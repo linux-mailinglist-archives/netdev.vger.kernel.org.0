@@ -2,97 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F7CB342A3C
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 04:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F4104342A45
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 04:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbhCTDnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 23:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbhCTDm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 23:42:58 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F22C061761;
-        Fri, 19 Mar 2021 20:42:58 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id w21-20020a9d63950000b02901ce7b8c45b4so10454747otk.5;
-        Fri, 19 Mar 2021 20:42:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mZG86UjrWc/s9wTcWCLvG2sfbbAYjJbFrMRaDNHgBD8=;
-        b=Q2FSdctjoURSvcz8/0nKdt7HYyzPbx1hCBOEy8/85bxWSlZK4CiW+qrVHVA+3uhCO8
-         m2KcAiGZ9HaFvgDm3AHP5q7B53/Qd4//pXIW/fHN90se7mz6vRs1bHqhEvheANUP8Ot9
-         nRPHgRB4gbvA4v4MOr9O21zJjF8Mna2EQAIHZOeV5wdNTn7SxRHcfIvpJdzIBtsnGCf1
-         zZqmR0fSzkwbC7TALDldSqoCjZw/LSD2Wp3+ZP1MZuPaHGsycp2tnhx7HdpDUiJbrbuG
-         gkrJvWdXwPfud/HZvrTqBUW3vUybX94xdlNOP1jaEqrymgqpCeESH9h6HIcOdvn/dWC7
-         pmNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mZG86UjrWc/s9wTcWCLvG2sfbbAYjJbFrMRaDNHgBD8=;
-        b=TLhGCCVlHBckOuKOWidpG0wUoI5wf3QbGAFy8ZPIk3ASJckyRA9Mjvv2Q92hYw6f86
-         3syg1nY9m0r2ctedY5ALyyja/FPkx19FOT7YPfFqyUYGQk1AUYF30ZNe2Y7RV7PLIQAQ
-         VdCh6BkGRZYpAxUBBihjdhEQgVEEAFE/hs+yl75b7p1V84ncn6+l739HMCT4qGFiL36J
-         QsIZcPZGHNCdTvNwM0vCEC+AdYGrvFjhem89MnY1QykWsbK6FSPcQdikr/F64Qy79CoM
-         3IJF+Ya08vLqpIshjHW/1puuMecxJw1GBjMyIHddglsu3TLBb0fvcJHU2TUTi47XrGz6
-         TWVA==
-X-Gm-Message-State: AOAM533weKcI8WdlNLXDFyQO+J+3Ho69fI1cJcLwwqX+70EsPSMWfZa4
-        +jffIRQ04hGjz450G4Ujo4I=
-X-Google-Smtp-Source: ABdhPJwYk/ursx2tTBt6OmjJ85fcG/kkaIWEBcMSdiQJas80gaCmQ2RIvvrPLA9Ltl3ZttjS9YVUNQ==
-X-Received: by 2002:a9d:7081:: with SMTP id l1mr3494351otj.358.1616211777607;
-        Fri, 19 Mar 2021 20:42:57 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:e449:7854:b17:d432])
-        by smtp.googlemail.com with ESMTPSA id l17sm1763024otb.57.2021.03.19.20.42.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Mar 2021 20:42:57 -0700 (PDT)
-Subject: Re: [PATCH v7 bpf-next 10/14] bpf: add new frame_length field to the
- XDP ctx
+        id S229766AbhCTDsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 23:48:07 -0400
+Received: from mga17.intel.com ([192.55.52.151]:41612 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229646AbhCTDr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 19 Mar 2021 23:47:59 -0400
+IronPort-SDR: Af6bSwsTk4Xbz65FIdnODV2Ya3MAbqdpyfhvHGxUq/7zZ8+6Cu4hVj3Kea0AOVADDSqZesSBnd
+ NmY64xtEkSQQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9928"; a="169940323"
+X-IronPort-AV: E=Sophos;i="5.81,263,1610438400"; 
+   d="scan'208";a="169940323"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2021 20:47:58 -0700
+IronPort-SDR: Td8dh0iTmDpxTDtM8kXIomaMtbtW0x8N7mDeNB3WLbplLbYLk/wHZ7+gmJRddNIlhHez2RJ9vY
+ rNPF10XsnVOA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,263,1610438400"; 
+   d="scan'208";a="512695394"
+Received: from lkp-server02.sh.intel.com (HELO 1c294c63cb86) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 19 Mar 2021 20:47:56 -0700
+Received: from kbuild by 1c294c63cb86 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lNSah-0002J6-I0; Sat, 20 Mar 2021 03:47:55 +0000
+Date:   Sat, 20 Mar 2021 11:47:00 +0800
+From:   kernel test robot <lkp@intel.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, sameehj@amazon.com
-References: <cover.1616179034.git.lorenzo@kernel.org>
- <a31b2599948c8d8679c6454b9191e70c1c732c32.1616179034.git.lorenzo@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a5ff68f0-00a1-2933-f863-7e861e78cd60@gmail.com>
-Date:   Fri, 19 Mar 2021 21:42:55 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.1
+Cc:     kbuild-all@lists.01.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
+        dsahern@kernel.org
+Subject: Re: [PATCH v7 bpf-next 09/14] bpd: add multi-buffer support to xdp
+ copy helpers
+Message-ID: <202103201112.Qq22IgkP-lkp@intel.com>
+References: <d7e913be6855a2aeaaff16de39960b38afd06da7.1616179034.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <a31b2599948c8d8679c6454b9191e70c1c732c32.1616179034.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d7e913be6855a2aeaaff16de39960b38afd06da7.1616179034.git.lorenzo@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/19/21 3:47 PM, Lorenzo Bianconi wrote:
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index 19cd6642e087..e47d9e8da547 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -75,6 +75,10 @@ struct xdp_buff {
->  	struct xdp_txq_info *txq;
->  	u32 frame_sz:31; /* frame size to deduce data_hard_end/reserved tailroom*/
->  	u32 mb:1; /* xdp non-linear buffer */
-> +	u32 frame_length; /* Total frame length across all buffers. Only needs
-> +			   * to be updated by helper functions, as it will be
-> +			   * initialized at XDP program start.
-> +			   */
->  };
->  
->  static __always_inline void
+Hi Lorenzo,
 
-If you do another version of this set ...
+Thank you for the patch! Perhaps something to improve:
 
-I think you only need 17-bits for the frame length (size is always <=
-128kB). It would be helpful for extensions to xdp if you annotated how
-many bits are really needed here.
+[auto build test WARNING on bpf-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Lorenzo-Bianconi/mvneta-introduce-XDP-multi-buffer-support/20210320-055103
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+compiler: nios2-linux-gcc (GCC) 9.3.0
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+cppcheck warnings: (new ones prefixed by >>)
+        ^
+   net/core/filter.c:10085:6: note: Variable 'ret' is reassigned a value before the old one has been used.
+    ret = -EACCES;
+        ^
+   net/core/filter.c:10090:6: note: Variable 'ret' is reassigned a value before the old one has been used.
+    ret = fprog->len;
+        ^
+>> net/core/filter.c:4593:30: warning: Uninitialized variable: copy_len [uninitvar]
+     memcpy(dst_buff, src_buff, copy_len);
+                                ^
+
+vim +4593 net/core/filter.c
+
+  4551	
+  4552	static unsigned long bpf_xdp_copy(void *dst_buff, const void *ctx,
+  4553					  unsigned long off, unsigned long len)
+  4554	{
+  4555		struct xdp_buff *xdp = (struct xdp_buff *)ctx;
+  4556		struct xdp_shared_info *xdp_sinfo;
+  4557		unsigned long base_len;
+  4558		const void *src_buff;
+  4559	
+  4560		if (likely(!xdp->mb)) {
+  4561			src_buff = xdp->data;
+  4562			memcpy(dst_buff, src_buff + off, len);
+  4563	
+  4564			return 0;
+  4565		}
+  4566	
+  4567		base_len = xdp->data_end - xdp->data;
+  4568		xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
+  4569		do {
+  4570			unsigned long copy_len;
+  4571	
+  4572			if (off < base_len) {
+  4573				src_buff = xdp->data + off;
+  4574				copy_len = min(len, base_len - off);
+  4575			} else {
+  4576				unsigned long frag_off_total = base_len;
+  4577				int i;
+  4578	
+  4579				for (i = 0; i < xdp_sinfo->nr_frags; i++) {
+  4580					skb_frag_t *frag = &xdp_sinfo->frags[i];
+  4581					unsigned long frag_len = xdp_get_frag_size(frag);
+  4582					unsigned long frag_off = off - frag_off_total;
+  4583	
+  4584					if (frag_off < frag_len) {
+  4585						src_buff = xdp_get_frag_address(frag) +
+  4586							   frag_off;
+  4587						copy_len = min(len, frag_len - frag_off);
+  4588						break;
+  4589					}
+  4590					frag_off_total += frag_len;
+  4591				}
+  4592			}
+> 4593			memcpy(dst_buff, src_buff, copy_len);
+  4594			off += copy_len;
+  4595			len -= copy_len;
+  4596			dst_buff += copy_len;
+  4597		} while (len);
+  4598	
+  4599		return 0;
+  4600	}
+  4601	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
