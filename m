@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10E32342F50
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 20:38:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3CE342F4F
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 20:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbhCTThh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 15:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34382 "EHLO
+        id S229893AbhCTThg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 15:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbhCTThQ (ORCPT
+        with ESMTP id S229871AbhCTThQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 15:37:16 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC1EC061762
-        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 12:37:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC69C061764
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 12:37:16 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lNhPO-0000RR-Bz
+        id 1lNhPO-0000RZ-JT
         for netdev@vger.kernel.org; Sat, 20 Mar 2021 20:37:14 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 8CFAC5FB3E9
+        by bjornoya.blackshift.org (Postfix) with SMTP id C097E5FB3EB
         for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 19:37:12 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 534F05FB3D6;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 6A9E25FB3D7;
         Sat, 20 Mar 2021 19:37:11 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 447d17a1;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c23fe795;
         Sat, 20 Mar 2021 19:37:10 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net 1/2] can: isotp: tx-path: zero initialize outgoing CAN frames
-Date:   Sat, 20 Mar 2021 20:37:07 +0100
-Message-Id: <20210320193708.348503-2-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Leon Romanovsky <leon@kernel.org>,
+        Stephane Grosjean <s.grosjean@peak-system.com>
+Subject: [net 2/2] can: peak_usb: Revert "can: peak_usb: add forgotten supported devices"
+Date:   Sat, 20 Mar 2021 20:37:08 +0100
+Message-Id: <20210320193708.348503-3-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210320193708.348503-1-mkl@pengutronix.de>
 References: <20210320193708.348503-1-mkl@pengutronix.de>
@@ -53,61 +54,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+In commit 6417f03132a6 ("module: remove never implemented
+MODULE_SUPPORTED_DEVICE") the MODULE_SUPPORTED_DEVICE macro was
+removed from the kerne entirely. Shortly before this patch was applied
+mainline the commit 59ec7b89ed3e ("can: peak_usb: add forgotten
+supported devices") was added to net/master. As this would result in a
+merge conflict, let's revert this patch.
 
-Commit d4eb538e1f48 ("can: isotp: TX-path: ensure that CAN frame flags are
-initialized") ensured the TX flags to be properly set for outgoing CAN
-frames.
-
-In fact the root cause of the issue results from a missing initialization
-of outgoing CAN frames created by isotp. This is no problem on the CAN bus
-as the CAN driver only picks the correctly defined content from the struct
-can(fd)_frame. But when the outgoing frames are monitored (e.g. with
-candump) we potentially leak some bytes in the unused content of
-struct can(fd)_frame.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/r/20210319100619.10858-1-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Fixes: 59ec7b89ed3e ("can: peak_usb: add forgotten supported devices")
+Link: https://lore.kernel.org/r/20210320192649.341832-1-mkl@pengutronix.de
+Suggested-by: Leon Romanovsky <leon@kernel.org>
+Cc: Stephane Grosjean <s.grosjean@peak-system.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/isotp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 430976485d95..15ea1234d457 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -196,7 +196,7 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
- 	nskb->dev = dev;
- 	can_skb_set_owner(nskb, sk);
- 	ncf = (struct canfd_frame *)nskb->data;
--	skb_put(nskb, so->ll.mtu);
-+	skb_put_zero(nskb, so->ll.mtu);
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+index f1d018218c93..f347ecc79aef 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+@@ -18,8 +18,6 @@
  
- 	/* create & send flow control reply */
- 	ncf->can_id = so->txid;
-@@ -779,7 +779,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
- 		can_skb_prv(skb)->skbcnt = 0;
+ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB FD adapter");
+ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB Pro FD adapter");
+-MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-Chip USB");
+-MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB X6 adapter");
  
- 		cf = (struct canfd_frame *)skb->data;
--		skb_put(skb, so->ll.mtu);
-+		skb_put_zero(skb, so->ll.mtu);
- 
- 		/* create consecutive frame */
- 		isotp_fill_dataframe(cf, so, ae, 0);
-@@ -895,7 +895,7 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	so->tx.idx = 0;
- 
- 	cf = (struct canfd_frame *)skb->data;
--	skb_put(skb, so->ll.mtu);
-+	skb_put_zero(skb, so->ll.mtu);
- 
- 	/* check for single frame transmission depending on TX_DL */
- 	if (size <= so->tx.ll_dl - SF_PCI_SZ4 - ae - off) {
-
-base-commit: 5aa3c334a449bab24519c4967f5ac2b3304c8dcf
+ #define PCAN_USBPROFD_CHANNEL_COUNT	2
+ #define PCAN_USBFD_CHANNEL_COUNT	1
 -- 
 2.30.2
 
