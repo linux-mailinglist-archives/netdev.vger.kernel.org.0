@@ -2,131 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E74203429AC
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 02:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8578E3429F4
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 03:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbhCTBlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 21:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        id S229817AbhCTCRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 22:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbhCTBky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 21:40:54 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA9EC061760
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 18:40:54 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id i9so4922698qka.2
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 18:40:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j70/tM1l2gVFoj1Vlwmu23HMZ+Naj9/vNEgAl0EBlR8=;
-        b=ig3LH0bVLzrhwGSQ9xftM57zVglOx3bWlooIL6mAuw8/UaGnuLa5BK9B4HWknUw4b+
-         Jd6/y4aZQPqEHrNZViRXArXM0X89f7RLcgVRYNdhXphA379oORewECw8kffmUO0c2fsj
-         /tBE5x2Ca3TiiutNiSH8X89fBEBstrus7ywIDFZHpMV40ikx3GhcdTPQS1sF5Zk2QuRh
-         Nv9yEqlcZ67dU4HP3XhQyAP30ghLhH5hjJfFeY6+2hevBtRU1cbizXHwFPJVFYdeAQxL
-         6ijPkGzITIYdDH1wXbSk/AD6UddbZ+RDV0Xoh52pGIZZdXZtzjdw4ElD0pbRSpinU3tt
-         aQAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j70/tM1l2gVFoj1Vlwmu23HMZ+Naj9/vNEgAl0EBlR8=;
-        b=O30BtJqDqYc/CnSZ3ptBmTqeOfCgrRhz/EQocCLFM9UA/eV4zSsfzncPwYG4XHGxSI
-         tdFQt6w48WcQOZND5HUupIp/IOmLn1u5eIAC6IDS5hAdkxc1TRnb+pk9vano0TJD8PP3
-         2l4Ccua/O9qay+W7cig6mw0qaLH976cNitAxkxeIp5VdNsG5kADfndO7aTJfhMAtaHF+
-         KqJoafV5tCAXapl5aoG10aQ5Vq7oRA8/BZr6aCeVfB7tNYsMuNyaMPMsAF4La+zriO+w
-         jWb0lg1YrgE9rT9rk5vsBMiRycDJXDUYsXIqYHv9dqa4xF2tVvhU/VUx72gii0ByJNpS
-         q4/w==
-X-Gm-Message-State: AOAM531USBczvlpGeACkA9g/KdGwfjhPAo4VXW1XsjvfYGk5/Kxjlsqr
-        paCo7eGmOgrHvF7dAfu6+Am2eAtNmuU3ahCK7fYVTg==
-X-Google-Smtp-Source: ABdhPJwxfsoYOA1pKbYhaAnz7sx1ZvOUCjOA+qWYBrmIelPcsW/iwOYx+f3NqTh+NwBXaKQrZRGQ3ApUDgMiVGWfyq8=
-X-Received: by 2002:a37:6108:: with SMTP id v8mr1408297qkb.448.1616204453261;
- Fri, 19 Mar 2021 18:40:53 -0700 (PDT)
+        with ESMTP id S229618AbhCTCRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 22:17:44 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0726BC061760;
+        Fri, 19 Mar 2021 19:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:Content-Type:MIME-Version:
+        References:Message-ID:In-Reply-To:Subject:cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=IA73I/1Q4ljXGa9sXgEYE5o60oxpvFT5RGp43jgdUZI=; b=oT1daocC/37cd1COpnbbd3BeV0
+        MtINmjA+3WKboa18UO3AFUWpkq/JC78nqf7ZqhP3lyvqbP21QlrEh0vntP04PXYEdRkXGpUXUxyhs
+        em/3ieJH16VYASnhsGtGOL6sJdqJge4/9E6/qfBhXJZg8x9PNskUs6JzeqJgBG+iUOv1yOh70R0EK
+        DHxGr7U4Ndnw/lKsXmQ5NiUEPp3BxMi42Izlg38k/w41YS4xJh+g30N6Ut0hanr5iIxuTfK8PKBK1
+        SP2YCvtThGg+poc9uTlQybvbw1/ag3lBIUSTyvUw/1Yrbrh4aTvZKiR6KtD5PzXTlEj+TiRLLyUqP
+        aE9IGPYw==;
+Received: from rdunlap (helo=localhost)
+        by bombadil.infradead.org with local-esmtp (Exim 4.94 #2 (Red Hat Linux))
+        id 1lNRBK-001ejd-M6; Sat, 20 Mar 2021 02:17:39 +0000
+Date:   Fri, 19 Mar 2021 19:17:38 -0700 (PDT)
+From:   Randy Dunlap <rdunlap@bombadil.infradead.org>
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
+cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: net: forwarding: Fix a typo
+In-Reply-To: <20210318232945.17834-1-unixbhaskar@gmail.com>
+Message-ID: <f9256be2-5b5-fdb5-8e12-771c2f952e15@bombadil.infradead.org>
+References: <20210318232945.17834-1-unixbhaskar@gmail.com>
 MIME-Version: 1.0
-References: <20210320000001.915366-1-sdf@google.com> <CAADnVQLCdMWgB9tB4UiSFHp36vswfQO_R_1ifdPqyrD6UT6vqA@mail.gmail.com>
- <CAKH8qBvXwzOqJ_4ETF1LrBQKxhKWLWv28beFHHK+=Zd0hULGFQ@mail.gmail.com> <CAADnVQ+fg-HMM=TtsrZx1kJQpy7-fckcgkN00L-Gp5Aa-CzmQQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+fg-HMM=TtsrZx1kJQpy7-fckcgkN00L-Gp5Aa-CzmQQ@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 19 Mar 2021 18:40:42 -0700
-Message-ID: <CAKH8qBsdJak0eO_zsuzAyNmSkVtR99ZAgGgP=j8mtAn9CvZ58g@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: use NOP_ATOMIC5 instead of emit_nops(&prog, 5)
- for BPF_TRAMP_F_CALL_ORIG
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Sender: Randy Dunlap <rdunlap@infradead.org>
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20210319_191738_746279_4CAB6813 
+X-CRM114-Status: GOOD (  11.75  )
+X-Spam-Score: -0.0 (/)
+X-Spam-Report: Spam detection software, running on the system "bombadil.infradead.org",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ the administrator of that system for details.
+ Content preview:  On Fri, 19 Mar 2021, Bhaskar Chowdhury wrote: > s/verfied/verified/
+    > > Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com> Acked-by: Randy
+    Dunlap <rdunlap@infradead.org> 
+ Content analysis details:   (-0.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -0.0 NO_RELAYS              Informational: message was not relayed via SMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 5:33 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+
+
+On Fri, 19 Mar 2021, Bhaskar Chowdhury wrote:
+
+> s/verfied/verified/
 >
-> On Fri, Mar 19, 2021 at 5:25 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > On Fri, Mar 19, 2021 at 5:14 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, Mar 19, 2021 at 5:00 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > > >
-> > > > __bpf_arch_text_poke does rewrite only for atomic nop5, emit_nops(xxx, 5)
-> > > > emits non-atomic one which breaks fentry/fexit with k8 atomics:
-> > > >
-> > > > P6_NOP5 == P6_NOP5_ATOMIC (0f1f440000 == 0f1f440000)
-> > > > K8_NOP5 != K8_NOP5_ATOMIC (6666906690 != 6666666690)
-> > > >
-> > > > Can be reproduced by doing "ideal_nops = k8_nops" in "arch_init_ideal_nops()
-> > > > and running fexit_bpf2bpf selftest.
-> > > >
-> > > > Fixes: e21aa341785c ("bpf: Fix fexit trampoline.")
-> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > > ---
-> > > >  arch/x86/net/bpf_jit_comp.c | 3 ++-
-> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > > > index 72b5a57e9e31..b35fc8023884 100644
-> > > > --- a/arch/x86/net/bpf_jit_comp.c
-> > > > +++ b/arch/x86/net/bpf_jit_comp.c
-> > > > @@ -2012,7 +2012,8 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
-> > > >                 /* remember return value in a stack for bpf prog to access */
-> > > >                 emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
-> > > >                 im->ip_after_call = prog;
-> > > > -               emit_nops(&prog, 5);
-> > > > +               memcpy(prog, ideal_nops[NOP_ATOMIC5], X86_PATCH_SIZE);
-> > > > +               prog += X86_PATCH_SIZE;
-> > >
-> > > I'm well aware, but ideal_nops are pretty much gone already.
-> > > The changes are already in the -tip tree.
-> > > So I decided to reduce the conflicts for the merge window.
-> > >
-> > > Do you actually see the breakage or it's purely theoretical?
-> > We do see it, but it's on our tree that pulls from bpf.
-> > And it obviously doesn't have that "x86: Remove dynamic NOP selection" yet.
-> > Thanks for the pointer, I guess I can just wait for the real merge then.
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+
+> ---
+> tools/testing/selftests/net/forwarding/fib_offload_lib.sh | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> If it breaks the real users we have to land the fix, but let me ask how
-> come that you run with k8 cpu? k8 does other nasty things.
-> Do you run with all of amd errata?
-It's not amd, it's intel:
-
-cpu family      : 6
-model           : 45
-model name      : Intel(R) Xeon(R) CPU E5-2689 0 @ 2.60GHz
-
-I think I'm hitting the following from the arch/x86/kernel/alternative.c:
-
-/*
-* Due to a decoder implementation quirk, some
-* specific Intel CPUs actually perform better with
-* the "k8_nops" than with the SDM-recommended NOPs.
-*/
-if (boot_cpu_data.x86 == 6 &&
-   boot_cpu_data.x86_model >= 0x0f &&
-   boot_cpu_data.x86_model != 0x1c &&
-   boot_cpu_data.x86_model != 0x26 &&
-   boot_cpu_data.x86_model != 0x27 &&
-   boot_cpu_data.x86_model < 0x30) {
-ideal_nops = k8_nops;
+> diff --git a/tools/testing/selftests/net/forwarding/fib_offload_lib.sh b/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
+> index 66496659bea7..e134a5f529c9 100644
+> --- a/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
+> +++ b/tools/testing/selftests/net/forwarding/fib_offload_lib.sh
+> @@ -224,7 +224,7 @@ fib_ipv4_plen_test()
+> 	ip -n $ns link set dev dummy1 up
+>
+> 	# Add two routes with the same key and different prefix length and
+> -	# make sure both are in hardware. It can be verfied that both are
+> +	# make sure both are in hardware. It can be verified that both are
+> 	# sharing the same leaf by checking the /proc/net/fib_trie
+> 	ip -n $ns route add 192.0.2.0/24 dev dummy1
+> 	ip -n $ns route add 192.0.2.0/25 dev dummy1
+> --
+> 2.26.2
+>
+>
