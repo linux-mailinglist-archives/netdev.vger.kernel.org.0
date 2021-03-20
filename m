@@ -2,80 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C35433429FC
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 03:22:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4831D342A05
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 03:32:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbhCTCWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 22:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39566 "EHLO
+        id S229720AbhCTCcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 22:32:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbhCTCV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 22:21:59 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C042FC061760;
-        Fri, 19 Mar 2021 19:21:59 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id k24so4893059pgl.6;
-        Fri, 19 Mar 2021 19:21:59 -0700 (PDT)
+        with ESMTP id S229447AbhCTCbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 22:31:36 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECD6C061760;
+        Fri, 19 Mar 2021 19:31:35 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id g8so5768581lfv.12;
+        Fri, 19 Mar 2021 19:31:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UeuAaIBGA8jKmjKUJQE3ziPleqbcVpxH0mTyWYs0tAY=;
-        b=Gj2JbxMU9mRFxaIGfvAq4V92pJsEmg5IqMB+Fh5GAo69X6xNT5Dl935UIELeAmgad1
-         hMVgB/4iS7nLtCtgf5fFb/T+M4/2QFyIg9PXbxsRuYbC+U20/aWkzgKTLMMisSgUxmfb
-         hyJ1jozlBBxU8kV4fAbLpnY7OxqT30tHJdsJeUnVoVGYeZE9FXej/6/Sh1nXRibid+3U
-         Up6/s7nQNok2MBYnSiix8kzpyA2sswfJ+VcYSPBlX2G3NaCbZk/mfSLSZMATTexImY8t
-         nHBb3QRKRRZDCrg0mvsocAMjTlr211YcmhNxiusB9kM2wuapXLioEU+VNW/0rEQMfzWB
-         p2aw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ik/fdWl54By5s9X5Z1SyPQ/XceBKzmTy7oaDJAYK7+0=;
+        b=DiyJZOxVYuYyie1B1+TMy9H+r29ppqRzoygUrRq6AI0sIJ/bd7Pzkzq958OO1eyX4y
+         DyGs66yO79PME1AsclFLKoD1qvcXKUEChTlgx+4W7DW3QlmzKXfM+u3RVPYHqToxPz00
+         PcCO5BFz3Mhqj/MHSZqByLHSGaZC95pz/+3uFtt7yKq8hIrfC9MxLkx4pKgzqiF2DB6e
+         /2QxZLt0+XiNUC6vXMgYfaQCRvSzqrjkr0E4oP/J6/e+9t6EznqyiYkISewbzCQi+Mjy
+         yAB/PU9t53laaVzR0CEskQZ76eJ5pS29/Kb6tgMOTKHv++VFaUyCutxGkf0AYXsO/rPl
+         gt/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UeuAaIBGA8jKmjKUJQE3ziPleqbcVpxH0mTyWYs0tAY=;
-        b=RqKZdmdWwTtCMTQrjCgf4NPc/BDqG2LBFsm6S1DwPT+oYvn21H8sLmHr37Cb42FPrl
-         YcabgXPBBZ3U6Rmv7I0d2zcKcLEflqeOn5V2vcmx/flZsYniRFO2KqG/0SuwYLAX+Pqw
-         6q++3Xv0TsVI6lY/Ykn0c45wl8OFYAXbZOJFHoC4PVNqDYfSHiXxpUOHk0pgZJve0k+s
-         mF6f1kKN4EGUntRw0EGqx7PVeP7qnWndVB3m0wzOtDYosLtpcZOzEPJHoRJeB/AXkDQD
-         /a/BUy575mCn3UxegtXZbP3QP8KFVYnVIEzyXV88GcSbEgzT5EVDZykdmkkb2DJ/yqbE
-         V4ZQ==
-X-Gm-Message-State: AOAM531BsjufTotfoeLwHr9JGF5Si/kGUP78f/Q3dO71gqPpy6/5OlAi
-        YzeOpqgrdvIlcBV6qYKq34Q=
-X-Google-Smtp-Source: ABdhPJyAVjJc6wUkwAqGly8OAp4vGDSLpmxtsuQpG66hL0WBOfJs2puTBpyjTOu8zpjN2Ajh47YZ2w==
-X-Received: by 2002:a62:2b85:0:b029:1ee:e2a2:cbee with SMTP id r127-20020a622b850000b02901eee2a2cbeemr11602420pfr.78.1616206919226;
-        Fri, 19 Mar 2021 19:21:59 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:343d])
-        by smtp.gmail.com with ESMTPSA id w203sm6600647pfc.188.2021.03.19.19.21.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 19:21:58 -0700 (PDT)
-Date:   Fri, 19 Mar 2021 19:21:56 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: allow compiling BPF objects
- without BTF
-Message-ID: <20210320022156.eqtmldxpzxkh45a7@ast-mbp>
-References: <20210319205909.1748642-1-andrii@kernel.org>
- <20210319205909.1748642-4-andrii@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ik/fdWl54By5s9X5Z1SyPQ/XceBKzmTy7oaDJAYK7+0=;
+        b=LqhDNi5f0dHIXPPRM+54ryz0Lz3DjBqvB1mEcHm7Vln5QS+xmyy2QZlW+UUzlo4Vo6
+         ah+ADZt6KP3uEN4mmZBMFJ3mx0ZMraE05KwVE4uCDWsp0vUztqLlsw1iUQtGhaYb6XgA
+         0JCBPzHLfm+pu9T79pcnyC4bG2T7YjtwtdDE+lheQ+tIRxDo/vmXQn8s0A7ROUqEP46I
+         C6eFK8+K6rFwkAuzPlDsi0sJGVYztNMF6XS+46JfB8jBqMOSpNfVE2fYnSvCCahqS/kQ
+         GY2AMBjcYNkHTEMvJoWjeYKQXV3D7B29yzZOjQpXGl3iSxlkY6+omc404XTRi1eBWSbR
+         U67g==
+X-Gm-Message-State: AOAM533NunAjiJil/yElhY6J28agKWLgoEzqLlEi49XcpsrOWJ9/tA0+
+        3xHbCG5dK6NtDfobGm7HhFlsjXTStkluBVybTTo7ryrh
+X-Google-Smtp-Source: ABdhPJxuW9cxZgvxszH1Qh2lgx1PEkjBm25WsHyrClS9G068yjDMSO4fMyNvLH1092MNDzVS0E8+Qb1K4fAkXA0mlb8=
+X-Received: by 2002:ac2:5b5a:: with SMTP id i26mr2569043lfp.182.1616207493814;
+ Fri, 19 Mar 2021 19:31:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210319205909.1748642-4-andrii@kernel.org>
+References: <20210320000001.915366-1-sdf@google.com> <CAADnVQLCdMWgB9tB4UiSFHp36vswfQO_R_1ifdPqyrD6UT6vqA@mail.gmail.com>
+ <CAKH8qBvXwzOqJ_4ETF1LrBQKxhKWLWv28beFHHK+=Zd0hULGFQ@mail.gmail.com>
+ <CAADnVQ+fg-HMM=TtsrZx1kJQpy7-fckcgkN00L-Gp5Aa-CzmQQ@mail.gmail.com> <CAKH8qBsdJak0eO_zsuzAyNmSkVtR99ZAgGgP=j8mtAn9CvZ58g@mail.gmail.com>
+In-Reply-To: <CAKH8qBsdJak0eO_zsuzAyNmSkVtR99ZAgGgP=j8mtAn9CvZ58g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 19 Mar 2021 19:31:22 -0700
+Message-ID: <CAADnVQLyUk+J_GLQc4RTMDZCvMFcb4M_fLsSQYYWCz_f9nWiPw@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: use NOP_ATOMIC5 instead of emit_nops(&prog, 5)
+ for BPF_TRAMP_F_CALL_ORIG
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 01:59:09PM -0700, Andrii Nakryiko wrote:
-> Add ability to skip BTF generation for some BPF object files. This is done
-> through using a convention of .nobtf.c file name suffix.
-> 
-> Also add third statically linked file to static_linked selftest. This file has
-> no BTF, causing resulting object file to have only some of DATASEC BTF types.
-> It also is using (from BPF code) global variables. This tests both libbpf's
-> static linking logic and bpftool's skeleton generation logic.
+On Fri, Mar 19, 2021 at 6:40 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> On Fri, Mar 19, 2021 at 5:33 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Mar 19, 2021 at 5:25 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > >
+> > > On Fri, Mar 19, 2021 at 5:14 PM Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Fri, Mar 19, 2021 at 5:00 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > > > >
+> > > > > __bpf_arch_text_poke does rewrite only for atomic nop5, emit_nops(xxx, 5)
+> > > > > emits non-atomic one which breaks fentry/fexit with k8 atomics:
+> > > > >
+> > > > > P6_NOP5 == P6_NOP5_ATOMIC (0f1f440000 == 0f1f440000)
+> > > > > K8_NOP5 != K8_NOP5_ATOMIC (6666906690 != 6666666690)
+> > > > >
+> > > > > Can be reproduced by doing "ideal_nops = k8_nops" in "arch_init_ideal_nops()
+> > > > > and running fexit_bpf2bpf selftest.
+> > > > >
+> > > > > Fixes: e21aa341785c ("bpf: Fix fexit trampoline.")
+> > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > > ---
+> > > > >  arch/x86/net/bpf_jit_comp.c | 3 ++-
+> > > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> > > > > index 72b5a57e9e31..b35fc8023884 100644
+> > > > > --- a/arch/x86/net/bpf_jit_comp.c
+> > > > > +++ b/arch/x86/net/bpf_jit_comp.c
+> > > > > @@ -2012,7 +2012,8 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > > > >                 /* remember return value in a stack for bpf prog to access */
+> > > > >                 emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
+> > > > >                 im->ip_after_call = prog;
+> > > > > -               emit_nops(&prog, 5);
+> > > > > +               memcpy(prog, ideal_nops[NOP_ATOMIC5], X86_PATCH_SIZE);
+> > > > > +               prog += X86_PATCH_SIZE;
+> > > >
+> > > > I'm well aware, but ideal_nops are pretty much gone already.
+> > > > The changes are already in the -tip tree.
+> > > > So I decided to reduce the conflicts for the merge window.
+> > > >
+> > > > Do you actually see the breakage or it's purely theoretical?
+> > > We do see it, but it's on our tree that pulls from bpf.
+> > > And it obviously doesn't have that "x86: Remove dynamic NOP selection" yet.
+> > > Thanks for the pointer, I guess I can just wait for the real merge then.
+> >
+> > If it breaks the real users we have to land the fix, but let me ask how
+> > come that you run with k8 cpu? k8 does other nasty things.
+> > Do you run with all of amd errata?
+> It's not amd, it's intel:
+>
+> cpu family      : 6
+> model           : 45
+> model name      : Intel(R) Xeon(R) CPU E5-2689 0 @ 2.60GHz
+>
+> I think I'm hitting the following from the arch/x86/kernel/alternative.c:
+>
+> /*
+> * Due to a decoder implementation quirk, some
+> * specific Intel CPUs actually perform better with
+> * the "k8_nops" than with the SDM-recommended NOPs.
+> */
+> if (boot_cpu_data.x86 == 6 &&
+>    boot_cpu_data.x86_model >= 0x0f &&
+>    boot_cpu_data.x86_model != 0x1c &&
+>    boot_cpu_data.x86_model != 0x26 &&
+>    boot_cpu_data.x86_model != 0x27 &&
+>    boot_cpu_data.x86_model < 0x30) {
+> ideal_nops = k8_nops;
 
-I don't like the long term direction of patch 1 and 3.
-BTF is mandatory for the most bpf kernel features added in the last couple years.
-Making user space do quirks for object files without BTF is not something
-we should support or maintain. If there is no BTF the linker and skeleton
-generation shouldn't crash, of course, but they should reject such object.
+Ohh. Thanks for explaining. Applied.
