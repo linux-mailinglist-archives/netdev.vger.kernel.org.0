@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9724934303F
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD1634303E
 	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 00:01:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbhCTXAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229897AbhCTXAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 20 Mar 2021 19:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbhCTW7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 18:59:49 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7E8C061574
+        with ESMTP id S229835AbhCTW7u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 18:59:50 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F62C061762
         for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 15:59:48 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a7so15327544ejs.3
-        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 15:59:47 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id l4so15316957ejc.10
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 15:59:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=e+x0CsY54hAVvQrt0uKaT6klSiIJ8qHUUQIai1jnqqo=;
-        b=f5LL8W2w613HqHxwDpml+eg5cWUUkOMrS4rl5+5C8PxQA6WcRBZXVYmFVqXNriIS9W
-         mY4mI3KQYSvn/MqtkBJtk7PR/6rABH9WFqK4H7MqdiIkGwUYRxhh9iYTuC61HmwXwyUS
-         tDhfM9DDdSNDaCupLPba7kLug7zvG6j95KNrZ2twgddPYGLzdnSERyZ+/7rmPtDsq868
-         xPCqj/L6Z5jbVGjmhdr6bwT8zfnD9CHaWWmGwbM846wZuk3Sj329vttgBC4ya8bpftNG
-         R0Id85yBqpufI62ZTRr+s/JTA76ZFBl3XYRdXPBkM6jrido97HN4Kaue1SOJCulwQIK1
-         ZjYg==
+        bh=41S/75ZBbiqBX6RwoO7CyOxzhDmC/IHHi5beUKC5sM0=;
+        b=frRPtSF2JP9Y3cQCeXeHTmlUpT1+GgHrW8S1TycQQ2ftIIbBFXxX6JEhT3rmqXjGWX
+         Lf6F/wYfGBKbpCJtttKpyH6VAE4UuS9ZLYi8JsPYwECedAuq+qkJK3M8HTnencnHqMTj
+         2Xd4wBQk+KYsDUWuPZxuaEJorgDp007nQldlsC2P7MUrWT1/qx5+11v8vDPeAB99dBaK
+         30GdkwN8779qVVXds9fYFWbFi1zYloUROivOjKmnrbV+Cslb2qFgA3CfOzbGEfqqNcVY
+         ObFgKyInBbJhNJLEMEUIj92ZyVmZ+GrNKXVPUU13j7fwR6QialjOpS5Tt0QVEztlyICy
+         5oGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=e+x0CsY54hAVvQrt0uKaT6klSiIJ8qHUUQIai1jnqqo=;
-        b=hraOA7iVIj5JjpwRiqCrRkNKu9P1kvJ+ReTOvi0iSIfCPDKYugvvtKjm5DqraXclvr
-         ZOQ2bUIXIkC0Q2gJ3iaFXsxAG9IWwysFeG6A/J4pvXjeCt1dUupQMsxZbhXEG89oseiH
-         ZkMLDtitdDTkD8hENujKgkQ+GWDrpqTnOVQOLI/qo4frkYoexIfmrtaxL5EkGadAECVX
-         h96bneAfbozMmygwUbiaIi4FY+lo8NR/QJFwg22PnmXIYz7C/4Ns5ILQx4keFcdD4+x/
-         cB6DmXPZxhen5ERtpnKz/NU9qzGTnYWF0Fq0LiM9bZGt3aS/CA7zsJeX56IWnGokMxgI
-         dVmg==
-X-Gm-Message-State: AOAM532UHOID3P/UtWHKGQxOCok7PcCLtrp59WYjimZ8V3P739E1D/pu
-        yPCgV276l8PVg/XAP/eSWQQ=
-X-Google-Smtp-Source: ABdhPJxJan3Pmtgi7pYfOiZyPaAcNXvwLWxbz74aPCtMbQzHcKiAiU0VkQNgQqNh9KVEtwzWoDaAJA==
-X-Received: by 2002:a17:906:85b:: with SMTP id f27mr12061662ejd.414.1616281186716;
-        Sat, 20 Mar 2021 15:59:46 -0700 (PDT)
+        bh=41S/75ZBbiqBX6RwoO7CyOxzhDmC/IHHi5beUKC5sM0=;
+        b=avHl+qK4fwlx+kXiMVKbjhP8Sm2aTHX6i4+tx38593wF5e/9BIXQwguV/ZCh6O4Xe9
+         p0YLs6lFkE63Wn/gVdx3KQoUPC9AEzbmHTpJFP/eAXauDJpIz8rel7+UtTHFMNRGkNLJ
+         79LNOvNZI278DdQSk0tHiL3A+f+1M4pDOgp0deKBenUTLcALxvr9ZrGlQ740+01+14YV
+         AQs9KUh8UXNqBa0Nt//je8c/gJXBmYHzUcArpYkeJqp3PfZQUYejh0uR2KknaWthAvPa
+         l+kK7qjBnXzWCnwbKWRW8Y9LIp9FOAxMkUwOKZ1sFPom2w/+1cZaZTfxVmKiFTiilb8o
+         qv4Q==
+X-Gm-Message-State: AOAM533Q953G1a7M6pIhCoHDpkd2Jr37m9SVoF1Zobote/3Tw+BysNv3
+        +waEG8jCp37o3vVxHIRQPXk=
+X-Google-Smtp-Source: ABdhPJwuANHOLC8n22bd9XsvXo3b9GaFu/5QCk2T2kvgvgA6UeW2EhPpteZ0I6cDqUqAVQt1rYYT1A==
+X-Received: by 2002:a17:906:d8d3:: with SMTP id re19mr11767729ejb.440.1616281187602;
+        Sat, 20 Mar 2021 15:59:47 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id a3sm6101517ejv.40.2021.03.20.15.59.45
+        by smtp.gmail.com with ESMTPSA id a3sm6101517ejv.40.2021.03.20.15.59.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Mar 2021 15:59:46 -0700 (PDT)
+        Sat, 20 Mar 2021 15:59:47 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -56,9 +56,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net 2/3] net: dsa: don't advertise 'rx-vlan-filter' if VLAN filtering not global
-Date:   Sun, 21 Mar 2021 00:59:27 +0200
-Message-Id: <20210320225928.2481575-3-olteanv@gmail.com>
+Subject: [PATCH v2 net 3/3] net: dsa: let drivers state that they need VLAN filtering while standalone
+Date:   Sun, 21 Mar 2021 00:59:28 +0200
+Message-Id: <20210320225928.2481575-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210320225928.2481575-1-olteanv@gmail.com>
 References: <20210320225928.2481575-1-olteanv@gmail.com>
@@ -70,233 +70,170 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The blamed patch has removed the driver's ability to return -EOPNOTSUPP
-in the .port_vlan_add method when called from .ndo_vlan_rx_add_vid
-(unmassaged by DSA, -EOPNOTSUPP is a hard error for vlan_vid_add).
-But we have not managed well enough the cases under which .port_vlan_add
-is called in the first place, as will be explained below. This was
-reported as a problem by Tobias because mv88e6xxx_port_vlan_prepare is
-stubborn and only accepts VLANs on bridged ports. That is understandably
-so, because standalone mv88e6xxx ports are VLAN-unaware, and VTU entries
-are said to be a scarce resource.
+As explained in the blamed patch, the hellcreek driver uses some tricks
+to comply with the network stack expectations: it enforces port
+separation in standalone mode using VLANs. For untagged traffic,
+bridging between ports is prevented by using different PVIDs, and for
+VLAN-tagged traffic, it never accepts 8021q uppers with the same VID on
+two ports, so packets with one VLAN cannot leak from one port to another.
 
-Otherwise said, the following fails lamentably on mv88e6xxx:
+That is almost fine*, and has worked because hellcreek relied on an
+implicit behavior of the DSA core that was changed by the previous
+patch: the standalone ports declare the 'rx-vlan-filter' feature as 'on
+[fixed]'. Since most of the DSA drivers are actually VLAN-unaware in
+standalone mode, that feature was actually incorrectly reflecting the
+hardware/driver state, so there was a desire to fix it. This leaves the
+hellcreek driver in a situation where it has to explicitly request this
+behavior from the DSA framework.
 
-ip link add br0 type bridge vlan_filtering 1
-ip link set lan3 master br0
-ip link add link lan10 name lan10.1 type vlan id 1
-[485256.724147] mv88e6085 d0032004.mdio-mii:12: p10: hw VLAN 1 already used by port 3 in br0
-RTNETLINK answers: Operation not supported
+We configure the ports as follows:
 
-We need to step back and explain that the dsa_slave_vlan_rx_add_vid and
-dsa_slave_vlan_rx_kill_vid methods exist for drivers that need the
-'rx-vlan-filter: on' feature in ethtool -k, which can be due to any of
-the following reasons:
+- Standalone: 'rx-vlan-filter' is on. An 8021q upper on top of a
+  standalone hellcreek port will go through dsa_slave_vlan_rx_add_vid
+  and will add a VLAN to the hardware tables, giving the driver the
+  opportunity to refuse it through .port_prechangeupper.
 
-1. vlan_filtering_is_global = true, and some ports are under a
-   VLAN-aware bridge while others are standalone, and the standalone
-   ports would otherwise drop VLAN-tagged traffic. This is described in
-   commit 061f6a505ac3 ("net: dsa: Add ndo_vlan_rx_{add, kill}_vid
-   implementation").
+- Bridged with vlan_filtering=0: 'rx-vlan-filter' is off. An 8021q upper
+  on top of a bridged hellcreek port will not go through
+  dsa_slave_vlan_rx_add_vid, because there will not be any attempt to
+  offload this VLAN. The driver already disables VLAN awareness, so that
+  upper should receive the traffic it needs.
 
-2. the ports that are under a VLAN-aware bridge should also set this
-   feature, for 8021q uppers having a VID not claimed by the bridge.
-   In this case, the driver will essentially not even know that the VID
-   is coming from the 8021q layer and not the bridge.
+- Bridged with vlan_filtering=1: 'rx-vlan-filter' is on. An 8021q upper
+  on top of a bridged hellcreek port will call dsa_slave_vlan_rx_add_vid,
+  and can again be vetoed through .port_prechangeupper.
 
-3. Hellcreek. This driver needs it because in standalone mode, it uses
-   unique VLANs per port to ensure separation. For separation of untagged
-   traffic, it uses different PVIDs for each port, and for separation of
-   VLAN-tagged traffic, it never accepts 8021q uppers with the same vid
-   on two ports.
+*It is not actually completely fine, because if I follow through
+correctly, we can have the following situation:
 
-If a driver does not fall under any of the above 3 categories, there is
-no reason why it should advertise the 'rx-vlan-filter' feature, therefore
-no reason why it should offload the VLANs added through vlan_vid_add.
-
-This commit fixes the problem by removing the 'rx-vlan-filter' feature
-from the slave devices when they operate in standalone mode, and when
-they offload a VLAN-unaware bridge. This gives the mv88e6xxx driver what
-it wants, since it keeps the 8021q VLANs away from the VTU until VLAN
-awareness is enabled (point at which the ports are no longer standalone,
-hence the check in mv88e6xxx_port_vlan_prepare passes). And since the
-issue predates the existence of the hellcreek driver, case 3 will be
-dealt with in a separate patch.
-
-The commit also has the nice side effect that we no longer lie to the
-network stack about our VLAN filtering status.
-
-Because the 'rx-vlan-filter' feature is now dynamically toggled, and our
-.ndo_vlan_rx_add_vid does not get called when 'rx-vlan-filter' is off,
-we need to avoid bugs such as the following by replaying the VLANs from
-8021q uppers every time we enable VLAN filtering:
-
-ip link add link lan0 name lan0.100 type vlan id 100
-ip addr add 192.168.100.1/24 dev lan0.100
-ping 192.168.100.2 # should work
 ip link add br0 type bridge vlan_filtering 0
-ip link set lan0 master br0
-ping 192.168.100.2 # should still work
-ip link set br0 type bridge vlan_filtering 1
-ping 192.168.100.2 # should still work but doesn't
+ip link set lan0 master br0 # lan0 now becomes VLAN-unaware
+ip link set lan0 nomaster # lan0 fails to become VLAN-aware again, therefore breaking isolation
 
-Fixes: 9b236d2a69da ("net: dsa: Advertise the VLAN offload netdev ability only if switch supports it")
-Reported-by: Tobias Waldekranz <tobias@waldekranz.com>
+This patch fixes that by extending the DSA core logic, based on this
+requested attribute, to change the VLAN awareness state of the switch
+(port) when it leaves the bridge.
+
+Fixes: e358bef7c392 ("net: dsa: Give drivers the chance to veto certain upper devices")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 37 +++++++++++++++++++++++++++--
- net/dsa/slave.c    | 58 ++++++++++++++++++++++++++++++++++++++++++++--
- 3 files changed, 93 insertions(+), 4 deletions(-)
+ drivers/net/dsa/hirschmann/hellcreek.c |  1 +
+ include/net/dsa.h                      |  3 +++
+ net/dsa/slave.c                        |  8 ++++++--
+ net/dsa/switch.c                       | 20 +++++++++++++++-----
+ 4 files changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 4c43c5406834..d7dd9e07d168 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -269,6 +269,8 @@ int dsa_slave_register_notifier(void);
- void dsa_slave_unregister_notifier(void);
- void dsa_slave_setup_tagger(struct net_device *slave);
- int dsa_slave_change_mtu(struct net_device *dev, int new_mtu);
-+int dsa_slave_manage_vlan_filtering(struct net_device *dev,
-+				    bool vlan_filtering);
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index 64a73dd045c0..f0f8aad8b5f3 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -1327,6 +1327,7 @@ static int hellcreek_setup(struct dsa_switch *ds)
+ 	 * filtering setups are not supported.
+ 	 */
+ 	ds->vlan_filtering_is_global = true;
++	ds->needs_standalone_vlan_filtering = true;
  
- static inline struct dsa_port *dsa_slave_to_port(const struct net_device *dev)
- {
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index c9c6d7ab3f47..902095f04e0a 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -363,6 +363,7 @@ static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
- int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
- 			    struct netlink_ext_ack *extack)
- {
-+	bool old_vlan_filtering = dsa_port_is_vlan_filtering(dp);
- 	struct dsa_switch *ds = dp->ds;
- 	bool apply;
- 	int err;
-@@ -388,12 +389,44 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
- 	if (err)
- 		return err;
+ 	/* Intercept _all_ PTP multicast traffic */
+ 	ret = hellcreek_setup_fdb(hellcreek);
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 57b2c49f72f4..d5167275d9fd 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -357,6 +357,9 @@ struct dsa_switch {
+ 	 */
+ 	bool			vlan_filtering_is_global;
  
--	if (ds->vlan_filtering_is_global)
-+	if (ds->vlan_filtering_is_global) {
-+		int port;
++	/* Keep VLAN filtering enabled on unbridged ports. */
++	bool			needs_standalone_vlan_filtering;
 +
-+		for (port = 0; port < ds->num_ports; port++) {
-+			struct net_device *slave;
-+
-+			if (!dsa_is_user_port(ds, port))
-+				continue;
-+
-+			/* We might be called in the unbind path, so not
-+			 * all slave devices might still be registered.
-+			 */
-+			slave = dsa_to_port(ds, port)->slave;
-+			if (!slave)
-+				continue;
-+
-+			err = dsa_slave_manage_vlan_filtering(slave,
-+							      vlan_filtering);
-+			if (err)
-+				goto restore;
-+		}
-+
- 		ds->vlan_filtering = vlan_filtering;
--	else
-+	} else {
-+		err = dsa_slave_manage_vlan_filtering(dp->slave,
-+						      vlan_filtering);
-+		if (err)
-+			goto restore;
-+
- 		dp->vlan_filtering = vlan_filtering;
-+	}
- 
- 	return 0;
-+
-+restore:
-+	ds->ops->port_vlan_filtering(ds, dp->index, old_vlan_filtering, NULL);
-+
-+	return err;
- }
- 
- /* This enforces legacy behavior for switch drivers which assume they can't
+ 	/* Pass .port_vlan_add and .port_vlan_del to drivers even for bridges
+ 	 * that have vlan_filtering=0. All drivers should ideally set this (and
+ 	 * then the option would get removed), but it is unknown whether this
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 992fcab4b552..6d06d13cdf3a 100644
+index 6d06d13cdf3a..55f862050976 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -1387,6 +1387,62 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 	return 0;
- }
- 
-+static int dsa_slave_restore_vlan(struct net_device *vdev, int vid, void *arg)
-+{
-+	__be16 proto = vdev ? vlan_dev_vlan_proto(vdev) : htons(ETH_P_8021Q);
-+
-+	return dsa_slave_vlan_rx_add_vid(arg, proto, vid);
-+}
-+
-+static int dsa_slave_clear_vlan(struct net_device *vdev, int vid, void *arg)
-+{
-+	__be16 proto = vdev ? vlan_dev_vlan_proto(vdev) : htons(ETH_P_8021Q);
-+
-+	return dsa_slave_vlan_rx_kill_vid(arg, proto, vid);
-+}
-+
-+/* Keep the VLAN RX filtering list in sync with the hardware only if VLAN
-+ * filtering is enabled.
-+ *
-+ * - Standalone ports offload:
-+ *   - no VLAN (any 8021q upper is a software VLAN) if
-+ *     ds->vlan_filtering_is_global = false
-+ *   - the 8021q upper VLANs if ds->vlan_filtering_is_global = true and there
-+ *     are bridges spanning this switch chip which have vlan_filtering=1
-+ *
-+ * - Ports under a vlan_filtering=0 bridge offload:
-+ *   - no VLAN if ds->configure_vlan_while_not_filtering = false (deprecated)
-+ *   - the bridge VLANs if ds->configure_vlan_while_not_filtering = true
-+ *
-+ * - Ports under a vlan_filtering=1 bridge offload:
-+ *   - the bridge VLANs
-+ *   - the 8021q upper VLANs
-+ */
-+int dsa_slave_manage_vlan_filtering(struct net_device *slave,
-+				    bool vlan_filtering)
-+{
-+	int err;
-+
-+	if (vlan_filtering) {
-+		slave->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
-+
-+		err = vlan_for_each(slave, dsa_slave_restore_vlan, slave);
-+		if (err) {
-+			vlan_for_each(slave, dsa_slave_clear_vlan, slave);
-+			slave->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
-+			return err;
-+		}
-+	} else {
-+		err = vlan_for_each(slave, dsa_slave_clear_vlan, slave);
-+		if (err)
-+			return err;
-+
-+		slave->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
-+	}
-+
-+	return 0;
-+}
-+
- struct dsa_hw_port {
- 	struct list_head list;
- 	struct net_device *dev;
-@@ -1857,8 +1913,6 @@ int dsa_slave_create(struct dsa_port *port)
- 		return -ENOMEM;
+@@ -1406,9 +1406,11 @@ static int dsa_slave_clear_vlan(struct net_device *vdev, int vid, void *arg)
+  *
+  * - Standalone ports offload:
+  *   - no VLAN (any 8021q upper is a software VLAN) if
+- *     ds->vlan_filtering_is_global = false
++ *     ds->vlan_filtering_is_global = false and
++ *     ds->needs_standalone_vlan_filtering = false
+  *   - the 8021q upper VLANs if ds->vlan_filtering_is_global = true and there
+- *     are bridges spanning this switch chip which have vlan_filtering=1
++ *     are bridges spanning this switch chip which have vlan_filtering=1, or
++ *     ds->needs_standalone_vlan_filtering = true.
+  *
+  * - Ports under a vlan_filtering=0 bridge offload:
+  *   - no VLAN if ds->configure_vlan_while_not_filtering = false (deprecated)
+@@ -1914,6 +1916,8 @@ int dsa_slave_create(struct dsa_port *port)
  
  	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
--	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
--		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
  	slave_dev->hw_features |= NETIF_F_HW_TC;
++	if (ds->needs_standalone_vlan_filtering)
++		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
  	slave_dev->features |= NETIF_F_LLTX;
  	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
+ 	if (!IS_ERR_OR_NULL(port->mac))
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 32963276452f..8b3a2b846789 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -104,9 +104,10 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
+ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 				   struct dsa_notifier_bridge_info *info)
+ {
+-	bool unset_vlan_filtering = br_vlan_enabled(info->br);
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 	struct netlink_ext_ack extack = {0};
++	bool change_vlan_filtering = false;
++	bool vlan_filtering;
+ 	int err, port;
+ 
+ 	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+@@ -119,6 +120,15 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 						info->sw_index, info->port,
+ 						info->br);
+ 
++	if (ds->needs_standalone_vlan_filtering && !br_vlan_enabled(info->br)) {
++		change_vlan_filtering = true;
++		vlan_filtering = true;
++	} else if (!ds->needs_standalone_vlan_filtering &&
++		   br_vlan_enabled(info->br)) {
++		change_vlan_filtering = true;
++		vlan_filtering = false;
++	}
++
+ 	/* If the bridge was vlan_filtering, the bridge core doesn't trigger an
+ 	 * event for changing vlan_filtering setting upon slave ports leaving
+ 	 * it. That is a good thing, because that lets us handle it and also
+@@ -127,21 +137,21 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 	 * vlan_filtering callback is only when the last port leaves the last
+ 	 * VLAN-aware bridge.
+ 	 */
+-	if (unset_vlan_filtering && ds->vlan_filtering_is_global) {
++	if (change_vlan_filtering && ds->vlan_filtering_is_global) {
+ 		for (port = 0; port < ds->num_ports; port++) {
+ 			struct net_device *bridge_dev;
+ 
+ 			bridge_dev = dsa_to_port(ds, port)->bridge_dev;
+ 
+ 			if (bridge_dev && br_vlan_enabled(bridge_dev)) {
+-				unset_vlan_filtering = false;
++				change_vlan_filtering = false;
+ 				break;
+ 			}
+ 		}
+ 	}
+-	if (unset_vlan_filtering) {
++	if (change_vlan_filtering) {
+ 		err = dsa_port_vlan_filtering(dsa_to_port(ds, info->port),
+-					      false, &extack);
++					      vlan_filtering, &extack);
+ 		if (extack._msg)
+ 			dev_err(ds->dev, "port %d: %s\n", info->port,
+ 				extack._msg);
 -- 
 2.25.1
 
