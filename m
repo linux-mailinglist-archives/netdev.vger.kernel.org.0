@@ -2,155 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D7DE342BDC
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 12:15:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C178F342BB8
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 12:13:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbhCTLOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 07:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
+        id S230359AbhCTLMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 07:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbhCTLOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 07:14:32 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F531C0611BF;
-        Sat, 20 Mar 2021 03:54:55 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id k14so4900745vsb.6;
-        Sat, 20 Mar 2021 03:54:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=oHahWSVlLUNFk2dULEm5PnUk4cpGh3Men11lJT8PaXg=;
-        b=KyzxLak81HiQiatX3GX1rM4RJZGmN6niH0mC+dsow3kkbIuJkbKHaSHiTViUd+i1ld
-         Y9R4xTigpf3VOOOs7VzB5o3NVyT8lLuhJ1FoQt7OjwVJF+luUk4JSpejmh4YNTDskmwg
-         5KKDbdBH/nJKBcLrVGWZ+8Wv48Gcs0j/xx40AFhHh7fyTJHsV9HWqHHvsC02TNALQADy
-         K4jlA//uZat3zgHqA1FWkVU9hBQQVDNgyfuMAwYSrk5ZgN/LZ1Ue+99FvNWzQo8M2e9s
-         x2D+Qlu+R7ZcSH5n/bMsspwVa6Zxv+1G1ASo6CyLwjyOszAYrcxa/aWC4acXe66Dm9uG
-         jnLQ==
+        with ESMTP id S229774AbhCTLMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 07:12:10 -0400
+Received: from mail-il1-x145.google.com (mail-il1-x145.google.com [IPv6:2607:f8b0:4864:20::145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2367C061793
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 03:35:10 -0700 (PDT)
+Received: by mail-il1-x145.google.com with SMTP id r16so26721679ilj.9
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 03:35:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=oHahWSVlLUNFk2dULEm5PnUk4cpGh3Men11lJT8PaXg=;
-        b=uJk6WaslnNmCUU0IsyiPXFjcBCKpFEZjkHw5hsuRgEfUdrBpRBKhGYecVPRecjRJV2
-         Vh7C9ZXJOfVOHTmOSii30ZS2SL8ING4EDEN0dhSp5XYWLzj/Zip1UI3xth6KzA/CX3qt
-         9HL9DFm+JsapU8J6CuHN3ILJeHTRwfnvWoZG7eOdV3Tm8znlSMchY7ceUwvKBIDNj3w9
-         LqsUjgRK15QkGWNIvO0zC6wIrfxpxdAVFCaYkfKJA24su+j8SJEuG/9W15etZkWmV1qj
-         D2b4fS6GXypxlJntvgURjgqz5wd6XzEQOvIrd4xNRKcqL7TvX/fABSX5rC/KXrWQgOCl
-         Gzpw==
-X-Gm-Message-State: AOAM532K/rqZJsn1+9K2yzYZWMNsIW53Dou+Lm47EAbsm14Q2mj4ZMfD
-        V6hq7sQO47/RszeFqpQp6xFr5b1b1zfyBIIA
-X-Google-Smtp-Source: ABdhPJwj37GXsy65AMroGZ7FNWUh7O5tDzbVjzwXsBrHaJOoLZCPVBapA5vjLi2yfpMhJOSV1sKQ9g==
-X-Received: by 2002:a17:902:441:b029:e6:364a:5f55 with SMTP id 59-20020a1709020441b02900e6364a5f55mr17635745ple.7.1616220920082;
-        Fri, 19 Mar 2021 23:15:20 -0700 (PDT)
-Received: from localhost ([61.12.83.162])
-        by smtp.gmail.com with ESMTPSA id z1sm7174823pfn.127.2021.03.19.23.15.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 23:15:19 -0700 (PDT)
-Date:   Sat, 20 Mar 2021 11:45:12 +0530
-From:   Sai Kalyaan Palla <saikalyaan63@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sai Kalyaan Palla <saikalyaan63@gmail.com>,
-        Gaurav Singh <gaurav1086@gmail.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Andrew Lunn <andrew@lunn.ch>,
-        David Laight <David.Laight@ACULAB.COM>,
-        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     bkkarthik@pesu.pes.edu
-Subject: [PATCH] net: decnet: Fixed multiple coding style issues
-Message-ID: <20210320061512.kztp7hijps4irjrl@ubuntu>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TY6eWPej2xyMujUIiW14t6MNCP0JG96Bsng7hloAJn4=;
+        b=HcbHtU0lQnGCxyvjrJXRMwFofG3M9+hCq7tMDPTYvqCJ6Ap51/AAmjg9uBhouGxzdF
+         /6Qb2IvXykERfPsdN54aGPRB5nrC7WEhS9if58rom/R2WsAWBD+tLCT6q6IXhZ9QQUdZ
+         kkjFCpyL1GNb63ruVRHNG+K4Ty1VQQjGGEQ84P/NFkJGkoH7v53A8CKttqCxeynshxo2
+         EeA/FKBT+LX/YqoTXQ7t23fH11OEXykL24t6NhcjXLKD2P/6rq7ev6GGkOZpmcCN8TVg
+         i0QTx04jZd4illLs7/Mbzk0lU/TU9nEt/wzCKp7KcfhGl0cM2pOeH/b8BK/1ZB0oVwz1
+         Icqg==
+X-Gm-Message-State: AOAM533U3MB0KGQ412GSofvsMA7NH2FX8v8k9THdnDX6syKdIiK8ApEf
+        G7RfMkKOWEkFBskfbV04uC5Zov0M2PnIszd489B/eITcP0TH
+X-Google-Smtp-Source: ABdhPJzd4Hj0631V/HLa6Uj7/62+FcuBi7Qtrnplas/d5g38qhibrBz0f8jwbnFRIVPYlFVkOb2/5wjN/P0+HfQ/VrrH9dXKJCjr
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Received: by 2002:a05:6e02:2184:: with SMTP id j4mr5426084ila.308.1616228824055;
+ Sat, 20 Mar 2021 01:27:04 -0700 (PDT)
+Date:   Sat, 20 Mar 2021 01:27:04 -0700
+In-Reply-To: <00000000000076ecf305b9f8efb1@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ef073a05bdf398e0@google.com>
+Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in add_adv_patterns_monitor
+From:   syzbot <syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com>
+To:     apusaka@chromium.org, dan.carpenter@oracle.com,
+        davem@davemloft.net, finanzas1@logisticaenlinea.net,
+        hdanton@sina.com, howardchung@google.com, johan.hedberg@gmail.com,
+        johan.hedberg@intel.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, mcchou@chromium.org,
+        mmandlik@chromium.org, netdev@vger.kernel.org, sashal@kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Made changes to coding style as suggested by checkpatch.pl
-changes are of the type:
-	open brace '{' following struct go on the same line
-	do not use assignment in if condition
+syzbot suspects this issue was fixed by commit:
 
-Signed-off-by: Sai Kalyaan Palla <saikalyaan63@gmail.com>
----
- net/decnet/dn_route.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+commit b4a221ea8a1f890b50838ef389d016c7ff280abc
+Author: Archie Pusaka <apusaka@chromium.org>
+Date:   Fri Jan 22 08:36:11 2021 +0000
 
-diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
-index 2193ae529e75..940755cdecc9 100644
---- a/net/decnet/dn_route.c
-+++ b/net/decnet/dn_route.c
-@@ -84,8 +84,7 @@
- #include <net/dn_neigh.h>
- #include <net/dn_fib.h>
- 
--struct dn_rt_hash_bucket
--{
-+struct dn_rt_hash_bucket {
- 	struct dn_route __rcu *chain;
- 	spinlock_t lock;
- };
-@@ -359,7 +358,8 @@ static void dn_run_flush(struct timer_list *unused)
- 	for (i = 0; i < dn_rt_hash_mask; i++) {
- 		spin_lock_bh(&dn_rt_hash_table[i].lock);
- 
--		if ((rt = xchg((struct dn_route **)&dn_rt_hash_table[i].chain, NULL)) == NULL)
-+		rt = xchg((struct dn_route **)&dn_rt_hash_table[i].chain, NULL);
-+		if (!rt)
- 			goto nothing_to_declare;
- 
- 		for(; rt; rt = next) {
-@@ -425,7 +425,8 @@ static int dn_return_short(struct sk_buff *skb)
- 	/* Add back headers */
- 	skb_push(skb, skb->data - skb_network_header(skb));
- 
--	if ((skb = skb_unshare(skb, GFP_ATOMIC)) == NULL)
-+	skb = skb_unshare(skb, GFP_ATOMIC);
-+	if (!skb)
- 		return NET_RX_DROP;
- 
- 	cb = DN_SKB_CB(skb);
-@@ -461,7 +462,8 @@ static int dn_return_long(struct sk_buff *skb)
- 	/* Add back all headers */
- 	skb_push(skb, skb->data - skb_network_header(skb));
- 
--	if ((skb = skb_unshare(skb, GFP_ATOMIC)) == NULL)
-+	skb = skb_unshare(skb, GFP_ATOMIC);
-+	if (!skb)
- 		return NET_RX_DROP;
- 
- 	cb = DN_SKB_CB(skb);
-@@ -505,7 +507,8 @@ static int dn_route_rx_packet(struct net *net, struct sock *sk, struct sk_buff *
- 	struct dn_skb_cb *cb;
- 	int err;
- 
--	if ((err = dn_route_input(skb)) == 0)
-+	err = dn_route_input(skb);
-+	if (err == 0)
- 		return dst_input(skb);
- 
- 	cb = DN_SKB_CB(skb);
-@@ -629,7 +632,8 @@ int dn_route_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type
- 	if (dn == NULL)
- 		goto dump_it;
- 
--	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL)
-+	skb = skb_share_check(skb, GFP_ATOMIC);
-+	if (!skb)
- 		goto out;
- 
- 	if (!pskb_may_pull(skb, 3))
-@@ -1324,7 +1328,8 @@ static int dn_route_input_slow(struct sk_buff *skb)
- 
- 	dev_hold(in_dev);
- 
--	if ((dn_db = rcu_dereference(in_dev->dn_ptr)) == NULL)
-+	dn_db = rcu_dereference(in_dev->dn_ptr);
-+	if (!dn_db)
- 		goto out;
- 
- 	/* Zero source addresses are not allowed */
--- 
-2.25.1
+    Bluetooth: advmon offload MSFT add rssi support
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14ef5ad6d00000
+start commit:   b491e6a7 net: lapb: Add locking to the lapb module
+git tree:       net
+kernel config:  https://syzkaller.appspot.com/x/.config?x=be33d8015c9de024
+dashboard link: https://syzkaller.appspot.com/bug?extid=3ed6361bf59830ca9138
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10628ae8d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12964b80d00000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: Bluetooth: advmon offload MSFT add rssi support
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
