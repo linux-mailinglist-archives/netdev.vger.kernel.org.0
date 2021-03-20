@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 647E5343001
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 23:39:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34BB8343003
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 23:39:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbhCTWgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 18:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
+        id S230115AbhCTWgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 18:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbhCTWf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 18:35:28 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64403C061574;
-        Sat, 20 Mar 2021 15:35:28 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id j3so14928294edp.11;
-        Sat, 20 Mar 2021 15:35:28 -0700 (PDT)
+        with ESMTP id S229973AbhCTWfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 18:35:30 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E313C061574;
+        Sat, 20 Mar 2021 15:35:29 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id w3so15294214ejc.4;
+        Sat, 20 Mar 2021 15:35:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UUgWwEswye+b4aK+2bQLBIyYwXBiDuUTJA+VOwNWdDg=;
-        b=PDRmZMcSgapKHhYZ7/XzOm2AZoQBVGGqPPm+7Men9VPsp3L4NRNrAbOfhffpStXFgF
-         ao31aEDiX4VkFAfJAVaYu/IJD5jhNxWXkoD274Wte4ccHVA14P3+2KZNA5je7plX9L2y
-         Fetf4eoAmR8/O2PwdyOr+/DElxS6irjZh7y1UrtzcVbVxLfax3PI15q7wPvjfpzLos6R
-         NKFQ/F7R4hX4w8Rl/2vcBI6vtX0zomXt8tyRjq4NVv2K1sLU7QVeClPV6mgqoUM46e5W
-         NHh8/mvaWbzajoQAbWUvVVRK7LuAI+xcfY1p1ks0blYVBky5z12vb889cPlgCXEHWsnb
-         eYqQ==
+        bh=+w2V4CrXrr28bS/NRzU+Y8EJ/yXppRLpxb1GjTO73/I=;
+        b=iphxnX1ZrOLj5/YdIZ0aKTSnUEeubyNIZ4hZHfDFzhEJ9qqzB35qJOq3ZseWdtRjqD
+         NPS+gyUYgOH5T4bVAtHHzeGndNJxEu2wxtHKxMC9AuhrTtFZ9k0ERQ1oACRsH47lrOSK
+         aOs/DZu9mYMsMVs4EQOfUXSfVRILJi6StlnJICXUXZNp5MjCbYCgXLuZtArq5Azngoq4
+         WYEb0Ck4WJA1ht6JmaHlGudFmgVOUO8EJBweobneuT3/OCHQya0umNNQ3KnuuTbN5F+A
+         T4qaqkRd4YORnQV3zxPl+WsDzhbRf9nCPwtTM1wa3DVSUMzsAkETjqkXTHorF/LjPBFa
+         cU+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UUgWwEswye+b4aK+2bQLBIyYwXBiDuUTJA+VOwNWdDg=;
-        b=gUK0mZaYuyD5qM5daYTXrxxJ3mgVN5F4zrSIa1vv03j8+/foLWZKHUWICpIyp9Vn1x
-         tDjgFd1PMHvIlKyAOFCisxflxU592yGtYb70lWiGdStVmQtuOnmJSiDZvxjXAbQTraO2
-         O4C6/3vFLV7zLenjyJ0tHGxXAyOUp2UlvgAvGsMNR/aRoEl0aVhqpflRKRW4i7QA2Sbn
-         wZqZQnExxAYOlaa+PDBZZRdJni6PTczKJhs5KrwwTmeOApymTM3KYC+CWv8cXeQX9INj
-         OnYa7kBQL3O7sGX5r++poXbOXoq+2T4LAV8mCjJW5//f7Qj+pStizqVz3xLP9/OrOEhx
-         fnxw==
-X-Gm-Message-State: AOAM5307FJszvozu+lbX3H2zKLlZLWHGdf+ZPjmGUdPdhApt/B1qX0YQ
-        n74/jIh7dT5VeKkp1Vc3v7xggE0lz8k=
-X-Google-Smtp-Source: ABdhPJxzcRf3pELkQzpNwfHINX/b43Q36CdVMrCXgNpOQfOOUIe31YLIA8EWHOST5LxVIKOS+CgPUg==
-X-Received: by 2002:aa7:da46:: with SMTP id w6mr17838479eds.40.1616279727186;
-        Sat, 20 Mar 2021 15:35:27 -0700 (PDT)
+        bh=+w2V4CrXrr28bS/NRzU+Y8EJ/yXppRLpxb1GjTO73/I=;
+        b=LeKXuQrmUHfVvY6fx01dltZrHPN9A+YGDP7vN94LPT0ZcNtWFvfD1F5tygC9qSWzZ3
+         59YMYt2crCxLzg6oaeWnHrMqe7ZPtkjNxJ4GggnTVv5VrREZa7M5vFvi7L4DGnM8UsoX
+         QmZa7c8LhkiHD+Q4uHYm5/h/7nGn+rHj4wiYDvoLwvyTwAxn042NG6+tE0VQM//Nozk2
+         tEphBjc2ktQy5DyMzCMFFNh0b/0TrPEeOSyg1UdFoF8MnJS74ocv3PI/EWOrWTeAy2p8
+         flMfbIlayfAMS01mDKEdZQhzuceV5fnMnhpM+A8VRgWeMgBooJRmP6JjTDYgOuIlrluE
+         5RiQ==
+X-Gm-Message-State: AOAM532BZut2+H4f5fWpCii1RwifC2TfGeM1TOpn6jmDSZoGvLyqo0Ee
+        2oM7L6CF8wB7/SQZUhCA2kA=
+X-Google-Smtp-Source: ABdhPJw5s5cjzrjbNOKfNNzuyHbiBwu6TiIvMhrfInX/00aZJWlYvRChC+pCJuwb+oOoBDrRKsaUgg==
+X-Received: by 2002:a17:906:a413:: with SMTP id l19mr11676480ejz.421.1616279728454;
+        Sat, 20 Mar 2021 15:35:28 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id n2sm6090850ejl.1.2021.03.20.15.35.26
+        by smtp.gmail.com with ESMTPSA id n2sm6090850ejl.1.2021.03.20.15.35.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Mar 2021 15:35:26 -0700 (PDT)
+        Sat, 20 Mar 2021 15:35:28 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -64,9 +64,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
         linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 06/12] net: dsa: sync multicast router state when joining the bridge
-Date:   Sun, 21 Mar 2021 00:34:42 +0200
-Message-Id: <20210320223448.2452869-7-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 07/12] net: dsa: sync ageing time when joining the bridge
+Date:   Sun, 21 Mar 2021 00:34:43 +0200
+Message-Id: <20210320223448.2452869-8-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210320223448.2452869-1-olteanv@gmail.com>
 References: <20210320223448.2452869-1-olteanv@gmail.com>
@@ -78,45 +78,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Make sure that the multicast router setting of the bridge is picked up
-correctly by DSA when joining, regardless of whether there are
-sandwiched interfaces or not. The SWITCHDEV_ATTR_ID_BRIDGE_MROUTER port
-attribute is only emitted from br_mc_router_state_change.
+The SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME attribute is only emitted from:
+
+sysfs/ioctl/netlink
+-> br_set_ageing_time
+   -> __set_ageing_time
+
+therefore not at bridge port creation time, so:
+(a) drivers had to hardcode the initial value for the address ageing time,
+    because they didn't get any notification
+(b) that hardcoded value can be out of sync, if the user changes the
+    ageing time before enslaving the port to the bridge
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v3:
 None.
 
- net/dsa/port.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ include/linux/if_bridge.h |  6 ++++++
+ net/bridge/br_stp.c       | 13 +++++++++++++
+ net/dsa/port.c            | 10 ++++++++++
+ 3 files changed, 29 insertions(+)
 
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index 920d3a02cc68..ebd16495459c 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -137,6 +137,7 @@ struct net_device *br_fdb_find_port(const struct net_device *br_dev,
+ void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
+ bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
+ u8 br_port_get_stp_state(const struct net_device *dev);
++clock_t br_get_ageing_time(struct net_device *br_dev);
+ #else
+ static inline struct net_device *
+ br_fdb_find_port(const struct net_device *br_dev,
+@@ -160,6 +161,11 @@ static inline u8 br_port_get_stp_state(const struct net_device *dev)
+ {
+ 	return BR_STATE_DISABLED;
+ }
++
++static inline clock_t br_get_ageing_time(struct net_device *br_dev)
++{
++	return 0;
++}
+ #endif
+ 
+ #endif
+diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+index 86b5e05d3f21..3dafb6143cff 100644
+--- a/net/bridge/br_stp.c
++++ b/net/bridge/br_stp.c
+@@ -639,6 +639,19 @@ int br_set_ageing_time(struct net_bridge *br, clock_t ageing_time)
+ 	return 0;
+ }
+ 
++clock_t br_get_ageing_time(struct net_device *br_dev)
++{
++	struct net_bridge *br;
++
++	if (!netif_is_bridge_master(br_dev))
++		return 0;
++
++	br = netdev_priv(br_dev);
++
++	return jiffies_to_clock_t(br->ageing_time);
++}
++EXPORT_SYMBOL_GPL(br_get_ageing_time);
++
+ /* called under bridge lock */
+ void __br_set_topology_change(struct net_bridge *br, unsigned char val)
+ {
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 3f938c253c99..124f8bb21204 100644
+index 124f8bb21204..95e6f2861290 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -189,6 +189,10 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+@@ -173,6 +173,7 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+ {
+ 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+ 	struct net_device *br = dp->bridge_dev;
++	clock_t ageing_time;
+ 	u8 stp_state;
+ 	int err;
+ 
+@@ -193,6 +194,11 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
  	if (err && err != -EOPNOTSUPP)
  		return err;
  
-+	err = dsa_port_mrouter(dp->cpu_dp, br_multicast_router(br), extack);
++	ageing_time = br_get_ageing_time(br);
++	err = dsa_port_ageing_time(dp, ageing_time);
 +	if (err && err != -EOPNOTSUPP)
 +		return err;
 +
  	return 0;
  }
  
-@@ -212,6 +216,12 @@ static void dsa_port_switchdev_unsync(struct dsa_port *dp)
- 	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
- 
- 	/* VLAN filtering is handled by dsa_switch_bridge_leave */
+@@ -222,6 +228,10 @@ static void dsa_port_switchdev_unsync(struct dsa_port *dp)
+ 	 * allow this in standalone mode too.
+ 	 */
+ 	dsa_port_mrouter(dp->cpu_dp, true, NULL);
 +
-+	/* Some drivers treat the notification for having a local multicast
-+	 * router by allowing multicast to be flooded to the CPU, so we should
-+	 * allow this in standalone mode too.
++	/* Ageing time may be global to the switch chip, so don't change it
++	 * here because we have no good reason (or value) to change it to.
 +	 */
-+	dsa_port_mrouter(dp->cpu_dp, true, NULL);
  }
  
  int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
