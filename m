@@ -2,207 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F3B342F48
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 20:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90100342F4D
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 20:38:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229815AbhCTTea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 15:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33680 "EHLO
+        id S229883AbhCTThf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 15:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbhCTTeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 15:34:04 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026ECC061574;
-        Sat, 20 Mar 2021 12:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-         s=42; h=Message-Id:Date:Cc:To:From;
-        bh=rMGUY++m322+w5Ub86qe3mkvPr0CfrAZ5ssaHcPRAo4=; b=cff3O8Snb9KjXbxFsgZBIQGzIX
-        SqbWqL5x7SWEs7/q/DLckeaEilDzxjS+gP1Tau8AJu4eHSIPATheJcPFRRJUXXjjCjmWkpGMO4+zC
-        1yt6O8cSjXNk1VRqRpdtgZ0mXM257zdcGL+l7kJDYDE/yHw0oQ+12rR9M9F2+ze1yNkYWjATCUhhz
-        OWGhIw6atYEr1YmeXuSO5GJ/+fSFFicX08eiCXjmXAOXCynL89jSkHmSG9h8Zi9oLvzuSY0J845hr
-        3ZIaxE0AliMYGMbdlTlNfrfpSs5v4J4/3gM76uUtE79ntlK2mOjvFkGamcamwfSMXKjUSBmvJ3OyU
-        ufkYK9q6DwzQux5uzASMQnoUOt0EVtJiXIno4aTtkDtPc+Jj6dfcC/BPgl167tmlecl1q18Iaj3Sz
-        KMUu4sB1lkvzg21/VajcF9JW20G+dmOwQXdYK4rC7CgINQPphIiiEZ69/2sVGapf1o4nKyuPiZAU6
-        2QCHfWlpqqu0R+f5P0cil+1L;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_RSA_CHACHA20_POLY1305:256)
-        (Exim)
-        id 1lNhMH-0005vY-Vg; Sat, 20 Mar 2021 19:34:02 +0000
-From:   Stefan Metzmacher <metze@samba.org>
-To:     io-uring@vger.kernel.org
-Cc:     Stefan Metzmacher <metze@samba.org>, netdev@vger.kernel.org
-Subject: [PATCH v2 1/1] io_uring: call req_set_fail_links() on short send[msg]()/recv[msg]() with MSG_WAITALL
-Date:   Sat, 20 Mar 2021 20:33:36 +0100
-Message-Id: <12efc18b6bef3955500080a238197e90ca6a402c.1616268538.git.metze@samba.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <c4e1a4cc0d905314f4d5dc567e65a7b09621aab3.1615908477.git.metze@samba.org>
-References: <c4e1a4cc0d905314f4d5dc567e65a7b09621aab3.1615908477.git.metze@samba.org>
+        with ESMTP id S229854AbhCTThP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 15:37:15 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64BE3C061762
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 12:37:15 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lNhPN-0000R8-Tf
+        for netdev@vger.kernel.org; Sat, 20 Mar 2021 20:37:13 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 414965FB3E3
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 19:37:12 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 43C315FB3D5;
+        Sat, 20 Mar 2021 19:37:11 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 7c602c88;
+        Sat, 20 Mar 2021 19:37:10 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2021-03-20
+Date:   Sat, 20 Mar 2021 20:37:06 +0100
+Message-Id: <20210320193708.348503-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Without that it's not safe to use them in a linked combination with
-others.
+Hello Jakub, hello David,
 
-Now combinations like IORING_OP_SENDMSG followed by IORING_OP_SPLICE
-should be possible.
+this is a pull request of 2 patches for net/master.
 
-We already handle short reads and writes for the following opcodes:
+The first patch is by Oliver Hartkopp. He fixes the TX-path in the
+ISO-TP protocol by properly initializing the outgoing CAN frames.
 
-- IORING_OP_READV
-- IORING_OP_READ_FIXED
-- IORING_OP_READ
-- IORING_OP_WRITEV
-- IORING_OP_WRITE_FIXED
-- IORING_OP_WRITE
-- IORING_OP_SPLICE
-- IORING_OP_TEE
+The second patch is by me and reverts a patch from my previous pull
+request which added MODULE_SUPPORTED_DEVICE to the peak_usb driver. In
+the mean time in Linus's tree the entirely MODULE_SUPPORTED_DEVICE was
+removed. So this reverts the adding of the new MODULE_SUPPORTED_DEVICE
+to avoid the merge conflict.
 
-Now we have it for these as well:
+If you prefer to resolve the merge conflict by hand, I'll send a new
+pull request without that patch.
 
-- IORING_OP_SENDMSG
-- IORING_OP_SEND
-- IORING_OP_RECVMSG
-- IORING_OP_RECV
+regards,
+Marc
 
-For IORING_OP_RECVMSG we also check for the MSG_TRUNC and MSG_CTRUNC
-flags in order to call req_set_fail_links().
-
-There might be applications arround depending on the behavior
-that even short send[msg]()/recv[msg]() retuns continue an
-IOSQE_IO_LINK chain.
-
-It's very unlikely that such applications pass in MSG_WAITALL,
-which is only defined in 'man 2 recvmsg', but not in 'man 2 sendmsg'.
-
-It's expected that the low level sock_sendmsg() call just ignores
-MSG_WAITALL, as MSG_ZEROCOPY is also ignored without explicitly set
-SO_ZEROCOPY.
-
-We also expect the caller to know about the implicit truncation to
-MAX_RW_COUNT, which we don't detect.
-
-cc: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/c4e1a4cc0d905314f4d5dc567e65a7b09621aab3.1615908477.git.metze@samba.org
-Signed-off-by: Stefan Metzmacher <metze@samba.org>
 ---
- fs/io_uring.c | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 75b791ff21ec..746435e3f534 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4386,6 +4386,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	struct io_async_msghdr iomsg, *kmsg;
- 	struct socket *sock;
- 	unsigned flags;
-+	int min_ret = 0;
- 	int ret;
- 
- 	sock = sock_from_file(req->file);
-@@ -4406,6 +4407,9 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	else if (issue_flags & IO_URING_F_NONBLOCK)
- 		flags |= MSG_DONTWAIT;
- 
-+	if (flags & MSG_WAITALL)
-+		min_ret = iov_iter_count(&kmsg->msg.msg_iter);
-+
- 	ret = __sys_sendmsg_sock(sock, &kmsg->msg, flags);
- 	if ((issue_flags & IO_URING_F_NONBLOCK) && ret == -EAGAIN)
- 		return io_setup_async_msg(req, kmsg);
-@@ -4416,7 +4420,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	if (kmsg->free_iov)
- 		kfree(kmsg->free_iov);
- 	req->flags &= ~REQ_F_NEED_CLEANUP;
--	if (ret < 0)
-+	if (ret < min_ret)
- 		req_set_fail_links(req);
- 	__io_req_complete(req, issue_flags, ret, 0);
- 	return 0;
-@@ -4429,6 +4433,7 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	struct iovec iov;
- 	struct socket *sock;
- 	unsigned flags;
-+	int min_ret = 0;
- 	int ret;
- 
- 	sock = sock_from_file(req->file);
-@@ -4450,6 +4455,9 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	else if (issue_flags & IO_URING_F_NONBLOCK)
- 		flags |= MSG_DONTWAIT;
- 
-+	if (flags & MSG_WAITALL)
-+		min_ret = iov_iter_count(&msg.msg_iter);
-+
- 	msg.msg_flags = flags;
- 	ret = sock_sendmsg(sock, &msg);
- 	if ((issue_flags & IO_URING_F_NONBLOCK) && ret == -EAGAIN)
-@@ -4457,7 +4465,7 @@ static int io_send(struct io_kiocb *req, unsigned int issue_flags)
- 	if (ret == -ERESTARTSYS)
- 		ret = -EINTR;
- 
--	if (ret < 0)
-+	if (ret < min_ret)
- 		req_set_fail_links(req);
- 	__io_req_complete(req, issue_flags, ret, 0);
- 	return 0;
-@@ -4609,6 +4617,7 @@ static int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	struct socket *sock;
- 	struct io_buffer *kbuf;
- 	unsigned flags;
-+	int min_ret = 0;
- 	int ret, cflags = 0;
- 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
- 
-@@ -4640,6 +4649,9 @@ static int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	else if (force_nonblock)
- 		flags |= MSG_DONTWAIT;
- 
-+	if (flags & MSG_WAITALL)
-+		min_ret = iov_iter_count(&kmsg->msg.msg_iter);
-+
- 	ret = __sys_recvmsg_sock(sock, &kmsg->msg, req->sr_msg.umsg,
- 					kmsg->uaddr, flags);
- 	if (force_nonblock && ret == -EAGAIN)
-@@ -4653,7 +4665,7 @@ static int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
- 	if (kmsg->free_iov)
- 		kfree(kmsg->free_iov);
- 	req->flags &= ~REQ_F_NEED_CLEANUP;
--	if (ret < 0)
-+	if (ret < min_ret || ((flags & MSG_WAITALL) && (kmsg->msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC))))
- 		req_set_fail_links(req);
- 	__io_req_complete(req, issue_flags, ret, cflags);
- 	return 0;
-@@ -4668,6 +4680,7 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- 	struct socket *sock;
- 	struct iovec iov;
- 	unsigned flags;
-+	int min_ret = 0;
- 	int ret, cflags = 0;
- 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
- 
-@@ -4699,6 +4712,9 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- 	else if (force_nonblock)
- 		flags |= MSG_DONTWAIT;
- 
-+	if (flags & MSG_WAITALL)
-+		min_ret = iov_iter_count(&msg.msg_iter);
-+
- 	ret = sock_recvmsg(sock, &msg, flags);
- 	if (force_nonblock && ret == -EAGAIN)
- 		return -EAGAIN;
-@@ -4707,7 +4723,7 @@ static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
- out_free:
- 	if (req->flags & REQ_F_BUFFER_SELECTED)
- 		cflags = io_put_recv_kbuf(req);
--	if (ret < 0)
-+	if (ret < min_ret || ((flags & MSG_WAITALL) && (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC))))
- 		req_set_fail_links(req);
- 	__io_req_complete(req, issue_flags, ret, cflags);
- 	return 0;
--- 
-2.25.1
+The following changes since commit 5aa3c334a449bab24519c4967f5ac2b3304c8dcf:
+
+  selftests: forwarding: vxlan_bridge_1d: Fix vxlan ecn decapsulate value (2021-03-19 13:54:28 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.12-20210320
+
+for you to fetch changes up to 5d7047ed6b7214fbabc16d8712a822e256b1aa44:
+
+  can: peak_usb: Revert "can: peak_usb: add forgotten supported devices" (2021-03-20 20:28:45 +0100)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.12-20210320
+
+----------------------------------------------------------------
+Marc Kleine-Budde (1):
+      can: peak_usb: Revert "can: peak_usb: add forgotten supported devices"
+
+Oliver Hartkopp (1):
+      can: isotp: tx-path: zero initialize outgoing CAN frames
+
+ drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 2 --
+ net/can/isotp.c                            | 6 +++---
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
 
