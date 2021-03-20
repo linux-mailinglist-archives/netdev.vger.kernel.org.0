@@ -2,115 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE05E34298A
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 01:55:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E74203429AC
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 02:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbhCTAy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Mar 2021 20:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
+        id S229708AbhCTBlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Mar 2021 21:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbhCTAyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 20:54:09 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4645EC061760
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 17:54:09 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id b9so12423639ejc.11
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 17:54:09 -0700 (PDT)
+        with ESMTP id S229447AbhCTBky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Mar 2021 21:40:54 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA9EC061760
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 18:40:54 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id i9so4922698qka.2
+        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 18:40:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MgQXe0cWf59brnTyPAf2KhEj4+ZhZVhfve0gDWUjExA=;
-        b=kr4d8DaIvQJJsNt/ziItohG8zdjExZ7oDjWlP6359eENCYhBRJUUbBVS/hxdiB4Xlr
-         IvjgG9EgKu/IsGoEUyxsezjJSrNl9fN1epPUy7mZer9yH1JjCeEpWu1yNlA7URC8klvO
-         VZQoaLaB5kct0LCiFmpAx5idOKhBA0lsbNFZOW6B+Nq+QLpL+r0Lx99iAJpFCeOEqbfA
-         PtGgViQiQBx1ghrDBv2bXPn9e18irWpKU9RyVc+2k1PAzyAtb3jMU7qbSBSiJQLgc1GQ
-         Y+WTaDUTlEqvSTyuXxBy313Mq9+8qcmF76fPO9CeZb0S402ySddmo5h9iwh7BYr73QMk
-         WCaA==
+        bh=j70/tM1l2gVFoj1Vlwmu23HMZ+Naj9/vNEgAl0EBlR8=;
+        b=ig3LH0bVLzrhwGSQ9xftM57zVglOx3bWlooIL6mAuw8/UaGnuLa5BK9B4HWknUw4b+
+         Jd6/y4aZQPqEHrNZViRXArXM0X89f7RLcgVRYNdhXphA379oORewECw8kffmUO0c2fsj
+         /tBE5x2Ca3TiiutNiSH8X89fBEBstrus7ywIDFZHpMV40ikx3GhcdTPQS1sF5Zk2QuRh
+         Nv9yEqlcZ67dU4HP3XhQyAP30ghLhH5hjJfFeY6+2hevBtRU1cbizXHwFPJVFYdeAQxL
+         6ijPkGzITIYdDH1wXbSk/AD6UddbZ+RDV0Xoh52pGIZZdXZtzjdw4ElD0pbRSpinU3tt
+         aQAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MgQXe0cWf59brnTyPAf2KhEj4+ZhZVhfve0gDWUjExA=;
-        b=p6eUiW8cW8TuVQ7Ygy135kG5rfgT3YXyIA45T4Vp8EmdFC1JUNRWEjX1vapSj1K187
-         swQ8RBhu7NRhI9rImhXigQw4A1FAp3uqpbPuLNGio7kGpotryKKEw+iHHoDwjioOWRzj
-         e+fh8+Joj30YveLInBoVkZcL/y5Mp9U4p7ZQ8FkKFM0jN45C65Jm8xfS1eYtuV/k+Z+W
-         /8Tx7Y7r34bcHX9ZeC/ym6bOkvQQT8F2lNbaMtPmioAHAnxzLjKD6+Rgk6TUySEyfBdn
-         AOPqM71mLIQXroS0xih/OpCZCAQxNeOrBOGLXA69HIv8d/KJJnwOpsjegH8Eu2FlSp6v
-         iMEg==
-X-Gm-Message-State: AOAM530xwS2+QMqo4VdInUY8NaygzaWFK6TIiEjl/wLMv4a666llVOfo
-        +PKIpEKKpkPGUTTGTOnrJT7BOXnqS7g=
-X-Google-Smtp-Source: ABdhPJxS/I3dwLdPXMHOAJvkEQwYCVBoCgmEnSXLuiIijR7kLLDSQfFSedMXhgmmCwyWKkU3OdSAHQ==
-X-Received: by 2002:a17:906:1c13:: with SMTP id k19mr7332352ejg.457.1616201647731;
-        Fri, 19 Mar 2021 17:54:07 -0700 (PDT)
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
-        by smtp.gmail.com with ESMTPSA id q26sm4496859eja.45.2021.03.19.17.54.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Mar 2021 17:54:07 -0700 (PDT)
-Received: by mail-wr1-f48.google.com with SMTP id v11so10794748wro.7
-        for <netdev@vger.kernel.org>; Fri, 19 Mar 2021 17:54:07 -0700 (PDT)
-X-Received: by 2002:a05:6000:1803:: with SMTP id m3mr7264925wrh.50.1616201646856;
- Fri, 19 Mar 2021 17:54:06 -0700 (PDT)
+        bh=j70/tM1l2gVFoj1Vlwmu23HMZ+Naj9/vNEgAl0EBlR8=;
+        b=O30BtJqDqYc/CnSZ3ptBmTqeOfCgrRhz/EQocCLFM9UA/eV4zSsfzncPwYG4XHGxSI
+         tdFQt6w48WcQOZND5HUupIp/IOmLn1u5eIAC6IDS5hAdkxc1TRnb+pk9vano0TJD8PP3
+         2l4Ccua/O9qay+W7cig6mw0qaLH976cNitAxkxeIp5VdNsG5kADfndO7aTJfhMAtaHF+
+         KqJoafV5tCAXapl5aoG10aQ5Vq7oRA8/BZr6aCeVfB7tNYsMuNyaMPMsAF4La+zriO+w
+         jWb0lg1YrgE9rT9rk5vsBMiRycDJXDUYsXIqYHv9dqa4xF2tVvhU/VUx72gii0ByJNpS
+         q4/w==
+X-Gm-Message-State: AOAM531USBczvlpGeACkA9g/KdGwfjhPAo4VXW1XsjvfYGk5/Kxjlsqr
+        paCo7eGmOgrHvF7dAfu6+Am2eAtNmuU3ahCK7fYVTg==
+X-Google-Smtp-Source: ABdhPJwxfsoYOA1pKbYhaAnz7sx1ZvOUCjOA+qWYBrmIelPcsW/iwOYx+f3NqTh+NwBXaKQrZRGQ3ApUDgMiVGWfyq8=
+X-Received: by 2002:a37:6108:: with SMTP id v8mr1408297qkb.448.1616204453261;
+ Fri, 19 Mar 2021 18:40:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210317221959.4410-1-ishaangandhi@gmail.com> <f65cb281-c6d5-d1c9-a90d-3281cdb75620@gmail.com>
- <5E97397E-7028-46E8-BC0D-44A3E30C41A4@gmail.com> <45eff141-30fb-e8af-5ca5-034a86398ac9@gmail.com>
-In-Reply-To: <45eff141-30fb-e8af-5ca5-034a86398ac9@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 19 Mar 2021 20:53:28 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSd9kEnU3wysOVE21xQeC_M3c7Rm80Y72Ep8kvHaoyox+w@mail.gmail.com>
-Message-ID: <CA+FuTSd9kEnU3wysOVE21xQeC_M3c7Rm80Y72Ep8kvHaoyox+w@mail.gmail.com>
-Subject: Re: [PATCH v3] icmp: support rfc5837
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Ishaan Gandhi <ishaangandhi@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
+References: <20210320000001.915366-1-sdf@google.com> <CAADnVQLCdMWgB9tB4UiSFHp36vswfQO_R_1ifdPqyrD6UT6vqA@mail.gmail.com>
+ <CAKH8qBvXwzOqJ_4ETF1LrBQKxhKWLWv28beFHHK+=Zd0hULGFQ@mail.gmail.com> <CAADnVQ+fg-HMM=TtsrZx1kJQpy7-fckcgkN00L-Gp5Aa-CzmQQ@mail.gmail.com>
+In-Reply-To: <CAADnVQ+fg-HMM=TtsrZx1kJQpy7-fckcgkN00L-Gp5Aa-CzmQQ@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 19 Mar 2021 18:40:42 -0700
+Message-ID: <CAKH8qBsdJak0eO_zsuzAyNmSkVtR99ZAgGgP=j8mtAn9CvZ58g@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: use NOP_ATOMIC5 instead of emit_nops(&prog, 5)
+ for BPF_TRAMP_F_CALL_ORIG
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 7:54 PM David Ahern <dsahern@gmail.com> wrote:
+On Fri, Mar 19, 2021 at 5:33 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On 3/19/21 10:11 AM, Ishaan Gandhi wrote:
-> > Thank you. Would it be better to do instead:
+> On Fri, Mar 19, 2021 at 5:25 PM Stanislav Fomichev <sdf@google.com> wrote:
 > >
-> > +     if_index = skb->skb_iif;
-> >
-> > or
-> >
-> > +     if_index = ip_version == 4 ? inet_iif(skb) : skb->skb_iif;
-> >
+> > On Fri, Mar 19, 2021 at 5:14 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Fri, Mar 19, 2021 at 5:00 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > > >
+> > > > __bpf_arch_text_poke does rewrite only for atomic nop5, emit_nops(xxx, 5)
+> > > > emits non-atomic one which breaks fentry/fexit with k8 atomics:
+> > > >
+> > > > P6_NOP5 == P6_NOP5_ATOMIC (0f1f440000 == 0f1f440000)
+> > > > K8_NOP5 != K8_NOP5_ATOMIC (6666906690 != 6666666690)
+> > > >
+> > > > Can be reproduced by doing "ideal_nops = k8_nops" in "arch_init_ideal_nops()
+> > > > and running fexit_bpf2bpf selftest.
+> > > >
+> > > > Fixes: e21aa341785c ("bpf: Fix fexit trampoline.")
+> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > ---
+> > > >  arch/x86/net/bpf_jit_comp.c | 3 ++-
+> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> > > > index 72b5a57e9e31..b35fc8023884 100644
+> > > > --- a/arch/x86/net/bpf_jit_comp.c
+> > > > +++ b/arch/x86/net/bpf_jit_comp.c
+> > > > @@ -2012,7 +2012,8 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
+> > > >                 /* remember return value in a stack for bpf prog to access */
+> > > >                 emit_stx(&prog, BPF_DW, BPF_REG_FP, BPF_REG_0, -8);
+> > > >                 im->ip_after_call = prog;
+> > > > -               emit_nops(&prog, 5);
+> > > > +               memcpy(prog, ideal_nops[NOP_ATOMIC5], X86_PATCH_SIZE);
+> > > > +               prog += X86_PATCH_SIZE;
+> > >
+> > > I'm well aware, but ideal_nops are pretty much gone already.
+> > > The changes are already in the -tip tree.
+> > > So I decided to reduce the conflicts for the merge window.
+> > >
+> > > Do you actually see the breakage or it's purely theoretical?
+> > We do see it, but it's on our tree that pulls from bpf.
+> > And it obviously doesn't have that "x86: Remove dynamic NOP selection" yet.
+> > Thanks for the pointer, I guess I can just wait for the real merge then.
 >
-> If the packet comes in via an interface assigned to a VRF, skb_iif is
-> most likely the VRF index which is not what you want.
->
-> The general problem of relying on skb_iif was discussed on v1 and v2 of
-> your patch. Returning an iif that is a VRF, as an example, leaks
-> information about the networking configuration of the device which from
-> a quick reading of the RFC is not the intention.
->
-> Further, the Security Considerations section recommends controls on what
-> information can be returned where you have added a single sysctl that
-> determines if all information or none is returned. Further, it is not a
-> a per-device control but a global one that applies to all net devices -
-> though multiple entries per netdevice has a noticeable cost in memory at
-> scale.
->
-> In the end it seems to me the cost benefit is not there for a feature
-> like this.
+> If it breaks the real users we have to land the fix, but let me ask how
+> come that you run with k8 cpu? k8 does other nasty things.
+> Do you run with all of amd errata?
+It's not amd, it's intel:
 
-The sysctl was my suggestion. The detailed filtering suggested in the
-RFC would add more complexity, not helping that cost benefit analysis.
-I cared mostly about being able to disable this feature outright as it has
-obvious risks.
+cpu family      : 6
+model           : 45
+model name      : Intel(R) Xeon(R) CPU E5-2689 0 @ 2.60GHz
 
-But perhaps that is overly simplistic. The RFC suggests deciding trusted
-recipients based on destination address. With a sysctl this feature can be
-only deployed when all possible recipients are trusted, i.e., on an isolated
-network. That is highly limiting.
+I think I'm hitting the following from the arch/x86/kernel/alternative.c:
 
-Perhaps a per-netns trusted subnet prefix?
-
-The root admin should always be able to override and disable this outright.
+/*
+* Due to a decoder implementation quirk, some
+* specific Intel CPUs actually perform better with
+* the "k8_nops" than with the SDM-recommended NOPs.
+*/
+if (boot_cpu_data.x86 == 6 &&
+   boot_cpu_data.x86_model >= 0x0f &&
+   boot_cpu_data.x86_model != 0x1c &&
+   boot_cpu_data.x86_model != 0x26 &&
+   boot_cpu_data.x86_model != 0x27 &&
+   boot_cpu_data.x86_model < 0x30) {
+ideal_nops = k8_nops;
