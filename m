@@ -2,245 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BC2D342C06
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 12:20:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E3C2342BC5
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 12:13:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbhCTLUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 07:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
+        id S230480AbhCTLMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 07:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbhCTLTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 07:19:34 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8AAC0613B9;
-        Sat, 20 Mar 2021 03:48:07 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id 184so14968617ljf.9;
-        Sat, 20 Mar 2021 03:48:07 -0700 (PDT)
+        with ESMTP id S230002AbhCTLMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 07:12:12 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CBAC0610D3
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 03:57:41 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id j2so1030174ybj.8
+        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 03:57:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QUequEfCgdfLsUqEy4g18QzTf16lKe0X3PtZvW0a3qw=;
-        b=jh77hUWgI0vhD/ikjdh+2ZiEl003B7Iv/MldfLGJSl1NF89CQISNfh9ESgGopUy9kX
-         pDld/WLbLNu+oQfokb/0NpqHIdyX2bL405N2Lz7fE03xNSmimsEP6cMPA4AEMHnpQ1LP
-         Lh7u0bs7Ga8nXihf8U1gQIKvaSP+/ziGXckThD2xxooUZKpN1kNMnkcc+u+WApI/IECc
-         0WZcDY39KoXXQ39/f7Dwy7v4F5tqTDE5JR3JjZd5q1BYX0gcNLrl2fPvMBM1TOzMJNht
-         kuRYbowPKaEAfsE7Nw7+4GOmpIdRQpT3VSTEnjjYvmQ4web3JiR6B/rArerCX9ilEfoR
-         kmyA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lZGSyLhVISic5NIlVXr8fasNNFW8/T/a/U9VdScG2yk=;
+        b=hX0qM8nMiQNGUKqXBU9VcnNlxIm7mIrpi8xb64HY0bWm4DmQ8hSVpi/MLnOF2zibOU
+         3IPSgTrByBjRBkGFGih4dLmb1B/Pzv4iYYxOekpfqhSPA5CPOK3juug8/cWrRddYMNUJ
+         omcwsLmn/LbfR8zJLhobc09A+oSfoeJISIFXkb3OiCoQqUKYVtfqxh+b85qPEb30ajVp
+         MN+jqT1LOU+yT08dkkvcScw718alJ1io96K5WTCLoAF8yhtXLASRfpKcEuwNLIYLIHjA
+         r6eyJi4WF/TIc/31btpwIl3OitBltPBfo7IQq50mHZFl+DNoC41/58zphhFXzXKAoJA9
+         Rmeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QUequEfCgdfLsUqEy4g18QzTf16lKe0X3PtZvW0a3qw=;
-        b=e+Qzqi/pOmbTOWlcma6nQY8FMgeyn215gzCqwRYK7odRf7WUon40tx6kw7IPRszNUd
-         /bntwO7J85g6vgSJT5WQB4wW1qibm6a+nkN7gw6o5hFaLL2XaQxIInB7Bv8R+wrC/c5b
-         ZVK6hxpRrNM8hI/UYzRVtkDvX6foJ/BKfp6I62zIamqTqHjmmKXSiHW+gaOjVjRMzUZr
-         033jGl5K5RhU61AkuTsRM5AyP3ZEGZel2Qa6q4qA7VDTqWI8Kdpr8cfiuXXaWJ1Iq1bH
-         xL1SyjbDS9ZQKkKn9HrAOeYdDYRUBw93XdFFdElCEz0Tk1/iYkIL7G4EKaGmNCHXNLpe
-         Xf9g==
-X-Gm-Message-State: AOAM533c/1p185r+mPplrPWE5RYI0jipZR442h+TBd7S6kPj/rUTs/IL
-        AIWTV8iI8L6KklK+14VMTgjb9BMKif8=
-X-Google-Smtp-Source: ABdhPJzVJXlZ45h7jrRNf2CAPuVupbjMUILqublXA/8OsL+FwN0Q+Q34oLAvkb45Fvj2hLCX3yHO0w==
-X-Received: by 2002:a50:ec81:: with SMTP id e1mr14582294edr.0.1616233994709;
-        Sat, 20 Mar 2021 02:53:14 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id q16sm5002206ejd.15.2021.03.20.02.53.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Mar 2021 02:53:14 -0700 (PDT)
-Date:   Sat, 20 Mar 2021 11:53:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH v2 net-next 08/16] net: dsa: replay port and
- host-joined mdb entries when joining the bridge
-Message-ID: <20210320095311.noojqngoyobuntej@skbuf>
-References: <20210318231829.3892920-1-olteanv@gmail.com>
- <20210318231829.3892920-9-olteanv@gmail.com>
- <eb155de5-73b7-1c27-20e9-0177dedfd985@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lZGSyLhVISic5NIlVXr8fasNNFW8/T/a/U9VdScG2yk=;
+        b=ktxLbiS8/N9+PYOejwy8eCUmae2El2Ns12kjTLyEbMCNOj/DCGFZbhVBVQmF3ulcYm
+         d5re11TzT7h59dnMT9UpZX1DIaaQSFzB3ZECB4w/9YWCWJZWUH7zkhXibRdQ7H4aKcY6
+         cHsm9rU3gCqyCqgDVOsvQwIFZAQfLZ7J+go5DzTwQEQvYVIhCIxNVhBMn+mRKcu37WvE
+         BdKxI5KbPicluBkPAdeEWhh0L9m5rxlLkh+J7o41aH87tElQR0QHsvYzfbWeIAgHvj2z
+         WBOKXHpanmXd01Tvk/7ZftF+5rKjXGZVjCHdB55xjYgh2+/ZRuQYs7UO/FLITrG2gNrA
+         +N7g==
+X-Gm-Message-State: AOAM5318T0QqOsS1HylK7LXrGa2rM/xmQhF7T0+gSrnAvIhV3qjJSXPv
+        1oJli0nT3KE57+3N0OjV3YAZsPa0xD66kmSaO9lPUTT0QSA=
+X-Google-Smtp-Source: ABdhPJx84zY7crfdeTqFgteJgzxFAD0r81tApZCNvB06fvqH1UDEaJjqk6fU18yG6/wYHiXhtv+t+T/PejG3eHDzJW0=
+X-Received: by 2002:a05:6902:708:: with SMTP id k8mr4154711ybt.234.1616234167022;
+ Sat, 20 Mar 2021 02:56:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb155de5-73b7-1c27-20e9-0177dedfd985@gmail.com>
+References: <20210316223647.4080796-1-weiwan@google.com> <6AF20AA6-07E7-4DDD-8A9E-BE093FC03802@gmail.com>
+In-Reply-To: <6AF20AA6-07E7-4DDD-8A9E-BE093FC03802@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sat, 20 Mar 2021 10:55:55 +0100
+Message-ID: <CANn89iJxXOZktXv6Arh82OAGOpn523NuOcWFDaSmJriOaXQMRw@mail.gmail.com>
+Subject: Re: [PATCH net v4] net: fix race between napi kthread mode and busy poll
+To:     Martin Zaharinov <micron10@gmail.com>
+Cc:     Wei Wang <weiwan@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 03:20:38PM -0700, Florian Fainelli wrote:
+On Sat, Mar 20, 2021 at 9:45 AM Martin Zaharinov <micron10@gmail.com> wrote=
+:
 >
+> Hi Wei
+> Check this:
 >
-> On 3/18/2021 4:18 PM, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > I have udhcpcd in my system and this is configured to bring interfaces
-> > up as soon as they are created.
-> >
-> > I create a bridge as follows:
-> >
-> > ip link add br0 type bridge
-> >
-> > As soon as I create the bridge and udhcpcd brings it up, I have some
-> > other crap (avahi)
->
-> How dare you ;)
+> [   39.706567] ------------[ cut here ]------------
+> [   39.706568] RTNL: assertion failed at net/ipv4/udp_tunnel_nic.c (557)
+> [   39.706585] WARNING: CPU: 0 PID: 429 at net/ipv4/udp_tunnel_nic.c:557 =
+__udp_tunnel_nic_reset_ntf+0xea/0x100
 
-Well, it comes preinstalled on my system, I don't need it, and it has
-caused me nothing but trouble. So I think it has earned its title :D
+Probably more relevant to Intel maintainers than Wei :/
 
-> > that starts sending some random IPv6 packets to
-> > advertise some local services, and from there, the br0 bridge joins the
-> > following IPv6 groups:
+> [   39.706594] Modules linked in: i40e(+) nf_nat_sip nf_conntrack_sip nf_=
+nat_pptp nf_conntrack_pptp nf_nat_tftp nf_conntrack_tftp nf_nat_ftp nf_conn=
+track_ftp nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 acpi_ipmi ipmi_=
+si ipmi_devintf ipmi_msghandler rtc_cmos megaraid_sas
+> [   39.706614] CPU: 0 PID: 429 Comm: kworker/0:2 Tainted: G           O  =
+    5.11.7 #1
+> [   39.706618] Hardware name: Supermicro X11DPi-N(T)/X11DPi-NT, BIOS 3.4 =
+11/23/2020
+> [   39.706619] Workqueue: events work_for_cpu_fn
+> [   39.706627] RIP: 0010:__udp_tunnel_nic_reset_ntf+0xea/0x100
+> [   39.706631] Code: c0 79 f1 00 00 0f 85 4e ff ff ff ba 2d 02 00 00 48 c=
+7 c6 45 3c 3a 93 48 c7 c7 40 de 39 93 c6 05 a0 79 f1 00 01 e8 f5 ad 0c 00 <=
+0f> 0b e9 28 ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00
+> [   39.706634] RSP: 0018:ffffa8390d9b3b38 EFLAGS: 00010292
+> [   39.706637] RAX: 0000000000000039 RBX: ffff8e02630b2768 RCX: 00000000f=
+fdfffff
+> [   39.706639] RDX: 00000000ffdfffff RSI: ffff8e80ad400000 RDI: 000000000=
+0000001
+> [   39.706641] RBP: ffff8e025df72000 R08: ffff8e80bb3fffe8 R09: 00000000f=
+fffffea
+> [   39.706643] R10: 00000000ffdfffff R11: 80000000ffe00000 R12: ffff8e026=
+30b2008
+> [   39.706645] R13: 0000000000000000 R14: ffff8e024a88ba00 R15: 000000000=
+0000000
+> [   39.706646] FS:  0000000000000000(0000) GS:ffff8e40bf800000(0000) knlG=
+S:0000000000000000
+> [   39.706649] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   39.706651] CR2: 00000000004d8f40 CR3: 0000002ca140a002 CR4: 000000000=
+01706f0
+> [   39.706652] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
+0000000
+> [   39.706654] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
+0000400
+> [   39.706656] Call Trace:
+> [   39.706658]  i40e_setup_pf_switch+0x617/0xf80 [i40e]
+> [   39.706683]  i40e_probe.part.0.cold+0x8dc/0x109e [i40e]
+> [   39.706708]  ? acpi_ns_check_object_type+0xd4/0x193
+> [   39.706713]  ? acpi_ns_check_package_list+0xfd/0x205
+> [   39.706716]  ? __kmalloc+0x37/0x160
+> [   39.706720]  ? kmem_cache_alloc+0xcb/0x120
+> [   39.706723]  ? irq_get_irq_data+0x5/0x20
+> [   39.706726]  ? mp_check_pin_attr+0xe/0xf0
+> [   39.706729]  ? irq_get_irq_data+0x5/0x20
+> [   39.706731]  ? mp_map_pin_to_irq+0xb7/0x2c0
+> [   39.706735]  ? acpi_register_gsi_ioapic+0x86/0x150
+> [   39.706739]  ? pci_conf1_read+0x9f/0xf0
+> [   39.706743]  ? pci_bus_read_config_word+0x2e/0x40
+> [   39.706746]  local_pci_probe+0x1b/0x40
+> [   39.706750]  work_for_cpu_fn+0xb/0x20
+> [   39.706754]  process_one_work+0x1ec/0x350
+> [   39.706758]  worker_thread+0x24b/0x4d0
+> [   39.706760]  ? process_one_work+0x350/0x350
+> [   39.706762]  kthread+0xea/0x120
+> [   39.706766]  ? kthread_park+0x80/0x80
+> [   39.706770]  ret_from_fork+0x1f/0x30
+> [   39.706774] ---[ end trace 7a203f3ec972a377 ]---
+>
+> Martin
+>
+>
+> > On 17 Mar 2021, at 0:36, Wei Wang <weiwan@google.com> wrote:
 > >
-> > 33:33:ff:6d:c1:9c vid 0
-> > 33:33:00:00:00:6a vid 0
-> > 33:33:00:00:00:fb vid 0
+> > Currently, napi_thread_wait() checks for NAPI_STATE_SCHED bit to
+> > determine if the kthread owns this napi and could call napi->poll() on
+> > it. However, if socket busy poll is enabled, it is possible that the
+> > busy poll thread grabs this SCHED bit (after the previous napi->poll()
+> > invokes napi_complete_done() and clears SCHED bit) and tries to poll
+> > on the same napi. napi_disable() could grab the SCHED bit as well.
+> > This patch tries to fix this race by adding a new bit
+> > NAPI_STATE_SCHED_THREADED in napi->state. This bit gets set in
+> > ____napi_schedule() if the threaded mode is enabled, and gets cleared
+> > in napi_complete_done(), and we only poll the napi in kthread if this
+> > bit is set. This helps distinguish the ownership of the napi between
+> > kthread and other scenarios and fixes the race issue.
 > >
-> > br_dev_xmit
-> > -> br_multicast_rcv
-> >    -> br_ip6_multicast_add_group
-> >       -> __br_multicast_add_group
-> >          -> br_multicast_host_join
-> >             -> br_mdb_notify
-> >
-> > This is all fine, but inside br_mdb_notify we have br_mdb_switchdev_host
-> > hooked up, and switchdev will attempt to offload the host joined groups
-> > to an empty list of ports. Of course nobody offloads them.
-> >
-> > Then when we add a port to br0:
-> >
-> > ip link set swp0 master br0
-> >
-> > the bridge doesn't replay the host-joined MDB entries from br_add_if,
-> > and eventually the host joined addresses expire, and a switchdev
-> > notification for deleting it is emitted, but surprise, the original
-> > addition was already completely missed.
-> >
-> > The strategy to address this problem is to replay the MDB entries (both
-> > the port ones and the host joined ones) when the new port joins the
-> > bridge, similar to what vxlan_fdb_replay does (in that case, its FDB can
-> > be populated and only then attached to a bridge that you offload).
-> > However there are 2 possibilities: the addresses can be 'pushed' by the
-> > bridge into the port, or the port can 'pull' them from the bridge.
-> >
-> > Considering that in the general case, the new port can be really late to
-> > the party, and there may have been many other switchdev ports that
-> > already received the initial notification, we would like to avoid
-> > delivering duplicate events to them, since they might misbehave. And
-> > currently, the bridge calls the entire switchdev notifier chain, whereas
-> > for replaying it should just call the notifier block of the new guy.
-> > But the bridge doesn't know what is the new guy's notifier block, it
-> > just knows where the switchdev notifier chain is. So for simplification,
-> > we make this a driver-initiated pull for now, and the notifier block is
-> > passed as an argument.
-> >
-> > To emulate the calling context for mdb objects (deferred and put on the
-> > blocking notifier chain), we must iterate under RCU protection through
-> > the bridge's mdb entries, queue them, and only call them once we're out
-> > of the RCU read-side critical section.
-> >
-> > Suggested-by: Ido Schimmel <idosch@idosch.org>
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop suppo=
+rt")
+> > Reported-by: Martin Zaharinov <micron10@gmail.com>
+> > Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Wei Wang <weiwan@google.com>
+> > Cc: Alexander Duyck <alexanderduyck@fb.com>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: Paolo Abeni <pabeni@redhat.com>
+> > Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
 > > ---
-> >  include/linux/if_bridge.h |  9 +++++
-> >  net/bridge/br_mdb.c       | 84 +++++++++++++++++++++++++++++++++++++++
-> >  net/dsa/dsa_priv.h        |  2 +
-> >  net/dsa/port.c            |  6 +++
-> >  net/dsa/slave.c           |  2 +-
-> >  5 files changed, 102 insertions(+), 1 deletion(-)
+> > Change since v3:
+> >  - Add READ_ONCE() for thread->state and add comments in
+> >    ____napi_schedule().
 > >
-> > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-> > index ebd16495459c..4c25dafb013d 100644
-> > --- a/include/linux/if_bridge.h
-> > +++ b/include/linux/if_bridge.h
-> > @@ -69,6 +69,8 @@ bool br_multicast_has_querier_anywhere(struct net_device *dev, int proto);
-> >  bool br_multicast_has_querier_adjacent(struct net_device *dev, int proto);
-> >  bool br_multicast_enabled(const struct net_device *dev);
-> >  bool br_multicast_router(const struct net_device *dev);
-> > +int br_mdb_replay(struct net_device *br_dev, struct net_device *dev,
-> > +		  struct notifier_block *nb, struct netlink_ext_ack *extack);
-> >  #else
-> >  static inline int br_multicast_list_adjacent(struct net_device *dev,
-> >  					     struct list_head *br_ip_list)
-> > @@ -93,6 +95,13 @@ static inline bool br_multicast_router(const struct net_device *dev)
-> >  {
-> >  	return false;
-> >  }
-> > +static inline int br_mdb_replay(struct net_device *br_dev,
-> > +				struct net_device *dev,
-> > +				struct notifier_block *nb,
-> > +				struct netlink_ext_ack *extack)
-> > +{
-> > +	return -EINVAL;
->
-> Should we return -EOPNOTUSPP such that this is not made fatal for DSA if
-> someone compiles its kernel with CONFIG_BRIDGE_IGMP_SNOOPING disabled?
-
-Sure, I'll change the return values of the shims everywhere.
-
-> > +}
-> >  #endif
+> > include/linux/netdevice.h |  2 ++
+> > net/core/dev.c            | 19 ++++++++++++++++++-
+> > 2 files changed, 20 insertions(+), 1 deletion(-)
 > >
-> >  #if IS_ENABLED(CONFIG_BRIDGE) && IS_ENABLED(CONFIG_BRIDGE_VLAN_FILTERING)
-> > diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-> > index 8846c5bcd075..23973186094c 100644
-> > --- a/net/bridge/br_mdb.c
-> > +++ b/net/bridge/br_mdb.c
-> > @@ -506,6 +506,90 @@ static void br_mdb_complete(struct net_device *dev, int err, void *priv)
-> >  	kfree(priv);
-> >  }
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 5b67ea89d5f2..87a5d186faff 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -360,6 +360,7 @@ enum {
+> >       NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI =
+*/
+> >       NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over softi=
+rq processing*/
+> >       NAPI_STATE_THREADED,            /* The poll is performed inside i=
+ts own thread*/
+> > +     NAPI_STATE_SCHED_THREADED,      /* Napi is currently scheduled in=
+ threaded mode */
+> > };
 > >
-> > +static int br_mdb_replay_one(struct notifier_block *nb, struct net_device *dev,
-> > +			     struct net_bridge_mdb_entry *mp, int obj_id,
-> > +			     struct net_device *orig_dev,
-> > +			     struct netlink_ext_ack *extack)
-> > +{
-> > +	struct switchdev_notifier_port_obj_info obj_info = {
-> > +		.info = {
-> > +			.dev = dev,
-> > +			.extack = extack,
-> > +		},
-> > +	};
-> > +	struct switchdev_obj_port_mdb mdb = {
-> > +		.obj = {
-> > +			.orig_dev = orig_dev,
-> > +			.id = obj_id,
-> > +		},
-> > +		.vid = mp->addr.vid,
-> > +	};
-> > +	int err;
+> > enum {
+> > @@ -372,6 +373,7 @@ enum {
+> >       NAPIF_STATE_IN_BUSY_POLL        =3D BIT(NAPI_STATE_IN_BUSY_POLL),
+> >       NAPIF_STATE_PREFER_BUSY_POLL    =3D BIT(NAPI_STATE_PREFER_BUSY_PO=
+LL),
+> >       NAPIF_STATE_THREADED            =3D BIT(NAPI_STATE_THREADED),
+> > +     NAPIF_STATE_SCHED_THREADED      =3D BIT(NAPI_STATE_SCHED_THREADED=
+),
+> > };
+> >
+> > enum gro_result {
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 6c5967e80132..d3195a95f30e 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -4294,6 +4294,13 @@ static inline void ____napi_schedule(struct soft=
+net_data *sd,
+> >                */
+> >               thread =3D READ_ONCE(napi->thread);
+> >               if (thread) {
+> > +                     /* Avoid doing set_bit() if the thread is in
+> > +                      * INTERRUPTIBLE state, cause napi_thread_wait()
+> > +                      * makes sure to proceed with napi polling
+> > +                      * if the thread is explicitly woken from here.
+> > +                      */
+> > +                     if (READ_ONCE(thread->state) !=3D TASK_INTERRUPTI=
+BLE)
+> > +                             set_bit(NAPI_STATE_SCHED_THREADED, &napi-=
+>state);
+> >                       wake_up_process(thread);
+> >                       return;
+> >               }
+> > @@ -6486,6 +6493,7 @@ bool napi_complete_done(struct napi_struct *n, in=
+t work_done)
+> >               WARN_ON_ONCE(!(val & NAPIF_STATE_SCHED));
+> >
+> >               new =3D val & ~(NAPIF_STATE_MISSED | NAPIF_STATE_SCHED |
+> > +                           NAPIF_STATE_SCHED_THREADED |
+> >                             NAPIF_STATE_PREFER_BUSY_POLL);
+> >
+> >               /* If STATE_MISSED was set, leave STATE_SCHED set,
+> > @@ -6968,16 +6976,25 @@ static int napi_poll(struct napi_struct *n, str=
+uct list_head *repoll)
+> >
+> > static int napi_thread_wait(struct napi_struct *napi)
+> > {
+> > +     bool woken =3D false;
 > > +
-> > +	if (mp->addr.proto == htons(ETH_P_IP))
-> > +		ip_eth_mc_map(mp->addr.dst.ip4, mdb.addr);
-> > +#if IS_ENABLED(CONFIG_IPV6)
-> > +	else if (mp->addr.proto == htons(ETH_P_IPV6))
-> > +		ipv6_eth_mc_map(&mp->addr.dst.ip6, mdb.addr);
-> > +#endif
-> > +	else
-> > +		ether_addr_copy(mdb.addr, mp->addr.dst.mac_addr);
+> >       set_current_state(TASK_INTERRUPTIBLE);
+> >
+> >       while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+> > -             if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
+> > +             /* Testing SCHED_THREADED bit here to make sure the curre=
+nt
+> > +              * kthread owns this napi and could poll on this napi.
+> > +              * Testing SCHED bit is not enough because SCHED bit migh=
+t be
+> > +              * set by some other busy poll thread or by napi_disable(=
+).
+> > +              */
+> > +             if (test_bit(NAPI_STATE_SCHED_THREADED, &napi->state) || =
+woken) {
+> >                       WARN_ON(!list_empty(&napi->poll_list));
+> >                       __set_current_state(TASK_RUNNING);
+> >                       return 0;
+> >               }
+> >
+> >               schedule();
+> > +             /* woken being true indicates this thread owns this napi.=
+ */
+> > +             woken =3D true;
+> >               set_current_state(TASK_INTERRUPTIBLE);
+> >       }
+> >       __set_current_state(TASK_RUNNING);
+> > --
+> > 2.31.0.rc2.261.g7f71774620-goog
+> >
 >
-> How you would feel about re-using br_mdb_switchdev_host_port() here and
-> pass a 'type' value that is neither RTM_NEWDB nor RTM_DELDB just so you
-> don't have to duplicate that code here and we ensure it is in sync?
-
-The trouble is that br_mdb_switchdev_host calls switchdev_port_obj_add,
-and I think the agreement was that replayed events should be a silent,
-one-to-one conversation via a direct call to the notifier block of the
-interested driver, as opposed to a call to the entire notifier chain
-which would make everybody else in the system see duplicates. This is
-the reason why I duplicated mostly everything.
