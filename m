@@ -2,120 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4EA342D4A
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 15:30:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F27342DC9
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 16:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhCTO3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 10:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53196 "EHLO
+        id S229805AbhCTPdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 11:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbhCTO25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 10:28:57 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC19C061762
-        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 07:28:56 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id q25so9788653eds.16
-        for <netdev@vger.kernel.org>; Sat, 20 Mar 2021 07:28:56 -0700 (PDT)
+        with ESMTP id S229606AbhCTPdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 11:33:09 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33854C061574;
+        Sat, 20 Mar 2021 08:33:09 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id b184so7979049pfa.11;
+        Sat, 20 Mar 2021 08:33:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ZJIhDl3dbfmuJaK3uoX7aKesDYTkhJ/dpFprfzrrMMQ=;
-        b=iekiG38RMHMqotvnjsWADzkjN8LBZy0T5PdAh2/x4zxQG+/gnSDXsQbaHLg157U03g
-         MK7BqYXwa9Z5YExdy1JA9WhBQxV5iWiY3PjtF1D7k9FJpAFVczlqUWT5Ygo/N3jcVHQK
-         kltkdr55DkCbVjC6N+dU2Ylkab6+7Z8EfE2QN6UXUlmzLd4HUik6Ygo+KqdvJzPdZSMP
-         46Q/GrrvOsa3okgJmBjij3e8EfhVwCtYR5xLOAlUqhSAtSyxIn1iFaHHiJy9eTAl68pX
-         KyW0aHGVXzexYr8eD027p6CGsaOHDJYasQsfVa4lKTXqnz01ooDZJmOsJHeUBfnuTIEv
-         zWeA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=u5bQM0dET0XHH+DjsfWvAVqI7tepR0lEwHfAG7aRgCQ=;
+        b=FwXPsADvHcm/f2ssMaTbRWh9czKbUN0UE5Grn4m/d25oaFVgPWRxwpTkEgB+IBnvB0
+         LMSBzCEyDQGTqzztOXBqH7DW+Zdd7bYrBaD4tlE3h4la0x5r6j9sBbqXg6iuq1hDYlNA
+         S5MxblNVZ2N51NJqJt2qXe1hQPDPxd+ilYHN2vA3TfZZqgiY1Mykr3F7yhzP5zSZu79o
+         Q039Jcfyp4siN9j3brRRAq6pH9ikI9YN3GsQrjK2natZVUQPBb7JtYYpr+BOCnX3UBVP
+         0OHeetn5qk9K75pYLcpCcROHYZw2kWhvzZC7dRpvrUt8DmwTkANfBDEqiNX8ZhvK+jyM
+         /hTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ZJIhDl3dbfmuJaK3uoX7aKesDYTkhJ/dpFprfzrrMMQ=;
-        b=YxiHnDhF2q67Le7VNtpwo3UZxe2n+vIkDU5zK9RhdFRxv4qDx687h0tpbRoMqxmLMh
-         AwYPApys83sYdwKGVI+zu6Zduo4C4+Sfjq+EqJs8i5FuFVOZPKH1AZkHupTHehyF+chJ
-         EN5jIicVEyGAfz5P/ZhPdTWdul0t3YtU+l4iNmtdvVAV3nOYgHTPdDwm8fOz6BfD834w
-         LxSI7/w4qvxcXXU15oI8tefX/oyfAfKhx3LjVVxUr/Z2Kqe5cQlxRQ4miN7M95cHzDqg
-         /+1IoMkPZsoyqA1RVDRSR+Ac1AcJGNNw4BHMqRI0GW8XyK/E6s8ArAFMvBy4alsBZ2d+
-         82tQ==
-X-Gm-Message-State: AOAM5314/S0VHuVGd+Q7CAgswZfAmyegQGvNbw11CK8m65mGJEGoSjWE
-        lRJ/Kyn1drADcLk8CXcqCdHRxX4nWmTv
-X-Google-Smtp-Source: ABdhPJwHmgIAdnlzw2k/d9RrWtIKW6/663KxRbUPItmuN/KgAczpxnymtpmzJaPiLAr9CkkdlUsfCCjUWQRX
-X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:84f2:bf18:7ada:738e])
- (user=dvyukov job=sendgmr) by 2002:a17:906:b159:: with SMTP id
- bt25mr9871210ejb.364.1616250535324; Sat, 20 Mar 2021 07:28:55 -0700 (PDT)
-Date:   Sat, 20 Mar 2021 15:28:51 +0100
-Message-Id: <20210320142851.1328291-1-dvyukov@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-Subject: [PATCH] net: make unregister netdev warning timeout configurable
-From:   Dmitry Vyukov <dvyukov@google.com>
-To:     davem@davemloft.net, edumazet@google.com
-Cc:     Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=u5bQM0dET0XHH+DjsfWvAVqI7tepR0lEwHfAG7aRgCQ=;
+        b=QAc8B2uLEuE+L7W6PymnIIjX2qzf73FJDmV2N3SlXP8/kHaAWp0+XJVy8prsqNQs17
+         1phTLt3I+jtLXzfKv/LMNPtNUO0I3HWe7sFSKASiAZUiQdp4n6xq++Aaee/teH2vsniU
+         Y/dsuHrUzxys3wH75DIsXF7MXAWfWjNO7+iR5i1xQl7VdxtFli+tlFnRyV0WszbeNtI3
+         9/gJBc7MvVVZ4fS9WEfRFBTHRNLI9BswsNwLrd84iSAYvwtePvjjrQK217Jb/EpcRNJ3
+         RYlbTemtGLLIGV6o6QJOWJsRKGCB2PLPL72QITMs9uKEXyqpThHNlAJgB3gPRcaJ8a0Y
+         8JDw==
+X-Gm-Message-State: AOAM532ImsXYxlpVfvAPeL0ttTsi10wcPzaiSqwBvKAXOAlST/aPB0qa
+        t92wdRistqDOFtYY5OP2EhPrEOkBMso=
+X-Google-Smtp-Source: ABdhPJxL2Tq6q09AYe9WwiuuG4YjxyOh+yPl9d3mRSUHfy0fa4eqqillzmtO9dmoQHcCgokrKKGwtw==
+X-Received: by 2002:a62:683:0:b029:1ec:c88c:8ea2 with SMTP id 125-20020a6206830000b02901ecc88c8ea2mr13739211pfg.27.1616254388746;
+        Sat, 20 Mar 2021 08:33:08 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id z25sm8555547pfn.37.2021.03.20.08.33.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 20 Mar 2021 08:33:08 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: pull-request: bpf 2021-03-20
+Date:   Sat, 20 Mar 2021 08:33:06 -0700
+Message-Id: <20210320153306.49142-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev_wait_allrefs() issues a warning if refcount does not drop to 0
-after 10 seconds. While 10 second wait generally should not happen
-under normal workload in normal environment, it seems to fire falsely
-very often during fuzzing and/or in qemu emulation (~10x slower).
-At least it's not possible to understand if it's really a false
-positive or not. Automated testing generally bumps all timeouts
-to very high values to avoid flake failures.
-Make the timeout configurable for automated testing systems.
-Lowering the timeout may also be useful for e.g. manual bisection.
-The default value matches the current behavior.
+Hi David, hi Jakub,
 
-Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-Fixes: https://bugzilla.kernel.org/show_bug.cgi?id=211877
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- net/Kconfig    | 12 ++++++++++++
- net/core/dev.c |  4 +++-
- 2 files changed, 15 insertions(+), 1 deletion(-)
+The following pull-request contains BPF updates for your *net* tree.
 
-diff --git a/net/Kconfig b/net/Kconfig
-index 8cea808ad9e8d..ebb9cc00ac81d 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -461,6 +461,18 @@ config ETHTOOL_NETLINK
- 	  netlink. It provides better extensibility and some new features,
- 	  e.g. notification messages.
- 
-+config UNREGISTER_NETDEV_TIMEOUT
-+	int "Unregister network device timeout in seconds"
-+	default 10
-+	range 0 3600
-+	help
-+	  This option controls the timeout (in seconds) used to issue
-+	  a warning while waiting for a network device refcount to drop to 0
-+	  during device unregistration.
-+	  A lower value may be useful during bisection to detect a leaked
-+	  reference faster. A larger value may be useful to prevent false
-+	  warnings on slow/loaded systems.
-+
- endif   # if NET
- 
- # Used by archs to tell that they support BPF JIT compiler plus which flavour.
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 0f72ff5d34ba0..ca03ee407133b 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10405,7 +10405,9 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 
- 		refcnt = netdev_refcnt_read(dev);
- 
--		if (refcnt && time_after(jiffies, warning_time + 10 * HZ)) {
-+		if (refcnt &&
-+		    time_after(jiffies, warning_time +
-+			       CONFIG_UNREGISTER_NETDEV_TIMEOUT * HZ)) {
- 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
- 				 dev->name, refcnt);
- 			warning_time = jiffies;
+We've added 5 non-merge commits during the last 3 day(s) which contain
+a total of 8 files changed, 155 insertions(+), 12 deletions(-).
 
-base-commit: 5aa3c334a449bab24519c4967f5ac2b3304c8dcf
--- 
-2.31.0.291.g576ba9dcdaf-goog
+The main changes are:
 
+1) Use correct nops in fexit trampoline, from Stanislav.
+
+2) Fix BTF dump, from Jean-Philippe.
+
+3) Fix umd memory leak, from Zqiang.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+
+
+----------------------------------------------------------------
+
+The following changes since commit e65eaded4cc4de6bf153def9dde6b25392d9a236:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-03-17 18:36:34 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to b9082970478009b778aa9b22d5561eef35b53b63:
+
+  bpf: Use NOP_ATOMIC5 instead of emit_nops(&prog, 5) for BPF_TRAMP_F_CALL_ORIG (2021-03-19 19:25:39 -0700)
+
+----------------------------------------------------------------
+Alexei Starovoitov (1):
+      selftest/bpf: Add a test to check trampoline freeing logic.
+
+Andrii Nakryiko (1):
+      Merge branch 'libbpf: Fix BTF dump of pointer-to-array-of-struct'
+
+Jean-Philippe Brucker (2):
+      libbpf: Fix BTF dump of pointer-to-array-of-struct
+      selftests/bpf: Add selftest for pointer-to-array-of-struct BTF dump
+
+Stanislav Fomichev (1):
+      bpf: Use NOP_ATOMIC5 instead of emit_nops(&prog, 5) for BPF_TRAMP_F_CALL_ORIG
+
+Zqiang (1):
+      bpf: Fix umd memory leak in copy_process()
+
+ arch/x86/net/bpf_jit_comp.c                        |  3 +-
+ include/linux/usermode_driver.h                    |  1 +
+ kernel/bpf/preload/bpf_preload_kern.c              | 19 +++--
+ kernel/usermode_driver.c                           | 21 ++++--
+ tools/lib/bpf/btf_dump.c                           |  2 +-
+ .../testing/selftests/bpf/prog_tests/fexit_sleep.c | 82 ++++++++++++++++++++++
+ .../bpf/progs/btf_dump_test_case_syntax.c          |  8 +++
+ tools/testing/selftests/bpf/progs/fexit_sleep.c    | 31 ++++++++
+ 8 files changed, 155 insertions(+), 12 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/fexit_sleep.c
+ create mode 100644 tools/testing/selftests/bpf/progs/fexit_sleep.c
