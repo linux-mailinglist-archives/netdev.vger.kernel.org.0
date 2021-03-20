@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18433342FFD
-	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 23:39:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 647E5343001
+	for <lists+netdev@lfdr.de>; Sat, 20 Mar 2021 23:39:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbhCTWgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 18:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
+        id S230100AbhCTWgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 18:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbhCTWf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 18:35:27 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210DEC061574;
-        Sat, 20 Mar 2021 15:35:27 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id b9so15301428ejc.11;
-        Sat, 20 Mar 2021 15:35:27 -0700 (PDT)
+        with ESMTP id S229946AbhCTWf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 18:35:28 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64403C061574;
+        Sat, 20 Mar 2021 15:35:28 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id j3so14928294edp.11;
+        Sat, 20 Mar 2021 15:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FX/gpTHurZv94BWIowZaJ3czNzkfeitN+oQL7QnMW9c=;
-        b=tL4oFig3Pkr6OVUSg/g0NtF9GTJ4U4F6h/XL2uRANZ/LskhtE+ul50rXwwL8FpU8WV
-         hD/0JX9LbH36w4dxToBWM1Ufq6TSiYphYRu4qakOynWMGHineNodCHu22xZvhWwOuKC3
-         OHLGNf0GmoVjaCJiE38UBVAgFTEfDcuV5wZKxJvpAJlnNHGM8DOJ6KShTDadEqvhV/Ya
-         /4EIUrSUTEvqDkLE1E1pItVN7KISOBh5rDsMZPFuqBH8JjLyEOzMT8qREWf+pvFOBjTQ
-         YGM9RdFl2nciNbW2IrZ43oqCa/tlytLWMdfUBA9GzZnv7WRrPwQhCgRq+lYV6VqFCb4s
-         fluw==
+        bh=UUgWwEswye+b4aK+2bQLBIyYwXBiDuUTJA+VOwNWdDg=;
+        b=PDRmZMcSgapKHhYZ7/XzOm2AZoQBVGGqPPm+7Men9VPsp3L4NRNrAbOfhffpStXFgF
+         ao31aEDiX4VkFAfJAVaYu/IJD5jhNxWXkoD274Wte4ccHVA14P3+2KZNA5je7plX9L2y
+         Fetf4eoAmR8/O2PwdyOr+/DElxS6irjZh7y1UrtzcVbVxLfax3PI15q7wPvjfpzLos6R
+         NKFQ/F7R4hX4w8Rl/2vcBI6vtX0zomXt8tyRjq4NVv2K1sLU7QVeClPV6mgqoUM46e5W
+         NHh8/mvaWbzajoQAbWUvVVRK7LuAI+xcfY1p1ks0blYVBky5z12vb889cPlgCXEHWsnb
+         eYqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FX/gpTHurZv94BWIowZaJ3czNzkfeitN+oQL7QnMW9c=;
-        b=ToRpBza+VTfDFAEG9KXJ6AwEr+bcX+pNSoBQQbVvfOKTm8ZZzk6EuyawBgdGz0Ooc3
-         WcTb2E2n0nGxaTuRwmnL9bTJrHYqO7liJk7lHTWsIEvNMOpa22NStkbJhetmddrC0K7v
-         UPjfwh08fAo4Gpmg0t/Ec5u9HeajFThj8uUV3d29+bzJGSVLTGDgc927lMC/HipJ6Z58
-         HCzE0hHymoknZ++4q9QtO9uD0nUJK5V18ba2+fwJdCKbFvpk3WpSV4JGcAyGvTCpFbSg
-         OjLHhaF02ypEKgSUhMHTcQs0fIimi4eH1EbAwZ5Pmo+Ml0lzYt33lNnaJ+AeA7ZrCDRU
-         xbpQ==
-X-Gm-Message-State: AOAM532OLx5o5w5ntBIxG6iNX5bdPCKFXNFRBB3ivAPtg3AXQn7tRH+A
-        ndj4RZmo+vK++a58KltGTqo=
-X-Google-Smtp-Source: ABdhPJy0rzK1nxpNTmRU/uDFvHDZ1kuicf8drxlE3WopPx6BeZiz+yqfB2jE8PfHRD8xK4EaP8uE/w==
-X-Received: by 2002:a17:906:19d9:: with SMTP id h25mr12087622ejd.453.1616279725936;
-        Sat, 20 Mar 2021 15:35:25 -0700 (PDT)
+        bh=UUgWwEswye+b4aK+2bQLBIyYwXBiDuUTJA+VOwNWdDg=;
+        b=gUK0mZaYuyD5qM5daYTXrxxJ3mgVN5F4zrSIa1vv03j8+/foLWZKHUWICpIyp9Vn1x
+         tDjgFd1PMHvIlKyAOFCisxflxU592yGtYb70lWiGdStVmQtuOnmJSiDZvxjXAbQTraO2
+         O4C6/3vFLV7zLenjyJ0tHGxXAyOUp2UlvgAvGsMNR/aRoEl0aVhqpflRKRW4i7QA2Sbn
+         wZqZQnExxAYOlaa+PDBZZRdJni6PTczKJhs5KrwwTmeOApymTM3KYC+CWv8cXeQX9INj
+         OnYa7kBQL3O7sGX5r++poXbOXoq+2T4LAV8mCjJW5//f7Qj+pStizqVz3xLP9/OrOEhx
+         fnxw==
+X-Gm-Message-State: AOAM5307FJszvozu+lbX3H2zKLlZLWHGdf+ZPjmGUdPdhApt/B1qX0YQ
+        n74/jIh7dT5VeKkp1Vc3v7xggE0lz8k=
+X-Google-Smtp-Source: ABdhPJxzcRf3pELkQzpNwfHINX/b43Q36CdVMrCXgNpOQfOOUIe31YLIA8EWHOST5LxVIKOS+CgPUg==
+X-Received: by 2002:aa7:da46:: with SMTP id w6mr17838479eds.40.1616279727186;
+        Sat, 20 Mar 2021 15:35:27 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id n2sm6090850ejl.1.2021.03.20.15.35.24
+        by smtp.gmail.com with ESMTPSA id n2sm6090850ejl.1.2021.03.20.15.35.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Mar 2021 15:35:25 -0700 (PDT)
+        Sat, 20 Mar 2021 15:35:26 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -64,9 +64,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
         linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 05/12] net: dsa: sync up VLAN filtering state when joining the bridge
-Date:   Sun, 21 Mar 2021 00:34:41 +0200
-Message-Id: <20210320223448.2452869-6-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 06/12] net: dsa: sync multicast router state when joining the bridge
+Date:   Sun, 21 Mar 2021 00:34:42 +0200
+Message-Id: <20210320223448.2452869-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210320223448.2452869-1-olteanv@gmail.com>
 References: <20210320223448.2452869-1-olteanv@gmail.com>
@@ -78,10 +78,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This is the same situation as for other switchdev port attributes: if we
-join an already-created bridge port, such as a bond master interface,
-then we can miss the initial switchdev notification emitted by the
-bridge for this port.
+Make sure that the multicast router setting of the bridge is picked up
+correctly by DSA when joining, regardless of whether there are
+sandwiched interfaces or not. The SWITCHDEV_ATTR_ID_BRIDGE_MROUTER port
+attribute is only emitted from br_mc_router_state_change.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
@@ -89,38 +89,34 @@ Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Changes in v3:
 None.
 
- net/dsa/port.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/dsa/port.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 2ecdc824ea66..3f938c253c99 100644
+index 3f938c253c99..124f8bb21204 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -172,6 +172,7 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
- 				   struct netlink_ext_ack *extack)
- {
- 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
-+	struct net_device *br = dp->bridge_dev;
- 	u8 stp_state;
- 	int err;
- 
-@@ -184,6 +185,10 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+@@ -189,6 +189,10 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
  	if (err && err != -EOPNOTSUPP)
  		return err;
  
-+	err = dsa_port_vlan_filtering(dp, br, extack);
++	err = dsa_port_mrouter(dp->cpu_dp, br_multicast_router(br), extack);
 +	if (err && err != -EOPNOTSUPP)
 +		return err;
 +
  	return 0;
  }
  
-@@ -205,6 +210,8 @@ static void dsa_port_switchdev_unsync(struct dsa_port *dp)
- 	 * so allow it to be in BR_STATE_FORWARDING to be kept functional
- 	 */
+@@ -212,6 +216,12 @@ static void dsa_port_switchdev_unsync(struct dsa_port *dp)
  	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
+ 
+ 	/* VLAN filtering is handled by dsa_switch_bridge_leave */
 +
-+	/* VLAN filtering is handled by dsa_switch_bridge_leave */
++	/* Some drivers treat the notification for having a local multicast
++	 * router by allowing multicast to be flooded to the CPU, so we should
++	 * allow this in standalone mode too.
++	 */
++	dsa_port_mrouter(dp->cpu_dp, true, NULL);
  }
  
  int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
