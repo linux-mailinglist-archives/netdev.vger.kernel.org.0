@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B02B343378
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 17:33:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C574834338F
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 18:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbhCUQco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 12:32:44 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:34576 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbhCUQcN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 12:32:13 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id EAFE51C0B78; Sun, 21 Mar 2021 17:32:10 +0100 (CET)
-Date:   Sun, 21 Mar 2021 17:32:10 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     kernel list <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230176AbhCURCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 13:02:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37931 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230094AbhCURBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 13:01:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616346105;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zXdHoUcjVUJHBfbZEfpNBFQoV8iIM4f14FaBG3Sy6a4=;
+        b=BBoYh25FQ7LJdyTHKqyeloxdY1eKni/hmhmwFPpHAHEwu5OXNpEvaPppCeStTN0Ld12orV
+        IOkOzcX/XhsxuGoEiqF/UxnxKFV2NLJnKuX62OeUGg/ukWR72nrDNJZ+XMC5JOqVZeW48M
+        23K0iapQT4L9bX7HjoJJRsebzUNnXD0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-524-vtaqVx7ePqy8i8QaVFYGBw-1; Sun, 21 Mar 2021 13:01:43 -0400
+X-MC-Unique: vtaqVx7ePqy8i8QaVFYGBw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 50B7C107ACCD;
+        Sun, 21 Mar 2021 17:01:42 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-112-107.ams2.redhat.com [10.36.112.107])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6FE766267B;
+        Sun, 21 Mar 2021 17:01:40 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        netdev@vger.kernel.org
-Subject: net/dev: fix information leak to userspace
-Message-ID: <20210321163210.GC26497@amd>
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next 0/8] udp: GRO L4 improvements
+Date:   Sun, 21 Mar 2021 18:01:11 +0100
+Message-Id: <cover.1616345643.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="gr/z0/N6AeWAPJVB"
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series improves the UDP L4 - either 'forward' or 'frag_list' -
+co-existence with UDP tunnel GRO, allowing the first to take place
+correctly even for encapsulated UDP traffic.
 
---gr/z0/N6AeWAPJVB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The first for patches are mostly bugfixes, addressing some GRO 
+edge-cases when both tunnels and L4 are present, enabled and in use.
 
-dev_get_mac_address() does not always initialize whole
-structure. Unfortunately, other code copies such structure to
-userspace, leaking information. Fix it.
+The next 3 patches avoid unneeded segmentation when UDP GRO
+traffic traverses in the receive path UDP tunnels.
 
-Signed-off-by: Pavel Machek (CIP) <pavel@denx.de>
-Cc: stable@kernel.org
+Finally, some self-tests are included, covering the relevant
+GRO scenarios.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 6c5967e80132..28283a9eb63a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8949,11 +8949,9 @@ int dev_get_mac_address(struct sockaddr *sa, struct =
-net *net, char *dev_name)
- 		ret =3D -ENODEV;
- 		goto unlock;
- 	}
--	if (!dev->addr_len)
--		memset(sa->sa_data, 0, size);
--	else
--		memcpy(sa->sa_data, dev->dev_addr,
--		       min_t(size_t, size, dev->addr_len));
-+	memset(sa->sa_data, 0, size);
-+	memcpy(sa->sa_data, dev->dev_addr,
-+	       min_t(size_t, size, dev->addr_len));
- 	sa->sa_family =3D dev->type;
-=20
- unlock:
+Even if most patches are actually bugfixes, this series is
+targeting net-next, as overall it makes available a new feature.
 
+Paolo Abeni (8):
+  udp: fixup csum for GSO receive slow path
+  udp: skip fwd/list GRO for tunnel packets
+  udp: properly complete L4 GRO over UDP tunnel packet
+  udp: never accept GSO_FRAGLIST packets
+  vxlan: allow L4 GRO passthrou
+  geneve: allow UDP L4 GRO passthrou
+  bareudp: allow UDP L4 GRO passthrou
+  selftests: net: add UDP GRO forwarding self-tests
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+ drivers/net/bareudp.c                     |   1 +
+ drivers/net/geneve.c                      |   1 +
+ drivers/net/vxlan.c                       |   1 +
+ include/linux/udp.h                       |  15 +-
+ include/net/udp.h                         |  18 ++
+ net/ipv4/udp.c                            |  22 +-
+ net/ipv4/udp_offload.c                    |  27 ++-
+ net/ipv6/udp.c                            |   5 +
+ net/ipv6/udp_offload.c                    |   3 +-
+ tools/testing/selftests/net/Makefile      |   1 +
+ tools/testing/selftests/net/udpgro_fwd.sh | 251 ++++++++++++++++++++++
+ 11 files changed, 330 insertions(+), 15 deletions(-)
+ create mode 100755 tools/testing/selftests/net/udpgro_fwd.sh
 
---gr/z0/N6AeWAPJVB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+-- 
+2.26.2
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAmBXdQoACgkQMOfwapXb+vJdiACfU1FPb4O7ikDk8o+OPGYR1NmK
-4IIAoKK4mpRlql+ZnR9Uxo1kJUWTUrBn
-=VJfs
------END PGP SIGNATURE-----
-
---gr/z0/N6AeWAPJVB--
