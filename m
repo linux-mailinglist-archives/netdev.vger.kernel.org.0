@@ -2,393 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 349DA3433A8
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 18:19:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B3D3433AD
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 18:22:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbhCURTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 13:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbhCURTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 13:19:05 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A39C061574
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 10:19:05 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id h1so12742378ilr.1
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 10:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=trd3bOQAuSxmemswUBJKTp+b88fg2ac3yQ5bfpCsI6I=;
-        b=Ug03H1ZtqD2RF0P3tNq76X8in9uJZCVXfq+/rb82aqxHeSUy+jnJ1h6o5QVw2ceplP
-         yEGZQ1GCnILtWoD1nOE/IKumvDKGeiq3QNIkdFsBHoAwvXr+EQO6M3r1RfKANWnpTIVk
-         fwa8Ywv4/uKEXnr8WsG1ax0EjkEpzNfbxhy5l8+P4H3ynsW3Ck3WSVFbhQrXtdGr4l7N
-         Jg2ZAHzSKWdTi2uhpc5xp+UmDrY6ESmW2uZKgW4GQ/+HMDD3uf+7lIGZ26qLAGOappoV
-         7y40X+C2Iz85eKZffEqWMTH786+EC6hNcuomG1PeIPjfsGmT2+oZ22g+IBJyBAf/JEVV
-         MbVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=trd3bOQAuSxmemswUBJKTp+b88fg2ac3yQ5bfpCsI6I=;
-        b=KJZ5c6AykkkYdWyQoGlfMGwUcN57JDmxPY0n0GHdoZWTv1X+0A/iTfDBEqlDZzOj+g
-         7+/GDwM709ZtenprQ7IcHQcf79XNE111T1knicU3YfAaq/MFa8lFe4lnUA4TBezCnJC6
-         Jti4GiC7++xb0pzXQqxOyg7tBbeZU4E3424pb4DPB9um2hwpsXY0+h5OdWx9E+ZoFWtn
-         F4s5xd+bqoLrxHEPbhGyafbbBQF3S2uH5DeYqioyM0HRiIKQSVGmSYGkgVdC9eA0vLCB
-         Q1U/OxJpZoR5M2C7THgCKysC0OpDRJ86hZzvCw0jr6/5b1ZYMYvbvpMyZLFkzDgNdU3i
-         /glg==
-X-Gm-Message-State: AOAM531gAleJVNGbwSnXzw1SaK8r+PMjlsolqUZ10qMM28rgVnKaHSWR
-        LpwxIb9W0KEbBCdo7BShu4HFoA==
-X-Google-Smtp-Source: ABdhPJyH+b8tBpFACR4h1flzXM5NNyQUAabLdDPKHvj5c8++3/du645cP7DvXxkGhwik76pqYqfYzA==
-X-Received: by 2002:a05:6e02:c7:: with SMTP id r7mr8820894ilq.288.1616347144424;
-        Sun, 21 Mar 2021 10:19:04 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id 14sm6607642ilt.54.2021.03.21.10.19.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Mar 2021 10:19:03 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/2] net: ipa: fix IPA validation
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210320141729.1956732-1-elder@linaro.org>
- <20210320141729.1956732-3-elder@linaro.org> <YFcCAr19ZXJ9vFQ5@unreal>
- <dd4619e2-f96a-122f-2cf6-ec19445c6a5c@linaro.org> <YFdO6UnWsm4DAkwc@unreal>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <7bc3e7d7-d32f-1454-eecc-661b5dc61aeb@linaro.org>
-Date:   Sun, 21 Mar 2021 12:19:02 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S230258AbhCURVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 13:21:23 -0400
+Received: from mail-co1nam11on2084.outbound.protection.outlook.com ([40.107.220.84]:37281
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230227AbhCURVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Mar 2021 13:21:06 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZHuEXMkJ93/pcUZF466PbybLf5joEGNXYPcW3yUocxsZh5sKurBvCRAGTzIoRTsLUfD9FlneNy54VfUhADPPgkVMD1Xr+w7/4Jec213mVoluA7tPTlLGr5b6j5FZ6xnK7BO8Td5vPjqsR5F+D3r6A7H4XtgPU6ib0k/TeEKgwGXu3W551tvKvG9SNfPXuRn2HtnwPVXU+xORqCsZaNK094w8SC9O3kQ6p8eGR4eHPxXpV9eeBBzLuLX7irwhDY1wHLG558WGOT2RcIdi4vkQ2TeE2Kxm5hGVHhT/3ScawISHxYwuxrjWdNNrG3UDFid8ABPA2FoE6cqGb4S9TPwL+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AHgeqVK/eWp6gfLEUXqoqFTes41MJZAk6855Kztr3Qw=;
+ b=dxdXZxXF9atlmxLKubj77PnHtsCwcV4nj+0+kK4qPCkFglWLoV54q/fAdMTv40dj9OBexTBk74dRjy+iWbKxCCAeMHSZKKLtLztwfhziafjMVQ8LHALzWd079xgHhLsz4D+fREFaOFoe9Lg57Qz+1SVdODhu3j0E3Wqx/+38ZY0diVhvB8vBXWcgK8qhAbyCIlVx0uFb3ETa7G5Sgebas017j6PTeaw8OnvB65y2SeWwlP7FIo1f5QCist2lUtTf3eq1a+le/hHErvsqaBJyR+8ccU4aGrv0wsXU3bB0xQ3k5Q0HJayRNDm4P60qOFfCO7C3tcYGVTRX0e8LbJJ0ZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AHgeqVK/eWp6gfLEUXqoqFTes41MJZAk6855Kztr3Qw=;
+ b=EkzP9Chzk3OdKL0YuEBVRB9NfUKqsSm48CZQNI/Sc0GYXLljCiwM2SMPhHw19XP21rIpD25rKBj7/x0NhgJgVCFaS/qoFq46Xyfp5q2Pg3PVaXEekzNsoeNWQoH6t8g5HdsL2OnUXmx8dz5NMGhxxOOu9ceN3znnviMjQq1pS8P+UiqouNhEe4ZLm1/xC+7WvEwHWHqVhI2yXb763PxDNDx16SS1VpmEmBLFzXlxhqNmFX3gSzgsSOFj4e+/U7GIlTwAtJL9mtJZUuaxmOYC68mLkIoPCKO2MQOTLJDT88YEeekMsB2IHSlgnsAjAmfm8Kl6Go4WN6CGIG70qQlcsw==
+Received: from DS7PR03CA0134.namprd03.prod.outlook.com (2603:10b6:5:3b4::19)
+ by BN6PR12MB1236.namprd12.prod.outlook.com (2603:10b6:404:1f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Sun, 21 Mar
+ 2021 17:21:00 +0000
+Received: from DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b4:cafe::d8) by DS7PR03CA0134.outlook.office365.com
+ (2603:10b6:5:3b4::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend
+ Transport; Sun, 21 Mar 2021 17:21:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT040.mail.protection.outlook.com (10.13.173.133) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3955.18 via Frontend Transport; Sun, 21 Mar 2021 17:20:59 +0000
+Received: from localhost (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 21 Mar
+ 2021 17:20:58 +0000
+Date:   Sun, 21 Mar 2021 19:20:55 +0200
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+CC:     <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>,
+        Petr Machata <petrm@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Guillaume Nault <gnault@redhat.com>
+Subject: Re: [PATCH net] selftests: forwarding: vxlan_bridge_1d: Fix vxlan
+ ecn decapsulate value
+Message-ID: <YFeAdxAOYcx3CMYJ@shredder.lan>
+References: <20210319143314.2731608-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YFdO6UnWsm4DAkwc@unreal>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210319143314.2731608-1-liuhangbin@gmail.com>
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3b04193f-59c8-4826-d0ec-08d8ec8db231
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1236:
+X-Microsoft-Antispam-PRVS: <BN6PR12MB12368DA90ED0C99D500C4173B2669@BN6PR12MB1236.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:466;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gcUpETbrLnMKioZKY9BjAd4W/gqdoD4I9kx2Gy+fbwg1bF6ixbbAPmf1qjsYpy5BTFkdLN1Zk/QESkD1axts6JHReBiOTNQXrb5wQdg0PqcHdAX+e5tcrPcrdU4lzGQfy2rk0fEWzJViQg0Ph+/eGYyy23YLNrgd97z14aF0UlLc6dlNxbI93PkSwrkT22Hb1n29a+twjdguTQ6rli1e6Hkxx0Y2+D7KHmmTCSKIYV/yLffOeKjkGJCy7XjgvYxwMVRT2hBYwBWoE7nlpTZYgdByYyvbWiqueu8utNKlR9/tkIT470LPs1iQv3Te9+0pSYbiT36j+8gg45N6Velr0JxhwbsZNu+2MPMOkBwCLSbS1++VWVr0tkFMTTfbqXfqYXA/IhFUd/V5lySlXx2C79/rgr6uGG6p7tFoi7guU4fIYaMdiY3jn9nE0M7iydf3Xvhb8t+7EIFYFB09Sou/eu3ypKXqyICp8sVyMpNO3v5qO0DKJLcpjlUtrlnvs4hmjZLvJ5EN9RWxg3isUGrvUwizeqGFtQlxqgzbV4iPiKhsLQ44Hh3rAtC5fwma4LgyybitBD38O6NvV5O7U5k4mNg3kNwFDAWwlzHW1oeoI0rkR3XpPYUPdPlTFBg0d2iY0gP0BmZdFutNNhDwmUs2nYW8cJ3MkjG0W6p6STO6TE0=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(346002)(376002)(396003)(39860400002)(46966006)(36840700001)(2906002)(5660300002)(70206006)(4326008)(9686003)(86362001)(7636003)(82740400003)(36756003)(70586007)(36860700001)(426003)(8936002)(478600001)(82310400003)(8676002)(83380400001)(6666004)(54906003)(47076005)(36906005)(336012)(6916009)(26005)(356005)(186003)(16526019)(316002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2021 17:20:59.5918
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b04193f-59c8-4826-d0ec-08d8ec8db231
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1236
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/21/21 8:49 AM, Leon Romanovsky wrote:
-> On Sun, Mar 21, 2021 at 08:21:24AM -0500, Alex Elder wrote:
->> On 3/21/21 3:21 AM, Leon Romanovsky wrote:
->>> On Sat, Mar 20, 2021 at 09:17:29AM -0500, Alex Elder wrote:
->>>> There are blocks of IPA code that sanity-check various values, at
->>>> compile time where possible.  Most of these checks can be done once
->>>> during development but skipped for normal operation.  These checks
->>>> permit the driver to make certain assumptions, thereby avoiding the
->>>> need for runtime error checking.
->>>>
->>>> The checks are defined conditionally, but not consistently.  In
->>>> some cases IPA_VALIDATION enables the optional checks, while in
->>>> others IPA_VALIDATE is used.
->>>>
->>>> Fix this by using IPA_VALIDATION consistently.
->>>>
->>>> Signed-off-by: Alex Elder <elder@linaro.org>
->>>> ---
->>>>   drivers/net/ipa/Makefile       | 2 +-
->>>>   drivers/net/ipa/gsi_trans.c    | 8 ++++----
->>>>   drivers/net/ipa/ipa_cmd.c      | 4 ++--
->>>>   drivers/net/ipa/ipa_cmd.h      | 6 +++---
->>>>   drivers/net/ipa/ipa_endpoint.c | 6 +++---
->>>>   drivers/net/ipa/ipa_main.c     | 6 +++---
->>>>   drivers/net/ipa/ipa_mem.c      | 6 +++---
->>>>   drivers/net/ipa/ipa_table.c    | 6 +++---
->>>>   drivers/net/ipa/ipa_table.h    | 6 +++---
->>>>   9 files changed, 25 insertions(+), 25 deletions(-)
->>>>
->>>> diff --git a/drivers/net/ipa/Makefile b/drivers/net/ipa/Makefile
->>>> index afe5df1e6eeee..014ae36ac6004 100644
->>>> --- a/drivers/net/ipa/Makefile
->>>> +++ b/drivers/net/ipa/Makefile
->>>> @@ -1,5 +1,5 @@
->>>>   # Un-comment the next line if you want to validate configuration data
->>>> -#ccflags-y		+=	-DIPA_VALIDATE
->>>> +# ccflags-y		+=	-DIPA_VALIDATION
->>>
->>> Maybe netdev folks think differently here, but general rule that dead
->>> code and closed code is such, is not acceptable to in Linux kernel.
->>>
->>> <...>
->>
->> What is the purpose of CONFIG_KGDB?  Or CONFIG_DEBUG_KERNEL?
->> Would you prefer I expose this through a kconfig option?  I
->> intentionally did not do that, because I really intended it
->> to be only for development, so defined it in the Makefile.
->> But I have no objection to making it configurable that way.
+On Fri, Mar 19, 2021 at 10:33:14PM +0800, Hangbin Liu wrote:
+> The ECN bit defines ECT(1) = 1, ECT(0) = 2. So inner 0x02 + outer 0x01
+> should be inner ECT(0) + outer ECT(1). Based on the description of
+> __INET_ECN_decapsulate, the final decapsulate value should be
+> ECT(1). So fix the test expect value to 0x01.
 > 
-> I prefer you to follow netdev/linux kernel rules of development.
-> The upstream repository and drivers/net/* folder especially are not
-> the place to put code used for the development.
-
-How do I add support for new versions of the hardware as
-it evolves?
-
-What I started supporting (v3.5.1) was in some respects
-relatively old.  Version 4.2 is newer, and the v4.5 and
-beyond are for products that are relatively new on the
-market.
-
-Some updates to IPA (like 4.0+ after 3.5.1, or 4.5+
-after 4.2) include substantial updates to the way the
-hardware works.  The code can't support the new hardware
-without being adapted and generalized to support both
-old and new.
-
-My goal is to get upstream support for IPA for all
-Qualcomm SoCs that have it.  But the hardware design
-is evolving; Qualcomm is actively developing their
-architecture so they can support new technologies
-(e.g. cellular 5G).  Development of the driver is
-simply *necessary*.
-
-The assertions I proposed and checks like this are
-intended as an *aid* to the active development I
-have been doing.
-
-They may look like hacky debugging--checking errors
-that can't happen.  They aren't that at all--they're
-intended to the compiler help me develop correct code,
-given I *know* it will be evolving.
-
-But the assertions are gone, and I accept/agree that
-these specific checks "look funny."  More below.
-
->>>> -#ifdef IPA_VALIDATE
->>>> +#ifdef IPA_VALIDATION
->>>>   	if (!size || size % 8)
->>>>   		return -EINVAL;
->>>>   	if (count < max_alloc)
->>>>   		return -EINVAL;
->>>>   	if (!max_alloc)
->>>>   		return -EINVAL;
->>>> -#endif /* IPA_VALIDATE */
->>>> +#endif /* IPA_VALIDATION */
->>>
->>> If it is possible to supply those values, the check should be always and
->>> not only under some closed config option.
->>
->> These are assertions.
->>
->> There is no need to test them for working code.  If
->> I run the code successfully with these tests enabled
->> exactly once, and they are satisfied, then every time
->> the code is run thereafter they will pass.  So I want
->> to check them when debugging/developing only.  That
->> way there is a mistake, it gets caught, but otherwise
->> there's no pointless argument checking done.
->>
->> I'll explain the first check; the others have similar
->> explanation.
->>
->> In the current code, the passed size is sizeof(struct)
->> for three separate structures.
->>   - If the structure size changes, I want to be
->>     sure the constraint is still honored
->>   - The code will break of someone happens
->>     to pass a size of 0.  I don't expect that to
->>     ever happen, but this states that requirement.
->>
->> This is an optimization, basically, but one that
->> allows the assumed conditions to be optionally
->> verified.
+> Before the fix:
+> TEST: VXLAN: ECN decap: 01/02->0x02                                 [FAIL]
+>         Expected to capture 10 packets, got 0.
 > 
-> Everything above as an outcome of attempting to mix constant vs. run-time
-> checks. If "size" is constant, the use of BUILD_BIG_ON() will help not only
-> you but other developers to catch the errors too. The assumption that you alone
-> are working on this code, can or can't be correct.
-
-Right now I am the only one doing substantive development.
-I am listed as the maintainer, and I trust anything more
-than simple fixes will await my review before being
-merged.
-
-> If "size" is not constant, you should check it always.
-
-To do that I might need to make this function (and others
-like it) inline, or maybe __always_inline.  Regardless,
-I generally agree with your suggestion of defensively
-testing the argument value.  But this is an *internal
-interface*.  The only callers are inside the driver.
-
-It's basically putting the burden on the caller to verify
-parameters, because often the caller already knows.
-
-I think this is more of a philosophical argument than
-a technical one.  The check isn't *that* expensive.
-
->>>>   	/* By allocating a few extra entries in our pool (one less
->>>>   	 * than the maximum number that will be requested in a
->>>> @@ -140,14 +140,14 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
->>>>   	dma_addr_t addr;
->>>>   	void *virt;
->>>> -#ifdef IPA_VALIDATE
->>>> +#ifdef IPA_VALIDATION
->>>>   	if (!size || size % 8)
->>>>   		return -EINVAL;
->>>>   	if (count < max_alloc)
->>>>   		return -EINVAL;
->>>>   	if (!max_alloc)
->>>>   		return -EINVAL;
->>>> -#endif /* IPA_VALIDATE */
->>>> +#endif /* IPA_VALIDATION */
->>>
->>> Same
->>>
->>> <...>
->>>
->>>>   {
->>>> -#ifdef IPA_VALIDATE
->>>> +#ifdef IPA_VALIDATION
->>>>   	/* At one time we assumed a 64-bit build, allowing some do_div()
->>>>   	 * calls to be replaced by simple division or modulo operations.
->>>>   	 * We currently only perform divide and modulo operations on u32,
->>>> @@ -768,7 +768,7 @@ static void ipa_validate_build(void)
->>>>   	BUILD_BUG_ON(!ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY));
->>>>   	BUILD_BUG_ON(ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY) >
->>>>   			field_max(AGGR_GRANULARITY_FMASK));
->>>> -#endif /* IPA_VALIDATE */
->>>> +#endif /* IPA_VALIDATION */
->>>
->>> BUILD_BUG_ON()s are checked during compilation and not during runtime
->>> like IPA_VALIDATION promised.
->>
->> So I should update the description.  But I'm not sure where
->> you are referring to.  Here is the first line of the patch
->> description:
->>   There are blocks of IPA code that sanity-check various
->>   values, at compile time where possible.
+> After the fix:
+> TEST: VXLAN: ECN decap: 01/02->0x01                                 [ OK ]
 > 
-> I'm suggesting to review if IPA_VALIDATION is truly needed.
+> Fixes: a0b61f3d8ebf ("selftests: forwarding: vxlan_bridge_1d: Add an ECN decap test")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-*That* is a suggestion I can act on...
+Fixes: b723748750ec ("tunnel: Propagate ECT(1) when decapsulating as recommended by RFC6040")
 
-Right now, it's *there*.  These few patches were the beginning
-of a side task to simplify and/or get rid of it.  The first
-step is to get it so it's not fundamentally broken.  Then I
-can work on getting rid of (or at least refactor) pieces.
+The commit you cited is from 2018 whereas this one is from 2020. The
+test stopped working after the latter. The reason I didn't see it is
+because this commit only changed one caller of __INET_ECN_decapsulate().
+Another caller is mlxsw which uses the function to understand how to
+program the hardware to perform decapsulation. See commit 28e450333d4d
+("inet: Refactor INET_ECN_decapsulate()").
 
-The code I started with did lots of checks of these things
-(including build-time checkable ones).  Many, many functions
-needlessly returned values, just so these checks could be made.
-The possibility of returning an error meant all callers had
-to check for it, and that complicated things all the way up.
+After your patch I get:
 
-So I tried to gather such things into foo_validate() functions,
-which just grouped these checks without having to clutter the
-normal code path with them.  That way called functions could
-have void return type, and calling functions would be simpler,
-and so on.
+TEST: VXLAN: ECN decap: 01/02->0x01                                 [FAIL]
+        Expected to capture 10 packets, got 0.
 
-So I guess to respond again to your comment, I really would
-like to get rid of IPA_VALIDATION, or most of it.  As it is,
-many things are checked with BUILD_BUG_ON(), but they need
-not really be conditionally built.  That is a fix I intend
-to make, but haven't yet.
+Fixed by:
 
-But the code is there, and if I am going to fix it, I need
-to do it with patches.  And I try to make my patches small
-enough to be easily reviewable.
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+index b8b08a6a1d10..61eb34e20fde 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+@@ -341,7 +341,12 @@ static int mlxsw_sp_ipip_ecn_decap_init_one(struct mlxsw_sp *mlxsw_sp,
+        u8 new_inner_ecn;
+ 
+        trap_en = __INET_ECN_decapsulate(outer_ecn, inner_ecn, &set_ce);
+-       new_inner_ecn = set_ce ? INET_ECN_CE : inner_ecn;
++       if (set_ce)
++               new_inner_ecn = INET_ECN_CE;
++       else if (outer_ecn == INET_ECN_ECT_1)
++               new_inner_ecn = INET_ECN_ECT_1;
++       else
++               new_inner_ecn = inner_ecn;
+ 
+        mlxsw_reg_tidem_pack(tidem_pl, outer_ecn, inner_ecn, new_inner_ecn,
+                             trap_en, trap_en ? MLXSW_TRAP_ID_DECAP_ECN0 : 0);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
+index e5ec595593f4..74f2c4ce7063 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
+@@ -913,7 +913,12 @@ static int __mlxsw_sp_nve_ecn_decap_init(struct mlxsw_sp *mlxsw_sp,
+        u8 new_inner_ecn;
+ 
+        trap_en = !!__INET_ECN_decapsulate(outer_ecn, inner_ecn, &set_ce);
+-       new_inner_ecn = set_ce ? INET_ECN_CE : inner_ecn;
++       if (set_ce)
++               new_inner_ecn = INET_ECN_CE;
++       else if (outer_ecn == INET_ECN_ECT_1)
++               new_inner_ecn = INET_ECN_ECT_1;
++       else
++               new_inner_ecn = inner_ecn;
+ 
+        mlxsw_reg_tndem_pack(tndem_pl, outer_ecn, inner_ecn, new_inner_ecn,
+                             trap_en, trap_en ? MLXSW_TRAP_ID_DECAP_ECN0 : 0);
 
->>> IMHO, the issue here is that this IPA code isn't release quality but
->>> some debug drop variant and it is far from expected from submitted code.
->>
->> Doesn't sound very humble, IMHO.
+I will prepare a patch
+
+> ---
+>  tools/testing/selftests/net/forwarding/vxlan_bridge_1d.sh | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Sorry about that.
-
-I'd like to suggest a plan so I can begin to make progress,
-but do so in a way you/others think is satisfactory.
-- I would first like to fix the existing bugs, namely that
-  if IPA_VALIDATION is defined there are build errors, and
-  that IPA_VALIDATION is not consistently used.  That is
-  this 2-patch series.
-- I assure you that my goal is to simplify the code that
-  does this sort of checking.  So here are some specific
-  things I can implement in the coming weeks toward that:
-    - Anything that can be checked at build time, will
-      be checked with BUILD_BUG_ON().
-    - Anything checked with BUILD_BUG_ON() will *not*
-      be conditional.  I.e. it won't be inside an
-      #ifdef IPA_VALIDATION block.
-    - I will review all remaining VALIDATION code (which
-      can't--or can't always--be checked at build time),
-      If it looks prudent to make it *always* be checked,
-      I will make it always be checked (not conditional
-      on IPA_VALIDATION).
-The result should clearly separate checks that can be done
-at build time from those that can't.
-
-And with what's left (especially on that third sub-bullet)
-I might have some better examples with which to argue
-for something different.  Or I might just concede that
-you were right all along.
-
-The IPA_VALIDATION stuff is a bit of an artifact of the
-development process.  I want to make it better, and right
-now it's upstream, so I have to do it in this forum.
-
->> This code was found acceptable and merged for mainline a
->> year ago.  At that time it supported IPA on the SDM845 SoC
->> (IPA v3.5.1).  Had it not been merged, I would have continued
->> refining the code out-of-tree until it could be merged.  But
->> now, it's upstream, so anything I want to do to make it better
->> must be done upstream.
+> diff --git a/tools/testing/selftests/net/forwarding/vxlan_bridge_1d.sh b/tools/testing/selftests/net/forwarding/vxlan_bridge_1d.sh
+> index ce6bea9675c0..0ccb1dda099a 100755
+> --- a/tools/testing/selftests/net/forwarding/vxlan_bridge_1d.sh
+> +++ b/tools/testing/selftests/net/forwarding/vxlan_bridge_1d.sh
+> @@ -658,7 +658,7 @@ test_ecn_decap()
+>  	# In accordance with INET_ECN_decapsulate()
+>  	__test_ecn_decap 00 00 0x00
+>  	__test_ecn_decap 01 01 0x01
+> -	__test_ecn_decap 02 01 0x02
+> +	__test_ecn_decap 02 01 0x01
+>  	__test_ecn_decap 01 03 0x03
+>  	__test_ecn_decap 02 03 0x03
+>  	test_ecn_decap_error
+> -- 
+> 2.26.2
 > 
-> The upstream just doesn't need to be your testing ground.
-
-As I said, this is not how I view these checks, but
-I understand why you're saying that.
-
-Can you help me get closer to resolution?
-
-Thank you for taking the time on this.  I have my
-views on how I like to do things, but I really do
-value your thoughts.
-
-					-Alex
-
->> Since last year it has undergone considerable development,
->> including adding support for the SC7180 SoC (IPA v4.2).  I
->> am now in the process of getting things posted for review
->> so IPA versions 4.5, 4.9, and 4.11 are supported.  With any
->> luck all that will be done in this merge cycle; we'll see.
->>
->> Most of what I've been doing is gradually transforming
->> things to support the new hardware.  But in the process
->> I'm also improving what's there so that it is better
->> organized, more consistent, more understandable, and
->> maintainable.
->>
->> I have explained this previously, but this code was derived
->> from Qualcomm "downstream" code.  Much was done toward
->> getting it into the upstream kernel, including carving out
->> great deal of code, and removing functionality to focus on
->> just *one* target platform.
->>
->> Now that it's upstream, the aim is to add back functionality,
->> ideally to support all current and future Qualcomm IPA hardware,
->> and eventually (this year) to support some of the features
->> (hardware filtering/routing/NAT) that were removed to make
->> the code simpler.
->>
->> I'm doing a lot of development on this driver, yes.  But
->> it doesn't mean it's broken, it means it's improving.
-> 
-> It is not what I said.
-> 
-> I said "some debug drop variant" and all those validation and custom
-> asserts for impossible flows are supporting my claim.
-> 
-> Thanks
-> 
->>
->> 					-Alex
->>
->>> Thanks
->>>
->>
-
