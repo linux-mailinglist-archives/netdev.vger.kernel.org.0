@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC91F343245
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 13:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A5B343248
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 13:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbhCUMKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 08:10:33 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:63742 "EHLO
+        id S230011AbhCUMKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 08:10:37 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10190 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229874AbhCUMKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 08:10:07 -0400
+        by vger.kernel.org with ESMTP id S229883AbhCUMKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 08:10:09 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12LC5G3v023747;
-        Sun, 21 Mar 2021 05:10:06 -0700
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12LC5G3x023747;
+        Sun, 21 Mar 2021 05:10:08 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=bkpsK+IigyeEXfiNw5e28SUQTFzKvOTRritcb6gcc1Q=;
- b=WKu03SpLejE+kNeDkoCm8H2VDik3ICrFwtXo5NTFYB0pKfvsrJoGIKkBkquPmPxV3AkH
- 2kmXLIDeiIzhsWiHJlLPF5a1ZbfUDKxKoiB9B09BTZBXH/FF6qE2BnWJh13HYPwHHWxW
- mXqoPgW3KkcmJXKAR3TA6vpf/+ajbLTWtNwJM4ug+cQJ5D2Lp8asEARA8eIIJ4zcTcOl
- bttQ1DXXLUgwdWSOKSwTB2SkBZDRHwzk/Qz0mdWCGKItG7S3NdZPzA9e04mwf5cNKg1j
- c0GmuBBqFKHJDgRmjlqK2TGWeB+DJk7gLHir4EhpiYnWppIuUaAALMC+WuhZGijyWhFe QA== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=8buGOtr0eugx/ZsBHN3wxj49ibipe44hW6VdD29TO8o=;
+ b=fRje9ZsPdL+9CAQxznxAeXLcEIlkkNniO9QPSLfGBux7ex07+RFqNNTL7CNxo7N4s0YG
+ 9PcBUym6Hz5lMt8HQx21NssLf/H8reboo7rCOkzH0+36JXEQCZZ9mOKxGIip+gUuwS8P
+ //k2t7w6w/nFwkFUFbZ0mj06Z0zatFve+24u6gcpioKEAaNh63XPqF8SNvjfDjUCdG3v
+ V/3sMsjwIeMWQ5ChZLtmLkC9bZy1cSS98aW+P7owj7YagAOzpxSThi4u2wllOs4ik7th
+ Ip/bfzhmsoQuNrrH6d/YnEBRkim0pzN6uZ8k+I3UcMHvvsQQtiOphn8KnsWHXtQ8644u og== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 37dedrab2p-1
+        by mx0a-0016f401.pphosted.com with ESMTP id 37dedrab2r-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 21 Mar 2021 05:10:06 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+        Sun, 21 Mar 2021 05:10:08 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 21 Mar
- 2021 05:10:04 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 21 Mar 2021 05:10:04 -0700
+ 2021 05:10:07 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 21 Mar 2021 05:10:06 -0700
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 4D6CF3F703F;
-        Sun, 21 Mar 2021 05:10:00 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id A8C073F704E;
+        Sun, 21 Mar 2021 05:10:03 -0700 (PDT)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
         <sbhatta@marvell.com>, <hkelam@marvell.com>
-Subject: [net-next PATCH 0/8] configuration support for switch headers & phy
-Date:   Sun, 21 Mar 2021 17:39:50 +0530
-Message-ID: <20210321120958.17531-1-hkelam@marvell.com>
+Subject: [net-next PATCH 1/8] octeontx2-af: Add new CGX_CMDs to set and get PHY modulation type
+Date:   Sun, 21 Mar 2021 17:39:51 +0530
+Message-ID: <20210321120958.17531-2-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210321120958.17531-1-hkelam@marvell.com>
+References: <20210321120958.17531-1-hkelam@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
@@ -52,54 +54,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series of patches add support for parsing switch headers and
-configuration support for phy modulation type(NRZ or PAM4).
+From: Felix Manlunas <fmanlunas@marvell.com>
 
-PHYs that support changing modulation type ,user can configure it
-through private flags pam4.
+Implement commands to set and get PHY line-side modulation type
+(NRZ or PAM4) from firmware.
 
-Marvell switches support DSA(distributed switch architecture) with
-different switch headers like FDSA and EDSA. This patch series adds
-private flags to enable user to configure interface in fdsa/edsa
-mode such that flow steering (forwading packets to pf/vf depending on
-switch header fields) and packet parsing can be acheived.
+Signed-off-by: Felix Manlunas <fmanlunas@marvell.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 29 +++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/cgx.h   |  2 ++
+ .../ethernet/marvell/octeontx2/af/cgx_fw_if.h |  6 ++++
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  | 10 +++++-
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 31 +++++++++++++++++++
+ 5 files changed, 77 insertions(+), 1 deletion(-)
 
-Also adds support for HIGIG2 protocol, user can configure interface
-in higig mode through higig private flage, such that packet classification
-and flow sterring achieved on packets with higig header
-
-
-Felix Manlunas (2):
-  octeontx2-af: Add new CGX_CMDs to set and get PHY modulation type
-  octeontx2-pf: Add ethtool priv flag to control PAM4 on/off
-
-Hariprasad Kelam (6):
-  octeontx2-af: Support for parsing pkts with switch headers
-  octeontx2-af: Do not allow VFs to overwrite PKIND config
-  octeontx2-af: Put CGX LMAC also in Higig2 mode
-  octeontx2-pf: Support to enable EDSA/Higig2 pkts parsing
-  octeontx2-af: Add flow steering support for FDSA tag
-  octeontx2-pf: Add ntuple filter support for FDSA
-
- .../net/ethernet/marvell/octeontx2/af/cgx.c   | 177 ++++++++++++-
- .../net/ethernet/marvell/octeontx2/af/cgx.h   |  19 +-
- .../ethernet/marvell/octeontx2/af/cgx_fw_if.h |   6 +
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  39 ++-
- .../net/ethernet/marvell/octeontx2/af/npc.h   |  14 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |   9 +
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 103 +++++++-
- .../marvell/octeontx2/af/rvu_debugfs.c        |   3 +-
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  44 +++-
- .../ethernet/marvell/octeontx2/af/rvu_npc.c   |  76 ++++++
- .../marvell/octeontx2/af/rvu_npc_fs.c         |  14 +-
- .../marvell/octeontx2/nic/otx2_common.c       |   2 +
- .../marvell/octeontx2/nic/otx2_common.h       |  36 ++-
- .../marvell/octeontx2/nic/otx2_ethtool.c      | 244 ++++++++++++++++++
- .../marvell/octeontx2/nic/otx2_flows.c        |  58 ++++-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  21 +-
- .../marvell/octeontx2/nic/otx2_txrx.c         |   1 +
- .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  10 +
- 18 files changed, 832 insertions(+), 44 deletions(-)
-
---
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 68deae529bc..294e7d12f15 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -1072,6 +1072,35 @@ int cgx_get_phy_fec_stats(void *cgxd, int lmac_id)
+ 	return cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
+ }
+ 
++int cgx_set_phy_mod_type(int mod, void *cgxd, int lmac_id)
++{
++	struct cgx *cgx = cgxd;
++	u64 req = 0, resp;
++
++	if (!cgx)
++		return -ENODEV;
++
++	req = FIELD_SET(CMDREG_ID, CGX_CMD_SET_PHY_MOD_TYPE, req);
++	req = FIELD_SET(CMDSETPHYMODTYPE, mod, req);
++	return cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
++}
++
++int cgx_get_phy_mod_type(void *cgxd, int lmac_id)
++{
++	struct cgx *cgx = cgxd;
++	u64 req = 0, resp;
++	int err;
++
++	if (!cgx)
++		return -ENODEV;
++
++	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_PHY_MOD_TYPE, req);
++	err = cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
++	if (!err)
++		return FIELD_GET(RESP_GETPHYMODTYPE, resp);
++	return err;
++}
++
+ static int cgx_fwi_link_change(struct cgx *cgx, int lmac_id, bool enable)
+ {
+ 	u64 req = 0;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+index 12521262164..10b5611a3b4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+@@ -165,4 +165,6 @@ u8 cgx_get_lmacid(void *cgxd, u8 lmac_index);
+ unsigned long cgx_get_lmac_bmap(void *cgxd);
+ void cgx_lmac_write(int cgx_id, int lmac_id, u64 offset, u64 val);
+ u64 cgx_lmac_read(int cgx_id, int lmac_id, u64 offset);
++int cgx_set_phy_mod_type(int mod, void *cgxd, int lmac_id);
++int cgx_get_phy_mod_type(void *cgxd, int lmac_id);
+ #endif /* CGX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
+index aa4e42f78f1..6bde02c8e4b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
+@@ -264,4 +264,10 @@ struct cgx_lnk_sts {
+ #define CMDMODECHANGE_PORT		GENMASK_ULL(21, 14)
+ #define CMDMODECHANGE_FLAGS		GENMASK_ULL(63, 22)
+ 
++/* command argument to be passed for cmd ID - CGX_CMD_SET_PHY_MOD_TYPE */
++#define CMDSETPHYMODTYPE	GENMASK_ULL(8, 8)
++
++/* response to cmd ID - RESP_GETPHYMODTYPE */
++#define RESP_GETPHYMODTYPE	GENMASK_ULL(9, 9)
++
+ #endif /* __CGX_FW_INTF_H__ */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 3af4d0ffcf7..66ab320b845 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -162,7 +162,10 @@ M(CGX_SET_LINK_MODE,	0x214, cgx_set_link_mode, cgx_set_link_mode_req,\
+ M(CGX_FEATURES_GET,	0x215, cgx_features_get, msg_req,		\
+ 			       cgx_features_info_msg)			\
+ M(RPM_STATS,		0x216, rpm_stats, msg_req, rpm_stats_rsp)	\
+- /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
++M(CGX_GET_PHY_MOD_TYPE, 0x217, cgx_get_phy_mod_type, msg_req,		\
++			       cgx_phy_mod_type)                        \
++M(CGX_SET_PHY_MOD_TYPE, 0x218, cgx_set_phy_mod_type, cgx_phy_mod_type,	\
++			       msg_rsp) \
+ /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+ M(NPA_LF_ALLOC,		0x400, npa_lf_alloc,				\
+ 				npa_lf_alloc_req, npa_lf_alloc_rsp)	\
+@@ -510,6 +513,11 @@ struct rpm_stats_rsp {
+ 	u64 tx_stats[RPM_TX_STATS_COUNT];
+ };
+ 
++struct cgx_phy_mod_type {
++	struct mbox_msghdr hdr;
++	int mod;
++};
++
+ /* NPA mbox message formats */
+ 
+ /* NPA mailbox error codes
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index e668e482383..b78e48d18f6 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -939,3 +939,34 @@ int rvu_mbox_handler_cgx_set_link_mode(struct rvu *rvu,
+ 	rsp->status = cgx_set_link_mode(cgxd, req->args, cgx_idx, lmac);
+ 	return 0;
+ }
++
++int rvu_mbox_handler_cgx_set_phy_mod_type(struct rvu *rvu,
++					  struct cgx_phy_mod_type *req,
++					  struct msg_rsp *rsp)
++{
++	int pf = rvu_get_pf(req->hdr.pcifunc);
++	u8 cgx_id, lmac_id;
++
++	if (!is_pf_cgxmapped(rvu, pf))
++		return -EPERM;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	return cgx_set_phy_mod_type(req->mod, rvu_cgx_pdata(cgx_id, rvu),
++				    lmac_id);
++}
++
++int rvu_mbox_handler_cgx_get_phy_mod_type(struct rvu *rvu, struct msg_req *req,
++					  struct cgx_phy_mod_type *rsp)
++{
++	int pf = rvu_get_pf(req->hdr.pcifunc);
++	u8 cgx_id, lmac_id;
++
++	if (!is_pf_cgxmapped(rvu, pf))
++		return -EPERM;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	rsp->mod = cgx_get_phy_mod_type(rvu_cgx_pdata(cgx_id, rvu), lmac_id);
++	if (rsp->mod < 0)
++		return rsp->mod;
++	return 0;
++}
+-- 
 2.17.1
+
