@@ -2,239 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 066EC3431AF
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 09:35:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BD2C3431B9
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 09:36:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbhCUHxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 03:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbhCUHxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 03:53:20 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F68EC061574;
-        Sun, 21 Mar 2021 00:53:20 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id b184so8857880pfa.11;
-        Sun, 21 Mar 2021 00:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3YMMQWqv0WQD77AlOgo+glNplzrUfg5GTEMFWXwVjL0=;
-        b=IPuWVof6WPFXhMXb4yA4nsWGYwzZqcCkry3NLfhR26kRgj4egffTt3VhVVwXNM/Lhp
-         FsZB2Auj2IQUp78Tf5QMlDELd66RtrLS6vRdXEekT1zvlZgrJzSZkBtUy6v4xYRYJLr2
-         6g95gTJO/PEXmqbRYuPF5pYN9q9okPXdE05tNJ21iRSHztf1/vZxoXt/L9+LOgYT8JMq
-         N8MXglHLG+cYCgeYynBxMA13BjCoaJOQ1eUDDITTdo7p7N0PcVBOeQGOT18n1htK7Uv/
-         gsND702wGZZeiQNuQxitH0eUmE9pzdCpIZDTamvcWWFhCm64HI4uqq/iUiMYmrGBofOP
-         xEOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3YMMQWqv0WQD77AlOgo+glNplzrUfg5GTEMFWXwVjL0=;
-        b=US4JX0xwzyPEFiMLUxa7cmqBNYNOQRjwuA78rvKHfwIUdMiIJfZ+kTtvuolOp9F1ND
-         hIGUmnDFqU9CpmNwxLF7BYjgQJZH9lFVOUfkz/LbP2S9Q6DBQ503ZxKXQW+TzGq1rAPu
-         G0otLholMpit4hvziC8CHOBobEM1bE/7ZGrsKycNpbOirvCT2ODL99iWE5MxF5roiWh3
-         EBE+mkEEP4K3NAuujbDmQScwLkNvew/YsaC0guKCz99atr7MksYkYDVfk94zVCNfm+9f
-         3rEqhpzdL54QDjpdiF0x7yw8KHKNZWIOz9Yl6Lh4JjGM7UigQ4IdXEf2Vhtl3x1eU+Ek
-         SUNQ==
-X-Gm-Message-State: AOAM532+t+0thfh19EBgI6rdfKhuWVgzoDEtho0V/PtorhAGiXWkQ5WU
-        UIfb3lux+JVkkuWwAEgorDiQmN83rmw=
-X-Google-Smtp-Source: ABdhPJxpXu9yd9ee4yv8NkLRu4PnXO6qVKQ2LZqJgqbiLGpOedn9cTPNtBq89itW8B3y8xKF9RVRTA==
-X-Received: by 2002:a62:38d7:0:b029:1fb:2382:57b0 with SMTP id f206-20020a6238d70000b02901fb238257b0mr16815430pfa.10.1616313199507;
-        Sun, 21 Mar 2021 00:53:19 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:9c26:6181:dc56:dba4])
-        by smtp.gmail.com with ESMTPSA id t7sm9855672pfg.69.2021.03.21.00.53.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Mar 2021 00:53:19 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Martin Schiller <ms@dev.tdt.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        id S229995AbhCUIVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 04:21:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48214 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229784AbhCUIV0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 21 Mar 2021 04:21:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E84C6192A;
+        Sun, 21 Mar 2021 08:21:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616314885;
+        bh=sZeAvrNbCmudskU91ZW5ZXk9U+2kiJMsNtDifgyLJ1E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Euo7aVpZ1qEOrnS+3SY71PLxJCX2RTOPwaOrtkHZm/RWnO6f0Dt0gK08Tz+RC6it7
+         VPQTFup43bUvDX5oR1w8TGNmrjZYceiaiSICdqyIQdB1DOweQRAc0OCaciA0WNo1M1
+         RX6kNHwpnltohDyHJadWiBXkaSrSVisjzII1coLL+kZlGIi4VpmmEy3YtoOei6z3Fd
+         P338xAx3O683vDfL9LeNsUKAxnGp6n6SX+spbKXCYfLOZsetvLF1Rnqns8Lz6HGyvw
+         KvtzFQO+0YaHQnlXtJYeFcDA7OaoQuUTPJ1bgREo95JuN6f9GGKThDnFXipI5uFUVE
+         r8L9T6Zpl625w==
+Date:   Sun, 21 Mar 2021 10:21:22 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next] net: lapb: Make "lapb_t1timer_running" able to detect an already running timer
-Date:   Sun, 21 Mar 2021 00:53:16 -0700
-Message-Id: <20210321075316.90385-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+Subject: Re: [PATCH net-next v2 2/2] net: ipa: fix IPA validation
+Message-ID: <YFcCAr19ZXJ9vFQ5@unreal>
+References: <20210320141729.1956732-1-elder@linaro.org>
+ <20210320141729.1956732-3-elder@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210320141729.1956732-3-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Problem:
+On Sat, Mar 20, 2021 at 09:17:29AM -0500, Alex Elder wrote:
+> There are blocks of IPA code that sanity-check various values, at
+> compile time where possible.  Most of these checks can be done once
+> during development but skipped for normal operation.  These checks
+> permit the driver to make certain assumptions, thereby avoiding the
+> need for runtime error checking.
+> 
+> The checks are defined conditionally, but not consistently.  In
+> some cases IPA_VALIDATION enables the optional checks, while in
+> others IPA_VALIDATE is used.
+> 
+> Fix this by using IPA_VALIDATION consistently.
+> 
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ipa/Makefile       | 2 +-
+>  drivers/net/ipa/gsi_trans.c    | 8 ++++----
+>  drivers/net/ipa/ipa_cmd.c      | 4 ++--
+>  drivers/net/ipa/ipa_cmd.h      | 6 +++---
+>  drivers/net/ipa/ipa_endpoint.c | 6 +++---
+>  drivers/net/ipa/ipa_main.c     | 6 +++---
+>  drivers/net/ipa/ipa_mem.c      | 6 +++---
+>  drivers/net/ipa/ipa_table.c    | 6 +++---
+>  drivers/net/ipa/ipa_table.h    | 6 +++---
+>  9 files changed, 25 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/net/ipa/Makefile b/drivers/net/ipa/Makefile
+> index afe5df1e6eeee..014ae36ac6004 100644
+> --- a/drivers/net/ipa/Makefile
+> +++ b/drivers/net/ipa/Makefile
+> @@ -1,5 +1,5 @@
+>  # Un-comment the next line if you want to validate configuration data
+> -#ccflags-y		+=	-DIPA_VALIDATE
+> +# ccflags-y		+=	-DIPA_VALIDATION
 
-The "lapb_t1timer_running" function in "lapb_timer.c" is used in only
-one place: in the "lapb_kick" function in "lapb_out.c". "lapb_kick" calls
-"lapb_t1timer_running" to check if the timer is already pending, and if
-it is not, schedule it to run.
+Maybe netdev folks think differently here, but general rule that dead
+code and closed code is such, is not acceptable to in Linux kernel.
 
-However, if the timer has already fired and is running, and is waiting to
-get the "lapb->lock" lock, "lapb_t1timer_running" will not detect this,
-and "lapb_kick" will then schedule a new timer, which causes the old
-timer to be aborted.
+<...>
 
-I think this is not right. The purpose of "lapb_kick" should be ensuring
-that the actual work of the timer function is scheduled to be done.
-If the timer function is already running but waiting for the lock,
-"lapb_kick" should not abort and reschedule it.
+>  
+> -#ifdef IPA_VALIDATE
+> +#ifdef IPA_VALIDATION
+>  	if (!size || size % 8)
+>  		return -EINVAL;
+>  	if (count < max_alloc)
+>  		return -EINVAL;
+>  	if (!max_alloc)
+>  		return -EINVAL;
+> -#endif /* IPA_VALIDATE */
+> +#endif /* IPA_VALIDATION */
 
-Changes made:
+If it is possible to supply those values, the check should be always and
+not only under some closed config option.
 
-I added a new field "t1timer_running" in "struct lapb_cb" for
-"lapb_t1timer_running" to use. "t1timer_running" will accurately reflect
-whether the actual work of the timer is pending. If the timer has fired
-but is still waiting for the lock, "t1timer_running" will still correctly
-reflect whether the actual work is waiting to be done.
+>  
+>  	/* By allocating a few extra entries in our pool (one less
+>  	 * than the maximum number that will be requested in a
+> @@ -140,14 +140,14 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
+>  	dma_addr_t addr;
+>  	void *virt;
+>  
+> -#ifdef IPA_VALIDATE
+> +#ifdef IPA_VALIDATION
+>  	if (!size || size % 8)
+>  		return -EINVAL;
+>  	if (count < max_alloc)
+>  		return -EINVAL;
+>  	if (!max_alloc)
+>  		return -EINVAL;
+> -#endif /* IPA_VALIDATE */
+> +#endif /* IPA_VALIDATION */
 
-The old "t1timer_stop" field, whose only responsibility is to ask a timer
-(that is already running but waiting for the lock) to abort, is no longer
-needed, because the new "t1timer_running" field can fully take over its
-responsibility. Therefore "t1timer_stop" is deleted.
+Same
 
-"t1timer_running" is not simply a negation of the old "t1timer_stop".
-At the end of the timer function, if it does not reschedule itself,
-"t1timer_running" is set to false to indicate that the timer is stopped.
+<...>
 
-For consistency of the code, I also added "t2timer_running" and deleted
-"t2timer_stop".
+>  {
+> -#ifdef IPA_VALIDATE
+> +#ifdef IPA_VALIDATION
+>  	/* At one time we assumed a 64-bit build, allowing some do_div()
+>  	 * calls to be replaced by simple division or modulo operations.
+>  	 * We currently only perform divide and modulo operations on u32,
+> @@ -768,7 +768,7 @@ static void ipa_validate_build(void)
+>  	BUILD_BUG_ON(!ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY));
+>  	BUILD_BUG_ON(ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY) >
+>  			field_max(AGGR_GRANULARITY_FMASK));
+> -#endif /* IPA_VALIDATE */
+> +#endif /* IPA_VALIDATION */
 
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- include/net/lapb.h    |  2 +-
- net/lapb/lapb_iface.c |  4 ++--
- net/lapb/lapb_timer.c | 19 ++++++++++++-------
- 3 files changed, 15 insertions(+), 10 deletions(-)
+BUILD_BUG_ON()s are checked during compilation and not during runtime
+like IPA_VALIDATION promised.
 
-diff --git a/include/net/lapb.h b/include/net/lapb.h
-index eee73442a1ba..124ee122f2c8 100644
---- a/include/net/lapb.h
-+++ b/include/net/lapb.h
-@@ -92,7 +92,7 @@ struct lapb_cb {
- 	unsigned short		n2, n2count;
- 	unsigned short		t1, t2;
- 	struct timer_list	t1timer, t2timer;
--	bool			t1timer_stop, t2timer_stop;
-+	bool			t1timer_running, t2timer_running;
- 
- 	/* Internal control information */
- 	struct sk_buff_head	write_queue;
-diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
-index 0511bbe4af7b..1078e14f1acf 100644
---- a/net/lapb/lapb_iface.c
-+++ b/net/lapb/lapb_iface.c
-@@ -122,8 +122,8 @@ static struct lapb_cb *lapb_create_cb(void)
- 
- 	timer_setup(&lapb->t1timer, NULL, 0);
- 	timer_setup(&lapb->t2timer, NULL, 0);
--	lapb->t1timer_stop = true;
--	lapb->t2timer_stop = true;
-+	lapb->t1timer_running = false;
-+	lapb->t2timer_running = false;
- 
- 	lapb->t1      = LAPB_DEFAULT_T1;
- 	lapb->t2      = LAPB_DEFAULT_T2;
-diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
-index 0230b272b7d1..5be68869064d 100644
---- a/net/lapb/lapb_timer.c
-+++ b/net/lapb/lapb_timer.c
-@@ -40,7 +40,7 @@ void lapb_start_t1timer(struct lapb_cb *lapb)
- 	lapb->t1timer.function = lapb_t1timer_expiry;
- 	lapb->t1timer.expires  = jiffies + lapb->t1;
- 
--	lapb->t1timer_stop = false;
-+	lapb->t1timer_running = true;
- 	add_timer(&lapb->t1timer);
- }
- 
-@@ -51,25 +51,25 @@ void lapb_start_t2timer(struct lapb_cb *lapb)
- 	lapb->t2timer.function = lapb_t2timer_expiry;
- 	lapb->t2timer.expires  = jiffies + lapb->t2;
- 
--	lapb->t2timer_stop = false;
-+	lapb->t2timer_running = true;
- 	add_timer(&lapb->t2timer);
- }
- 
- void lapb_stop_t1timer(struct lapb_cb *lapb)
- {
--	lapb->t1timer_stop = true;
-+	lapb->t1timer_running = false;
- 	del_timer(&lapb->t1timer);
- }
- 
- void lapb_stop_t2timer(struct lapb_cb *lapb)
- {
--	lapb->t2timer_stop = true;
-+	lapb->t2timer_running = false;
- 	del_timer(&lapb->t2timer);
- }
- 
- int lapb_t1timer_running(struct lapb_cb *lapb)
- {
--	return timer_pending(&lapb->t1timer);
-+	return lapb->t1timer_running;
- }
- 
- static void lapb_t2timer_expiry(struct timer_list *t)
-@@ -79,13 +79,14 @@ static void lapb_t2timer_expiry(struct timer_list *t)
- 	spin_lock_bh(&lapb->lock);
- 	if (timer_pending(&lapb->t2timer)) /* A new timer has been set up */
- 		goto out;
--	if (lapb->t2timer_stop) /* The timer has been stopped */
-+	if (!lapb->t2timer_running) /* The timer has been stopped */
- 		goto out;
- 
- 	if (lapb->condition & LAPB_ACK_PENDING_CONDITION) {
- 		lapb->condition &= ~LAPB_ACK_PENDING_CONDITION;
- 		lapb_timeout_response(lapb);
- 	}
-+	lapb->t2timer_running = false;
- 
- out:
- 	spin_unlock_bh(&lapb->lock);
-@@ -98,7 +99,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 	spin_lock_bh(&lapb->lock);
- 	if (timer_pending(&lapb->t1timer)) /* A new timer has been set up */
- 		goto out;
--	if (lapb->t1timer_stop) /* The timer has been stopped */
-+	if (!lapb->t1timer_running) /* The timer has been stopped */
- 		goto out;
- 
- 	switch (lapb->state) {
-@@ -127,6 +128,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb->state = LAPB_STATE_0;
- 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
-+				lapb->t1timer_running = false;
- 				goto out;
- 			} else {
- 				lapb->n2count++;
-@@ -151,6 +153,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb->state = LAPB_STATE_0;
- 				lapb_disconnect_confirmation(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S2 -> S0\n", lapb->dev);
-+				lapb->t1timer_running = false;
- 				goto out;
- 			} else {
- 				lapb->n2count++;
-@@ -169,6 +172,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb_stop_t2timer(lapb);
- 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S3 -> S0\n", lapb->dev);
-+				lapb->t1timer_running = false;
- 				goto out;
- 			} else {
- 				lapb->n2count++;
-@@ -186,6 +190,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb->state = LAPB_STATE_0;
- 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S4 -> S0\n", lapb->dev);
-+				lapb->t1timer_running = false;
- 				goto out;
- 			} else {
- 				lapb->n2count++;
--- 
-2.27.0
+IMHO, the issue here is that this IPA code isn't release quality but
+some debug drop variant and it is far from expected from submitted code.
 
+Thanks
