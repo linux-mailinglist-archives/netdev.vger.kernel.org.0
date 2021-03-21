@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6EE834335E
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 17:17:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C541343368
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 17:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbhCUQQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 12:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
+        id S230094AbhCUQVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 12:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbhCUQPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 12:15:46 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81907C061574;
-        Sun, 21 Mar 2021 09:15:46 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id y19-20020a0568301d93b02901b9f88a238eso13518346oti.11;
-        Sun, 21 Mar 2021 09:15:46 -0700 (PDT)
+        with ESMTP id S229903AbhCUQUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 12:20:46 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C1BC061574;
+        Sun, 21 Mar 2021 09:20:46 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id l79so10558523oib.1;
+        Sun, 21 Mar 2021 09:20:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:subject:to:cc:references:from:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=SGDgCsgqZ+Jm9MN6MAj/2oOtkuCICMDSOY6njb7Ulws=;
-        b=HzHoSiCYzUfWRtNDzcfvb8HpqfXDLUfiLGZxLMeQzgIRELNIXgLj/JCVHPRy9SrtmI
-         p/Yqg88dNJJz6rs7rOdZ4IHysRk/QORm3D67ZQM2ljfqv+Q5ScKSQ/p2/jvxjwz9I+Na
-         +WkSU4xoDhSbHfE1OGIgDvbor58hQrtX67xL3RCmWd2/RGwBC48Du7AW+MZqsgFq1UVS
-         NayHPpXzCoIFlmlE9ulGEXHZ/hYJSWVnykSwNROMhpPuO0u31ECXTuA0BsUTHOZMlSgZ
-         mnttuoCTTKbEOzKYHPW4zcBZBg/BPNggbNrPbjEHv0p5OEq9CpEQZe3l0vbUUbd011Yx
-         a3kA==
+        bh=cfcUNLePtW8MPQQ2B7OfYoM3P1f+j0I9OKeJbS48TwQ=;
+        b=PMtNIBY+Ocru/4Xdd5QdbsKW7hFgvTMs4aP0ooLbCH7TzT5B7jCm2GQdDFkjlGqDOu
+         /7bvsKjeh+GqH2z8kB1XJIesP86MN0NV7YgYLzVdO3icrQ2T6NwV9/yvwf7tHp1r+N42
+         sNCZU3SYjn3y61VNArOYY+fJ4APpSU1nAo1Q2YDG7DCM1j7Ycs3mRGT+aoHg4pN9H6zm
+         PAWsyc1e1Y5AFt+Enx9P+XsKjPHbk7zbfj0qQbXGQsfRlNUnqNJuPgUBkgyOqJSDRa/k
+         4stfYCpKm98kMef3yZdZRAQ5jWvlO23qHfqwXf19j8DGZF+3gxHXvo+lDBH4Cl4I67Yt
+         gOYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=SGDgCsgqZ+Jm9MN6MAj/2oOtkuCICMDSOY6njb7Ulws=;
-        b=dIAxOQf1Ai6rO/zh4ShvS92LLZeyqpO9ucxTehlnHDyQOjhi8hZOKqF7DJdRksWaj9
-         NFI0le95h+RvsOT8EtRMte0x6TsBC7GSZXTsjgVNOO74q6K0kX/vBVYDzuD79bxbKReP
-         rJT6t+oO45PLOAsCLNN5rTuPy6ySSYKKc8s4ZRRES33kf+MuU+1O1cwN8OJI+cc3HRsp
-         +0maecQsKSyIjtm55vlORxFZD9cBDe1DZmIh2y4acSUYNMyaeL4lhfMXMX5/olCV5mar
-         12uC9QsJsv0AH8Em40SvlORN8xrUrYVRthQQ33qlR5TkqSS8a+/QndPhlMBs02EGHlDK
-         FKEg==
-X-Gm-Message-State: AOAM5316+QeXeSEtcMVnQ2D6kwYL9fFc8HIYcn8TOEla2TBeRh/DrtJw
-        mO9D0hY7UVU8zqh0QuEIlGf3R+Wn1bY=
-X-Google-Smtp-Source: ABdhPJzKeb/hA6C7+VitvJmDfjulbMSR7v+QQGzIP1QhlGHgkhlNLzpbJdwPKzLi6lafbRDFwsTO/A==
-X-Received: by 2002:a9d:2f45:: with SMTP id h63mr8116195otb.372.1616343345728;
-        Sun, 21 Mar 2021 09:15:45 -0700 (PDT)
+        bh=cfcUNLePtW8MPQQ2B7OfYoM3P1f+j0I9OKeJbS48TwQ=;
+        b=J/W6kMkxsqAO8w4D/rSGTvVXZioLC5DkfIjVeK0zwC4kQ84+YhUy6QDcR5o77de/CI
+         CQHZygnP7s0eZBxVTsmdxIgiihXb/jVAHEIpwbBaFlDzHCQhUAj62dvif0nZfJ+md3xu
+         UfC5KA/82FKAK4uDFBlGu8ttJV9fIQtf5G0qwhgnxL8LUESNkhEqH6pEvpx1/5pIBFN+
+         iXJLjWFjCckai0n9WnpgvplUA+beNtOyl0o0jZX2eLaNRSivKVTi4UkFu9NLGKlohk11
+         7iQwrWGAwUZhSywm8Wmo1OsS57MDrJyv0h+udDM8+guCIZJFcPmufLRRUypL3VnD6aJr
+         Oe/Q==
+X-Gm-Message-State: AOAM531RirNGn6M+/aRsFEOqJ47gQEZCiVyqvJQVHHgwLgaKvE/04GlL
+        JlsDZ2nNlgWw+g0QOu1rhztitWgbtc0=
+X-Google-Smtp-Source: ABdhPJx+EZobCNzJOEDjnzy9+H8HPtGRCIrOP0WLgS1dT2z9q35/LOdxZHeriwdvWsDYpn9wnFWswA==
+X-Received: by 2002:a05:6808:1482:: with SMTP id e2mr7467227oiw.138.1616343645620;
+        Sun, 21 Mar 2021 09:20:45 -0700 (PDT)
 Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 44sm2710512otf.60.2021.03.21.09.15.44
+        by smtp.gmail.com with ESMTPSA id g6sm2537848ooh.29.2021.03.21.09.20.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Mar 2021 09:15:45 -0700 (PDT)
+        Sun, 21 Mar 2021 09:20:45 -0700 (PDT)
 Sender: Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH v2 net-next 1/2] net: socket: use BIT() for MSG_*
+Subject: Re: [PATCH v2 net-next 2/2] net: socket: change MSG_CMSG_COMPAT to
+ BIT(21)
 To:     menglong8.dong@gmail.com, herbert@gondor.apana.org.au,
         andy.shevchenko@gmail.com, kuba@kernel.org, David.Laight@aculab.com
 Cc:     davem@davemloft.net, dong.menglong@zte.com.cn,
         viro@zeniv.linux.org.uk, axboe@kernel.dk,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 References: <20210321134357.148323-1-dong.menglong@zte.com.cn>
- <20210321134357.148323-2-dong.menglong@zte.com.cn>
+ <20210321134357.148323-3-dong.menglong@zte.com.cn>
 From:   Guenter Roeck <linux@roeck-us.net>
 Autocrypt: addr=linux@roeck-us.net; keydata=
  xsFNBE6H1WcBEACu6jIcw5kZ5dGeJ7E7B2uweQR/4FGxH10/H1O1+ApmcQ9i87XdZQiB9cpN
@@ -102,12 +103,12 @@ Autocrypt: addr=linux@roeck-us.net; keydata=
  WkRwrSuCn7UG+qVWZeKEsFKFOkynOs3pVbcbq1pxbhk3TRWCGRU5JolI4ohy/7JV1TVbjiDI
  HP/aVnm6NC8of26P40Pg8EdAhajZnHHjA7FrJXsy3cyIGqvg9os4rNkUWmrCfLLsZDHD8FnU
  mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <7b0e1c1e-b45a-4ae3-6e4f-aa7a3dccafdb@roeck-us.net>
-Date:   Sun, 21 Mar 2021 09:15:43 -0700
+Message-ID: <c9d708cd-f38a-01bf-2b1a-d3047a2248b1@roeck-us.net>
+Date:   Sun, 21 Mar 2021 09:20:43 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210321134357.148323-2-dong.menglong@zte.com.cn>
+In-Reply-To: <20210321134357.148323-3-dong.menglong@zte.com.cn>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -118,103 +119,75 @@ X-Mailing-List: netdev@vger.kernel.org
 On 3/21/21 6:43 AM, menglong8.dong@gmail.com wrote:
 > From: Menglong Dong <dong.menglong@zte.com.cn>
 > 
-> The bit mask for MSG_* seems a little confused here. Replace it
-> with BIT() to make it clear to understand.
+> Currently, MSG_CMSG_COMPAT is defined as '1 << 31'. However, 'msg_flags'
+> is defined with type of 'int' somewhere, such as 'packet_recvmsg' and
+> other recvmsg functions:
 > 
-> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+> static int packet_recvmsg(struct socket *sock, struct msghdr *msg,
+> 			  size_t len,
+> 			  int flags)
+> 
+> If MSG_CMSG_COMPAT is set in 'flags', it's value will be negative.
+> Once it perform bit operations with MSG_*, the upper 32 bits of
+> the result will be set, just like what Guenter Roeck explained
+> here:
+> 
+> https://lore.kernel.org/netdev/20210317013758.GA134033@roeck-us.net
+> 
+> As David Laight suggested, fix this by change MSG_CMSG_COMPAT to
+> some value else. MSG_CMSG_COMPAT is an internal value, which is't
+> used in userspace, so this change works.
+> 
 
-With this patch sent as patch 1/2, any code trying to bisect
-a compat related network problem will fail at this commit.
+Maybe I am overly concerned (or maybe call it pessimistic),
+but I do wonder if this change is worth the added risk. Personally
+I'd rather start changing all 'int flag' uses to 'unsigned int flag'
+and, only after that is complete, make the switch to BIT().
+
+Of course, that is just my personal opinion, and, as I said,
+I may be overly concerned.
 
 Guenter
 
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
 > ---
->  include/linux/socket.h | 71 ++++++++++++++++++++++--------------------
->  1 file changed, 37 insertions(+), 34 deletions(-)
+> v2:
+> - add comment to stop people from trying to use BIT(31)
+> ---
+>  include/linux/socket.h | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
 > 
 > diff --git a/include/linux/socket.h b/include/linux/socket.h
-> index 385894b4a8bb..d5ebfe30d96b 100644
+> index d5ebfe30d96b..61b2694d68dd 100644
 > --- a/include/linux/socket.h
 > +++ b/include/linux/socket.h
-> @@ -283,42 +283,45 @@ struct ucred {
->     Added those for 1003.1g not all are supported yet
->   */
+> @@ -312,17 +312,21 @@ struct ucred {
+>  					 * plain text and require encryption
+>  					 */
 >  
-> -#define MSG_OOB		1
-> -#define MSG_PEEK	2
-> -#define MSG_DONTROUTE	4
-> -#define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */
-> -#define MSG_CTRUNC	8
-> -#define MSG_PROBE	0x10	/* Do not send. Only probe path f.e. for MTU */
-> -#define MSG_TRUNC	0x20
-> -#define MSG_DONTWAIT	0x40	/* Nonblocking io		 */
-> -#define MSG_EOR         0x80	/* End of record */
-> -#define MSG_WAITALL	0x100	/* Wait for a full request */
-> -#define MSG_FIN         0x200
-> -#define MSG_SYN		0x400
-> -#define MSG_CONFIRM	0x800	/* Confirm path validity */
-> -#define MSG_RST		0x1000
-> -#define MSG_ERRQUEUE	0x2000	/* Fetch message from error queue */
-> -#define MSG_NOSIGNAL	0x4000	/* Do not generate SIGPIPE */
-> -#define MSG_MORE	0x8000	/* Sender will send more */
-> -#define MSG_WAITFORONE	0x10000	/* recvmmsg(): block until 1+ packets avail */
-> -#define MSG_SENDPAGE_NOPOLICY 0x10000 /* sendpage() internal : do no apply policy */
-> -#define MSG_SENDPAGE_NOTLAST 0x20000 /* sendpage() internal : not the last page */
-> -#define MSG_BATCH	0x40000 /* sendmmsg(): more messages coming */
-> -#define MSG_EOF         MSG_FIN
-> -#define MSG_NO_SHARED_FRAGS 0x80000 /* sendpage() internal : page frags are not shared */
-> -#define MSG_SENDPAGE_DECRYPTED	0x100000 /* sendpage() internal : page may carry
-> -					  * plain text and require encryption
-> -					  */
-> -
-> -#define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
-> -#define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
-> -#define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
-> -					   descriptor received through
-> -					   SCM_RIGHTS */
-> +#define MSG_OOB		BIT(0)
-> +#define MSG_PEEK	BIT(1)
-> +#define MSG_DONTROUTE	BIT(2)
-> +#define MSG_TRYHARD	BIT(2)	/* Synonym for MSG_DONTROUTE for DECnet		*/
-> +#define MSG_CTRUNC	BIT(3)
-> +#define MSG_PROBE	BIT(4)	/* Do not send. Only probe path f.e. for MTU	*/
-> +#define MSG_TRUNC	BIT(5)
-> +#define MSG_DONTWAIT	BIT(6)	/* Nonblocking io		*/
-> +#define MSG_EOR		BIT(7)	/* End of record		*/
-> +#define MSG_WAITALL	BIT(8)	/* Wait for a full request	*/
-> +#define MSG_FIN		BIT(9)
-> +#define MSG_SYN		BIT(10)
-> +#define MSG_CONFIRM	BIT(11)	/* Confirm path validity	*/
-> +#define MSG_RST		BIT(12)
-> +#define MSG_ERRQUEUE	BIT(13)	/* Fetch message from error queue */
-> +#define MSG_NOSIGNAL	BIT(14)	/* Do not generate SIGPIPE	*/
-> +#define MSG_MORE	BIT(15)	/* Sender will send more	*/
-> +#define MSG_WAITFORONE	BIT(16)	/* recvmmsg(): block until 1+ packets avail */
-> +#define MSG_SENDPAGE_NOPOLICY	BIT(16)	/* sendpage() internal : do no apply policy */
-> +#define MSG_SENDPAGE_NOTLAST	BIT(17)	/* sendpage() internal : not the last page  */
-> +#define MSG_BATCH		BIT(18)	/* sendmmsg(): more messages coming */
-> +#define MSG_EOF	MSG_FIN
-> +#define MSG_NO_SHARED_FRAGS	BIT(19)	/* sendpage() internal : page frags
-> +					 * are not shared
-> +					 */
-> +#define MSG_SENDPAGE_DECRYPTED	BIT(20)	/* sendpage() internal : page may carry
-> +					 * plain text and require encryption
-> +					 */
-> +
-> +#define MSG_ZEROCOPY		BIT(26)	/* Use user data in kernel path */
-> +#define MSG_FASTOPEN		BIT(29)	/* Send data in TCP SYN */
-> +#define MSG_CMSG_CLOEXEC	BIT(30)	/* Set close_on_exec for file
-> +					 * descriptor received through
-> +					 * SCM_RIGHTS
-> +					 */
->  #if defined(CONFIG_COMPAT)
-> -#define MSG_CMSG_COMPAT	0x80000000	/* This message needs 32 bit fixups */
-> +#define MSG_CMSG_COMPAT		BIT(31)	/* This message needs 32 bit fixups */
->  #else
-> -#define MSG_CMSG_COMPAT	0		/* We never have 32 bit fixups */
+> +#if defined(CONFIG_COMPAT)
+> +#define MSG_CMSG_COMPAT		BIT(21)	/* This message needs 32 bit fixups */
+> +#else
 > +#define MSG_CMSG_COMPAT		0	/* We never have 32 bit fixups */
->  #endif
+> +#endif
+> +
+>  #define MSG_ZEROCOPY		BIT(26)	/* Use user data in kernel path */
+>  #define MSG_FASTOPEN		BIT(29)	/* Send data in TCP SYN */
+>  #define MSG_CMSG_CLOEXEC	BIT(30)	/* Set close_on_exec for file
+>  					 * descriptor received through
+>  					 * SCM_RIGHTS
+>  					 */
+> -#if defined(CONFIG_COMPAT)
+> -#define MSG_CMSG_COMPAT		BIT(31)	/* This message needs 32 bit fixups */
+> -#else
+> -#define MSG_CMSG_COMPAT		0	/* We never have 32 bit fixups */
+> -#endif
+> +/* Attention: Don't use BIT(31) for MSG_*, as 'msg_flags' is defined
+> + * as 'int' somewhere and BIT(31) will make it become negative.
+> + */
 >  
 >  
+>  /* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
 > 
 
