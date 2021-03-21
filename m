@@ -2,133 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28BFC343374
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 17:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B02B343378
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 17:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbhCUQbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 12:31:39 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:56218 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbhCUQbU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 12:31:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1616344281; x=1647880281;
-  h=to:cc:references:from:message-id:date:mime-version:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=/YenUM5sZuq/Q41I5eoUqo3Fp3T8FhBehiqwfNkqKUY=;
-  b=WePS3JLfYMz6y+E/CaYpdQHUhSelT7ItnCFWvbSVOqK6zwWolzZfCE8t
-   UGvQKcnDuBjo5Sv82a9xwqLPxo3z1VqkFNjnehoShlIm+GkWgQjpmyvkp
-   KF+ZrYyNqKZeMZ5MsIyOpgxn8jgvuzWARw36cmcscHkhGgjoUfwJ5lYeZ
-   g=;
-X-IronPort-AV: E=Sophos;i="5.81,266,1610409600"; 
-   d="scan'208";a="96528257"
-Subject: Re: [net-next 1/2] xen-netback: add module parameter to disable ctrl-ring
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 21 Mar 2021 16:31:13 +0000
-Received: from EX13D12EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id AB7991A01BD;
-        Sun, 21 Mar 2021 16:31:11 +0000 (UTC)
-Received: from 147dda3ee008.ant.amazon.com (10.43.165.62) by
- EX13D12EUA002.ant.amazon.com (10.43.165.103) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 21 Mar 2021 16:31:09 +0000
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>, <netdev@vger.kernel.org>,
-        <wei.liu@kernel.org>, <paul@xen.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <xen-devel@lists.xenproject.org>
-References: <20210311225944.24198-1-andyhsu@amazon.com>
- <YEuAKNyU6Hma39dN@lunn.ch> <ec5baac1-1410-86e4-a0d1-7c7f982a0810@amazon.com>
- <YEvQ6z5WFf+F4mdc@lunn.ch> <YE3foiFJ4sfiFex2@unreal>
- <64f5c7a8-cc09-3a7f-b33b-a64d373aed60@amazon.com> <YFI676dumSDJvTlV@unreal>
-From:   "Hsu, Chiahao" <andyhsu@amazon.com>
-Message-ID: <f3b76d9b-7c82-d3bd-7858-9e831198e33c@amazon.com>
-Date:   Sun, 21 Mar 2021 17:31:08 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.1
+        id S230010AbhCUQco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 12:32:44 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:34576 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229951AbhCUQcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 12:32:13 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id EAFE51C0B78; Sun, 21 Mar 2021 17:32:10 +0100 (CET)
+Date:   Sun, 21 Mar 2021 17:32:10 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     kernel list <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        netdev@vger.kernel.org
+Subject: net/dev: fix information leak to userspace
+Message-ID: <20210321163210.GC26497@amd>
 MIME-Version: 1.0
-In-Reply-To: <YFI676dumSDJvTlV@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.43.165.62]
-X-ClientProxiedBy: EX13D08EUB004.ant.amazon.com (10.43.166.158) To
- EX13D12EUA002.ant.amazon.com (10.43.165.103)
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="gr/z0/N6AeWAPJVB"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--gr/z0/N6AeWAPJVB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Leon Romanovsky 於 2021/3/17 18:22 寫道:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
->
->
->
-> On Tue, Mar 16, 2021 at 04:22:21PM +0100, Hsu, Chiahao wrote:
->>
->> Leon Romanovsky 於 2021/3/14 11:04 寫道:
->>> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
->>>
->>>
->>>
->>> On Fri, Mar 12, 2021 at 09:36:59PM +0100, Andrew Lunn wrote:
->>>> On Fri, Mar 12, 2021 at 04:18:02PM +0100, Hsu, Chiahao wrote:
->>>>> Andrew Lunn 於 2021/3/12 15:52 寫道:
->>>>>> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
->>>>>>
->>>>>>
->>>>>>
->>>>>> On Thu, Mar 11, 2021 at 10:59:44PM +0000, ChiaHao Hsu wrote:
->>>>>>> In order to support live migration of guests between kernels
->>>>>>> that do and do not support 'feature-ctrl-ring', we add a
->>>>>>> module parameter that allows the feature to be disabled
->>>>>>> at run time, instead of using hardcode value.
->>>>>>> The default value is enable.
->>>>>> Hi ChiaHao
->>>>>>
->>>>>> There is a general dislike for module parameters. What other mechanisms
->>>>>> have you looked at? Would an ethtool private flag work?
->>>>>>
->>>>>>         Andrew
->>>>> Hi Andrew,
->>>>>
->>>>> I can survey other mechanisms, however before I start doing that,
->>>>>
->>>>> could you share more details about what the problem is with using module
->>>>> parameters? thanks.
->>>> It is not very user friendly. No two kernel modules use the same
->>>> module parameters. Often you see the same name, but different
->>>> meaning. There is poor documentation, you often need to read the
->>>> kernel sources it figure out what it does, etc.
->>> +1, It is also global parameter to whole system/devices that use this
->>> module, which is rarely what users want.
->>>
->>> Thanks
->> Hi,
->> I think I would say the current implementation(modparams) isappropriate
->> after reviewing it again.
->>
->> We are talking about 'feature leveling', a way to support live migrationof
->> guest
->> between kernels that do and do not support the features. So we want to
->> refrain
->> fromadding the features if guest would be migrated to the kernel which does
->> not support the feature. Everythingshould be done (in probe function) before
->> frontend connects, and this is why ethtool is not appropriate for this.
-> It wouldn't be a surprise to you that feature discovery is not supposed
-> to be done through module parameters. Instead of asking from user to
-> randomly disable some feature, the system is expected to be backward
-> compatible and robust enough to query the list of supported/needed
-> features.
->
-> Thanks
->
->> Thanks
->>
->>
-Typically there should be one VM running netback on each host,
-and having control over what interfaces or features it exposes is also 
-important for stability.
-How about we create a 'feature flags' modparam, each bits is specified 
-for different new features?
+dev_get_mac_address() does not always initialize whole
+structure. Unfortunately, other code copies such structure to
+userspace, leaking information. Fix it.
 
+Signed-off-by: Pavel Machek (CIP) <pavel@denx.de>
+Cc: stable@kernel.org
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6c5967e80132..28283a9eb63a 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8949,11 +8949,9 @@ int dev_get_mac_address(struct sockaddr *sa, struct =
+net *net, char *dev_name)
+ 		ret =3D -ENODEV;
+ 		goto unlock;
+ 	}
+-	if (!dev->addr_len)
+-		memset(sa->sa_data, 0, size);
+-	else
+-		memcpy(sa->sa_data, dev->dev_addr,
+-		       min_t(size_t, size, dev->addr_len));
++	memset(sa->sa_data, 0, size);
++	memcpy(sa->sa_data, dev->dev_addr,
++	       min_t(size_t, size, dev->addr_len));
+ 	sa->sa_family =3D dev->type;
+=20
+ unlock:
+
+
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--gr/z0/N6AeWAPJVB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmBXdQoACgkQMOfwapXb+vJdiACfU1FPb4O7ikDk8o+OPGYR1NmK
+4IIAoKK4mpRlql+ZnR9Uxo1kJUWTUrBn
+=VJfs
+-----END PGP SIGNATURE-----
+
+--gr/z0/N6AeWAPJVB--
