@@ -2,147 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEF393432AE
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 14:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2B43432B9
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 14:22:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbhCUNLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 09:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
+        id S229893AbhCUNVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 09:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbhCUNLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 09:11:00 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BFFC061574
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 06:11:00 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id lr1-20020a17090b4b81b02900ea0a3f38c1so9984940pjb.0
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 06:11:00 -0700 (PDT)
+        with ESMTP id S229815AbhCUNV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 09:21:26 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A8CC061574
+        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 06:21:26 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id n21so11097296ioa.7
+        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 06:21:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        d=linaro.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pdpLGwZVWgH1ZXWMGAb8CDhHmencOHZRTJisrrYzukM=;
-        b=fvWoMaWKDwk6hbHahxH0fr03yS1R0JQXZ+P3M7Lpq3ImM/PaVyww/cZvAiYqOCi0uP
-         HI4UKfyIMVX4IHv1CvoGFjLOM3pgXdxuwK9C+c35WKr9MkHDwugQOcNE9wu0pvZP5wA3
-         74CxJHxm8ER0YHyiFIJZ4OmnZ8WU8h48i334nKcZUYHsOA7dyS5Ebaf9C88X1zd+ITUu
-         v2FPOFL40YCvfVIrJzZVVCVTvJtn6tr4pfsaTkCdzBDilBsv2IRDMeeCac+u+U+FTMEe
-         Iy+caqnh4ZQyCu7ph09heaPpdTV8bYG2mzvdvP7Mk24v2T/h2ikb+HoGmSaVXUP5CSb2
-         nWlA==
+        bh=hm0j+eixmdl/zBGbDZFFjyplev8KCj4c3qDD2qAyoQs=;
+        b=V/ixscQe0sYickdYafYCxUnh/2Wg3r3Kyt1ax2rsHdFYjKxFEtL1Yigz6Yy3+sevbf
+         40Ljm4s4Lj0hWxjbWJsv4KE6IqBW/XUEuGxri3mLHwqH84HfoXPK7BQGZCn50UD/xW5h
+         yvfxA87H8JZoLdthgmWjqoZgo2ntGO/akntDijcSlxws7ESsK5Kyb448Va5JtCzopUIE
+         P+OG6EQUvkAfeO9Y5f442uUIeayOyprgRzizbr5hWrYOQS6kH6ppDhFhQzcGYzfa1mYF
+         A2zHhIy6YSumTx/pTPzQvMR2dUjvcPjippnxFlyJLzOq+35HwKbWWzhWQsoM1WgAKnd7
+         St9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=pdpLGwZVWgH1ZXWMGAb8CDhHmencOHZRTJisrrYzukM=;
-        b=Kw58XXVrOvT/FEFPPKiCWICTD5ZmaCmz85T99fNNha4vL3CFyzsAolmUOHmfihLq0D
-         5dMXu/MoBa+dEEQnH/Jx33B2qOSWh830B/ENiMFyEFFUjZIjFVo1ESJft4NvYfjYI9g3
-         wnxeKqLlKwEpvyQ6PgHLfQMPIYEujaoh7Qp3P39r/czbVJHlt0P2XouFS3GJr8d98fee
-         XmBOp5S/SFOtfxli7YrhSQd6KAyTo90Lac5iMERm8H7PAtQ+9WrQgsN0A/5tP5CcPIqV
-         haxHAyNOt+1esIxzrfzceYiCv1bafYMrNZgjSTC310TcSPsJNU9pJ6R9MNfSre43tCls
-         pyzQ==
-X-Gm-Message-State: AOAM530lPNAzwEBMBXBX9wic6Lq3aAjd+oPLJMqCYMIBrbMbjHdzFkAc
-        MA/2WLgAjgg09JUE6s327MNRmvWLVCMuFQ==
-X-Google-Smtp-Source: ABdhPJxpvivSu2v/AqSP0cBfVHCiJ7bwze7KKyc67QgGvffOBPql6pVgZ37iVMPtkfpSsVnehbm8rQ==
-X-Received: by 2002:a17:90a:a403:: with SMTP id y3mr8259581pjp.227.1616332259284;
-        Sun, 21 Mar 2021 06:10:59 -0700 (PDT)
-Received: from [192.168.1.134] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id a20sm11374868pfl.97.2021.03.21.06.10.58
+        bh=hm0j+eixmdl/zBGbDZFFjyplev8KCj4c3qDD2qAyoQs=;
+        b=j5HAuOJHhDc5SkJ+s+MJsIDK//koy1CeYZwvcRRvvg1jtBkNQwqq6JU31Sa7WP8oZ4
+         CMFBitc3qRHjIyT7FNFPgdNVfzHkhvbPiKjwQAUjaWrmdsnyjH7dfrule18FcNJnFSvB
+         c2g1xRpmeUHdUvxb32BhyEBUbAoxD3jUuzkIUX4dvMcl3pyi9VjSUUIn1g1kP3JijPNZ
+         wda4Y3s/GmAVPfowfg+iR0QA8awO/oI+Xez6DirdctLZ6lgDC8DwGxTmZw6e8/KdloUx
+         m5zSIv/NmNwi7moYGSyCptuVyfWjanHIzD/U+yOF4qBefoMyARD3GFinuOsiqdoJyr1A
+         vpaw==
+X-Gm-Message-State: AOAM530gfLhH3wMIy3CIvQbWPELXGxh7BCHBUKWznTbx8RepF98BH0f9
+        Pn+6vyMEVgVhQpz3BIlAk8b7Dg==
+X-Google-Smtp-Source: ABdhPJzTSIaTOGsDTz6OIRL0MW2Ke8IhzwQonnCZd184Eu0CItzu9pX11IIxJLZ2iGqZGQ1ajDH4EA==
+X-Received: by 2002:a02:ccb2:: with SMTP id t18mr7732583jap.123.1616332885588;
+        Sun, 21 Mar 2021 06:21:25 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id b5sm5885325ioq.7.2021.03.21.06.21.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Mar 2021 06:10:58 -0700 (PDT)
-Subject: Re: [PATCH v2 1/1] io_uring: call req_set_fail_links() on short
- send[msg]()/recv[msg]() with MSG_WAITALL
-To:     Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-References: <c4e1a4cc0d905314f4d5dc567e65a7b09621aab3.1615908477.git.metze@samba.org>
- <12efc18b6bef3955500080a238197e90ca6a402c.1616268538.git.metze@samba.org>
- <38a987b9-d962-7531-6164-6dde9b4d133b@kernel.dk>
- <d68edf13-99a7-d010-cfc8-542f59ac7e27@samba.org>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <b624c6ad-fa60-d745-8393-3c778fdeca73@kernel.dk>
-Date:   Sun, 21 Mar 2021 07:10:57 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 21 Mar 2021 06:21:25 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/2] net: ipa: fix IPA validation
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210320141729.1956732-1-elder@linaro.org>
+ <20210320141729.1956732-3-elder@linaro.org> <YFcCAr19ZXJ9vFQ5@unreal>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <dd4619e2-f96a-122f-2cf6-ec19445c6a5c@linaro.org>
+Date:   Sun, 21 Mar 2021 08:21:24 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <d68edf13-99a7-d010-cfc8-542f59ac7e27@samba.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <YFcCAr19ZXJ9vFQ5@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/21/21 4:20 AM, Stefan Metzmacher wrote:
-> 
-> Am 20.03.21 um 23:57 schrieb Jens Axboe:
->> On 3/20/21 1:33 PM, Stefan Metzmacher wrote:
->>> Without that it's not safe to use them in a linked combination with
->>> others.
->>>
->>> Now combinations like IORING_OP_SENDMSG followed by IORING_OP_SPLICE
->>> should be possible.
->>>
->>> We already handle short reads and writes for the following opcodes:
->>>
->>> - IORING_OP_READV
->>> - IORING_OP_READ_FIXED
->>> - IORING_OP_READ
->>> - IORING_OP_WRITEV
->>> - IORING_OP_WRITE_FIXED
->>> - IORING_OP_WRITE
->>> - IORING_OP_SPLICE
->>> - IORING_OP_TEE
->>>
->>> Now we have it for these as well:
->>>
->>> - IORING_OP_SENDMSG
->>> - IORING_OP_SEND
->>> - IORING_OP_RECVMSG
->>> - IORING_OP_RECV
->>>
->>> For IORING_OP_RECVMSG we also check for the MSG_TRUNC and MSG_CTRUNC
->>> flags in order to call req_set_fail_links().
->>>
->>> There might be applications arround depending on the behavior
->>> that even short send[msg]()/recv[msg]() retuns continue an
->>> IOSQE_IO_LINK chain.
->>>
->>> It's very unlikely that such applications pass in MSG_WAITALL,
->>> which is only defined in 'man 2 recvmsg', but not in 'man 2 sendmsg'.
->>>
->>> It's expected that the low level sock_sendmsg() call just ignores
->>> MSG_WAITALL, as MSG_ZEROCOPY is also ignored without explicitly set
->>> SO_ZEROCOPY.
->>>
->>> We also expect the caller to know about the implicit truncation to
->>> MAX_RW_COUNT, which we don't detect.
+On 3/21/21 3:21 AM, Leon Romanovsky wrote:
+> On Sat, Mar 20, 2021 at 09:17:29AM -0500, Alex Elder wrote:
+>> There are blocks of IPA code that sanity-check various values, at
+>> compile time where possible.  Most of these checks can be done once
+>> during development but skipped for normal operation.  These checks
+>> permit the driver to make certain assumptions, thereby avoiding the
+>> need for runtime error checking.
 >>
->> Thanks, I do think this is much better and I feel comfortable getting
->> htis applied for 5.12 (and stable).
+>> The checks are defined conditionally, but not consistently.  In
+>> some cases IPA_VALIDATION enables the optional checks, while in
+>> others IPA_VALIDATE is used.
 >>
+>> Fix this by using IPA_VALIDATION consistently.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+>> ---
+>>   drivers/net/ipa/Makefile       | 2 +-
+>>   drivers/net/ipa/gsi_trans.c    | 8 ++++----
+>>   drivers/net/ipa/ipa_cmd.c      | 4 ++--
+>>   drivers/net/ipa/ipa_cmd.h      | 6 +++---
+>>   drivers/net/ipa/ipa_endpoint.c | 6 +++---
+>>   drivers/net/ipa/ipa_main.c     | 6 +++---
+>>   drivers/net/ipa/ipa_mem.c      | 6 +++---
+>>   drivers/net/ipa/ipa_table.c    | 6 +++---
+>>   drivers/net/ipa/ipa_table.h    | 6 +++---
+>>   9 files changed, 25 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/drivers/net/ipa/Makefile b/drivers/net/ipa/Makefile
+>> index afe5df1e6eeee..014ae36ac6004 100644
+>> --- a/drivers/net/ipa/Makefile
+>> +++ b/drivers/net/ipa/Makefile
+>> @@ -1,5 +1,5 @@
+>>   # Un-comment the next line if you want to validate configuration data
+>> -#ccflags-y		+=	-DIPA_VALIDATE
+>> +# ccflags-y		+=	-DIPA_VALIDATION
 > 
-> Great thanks!
+> Maybe netdev folks think differently here, but general rule that dead
+> code and closed code is such, is not acceptable to in Linux kernel.
 > 
-> Related to that I have a questing regarding the IOSQE_IO_LINK behavior.
-> (Assuming I have a dedicated ring for the send-path of each socket.)
-> 
-> Is it possible to just set IOSQE_IO_LINK on every sqe in order to create
-> an endless chain of requests so that userspace can pass as much sqes as possible
-> which all need to be submitted in the exact correct order. And if any request
-> is short, then all remaining get ECANCELED, without the risk of running any later
-> request out of order.
-> 
-> Are such link chains possible also over multiple io_uring_submit() calls?
-> Is there still a race between, having an iothread removing the request from
-> from the list and fill in a cqe with ECANCELED, that userspace is not awaire
-> of yet, which then starts a new independed link chain with a request that
-> ought to be submitted after all the canceled once.
-> 
-> Or do I have to submit a link chain with just a single __io_uring_flush_sq()
-> and then strictly need to wait until I got a cqe for the last request in
-> the chain?
+> <...>
 
-A chain can only exist within a single submit attempt, so it will not work
-if you need to break it up over multiple io_uring_enter() calls.
+What is the purpose of CONFIG_KGDB?  Or CONFIG_DEBUG_KERNEL?
+Would you prefer I expose this through a kconfig option?  I
+intentionally did not do that, because I really intended it
+to be only for development, so defined it in the Makefile.
+But I have no objection to making it configurable that way.
 
--- 
-Jens Axboe
+>> -#ifdef IPA_VALIDATE
+>> +#ifdef IPA_VALIDATION
+>>   	if (!size || size % 8)
+>>   		return -EINVAL;
+>>   	if (count < max_alloc)
+>>   		return -EINVAL;
+>>   	if (!max_alloc)
+>>   		return -EINVAL;
+>> -#endif /* IPA_VALIDATE */
+>> +#endif /* IPA_VALIDATION */
+> 
+> If it is possible to supply those values, the check should be always and
+> not only under some closed config option.
+
+These are assertions.
+
+There is no need to test them for working code.  If
+I run the code successfully with these tests enabled
+exactly once, and they are satisfied, then every time
+the code is run thereafter they will pass.  So I want
+to check them when debugging/developing only.  That
+way there is a mistake, it gets caught, but otherwise
+there's no pointless argument checking done.
+
+I'll explain the first check; the others have similar
+explanation.
+
+In the current code, the passed size is sizeof(struct)
+for three separate structures.
+   - If the structure size changes, I want to be
+     sure the constraint is still honored
+   - The code will break of someone happens
+     to pass a size of 0.  I don't expect that to
+     ever happen, but this states that requirement.
+
+This is an optimization, basically, but one that
+allows the assumed conditions to be optionally
+verified.
+
+>>   	/* By allocating a few extra entries in our pool (one less
+>>   	 * than the maximum number that will be requested in a
+>> @@ -140,14 +140,14 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
+>>   	dma_addr_t addr;
+>>   	void *virt;
+>>   
+>> -#ifdef IPA_VALIDATE
+>> +#ifdef IPA_VALIDATION
+>>   	if (!size || size % 8)
+>>   		return -EINVAL;
+>>   	if (count < max_alloc)
+>>   		return -EINVAL;
+>>   	if (!max_alloc)
+>>   		return -EINVAL;
+>> -#endif /* IPA_VALIDATE */
+>> +#endif /* IPA_VALIDATION */
+> 
+> Same
+> 
+> <...>
+> 
+>>   {
+>> -#ifdef IPA_VALIDATE
+>> +#ifdef IPA_VALIDATION
+>>   	/* At one time we assumed a 64-bit build, allowing some do_div()
+>>   	 * calls to be replaced by simple division or modulo operations.
+>>   	 * We currently only perform divide and modulo operations on u32,
+>> @@ -768,7 +768,7 @@ static void ipa_validate_build(void)
+>>   	BUILD_BUG_ON(!ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY));
+>>   	BUILD_BUG_ON(ipa_aggr_granularity_val(IPA_AGGR_GRANULARITY) >
+>>   			field_max(AGGR_GRANULARITY_FMASK));
+>> -#endif /* IPA_VALIDATE */
+>> +#endif /* IPA_VALIDATION */
+> 
+> BUILD_BUG_ON()s are checked during compilation and not during runtime
+> like IPA_VALIDATION promised.
+
+So I should update the description.  But I'm not sure where
+you are referring to.  Here is the first line of the patch
+description:
+   There are blocks of IPA code that sanity-check various
+   values, at compile time where possible.
+
+> IMHO, the issue here is that this IPA code isn't release quality but
+> some debug drop variant and it is far from expected from submitted code.
+
+Doesn't sound very humble, IMHO.
+
+This code was found acceptable and merged for mainline a
+year ago.  At that time it supported IPA on the SDM845 SoC
+(IPA v3.5.1).  Had it not been merged, I would have continued
+refining the code out-of-tree until it could be merged.  But
+now, it's upstream, so anything I want to do to make it better
+must be done upstream.
+
+Since last year it has undergone considerable development,
+including adding support for the SC7180 SoC (IPA v4.2).  I
+am now in the process of getting things posted for review
+so IPA versions 4.5, 4.9, and 4.11 are supported.  With any
+luck all that will be done in this merge cycle; we'll see.
+
+Most of what I've been doing is gradually transforming
+things to support the new hardware.  But in the process
+I'm also improving what's there so that it is better
+organized, more consistent, more understandable, and
+maintainable.
+
+I have explained this previously, but this code was derived
+from Qualcomm "downstream" code.  Much was done toward
+getting it into the upstream kernel, including carving out
+great deal of code, and removing functionality to focus on
+just *one* target platform.
+
+Now that it's upstream, the aim is to add back functionality,
+ideally to support all current and future Qualcomm IPA hardware,
+and eventually (this year) to support some of the features
+(hardware filtering/routing/NAT) that were removed to make
+the code simpler.
+
+I'm doing a lot of development on this driver, yes.  But
+it doesn't mean it's broken, it means it's improving.
+
+					-Alex
+
+> Thanks
+> 
 
