@@ -2,92 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FBD3435AD
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 00:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E80513435B2
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 00:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbhCUXXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 19:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
+        id S230195AbhCUXaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 19:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbhCUXXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 19:23:16 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E26BC061574;
-        Sun, 21 Mar 2021 16:23:15 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id f73-20020a9d03cf0000b02901b4d889bce0so14166736otf.12;
-        Sun, 21 Mar 2021 16:23:15 -0700 (PDT)
+        with ESMTP id S229613AbhCUX3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 19:29:50 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA1CC061574;
+        Sun, 21 Mar 2021 16:29:49 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id r12so18352271ejr.5;
+        Sun, 21 Mar 2021 16:29:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=B74youK00+gi/xqfb9oTzK7xl7IAxaoNJNt8Y8fsLdA=;
-        b=Oo9j9TVYePGcOsh5RNcAkOrsfmfAXZeTZ+2cu/SkCOQt0g17TN9WI55JwKz/x5hP53
-         JLnHSeoeRhJmeoECSq5eGWV5Pg5ZUMwGZ+D3byoJvLa/a+42uLOkeOjeK+ciPdhyaJm8
-         pgAFSrF02ryJM+nMrd+gn8eZg5DEtPXKhopx7HdncZC387ZrREsB0u+lFpGGAPaoO9xk
-         GSxNsTE/ZSf/MXs1eTXCZVg3dT/RoJgF/svkgXxMSiDdXF9GUEhyBkFv0tGjDUcArBeH
-         EK2m/ySAyWNnoQCJnfCFb8Pigyc8G27ncec5HlBY6aCkQNz7tORkLLs2XFA0ieDacatk
-         kcyQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7pOLNQfROV9DESH9c1z/95PUsvdUmS+ux4xUVmugTq0=;
+        b=h9qc2xEvgfRcB+T+8D4cDQ+gO7nMzZAye7jQiJqFNHSVNa4+cj/xwYUwklpJl9xV33
+         mqXJU3Xy44xfdONRVov7Wa24Gz16ZPufnUPAPg7v9aP51g7iNohl+CNR8QimxgcBqKZq
+         6kA1ig9kralNr6tedvjWNlaYZaeNti05dDjou9IlJ/TF77+GDHkySX2sDlX4YNNztwao
+         uajypSuKh+TX6sWyralMuN8waKHdAmhK2HVgtMrTJeDDwgRs3kL3wDuB1+oi9FR2ELi6
+         CcJspofOkDRKuPaMiNe06bu7Xp9rQ4GTNaS73oOJae/zOW6hyDA6bnqKf37FXbAG7nCH
+         YFyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=B74youK00+gi/xqfb9oTzK7xl7IAxaoNJNt8Y8fsLdA=;
-        b=YBB9BkQutX4QNphCulmrU88bhK4/TVaLfqxox0jJpSVKqAOqlAtg+E5trof/bOxbqR
-         0+IMyM8J9tcFS8Ej/WnVDE8cff2u8WaG/oQ+Z0fa9PMnj7uGX3HFizFeujvhi5C6rFBp
-         fWWru2yhdP5P1zbDWG6BR0jTdC6FLdMtJviDuDEUEq1ux48uWLXfRuQJh6xB+OFiuueA
-         xJaw6H35+knOkhpwOT71bzIizJaRSA7cMcv+r71MY2F1xcSZy9fC52vLHuoRl/T89eHQ
-         XCz87tW+8LlxvTKoqYdemnHBYsK/pOZ4rEWhV2cO8yKITmVvbtcGy4NElfQUNDb1GB4V
-         x7iQ==
-X-Gm-Message-State: AOAM533hORF3VLvIxsx+S4scVbqPvPBc157X7AD5Gb3KkcrJ5GNAbM72
-        sqZQS9iZsRq+u9tjbQ+Jq/SbnSmr7dqbux5Cmgg=
-X-Google-Smtp-Source: ABdhPJxRJba+qeIGPrVGbzJd6p+95y73QrUSIeTO+MVJpzPEq/KtAsbjuBjoOiGOc2UVpyBYSe7fOypcM+rLb9rZqr4=
-X-Received: by 2002:a9d:6949:: with SMTP id p9mr9445538oto.252.1616368994696;
- Sun, 21 Mar 2021 16:23:14 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7pOLNQfROV9DESH9c1z/95PUsvdUmS+ux4xUVmugTq0=;
+        b=OqWhQZF+ji9oDdzgDxHL2kE/3ASfquGxYmWTsnShcQsPq08mo1pbWRI4iew5nfgN41
+         n7wr/cGvbgACJfGyOtwjTKYDWOw+XKOoc40NX6+e28R3LGOYm4DOOr0aAQlkBQRZLrS4
+         BTeJ/jkFy/AvVkLCKHTihibkN8N5kcZQv3URfIgx1dj1/XA6OTKdj90Tq8Fz5GM7niR3
+         QYAUJM0m1gDXsOszPbU5FcsOqFgCu6Gbxprn8kG3+e7ZFW/vBJuwl8hygW3hEvdOdBuG
+         lWBpE36xz4ckZOh075vKnehP2CMfitTqKoYlU6mcPYegn9AJrkAGHv6gKe1ruqgPmw73
+         5D+g==
+X-Gm-Message-State: AOAM533ztcrZErzryFcGja4iOTf6b3AeA3pyd5skOkCBeOMHKS3jtPSN
+        iPJrC1Elb7Ogq8yM6dkfJLU=
+X-Google-Smtp-Source: ABdhPJz6DWGODcj429igJhmLIHWMUTHzDEAasDLnQIVoj9x7rHcLoKbHHOoDgqdUl0liiet5NjJj5g==
+X-Received: by 2002:a17:906:13c4:: with SMTP id g4mr16551073ejc.390.1616369388113;
+        Sun, 21 Mar 2021 16:29:48 -0700 (PDT)
+Received: from localhost.localdomain ([188.24.140.160])
+        by smtp.gmail.com with ESMTPSA id bt14sm9801472edb.92.2021.03.21.16.29.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Mar 2021 16:29:47 -0700 (PDT)
+From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] Add support for Actions Semi Owl Ethernet MAC
+Date:   Mon, 22 Mar 2021 01:29:42 +0200
+Message-Id: <cover.1616368101.git.cristian.ciocaltea@gmail.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-References: <13aed72.61c7.17853a6a5cd.Coremail.linma@zju.edu.cn> <CABBYNZKwHEXK680Xz+W=2qXdkO2eEzTBu38Hc=5DaxggkaTSsg@mail.gmail.com>
-In-Reply-To: <CABBYNZKwHEXK680Xz+W=2qXdkO2eEzTBu38Hc=5DaxggkaTSsg@mail.gmail.com>
-From:   Emil Lenngren <emil.lenngren@gmail.com>
-Date:   Mon, 22 Mar 2021 00:23:05 +0100
-Message-ID: <CAO1O6sfdpWzULj_Yj1s_GTFiLaZFFjrrj_0RPAVe1hyk3uuSsg@mail.gmail.com>
-Subject: Re: BUG: Out of bounds read in hci_le_ext_adv_report_evt()
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     =?UTF-8?B?6ams6bqf?= <linma@zju.edu.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        yajin_zhou@zju.edu.cn, syzkaller@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patch series adds support for the Ethernet MAC found on the Actions
+Semi Owl family of SoCs.
 
-Den m=C3=A5n 22 mars 2021 kl 00:01 skrev Luiz Augusto von Dentz
-<luiz.dentz@gmail.com>:
-> Or we do something like
-> https://lore.kernel.org/linux-bluetooth/20201024002251.1389267-1-luiz.den=
-tz@gmail.com/,
-> that said the reason we didn't applied my patches was that the
-> controller would be the one generating invalid data, but it seems you
-> are reproducing with vhci controller which is only used for emulating
-> a controller and requires root privileges so it is unlikely these
-> conditions would happens with hardware itself, in the other hand as
-> there seems to be more and more reports using vhci to emulate broken
-> events it perhaps more productive to introduce proper checks for all
-> events so we don't have to deal with more reports like this in the
-> future.
+For the moment I have only tested the driver on RoseapplePi SBC, which is
+based on the S500 SoC variant. It might work on S900 as well, but I cannot
+tell for sure since the S900 datasheet I currently have doesn't provide
+any information regarding the MAC registers - so I couldn't check the
+compatibility with S500.
 
-Keep in mind that when using the H4 uart protocol without any error
-correction (as H5 has), it is possible that random bit errors occur on
-the wire. I wouldn't like my kernel to crash due to this. Bit errors
-happen all the time on RPi 4 for example at the default baud rate if
-you just do some heavy stress testing, or use an application that
-transfers a lot of data over Bluetooth.
+Similar story for S700: the datasheet I own is incomplete, but it seems
+the MAC is advertised with Gigabit capabilities. For that reason most
+probably we need to extend the current implementation in order to support
+this SoC variant as well.
 
-/Emil
+Please note that for testing the driver it is also necessary to update the
+S500 clock subsystem:
+
+https://lore.kernel.org/lkml/cover.1615221459.git.cristian.ciocaltea@gmail.com/
+
+The DTS changes for the S500 SBCs will be provided separately.
+
+Thanks,
+Cristi
+
+Changes in v3:
+ - Dropped the 'debug' module parameter and passed the default NETIF_MSG flags
+to netif_msg_init(), according to David's review
+
+ - Removed the owl_emac_generate_mac_addr() function and the related
+OWL_EMAC_GEN_ADDR_SYS_SN config option until a portable solution to get
+the system serial number is found - when building on arm64 the following
+error is thrown (as reported by Rob's kernel bot):
+ '[...]/owl-emac.c:9:10: fatal error: asm/system_info.h: No such file or directory'
+
+ - Rebased patchset on v5.12-rc4
+
+Changes in v2:
+* According to Philipp's review
+ - Requested exclusive control over serial line via
+   devm_reset_control_get_exclusive()
+ - Optimized error handling by using dev_err_probe()
+
+* According to Andrew's review
+ - Dropped the inline keywords
+ - Applied Reverse Christmas Tree format to local variable declarations
+ - Renamed owl_emac_phy_config() to owl_emac_update_link_state()
+ - Documented the purpose of the special descriptor used in the context of
+   owl_emac_setup_frame_xmit()
+ - Updated comment inside owl_emac_mdio_clock_enable() regarding the MDC
+   clock divider setup
+ - Indicated MAC support for symmetric pause via phy_set_sym_pause()
+   in owl_emac_phy_init()
+ - Changed the MAC addr generation algorithm in owl_emac_generate_mac_addr()
+   by setting the locally administered bit in byte 0 and replacing bytes 1 & 2
+   with additional entries from enc_sn
+ - Moved devm_add_action_or_reset() before clk_set_rate() in owl_emac_probe()
+
+* Other
+ - Added SMII interface support: updated owl_emac_core_sw_reset(), added
+   owl_emac_clk_set_rate(), updated description in the YAML binding
+ - Changed OWL_EMAC_TX_TIMEOUT from 0.05*HZ to 2*HZ
+ - Rebased patchset on v5.12-rc3
+
+Cristian Ciocaltea (3):
+  dt-bindings: net: Add Actions Semi Owl Ethernet MAC binding
+  net: ethernet: actions: Add Actions Semi Owl Ethernet MAC driver
+  MAINTAINERS: Add entries for Actions Semi Owl Ethernet MAC
+
+ .../bindings/net/actions,owl-emac.yaml        |   92 +
+ MAINTAINERS                                   |    2 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/actions/Kconfig          |   26 +
+ drivers/net/ethernet/actions/Makefile         |    6 +
+ drivers/net/ethernet/actions/owl-emac.c       | 1625 +++++++++++++++++
+ drivers/net/ethernet/actions/owl-emac.h       |  280 +++
+ 8 files changed, 2033 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/actions,owl-emac.yaml
+ create mode 100644 drivers/net/ethernet/actions/Kconfig
+ create mode 100644 drivers/net/ethernet/actions/Makefile
+ create mode 100644 drivers/net/ethernet/actions/owl-emac.c
+ create mode 100644 drivers/net/ethernet/actions/owl-emac.h
+
+-- 
+2.31.0
+
