@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 892E43432CF
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 14:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB4B3432D0
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 14:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbhCUNtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 09:49:21 -0400
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:45758 "EHLO
+        id S230014AbhCUNtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 09:49:53 -0400
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:35954 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbhCUNtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 09:49:16 -0400
+        with ESMTP id S229863AbhCUNtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 09:49:32 -0400
 Received: from tomoyo.flets-east.jp ([153.202.107.157])
         by mwinf5d13 with ME
-        id j1oz240023PnFJp031p6zA; Sun, 21 Mar 2021 14:49:14 +0100
+        id j1oz240023PnFJp031pT0a; Sun, 21 Mar 2021 14:49:30 +0100
 X-ME-Helo: tomoyo.flets-east.jp
 X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 21 Mar 2021 14:49:14 +0100
+X-ME-Date: Sun, 21 Mar 2021 14:49:30 +0100
 X-ME-IP: 153.202.107.157
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
@@ -28,80 +28,77 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v3 0/1] Allow drivers to modify dql.min_limit value
-Date:   Sun, 21 Mar 2021 22:48:48 +0900
-Message-Id: <20210321134849.463560-1-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v3 1/1] netdev: add netdev_queue_set_dql_min_limit()
+Date:   Sun, 21 Mar 2021 22:48:49 +0900
+Message-Id: <20210321134849.463560-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210321134849.463560-1-mailhol.vincent@wanadoo.fr>
+References: <20210321134849.463560-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abstract: would like to directly set dql.min_limit value inside a
-driver to improve BQL performances of a CAN USB driver.
+Add a function to set the dynamic queue limit minimum value.
 
-CAN packets have a small PDU: for classical CAN maximum size is
-roughly 16 bytes (8 for payload and 8 for arbitration, CRC and
-others).
+Some specific drivers might have legitimate reasons to configure
+dql.min_limit to a given value. Typically, this is the case when the
+PDU of the protocol is smaller than the packet size to used to
+carry those frames to the device.
 
-I am writing an CAN driver for an USB interface. To compensate the
-extra latency introduced by the USB, I want to group several CAN
-frames and do one USB bulk send. To this purpose, I implemented BQL in
-my driver.
+Concrete example: a CAN (Control Area Network) device with an USB 2.0
+interface.  The PDU of classical CAN protocol are roughly 16 bytes but
+the USB packet size (which is used to carry the CAN frames to the
+device) might be up to 512 bytes.  Wen small traffic burst occurs, BQL
+algorithm is not able to immediately adjust and this would result in
+having to send many small USB packets (i.e packet of 16 bytes for each
+CAN frame). Filling up the USB packet with CAN frames is relatively
+fast (small latency issue) but the gain of not having to send several
+small USB packets is huge (big throughput increase). In this case,
+forcing dql.min_limit to a given value that would allow to stuff the
+USB packet is always a win.
 
-However, the BQL algorithms can take time to adjust, especially if
-there are small bursts.
+This function is to be used by network drivers which are able to prove
+through a rationale and through empirical tests on several environment
+(with other applications, heavy context switching, virtualization...),
+that they constantly reach better performances with a specific
+predefined dql.min_limit value with no noticeable latency impact.
 
-The best way I found is to directly modify the dql.min_limit and set
-it to some empirical values. This way, even during small burst events
-I can have a good throughput. Slightly increasing the dql.min_limit
-has no measurable impact on the latency as long as frames fit in the
-same USB packet (i.e. BQL overheard is negligible compared to USB
-overhead).
-
-The BQL was not designed for USB nor was it designed for CAN's small
-PDUs which probably explains why I am the first one to ever have
-thought of using dql.min_limit within the driver.
-
-The code I wrote looks like:
-
-> #ifdef CONFIG_BQL
->	netdev_get_tx_queue(netdev, 0)->dql.min_limit = <some empirical value>;
-> #endif
-
-Using #ifdef to set up some variables is not a best practice. I am
-sending this RFC to see if we can add a function to set this
-dql.min_limit in a more pretty way.
-
-For your reference, this RFQ is a follow-up of a discussion on the
-linux-can mailing list:
-https://lore.kernel.org/linux-can/20210309125708.ei75tr5vp2sanfh6@pengutronix.de/
-
-Thank you for your comments.
-
-Yours sincerely,
-Vincent
-
-** Changelog **
-
-RFC v2 -> v3
-  - More verbose commit description.
-  - Fix kernel documentation.
-
-RFC v1 -> RFC v2
-  - Fix incorect #ifdef use.
-Reference: https://lore.kernel.org/linux-can/20210309153547.q7zspf46k6terxqv@pengutronix.de/
-
-Link to RFC v1:
-https://lore.kernel.org/linux-can/20210309152354.95309-1-mailhol.vincent@wanadoo.fr/T/#t
-
-Vincent Mailhol (1):
-  netdev: add netdev_queue_set_dql_min_limit()
-
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
  include/linux/netdevice.h | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index ddf4cfc12615..c3511263b15a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3389,6 +3389,24 @@ netif_xmit_frozen_or_drv_stopped(const struct netdev_queue *dev_queue)
+ 	return dev_queue->state & QUEUE_STATE_DRV_XOFF_OR_FROZEN;
+ }
+ 
++/**
++ *	netdev_queue_set_dql_min_limit - set dql minimum limit
++ *	@dev_queue: pointer to transmit queue
++ *	@min_limit: dql minimum limit
++ *
++ * Forces xmit_more() to return true until the minimum threshold
++ * defined by @min_limit is reached (or until the tx queue is
++ * empty). Warning: to be use with care, misuse will impact the
++ * latency.
++ */
++static inline void netdev_queue_set_dql_min_limit(struct netdev_queue *dev_queue,
++						  unsigned int min_limit)
++{
++#ifdef CONFIG_BQL
++	dev_queue->dql.min_limit = min_limit;
++#endif
++}
++
+ /**
+  *	netdev_txq_bql_enqueue_prefetchw - prefetch bql data for write
+  *	@dev_queue: pointer to transmit queue
 -- 
 2.26.2
 
