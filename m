@@ -2,69 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38216343064
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 01:22:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA63D34306F
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 02:04:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbhCUAWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 20:22:22 -0400
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:49209 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229766AbhCUAVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 20:21:46 -0400
-X-Originating-IP: 95.232.69.74
-Received: from enhorning.arpa1.net (host-95-232-69-74.retail.telecomitalia.it [95.232.69.74])
-        (Authenticated sender: pbl@bestov.io)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 2B15B20002;
-        Sun, 21 Mar 2021 00:21:40 +0000 (UTC)
-From:   Riccardo Paolo Bestetti <pbl@bestov.io>
-Cc:     Riccardo Paolo Bestetti <pbl@bestov.io>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ipv4/raw: support binding to nonlocal addresses
-Date:   Sun, 21 Mar 2021 01:20:45 +0100
-Message-Id: <20210321002045.23700-1-pbl@bestov.io>
-X-Mailer: git-send-email 2.31.0
+        id S229870AbhCUA7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 20:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229772AbhCUA6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 20:58:34 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8E1C061574;
+        Sat, 20 Mar 2021 17:58:34 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id f12so9808310qtq.4;
+        Sat, 20 Mar 2021 17:58:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j7g00KvxUaXEkg8CodXOQ9q9GuklDT0w1/LZTLeravI=;
+        b=JMw3ewJMtAVd4yTjqh7ux/RxZgrXnd8KPkfnLkFLrrZULV0hUGPQJmw+bI15dVx3qf
+         CQno9uPhunkDAmloEPQWGpmAVwrDS4kDVv2JqMU7bSmgofRFGHhA5lV6rIcGyPGh/BQg
+         eHlKQE3K1eBpGAj/4bWabWdAAZaqQd5j9xFklJD/11rfk3ogIgbPfXdd9lW/EXOx4aJ2
+         KutK1KefTuxZwW7ozYcwSNMCRT44AQIksSDtEZ+T+3DiQq89Ub5OCEgPcuRa2bqSZMOH
+         VbcsGplWvXC4W9sUXE3ynGNVCXn/+IUd5dBCrULp+QgDlrxVUsj7E1wmUgTH16unBRRP
+         +AIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j7g00KvxUaXEkg8CodXOQ9q9GuklDT0w1/LZTLeravI=;
+        b=HYYzNgtqbT8rB1YLmuzRkSNWcF+Ut9Q3XH8i3kNFI/ClSRuW6iF0+SyIq+uUxgYZoU
+         o3FFdwtzj5PFAHaFNyNY6VJHDiCqRBDH4ycP4BibEPwO23wmyYPqMqlbniVKW6ABAUHA
+         k0q5/5ugdLxQyWiVBkc+hDDiQDg/7nnm5DF2CuWRBSRWc3ZzGresj5MKVC3BJCKRsBzl
+         92zCxn4CsdOFE4M+9vO3SshdBuP0HXzQkie49gYhctd/ApY52P23sXvvzWXrIzgbndvC
+         6nDJSjq0o0VJ3mq3GDwUR/X4bTwoIjrMBzdXZXD7ALI1iIoV2m1IiAU3gnDecWjyjXPu
+         gGQQ==
+X-Gm-Message-State: AOAM532SCrGFcG+yjHDqIzVtL4pXNQPj5hR0i4jgnpypzakzeuqJyJN1
+        Kw41FJb/ask74ZzvYSQMPqg=
+X-Google-Smtp-Source: ABdhPJy96ZtyLWHigXJWo1rfi/ZX7PIoXySFPza2l2ON1lbJNeob/30XoVBuzhl4NZuqS5e9rNh8cw==
+X-Received: by 2002:ac8:4d95:: with SMTP id a21mr4515515qtw.304.1616288313236;
+        Sat, 20 Mar 2021 17:58:33 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.55.187])
+        by smtp.gmail.com with ESMTPSA id e14sm7748588qka.56.2021.03.20.17.58.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Mar 2021 17:58:32 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Subject: [PATCH] perf tools: Rudimentary typo fix
+Date:   Sun, 21 Mar 2021 06:27:55 +0530
+Message-Id: <20210321005755.26660-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support to inet raw sockets for binding to nonlocal addresses
-through the IP_FREEBIND and IP_TRANSPARENT socket options, as well as
-the ipv4.ip_nonlocal_bind kernel parameter.
 
-Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+s/archictures/architectures/
+
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
- net/ipv4/raw.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/perf/builtin-stat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 50a73178d63a..734c0332b54b 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -717,6 +717,7 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- {
- 	struct inet_sock *inet = inet_sk(sk);
- 	struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
-+	struct net *net = sock_net(sk);
- 	u32 tb_id = RT_TABLE_LOCAL;
- 	int ret = -EINVAL;
- 	int chk_addr_ret;
-@@ -732,7 +733,8 @@ static int raw_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 					    tb_id);
- 
- 	ret = -EADDRNOTAVAIL;
--	if (addr->sin_addr.s_addr && chk_addr_ret != RTN_LOCAL &&
-+	if (!inet_can_nonlocal_bind(net, inet) &&
-+	    addr->sin_addr.s_addr && chk_addr_ret != RTN_LOCAL &&
- 	    chk_addr_ret != RTN_MULTICAST && chk_addr_ret != RTN_BROADCAST)
- 		goto out;
- 	inet->inet_rcv_saddr = inet->inet_saddr = addr->sin_addr.s_addr;
--- 
-2.31.0
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 2e2e4a8345ea..5cc5eeae6ade 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -1705,7 +1705,7 @@ static int add_default_attributes(void)
+ 	bzero(&errinfo, sizeof(errinfo));
+ 	if (transaction_run) {
+ 		/* Handle -T as -M transaction. Once platform specific metrics
+-		 * support has been added to the json files, all archictures
++		 * support has been added to the json files, all architectures
+ 		 * will use this approach. To determine transaction support
+ 		 * on an architecture test for such a metric name.
+ 		 */
+--
+2.30.1
 
