@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B9B343072
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 02:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3CC34307A
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 02:22:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbhCUBDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Mar 2021 21:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        id S229874AbhCUBKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Mar 2021 21:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbhCUBDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 21:03:18 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EC7C061574;
-        Sat, 20 Mar 2021 18:03:17 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id h10so15102649edt.13;
-        Sat, 20 Mar 2021 18:03:17 -0700 (PDT)
+        with ESMTP id S229787AbhCUBJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Mar 2021 21:09:58 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E07C061574;
+        Sat, 20 Mar 2021 18:09:58 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id c4so7056519qkg.3;
+        Sat, 20 Mar 2021 18:09:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sYxUtyAOLdJkhobYZlH8F8gX4p7P2TgZmZ5PNFmnT+8=;
-        b=THiVEz36og5hrIWzcGXbTKxvDjd6DAIASZSFfxncTsxKBScDakrsCiRVQhJ66EODVS
-         pELwi2ZxITpsooxJqz8rgSY15VEsvp4H9AMxwmFifDlmUWgmG6Wl4eEoAecertY4mGfO
-         p0vVip0MeA0jtil8u8WRIhyLIF5cuS86HyUAja5BMyyE0HcCA8+8uAcceUC4Vx/jJtJ8
-         L6Y9nIXXRDoUiHQ2bDLx2L5EaJ34TIPhWZWb8MbP4En2La9N8QLaVlgQ/b2wsshr6jgD
-         o4MxfjlGggQlrPJM88mirTZQ+5yURySzlq4mvRFb4ZhpaN+yVT+WjoZQlostpQKNavU4
-         cyeA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LLjFApal9gMK0Vx1mZd/SlRCzWigv0Q0T5Vb350wjfY=;
+        b=Lix9A6KbGtt46lOUgEVcJ8iZ4szAIjbq1m4AObtr6mgHNDLgO70SiiMQf4c9QOIHkA
+         cqnlKCWfD7T7aV1JKgJMNJjS+pw7xRT/Y/5c/j23HH+LUIJCUYD2lIC9OeNXrimgQ9U/
+         wd5rcBpE7SYyYgZJx2tULoEpgOQ1JsjA/DsHd4Qy7JgGY4ZF0slL+Ugn5cih/MFATBlS
+         byEtZItmDiMhwQkWswqR251Css1JlM2mAz0iOXsE1xlWVLp6d1ISX3Rj/Z8x/13pKbs1
+         QjjqGwTN5RUqygW/LKhskhJ9JOee5OqVj0yeXEW6XDZ31rdjwv3WveOUJjSISpj1aIxd
+         oWoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sYxUtyAOLdJkhobYZlH8F8gX4p7P2TgZmZ5PNFmnT+8=;
-        b=r7gJF0tkA93nW+c2HM8vV+rlXBtQNjxg5nyaa5RY6xreS3/NHQPaJcQKs34N3FHpof
-         UoM+3q21PpsvyTTbtYXb1t0z/cIDMK/OJD9rLBmNjaJ1ah+ParYoZx/LKqUjue90PHd6
-         0N0Ju8mq7Gr5qqJzPF84kDdPQaIrJX/vl3XdgSxgOMBocbK/QJmSDUbKSMxnb3vedhT6
-         ckcSkkq16+BD5fpPSq9OfWHHLAcB4tSBTUqgtHA2yimBuCk1bDXiBMuz9Qh8KyW3V2Y6
-         k7vriELupRgNH4/hezgyWvdCLRwdjGC80SQ0JkUfr/X5zEWhKaDi+JxUPuvsK+twRh4L
-         w7iw==
-X-Gm-Message-State: AOAM5327lpJ55g8H8SmyhoF42JCSHeQUw8s9p8Q7mWT26xg6QeaBweR/
-        SBaAatZFqQ6Rf+t49FclPFc=
-X-Google-Smtp-Source: ABdhPJyj8vbEU+wPreri1LsmqncKXNJmYOKxeCZk3J/7RMT9Y3axyli/378Z0OKeN4CkI6cXSzLefw==
-X-Received: by 2002:a05:6402:c88:: with SMTP id cm8mr18047826edb.62.1616288596424;
-        Sat, 20 Mar 2021 18:03:16 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id y24sm7339185eds.23.2021.03.20.18.03.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LLjFApal9gMK0Vx1mZd/SlRCzWigv0Q0T5Vb350wjfY=;
+        b=rXgEP1Intm4XmE/mGIEAW0VIpJbTEUtGotfjkk4ltq76XX4oeK4bql0wCBikTkOSaz
+         LWfKg0XSLuOgziN+cUUUZSSxAnmpXet7+3Sl5wUamNATgc44LHiHBLCbqD6wIEo9NfU9
+         L1dndjyBZ3g49YWcOmIt+8UmqGwtRf4bg8VW1olFD1ehWUkxQ9GX+2ute5tM3Hvi68aD
+         BfPEhOWu1/hNhVjK33x6CKCh6PgHmgCh494r3blwnK+H2UmuaX9OTHmTRfIjD0bsWJLT
+         8TtrKPA4oh492Qu74tJMj8qD4yjgnScQg1WikW9VlekbgqvkZeM0kXd69vZTYKBcEh89
+         nj4Q==
+X-Gm-Message-State: AOAM533q2s4mWttUR2dt+MxKEEoBqEezK4ABEx+4VTOIusytV8OwiFNr
+        K7JfJb+F6AbVbu3ZnXsn82s=
+X-Google-Smtp-Source: ABdhPJx3zZaiRjkaCybT6CcSThfX623bMOcePVOKmOGP9s36WJ7j5xF0KPA3P/7eoyTF6e3+MQcLNQ==
+X-Received: by 2002:a37:8cd:: with SMTP id 196mr5028109qki.434.1616288997831;
+        Sat, 20 Mar 2021 18:09:57 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.55.187])
+        by smtp.gmail.com with ESMTPSA id 73sm7816448qkk.131.2021.03.20.18.09.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Mar 2021 18:03:16 -0700 (PDT)
-Date:   Sun, 21 Mar 2021 03:03:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] dsa: simplify Kconfig symbols and dependencies
-Message-ID: <20210321010314.mdbvtfc3zangtqgi@skbuf>
-References: <20210319154617.187222-1-alobakin@pm.me>
+        Sat, 20 Mar 2021 18:09:57 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Subject: [PATCH] perf evlist: Mundane typo fix
+Date:   Sun, 21 Mar 2021 06:39:30 +0530
+Message-Id: <20210321010930.12489-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210319154617.187222-1-alobakin@pm.me>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 03:46:30PM +0000, Alexander Lobakin wrote:
-> 1. Remove CONFIG_HAVE_NET_DSA.
->
-> CONFIG_HAVE_NET_DSA is a legacy leftover from the times when drivers
-> should have selected CONFIG_NET_DSA manually.
-> Currently, all drivers has explicit 'depends on NET_DSA', so this is
-> no more needed.
->
-> 2. CONFIG_HAVE_NET_DSA dependencies became CONFIG_NET_DSA's ones.
->
->  - dropped !S390 dependency which was introduced to be sure NET_DSA
->    can select CONFIG_PHYLIB. DSA migrated to Phylink almost 3 years
->    ago and the PHY library itself doesn't depend on !S390 since
->    commit 870a2b5e4fcd ("phylib: remove !S390 dependeny from Kconfig");
->  - INET dependency is kept to be sure we can select NET_SWITCHDEV;
->  - NETDEVICES dependency is kept to be sure we can select PHYLINK.
->
-> 3. DSA drivers menu now depends on NET_DSA.
->
-> Instead on 'depends on NET_DSA' on every single driver, the entire
-> menu now depends on it. This eliminates a lot of duplicated lines
-> from Kconfig with no loss (when CONFIG_NET_DSA=m, drivers also can
-> be only m or n).
-> This also has a nice side effect that there's no more empty menu on
-> configurations without DSA.
->
-> 4. Kbuild will now descend into 'drivers/net/dsa' only when
->    CONFIG_NET_DSA is y or m.
->
-> This is safe since no objects inside this folder can be built without
-> DSA core, as well as when CONFIG_NET_DSA=m, no objects can be
-> built-in.
->
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
 
-Thanks!
+s/explicitely/explicitly/
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+---
+ tools/perf/builtin-top.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/builtin-top.c b/tools/perf/builtin-top.c
+index 3673c04d16b6..173ace43f845 100644
+--- a/tools/perf/builtin-top.c
++++ b/tools/perf/builtin-top.c
+@@ -1607,7 +1607,7 @@ int cmd_top(int argc, const char **argv)
+ 	if (status) {
+ 		/*
+ 		 * Some arches do not provide a get_cpuid(), so just use pr_debug, otherwise
+-		 * warn the user explicitely.
++		 * warn the user explicitly.
+ 		 */
+ 		eprintf(status == ENOSYS ? 1 : 0, verbose,
+ 			"Couldn't read the cpuid for this machine: %s\n",
+--
+2.30.1
+
