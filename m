@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE8E3434CF
-	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 21:49:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85CF83434F2
+	for <lists+netdev@lfdr.de>; Sun, 21 Mar 2021 22:01:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231312AbhCUUs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 16:48:58 -0400
-Received: from ozlabs.org ([203.11.71.1]:40957 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229990AbhCUUsi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 21 Mar 2021 16:48:38 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F3V8b4nG3z9sS8;
-        Mon, 22 Mar 2021 07:48:30 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1616359713;
-        bh=PM3mc5URKC4fT+ts9F6ePl8Ad5BqKjldkxwwww/NuUA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=KsL2rg2oYvdiFCR1/mqv2EOVrIFCRzzvg1XOOZU8RWa2i5VcmL57GrHitTBHbDJL3
-         R6BIxq4H0EiZ4BCI41fqtRCSYqTpij8sCzyiFjRlhkpbmnylYq4S0VaIwVje1FJsk+
-         zT9P5ZBAQF2byM84zB692ZWXPsCoU/LMoAWcdY5HfjiIH9wfo2tjRTjmmSS1EL6y1/
-         +Y6hcev1Daa/8FS8FYJTxmA3Ei+haZgLNNhGk5si0ueBkEaLB0HvjmWipVN1Y1r2Rh
-         GkprqtAPUPd700coip+SYSt+/OCaa3DWewbdMtAeGu4s5SRDGMYPoULwSoZfXBuoIN
-         0YM8OpY1TnE2A==
-Date:   Mon, 22 Mar 2021 07:48:29 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Corentin Labbe <clabbe@baylibre.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20210322074829.5ce59a97@canb.auug.org.au>
+        id S229696AbhCUVBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 17:01:14 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:52568 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230107AbhCUVAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 17:00:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1616360446; x=1647896446;
+  h=to:cc:references:from:message-id:date:mime-version:
+   in-reply-to:content-transfer-encoding:subject;
+  bh=bR/zGL5bgmIYKJX4KBNvUn1W7VU3s2jvkoCpPNEsc+Y=;
+  b=D+80gHtukbZoYMZx8KbnoPhQyra/OZnnFHS7/XDep9bqxDXTZIR6vCnz
+   QPj3mzZEIsBYjFWqDHndISrWokjBAmCVvGwbjXEttGPPUj/uei55tI48E
+   X+278dJOrIIHhVvRDJopZNwLlJpG4irJX3jgW5vS5CrNLmtVVq33SztIU
+   c=;
+X-IronPort-AV: E=Sophos;i="5.81,266,1610409600"; 
+   d="scan'208";a="99384150"
+Subject: Re: [net-next 1/2] xen-netback: add module parameter to disable ctrl-ring
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-821c648d.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 21 Mar 2021 21:00:39 +0000
+Received: from EX13D12EUA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1a-821c648d.us-east-1.amazon.com (Postfix) with ESMTPS id C740FA1F51;
+        Sun, 21 Mar 2021 21:00:36 +0000 (UTC)
+Received: from 147dda3ee008.ant.amazon.com (10.43.166.52) by
+ EX13D12EUA002.ant.amazon.com (10.43.165.103) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 21 Mar 2021 21:00:33 +0000
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Leon Romanovsky <leon@kernel.org>, <netdev@vger.kernel.org>,
+        <wei.liu@kernel.org>, <paul@xen.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <xen-devel@lists.xenproject.org>
+References: <20210311225944.24198-1-andyhsu@amazon.com>
+ <YEuAKNyU6Hma39dN@lunn.ch> <ec5baac1-1410-86e4-a0d1-7c7f982a0810@amazon.com>
+ <YEvQ6z5WFf+F4mdc@lunn.ch> <YE3foiFJ4sfiFex2@unreal>
+ <64f5c7a8-cc09-3a7f-b33b-a64d373aed60@amazon.com> <YFI676dumSDJvTlV@unreal>
+ <f3b76d9b-7c82-d3bd-7858-9e831198e33c@amazon.com> <YFeAzfJsHAqPvPuY@unreal>
+ <12f643b5-7a35-d960-9b1f-22853aea4b4c@amazon.com> <YFeso1fr1hLxi3lR@lunn.ch>
+From:   "Hsu, Chiahao" <andyhsu@amazon.com>
+Message-ID: <818b5f7c-92ce-dca9-ee83-c6220c8292da@amazon.com>
+Date:   Sun, 21 Mar 2021 22:00:21 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Wuc7qK1JLYnP+HJpGwSifxg";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <YFeso1fr1hLxi3lR@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.43.166.52]
+X-ClientProxiedBy: EX13D10EUA003.ant.amazon.com (10.43.165.52) To
+ EX13D12EUA002.ant.amazon.com (10.43.165.103)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Wuc7qK1JLYnP+HJpGwSifxg
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-In commit
+Andrew Lunn 於 2021/3/21 21:29 寫道:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
+>
+>
+>
+>>> At the end, it will be more granular module parameter that user still
+>>> will need to guess.
+>> I believe users always need to know any parameter or any tool's flag before
+>> they use it.
+>> For example, before user try to set/clear this ctrl_ring_enabled, they
+>> should already have basic knowledge about this feature,
+>> or else they shouldn't use it (the default value is same as before), and
+>> that's also why we use the 'ctrl_ring_enabled' as parameter name.
+> To me, it seems you are fixing this problem in the wrong place. As a
+> VM user in the cloud, i have no idea how the cloud provider needs the
+> VM configured to allow the cloud provider to migrate the VM to
+> somewhere else in the bitbarn. As the VM user, it should not be my
+> problem. I would expect the cloud provider to configure the VM host to
+> only expose facilities to the VM which allows it to be migrated.
+'the users' I mentioned it's the cloud provider, not a VM user. Sorry 
+for the confusion.
+And agree with you, just wondering how the cloud provider can expose the 
+facilities to the VM if there's no way to set/clr it at runtime, unless 
+reconfigure kernel?  These features are enabled by default.
+>
+> This is a VM host problem, not a VM problem.
+>
+>       Andrew
 
-  014dfa26ce1c ("net: stmmac: dwmac-sun8i: Provide TX and RX fifo sizes")
 
-Fixes tag
+Thanks
 
-  Fixes: 9f93ac8d408 ("net-next: stmmac: Add dwmac-sun8i")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-
-I don't think this is worth rebasing to fix, but it can be fixed for
-future commits by setting core.abbrev to 12 (or more) or (for git v2.11
-or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Wuc7qK1JLYnP+HJpGwSifxg
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBXsR0ACgkQAVBC80lX
-0GzR/QgAmf7iGMxbO6xURCcfc3ghMiUDvN/58O+pLv2xbvq7u+J73msuQBWYDttE
-gGzzPu5NKxc86TcMPns8UksoaM/YjLNvQrxPPcF0ZzE/G8ehHB2vJZchHXV97yUE
-XcNG88JUd5kE8fAmFGFybKDdtIbQjTz1QSSKKT4LAeQkNvD++oMAVFUyxc7qVvaC
-mFA7llFwqFjeIP7zloOekHiXyMyGzLSbNvBVYI92x9Av6Ak5STanKO1fsxV9JEGa
-oZgRXVmsZSRn1iu2H2LJb6x/Y2t6zpcOJ8iegCpCJr/WNVbs7mtjVWQ5/FTUwCQW
-GfjEQ/D4CQhGPNbJGqnzLwH7KHEYJg==
-=mLda
------END PGP SIGNATURE-----
-
---Sig_/Wuc7qK1JLYnP+HJpGwSifxg--
