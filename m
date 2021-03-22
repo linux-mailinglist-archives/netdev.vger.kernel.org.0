@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C99344CB3
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:05:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2A7E344CB5
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbhCVREb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 13:04:31 -0400
-Received: from mail-ej1-f50.google.com ([209.85.218.50]:40704 "EHLO
+        id S232025AbhCVREd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 13:04:33 -0400
+Received: from mail-ej1-f50.google.com ([209.85.218.50]:45026 "EHLO
         mail-ej1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbhCVREN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:04:13 -0400
-Received: by mail-ej1-f50.google.com with SMTP id u9so22493180ejj.7;
-        Mon, 22 Mar 2021 10:04:12 -0700 (PDT)
+        with ESMTP id S231435AbhCVRE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:04:26 -0400
+Received: by mail-ej1-f50.google.com with SMTP id e14so4284203ejz.11;
+        Mon, 22 Mar 2021 10:04:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mbX+25IhtGxUxG75ZUNY2+6T7jBsgS7En6v4O7pc9lg=;
-        b=Kgc5EtGIsxAH9YA8qnZ7LZZ5q9gfka6DUdUgFtmsOWpBqRmnea0gUVMzzate2ospzb
-         NBKG22jFqgJPl827C5ZSTQj+IOORoz35t/abVUx1bL0j6xk/4rSUv1XrKN1sgqdSCM0j
-         I6ZQ07yDdIXowvIsVkzXQAVcUDMfajAl9jD3BoNAs/tkhnJrZRiaNQLt7y2OmDhjrGNa
-         loPwOpcbV4XZPxiNTLSt0Z3PapocIPuJyAdnpTWp0qmmbXowW4HOEKFkHkKPlr6z5tvq
-         HomNoXzGzzk0qFAehxJUM0qITU/d7ZAQLsGBUWHtM6uZjvv6wza7eNAwFwuklbuiToZ1
-         y8Zg==
-X-Gm-Message-State: AOAM531TMNJKpHe/gsc0/zRrLwkMb1ZJiBUyWHddmlis8/henXgFctAW
-        i1rHYgsEZM4Wmqon7v2mGG36TvvEqZk=
-X-Google-Smtp-Source: ABdhPJwMnCjHMCYCYTsTuTMec+ggbYvQT5m7rmd3ISvi2eHsMoBHe97QYnp1Zk6QZMplCB32R6St/Q==
-X-Received: by 2002:a17:906:4a50:: with SMTP id a16mr821098ejv.256.1616432651829;
-        Mon, 22 Mar 2021 10:04:11 -0700 (PDT)
+        bh=Q4hJwVCk3+ZTPKzqvOlhAKuNUBRHjDMrz11EpiH6d2Q=;
+        b=iOxJWrYeuxfMdroIwyPWyLYPSniXH1Mr3LJ5n9yPRQ34mHI3zjAXM31UN1DkvaE5KQ
+         lrOCCoxPZlEp+iiTVedpFhCgL6APTjmC8lojr4DFgjxNtXKyF8vUeQE8ZXbUpXQAv291
+         dtQyFR5c+55R6dHpeBqBozltHByagiD9SfcCn7BD3UxoTjthcwNNSxEeNVIHdSrwz2Fh
+         omADOJH9nqYUpAb6ZXCoIVL6yETSRmi4F1BluIjW6P56toS7MnllI8M683FnSnM8S2Dy
+         H2Q9ZgJOvmhziCgirjNFJMZfytyCvbul7fk3gVVUNM/YWmcRI51dnnxS7EKMWrLabVYI
+         OoMA==
+X-Gm-Message-State: AOAM530z/efvlnQI81eVeVEk1OA3IizhjCoxrQn+wjdNyuoe9uDKJpmI
+        dRsjf0TdU0U3PSC/uy5iOod/CaXcbRU=
+X-Google-Smtp-Source: ABdhPJyKt9rFvfA1h22M92BqSGbJM062tCpyfjUwYNkAwntkJpQTDeRzbPyMGENaSYJFRYpNTU/FqA==
+X-Received: by 2002:a17:907:2062:: with SMTP id qp2mr755287ejb.397.1616432662421;
+        Mon, 22 Mar 2021 10:04:22 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-2-34-63-208.cust.vodafonedsl.it. [2.34.63.208])
-        by smtp.gmail.com with ESMTPSA id h22sm9891589eji.80.2021.03.22.10.04.10
+        by smtp.gmail.com with ESMTPSA id h22sm9891589eji.80.2021.03.22.10.04.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 10:04:11 -0700 (PDT)
+        Mon, 22 Mar 2021 10:04:22 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -44,9 +44,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Saeed Mahameed <saeedm@nvidia.com>,
         David Ahern <dsahern@gmail.com>,
         Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next 4/6] net: change users of __skb_frag_unref() and add an extra argument
-Date:   Mon, 22 Mar 2021 18:02:59 +0100
-Message-Id: <20210322170301.26017-5-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next 5/6] mvpp2: recycle buffers
+Date:   Mon, 22 Mar 2021 18:03:00 +0100
+Message-Id: <20210322170301.26017-6-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210322170301.26017-1-mcroce@linux.microsoft.com>
 References: <20210322170301.26017-1-mcroce@linux.microsoft.com>
@@ -56,72 +56,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+From: Matteo Croce <mcroce@microsoft.com>
 
-On a previous patch we added an extra argument on __skb_frag_unref() to
-handle recycling. Update the current users of the function with that.
+Use the new recycling API for page_pool.
+In a drop rate test, the packet rate is more than doubled,
+from 962 Kpps to 2047 Kpps.
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+perf top on a stock system shows:
+
+Overhead  Shared Object     Symbol
+  30.67%  [kernel]          [k] page_pool_release_page
+   8.37%  [kernel]          [k] get_page_from_freelist
+   7.34%  [kernel]          [k] free_unref_page
+   6.47%  [mvpp2]           [k] mvpp2_rx
+   4.69%  [kernel]          [k] eth_type_trans
+   4.55%  [kernel]          [k] __netif_receive_skb_core
+   4.40%  [kernel]          [k] build_skb
+   4.29%  [kernel]          [k] kmem_cache_free
+   4.00%  [kernel]          [k] kmem_cache_alloc
+   3.81%  [kernel]          [k] dev_gro_receive
+
+With packet rate stable at 962 Kpps:
+
+tx: 0 bps 0 pps rx: 477.4 Mbps 962.6 Kpps
+tx: 0 bps 0 pps rx: 477.6 Mbps 962.8 Kpps
+tx: 0 bps 0 pps rx: 477.6 Mbps 962.9 Kpps
+tx: 0 bps 0 pps rx: 477.2 Mbps 962.1 Kpps
+tx: 0 bps 0 pps rx: 477.5 Mbps 962.7 Kpps
+
+And this is the same output with recycling enabled:
+
+Overhead  Shared Object     Symbol
+  12.75%  [mvpp2]           [k] mvpp2_rx
+   9.56%  [kernel]          [k] __netif_receive_skb_core
+   9.29%  [kernel]          [k] build_skb
+   9.27%  [kernel]          [k] eth_type_trans
+   8.39%  [kernel]          [k] kmem_cache_alloc
+   7.85%  [kernel]          [k] kmem_cache_free
+   7.36%  [kernel]          [k] page_pool_put_page
+   6.45%  [kernel]          [k] dev_gro_receive
+   4.72%  [kernel]          [k] __xdp_return
+   3.06%  [kernel]          [k] page_pool_refill_alloc_cache
+
+With packet rate above 2000 Kpps:
+
+tx: 0 bps 0 pps rx: 1015 Mbps 2046 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
+
+The major performance increase is explained by the fact that the most CPU
+consuming functions (page_pool_release_page, get_page_from_freelist
+and free_unref_page) are no longer called on a per packet basis.
+
+The test was done by sending to the macchiatobin 64 byte ethernet frames
+with an invalid ethertype, so the packets are dropped early in the RX path.
+
 Signed-off-by: Matteo Croce <mcroce@microsoft.com>
 ---
- drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c | 2 +-
- drivers/net/ethernet/marvell/sky2.c                            | 2 +-
- drivers/net/ethernet/mellanox/mlx4/en_rx.c                     | 2 +-
- net/tls/tls_device.c                                           | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-index 169e10c91378..cbcff5518965 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -2125,7 +2125,7 @@ static int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev)
- 		/* clear the frag ref count which increased locally before */
- 		for (i = 0; i < record->num_frags; i++) {
- 			/* clear the frag ref count */
--			__skb_frag_unref(&record->frags[i]);
-+			__skb_frag_unref(&record->frags[i], false);
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 1767c60056c5..8f03bbc763bc 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -3848,6 +3848,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 	struct mvpp2_pcpu_stats ps = {};
+ 	enum dma_data_direction dma_dir;
+ 	struct bpf_prog *xdp_prog;
++	struct xdp_rxq_info *rxqi;
+ 	struct xdp_buff xdp;
+ 	int rx_received;
+ 	int rx_done = 0;
+@@ -3913,15 +3914,15 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		else
+ 			frag_size = bm_pool->frag_size;
+ 
+-		if (xdp_prog) {
+-			struct xdp_rxq_info *xdp_rxq;
++		if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
++			rxqi = &rxq->xdp_rxq_short;
++		else
++			rxqi = &rxq->xdp_rxq_long;
+ 
+-			if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
+-				xdp_rxq = &rxq->xdp_rxq_short;
+-			else
+-				xdp_rxq = &rxq->xdp_rxq_long;
++		if (xdp_prog) {
++			xdp.rxq = rxqi;
+ 
+-			xdp_init_buff(&xdp, PAGE_SIZE, xdp_rxq);
++			xdp_init_buff(&xdp, PAGE_SIZE, rxqi);
+ 			xdp_prepare_buff(&xdp, data,
+ 					 MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM,
+ 					 rx_bytes, false);
+@@ -3965,7 +3966,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
  		}
- 		/* if any failure, come out from the loop. */
- 		if (ret) {
-diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
-index 2a752fb6b758..1cc646fb4fe4 100644
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -2501,7 +2501,7 @@ static void skb_put_frags(struct sk_buff *skb, unsigned int hdr_space,
  
- 		if (length == 0) {
- 			/* don't need this page */
--			__skb_frag_unref(frag);
-+			__skb_frag_unref(frag, false);
- 			--skb_shinfo(skb)->nr_frags;
- 		} else {
- 			size = min(length, (unsigned) PAGE_SIZE);
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index e35e4d7ef4d1..cea62b8f554c 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -526,7 +526,7 @@ static int mlx4_en_complete_rx_desc(struct mlx4_en_priv *priv,
- fail:
- 	while (nr > 0) {
- 		nr--;
--		__skb_frag_unref(skb_shinfo(skb)->frags + nr);
-+		__skb_frag_unref(skb_shinfo(skb)->frags + nr, false);
- 	}
- 	return 0;
- }
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index d9cd229aa111..2a32a547e51a 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -127,7 +127,7 @@ static void destroy_record(struct tls_record_info *record)
- 	int i;
- 
- 	for (i = 0; i < record->num_frags; i++)
--		__skb_frag_unref(&record->frags[i]);
-+		__skb_frag_unref(&record->frags[i], false);
- 	kfree(record);
- }
- 
+ 		if (pp)
+-			page_pool_release_page(pp, virt_to_page(data));
++			skb_mark_for_recycle(skb, virt_to_page(data), &rxqi->mem);
+ 		else
+ 			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
+ 					       bm_pool->buf_size, DMA_FROM_DEVICE,
 -- 
 2.30.2
 
