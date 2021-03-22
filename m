@@ -2,153 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA3B345141
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0BC345146
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 22:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbhCVU6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:58:53 -0400
-Received: from outbound-smtp02.blacknight.com ([81.17.249.8]:57380 "EHLO
-        outbound-smtp02.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229547AbhCVU6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:58:50 -0400
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp02.blacknight.com (Postfix) with ESMTPS id F21E4BB098
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 20:58:28 +0000 (GMT)
-Received: (qmail 5808 invoked from network); 22 Mar 2021 20:58:28 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 22 Mar 2021 20:58:28 -0000
-Date:   Mon, 22 Mar 2021 20:58:27 +0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
-Message-ID: <20210322205827.GJ3697@techsingularity.net>
-References: <20210322091845.16437-1-mgorman@techsingularity.net>
- <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
- <20210322194948.GI3697@techsingularity.net>
- <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
+        id S230295AbhCVU77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230114AbhCVU7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:59:23 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C52C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 13:59:23 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id j3so21012371edp.11
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 13:59:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wxv9iUavjoA7myo0v2QjEUO2tzYld2L/O7j3H4/kka4=;
+        b=jo41hw6F5RPvltp+vCy/FKSOryJfRRMiu4YgZZ5xBsnBvw7nejqqYXzf5bWfUVgVoE
+         H+6luUL8CU/2q7GalGA4XZy4DNq6BINboW/FkhDNrnumECl8r63MU/T1t6J6cqUoSiJN
+         3jCMKdAv5jg3JC5d83WgeKtKsypwo6bMONoa8V1tat34Scv/bgGji0fYMrtlcaYOKI2w
+         5XXnrE6W1NeKpyaUm01NY5hKZbW3rJcDzZdRmqEgcEkMQZiKmtPfCG877w+pWF1flU5I
+         sVX27GxuFVp4jAqwvDX2AIZZRwPgttKwlbcMqRbEDxpOew5RcR35xMkuzYeigLlFsO25
+         YWzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wxv9iUavjoA7myo0v2QjEUO2tzYld2L/O7j3H4/kka4=;
+        b=fhjhyCeaOKGwGVEHjJ8ZsgObG0buxxD1Ug5rqIsnmjmcgIkTGuutXfeeHH1xVcbUoG
+         lCt8SNoQecL/VGqEf0mo/smIuSWyoS27RfS33Pq2+qEwAQBoRSTts601W7a1V9yhSILP
+         pn0qBhXeHjq1oTGjkAkHyfqSJv5+xaMMo8SPAHsVwXiZUioQBT0G6Tz5LD+xRyq7mz50
+         8goWmwrGcr5QU/OSKlwSIX5I1v/YiQBPl2o+q8WB7e9q+v67M6cHOdmNhXCAfcVnKWqT
+         SakuW72FbhKcBqPuSagtOyXSR5uqA4vtATa0P8/wCq/KogU8w8AudoZjlcEKN5IokfUr
+         98MA==
+X-Gm-Message-State: AOAM5320jPBpgfPliEawlWeghXuLqhLTU19VGfZMIX3iLPtPPb8Wr03/
+        rqwl59H9AEycF/LnYdXv5tk=
+X-Google-Smtp-Source: ABdhPJxtTH3qo4u6RoXNMIW0ZOXbi03MphZ3jre7hzQwL++f94I3a4F1zLqLKg1eXTK+/N9upMjNGw==
+X-Received: by 2002:a05:6402:4242:: with SMTP id g2mr1432117edb.329.1616446762322;
+        Mon, 22 Mar 2021 13:59:22 -0700 (PDT)
+Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id v25sm11621074edr.18.2021.03.22.13.59.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 13:59:21 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 0/6] dpaa2-switch: offload bridge port flags to device
+Date:   Mon, 22 Mar 2021 22:58:53 +0200
+Message-Id: <20210322205859.606704-1-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 08:32:54PM +0000, Chuck Lever III wrote:
-> >> It is returning some confusing (to me) results. I'd like
-> >> to get these resolved before posting any benchmark
-> >> results.
-> >> 
-> >> 1. When it has visited every array element, it returns the
-> >> same value as was passed in @nr_pages. That's the N + 1th
-> >> array element, which shouldn't be touched. Should the
-> >> allocator return nr_pages - 1 in the fully successful case?
-> >> Or should the documentation describe the return value as
-> >> "the number of elements visited" ?
-> >> 
-> > 
-> > I phrased it as "the known number of populated elements in the
-> > page_array".
-> 
-> The comment you added states:
-> 
-> + * For lists, nr_pages is the number of pages that should be allocated.
-> + *
-> + * For arrays, only NULL elements are populated with pages and nr_pages
-> + * is the maximum number of pages that will be stored in the array.
-> + *
-> + * Returns the number of pages added to the page_list or the index of the
-> + * last known populated element of page_array.
-> 
-> 
-> > I did not want to write it as "the number of valid elements
-> > in the array" because that is not necessarily the case if an array is
-> > passed in with holes in the middle. I'm open to any suggestions on how
-> > the __alloc_pages_bulk description can be improved.
-> 
-> The comments states that, for the array case, a /count/ of
-> pages is passed in, and an /index/ is returned. If you want
-> to return the same type for lists and arrays, it should be
-> documented as a count in both cases, to match @nr_pages.
-> Consumers will want to compare @nr_pages with the return
-> value to see if they need to call again.
-> 
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Then I'll just say it's the known count of pages in the array. That
-might still be less than the number of requested pages if holes are
-encountered.
+Add support for offloading bridge port flags to the switch. With this
+patch set, the learning, broadcast flooding and unknown ucast/mcast
+flooding states will be user configurable.
 
-> > The definition of the return value as-is makes sense for either a list
-> > or an array. Returning "nr_pages - 1" suits an array because it's the
-> > last valid index but it makes less sense when returning a list.
-> > 
-> >> 2. Frequently the allocator returns a number smaller than
-> >> the total number of elements. As you may recall, sunrpc
-> >> will delay a bit (via a call to schedule_timeout) then call
-> >> again. This is supposed to be a rare event, and the delay
-> >> is substantial. But with the array-based API, a not-fully-
-> >> successful allocator call seems to happen more than half
-> >> the time. Is that expected? I'm calling with GFP_KERNEL,
-> >> seems like the allocator should be trying harder.
-> >> 
-> > 
-> > It's not expected that the array implementation would be worse *unless*
-> > you are passing in arrays with holes in the middle. Otherwise, the success
-> > rate should be similar.
-> 
-> Essentially, sunrpc will always pass an array with a hole.
-> Each RPC consumes the first N elements in the rq_pages array.
-> Sometimes N == ARRAY_SIZE(rq_pages). AFAIK sunrpc will not
-> pass in an array with more than one hole. Typically:
-> 
-> .....PPPP
-> 
-> My results show that, because svc_alloc_arg() ends up calling
-> __alloc_pages_bulk() twice in this case, it ends up being
-> twice as expensive as the list case, on average, for the same
-> workload.
-> 
+Apart from that, the last patch is a small fix that configures the
+offload_fwd_mark if the switch port is under a bridge or not.
 
-Ok, so in this case the caller knows that holes are always at the
-start. If the API returns an index that is a valid index and populated,
-it can check the next index and if it is valid then the whole array
-must be populated.
+Ioana Ciornei (6):
+  dpaa2-switch: move the dpaa2_switch_fdb_set_egress_flood function
+  dpaa2-switch: refactor the egress flooding domain setup
+  dpaa2-switch: add support for configuring learning state per port
+  dpaa2-switch: add support for configuring per port broadcast flooding
+  dpaa2-switch: add support for configuring per port unknown flooding
+  dpaa2-switch: mark skbs with offload_fwd_mark
 
-Right now, the implementation checks for populated elements at the *start*
-because it is required for calling prep_new_page starting at the correct
-index and the API cannot make assumptions about the location of the hole.
-
-The patch below would check the rest of the array but note that it's
-slower for the API to do this check because it has to check every element
-while the sunrpc user could check one element. Let me know if a) this
-hunk helps and b) is desired behaviour.
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index c83d38dfe936..4bf20650e5f5 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5107,6 +5107,9 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 	} else {
- 		while (prep_index < nr_populated)
- 			prep_new_page(page_array[prep_index++], 0, gfp, 0);
-+
-+		while (nr_populated < nr_pages && page_array[nr_populated])
-+			nr_populated++;
- 	}
- 
- 	return nr_populated;
+ .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 214 ++++++++++++++----
+ .../ethernet/freescale/dpaa2/dpaa2-switch.h   |   3 +-
+ .../net/ethernet/freescale/dpaa2/dpsw-cmd.h   |  10 +
+ drivers/net/ethernet/freescale/dpaa2/dpsw.c   |  27 +++
+ drivers/net/ethernet/freescale/dpaa2/dpsw.h   |  25 +-
+ 5 files changed, 225 insertions(+), 54 deletions(-)
 
 -- 
-Mel Gorman
-SUSE Labs
+2.30.0
+
