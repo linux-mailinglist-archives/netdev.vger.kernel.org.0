@@ -2,24 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A677345371
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:57:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E785345374
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:57:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbhCVX5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 19:57:10 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:58324 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230414AbhCVX4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 19:56:41 -0400
+        id S231197AbhCVX5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 19:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230438AbhCVX4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 19:56:48 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [IPv6:2001:4b98:dc0:41:216:3eff:fe8c:2bda])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BB46C061756;
+        Mon, 22 Mar 2021 16:56:40 -0700 (PDT)
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 1C2A26312A;
+        by mail.netfilter.org (Postfix) with ESMTPSA id BAAAD6312B;
         Tue, 23 Mar 2021 00:56:32 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 02/10] netfilter: Fix fall-through warnings for Clang
-Date:   Tue, 23 Mar 2021 00:56:20 +0100
-Message-Id: <20210322235628.2204-3-pablo@netfilter.org>
+Subject: [PATCH net-next 03/10] netfilter: conntrack: Remove unused variable declaration
+Date:   Tue, 23 Mar 2021 00:56:21 +0100
+Message-Id: <20210322235628.2204-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210322235628.2204-1-pablo@netfilter.org>
 References: <20210322235628.2204-1-pablo@netfilter.org>
@@ -29,58 +32,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+From: YueHaibing <yuehaibing@huawei.com>
 
-In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
-warnings by explicitly adding multiple break statements instead of just
-letting the code fall through to the next case.
+commit e97c3e278e95 ("tproxy: split off ipv6 defragmentation to a separate
+module") left behind this.
 
-Link: https://github.com/KSPP/linux/issues/115
-Acked-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_proto_dccp.c | 1 +
- net/netfilter/nf_tables_api.c           | 1 +
- net/netfilter/nft_ct.c                  | 1 +
- 3 files changed, 3 insertions(+)
+ include/net/netfilter/ipv6/nf_conntrack_ipv6.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_dccp.c b/net/netfilter/nf_conntrack_proto_dccp.c
-index db7479db8512..4f33307fa3cf 100644
---- a/net/netfilter/nf_conntrack_proto_dccp.c
-+++ b/net/netfilter/nf_conntrack_proto_dccp.c
-@@ -397,6 +397,7 @@ dccp_new(struct nf_conn *ct, const struct sk_buff *skb,
- 			msg = "not picking up existing connection ";
- 			goto out_invalid;
- 		}
-+		break;
- 	case CT_DCCP_REQUEST:
- 		break;
- 	case CT_DCCP_INVALID:
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 224c8e537cb3..083c112bee0b 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -8557,6 +8557,7 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
- 							data->verdict.chain);
- 				if (err < 0)
- 					return err;
-+				break;
- 			default:
- 				break;
- 			}
-diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-index 882fe8648653..0592a9456084 100644
---- a/net/netfilter/nft_ct.c
-+++ b/net/netfilter/nft_ct.c
-@@ -527,6 +527,7 @@ static void __nft_ct_set_destroy(const struct nft_ctx *ctx, struct nft_ct *priv)
- 	case NFT_CT_ZONE:
- 		if (--nft_ct_pcpu_template_refcnt == 0)
- 			nft_ct_tmpl_put_pcpu();
-+		break;
- #endif
- 	default:
- 		break;
+diff --git a/include/net/netfilter/ipv6/nf_conntrack_ipv6.h b/include/net/netfilter/ipv6/nf_conntrack_ipv6.h
+index 7b3c873f8839..e95483192d1b 100644
+--- a/include/net/netfilter/ipv6/nf_conntrack_ipv6.h
++++ b/include/net/netfilter/ipv6/nf_conntrack_ipv6.h
+@@ -4,7 +4,4 @@
+ 
+ extern const struct nf_conntrack_l4proto nf_conntrack_l4proto_icmpv6;
+ 
+-#include <linux/sysctl.h>
+-extern struct ctl_table nf_ct_ipv6_sysctl_table[];
+-
+ #endif /* _NF_CONNTRACK_IPV6_H*/
 -- 
 2.20.1
 
