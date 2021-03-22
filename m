@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E28BC344C66
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:55:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E63ED344C6A
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbhCVQzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
+        id S231150AbhCVQ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbhCVQzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:55:11 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A92C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 09:55:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kzxqchfPmu/8lYrfp2zKgORyBaujjx8P/Vw5bDn6fBo=; b=ME/6dWtOH2m+rpfhWa5qfP98RK
-        YXfI9TJ2znmUor/ucQ6NAFp5l9SaMBsAkEHsp/2XmErAwXrdmcvzi4gZvDsO8H+t8bqKKO5XnycyO
-        tRRUEqP4zVlFcNHwRQH1R5DERdhYjvDW0TBOwhMGx/HX6uNmQsgOPA0gyM43KvYfc8evjQkQzh6vU
-        gGFTOw1hyMCfEFtyLCl2uv3+mhvtbQL3w+vmIfohv9VTYyRYg9+Gu1VWGAOQ2MFoemAI5M9UAiu0f
-        KSlJKB6y9ZL9l6MFT813hkEUjleKf7GlVovHMYTXAvgKx/KbgGwbZ7eaWHPbYQrfEP8ugPunvrdVz
-        71O0zeCg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lONp9-008oEE-4v; Mon, 22 Mar 2021 16:54:43 +0000
-Date:   Mon, 22 Mar 2021 16:54:39 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org, kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH net-next] net-sysfs: remove possible sleep from an RCU
- read-side critical section
-Message-ID: <20210322165439.GR1719932@casper.infradead.org>
-References: <20210322154329.340048-1-atenart@kernel.org>
+        with ESMTP id S231304AbhCVQ4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:56:18 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379EAC061756;
+        Mon, 22 Mar 2021 09:56:17 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id j3so20177159edp.11;
+        Mon, 22 Mar 2021 09:56:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=in5zPWN2s1K/tCcc950Upp69w93UR8g2HDZ0TgRoXRM=;
+        b=DhcHmXJBGHTgBNm2rEBfRQ2WT31PbZ5H6CB6K6j3kJWA/q3XmOLMNm3B+pZBwA8nTN
+         WbkTrUgUfBR9LvMY12FjMK1Yl2rxjfnVTHW5SJY+GK1tI7qRxe4YpbdHqPH7XgVonYP2
+         /2IuWqtzb6S7DdL0uXvDfstvowKP5PF83Rb59ovAQl+Bt/R5+MSL2keffSccbDouzH/0
+         8wB2bJoeF4KiC7Cj+x8OtcCJ8/sLXsmqOW+yM97z5M1Te9vHKbhGpLGO3yKRnD74YU5z
+         07tvi7we5mYd/emSvnsLeCisYcZUjTTOKFhBCD8Mj/uXmTCVR7ExHGgAS2auO+Kctkht
+         sugQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=in5zPWN2s1K/tCcc950Upp69w93UR8g2HDZ0TgRoXRM=;
+        b=RdnxGLWX/RK5hDX9rc+l45OzF6o1TZaZ424AF55c60LXplbQlhC+/0gwCdqLoMZwmT
+         RT6mY5pk4rYdJ3A/ohbqaTzoLqSjpVkCly3Jfy0bIEWbNP8NlVb9MYJi5ndOmSkvzzE8
+         0aFTQT/s1lhlKfWLbF11zCroH88pF1Lonkg/bGnK3qX2A/navypQwHhU1RhQNyScBhR9
+         0CXXFdhhGsR8Bja7U/Iewc6BEFRFS5SB6nqlb4thxaijSTTnkfLzalhMFE/S7UnYOEJc
+         38cpDs73sixU+86vS/eFK4yp88sKZ9+p0xSZQgBUC3Mh2YflKWwvYVn4WiESxatntIFY
+         nRpg==
+X-Gm-Message-State: AOAM532d7dtHnzS/qzV14x03U2lAeasbIA+l9A58Oc/SJ+TxI2m8QknP
+        +7ojdOKzFWKepbZemDI2ee8=
+X-Google-Smtp-Source: ABdhPJw8kbQvgz9YUmfHBxMrExsPx8A56GEChaihtAgtGZ9HEx+Pf2ZfCc+wSixEp9N4AU5FAE8EPQ==
+X-Received: by 2002:aa7:c0c7:: with SMTP id j7mr554934edp.298.1616432176029;
+        Mon, 22 Mar 2021 09:56:16 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id j7sm11538303edv.40.2021.03.22.09.56.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 09:56:15 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 18:56:14 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
+        linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v3 net-next 08/12] net: dsa: replay port and host-joined
+ mdb entries when joining the bridge
+Message-ID: <20210322165614.56sgtdxpmnp2dkja@skbuf>
+References: <20210320223448.2452869-1-olteanv@gmail.com>
+ <20210320223448.2452869-9-olteanv@gmail.com>
+ <7a89fd44-98d7-072f-6215-84960e27b0d9@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210322154329.340048-1-atenart@kernel.org>
+In-Reply-To: <7a89fd44-98d7-072f-6215-84960e27b0d9@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 04:43:29PM +0100, Antoine Tenart wrote:
-> xps_queue_show is mostly made of an RCU read-side critical section and
-> calls bitmap_zalloc with GFP_KERNEL in the middle of it. That is not
-> allowed as this call may sleep and such behaviours aren't allowed in RCU
-> read-side critical sections. Fix this by using GFP_NOWAIT instead.
+On Mon, Mar 22, 2021 at 06:35:10PM +0200, Nikolay Aleksandrov wrote:
+> > +	hlist_for_each_entry(mp, &br->mdb_list, mdb_node) {
+> 
+> You cannot walk over these lists without the multicast lock or RCU. RTNL is not
+> enough because of various timers and leave messages that can alter both the mdb_list
+> and the port group lists. I'd prefer RCU to avoid blocking the bridge mcast.
 
-This would be another way of fixing the problem that is slightly less
-complex than my initial proposal, but does allow for using GFP_KERNEL
-for fewer failures:
+The trouble is that I need to emulate the calling context that is
+provided to SWITCHDEV_OBJ_ID_HOST_MDB and SWITCHDEV_OBJ_ID_PORT_MDB, and
+that means blocking context.
 
-@@ -1366,11 +1366,10 @@ static ssize_t xps_queue_show(struct net_device *dev, unsigned int index,
- {
-        struct xps_dev_maps *dev_maps;
-        unsigned long *mask;
--       unsigned int nr_ids;
-+       unsigned int nr_ids, new_nr_ids;
-        int j, len;
- 
--       rcu_read_lock();
--       dev_maps = rcu_dereference(dev->xps_maps[type]);
-+       dev_maps = READ_ONCE(dev->xps_maps[type]);
- 
-        /* Default to nr_cpu_ids/dev->num_rx_queues and do not just return 0
-         * when dev_maps hasn't been allocated yet, to be backward compatible.
-@@ -1379,10 +1378,18 @@ static ssize_t xps_queue_show(struct net_device *dev, unsigned int index,
-                 (type == XPS_CPUS ? nr_cpu_ids : dev->num_rx_queues);
- 
-        mask = bitmap_zalloc(nr_ids, GFP_KERNEL);
--       if (!mask) {
--               rcu_read_unlock();
-+       if (!mask)
-                return -ENOMEM;
--       }
-+
-+       rcu_read_lock();
-+       dev_maps = rcu_dereference(dev->xps_maps[type]);
-+       /* if nr_ids shrank in the meantime, do not overrun array.
-+        * if it increased, we just won't show the new ones
-+        */
-+       new_nr_ids = dev_maps ? dev_maps->nr_ids :
-+                       (type == XPS_CPUS ? nr_cpu_ids : dev->num_rx_queues);
-+       if (new_nr_ids < nr_ids)
-+               nr_ids = new_nr_ids;
- 
-        if (!dev_maps || tc >= dev_maps->num_tc)
-                goto out_no_maps;
+So if I hold rcu_read_lock(), I need to queue up the mdb entries, and
+notify the driver only after I leave the RCU critical section. The
+memory footprint may temporarily blow up.
 
-(or do we need the rcu read lock to read dev->num_rcx_queues? i'm assuming
-we only need it to read the xps_maps array)
+In fact this is what I did in v1:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210224114350.2791260-15-olteanv@gmail.com/
+
+I just figured I could get away with rtnl_mutex protection, but it looks
+like I can't. So I guess you prefer my v1?
