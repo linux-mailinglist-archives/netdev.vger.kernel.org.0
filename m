@@ -2,105 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E0FD34360B
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 01:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E1B34360F
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 01:56:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbhCVAy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 20:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S229949AbhCVAzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 20:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbhCVAyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 20:54:12 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2D1C061574;
-        Sun, 21 Mar 2021 17:54:11 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id c17so2929711pfn.6;
-        Sun, 21 Mar 2021 17:54:11 -0700 (PDT)
+        with ESMTP id S229829AbhCVAyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 20:54:46 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527AFC061574;
+        Sun, 21 Mar 2021 17:54:46 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id v70so9027126qkb.8;
+        Sun, 21 Mar 2021 17:54:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZqTdh65re5NOM88Bvn/Ypjdea75IBIwk3x5yx/WoBHk=;
-        b=mAjRKsiHwBtW0yF3hWXsRMbk6nXYqyDwKcILPuoELgnTAbFFFLJ4l7AfkO5Dy6mC8e
-         vTct0XhX3cAlVrolU2tzrlFqgf7DkTXloU3xKURQbKglhtlZ7OFXJx52AfnFZwpvb/X9
-         gYlfrTjc58M0cKOQ7R+Ociy/5xKopHigb+fMdf+u4AEjalojcUcnBnJ9oPaJH7RM4+nZ
-         36ZUhq1mA4r/n87dHdGc9Vn1zISngvOIYWJAjME4EaeAUs8aj1ffVbbHhg+ZXbVooelq
-         LsrIdWCMLt+Oyrob/4zJP53WLSKpvC1SEKqHpaoCeS+yPIKjOcooJR6/S5Ag6Tz+TdVp
-         OvWQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IFO3ZmmHApJhUFvrdn88x5lFpaNnQPfLrvXIFZxyIfY=;
+        b=HMaaQ2EwXNPzTjDinLvgNl2XGH03e6mT++sfIa8k+BNl9VLbfM635gNrH4XrSxZRJi
+         B3/4SUjfZGQbsRqQkNl9zYsyYCb4k+BdJDRbzJ3Vi74uft9pLGo8/Nlcu2IEgfHT0TDB
+         ymBUM5eRkvOMwcS7IGExanMTsYUyti+AQE4TeL989us/JOb1iV1jnfdI/XEnEjKft7PS
+         D4UUFsa6mQ2Le16Y4uX/BVBpWOhjQlAl9ElWjIWhX3ClMRe35jugzuEU9Be+H81M5pbU
+         awY1ILp6nEuFaH3speJY2ZUsRYT64aDKvGIE6xAXgkKqhRw42aAdMsHC1tlu7flws89J
+         ZT7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZqTdh65re5NOM88Bvn/Ypjdea75IBIwk3x5yx/WoBHk=;
-        b=OiSqiBLB8jnp/3L+rzN5tMTqTXRlVMDzOeamIyiRN/Fv0qpSa4XG5zhk0Wq8tc9ayI
-         7aToxEPFZhkHp7pU4Z1haexOytG0ndH01YIvdBKtF8C1bhlex6uDmrBGyrpSNdmJL5OL
-         ilO/P+kEJj5WqVuHPL1BhCZsvEbgu0xDJ2yLRghIir8aNSpG/q8LElI09GTyREcP25BS
-         eJ3dmrbv0UZ2PHsMwZYt7dRBn/G5Ft9PJOFyydZvKmD6/W7xJ9fUAhABkwb+MHvNZe9/
-         v6DwVJbGu1XYIT/fLxt+S/ES0mndLT95twRrahGHZgM+whcIabrIcoCbrB9PlH+JEqto
-         HNNQ==
-X-Gm-Message-State: AOAM530JFtDol0dY8Kc7Pf+TGKIzHSIEq8qymYC+9ZyXYZfWcg+F0Ked
-        uQUQ2PMwPmo/tKbygu/OtAQ=
-X-Google-Smtp-Source: ABdhPJw4lpgpAKfGRVTZaPAl07QBplRcpsy2yzbtRBV88WTFH8ZitWQYeVsNFR8P76uyq4NxVdoUCA==
-X-Received: by 2002:a62:3706:0:b029:211:3d70:a55a with SMTP id e6-20020a6237060000b02902113d70a55amr16219198pfa.16.1616374450057;
-        Sun, 21 Mar 2021 17:54:10 -0700 (PDT)
-Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
-        by smtp.gmail.com with ESMTPSA id i10sm17589687pjm.1.2021.03.21.17.54.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 21 Mar 2021 17:54:09 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 08:54:01 +0800
-From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] atl1c: optimize rx loop
-Message-ID: <20210322005326.GA24403@DESKTOP-8REGVGF.localdomain>
-References: <20210319040447.527-1-liew.s.piaw@gmail.com>
- <20210319041535.GA3441@1wt.eu>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IFO3ZmmHApJhUFvrdn88x5lFpaNnQPfLrvXIFZxyIfY=;
+        b=ARdHRLxF3a/MIvK9Lxur1PLvt+FL7ToI0GYzHiQ1pFzEJ9J2ODzh+WPsBfaodilF4W
+         Aia9QK37BXHJ00PP+qhuUnh+J6g3GdhJu6xy+w71YzEJbK/zl23Fx45+INur3KkVCRcw
+         LdIxcTiGb6untgFLQDICIbB/lhg1wInKT642/YtS/SunCXd8Q+BiQJxKq1ReTFrWaVib
+         JrIbs05xwrE5cf3tVgOIpaR+Wcx2AVjMpMHpb/tryB3OZDrBHLk8Kgsnj9HkzIur3xYu
+         w0OejEegn3Wme8R+kDfas/umnLBXdS6rrszI1oohRfGxtF0z44y7d+WROeeYXSUtesx1
+         ejyg==
+X-Gm-Message-State: AOAM533l6zm7gpDpwWr0chvd5ELovBXWWTwmHlNU6Q3PemJdhLgyu5im
+        7M75AX4Cb/5bD1ykPZDUNAc=
+X-Google-Smtp-Source: ABdhPJwQS2Lq57vCModtxZzm3rXvuzhszBafTEMkEzhZQjFu+85PuzUj0gR1y4+nf/gHLJyGjfsOOA==
+X-Received: by 2002:a37:ef17:: with SMTP id j23mr8342728qkk.209.1616374485604;
+        Sun, 21 Mar 2021 17:54:45 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.54.190])
+        by smtp.gmail.com with ESMTPSA id v35sm8336349qtd.56.2021.03.21.17.54.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Mar 2021 17:54:45 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     davem@davemloft.net, unixbhaskar@gmail.com,
+        dan.carpenter@oracle.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     rdunlap@infradead.org
+Subject: [PATCH] NFC: Fix a typo
+Date:   Mon, 22 Mar 2021 06:24:30 +0530
+Message-Id: <20210322005430.222748-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210319041535.GA3441@1wt.eu>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 05:15:35AM +0100, Willy Tarreau wrote:
-> On Fri, Mar 19, 2021 at 12:04:47PM +0800, Sieng Piaw Liew wrote:
-> > Remove this trivial bit of inefficiency from the rx receive loop,
-> > results in increase of a few Mbps in iperf3. Tested on Intel Core2
-> > platform.
-> > 
-> > Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
-> > ---
-> >  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> > index 3f65f2b370c5..b995f9a0479c 100644
-> > --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> > +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> > @@ -1796,9 +1796,7 @@ static void atl1c_clean_rx_irq(struct atl1c_adapter *adapter,
-> >  	struct atl1c_recv_ret_status *rrs;
-> >  	struct atl1c_buffer *buffer_info;
-> >  
-> > -	while (1) {
-> > -		if (*work_done >= work_to_do)
-> > -			break;
-> > +	while (*work_done < work_to_do) {
-> 
-> It should not change anything, or only based on the compiler's optimization
-> and should not result in a measurable difference because what it does is
-> exactly the same. Have you really compared the compiled output code to
-> explain the difference ? I strongly suspect you'll find no difference at
-> all.
-> 
-> Thus for me it's certainly not an optimization, it could be qualified as
-> a cleanup to improve code readability however.
-> 
-> Willy
 
-You're right. Objdump and diff showed no difference.
+s/packaet/packet/
 
-Regards,
-Sieng Piaw
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+---
+ drivers/nfc/fdp/fdp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/nfc/fdp/fdp.c b/drivers/nfc/fdp/fdp.c
+index 4dc7bd7e02b6..5d17f0a6c1bf 100644
+--- a/drivers/nfc/fdp/fdp.c
++++ b/drivers/nfc/fdp/fdp.c
+@@ -176,7 +176,7 @@ static void fdp_nci_set_data_pkt_counter(struct nci_dev *ndev,
+  *
+  * The firmware will be analyzed and applied when we send NCI_OP_PROP_PATCH_CMD
+  * command with NCI_PATCH_TYPE_EOT parameter. The device will send a
+- * NFCC_PATCH_NTF packaet and a NCI_OP_CORE_RESET_NTF packet.
++ * NFCC_PATCH_NTF packet and a NCI_OP_CORE_RESET_NTF packet.
+  */
+ static int fdp_nci_send_patch(struct nci_dev *ndev, u8 conn_id, u8 type)
+ {
+--
+2.31.0
+
