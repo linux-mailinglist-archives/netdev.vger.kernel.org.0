@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76770344AA0
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:08:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A85344B0C
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbhCVQIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbhCVQGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:06:22 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C49C061574;
-        Mon, 22 Mar 2021 09:06:21 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id x7-20020a17090a2b07b02900c0ea793940so10828014pjc.2;
-        Mon, 22 Mar 2021 09:06:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SowZIcaJZhEed7YjVk5JGDpUaVc5E1KpdjlopzLh6mI=;
-        b=Vf2RpsLhJ81z4wgKHc/itHt04mg45ujrA6xkjcJEecBUQdcXt5Or36E7aHif2FLaDd
-         0HSw61pk9edeaJwgIQmixB/dGv/ffqFFludF+eBXtH+npHcCGnl4KqiJ5H+UbRyprrKo
-         QXwKSj9460S7sjOtLi0EP+ZZvXH7YcD7cesk6sq+9xLzuce321T7f39UnWMEqnrg8uT8
-         wAqNTR4NhRJVgrL3h1hKHdfUYdoZ96RARj+etL4ZcYY556aRlaoSM8zZ9KIMmGPEX2u3
-         E3rPnyUP9wa8Fot6hu48Av7UB2VbXDR8dj8NtlXZZiw8LdzgXbVTawNha2q6CJp5vYYx
-         /v0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SowZIcaJZhEed7YjVk5JGDpUaVc5E1KpdjlopzLh6mI=;
-        b=l4rcbj2j2qYZxxm2tm2yA4wJOUPrNVln8lcmMXJVMRkAuePKH/WyWKTIrz2PTCDB+j
-         rpL2czdkZA8qF/c0Qh6ohPb6qDOqLLjd3qWOJQooNtMvVCV+0lzbO0lpvWgaWjP/JxD2
-         vBtlRYfUGPEbSeNlyz/7vZsUF5mwWUBi+UqYaXg9g/jp/0UmnWQ0Hs2zGLer3luy01Ys
-         YSRsPm3rdOwKUyiDRVau1p8s8VyPA+ZeSS9V89OrXQvNK6E6dOl0m80XBtJevv/Qmj9Q
-         XtqbXVYH55xFt9XCKfMI0tSQJDgGKOZ9rgyo6kEuXdxqtSNdJXzWQguwn9Ax3vjrYvMx
-         3pZA==
-X-Gm-Message-State: AOAM530IzDSzGl4Bc9uwTAe9Ma9VUgzjPNCP9GPl69PGy4dDbRntI/fW
-        dDYN81m1e9eLApCOj1Dk20o=
-X-Google-Smtp-Source: ABdhPJws+kSzU6djYSD76v4UsDTW83oAB/M1MEpcsMaHwqscU4XhPIidErY6653b/bu/+Vz/CIIZdg==
-X-Received: by 2002:a17:902:70c5:b029:e6:cba1:5d94 with SMTP id l5-20020a17090270c5b02900e6cba15d94mr274867plt.84.1616429180778;
-        Mon, 22 Mar 2021 09:06:20 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i13sm294731pgi.3.2021.03.22.09.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Mar 2021 09:06:20 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 net-next 14/16] net: dsa: don't set
- skb->offload_fwd_mark when not offloading the bridge
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20210318231829.3892920-1-olteanv@gmail.com>
- <20210318231829.3892920-15-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0856e923-fdca-93cb-4fe3-4f5c5d811c3c@gmail.com>
-Date:   Mon, 22 Mar 2021 09:06:16 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.1
+        id S231561AbhCVQTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:19:53 -0400
+Received: from mga07.intel.com ([134.134.136.100]:21216 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231626AbhCVQTf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 12:19:35 -0400
+IronPort-SDR: /dz+JhLGp4W0pVzjjPaSviNl0fDNEDBW+cZO56uqZ2WOPAvy2UFgNbPDWIL4etW7qkzWgUp+QK
+ ugVxpsFHnFyQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="254301394"
+X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
+   d="scan'208";a="254301394"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 09:19:24 -0700
+IronPort-SDR: HQ3akpnHPpLHDT7mmhoaVazRlWDreeTdYyLA9dC2UX0DyvS5mBjryokClXhGTKY6YrPNCHFRic
+ dUkCadlmTnGw==
+X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
+   d="scan'208";a="407893515"
+Received: from canguven-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.255.87.118])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 09:19:22 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        sasha.neftin@intel.com, anthony.l.nguyen@intel.com,
+        linux-pci@vger.kernel.org, bhelgaas@google.com,
+        netdev@vger.kernel.org, mlichvar@redhat.com,
+        richardcochran@gmail.com
+Subject: [PATCH next-queue v3 0/3] igc: Add support for PCIe PTM
+Date:   Mon, 22 Mar 2021 09:18:19 -0700
+Message-Id: <20210322161822.1546454-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-In-Reply-To: <20210318231829.3892920-15-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+Changes from v2:
+  - Now the PTM timestamps are retrieved synchronously with the
+    ioctl();
+  - Fixed some typos in constants;
+  - The IGC_PTM_STAT register is write-1-to-clear, document this more
+    clearly;
 
-On 3/18/2021 4:18 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> DSA has gained the recent ability to deal gracefully with upper
-> interfaces it cannot offload, such as the bridge, bonding or team
-> drivers. When such uppers exist, the ports are still in standalone mode
-> as far as the hardware is concerned.
-> 
-> But when we deliver packets to the software bridge in order for that to
-> do the forwarding, there is an unpleasant surprise in that the bridge
-> will refuse to forward them. This is because we unconditionally set
-> skb->offload_fwd_mark = true, meaning that the bridge thinks the frames
-> were already forwarded in hardware by us.
-> 
-> Since dp->bridge_dev is populated only when there is hardware offload
-> for it, but not in the software fallback case, let's introduce a new
-> helper that can be called from the tagger data path which sets the
-> skb->offload_fwd_mark accordingly to zero when there is no hardware
-> offload for bridging. This lets the bridge forward packets back to other
-> interfaces of our switch, if needed.
-> 
-> Without this change, sending a packet to the CPU for an unoffloaded
-> interface triggers this WARN_ON:
-> 
-> void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
-> 			      struct sk_buff *skb)
-> {
-> 	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
-> 		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
-> }
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
+Changes from v1:
+  - This now should cross compile better, convert_art_ns_to_tsc() will
+    only be used if CONFIG_X86_TSC is enabled;
+  - PCIe PTM errors reported by the NIC are logged and PTM cycles are
+    restarted in case an error is detected;
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Original cover letter:
+
+This adds support for PCIe PTM (Precision Time Measurement) to the igc
+driver. PCIe PTM allows the NIC and Host clocks to be compared more
+precisely, improving the clock synchronization accuracy.
+
+Patch 1/3 reverts a commit that made pci_enable_ptm() private to the
+PCI subsystem, reverting makes it possible for it to be called from
+the drivers.
+
+Patch 2/3 calls pci_enable_ptm() from the igc driver.
+
+Patch 3/3 implements the PCIe PTM support. It adds a workqueue that
+reads the PTM registers periodically and collects the information so a
+subsequent call to getcrosststamp() has all the timestamps needed.
+
+Some questions are raised (also pointed out in the commit message):
+
+1. Using convert_art_ns_to_tsc() is too x86 specific, there should be
+   a common way to create a 'system_counterval_t' from a timestamp.
+
+2. convert_art_ns_to_tsc() says that it should only be used when
+   X86_FEATURE_TSC_KNOWN_FREQ is true, but during tests it works even
+   when it returns false. Should that check be done?
+
+Cheers,
+
+Vinicius Costa Gomes (3):
+  Revert "PCI: Make pci_enable_ptm() private"
+  igc: Enable PCIe PTM
+  igc: Add support for PTP getcrosststamp()
+
+ drivers/net/ethernet/intel/igc/igc.h         |   1 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |  31 ++++
+ drivers/net/ethernet/intel/igc/igc_main.c    |   6 +
+ drivers/net/ethernet/intel/igc/igc_ptp.c     | 173 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  23 +++
+ drivers/pci/pci.h                            |   3 -
+ include/linux/pci.h                          |   7 +
+ 7 files changed, 241 insertions(+), 3 deletions(-)
+
 -- 
-Florian
+2.31.0
+
