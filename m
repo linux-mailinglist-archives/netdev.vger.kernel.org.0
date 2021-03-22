@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF809344A11
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F9C344A12
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbhCVQAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:00:34 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55097 "EHLO
+        id S231601AbhCVQAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:00:35 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:44035 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231150AbhCVP75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 11:59:57 -0400
+        by vger.kernel.org with ESMTP id S230218AbhCVQAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:00:00 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 66F4F5C01CA;
-        Mon, 22 Mar 2021 11:59:57 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id C2B435C01A9;
+        Mon, 22 Mar 2021 11:59:59 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 22 Mar 2021 11:59:57 -0400
+  by compute3.internal (MEProxy); Mon, 22 Mar 2021 11:59:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=W3J1CCgnfqiYxXfJi5oeJHFZyLibHPwHCBh4S17HkNM=; b=A5EnbIyQ
-        I9LJo12cdpGgYwdFLJhLT1aVJjf7t7QIC+GpTGasf3/8GQlA3mfdLkDm2tJK/FFi
-        j86sdMZAMsbn7Za2VLsSH4KlbUk4NkVQ1ZvgQkv05MheW8cE6q7JueXVd5ZEpUEL
-        RxghMg4RB5MBmkfOUyZIRQwzOGAe+5MppUohlOMJMj3mQFb2WYWsCp9YlDjI+bQV
-        y7YvsaUcwmUiQ1jD4PXTbI9zH61cBO+KersSxfoRcwX8M2lW3Ck69VzvDW2HmBtr
-        FK2nX/hJfQiqUEchd/9qAhumyj+htd7qeI6SuN7fYO1qMSeLQaWdJn9A53iNA3dt
-        +OS6LWBVXgnfKw==
-X-ME-Sender: <xms:_b5YYAegtHRJVtceLkjDpwZgNkjmbRkYqtkBMoTcBdwxF8AcE88tpA>
-    <xme:_b5YYCLul_n09dIUefjdDhmSO8CaZ_Jp-ZzPO37VpD1BEnj-bJikvUSOpQ7lp_zQ5
-    toakyr-khX803Y>
+        fm2; bh=yM7DrzRaDEUQ6/mqxIxqg4+9sRo7d7GRxGR35wsSZRA=; b=Yb8yd5XP
+        baLXgCvSl3efKuPrFEeJ/WoybhiijglA0G4H9GJPUpMBolS4CaSSvC8avgTVBGft
+        WhkFyPSSGPIpC5xyDF9qXNst37R4l/1mXLc/tC/1kD171w4uu1o9u3C7VMSu6ct5
+        mK5M4XzPrE/yz/zMjbNJndvUWqshqfJ5K4+eZ5utW+7a+aTK+CIX+TnavC0P4j4O
+        Qr73dFzYQ3iNss1Si3Ix/dvZmkcEQoSZrWwIW2Anh3OCHQbkqNTqDsNKpBAo+8lr
+        RZENt3WOmJ4JRPXDfriePrzuVGurEz257+KjzyovMkkxOAthlFiPaDuX8g42jClR
+        Pqlu4rw2+X5YIg==
+X-ME-Sender: <xms:_75YYNGODM8rT7f5pNsFJO93I79-zE5Nr03ZQCKnEWgnYgfBbxcL3A>
+    <xme:_75YYCWxSp-8ug_t3W-RYNLaqIx2oBGfI8PcKTtxTTzKf9wuz78pMkSWcpTk35rXK
+    TALcQmy-P1nAbE>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeggedgkedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeggedgkedvucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
     necuvehluhhsthgvrhfuihiivgepjeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:_b5YYOblH2oAHntkluWHdaXobtJt7o7RVh8CNlOfjBDnrtFGFVDj2g>
-    <xmx:_b5YYNtz1P1Fx4elpb0F-HTRlKe1rS6RnsVr55IeVwKIgziJmkdnrQ>
-    <xmx:_b5YYLsfb7oBc8IkorDvLLeqJAAVJqm0yUEM6Wj8YyvZkOCLs86kAQ>
-    <xmx:_b5YYBQVcID5psAPuHPoUejAVsye4esrHiDO_fv2tc5TWqC00Dvk_A>
+X-ME-Proxy: <xmx:_75YYPICcUmVebtYcVXlBpBzd06pLh19Xd4Us0onVlFjiFC8YGeFYw>
+    <xmx:_75YYDEZv6VVrKMq_44rKpEbQeZ_YNPPw9NQ6jE92j-CBKhKt1vFnA>
+    <xmx:_75YYDWEbzYzaD5iqvBIWk9Uwxpq-RfCO5qt_3iAdct_kAkZ0bkEJA>
+    <xmx:_75YYJyf-E3PYevgwJS83YGAj1BMEZgxpMi2X9L5kqSD7JNLLtJIpQ>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 99B971080057;
-        Mon, 22 Mar 2021 11:59:55 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id A60501080057;
+        Mon, 22 Mar 2021 11:59:57 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 09/14] mlxsw: spectrum_router: Encapsulate nexthop update in a function
-Date:   Mon, 22 Mar 2021 17:58:50 +0200
-Message-Id: <20210322155855.3164151-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/14] mlxsw: spectrum_router: Break nexthop group entry validation to a separate function
+Date:   Mon, 22 Mar 2021 17:58:51 +0200
+Message-Id: <20210322155855.3164151-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210322155855.3164151-1-idosch@idosch.org>
 References: <20210322155855.3164151-1-idosch@idosch.org>
@@ -64,62 +64,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Encapsulate this functionality in a separate function, so that it could
-be invoked by follow-up patches, when replacing a nexthop bucket that is
-part of a resilient nexthop group.
+The validation of a nexthop group entry is also necessary for resilient
+nexthop groups, so break the validation to a separate function to allow
+for code reuse in subsequent patches.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 28 ++++++++++---------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 36 +++++++++++++------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 1f1f8af63ef7..6be225ec1997 100644
+index 6be225ec1997..fa190e27323e 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -3491,6 +3491,20 @@ static int mlxsw_sp_nexthop_ipip_update(struct mlxsw_sp *mlxsw_sp,
- 	return 0;
+@@ -4296,6 +4296,29 @@ mlxsw_sp_nexthop_obj_single_validate(struct mlxsw_sp *mlxsw_sp,
+ 	return err;
  }
  
-+static int mlxsw_sp_nexthop_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
-+				   struct mlxsw_sp_nexthop *nh)
++static int
++mlxsw_sp_nexthop_obj_group_entry_validate(struct mlxsw_sp *mlxsw_sp,
++					  const struct nh_notifier_single_info *nh,
++					  struct netlink_ext_ack *extack)
 +{
-+	/* When action is discard or trap, the nexthop must be
-+	 * programmed as an Ethernet nexthop.
++	int err;
++
++	err = mlxsw_sp_nexthop_obj_single_validate(mlxsw_sp, nh, extack);
++	if (err)
++		return err;
++
++	/* Device only nexthops with an IPIP device are programmed as
++	 * encapsulating adjacency entries.
 +	 */
-+	if (nh->type == MLXSW_SP_NEXTHOP_TYPE_ETH ||
-+	    nh->action == MLXSW_SP_NEXTHOP_ACTION_DISCARD ||
-+	    nh->action == MLXSW_SP_NEXTHOP_ACTION_TRAP)
-+		return mlxsw_sp_nexthop_eth_update(mlxsw_sp, adj_index, nh);
-+	else
-+		return mlxsw_sp_nexthop_ipip_update(mlxsw_sp, adj_index, nh);
++	if (!nh->gw_family && !nh->is_reject &&
++	    !mlxsw_sp_netdev_ipip_type(mlxsw_sp, nh->dev, NULL)) {
++		NL_SET_ERR_MSG_MOD(extack, "Nexthop group entry does not have a gateway");
++		return -EINVAL;
++	}
++
++	return 0;
 +}
 +
  static int
- mlxsw_sp_nexthop_group_update(struct mlxsw_sp *mlxsw_sp,
- 			      struct mlxsw_sp_nexthop_group_info *nhgi,
-@@ -3511,19 +3525,7 @@ mlxsw_sp_nexthop_group_update(struct mlxsw_sp *mlxsw_sp,
- 		if (nh->update || reallocate) {
- 			int err = 0;
+ mlxsw_sp_nexthop_obj_group_validate(struct mlxsw_sp *mlxsw_sp,
+ 				    const struct nh_notifier_grp_info *nh_grp,
+@@ -4313,19 +4336,10 @@ mlxsw_sp_nexthop_obj_group_validate(struct mlxsw_sp *mlxsw_sp,
+ 		int err;
  
--			/* When action is discard or trap, the nexthop must be
--			 * programmed as an Ethernet nexthop.
--			 */
--			if (nh->type == MLXSW_SP_NEXTHOP_TYPE_ETH ||
--			    nh->action == MLXSW_SP_NEXTHOP_ACTION_DISCARD ||
--			    nh->action == MLXSW_SP_NEXTHOP_ACTION_TRAP)
--				err = mlxsw_sp_nexthop_eth_update(mlxsw_sp,
--								  adj_index,
--								  nh);
--			else
--				err = mlxsw_sp_nexthop_ipip_update(mlxsw_sp,
--								   adj_index,
--								   nh);
-+			err = mlxsw_sp_nexthop_update(mlxsw_sp, adj_index, nh);
- 			if (err)
- 				return err;
- 			nh->update = 0;
+ 		nh = &nh_grp->nh_entries[i].nh;
+-		err = mlxsw_sp_nexthop_obj_single_validate(mlxsw_sp, nh,
+-							   extack);
++		err = mlxsw_sp_nexthop_obj_group_entry_validate(mlxsw_sp, nh,
++								extack);
+ 		if (err)
+ 			return err;
+-
+-		/* Device only nexthops with an IPIP device are programmed as
+-		 * encapsulating adjacency entries.
+-		 */
+-		if (!nh->gw_family && !nh->is_reject &&
+-		    !mlxsw_sp_netdev_ipip_type(mlxsw_sp, nh->dev, NULL)) {
+-			NL_SET_ERR_MSG_MOD(extack, "Nexthop group entry does not have a gateway");
+-			return -EINVAL;
+-		}
+ 	}
+ 
+ 	return 0;
 -- 
 2.29.2
 
