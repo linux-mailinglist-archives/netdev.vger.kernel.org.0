@@ -2,192 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D630E34509B
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B18463450A6
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:21:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbhCVUUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:20:06 -0400
-Received: from mga09.intel.com ([134.134.136.24]:4761 "EHLO mga09.intel.com"
+        id S232330AbhCVUVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:21:14 -0400
+Received: from mga17.intel.com ([192.55.52.151]:45119 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230060AbhCVUUB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 16:20:01 -0400
-IronPort-SDR: 7mCkypICdB3/D2YlGIdcOi7ECVwXnKD3dy3HSDKwsVHzvmzDR7PGXeRQ7pxwbBajNtGtYb8Hl4
- GTPAXZVJFh8Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="190436830"
+        id S232312AbhCVUUt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 16:20:49 -0400
+IronPort-SDR: wwiRac0TZeUkVbt3tKkbK8FD2nIQK8oPhfT8l++ilc1OxZinw1eBS0GL4jKqnXdwojd7sEBoVw
+ Hu0wVXX9/t0w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="170303783"
 X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="190436830"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 13:20:00 -0700
-IronPort-SDR: GVsMUUNyTj+ywIKD76aCAAQC5/wg7DZeE48ajz4FS9StYu/gPgGWR+zD3AYO6qJFqSRfJv9e+R
- abNe7yyuWjdQ==
+   d="scan'208";a="170303783"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 13:20:48 -0700
+IronPort-SDR: JwCBkwhyCgdwkd2s9CrzWUiRmXSbrCFSqgoUfCcmr3tTAw49BJ4WLBHa4ndun5T30B+qEtEffG
+ cdd2GZ86I/dA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="414632242"
+   d="scan'208";a="390611082"
 Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga008.jf.intel.com with ESMTP; 22 Mar 2021 13:19:57 -0700
-Date:   Mon, 22 Mar 2021 21:09:22 +0100
+  by orsmga002.jf.intel.com with ESMTP; 22 Mar 2021 13:20:41 -0700
+Date:   Mon, 22 Mar 2021 21:10:06 +0100
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
         =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        ciara.loftus@intel.com, john fastabend <john.fastabend@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Ciara Loftus <ciara.loftus@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH v2 bpf-next 06/17] libbpf: xsk: use bpf_link
-Message-ID: <20210322200922.GA56104@ranger.igk.intel.com>
+Subject: Re: [PATCH v2 bpf-next 13/17] veth: implement ethtool's
+ get_channels() callback
+Message-ID: <20210322201006.GB56104@ranger.igk.intel.com>
 References: <20210311152910.56760-1-maciej.fijalkowski@intel.com>
- <20210311152910.56760-7-maciej.fijalkowski@intel.com>
- <CAEf4Bza-pGTS+vmE5SvuMtEptGxS5wSbW2d0K34nvt9StG3C8A@mail.gmail.com>
+ <20210311152910.56760-14-maciej.fijalkowski@intel.com>
+ <CAJ8uoz0+Ofu32-QmX1mYka2f52ym=zG_OPyz3wto=pv-brOi-w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4Bza-pGTS+vmE5SvuMtEptGxS5wSbW2d0K34nvt9StG3C8A@mail.gmail.com>
+In-Reply-To: <CAJ8uoz0+Ofu32-QmX1mYka2f52ym=zG_OPyz3wto=pv-brOi-w@mail.gmail.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 10:34:11PM -0700, Andrii Nakryiko wrote:
-> On Thu, Mar 11, 2021 at 7:42 AM Maciej Fijalkowski
+On Tue, Mar 16, 2021 at 09:44:38AM +0100, Magnus Karlsson wrote:
+> On Thu, Mar 11, 2021 at 4:43 PM Maciej Fijalkowski
 > <maciej.fijalkowski@intel.com> wrote:
 > >
-> > Currently, if there are multiple xdpsock instances running on a single
-> > interface and in case one of the instances is terminated, the rest of
-> > them are left in an inoperable state due to the fact of unloaded XDP
-> > prog from interface.
+> > Libbpf's xsk part calls get_channels() API to retrieve the queue count
+> > of the underlying driver so that XSKMAP is sized accordingly.
 > >
-> > Consider the scenario below:
-> >
-> > // load xdp prog and xskmap and add entry to xskmap at idx 10
-> > $ sudo ./xdpsock -i ens801f0 -t -q 10
-> >
-> > // add entry to xskmap at idx 11
-> > $ sudo ./xdpsock -i ens801f0 -t -q 11
-> >
-> > terminate one of the processes and another one is unable to work due to
-> > the fact that the XDP prog was unloaded from interface.
-> >
-> > To address that, step away from setting bpf prog in favour of bpf_link.
-> > This means that refcounting of BPF resources will be done automatically
-> > by bpf_link itself.
-> >
-> > When setting up BPF resources during xsk socket creation, check whether
-> > bpf_link for a given ifindex already exists via set of calls to
-> > bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
-> > and comparing the ifindexes from bpf_link and xsk socket.
-> >
-> > If there's no bpf_link yet, create one for a given XDP prog. If bpf_link
-> > is already at a given ifindex and underlying program is not AF-XDP one,
-> > bail out or update the bpf_link's prog given the presence of
-> > XDP_FLAGS_UPDATE_IF_NOEXIST.
-> >
-> > If there's netlink-based XDP prog running on a interface, bail out and
-> > ask user to do removal by himself.
+> > Implement that in veth so multi queue scenarios can work properly.
 > >
 > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > > ---
-> >  tools/lib/bpf/xsk.c | 139 ++++++++++++++++++++++++++++++++++++++------
-> >  1 file changed, 120 insertions(+), 19 deletions(-)
+> >  drivers/net/veth.c | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
 > >
-> 
-> [...]
-> 
-> > +static int xsk_link_lookup(struct xsk_ctx *ctx, __u32 *prog_id)
+> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > index aa1a66ad2ce5..efca3d45f5c2 100644
+> > --- a/drivers/net/veth.c
+> > +++ b/drivers/net/veth.c
+> > @@ -218,6 +218,17 @@ static void veth_get_ethtool_stats(struct net_device *dev,
+> >         }
+> >  }
+> >
+> > +static void veth_get_channels(struct net_device *dev,
+> > +                             struct ethtool_channels *channels)
 > > +{
-> > +       struct bpf_link_info link_info;
-> > +       __u32 link_len;
-> > +       __u32 id = 0;
-> > +       int err;
-> > +       int fd;
-> > +
-> > +       while (true) {
-> > +               err = bpf_link_get_next_id(id, &id);
-> > +               if (err) {
-> > +                       if (errno == ENOENT) {
-> > +                               err = 0;
-> > +                               break;
-> > +                       }
-> > +                       pr_warn("can't get next link: %s\n", strerror(errno));
-> > +                       break;
-> > +               }
-> > +
-> > +               fd = bpf_link_get_fd_by_id(id);
-> > +               if (fd < 0) {
-> > +                       if (errno == ENOENT)
-> > +                               continue;
-> > +                       pr_warn("can't get link by id (%u): %s\n", id, strerror(errno));
-> > +                       err = -errno;
-> > +                       break;
-> > +               }
-> > +
-> > +               link_len = sizeof(struct bpf_link_info);
-> > +               memset(&link_info, 0, link_len);
-> > +               err = bpf_obj_get_info_by_fd(fd, &link_info, &link_len);
-> > +               if (err) {
-> > +                       pr_warn("can't get link info: %s\n", strerror(errno));
-> > +                       close(fd);
-> > +                       break;
-> > +               }
-> > +               if (link_info.xdp.ifindex == ctx->ifindex) {
+> > +       channels->tx_count = dev->real_num_tx_queues;
+> > +       channels->rx_count = dev->real_num_rx_queues;
+> > +       channels->max_tx = dev->real_num_tx_queues;
+> > +       channels->max_rx = dev->real_num_rx_queues;
+> > +       channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
+> > +       channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
 > 
-> how do you know you are looking at XDP bpf_link? link_info.xdp.ifindex
-> might as well be attach_type for tracing bpf_linke, netns_ino for
-> netns bpf_link, and so on. Do check link_info.type before check other
-> per-link type properties.
+> Copy and paste error in the above two lines. One of the min entries
+> should be dev->real_num_tx_queues. Kind of pointless otherwise ;-).
 
-My mistake, good that you brought that up. I'll fix it.
+Geez. Embarrassing :)
 
 > 
-> > +                       ctx->link_fd = fd;
-> > +                       *prog_id = link_info.prog_id;
-> > +                       break;
-> > +               }
-> > +               close(fd);
-> > +       }
-> > +
-> > +       return err;
 > > +}
 > > +
-> >  static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
-> >                                 int *xsks_map_fd)
-> >  {
-> > @@ -675,8 +777,7 @@ static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
-> >         __u32 prog_id = 0;
-> >         int err;
+> >  static const struct ethtool_ops veth_ethtool_ops = {
+> >         .get_drvinfo            = veth_get_drvinfo,
+> >         .get_link               = ethtool_op_get_link,
+> > @@ -226,6 +237,7 @@ static const struct ethtool_ops veth_ethtool_ops = {
+> >         .get_ethtool_stats      = veth_get_ethtool_stats,
+> >         .get_link_ksettings     = veth_get_link_ksettings,
+> >         .get_ts_info            = ethtool_op_get_ts_info,
+> > +       .get_channels           = veth_get_channels,
+> >  };
 > >
-> > -       err = bpf_get_link_xdp_id(ctx->ifindex, &prog_id,
-> > -                                 xsk->config.xdp_flags);
-> > +       err = xsk_link_lookup(ctx, &prog_id);
-> >         if (err)
-> >                 return err;
+> >  /* general routines */
+> > --
+> > 2.20.1
 > >
-> > @@ -686,9 +787,12 @@ static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
-> >                         return err;
-> >
-> >                 err = xsk_load_xdp_prog(xsk);
-> > -               if (err) {
-> > +               if (err)
-> >                         goto err_load_xdp_prog;
-> > -               }
-> > +
-> > +               err = xsk_create_bpf_link(xsk);
-> > +               if (err)
-> > +                       goto err_create_bpf_link;
-> 
-> what about the backwards compatibility with kernels that don't yet
-> support bpf_link?
-
-For that I'll be trying to create or lookup bpf_link on loopback device.
-If it failed in any way, then use netlink based logic as the underlying
-system doesn't support bpf_link.
-
-Once again, thanks for catching it!
-
-> 
-> >         } else {
-> >                 ctx->prog_fd = bpf_prog_get_fd_by_id(prog_id);
-> >                 if (ctx->prog_fd < 0)
-> 
-> [...]
