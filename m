@@ -2,90 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 275983449A0
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 16:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BFD3449C7
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 16:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbhCVPse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 11:48:34 -0400
-Received: from mga07.intel.com ([134.134.136.100]:18507 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230332AbhCVPr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 11:47:56 -0400
-IronPort-SDR: 3XKcPPGksjcWB1oqEEg+CO8Pu+VWbIc8jgvw45F64/f+ipoXWJ1u9K+Kbmj2HGe22JALuLgfrA
- eZW5ocZ1p7ig==
-X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="254295218"
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="254295218"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 08:47:55 -0700
-IronPort-SDR: TZEUZdZLl44sVFSK6KXCk76loEa+NgbKDVRw/xzbvUQR4XfBwfeqfKciBlZNMK76b8PUHyig5o
- HZLnuyhZheLw==
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="451780716"
-Received: from canguven-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.255.87.118])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 08:47:55 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support
- for PTP getcrosststamp()
-In-Reply-To: <20201110180719.GA1559650@localhost>
-References: <20201110061019.519589-1-vinicius.gomes@intel.com>
- <20201110061019.519589-4-vinicius.gomes@intel.com>
- <20201110180719.GA1559650@localhost>
-Date:   Mon, 22 Mar 2021 08:47:54 -0700
-Message-ID: <875z1jkx5h.fsf@vcostago-mobl2.amr.corp.intel.com>
+        id S230356AbhCVPwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 11:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231305AbhCVPvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 11:51:55 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF0AC061756;
+        Mon, 22 Mar 2021 08:51:54 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id u5so22112812ejn.8;
+        Mon, 22 Mar 2021 08:51:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=P1zx+gVi7eurX/wcAygqpr2CDWPeDaHcriTmolTK1xU=;
+        b=bEVgUuuP2bE/VUwwNcXpOB8inqXkeiuv962axrmdI8HNdb7nsPC8GR9qU1QZnSFHza
+         ngF/NRyQYX1fC7j48cA17HVy8OGoo2tP7YfdDw78JRyku6TBzgftBdYmx5AGkZaDLv9/
+         /+P4TWV3He3gzQyR7m/IAtJ63lzrNO8Kv7mV/XGcJkmkcXfMMbd5dHmv5RQ9VbbRLhfg
+         3Gi2eCSzGLyagAsRVVJ78W+IMsquRwt0fR6tozGR7f6YXg4MPaEi3TqpM8m8jLzArlU0
+         LYZTYbQ6w65YmFl9FRTQaC4hzIqIkB7JiACRNlUG5ocM93u6XillPx8D8Lfxv3OCi8kP
+         pQQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=P1zx+gVi7eurX/wcAygqpr2CDWPeDaHcriTmolTK1xU=;
+        b=EaXeB+Gj/ydh34M7sGPJqvDuRAGJdQulbB/4k/enErOm/RPo4uwu6xTSrNI9s+G3XE
+         cUbCk+Pi9xOsgY9jLtbGmMe+aFP33De8poz2cB9WxNQOEVXhuzlLF9uPMgTx/UFT4und
+         zfrgsfOlcEgCPSt0ONRQ7xnFx0Gt83Z0O4CUE6ju0EKP7+4ucMWDf4YZZKkEmYLcF4IX
+         /QMIH5ZzsB4Zxhs+Ay1zYwPOdMyAHMTdzWoP0ujDvH3mS4EafHYDcbgYJBoEHM08z7U5
+         q+igupOXA8TSiEw759quumGAKntIF7DxrYDH8SkR6IWsp7vVapNe2W/poA4LuVaxVwem
+         dtUA==
+X-Gm-Message-State: AOAM532a2tAdrCPPF83ZSnWTpmzbfG1K/IuUylXoN1dDWCT4RkIGmO/N
+        Xd38G0rKm9wWUICtp6LOVfs=
+X-Google-Smtp-Source: ABdhPJy/+WldZr1xoAOT8UD3w9feWEH8m3O5OU4AeeHQIclNDI0LngFZ3brViaqYNrubVogfwyu+NQ==
+X-Received: by 2002:a17:906:a413:: with SMTP id l19mr396813ejz.421.1616428312836;
+        Mon, 22 Mar 2021 08:51:52 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id s9sm11054640edd.16.2021.03.22.08.51.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Mar 2021 08:51:52 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 net-next 15/16] net: dsa: return -EOPNOTSUPP when
+ driver does not implement .port_lag_join
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210318231829.3892920-1-olteanv@gmail.com>
+ <20210318231829.3892920-16-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c4e371e9-4b4a-0236-c05d-c9a7b94bfc64@gmail.com>
+Date:   Mon, 22 Mar 2021 08:51:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210318231829.3892920-16-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Miroslav Lichvar <mlichvar@redhat.com> writes:
-
-> On Mon, Nov 09, 2020 at 10:10:19PM -0800, Vinicius Costa Gomes wrote:
->> i225 has support for PCIe PTM, which allows us to implement support
->> for the PTP_SYS_OFFSET_PRECISE ioctl(), implemented in the driver via
->> the getcrosststamp() function.
->
-> Would it be possible to provide the PTM measurements with the
-> PTP_SYS_OFFSET_EXTENDED ioctl instead of PTP_SYS_OFFSET_PRECISE?
-
-Sorry for the long delay.
-
-About PTP_SYS_OFFSET_EXTENDED, I did play with it a bit, but I didn't
-like it too much: because I don't have access to all the timestamps from
-the same "cycle", I ended up having to run two cycles to retrieve all
-the information.
-
-So, the new version will expose the timestamps via
-PTP_SYS_OFFSET_PRECISE, later we can think of PTP_SYS_OFFSET_EXTENDED.
-
->
-> As I understand it, PTM is not cross timestamping. It's basically
-> NTP over PCIe, which provides four timestamps with each "dialog". From
-> the other constants added to the header file it looks like they could
-> all be obtained and then they could be converted to the triplets
-> returned by the EXTENDED ioctl.
->
-> The main advantage would be that it would provide applications with
-> the round trip time, which is important to estimate the maximum error
-> in the measurement. As your example phc2sys output shows, with the
-> PRECISE ioctl the delay is 0, which is misleading here.
->
-> I suspect the estimate would be valid only when the NIC is connected
-> directly to the PTM root (PCI root complex). Is it possible to get the
-> timestamps or delay from PTM-capable switches on the path between CPU
-> and NIC? Also, how frequent can be the PTM dialogs? Could they be
-> performed synchronously in the ioctl?
->
-> -- 
-> Miroslav Lichvar
->
 
 
-Cheers,
+On 3/18/2021 4:18 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> The DSA core has a layered structure, and even though we end up
+> returning 0 (success) to user space when setting a bonding/team upper
+> that can't be offloaded, some parts of the framework actually need to
+> know that we couldn't offload that.
+> 
+> For example, if dsa_switch_lag_join returns 0 as it currently does,
+> dsa_port_lag_join has no way to tell a successful offload from a
+> software fallback, and it will call dsa_port_bridge_join afterwards.
+> Then we'll think we're offloading the bridge master of the LAG, when in
+> fact we're not even offloading the LAG. In turn, this will make us set
+> skb->offload_fwd_mark = true, which is incorrect and the bridge doesn't
+> like it.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Vinicius
+Florian
