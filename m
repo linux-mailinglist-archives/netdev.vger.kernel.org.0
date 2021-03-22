@@ -2,129 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB43343A65
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 08:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 581E3343A6F
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 08:19:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbhCVHNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 03:13:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33062 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229990AbhCVHN2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 03:13:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E91661924;
-        Mon, 22 Mar 2021 07:13:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616397208;
-        bh=LFgbb7l9KEu7Z6OAYZRvyu6Do2gcidBM2ddbIvOEWrA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Zd3+s2OeoaOuzP1Xenkromp3abbFxeEdHfs6d7rqu0IVAMmK+ykrB9MRNcHuNJ2MR
-         vkHlkZWY0FilJxuZCdG3GGRLDZ0PC3Rm+xM0y6bHgYqcXg0Cx3xrrmH0Evgrp2IyS6
-         kg/W95bfTCSERGyq9naq2YYwqdRZ3DqD61CQhEEIFhYnhFyCpsCQSu3C6GYLl0GDBs
-         wWBLVXJRpdJxeLsnFjmV8FqIX36ZAQMmks+JUrdpDmpF8mUGUplaM/IG3LFtnl9iP1
-         CCvwIktMW6m1AarZ3tfDhyPeeDVzpRDmGI4Alvab1O8ZxhUxfrgAHtLlHpvnJrZInP
-         LSHX4pxgZd4RA==
-Date:   Mon, 22 Mar 2021 09:13:24 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     =?iso-8859-1?Q?J=FCrgen_Gro=DF?= <jgross@suse.com>
-Cc:     "Hsu, Chiahao" <andyhsu@amazon.com>, Andrew Lunn <andrew@lunn.ch>,
-        netdev@vger.kernel.org, wei.liu@kernel.org, paul@xen.org,
-        davem@davemloft.net, kuba@kernel.org,
-        xen-devel@lists.xenproject.org
-Subject: Re: [net-next 1/2] xen-netback: add module parameter to disable
- ctrl-ring
-Message-ID: <YFhDlLkXLSs30/Ci@unreal>
-References: <YE3foiFJ4sfiFex2@unreal>
- <64f5c7a8-cc09-3a7f-b33b-a64d373aed60@amazon.com>
- <YFI676dumSDJvTlV@unreal>
- <f3b76d9b-7c82-d3bd-7858-9e831198e33c@amazon.com>
- <YFeAzfJsHAqPvPuY@unreal>
- <12f643b5-7a35-d960-9b1f-22853aea4b4c@amazon.com>
- <YFgtf6NBPMjD/U89@unreal>
- <c7b2a12d-bf81-3d5f-40ae-f70e6cfa1637@suse.com>
- <YFg9w980NkZzEHmb@unreal>
- <facd5d2e-510e-4fc4-5e22-c934ea237b1b@suse.com>
+        id S229995AbhCVHS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 03:18:29 -0400
+Received: from mail-eopbgr760072.outbound.protection.outlook.com ([40.107.76.72]:50326
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229822AbhCVHSE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 03:18:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bJ6wFjLVk48pN+NMYPJtKbkqeBAcWtCe/PbKiobjTcpavAhqQkovPsnAp1V41FaEO4kgzPQUeF0kD+Cb0nVkkO4clyI2BjvrkmGJ8FBOwU8DALrf+J2ChvHHGzLMjwuY0lJ3D3BqFssJgDN3nP9EtXs2vZ/RJSFN2Nv+UV7LlGgq9RdAVTp7CZSHTd3lnIS8s++R0bWolEmJyX/VXUC6tNh+R8EGZlC4/s+LfPQGA7qigk7CG/ogNgP2RjvfxxIs59ABHO6ZFNBdIVqWARBbtQ313DbXDUS5IdUwEYXSu+uMgCiqtwTsGbrqde3mD2/PGArOjSHJLOW4keM/sa+kgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lMgAN3skDtOkQACoJ8REUngygs6eZnMJIngesIAlgw8=;
+ b=VxHSDd6K5+iWKP5AWcFVGqRm4cClkJjduD7VhmA207Qsx9dZd3nioYOd6V7z+c5+qL5ayg51+wc2jSEWZXwNCRDBkVNyCmKCS1FfpfvhH7cm6zuI5pG17x2OjPjtYvMA2ag4at2RamwPYUNSa2LMFyRhNpdDR49IifQi45lO3DSs7pxfh15lFY8doZx1TycCnt/vtmNIOQCbxUUTOcXv5Ly7mpgfmyJooTNiAHjTfIL7TxvyQBgGjBo6RezXVkAr3j1+i3H3ar6Wy+S/laiC/iOqlmOpl+RgeehedFB65s2xo1GQFEgE8W6EA6aZ6H11x3Je6GjPtGmw/WYwKMh5QQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lMgAN3skDtOkQACoJ8REUngygs6eZnMJIngesIAlgw8=;
+ b=BCO0T4XXYerInHHuQ/I0zAVW/HR1UFDx5Yea8i6tGfZA1FgWRAtDravPLYSmZH5UFZg03YV5sTWFYnn2WVKaYggBjmgFUQ2d1ACz2ZyuNa/0eoxurvsYtL5kJ9TpX8u+zEoezQkRYSK+d7FEzR4d0ydn/nCZzwE5FWNLnOJPcLw=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=windriver.com;
+Received: from PH0PR11MB5175.namprd11.prod.outlook.com (2603:10b6:510:3d::8)
+ by PH0PR11MB4952.namprd11.prod.outlook.com (2603:10b6:510:40::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.23; Mon, 22 Mar
+ 2021 07:18:03 +0000
+Received: from PH0PR11MB5175.namprd11.prod.outlook.com
+ ([fe80::9429:4c5e:12c5:b88f]) by PH0PR11MB5175.namprd11.prod.outlook.com
+ ([fe80::9429:4c5e:12c5:b88f%7]) with mapi id 15.20.3955.027; Mon, 22 Mar 2021
+ 07:18:03 +0000
+From:   Yongxin Liu <yongxin.liu@windriver.com>
+To:     vaibhavgupta40@gmail.com, andrewx.bowers@intel.com,
+        anthony.l.nguyen@intel.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, jesse.brandeburg@intel.com,
+        intel-wired-lan@lists.osuosl.org, kuba@kernel.org
+Subject: [PATCH net] ixgbe: fix unbalanced device enable/disable in suspend/resume
+Date:   Mon, 22 Mar 2021 15:14:48 +0800
+Message-Id: <20210322071448.12023-1-yongxin.liu@windriver.com>
+X-Mailer: git-send-email 2.14.5
+Content-Type: text/plain
+X-Originating-IP: [60.247.85.82]
+X-ClientProxiedBy: HK2P15301CA0009.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:202:1::19) To PH0PR11MB5175.namprd11.prod.outlook.com
+ (2603:10b6:510:3d::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <facd5d2e-510e-4fc4-5e22-c934ea237b1b@suse.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pek-lpggp6.wrs.com (60.247.85.82) by HK2P15301CA0009.APCP153.PROD.OUTLOOK.COM (2603:1096:202:1::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.1 via Frontend Transport; Mon, 22 Mar 2021 07:17:59 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0c098c2a-c737-48b3-7bb5-08d8ed02a16e
+X-MS-TrafficTypeDiagnostic: PH0PR11MB4952:
+X-Microsoft-Antispam-PRVS: <PH0PR11MB4952D8666D5D60E6A5CA08B9E5659@PH0PR11MB4952.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:383;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FLD/e2ICrjit9hLntnkA+KfDqUy4kthMXuLDNxvy0DOYryrp9F9wR+zfQEUYZnWx+3oIP3t5vNWkSnbAifUtHdGet5BxBEa5AVtVHsQ1k3WRzmB944erpls5sQd+Wp+0A5xHPwZrFBEjfrRv50cS18JKYroo6pOCpwoi04w+9AH2oHKJ5bo9KQiVwHurbaD1+MnhwGAodBe2W3d9JBIouezMDe5A5K0zLnzGyqXKvfTzn0SeXjpjat00IwAaq+UGAYpHkKUAtJ/kKY6qpNUIiyYHhaQm6rGd661CoPrTwC6OGSkYLuEBPfTDAvnYUVxnpmbi/iIlhYPRq8aCKkTZOZwgVZPRbTYX1bEASQr4rux6EW+GJvgwbsHShNnEuCB1N3UyZl83LgE2JC9Gx0DotW+nMslw+lUtOARpsFuUZW3yvvAoqgt3pIEeXP4mVcmbgXRYTtVV6RdLYesPlLsVpasu/5FrapYUCUg7iTkVfJeIxULeCxen5ZCQKQwmeWS6qM5wPWdKUkKLNNi8Tc+XLJsBB75/rbEoSuvSMuex6VC/0+8DA6MhlgEoS/qQLpuQ6emSO36IN6zEjTQxOD4nVnTxxgvC4mbsphh3u/aT5vJSTfRkReH/NS8cIkadEJoemZtSaJ+1LllvhjBQ33TvPYhU+Zg1PuFl6As35e+rBl0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5175.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(39840400004)(376002)(136003)(366004)(186003)(52116002)(44832011)(83380400001)(66946007)(16526019)(4326008)(66476007)(26005)(6486002)(5660300002)(1076003)(66556008)(6506007)(2616005)(2906002)(956004)(478600001)(15650500001)(8936002)(6666004)(316002)(6512007)(86362001)(38100700001)(36756003)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?xX3Vy7BsS6Qk1WGOEGWBeH5QrCme3pJ2pbZJv/YdnlNk68tO/wIVQzLhapsb?=
+ =?us-ascii?Q?u6Vfz8s+lo3AAdqH/Oan4DbGvUJutHaYBP908kM9Jc42X1RqmejZhLRsDTct?=
+ =?us-ascii?Q?mdeiqZEcRGOqweQhpI+a/1nEXAk6iCnw82JXIJNLz39+8jhI7ZiPEbcf2nw7?=
+ =?us-ascii?Q?lYaktusOMdQXcd4699Q+pqYO4kSlKsH7J/A2/CWGGiblrSmbLsnSzrdcaD7H?=
+ =?us-ascii?Q?ZwiaZ/KAhB0i+m7qiJj7JviN33ENhGmWUAS/2U5Ro7NuIIVuOk8D+PMZisw5?=
+ =?us-ascii?Q?aUw+s+GhZ40fSWf2pLbOjsvAzC9STTjv+l1EIZ2EXeHGZ3Sc4JJXxxqNjaur?=
+ =?us-ascii?Q?ifRyel4f+vWBzB3N2zM3CnisdK0BYnvzUh/q5AtPC73r3ATIR5OUe8ngsckk?=
+ =?us-ascii?Q?IzwyQVPwOP++ST4kf5QfezGFWOEhctxNmcTGMrxTBpnXzvEEAO49kvcfpEqo?=
+ =?us-ascii?Q?Bn0WGOAF+HASSoetEs6XAYY4HU3LiFz/wpNRzis7p4jsdc04HJg3cvTm+1MS?=
+ =?us-ascii?Q?cvsMab6gokniY9faccz1m57GUbExMn7HEi+3rbh5rgHPC4lQ1mvWuyqQhRcu?=
+ =?us-ascii?Q?3Yhd/Bl8M6Ox6okB7h9PCow7dA+xMGpBjKku9CKLUv2/punJO8eeJV0xB9cr?=
+ =?us-ascii?Q?U2KJGOfu1PR3MouI+uN1FjeEyiyTMWOmJlLaQJUk84qRvY0/ngesUDVV1GVq?=
+ =?us-ascii?Q?mupL7i5Ex94Kej+oWYEgnm2I+CmMfVfKef4l8KzduSS4SDO0ULt0xIj7Qvdo?=
+ =?us-ascii?Q?nhaCWEXPCCqpJ2vauPbg7XK+uVz+NtRuLD2DFZxoi+fdRwTx3j1InzPXpMft?=
+ =?us-ascii?Q?qcc1vKuU4UMMcX9DQmyV/yLz5aGwGnTI6cU0bAff74yQE7LllNDRtX57fxlC?=
+ =?us-ascii?Q?E0dl2cOBwt8Oxx+x9LqFcZlLge88r3CrGI34HFuyHI9f5CgN1gWgukFw0b9t?=
+ =?us-ascii?Q?gsXqEgk3ecXH1GWMjvSbnfttB+BDGuzNxraanA2Vx9C5zUgqF5bbjE5iXst9?=
+ =?us-ascii?Q?8EoxjGLuMt2NnkWQOMTUWwYLjz4etRKPpdlEVZbi2O/BhXWZnmSKMio2C0U1?=
+ =?us-ascii?Q?h6davxIRvopQYbhHekGPLcC2oZLsk+au7BGlV2sKrO7nwUNNkniaySHcLmWr?=
+ =?us-ascii?Q?x36SGiNvAEA9dAYXYPMp+azbj8N+VwKJWpbkRlcgT+4rRyr8FQ8DW8pYRhbP?=
+ =?us-ascii?Q?DIjMaFgVG1LHGSK0OeTBukmHx7cak4IN+8ipuu4JyVi2ar98/aoVvpfZTeSX?=
+ =?us-ascii?Q?e1+718XQ9ULgODNf2SlHbHuJHKknDFc3bLD2En4RLjUXnGP7pW/YDMLBdc2R?=
+ =?us-ascii?Q?4vO123oOI8GkldBrk8C+JiTC?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c098c2a-c737-48b3-7bb5-08d8ed02a16e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5175.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2021 07:18:02.8876
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KJEVlExFMytWudFnsf6SxCkMIMlkqHgA/htc+83nUSN9reefgd86090NRwAeV21GulXhOfsU19wKLKSRPwY8wHXBTI6903L9hiCzGRquFnE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4952
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 08:01:17AM +0100, J=FCrgen Gro=DF wrote:
-> On 22.03.21 07:48, Leon Romanovsky wrote:
-> > On Mon, Mar 22, 2021 at 06:58:34AM +0100, J=FCrgen Gro=DF wrote:
-> > > On 22.03.21 06:39, Leon Romanovsky wrote:
-> > > > On Sun, Mar 21, 2021 at 06:54:52PM +0100, Hsu, Chiahao wrote:
-> > > > >=20
-> > > >=20
-> > > > <...>
-> > > >=20
-> > > > > > > Typically there should be one VM running netback on each host,
-> > > > > > > and having control over what interfaces or features it expose=
-s is also
-> > > > > > > important for stability.
-> > > > > > > How about we create a 'feature flags' modparam, each bits is =
-specified for
-> > > > > > > different new features?
-> > > > > > At the end, it will be more granular module parameter that user=
- still
-> > > > > > will need to guess.
-> > > > > I believe users always need to know any parameter or any tool's f=
-lag before
-> > > > > they use it.
-> > > > > For example, before user try to set/clear this ctrl_ring_enabled,=
- they
-> > > > > should already have basic knowledge about this feature,
-> > > > > or else they shouldn't use it (the default value is same as befor=
-e), and
-> > > > > that's also why we use the 'ctrl_ring_enabled' as parameter name.
-> > > >=20
-> > > > It solves only forward migration flow. Move from machine A with no
-> > > > option X to machine B with option X. It doesn't work for backward
-> > > > flow. Move from machine B to A back will probably break.
-> > > >=20
-> > > > In your flow, you want that users will set all module parameters for
-> > > > every upgrade and keep those parameters differently per-version.
-> > >=20
-> > > I think the flag should be a per guest config item. Adding this item =
-to
-> > > the backend Xenstore nodes for netback to consume it should be rather
-> > > easy.
-> > >=20
-> > > Yes, this would need a change in Xen tools, too, but it is the most
-> > > flexible way to handle it. And in case of migration the information
-> > > would be just migrated to the new host with the guest's config data.
-> >=20
-> > Yes, it will overcome global nature of module parameters, but how does
-> > it solve backward compatibility concern?
->=20
-> When creating a guest on A the (unknown) feature will not be set to
-> any value in the guest's config data. A migration stream not having any
-> value for that feature on B should set it to "false".
->=20
-> When creating a guest on B it will either have the feature value set
-> explicitly in the guest config (either true or false), or it will get
-> the server's default (this value should be configurable in a global
-> config file, default for that global value would be "true").
->=20
-> So with the guest created on B with feature specified as "false" (either
-> for this guest only, or per global config), it will be migratable to
-> machine A without problem. Migrating it back to B would work the same
-> way as above. Trying to migrate a guest with feature set to "true" to
-> B would not work, but this would be the host admin's fault due to not
-> configuring the guest correctly.
+pci_disable_device() called in __ixgbe_shutdown() decreases
+dev->enable_cnt by 1. pci_enable_device_mem() which increases
+dev->enable_cnt by 1, was removed from ixgbe_resume() in commit
+6f82b2558735 ("ixgbe: use generic power management"). This caused
+unbalanced increase/decrease. So add pci_enable_device_mem() back.
 
-As long as all new features are disabled by default, it will be ok.
+Fix the following call trace.
 
-Thanks
+  ixgbe 0000:17:00.1: disabling already-disabled device
+  Call Trace:
+   __ixgbe_shutdown+0x10a/0x1e0 [ixgbe]
+   ixgbe_suspend+0x32/0x70 [ixgbe]
+   pci_pm_suspend+0x87/0x160
+   ? pci_pm_freeze+0xd0/0xd0
+   dpm_run_callback+0x42/0x170
+   __device_suspend+0x114/0x460
+   async_suspend+0x1f/0xa0
+   async_run_entry_fn+0x3c/0xf0
+   process_one_work+0x1dd/0x410
+   worker_thread+0x34/0x3f0
+   ? cancel_delayed_work+0x90/0x90
+   kthread+0x14c/0x170
+   ? kthread_park+0x90/0x90
+   ret_from_fork+0x1f/0x30
 
->=20
->=20
-> Juergen
+Fixes: 6f82b2558735 ("ixgbe: use generic power management")
+Signed-off-by: Yongxin Liu <yongxin.liu@windriver.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-
-
-
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 9f3f12e2ccf2..b0a8f7a43f06 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6891,6 +6891,11 @@ static int __maybe_unused ixgbe_resume(struct device *dev_d)
+ 
+ 	adapter->hw.hw_addr = adapter->io_addr;
+ 
++	err = pci_enable_device_mem(pdev);
++	if (err) {
++		e_dev_err("Cannot enable PCI device from suspend\n");
++		return err;
++	}
+ 	smp_mb__before_atomic();
+ 	clear_bit(__IXGBE_DISABLED, &adapter->state);
+ 	pci_set_master(pdev);
+-- 
+2.14.5
 
