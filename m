@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B78C2345128
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4970434512D
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbhCVUuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:50:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230259AbhCVUuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 16:50:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 49A62619A4;
-        Mon, 22 Mar 2021 20:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616446210;
-        bh=/JcdPapT+PJMRUUV5p7cCgNExCaXSs1Rseksk5oNQsg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CPWok8/bSEeOSkGqEI1KG3/qF74fFqZJPrkxjBsGfX5umXI6a7MEQcfgZAjpOMccj
-         4yXnnYSCVGkiymXThRmhpnqKoIOfVMN4q6zEOwkENl/jUAvG9ll2H8GToU9wrR59Sw
-         3haAHtTG7Yk5MyUG9ASjjSOO2U9zbAUkcsasO2ReJNGVnsanWDqYE/Il5JwwLPkPvY
-         I4MbwhxTl/iwnM7VvzDd4NXBVBuTNjosUbSaWxwRwqESy6hFX//fq/y1O38s5JkEZJ
-         TJSZJD11NZR5HzOP3TG97M9YLOIWaJ+Qbe18jYBgXOBOXg3eRWhdXdnLkl5JQntHOB
-         TTEoA+6xGYITQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3DA4F60A49;
-        Mon, 22 Mar 2021 20:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230362AbhCVUvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231156AbhCVUvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:51:23 -0400
+Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48AC6C061574;
+        Mon, 22 Mar 2021 13:51:21 -0700 (PDT)
+Received: by mail-oo1-xc2a.google.com with SMTP id r17-20020a4acb110000b02901b657f28cdcso4430429ooq.6;
+        Mon, 22 Mar 2021 13:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yM/6S6FViE7IpToxGYmVsIhNe3gv17YedRrLGkVh5iM=;
+        b=dakTJAIFUC5lWRKJ4WNCzoxcD8nuusxO0ZPD7ezRk0/ETCqga2jW4+w0XKxyjCBPiN
+         jqWI87gYljQV8OHOTiwQXhF6I+V2JGs6979WY8TclxFuxKXZuzKR1y0OxD4UkYGvAoor
+         bZAH0VLgiQGc+Q33AMfjSMtApEbQubnRsq3myM/PI2LDRSdrPqZp3dFBB5s3bsyaT8Xn
+         uO5qYtTKiWDKhPvDP1QGFvGzm1LorVRfxqCmNQd6DVGfKqatN2nPG944Bs2Bd490KsD6
+         BqESeYIoHfPjXOwbMu7VcTIzQEuOafVK0TnSoOXdwvgXY3Atfsi0R6l/NlhKMtZM3Xse
+         JDyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yM/6S6FViE7IpToxGYmVsIhNe3gv17YedRrLGkVh5iM=;
+        b=VGytosfkTP0W4WvHIZl0SgO6cA1nT/RimjqTGZcmhDRv8lI+tmOFvABx0Wi41UtnEG
+         ZR0H6hi6xGgmZC1mjhF23Vrl6pZD7YXopv7QCGj5yWpAuZRZZFmtEHfLRP/hIOELv0SY
+         Roh+wCKMVewBMQAKwqgIilI63DGOJluBNJqnlWwu4d0cHT4JTBvum0PZDtLOVSDSYH/Z
+         8g8aBm6BP4eYy+LleykyyH9UwzBs927OTmlZ8azotIjOY+RuqatuyuD4IDgM96mER+Cf
+         TjsYqOxJIzUUYpYycjyhRktc8wIM6MWere9pxKzOlypgokHIzWMv/kwrvvyzsY9IUBuo
+         3k4Q==
+X-Gm-Message-State: AOAM531MnpP6vEfwVXpViIStxjG8pdVgnpeKAENJkPTlanZlQFez+7HC
+        1yzwzVA3s+cvzYQf3Hb3mbzvKO+Vf2qT7AInaWfVUwmTiA==
+X-Google-Smtp-Source: ABdhPJxfDqZznIfEqJoPvRZgE9GrpR69RJyCbfAlvZ6GCegAdfd9P6ANUWByDsxOPDNAfVKpbaV65S4EY2OnnPJusxM=
+X-Received: by 2002:a4a:d0ce:: with SMTP id u14mr1047919oor.36.1616446280734;
+ Mon, 22 Mar 2021 13:51:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/14] mlxsw: Preparations for resilient nexthop
- groups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161644621024.7104.11749434615387440872.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Mar 2021 20:50:10 +0000
-References: <20210322155855.3164151-1-idosch@idosch.org>
-In-Reply-To: <20210322155855.3164151-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        mlxsw@nvidia.com, idosch@nvidia.com
+References: <20210322202650.45776-1-george.mccollister@gmail.com> <20210322204633.ptvwd2jinybnxcje@skbuf>
+In-Reply-To: <20210322204633.ptvwd2jinybnxcje@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Mon, 22 Mar 2021 15:51:08 -0500
+Message-ID: <CAFSKS=NRMMz5u9qjFmhrxZMCVpa2ZP1jTJ5o+eUA6H2B2aotOg@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: don't assign an error value to tag_ops
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Mar 22, 2021 at 3:46 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Mon, Mar 22, 2021 at 03:26:50PM -0500, George McCollister wrote:
+> > Use a temporary variable to hold the return value from
+> > dsa_tag_driver_get() instead of assigning it to dst->tag_ops. Leaving
+> > an error value in dst->tag_ops can result in deferencing an invalid
+> > pointer when a deferred switch configuration happens later.
+> >
+> > Fixes: 357f203bb3b5 ("net: dsa: keep a copy of the tagging protocol in the DSA switch tree")
+> >
+> > Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> > ---
+>
+> Who dereferences the invalid pointer? dsa_tree_free I guess?
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+I saw it occur just above on the following line the next time
+dsa_port_parse_cpu() is called:
+if (dst->tag_ops->proto != tag_protocol) {
 
-On Mon, 22 Mar 2021 17:58:41 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> This patchset contains preparations for resilient nexthop groups support in
-> mlxsw. A follow-up patchset will add support and selftests. Most of the
-> patches are trivial and small to make review easier.
-> 
-> Patchset overview:
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,01/14] mlxsw: spectrum_router: Remove RTNL assertion
-    https://git.kernel.org/netdev/net-next/c/08c99b92d76c
-  - [net-next,02/14] mlxsw: spectrum_router: Consolidate nexthop helpers
-    https://git.kernel.org/netdev/net-next/c/26df5acc275b
-  - [net-next,03/14] mlxsw: spectrum_router: Only provide MAC address for valid nexthops
-    https://git.kernel.org/netdev/net-next/c/c6a5011bec09
-  - [net-next,04/14] mlxsw: spectrum_router: Adjust comments on nexthop fields
-    https://git.kernel.org/netdev/net-next/c/248136fa251a
-  - [net-next,05/14] mlxsw: spectrum_router: Introduce nexthop action field
-    https://git.kernel.org/netdev/net-next/c/031d5c160656
-  - [net-next,06/14] mlxsw: spectrum_router: Prepare for nexthops with trap action
-    https://git.kernel.org/netdev/net-next/c/1be2361e3ca7
-  - [net-next,07/14] mlxsw: spectrum_router: Add nexthop trap action support
-    https://git.kernel.org/netdev/net-next/c/fc199d7c08c8
-  - [net-next,08/14] mlxsw: spectrum_router: Rename nexthop update function to reflect its type
-    https://git.kernel.org/netdev/net-next/c/424603ccdd5e
-  - [net-next,09/14] mlxsw: spectrum_router: Encapsulate nexthop update in a function
-    https://git.kernel.org/netdev/net-next/c/29017c643476
-  - [net-next,10/14] mlxsw: spectrum_router: Break nexthop group entry validation to a separate function
-    https://git.kernel.org/netdev/net-next/c/40f5429fce69
-  - [net-next,11/14] mlxsw: spectrum_router: Avoid unnecessary neighbour updates
-    https://git.kernel.org/netdev/net-next/c/c1efd50002c0
-  - [net-next,12/14] mlxsw: spectrum_router: Create per-ASIC router operations
-    https://git.kernel.org/netdev/net-next/c/d354fdd923e7
-  - [net-next,13/14] mlxsw: spectrum_router: Encode adjacency group size ranges in an array
-    https://git.kernel.org/netdev/net-next/c/164fa130dd16
-  - [net-next,14/14] mlxsw: spectrum_router: Add Spectrum-{2, 3} adjacency group size ranges
-    https://git.kernel.org/netdev/net-next/c/ea037b236a05
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+-George
