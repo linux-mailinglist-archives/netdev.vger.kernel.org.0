@@ -2,93 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C88E343CDD
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 10:30:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E6C343CDF
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 10:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbhCVJ3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 05:29:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55018 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229884AbhCVJ3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 05:29:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616405371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6ZaGnE5KS4xwBu7jMSi2JEwn46rVmxazAk+HP7D3LaQ=;
-        b=Hpb3c3eC8bFKGleFtYLRyG+70ZaOz+vodM+S4Hw+fNZu+QjJ7uhljT+hFsvAh1O8b7XTZU
-        co58HfsJgbrhzJUQHD8HJiIgg68emZKy/y0uOIBxAhyrA6cFoZi58+o1tTX/Fsk+ggLu5b
-        EJJxqgBq1uFvWtuTwGPK9zv77wc8EGo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-379-ac9IBUVVOSGaqNwj96WVzQ-1; Mon, 22 Mar 2021 05:29:24 -0400
-X-MC-Unique: ac9IBUVVOSGaqNwj96WVzQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9B9C9A0CA3;
-        Mon, 22 Mar 2021 09:29:21 +0000 (UTC)
-Received: from [169.254.144.253] (ovpn-114-52.ams2.redhat.com [10.36.114.52])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9EEA060C04;
-        Mon, 22 Mar 2021 09:29:11 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "David Ahern" <dsahern@gmail.com>
-Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, john.fastabend@gmail.com,
-        dsahern@kernel.org, brouer@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, sameehj@amazon.com
-Subject: Re: [PATCH v7 bpf-next 10/14] bpf: add new frame_length field to the
- XDP ctx
-Date:   Mon, 22 Mar 2021 10:29:10 +0100
-Message-ID: <E467B3B1-4BDD-4366-A218-A60EC45C2C67@redhat.com>
-In-Reply-To: <a5ff68f0-00a1-2933-f863-7e861e78cd60@gmail.com>
-References: <cover.1616179034.git.lorenzo@kernel.org>
- <a31b2599948c8d8679c6454b9191e70c1c732c32.1616179034.git.lorenzo@kernel.org>
- <a5ff68f0-00a1-2933-f863-7e861e78cd60@gmail.com>
+        id S229890AbhCVJa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 05:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229547AbhCVJaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 05:30:22 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED89BC061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 02:30:21 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id e7so18356262edu.10
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 02:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gv/vF8ePQatEJhQ19O9eFZZ4RyJnM8zEipvGG7S13pg=;
+        b=WBRp6j+rSE9AKv22mugn8Ufd1cPiYyOtwuaH24PcY7TdJs+y8nA+UOBy3tFmne29ZX
+         k3/2BDAq//QR9g7rnltPBq0WaFdP2m1JIUtmH7V9VgjtqyzAPwup5hxtnmV2qoCpOXmx
+         Pkp2dHs9rfBTI/Y8QMJgDZtt0IscSlDvFivSSeZQ1p+7UjCA+mU+TLzvIyGBddH27+1Y
+         4PWGtc+1UevEvlutMj3IMPzUaFQBNUYZ4LRD/dgknTCTJGdkS49Qqxbf61UXlP0ZGu+I
+         fAQ5LEjLqIhZrNBMERL7hJyZTf+/NpHBNlsH2JJlYybssHyI0EEl3TmTKtfyvURKBNiQ
+         thzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gv/vF8ePQatEJhQ19O9eFZZ4RyJnM8zEipvGG7S13pg=;
+        b=h+8SGXZQMIxffdkDMdwQBgDFSIpAXMHweseub19pqg7/mcULKnSJaKVSOZuhdUUiXq
+         b/ZcjEv3Dgg2HJIVT296gdjOND8NsWl8MEvW+Vhnlfi4Pd5keAOf6TY1R+3ugSg6jsTP
+         URHZ0LqU2Y1oBA2zH4T525qzkECodHvRGv9oK9oSNgkvUvmOiIw2eRw3fpMgRaOE5p7b
+         1WLZ+74+FxybmDlDufaJmoKVwZ/xyrzipug7EXkjnVyWengE6E1Rox8jMgTsO7L+mGPC
+         OL85AkZdc5IU4a2TjojkSt40omUQTRyZp/FT5fzmbkJkWUKvv1FXEzX/Z2kFsbM54xVN
+         XHPg==
+X-Gm-Message-State: AOAM533ZhRnyp4dglDy8m1Pbk8xEcqZ4/Q8BsZSq8ZD9bZeqgCyCZqb3
+        H+XTEIyocvvhStzL/BuLVh4=
+X-Google-Smtp-Source: ABdhPJzkPVGO+Fgxjxjpqto+DvMS+M0ThnK8MX/b1gyGcHC1j7ah/tMAGyzOdIfSE3b38BMtbIBAmg==
+X-Received: by 2002:a05:6402:354d:: with SMTP id f13mr24875242edd.228.1616405420759;
+        Mon, 22 Mar 2021 02:30:20 -0700 (PDT)
+Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id t15sm11099230edw.84.2021.03.22.02.30.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 02:30:20 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: fix up kerneldoc some more
+Date:   Mon, 22 Mar 2021 11:30:09 +0200
+Message-Id: <20210322093009.3677265-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
+Commit 0b5294483c35 ("net: dsa: mv88e6xxx: scratch: Fixup kerneldoc")
+has addressed some but not all kerneldoc warnings for the Global 2
+Scratch register accessors. Namely, we have some mismatches between
+the function names in the kerneldoc and the ones in the actual code.
+Let's adjust the comments so that they match the functions they're
+sitting next to.
 
-On 20 Mar 2021, at 4:42, David Ahern wrote:
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/dsa/mv88e6xxx/global2_scratch.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> On 3/19/21 3:47 PM, Lorenzo Bianconi wrote:
->> diff --git a/include/net/xdp.h b/include/net/xdp.h
->> index 19cd6642e087..e47d9e8da547 100644
->> --- a/include/net/xdp.h
->> +++ b/include/net/xdp.h
->> @@ -75,6 +75,10 @@ struct xdp_buff {
->>  	struct xdp_txq_info *txq;
->>  	u32 frame_sz:31; /* frame size to deduce data_hard_end/reserved 
->> tailroom*/
->>  	u32 mb:1; /* xdp non-linear buffer */
->> +	u32 frame_length; /* Total frame length across all buffers. Only 
->> needs
->> +			   * to be updated by helper functions, as it will be
->> +			   * initialized at XDP program start.
->> +			   */
->>  };
->>
->>  static __always_inline void
->
-> If you do another version of this set ...
->
-> I think you only need 17-bits for the frame length (size is always <=
-> 128kB). It would be helpful for extensions to xdp if you annotated how
-> many bits are really needed here.
-
-Guess this can be done, but I did not too avoid the use of constants to 
-do the BPF extraction.
-Here is an example of what might need to be added, as adding them before 
-made people unhappy ;)
-
-https://elixir.bootlin.com/linux/v5.12-rc4/source/include/linux/skbuff.h#L801
+diff --git a/drivers/net/dsa/mv88e6xxx/global2_scratch.c b/drivers/net/dsa/mv88e6xxx/global2_scratch.c
+index 7c2c67405322..eda710062933 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2_scratch.c
++++ b/drivers/net/dsa/mv88e6xxx/global2_scratch.c
+@@ -42,7 +42,7 @@ static int mv88e6xxx_g2_scratch_write(struct mv88e6xxx_chip *chip, int reg,
+ }
+ 
+ /**
+- * mv88e6xxx_g2_scratch_gpio_get_bit - get a bit
++ * mv88e6xxx_g2_scratch_get_bit - get a bit
+  * @chip: chip private data
+  * @base_reg: base of scratch bits
+  * @offset: index of bit within the register
+@@ -67,7 +67,7 @@ static int mv88e6xxx_g2_scratch_get_bit(struct mv88e6xxx_chip *chip,
+ }
+ 
+ /**
+- * mv88e6xxx_g2_scratch_gpio_set_bit - set (or clear) a bit
++ * mv88e6xxx_g2_scratch_set_bit - set (or clear) a bit
+  * @chip: chip private data
+  * @base_reg: base of scratch bits
+  * @offset: index of bit within the register
+@@ -240,7 +240,7 @@ const struct mv88e6xxx_gpio_ops mv88e6352_gpio_ops = {
+ };
+ 
+ /**
+- * mv88e6xxx_g2_gpio_set_smi - set gpio muxing for external smi
++ * mv88e6xxx_g2_scratch_gpio_set_smi - set gpio muxing for external smi
+  * @chip: chip private data
+  * @external: set mux for external smi, or free for gpio usage
+  *
+-- 
+2.25.1
 
