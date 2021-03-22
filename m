@@ -2,107 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B18463450A6
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:21:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5721B34507E
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:10:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbhCVUVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:21:14 -0400
-Received: from mga17.intel.com ([192.55.52.151]:45119 "EHLO mga17.intel.com"
+        id S230070AbhCVUK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:10:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232312AbhCVUUt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 16:20:49 -0400
-IronPort-SDR: wwiRac0TZeUkVbt3tKkbK8FD2nIQK8oPhfT8l++ilc1OxZinw1eBS0GL4jKqnXdwojd7sEBoVw
- Hu0wVXX9/t0w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="170303783"
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="170303783"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 13:20:48 -0700
-IronPort-SDR: JwCBkwhyCgdwkd2s9CrzWUiRmXSbrCFSqgoUfCcmr3tTAw49BJ4WLBHa4ndun5T30B+qEtEffG
- cdd2GZ86I/dA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="390611082"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga002.jf.intel.com with ESMTP; 22 Mar 2021 13:20:41 -0700
-Date:   Mon, 22 Mar 2021 21:10:06 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH v2 bpf-next 13/17] veth: implement ethtool's
- get_channels() callback
-Message-ID: <20210322201006.GB56104@ranger.igk.intel.com>
-References: <20210311152910.56760-1-maciej.fijalkowski@intel.com>
- <20210311152910.56760-14-maciej.fijalkowski@intel.com>
- <CAJ8uoz0+Ofu32-QmX1mYka2f52ym=zG_OPyz3wto=pv-brOi-w@mail.gmail.com>
+        id S230163AbhCVUKK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 16:10:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6DECD6192E;
+        Mon, 22 Mar 2021 20:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616443810;
+        bh=0trmCG3jaIfo5XELMD73LjdgDJfcVxs490ETY/MW4ow=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d13LcAE6vMJPnqQZxL7oDPLwUdgZ+U666KBOtLjcV6WUoK4KCOEPPZ2Rlvcth2LcU
+         +f526h8Cy2wxeUn9xZ3jOF8fehHpL5zV9lVAC51LhTcmCOt2QhU/OTnleNIC56iZFT
+         sNwG00eI5olcgCQfxVEuKv4DIxSm/+49iK3F9Za1VTjWgVGF4tXDl+tlIuqC1K5+EJ
+         k61FGNbzJII31hKaN1vgOe8lHxOYBC8S9Ggfsahxf8vv9FwRDgVuMM42mUHSWNmxoD
+         Z7dCB393fJhgr2CLF/Tw66eLFBgBQOEsY9LF4h2eKQ4RbA3c2aqCXr0gANbTeNfl8X
+         MY8qbpsTS4l1Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5B2D960A6A;
+        Mon, 22 Mar 2021 20:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ8uoz0+Ofu32-QmX1mYka2f52ym=zG_OPyz3wto=pv-brOi-w@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V2 net-next 0/7] net: hns3: refactor and new features for flow
+ director
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161644381036.22637.12567078527418286788.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Mar 2021 20:10:10 +0000
+References: <1616385122-48198-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1616385122-48198-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        huangdaode@huawei.com, linuxarm@openeuler.org, linuxarm@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 09:44:38AM +0100, Magnus Karlsson wrote:
-> On Thu, Mar 11, 2021 at 4:43 PM Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
-> >
-> > Libbpf's xsk part calls get_channels() API to retrieve the queue count
-> > of the underlying driver so that XSKMAP is sized accordingly.
-> >
-> > Implement that in veth so multi queue scenarios can work properly.
-> >
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> >  drivers/net/veth.c | 12 ++++++++++++
-> >  1 file changed, 12 insertions(+)
-> >
-> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > index aa1a66ad2ce5..efca3d45f5c2 100644
-> > --- a/drivers/net/veth.c
-> > +++ b/drivers/net/veth.c
-> > @@ -218,6 +218,17 @@ static void veth_get_ethtool_stats(struct net_device *dev,
-> >         }
-> >  }
-> >
-> > +static void veth_get_channels(struct net_device *dev,
-> > +                             struct ethtool_channels *channels)
-> > +{
-> > +       channels->tx_count = dev->real_num_tx_queues;
-> > +       channels->rx_count = dev->real_num_rx_queues;
-> > +       channels->max_tx = dev->real_num_tx_queues;
-> > +       channels->max_rx = dev->real_num_rx_queues;
-> > +       channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
-> > +       channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_rx_queues);
-> 
-> Copy and paste error in the above two lines. One of the min entries
-> should be dev->real_num_tx_queues. Kind of pointless otherwise ;-).
+Hello:
 
-Geez. Embarrassing :)
+This series was applied to netdev/net-next.git (refs/heads/master):
 
+On Mon, 22 Mar 2021 11:51:55 +0800 you wrote:
+> This patchset refactor some functions and add some new features for
+> flow director.
 > 
-> > +}
-> > +
-> >  static const struct ethtool_ops veth_ethtool_ops = {
-> >         .get_drvinfo            = veth_get_drvinfo,
-> >         .get_link               = ethtool_op_get_link,
-> > @@ -226,6 +237,7 @@ static const struct ethtool_ops veth_ethtool_ops = {
-> >         .get_ethtool_stats      = veth_get_ethtool_stats,
-> >         .get_link_ksettings     = veth_get_link_ksettings,
-> >         .get_ts_info            = ethtool_op_get_ts_info,
-> > +       .get_channels           = veth_get_channels,
-> >  };
-> >
-> >  /* general routines */
-> > --
-> > 2.20.1
-> >
+> patch 1~3: refactor large functions
+> patch 4, 7: add traffic class and user-def field support for ethtool
+> patch 5: refactor flow director configuration
+> patch 6: clean up for hns3_del_all_fd_entries()
+> 
+> [...]
+
+Here is the summary with links:
+  - [V2,net-next,1/7] net: hns3: refactor out hclge_add_fd_entry()
+    https://git.kernel.org/netdev/net-next/c/5f2b1238b33c
+  - [V2,net-next,2/7] net: hns3: refactor out hclge_fd_get_tuple()
+    https://git.kernel.org/netdev/net-next/c/74b755d1dbf1
+  - [V2,net-next,3/7] net: hns3: refactor for function hclge_fd_convert_tuple
+    https://git.kernel.org/netdev/net-next/c/fb72699dfef8
+  - [V2,net-next,4/7] net: hns3: add support for traffic class tuple support for flow director by ethtool
+    https://git.kernel.org/netdev/net-next/c/ae4811913f57
+  - [V2,net-next,5/7] net: hns3: refactor flow director configuration
+    https://git.kernel.org/netdev/net-next/c/fc4243b8de8b
+  - [V2,net-next,6/7] net: hns3: refine for hns3_del_all_fd_entries()
+    https://git.kernel.org/netdev/net-next/c/f07203b0180f
+  - [V2,net-next,7/7] net: hns3: add support for user-def data of flow director
+    https://git.kernel.org/netdev/net-next/c/67b0e1428e2f
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
