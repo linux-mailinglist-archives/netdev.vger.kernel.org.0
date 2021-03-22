@@ -2,86 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6CC343B2D
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 09:04:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE26343BD0
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 09:31:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbhCVIEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 04:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbhCVIEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 04:04:10 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E24C061574;
-        Mon, 22 Mar 2021 01:04:10 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id v26so12947685iox.11;
-        Mon, 22 Mar 2021 01:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NQCjdvCCiui7NyjVPyRHtMOqJO2l/XC/v3WkLyGdTXs=;
-        b=Uq/OBklgV6KsgFXzbeyaRuJUapPvtKTysUFRcCWJfwnQUlE1UDpce59Owq2xmCVq3n
-         C1wfKuf9Ekgl73sGCJOClyGBuNC1qFu3WC1F6XaQCt1Fq/Fiy2NlGpandRD5TdG6riiu
-         qmh4wOzrQ8iGKgpNq45ywuxV1UsM5mL5qm7zapfXE19/Ba4cOlJks8otYTP/uNpi4U3e
-         070vXWykdlPihP1P5RWGFJd//yLrto7Pu/2e1vtiDGYM3AMBTYAE7wxtMWqgc3TvzffO
-         EM1eV/M9mx8XveD0S5BS1W5Fl+Y1cI3ukzMX4QB4q/uhg9DCOxfAlA5J4ANFApt7utFB
-         +98Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NQCjdvCCiui7NyjVPyRHtMOqJO2l/XC/v3WkLyGdTXs=;
-        b=uTB5mceYOuvEpdk3EATAtf4itg5pzCvY4miNRPZNbXhhDFyDB7a+e9hkTj/Va8d3dE
-         yBhBSBxmwUUgy3oaeY9dmwE23St2cUbBRtLChKXvNA9PTwSiZp2SQH96gkTIMljdPDMn
-         Cvtc7/byJXeDrqlke0X3y0gOP/7FALXav/Q2Z9dS7mVeTTlqIF7fp7lDuqbcyCA3lWcN
-         Ay1n18ArLBLA6wL0MBsM1mW1klolOJEolE46NbVQbddhokCR9h9+y5YWAZb9tlTLjoJ9
-         DJOWGQeA/NlchsNbU3cnlEafU/OUZG+8+TL6FYc5bzoKU05ngRTE/WHQGSkfPo8xhBGR
-         toIg==
-X-Gm-Message-State: AOAM5323LMJUbvHYx9gCxDP4nnuv6SA7MitzdYCTNkT1HJs6SOq7uvYM
-        T9/XoosDJ3hSockyOBIQ94JMi3M1xh26VY/2354gRLCd
-X-Google-Smtp-Source: ABdhPJwdqhT0oEb6tE/dej3q9+JpzvaDLk1Lxf4HQ/V4S8rkNVvaT6uKCMGjCO5kDCBKzvQld8WYIz1HewAlaPK1TRI=
-X-Received: by 2002:a02:a889:: with SMTP id l9mr10105193jam.1.1616400250019;
- Mon, 22 Mar 2021 01:04:10 -0700 (PDT)
+        id S229866AbhCVIay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 04:30:54 -0400
+Received: from outbound-smtp32.blacknight.com ([81.17.249.64]:46047 "EHLO
+        outbound-smtp32.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229647AbhCVIam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 04:30:42 -0400
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp32.blacknight.com (Postfix) with ESMTPS id 616EABF063
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 08:30:41 +0000 (GMT)
+Received: (qmail 12857 invoked from network); 22 Mar 2021 08:30:41 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 22 Mar 2021 08:30:41 -0000
+Date:   Mon, 22 Mar 2021 08:30:39 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 3/7] mm/page_alloc: Add a bulk page allocator
+Message-ID: <20210322083039.GD3697@techsingularity.net>
+References: <20210312154331.32229-1-mgorman@techsingularity.net>
+ <20210312154331.32229-4-mgorman@techsingularity.net>
+ <7c520bbb-efd7-7cad-95df-610000832a67@suse.cz>
 MIME-Version: 1.0
-References: <20210318231829.3892920-1-olteanv@gmail.com> <20210318231829.3892920-15-olteanv@gmail.com>
- <20210319084025.GA2152639@haswell-ubuntu20> <20210319090642.bzmtlzc5im6xtbkh@skbuf>
- <CALW65janF_yztk7hH5n8wZFpWXxbCwQu3m4W=B-n2mcNG+W=Mw@mail.gmail.com> <20210319104924.gcdobjxmqcf6s4wq@skbuf>
-In-Reply-To: <20210319104924.gcdobjxmqcf6s4wq@skbuf>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Mon, 22 Mar 2021 16:04:01 +0800
-Message-ID: <CALW65jYc6DFoUiF55Q3KrhamPf75tFRSAkSA6ONrF3KMf9z+7g@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 net-next 14/16] net: dsa: don't set
- skb->offload_fwd_mark when not offloading the bridge
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <7c520bbb-efd7-7cad-95df-610000832a67@suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 6:49 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> Why would you even want to look at the source net device for forwarding?
-> I'd say that if dp->bridge_dev is NULL in the xmit function, you certainly
-> want to bypass address learning if you can. Maybe also for link-local traffic.
+On Fri, Mar 19, 2021 at 07:18:32PM +0100, Vlastimil Babka wrote:
+> On 3/12/21 4:43 PM, Mel Gorman wrote:
+> > This patch adds a new page allocator interface via alloc_pages_bulk,
+> > and __alloc_pages_bulk_nodemask. A caller requests a number of pages
+> > to be allocated and added to a list. They can be freed in bulk using
+> > free_pages_bulk().
+> > 
+> > The API is not guaranteed to return the requested number of pages and
+> > may fail if the preferred allocation zone has limited free memory, the
+> > cpuset changes during the allocation or page debugging decides to fail
+> > an allocation. It's up to the caller to request more pages in batch
+> > if necessary.
+> > 
+> > Note that this implementation is not very efficient and could be improved
+> > but it would require refactoring. The intent is to make it available early
+> > to determine what semantics are required by different callers. Once the
+> > full semantics are nailed down, it can be refactored.
+> > 
+> > Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> 
+> Acked-by: Vlastimil Babka <vbabka@suse.cz>
+> 
+> Although maybe premature, if it changes significantly due to the users'
+> performance feedback, let's see :)
+> 
 
-Also for trapped traffic (snooping, tc-flower trap action) if the CPU
-sends them back.
+Indeed. The next version will have no users so that Jesper and Chuck
+can check if an array-based or LRU based version is better. There were
+also bugs such as broken accounting of stats that had to be fixed which
+increases overhead.
+
+> Some nits below:
+> 
+> ...
+> 
+> > @@ -4963,6 +4978,107 @@ static inline bool prepare_alloc_pages(gfp_t gfp, unsigned int order,
+> >  	return true;
+> >  }
+> >  
+> > +/*
+> > + * This is a batched version of the page allocator that attempts to
+> > + * allocate nr_pages quickly from the preferred zone and add them to list.
+> > + *
+> > + * Returns the number of pages allocated.
+> > + */
+> > +int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+> > +			nodemask_t *nodemask, int nr_pages,
+> > +			struct list_head *alloc_list)
+> > +{
+> > +	struct page *page;
+> > +	unsigned long flags;
+> > +	struct zone *zone;
+> > +	struct zoneref *z;
+> > +	struct per_cpu_pages *pcp;
+> > +	struct list_head *pcp_list;
+> > +	struct alloc_context ac;
+> > +	gfp_t alloc_gfp;
+> > +	unsigned int alloc_flags;
+> > +	int allocated = 0;
+> > +
+> > +	if (WARN_ON_ONCE(nr_pages <= 0))
+> > +		return 0;
+> > +
+> > +	if (nr_pages == 1)
+> > +		goto failed;
+> > +
+> > +	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
+> > +	if (!prepare_alloc_pages(gfp, 0, preferred_nid, nodemask, &ac,
+> > +	&alloc_gfp, &alloc_flags))
+> 
+> Unusual identation here.
+> 
+
+Fixed
+
+> > +		return 0;
+> > +	gfp = alloc_gfp;
+> > +
+> > +	/* Find an allowed local zone that meets the high watermark. */
+> > +	for_each_zone_zonelist_nodemask(zone, z, ac.zonelist, ac.highest_zoneidx, ac.nodemask) {
+> > +		unsigned long mark;
+> > +
+> > +		if (cpusets_enabled() && (alloc_flags & ALLOC_CPUSET) &&
+> > +		    !__cpuset_zone_allowed(zone, gfp)) {
+> > +			continue;
+> > +		}
+> > +
+> > +		if (nr_online_nodes > 1 && zone != ac.preferred_zoneref->zone &&
+> > +		    zone_to_nid(zone) != zone_to_nid(ac.preferred_zoneref->zone)) {
+> > +			goto failed;
+> > +		}
+> > +
+> > +		mark = wmark_pages(zone, alloc_flags & ALLOC_WMARK_MASK) + nr_pages;
+> > +		if (zone_watermark_fast(zone, 0,  mark,
+> > +				zonelist_zone_idx(ac.preferred_zoneref),
+> > +				alloc_flags, gfp)) {
+> > +			break;
+> > +		}
+> > +	}
+> > +	if (!zone)
+> > +		return 0;
+> 
+> Why not also "goto failed;" here?
+
+Good question. When first written, it was because the zone search for the
+normal allocator was almost certainly going to fail to find a zone and
+it was expected that callers would prefer to fail fast over blocking.
+Now we know that sunrpc can sleep on a failing allocation and it would
+be better to enter the single page allocator and reclaim pages instead of
+"sleep and hope for the best".
+
+-- 
+Mel Gorman
+SUSE Labs
