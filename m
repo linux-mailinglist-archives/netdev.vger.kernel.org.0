@@ -2,108 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AEDE3449D1
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 16:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3153449F2
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 16:57:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbhCVPxV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Mar 2021 11:53:21 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:41776 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbhCVPxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 11:53:16 -0400
-Received: from marcel-macbook.holtmann.net (p4fefce19.dip0.t-ipconnect.de [79.239.206.25])
-        by mail.holtmann.org (Postfix) with ESMTPSA id BD42DCECB0;
-        Mon, 22 Mar 2021 17:00:52 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH] Bluetooth: check for zapped sk before connecting
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210322140046.1.I6c4306f6e8ba3ccc9106067d4eb70092f8cb2a49@changeid>
-Date:   Mon, 22 Mar 2021 16:53:08 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com,
-        Alain Michaud <alainm@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <559FCF7C-A929-4291-956C-EF776EFAA47D@holtmann.org>
-References: <20210322140046.1.I6c4306f6e8ba3ccc9106067d4eb70092f8cb2a49@changeid>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        id S231138AbhCVP5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 11:57:03 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53818 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230134AbhCVP4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 11:56:44 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12MFpPun014020;
+        Mon, 22 Mar 2021 08:56:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0220;
+ bh=YEgiwQSusQxj3lZOUq2K6+1KjkgfNBb/7IIwqWNUUKo=;
+ b=SgQCTM99QjdGkCRD8txfKnK7ac68JfJoPU/N/1jDZvSy70miHsv9+Xaz8ASyp7ZY6VrR
+ ha+HAx2pZ9NBoyj5Ujcup04HgqZlsGFD4Nd8s5r5j945gEwEsmFmQEtTCkOxt25mlzyK
+ 3bB5X9ztMAsJr79yg0vJJ5tFzfnbhnkq7TZgeagMd/gPrB9fbuA4aUqB3bOVVZhwpY+e
+ BhHBeMNWX+H8TRRO4U07IpJVubSVl6dbZ+zTo5OF6N4jHhgknuo6mleeshgYlgVoCEyA
+ Ycfh7k05FhDON2i4LTwhyUQBO3XZo0cyyKzEaU/Dt9essmMNTJiIzQuKccJcaYFlP8rZ GA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 37dgjnwhn5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 22 Mar 2021 08:56:23 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Mar
+ 2021 08:56:20 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 22 Mar 2021 08:56:20 -0700
+Received: from [10.193.38.106] (unknown [10.193.38.106])
+        by maili.marvell.com (Postfix) with ESMTP id C90EE3F704D;
+        Mon, 22 Mar 2021 08:56:16 -0700 (PDT)
+Message-ID: <4c953b24-974c-9425-b9be-cb386b15c9fb@marvell.com>
+Date:   Mon, 22 Mar 2021 16:56:14 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101
+ Thunderbird/87.0
+Subject: Re: [EXT] [PATCH] linux/qed: Mundane spelling fixes throughout the
+ file
+Content-Language: en-US
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <rdunlap@infradead.org>
+References: <20210322025516.968396-1-unixbhaskar@gmail.com>
+From:   Igor Russkikh <irusskikh@marvell.com>
+In-Reply-To: <20210322025516.968396-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-22_08:2021-03-22,2021-03-22 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
 
-> There is a possibility of receiving a zapped sock on
-> l2cap_sock_connect(). This could lead to interesting crashes, one
-> such case is tearing down an already tore l2cap_sock as is happened
-> with this call trace:
+> s/unrequired/"not required"/
+> s/consme/consume/ .....two different places
+> s/accros/across/
 > 
-> __dump_stack lib/dump_stack.c:15 [inline]
-> dump_stack+0xc4/0x118 lib/dump_stack.c:56
-> register_lock_class kernel/locking/lockdep.c:792 [inline]
-> register_lock_class+0x239/0x6f6 kernel/locking/lockdep.c:742
-> __lock_acquire+0x209/0x1e27 kernel/locking/lockdep.c:3105
-> lock_acquire+0x29c/0x2fb kernel/locking/lockdep.c:3599
-> __raw_spin_lock_bh include/linux/spinlock_api_smp.h:137 [inline]
-> _raw_spin_lock_bh+0x38/0x47 kernel/locking/spinlock.c:175
-> spin_lock_bh include/linux/spinlock.h:307 [inline]
-> lock_sock_nested+0x44/0xfa net/core/sock.c:2518
-> l2cap_sock_teardown_cb+0x88/0x2fb net/bluetooth/l2cap_sock.c:1345
-> l2cap_chan_del+0xa3/0x383 net/bluetooth/l2cap_core.c:598
-> l2cap_chan_close+0x537/0x5dd net/bluetooth/l2cap_core.c:756
-> l2cap_chan_timeout+0x104/0x17e net/bluetooth/l2cap_core.c:429
-> process_one_work+0x7e3/0xcb0 kernel/workqueue.c:2064
-> worker_thread+0x5a5/0x773 kernel/workqueue.c:2196
-> kthread+0x291/0x2a6 kernel/kthread.c:211
-> ret_from_fork+0x4e/0x80 arch/x86/entry/entry_64.S:604
-> 
-> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> Reported-by: syzbot+abfc0f5e668d4099af73@syzkaller.appspotmail.com
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Guenter Roeck <groeck@chromium.org>
-> ---
-> 
-> net/bluetooth/l2cap_sock.c | 7 +++++++
-> 1 file changed, 7 insertions(+)
-> 
-> diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-> index f1b1edd0b697..b86fd8cc4dc1 100644
-> --- a/net/bluetooth/l2cap_sock.c
-> +++ b/net/bluetooth/l2cap_sock.c
-> @@ -182,6 +182,13 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
-> 
-> 	BT_DBG("sk %p", sk);
-> 
-> +	lock_sock(sk);
-> +	if (sock_flag(sk, SOCK_ZAPPED)) {
-> +		release_sock(sk);
-> +		return -EINVAL;
-> +	}
-> +	release_sock(sk);
-> +
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-hmmm. I wonder if this would look better and easy to see that the locking is done correctly.
+Acked-by: Igor Russkikh <irusskikh@marvell.com>
 
-	lock_sock(sk);
-	zapped = sock_flag(sk, SOCK_ZAPPED);
-	release_sock(sk);
-
-	if (zapped)
-		return -EINVAL;
-
-Regards
-
-Marcel
-
+Thanks
+  Igor
