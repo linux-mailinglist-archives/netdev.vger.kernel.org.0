@@ -2,111 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CEC7344C6F
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:57:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7396344C80
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231241AbhCVQ45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbhCVQ4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:56:31 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2459C061574;
-        Mon, 22 Mar 2021 09:56:30 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id m3so7314484ybt.0;
-        Mon, 22 Mar 2021 09:56:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O8a1/KMRD2gZlRZYI2i+SlO+VhWKrwDB0WvdEpBaVbE=;
-        b=t5Um+QAdxVORPIeyt/dcD/BvreZIWg82Edi10Gou+E/9cYzuB2K3D0xF18Usg+EHV5
-         kM/a4eZZvcx14jvUGVB65NzTPTmz7uaP6N6hR41MqPuccZ4xcoQJC+qOGup4wz0+yFuD
-         M5T/hkei/wR/0bedell5Nk8URyUabim6SQDR00j2NMSARTorCG/RUV2dHfl40rmdKTsF
-         lLk3qq7Q1a6splKo6HMcePRpJznaHgwE+5EaFmpz8gaWPH8yO2ZswTSk5WdACg/gpS/E
-         fFzglId0NSSNJ6r9mkDymQcUv2GaoVFmBsfUtcLAWTXBuda0pr+quUCy5jip6/qWHpLO
-         ncng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O8a1/KMRD2gZlRZYI2i+SlO+VhWKrwDB0WvdEpBaVbE=;
-        b=TYwx8K/yPecNjvAP6DTWH6IZk/S6FtgpG1aZzA+drsId8QolJQyM7NKRTJffoCynIY
-         MbRKjqgVJS4clAbAHnixmGXMLoZYhmMGuJKVtpt9czUK7YZuWHhKWNQUn1jr+eduuc2Y
-         VZXH1lE+pFQY5L2xQVLOBN2WBD1VmeyZKlUsSPmsTfXjGDe/b4fZloyHBDn+c2a5Jqb0
-         3mx1UD0TvDgpIrVUtGZSqC3C0mK2PPB389ODI8TL1zBUOgm5vWBUXiLPEDZ0iPUIQ5Gn
-         AWmUr3pkC9Dtv3f1d7t52SnZ9lj3dnOE27KxmD6JDoQ0Hh4dVNp9Owx9jOnyO7KPPVJm
-         lCjQ==
-X-Gm-Message-State: AOAM532bDjekV5RCwwuZaAeIztmR8fWJDCiOAPInJ4lfJuw0+cqiREmR
-        NLcUOKZXEggV9oYDd10z2iUe4qM8oWl5d6N1QcE=
-X-Google-Smtp-Source: ABdhPJynFSu7SS+LXJeOFDSKUSk2+lgJrWGC2LWRfVF9fLj80uzqBt9QyF6f3qHQZafgqUqlX7kLBjGtGuSgbgkM0l8=
-X-Received: by 2002:a25:874c:: with SMTP id e12mr517350ybn.403.1616432190180;
- Mon, 22 Mar 2021 09:56:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210319205909.1748642-1-andrii@kernel.org> <20210319205909.1748642-4-andrii@kernel.org>
- <20210320022156.eqtmldxpzxkh45a7@ast-mbp> <CAEf4Bzarx33ENLBRyqxDz7k9t0YmTRNs5wf_xCqL2jNXvs+0Sg@mail.gmail.com>
- <20210322010734.tw2rigbr3dyk3iot@ast-mbp>
-In-Reply-To: <20210322010734.tw2rigbr3dyk3iot@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 22 Mar 2021 09:56:19 -0700
-Message-ID: <CAEf4BzbdgPnw81+diwcvAokv+S6osqvAAzSQYt_BoYbga9t-qQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: allow compiling BPF objects
- without BTF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        id S231486AbhCVQ7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:59:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33590 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231270AbhCVQ7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:59:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616432362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7N6XCp6yGRBkxMmcdSYxJKvExERSs5ZsnuqRS5j5r0w=;
+        b=DDBJao6qhkOIP1TYs2Nb4h4K9kQjY8yXgGmbZU9J1HG+No6KXWPXpMy+8hGIz/r3XarYWD
+        gux7e7I8n0qSqBxdRV7BTa4M992ON8RlEzGMsA+r4nCYPJLy69fTM9Me8NfcOmWA78l1UY
+        Q/6Un9I5y4CFJSB8BlR2etetzBFmPEE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-223-YV3LD6y7MvynlPtYZB05Nw-1; Mon, 22 Mar 2021 12:59:12 -0400
+X-MC-Unique: YV3LD6y7MvynlPtYZB05Nw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 56CD61007477;
+        Mon, 22 Mar 2021 16:59:11 +0000 (UTC)
+Received: from ovpn-115-44.ams2.redhat.com (ovpn-115-44.ams2.redhat.com [10.36.115.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C4D260D43;
+        Mon, 22 Mar 2021 16:59:09 +0000 (UTC)
+Message-ID: <6d5fae11c4eecda3f59f9491426834fce8c37f7e.camel@redhat.com>
+Subject: Re: [PATCH net-next 3/8] udp: properly complete L4 GRO over UDP
+ tunnel packet
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Date:   Mon, 22 Mar 2021 17:59:08 +0100
+In-Reply-To: <CA+FuTSfpAzEEz0WZ0EqwKu3CzuvZiD1Vv5+kCos0mL=_Rudkrg@mail.gmail.com>
+References: <cover.1616345643.git.pabeni@redhat.com>
+         <72d8fc8a6d35a74d267cca6c9eddb3ff7852868b.1616345643.git.pabeni@redhat.com>
+         <CA+FuTSfpAzEEz0WZ0EqwKu3CzuvZiD1Vv5+kCos0mL=_Rudkrg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 21, 2021 at 6:07 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sat, Mar 20, 2021 at 10:00:57AM -0700, Andrii Nakryiko wrote:
-> > On Fri, Mar 19, 2021 at 7:22 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, Mar 19, 2021 at 01:59:09PM -0700, Andrii Nakryiko wrote:
-> > > > Add ability to skip BTF generation for some BPF object files. This is done
-> > > > through using a convention of .nobtf.c file name suffix.
-> > > >
-> > > > Also add third statically linked file to static_linked selftest. This file has
-> > > > no BTF, causing resulting object file to have only some of DATASEC BTF types.
-> > > > It also is using (from BPF code) global variables. This tests both libbpf's
-> > > > static linking logic and bpftool's skeleton generation logic.
-> > >
-> > > I don't like the long term direction of patch 1 and 3.
-> > > BTF is mandatory for the most bpf kernel features added in the last couple years.
-> > > Making user space do quirks for object files without BTF is not something
-> > > we should support or maintain. If there is no BTF the linker and skeleton
-> > > generation shouldn't crash, of course, but they should reject such object.
-> >
-> > I don't think tools need to enforce any policies like that. They are
-> > tools and should be unassuming about the way they are going to be used
-> > to the extent possible.
->
-> Right and bpftool/skeleton was used with BTF since day one.
-> Without BTF the skeleton core ideas are lost. The skeleton api
-> gives no benefit. So what's the point of adding support for skeleton without BTF?
-> Is there a user that would benefit? If so, what will they gain from
-> such BTF-less skeleton?
+On Mon, 2021-03-22 at 09:30 -0400, Willem de Bruijn wrote:
+> On Sun, Mar 21, 2021 at 1:01 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > After the previous patch the stack can do L4 UDP aggregation
+> > on top of an UDP tunnel.
+> > 
+> > The current GRO complete code tries frag based aggregation first;
+> > in the above scenario will generate corrupted frames.
+> > 
+> > We need to try first UDP tunnel based aggregation, if the GRO
+> > packet requires that. We can use time GRO 'encap_mark' field
+> > to track the need GRO complete action. If encap_mark is set,
+> > skip the frag_list aggregation.
+> > 
+> > On tunnel encap GRO complete clear such field, so that an inner
+> > frag_list GRO complete could take action.
+> > 
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> >  net/ipv4/udp_offload.c | 8 +++++++-
+> >  net/ipv6/udp_offload.c | 3 ++-
+> >  2 files changed, 9 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> > index 25134a3548e99..54e06b88af69a 100644
+> > --- a/net/ipv4/udp_offload.c
+> > +++ b/net/ipv4/udp_offload.c
+> > @@ -642,6 +642,11 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+> >                 skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
+> >                                         : SKB_GSO_UDP_TUNNEL;
+> > 
+> > +               /* clear the encap mark, so that inner frag_list gro_complete
+> > +                * can take place
+> > +                */
+> > +               NAPI_GRO_CB(skb)->encap_mark = 0;
+> > +
+> >                 /* Set encapsulation before calling into inner gro_complete()
+> >                  * functions to make them set up the inner offsets.
+> >                  */
+> > @@ -665,7 +670,8 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+> >         const struct iphdr *iph = ip_hdr(skb);
+> >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+> > 
+> > -       if (NAPI_GRO_CB(skb)->is_flist) {
+> > +       /* do fraglist only if there is no outer UDP encap (or we already processed it) */
+> > +       if (NAPI_GRO_CB(skb)->is_flist && !NAPI_GRO_CB(skb)->encap_mark) {
+> 
+> Sorry, I don't follow. I thought the point was to avoid fraglist if an
+> outer udp tunnel header is present. But the above code clears the mark
+> and allows entering the fraglist branch exactly when such a header is
+> encountered?
 
-The only part of skeleton API that's not available is convenient
-user-space access to global variables. If you don't use global
-variables you don't use BTF at all with skeleton. So all features but
-one work without BTF just fine: compile-time maps and progs (and
-links) references, embedding object file in .skel.h, and even
-automatic memory-mapping of .data/.rodata/.bss (just unknown struct
-layout).
+The relevant UDP packet has gone through:
 
-Compile-time maps and progs and separately object file embedding in C
-header are useful in their own rights, even individually. There is no
-single "core idea" of the BPF skeleton in my mind. What is it for you?
+[l2/l3 GRO] -> udp_gro_receive  -> udp_sk(sk)->gro_receive -> [some
+more GRO layers] -> udp_gro_receive (again)
 
-So given none of the fixes are horrible hacks and won't incur
-additional maintenance costs, what's the problem with accepting them?
+The first udp_gro_receive set NAPI_GRO_CB(skb)->encap_mark, the
+latter udp_gro_receive set NAPI_GRO_CB(skb)->is_flist.
+
+Then, at GRO complete time:
+
+[l2/l3 GRO] -> udp{4,6}_gro_complete -> udp_sk(sk)->gro_complete ->
+[more GRO layers] -> udp{4,6}_gro_complete (again).
+
+In the first udp{4,6}_gro_complete invocation 'encap_mark' is 1, so
+with this patch we do the 'udp_sk(sk)->gro_complete' path. In the
+second udp{4,6}_gro_complete invocation 'encap_mark' has been cleared
+(by udp_gro_complete), so we do the SKB_GSO_FRAGLIST completion.
+
+In case SKB_GSO_FRAGLIST with no UDP tunnel, 'encap_mark' is 0 and we
+do the SKB_GSO_FRAGLIST completion.
+
+Another alternative, possibly more readable, would be avoid clearing
+'encap_mark' in udp_gro_complete() and replacing the above check with:
+
+	if (NAPI_GRO_CB(skb)->is_flist &&
+            (!NAPI_GRO_CB(skb)->encap_mark ||
+ 	     (NAPI_GRO_CB(skb)->encap_mark && skb->encapsulation))) {
+
+I opted otherwise to simplify the conditional expression.
+
+Please let me know if the above is somewhat more clear and if you have
+preferecens between the two options.
+
+Cheers,
+
+Paolo
+
