@@ -2,105 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E366344A25
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 704B0344A3E
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbhCVQC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbhCVQCO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:02:14 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663FBC061574;
-        Mon, 22 Mar 2021 09:02:14 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id h3so11234826pfr.12;
-        Mon, 22 Mar 2021 09:02:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TxgbwfvEeZkYrurUbnEsv0ASlZPTTYngpuV8wfALc4E=;
-        b=K1sZxYsl1lU9BZnL153NgkXJqBOxZrUtg3mgKt/7sAcVRAAN/TuR2zX57IlYKJ6BZp
-         iBGwMhtjLaM0XNb5yH7/AucltIiZ9jrlCduhYQXHGbOC8UXP68jS3Gwvz0lxgo1/rTse
-         9s2NUYOR+HTrLHQdDKZsl6met+Fz2OKZEnPZ2vEcv6k1mJiDALM/tJNig3MvWJNHS/m3
-         99IZMPUtocx7RAvcKXoYLLH1CEvLeAWu+2+A5p9cfFIMzOa6GYu4LjNIpkFtKOuwuF76
-         x5W4Vvc4p+0TfsxEYGCQNHS28lpsLVjScUZl37T92ygyVrmh57MSZqtkX64xpK5x097/
-         BLTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TxgbwfvEeZkYrurUbnEsv0ASlZPTTYngpuV8wfALc4E=;
-        b=nFl919tUgSUfaxIEz3Vglh7zRXYFgR3R6yP5EHj+0sFZF7DQuWLX0g/SBX8gZ/PjHi
-         H6qqm5P76o/47MmWIm1PxBe6uNK7YvNP20v4sBRsA5bmlj5Gn9idfK4BIip6lrYJxkwa
-         qR2IBi2xldUqyAQ7ax+URLUhOBHkho05VaYihxmV8E575pDtunBVvKExe/uFjW23L5w7
-         M93cadw+CvZjfeiLazmQNIRfSgm12/T1OPSbYMPz9bAY4sPCncCdRlE5WTSWPg7fxGKp
-         1MNQiLe5PqV4NODD0WyXBLK4om0fRpFqRSvw3aZhnXr4ZUrZEvrh7RKlNsa7UtE902SA
-         13Bg==
-X-Gm-Message-State: AOAM531sM8vX8R/iI1YzUBjOayZkrnLPe6QrnC52dLsF2IYd5+xTIuDj
-        c9eI2wIbZnI06n05B2h/Khk=
-X-Google-Smtp-Source: ABdhPJxxqffz5n4czoiK7aqYkClImLDnROA9GCY8UTQlt9OEAEiaLgjXTLmAGDdx8HTCtvPd7/qfXA==
-X-Received: by 2002:a62:83c6:0:b029:21b:b0e5:4560 with SMTP id h189-20020a6283c60000b029021bb0e54560mr474188pfe.69.1616428933847;
-        Mon, 22 Mar 2021 09:02:13 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i14sm14646584pjh.17.2021.03.22.09.02.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Mar 2021 09:02:13 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 07/12] net: dsa: sync ageing time when joining
- the bridge
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
-        linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20210320223448.2452869-1-olteanv@gmail.com>
- <20210320223448.2452869-8-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4c481471-debb-f2ce-8368-ee0241efc53f@gmail.com>
-Date:   Mon, 22 Mar 2021 09:02:09 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20210320223448.2452869-8-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S231707AbhCVQDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:03:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51622 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231493AbhCVQDB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 12:03:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B49F619A1;
+        Mon, 22 Mar 2021 16:02:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616428980;
+        bh=443r2a53XZrLPy3VFDNzKFCONnuuJaVZhGXWFTRxMGo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Wm1CETPpBfKZZ3lkNCemLWeIZGtbFVmw4nKK+xzlHh6SjshNPJfKJvKmWNXvf1K/F
+         5o2Ww58tt6oERHDBipAS4BwOz2CJOvMh/uBNklODZ0dsfVzZt5cj7OrnLB7U+iYnI+
+         V9LYQbKfb8Z/fsl+P+r2cUIk2R08rZtGx280ke6EJyn8vt+7YkwV0naEM1o/sQwiUN
+         Si9atqBgkFPNOL0NiRMLIEOjWWQ3UF2GIm92tB+iawDYiaDCLVZNub5gpWn3V4pP25
+         Ov3hZNHbzywOnT474a9kxX7y+Z8vSF7APRLbZu9IopXbelGoOeiLfQvjhYZz099ogD
+         8vEYHTLGBXuSg==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     linux-kernel@vger.kernel.org, Martin Sebor <msebor@gcc.gnu.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, x86@kernel.org,
+        Ning Sun <ning.sun@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Simon Kelley <simon@thekelleys.org.uk>,
+        James Smart <james.smart@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
+        Serge Hallyn <serge@hallyn.com>,
+        Imre Deak <imre.deak@intel.com>,
+        linux-arm-kernel@lists.infradead.org,
+        tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: [PATCH 00/11] treewide: address gcc-11 -Wstringop-overread warnings
+Date:   Mon, 22 Mar 2021 17:02:38 +0100
+Message-Id: <20210322160253.4032422-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Arnd Bergmann <arnd@arndb.de>
+
+The coming gcc release introduces a new warning for string operations
+reading beyond the end of a fixed-length object. After testing
+randconfig kernels for a while, think I have patches for any such
+warnings that came up on x86, arm and arm64.
+
+Most of these warnings are false-positive ones, either gcc warning
+about something that is entirely correct, or about something that
+looks suspicious but turns out to be correct after all.
+
+The two patches for the i915 driver look like something that might
+be actual bugs, but I am not sure about those either.
+
+We probably want some combination of workaround like the ones I
+post here and changes to gcc to have fewer false positives in the
+release. I'm posting the entire set of workaround that give me
+a cleanly building kernel for reference here.
+
+        Arnd
+
+Arnd Bergmann (11):
+  x86: compressed: avoid gcc-11 -Wstringop-overread warning
+  x86: tboot: avoid Wstringop-overread-warning
+  security: commoncap: fix -Wstringop-overread warning
+  ath11: Wstringop-overread warning
+  qnx: avoid -Wstringop-overread warning
+  cgroup: fix -Wzero-length-bounds warnings
+  ARM: sharpsl_param: work around -Wstringop-overread warning
+  atmel: avoid gcc -Wstringop-overflow warning
+  scsi: lpfc: fix gcc -Wstringop-overread warning
+  drm/i915: avoid stringop-overread warning on pri_latency
+  [RFC] drm/i915/dp: fix array overflow warning
+
+ arch/arm/common/sharpsl_param.c         |  4 ++-
+ arch/x86/boot/compressed/misc.c         |  2 --
+ arch/x86/kernel/tboot.c                 | 44 +++++++++++++++----------
+ drivers/gpu/drm/i915/display/intel_dp.c |  2 +-
+ drivers/gpu/drm/i915/i915_drv.h         |  6 ++--
+ drivers/net/wireless/ath/ath11k/mac.c   |  2 +-
+ drivers/net/wireless/atmel/atmel.c      | 25 ++++++++------
+ drivers/scsi/lpfc/lpfc_attr.c           |  6 ++--
+ fs/qnx4/dir.c                           | 11 +++----
+ kernel/cgroup/cgroup.c                  | 15 +++++++--
+ security/commoncap.c                    |  2 +-
+ 11 files changed, 69 insertions(+), 50 deletions(-)
+
+Cc: x86@kernel.org
+Cc: Ning Sun <ning.sun@intel.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Simon Kelley <simon@thekelleys.org.uk>
+Cc: James Smart <james.smart@broadcom.com>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: Anders Larsen <al@alarsen.net>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Serge Hallyn <serge@hallyn.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Cc: tboot-devel@lists.sourceforge.net
+Cc: intel-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: ath11k@lists.infradead.org
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-scsi@vger.kernel.org
+Cc: cgroups@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
 
 
-On 3/20/2021 3:34 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME attribute is only emitted from:
-> 
-> sysfs/ioctl/netlink
-> -> br_set_ageing_time
->    -> __set_ageing_time
-> 
-> therefore not at bridge port creation time, so:
-> (a) drivers had to hardcode the initial value for the address ageing time,
->     because they didn't get any notification
-> (b) that hardcoded value can be out of sync, if the user changes the
->     ageing time before enslaving the port to the bridge
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+2.29.2
+
