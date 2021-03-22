@@ -2,184 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56AAD344E74
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:25:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13082344E87
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:26:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbhCVSYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 14:24:34 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64146 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231617AbhCVSYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:24:23 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12MIBBZv004329;
-        Mon, 22 Mar 2021 11:24:09 -0700
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2171.outbound.protection.outlook.com [104.47.57.171])
-        by mx0b-0016f401.pphosted.com with ESMTP id 37dgjnx1sa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Mar 2021 11:24:09 -0700
+        id S231384AbhCVS0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 14:26:15 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:36774 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232210AbhCVSZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:25:44 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12MIOGLR158440;
+        Mon, 22 Mar 2021 18:25:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2020-01-29;
+ bh=Z2dk7K7T9DAppWx/xHWRtkZuAUvhZOoYyufY6yoM9pk=;
+ b=YAgg9HmRIzgAZg88AtEh91JXhGsbdf0kfGAskLxHHYgbnD/sL2etP7ANV1m1vXiH2pDG
+ iqjCkB/uL5sY08wVLplHhyCiHM90UCLZYEjMZOLtyKWiMCh+VgcJqqoFNU5of7iS26TC
+ acTaaV37MWPsDoU4MaB+sqOcA8LrpPV2hMzgu878iZZPunNYQIMohOSCVlLjMxrisTBq
+ pO0EB//9xUGHXZ4RyGQ507A65MOLyH4qJOIMaGPj74jQf+5FY9eUJrL15jtRhhmThFi4
+ ++EpX762dOfVxWaO70Fl4mzqBsvVswGpbDEJNYNAISVDCq3TnbSjfYBdmN4gKqt6iuBe nA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 37d9pmvd6c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Mar 2021 18:25:07 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12MIA8Lk187091;
+        Mon, 22 Mar 2021 18:25:06 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2171.outbound.protection.outlook.com [104.47.58.171])
+        by userp3020.oracle.com with ESMTP id 37dttqwx5m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Mar 2021 18:25:06 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=exqviFRlbubX7Mr+FPayO0y1QMFs+4BUdmNo8dMNsbbulNblNqJPCJJ2CJyNen+EVudpBmltUgOTQDgu0VyRzwL6ay7buIHnVfXpstnZRpJQxAGWSm2E8/zZ4DADdrkVHStjG6NyE10PWCZt+OONb92P6NrFdROTuj7Uup2oRGQmYYVCw7DS1p3d+9VpYBSdw8DQOPPgD+ToDDo8AiigwjBzAGgwFQ62Z3v/ZrMqmzF6tWmAOS5Yb/Z+sUqs3Axr92Z2L4ZYla6fNH9QCx5vXx43O9TElOSrQtr/jKGYECg9Et5P0kacpILK+Tp49LobiEl5kuuf9nrTJLLr6ccvLw==
+ b=jE/OhS0t0bxbly7qivKCMymQPAd5GtyuWFQSS8B5DW2JohDPuylVC+/3blgCo+y57/1qYfuEodkYpy490LpVpyGdCiDfFZMAfHuk7kdvkpjHlWcfquNeQoi/vtkYQ15pcFXa06i2iTfnRE1Tu3Tv3SMSnRBljBfBTvuLkuWIomIeZZYTl0QSSjWu59MSbpwOfmkPjN6xL9q8rPoP6XvXvzWyYIFxgCdAwrEc2daxgdiGt7UGAhDSQ6G6z4+C1n1OVeQQImOuMh2+6jvDDUIlgJqBCrCbRQ29REF7cUKVkhHMKdGeGn+QqYUU1jkYaJpl7IXizvFm8afmAxcLDtCYkA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EY5vWIHHbT+LVIPb730iPW0GZmnAA0OObXAMAT1YNb0=;
- b=f6Mrd8KkoMx6kYcO+SgHzDz1KnoujC55Nd/xfg1+E6QGZ9+kbp/7ffJ7u9x4RQIwI0gkNR0BcLsxv3eGMPFVu1ufZhczuINSgDTw+hYopc7JrFzet7djfgh5ES4+QdC1zGvdLbKUJvGEdTdMUjr3dUl2kezDy+cg/lQUvH/zcFpF6l3q0r5XcN+WxNDHCiTE2NWVEc4jtGicvmzzjQBQMkiul3uB05U1vtVyPvVAEEYpDmaMWRLWJl9y+YJQBhMxlJYyw0B03PjvImKf8/75j8UpX8a6nIhuhiH/XoZ45DpfKJbxcYC4BWZ9Vb5BfdvFCwtkiK8W/b0euM5cEIV3KQ==
+ bh=Z2dk7K7T9DAppWx/xHWRtkZuAUvhZOoYyufY6yoM9pk=;
+ b=LupkM5j0F6UKzNEJDcNXzpPgJphMBs/IaQTj1T5beWCtLFxqD54MCKv9PqieNxXX8+2kkwundn4a9XligzRKjzV3OV5YeewdZ/u6QSYfWghQ0ORZfMRfW/f+xthanEpRE+OOV0nBXx56SYFAXhXvPOtjOfG2cBnRJ+KvMQNAp7uPHjKmtLxMnIJVF82XUuBLHrFJCYDsk4ykCIKbnZxmSoFMreMbnI/4iIu6ENYiC6wyzK/DUefu5hLLr60kysPOm1Kj7uzrepRXzIQVGbjCY8Xn1EosQw7ch9AAhYkac5CzVToCNtlJFVj/sIA8fnIf9Qew81l8dAbrtKZVcCTFdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EY5vWIHHbT+LVIPb730iPW0GZmnAA0OObXAMAT1YNb0=;
- b=LVECFHESzufP1NdaegoPNP4AUBcxVwlAIoRnga/HVZa8B2Zm6/yEseMXoHH2RfFhe5cPTy3b0/9+S7dP1LYhVR3Vz/L5RM/Zea6afzU2leNdVxB5x91SN1YAmQkiD9TQ5WFbdLDpOXzTmR3R7QFy7Y+ebcsA/38w1VZUs3fyXA4=
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
- by CO6PR18MB3924.namprd18.prod.outlook.com (2603:10b6:5:340::11) with
+ bh=Z2dk7K7T9DAppWx/xHWRtkZuAUvhZOoYyufY6yoM9pk=;
+ b=bwwiNZ0p7NTkbkIuh9dx/T4PsUIj4dAmDg56zyL2qvXY9+DPDhAyOLmax2AWv6TqI+idkgUfQfKR+t+A23XnJfpH4B4eQW+XwkPl1pqM5GyjPzmF6k5dm/hPo4Hm3o0itU24MtIliTYGZVOuOydEFhIXFb3G7F6aNGmPnAR+01Y=
+Received: from SJ0PR10MB4688.namprd10.prod.outlook.com (2603:10b6:a03:2db::24)
+ by BY5PR10MB4034.namprd10.prod.outlook.com (2603:10b6:a03:1b1::31) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Mon, 22 Mar
- 2021 18:24:06 +0000
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::ddee:3de3:f688:ee3e]) by CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::ddee:3de3:f688:ee3e%7]) with mapi id 15.20.3955.027; Mon, 22 Mar 2021
- 18:24:06 +0000
-From:   Stefan Chulski <stefanc@marvell.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "rabeeh@solid-run.com" <rabeeh@solid-run.com>
-Subject: RE: [EXT] Re: [V2 net-next] net: mvpp2: Add reserved port private
- flag configuration
-Thread-Topic: [EXT] Re: [V2 net-next] net: mvpp2: Add reserved port private
- flag configuration
-Thread-Index: AQHXFpW4dTR4hPIdakagD6uzfQ/d0ap/ArIAgAfBQuCAA4BOAIAF9pLggAAIxICAAAc3gA==
-Date:   Mon, 22 Mar 2021 18:24:05 +0000
-Message-ID: <CO6PR18MB3873473DF823D778135AE9E0B0659@CO6PR18MB3873.namprd18.prod.outlook.com>
-References: <1615481007-16735-1-git-send-email-stefanc@marvell.com>
- <YEpMgK1MF6jFn2ZW@lunn.ch>
- <CO6PR18MB38733E25F6B3194D4858147BB06B9@CO6PR18MB3873.namprd18.prod.outlook.com>
- <YFO9ug0gZp8viEHn@lunn.ch>
- <CO6PR18MB3873543426EC122F1C53DC40B0659@CO6PR18MB3873.namprd18.prod.outlook.com>
- <YFjFqaHxXiwcZpr2@lunn.ch>
-In-Reply-To: <YFjFqaHxXiwcZpr2@lunn.ch>
+ 2021 18:25:04 +0000
+Received: from SJ0PR10MB4688.namprd10.prod.outlook.com
+ ([fe80::50bf:7319:321c:96c9]) by SJ0PR10MB4688.namprd10.prod.outlook.com
+ ([fe80::50bf:7319:321c:96c9%4]) with mapi id 15.20.3955.027; Mon, 22 Mar 2021
+ 18:25:04 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Thread-Topic: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Thread-Index: AQHXHvxh39vYR/ByH0SHQRVYSjGN/KqQU18A
+Date:   Mon, 22 Mar 2021 18:25:03 +0000
+Message-ID: <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+In-Reply-To: <20210322091845.16437-1-mgorman@techsingularity.net>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [62.67.24.210]
+authentication-results: techsingularity.net; dkim=none (message not signed)
+ header.d=none;techsingularity.net; dmarc=none action=none
+ header.from=oracle.com;
+x-originating-ip: [68.61.232.219]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 77e065a2-1f07-4022-bf83-08d8ed5fad72
-x-ms-traffictypediagnostic: CO6PR18MB3924:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CO6PR18MB3924857CE8BB05C7A24ACBA0B0659@CO6PR18MB3924.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-office365-filtering-correlation-id: c986b3ef-c477-49a1-3b67-08d8ed5fcffd
+x-ms-traffictypediagnostic: BY5PR10MB4034:
+x-microsoft-antispam-prvs: <BY5PR10MB403405E19A0247784AD37DEE93659@BY5PR10MB4034.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 37wamn6EGuSBsS5JLvln+O1bLTTd4XsgqvkuRk9GjGc5fqPElwsSHbr1+3jD0qlsLtx/l2yr+zQK4BZDWYw/wh6T/4f2NLyo7QyDy40Tw9MMx2uC/BVLzQaD3KSrPV3Sffg+tJHsjKRHOx9n0WcarO8Er3pX8uV7D7ITtTXMfaf+BpJM4KVbufa3/SXLsRmIFDXBh+gjoUEnS1qtOmrfK1KpOylaGCLmQnl9XcQO5Tw84pCRJIJdTxzhP8Q2ON9cRGdBYOlO9GLLNMSa2YdDCd6+gilXBDPUx1S6WE4yD3vyKHGIaptwqts5TurefEFHskfsQmJaRNK2k4yKJiHwc8JaBlXVqnBPd/Ya2sbdrLTnpA9k1ccyb1096oleIIy4HvbLSty841/WDqDC3JSPti2+eKKU+iUWL62Qn4YUxRVfSIiQEkyjOV9031HB3NCC/bViurY+usCGmNo/iqL7OWawUnezd6/HfznXtRDR8IndPS/JleT/YG0auXrkaRj/PV+3jgBdsV/+M4aACY4wBwC8jVYoaSSZQnSjiYgbJQR+7avZ51/sN8+aV6n7UrUMNV5FpkaRmnl1FC7X1DgAfmbYQZV+c7IkcMa8UnhoxVC0xLTVNPX6roISAYZd+KWkVSukYgdT6j8XLhFGV/XuocnHRB8YQ8gMfmlaFAvjA5M=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(39860400002)(396003)(136003)(2906002)(9686003)(33656002)(6916009)(38100700001)(8676002)(64756008)(66446008)(66556008)(71200400001)(316002)(66946007)(55016002)(6506007)(76116006)(66476007)(7416002)(26005)(186003)(54906003)(7696005)(52536014)(8936002)(5660300002)(478600001)(83380400001)(4326008)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?/7RSoHXpjxV/FDXxvXpafcfmxgnL5RsEBYQaWJfYHxCgI0AeZC02veAS4A77?=
- =?us-ascii?Q?YCGsSyeAHtuGiSO4iM9WXxMAPy/VNTkF7FFxFJYAeRzdgYP25HFz77aWh8bj?=
- =?us-ascii?Q?uQGESAFe+bmoa6Va+cN981RGV/9M7OYwqzqYiZiyg3SnZ9V/Zc61ytgDpob4?=
- =?us-ascii?Q?CVy2PE9DztHpAcOV9i94eC0/Ykxt9zrYIw1mlkbqyRK8TCXBB2PNX3LC0mOU?=
- =?us-ascii?Q?72Z8MCq0k5RkIkIxOUGmNIoZex2VzZ77PjcW706bh/swLjRzhyPFmRuayGPU?=
- =?us-ascii?Q?NumoodJTHDHZDZY3f0SXNKbZ5cOx2izyFerlvjahjqzR317LcCP/nxjzIkSH?=
- =?us-ascii?Q?X8eFw65Nt/bkbBZhZSRzADjKiMwnwvJd5MteM0u6WDL6+g5DXGPOTphPRgWh?=
- =?us-ascii?Q?Bd081nC8IQOyYAsZX/H+6NYNec9oHGyP06f1DWdM6wvwYEm3XDQfEh7fB9YM?=
- =?us-ascii?Q?eE3Ii31yjmpG8aXvkprXdJx+l7SVQBEdW1uYDWPXC9nI3uj5RMy8ztI5RiBp?=
- =?us-ascii?Q?Fenh0aLqqqCKIvzLdwEPUBnopovVhppEsdQTxZ31O4IBWveI7vUCXIqJJwVp?=
- =?us-ascii?Q?z2CG3fcXyS9+cdtgzDIWmKROA9pYXH7yQQujhNkTgMxoqDVeWKouHb6Z+6mi?=
- =?us-ascii?Q?yXm86kO2AayavXzdBYlT6ON4jhKYT/g0EdAIrVJ5y66byq81m+QcLgSEv4ad?=
- =?us-ascii?Q?0LkJY3MUzT6igzNQQ62JAuXNw+xrkLwPkzwQ9fZdeBZ11hgnVxb6ythuZzE8?=
- =?us-ascii?Q?oiifvE60ZeglRW6q3LcdnEOEjOvMXonZ3xcmUtm5xwZ7itCKd9DLdKtmfMp0?=
- =?us-ascii?Q?PLdVql0yEQJ5hPk9WKirXsyYqOEzQbW2dgRILvzhn2q/eDP+AnLc0I3jPpZM?=
- =?us-ascii?Q?VbByk6rICbnZTc9eMBprYcbjJVProOj0L6oEEntN/aXhF1iBm1Qlu7DB8zoG?=
- =?us-ascii?Q?nCchCSUQCEi4+heRkIAgzZaf//V3oo0WkWKpb+xBcHzee3QwmkU3FKwUgtNu?=
- =?us-ascii?Q?li1NsIM8B36RpXvSfHjTKvHimmMmppxwEzWcYDPd2+kWCAEH24QTx6wWGZEW?=
- =?us-ascii?Q?WyOQ1BFJq4LeTVdT45YvsPt9JlppEhgRBAS9xNsPegdb0KdhnUG5EZR/xnD5?=
- =?us-ascii?Q?B3QBWqFIfHXPUWOgnRA3vPKHGGjBki85z+Bd7lhMscbG9OW3tEs/rAkewHIC?=
- =?us-ascii?Q?+dnCj5FheDcm9hhmxCDaZy29p04d1QAJ9lBSadpXZvxX3R9iNkMOALfQI5vm?=
- =?us-ascii?Q?PZiy2BKKP7IpqgdKBvtLKAPF9VP2CWej5S/Y6jp4JivXKkfikIGW3yE6/+fG?=
- =?us-ascii?Q?WhE=3D?=
+x-microsoft-antispam-message-info: tcicPTytUdJGLyA57TLfs4Ljmb2YUheBsMH84w4OSqS1ntpLHtKfuRqF0Xs/biPD4mzffOPugw7FrkkScLQCqL8fnxnH4IWZXc6QU1Jil2gycUDrn/FZpmUP0bDvYkp56oxpuk0gUMBF3hBxgRIl43qBf9CXk+5ITSdVmpcH/DsGUfK/MLxySSUwi95VoI3W6nT/CIsobnFE7tJRm2QLo+nRR7M/VgtBF+zY0WK1Fyf8tMHTxWv8ScORuK6pIHKKx5Chu/EPvqBZ0J1RDT/G/C0S1L2IRlC+T9ZWiET98Yhuqf68o0W5xsijb2STdr2nJraXF94kkbylphbmXAlRjJ9RZBMQACsW+52ZPJPlbxlvi5DICV5ouiQ4/uwlBFXwWj6T2kQcc1louymFltv4JPhpVtdYt2ybvJGTTi7713qKd8oia37DwdOFjI1AP13FO3T+wTeDIxyQvFX1RyVOUXc84AR4p9gwFs1Lbzesiqr63ADJFotUZGn2lU2GSwKew4yf5ZXatfZq7SA6gsezXGTC8uPTImyWAAvE2HD4+RqS6cuUXKRr2lXmUd5bggJGusnzYbHsYmKvUTKh05J49oE3QWGI3gOrtO/jvwYn1cZjmWzDYM/OmGw4YsN3FLAoPbftZHN7KN/EbXAPAHwJDunPTpj6HH2bhQacjrsdUjt/tavvdFsagtbbVY0d9NIl
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR10MB4688.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(346002)(366004)(136003)(376002)(7416002)(8676002)(8936002)(83380400001)(6486002)(86362001)(478600001)(2906002)(6916009)(66946007)(66556008)(38100700001)(64756008)(66446008)(76116006)(91956017)(66476007)(54906003)(316002)(5660300002)(6506007)(53546011)(71200400001)(33656002)(36756003)(2616005)(4326008)(6512007)(26005)(186003)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?d2pXZS+ZgXYbU+Ry3kwiI+gmj+hXwQhZ9dYL8EOUyCv3fNheifB2UdXjhFT6?=
+ =?us-ascii?Q?PEPwU+1kndjJdnBCkgQpp907foxGZZxGZDzuTyq/wQe4YTXlgJzS+aG+xLuI?=
+ =?us-ascii?Q?IJ27yN0hYKiw/MI3iK85p7zsLuYwPOEKF+aFAFQNVUsaNOUrOO65Vsb5eIES?=
+ =?us-ascii?Q?KIJn1cFsKnjZwB/CrvTx1Pk4rwpAQ+Ux4MBKCXHpyqrpZQ9peaWsNTXl2bui?=
+ =?us-ascii?Q?1DJ4//i3ZkbCYrOeZWu7GjLcuVlR8hyhe+xdFROCtqePmSrSHfYLyYNX4gEF?=
+ =?us-ascii?Q?f4f0d37UoJcytothDdDPh+jBvhUtjAbI49U4yuyjyDJAIEPtTh8PWagjH9+k?=
+ =?us-ascii?Q?x6nOFOSl5GPv29UOdt8SbokKM0EwTY33ztj9w94/qr4p7Kb/gJKHaqPp7cBd?=
+ =?us-ascii?Q?eIH1WqINPaL/rr7BaYLZ3F6vUzhXg1g7fV1n+Bxf791caCEjsCSf6spkYMAd?=
+ =?us-ascii?Q?AFaxGTYNz1IIptCg1VqttrfYU2HkO6SXR0fRykj7M+8BfX9+0ZbBdtTD/Av/?=
+ =?us-ascii?Q?E6UiluHbE1NL+ZiIi60FM1WgknpKYhHgq9LRIBNMHHiFzGItlQYHLTUNmIdw?=
+ =?us-ascii?Q?ZKIU4eoIN441jvB+olZoKWhPxt2dsWsuFLHhzZAPR52WOX9Ft3Df4DUPuTyV?=
+ =?us-ascii?Q?9g3zFBWxkR9YjMZn3lMgqMkAt36VbDPgn35prP8TaAlkSupADQ7k+GUTq+hq?=
+ =?us-ascii?Q?UlBpDBAJ9QKZCEq2DZqcYwMco53LO8n9lJIypxAfBgapUdaoXgmXazBCGd6x?=
+ =?us-ascii?Q?mQ7VyBi8Hc8qY2edFBuqRFI6VUUyJ3PrtM7GnrhPft3ogBDAfOZRkrJg75ys?=
+ =?us-ascii?Q?X21zX3bf65is41Xx3bkqkS4QOPhyUs/vgc/j04yV1Rhfn6ovfR8+eOk6jQws?=
+ =?us-ascii?Q?HkJikNVvzdCxt8+TTPIX4w4FslRAjg9etMMZNaqN/ExIsFhfl6M4w3wmKzqC?=
+ =?us-ascii?Q?aiLTkD1SkQzOKm1tMat4hQdAZd4DDDTku/0TaX7oJhzlnNd2dKAHcA7v1ldK?=
+ =?us-ascii?Q?LbGMHbmkZYzyGxc5XhJrOSLSZYLq3Pla4Dk2UTlqTyDVWMlq9RsfMsWRPMhE?=
+ =?us-ascii?Q?wEKQeXW1u108NJFxqj/I2U42NsZlGW5Xc3y9ZW0HBywn123t1sR82sInxh6p?=
+ =?us-ascii?Q?ILVAm9qZHueGnB3kEZNIL/YgPyrynkHElHSri7iWdO+TRcn5aa62OzpxMysJ?=
+ =?us-ascii?Q?33b6NcGkhD93WSe0WDy+RYx26YOMpElTNZQe3y3uL+7ib0numZwgySW3CLtD?=
+ =?us-ascii?Q?63+I2A0OKk2IZkx5CybC1lFSbJBZxjgzfapgXLObMzqVgGtZL10XpBjLayri?=
+ =?us-ascii?Q?8O4mICAn0An1zNLQXnSDgcnw?=
+x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <605D5AD6155EF3448FBD4206E1189DD6@namprd10.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
+X-OriginatorOrg: oracle.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77e065a2-1f07-4022-bf83-08d8ed5fad72
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2021 18:24:05.8658
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR10MB4688.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c986b3ef-c477-49a1-3b67-08d8ed5fcffd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2021 18:25:03.8895
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: u78l0nEhs6rQIkSa+V0/x5T8yl51R1RRavJqGb6Kuob4ruXsHYVWJVQ67hkyGoU/zBhQP/2Z/4c6sJdPzK40RQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR18MB3924
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-22_10:2021-03-22,2021-03-22 signatures=0
+X-MS-Exchange-CrossTenant-userprincipalname: oq0gDaNaYLFXqo1xQYEY/Kn012n8JtgGg44TamRvQAoHpSTHgtNH8ug7m6GSTEzt0t0wDHeR9t8cMdzjxz+hOA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4034
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9931 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 spamscore=0
+ mlxscore=0 phishscore=0 suspectscore=0 mlxlogscore=999 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103220133
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9931 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 phishscore=0
+ mlxlogscore=999 priorityscore=1501 impostorscore=0 bulkscore=0 spamscore=0
+ adultscore=0 clxscore=1011 malwarescore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103220134
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > CM3 won't use this interface till ethtool priv flag was set, it can be =
-done by
-> communication over CM3 SRAM memory.
-> >
-> > > How does CM3 know the status of the link?
-> >
-> > CM3 has access to MAC registers and can read port status bit.
-> >
-> > > How does CM3 set its
-> > > flow control depending on what auto-neg determines, etc?
-> >
-> > Same as PPv2 Packet Processor RX and TX flow don't really care about au=
-to-
-> neg, flow control, etc.
-> > CM3 can ignore it, all this stuff handled in MAC layer. CM3 just pollin=
-g RX
-> descriptor ring and using TX ring for transmit.
-> >
-> > >
-> > > > 3. In some cases we need to dynamically switch the port "user"
-> > > > between CM3 and kernel. So I would like to preserve this
-> > > > functionality.
-> > >
-> > > And how do you synchronize between Linux and CM3 so you know how
-> is
-> > > using it and who cannot use it?
-> > >
-> > >       Andrew
-> >
-> > I can add CM3 SRAM update into ethtool priv flag callback, so CM3 won't
-> use port till it was reserved to CM3.
->=20
-> I really think you need to step back here and look at the bigger picture.=
- If
-> linux should not use the interface, it should not exist. If it does not e=
-xist, you
-> cannot use ethtool on it.
->=20
-> What you might want to consider is adding remoteproc support between
-> Linux on the main processor and whatever you have on the CM3. You can
-> use RPMsg to send requests back and forth between Linux and the CM3. It
-> can request that the shared parts of the packet processor are set up for =
-it.
-> Linux can tell it when the link comes up? It can request how the PHY auto=
--
-> neg should be configured.
->=20
-> 	Andrew
 
-I would check this option.=20
 
-Thanks,
-Stefan.
+> On Mar 22, 2021, at 5:18 AM, Mel Gorman <mgorman@techsingularity.net> wro=
+te:
+>=20
+> This series is based on top of Matthew Wilcox's series "Rationalise
+> __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
+> test and are not using Andrew's tree as a baseline, I suggest using the
+> following git tree
+>=20
+> git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebas=
+e-v5r9
+>=20
+> The users of the API have been dropped in this version as the callers
+> need to check whether they prefer an array or list interface (whether
+> preference is based on convenience or performance).
+
+I now have a consumer implementation that uses the array
+API. If I understand the contract correctly, the return
+value is the last array index that __alloc_pages_bulk()
+visits. My consumer uses the return value to determine
+if it needs to call the allocator again.
+
+It is returning some confusing (to me) results. I'd like
+to get these resolved before posting any benchmark
+results.
+
+1. When it has visited every array element, it returns the
+same value as was passed in @nr_pages. That's the N + 1th
+array element, which shouldn't be touched. Should the
+allocator return nr_pages - 1 in the fully successful case?
+Or should the documentation describe the return value as
+"the number of elements visited" ?
+
+2. Frequently the allocator returns a number smaller than
+the total number of elements. As you may recall, sunrpc
+will delay a bit (via a call to schedule_timeout) then call
+again. This is supposed to be a rare event, and the delay
+is substantial. But with the array-based API, a not-fully-
+successful allocator call seems to happen more than half
+the time. Is that expected? I'm calling with GFP_KERNEL,
+seems like the allocator should be trying harder.
+
+3. Is the current design intended so that if the consumer
+does call again, is it supposed to pass in the array address
++ the returned index (and @nr_pages reduced by the returned
+index) ?
+
+Thanks for all your hard work, Mel.
+
+
+> Changelog since v4
+> o Drop users of the API
+> o Remove free_pages_bulk interface, no users
+> o Add array interface
+> o Allocate single page if watermark checks on local zones fail
+>=20
+> Changelog since v3
+> o Rebase on top of Matthew's series consolidating the alloc_pages API
+> o Rename alloced to allocated
+> o Split out preparation patch for prepare_alloc_pages
+> o Defensive check for bulk allocation or <=3D 0 pages
+> o Call single page allocation path only if no pages were allocated
+> o Minor cosmetic cleanups
+> o Reorder patch dependencies by subsystem. As this is a cross-subsystem
+>  series, the mm patches have to be merged before the sunrpc and net
+>  users.
+>=20
+> Changelog since v2
+> o Prep new pages with IRQs enabled
+> o Minor documentation update
+>=20
+> Changelog since v1
+> o Parenthesise binary and boolean comparisons
+> o Add reviewed-bys
+> o Rebase to 5.12-rc2
+>=20
+> This series introduces a bulk order-0 page allocator with the
+> intent that sunrpc and the network page pool become the first users.
+> The implementation is not particularly efficient and the intention is to
+> iron out what the semantics of the API should have for users. Despite
+> that, this is a performance-related enhancement for users that require
+> multiple pages for an operation without multiple round-trips to the page
+> allocator. Quoting the last patch for the prototype high-speed networking
+> use-case.
+>=20
+>    For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
+>    redirecting xdp_frame packets into a veth, that does XDP_PASS to
+>    create an SKB from the xdp_frame, which then cannot return the page
+>    to the page_pool. In this case, we saw[1] an improvement of 18.8%
+>    from using the alloc_pages_bulk API (3,677,958 pps -> 4,368,926 pps).
+>=20
+> Both potential users in this series are corner cases (NFS and high-speed
+> networks) so it is unlikely that most users will see any benefit in the
+> short term. Other potential other users are batch allocations for page
+> cache readahead, fault around and SLUB allocations when high-order pages
+> are unavailable. It's unknown how much benefit would be seen by convertin=
+g
+> multiple page allocation calls to a single batch or what difference it ma=
+y
+> make to headline performance. It's a chicken and egg problem given that
+> the potential benefit cannot be investigated without an implementation
+> to test against.
+>=20
+> Light testing passed, I'm relying on Chuck and Jesper to test their
+> implementations, choose whether to use lists or arrays and document
+> performance gains/losses in the changelogs.
+>=20
+> Patch 1 renames a variable name that is particularly unpopular
+>=20
+> Patch 2 adds a bulk page allocator
+>=20
+> Patch 3 adds an array-based version of the bulk allocator
+>=20
+> include/linux/gfp.h |  18 +++++
+> mm/page_alloc.c     | 171 ++++++++++++++++++++++++++++++++++++++++++--
+> 2 files changed, 185 insertions(+), 4 deletions(-)
+>=20
+> --=20
+> 2.26.2
+>=20
+
+--
+Chuck Lever
+
+
+
