@@ -2,133 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4F4A344DD8
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B96344DE0
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbhCVRzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 13:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
+        id S230071AbhCVR4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 13:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbhCVRyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:54:47 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94D7C061756;
-        Mon, 22 Mar 2021 10:54:46 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id l1so9101983pgb.5;
-        Mon, 22 Mar 2021 10:54:46 -0700 (PDT)
+        with ESMTP id S230021AbhCVR4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:56:18 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7706EC061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 10:56:18 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id b7so22771870ejv.1
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 10:56:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=87pGrLteJ+237RV0BtDd06HtY25mz530b4exQgqj/zg=;
-        b=CrG38DWa9qAvcmrymHnZgrao/1g2aKLb2W6MED98qp8qS/XKo30r9qyY9+QSLsaWDS
-         STfYM+DhjwcP/3e+Wz3ZTmwOL95cZmsZuYiiwrra/J1lJOO/MhJ0agQFJ4h+QFR3QYKp
-         IM9fmzv8M6hpL7YqIB7Yy+z2IfrYAPIZErsRkAnUPyee2MoEnxp/Qo3uwCeAmg358tUm
-         VPDahDnxjV1MiSo8yjBdOCJeidX6DAZT/pB8gpJoTaalpEQdfx8i61SlMWJyPfXNRilS
-         noiZmlX0uXHlnOVCmGTlsKbppTteN2hUpQku3cqjBt2eZOtB3Xu40yOPprCAsRXLlOr5
-         Xz1g==
+        bh=OrKJJ7lUxB0+2wGbFPE+KxXpI85Er2m66PshYy/4kls=;
+        b=CE7NmpSehqYNXiRwWePBxpHm+26JpjgIdsVIA/iMVLRI3sHIRGGp1qfkpbsgywb19G
+         bzPJAJJGrVtZkZQCinm/B/uetnhoQXgNQBClUEot/B2J1Rg2GWo3FoIpgPzeVaxFypwV
+         8RDPjcYxKCA2Nddm83+VyYu1sqX8Z5Top3CY+fcVja0qnwALx4IyZjKtheSCb/EiZSLh
+         Cxtj/1be0YbHFyq7d4kmNV1tchrOQt8x2cB9/0P6Y5X0LpMC0dGqwhBRjZulCkPDvnF3
+         Php/D1oe0sphOScgV6+zEy4JYV10pbv58sKhZ0TY1ilGu9utfbOrAZgE/9Cu+fKaEQi2
+         jspw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=87pGrLteJ+237RV0BtDd06HtY25mz530b4exQgqj/zg=;
-        b=VdFHCvYZm2IZpXT0JdD7l9soF69m0z+rrsqmcnZ+qM2DF80diVmp+7PDtlB+RhZmYX
-         rwHGaCGSkUSz/quK/cYBlMl8KT+SdwUGvK/lHRgG+wtI+y0mXRX0Bfi/AKMyTQMEycB2
-         UFVA/9H6EOcEpM2npHVjCNvoFlFp90nqrHCthgWJM8eSUrXCE0IuYvEapU4D+1wkDz4I
-         q84QGT2jpipuzPOU3ZTn8NMOKKe/C1Dlc8MnmiHjQBZ9eDXLb8qQtTAHEYOUjKiuk1Z9
-         6aos8vz1jvpCumGxhL+56uZ3BFG7Wl280/2LnK3Ay8P7G21erTi0C+liIWDPD10BGLhs
-         tj5A==
-X-Gm-Message-State: AOAM531s9wjzimhObQFxVIGx+jjGS7RBg9GXHSJ7BrXF4Nw30f96K2wt
-        IB6/EZFAWzuoWn+q1WgJFI1rQsiJJFU=
-X-Google-Smtp-Source: ABdhPJxqweOaS6g+BETYVuqs+Sytqb7t6qAF8onnorVNo/uV0UgFqgWPen0BStGAttW9dnkwp5AUFw==
-X-Received: by 2002:a63:fb10:: with SMTP id o16mr644549pgh.368.1616435686172;
-        Mon, 22 Mar 2021 10:54:46 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:6970])
-        by smtp.gmail.com with ESMTPSA id w189sm14167569pfw.86.2021.03.22.10.54.44
+        bh=OrKJJ7lUxB0+2wGbFPE+KxXpI85Er2m66PshYy/4kls=;
+        b=Nrh/RgJTBshuiNqqm7zE/yIXXhES+v/2bd9JwhPzwaIm/g0B5diPppcMh6NasSbjJI
+         pnaXZQV4DlMNyVY+NG+gbiMQ/JSmtJft87KXtTFsghoBxTNls4nPfVVp8E9T1tU8EsgS
+         NKwGlkQLoe0dXZt0KdTBKDFJ2vs0c2FDcVnawnEOKXH5ygpzrMVew9wtLP+X8CAj3+G5
+         gOo64xRO4C8fnoDj4wUWFHZxDa5EvtFlI1CjumkswUE+8kR3fUsFrLXvIE1jImUXwz9D
+         oxhNL3RDOpohECnmg4CZ/sPbSU8ka8glReUMEUv4ov1vqFHsSLFbXDFV9/he4F2VxVVF
+         E8hQ==
+X-Gm-Message-State: AOAM5320UDrX3LaN9vM14tBj9df73YgL4AZbjWHDXmo55F4uy8UPudAG
+        d23fbgEsMnEzay65e4eFBW4=
+X-Google-Smtp-Source: ABdhPJyWqr9lVOA1Q9EuQhxL71O/vFjTc6w0vZDgIt8Qt5aaYhVHRKYSnu8H3mSCm5k3VBYrz0hg9Q==
+X-Received: by 2002:a17:906:4ada:: with SMTP id u26mr981429ejt.129.1616435777253;
+        Mon, 22 Mar 2021 10:56:17 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id n16sm9896431ejy.35.2021.03.22.10.56.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 10:54:45 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 10:54:43 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: allow compiling BPF objects
- without BTF
-Message-ID: <20210322175443.zflwaf7dstpg4y2b@ast-mbp>
-References: <20210319205909.1748642-1-andrii@kernel.org>
- <20210319205909.1748642-4-andrii@kernel.org>
- <20210320022156.eqtmldxpzxkh45a7@ast-mbp>
- <CAEf4Bzarx33ENLBRyqxDz7k9t0YmTRNs5wf_xCqL2jNXvs+0Sg@mail.gmail.com>
- <20210322010734.tw2rigbr3dyk3iot@ast-mbp>
- <CAEf4BzbdgPnw81+diwcvAokv+S6osqvAAzSQYt_BoYbga9t-qQ@mail.gmail.com>
+        Mon, 22 Mar 2021 10:56:16 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 19:56:15 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH v2 net 1/3] net: dsa: only unset VLAN filtering when last
+ port leaves last VLAN-aware bridge
+Message-ID: <20210322175615.47awcvac2sbxqqyc@skbuf>
+References: <20210320225928.2481575-1-olteanv@gmail.com>
+ <20210320225928.2481575-2-olteanv@gmail.com>
+ <87lfafm5xh.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzbdgPnw81+diwcvAokv+S6osqvAAzSQYt_BoYbga9t-qQ@mail.gmail.com>
+In-Reply-To: <87lfafm5xh.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 09:56:19AM -0700, Andrii Nakryiko wrote:
-> On Sun, Mar 21, 2021 at 6:07 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+On Mon, Mar 22, 2021 at 06:52:58PM +0100, Tobias Waldekranz wrote:
+> On Sun, Mar 21, 2021 at 00:59, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > >
-> > On Sat, Mar 20, 2021 at 10:00:57AM -0700, Andrii Nakryiko wrote:
-> > > On Fri, Mar 19, 2021 at 7:22 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Fri, Mar 19, 2021 at 01:59:09PM -0700, Andrii Nakryiko wrote:
-> > > > > Add ability to skip BTF generation for some BPF object files. This is done
-> > > > > through using a convention of .nobtf.c file name suffix.
-> > > > >
-> > > > > Also add third statically linked file to static_linked selftest. This file has
-> > > > > no BTF, causing resulting object file to have only some of DATASEC BTF types.
-> > > > > It also is using (from BPF code) global variables. This tests both libbpf's
-> > > > > static linking logic and bpftool's skeleton generation logic.
-> > > >
-> > > > I don't like the long term direction of patch 1 and 3.
-> > > > BTF is mandatory for the most bpf kernel features added in the last couple years.
-> > > > Making user space do quirks for object files without BTF is not something
-> > > > we should support or maintain. If there is no BTF the linker and skeleton
-> > > > generation shouldn't crash, of course, but they should reject such object.
-> > >
-> > > I don't think tools need to enforce any policies like that. They are
-> > > tools and should be unassuming about the way they are going to be used
-> > > to the extent possible.
+> > DSA is aware of switches with global VLAN filtering since the blamed
+> > commit, but it makes a bad decision when multiple bridges are spanning
+> > the same switch:
 > >
-> > Right and bpftool/skeleton was used with BTF since day one.
-> > Without BTF the skeleton core ideas are lost. The skeleton api
-> > gives no benefit. So what's the point of adding support for skeleton without BTF?
-> > Is there a user that would benefit? If so, what will they gain from
-> > such BTF-less skeleton?
+> > ip link add br0 type bridge vlan_filtering 1
+> > ip link add br1 type bridge vlan_filtering 1
+> > ip link set swp2 master br0
+> > ip link set swp3 master br0
+> > ip link set swp4 master br1
+> > ip link set swp5 master br1
+> > ip link set swp5 nomaster
+> > ip link set swp4 nomaster
+> > [138665.939930] sja1105 spi0.1: port 3: dsa_core: VLAN filtering is a global setting
+> > [138665.947514] DSA: failed to notify DSA_NOTIFIER_BRIDGE_LEAVE
+> >
+> > When all ports leave br1, DSA blindly attempts to disable VLAN filtering
+> > on the switch, ignoring the fact that br0 still exists and is VLAN-aware
+> > too. It fails while doing that.
+> >
+> > This patch checks whether any port exists at all and is under a
+> > VLAN-aware bridge.
+> >
+> > Fixes: d371b7c92d19 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > ---
+> >  net/dsa/switch.c | 15 +++++++++------
+> >  1 file changed, 9 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+> > index 4b5da89dc27a..32963276452f 100644
+> > --- a/net/dsa/switch.c
+> > +++ b/net/dsa/switch.c
+> > @@ -107,7 +107,7 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+> >  	bool unset_vlan_filtering = br_vlan_enabled(info->br);
+> >  	struct dsa_switch_tree *dst = ds->dst;
+> >  	struct netlink_ext_ack extack = {0};
+> > -	int err, i;
+> > +	int err, port;
+> >  
+> >  	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+> >  	    ds->ops->port_bridge_join)
+> > @@ -124,13 +124,16 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+> >  	 * it. That is a good thing, because that lets us handle it and also
+> >  	 * handle the case where the switch's vlan_filtering setting is global
+> >  	 * (not per port). When that happens, the correct moment to trigger the
+> > -	 * vlan_filtering callback is only when the last port left this bridge.
+> > +	 * vlan_filtering callback is only when the last port leaves the last
+> > +	 * VLAN-aware bridge.
+> >  	 */
+> >  	if (unset_vlan_filtering && ds->vlan_filtering_is_global) {
+> > -		for (i = 0; i < ds->num_ports; i++) {
+> > -			if (i == info->port)
+> > -				continue;
+> > -			if (dsa_to_port(ds, i)->bridge_dev == info->br) {
+> > +		for (port = 0; port < ds->num_ports; port++) {
+> > +			struct net_device *bridge_dev;
+> > +
+> > +			bridge_dev = dsa_to_port(ds, port)->bridge_dev;
+> > +
+> > +			if (bridge_dev && br_vlan_enabled(bridge_dev)) {
+> >  				unset_vlan_filtering = false;
+> >  				break;
+> >  			}
+> > -- 
+> > 2.25.1
 > 
-> The only part of skeleton API that's not available is convenient
-> user-space access to global variables. If you don't use global
-> variables you don't use BTF at all with skeleton. So all features but
-> one work without BTF just fine: compile-time maps and progs (and
-> links) references, embedding object file in .skel.h, and even
-> automatic memory-mapping of .data/.rodata/.bss (just unknown struct
-> layout).
-> 
-> Compile-time maps and progs and separately object file embedding in C
-> header are useful in their own rights, even individually. There is no
-> single "core idea" of the BPF skeleton in my mind. What is it for you?
-> 
-> So given none of the fixes are horrible hacks and won't incur
-> additional maintenance costs, what's the problem with accepting them?
+> Is it the case that all devices in which VLAN filtering is a global
+> setting are also single-chip? To my _D_SA eyes, it feels like we should
+> have to iterate over all ports in the tree, not just the switch.
 
-Because they double the maintenance cost now and double the support forever.
-We never needed to worry about skeleton without BTF and now it would be
-a thing ? So all tests realistically need to be doubled: with and without BTF.
-Even more so for static linking. If one .o has BTF and another doesn't
-what linker suppose to do? Keep it, but the linked BTF will sort of cover
-both .o-s, but line info in some funcs will be missing.
-All these weird combinations would need to be tested.
-The sensible thing to do would be to reject skel generation without BTF
-and reject linking without BTF. The user most likely forgot -g during
-compilation of bpf prog. The bpftool should give the helpful message
-in such case. Whether it's generating skel or linking. Silently proceeding
-and generating half-featured skeleton is not what user wanted.
+Correct, I might revisit this if I ever get my hands on a board with
+sja1105 switches in a real multi-switch tree, and not in disjoint trees
+as I have had access to so far.
