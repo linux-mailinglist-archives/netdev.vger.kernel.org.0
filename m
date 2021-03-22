@@ -2,114 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A673436E4
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 03:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD483436E8
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 03:57:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbhCVCzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 22:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41042 "EHLO
+        id S229771AbhCVC5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 22:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbhCVCz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 22:55:29 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555BFC061574;
-        Sun, 21 Mar 2021 19:55:29 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id y5so7656941qkl.9;
-        Sun, 21 Mar 2021 19:55:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oR1H5bxrFPySLuXWuSIjE3cyW9BaggyAThx0cwWxPsc=;
-        b=Gq8ZQ3ucrk+9Obg7+gMsCexmW7aPbMC7+zpd/05zO0Nfva7QCwbxOft4Ll1XnTJY6u
-         cE0twtfU/alR4XQ0SFBeGOah6BIdzeOpP8yPuX3xkGaKILywmjxJ8FxYM39YzRKrgGI8
-         Ur9EOxurLGoH2G4SFOtii/WspoCiPwJUjAbtOH9EURcgDV7lGhzcRtpKlNqANtvTyyQK
-         AtdR7ZL6xZOyNWmW5B8GsnswCaKebdkoyldIP3CAoyeC0ZbmroOUbiyqg+gnof3zeWgs
-         yZGH1S0ek7/R8feUaMM5QV6aIFDNaqFq6Pe7KL7x/kXTBE5h65prgdQM4Trrl0DrQYKh
-         FaPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oR1H5bxrFPySLuXWuSIjE3cyW9BaggyAThx0cwWxPsc=;
-        b=GN15c+QX12uJNPS6T3vGU8MoADgDREBsWQac+SqUnVcTPdkB/eoCEvEFIJjKNng7hL
-         B3s60Sj1fqbQ1zDFJxEfNjphydt59TH7YSvrDe7xQDyxlin0d1BlO8uH6ygaN3zEmIET
-         jHjIirp05wiHEOoMcZq/vn4ruEL6dYQAkbZNhF8Ar31zPD+8YtSrdWhQSSpz13F6daMN
-         Ax0V8vPAx7CwpSB0qZIISbS7sGOdzU+Mtd3NEk9LM+1mQvXkyTlQzBWC0Hr873J8u8of
-         HzDGkZxo1AsjwidJ6eD57s34r4vNXKnCMuFA3/serboNS6JbcxhpFQIZFND3suW0GGmU
-         Z9tw==
-X-Gm-Message-State: AOAM533qFTWZXYgxi5gLNO/0vZgHcGjccn4wZdojLn+RZyZleb2sJEE4
-        07I6WSeMOJSvvQBWTMuMZxFue9VePmmbDRbc
-X-Google-Smtp-Source: ABdhPJyaowrx/fmTNly7fg26L93KEzLdl6Bi4IkqOsPg0oGq7B1hZ6fsq74RVrfk+RUPgbr54TP+7g==
-X-Received: by 2002:a37:7305:: with SMTP id o5mr9168634qkc.21.1616381728663;
-        Sun, 21 Mar 2021 19:55:28 -0700 (PDT)
-Received: from localhost.localdomain ([156.146.54.190])
-        by smtp.gmail.com with ESMTPSA id c5sm10173278qkg.105.2021.03.21.19.55.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Mar 2021 19:55:28 -0700 (PDT)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] linux/qed: Mundane spelling fixes throughout the file
-Date:   Mon, 22 Mar 2021 08:25:16 +0530
-Message-Id: <20210322025516.968396-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.31.0
+        with ESMTP id S229614AbhCVC4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 22:56:47 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B16C061574;
+        Sun, 21 Mar 2021 19:56:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=e0BNuDjzdIaSTsVYrS6v9Yb6zAxMkQCvlSdpRpd8Qxw=; b=f5JCBASiK3eS8KxXn8iioSF+ly
+        H/5Im6+aoT6bCe9SEybTf7QO9PvPzafw/8DH8Pjfr7FoNuhGLhr0cmXVVXBbnE8aikRQY/8jv66Ro
+        nDeiQGPrH4awxSN0OqxF4cLQecJrskCxHco0DlzQSzVb35ZCekYf8Lxw31MUppBOaGuRTvtah8KzX
+        fJ0eCTwA1EjE92oE5IdDoPTXkbPk/pJ5YUecO6gSSrVLmOQbgLJw2IWq1O4JpgoSWr9M5poF+mImU
+        3YWl21lJO/kYd/LfOiZNmJw9j8HhRpazrm2m2qfmAoksBVkIdV9/Ve4QsdofcP89IcI1Zh4oKt1JX
+        Xw/v+ahw==;
+Received: from [2601:1c0:6280:3f0::3ba4]
+        by desiato.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lOAk9-00AjZA-CH; Mon, 22 Mar 2021 02:56:37 +0000
+Subject: Re: [PATCH] openvswitch: Fix a typo
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, pshelar@ovn.org,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+References: <20210322021708.3687398-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <4e9a7860-39c5-ed53-32d8-d88408dbfcae@infradead.org>
+Date:   Sun, 21 Mar 2021 19:56:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210322021708.3687398-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/21/21 7:17 PM, Bhaskar Chowdhury wrote:
+> 
+> s/subsytem/subsystem/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-s/unrequired/"not required"/
-s/consme/consume/ .....two different places
-s/accros/across/
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
+> ---
+>  net/openvswitch/vport.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/openvswitch/vport.h b/net/openvswitch/vport.h
+> index 1eb7495ac5b4..8a930ca6d6b1 100644
+> --- a/net/openvswitch/vport.h
+> +++ b/net/openvswitch/vport.h
+> @@ -20,7 +20,7 @@
+>  struct vport;
+>  struct vport_parms;
+> 
+> -/* The following definitions are for users of the vport subsytem: */
+> +/* The following definitions are for users of the vport subsystem: */
+> 
+>  int ovs_vport_init(void);
+>  void ovs_vport_exit(void);
+> --
 
- include/linux/qed/qed_chain.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/qed/qed_chain.h b/include/linux/qed/qed_chain.h
-index e339b48de32d..f34dbd0db795 100644
---- a/include/linux/qed/qed_chain.h
-+++ b/include/linux/qed/qed_chain.h
-@@ -19,7 +19,7 @@ enum qed_chain_mode {
- 	/* Each Page contains a next pointer at its end */
- 	QED_CHAIN_MODE_NEXT_PTR,
-
--	/* Chain is a single page (next ptr) is unrequired */
-+	/* Chain is a single page (next ptr) is not required */
- 	QED_CHAIN_MODE_SINGLE,
-
- 	/* Page pointers are located in a side list */
-@@ -56,13 +56,13 @@ struct qed_chain_pbl_u32 {
- };
-
- struct qed_chain_u16 {
--	/* Cyclic index of next element to produce/consme */
-+	/* Cyclic index of next element to produce/consume */
- 	u16						prod_idx;
- 	u16						cons_idx;
- };
-
- struct qed_chain_u32 {
--	/* Cyclic index of next element to produce/consme */
-+	/* Cyclic index of next element to produce/consume */
- 	u32						prod_idx;
- 	u32						cons_idx;
- };
-@@ -270,7 +270,7 @@ static inline dma_addr_t qed_chain_get_pbl_phys(const struct qed_chain *chain)
- /**
-  * @brief qed_chain_advance_page -
-  *
-- * Advance the next element accros pages for a linked chain
-+ * Advance the next element across pages for a linked chain
-  *
-  * @param p_chain
-  * @param p_next_elem
---
-2.31.0
+-- 
+~Randy
 
