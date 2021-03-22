@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB5E3450B1
+	by mail.lfdr.de (Postfix) with ESMTP id E53983450B3
 	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231754AbhCVU0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:26:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58392 "EHLO mail.kernel.org"
+        id S231852AbhCVU0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:26:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231189AbhCVUZe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 16:25:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E99B619A1;
+        id S231191AbhCVUZf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 16:25:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB895619A3;
         Mon, 22 Mar 2021 20:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616444734;
-        bh=Kva627dsJXByZtz6oQusR8VuSpyYFYXRx87s0m3Ai1c=;
+        s=k20201202; t=1616444735;
+        bh=PROEm4XWinY+KY3Y9/LiV1/m1e1BYesFZdyMLA9qNs4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/eMRBZm3SNbcs1V7odjSBSfyOdzt5mFZcJGwTe6Fp+7F0gUNVjT08jSCgG99kSnb
-         dbq2dmS1QP107Fo6HAveFUPmjqTjpf+lWHtOlYZLj1S+6TOCmr6lvLX/iCvnqiWEtI
-         Zi9DlRi+427mgGOdA/Pk8pchjJhz5I6fL0DOx73lHsrF5iV5aRX9op/q9QbxyB3Qjl
-         jZcD9NHkwvtFgJrbhTTQt6BEAmL6NeJWGoz9Rik2E1PfQRwrDMo9sOMQPng4TkR6vf
-         p35hDW4diskkT1u+9A+b2f3GJs5lPZkQpLSQBFIp/wD6qtDgMvKLHF/tQd+QR0HP+y
-         phqC7a8kxc1AA==
+        b=fk2y+JaoZLiRPoNmXYYa/2JIzkzlIRYUClzC99p6fvaet8BAZ3RBKxUKNJehRvfe9
+         fowTZv2Sqw1G2AKULYvnpmJASlAMIrQ73XoVj6vErckFIbYLoLm1t1RZ4AeA0ag6BC
+         H+HqwQbf6PefmmrYnme3IBIUg3NrUk7UfM+lkTAN3s95K83YwIL89PsMCZ7wG0j8My
+         yMEUKGms0LznMzYlTnBXv0JXGrO38DEdDIsDgXResZNlKaP9AjjTqmf4biACf85KgX
+         vWkIjzf2IKQpWvVXcVcNSQg/AbRcqEUv1R5GN6hG8Zak+VDaHY6IhqkUoOoJaahDH7
+         t3YmmeeBq/AAA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dima Chumak <dchumak@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 3/6] net/mlx5e: Offload tuple rewrite for non-CT flows
-Date:   Mon, 22 Mar 2021 13:25:21 -0700
-Message-Id: <20210322202524.68886-4-saeed@kernel.org>
+Subject: [net 4/6] net/mlx5e: Fix error path for ethtool set-priv-flag
+Date:   Mon, 22 Mar 2021 13:25:22 -0700
+Message-Id: <20210322202524.68886-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210322202524.68886-1-saeed@kernel.org>
 References: <20210322202524.68886-1-saeed@kernel.org>
@@ -41,103 +41,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dima Chumak <dchumak@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-Setting connection tracking OVS flows and then setting non-CT flows that
-use tuple rewrite action (e.g. mod_tp_dst), causes the latter flows not
-being offloaded.
+Expose error value when failing to comply to command:
+$ ethtool --set-priv-flags eth2 rx_cqe_compress [on/off]
 
-Fix by using a stricter condition in modify_header_match_supported() to
-check tuple rewrite support only for flows with CT action. The check is
-factored out into standalone modify_tuple_supported() function to aid
-readability.
-
-Fixes: 7e36feeb0467 ("net/mlx5e: CT: Don't offload tuple rewrites for established tuples")
-Signed-off-by: Dima Chumak <dchumak@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
+Fixes: be7e87f92b58 ("net/mlx5e: Fail safe cqe compressing/moderation mode setting")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |  3 +-
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 44 ++++++++++++++-----
- 2 files changed, 35 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index f3f6eb081948..b2cd29847a37 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1181,7 +1181,8 @@ int mlx5_tc_ct_add_no_trk_match(struct mlx5_flow_spec *spec)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index 0e059d5c57ac..f5f2a8fd0046 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -1887,6 +1887,7 @@ static int set_pflag_rx_cqe_compress(struct net_device *netdev,
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct mlx5_core_dev *mdev = priv->mdev;
++	int err;
  
- 	mlx5e_tc_match_to_reg_get_match(spec, CTSTATE_TO_REG,
- 					&ctstate, &ctstate_mask);
--	if (ctstate_mask)
-+
-+	if ((ctstate & ctstate_mask) == MLX5_CT_STATE_TRK_BIT)
+ 	if (!MLX5_CAP_GEN(mdev, cqe_compression))
  		return -EOPNOTSUPP;
- 
- 	ctstate_mask |= MLX5_CT_STATE_TRK_BIT;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 3359098c51d4..df2a0af854bb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -2909,6 +2909,37 @@ static int is_action_keys_supported(const struct flow_action_entry *act,
- 	return 0;
- }
- 
-+static bool modify_tuple_supported(bool modify_tuple, bool ct_clear,
-+				   bool ct_flow, struct netlink_ext_ack *extack,
-+				   struct mlx5e_priv *priv,
-+				   struct mlx5_flow_spec *spec)
-+{
-+	if (!modify_tuple || ct_clear)
-+		return true;
-+
-+	if (ct_flow) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "can't offload tuple modification with non-clear ct()");
-+		netdev_info(priv->netdev,
-+			    "can't offload tuple modification with non-clear ct()");
-+		return false;
-+	}
-+
-+	/* Add ct_state=-trk match so it will be offloaded for non ct flows
-+	 * (or after clear action), as otherwise, since the tuple is changed,
-+	 * we can't restore ct state
-+	 */
-+	if (mlx5_tc_ct_add_no_trk_match(spec)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "can't offload tuple modification with ct matches and no ct(clear) action");
-+		netdev_info(priv->netdev,
-+			    "can't offload tuple modification with ct matches and no ct(clear) action");
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
- static bool modify_header_match_supported(struct mlx5e_priv *priv,
- 					  struct mlx5_flow_spec *spec,
- 					  struct flow_action *flow_action,
-@@ -2947,18 +2978,9 @@ static bool modify_header_match_supported(struct mlx5e_priv *priv,
- 			return err;
+@@ -1896,7 +1897,10 @@ static int set_pflag_rx_cqe_compress(struct net_device *netdev,
+ 		return -EINVAL;
  	}
  
--	/* Add ct_state=-trk match so it will be offloaded for non ct flows
--	 * (or after clear action), as otherwise, since the tuple is changed,
--	 *  we can't restore ct state
--	 */
--	if (!ct_clear && modify_tuple &&
--	    mlx5_tc_ct_add_no_trk_match(spec)) {
--		NL_SET_ERR_MSG_MOD(extack,
--				   "can't offload tuple modify header with ct matches");
--		netdev_info(priv->netdev,
--			    "can't offload tuple modify header with ct matches");
-+	if (!modify_tuple_supported(modify_tuple, ct_clear, ct_flow, extack,
-+				    priv, spec))
- 		return false;
--	}
+-	mlx5e_modify_rx_cqe_compression_locked(priv, enable);
++	err = mlx5e_modify_rx_cqe_compression_locked(priv, enable);
++	if (err)
++		return err;
++
+ 	priv->channels.params.rx_cqe_compress_def = enable;
  
- 	ip_proto = MLX5_GET(fte_match_set_lyr_2_4, headers_v, ip_protocol);
- 	if (modify_ip_header && ip_proto != IPPROTO_TCP &&
+ 	return 0;
 -- 
 2.30.2
 
