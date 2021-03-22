@@ -2,78 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23DAA343D8D
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 11:14:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15401343DB2
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 11:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229986AbhCVKNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 06:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
+        id S229761AbhCVKZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 06:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbhCVKNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 06:13:08 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A590DC061763
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 03:13:07 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id m132so5937640ybf.2
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 03:13:07 -0700 (PDT)
+        with ESMTP id S230087AbhCVKYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 06:24:53 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792B8C061756
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 03:24:52 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id z25so20327820lja.3
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 03:24:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=1P1ylb+0K8r+W1E1V6incN0kq8bWpLVNDCMYMUCyg3s=;
-        b=bzi9vD6E2AUdbZQcvIbscwiGt+DTHszzRZNSiBV+xdfdy2AobAc2RBvwcUXty1qzph
-         schx+6gUrFpQg0kwbHHoMsFJDccEcNvvbjUMxxV6KxIPypgWWbj2LGGKiUec6xy+O3+t
-         p/fW+5MPGtAaHwUiHzDOHJRlA7ZYNtV//X0pXNts//QazAVxCBKOqQXYhFYEzXkTU6Up
-         0nlElbgwuDHWF4fFBdhg0f8lHFfzBWClSKXcII+GyYatrzZnnBOpLcpytN39rwbHfQtU
-         BMyqXek+dvZTu/7zOoCwu/luW8bIUY0aZgEu5k6tvmsaap6jkZXzxxd9Ag3zqERDjWFh
-         Ldtw==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=Wecwnopc86KzaaAOKv3X7oG8HgwPY9eS80QiSLYB0eM=;
+        b=o9gsBfuKJWDHOxBZKihm/vEqdDWAXNrVhlxycxZQy37pipJyW6ONJLOzKcmRQ7Gbv7
+         20vv+UH8W6QiL92d9C03a9mGmq+d3WJtH8UTQK6cC2JXyhHfIw52FegIVpNGOSGKh/YI
+         GjY9n5N9xGsur6m/KKgcl7dSP/flaS44MD/wNnhm6nwrKa+LvnXRMZQTRn3TEfZmgKLO
+         ctd8p1gnGt6gpwYqBW9V8pL41/4m/xFURw+aUyScIQol/mcO23KMYVuisAxzHcMpIchQ
+         mcDpDqn9s335ondAHMjhHolvXGBPHbKeGjsS9TEHiDezPTDTPkiUiwN6qlrlgA6Q3NZa
+         iWnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=1P1ylb+0K8r+W1E1V6incN0kq8bWpLVNDCMYMUCyg3s=;
-        b=rc9775Tf6y2zmHaqL2t8S8OQAibdzm8TdHwTCoIyTECZxvv8tC/uvDDC7gho1sv+HD
-         k0yADgHAon6haElsPoTpRDCfMaVoKEZndwtT+BJ0yq0qaPkMAPx3OUy52+smvnJjvZSF
-         Y+PHdxnbWQ/XfdYC8VVFqU2RtuVa7RZKfnO4XPfkG5tIUXzNaaVnPlbur+KNCdrDBQYz
-         kA5swy1gRola7NmveRLRolvhT4sujfSm8HUT2IM5PdPOJGZdEFf/28Jl2Jx4Crn78PRJ
-         B6y0p1hxiqY7PLdkolEFNxdbcA2J7EVwHbYocW8ARrXSZcQgQoIo5jn6wtA8pVP5lQLS
-         2i7g==
-X-Gm-Message-State: AOAM533CErmy/SJbiNM+6wF82907pSLbVYqfGHGhSEx+06fRxNmDDdBB
-        28Z6Vo7310TwZF88XSQ64WE9tXUH7942j83x918=
-X-Google-Smtp-Source: ABdhPJzjNDesOHgKan6gxFJnQcCnxqWFwfXjKBzQkeRAMHPfDcIokyDaoMBrEXJUCuRcGyHQuXGl5HGb2+GMC6unNto=
-X-Received: by 2002:a25:d44f:: with SMTP id m76mr24827956ybf.101.1616407984718;
- Mon, 22 Mar 2021 03:13:04 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Wecwnopc86KzaaAOKv3X7oG8HgwPY9eS80QiSLYB0eM=;
+        b=RE8nTv/FihCOd1BqDsqxKYMK2pqijUH2Kd7Dh1zHstpEx31QGnsZ2iGV46w56P4PNe
+         B3Sb1p1IcAhD6VrzOjWB/mokNh+zGYxe/nXnhTvkGLCZ21J+qRFm/QLvNgYQfufQkBKv
+         72P6uWxBBgiEqAFxYIXvTCnrh2xLavkfFO+Cyp+tj8+P31oubrmhrZknyWIeSuy9mqeU
+         zQWfCjgc0SVSGuPIEjhOXxwwdJMTraI5iRKYbTk/rlmPvGByrXGARdKU7QB5edZ/54yx
+         J3vTFYuyBrdM+0lDrHotuSzNaq/W7OMvivtbqtwqhFu0Nfyy7Jbzbt1xUZOeY/7DsbPG
+         ahqA==
+X-Gm-Message-State: AOAM533OwL1kEMsEcHHkJqm4WSl5EWXg7Jtm9sBo+vQBeVvDp6HB2Nh6
+        qXREFmb2vBB1+41lPRcaZaclDw==
+X-Google-Smtp-Source: ABdhPJzsmd+NyeqccDbrblkBWBsQe0ffnkHfCmbHXOn/TJZBCABBdJ8Ef6kPsWWYQtRBB5tf2BaQfw==
+X-Received: by 2002:a05:651c:50f:: with SMTP id o15mr9209716ljp.389.1616408690762;
+        Mon, 22 Mar 2021 03:24:50 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id r15sm1904337ljj.88.2021.03.22.03.24.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 03:24:50 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v2 net-next 01/16] net: dsa: call dsa_port_bridge_join when joining a LAG that is already in a bridge
+In-Reply-To: <20210318231829.3892920-2-olteanv@gmail.com>
+References: <20210318231829.3892920-1-olteanv@gmail.com> <20210318231829.3892920-2-olteanv@gmail.com>
+Date:   Mon, 22 Mar 2021 11:24:49 +0100
+Message-ID: <87eeg7o58u.fsf@waldekranz.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7108:2b49:0:0:0:0 with HTTP; Mon, 22 Mar 2021 03:13:02
- -0700 (PDT)
-Reply-To: sarandan122@yahoo.com
-From:   Mrs Sarah Daniel <nrevpeter@gmail.com>
-Date:   Mon, 22 Mar 2021 11:13:02 +0100
-Message-ID: <CA+kTmTfLmEmbxVWGSEe7oHH404SBdR=jaPtOmz2GvwgyU51x9w@mail.gmail.com>
-Subject: Donation for charity work of God
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Donation for charity work of God
+On Fri, Mar 19, 2021 at 01:18, Vladimir Oltean <olteanv@gmail.com> wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> DSA can properly detect and offload this sequence of operations:
+>
+> ip link add br0 type bridge
+> ip link add bond0 type bond
+> ip link set swp0 master bond0
+> ip link set bond0 master br0
+>
+> But not this one:
+>
+> ip link add br0 type bridge
+> ip link add bond0 type bond
+> ip link set bond0 master br0
+> ip link set swp0 master bond0
+>
+> Actually the second one is more complicated, due to the elapsed time
+> between the enslavement of bond0 and the offloading of it via swp0, a
+> lot of things could have happened to the bond0 bridge port in terms of
+> switchdev objects (host MDBs, VLANs, altered STP state etc). So this is
+> a bit of a can of worms, and making sure that the DSA port's state is in
+> sync with this already existing bridge port is handled in the next
+> patches.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-Greetings to you and sorry if this message came to you as a
-surprise.My name is Mrs Sarah Daniel a widow, I found your email
-address through my late husbands internet dater late Mr. Daniel
-
-I am presently admitted at the hospital suffering from a blood cancer
-and Parkinson diseases. I have only about a few months to live and I
-want you to Transfer the sum of ( $6.200,000.00) united states dollars
-to your account so you can assist me Distribute my funds to charity
-homes in your country ,
-
-I have set aside 20% for you and your family keep while you donate 80%
-to the less privilege people,
-
-I will give you more details or full story as soon as i receive your
-reply as the fund was deposited with a bank
-
-Remain Blessed
-
-Mrs Sarah Daniel
+Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
