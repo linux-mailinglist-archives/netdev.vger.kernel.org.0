@@ -2,72 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2633446CA
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 15:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F393446E9
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 15:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230096AbhCVOKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 10:10:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48974 "EHLO mail.kernel.org"
+        id S230237AbhCVOQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 10:16:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230411AbhCVOJp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 10:09:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 77B6461920;
-        Mon, 22 Mar 2021 14:09:44 +0000 (UTC)
+        id S230076AbhCVOQG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 10:16:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5343F6196C;
+        Mon, 22 Mar 2021 14:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616422185;
-        bh=uoFKba5rFprgXKSWlOIaz7B++kFkS6xpe6ODVO8W+/M=;
+        s=k20201202; t=1616422566;
+        bh=1fKgyeYVl0YYfrA/uXu1vWP9qkb3DsOxrdvd8EqUZ8c=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gY1iK40yFTCigHqXvjMFTyFVvVMbzF17hT60KCmOSH498JPDtevwiTFr3LPpxotKs
-         XwYpC7DT0+0P76hUL6zoXrNdjbp1cvwdMCU8rSWbLZxBv7PTWIbFQF6zzdpYTyL8Ca
-         M7hDn3+P8/24IjjVFFCcQr1jedilIV+V1Yx5uNKHIBtJ0V15dvvNrvIaXOvjUf82bu
-         L+qaCKRfeDWSZIJN8j9yMCMMk/qimdO93jEX5VBasAKJVk+eWTnNKx/6BTP0UIxAQk
-         nOtitNQ9sUj2Nom+A5PJBebWnaFcNI2YGTsFYK0uDVBhYFuCB4VIAWjKwqGv3hTY3N
-         TSd2dTepWdDcA==
-Date:   Mon, 22 Mar 2021 16:09:41 +0200
+        b=LgMtFZ+reDWcLnsq8NzV6JvsNSwKyMPT0ayuq4Wrov0chkbVm4noZX6f4GxbZ7NpS
+         njkjBsFUBd+3NA3I1ISMznkpAvFZdbSmIdyT05FQjRUnSVYEVJJGNR1M0dPCNMpiXd
+         HNYOZqpRBuwm3a5IynPuu2Db5pUcGeGN9ncZ1D2wuunbokvpgmZO6AlUHqudo3pzyI
+         HsoBGIJHn+iaxTFYXDejnrmETAFdUupTXkO2RBVqEM+YnX/4Lq1tpsSbRVrgzb0a3Q
+         vbbzNlGXDWoDgBuiB7PfXKp+Cxt1HTa7+jVMb2eS1Y28eRBeEiFz4wLnxgX9vwINUD
+         bJhV+vGN9WV9Q==
+Date:   Mon, 22 Mar 2021 16:16:02 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Nikolay Aleksandrov <nikolay@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH net] bonding: Work around lockdep_is_held false
- positives
-Message-ID: <YFilJZOraCqD0mVj@unreal>
-References: <20210322123846.3024549-1-maximmi@nvidia.com>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/2] net: ipa: fix validation
+Message-ID: <YFimooGgT1pIRe/G@unreal>
+References: <20210320141729.1956732-1-elder@linaro.org>
+ <f1b719d3-c7f2-1815-9cfe-19ea23944cce@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210322123846.3024549-1-maximmi@nvidia.com>
+In-Reply-To: <f1b719d3-c7f2-1815-9cfe-19ea23944cce@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 02:38:46PM +0200, Maxim Mikityanskiy wrote:
-> After lockdep gets triggered for the first time, it gets disabled, and
-> lockdep_enabled() will return false. It will affect lockdep_is_held(),
-> which will start returning true all the time. Normally, it just disables
-> checks that expect a lock to be held. However, the bonding code checks
-> that a lock is NOT held, which triggers a false positive in WARN_ON.
+On Mon, Mar 22, 2021 at 08:22:20AM -0500, Alex Elder wrote:
+> On 3/20/21 9:17 AM, Alex Elder wrote:
+> > There is sanity checking code in the IPA driver that's meant to be
+> > enabled only during development.  This allows the driver to make
+> > certain assumptions, but not have to verify those assumptions are
+> > true at (operational) runtime.  This code is built conditional on
+> > IPA_VALIDATION, set (if desired) inside the IPA makefile.
+> > 
+> > Unfortunately, this validation code has some errors.  First, there
+> > are some mismatched arguments supplied to some dev_err() calls in
+> > ipa_cmd_table_valid() and ipa_cmd_header_valid(), and these are
+> > exposed if validation is enabled.  Second, the tag that enables
+> > this conditional code isn't used consistently (it's IPA_VALIDATE
+> > in some spots and IPA_VALIDATION in others).
+> > 
+> > This series fixes those two problems with the conditional validation
+> > code.
 > 
-> This commit addresses the issue by replacing lockdep_is_held with
-> spin_is_locked, which should have the same effect, but without suffering
-> from disabling lockdep.
+> After much back-and-forth with Leon Romanovsky:
 > 
-> Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
-> While this patch works around the issue, I would like to discuss better
-> options. Another straightforward approach is to extend lockdep API with
-> lockdep_is_not_held(), which will be basically !lockdep_is_held() when
-> lockdep is enabled, but will return true when !lockdep_enabled().
+> 	--> I retract this series <--
+> 
+> I will include these patches in a future series that will
+> do cleanup of this validation code more completely.
 
-lockdep_assert_not_held() was added in this cycle to tip: locking/core
-https://yhbt.net/lore/all/161475935945.20312.2870945278690244669.tip-bot2@tip-bot2/
-https://yhbt.net/lore/all/878s779s9f.fsf@codeaurora.org/
+Thanks a lot.
 
-Thanks
+> 
+> Thanks.
+> 
+> 					-Alex
+> 
+> > Version 2 removes the two patches that introduced ipa_assert().  It
+> > also modifies the description in the first patch so that it mentions
+> > the changes made to ipa_cmd_table_valid().
+> > 
+> > 					-Alex
+> > 
+> > Alex Elder (2):
+> >    net: ipa: fix init header command validation
+> >    net: ipa: fix IPA validation
+> > 
+> >   drivers/net/ipa/Makefile       |  2 +-
+> >   drivers/net/ipa/gsi_trans.c    |  8 ++---
+> >   drivers/net/ipa/ipa_cmd.c      | 54 ++++++++++++++++++++++------------
+> >   drivers/net/ipa/ipa_cmd.h      |  6 ++--
+> >   drivers/net/ipa/ipa_endpoint.c |  6 ++--
+> >   drivers/net/ipa/ipa_main.c     |  6 ++--
+> >   drivers/net/ipa/ipa_mem.c      |  6 ++--
+> >   drivers/net/ipa/ipa_table.c    |  6 ++--
+> >   drivers/net/ipa/ipa_table.h    |  6 ++--
+> >   9 files changed, 58 insertions(+), 42 deletions(-)
+> > 
+> 
