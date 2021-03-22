@@ -2,107 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC2FD344E90
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E2E344EB9
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:42:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbhCVSbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 14:31:12 -0400
-Received: from mail1.protonmail.ch ([185.70.40.18]:62916 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbhCVSbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:31:02 -0400
-Date:   Mon, 22 Mar 2021 18:30:55 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1616437860; bh=b5bnSC21HmdPSasvb0lPwEo3mq8xZMPl9SmiGDrxhUA=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=T7gFIEvlwC6tvcyiAGO7XGyjFHGvUsCeAnSnlZePqC9ObCS2k+FPNvlA6BCtbIfvK
-         0IiSFn0JyKe8s3lslelNM21/WjpYjbT9egUHW2iXTNhB/Iz9js+pkFG3w8OFZSYBIC
-         Fp4PCGRVWGivgvfad8WOg819SMJ6F0CM5PjghkyVxGl3pO2IhW+JmhzjmK4ksM1sUO
-         cflq/xEqRaQAAdxnFDGx+PTPBngvlY6XHklEwEtu/tfaYxXsn7zcDXzEWeNGpUaWuN
-         O+jKscOJ20r9mriCfMJhbrbzHrA0KOl3WtqfLf2d6xPjBGvsS1S/XTNdwnAACN4M++
-         sAcXS508z8sVQ==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next] page_pool: let the compiler optimize and inline core functions
-Message-ID: <20210322183047.10768-1-alobakin@pm.me>
+        id S232224AbhCVSm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 14:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231965AbhCVSmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:42:05 -0400
+Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604D1C061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 11:42:03 -0700 (PDT)
+Received: from p548da928.dip0.t-ipconnect.de ([84.141.169.40] helo=kmk0); authenticated
+        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1lOPV0-0001l9-OK; Mon, 22 Mar 2021 19:41:58 +0100
+From:   Kurt Kanzenbach <kurt@kmk-computers.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Report switch name and ID
+In-Reply-To: <YFYFLiwnXBeXhqgj@lunn.ch>
+References: <20210320112715.8667-1-kurt@kmk-computers.de>
+ <YFYFLiwnXBeXhqgj@lunn.ch>
+Date:   Mon, 22 Mar 2021 19:41:23 +0100
+Message-ID: <8735wnf2uk.fsf@kmk-computers.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1616438523;7ca61be6;
+X-HE-SMSGID: 1lOPV0-0001l9-OK
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As per disscussion in Page Pool bulk allocator thread [0],
-there are two functions in Page Pool core code that are marked as
-'noinline'. The reason for this is not so clear, and even if it
-was made to reduce hotpath overhead, in fact it only makes things
-worse.
-As both of these functions as being called only once through the
-code, they could be inlined/folded into the non-static entry point.
-However, 'noinline' marks effectively prevent from doing that and
-induce totally unneeded fragmentation (baseline -> after removal):
+--=-=-=
+Content-Type: text/plain
 
-add/remove: 0/3 grow/shrink: 1/0 up/down: 1024/-1096 (-72)
-Function                                     old     new   delta
-page_pool_alloc_pages                        100    1124   +1024
-page_pool_dma_map                            164       -    -164
-page_pool_refill_alloc_cache                 332       -    -332
-__page_pool_alloc_pages_slow                 600       -    -600
+On Sat Mar 20 2021, Andrew Lunn wrote:
+>> +static int hellcreek_devlink_info_get(struct dsa_switch *ds,
+>> +				      struct devlink_info_req *req,
+>> +				      struct netlink_ext_ack *extack)
+>> +{
+>> +	struct hellcreek *hellcreek = ds->priv;
+>> +	int ret;
+>> +
+>> +	ret = devlink_info_driver_name_put(req, "hellcreek");
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return devlink_info_version_fixed_put(req,
+>> +					      DEVLINK_INFO_VERSION_GENERIC_ASIC_ID,
+>> +					      hellcreek->pdata->name);
+>
+>>  static const struct hellcreek_platform_data de1soc_r1_pdata = {
+>> +	.name		 = "Hellcreek r4c30",
+>
+> Hi Kurt
+>
+> The two other DSA drivers which implement this keep the
+> DEVLINK_INFO_VERSION_GENERIC_ASIC_ID just the model name, mv88e6390,
+> SJA1105E for example. You have hellcreek in the driver name, so i
+> don't see a need to repeat it.
 
-(taken from Mel's branch, hence factored-out page_pool_dma_map())
+I see, makes sense.
 
-1124 is a normal hotpath frame size, but these jumps between tiny
-page_pool_alloc_pages(), page_pool_refill_alloc_cache() and
-__page_pool_alloc_pages_slow() are really redundant and harmful
-for performance.
+Thanks,
+Kurt
 
-This simple removal of 'noinline' keywords bumps the throughput
-on XDP_PASS + napi_build_skb() + napi_gro_receive() on 25+ Mbps
-for 1G embedded NIC.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-[0] https://lore.kernel.org/netdev/20210317222506.1266004-1-alobakin@pm.me
+-----BEGIN PGP SIGNATURE-----
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/page_pool.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index ad8b0707af04..589e4df6ef2b 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -102,7 +102,6 @@ EXPORT_SYMBOL(page_pool_create);
-
- static void page_pool_return_page(struct page_pool *pool, struct page *pag=
-e);
-
--noinline
- static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
- {
- =09struct ptr_ring *r =3D &pool->ring;
-@@ -181,7 +180,6 @@ static void page_pool_dma_sync_for_device(struct page_p=
-ool *pool,
- }
-
- /* slow path */
--noinline
- static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- =09=09=09=09=09=09 gfp_t _gfp)
- {
---
-2.31.0
-
-
+iQJKBAEBCAA0FiEEiQLjxJIQcNxwU7Bj249qgr3OILkFAmBY5NMWHGt1cnRAa21r
+LWNvbXB1dGVycy5kZQAKCRDbj2qCvc4guaBjD/0Z9P7MqDVjj6OdPlkCdiPRrjDD
+4cnSmtnGJ+q6cKGzeOl+8pnEtNwOfBGMIArAWM34yGRTJoA6tdeKGhFVRvBpwU2V
+Z4BrTqafKMkDZBZ6bdLXf2+bxxRmbBgbDT2mX5votO0HVOEWftllpNKrYxnMxA+T
+QSaLZKSD+zraNwdSlhkOapbyyVGROYNWGRVCPJOOnJD849GQclbiv6b8PPGVs+SM
+muJ/Sl6yvbsPvaWH0YDiN1uEfK3vmUUQ/RkRRZbYcK8BmBY3lHY34tdd2BiL/nBP
+Er2zB+ZDLHrTl3zVvaBaL+TNmSuqLp9MzZvEh4MRmO7Ag1hTYjnAN9CqMccnE2Pu
+ImTDx/4I+6BlTnxFqADMVhwoRolOmzSXQsuaXqCRjUHZst8ZNkIj1I6SV2LVuUHE
+umwzjz5rSyaK+rcmrn3/8GF0jPNrKEc4osRvrKu4AvG/U//RjDPTeyOcEmWZe6Tp
+MNNSrIMRsSnh9lyRhy94/pR6imAzRYcLfJr+gR2NstlHQ4GqqZXrfuBRRJGsHJvF
+Nj0kcNdM5bClRcVhEMRjlxYzyMoXcI37OqhJinya49XHIcGRAGD+Emui08btMues
+q8RDIrb1C/KfVKQnshOs1cLlP/WUsj/8ENsUShUAox0goB4P6CmkeY4M4g6SIlxl
+3+bJoR5jnJ8CHp25iw==
+=7BXf
+-----END PGP SIGNATURE-----
+--=-=-=--
