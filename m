@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ADA1344A41
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:04:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E778A344A83
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:08:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231743AbhCVQDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:03:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51740 "EHLO mail.kernel.org"
+        id S231755AbhCVQEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:04:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52014 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231684AbhCVQDV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 12:03:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C5EBC61992;
-        Mon, 22 Mar 2021 16:03:15 +0000 (UTC)
+        id S231493AbhCVQDj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 12:03:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BA0F66199E;
+        Mon, 22 Mar 2021 16:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616429000;
-        bh=3vH1tW/3dz/29rKeu66QIybhctPu7u2aaTt+yHw+ixQ=;
+        s=k20201202; t=1616429019;
+        bh=by6x6Rsrr+/5kT7BQ0fn/CIy488q3HO6uAtxXzMMlIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRbsfgY+z8kWvWs+txugnu/XzSTF1os4UBObTbMaVvuShG2tPdw5ChRNTsdoitI1c
-         Os5gXEmTV19Hh0dH4sglqm/fSEpSE1o+cdD5mtmVZ292EJ017mpHo8q2zl1C63RDvy
-         9IP52tHZwWSskub+gnvqqJxnuA90avLg12n2yst/hTpywQNyH7pGS5SlpLOCg1l1zv
-         SC2S1tGwIlfSqI7YXPTsk7il0mAFtLumFo7AO2H+payHYwT3xe1jEFpNJbjQ5KEMrV
-         fL6MEJv6J7008Lwon/8167XZUtB/IGdDaiFW7a3KldjWew3Xisi5j0MtsrpiR6liOq
-         jy3MXhpKCZK+w==
+        b=O6Jy+HmUTikJ1x1bJ304Vrp1sBfWbLm1PtId9ZJsKafzCLMEYQU//L/uQ5NyHGzrh
+         RhBcv0KcZohevaQjWtq/m2PyDxHXZ6oO/xPHdEAeZN27qebnzt5Wg4fhtjqGJK48VY
+         UL94XPmfJWp5a2JWF1yBFnnQqkdteTxWc08FTIpJX/wa6/CiiShyqAZe7XpjIeOmzt
+         cO/lp91PJ7K5iDRKpXJ1LzXMgwxLeTNc1hWrW+Oj2cHQ8M1FuYfEUnJHvIMPGvZ3nY
+         pOppyp2fEDOWTHfMFCcVXI+sMo5gidr9nyHaAyqJ/Nlnh1nTbp/etdZKIJcUsxQAJ9
+         FpT/4xvv9xvFg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-kernel@vger.kernel.org, Martin Sebor <msebor@gcc.gnu.org>,
+        Ning Sun <ning.sun@intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         x86@kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Ning Sun <ning.sun@intel.com>,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Simon Kelley <simon@thekelleys.org.uk>,
@@ -43,15 +44,17 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Ning Sun <ning.sun@intel.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
         linux-security-module@vger.kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Kees Cook <keescook@chromium.org>
-Subject: [PATCH 01/11] x86: compressed: avoid gcc-11 -Wstringop-overread warning
-Date:   Mon, 22 Mar 2021 17:02:39 +0100
-Message-Id: <20210322160253.4032422-2-arnd@kernel.org>
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 02/11] x86: tboot: avoid Wstringop-overread-warning
+Date:   Mon, 22 Mar 2021 17:02:40 +0100
+Message-Id: <20210322160253.4032422-3-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210322160253.4032422-1-arnd@kernel.org>
 References: <20210322160253.4032422-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -59,45 +62,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-gcc gets confused by the comparison of a pointer to an integer listeral,
-with the assumption that this is an offset from a NULL pointer and that
-dereferencing it is invalid:
+gcc-11 warns about using string operations on pointers that are
+defined at compile time as offsets from a NULL pointer. Unfortunately
+that also happens on the result of fix_to_virt(), which is a
+compile-time constant for a constantn input:
 
-In file included from arch/x86/boot/compressed/misc.c:18:
-In function ‘parse_elf’,
-    inlined from ‘extract_kernel’ at arch/x86/boot/compressed/misc.c:442:2:
-arch/x86/boot/compressed/../string.h:15:23: error: ‘__builtin_memcpy’ reading 64 bytes from a region of size 0 [-Werror=stringop-overread]
-   15 | #define memcpy(d,s,l) __builtin_memcpy(d,s,l)
-      |                       ^~~~~~~~~~~~~~~~~~~~~~~
-arch/x86/boot/compressed/misc.c:283:9: note: in expansion of macro ‘memcpy’
-  283 |         memcpy(&ehdr, output, sizeof(ehdr));
-      |         ^~~~~~
+arch/x86/kernel/tboot.c: In function 'tboot_probe':
+arch/x86/kernel/tboot.c:70:13: error: '__builtin_memcmp_eq' specified bound 16 exceeds source size 0 [-Werror=stringop-overread]
+   70 |         if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-I could not find any good workaround for this, but as this is only
-a warning for a failure during early boot, removing the line entirely
-works around the warning.
+I hope this can get addressed in gcc-11 before the release.
 
-This should probably get addressed in gcc instead, before 11.1 gets
-released.
+As a workaround, split up the tboot_probe() function in two halves
+to separate the pointer generation from the usage. This is a bit
+ugly, and hopefully gcc understands that the code is actually correct
+before it learns to peek into the noinline function.
 
+Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/x86/boot/compressed/misc.c | 2 --
- 1 file changed, 2 deletions(-)
+ arch/x86/kernel/tboot.c | 44 ++++++++++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
-index 3a214cc3239f..9ada64e66cb7 100644
---- a/arch/x86/boot/compressed/misc.c
-+++ b/arch/x86/boot/compressed/misc.c
-@@ -430,8 +430,6 @@ asmlinkage __visible void *extract_kernel(void *rmode, memptr heap,
- 		error("Destination address too large");
- #endif
- #ifndef CONFIG_RELOCATABLE
--	if ((unsigned long)output != LOAD_PHYSICAL_ADDR)
--		error("Destination address does not match LOAD_PHYSICAL_ADDR");
- 	if (virt_addr != LOAD_PHYSICAL_ADDR)
- 		error("Destination virtual address changed when not relocatable");
- #endif
+diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+index 4c09ba110204..f9af561c3cd4 100644
+--- a/arch/x86/kernel/tboot.c
++++ b/arch/x86/kernel/tboot.c
+@@ -49,6 +49,30 @@ bool tboot_enabled(void)
+ 	return tboot != NULL;
+ }
+ 
++/* noinline to prevent gcc from warning about dereferencing constant fixaddr */
++static noinline __init bool check_tboot_version(void)
++{
++	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
++		pr_warn("tboot at 0x%llx is invalid\n", boot_params.tboot_addr);
++		return false;
++	}
++
++	if (tboot->version < 5) {
++		pr_warn("tboot version is invalid: %u\n", tboot->version);
++		return false;
++	}
++
++	pr_info("found shared page at phys addr 0x%llx:\n",
++		boot_params.tboot_addr);
++	pr_debug("version: %d\n", tboot->version);
++	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
++	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
++	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
++	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
++
++	return true;
++}
++
+ void __init tboot_probe(void)
+ {
+ 	/* Look for valid page-aligned address for shared page. */
+@@ -66,25 +90,9 @@ void __init tboot_probe(void)
+ 
+ 	/* Map and check for tboot UUID. */
+ 	set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
+-	tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
+-	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
+-		pr_warn("tboot at 0x%llx is invalid\n", boot_params.tboot_addr);
++	tboot = (void *)fix_to_virt(FIX_TBOOT_BASE);
++	if (!check_tboot_version())
+ 		tboot = NULL;
+-		return;
+-	}
+-	if (tboot->version < 5) {
+-		pr_warn("tboot version is invalid: %u\n", tboot->version);
+-		tboot = NULL;
+-		return;
+-	}
+-
+-	pr_info("found shared page at phys addr 0x%llx:\n",
+-		boot_params.tboot_addr);
+-	pr_debug("version: %d\n", tboot->version);
+-	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
+-	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
+-	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
+-	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
+ }
+ 
+ static pgd_t *tboot_pg_dir;
 -- 
 2.29.2
 
