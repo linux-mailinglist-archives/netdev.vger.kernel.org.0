@@ -2,34 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3F6343E36
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 11:44:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 946A0343E3B
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 11:45:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230280AbhCVKoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 06:44:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54950 "EHLO mail.kernel.org"
+        id S230298AbhCVKpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 06:45:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229904AbhCVKnr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 06:43:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4CAAE61931;
-        Mon, 22 Mar 2021 10:43:46 +0000 (UTC)
+        id S230285AbhCVKoi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 06:44:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C6E561931;
+        Mon, 22 Mar 2021 10:44:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616409827;
-        bh=h/7NZxyJTdtxn6ErvpBB/wUkK789lbNzLTv0zGToHNI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RUleBEDQbNtxr/XVMeTQB3bFCK8wL5IgFp+zAf7Q/XkDgePvbTFrcgBhLJExR6MtW
-         5XdFWaD5JoJggZfhMaGXXEfCVkR6bhNKl7pSlawtXNRKZAeTP1dGZcRLbS5L6eN8Br
-         loJqlQU0voQMzCKUeVLClq9+NOXy2egCF3KsG8tluTHz1TKqWB5Mmck3HQd2pBQVcb
-         GOGWLAQTXP3oK1HPQXiojKhO8bS00wVpFf3xUYpV54l0g3/vdoJLet7zrWqnH+puEd
-         Ds6YbxCgvhLgeOaKd6N562W/lm+SAk40FXtzXvJYCETrq3aRwtG8g6lQgLlCQq0G5l
-         697DH6H7Y6Q5w==
+        s=k20201202; t=1616409878;
+        bh=4DHr4ASfBHeq91iw3ENPpzdWKJXn5AZnZFrECFYNDQU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cPqdnpIc76Sfc4S0WxhticZnlpY46xJtVyxtipkLrFREoyJDHLvaO/JOmmYxuBWn2
+         Q0FCwxw6Vr4/fhlrJgzOVXrxEJh/QNygiAQyTlOcSVijlINs+eiK85+SosPEEv7Fxd
+         8oBK07+cbrYR03jU9PREWW2n1R/sW1vihSey94bPNz1rEkiqTuQQvCbV/pphwWOsUR
+         HTquMlF8zDU10yLDmixg4KhY+reClZyxOHPp9D85pRg/4e0TgeCXDdxEVTbUAbN/BL
+         uUTzQafLyU5Im+LELXwwuizxaAm0DYAjBRKAjYTUp2h940q/MYbRnKEK0i5TyK9AY6
+         bT5zKR5TkZb6g==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     netdev@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/5] misdn: avoid -Wempty-body warning
-Date:   Mon, 22 Mar 2021 11:43:31 +0100
-Message-Id: <20210322104343.948660-1-arnd@kernel.org>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, dccp@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 2/5] dccp: avoid Wempty-body warning
+Date:   Mon, 22 Mar 2021 11:43:32 +0100
+Message-Id: <20210322104343.948660-2-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210322104343.948660-1-arnd@kernel.org>
+References: <20210322104343.948660-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -38,36 +42,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-gcc warns about a pointless condition:
+There are a couple of warnings in this driver when building with W=1:
 
-drivers/isdn/hardware/mISDN/hfcmulti.c: In function 'hfcmulti_interrupt':
-drivers/isdn/hardware/mISDN/hfcmulti.c:2752:17: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
- 2752 |                 ; /* external IRQ */
+net/dccp/output.c: In function 'dccp_xmit_packet':
+net/dccp/output.c:283:71: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+  283 |                 dccp_pr_debug("transmit_skb() returned err=%d\n", err);
+      |                                                                       ^
+net/dccp/ackvec.c: In function 'dccp_ackvec_update_old':
+net/dccp/ackvec.c:163:80: error: suggest braces around empty body in an 'else' statement [-Werror=empty-body]
+  163 |                                               (unsigned long long)seqno, state);
+      |                                                                                ^
 
-Change this as suggested by gcc, which also fits the style of the
-other conditions in this function.
+Change the empty debug macros to no_printk(), which avoids the
+warnings and adds useful format string checks.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/isdn/hardware/mISDN/hfcmulti.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/dccp/dccp.h  | 6 +++---
+ net/dccp/proto.c | 2 --
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardware/mISDN/hfcmulti.c
-index 7013a3f08429..8ab0fde758d2 100644
---- a/drivers/isdn/hardware/mISDN/hfcmulti.c
-+++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
-@@ -2748,8 +2748,9 @@ hfcmulti_interrupt(int intno, void *dev_id)
- 		if (hc->ctype != HFC_TYPE_E1)
- 			ph_state_irq(hc, r_irq_statech);
- 	}
--	if (status & V_EXT_IRQSTA)
--		; /* external IRQ */
-+	if (status & V_EXT_IRQSTA) {
-+		/* external IRQ */
-+	}
- 	if (status & V_LOST_STA) {
- 		/* LOST IRQ */
- 		HFC_outb(hc, R_INC_RES_FIFO, V_RES_LOST); /* clear irq! */
+diff --git a/net/dccp/dccp.h b/net/dccp/dccp.h
+index 9cc9d1ee6cdb..8a5163620bc3 100644
+--- a/net/dccp/dccp.h
++++ b/net/dccp/dccp.h
+@@ -41,9 +41,9 @@ extern bool dccp_debug;
+ #define dccp_pr_debug_cat(format, a...)   DCCP_PRINTK(dccp_debug, format, ##a)
+ #define dccp_debug(fmt, a...)		  dccp_pr_debug_cat(KERN_DEBUG fmt, ##a)
+ #else
+-#define dccp_pr_debug(format, a...)
+-#define dccp_pr_debug_cat(format, a...)
+-#define dccp_debug(format, a...)
++#define dccp_pr_debug(format, a...)	  no_printk(format, ##a)
++#define dccp_pr_debug_cat(format, a...)	  no_printk(format, ##a)
++#define dccp_debug(format, a...)	  no_printk(format, ##a)
+ #endif
+ 
+ extern struct inet_hashinfo dccp_hashinfo;
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index 6d705d90c614..97a175eaf247 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -51,7 +51,6 @@ EXPORT_SYMBOL_GPL(dccp_hashinfo);
+ /* the maximum queue length for tx in packets. 0 is no limit */
+ int sysctl_dccp_tx_qlen __read_mostly = 5;
+ 
+-#ifdef CONFIG_IP_DCCP_DEBUG
+ static const char *dccp_state_name(const int state)
+ {
+ 	static const char *const dccp_state_names[] = {
+@@ -73,7 +72,6 @@ static const char *dccp_state_name(const int state)
+ 	else
+ 		return dccp_state_names[state];
+ }
+-#endif
+ 
+ void dccp_set_state(struct sock *sk, const int state)
+ {
 -- 
 2.29.2
 
