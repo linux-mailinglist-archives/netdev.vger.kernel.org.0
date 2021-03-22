@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84BE234390F
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 07:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C69F343921
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 07:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbhCVGCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 02:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
+        id S230158AbhCVGDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 02:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbhCVGCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 02:02:21 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A670C061574
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 23:02:21 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 131so59591168ybp.16
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 23:02:21 -0700 (PDT)
+        with ESMTP id S230139AbhCVGDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 02:03:18 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7C7C061756
+        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 23:03:18 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id p15so5427227plq.10
+        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 23:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:message-id:mime-version:subject:from:to:cc;
-        bh=w4n6Y6TRgjyD9SHfdO058vXR1r4LRwmUmHS4TxN0IUQ=;
-        b=VvvFYSfyRxpvJOTLwaDhC7q5by4hb3byrVlKjP5CT/9X60WGM6qnHuYV8DfJmC/Z+7
-         o8pZFJ7UEM1RhFbr9o5LQo/t5qgl3Or+rnmqF4MY5tCf0kNH81N+1rEYvkXcV02DDao4
-         U8BVCCGXj2lPmZB3SB0JUBCdiIidnIFo6XUJUj1G+DDRyeAmOG8oCoDJxxTvQ8wBV1uq
-         Wf/CCelq59jPEaaVT2Mynjon5YFSWCuOXnSsWG/yLXXNoPhlm36NB68yD6Zmd6k+BOBj
-         XP8j0F2L9cUeX7Ws4iip+JqRFY+8cU44AL6a9BX1/vOpXomx/y5KxmCKtsGzFqL8i73M
-         p0vQ==
+        bh=BBThBlrE4t0qS0hQxdepmG5twB5J+RKrQ7EGY8fRoQ0=;
+        b=WDHqFvoBWbW+cFFKyZ3TRnUGdtkgLHk3OCEAlFKiFudZSkVuni4bnbIc+wntXJyU6a
+         XljXhZSbhauj9jqHA2nkuHNLmNvorRI9alCE8zNVDa15+JkR7aSWqX4QezA4hXr/wIgY
+         5SE9KIaAQNRHNCz5DDIHLS9tRAnXlzEZfbYK8UKN6+N2FXgtgyS5fsv8gzDwzQ0vaYNl
+         fvKDJOxO/EJSr7R2IcgVs96pcWvW42WmDcjkNoEYjEaqSmyhDgGLyDzOyyxHxMl/MfTt
+         HXLDlO3IgswS+XN0Yyj20HOSIhm9+6cdId9c2AlVrR2EaA29YTJhHItWQp6tnTwObgJL
+         8zjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=w4n6Y6TRgjyD9SHfdO058vXR1r4LRwmUmHS4TxN0IUQ=;
-        b=dgW7LCcybUxRA8P3NLyQjMrT91N1OwZwNn45gtwPpRVqtxg8hn9xhXxY4ZeJfEwFeD
-         MPXCNbBLdLynM/Z8NWfC4LOHSnuDH7SNAluXAyGOAqokEQUZbg8djK1nm1+hsJLNj3HF
-         edA92diJxujqz4I3tZWL7SqQ7fbjR7PCXRhQ59JjmWsz8fSuYMwpRKCR+vU9ctuMFXAL
-         +6zPnMuUFTH41xEzAroDDZm+DcxpbfNj0BeqqBZN1SQpUqdxuYpeloa5fppZmv3Q15sN
-         LfhNqY6TEPqJyK7kAzuv5L1txYcddu6s+Xk8xWlsf7epGWI0kjlyi+k2ibNgrWz4IYwm
-         GW7Q==
-X-Gm-Message-State: AOAM5328QVNneA26uNYdWT9SH65vas9qRdIA0VMi9Wo1xXQ1fnoRCD8j
-        0obG5xDaPIAqD5dAHF0UGWn2JRTa/KG9
-X-Google-Smtp-Source: ABdhPJz18QXc98nJNotAJXH1w16tomxxC41Sm171H6xFFCDRDaArBTvl2SSZayQp3Fzd2/rQeafanaLF0jHr
+        bh=BBThBlrE4t0qS0hQxdepmG5twB5J+RKrQ7EGY8fRoQ0=;
+        b=OJNsbcLxU1qxwrrDEusFNy009aAS4VHJipxtdU/3Ug5A96/nOCqBsGQJUCFaz0JLHI
+         ruuSOMa24iM9kHSvz8UZa3TOl5Fq8rLuPBSs18l5H/g5x+xGKdcv25xYGkiJXMXM/3uj
+         EwcBoXLKjV2eser2yzK3urLA6mEcYbyGtciRt69UhQ4NjVuXwddjbNB5+lR7BYB94tpz
+         SA9cAqqkGO2kH4AVRd5YxrbTh9iFKP0jUd4LKLNu/tM+iaMjokjP5z8pCpm9yuMptvDR
+         bXvdir1FUaEiYakGfawMKknYbTSpWJxOHf+uaqEUnJDoUpPL9KkNSgAp9VhgrXBgbuxX
+         tcPA==
+X-Gm-Message-State: AOAM530Sn3Nx/uyEjq2mYUZ+hQYR5aWexo3qGKwrUBIIWYXaq+z4ZCbI
+        MLNS3+QrsR8KZVtkNGGShSU9FuqPQs+P
+X-Google-Smtp-Source: ABdhPJx2M8re/qJt2WXluKnSt1n1xM/g2KEzGadbRl0hMC3W37BsX9z1RxrRpiG9UABEODbaVwLwuQI0/LUA
 X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:fdf3:9f7d:e4e3:ccad])
- (user=apusaka job=sendgmr) by 2002:a25:b0f:: with SMTP id 15mr22845240ybl.467.1616392940803;
- Sun, 21 Mar 2021 23:02:20 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 14:02:15 +0800
-Message-Id: <20210322140154.1.I2ce9acd6cc6766e6789fc5742951b21b7ab27067@changeid>
+ (user=apusaka job=sendgmr) by 2002:a17:902:b088:b029:e6:e1d8:20cc with SMTP
+ id p8-20020a170902b088b02900e6e1d820ccmr7601434plr.27.1616392997921; Sun, 21
+ Mar 2021 23:03:17 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 14:03:11 +0800
+Message-Id: <20210322140253.1.I269a2d44fcd122aa97e8533a836d968932430f95@changeid>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
-Subject: [PATCH] Bluetooth: Set CONF_NOT_COMPLETE as l2cap_chan default
+Subject: [PATCH] Bluetooth: verify AMP hci_chan before amp_destroy
 From:   Archie Pusaka <apusaka@google.com>
 To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
         Marcel Holtmann <marcel@holtmann.org>
 Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
         Archie Pusaka <apusaka@chromium.org>,
-        syzbot+338f014a98367a08a114@syzkaller.appspotmail.com,
+        syzbot+98228e7407314d2d4ba2@syzkaller.appspotmail.com,
         Alain Michaud <alainm@chromium.org>,
         Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -68,70 +68,137 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Archie Pusaka <apusaka@chromium.org>
 
-Currently l2cap_chan_set_defaults() reset chan->conf_state to zero.
-However, there is a flag CONF_NOT_COMPLETE which is set when
-creating the l2cap_chan. It is suggested that the flag should be
-cleared when l2cap_chan is ready, but when l2cap_chan_set_defaults()
-is called, l2cap_chan is not yet ready. Therefore, we must set this
-flag as the default.
+hci_chan can be created in 2 places: hci_loglink_complete_evt() if
+it is an AMP hci_chan, or l2cap_conn_add() otherwise. In theory,
+Only AMP hci_chan should be removed by a call to
+hci_disconn_loglink_complete_evt(). However, the controller might mess
+up, call that function, and destroy an hci_chan which is not initiated
+by hci_loglink_complete_evt().
+
+This patch adds a verification that the destroyed hci_chan must have
+been init'd by hci_loglink_complete_evt().
 
 Example crash call trace:
-__dump_stack lib/dump_stack.c:15 [inline]
-dump_stack+0xc4/0x118 lib/dump_stack.c:56
-panic+0x1c6/0x38b kernel/panic.c:117
-__warn+0x170/0x1b9 kernel/panic.c:471
-warn_slowpath_fmt+0xc7/0xf8 kernel/panic.c:494
-debug_print_object+0x175/0x193 lib/debugobjects.c:260
-debug_object_assert_init+0x171/0x1bf lib/debugobjects.c:614
-debug_timer_assert_init kernel/time/timer.c:629 [inline]
-debug_assert_init kernel/time/timer.c:677 [inline]
-del_timer+0x7c/0x179 kernel/time/timer.c:1034
-try_to_grab_pending+0x81/0x2e5 kernel/workqueue.c:1230
-cancel_delayed_work+0x7c/0x1c4 kernel/workqueue.c:2929
-l2cap_clear_timer+0x1e/0x41 include/net/bluetooth/l2cap.h:834
-l2cap_chan_del+0x2d8/0x37e net/bluetooth/l2cap_core.c:640
-l2cap_chan_close+0x532/0x5d8 net/bluetooth/l2cap_core.c:756
-l2cap_sock_shutdown+0x806/0x969 net/bluetooth/l2cap_sock.c:1174
-l2cap_sock_release+0x64/0x14d net/bluetooth/l2cap_sock.c:1217
-__sock_release+0xda/0x217 net/socket.c:580
-sock_close+0x1b/0x1f net/socket.c:1039
-__fput+0x322/0x55c fs/file_table.c:208
-____fput+0x17/0x19 fs/file_table.c:244
-task_work_run+0x19b/0x1d3 kernel/task_work.c:115
-exit_task_work include/linux/task_work.h:21 [inline]
-do_exit+0xe4c/0x204a kernel/exit.c:766
-do_group_exit+0x291/0x291 kernel/exit.c:891
-get_signal+0x749/0x1093 kernel/signal.c:2396
-do_signal+0xa5/0xcdb arch/x86/kernel/signal.c:737
-exit_to_usermode_loop arch/x86/entry/common.c:243 [inline]
-prepare_exit_to_usermode+0xed/0x235 arch/x86/entry/common.c:277
-syscall_return_slowpath+0x3a7/0x3b3 arch/x86/entry/common.c:348
-int_ret_from_sys_call+0x25/0xa3
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xe3/0x144 lib/dump_stack.c:118
+ print_address_description+0x67/0x22a mm/kasan/report.c:256
+ kasan_report_error mm/kasan/report.c:354 [inline]
+ kasan_report mm/kasan/report.c:412 [inline]
+ kasan_report+0x251/0x28f mm/kasan/report.c:396
+ hci_send_acl+0x3b/0x56e net/bluetooth/hci_core.c:4072
+ l2cap_send_cmd+0x5af/0x5c2 net/bluetooth/l2cap_core.c:877
+ l2cap_send_move_chan_cfm_icid+0x8e/0xb1 net/bluetooth/l2cap_core.c:4661
+ l2cap_move_fail net/bluetooth/l2cap_core.c:5146 [inline]
+ l2cap_move_channel_rsp net/bluetooth/l2cap_core.c:5185 [inline]
+ l2cap_bredr_sig_cmd net/bluetooth/l2cap_core.c:5464 [inline]
+ l2cap_sig_channel net/bluetooth/l2cap_core.c:5799 [inline]
+ l2cap_recv_frame+0x1d12/0x51aa net/bluetooth/l2cap_core.c:7023
+ l2cap_recv_acldata+0x2ea/0x693 net/bluetooth/l2cap_core.c:7596
+ hci_acldata_packet net/bluetooth/hci_core.c:4606 [inline]
+ hci_rx_work+0x2bd/0x45e net/bluetooth/hci_core.c:4796
+ process_one_work+0x6f8/0xb50 kernel/workqueue.c:2175
+ worker_thread+0x4fc/0x670 kernel/workqueue.c:2321
+ kthread+0x2f0/0x304 kernel/kthread.c:253
+ ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:415
+
+Allocated by task 38:
+ set_track mm/kasan/kasan.c:460 [inline]
+ kasan_kmalloc+0x8d/0x9a mm/kasan/kasan.c:553
+ kmem_cache_alloc_trace+0x102/0x129 mm/slub.c:2787
+ kmalloc include/linux/slab.h:515 [inline]
+ kzalloc include/linux/slab.h:709 [inline]
+ hci_chan_create+0x86/0x26d net/bluetooth/hci_conn.c:1674
+ l2cap_conn_add.part.0+0x1c/0x814 net/bluetooth/l2cap_core.c:7062
+ l2cap_conn_add net/bluetooth/l2cap_core.c:7059 [inline]
+ l2cap_connect_cfm+0x134/0x852 net/bluetooth/l2cap_core.c:7381
+ hci_connect_cfm+0x9d/0x122 include/net/bluetooth/hci_core.h:1404
+ hci_remote_ext_features_evt net/bluetooth/hci_event.c:4161 [inline]
+ hci_event_packet+0x463f/0x72fa net/bluetooth/hci_event.c:5981
+ hci_rx_work+0x197/0x45e net/bluetooth/hci_core.c:4791
+ process_one_work+0x6f8/0xb50 kernel/workqueue.c:2175
+ worker_thread+0x4fc/0x670 kernel/workqueue.c:2321
+ kthread+0x2f0/0x304 kernel/kthread.c:253
+ ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:415
+
+Freed by task 1732:
+ set_track mm/kasan/kasan.c:460 [inline]
+ __kasan_slab_free mm/kasan/kasan.c:521 [inline]
+ __kasan_slab_free+0x106/0x128 mm/kasan/kasan.c:493
+ slab_free_hook mm/slub.c:1409 [inline]
+ slab_free_freelist_hook+0xaa/0xf6 mm/slub.c:1436
+ slab_free mm/slub.c:3009 [inline]
+ kfree+0x182/0x21e mm/slub.c:3972
+ hci_disconn_loglink_complete_evt net/bluetooth/hci_event.c:4891 [inline]
+ hci_event_packet+0x6a1c/0x72fa net/bluetooth/hci_event.c:6050
+ hci_rx_work+0x197/0x45e net/bluetooth/hci_core.c:4791
+ process_one_work+0x6f8/0xb50 kernel/workqueue.c:2175
+ worker_thread+0x4fc/0x670 kernel/workqueue.c:2321
+ kthread+0x2f0/0x304 kernel/kthread.c:253
+ ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:415
+
+The buggy address belongs to the object at ffff8881d7af9180
+ which belongs to the cache kmalloc-128 of size 128
+The buggy address is located 24 bytes inside of
+ 128-byte region [ffff8881d7af9180, ffff8881d7af9200)
+The buggy address belongs to the page:
+page:ffffea00075ebe40 count:1 mapcount:0 mapping:ffff8881da403200 index:0x0
+flags: 0x8000000000000200(slab)
+raw: 8000000000000200 dead000000000100 dead000000000200 ffff8881da403200
+raw: 0000000000000000 0000000080150015 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8881d7af9080: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff8881d7af9100: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>ffff8881d7af9180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                            ^
+ ffff8881d7af9200: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8881d7af9280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
 
 Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reported-by: syzbot+338f014a98367a08a114@syzkaller.appspotmail.com
+Reported-by: syzbot+98228e7407314d2d4ba2@syzkaller.appspotmail.com
 Reviewed-by: Alain Michaud <alainm@chromium.org>
 Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
 ---
 
- net/bluetooth/l2cap_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/net/bluetooth/hci_core.h | 1 +
+ net/bluetooth/hci_event.c        | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 374cc32d7138..59ab9689b37d 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -516,7 +516,9 @@ void l2cap_chan_set_defaults(struct l2cap_chan *chan)
- 	chan->flush_to = L2CAP_DEFAULT_FLUSH_TO;
- 	chan->retrans_timeout = L2CAP_DEFAULT_RETRANS_TO;
- 	chan->monitor_timeout = L2CAP_DEFAULT_MONITOR_TO;
-+
- 	chan->conf_state = 0;
-+	set_bit(CONF_NOT_COMPLETE, &chan->conf_state);
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index ebdd4afe30d2..ca4ac6603b9a 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -704,6 +704,7 @@ struct hci_chan {
+ 	struct sk_buff_head data_q;
+ 	unsigned int	sent;
+ 	__u8		state;
++	bool		amp;
+ };
  
- 	set_bit(FLAG_FORCE_ACTIVE, &chan->flags);
- }
+ struct hci_conn_params {
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index cf2f4a0abdbd..341c8ce93648 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5032,6 +5032,7 @@ static void hci_loglink_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		return;
+ 
+ 	hchan->handle = le16_to_cpu(ev->handle);
++	hchan->amp = true;
+ 
+ 	BT_DBG("hcon %p mgr %p hchan %p", hcon, hcon->amp_mgr, hchan);
+ 
+@@ -5064,7 +5065,7 @@ static void hci_disconn_loglink_complete_evt(struct hci_dev *hdev,
+ 	hci_dev_lock(hdev);
+ 
+ 	hchan = hci_chan_lookup_handle(hdev, le16_to_cpu(ev->handle));
+-	if (!hchan)
++	if (!hchan || !hchan->amp)
+ 		goto unlock;
+ 
+ 	amp_destroy_logical_link(hchan, ev->reason);
 -- 
 2.31.0.rc2.261.g7f71774620-goog
 
