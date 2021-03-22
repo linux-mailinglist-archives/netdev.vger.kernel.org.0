@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6049344A72
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:06:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E72344A60
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231777AbhCVQEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:04:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52134 "EHLO mail.kernel.org"
+        id S231796AbhCVQFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:05:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231759AbhCVQD4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 12:03:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4428761998;
-        Mon, 22 Mar 2021 16:03:51 +0000 (UTC)
+        id S231815AbhCVQEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 12:04:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 60C55619A7;
+        Mon, 22 Mar 2021 16:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616429036;
-        bh=yFqEt0Vza9xx1ZEH6vpmadF/s9WD+9cr+PvfYFx1jTs=;
+        s=k20201202; t=1616429056;
+        bh=n4YjjyF/BQX1oLI53brWrn/ZFErJefAlbdz/B6a/LhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DnY2VvcIHWNR00CmYsS8o9sdpXW8IfqlUTn3pfDogyHxX/SIITlr8SG6GxkT3eSRZ
-         a7K8jLXsPna4Mm190+MpWcuBICb/n+i193Sgx5UJVnr/NQaks4zNGBOOkdJN7kk+Zx
-         IrtL2gHR1/fBjD9NvgLiYwkQqQ/EKWhfodExGrNMHcxDZouSH1dybJZC/EbBnOcXm9
-         XQLG8dt1bjMaDOofLpAx013Fhy9k111G7DuVnc/32l3avRksgUDzsBf0x12znYeUYk
-         RAdBhG+/y/EhxEsBwjpyhm77vbHfFV6Wbj7ETM5qbIRB/4/X2e34tKnfe8hgDnqlGY
-         gToo1OwJ8lpqg==
+        b=PJL0qpPDqSs2z7UPLYK5QVJo9sc76O7NWlWo5JPHSsPqGyDVDF4pF7hWXIkB1JA75
+         QpQt35+7BgO8L8Mn3URqgy3oEgZ8mXFVdUTizaV6t4aX9h9ExQGoEX/rwcyz2jamB2
+         scTuPUkDJISJZufdWGtFTIeZztxCxD3lXQOLujQyrS4sySOSS+Y/vZY+qg8LWnqJQL
+         I/Aimz84KOYue+E+Dz/GzEJ2kjYrLgh/PeozYrKn1GELVG7ePD4iEbNB0WU3el9Rvz
+         crDXO284w80Ehtcr/BjQheDrwVIVIOc3LE73CNZdbBcsVLFqijc8sIiXIjFKbmSQwm
+         LtmW3NkvnLTfA==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     linux-kernel@vger.kernel.org, Martin Sebor <msebor@gcc.gnu.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        James Morris <jmorris@namei.org>
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     Arnd Bergmann <arnd@arndb.de>, x86@kernel.org,
         Ning Sun <ning.sun@intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
         Simon Kelley <simon@thekelleys.org.uk>,
         James Smart <james.smart@broadcom.com>,
         "James E.J. Bottomley" <jejb@linux.ibm.com>,
         Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
+        Serge Hallyn <serge@hallyn.com>,
         Imre Deak <imre.deak@intel.com>,
         linux-arm-kernel@lists.infradead.org,
         tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
@@ -42,19 +43,21 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, x86@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
         linux-security-module@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <mszeredi@redhat.com>,
-        Tycho Andersen <tycho@tycho.pizza>
-Subject: [PATCH 03/11] security: commoncap: fix -Wstringop-overread warning
-Date:   Mon, 22 Mar 2021 17:02:41 +0100
-Message-Id: <20210322160253.4032422-4-arnd@kernel.org>
+        Carl Huang <cjhuang@codeaurora.org>,
+        Maharaja Kennadyrajan <mkenna@codeaurora.org>,
+        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Ritesh Singh <ritesi@codeaurora.org>,
+        Rajkumar Manoharan <rmanohar@codeaurora.org>,
+        Aloka Dixit <alokad@codeaurora.org>,
+        Felix Fietkau <nbd@nbd.name>
+Subject: [PATCH 04/11] ath11: Wstringop-overread warning
+Date:   Mon, 22 Mar 2021 17:02:42 +0100
+Message-Id: <20210322160253.4032422-5-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210322160253.4032422-1-arnd@kernel.org>
 References: <20210322160253.4032422-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -62,38 +65,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-gcc-11 introdces a harmless warning for cap_inode_getsecurity:
+gcc-11 with the kernel address sanitizer prints a warning for this
+driver:
 
-security/commoncap.c: In function ‘cap_inode_getsecurity’:
-security/commoncap.c:440:33: error: ‘memcpy’ reading 16 bytes from a region of size 0 [-Werror=stringop-overread]
-  440 |                                 memcpy(&nscap->data, &cap->data, sizeof(__le32) * 2 * VFS_CAP_U32);
-      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In function 'ath11k_peer_assoc_h_vht',
+    inlined from 'ath11k_peer_assoc_prepare' at drivers/net/wireless/ath/ath11k/mac.c:1632:2:
+drivers/net/wireless/ath/ath11k/mac.c:1164:13: error: 'ath11k_peer_assoc_h_vht_masked' reading 16 bytes from a region of size 4 [-Werror=stringop-overread]
+ 1164 |         if (ath11k_peer_assoc_h_vht_masked(vht_mcs_mask))
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/wireless/ath/ath11k/mac.c: In function 'ath11k_peer_assoc_prepare':
+drivers/net/wireless/ath/ath11k/mac.c:1164:13: note: referencing argument 1 of type 'const u16 *' {aka 'const short unsigned int *'}
+drivers/net/wireless/ath/ath11k/mac.c:969:1: note: in a call to function 'ath11k_peer_assoc_h_vht_masked'
+  969 | ath11k_peer_assoc_h_vht_masked(const u16 vht_mcs_mask[NL80211_VHT_NSS_MAX])
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The problem here is that tmpbuf is initialized to NULL, so gcc assumes
-it is not accessible unless it gets set by vfs_getxattr_alloc().  This is
-a legitimate warning as far as I can tell, but the code is correct since
-it correctly handles the error when that function fails.
+According to analysis from gcc developers, this is a glitch in the
+way gcc tracks the size of struct members. This should really get
+fixed in gcc, but it's also easy to work around this instance
+by changing the function prototype to no include the length of
+the array.
 
-Add a separate NULL check to tell gcc about it as well.
-
+Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99673
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- security/commoncap.c | 2 +-
+ drivers/net/wireless/ath/ath11k/mac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/commoncap.c b/security/commoncap.c
-index 28f4d25480df..9a36ed6dd737 100644
---- a/security/commoncap.c
-+++ b/security/commoncap.c
-@@ -400,7 +400,7 @@ int cap_inode_getsecurity(struct user_namespace *mnt_userns,
- 				      &tmpbuf, size, GFP_NOFS);
- 	dput(dentry);
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index b391169576e2..5cb7ed53f3c4 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -966,7 +966,7 @@ ath11k_peer_assoc_h_ht_masked(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
+ }
  
--	if (ret < 0)
-+	if (ret < 0 || !tmpbuf)
- 		return ret;
+ static bool
+-ath11k_peer_assoc_h_vht_masked(const u16 vht_mcs_mask[NL80211_VHT_NSS_MAX])
++ath11k_peer_assoc_h_vht_masked(const u16 vht_mcs_mask[])
+ {
+ 	int nss;
  
- 	fs_ns = inode->i_sb->s_user_ns;
 -- 
 2.29.2
 
