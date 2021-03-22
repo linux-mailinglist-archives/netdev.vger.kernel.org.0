@@ -2,240 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1EA034523C
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 23:08:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4D0345261
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 23:24:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbhCVWIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 18:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbhCVWH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 18:07:56 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9B1C061574;
-        Mon, 22 Mar 2021 15:07:56 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id y2so11138275qtw.13;
-        Mon, 22 Mar 2021 15:07:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bp6cadiLp9JG4ot8VD8DrNUhLvtl3tOiutuJ7QXWznQ=;
-        b=iaV83Ux9xBDgj/qom3Bk+Pnnd+Npq2g7l2Wcj4hhm0C9/Wqa5sWw8p1Jsa6IVtm0yS
-         TdIiUfQGXTD6NiCLV6NBiRXyZP2uVw+Q2q6lU7LXwrWQJ/Maefvj0xV0Uec18FcSeRXF
-         vIJU9u5du1ZOWFtkZrF5/qMHCMqhC93pFGIqrrKl6XUhkAUrPxcx4X0Batpu84izU0rl
-         6nUs9IEvPSvLgj3W8ej7UliIwlqDMHRm/QB8uQcgZsL5UpAnoTMEMr+Ed2fl6upuTDTk
-         ++B/wzn6EYS99xzPoQfKZFL2om7c/ZVOPmZEz09Ms8KU+NvgtrohB8esdB1kDZFPOvri
-         10Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bp6cadiLp9JG4ot8VD8DrNUhLvtl3tOiutuJ7QXWznQ=;
-        b=jddVdzHLZz2NLlLHjp0TkxvOdobYmwIcsRfDz43S9CFMgwI6TEXRlThUYBHL7DFV9b
-         gOa92HNWwoDSRkqVYVlI0BKYvme8oTkIYrywMDwuDEZD+f7Nd+SgW2vMFPU2Y/ZgHGv9
-         8DcdPpLuvX/4QwJl/eheuOGhYjNqzD2KIPddxqKjxkXpojo3sx2MHAgXKHfAG5vdvl8q
-         gTh26lkjlS21BE/MxMOOpXmg3Fw12LsMjuu0FL9RGMZVLHpGJHK3OaCn/Oneo5TDlA81
-         SjFtjZKeXFt6gGKSdluw9RxLjVHv07zCPIOjWOd5byuVg2idPbZfrSZyASsQBeOVZ8wh
-         qFNg==
-X-Gm-Message-State: AOAM531+E1ZFq+tytPnVB1oAQCFhOqNCBR3sw/ZixFYdAtr+N7KAvVtF
-        mtiROIlC6hZ3TDVxxsn0+RE=
-X-Google-Smtp-Source: ABdhPJw2Q59a1ZLYugiGOh0k53LBnL3VNySQVKoaoySDrE/bFUhGmQDuP132X+ofXKkmUC96EG1Wbg==
-X-Received: by 2002:ac8:5281:: with SMTP id s1mr1870981qtn.293.1616450875002;
-        Mon, 22 Mar 2021 15:07:55 -0700 (PDT)
-Received: from [192.168.0.41] (71-218-23-248.hlrn.qwest.net. [71.218.23.248])
-        by smtp.gmail.com with ESMTPSA id y19sm12052651qky.111.2021.03.22.15.07.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Mar 2021 15:07:54 -0700 (PDT)
-Subject: Re: [PATCH 02/11] x86: tboot: avoid Wstringop-overread-warning
-To:     Ingo Molnar <mingo@kernel.org>, Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Martin Sebor <msebor@gcc.gnu.org>,
-        Ning Sun <ning.sun@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Will Deacon <will@kernel.org>
-References: <20210322160253.4032422-1-arnd@kernel.org>
- <20210322160253.4032422-3-arnd@kernel.org>
- <20210322202958.GA1955909@gmail.com>
-From:   Martin Sebor <msebor@gmail.com>
-Message-ID: <b944a853-0e4b-b767-0175-cc2c1edba759@gmail.com>
-Date:   Mon, 22 Mar 2021 16:07:50 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S230080AbhCVWXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 18:23:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59870 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229764AbhCVWXD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 18:23:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BDC5619A3;
+        Mon, 22 Mar 2021 22:23:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616451783;
+        bh=9TOm/vUdTVgkLrEcvTO6xa6y15f8WUxq5hs+UGMAt0w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=U0iFIjhulmjOHIH4ZCHGXKBTlk4hg5aK/NBUps8Mp8OdMncu+JsfhCVHc7Fy3mjMN
+         v5dLlyafisbAoZ8bJQoxyZnlOYisXMLnrd9/ZIM78JjzH+AN9ftQHRa2Xf233ycVwI
+         BVwvGUEBoJJCDGnMeh4GCYDVHEGKBMraxikxVROOKW27S8ShtH/HbOsUp/rQQIxn28
+         YjnDkmRrGWFYvA08QXRjzGxJRX742mBWY5tmsSxZgcIEVYdyMAH+Qal1CA+pnkv7d+
+         ljAMmRoEzgEP06BBkCm3ndmMb3Qgxj09+pxbrlwhqkM4k0YHn2ujTtAoY2q8MEUAt6
+         T/XvKWUgQgG6A==
+Received: by mail-ej1-f49.google.com with SMTP id e14so5640164ejz.11;
+        Mon, 22 Mar 2021 15:23:02 -0700 (PDT)
+X-Gm-Message-State: AOAM5330Ufdgf6tRqDczHDez93+Fm9OxshlyUk4PN1aqi63/hogG5m9a
+        I4GYE0oMM293hW9CH3X/oPzxe5457yGKLi4RlA==
+X-Google-Smtp-Source: ABdhPJx3z7wXtL8KQ3NRS45wE2EUgPtOjsUMqBUiolC7/JCPmaRaai1z8yHmFPME7Qtf+AsOQ2F81DUULd1XRtw/K00=
+X-Received: by 2002:a17:906:d153:: with SMTP id br19mr1849046ejb.360.1616451781529;
+ Mon, 22 Mar 2021 15:23:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210322202958.GA1955909@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210318104036.3175910-1-lee.jones@linaro.org>
+In-Reply-To: <20210318104036.3175910-1-lee.jones@linaro.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 22 Mar 2021 16:22:49 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKueTWKbXNuN+74COR1LT6XLyw61GqCLpOgv-knNtEdKg@mail.gmail.com>
+Message-ID: <CAL_JsqKueTWKbXNuN+74COR1LT6XLyw61GqCLpOgv-knNtEdKg@mail.gmail.com>
+Subject: Re: [PATCH v2 00/10] Rid W=1 warnings from OF
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Colin Cross <ccross@android.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Josh Cartwright <joshc@codeaurora.org>,
+        Kees Cook <keescook@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        netdev <netdev@vger.kernel.org>,
+        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tony Luck <tony.luck@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/22/21 2:29 PM, Ingo Molnar wrote:
-> 
-> * Arnd Bergmann <arnd@kernel.org> wrote:
-> 
->> From: Arnd Bergmann <arnd@arndb.de>
->>
->> gcc-11 warns about using string operations on pointers that are
->> defined at compile time as offsets from a NULL pointer. Unfortunately
->> that also happens on the result of fix_to_virt(), which is a
->> compile-time constant for a constantn input:
->>
->> arch/x86/kernel/tboot.c: In function 'tboot_probe':
->> arch/x86/kernel/tboot.c:70:13: error: '__builtin_memcmp_eq' specified bound 16 exceeds source size 0 [-Werror=stringop-overread]
->>     70 |         if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
->>        |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> I hope this can get addressed in gcc-11 before the release.
->>
->> As a workaround, split up the tboot_probe() function in two halves
->> to separate the pointer generation from the usage. This is a bit
->> ugly, and hopefully gcc understands that the code is actually correct
->> before it learns to peek into the noinline function.
->>
->> Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->> ---
->>   arch/x86/kernel/tboot.c | 44 ++++++++++++++++++++++++-----------------
->>   1 file changed, 26 insertions(+), 18 deletions(-)
->>
->> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
->> index 4c09ba110204..f9af561c3cd4 100644
->> --- a/arch/x86/kernel/tboot.c
->> +++ b/arch/x86/kernel/tboot.c
->> @@ -49,6 +49,30 @@ bool tboot_enabled(void)
->>   	return tboot != NULL;
->>   }
->>   
->> +/* noinline to prevent gcc from warning about dereferencing constant fixaddr */
->> +static noinline __init bool check_tboot_version(void)
->> +{
->> +	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
->> +		pr_warn("tboot at 0x%llx is invalid\n", boot_params.tboot_addr);
->> +		return false;
->> +	}
->> +
->> +	if (tboot->version < 5) {
->> +		pr_warn("tboot version is invalid: %u\n", tboot->version);
->> +		return false;
->> +	}
->> +
->> +	pr_info("found shared page at phys addr 0x%llx:\n",
->> +		boot_params.tboot_addr);
->> +	pr_debug("version: %d\n", tboot->version);
->> +	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
->> +	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
->> +	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
->> +	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
->> +
->> +	return true;
->> +}
->> +
->>   void __init tboot_probe(void)
->>   {
->>   	/* Look for valid page-aligned address for shared page. */
->> @@ -66,25 +90,9 @@ void __init tboot_probe(void)
->>   
->>   	/* Map and check for tboot UUID. */
->>   	set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
->> -	tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
->> -	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
->> -		pr_warn("tboot at 0x%llx is invalid\n", boot_params.tboot_addr);
->> +	tboot = (void *)fix_to_virt(FIX_TBOOT_BASE);
->> +	if (!check_tboot_version())
->>   		tboot = NULL;
->> -		return;
->> -	}
->> -	if (tboot->version < 5) {
->> -		pr_warn("tboot version is invalid: %u\n", tboot->version);
->> -		tboot = NULL;
->> -		return;
->> -	}
->> -
->> -	pr_info("found shared page at phys addr 0x%llx:\n",
->> -		boot_params.tboot_addr);
->> -	pr_debug("version: %d\n", tboot->version);
->> -	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
->> -	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
->> -	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
->> -	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
-> 
-> This is indeed rather ugly - and the other patch that removes a debug
-> check seems counterproductive as well.
-> 
-> Do we know how many genuine bugs -Wstringop-overread-warning has
-> caught or is about to catch?
-> 
-> I.e. the real workaround might be to turn off the -Wstringop-overread-warning,
-> until GCC-11 gets fixed?
+On Thu, Mar 18, 2021 at 4:40 AM Lee Jones <lee.jones@linaro.org> wrote:
+>
+> This set is part of a larger effort attempting to clean-up W=1
+> kernel builds, which are currently overwhelmingly riddled with
+> niggly little warnings.
+>
+> v2:
+>  - Provided some descriptions to exported functions
+>
+> Lee Jones (10):
+>   of: device: Fix function name in header and provide missing
+>     descriptions
+>   of: dynamic: Fix incorrect parameter name and provide missing
+>     descriptions
+>   of: platform: Demote kernel-doc abuse
+>   of: base: Fix some formatting issues and provide missing descriptions
+>   of: property: Provide missing member description and remove excess
+>     param
+>   of: address: Provide descriptions for 'of_address_to_resource's params
+>   of: fdt: Demote kernel-doc abuses and fix function naming
+>   of: of_net: Provide function name and param description
+>   of: overlay: Fix function name disparity
+>   of: of_reserved_mem: Demote kernel-doc abuses
+>
+>  drivers/of/address.c         |  3 +++
+>  drivers/of/base.c            | 16 +++++++++++-----
+>  drivers/of/device.c          |  7 ++++++-
+>  drivers/of/dynamic.c         |  4 +++-
+>  drivers/of/fdt.c             | 23 ++++++++++++-----------
+>  drivers/of/of_net.c          |  3 +++
+>  drivers/of/of_reserved_mem.c |  6 +++---
+>  drivers/of/overlay.c         |  2 +-
+>  drivers/of/platform.c        |  2 +-
+>  drivers/of/property.c        |  2 +-
+>  10 files changed, 44 insertions(+), 24 deletions(-)
 
-In GCC 10 -Wstringop-overread is a subset of -Wstringop-overflow.
-GCC 11 breaks it out as a separate warning to make it easier to
-control.  Both warnings have caught some real bugs but they both
-have a nonzero rate of false positives.  Other than bug reports
-we don't have enough data to say what their S/N ratio might be
-but my sense is that it's fairly high in general.
+I still see some warnings (note this is with DT files added to doc
+build). Can you send follow-up patches:
 
-   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=wstringop-overread
-   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=wstringop-overflow
+../include/linux/of.h:1193: warning: Function parameter or member
+'output' not described in 'of_property_read_string_index'
+../include/linux/of.h:1193: warning: Excess function parameter
+'out_string' description in 'of_property_read_string_index'
+../include/linux/of.h:1461: warning: cannot understand function
+prototype: 'enum of_overlay_notify_action '
+../drivers/of/base.c:1781: warning: Excess function parameter 'prob'
+description in '__of_add_property'
+../drivers/of/base.c:1804: warning: Excess function parameter 'prob'
+description in 'of_add_property'
+../drivers/of/base.c:1855: warning: Function parameter or member
+'prop' not described in 'of_remove_property'
+../drivers/of/base.c:1855: warning: Excess function parameter 'prob'
+description in 'of_remove_property'
 
-In GCC 11, all access warnings expect objects to be either declared
-or allocated.  Pointers with constant values are taken to point to
-nothing valid (as Arnd mentioned above, this is to detect invalid
-accesses to members of structs at address zero).
+BTW, there some more which I guess W=1 doesn't find:
 
-One possible solution to the known address problem is to extend GCC
-attributes address and io that pin an object to a hardwired address
-to all targets (at the moment they're supported on just one or two
-targets).  I'm not sure this can still happen before GCC 11 releases
-sometime in April or May.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:906: WARNING: Block quote ends without a blank
+line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1465: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1469: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1473: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1517: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1521: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1526: WARNING: Unexpected indentation.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1528: WARNING: Block quote ends without a blank
+line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1529: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1533: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+../drivers/of/base.c:1705: WARNING: Definition list ends without a
+blank line; unexpected unindent.
+/home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:49:
+../drivers/of/overlay.c:1183: WARNING: Inline emphasis start-string
+without end-string.
 
-Until then, another workaround is to convert the fixed address to
-a volatile pointer before using it for the access, along the lines
-below.  It should have only a negligible effect on efficiency.
-
-diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
-index 4c09ba110204..76326b906010 100644
---- a/arch/x86/kernel/tboot.c
-+++ b/arch/x86/kernel/tboot.c
-@@ -67,7 +67,9 @@ void __init tboot_probe(void)
-         /* Map and check for tboot UUID. */
-         set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
-         tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
--       if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
-+       if (memcmp(&tboot_uuid,
-+                  (*(struct tboot* volatile *)(&tboot))->uuid,
-+                  sizeof(tboot->uuid))) {
-                 pr_warn("tboot at 0x%llx is invalid\n", 
-boot_params.tboot_addr);
-                 tboot = NULL;
-                 return;
-
-Martin
-
-> 
-> Thanks,
-> 
-> 	Ingo
-> 
-
+Rob
