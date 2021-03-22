@@ -2,100 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B6A34498D
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 16:46:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 275983449A0
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 16:49:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbhCVPpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 11:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbhCVPpf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 11:45:35 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4E3C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 08:45:34 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id b16so19942960eds.7
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 08:45:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sANlXMVqsl2aKn3Z66der6aHhsvdu11h2110/nO0vMs=;
-        b=OWy9EqRCalVtRAbn9gLT3sgT05a5GeFJP1xtKWtYRWAImDpAi7woU89y/AAfvnK5tb
-         m5sl15WUXgy2SexHXBcd7qP6NV5STFzlkThDedoJiJmKiGTMOZAjwD2767X7Q/2a173/
-         gqdeWZ8ZZ/hw465ueJA/RivubUv5BrK6G9sFT5OM7bhNDWja+JsdYbXWF96rNRIHc5vm
-         2eoRJRRCxXeWavHfXi4dE1fc1AiuTAlX9m2/xhu8+HErEcY9t6wo6OBNu/oWo30rZ1m/
-         weJ8YyE2AgiYHQRacIKRL7Se6TdJ8Hs8JD9j8N25W4crq114m/QYyk6/qiqg0a3vyMxb
-         r0jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sANlXMVqsl2aKn3Z66der6aHhsvdu11h2110/nO0vMs=;
-        b=PiDB/d7wYYAYibSUwwJQ00gH1Un2EfQO84cj+B5IX6EEaZ3da7efGVwV8zhP52rXx7
-         DsylvnmKZ28jSM83Sh6zyOVru7ivtKji5rnMC7Hli850x001qnHjYBDzG1cMvNW6vMFj
-         WWi73DEFYE9154QWsq1zhevzxIa9uBX0/p1BgDzQ1YMaX27XzLxx+ZM2Sx6ytveldnq1
-         PjkRcbIr7YSgo3MvbdgAg3U7tcfhOghT8vQm0HNu5mMLvlxf9Al7eFc5Wiew4DBwMYh9
-         BwgeXU86LDENrgC/gx3udS9WCgCBPUAnVPvTGjZJaoHBrgq8afq3UrlNJpui6qQFFwnJ
-         tENw==
-X-Gm-Message-State: AOAM5331GNhICGcmWPd4iq/v64AEWQnMTpF9xDz8JOEjqo+vo5UBaXlp
-        dMlJs1RLQtGPNEzs9nnep3IQmRLPVnUsbhJH
-X-Google-Smtp-Source: ABdhPJwhT+bPiYLdGRnd3yrTthz6BzxlQh/lou1wEpTojUjl776KED4P1UKCfK3y4aL5xO8h1aOeUQ==
-X-Received: by 2002:a05:6402:1853:: with SMTP id v19mr139960edy.179.1616427932902;
-        Mon, 22 Mar 2021 08:45:32 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id t27sm9834223ejc.62.2021.03.22.08.45.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 08:45:32 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Amer Abdalamer <amer@nvidia.com>
-Subject: [PATCH net-next] net: bridge: when suppression is enabled exclude RARP packets
-Date:   Mon, 22 Mar 2021 17:45:27 +0200
-Message-Id: <20210322154527.224886-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.30.2
+        id S230078AbhCVPse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 11:48:34 -0400
+Received: from mga07.intel.com ([134.134.136.100]:18507 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230332AbhCVPr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 11:47:56 -0400
+IronPort-SDR: 3XKcPPGksjcWB1oqEEg+CO8Pu+VWbIc8jgvw45F64/f+ipoXWJ1u9K+Kbmj2HGe22JALuLgfrA
+ eZW5ocZ1p7ig==
+X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="254295218"
+X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
+   d="scan'208";a="254295218"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 08:47:55 -0700
+IronPort-SDR: TZEUZdZLl44sVFSK6KXCk76loEa+NgbKDVRw/xzbvUQR4XfBwfeqfKciBlZNMK76b8PUHyig5o
+ HZLnuyhZheLw==
+X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
+   d="scan'208";a="451780716"
+Received: from canguven-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.255.87.118])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 08:47:55 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        bhelgaas@google.com
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support
+ for PTP getcrosststamp()
+In-Reply-To: <20201110180719.GA1559650@localhost>
+References: <20201110061019.519589-1-vinicius.gomes@intel.com>
+ <20201110061019.519589-4-vinicius.gomes@intel.com>
+ <20201110180719.GA1559650@localhost>
+Date:   Mon, 22 Mar 2021 08:47:54 -0700
+Message-ID: <875z1jkx5h.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+Miroslav Lichvar <mlichvar@redhat.com> writes:
 
-Recently we had an interop issue where RARP packets got suppressed with
-bridge neigh suppression enabled, but the check in the code was meant to
-suppress GARP. Exclude RARP packets from it which would allow some VMWare
-setups to work, to quote the report:
-"Those RARP packets usually get generated by vMware to notify physical
-switches when vMotion occurs. vMware may use random sip/tip or just use
-sip=tip=0. So the RARP packet sometimes get properly flooded by the vtep
-and other times get dropped by the logic"
+> On Mon, Nov 09, 2020 at 10:10:19PM -0800, Vinicius Costa Gomes wrote:
+>> i225 has support for PCIe PTM, which allows us to implement support
+>> for the PTP_SYS_OFFSET_PRECISE ioctl(), implemented in the driver via
+>> the getcrosststamp() function.
+>
+> Would it be possible to provide the PTM measurements with the
+> PTP_SYS_OFFSET_EXTENDED ioctl instead of PTP_SYS_OFFSET_PRECISE?
 
-Reported-by: Amer Abdalamer <amer@nvidia.com>
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
-Targeting net-next as it's not critical, can be considered an improvement.
+Sorry for the long delay.
 
- net/bridge/br_arp_nd_proxy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+About PTP_SYS_OFFSET_EXTENDED, I did play with it a bit, but I didn't
+like it too much: because I don't have access to all the timestamps from
+the same "cycle", I ended up having to run two cycles to retrieve all
+the information.
 
-diff --git a/net/bridge/br_arp_nd_proxy.c b/net/bridge/br_arp_nd_proxy.c
-index dfec65eca8a6..3db1def4437b 100644
---- a/net/bridge/br_arp_nd_proxy.c
-+++ b/net/bridge/br_arp_nd_proxy.c
-@@ -160,7 +160,9 @@ void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
- 	if (br_opt_get(br, BROPT_NEIGH_SUPPRESS_ENABLED)) {
- 		if (p && (p->flags & BR_NEIGH_SUPPRESS))
- 			return;
--		if (ipv4_is_zeronet(sip) || sip == tip) {
-+		if (parp->ar_op != htons(ARPOP_RREQUEST) &&
-+		    parp->ar_op != htons(ARPOP_RREPLY) &&
-+		    (ipv4_is_zeronet(sip) || sip == tip)) {
- 			/* prevent flooding to neigh suppress ports */
- 			BR_INPUT_SKB_CB(skb)->proxyarp_replied = 1;
- 			return;
+So, the new version will expose the timestamps via
+PTP_SYS_OFFSET_PRECISE, later we can think of PTP_SYS_OFFSET_EXTENDED.
+
+>
+> As I understand it, PTM is not cross timestamping. It's basically
+> NTP over PCIe, which provides four timestamps with each "dialog". From
+> the other constants added to the header file it looks like they could
+> all be obtained and then they could be converted to the triplets
+> returned by the EXTENDED ioctl.
+>
+> The main advantage would be that it would provide applications with
+> the round trip time, which is important to estimate the maximum error
+> in the measurement. As your example phc2sys output shows, with the
+> PRECISE ioctl the delay is 0, which is misleading here.
+>
+> I suspect the estimate would be valid only when the NIC is connected
+> directly to the PTM root (PCI root complex). Is it possible to get the
+> timestamps or delay from PTM-capable switches on the path between CPU
+> and NIC? Also, how frequent can be the PTM dialogs? Could they be
+> performed synchronously in the ioctl?
+>
+> -- 
+> Miroslav Lichvar
+>
+
+
+Cheers,
 -- 
-2.30.2
-
+Vinicius
