@@ -2,64 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4748D345323
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10860345325
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:40:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbhCVXkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 19:40:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51078 "EHLO mail.kernel.org"
+        id S230393AbhCVXkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 19:40:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51198 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230363AbhCVXkI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 19:40:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1A93E619A5;
-        Mon, 22 Mar 2021 23:40:08 +0000 (UTC)
+        id S230368AbhCVXkM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 19:40:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A6F0D619A4;
+        Mon, 22 Mar 2021 23:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616456408;
-        bh=k9n/0XdmhH7SmFqauapbeH2d87GHvGAqr/ktpjaMQ5A=;
+        s=k20201202; t=1616456411;
+        bh=dJKj8nPl3zrdIA+jMRqT92my/PHfJDgmMKyf+Wj3A9c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hSlBqg7fkTbQrARNQR4ylJZI14NGtgG6fWz7OCrMk6rYaVFQ6krqKrOtAmQLGR1Tl
-         Wf1qtyCAO0cB7DVwf1N0wGAyr5X8+uN6qt2WO6zKlLzyUhiQ9jYNsAZdB6zvUMkUX1
-         4MvrGsbXcoWJnVUsieXitKzZ1t8JVI9poK3dnBf19mMXqxSa4mAPeARX7pV0IPJqH4
-         S8fNv3yNu+BDz61QKPNfo8X4xWaoErYSIK4tjgTlFq7psdJoUzj/8OmG2wf0HCM/O3
-         FMvzlZlQ36INBezY7pcLX38EId7sG86Zcf6NwSyS1IoZTBaeAcN1vHJTpYKbage18c
-         7l5VhTbDvWBJw==
+        b=aF7wjxKOF8aN8oLprA48jPomJwm4v6pEQ/HsSEptPA9zVp+X8Q2XrnD5JoFb3azQv
+         AyECEDwn00lSwRUIAh7z9KqiUp5CzCnvXy1cBZxfvr1V01+ZLuGiOpNXt8OSaLE2W2
+         qQFZkI2yBpBcixHen2w87VzhKn2QSCHfOrpFPj/AUBMkRKBARk25oSJdLAVgJfIg07
+         cmUkdPg0kZ1br6HlI3+5excRkJD5Bfbt0lNB7nNj61ba9cDE7XFEvmSBI61B25XA1Z
+         k83v1WYGpm7jMe+6ygurU0sdKOIjjgK9cQ299MIf+teyDSxASonrt4nDK3eXxIITt3
+         GgZdzz2AHEtsQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 09C1760A1B;
-        Mon, 22 Mar 2021 23:40:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 990CD609E8;
+        Mon, 22 Mar 2021 23:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ipconfig: ic_dev can be NULL in ic_close_devs
+Subject: Re: [PATCH v4 0/3] net: dsa: lantiq: add support for xRX300 and xRX330
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161645640803.10796.17856929136475519623.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Mar 2021 23:40:08 +0000
-References: <20210322002637.3412657-1-olteanv@gmail.com>
-In-Reply-To: <20210322002637.3412657-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, f.fainelli@gmail.com,
-        andrew@lunn.ch, vladimir.oltean@nxp.com
+Message-Id: <161645641162.10796.16297619759185688700.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Mar 2021 23:40:11 +0000
+References: <20210322203717.20616-1-olek2@wp.pl>
+In-Reply-To: <20210322203717.20616-1-olek2@wp.pl>
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux@armlinux.org.uk, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 22 Mar 2021 02:26:37 +0200 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, 22 Mar 2021 21:37:14 +0100 you wrote:
+> Changed since v3:
+> 	* fixed last compilation warning
 > 
-> ic_close_dev contains a generalization of the logic to not close a
-> network interface if it's the host port for a DSA switch. This logic is
-> disguised behind an iteration through the lowers of ic_dev in
-> ic_close_dev.
+> Changed since v2:
+> 	* fixed compilation warnings
+> 	* removed example bindings for xrx330
+> 	* patches has been refactored due to upstream changes
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: ipconfig: ic_dev can be NULL in ic_close_devs
-    https://git.kernel.org/netdev/net/c/a50a151e311b
+  - [v4,1/3] net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330
+    https://git.kernel.org/netdev/net-next/c/a09d042b0862
+  - [v4,2/3] net: dsa: lantiq: verify compatible strings against hardware
+    https://git.kernel.org/netdev/net-next/c/204c7614738e
+  - [v4,3/3] dt-bindings: net: dsa: lantiq: add xRx300 and xRX330 switch bindings
+    https://git.kernel.org/netdev/net-next/c/ee83d82407e4
 
 You are awesome, thank you!
 --
