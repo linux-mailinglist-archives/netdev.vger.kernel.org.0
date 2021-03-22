@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8CC344BF1
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:42:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D611344C05
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbhCVQlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:41:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49125 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230231AbhCVQlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:41:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616431295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WJs/8i/2hkoGdB658bHnbrqVNm/IrfHamj6wRjahfew=;
-        b=RNwQ8BqaSxV/AP1cn09E7o34KOboRI9rMUEV/HZJ9pubWvWHs2c5iF3kqCgp7f2sKLqv0Q
-        e07wIs2yyZO0VcWSiN8LqoI+5FS5u8YZ41ImbNc3S7JuSW0YHZH7A4udrtjAjcgdN4XkmQ
-        i1QKia71j6sx28fk8f659LPkYzSsvsk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-442-wJ7d-O2dMIe37-v8OfdiSQ-1; Mon, 22 Mar 2021 12:41:31 -0400
-X-MC-Unique: wJ7d-O2dMIe37-v8OfdiSQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0902B81622;
-        Mon, 22 Mar 2021 16:41:30 +0000 (UTC)
-Received: from ovpn-115-44.ams2.redhat.com (ovpn-115-44.ams2.redhat.com [10.36.115.44])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5470617D7E;
-        Mon, 22 Mar 2021 16:41:28 +0000 (UTC)
-Message-ID: <efa5f117ad63064f7984655d46eb5140d23b0585.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/8] udp: skip fwd/list GRO for tunnel packets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Date:   Mon, 22 Mar 2021 17:41:27 +0100
-In-Reply-To: <CA+FuTSc=V_=behQ0MKX3oYdDzZN=V7_CdeNOFXUAa-4TuU5ztA@mail.gmail.com>
-References: <cover.1616345643.git.pabeni@redhat.com>
-         <661b8bc7571c4619226fad9a00ca49352f43de45.1616345643.git.pabeni@redhat.com>
-         <CA+FuTSc=V_=behQ0MKX3oYdDzZN=V7_CdeNOFXUAa-4TuU5ztA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S230056AbhCVQo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:44:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35468 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230403AbhCVQox (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 12:44:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B3866157F;
+        Mon, 22 Mar 2021 16:44:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616431493;
+        bh=cgxEyWWxWMLS8CQf76WqHFO4Irvj44kjG2TqRGl58zo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sjqt6owPFwii84L04miltanmCepnNwV8IugPcOZx+HGkD7PdVgB+Hw82QIC8Ua4Dr
+         4tP2fnl/yDW7bUgBvHkd3KRx+JcVGq01+t+5XChGJc70mDt/KG57lBjj4SFAJDSzEx
+         PUeRh80/0l8/Qe5YCZB4SjX0AxmIMjUEZFugsQhl4Jpr17eo2xCu4CKumIEWng5hsT
+         Igs01r432rd8lFRgo+GPHUjp2WaloOmD6zGUkId9B8X+cLyRanftTjXDGLd4LXTcOj
+         d5uMS6NcVH2N0FXPQh8ru1hx+ydbuqWbr6K9h+uoCKnKvIuE+OUVT0jriN7KjI9aK/
+         hHF+DpCxHWHVQ==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Karsten Keil <isdn@linux-pingi.de>
+Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] isdn: capi: fix mismatched prototypes
+Date:   Mon, 22 Mar 2021 17:44:29 +0100
+Message-Id: <20210322164447.876440-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-03-22 at 09:24 -0400, Willem de Bruijn wrote:
-> On Sun, Mar 21, 2021 at 1:01 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > If UDP GRO forwarding (or list) is enabled,
-> 
-> Please explicitly mention the gso type SKB_GSO_FRAGLIST. I, at least,
-> didn't immediately grasp that gro forwarding is an alias for that.
+From: Arnd Bergmann <arnd@arndb.de>
 
-I see the commit message was not clear at all, I'm sorry.
+gcc-11 complains about a prototype declaration that is different
+from the function definition:
 
-The above means:
+drivers/isdn/capi/kcapi.c:724:44: error: argument 2 of type ‘u8 *’ {aka ‘unsigned char *’} declared as a pointer [-Werror=array-parameter=]
+  724 | u16 capi20_get_manufacturer(u32 contr, u8 *buf)
+      |                                        ~~~~^~~
+In file included from drivers/isdn/capi/kcapi.c:13:
+drivers/isdn/capi/kcapi.h:62:43: note: previously declared as an array ‘u8[64]’ {aka ‘unsigned char[64]’}
+   62 | u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN]);
+      |                                        ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/isdn/capi/kcapi.c:790:38: error: argument 2 of type ‘u8 *’ {aka ‘unsigned char *’} declared as a pointer [-Werror=array-parameter=]
+  790 | u16 capi20_get_serial(u32 contr, u8 *serial)
+      |                                  ~~~~^~~~~~
+In file included from drivers/isdn/capi/kcapi.c:13:
+drivers/isdn/capi/kcapi.h:64:37: note: previously declared as an array ‘u8[8]’ {aka ‘unsigned char[8]’}
+   64 | u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN]);
+      |                                  ~~~^~~~~~~~~~~~~~~~~~~~~~~
 
-gso_type & (NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRAGLIST) 
+Change the definition to make them match.
 
-:)
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/isdn/capi/kcapi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> > and there are
-> > udp tunnel available in the system, we could end-up doing L4
-> > aggregation for packets targeting the UDP tunnel.
-> 
-> Is this specific to UDP tunnels, or can this also occur with others,
-> such as GRE? (not implying that this patchset needs to address those
-> at the same time)
-
-I did not look at that before your suggestion. Thanks for pointing out.
-
-I think the problem is specific to UDP: when processing the outer UDP
-header that is potentially eligible for both NETIF_F_GSO_UDP_L4 and
-gro_receive aggregation and that is the root cause of the problem
-addressed here.
-
-
-> > Just skip the fwd GRO if this packet could land in an UDP
-> > tunnel.
-> 
-> Could you make more clear that this does not skip UDP GRO, only
-> switches from fraglist-based to pure SKB_GSO_UDP_L4.
-
-Sure, I'll try to rewrite the commit message.
-
-Thanks!
-
-Paolo
+diff --git a/drivers/isdn/capi/kcapi.c b/drivers/isdn/capi/kcapi.c
+index 7168778fbbe1..cb0afe897162 100644
+--- a/drivers/isdn/capi/kcapi.c
++++ b/drivers/isdn/capi/kcapi.c
+@@ -721,7 +721,7 @@ u16 capi20_put_message(struct capi20_appl *ap, struct sk_buff *skb)
+  * Return value: CAPI result code
+  */
+ 
+-u16 capi20_get_manufacturer(u32 contr, u8 *buf)
++u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN])
+ {
+ 	struct capi_ctr *ctr;
+ 	u16 ret;
+@@ -787,7 +787,7 @@ u16 capi20_get_version(u32 contr, struct capi_version *verp)
+  * Return value: CAPI result code
+  */
+ 
+-u16 capi20_get_serial(u32 contr, u8 *serial)
++u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN])
+ {
+ 	struct capi_ctr *ctr;
+ 	u16 ret;
+-- 
+2.29.2
 
