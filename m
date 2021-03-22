@@ -2,100 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA4BB343FD0
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 12:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B3A9343FDD
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 12:32:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbhCVLbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 07:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbhCVLai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 07:30:38 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE169C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 04:30:37 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id w3so20627833ejc.4
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 04:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CrSA+wiijQAKKKT9DLkaZo0kNL81nTfatd/dZH6KY5k=;
-        b=D33fZc//sYei/31Amus1LciTQ6o812Y1vyjwFClIOd2s6ijLIZCW6LEPI32d4NB4lx
-         OlISpHqXr5d2DQMblS0zAD8l7ERaGtPGBpMCs0b8jfgQx77REgvLt/uv34SE81v8gODd
-         1vkGFkyGOCNz2OW7M4rh9tkQtEJNgA3G7UEjU1nXnmMQRkX2Fc2TL/jmq3CZ8+4QMAye
-         1o07BYWuVHNglckJszEEwNnBnakrYEI6Id+Q0Fh9HplCJDc94prmHopH2lfB5xMxMjpI
-         KWYMpVFmJcK8RwxE6ydxSh31zpJfxcXb8AkQAa0uChkJO6Zm1MSzGP5apJGaqhUyCPEZ
-         Y+gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CrSA+wiijQAKKKT9DLkaZo0kNL81nTfatd/dZH6KY5k=;
-        b=Uyrjkqi1i6k9/Ol4lXSpcedT/IUJeJeq9TKoIY1fFRI7xeXROF9lTdljZ5mUfpRl+X
-         FeutE22eLBb9OsfiCO830hz2ErCjCJuE0hfJowzHWGqSYBTGgi4G5NV/CJmHoNu0x4Z1
-         +vGsV3+1fO/HjvL4wwtOqw3r16XR81Bu1bQcGv9m6wzp99z+LsMpGmQKNXeZYjDC/UAw
-         pPhzo9n+uTJldHLGDT3/dpTInWf1ef/ayzYy52PcI9SEZA1swOD6E7ysv/PZgFTERGRi
-         GnxU59+trA7G7ETggytMJgfdzTnZeOY0pORI47jjbdWUDDagxEjcyH1+DFv4SUJ8APSy
-         VDkQ==
-X-Gm-Message-State: AOAM5308CtSqC46pW+0kWStsHLyfZvr8VUmFkutAlNt+wdwJgOmulsqP
-        4t1wrD/mKVmUsIcUdO3eFO0=
-X-Google-Smtp-Source: ABdhPJyXKHN+Nyq1F5UTg39T7R/Nv+W/FSF9GEsf85NaXMrJfEMwY9cV9zhQK067KsAn3AtfZDa71Q==
-X-Received: by 2002:a17:907:9862:: with SMTP id ko2mr18398449ejc.222.1616412636773;
-        Mon, 22 Mar 2021 04:30:36 -0700 (PDT)
-Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id m14sm11380569edr.13.2021.03.22.04.30.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 04:30:36 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>
-Subject: [PATCH net-next] net: make xps_needed and xps_rxqs_needed static
-Date:   Mon, 22 Mar 2021 13:30:19 +0200
-Message-Id: <20210322113019.3788474-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S230189AbhCVLcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 07:32:21 -0400
+Received: from mx3.wp.pl ([212.77.101.10]:32657 "EHLO mx3.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230194AbhCVLbw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 07:31:52 -0400
+Received: (wp-smtpd smtp.wp.pl 40326 invoked from network); 22 Mar 2021 12:31:45 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1616412705; bh=BZ6MMKjc+EXZHl3nR8G7VYMCt9QRigytS90CzC28tG8=;
+          h=From:To:Cc:Subject;
+          b=lEJVHsw8Ty2kwv6rJ8aebmvFJa2JyKNa3ezf4+c0botrpq2x1pb76A7c9PVrc8ftV
+           DbgUQm++nD3bNt3KXky9naz491XaIfte/ZjTJPVmFFPARhO4s0TTyX0Ya2F3onyn8Y
+           6v2i8lUb0+6RbcnBvx8hVB0+WMPThixcB5LiCiNs=
+Received: from ip4-46-39-164-204.cust.nbox.cz (HELO localhost) (stf_xl@wp.pl@[46.39.164.204])
+          (envelope-sender <stf_xl@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <arnd@kernel.org>; 22 Mar 2021 12:31:45 +0100
+Date:   Mon, 22 Mar 2021 12:31:43 +0100
+From:   Stanislaw Gruszka <stf_xl@wp.pl>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     netdev@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/5] iwlegacy: avoid -Wempty-body warning
+Message-ID: <20210322113143.GA324121@wp.pl>
+References: <20210322104343.948660-1-arnd@kernel.org>
+ <20210322104343.948660-3-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210322104343.948660-3-arnd@kernel.org>
+X-WP-MailID: 197c071c323c67e66ef25da19382773c
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [sSOU]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Since their introduction in commit 04157469b7b8 ("net: Use static_key
-for XPS maps"), xps_needed and xps_rxqs_needed were never used outside
-net/core/dev.c, so I don't really understand why they were exported as
-symbols in the first place.
-
-This is needed in order to silence a "make W=1" warning about these
-static keys not being declared as static variables, but not having a
-previous declaration in a header file nonetheless.
-
-Cc: Amritha Nambiar <amritha.nambiar@intel.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/core/dev.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index be941ed754ac..ffab3928eeeb 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2451,10 +2451,8 @@ int netdev_txq_to_tc(struct net_device *dev, unsigned int txq)
- EXPORT_SYMBOL(netdev_txq_to_tc);
- 
- #ifdef CONFIG_XPS
--struct static_key xps_needed __read_mostly;
--EXPORT_SYMBOL(xps_needed);
--struct static_key xps_rxqs_needed __read_mostly;
--EXPORT_SYMBOL(xps_rxqs_needed);
-+static struct static_key xps_needed __read_mostly;
-+static struct static_key xps_rxqs_needed __read_mostly;
- static DEFINE_MUTEX(xps_map_mutex);
- #define xmap_dereference(P)		\
- 	rcu_dereference_protected((P), lockdep_is_held(&xps_map_mutex))
--- 
-2.25.1
-
+On Mon, Mar 22, 2021 at 11:43:33AM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> There are a couple of warnings in this driver when building with W=1:
+> 
+> drivers/net/wireless/intel/iwlegacy/common.c: In function 'il_power_set_mode':
+> drivers/net/wireless/intel/iwlegacy/common.c:1195:60: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+>  1195 |                                 il->chain_noise_data.state);
+>       |                                                            ^
+> drivers/net/wireless/intel/iwlegacy/common.c: In function 'il_do_scan_abort':
+> drivers/net/wireless/intel/iwlegacy/common.c:1343:57: error: suggest braces around empty body in an 'else' statement [-Werror=empty-body]
+> 
+> Change the empty debug macros to no_printk(), which avoids the
+> warnings and adds useful format string checks.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
