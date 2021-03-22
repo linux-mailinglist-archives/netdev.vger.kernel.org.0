@@ -2,109 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A41EF344F1A
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:52:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E642344F5D
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbhCVSv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 14:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        id S231982AbhCVS6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 14:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbhCVSv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:51:27 -0400
-Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4378DC061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 11:51:27 -0700 (PDT)
-Received: from p548da928.dip0.t-ipconnect.de ([84.141.169.40] helo=kmk0.Speedport_W_724V_09011603_06_007); authenticated
-        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1lOPe7-0001pZ-Fy; Mon, 22 Mar 2021 19:51:23 +0100
-From:   Kurt Kanzenbach <kurt@kmk-computers.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Kurt Kanzenbach <kurt@kmk-computers.de>
-Subject: [PATCH net-next v2] net: dsa: hellcreek: Report switch name and ID
-Date:   Mon, 22 Mar 2021 19:51:13 +0100
-Message-Id: <20210322185113.18095-1-kurt@kmk-computers.de>
-X-Mailer: git-send-email 2.31.0
+        with ESMTP id S232164AbhCVS57 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:57:59 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49651C061764;
+        Mon, 22 Mar 2021 11:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=F1VGSYHn4YFG1IOMrKB92bbrxwOjzJNXg/ULli3TtCw=; b=WA1YJUF1Tr2KfR4cyVdTjaEOCa
+        k09mPE0c/52m3XNIZJwaP1D8MB+7IpUcBEwXrCJuR4B9Oeg6puozV056mVScAWDlDgDlkvOlHAX1V
+        9Msgo91ETTpKRgPd+4sAF2ZFJONOhlU8osEIPtyI9EN9ps6bLcB9r7soLKfSm1pMe+m20u9vtGilz
+        /u1rZ5AWToRSLP1xQwveGajykaOi4JI+Y+50vn+6Hv+czzCpoO48nGfsgftxzv0fhIMU2xnSi7TuE
+        VS5H1saBWmuS68q/TtkCPCW7wzrM9acWzpsMS/FYCUW2rKa2ZV5qTAjbXd3a2q6Aw8YLiVCkEI+xP
+        SON0VqaQ==;
+Received: from [2601:1c0:6280:3f0::3ba4]
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lOPjv-008wey-Qk; Mon, 22 Mar 2021 18:57:28 +0000
+Subject: Re: [PATCH] liquidio: Fix a typo
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210322063122.3397260-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <865331ba-242f-fa94-e8ca-a1dbedc4832d@infradead.org>
+Date:   Mon, 22 Mar 2021 11:57:20 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1616439087;336673db;
-X-HE-SMSGID: 1lOPe7-0001pZ-Fy
+In-Reply-To: <20210322063122.3397260-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report the driver name, ASIC ID and the switch name via devlink. This is a
-useful information for user space tooling.
+On 3/21/21 11:31 PM, Bhaskar Chowdhury wrote:
+> 
+> s/struture/structure/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> ---
+>  drivers/net/ethernet/cavium/liquidio/octeon_device.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.h b/drivers/net/ethernet/cavium/liquidio/octeon_device.h
+> index fb380b4f3e02..b402facfdc04 100644
+> --- a/drivers/net/ethernet/cavium/liquidio/octeon_device.h
+> +++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.h
+> @@ -880,7 +880,7 @@ void octeon_set_droq_pkt_op(struct octeon_device *oct, u32 q_no, u32 enable);
+>  void *oct_get_config_info(struct octeon_device *oct, u16 card_type);
+> 
+>  /** Gets the octeon device configuration
+> - *  @return - pointer to the octeon configuration struture
+> + *  @return - pointer to the octeon configuration structure
 
-Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
----
-Changes since v1:
+No, that's not proper kernel-doc syntax.
 
- * Include just the model name in ASIC ID
+>   */
+>  struct octeon_config *octeon_get_conf(struct octeon_device *oct);
+> 
+> --
 
-drivers/net/dsa/hirschmann/hellcreek.c         | 18 ++++++++++++++++++
- .../linux/platform_data/hirschmann-hellcreek.h |  1 +
- 2 files changed, 19 insertions(+)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 64a73dd045c0..918be7eb626f 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -1082,6 +1082,22 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
- 	return ret;
- }
- 
-+static int hellcreek_devlink_info_get(struct dsa_switch *ds,
-+				      struct devlink_info_req *req,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct hellcreek *hellcreek = ds->priv;
-+	int ret;
-+
-+	ret = devlink_info_driver_name_put(req, "hellcreek");
-+	if (ret)
-+		return ret;
-+
-+	return devlink_info_version_fixed_put(req,
-+					      DEVLINK_INFO_VERSION_GENERIC_ASIC_ID,
-+					      hellcreek->pdata->name);
-+}
-+
- static u64 hellcreek_devlink_vlan_table_get(void *priv)
- {
- 	struct hellcreek *hellcreek = priv;
-@@ -1732,6 +1748,7 @@ static int hellcreek_port_setup_tc(struct dsa_switch *ds, int port,
- }
- 
- static const struct dsa_switch_ops hellcreek_ds_ops = {
-+	.devlink_info_get      = hellcreek_devlink_info_get,
- 	.get_ethtool_stats     = hellcreek_get_ethtool_stats,
- 	.get_sset_count	       = hellcreek_get_sset_count,
- 	.get_strings	       = hellcreek_get_strings,
-@@ -1909,6 +1926,7 @@ static int hellcreek_remove(struct platform_device *pdev)
- }
- 
- static const struct hellcreek_platform_data de1soc_r1_pdata = {
-+	.name		 = "r4c30",
- 	.num_ports	 = 4,
- 	.is_100_mbits	 = 1,
- 	.qbv_support	 = 1,
-diff --git a/include/linux/platform_data/hirschmann-hellcreek.h b/include/linux/platform_data/hirschmann-hellcreek.h
-index 388846766bb2..6a000df5541f 100644
---- a/include/linux/platform_data/hirschmann-hellcreek.h
-+++ b/include/linux/platform_data/hirschmann-hellcreek.h
-@@ -12,6 +12,7 @@
- #include <linux/types.h>
- 
- struct hellcreek_platform_data {
-+	const char *name;	/* Switch name */
- 	int num_ports;		/* Amount of switch ports */
- 	int is_100_mbits;	/* Is it configured to 100 or 1000 mbit/s */
- 	int qbv_support;	/* Qbv support on front TSN ports */
 -- 
-2.31.0
+~Randy
 
