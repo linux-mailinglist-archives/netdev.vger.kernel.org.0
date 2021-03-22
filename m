@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43901345380
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:57:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D21D34537D
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:57:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231374AbhCVX5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 19:57:23 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:58338 "EHLO
+        id S231312AbhCVX5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 19:57:15 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:58342 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbhCVX4s (ORCPT
+        with ESMTP id S230452AbhCVX4s (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 19:56:48 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 4F3186312F;
+        by mail.netfilter.org (Postfix) with ESMTPSA id DB4C7630C3;
         Tue, 23 Mar 2021 00:56:33 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 04/10] netfilter: flowtable: consolidate skb_try_make_writable() call
-Date:   Tue, 23 Mar 2021 00:56:22 +0100
-Message-Id: <20210322235628.2204-5-pablo@netfilter.org>
+Subject: [PATCH net-next 05/10] netfilter: flowtable: move skb_try_make_writable() before NAT in IPv4
+Date:   Tue, 23 Mar 2021 00:56:23 +0100
+Message-Id: <20210322235628.2204-6-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210322235628.2204-1-pablo@netfilter.org>
 References: <20210322235628.2204-1-pablo@netfilter.org>
@@ -29,298 +29,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fetch the layer 4 header size to be mangled by NAT when building the
-tuple, then use it to make writable the network and the transport
-headers. After this update, the NAT routines now assumes that the skbuff
-area is writable. Do the pointer refetch only after the single
-skb_try_make_writable() call.
+For consistency with the IPv6 flowtable datapath and to make sure the
+skbuff is writable right before the NAT header updates.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_flow_table_core.c | 12 -----
- net/netfilter/nf_flow_table_ip.c   | 74 +++++++++++++-----------------
- 2 files changed, 31 insertions(+), 55 deletions(-)
+ net/netfilter/nf_flow_table_ip.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 5fa657b8e03d..ff5d94b644ac 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -395,9 +395,6 @@ static int nf_flow_nat_port_tcp(struct sk_buff *skb, unsigned int thoff,
- {
- 	struct tcphdr *tcph;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*tcph)))
--		return -1;
--
- 	tcph = (void *)(skb_network_header(skb) + thoff);
- 	inet_proto_csum_replace2(&tcph->check, skb, port, new_port, false);
- 
-@@ -409,9 +406,6 @@ static int nf_flow_nat_port_udp(struct sk_buff *skb, unsigned int thoff,
- {
- 	struct udphdr *udph;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*udph)))
--		return -1;
--
- 	udph = (void *)(skb_network_header(skb) + thoff);
- 	if (udph->check || skb->ip_summed == CHECKSUM_PARTIAL) {
- 		inet_proto_csum_replace2(&udph->check, skb, port,
-@@ -447,9 +441,6 @@ int nf_flow_snat_port(const struct flow_offload *flow,
- 	struct flow_ports *hdr;
- 	__be16 port, new_port;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*hdr)))
--		return -1;
--
- 	hdr = (void *)(skb_network_header(skb) + thoff);
- 
- 	switch (dir) {
-@@ -478,9 +469,6 @@ int nf_flow_dnat_port(const struct flow_offload *flow,
- 	struct flow_ports *hdr;
- 	__be16 port, new_port;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*hdr)))
--		return -1;
--
- 	hdr = (void *)(skb_network_header(skb) + thoff);
- 
- 	switch (dir) {
 diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-index a698dbe28ef5..2b8ee5dcef64 100644
+index 2b8ee5dcef64..95adf74515ea 100644
 --- a/net/netfilter/nf_flow_table_ip.c
 +++ b/net/netfilter/nf_flow_table_ip.c
-@@ -39,9 +39,6 @@ static int nf_flow_nat_ip_tcp(struct sk_buff *skb, unsigned int thoff,
- {
- 	struct tcphdr *tcph;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*tcph)))
--		return -1;
--
- 	tcph = (void *)(skb_network_header(skb) + thoff);
- 	inet_proto_csum_replace4(&tcph->check, skb, addr, new_addr, true);
- 
-@@ -53,9 +50,6 @@ static int nf_flow_nat_ip_udp(struct sk_buff *skb, unsigned int thoff,
- {
- 	struct udphdr *udph;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*udph)))
--		return -1;
--
- 	udph = (void *)(skb_network_header(skb) + thoff);
- 	if (udph->check || skb->ip_summed == CHECKSUM_PARTIAL) {
- 		inet_proto_csum_replace4(&udph->check, skb, addr,
-@@ -136,19 +130,17 @@ static int nf_flow_dnat_ip(const struct flow_offload *flow, struct sk_buff *skb,
- }
- 
- static int nf_flow_nat_ip(const struct flow_offload *flow, struct sk_buff *skb,
--			  unsigned int thoff, enum flow_offload_tuple_dir dir)
-+			  unsigned int thoff, enum flow_offload_tuple_dir dir,
-+			  struct iphdr *iph)
- {
--	struct iphdr *iph = ip_hdr(skb);
--
- 	if (test_bit(NF_FLOW_SNAT, &flow->flags) &&
- 	    (nf_flow_snat_port(flow, skb, thoff, iph->protocol, dir) < 0 ||
--	     nf_flow_snat_ip(flow, skb, ip_hdr(skb), thoff, dir) < 0))
-+	     nf_flow_snat_ip(flow, skb, iph, thoff, dir) < 0))
- 		return -1;
- 
--	iph = ip_hdr(skb);
- 	if (test_bit(NF_FLOW_DNAT, &flow->flags) &&
- 	    (nf_flow_dnat_port(flow, skb, thoff, iph->protocol, dir) < 0 ||
--	     nf_flow_dnat_ip(flow, skb, ip_hdr(skb), thoff, dir) < 0))
-+	     nf_flow_dnat_ip(flow, skb, iph, thoff, dir) < 0))
- 		return -1;
- 
- 	return 0;
-@@ -160,10 +152,10 @@ static bool ip_has_options(unsigned int thoff)
- }
- 
- static int nf_flow_tuple_ip(struct sk_buff *skb, const struct net_device *dev,
--			    struct flow_offload_tuple *tuple)
-+			    struct flow_offload_tuple *tuple, u32 *hdrsize)
- {
--	unsigned int thoff, hdrsize;
- 	struct flow_ports *ports;
-+	unsigned int thoff;
- 	struct iphdr *iph;
- 
- 	if (!pskb_may_pull(skb, sizeof(*iph)))
-@@ -178,10 +170,10 @@ static int nf_flow_tuple_ip(struct sk_buff *skb, const struct net_device *dev,
- 
- 	switch (iph->protocol) {
- 	case IPPROTO_TCP:
--		hdrsize = sizeof(struct tcphdr);
-+		*hdrsize = sizeof(struct tcphdr);
- 		break;
- 	case IPPROTO_UDP:
--		hdrsize = sizeof(struct udphdr);
-+		*hdrsize = sizeof(struct udphdr);
- 		break;
- 	default:
- 		return -1;
-@@ -191,7 +183,7 @@ static int nf_flow_tuple_ip(struct sk_buff *skb, const struct net_device *dev,
- 		return -1;
- 
- 	thoff = iph->ihl * 4;
--	if (!pskb_may_pull(skb, thoff + hdrsize))
-+	if (!pskb_may_pull(skb, thoff + *hdrsize))
- 		return -1;
+@@ -266,10 +266,6 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
  
  	iph = ip_hdr(skb);
-@@ -252,11 +244,12 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 	unsigned int thoff;
- 	struct iphdr *iph;
- 	__be32 nexthop;
-+	u32 hdrsize;
- 
- 	if (skb->protocol != htons(ETH_P_IP))
- 		return NF_ACCEPT;
- 
--	if (nf_flow_tuple_ip(skb, state->in, &tuple) < 0)
-+	if (nf_flow_tuple_ip(skb, state->in, &tuple, &hdrsize) < 0)
- 		return NF_ACCEPT;
- 
- 	tuplehash = flow_offload_lookup(flow_table, &tuple);
-@@ -271,11 +264,13 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)))
- 		return NF_ACCEPT;
- 
--	if (skb_try_make_writable(skb, sizeof(*iph)))
-+	iph = ip_hdr(skb);
-+	thoff = iph->ihl * 4;
-+	if (skb_try_make_writable(skb, thoff + hdrsize))
- 		return NF_DROP;
- 
--	thoff = ip_hdr(skb)->ihl * 4;
--	if (nf_flow_state_check(flow, ip_hdr(skb)->protocol, skb, thoff))
-+	iph = ip_hdr(skb);
-+	if (nf_flow_state_check(flow, iph->protocol, skb, thoff))
- 		return NF_ACCEPT;
- 
- 	flow_offload_refresh(flow_table, flow);
-@@ -285,10 +280,9 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 		return NF_ACCEPT;
- 	}
- 
--	if (nf_flow_nat_ip(flow, skb, thoff, dir) < 0)
-+	if (nf_flow_nat_ip(flow, skb, thoff, dir, iph) < 0)
- 		return NF_DROP;
- 
+ 	thoff = iph->ihl * 4;
+-	if (skb_try_make_writable(skb, thoff + hdrsize))
+-		return NF_DROP;
+-
 -	iph = ip_hdr(skb);
- 	ip_decrease_ttl(iph);
- 	skb->tstamp = 0;
- 
-@@ -317,9 +311,6 @@ static int nf_flow_nat_ipv6_tcp(struct sk_buff *skb, unsigned int thoff,
- {
- 	struct tcphdr *tcph;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*tcph)))
--		return -1;
--
- 	tcph = (void *)(skb_network_header(skb) + thoff);
- 	inet_proto_csum_replace16(&tcph->check, skb, addr->s6_addr32,
- 				  new_addr->s6_addr32, true);
-@@ -333,9 +324,6 @@ static int nf_flow_nat_ipv6_udp(struct sk_buff *skb, unsigned int thoff,
- {
- 	struct udphdr *udph;
- 
--	if (skb_try_make_writable(skb, thoff + sizeof(*udph)))
--		return -1;
--
- 	udph = (void *)(skb_network_header(skb) + thoff);
- 	if (udph->check || skb->ip_summed == CHECKSUM_PARTIAL) {
- 		inet_proto_csum_replace16(&udph->check, skb, addr->s6_addr32,
-@@ -417,31 +405,30 @@ static int nf_flow_dnat_ipv6(const struct flow_offload *flow,
- 
- static int nf_flow_nat_ipv6(const struct flow_offload *flow,
- 			    struct sk_buff *skb,
--			    enum flow_offload_tuple_dir dir)
-+			    enum flow_offload_tuple_dir dir,
-+			    struct ipv6hdr *ip6h)
- {
--	struct ipv6hdr *ip6h = ipv6_hdr(skb);
- 	unsigned int thoff = sizeof(*ip6h);
- 
- 	if (test_bit(NF_FLOW_SNAT, &flow->flags) &&
- 	    (nf_flow_snat_port(flow, skb, thoff, ip6h->nexthdr, dir) < 0 ||
--	     nf_flow_snat_ipv6(flow, skb, ipv6_hdr(skb), thoff, dir) < 0))
-+	     nf_flow_snat_ipv6(flow, skb, ip6h, thoff, dir) < 0))
- 		return -1;
- 
--	ip6h = ipv6_hdr(skb);
- 	if (test_bit(NF_FLOW_DNAT, &flow->flags) &&
- 	    (nf_flow_dnat_port(flow, skb, thoff, ip6h->nexthdr, dir) < 0 ||
--	     nf_flow_dnat_ipv6(flow, skb, ipv6_hdr(skb), thoff, dir) < 0))
-+	     nf_flow_dnat_ipv6(flow, skb, ip6h, thoff, dir) < 0))
- 		return -1;
- 
- 	return 0;
- }
- 
- static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
--			      struct flow_offload_tuple *tuple)
-+			      struct flow_offload_tuple *tuple, u32 *hdrsize)
- {
--	unsigned int thoff, hdrsize;
- 	struct flow_ports *ports;
- 	struct ipv6hdr *ip6h;
-+	unsigned int thoff;
- 
- 	if (!pskb_may_pull(skb, sizeof(*ip6h)))
- 		return -1;
-@@ -450,10 +437,10 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
- 
- 	switch (ip6h->nexthdr) {
- 	case IPPROTO_TCP:
--		hdrsize = sizeof(struct tcphdr);
-+		*hdrsize = sizeof(struct tcphdr);
- 		break;
- 	case IPPROTO_UDP:
--		hdrsize = sizeof(struct udphdr);
-+		*hdrsize = sizeof(struct udphdr);
- 		break;
- 	default:
- 		return -1;
-@@ -463,7 +450,7 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
- 		return -1;
- 
- 	thoff = sizeof(*ip6h);
--	if (!pskb_may_pull(skb, thoff + hdrsize))
-+	if (!pskb_may_pull(skb, thoff + *hdrsize))
- 		return -1;
- 
- 	ip6h = ipv6_hdr(skb);
-@@ -493,11 +480,12 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
- 	struct net_device *outdev;
- 	struct ipv6hdr *ip6h;
- 	struct rt6_info *rt;
-+	u32 hdrsize;
- 
- 	if (skb->protocol != htons(ETH_P_IPV6))
+ 	if (nf_flow_state_check(flow, iph->protocol, skb, thoff))
  		return NF_ACCEPT;
  
--	if (nf_flow_tuple_ipv6(skb, state->in, &tuple) < 0)
-+	if (nf_flow_tuple_ipv6(skb, state->in, &tuple, &hdrsize) < 0)
- 		return NF_ACCEPT;
- 
- 	tuplehash = flow_offload_lookup(flow_table, &tuple);
-@@ -523,13 +511,13 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
+@@ -280,6 +276,10 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
  		return NF_ACCEPT;
  	}
  
--	if (skb_try_make_writable(skb, sizeof(*ip6h)))
-+	if (skb_try_make_writable(skb, sizeof(*ip6h) + hdrsize))
++	if (skb_try_make_writable(skb, thoff + hdrsize))
++		return NF_DROP;
++
++	iph = ip_hdr(skb);
+ 	if (nf_flow_nat_ip(flow, skb, thoff, dir, iph) < 0)
  		return NF_DROP;
- 
--	if (nf_flow_nat_ipv6(flow, skb, dir) < 0)
-+	ip6h = ipv6_hdr(skb);
-+	if (nf_flow_nat_ipv6(flow, skb, dir, ip6h) < 0)
- 		return NF_DROP;
- 
--	ip6h = ipv6_hdr(skb);
- 	ip6h->hop_limit--;
- 	skb->tstamp = 0;
  
 -- 
 2.20.1
