@@ -2,57 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 940CA343D45
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 10:54:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23DAA343D8D
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 11:14:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbhCVJx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 05:53:56 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:56885 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229647AbhCVJxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 05:53:23 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0USw2o5d_1616406796;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0USw2o5d_1616406796)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 22 Mar 2021 17:53:21 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     rajur@chelsio.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] cxgb4: Remove redundant NULL check
-Date:   Mon, 22 Mar 2021 17:53:14 +0800
-Message-Id: <1616406794-105194-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S229986AbhCVKNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 06:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229990AbhCVKNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 06:13:08 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A590DC061763
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 03:13:07 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id m132so5937640ybf.2
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 03:13:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=1P1ylb+0K8r+W1E1V6incN0kq8bWpLVNDCMYMUCyg3s=;
+        b=bzi9vD6E2AUdbZQcvIbscwiGt+DTHszzRZNSiBV+xdfdy2AobAc2RBvwcUXty1qzph
+         schx+6gUrFpQg0kwbHHoMsFJDccEcNvvbjUMxxV6KxIPypgWWbj2LGGKiUec6xy+O3+t
+         p/fW+5MPGtAaHwUiHzDOHJRlA7ZYNtV//X0pXNts//QazAVxCBKOqQXYhFYEzXkTU6Up
+         0nlElbgwuDHWF4fFBdhg0f8lHFfzBWClSKXcII+GyYatrzZnnBOpLcpytN39rwbHfQtU
+         BMyqXek+dvZTu/7zOoCwu/luW8bIUY0aZgEu5k6tvmsaap6jkZXzxxd9Ag3zqERDjWFh
+         Ldtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=1P1ylb+0K8r+W1E1V6incN0kq8bWpLVNDCMYMUCyg3s=;
+        b=rc9775Tf6y2zmHaqL2t8S8OQAibdzm8TdHwTCoIyTECZxvv8tC/uvDDC7gho1sv+HD
+         k0yADgHAon6haElsPoTpRDCfMaVoKEZndwtT+BJ0yq0qaPkMAPx3OUy52+smvnJjvZSF
+         Y+PHdxnbWQ/XfdYC8VVFqU2RtuVa7RZKfnO4XPfkG5tIUXzNaaVnPlbur+KNCdrDBQYz
+         kA5swy1gRola7NmveRLRolvhT4sujfSm8HUT2IM5PdPOJGZdEFf/28Jl2Jx4Crn78PRJ
+         B6y0p1hxiqY7PLdkolEFNxdbcA2J7EVwHbYocW8ARrXSZcQgQoIo5jn6wtA8pVP5lQLS
+         2i7g==
+X-Gm-Message-State: AOAM533CErmy/SJbiNM+6wF82907pSLbVYqfGHGhSEx+06fRxNmDDdBB
+        28Z6Vo7310TwZF88XSQ64WE9tXUH7942j83x918=
+X-Google-Smtp-Source: ABdhPJzjNDesOHgKan6gxFJnQcCnxqWFwfXjKBzQkeRAMHPfDcIokyDaoMBrEXJUCuRcGyHQuXGl5HGb2+GMC6unNto=
+X-Received: by 2002:a25:d44f:: with SMTP id m76mr24827956ybf.101.1616407984718;
+ Mon, 22 Mar 2021 03:13:04 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:7108:2b49:0:0:0:0 with HTTP; Mon, 22 Mar 2021 03:13:02
+ -0700 (PDT)
+Reply-To: sarandan122@yahoo.com
+From:   Mrs Sarah Daniel <nrevpeter@gmail.com>
+Date:   Mon, 22 Mar 2021 11:13:02 +0100
+Message-ID: <CA+kTmTfLmEmbxVWGSEe7oHH404SBdR=jaPtOmz2GvwgyU51x9w@mail.gmail.com>
+Subject: Donation for charity work of God
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warnings:
+Donation for charity work of God
 
-./drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:3540:2-8: WARNING: NULL
-check before some freeing functions is not needed.
+Greetings to you and sorry if this message came to you as a
+surprise.My name is Mrs Sarah Daniel a widow, I found your email
+address through my late husbands internet dater late Mr. Daniel
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I am presently admitted at the hospital suffering from a blood cancer
+and Parkinson diseases. I have only about a few months to live and I
+want you to Transfer the sum of ( $6.200,000.00) united states dollars
+to your account so you can assist me Distribute my funds to charity
+homes in your country ,
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index 6c85a10..d2ba40c 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-@@ -3536,8 +3536,7 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
- 	}
- 
- out_free:
--	if (data)
--		kvfree(data);
-+	kvfree(data);
- 
- #undef QDESC_GET_FLQ
- #undef QDESC_GET_RXQ
--- 
-1.8.3.1
+I have set aside 20% for you and your family keep while you donate 80%
+to the less privilege people,
 
+I will give you more details or full story as soon as i receive your
+reply as the fund was deposited with a bank
+
+Remain Blessed
+
+Mrs Sarah Daniel
