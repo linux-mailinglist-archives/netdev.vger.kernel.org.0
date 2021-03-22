@@ -2,100 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4701D34518C
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 22:10:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA3B345141
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:59:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232112AbhCVVKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 17:10:31 -0400
-Received: from mga01.intel.com ([192.55.52.88]:4992 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231179AbhCVVJf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 17:09:35 -0400
-IronPort-SDR: v3fvxF5OEMuLfyUDviOefUKwfoNZPe764NgCtEzj4Tg+uCFhz1CVPwJe3XKFJotDsWqiVlzDEE
- OXi4j4q/o+RQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="210423777"
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="210423777"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 14:09:35 -0700
-IronPort-SDR: JLh01sEw3vyw4Ur3m1KiqpMWghaoL+SJTZpkkVFzsBbWvWHGx6bedf1h15FlUyxCpuR7naSHAS
- 1adTckBPkapg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
-   d="scan'208";a="513448934"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Mar 2021 14:09:33 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org
-Cc:     bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com, john.fastabend@gmail.com, toke@redhat.com
-Subject: [PATCH v3 bpf-next 17/17] selftests: xsk: Remove unused defines
-Date:   Mon, 22 Mar 2021 21:58:16 +0100
-Message-Id: <20210322205816.65159-18-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210322205816.65159-1-maciej.fijalkowski@intel.com>
-References: <20210322205816.65159-1-maciej.fijalkowski@intel.com>
+        id S230160AbhCVU6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:58:53 -0400
+Received: from outbound-smtp02.blacknight.com ([81.17.249.8]:57380 "EHLO
+        outbound-smtp02.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229547AbhCVU6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:58:50 -0400
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp02.blacknight.com (Postfix) with ESMTPS id F21E4BB098
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 20:58:28 +0000 (GMT)
+Received: (qmail 5808 invoked from network); 22 Mar 2021 20:58:28 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 22 Mar 2021 20:58:28 -0000
+Date:   Mon, 22 Mar 2021 20:58:27 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Message-ID: <20210322205827.GJ3697@techsingularity.net>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+ <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
+ <20210322194948.GI3697@techsingularity.net>
+ <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Mon, Mar 22, 2021 at 08:32:54PM +0000, Chuck Lever III wrote:
+> >> It is returning some confusing (to me) results. I'd like
+> >> to get these resolved before posting any benchmark
+> >> results.
+> >> 
+> >> 1. When it has visited every array element, it returns the
+> >> same value as was passed in @nr_pages. That's the N + 1th
+> >> array element, which shouldn't be touched. Should the
+> >> allocator return nr_pages - 1 in the fully successful case?
+> >> Or should the documentation describe the return value as
+> >> "the number of elements visited" ?
+> >> 
+> > 
+> > I phrased it as "the known number of populated elements in the
+> > page_array".
+> 
+> The comment you added states:
+> 
+> + * For lists, nr_pages is the number of pages that should be allocated.
+> + *
+> + * For arrays, only NULL elements are populated with pages and nr_pages
+> + * is the maximum number of pages that will be stored in the array.
+> + *
+> + * Returns the number of pages added to the page_list or the index of the
+> + * last known populated element of page_array.
+> 
+> 
+> > I did not want to write it as "the number of valid elements
+> > in the array" because that is not necessarily the case if an array is
+> > passed in with holes in the middle. I'm open to any suggestions on how
+> > the __alloc_pages_bulk description can be improved.
+> 
+> The comments states that, for the array case, a /count/ of
+> pages is passed in, and an /index/ is returned. If you want
+> to return the same type for lists and arrays, it should be
+> documented as a count in both cases, to match @nr_pages.
+> Consumers will want to compare @nr_pages with the return
+> value to see if they need to call again.
+> 
 
-Remove two unused defines.
+Then I'll just say it's the known count of pages in the array. That
+might still be less than the number of requested pages if holes are
+encountered.
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- tools/testing/selftests/bpf/xdpxceiver.c | 7 +++----
- tools/testing/selftests/bpf/xdpxceiver.h | 2 --
- 2 files changed, 3 insertions(+), 6 deletions(-)
+> > The definition of the return value as-is makes sense for either a list
+> > or an array. Returning "nr_pages - 1" suits an array because it's the
+> > last valid index but it makes less sense when returning a list.
+> > 
+> >> 2. Frequently the allocator returns a number smaller than
+> >> the total number of elements. As you may recall, sunrpc
+> >> will delay a bit (via a call to schedule_timeout) then call
+> >> again. This is supposed to be a rare event, and the delay
+> >> is substantial. But with the array-based API, a not-fully-
+> >> successful allocator call seems to happen more than half
+> >> the time. Is that expected? I'm calling with GFP_KERNEL,
+> >> seems like the allocator should be trying harder.
+> >> 
+> > 
+> > It's not expected that the array implementation would be worse *unless*
+> > you are passing in arrays with holes in the middle. Otherwise, the success
+> > rate should be similar.
+> 
+> Essentially, sunrpc will always pass an array with a hole.
+> Each RPC consumes the first N elements in the rq_pages array.
+> Sometimes N == ARRAY_SIZE(rq_pages). AFAIK sunrpc will not
+> pass in an array with more than one hole. Typically:
+> 
+> .....PPPP
+> 
+> My results show that, because svc_alloc_arg() ends up calling
+> __alloc_pages_bulk() twice in this case, it ends up being
+> twice as expensive as the list case, on average, for the same
+> workload.
+> 
 
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 084ba052fa89..0a7c5a8ca585 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -456,7 +456,7 @@ static void complete_tx_only(struct xsk_socket_info *xsk, int batch_size)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	if (!NEED_WAKEUP || xsk_ring_prod__needs_wakeup(&xsk->tx))
-+	if (xsk_ring_prod__needs_wakeup(&xsk->tx))
- 		kick_tx(xsk);
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, batch_size, &idx);
-@@ -544,9 +544,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frameptr, int batch_size)
- 	xsk_ring_prod__submit(&xsk->tx, batch_size);
- 	if (!tx_invalid_test) {
- 		xsk->outstanding_tx += batch_size;
--	} else {
--		if (!NEED_WAKEUP || xsk_ring_prod__needs_wakeup(&xsk->tx))
--			kick_tx(xsk);
-+	} else if (xsk_ring_prod__needs_wakeup(&xsk->tx)) {
-+		kick_tx(xsk);
+Ok, so in this case the caller knows that holes are always at the
+start. If the API returns an index that is a valid index and populated,
+it can check the next index and if it is valid then the whole array
+must be populated.
+
+Right now, the implementation checks for populated elements at the *start*
+because it is required for calling prep_new_page starting at the correct
+index and the API cannot make assumptions about the location of the hole.
+
+The patch below would check the rest of the array but note that it's
+slower for the API to do this check because it has to check every element
+while the sunrpc user could check one element. Let me know if a) this
+hunk helps and b) is desired behaviour.
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index c83d38dfe936..4bf20650e5f5 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5107,6 +5107,9 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	} else {
+ 		while (prep_index < nr_populated)
+ 			prep_new_page(page_array[prep_index++], 0, gfp, 0);
++
++		while (nr_populated < nr_pages && page_array[nr_populated])
++			nr_populated++;
  	}
- 	*frameptr += batch_size;
- 	*frameptr %= num_frames;
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index ef219c0785eb..6c428b276ab6 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -34,13 +34,11 @@
- #define IP_PKT_TOS 0x9
- #define UDP_PKT_SIZE (IP_PKT_SIZE - sizeof(struct iphdr))
- #define UDP_PKT_DATA_SIZE (UDP_PKT_SIZE - sizeof(struct udphdr))
--#define TMOUT_SEC (3)
- #define EOT (-1)
- #define USLEEP_MAX 200000
- #define SOCK_RECONF_CTR 10
- #define BATCH_SIZE 64
- #define POLL_TMOUT 1000
--#define NEED_WAKEUP true
- #define DEFAULT_PKT_CNT 10000
- #define RX_FULL_RXQSIZE 32
  
--- 
-2.20.1
+ 	return nr_populated;
 
+-- 
+Mel Gorman
+SUSE Labs
