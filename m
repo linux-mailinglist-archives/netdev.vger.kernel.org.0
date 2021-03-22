@@ -2,70 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDB0D34509E
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83EC33450AF
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:26:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbhCVUUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:20:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55172 "EHLO mail.kernel.org"
+        id S231429AbhCVUZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:25:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230060AbhCVUUI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 16:20:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1DACE61992;
-        Mon, 22 Mar 2021 20:20:08 +0000 (UTC)
+        id S230404AbhCVUZd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 16:25:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F176361990;
+        Mon, 22 Mar 2021 20:25:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616444408;
-        bh=RKJLsMuuPVjLOqSAugNpnCjMxH5h0lHuTvEFxz9bC1A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fTUGFlAuma+82AqQJl4i2J9uP5/8w1Il/9AnSdelS5ce3JlGtxRbJOKqzgI109CW3
-         xrdUv6sRH43e1p/ra5Ur/+cg2A6NPYAUB5pfY67xf9stVXx++b38/64bxgX4k8Rsd6
-         xt5VeY8CHpnzoyf7hPWrJ8M3f74rbvOsNu6MDxbIckkVJczmwNMuKR4SgMiOsZzuOb
-         JELGOu5qfI1lqk+gkggptQnC4ZY26l9rH1eJydH6/bLcQr2r3Xia+ZjudeE5Q2aoYi
-         R4k4u9La8wXEwdXaJmy2/pqnyuVU4l2wZPUciWtPeIKIzIZ6EzcTnaYs5XpglzVZHm
-         pHuQEBJMWq8Ew==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0C85160A49;
-        Mon, 22 Mar 2021 20:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1616444733;
+        bh=wwg0czpeNEOWYdkh5k3QGJ3f6qBVplC4QNvluSrwMj0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=i3NjVU1JkonLcAQEVwZraZyZ74hO3hZDFBCRLTmXnHTrrxkMagAwFLQxke+VNfHd9
+         J1H+E9xZRwFntdLq+j12Vd3IMWnB/8rotz/Tvt8oIx05WicH+zp3iQKmUNiEcoxbkg
+         W2fExAimUpoXjP7ZV3CG4nJO40zLLzDlAIA+o9fxYPYYfs0B4OQi4CgQzYTZ97Lumq
+         aipAAQXjzFZGsdTk8yuF4KtIJZ2izzmqS5/DkM65t9yFHHyXWD1F8G5Y4wmgywNAtU
+         3fQ7I927i0uGe/++k35G8a1an88LdWc6xv2VQlVrLR+9CUPOv0flfFPb2PPTzeZ8qt
+         XlSY1vRLrKc9A==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net 0/6] mlx5 fixes 2021-03-22
+Date:   Mon, 22 Mar 2021 13:25:18 -0700
+Message-Id: <20210322202524.68886-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: fix up kerneldoc some more
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161644440804.26518.8381053935417453240.git-patchwork-notify@kernel.org>
-Date:   Mon, 22 Mar 2021 20:20:08 +0000
-References: <20210322093009.3677265-1-olteanv@gmail.com>
-In-Reply-To: <20210322093009.3677265-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Hi Dave, Jakub
 
-On Mon, 22 Mar 2021 11:30:09 +0200 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Commit 0b5294483c35 ("net: dsa: mv88e6xxx: scratch: Fixup kerneldoc")
-> has addressed some but not all kerneldoc warnings for the Global 2
-> Scratch register accessors. Namely, we have some mismatches between
-> the function names in the kerneldoc and the ones in the actual code.
-> Let's adjust the comments so that they match the functions they're
-> sitting next to.
-> 
-> [...]
+This series introduces some fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-Here is the summary with links:
-  - [net-next] net: dsa: mv88e6xxx: fix up kerneldoc some more
-    https://git.kernel.org/netdev/net-next/c/3de43dc98615
+Thanks,
+Saeed.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+---
+The following changes since commit 87d77e59d1ebc31850697341ab15ca013004b81b:
 
+  docs: networking: Fix a typo (2021-03-20 19:02:42 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-03-22
+
+for you to fetch changes up to 7c1ef1959b6fefe616ef3e7df832bf63dfbab9cf:
+
+  net/mlx5: SF, do not use ecpu bit for vhca state processing (2021-03-22 13:16:41 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2021-03-22
+
+----------------------------------------------------------------
+Alaa Hleihel (1):
+      net/mlx5e: Allow to match on MPLS parameters only for MPLS over UDP
+
+Aya Levin (1):
+      net/mlx5e: Fix error path for ethtool set-priv-flag
+
+Dima Chumak (1):
+      net/mlx5e: Offload tuple rewrite for non-CT flows
+
+Huy Nguyen (1):
+      net/mlx5: Add back multicast stats for uplink representor
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Fix division by 0 in mlx5e_select_queue
+
+Parav Pandit (1):
+      net/mlx5: SF, do not use ecpu bit for vhca state processing
+
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  6 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 12 +++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 54 +++++++++++++++++-----
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   |  4 +-
+ .../net/ethernet/mellanox/mlx5/core/sf/hw_table.c  |  8 ++--
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.c    | 22 ++++-----
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.h    |  7 ++-
+ 8 files changed, 79 insertions(+), 37 deletions(-)
