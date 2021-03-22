@@ -2,99 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E63ED344C6A
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CEC7344C6F
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 17:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbhCVQ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 12:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        id S231241AbhCVQ45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 12:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbhCVQ4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:56:18 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379EAC061756;
-        Mon, 22 Mar 2021 09:56:17 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id j3so20177159edp.11;
-        Mon, 22 Mar 2021 09:56:17 -0700 (PDT)
+        with ESMTP id S231387AbhCVQ4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 12:56:31 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2459C061574;
+        Mon, 22 Mar 2021 09:56:30 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id m3so7314484ybt.0;
+        Mon, 22 Mar 2021 09:56:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=in5zPWN2s1K/tCcc950Upp69w93UR8g2HDZ0TgRoXRM=;
-        b=DhcHmXJBGHTgBNm2rEBfRQ2WT31PbZ5H6CB6K6j3kJWA/q3XmOLMNm3B+pZBwA8nTN
-         WbkTrUgUfBR9LvMY12FjMK1Yl2rxjfnVTHW5SJY+GK1tI7qRxe4YpbdHqPH7XgVonYP2
-         /2IuWqtzb6S7DdL0uXvDfstvowKP5PF83Rb59ovAQl+Bt/R5+MSL2keffSccbDouzH/0
-         8wB2bJoeF4KiC7Cj+x8OtcCJ8/sLXsmqOW+yM97z5M1Te9vHKbhGpLGO3yKRnD74YU5z
-         07tvi7we5mYd/emSvnsLeCisYcZUjTTOKFhBCD8Mj/uXmTCVR7ExHGgAS2auO+Kctkht
-         sugQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O8a1/KMRD2gZlRZYI2i+SlO+VhWKrwDB0WvdEpBaVbE=;
+        b=t5Um+QAdxVORPIeyt/dcD/BvreZIWg82Edi10Gou+E/9cYzuB2K3D0xF18Usg+EHV5
+         kM/a4eZZvcx14jvUGVB65NzTPTmz7uaP6N6hR41MqPuccZ4xcoQJC+qOGup4wz0+yFuD
+         M5T/hkei/wR/0bedell5Nk8URyUabim6SQDR00j2NMSARTorCG/RUV2dHfl40rmdKTsF
+         lLk3qq7Q1a6splKo6HMcePRpJznaHgwE+5EaFmpz8gaWPH8yO2ZswTSk5WdACg/gpS/E
+         fFzglId0NSSNJ6r9mkDymQcUv2GaoVFmBsfUtcLAWTXBuda0pr+quUCy5jip6/qWHpLO
+         ncng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=in5zPWN2s1K/tCcc950Upp69w93UR8g2HDZ0TgRoXRM=;
-        b=RdnxGLWX/RK5hDX9rc+l45OzF6o1TZaZ424AF55c60LXplbQlhC+/0gwCdqLoMZwmT
-         RT6mY5pk4rYdJ3A/ohbqaTzoLqSjpVkCly3Jfy0bIEWbNP8NlVb9MYJi5ndOmSkvzzE8
-         0aFTQT/s1lhlKfWLbF11zCroH88pF1Lonkg/bGnK3qX2A/navypQwHhU1RhQNyScBhR9
-         0CXXFdhhGsR8Bja7U/Iewc6BEFRFS5SB6nqlb4thxaijSTTnkfLzalhMFE/S7UnYOEJc
-         38cpDs73sixU+86vS/eFK4yp88sKZ9+p0xSZQgBUC3Mh2YflKWwvYVn4WiESxatntIFY
-         nRpg==
-X-Gm-Message-State: AOAM532d7dtHnzS/qzV14x03U2lAeasbIA+l9A58Oc/SJ+TxI2m8QknP
-        +7ojdOKzFWKepbZemDI2ee8=
-X-Google-Smtp-Source: ABdhPJw8kbQvgz9YUmfHBxMrExsPx8A56GEChaihtAgtGZ9HEx+Pf2ZfCc+wSixEp9N4AU5FAE8EPQ==
-X-Received: by 2002:aa7:c0c7:: with SMTP id j7mr554934edp.298.1616432176029;
-        Mon, 22 Mar 2021 09:56:16 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id j7sm11538303edv.40.2021.03.22.09.56.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 09:56:15 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 18:56:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
-        linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v3 net-next 08/12] net: dsa: replay port and host-joined
- mdb entries when joining the bridge
-Message-ID: <20210322165614.56sgtdxpmnp2dkja@skbuf>
-References: <20210320223448.2452869-1-olteanv@gmail.com>
- <20210320223448.2452869-9-olteanv@gmail.com>
- <7a89fd44-98d7-072f-6215-84960e27b0d9@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O8a1/KMRD2gZlRZYI2i+SlO+VhWKrwDB0WvdEpBaVbE=;
+        b=TYwx8K/yPecNjvAP6DTWH6IZk/S6FtgpG1aZzA+drsId8QolJQyM7NKRTJffoCynIY
+         MbRKjqgVJS4clAbAHnixmGXMLoZYhmMGuJKVtpt9czUK7YZuWHhKWNQUn1jr+eduuc2Y
+         VZXH1lE+pFQY5L2xQVLOBN2WBD1VmeyZKlUsSPmsTfXjGDe/b4fZloyHBDn+c2a5Jqb0
+         3mx1UD0TvDgpIrVUtGZSqC3C0mK2PPB389ODI8TL1zBUOgm5vWBUXiLPEDZ0iPUIQ5Gn
+         AWmUr3pkC9Dtv3f1d7t52SnZ9lj3dnOE27KxmD6JDoQ0Hh4dVNp9Owx9jOnyO7KPPVJm
+         lCjQ==
+X-Gm-Message-State: AOAM532bDjekV5RCwwuZaAeIztmR8fWJDCiOAPInJ4lfJuw0+cqiREmR
+        NLcUOKZXEggV9oYDd10z2iUe4qM8oWl5d6N1QcE=
+X-Google-Smtp-Source: ABdhPJynFSu7SS+LXJeOFDSKUSk2+lgJrWGC2LWRfVF9fLj80uzqBt9QyF6f3qHQZafgqUqlX7kLBjGtGuSgbgkM0l8=
+X-Received: by 2002:a25:874c:: with SMTP id e12mr517350ybn.403.1616432190180;
+ Mon, 22 Mar 2021 09:56:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a89fd44-98d7-072f-6215-84960e27b0d9@nvidia.com>
+References: <20210319205909.1748642-1-andrii@kernel.org> <20210319205909.1748642-4-andrii@kernel.org>
+ <20210320022156.eqtmldxpzxkh45a7@ast-mbp> <CAEf4Bzarx33ENLBRyqxDz7k9t0YmTRNs5wf_xCqL2jNXvs+0Sg@mail.gmail.com>
+ <20210322010734.tw2rigbr3dyk3iot@ast-mbp>
+In-Reply-To: <20210322010734.tw2rigbr3dyk3iot@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 22 Mar 2021 09:56:19 -0700
+Message-ID: <CAEf4BzbdgPnw81+diwcvAokv+S6osqvAAzSQYt_BoYbga9t-qQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: allow compiling BPF objects
+ without BTF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 06:35:10PM +0200, Nikolay Aleksandrov wrote:
-> > +	hlist_for_each_entry(mp, &br->mdb_list, mdb_node) {
-> 
-> You cannot walk over these lists without the multicast lock or RCU. RTNL is not
-> enough because of various timers and leave messages that can alter both the mdb_list
-> and the port group lists. I'd prefer RCU to avoid blocking the bridge mcast.
+On Sun, Mar 21, 2021 at 6:07 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sat, Mar 20, 2021 at 10:00:57AM -0700, Andrii Nakryiko wrote:
+> > On Fri, Mar 19, 2021 at 7:22 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Fri, Mar 19, 2021 at 01:59:09PM -0700, Andrii Nakryiko wrote:
+> > > > Add ability to skip BTF generation for some BPF object files. This is done
+> > > > through using a convention of .nobtf.c file name suffix.
+> > > >
+> > > > Also add third statically linked file to static_linked selftest. This file has
+> > > > no BTF, causing resulting object file to have only some of DATASEC BTF types.
+> > > > It also is using (from BPF code) global variables. This tests both libbpf's
+> > > > static linking logic and bpftool's skeleton generation logic.
+> > >
+> > > I don't like the long term direction of patch 1 and 3.
+> > > BTF is mandatory for the most bpf kernel features added in the last couple years.
+> > > Making user space do quirks for object files without BTF is not something
+> > > we should support or maintain. If there is no BTF the linker and skeleton
+> > > generation shouldn't crash, of course, but they should reject such object.
+> >
+> > I don't think tools need to enforce any policies like that. They are
+> > tools and should be unassuming about the way they are going to be used
+> > to the extent possible.
+>
+> Right and bpftool/skeleton was used with BTF since day one.
+> Without BTF the skeleton core ideas are lost. The skeleton api
+> gives no benefit. So what's the point of adding support for skeleton without BTF?
+> Is there a user that would benefit? If so, what will they gain from
+> such BTF-less skeleton?
 
-The trouble is that I need to emulate the calling context that is
-provided to SWITCHDEV_OBJ_ID_HOST_MDB and SWITCHDEV_OBJ_ID_PORT_MDB, and
-that means blocking context.
+The only part of skeleton API that's not available is convenient
+user-space access to global variables. If you don't use global
+variables you don't use BTF at all with skeleton. So all features but
+one work without BTF just fine: compile-time maps and progs (and
+links) references, embedding object file in .skel.h, and even
+automatic memory-mapping of .data/.rodata/.bss (just unknown struct
+layout).
 
-So if I hold rcu_read_lock(), I need to queue up the mdb entries, and
-notify the driver only after I leave the RCU critical section. The
-memory footprint may temporarily blow up.
+Compile-time maps and progs and separately object file embedding in C
+header are useful in their own rights, even individually. There is no
+single "core idea" of the BPF skeleton in my mind. What is it for you?
 
-In fact this is what I did in v1:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210224114350.2791260-15-olteanv@gmail.com/
-
-I just figured I could get away with rtnl_mutex protection, but it looks
-like I can't. So I guess you prefer my v1?
+So given none of the fixes are horrible hacks and won't incur
+additional maintenance costs, what's the problem with accepting them?
