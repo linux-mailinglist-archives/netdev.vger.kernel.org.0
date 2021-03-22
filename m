@@ -2,142 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55C40344250
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 13:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1603442E2
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 13:48:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbhCVMkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 08:40:22 -0400
-Received: from mail-bn7nam10on2044.outbound.protection.outlook.com ([40.107.92.44]:9889
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231181AbhCVMiz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 08:38:55 -0400
+        id S231679AbhCVMqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 08:46:39 -0400
+Received: from mga18.intel.com ([134.134.136.126]:36971 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231687AbhCVMoE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 08:44:04 -0400
+IronPort-SDR: BKa1f7/qcct0G2Ec2cIWaWl63ahojrt4jaBGe+dnkRbDbVWaqYzj/NlqLoAS0Jq02O9MuW2fsm
+ RuPDqKusPG1A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9930"; a="177833867"
+X-IronPort-AV: E=Sophos;i="5.81,268,1610438400"; 
+   d="scan'208";a="177833867"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 05:40:00 -0700
+IronPort-SDR: TZsFns+lZr16E1HmUjnO00vjGrvVaCdmAT4lgGyhQfxxIVgGVQL8Ow9qY3UfpwQuOhxvD0PpRX
+ cGFPoabWue7A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,268,1610438400"; 
+   d="scan'208";a="413026851"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga007.jf.intel.com with ESMTP; 22 Mar 2021 05:40:00 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 22 Mar 2021 05:40:00 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 22 Mar 2021 05:39:59 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Mon, 22 Mar 2021 05:39:59 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.106)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Mon, 22 Mar 2021 05:39:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kAUC5KnVfIl12DSpEsENEcfDrWeaDv6Fu7r/RAdj4m+C0q9UXyzvViDX9CwisOSWNOI8PgviMABGCL0IIIcPxPMNizAc0lrSgIyyYKOrK6IH8zaharnxCmYENYeMBNB25RrdNUObSsJYZIKwU+QXa5zoTU1G0yENSLoj4/n32kxYpSKENwL2hXBCDVIKnLJXOw8SKLnGrfcqyv6NclZnEhjCLVB06gyjMHqrjGzgAtsP2zuOKrGfZ7g2KhPM/Q5v0AoXC4KnKpRmjYsbuseJRXGemmlBw4NKX49qqHl1cQTPKncILLDx2+7tv+/ox1QNyty9xfEWkolWkb2dyjyJhA==
+ b=Mf9eqvNuZ6t4jVPYxvsEjrI47JGFnS5HDAj4fEG6+8kFVBGxBoCi28soL6RerkKhrpG6X1T2ik328k2phe8bHE/01fVwyq4VDBPoBsoSREzUUUEWuppdMs+COs1CS/WBf479MesrApZlWBc1SzHFM/fuqAavdr7y6reb9QEUkf1xRIb8VVJmrMWqOzhd5EV1gnLYX8Nt+ZlNxJ+gGB3ESdCZIyA2Z2zKyI23wrus1jDoWebvZ4ZFeaqLcmIfi7MQVOT7zzZ5288KhWMiE3b/D88RSWY0BZe8e37gsxOV1YC8e4ABp5d7YF1ClZqKlusM39JJ5Eb9uk1gzhTgJPauQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XLQc4SuSbpmKSn5iGZYW6X0ywu+BLplR7xJsRilWmSA=;
- b=I2xZyl4xqnGIE5g0iDZH3Fh7N2WD4JvlJbRbFzfpqJdgKfjS0SE1Bz+Fl7ZrzCv+o1Q7lZX60EVc4z99JQccfAQNPZU4wjIUYi1xX5H0B22BrBMbuSuhe1H8rALA4LVMEq33dHHPzw3opLWaNIIFZVNLzxgHVmJZmtzQULK8FzlnFrANdaPn9kUYH3OBTpHCn4EMcspTMc6BxLJrwszEt4vD4WGiaVW6m+xns43CYDHgoKg1JY+18xCarfoCN+XSWLljRnosjVT3vKv54G7AeH9lVHqLq2+9CQIp8liHUDaFpV9ArGbJBemDkOVmJCz6DCSWAF68ngGpaOB2V101JA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=Podkf5lsBJu4Rdh6LLsFBFGCVvtY7OdigWktCrFs2Zk=;
+ b=hqJla/knndA04ZeNjjhRHy47HA67hcq68BXaBBcDCjyxCj/paMkFgY3PERqSXMpIJCUaQr9n+8Vvo4R+tM8eduiu/w4+ngkbmgS6t9FoAUzryTr16VJi5G6Q23gd3zelof824vjztZVzs/wkCsLdvus1tC7F1s8kkc8j+1cWLNtBDYbCQ3Wp5bA7me/Hi3FDYuUp3IiSoUuGNtJS1s22lzOAskBP+Mc+K2IhdSdEefw/F3N9PdiUtbJ2tsefKSI6NAbnt715pKuzFFkgGP0L+w33WgZtRpIdVVPCK5A3WPnqM+bev5r5A2HSOeoECAAKNtumnAv8atHJU4feUlFJQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XLQc4SuSbpmKSn5iGZYW6X0ywu+BLplR7xJsRilWmSA=;
- b=Q+v8fTN1w2kslgk/8qyaqk41UCW5Ui9OYK9XlWSTIcomw7Q2oRsxCVLDnucvRqwOPU1AJe9f3UgEa+5TlHd4/DmGqNPD5BZViiDWKrHmYQHQxrxX7MiZsvRfWmVaNlgSqZrDX6kTibaNkO+oXva8K4p5p+8mrNj0bzCmySfpBNlJiI4d3urBb1Q1NBW/N1sXTs8y8vFSk3myXZ0ak4BFJUG5UX00W2UNKVhip4UZj9qfgT/viIi6+t8397PQ3OkJMMfJ7Y/WJvbd3IfngCRr3ueC/D+betVBkboS509JIlViEEOpWcJ4t0MjhufR7udBrp8djuotj4yaR6Q/jdXeaw==
-Received: from BN9PR03CA0957.namprd03.prod.outlook.com (2603:10b6:408:108::32)
- by BN6PR12MB1905.namprd12.prod.outlook.com (2603:10b6:404:fe::14) with
+ bh=Podkf5lsBJu4Rdh6LLsFBFGCVvtY7OdigWktCrFs2Zk=;
+ b=iWLb+5Qeuhbtph8m3iGRl1DMnMeIDTnaSg7mAlFhpg9RyVvtFSGgTjgiUCCPmPbD/DV/AGwANUgpUyiqVwHxWeUmaghU3lYhI6LKg3i5hPly0aPm+QVuv3fsTjkDG6lBJiQNH8rL3imqJaj9onLeAWwXHnScSQ9pcU+Ggf+LPJE=
+Received: from BYAPR11MB2870.namprd11.prod.outlook.com (2603:10b6:a02:cb::12)
+ by SJ0PR11MB5149.namprd11.prod.outlook.com (2603:10b6:a03:2d1::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Mon, 22 Mar
- 2021 12:38:54 +0000
-Received: from BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:108:cafe::20) by BN9PR03CA0957.outlook.office365.com
- (2603:10b6:408:108::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend
- Transport; Mon, 22 Mar 2021 12:38:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT060.mail.protection.outlook.com (10.13.177.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3955.18 via Frontend Transport; Mon, 22 Mar 2021 12:38:54 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 22 Mar
- 2021 12:38:53 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 22 Mar 2021 12:38:50 +0000
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-To:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Nikolay Aleksandrov <nikolay@redhat.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
+ 2021 12:39:58 +0000
+Received: from BYAPR11MB2870.namprd11.prod.outlook.com
+ ([fe80::4156:a987:2665:c608]) by BYAPR11MB2870.namprd11.prod.outlook.com
+ ([fe80::4156:a987:2665:c608%5]) with mapi id 15.20.3955.027; Mon, 22 Mar 2021
+ 12:39:58 +0000
+From:   "Wong, Vee Khee" <vee.khee.wong@intel.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>,
-        "Maxim Mikityanskiy" <maximmi@nvidia.com>
-Subject: [RFC PATCH net] bonding: Work around lockdep_is_held false positives
-Date:   Mon, 22 Mar 2021 14:38:46 +0200
-Message-ID: <20210322123846.3024549-1-maximmi@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>
+Subject: RE: [PATCH net V2 1/1] net: phy: fix invalid phy id when probe using
+ C22
+Thread-Topic: [PATCH net V2 1/1] net: phy: fix invalid phy id when probe using
+ C22
+Thread-Index: AQHXHJMri61PaJNIo0y3q5cHdUTUA6qLAlgAgATmr0A=
+Date:   Mon, 22 Mar 2021 12:39:58 +0000
+Message-ID: <BYAPR11MB28702033C50FCB9EAE5686A0AB659@BYAPR11MB2870.namprd11.prod.outlook.com>
+References: <20210318090937.26465-1-vee.khee.wong@intel.com>
+ <3f7f68d0-6bbd-baa0-5de8-1e8a0a50a04d@gmail.com>
+ <20210319085628.GT1463@shell.armlinux.org.uk>
+In-Reply-To: <20210319085628.GT1463@shell.armlinux.org.uk>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [210.195.26.177]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 48f609f1-73a0-4c91-6b57-08d8ed2f9a9c
+x-ms-traffictypediagnostic: SJ0PR11MB5149:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SJ0PR11MB514979E96D4B349CAFF5463DAB659@SJ0PR11MB5149.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JoWNbAv1EqyD7M04OpMTFg31yczuUkQnOFxrKFaYdCR7lXV7DkxfkEunX50mX8SqothnFmrhEdT+dQJAqXJCLjIU9EWCos4v86ekNtg4AnIbjVYg7OIU34kZAz37iAo/EQtT1mo9D0UrQFwoCViHNqu0xHlkzJJHDTBlBJqqdA4K1UsBtpaoCZxeNvMVvpH1/c6rBjqgR38AvDmMvqe8WJ75IsxtCW4tiuuQBs8zNg50GJSCGE8j3Hk7Q3+bzIr9W6eia74H0LMZKRA3LLXbyHFx4XTMCpoO4HZAf66K7SGUl3JEc1zFUukgmwSjCk8nellrFrcEWnK86A66Df5lISBK/1x3Xaqhlf06A8tbi2gz1aR6VZjKS8/zOvtqT2gKfxYUoHNf8SI2gJ0QKfq7fvb7ECpdreWiGrsb31siPuqc/e9yEZWSZqJSREG9Vute2t1bQRjzt91T9kYSF+kkOKKs21Ft8KFUJ8rxakX4DZS6VNHo1RGJXYFGVuHby2piooXveSwqBwDowXUiTChsA1qmeJIdtCKD99jwToRoo/6LPYG+vOJTL/EVt6I7rIGqOcSRHhAFa+D6/7y5yd4QHPxQhiyoMqOs8sxHS5bpynXw+qYXObmJUAhwqo2P8BPxxD+Nsh37+wLXE6ysJSOtXk76v244R9B13kIk9HPGKKemtet71RVniu2jEMFDvRPHDoguu4nNd8LmoOgXT70hoD8LI9XK1gjDzg5bSMV5Ryg=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB2870.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(366004)(39860400002)(136003)(396003)(66556008)(66946007)(66446008)(76116006)(110136005)(8676002)(64756008)(316002)(4744005)(83380400001)(8936002)(54906003)(66476007)(33656002)(86362001)(2906002)(4326008)(26005)(478600001)(5660300002)(71200400001)(6506007)(966005)(55236004)(186003)(9686003)(55016002)(7416002)(38100700001)(107886003)(7696005)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?qiLiBEpycyaYgVaWA2ibPJXaVJi/dO3XK09RWXEW9Rlx1deKrXDucSW1xLTi?=
+ =?us-ascii?Q?cHOgvjmU/9Ww7F50Jw1wMbFRjsSmxertbIZsvVBQ7G50dr0FkBEwM7AZDRjy?=
+ =?us-ascii?Q?rjWZzjDtLFIsqiNNK0cGML+xBSdcJ4/XjihR5dRocxIsk8ISDrIA/ffBb7w7?=
+ =?us-ascii?Q?4XU5WXm9t8ElgwpAEx6z89z3sJyapkvgqjHtjtnMJspd0rGrwVLqM0l3RGNo?=
+ =?us-ascii?Q?WPjXjuxh/2+uDNtRbj9y0vGLLg8ZdR3dQghA/7vDOytZH0BIKxNhsmdy6ck4?=
+ =?us-ascii?Q?sP/qpEHFUGXsUBnk5HNIMxZU8T2pXXZdpyyiehVJujz4+fX6K4/iOtv1aO7i?=
+ =?us-ascii?Q?3+pIcC5jhAZ8ncCFGN2SwwPTFI0un4KIsmg/GjgWXAD/YsKaasJ/dlMiM8O1?=
+ =?us-ascii?Q?z4UdvEOP3XODmQJ7JnKXLpMVZEnhDHJ2BRSqK493u3POvRydm3+mjiyJAUaq?=
+ =?us-ascii?Q?Cyf2vJly6R1r1G2hLLFV+z1hDniAEBRXennlkEkifDItLpagNIQVjWGz0f7m?=
+ =?us-ascii?Q?02+NBn+rvGis5KW3bkFurB2aUt8vtmwEZa4I/N/8A7a/CfmFzjQ1WHH7OX/H?=
+ =?us-ascii?Q?SAZcWqlqJdWdZHI5GftGEg6cJJ4EK26hSCoh1KZCfD29NM4Gjej0tN0SvO1Z?=
+ =?us-ascii?Q?2eKnjlkjc6ulIuBNVPXqa0NAp0ESeyfkmWN5U/sdZgP5KCGup99mxfv2LaJO?=
+ =?us-ascii?Q?pPVMcf08fIqjLq58D24Xa8geO5skeIQuEvs3giX9cS7l3jzhdS/fFbcza1MP?=
+ =?us-ascii?Q?RlPIvzLdGDhm6bwIOuabBJ6hRcdh82c7mMt+u7ypvhY1SUOngqbC+5QFQL7l?=
+ =?us-ascii?Q?ii84tzUvJZ2TOrnu+oKwmSAPy364tLn+F/2RpbkTPPvuiUksVNtftNhfXMFG?=
+ =?us-ascii?Q?UYQ/gGp6n8jsvAWexp1O9p4EuRGDSYD6RxueYnORSDYzyVQUBX1cc5vxZAtS?=
+ =?us-ascii?Q?kbtfrKhhiQBywzMC9IddGb1xkwryCroi5qeFQ+chDxOOE69gGFxCCA8cKrNV?=
+ =?us-ascii?Q?8ceVwsiP+2O4l+ck+4EjlDSkfK9a8lenQorqU0xHISvTYnFjLvf7+VNILk3p?=
+ =?us-ascii?Q?Uu0V+wdaMnFz2V5ay6jff6PSCIGBwvaIn8okjn5c6kr/Z5J8Xu0GcWFFBxP2?=
+ =?us-ascii?Q?a4itm1EbwGJOUkQTtaVKveIax8xomN28FcYWvebEqioY6W4lhuPPbWe8RmJS?=
+ =?us-ascii?Q?tsKQwC0g8fgLH04QOZbFbvKEcvAxk7HG++xuQp/mcJ7/wNl0CVNIFJL61FQF?=
+ =?us-ascii?Q?qTkMHqCg9bulliRILHEeA6oG6tOggZScEaQ2oqN4xrFgEER76BtTYaNO6AMm?=
+ =?us-ascii?Q?169Ld5EBX2H0QC/8WjGqEFY0?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bbb6c46b-cd81-4820-d744-08d8ed2f7455
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1905:
-X-Microsoft-Antispam-PRVS: <BN6PR12MB190507223FDAB469403DA817DC659@BN6PR12MB1905.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WLlZjWDcX6sf/mBCzey0L+hzi0ReTU28vLb4q53hAPy8Y0aUZZvALJ9r3OPPHfQnMW5U8eLMtJcPwfJA1japxkewWHErSkiQUe3Vg2twDVo8XuYDeB7WFGCqlLOlPRVHogNXAdGQu/bU/SIB99vE7yK1omQuuQdFk4nvvJ3w3kWvzCXiRG+sLXdZa6DIVEq4VsMmrE9YXf3AFvFXtLSyXJm2KfiKCQ234d7Ihar/x369x1y0D9EO5vVIVSUAUON413MIfQ4OSxpZxi79NWnuE5Hdp/KZ6w3F2HGydxdjNloB4lk6U4mbw0RcOmPguz7x4agQ5UO1V8fcYBcy2Ni2AslT8axoaqFEvtgUHxYustgdXk83VqBFylkHjPKt+Eaa1LUbc7+41lc8xle0ATqDVgLxRYcQjuP+7blQF/6w8L9W3eXA8ZLSOJ1RNhpEmHiPzyiJb3RpjYwV+7XbFBmBA668676Q7tAQOtcxGRqKLSUCPVKQUWe2ELKjIexnxYkjm6JAFI02I50dvHsypDfdVkdmRwWNwOf1aWWduC38/GaJJeuReHk0gpYs2xK2CeIhgNV3izX3ZluKOCAxV5hCWtROeBXk/DBBJRqkWTQ3lt1rjeIq3a+Y7A08oxkUy0dQXq5Zc7ROchlx+VflUYD4+3W2cpCeyCLTbNsUxD6Vszk=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(46966006)(36840700001)(82740400003)(110136005)(54906003)(1076003)(2616005)(2906002)(478600001)(107886003)(36860700001)(36906005)(83380400001)(5660300002)(316002)(356005)(7636003)(8676002)(4326008)(70586007)(47076005)(82310400003)(86362001)(186003)(36756003)(426003)(26005)(6666004)(7696005)(336012)(70206006)(8936002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2021 12:38:54.2334
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB2870.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48f609f1-73a0-4c91-6b57-08d8ed2f9a9c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2021 12:39:58.4994
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bbb6c46b-cd81-4820-d744-08d8ed2f7455
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1905
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2akSXwn3qN/t4gNzt+xW4DyHlh9zX00OzRoaOTfSPwJSTX8A/In/paMmcPGwWjc0Zu5PYD7E1RBrw7BygBNhiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5149
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After lockdep gets triggered for the first time, it gets disabled, and
-lockdep_enabled() will return false. It will affect lockdep_is_held(),
-which will start returning true all the time. Normally, it just disables
-checks that expect a lock to be held. However, the bonding code checks
-that a lock is NOT held, which triggers a false positive in WARN_ON.
+On Fri, Mar 19, 2021 at 04:56PM +0800, Russell King - ARM Linux admin wrote=
+:
+> On Fri, Mar 19, 2021 at 08:40:45AM +0100, Heiner Kallweit wrote:
+>> Is there a specific reason why c22 is probed first? Reversing the order
+>> would solve the issue we speak about here.
+>> c45-probing of c22-only PHY's shouldn't return false positives
+>> (at least at a first glance).
+>=20
+> That would likely cause problems for the I2f MDIO driver, since a
+> C45 read is indistinguishable from a C22 write on the I2C bus.
+>=20
 
-This commit addresses the issue by replacing lockdep_is_held with
-spin_is_locked, which should have the same effect, but without suffering
-from disabling lockdep.
+Hi Russell,
 
-Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
-While this patch works around the issue, I would like to discuss better
-options. Another straightforward approach is to extend lockdep API with
-lockdep_is_not_held(), which will be basically !lockdep_is_held() when
-lockdep is enabled, but will return true when !lockdep_enabled().
+STMMAC is capable of supporting external PHYs that accessible using=20
+C22 or C45.=20
 
-However, there is no reliable way to check that some lock is not held
-without taking it ourselves (because the lock may be taken by another
-thread after the check). Could someone explain why this code tries to
-make this check? Maybe we could figure out some better way to achieve
-the original goal.
+Accordng to patch [1] send earlier, it should solve the problem.
 
- drivers/net/bonding/bond_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+As for any other drivers, if it is not using MDIOBUS_C45_C22,=20
+It should still work as it is by using MDIOBUS_C22.
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 74cbbb22470b..b2fe4e93cb8e 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4391,9 +4391,7 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
- 	int agg_id = 0;
- 	int ret = 0;
- 
--#ifdef CONFIG_LOCKDEP
--	WARN_ON(lockdep_is_held(&bond->mode_lock));
--#endif
-+	WARN_ON(spin_is_locked(&bond->mode_lock));
- 
- 	usable_slaves = kzalloc(struct_size(usable_slaves, arr,
- 					    bond->slave_cnt), GFP_KERNEL);
--- 
-2.25.1
+[1] https://lkml.org/lkml/2020/11/9/443
 
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
