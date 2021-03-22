@@ -2,112 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E4953450BB
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:28:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 426B83450C9
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:30:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbhCVU1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42060 "EHLO
+        id S231847AbhCVUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhCVU1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:27:20 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E216C061574;
-        Mon, 22 Mar 2021 13:27:19 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id z15so14483821oic.8;
-        Mon, 22 Mar 2021 13:27:19 -0700 (PDT)
+        with ESMTP id S231506AbhCVUaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:30:03 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36B7DC061574;
+        Mon, 22 Mar 2021 13:30:03 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id j3so20927381edp.11;
+        Mon, 22 Mar 2021 13:30:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=8EdwlC6mjQMaPh/szmT93V5gJUSuLrIXnwc5sVFVX2c=;
-        b=cZn/TvmaDITh0NMd2xAfoLOOj9lF76COeqeLSVCRlOsmlijzvxwrPY6I2xUjNQRfhg
-         jqDYt/TvG+RB77Z6YV3cj7LnCAlV8m26r69jUor/FXVvXVl+s9zHo7rNPci4wrg7bzQU
-         0bte99M+b+tDWfuif6181aUxZytGrEQm3rokTqSusiib8WvROJxVkU01DjPaTTilmMOQ
-         NDXaQXo3NeDCGa4PnZ8qN3dISUPLHVrjvSF35YMES7P2M83Gx98GzLa++xmsS4ibqJ18
-         KHTWSV1neD6DYIU1AD0mW/NpKlrb0wGM2j1/csMPWK9NWkGX36BLsPtOG+U81wV8evvX
-         mtJw==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7QH2qH8OXw7astC9J+hBZNIvd5jFa6HOZzbSlRf+8Ek=;
+        b=T8MfESZQxe3NObZ/7MqvvJi28NxxdFf3ab07gERPhzLT804c2DkkhJkBMdizuiX7N5
+         CHF46uFWWZ0cEHLJOYnXTiyTVv5tLvjO1lmS5Ohg2XPP88nZmWW9F5ARG6cD601rZ5/K
+         zoiBTqPm5H0nLHbAPcra7yZ3RbLdPm8oZKbWma9nQPHRlRk5CMs6B2AjWWGtpKPrvkGd
+         rL5fFWVmWmq+K/IWUKd2YrrT8XNdUQvFpqJ+tfEUQNjkhvUoBFoAG9jEiozLdABWs7F1
+         P6ZC1gmMny9VZsWnwgXXF/Dsydybb92YeAKNqz04oOvYAWJ3XKyrs6O1pidMSVkxvnmE
+         iM1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8EdwlC6mjQMaPh/szmT93V5gJUSuLrIXnwc5sVFVX2c=;
-        b=L6y5RiX67AyjIccrffSXHcqTeXYqtgJxIXgRs98bseiQ/DH8y3/+OPtK5ndfX5woOK
-         q1qoinMvA9sCQx5ugclHmedXo8tQHXzC1ybstxDU3ascM3WrI9Kqlt08yURv7zw3399Z
-         tXnTbsHbDgelQj8hvzIrbE0f8IBGyO3mo9J98ZkUCgSjHi4wM2gf/+UppnN0LGXNv71c
-         DaIv2gX32gRTeKCsnRwH8cyuy9DlB2x2wIpOK6RyOMZyqfcLn50lkxzCHaH347T+pZoD
-         qzTHgDwJcjsLw51ix8qyA89EKN+b5U6tN/RhtdKVY4YEVIOjC173+4jLMT8DyPOyA4N4
-         rv7A==
-X-Gm-Message-State: AOAM530NNxsersXqKWIatUdNWsXkaW2j6a1oO5+gfsr2TxAGONClOAZm
-        YZ1giFL7brTzrcVFSLLVqNKbxLEYJH5m
-X-Google-Smtp-Source: ABdhPJzsMGenVsSc28CsH9Rxxaz/tDxVMOUqbp2XOQfj8nMnhZeHw6gldvTAgGU96TmI/ofhhre/MQ==
-X-Received: by 2002:aca:ef84:: with SMTP id n126mr612731oih.84.1616444838977;
-        Mon, 22 Mar 2021 13:27:18 -0700 (PDT)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id x3sm3462766oif.22.2021.03.22.13.27.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Mar 2021 13:27:18 -0700 (PDT)
-From:   George McCollister <george.mccollister@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net] net: dsa: don't assign an error value to tag_ops
-Date:   Mon, 22 Mar 2021 15:26:50 -0500
-Message-Id: <20210322202650.45776-1-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=7QH2qH8OXw7astC9J+hBZNIvd5jFa6HOZzbSlRf+8Ek=;
+        b=leNPY43U+GP3bVKZwkB+lJg2KyM9KE3J2BFaL8GyBbtK5FxkdvSf+O+fr0RWMe3JBd
+         J7pP+6GAbA+ttwYqzvfe5+RYYtWD1pM01ZARcqk0btY2WCJiNCPFuC0laaXjjVFH09Py
+         ubBTXmpqEEOMZ8KePXTQTSV3vAyBWlsigmNBoEOHhkFE2B8OFPKIE4dl6iUCSj8A8foG
+         G1eG3/aJkkn+TJlbpoZssdMKGsnjJcJTlO9zI2eELfmnhvJdvsKnaXzdbDm3d630n6/T
+         WldJsHY4wqV54f6O95BiFajQOa6pNIMMhqwGcg2vfF+wP8w/6cJxlS00s9lFIe/Eigpc
+         0hQQ==
+X-Gm-Message-State: AOAM532Pysb8L0q7VJmQYDTpgC9fAhOi7Ab3X/7FI4p5/vspOoI7oA7t
+        8M2UPdz24vWHYaXoLgOFcP4=
+X-Google-Smtp-Source: ABdhPJwU1mWLXQUCBk/cr2I4/KV5sNA0QBX6NdJBSPel6aICLgwoK3n4c4u3DzEAz75RN+WAzRwu0Q==
+X-Received: by 2002:aa7:c447:: with SMTP id n7mr1365222edr.171.1616445001869;
+        Mon, 22 Mar 2021 13:30:01 -0700 (PDT)
+Received: from gmail.com (54033286.catv.pool.telekom.hu. [84.3.50.134])
+        by smtp.gmail.com with ESMTPSA id x1sm10321496eji.8.2021.03.22.13.30.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 13:30:01 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Mon, 22 Mar 2021 21:29:58 +0100
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Martin Sebor <msebor@gcc.gnu.org>,
+        Ning Sun <ning.sun@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Simon Kelley <simon@thekelleys.org.uk>,
+        James Smart <james.smart@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
+        Serge Hallyn <serge@hallyn.com>,
+        Imre Deak <imre.deak@intel.com>,
+        linux-arm-kernel@lists.infradead.org,
+        tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 02/11] x86: tboot: avoid Wstringop-overread-warning
+Message-ID: <20210322202958.GA1955909@gmail.com>
+References: <20210322160253.4032422-1-arnd@kernel.org>
+ <20210322160253.4032422-3-arnd@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210322160253.4032422-3-arnd@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use a temporary variable to hold the return value from
-dsa_tag_driver_get() instead of assigning it to dst->tag_ops. Leaving
-an error value in dst->tag_ops can result in deferencing an invalid
-pointer when a deferred switch configuration happens later.
 
-Fixes: 357f203bb3b5 ("net: dsa: keep a copy of the tagging protocol in the DSA switch tree")
+* Arnd Bergmann <arnd@kernel.org> wrote:
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
----
- net/dsa/dsa2.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> gcc-11 warns about using string operations on pointers that are
+> defined at compile time as offsets from a NULL pointer. Unfortunately
+> that also happens on the result of fix_to_virt(), which is a
+> compile-time constant for a constantn input:
+> 
+> arch/x86/kernel/tboot.c: In function 'tboot_probe':
+> arch/x86/kernel/tboot.c:70:13: error: '__builtin_memcmp_eq' specified bound 16 exceeds source size 0 [-Werror=stringop-overread]
+>    70 |         if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
+>       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> I hope this can get addressed in gcc-11 before the release.
+> 
+> As a workaround, split up the tboot_probe() function in two halves
+> to separate the pointer generation from the usage. This is a bit
+> ugly, and hopefully gcc understands that the code is actually correct
+> before it learns to peek into the noinline function.
+> 
+> Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/x86/kernel/tboot.c | 44 ++++++++++++++++++++++++-----------------
+>  1 file changed, 26 insertions(+), 18 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+> index 4c09ba110204..f9af561c3cd4 100644
+> --- a/arch/x86/kernel/tboot.c
+> +++ b/arch/x86/kernel/tboot.c
+> @@ -49,6 +49,30 @@ bool tboot_enabled(void)
+>  	return tboot != NULL;
+>  }
+>  
+> +/* noinline to prevent gcc from warning about dereferencing constant fixaddr */
+> +static noinline __init bool check_tboot_version(void)
+> +{
+> +	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
+> +		pr_warn("tboot at 0x%llx is invalid\n", boot_params.tboot_addr);
+> +		return false;
+> +	}
+> +
+> +	if (tboot->version < 5) {
+> +		pr_warn("tboot version is invalid: %u\n", tboot->version);
+> +		return false;
+> +	}
+> +
+> +	pr_info("found shared page at phys addr 0x%llx:\n",
+> +		boot_params.tboot_addr);
+> +	pr_debug("version: %d\n", tboot->version);
+> +	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
+> +	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
+> +	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
+> +	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
+> +
+> +	return true;
+> +}
+> +
+>  void __init tboot_probe(void)
+>  {
+>  	/* Look for valid page-aligned address for shared page. */
+> @@ -66,25 +90,9 @@ void __init tboot_probe(void)
+>  
+>  	/* Map and check for tboot UUID. */
+>  	set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
+> -	tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
+> -	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
+> -		pr_warn("tboot at 0x%llx is invalid\n", boot_params.tboot_addr);
+> +	tboot = (void *)fix_to_virt(FIX_TBOOT_BASE);
+> +	if (!check_tboot_version())
+>  		tboot = NULL;
+> -		return;
+> -	}
+> -	if (tboot->version < 5) {
+> -		pr_warn("tboot version is invalid: %u\n", tboot->version);
+> -		tboot = NULL;
+> -		return;
+> -	}
+> -
+> -	pr_info("found shared page at phys addr 0x%llx:\n",
+> -		boot_params.tboot_addr);
+> -	pr_debug("version: %d\n", tboot->version);
+> -	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
+> -	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
+> -	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
+> -	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index eb709d988c54..8f9e35e1aa89 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1068,6 +1068,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
- {
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_switch_tree *dst = ds->dst;
-+	const struct dsa_device_ops *tag_ops;
- 	enum dsa_tag_protocol tag_protocol;
- 
- 	tag_protocol = dsa_get_tag_protocol(dp, master);
-@@ -1082,14 +1083,16 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
- 		 * nothing to do here.
- 		 */
- 	} else {
--		dst->tag_ops = dsa_tag_driver_get(tag_protocol);
--		if (IS_ERR(dst->tag_ops)) {
--			if (PTR_ERR(dst->tag_ops) == -ENOPROTOOPT)
-+		tag_ops = dsa_tag_driver_get(tag_protocol);
-+		if (IS_ERR(tag_ops)) {
-+			if (PTR_ERR(tag_ops) == -ENOPROTOOPT)
- 				return -EPROBE_DEFER;
- 			dev_warn(ds->dev, "No tagger for this switch\n");
- 			dp->master = NULL;
--			return PTR_ERR(dst->tag_ops);
-+			return PTR_ERR(tag_ops);
- 		}
-+
-+		dst->tag_ops = tag_ops;
- 	}
- 
- 	dp->master = master;
--- 
-2.11.0
+This is indeed rather ugly - and the other patch that removes a debug 
+check seems counterproductive as well.
 
+Do we know how many genuine bugs -Wstringop-overread-warning has 
+caught or is about to catch?
+
+I.e. the real workaround might be to turn off the -Wstringop-overread-warning,
+until GCC-11 gets fixed?
+
+Thanks,
+
+	Ingo
