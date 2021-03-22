@@ -2,87 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B73343AC9
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 08:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6CC343B2D
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 09:04:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbhCVHjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 03:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45228 "EHLO
+        id S229829AbhCVIEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 04:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbhCVHjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 03:39:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9B1C061756
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 00:39:41 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mtr@pengutronix.de>)
-        id 1lOFA1-0002rH-Oz; Mon, 22 Mar 2021 08:39:37 +0100
-Received: from mtr by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mtr@pengutronix.de>)
-        id 1lOFA0-0007nU-To; Mon, 22 Mar 2021 08:39:36 +0100
-Date:   Mon, 22 Mar 2021 08:39:36 +0100
-From:   Michael Tretter <m.tretter@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, robh+dt@kernel.org, hkallweit1@gmail.com
-Subject: Re: [PATCH 0/2] net: phy: dp83867: Configure LED modes via device
- tree
-Message-ID: <20210322073936.GA31778@pengutronix.de>
-References: <20210319155710.2793637-1-m.tretter@pengutronix.de>
- <YFUVcLCzONhPmeh8@lunn.ch>
+        with ESMTP id S229547AbhCVIEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 04:04:10 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E24C061574;
+        Mon, 22 Mar 2021 01:04:10 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id v26so12947685iox.11;
+        Mon, 22 Mar 2021 01:04:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NQCjdvCCiui7NyjVPyRHtMOqJO2l/XC/v3WkLyGdTXs=;
+        b=Uq/OBklgV6KsgFXzbeyaRuJUapPvtKTysUFRcCWJfwnQUlE1UDpce59Owq2xmCVq3n
+         C1wfKuf9Ekgl73sGCJOClyGBuNC1qFu3WC1F6XaQCt1Fq/Fiy2NlGpandRD5TdG6riiu
+         qmh4wOzrQ8iGKgpNq45ywuxV1UsM5mL5qm7zapfXE19/Ba4cOlJks8otYTP/uNpi4U3e
+         070vXWykdlPihP1P5RWGFJd//yLrto7Pu/2e1vtiDGYM3AMBTYAE7wxtMWqgc3TvzffO
+         EM1eV/M9mx8XveD0S5BS1W5Fl+Y1cI3ukzMX4QB4q/uhg9DCOxfAlA5J4ANFApt7utFB
+         +98Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NQCjdvCCiui7NyjVPyRHtMOqJO2l/XC/v3WkLyGdTXs=;
+        b=uTB5mceYOuvEpdk3EATAtf4itg5pzCvY4miNRPZNbXhhDFyDB7a+e9hkTj/Va8d3dE
+         yBhBSBxmwUUgy3oaeY9dmwE23St2cUbBRtLChKXvNA9PTwSiZp2SQH96gkTIMljdPDMn
+         Cvtc7/byJXeDrqlke0X3y0gOP/7FALXav/Q2Z9dS7mVeTTlqIF7fp7lDuqbcyCA3lWcN
+         Ay1n18ArLBLA6wL0MBsM1mW1klolOJEolE46NbVQbddhokCR9h9+y5YWAZb9tlTLjoJ9
+         DJOWGQeA/NlchsNbU3cnlEafU/OUZG+8+TL6FYc5bzoKU05ngRTE/WHQGSkfPo8xhBGR
+         toIg==
+X-Gm-Message-State: AOAM5323LMJUbvHYx9gCxDP4nnuv6SA7MitzdYCTNkT1HJs6SOq7uvYM
+        T9/XoosDJ3hSockyOBIQ94JMi3M1xh26VY/2354gRLCd
+X-Google-Smtp-Source: ABdhPJwdqhT0oEb6tE/dej3q9+JpzvaDLk1Lxf4HQ/V4S8rkNVvaT6uKCMGjCO5kDCBKzvQld8WYIz1HewAlaPK1TRI=
+X-Received: by 2002:a02:a889:: with SMTP id l9mr10105193jam.1.1616400250019;
+ Mon, 22 Mar 2021 01:04:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YFUVcLCzONhPmeh8@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:13:54 up 32 days, 10:37, 79 users,  load average: 0.75, 0.72,
- 0.58
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mtr@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210318231829.3892920-1-olteanv@gmail.com> <20210318231829.3892920-15-olteanv@gmail.com>
+ <20210319084025.GA2152639@haswell-ubuntu20> <20210319090642.bzmtlzc5im6xtbkh@skbuf>
+ <CALW65janF_yztk7hH5n8wZFpWXxbCwQu3m4W=B-n2mcNG+W=Mw@mail.gmail.com> <20210319104924.gcdobjxmqcf6s4wq@skbuf>
+In-Reply-To: <20210319104924.gcdobjxmqcf6s4wq@skbuf>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Mon, 22 Mar 2021 16:04:01 +0800
+Message-ID: <CALW65jYc6DFoUiF55Q3KrhamPf75tFRSAkSA6ONrF3KMf9z+7g@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 net-next 14/16] net: dsa: don't set
+ skb->offload_fwd_mark when not offloading the bridge
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Mar 2021 22:19:44 +0100, Andrew Lunn wrote:
-> On Fri, Mar 19, 2021 at 04:57:08PM +0100, Michael Tretter wrote:
-> > The dp83867 has 4 LED pins, which can be multiplexed with different functions
-> > of the phy.
-> > 
-> > This series adds a device tree binding to describe the multiplexing of the
-> > functions to the LEDs and implements the binding for the dp83867 phy.
-> > 
-> > I found existing bindings for configuring the LED modes for other phys:
-> > 
-> > In Documentation/devicetree/bindings/net/micrel.txt, the binding is not
-> > flexible enough for the use case in the dp83867, because there is a value for
-> > each LED configuration, which would be a lot of values for the dp83867.
-> > 
-> > In Documentation/devicetree/bindings/net/mscc-phy-vsc8532.txt, there is a
-> > separate property for each LED, which would work, but I found rather
-> > unintuitive compared to how clock bindings etc. work.
-> > 
-> > The new binding defines two properties: one for the led names and another
-> > property for the modes of the LEDs with defined values in the same order.
-> > Currently, the binding is specific to the dp83867, but I guess that the
-> > binding could be made more generic and used for other phys, too.
-> 
-> There is some work going on to manage PHY LEDs just like other LEDs in
-> Linux, using /sys/class/leds.
-> 
-> Please try to help out with that work, rather than adding yet another
-> DT binding.
+On Fri, Mar 19, 2021 at 6:49 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> Why would you even want to look at the source net device for forwarding?
+> I'd say that if dp->bridge_dev is NULL in the xmit function, you certainly
+> want to bypass address learning if you can. Maybe also for link-local traffic.
 
-Oh, thanks. That's even better.
-
-For reference: https://lore.kernel.org/netdev/20190813191147.19936-1-mka@chromium.org/
-
-Michael
+Also for trapped traffic (snooping, tc-flower trap action) if the CPU
+sends them back.
