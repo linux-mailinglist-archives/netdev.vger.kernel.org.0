@@ -2,111 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB5A343C01
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 09:45:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0619A343C2F
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 09:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbhCVIoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 04:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229467AbhCVIo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 04:44:26 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB5AC061574;
-        Mon, 22 Mar 2021 01:44:25 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id e7so18201636edu.10;
-        Mon, 22 Mar 2021 01:44:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1rnkMpGsCf/4BnBYAYXXRx86itQPydiaEV5BqDF9/qw=;
-        b=PSp+DW8HY4S5LbW9uyOCmE/4pZe+0jMXvcLhKhdY5ccVq9Bjkhr1tm+fEbhH+iFiPm
-         PpRvcUKmNAPztWu1lkTxTNT9einv/4U3b9wmVA5/lPvaRQVeKrUsm2DdvQZIDW1qgdax
-         ZgCNQzHhoS55dWOIb+lqnq4cVzcGZrlRgjxzFhY6mWlp6UVcBiWFTDaNVR9Td2/vm3KU
-         hnpWewO9lx2c9Uj+LvB8qJa7KzxAAXOs4tFO83cACUykDW0mcFM23T1aTeJQnzarSg24
-         VgAJpVN/rilBtJjVcJGiVAMzytegbyBRIjUTTCl4X5pt2E1aqIOhY+VQPQiJ83E8Owf3
-         I8AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1rnkMpGsCf/4BnBYAYXXRx86itQPydiaEV5BqDF9/qw=;
-        b=HZC+O7z7pcVuQbjGVrqbwzBwR9aR37eynb7oS58kCFzn4VbiQ6qn6GP+SgQGE+Ml5s
-         o2XEbJkEnmAjjZXSPxmnRt/1OBjKFcX4sDJt0b/BgIn49TXy9BE2a4pDUeWn9zS9b0+a
-         DZmOQ5HxbMDIngsEb5BnlmaQokVmE7h0r7iElT09Dcb5PiD99p8Y6BVZKvZWuogBnR/j
-         FAX3FApDYEWX19959Zlc2AZDt1JzXIzgERbjIhH7Iu1BpSO7tWvq+51cJITlGlxnwHTu
-         LrPoeIHFwRrvnhAOKohjS5Cchrzv24pxK4F6npd+5R2slRwq1BRiQCPopmoe2bpurCY8
-         B+lA==
-X-Gm-Message-State: AOAM533N00YNQl/42UUq9R/BFmyAbCfFXp5XXswmXylTeP4uGXrOsOoX
-        Rp0RVNRocsz1w1+xU0r3kYE=
-X-Google-Smtp-Source: ABdhPJz41xCpO0VkuEmg6Jb1VNkaQeMfiyhoRJqY33tLy16EFE29vissNcZ5Ec4C8iIUDArvay0YaQ==
-X-Received: by 2002:a05:6402:105a:: with SMTP id e26mr24256372edu.164.1616402664114;
-        Mon, 22 Mar 2021 01:44:24 -0700 (PDT)
-Received: from BV030612LT ([188.24.140.160])
-        by smtp.gmail.com with ESMTPSA id hd8sm9111614ejc.92.2021.03.22.01.44.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 01:44:23 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 10:44:20 +0200
-From:   Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] net: ethernet: actions: Add Actions Semi Owl
- Ethernet MAC driver
-Message-ID: <20210322084420.GA1503756@BV030612LT>
-References: <cover.1616368101.git.cristian.ciocaltea@gmail.com>
- <ab25bd143589d3c1894cdb3189670efa62ed1440.1616368101.git.cristian.ciocaltea@gmail.com>
- <17876c6e-4688-59e6-216f-445f91a8b884@gmail.com>
+        id S229846AbhCVI60 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 22 Mar 2021 04:58:26 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:54865 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229955AbhCVI6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 04:58:19 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-245-4lZc9m03OW2Pu2atP1wGzw-1; Mon, 22 Mar 2021 08:58:12 +0000
+X-MC-Unique: 4lZc9m03OW2Pu2atP1wGzw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Mon, 22 Mar 2021 08:58:11 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.012; Mon, 22 Mar 2021 08:58:11 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Herbert Xu' <herbert@gondor.apana.org.au>,
+        "menglong8.dong@gmail.com" <menglong8.dong@gmail.com>
+CC:     "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@roeck-us.net" <linux@roeck-us.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dong.menglong@zte.com.cn" <dong.menglong@zte.com.cn>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next 2/2] net: socket: change MSG_CMSG_COMPAT to
+ BIT(21)
+Thread-Topic: [PATCH net-next 2/2] net: socket: change MSG_CMSG_COMPAT to
+ BIT(21)
+Thread-Index: AQHXHlCgGHDgaZN5KE6t5P14se4atKqPtAlQ
+Date:   Mon, 22 Mar 2021 08:58:11 +0000
+Message-ID: <ab55a91d390c485187326c8fa3a84841@AcuMS.aculab.com>
+References: <20210321123929.142838-1-dong.menglong@zte.com.cn>
+ <20210321123929.142838-3-dong.menglong@zte.com.cn>
+ <20210321124906.GA14333@gondor.apana.org.au>
+In-Reply-To: <20210321124906.GA14333@gondor.apana.org.au>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <17876c6e-4688-59e6-216f-445f91a8b884@gmail.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
-
-On Sun, Mar 21, 2021 at 08:30:07PM -0700, Florian Fainelli wrote:
-> Hi Christian,
+From: Herbert Xu
+> Sent: 21 March 2021 12:49
 > 
-> On 3/21/2021 4:29 PM, Cristian Ciocaltea wrote:
-> > Add new driver for the Ethernet MAC used on the Actions Semi Owl
-> > family of SoCs.
-> > 
-> > Currently this has been tested only on the Actions Semi S500 SoC
-> > variant.
-> > 
-> > Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
+> On Sun, Mar 21, 2021 at 08:39:29PM +0800, menglong8.dong@gmail.com wrote:
+> >
+> > diff --git a/include/linux/socket.h b/include/linux/socket.h
+> > index d5ebfe30d96b..317b2933f499 100644
+> > --- a/include/linux/socket.h
+> > +++ b/include/linux/socket.h
+> > @@ -312,17 +312,18 @@ struct ucred {
+> >  					 * plain text and require encryption
+> >  					 */
+> >
+> > +#if defined(CONFIG_COMPAT)
+> > +#define MSG_CMSG_COMPAT		BIT(21)	/* This message needs 32 bit fixups */
+> > +#else
+> > +#define MSG_CMSG_COMPAT		0	/* We never have 32 bit fixups */
+> > +#endif
+> > +
+> >  #define MSG_ZEROCOPY		BIT(26)	/* Use user data in kernel path */
+> >  #define MSG_FASTOPEN		BIT(29)	/* Send data in TCP SYN */
+> >  #define MSG_CMSG_CLOEXEC	BIT(30)	/* Set close_on_exec for file
+> >  					 * descriptor received through
+> >  					 * SCM_RIGHTS
+> >  					 */
+> > -#if defined(CONFIG_COMPAT)
+> > -#define MSG_CMSG_COMPAT		BIT(31)	/* This message needs 32 bit fixups */
+> > -#else
+> > -#define MSG_CMSG_COMPAT		0	/* We never have 32 bit fixups */
+> > -#endif
 > 
-> [snip]
-> 
-> Do you know the story behind this Ethernet controller? 
+> Shouldn't you add some comment here to stop people from trying to
+> use BIT(31) in the future?
 
-I just happened to get a board based on the S500 SoC, so I took this
-opportunity to help improving the mainline kernel support, but other
-than that I do not really know much about the hardware history.
+You'd also be better using BIT(30) - ie the other end of the
+free space from the user-visible bits.
 
-> The various
-> receive/transmit descriptor definitions are 99% those defined in
-> drivers/net/ethernet/stmmicro/stmmac/descs.h for the normal descriptor.
+It has to be said that the entire impossibility of writing BIT(n)
+safely almost makes it worse that just defining appropriate constants.
 
-That's an interesting observation. I could only assume the vendor did
-not want to reinvent the wheel here, but I cannot say if this is a
-common design scheme or is something specific to STMicroelectronics
-only.
+Personally I like the hex constants.
+The make it much easier to work out which bits are set in a diagnostic
+print (or memory hexdump).
 
-> The register layout of the MAC looks completely different from a
-> dwmac100 or dwmac1000 however.
+The only time I've really found BIT() type macros useful is when
+defining values that have to match hardware specs that define bit
+numbers backwards starting from 1.
 
-Most probably this is Actions specific.. 
+	David
 
-> -- 
-> Florian
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
