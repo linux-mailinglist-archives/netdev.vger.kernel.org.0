@@ -2,138 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE46345066
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:01:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D630E34509B
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231955AbhCVUA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhCVUAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 16:00:37 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562BFC061574;
-        Mon, 22 Mar 2021 13:00:37 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id l18so12680495edc.9;
-        Mon, 22 Mar 2021 13:00:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kJgeZ3KJMI6EGBVI9mka8hL+bYKbeA4W1uqhZJmB1Sg=;
-        b=guOGuGv2a439sFNoLo25xREFKxJf4tWlTAGfF/Cp51m+nDzN5NxmzPV/Ju6XPo4wpe
-         2iXXbVFoZLKu9yuCu5rxcJyUEBbgU4v/KYH01eSKph+0XiEleK4o9LmpRMjsTXFo1+dU
-         dOyVWf7qhh8oMY6cRQHAYySBY1cMFAbMb+PvyCTm+FN9Ro4aeOLyb1NQ7oghLpr60VU9
-         9I3xDPqHPYcqEXRaZU4rsxXyINtonGPQV8hx9hEUIy+PAz88q/pAF7ivLjEgSF2syWIT
-         AL6qGk0n3iHg7FlXAQJTbaFVsJO85W0P0Xn0QjBiw4yW6CikXIbMSOHydQ7FltGqKFyR
-         IJcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kJgeZ3KJMI6EGBVI9mka8hL+bYKbeA4W1uqhZJmB1Sg=;
-        b=ZfTKos9SG2+1muTYFTunNGpsViiPbJFnPUXSbYnyoVvreuLdT3XmQR7W/u+LPHxAeI
-         kSuIXJByZnzLXWaAxqBnHA6Vl0DnzHyd6Lh0+QmKc0ZIJVaEtE90YKU6oKn9tuAR+RsS
-         xKXCKBD8eUUmFjEDVyU+pcZf16qQBWYTdB3wPl10/jEsU2tEOx191BAReJCJvh2w8p4T
-         KIAbQ/t25pCGhnstiGdlV+9pdffTOFBDGltHgTnclDRkfTDEDDGcxBErpEx+daW7aSgq
-         2Y7UzgWuKeTUTdzS8B3RFP3Wsrq5BxX6dnAUdF11/vpXLjFIrQA283/IIHDWRkLIOWRC
-         o45w==
-X-Gm-Message-State: AOAM532oneT/mlHLOV9qgWqssexqYJqQzcyL/3pMF21b+zXU/xcBzEIt
-        56W7RBzVhtye4QlWnnCF/QA=
-X-Google-Smtp-Source: ABdhPJy+C7VuSJCRfrFWwPe0gMdRPDewaq2T+4NZX0BYUVH6P8iaZK2n3S/VrpKsUhN0apLvfxyaqQ==
-X-Received: by 2002:a05:6402:95b:: with SMTP id h27mr1292903edz.93.1616443235936;
-        Mon, 22 Mar 2021 13:00:35 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bx24sm10335188ejc.88.2021.03.22.13.00.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 13:00:35 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 22:00:33 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andriin@fb.com, edumazet@google.com,
-        weiwan@google.com, cong.wang@bytedance.com, ap420073@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, mkl@pengutronix.de,
-        linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
-        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com,
-        a.fatoum@pengutronix.de
-Subject: Re: [RFC v3] net: sched: implement TCQ_F_CAN_BYPASS for lockless
- qdisc
-Message-ID: <20210322200033.uphemtsunfqsvjej@skbuf>
-References: <1616050402-37023-1-git-send-email-linyunsheng@huawei.com>
- <1616404156-11772-1-git-send-email-linyunsheng@huawei.com>
+        id S230205AbhCVUUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:20:06 -0400
+Received: from mga09.intel.com ([134.134.136.24]:4761 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230060AbhCVUUB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 16:20:01 -0400
+IronPort-SDR: 7mCkypICdB3/D2YlGIdcOi7ECVwXnKD3dy3HSDKwsVHzvmzDR7PGXeRQ7pxwbBajNtGtYb8Hl4
+ GTPAXZVJFh8Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="190436830"
+X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
+   d="scan'208";a="190436830"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2021 13:20:00 -0700
+IronPort-SDR: GVsMUUNyTj+ywIKD76aCAAQC5/wg7DZeE48ajz4FS9StYu/gPgGWR+zD3AYO6qJFqSRfJv9e+R
+ abNe7yyuWjdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; 
+   d="scan'208";a="414632242"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga008.jf.intel.com with ESMTP; 22 Mar 2021 13:19:57 -0700
+Date:   Mon, 22 Mar 2021 21:09:22 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        ciara.loftus@intel.com, john fastabend <john.fastabend@gmail.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH v2 bpf-next 06/17] libbpf: xsk: use bpf_link
+Message-ID: <20210322200922.GA56104@ranger.igk.intel.com>
+References: <20210311152910.56760-1-maciej.fijalkowski@intel.com>
+ <20210311152910.56760-7-maciej.fijalkowski@intel.com>
+ <CAEf4Bza-pGTS+vmE5SvuMtEptGxS5wSbW2d0K34nvt9StG3C8A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1616404156-11772-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <CAEf4Bza-pGTS+vmE5SvuMtEptGxS5wSbW2d0K34nvt9StG3C8A@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yunsheng,
+On Mon, Mar 15, 2021 at 10:34:11PM -0700, Andrii Nakryiko wrote:
+> On Thu, Mar 11, 2021 at 7:42 AM Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+> >
+> > Currently, if there are multiple xdpsock instances running on a single
+> > interface and in case one of the instances is terminated, the rest of
+> > them are left in an inoperable state due to the fact of unloaded XDP
+> > prog from interface.
+> >
+> > Consider the scenario below:
+> >
+> > // load xdp prog and xskmap and add entry to xskmap at idx 10
+> > $ sudo ./xdpsock -i ens801f0 -t -q 10
+> >
+> > // add entry to xskmap at idx 11
+> > $ sudo ./xdpsock -i ens801f0 -t -q 11
+> >
+> > terminate one of the processes and another one is unable to work due to
+> > the fact that the XDP prog was unloaded from interface.
+> >
+> > To address that, step away from setting bpf prog in favour of bpf_link.
+> > This means that refcounting of BPF resources will be done automatically
+> > by bpf_link itself.
+> >
+> > When setting up BPF resources during xsk socket creation, check whether
+> > bpf_link for a given ifindex already exists via set of calls to
+> > bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
+> > and comparing the ifindexes from bpf_link and xsk socket.
+> >
+> > If there's no bpf_link yet, create one for a given XDP prog. If bpf_link
+> > is already at a given ifindex and underlying program is not AF-XDP one,
+> > bail out or update the bpf_link's prog given the presence of
+> > XDP_FLAGS_UPDATE_IF_NOEXIST.
+> >
+> > If there's netlink-based XDP prog running on a interface, bail out and
+> > ask user to do removal by himself.
+> >
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> >  tools/lib/bpf/xsk.c | 139 ++++++++++++++++++++++++++++++++++++++------
+> >  1 file changed, 120 insertions(+), 19 deletions(-)
+> >
+> 
+> [...]
+> 
+> > +static int xsk_link_lookup(struct xsk_ctx *ctx, __u32 *prog_id)
+> > +{
+> > +       struct bpf_link_info link_info;
+> > +       __u32 link_len;
+> > +       __u32 id = 0;
+> > +       int err;
+> > +       int fd;
+> > +
+> > +       while (true) {
+> > +               err = bpf_link_get_next_id(id, &id);
+> > +               if (err) {
+> > +                       if (errno == ENOENT) {
+> > +                               err = 0;
+> > +                               break;
+> > +                       }
+> > +                       pr_warn("can't get next link: %s\n", strerror(errno));
+> > +                       break;
+> > +               }
+> > +
+> > +               fd = bpf_link_get_fd_by_id(id);
+> > +               if (fd < 0) {
+> > +                       if (errno == ENOENT)
+> > +                               continue;
+> > +                       pr_warn("can't get link by id (%u): %s\n", id, strerror(errno));
+> > +                       err = -errno;
+> > +                       break;
+> > +               }
+> > +
+> > +               link_len = sizeof(struct bpf_link_info);
+> > +               memset(&link_info, 0, link_len);
+> > +               err = bpf_obj_get_info_by_fd(fd, &link_info, &link_len);
+> > +               if (err) {
+> > +                       pr_warn("can't get link info: %s\n", strerror(errno));
+> > +                       close(fd);
+> > +                       break;
+> > +               }
+> > +               if (link_info.xdp.ifindex == ctx->ifindex) {
+> 
+> how do you know you are looking at XDP bpf_link? link_info.xdp.ifindex
+> might as well be attach_type for tracing bpf_linke, netns_ino for
+> netns bpf_link, and so on. Do check link_info.type before check other
+> per-link type properties.
 
-On Mon, Mar 22, 2021 at 05:09:16PM +0800, Yunsheng Lin wrote:
-> Currently pfifo_fast has both TCQ_F_CAN_BYPASS and TCQ_F_NOLOCK
-> flag set, but queue discipline by-pass does not work for lockless
-> qdisc because skb is always enqueued to qdisc even when the qdisc
-> is empty, see __dev_xmit_skb().
-> 
-> This patch calls sch_direct_xmit() to transmit the skb directly
-> to the driver for empty lockless qdisc too, which aviod enqueuing
-> and dequeuing operation. qdisc->empty is set to false whenever a
-> skb is enqueued, see pfifo_fast_enqueue(), and is set to true when
-> skb dequeuing return NULL, see pfifo_fast_dequeue().
-> 
-> There is a data race between enqueue/dequeue and qdisc->empty
-> setting, qdisc->empty is only used as a hint, so we need to call
-> sch_may_need_requeuing() to see if the queue is really empty and if
-> there is requeued skb, which has higher priority than the current
-> skb.
-> 
-> The performance for ip_forward test increases about 10% with this
-> patch.
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
-> Hi, Vladimir and Ahmad
-> 	Please give it a test to see if there is any out of order
-> packet for this patch, which has removed the priv->lock added in
-> RFC v2.
-> 
-> There is a data race as below:
-> 
->       CPU1                                   CPU2
-> qdisc_run_begin(q)                            .
->         .                                q->enqueue()
-> sch_may_need_requeuing()                      .
->     return true                               .
->         .                                     .
->         .                                     .
->     q->enqueue()                              .
-> 
-> When above happen, the skb enqueued by CPU1 is dequeued after the
-> skb enqueued by CPU2 because sch_may_need_requeuing() return true.
-> If there is not qdisc bypass, the CPU1 has better chance to queue
-> the skb quicker than CPU2.
-> 
-> This patch does not take care of the above data race, because I
-> view this as similar as below:
-> 
-> Even at the same time CPU1 and CPU2 write the skb to two socket
-> which both heading to the same qdisc, there is no guarantee that
-> which skb will hit the qdisc first, becuase there is a lot of
-> factor like interrupt/softirq/cache miss/scheduling afffecting
-> that.
-> 
-> So I hope the above data race will not cause problem for Vladimir
-> and Ahmad.
-> ---
+My mistake, good that you brought that up. I'll fix it.
 
-Preliminary results on my test setup look fine, but please allow me to
-run the canfdtest overnight, since as you say, races are still
-theoretically possible.
+> 
+> > +                       ctx->link_fd = fd;
+> > +                       *prog_id = link_info.prog_id;
+> > +                       break;
+> > +               }
+> > +               close(fd);
+> > +       }
+> > +
+> > +       return err;
+> > +}
+> > +
+> >  static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
+> >                                 int *xsks_map_fd)
+> >  {
+> > @@ -675,8 +777,7 @@ static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
+> >         __u32 prog_id = 0;
+> >         int err;
+> >
+> > -       err = bpf_get_link_xdp_id(ctx->ifindex, &prog_id,
+> > -                                 xsk->config.xdp_flags);
+> > +       err = xsk_link_lookup(ctx, &prog_id);
+> >         if (err)
+> >                 return err;
+> >
+> > @@ -686,9 +787,12 @@ static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
+> >                         return err;
+> >
+> >                 err = xsk_load_xdp_prog(xsk);
+> > -               if (err) {
+> > +               if (err)
+> >                         goto err_load_xdp_prog;
+> > -               }
+> > +
+> > +               err = xsk_create_bpf_link(xsk);
+> > +               if (err)
+> > +                       goto err_create_bpf_link;
+> 
+> what about the backwards compatibility with kernels that don't yet
+> support bpf_link?
+
+For that I'll be trying to create or lookup bpf_link on loopback device.
+If it failed in any way, then use netlink based logic as the underlying
+system doesn't support bpf_link.
+
+Once again, thanks for catching it!
+
+> 
+> >         } else {
+> >                 ctx->prog_fd = bpf_prog_get_fd_by_id(prog_id);
+> >                 if (ctx->prog_fd < 0)
+> 
+> [...]
