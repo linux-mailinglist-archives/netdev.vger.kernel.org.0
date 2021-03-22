@@ -2,150 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1477C344CF8
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:14:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD405344D04
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:15:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232107AbhCVRNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 13:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232119AbhCVRNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:13:34 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4370CC061574;
-        Mon, 22 Mar 2021 10:13:33 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id jy13so22524097ejc.2;
-        Mon, 22 Mar 2021 10:13:33 -0700 (PDT)
+        id S230443AbhCVRPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 13:15:22 -0400
+Received: from mail-bn7nam10on2089.outbound.protection.outlook.com ([40.107.92.89]:27591
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230334AbhCVROq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 13:14:46 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EIEbxZvXpolTN4bBFMLNK8gzO7yk31UTK2s3smkBOmsQvL2nS+T88qv5UZCQ+I36/a2sJ3Ed3K+jzX6lsD6Z2Ln6gjTkF4lM8Ml+CHTtIqVFuub+R2yygehmQRh6SrXX5vpARNx7naoVucEwl6wAgg+EAnUztOMFQHh8W9OpQZHmidQ0njpELSEgT5uvmq1vUW5L9Cx7w5ekRBgeBVLlcuRz8Qre/dJ5OpIN0KsAnRmoGMCsuxKZ0vx7PsZIkrgzyyaReWlk56Ob+YzrSKVv8K7EnKWkB9UBXSurJcKPOZXAZb/+atXwHiiMpvlVWsAigaxPNTjp8jqfCA9Lz9tIMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hst/YM/qPFiQ20GaPXW7z81quuvY+QfkKCzDv7OkUzs=;
+ b=JJWNyTiMcWX48PNfsoU6PQrRxGY3nEtqd9+agznmJtE0u7F6Qw/rQpZw2MLjyW69CpICaXfqWgW9ayWW+SvsiUae0uGICzwDmo3wg77infaGCyhI/Tm5QbJTkPJWBR1vqhiVfaCWR0QgM7Gai2UakSWgwMqFqYrLBTzamd5uMVWnI7PQpql8x9Ny3hRB6eeR0/3HroAxKHFlarnxhQDzibPjY8EiZxSMikr6Fzo1XrEfmF3/64juQrlvMx35e5+xl6eC4UDzpo10EE/jO9FoTMQ2XgpEuUydhk5em9jCMgmdMffnkf1wdfh5A4Nt4ybNBlm9Ap4ACOWbaf2P/CwHVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wwJtab4A329FXksuBKVJi/Nx6bKYmPZ1sJgf6Ui876E=;
-        b=Xgfj33jtihnlxFFXPhoZp3X/m+0n1o53VZ/2wUPkn6sM4M7oPUgTs4vQZgNYH8P31u
-         2WaclFiMGgj3haBEZnAfGQU1onj8LKsVA9e5JpOH88wyrRIoPS674wkmXPJKfow7DidK
-         NiVdIbf0nUrMNv0Bp28JHlJYx6WDuCXyZonAmwf/uKeyRuskBmlt1h9vqmQRmF2VKgkm
-         lTMSaqG8PuGbdYy0F37uRT6J+0Hjl/SbFoU4kjfU/O3LIyzablF9mSHLmh9VbNBG5uHK
-         gGpJG+ZWH+9Hamw15AmNmRZ5SApBTfqx8T6FOCeyiX0GY7gLq7S/6Wke3C9UFPmM5l8w
-         YSaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wwJtab4A329FXksuBKVJi/Nx6bKYmPZ1sJgf6Ui876E=;
-        b=Q3RIMUdFmJInEgNxxBo59ZgbXuyAjv3DERsDDSQL+wigqbNG/31Ev+v6soYHQQgM/T
-         QSctDeDAkWnGOaQO2u46YnAzD97WgFRqD3N6uJ6enMzAhVHvHCp6nj9OlfeTUvPAme97
-         PeK6PvvVM4r4+72a2nAYXoIacEYS6TOn2UBJs0B8a0xzWPrFKeJxeuBuFYNffX0Njh2F
-         8VxXHjoTRvyLK/i0V0E58yiyiRErzffiuRc8SQa4aZ7e/9MlYtTB9kFmWaWyjq/2W8uS
-         MqDq+cYdkp7j/m5UiDSvd8CsSu7Eai1JPDc3KxJYn9R62nrvQdjK5dkgQN2ECqfr+YN1
-         UBbQ==
-X-Gm-Message-State: AOAM532HyUbfCy6jYDzvML95UnlRmtddKWIt+bqr+kI7x7BUAr6srldv
-        o7iqzIuFUcvIOAVVwYw4Ctg=
-X-Google-Smtp-Source: ABdhPJw/Ina4sv9Jg5VgGTErX7Ai4K2YyGn5xnSTpnL1mRUvu4HATjhPug/vg1hI8I7XXh8yYU9BtQ==
-X-Received: by 2002:a17:906:2dc1:: with SMTP id h1mr848804eji.460.1616433210869;
-        Mon, 22 Mar 2021 10:13:30 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id sb4sm9998097ejb.71.2021.03.22.10.13.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 10:13:30 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 19:13:28 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH v2 net-next 09/16] net: dsa: replay port and local
- fdb entries when joining the bridge
-Message-ID: <20210322171328.6ctmzyullywm3qmk@skbuf>
-References: <20210318231829.3892920-1-olteanv@gmail.com>
- <20210318231829.3892920-10-olteanv@gmail.com>
- <87wntzmbva.fsf@waldekranz.com>
- <20210322161955.c3slrmbtofswrqiz@skbuf>
- <87o8fbm80o.fsf@waldekranz.com>
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hst/YM/qPFiQ20GaPXW7z81quuvY+QfkKCzDv7OkUzs=;
+ b=fDKpMPrTf9Q1SSRaGKtfp49/ZxuZTRQcm4MWP9HABSJ7ChE3lNaXIDUwooBQQtCs+Y3jInzr7X2JbIPmJlnj9il9u8zofqtsxWOhLVlWEoAhV2/gVKjIFuuHko0WsPuu7H/RGsNFXVC6INmc4da8DhaEJsA0zSq32Az8TmOVFsc=
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SA2PR11MB5114.namprd11.prod.outlook.com (2603:10b6:806:114::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Mon, 22 Mar
+ 2021 17:14:43 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::41bc:5ce:dfa0:9701]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::41bc:5ce:dfa0:9701%7]) with mapi id 15.20.3955.025; Mon, 22 Mar 2021
+ 17:14:43 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Subject: Re: [PATCH v5 08/24] wfx: add bus_sdio.c
+Date:   Mon, 22 Mar 2021 18:14:36 +0100
+Message-ID: <4503971.bAhddQ8uqO@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <CAPDyKFqJf=vUqpQg3suDCadKrFTkQWFTY_qp=+yDK=_Lu9gJGg@mail.gmail.com>
+References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com> <20210315132501.441681-9-Jerome.Pouiller@silabs.com> <CAPDyKFqJf=vUqpQg3suDCadKrFTkQWFTY_qp=+yDK=_Lu9gJGg@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Originating-IP: [2a01:e35:2435:66a0:544b:f17b:7ae8:fb7]
+X-ClientProxiedBy: BL0PR0102CA0031.prod.exchangelabs.com
+ (2603:10b6:207:18::44) To SN6PR11MB2718.namprd11.prod.outlook.com
+ (2603:10b6:805:63::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87o8fbm80o.fsf@waldekranz.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.localnet (2a01:e35:2435:66a0:544b:f17b:7ae8:fb7) by BL0PR0102CA0031.prod.exchangelabs.com (2603:10b6:207:18::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Mon, 22 Mar 2021 17:14:41 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 287acc7b-f23d-410c-5ec1-08d8ed55fc4f
+X-MS-TrafficTypeDiagnostic: SA2PR11MB5114:
+X-Microsoft-Antispam-PRVS: <SA2PR11MB51146055839C718D9A2C7BFA93659@SA2PR11MB5114.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e/wZfVm4O9B6wpMOwPoTmA9umYTAL+XQLoXOIULZ/DvPzjbdvvyv5Y/gHzE0gs1dAiiDlx6GgUxBztZLBF3DgbfckgHgsdkcAsDnEafAlqlhJjc+Ld1RsvZ7OMsauWSurFD5+0Kb0xH6CvN67soofzqO6PIMNyDffsGQt6tRjpHRXqK+79D2cakNL9uDWxzaRg9IG3A7UBhi4bFUSQgg+W/HtUNv4vogudoLbTeUW5s+1GgRV+i7jViQQEePqF0ltMV/D6pOUyUqU5hPL95eA+j+wmbsoKZsD3jBm6R32HRxlRm5dpCCFUmNmG37NRLEFQeYK/TAHGajcxXD9v9xfKWZ//UAVSfYTVlWJAb18g8L7eV5mL/BK9UdKiLJy1FSW1/3FJW8EctLRxwMOUd5VGIdNLBi7jAKuioCFkH4wSqFSLJLkP2ESnMYOcPs5pWQRcpnFwC2cZ/eoUrTrA9iNQ/EwWZ9kch3QSmlMWOkvIIExoR9GrYMK9/MayHHTy8u8cUdACyUTUI3N1Ioz98NDbMohYLmD6RL0w5XOjcYJ8GAXg5WVBgBjA/ZFToEhJhktE+QhqxshHzQoGH65GYk/5SJYuIE0BhiJszNrhCszglqOHQG8Jby0SqeYwEanK6C3NrmTXKw/mKotjPZZrVmKEN1GxZoPLSqYX8f7JVSkQhV0j872vY7uCK+oJveIkIB
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(376002)(39850400004)(396003)(346002)(6916009)(36916002)(6512007)(7416002)(478600001)(9686003)(6666004)(6486002)(5660300002)(52116002)(8676002)(4326008)(38100700001)(6506007)(2906002)(186003)(316002)(54906003)(66574015)(83380400001)(33716001)(8936002)(16526019)(66476007)(86362001)(66946007)(66556008)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?iso-8859-1?Q?dus6qcuOBIE7CvCbfOyGS2QkrLKrI1LdJSW7ohdg5WKQrOowPgFtTOJrOV?=
+ =?iso-8859-1?Q?XY+x4zh02lyBQh9/6UlIstoc28bgFw9wRbAYyFIj+5DkEggI7X4z73bGji?=
+ =?iso-8859-1?Q?NP5bFx2aPyCTfvCnb9kxPRiZB6j1eKbxio8RNXGfckbQsrkUtxLpk0YQq0?=
+ =?iso-8859-1?Q?W0XKn7u0TQt0NbM/Nvb8fNQRPUE9BsMy79clHCqfjko0nDMA6y29El5R/K?=
+ =?iso-8859-1?Q?GNnf5aetZs835fhODUkT5aFf4EgYnZFhfnxnqQbq8oxqURy7tSpu41hPoE?=
+ =?iso-8859-1?Q?e220k3DHSqiZp/IuWpNaIi4dQwKVn1OEJxtuLYWrZe7QHsb/6L/Go9OwIL?=
+ =?iso-8859-1?Q?SzgOuF6SGIZhMvRHBRtUWeQu9EWO4JronMW55wd/JiijGARrkX6O1w5Mp+?=
+ =?iso-8859-1?Q?Hy4gui1/SBWiUG9OFDKFD13QjQ4iwQAOHUIgujw7SKEn9VKv6u1ghAWsGK?=
+ =?iso-8859-1?Q?zppUo+l8EeXncTQF7uQ+mKVW5Z5T/HT0q5lu9uC5GeJXgf2ucChDloZ86B?=
+ =?iso-8859-1?Q?qKCnLL3IAP6xqhmBRwykKlSZoIxQfjR71a4XiUC6YShE9ZRMDz/QFuXDqQ?=
+ =?iso-8859-1?Q?VhsQ3epZR4BFjLOdINta2SjCylsGYKCie0jwqrQGCZbKV8GoXraXagc8BZ?=
+ =?iso-8859-1?Q?PytZ/NzyyOzQBT4ous9D9v1ME5mCpylTTy8OdL6aSyyda4gPDczaSg6k/p?=
+ =?iso-8859-1?Q?ocHDDzK/FwP600p4fcTNUmhrqgisxCRbvZ+xeM4lR30Q9tQ9oZ/JzVP8xP?=
+ =?iso-8859-1?Q?tNkOVsY+KCM+d8gMFEEdT751gBxz716XzDrak2iCsNtemcTswjDuIN1N/6?=
+ =?iso-8859-1?Q?/MFKjN9i51NxFnXj7RcMrFgdAOXekq9/etF62Fjo4I6Si2L055DEXTc4bO?=
+ =?iso-8859-1?Q?QubtgYFJtaIiLZyyzP8d8zgiax5Bg85OwbExS8YGHPm7mtPbMo150w+nBM?=
+ =?iso-8859-1?Q?NgQb63DszfBtiUUCop9e7+QoxWYQTrD46wvKs/v/6wJkhQcUlh+yWGEMh7?=
+ =?iso-8859-1?Q?a/VTwllA22PaYM/n0dclUT4JuHkMMCB9/807uwqa6tIiAANly4f8xXqS7D?=
+ =?iso-8859-1?Q?CbjDUAy4LhztPS12OGI0gi+6uqZyFZfOsAzINGO8JaRRlTQoQ3HWkRqbuc?=
+ =?iso-8859-1?Q?3VKucQRdNr5rAdVjnbKkUjDPJ5qYdyH3j6A8ctMsaq6BSC7JqCIVpHiU0d?=
+ =?iso-8859-1?Q?yw5lXig1sQ6jUHCmu7IbVsEvjoNAoXjR4NZbtBH6B4FD6Dicm1MX+rMieo?=
+ =?iso-8859-1?Q?aakaemhvsS8Uxz4lwdrzaR4ixor7b4qPTS+DlmA0leL6I2vJcg71Bo+qdF?=
+ =?iso-8859-1?Q?eMPA8RGorwNyd68AQLdnsnEp4ag4yqHt5JmFcis786N3RO83Hc897exVRK?=
+ =?iso-8859-1?Q?ykD9eRZvBqM61tTvb7hMAbTz+s9cwdyjOkRQiCcTrQrNrDF2OK2fEHSkfc?=
+ =?iso-8859-1?Q?SJoPiRwMTOdu9n3V?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 287acc7b-f23d-410c-5ec1-08d8ed55fc4f
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2021 17:14:43.6226
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aKJvcqDCXBx6CPKPkqJLId1CXCPk/V4iboYBx+KE8Volyoc6x4aaxfRYI6Mw9Rl9nh/ZXEPZSUO8e3d7fSMllg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5114
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 06:07:51PM +0100, Tobias Waldekranz wrote:
-> On Mon, Mar 22, 2021 at 18:19, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Mar 22, 2021 at 04:44:41PM +0100, Tobias Waldekranz wrote:
-> >> I do not know if it is a problem or not, more of an observation: This is
-> >> not guaranteed to be an exact replay of the events that the bridge port
-> >> (i.e. bond0 or whatever) has received since, in fdb_insert, we exit
-> >> early when adding local entries if that address is already in the
-> >> database.
-> >> 
-> >> Do we have to guard against this somehow? Or maybe we should consider
-> >> the current behavior a bug and make sure to always send the event in the
-> >> first place?
-> >
-> > I don't really understand what you're saying.
-> > fdb_insert has:
-> >
-> > 	fdb = br_fdb_find(br, addr, vid);
-> > 	if (fdb) {
-> > 		/* it is okay to have multiple ports with same
-> > 		 * address, just use the first one.
-> > 		 */
-> > 		if (test_bit(BR_FDB_LOCAL, &fdb->flags))
-> > 			return 0;
-> > 		br_warn(br, "adding interface %s with same address as a received packet (addr:%pM, vlan:%u)\n",
-> > 		       source ? source->dev->name : br->dev->name, addr, vid);
-> > 		fdb_delete(br, fdb, true);
-> > 	}
-> >
-> > 	fdb = fdb_create(br, source, addr, vid,
-> > 			 BIT(BR_FDB_LOCAL) | BIT(BR_FDB_STATIC));
-> >
-> > Basically, if the {addr, vid} pair already exists in the fdb, and it
-> > points to a local entry, fdb_create is bypassed.
-> >
-> > Whereas my br_fdb_replay() function iterates over br->fdb_list, which is
-> > exactly where fdb_create() also lays its eggs. That is to say, unless
-> > I'm missing something, that duplicate local FDB entries that skipped the
-> > fdb_create() call in fdb_insert() because they were for already-existing
-> > local FDB entries will also be skipped by br_fdb_replay(), because it
-> > iterates over a br->fdb_list which contains unique local addresses.
-> > Where am I wrong?
-> 
-> No you are right. I was thinking back to my attempt of offloading local
-> addresses and I distinctly remembered that local addresses could be
-> added without a notification being sent.
-> 
-> But that is not what is happening. It is just already inserted on
-> another port. So the notification would reach DSA, or not, depending on
-> ordering the of events. But there will be no discrepancy between that
-> and the replay.
+Hello Ulf,
 
-I'm not saying that the bridge isn't broken, because it is, but for
-different reasons, as explained here:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210224114350.2791260-9-olteanv@gmail.com/
+On Monday 22 March 2021 13:20:35 CET Ulf Hansson wrote:
+> On Mon, 15 Mar 2021 at 14:25, Jerome Pouiller
+> <Jerome.Pouiller@silabs.com> wrote:
+> >
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  drivers/net/wireless/silabs/wfx/bus_sdio.c | 259 +++++++++++++++++++++
+> >  1 file changed, 259 insertions(+)
+> >  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio.c
+>=20
+> [...]
+>=20
+> > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> > +       { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF20=
+0) },
+> > +       { },
+> > +};
+> > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> > +
+> > +struct sdio_driver wfx_sdio_driver =3D {
+> > +       .name =3D "wfx-sdio",
+> > +       .id_table =3D wfx_sdio_ids,
+> > +       .probe =3D wfx_sdio_probe,
+> > +       .remove =3D wfx_sdio_remove,
+> > +       .drv =3D {
+> > +               .owner =3D THIS_MODULE,
+> > +               .of_match_table =3D wfx_sdio_of_match,
+>=20
+> It's not mandatory to support power management, like system
+> suspend/resume. However, as this looks like this is a driver for an
+> embedded SDIO device, you probably want this.
+>=20
+> If that is the case, please assign the dev_pm_ops here and implement
+> the ->suspend|resume() callbacks.
 
-What I can do is I can make br_switchdev_fdb_notify() skip fdb entries
-with the BR_FDB_LOCAL bit set, and target that patch against "net", with
-a Fixes: tag of 6b26b51b1d13 ("net: bridge: Add support for notifying
-devices about FDB add/del").
-Then I can also skip the entries with BR_FDB_LOCAL from br_fdb_replay.
-Then, when I return to the "RX filtering for DSA" series, I can add the
-"is_local" bit to switchdev FDB objects, and make all drivers reject
-"is_local" entries (which is what the linked patch does) unless more
-specific treatment is applied to those (trap to CPU).
-Nikolay?
+I have no platform to test suspend/resume, so I have only a
+theoretical understanding of this subject.
+
+I understanding is that with the current implementation, the
+device will be powered off on suspend and then totally reset
+(including reloading of the firmware) on resume. I am wrong?
+
+This behavior sounds correct to me. You would expect something
+more?=20
+
+
+--=20
+J=E9r=F4me Pouiller
+
+
