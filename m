@@ -2,96 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 789EE3451ED
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 22:40:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D492A3451FD
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 22:47:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbhCVVkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 17:40:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59434 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229639AbhCVVkE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 17:40:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 28117619A9;
-        Mon, 22 Mar 2021 21:40:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616449204;
-        bh=ZjEe7Re0RKu002ndI22T8BlfDJ+aY+HHY+t9XvQS7Q8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bJZCpZ5EEGZerp3UrSyvokIM6nH3GPNLIsyJMJB5nyc4Sgnjtzn+OMtjUL2ZBSie+
-         Fi83eey5HsMSKc/9qaD2RuZEeUeUwoE2M6qwk7wrSCjkj4ws8OGv18z8EyYcukmWHT
-         jM35+ir6/srZfSH78DCRwpRXtTCanNR0ouNRk+r0zZqC9uicwbh5Vl6qVN2J0nC7fg
-         yAR8A/u0nDcj41ohiNdL688eDQ2opEHdctaDOmgytVvpFgfvzBz92vFYBp5Nn21+zL
-         vtNIUbcaOAFjelvCYqZ6uXvufN0DecSq4tETddYi+zxgAsQXGrS7YO4xRruhTqWyYj
-         CraMDT8xmXxbw==
-Received: by mail-ot1-f44.google.com with SMTP id g8-20020a9d6c480000b02901b65ca2432cso17476595otq.3;
-        Mon, 22 Mar 2021 14:40:04 -0700 (PDT)
-X-Gm-Message-State: AOAM533FUOhFfO7wq9f+GsWOzKkBqFJJDy1x14lvq359GYXwWaCk6hUk
-        iGNe8yk9vCXFksLX6c2bH7EqB0oZSmM8DFSdmWI=
-X-Google-Smtp-Source: ABdhPJzNzw6/c6SVRTMWeDvzQfOYlqmnHJ7XZUtZKGXGAyd4E2bODGHMqyepsXMnLh1hlMatZvPmNE5xJdhqw6/8ZCE=
-X-Received: by 2002:a9d:316:: with SMTP id 22mr1561463otv.210.1616449203436;
- Mon, 22 Mar 2021 14:40:03 -0700 (PDT)
+        id S229591AbhCVVrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 17:47:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52650 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230095AbhCVVrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 17:47:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616449634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BYH+ALHHuUp2nY1Tf4LO1X9cBqJmh5q5ergCiNTIsFA=;
+        b=fMzNZrnqkbupAYDCyPlkZVA4H1sqdid/N23+e4Dp6swIA5JpMJqL9b2ZOHp/bQIoSqoeS5
+        nXn3Kn4goz2p6lvcX1ixn96M/O1xkaFRG3pfXXNUdH0RSfqaxU9LAClhnaU4/7jqj1LM+G
+        JmwQviKfApLVfG3pAhBT5lpzIAoJjVI=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-307-H3ScGiJnOMCtZJL9T32K4Q-1; Mon, 22 Mar 2021 17:47:12 -0400
+X-MC-Unique: H3ScGiJnOMCtZJL9T32K4Q-1
+Received: by mail-ed1-f72.google.com with SMTP id a2so157288edx.0
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 14:47:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=BYH+ALHHuUp2nY1Tf4LO1X9cBqJmh5q5ergCiNTIsFA=;
+        b=ODo5uLz4UH+T3kJoWtmjSbNqJarshag80/yUQDIqoCphC3ZQvyBOvHjDNTYP62NjGL
+         BEJuIDqf3Uotu+15BzQcuEpz3LXgYeAh8hgB4L0JtQH0PWV/UMXB+HoqG1oLoWu4JYvF
+         gjvDtaXKAAqy1N60L6A7i/Wt/GElAvlyFEEGaXqYMMeIOX5+PPZh6wghMFXX2qyXStSX
+         kaakiU3vXGuDASHzpPcOzpFcpRaL8nz250w3NBv18y+oFTlgw547VyElpukCSc1fEuKU
+         kZE8CuZxmRQiaLNRT3fA+sCDN6k3HXczUSpHNev6Q1Dh+6YvSXQsPOtMY0XVRHWbSi8h
+         N5gw==
+X-Gm-Message-State: AOAM532v20Rsujd7cfcFAjNXE08DvFwRtYVNjm39wqCraMZg4+0eNYqD
+        UxxyChPYt1clrZKhbDctFexHW1L/aWkraT7apK7Az3V0SarLBJhtq7IEeHUhY4dj9bQCTqtqZZR
+        uJxaGTuj2j9RtocA4
+X-Received: by 2002:aa7:cf95:: with SMTP id z21mr1668645edx.76.1616449631760;
+        Mon, 22 Mar 2021 14:47:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzGx0BGOGgfTXiKJV8s2OrCDJkou1EZOucbXM2fC8InHZfQ99sRZLaQtAxxQHygPvmUBl4/1g==
+X-Received: by 2002:aa7:cf95:: with SMTP id z21mr1668630edx.76.1616449631619;
+        Mon, 22 Mar 2021 14:47:11 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id f19sm12129383edu.12.2021.03.22.14.47.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 14:47:11 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 8FA5C180281; Mon, 22 Mar 2021 22:47:09 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org
+Cc:     bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        ciara.loftus@intel.com, john.fastabend@gmail.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: Re: [PATCH v3 bpf-next 06/17] libbpf: xsk: use bpf_link
+In-Reply-To: <20210322205816.65159-7-maciej.fijalkowski@intel.com>
+References: <20210322205816.65159-1-maciej.fijalkowski@intel.com>
+ <20210322205816.65159-7-maciej.fijalkowski@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 22 Mar 2021 22:47:09 +0100
+Message-ID: <87wnty7teq.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20210322160253.4032422-1-arnd@kernel.org> <20210322160253.4032422-3-arnd@kernel.org>
- <20210322202958.GA1955909@gmail.com>
-In-Reply-To: <20210322202958.GA1955909@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 22 Mar 2021 22:39:47 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a10d8hgBiO5W=34oLqw8m22=Xi4C=MxVSY_fGnXZUJ3iA@mail.gmail.com>
-Message-ID: <CAK8P3a10d8hgBiO5W=34oLqw8m22=Xi4C=MxVSY_fGnXZUJ3iA@mail.gmail.com>
-Subject: Re: [PATCH 02/11] x86: tboot: avoid Wstringop-overread-warning
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Martin Sebor <msebor@gcc.gnu.org>,
-        Ning Sun <ning.sun@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        tboot-devel@lists.sourceforge.net,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        ath11k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Will Deacon <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 9:29 PM Ingo Molnar <mingo@kernel.org> wrote:
-> * Arnd Bergmann <arnd@kernel.org> wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
 
-> This is indeed rather ugly - and the other patch that removes a debug
-> check seems counterproductive as well.
+> Currently, if there are multiple xdpsock instances running on a single
+> interface and in case one of the instances is terminated, the rest of
+> them are left in an inoperable state due to the fact of unloaded XDP
+> prog from interface.
 >
-> Do we know how many genuine bugs -Wstringop-overread-warning has
-> caught or is about to catch?
+> Consider the scenario below:
 >
-> I.e. the real workaround might be to turn off the -Wstringop-overread-warning,
-> until GCC-11 gets fixed?
+> // load xdp prog and xskmap and add entry to xskmap at idx 10
+> $ sudo ./xdpsock -i ens801f0 -t -q 10
+>
+> // add entry to xskmap at idx 11
+> $ sudo ./xdpsock -i ens801f0 -t -q 11
+>
+> terminate one of the processes and another one is unable to work due to
+> the fact that the XDP prog was unloaded from interface.
+>
+> To address that, step away from setting bpf prog in favour of bpf_link.
+> This means that refcounting of BPF resources will be done automatically
+> by bpf_link itself.
+>
+> Provide backward compatibility by checking if underlying system is
+> bpf_link capable. Do this by looking up/creating bpf_link on loopback
+> device. If it failed in any way, stick with netlink-based XDP prog.
+> Otherwise, use bpf_link-based logic.
 
-See the [PATCH 0/11] message. The last two patches in the series are for
-code that I suspect may be broken, the others are basically all false positives.
+So how is the caller supposed to know which of the cases happened?
+Presumably they need to do their own cleanup in that case? AFAICT you're
+changing the code to always clobber the existing XDP program on detach
+in the fallback case, which seems like a bit of an aggressive change? :)
 
-As gcc-11 is not released yet, I don't think we have to apply any of the
-patches or disable the warning at the moment, but I posted all the patches
-to get a better understanding on which of them should be addressed in
-the kernel vs gcc.
+-Toke
 
-       Arnd
