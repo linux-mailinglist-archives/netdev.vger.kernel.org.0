@@ -2,151 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B96344DE0
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 18:57:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0095C344DF6
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbhCVR4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 13:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbhCVR4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:56:18 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7706EC061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 10:56:18 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id b7so22771870ejv.1
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 10:56:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OrKJJ7lUxB0+2wGbFPE+KxXpI85Er2m66PshYy/4kls=;
-        b=CE7NmpSehqYNXiRwWePBxpHm+26JpjgIdsVIA/iMVLRI3sHIRGGp1qfkpbsgywb19G
-         bzPJAJJGrVtZkZQCinm/B/uetnhoQXgNQBClUEot/B2J1Rg2GWo3FoIpgPzeVaxFypwV
-         8RDPjcYxKCA2Nddm83+VyYu1sqX8Z5Top3CY+fcVja0qnwALx4IyZjKtheSCb/EiZSLh
-         Cxtj/1be0YbHFyq7d4kmNV1tchrOQt8x2cB9/0P6Y5X0LpMC0dGqwhBRjZulCkPDvnF3
-         Php/D1oe0sphOScgV6+zEy4JYV10pbv58sKhZ0TY1ilGu9utfbOrAZgE/9Cu+fKaEQi2
-         jspw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OrKJJ7lUxB0+2wGbFPE+KxXpI85Er2m66PshYy/4kls=;
-        b=Nrh/RgJTBshuiNqqm7zE/yIXXhES+v/2bd9JwhPzwaIm/g0B5diPppcMh6NasSbjJI
-         pnaXZQV4DlMNyVY+NG+gbiMQ/JSmtJft87KXtTFsghoBxTNls4nPfVVp8E9T1tU8EsgS
-         NKwGlkQLoe0dXZt0KdTBKDFJ2vs0c2FDcVnawnEOKXH5ygpzrMVew9wtLP+X8CAj3+G5
-         gOo64xRO4C8fnoDj4wUWFHZxDa5EvtFlI1CjumkswUE+8kR3fUsFrLXvIE1jImUXwz9D
-         oxhNL3RDOpohECnmg4CZ/sPbSU8ka8glReUMEUv4ov1vqFHsSLFbXDFV9/he4F2VxVVF
-         E8hQ==
-X-Gm-Message-State: AOAM5320UDrX3LaN9vM14tBj9df73YgL4AZbjWHDXmo55F4uy8UPudAG
-        d23fbgEsMnEzay65e4eFBW4=
-X-Google-Smtp-Source: ABdhPJyWqr9lVOA1Q9EuQhxL71O/vFjTc6w0vZDgIt8Qt5aaYhVHRKYSnu8H3mSCm5k3VBYrz0hg9Q==
-X-Received: by 2002:a17:906:4ada:: with SMTP id u26mr981429ejt.129.1616435777253;
-        Mon, 22 Mar 2021 10:56:17 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id n16sm9896431ejy.35.2021.03.22.10.56.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 10:56:16 -0700 (PDT)
-Date:   Mon, 22 Mar 2021 19:56:15 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net 1/3] net: dsa: only unset VLAN filtering when last
- port leaves last VLAN-aware bridge
-Message-ID: <20210322175615.47awcvac2sbxqqyc@skbuf>
-References: <20210320225928.2481575-1-olteanv@gmail.com>
- <20210320225928.2481575-2-olteanv@gmail.com>
- <87lfafm5xh.fsf@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S231313AbhCVR7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 13:59:55 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:42798 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229840AbhCVR7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 13:59:38 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12MHxRbs026355;
+        Mon, 22 Mar 2021 10:59:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=facebook;
+ bh=DRzSr5CgmuCew7f1uaRwc29Ez358PewDqqmqh5bt9qI=;
+ b=Ep1JvT5kTBDnKJtteNzM2gcHl2mVpHSdyNN+7M8tjI3//1HEsD8xeNAw+pCBqMcWFlPy
+ IqlxFtm0Pqdz00l284HFJs7VcmMqF+4+vl7WxFhoc+MeiPauenVJXC0AxW+zjXsO/Sg8
+ P88bZxHJ54ZCzjKdOpMNMUrvLEC/v5ccAtw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 37e0sxpybh-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 22 Mar 2021 10:59:28 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 22 Mar 2021 10:59:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y9hABFTETuufzjYccs7rO8y846hIulu46/dNkNsIrzP5HosWCbIFeQifHIJcc6c635VRePTJBEoHpmbhX2Upr4wOgRdWZdMS1N8ebhkALeZCVuHi1A13Yi4+GI2iVsfEZT6nfzxTrBD+tOb12bgEoBJuHFC6ahjqR+UyYsxxUS4zW8U05VErDTfB+Vvd6OQAOryOIuwz+/j4zvsbQa/HNE61yLruyJszjDxW5LSo5AdTWCEV6429vbImDkg3RxmqWm50oqCcXMFP53aIH0W/+e3ld1TJbevpiFDB+X23+ReZFtQ6yWBX/rPahUAG+gLj6HScWOdpwOcR2vVrPxwOiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VPRWgbP4wyBoi3EhujCtEsDoKUwTTo6NrY8+DLYejMo=;
+ b=UcL4DM0+xLkoD3XfF6JxSl7Sm0Do2IePD8MF7hvTympUStg1vzgKyclYnmWE6uol5H6lld7uuG2qIrOQOs06Bw6WSKEY3QFcbFSg2zKYQzPn9SuJ0tGw+OSM+z9X0kuFPHRbOPMf5X+NuPaIAmSMeKx788jQ91s2uqg/F3pECuXC8j5SzXdVnAdxqzh/RcdrEq5KmC27WCTcfxu5tipm+B+hQ9PSD9sL0PoOqGEWBwh5uUyMceVgmkNE4HvPif8tGri4Hex8K3Y0T86+ia727EkvFXUsBDw7D1E//COT8tt2+WBtzg9VEgOmsHM/XUMJo3qskT0BNkRFoo9GiIOqpg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: mildred.fr; dkim=none (message not signed)
+ header.d=none;mildred.fr; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB3191.namprd15.prod.outlook.com (2603:10b6:a03:107::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Mon, 22 Mar
+ 2021 17:59:26 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::2975:c9d8:3f7f:dbd0]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::2975:c9d8:3f7f:dbd0%5]) with mapi id 15.20.3955.027; Mon, 22 Mar 2021
+ 17:59:26 +0000
+Date:   Mon, 22 Mar 2021 10:59:22 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Shanti Lombard =?utf-8?Q?n=C3=A9e_Bouchez-Mongard=C3=A9?= 
+        <mildred@mildred.fr>
+CC:     bpf <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <alexei.starovoitov@gmail.com>
+Subject: Re: Design for sk_lookup helper function in context of sk_lookup hook
+Message-ID: <20210322175922.wu5igribakuc7pl6@kafai-mbp.dhcp.thefacebook.com>
+References: <0eba7cd7-aa87-26a0-9431-686365d515f2@mildred.fr>
+ <20210319165546.6dbiki7es7uhdayw@kafai-mbp.dhcp.thefacebook.com>
+ <a707be4e-9101-78dd-4ed0-5556c5fa143e@mildred.fr>
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-In-Reply-To: <87lfafm5xh.fsf@waldekranz.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a707be4e-9101-78dd-4ed0-5556c5fa143e@mildred.fr>
+X-Originating-IP: [2620:10d:c090:400::5:1cda]
+X-ClientProxiedBy: MWHPR19CA0050.namprd19.prod.outlook.com
+ (2603:10b6:300:94::12) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:1cda) by MWHPR19CA0050.namprd19.prod.outlook.com (2603:10b6:300:94::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Mon, 22 Mar 2021 17:59:25 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6907af70-8710-40ea-e40c-08d8ed5c3b31
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3191:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3191D88AEC0779B477AB02A4D5659@BYAPR15MB3191.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XeCZDEXO1i1CMWeo1vncSfWiJ+uMPAWIUBisg9gj/jkxj+egC86MmIRn3VMTR4WDoV89kw7jRMlG6r4WvnWtmJMNWFznDQoMqYrdnfUaG59wkixViQkl0kAWPuAd9325rhlRFrLthMILDeJk3YX5Ytd0ofoegYy2dedcXmjCm9AgcumzBCSZ8xXykevj7xS6tTqFe/4wENB733WGkJUxLISj0VtlOU0YsR9eZNMmWNT6tPZaZgZO2T9JDDXf0QSNq8v5SuUv606Lt/HZ5YHsXpqyx/q9Et0cxZmsKq9ON5pOB8hqsr5obKQbbbcGVzZl9uhCDrPu1I5aHmTBdL27TkVG4g8vFkcY30rgTB3+ahc3Z5vsVbJO+BR8OHEmLDzYypKIyE8yhPyM6859kqkADm7RzV0xy6A3JGckan9GxNGENrunSpTFMje+/+ac3T1dGO4JFKlwyyRc2pi9rsfI9iqeChkzxHETdyXBcaxUrjc9Dw96Ud4SbsWxkNyk17KIiv43bExMopb1nUORkIqut8BQXXT1gfAjZwVHDv+cjee1/ywAYxjkUOdsVc92zF/jQ5PyjkqNFWPaLmrbWJMM7gqg+00alkmisO5q1kK5LkDKe58uQEmHGRY0ylidF4vQVWFqp+91HBO2YjIntfgnZQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(39860400002)(136003)(366004)(376002)(2906002)(8676002)(66946007)(6916009)(66476007)(66556008)(1076003)(9686003)(55016002)(4326008)(66574015)(6666004)(8936002)(5660300002)(83380400001)(478600001)(86362001)(6506007)(186003)(38100700001)(7696005)(16526019)(316002)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?iso-8859-1?Q?128MDRwSLc+1zt83e//USGS9zp7vDiUfg4AaGfZ5sFEIGCIUIwd+IMZSX+?=
+ =?iso-8859-1?Q?9xmxvXUEdIC0OrFzL9OmXF0g2dxl6Sr96ry0c5C6jLCGno4xtunxkj0F7T?=
+ =?iso-8859-1?Q?x6R/uffvcWwQj7Y6/TNFzKIHX6Six32h+aQPkdoZBuTJdJJ3qZveY+1yQn?=
+ =?iso-8859-1?Q?+mmzuJ2JDqNSaInJ9ZJNvPy/p/+A+SW6DWMPXbRcErewUt2Eo6by7GmRfM?=
+ =?iso-8859-1?Q?GHJuCgfg19TAraO+rRv2/cd/I7VTb9kvsLvybLN6lkzp/gm0bGkzhyP2oY?=
+ =?iso-8859-1?Q?ggRt8P35pHO9Xs66TaCotabmCYNSM69Tr2oMpE+/A42pnhAfScv7MfMOcl?=
+ =?iso-8859-1?Q?cVftMHspdGFy8pRxkhmSp61Mr77GLkn26tugIntcahZa9JUy9Jwz9rhZDB?=
+ =?iso-8859-1?Q?B9xC83xVed6ySqYutiST0E0wCB5u5A84DrB5VU5FQXEfgWMhspGMNgTwrS?=
+ =?iso-8859-1?Q?zbAm/AhX/A+d0QDz5mcE7/GOnDxJTqAM7CcglTEU7TTJkoirdwtXj6rTAB?=
+ =?iso-8859-1?Q?4MxTg933z0XX2Gc/can1P4LF6PhEYx/10fVa1fnql+WEZM75e/1Nv2eGZF?=
+ =?iso-8859-1?Q?2nSOJDFwRilS2CmEo0kWzhvqNMkzERqg8ezfqkpzN9QvJ3Hfq9MHbnLwlY?=
+ =?iso-8859-1?Q?vn1tpGqNHwRDO/AnNNHEbLCxe69Eqc/NdIVKJEMVZxWsRelJaTiQ+7PVvg?=
+ =?iso-8859-1?Q?8aGjZ7IVgNktKcG3SmlTcfZrOWrSeqJDJnXN4a+GHuGMbAKPGsBM/b8H1x?=
+ =?iso-8859-1?Q?5e1Ygqyt4tqCqeaNbcwXd2XfFeJ7HspcqkQj0kfvo3anFGz/I9Wo5ynarT?=
+ =?iso-8859-1?Q?OmIBGQtuIBLQw6mN3duR58bvfUBVUgv+prjPDuOfmz+z2IfMzhPQBroHrD?=
+ =?iso-8859-1?Q?ZbEtUz2tcDlv8IV48lEskASfta3tGb80qwpTZjomhKxBkHirOZ2VABbH0A?=
+ =?iso-8859-1?Q?cIfGnXEbzMQjTY2pVshlIqYsVoZpa4IuxTnwsC9NwRoOfCb7eqZWWDgiPn?=
+ =?iso-8859-1?Q?d7PqMI4HS17BwPHevWKHFeW1zuSaqHIskDOO9Bzvx6OQC5lqiPluATG8Xe?=
+ =?iso-8859-1?Q?zpASk6kLTsaNJ1AgNw3A5/IR6XbM3UtwGYVM8axGxaIjGXV+g9FvNpaBlt?=
+ =?iso-8859-1?Q?LKnTfnR8Pr78QofcvxtDNfXUP1XnoJgo08j5bvU6Lijh1KsK1pNbT3QHj1?=
+ =?iso-8859-1?Q?1ZAl6UNet1j5+eokcrE7lod2DkDH5zq5W+Rtf73sfUunr0oG4QtWDvjdQv?=
+ =?iso-8859-1?Q?dS0uKMeoMaxkXIGS/H0gmyOLRQfBP2jl5TlKh58inTF1X9IdRRrxClSFMe?=
+ =?iso-8859-1?Q?xA3AdAjrS/z++XVRQeWWORQdaIdHfH/DwA5BOSnCzhs+q/Jr4qw2Lt5ts8?=
+ =?iso-8859-1?Q?Kqp+xLGEADD7y/Cxz8VjJuWUD/TWa2Kw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6907af70-8710-40ea-e40c-08d8ed5c3b31
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2021 17:59:26.3452
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q7K2VUus1EwbI0ZkF8mmSKGxqUple4ezzFix+JBTJg92QgBVNB35F+7QwtIYMFU2
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3191
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-22_10:2021-03-22,2021-03-22 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ impostorscore=0 clxscore=1011 lowpriorityscore=0 mlxlogscore=999
+ mlxscore=0 bulkscore=0 suspectscore=0 priorityscore=1501 malwarescore=0
+ adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2103220132
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 06:52:58PM +0100, Tobias Waldekranz wrote:
-> On Sun, Mar 21, 2021 at 00:59, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > DSA is aware of switches with global VLAN filtering since the blamed
-> > commit, but it makes a bad decision when multiple bridges are spanning
-> > the same switch:
-> >
-> > ip link add br0 type bridge vlan_filtering 1
-> > ip link add br1 type bridge vlan_filtering 1
-> > ip link set swp2 master br0
-> > ip link set swp3 master br0
-> > ip link set swp4 master br1
-> > ip link set swp5 master br1
-> > ip link set swp5 nomaster
-> > ip link set swp4 nomaster
-> > [138665.939930] sja1105 spi0.1: port 3: dsa_core: VLAN filtering is a global setting
-> > [138665.947514] DSA: failed to notify DSA_NOTIFIER_BRIDGE_LEAVE
-> >
-> > When all ports leave br1, DSA blindly attempts to disable VLAN filtering
-> > on the switch, ignoring the fact that br0 still exists and is VLAN-aware
-> > too. It fails while doing that.
-> >
-> > This patch checks whether any port exists at all and is under a
-> > VLAN-aware bridge.
-> >
-> > Fixes: d371b7c92d19 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > ---
-> >  net/dsa/switch.c | 15 +++++++++------
-> >  1 file changed, 9 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-> > index 4b5da89dc27a..32963276452f 100644
-> > --- a/net/dsa/switch.c
-> > +++ b/net/dsa/switch.c
-> > @@ -107,7 +107,7 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
-> >  	bool unset_vlan_filtering = br_vlan_enabled(info->br);
-> >  	struct dsa_switch_tree *dst = ds->dst;
-> >  	struct netlink_ext_ack extack = {0};
-> > -	int err, i;
-> > +	int err, port;
-> >  
-> >  	if (dst->index == info->tree_index && ds->index == info->sw_index &&
-> >  	    ds->ops->port_bridge_join)
-> > @@ -124,13 +124,16 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
-> >  	 * it. That is a good thing, because that lets us handle it and also
-> >  	 * handle the case where the switch's vlan_filtering setting is global
-> >  	 * (not per port). When that happens, the correct moment to trigger the
-> > -	 * vlan_filtering callback is only when the last port left this bridge.
-> > +	 * vlan_filtering callback is only when the last port leaves the last
-> > +	 * VLAN-aware bridge.
-> >  	 */
-> >  	if (unset_vlan_filtering && ds->vlan_filtering_is_global) {
-> > -		for (i = 0; i < ds->num_ports; i++) {
-> > -			if (i == info->port)
-> > -				continue;
-> > -			if (dsa_to_port(ds, i)->bridge_dev == info->br) {
-> > +		for (port = 0; port < ds->num_ports; port++) {
-> > +			struct net_device *bridge_dev;
-> > +
-> > +			bridge_dev = dsa_to_port(ds, port)->bridge_dev;
-> > +
-> > +			if (bridge_dev && br_vlan_enabled(bridge_dev)) {
-> >  				unset_vlan_filtering = false;
-> >  				break;
-> >  			}
-> > -- 
-> > 2.25.1
+On Fri, Mar 19, 2021 at 06:05:20PM +0100, Shanti Lombard née Bouchez-Mongardé wrote:
+> Le 19/03/2021 à 17:55, Martin KaFai Lau a écrit :
+> > On Wed, Mar 17, 2021 at 10:04:18AM +0100, Shanti Lombard née Bouchez-Mongardé wrote:
+> > > Q1: How do we prevent socket lookup from triggering BPF sk_lookup causing a
+> > > loop?
+> > The bpf_sk_lookup_(tcp|udp) will be called from the BPF_PROG_TYPE_SK_LOOKUP program?
 > 
-> Is it the case that all devices in which VLAN filtering is a global
-> setting are also single-chip? To my _D_SA eyes, it feels like we should
-> have to iterate over all ports in the tree, not just the switch.
+> Yes, the idea is to allow the BPF program to redirect incoming connections
+> for 0.0.0.0:1234 to a specific IP address such as 127.0.12.34:1234 or any
+> other combinaison with a binding not done based on a predefined socket file
+> descriptor but based on a listening IP address for a socket.
+> 
+> See linked discussion in the original message
+> 
+> > > - Solution A: We add a flag to the existing inet_lookup exported function
+> > > (and similarly for inet6, udp4 and udp6). The INET_LOOKUP_SKIP_BPF_SK_LOOKUP
+> > > flag, when set, would prevent BPF sk_lookup from happening. It also requires
+> > > modifying every location making use of those functions.
+> > > 
+> > > - Solution B: We export a new symbol in inet_hashtables, a wrapper around
+> > > static function inet_lhash2_lookup for inet4 and similar functions for inet6
+> > > and udp4/6. Looking up specific IP/port and if not found looking up for
+> > > INADDR_ANY could be done in the helper function in net/core/filters.c or in
+> > > the BPF program.
+For TCP, it is only for lhash lookup, right?
 
-Correct, I might revisit this if I ever get my hands on a board with
-sja1105 switches in a real multi-switch tree, and not in disjoint trees
-as I have had access to so far.
+> > > 
+> > > Q2: Should we reuse the bpf_sk_lokup_tcp and bpf_sk_lookup_udp helper
+> > > functions or create new ones?
+> > If the args passing to the bpf_sk_lookup_(tcp|udp) is the same,
+> > it makes sense to reuse the same BPF_FUNC_sk_lookup_*.
+> > The actual helper implementation could be different though.
+> > Look at bpf_xdp_sk_lookup_tcp_proto and bpf_sk_lookup_tcp_proto.
+> 
+> I was thinking that perhaps a different helper method which would take
+> IPPROTO_TCP or IPPROTO_UDP parameter would be better suited. it would avoid
+> BPF code such as :
+> 
+>     switch(ctx->protocol){
+>         case IPPROTO_TCP:
+>             sk = bpf_sk_lookup_tcp(ctx, &tuple, tuple_size, -1, 0);
+>             break;
+>         case IPPROTO_UDP:
+>             sk = bpf_sk_lookup_udp(ctx, &tuple, tuple_size, -1, 0);
+>             break;
+>         default:
+>             return SK_PASS;
+>     }
+> 
+> But then there is the limit of 5 arguments, isn't it, so perhaps the
+> _tcp/_udp functions are not such a bad idea after all.
+> 
+> I saw already that the same helper functions could be given different
+> implementations. And if there is no way to have more than 5 arguments then
+> this is probably better to reuse the same helper function name and
+> signature.
