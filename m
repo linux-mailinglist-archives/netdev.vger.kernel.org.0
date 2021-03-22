@@ -2,38 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D54C34520E
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 22:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E75E345213
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 22:52:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbhCVVvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 17:51:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41710 "EHLO mail.kernel.org"
+        id S230215AbhCVVwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 17:52:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42476 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229467AbhCVVv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 17:51:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D95426191D;
-        Mon, 22 Mar 2021 21:51:26 +0000 (UTC)
+        id S230203AbhCVVwG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 17:52:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8077B6191D;
+        Mon, 22 Mar 2021 21:52:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616449888;
-        bh=vplW57jdS3sdwY5BYxTl7rROU7sS/6x0YoCPBkEaF7s=;
+        s=k20201202; t=1616449926;
+        bh=cynxWr4EIlyILN7JP7FRcyb1BaVwBjk2hMRHLfYM1x4=;
         h=From:To:Cc:Subject:Date:From;
-        b=NFCk5pszFaz6NRayADSr2fVS3LN+m6B5SW1UewBb2lqJngOvQ8go3ziYYlwSZ6/hW
-         wfcDgBrl64BQuCRy3cWqPldHbMqmanTm9YQeKuk0d/SAqB3E+Q2EbHtJ+Gitm6J44v
-         LeZRod5vnYzD4XMzDtVYeseG7IBxTOQOqq+xPRP1X/FtjaSpqSz+Mur+YFaWzQOlj4
-         eIps+pvMmz27xTm/XuIf6ODQI3kj0swcbV5jEh8xCBde/cVIdhNmuYJrMZmN8I2eMZ
-         1EnMYr0YWxEqT4eIzwd/4Eg1KmIKpczFSC7WDERFdR0bpfdlN76GSGt0p3qaMr3TbD
-         RipEFz6+4ptQA==
+        b=knQg1MTNIgrJ8FsQd53FmeWH1omD0zye6GeyRCGMavRNlOUYuAdhq3s7v5aNhcFYa
+         LvdmT4vQ0Y4nRUgGlSbX3kT0744onMLv0ciZU9IUhPUAVVLaF2ZCnUXNXp976PNmWO
+         /gvnbBAFvR9aQ0qGQKg03Cucq3YIAgOAJERJ1QAjedMGZGTbY7Anoy7syocsubSdwB
+         mdMw+0vrLV1xLv8FrB41IFfHnqEliVwvyVt5oxP6gR0iDPmu2dBXheyRnhX1BNju/o
+         5fqM/U0RAuMeaYt28HrP9yFoy1rXuInmzhVkHzVq7cshq+ZfxkoSylOYabrZsNPVe8
+         1Lijx8ljY7BLA==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     netdev@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] iwlwifi: fix old-style-declaration warning
-Date:   Mon, 22 Mar 2021 22:51:16 +0100
-Message-Id: <20210322215124.1078478-1-arnd@kernel.org>
+To:     KP Singh <kpsingh@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Florent Revest <revest@chromium.org>,
+        Brendan Jackman <jackmanb@chromium.org>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Mikko Ylinen <mikko.ylinen@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bpf: avoid old-style declaration warnings
+Date:   Mon, 22 Mar 2021 22:51:51 +0100
+Message-Id: <20210322215201.1097281-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -43,30 +48,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The correct order is 'static const', not 'const static', as seen from
-make W=1:
+gcc -Wextra wants type modifiers in the normal order:
 
-drivers/net/wireless/intel/iwlwifi/mvm/rfi.c:14:1: error: 'static' is not at beginning of declaration [-Werror=old-style-declaration]
+kernel/bpf/bpf_lsm.c:70:1: error: 'static' is not at beginning of declaration [-Werror=old-style-declaration]
+   70 | const static struct bpf_func_proto bpf_bprm_opts_set_proto = {
+      | ^~~~~
+kernel/bpf/bpf_lsm.c:91:1: error: 'static' is not at beginning of declaration [-Werror=old-style-declaration]
+   91 | const static struct bpf_func_proto bpf_ima_inode_hash_proto = {
+      | ^~~~~
 
-Fixes: 21254908cbe9 ("iwlwifi: mvm: add RFI-M support")
+Fixes: 3f6719c7b62f ("bpf: Add bpf_bprm_opts_set helper")
+Fixes: 27672f0d280a ("bpf: Add a BPF helper for getting the IMA hash of an inode")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/rfi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/bpf_lsm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-index 873919048143..4d5a99cbcc9d 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rfi.c
-@@ -11,7 +11,7 @@
-  * DDR needs frequency in units of 16.666MHz, so provide FW with the
-  * frequency values in the adjusted format.
-  */
--const static struct iwl_rfi_lut_entry iwl_rfi_table[IWL_RFI_LUT_SIZE] = {
-+static const struct iwl_rfi_lut_entry iwl_rfi_table[IWL_RFI_LUT_SIZE] = {
- 	/* LPDDR4 */
+diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+index 1622a44d1617..75b1c678d558 100644
+--- a/kernel/bpf/bpf_lsm.c
++++ b/kernel/bpf/bpf_lsm.c
+@@ -67,7 +67,7 @@ BPF_CALL_2(bpf_bprm_opts_set, struct linux_binprm *, bprm, u64, flags)
  
- 	/* frequency 3733MHz */
+ BTF_ID_LIST_SINGLE(bpf_bprm_opts_set_btf_ids, struct, linux_binprm)
+ 
+-const static struct bpf_func_proto bpf_bprm_opts_set_proto = {
++static const struct bpf_func_proto bpf_bprm_opts_set_proto = {
+ 	.func		= bpf_bprm_opts_set,
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
+@@ -88,7 +88,7 @@ static bool bpf_ima_inode_hash_allowed(const struct bpf_prog *prog)
+ 
+ BTF_ID_LIST_SINGLE(bpf_ima_inode_hash_btf_ids, struct, inode)
+ 
+-const static struct bpf_func_proto bpf_ima_inode_hash_proto = {
++static const struct bpf_func_proto bpf_ima_inode_hash_proto = {
+ 	.func		= bpf_ima_inode_hash,
+ 	.gpl_only	= false,
+ 	.ret_type	= RET_INTEGER,
 -- 
 2.29.2
 
