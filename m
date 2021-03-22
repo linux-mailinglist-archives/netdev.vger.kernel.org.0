@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 646EF3435F3
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 01:27:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E0FD34360B
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 01:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbhCVA0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Mar 2021 20:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
+        id S229879AbhCVAy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Mar 2021 20:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbhCVA0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 20:26:51 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25359C061574
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 17:26:50 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id x21so17264422eds.4
-        for <netdev@vger.kernel.org>; Sun, 21 Mar 2021 17:26:50 -0700 (PDT)
+        with ESMTP id S229829AbhCVAyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Mar 2021 20:54:12 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2D1C061574;
+        Sun, 21 Mar 2021 17:54:11 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id c17so2929711pfn.6;
+        Sun, 21 Mar 2021 17:54:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gdLVcIBXx0ShCvSRbe9mCmmJlII/2Cv9N1vwDZYXYCY=;
-        b=c1FM6rmsCqFy2yiHWr30xdXUlEAXu0P6STL2vj1sHbydZc3/TEBRZT0gbFySFGxKHy
-         sUx70fkiLCOTOX4JgIAmvDNwMlYQLGzkKBzCn307v+r+Hb6lJFy+rWUu9E3XEW7mHGzt
-         OZBV4N9IoHhDz9Fs2PrplxRy1a4a34ZbeL3C1z8kQ8wHI4PnjQtvWoVooBasWIotgqv1
-         RSYUHRcaGB1Q/EffVCDu7rwdNGrWe23kqqIsd9D/7jCZjlJjDGgh/bYYyqMUdRNwwkk6
-         JNHKdGt6PM390v9HUIG5Gp3zNeY0cvK6GnRA6Xxg8YWTuqyuQCZraI8YeyO9RMDDHZmD
-         8Urg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZqTdh65re5NOM88Bvn/Ypjdea75IBIwk3x5yx/WoBHk=;
+        b=mAjRKsiHwBtW0yF3hWXsRMbk6nXYqyDwKcILPuoELgnTAbFFFLJ4l7AfkO5Dy6mC8e
+         vTct0XhX3cAlVrolU2tzrlFqgf7DkTXloU3xKURQbKglhtlZ7OFXJx52AfnFZwpvb/X9
+         gYlfrTjc58M0cKOQ7R+Ociy/5xKopHigb+fMdf+u4AEjalojcUcnBnJ9oPaJH7RM4+nZ
+         36ZUhq1mA4r/n87dHdGc9Vn1zISngvOIYWJAjME4EaeAUs8aj1ffVbbHhg+ZXbVooelq
+         LsrIdWCMLt+Oyrob/4zJP53WLSKpvC1SEKqHpaoCeS+yPIKjOcooJR6/S5Ag6Tz+TdVp
+         OvWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gdLVcIBXx0ShCvSRbe9mCmmJlII/2Cv9N1vwDZYXYCY=;
-        b=R5AcNGQo4aNYAswvEXqQjSR0U8ytRY7Y8LoOEITbVqEIJEBxplJBF9CgH3Fqc94vQn
-         lCHkv7EVzHTNlVZQNOFfPtecUGVluTj4zsdD6C7TFv7zoScKO/kb4mrow4DGBKXh0PLW
-         yb2/dAv3CnC+vx1vJaHrESMjFZwRXhKlgcTaS8PGDBpBKK+ncArK+XTaiLCZC6qTq75P
-         ZT6cFd2aNTRREMb0TtQTXPewcpnzTwMgFEwrFe5TUTbMhxyuy4sE9pJ6Lkc32eWDnQiX
-         c82iqQjxuyTOEIhHwMG5vdBzlQNQHGx54KKcHqH+JjlJKjlXRSTvNW7M4XFm+bMsOOKH
-         CSBQ==
-X-Gm-Message-State: AOAM532IzQRSZxsEG/6VKdDC5j8udi93oDuR/ghjhX9VpRRnaoQx0maQ
-        A+QypGVo0WJVSgd6EfAXhE4=
-X-Google-Smtp-Source: ABdhPJyW2jwUXryGCNbEBN2fkQQ8tuXCwsVL0yccD7eozPY704X5+sO3mVY9TqPx80TnwyUr6Wzbng==
-X-Received: by 2002:a05:6402:3047:: with SMTP id bu7mr22886609edb.227.1616372807672;
-        Sun, 21 Mar 2021 17:26:47 -0700 (PDT)
-Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id c12sm6000882edx.54.2021.03.21.17.26.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Mar 2021 17:26:47 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net] net: ipconfig: ic_dev can be NULL in ic_close_devs
-Date:   Mon, 22 Mar 2021 02:26:37 +0200
-Message-Id: <20210322002637.3412657-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZqTdh65re5NOM88Bvn/Ypjdea75IBIwk3x5yx/WoBHk=;
+        b=OiSqiBLB8jnp/3L+rzN5tMTqTXRlVMDzOeamIyiRN/Fv0qpSa4XG5zhk0Wq8tc9ayI
+         7aToxEPFZhkHp7pU4Z1haexOytG0ndH01YIvdBKtF8C1bhlex6uDmrBGyrpSNdmJL5OL
+         ilO/P+kEJj5WqVuHPL1BhCZsvEbgu0xDJ2yLRghIir8aNSpG/q8LElI09GTyREcP25BS
+         eJ3dmrbv0UZ2PHsMwZYt7dRBn/G5Ft9PJOFyydZvKmD6/W7xJ9fUAhABkwb+MHvNZe9/
+         v6DwVJbGu1XYIT/fLxt+S/ES0mndLT95twRrahGHZgM+whcIabrIcoCbrB9PlH+JEqto
+         HNNQ==
+X-Gm-Message-State: AOAM530JFtDol0dY8Kc7Pf+TGKIzHSIEq8qymYC+9ZyXYZfWcg+F0Ked
+        uQUQ2PMwPmo/tKbygu/OtAQ=
+X-Google-Smtp-Source: ABdhPJw4lpgpAKfGRVTZaPAl07QBplRcpsy2yzbtRBV88WTFH8ZitWQYeVsNFR8P76uyq4NxVdoUCA==
+X-Received: by 2002:a62:3706:0:b029:211:3d70:a55a with SMTP id e6-20020a6237060000b02902113d70a55amr16219198pfa.16.1616374450057;
+        Sun, 21 Mar 2021 17:54:10 -0700 (PDT)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id i10sm17589687pjm.1.2021.03.21.17.54.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 21 Mar 2021 17:54:09 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 08:54:01 +0800
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] atl1c: optimize rx loop
+Message-ID: <20210322005326.GA24403@DESKTOP-8REGVGF.localdomain>
+References: <20210319040447.527-1-liew.s.piaw@gmail.com>
+ <20210319041535.GA3441@1wt.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210319041535.GA3441@1wt.eu>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Fri, Mar 19, 2021 at 05:15:35AM +0100, Willy Tarreau wrote:
+> On Fri, Mar 19, 2021 at 12:04:47PM +0800, Sieng Piaw Liew wrote:
+> > Remove this trivial bit of inefficiency from the rx receive loop,
+> > results in increase of a few Mbps in iperf3. Tested on Intel Core2
+> > platform.
+> > 
+> > Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+> > ---
+> >  drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 4 +---
+> >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> > index 3f65f2b370c5..b995f9a0479c 100644
+> > --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> > +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> > @@ -1796,9 +1796,7 @@ static void atl1c_clean_rx_irq(struct atl1c_adapter *adapter,
+> >  	struct atl1c_recv_ret_status *rrs;
+> >  	struct atl1c_buffer *buffer_info;
+> >  
+> > -	while (1) {
+> > -		if (*work_done >= work_to_do)
+> > -			break;
+> > +	while (*work_done < work_to_do) {
+> 
+> It should not change anything, or only based on the compiler's optimization
+> and should not result in a measurable difference because what it does is
+> exactly the same. Have you really compared the compiled output code to
+> explain the difference ? I strongly suspect you'll find no difference at
+> all.
+> 
+> Thus for me it's certainly not an optimization, it could be qualified as
+> a cleanup to improve code readability however.
+> 
+> Willy
 
-ic_close_dev contains a generalization of the logic to not close a
-network interface if it's the host port for a DSA switch. This logic is
-disguised behind an iteration through the lowers of ic_dev in
-ic_close_dev.
+You're right. Objdump and diff showed no difference.
 
-When no interface for ipconfig can be found, ic_dev is NULL, and
-ic_close_dev:
-- dereferences a NULL pointer when assigning selected_dev
-- would attempt to search through the lower interfaces of a NULL
-  net_device pointer
-
-So we should protect against that case.
-
-The "lower_dev" iterator variable was shortened to "lower" in order to
-keep the 80 character limit.
-
-Fixes: f68cbaed67cb ("net: ipconfig: avoid use-after-free in ic_close_devs")
-Fixes: 46acf7bdbc72 ("Revert "net: ipv4: handle DSA enabled master network devices"")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/ipv4/ipconfig.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index 47db1bfdaaa0..bc2f6ca97152 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -309,7 +309,7 @@ static int __init ic_open_devs(void)
-  */
- static void __init ic_close_devs(void)
- {
--	struct net_device *selected_dev = ic_dev->dev;
-+	struct net_device *selected_dev = ic_dev ? ic_dev->dev : NULL;
- 	struct ic_device *d, *next;
- 	struct net_device *dev;
- 
-@@ -317,16 +317,18 @@ static void __init ic_close_devs(void)
- 	next = ic_first_dev;
- 	while ((d = next)) {
- 		bool bring_down = (d != ic_dev);
--		struct net_device *lower_dev;
-+		struct net_device *lower;
- 		struct list_head *iter;
- 
- 		next = d->next;
- 		dev = d->dev;
- 
--		netdev_for_each_lower_dev(selected_dev, lower_dev, iter) {
--			if (dev == lower_dev) {
--				bring_down = false;
--				break;
-+		if (selected_dev) {
-+			netdev_for_each_lower_dev(selected_dev, lower, iter) {
-+				if (dev == lower) {
-+					bring_down = false;
-+					break;
-+				}
- 			}
- 		}
- 		if (bring_down) {
--- 
-2.25.1
-
+Regards,
+Sieng Piaw
