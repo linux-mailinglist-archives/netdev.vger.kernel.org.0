@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98FCB3450B2
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F053450B0
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 21:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbhCVU0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 16:26:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58372 "EHLO mail.kernel.org"
+        id S231547AbhCVUZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 16:25:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230520AbhCVUZd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 16:25:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 551F061998;
+        id S231130AbhCVUZe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 16:25:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C4AFD6199F;
         Mon, 22 Mar 2021 20:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616444733;
-        bh=D6kU/bXdanr7vPIp3scHPdlB37G5TMijaUE2ssBPKKo=;
+        s=k20201202; t=1616444734;
+        bh=aHPgc33+AHGNs3q8SDrwa5+LQwCIXf/+56TPt0MJ/qw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKCmVbKccsfkk/3bFz+NZuDQptTQs0eF045z310JJgGjTQtrchC4ESf4Bw1cH4v8T
-         M2Sc/S/fB2OXY3mXcitNgEil6Lp/GqlMIZ2W3SIqVohPeCQxukU0kxnkpuoJeEfthy
-         6bHqUJRCxHS0h3kOVda9te081FSZR/DzRM2osMAneNFKhQSUz/I3wydsKaPeOtWKDB
-         Wt7v5PROkqS5pvRFdKbzYfBYAOoZZw0hBuu7IG9kFlaHocSMMp5ikaeaGzioqvqAE7
-         Km9Hf1IBCKrwbm07wWHFlEGEFP1lr/Sa9QH3siuRNOzeSDR4te3JYZu4tZzw4lg6zf
-         LbjhGcKO3Egyw==
+        b=TG8Umb9CPriCoGOjfMZVVg9aOCuHwE17NSbIOEHAvU5QIdmSXc8gweQQRvJ0/jY6K
+         41viHZiQ7HWd86liLhsYjKHUlWvA+1+uNK84tyPh1ZAIJZRO0iisNhSUIQp6Pl6yT/
+         8+vs5H6wKVVuy5xBZtEwAZppVMpPcqZmU7XCSOIurKRmrs0fc7LJuppFxm2e5p3kKi
+         p7lk/lWgWsoIYwtF4zpTJy44LrWZiSmrQ+Bokdf/kqsCtmKDdjgP+UX64OFpHHv7GM
+         lsTsbndgBrG1Ttnn4y/ZyPyTWM5sSBSb0Do6KehfgKGPkvm66v1KHeyd+YclGEBj/P
+         C+zwcGvIiXncw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Huy Nguyen <huyn@nvidia.com>,
-        Daniel Jurgens <danielj@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 1/6] net/mlx5: Add back multicast stats for uplink representor
-Date:   Mon, 22 Mar 2021 13:25:19 -0700
-Message-Id: <20210322202524.68886-2-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Alaa Hleihel <alaa@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 2/6] net/mlx5e: Allow to match on MPLS parameters only for MPLS over UDP
+Date:   Mon, 22 Mar 2021 13:25:20 -0700
+Message-Id: <20210322202524.68886-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210322202524.68886-1-saeed@kernel.org>
 References: <20210322202524.68886-1-saeed@kernel.org>
@@ -41,41 +40,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huy Nguyen <huyn@nvidia.com>
+From: Alaa Hleihel <alaa@nvidia.com>
 
-The multicast counter got removed from uplink representor due to the
-cited patch.
+Currently, we support hardware offload only for MPLS over UDP.
+However, rules matching on MPLS parameters are now wrongly offloaded
+for regular MPLS, without actually taking the parameters into
+consideration when doing the offload.
+Fix it by rejecting such unsupported rules.
 
-Fixes: 47c97e6b10a1 ("net/mlx5e: Fix multicast counter not up-to-date in "ip -s"")
-Signed-off-by: Huy Nguyen <huyn@nvidia.com>
-Reviewed-by: Daniel Jurgens <danielj@nvidia.com>
+Fixes: 72046a91d134 ("net/mlx5e: Allow to match on mpls parameters")
+Signed-off-by: Alaa Hleihel <alaa@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 33b418796e43..c8b8249846a9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3846,10 +3846,17 @@ mlx5e_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 0cacf46dc950..3359098c51d4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -2296,6 +2296,16 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 			*match_level = MLX5_MATCH_L4;
  	}
  
- 	if (mlx5e_is_uplink_rep(priv)) {
-+		struct mlx5e_vport_stats *vstats = &priv->stats.vport;
++	/* Currenlty supported only for MPLS over UDP */
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_MPLS) &&
++	    !netif_is_bareudp(filter_dev)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Matching on MPLS is supported only for MPLS over UDP");
++		netdev_err(priv->netdev,
++			   "Matching on MPLS is supported only for MPLS over UDP\n");
++		return -EOPNOTSUPP;
++	}
 +
- 		stats->rx_packets = PPORT_802_3_GET(pstats, a_frames_received_ok);
- 		stats->rx_bytes   = PPORT_802_3_GET(pstats, a_octets_received_ok);
- 		stats->tx_packets = PPORT_802_3_GET(pstats, a_frames_transmitted_ok);
- 		stats->tx_bytes   = PPORT_802_3_GET(pstats, a_octets_transmitted_ok);
-+
-+		/* vport multicast also counts packets that are dropped due to steering
-+		 * or rx out of buffer
-+		 */
-+		stats->multicast = VPORT_COUNTER_GET(vstats, received_eth_multicast.packets);
- 	} else {
- 		mlx5e_fold_sw_stats64(priv, stats);
- 	}
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
