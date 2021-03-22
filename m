@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AF67345049
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 20:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D991345058
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 20:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232282AbhCVTvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 15:51:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37688 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231657AbhCVTul (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 15:50:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C557619A0;
-        Mon, 22 Mar 2021 19:50:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616442640;
-        bh=itcODGQHLpuXMXSmPfGYKFBLRHdM96wzv6qnbYt2C+E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LIA1MGDksh39F+rFbTj75EUHE5Me8eLtJ2yU6ibQJH2Gio83zPdoqWnHjz5HzJaBu
-         96rlphk16yQedizEwDbAsR2TevRw8Rgx9urqJL9xpWrGb2U8bYnZ2J8LSzy30RP92d
-         JUhUa8taNuDdpRLUol11tkMquc1plcZSmH/lHhAwNSO8WJn63XHxLP3k0ef76970bo
-         ydwEJFrQxLLa+nIhbHUWnMvNBSgDTu6ISeVKCiGxJxwgo7bcYNYK3yQReVhjLfursC
-         s0GTnXpWizkMWUaBoZt9znU+axh2Pdnn/pfnHgINvRz4rRXXqBvgmczo1Xciiugm6q
-         OzAe/pZjFtdLQ==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        id S230520AbhCVT4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 15:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229771AbhCVT4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 15:56:10 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781CCC061574;
+        Mon, 22 Mar 2021 12:56:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=GazjgikYivoBy6/oU6gAviqIw+giRT+xUyeti4WbEQ4=; b=FEeMSxas4D/LJgc2If9d8pya+
+        yMHofB14IaJUluUvcwMUkXVBxigOc9OSjvDQodss4s/m6fyGOZsw+pH+kXuK/aKbvpX5Qw1CTe5Op
+        3aKLUCWzwJdR3JuVxkb+2jy9XjPIbTA5bg2KhPx8qPIjwt5uk5FE4BcvHpxlxzjtBkWaVo/LNnSyM
+        vFC2/FgcNFnWXkU8FSOqhgf51KBjZwbXNbOJMieXnGvcV9fNBwhhYkAG2MwvTyd1rRMMjajLMX7Mm
+        cLF61dZ9JkrMIQwJJfaqIxSKZ//eX1FclsYU7zKPhtX1CsCGc6eFagWsXFNyCdd+egm3cfJsPkW0P
+        8W+f7Q81A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51598)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lOQek-0006u2-RZ; Mon, 22 Mar 2021 19:56:06 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lOQej-0003UW-EF; Mon, 22 Mar 2021 19:56:05 +0000
+Date:   Mon, 22 Mar 2021 19:56:05 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
         Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [RFC net-next 2/2] dt-bindings: ethernet-phy: define `unsupported-mac-connection-types` property
-Date:   Mon, 22 Mar 2021 20:50:01 +0100
-Message-Id: <20210322195001.28036-4-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210322195001.28036-1-kabel@kernel.org>
+Subject: Re: [RFC net-next 2/2] dt-bindings: ethernet-phy: define
+ `unsupported-mac-connection-types` property
+Message-ID: <20210322195605.GA1463@shell.armlinux.org.uk>
 References: <20210322195001.28036-1-kabel@kernel.org>
+ <20210322195001.28036-2-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210322195001.28036-2-kabel@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An ethernet PHY may support PHY interface modes that are not wired on a
-specific board (or are broken for some other reason). In order for the
-kernel to know that these modes should not be used, we need to specify
-this in device tree.
+On Mon, Mar 22, 2021 at 08:49:59PM +0100, Marek Beh˙n wrote:
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> index 2766fe45bb98..4c5b8fabbec3 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> @@ -136,6 +136,20 @@ properties:
+>        used. The absence of this property indicates the muxers
+>        should be configured so that the external PHY is used.
+>  
+> +  unsupported-mac-connection-types:
+> +    $ref: "ethernet-controller.yaml#/$defs/phy-connection-type-array"
+> +    description:
+> +      The PHY device may support different interface types for
+> +      connecting the Ethernet MAC device to the PHY device (i.e.
+> +      rgmii, sgmii, xaui, ...), but not all of these interface
+> +      types must necessarily be supported for a specific board
+> +      (either not all of them are wired, or there is a known bug
+> +      for a specific mode).
+> +      This property specifies a list of interface modes are not
+> +      supported on the board.
 
-Define a new ethernet PHY property `unsupported-mac-connection-types`,
-which lists these unsupported modes.
+I think this needs to be clearer. "This property specifies a list
+of interface modes supported by the PHY hardware but are not
+supported on the board."
 
-Signed-off-by: Marek Beh√∫n <kabel@kernel.org>
----
+I would also suggest having a think about a PHY that supports some
+interface types that we don't have support in the kernel for, but
+which also are not part of the board. Should these be listed
+somehow as well? If not, how do we deal with the kernel later gaining
+support for those interface modes, potentially the PHY driver as well,
+and then having a load of boards not listing this?
 
-As in the previous patch: we allow both `phy-connection-type` and
-`phy-mode` to define PHY interface mode. Should we call this new
-property as it is proposed by this patch, or something different,
-like `unsupported-mac-phy-modes`?
+My feeling is that listing negative properties presents something of
+a problem, and we ought to stick with boards specifying what they
+support, rather than what they don't.
 
-Also, some PHYs (marvell10g for example) also multiple units (host
-unit for connecting to the MAC, fiber unit for connecting for example
-via a SFP). Should we also add `unsupported-fiber-connection-types`
-property?
-
-Moreover should this property be a member of PHY's node, or the
-ethernet controller's node? Were it a member of ethernet controller's
-node, we wouldn't need to $ref a definition from another file's $defs
-(which Rob Herring says that so far is done only in withing single
-file).
-On the other hand `unsupported-fiber-connection-types` property should
-be a member of PHY's node, if we will add this in the future.
-
----
- .../devicetree/bindings/net/ethernet-phy.yaml     | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index 2766fe45bb98..4c5b8fabbec3 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -136,6 +136,20 @@ properties:
-       used. The absence of this property indicates the muxers
-       should be configured so that the external PHY is used.
- 
-+  unsupported-mac-connection-types:
-+    $ref: "ethernet-controller.yaml#/$defs/phy-connection-type-array"
-+    description:
-+      The PHY device may support different interface types for
-+      connecting the Ethernet MAC device to the PHY device (i.e.
-+      rgmii, sgmii, xaui, ...), but not all of these interface
-+      types must necessarily be supported for a specific board
-+      (either not all of them are wired, or there is a known bug
-+      for a specific mode).
-+      This property specifies a list of interface modes are not
-+      supported on the board.
-+    minItems: 1
-+    maxItems: 128
-+
-   resets:
-     maxItems: 1
- 
-@@ -196,5 +210,6 @@ examples:
-             reset-gpios = <&gpio1 4 1>;
-             reset-assert-us = <1000>;
-             reset-deassert-us = <2000>;
-+            unsupported-mac-connection-types = "xaui", "rxaui";
-         };
-     };
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
