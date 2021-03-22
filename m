@@ -2,72 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CE034409B
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 13:15:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BF93440C5
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 13:21:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230367AbhCVMPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 08:15:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48856 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230319AbhCVMPB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 08:15:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 73A016196F;
-        Mon, 22 Mar 2021 12:14:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616415300;
-        bh=9XRfjBpAAKr1LuYTDPxAQk/Vc1HEIU4R46I0OKcvdyA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kWrFeu94yiks68xf9Su1xbk0lhpBE2tdzQhBZCjDfmibnTj7S8BNNPFioYPsgTJxX
-         ZqG15QgONoDZCsHAq7x1CX4S2PsWZyEGHbFpaINZ0UqSaOLCmRkURQFIZPy0XxwWc7
-         zronma+/2bvp48sGebVqG7k8NdkQFqwVJWpFnmjWj04ResVi+Fx9dRhpGLnDdO32vh
-         cbcP/xvg4vwGPBrG+k1zNRZIgE4ms1McyAGib5eGDzj1I3fIlG7p0XTmdWh27A9ISk
-         Lw9kfTYpQlVcwZ/D2CiF7ivFhXIZ30/HMIrILQh5XEvUalbiq6XOd4AxnMNIENS1Fm
-         tHR+u450YvznA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     netdev@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Leon Romanovsky <leon@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] [v2] misdn: avoid -Wempty-body warning
-Date:   Mon, 22 Mar 2021 13:14:47 +0100
-Message-Id: <20210322121453.653228-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S230363AbhCVMVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 08:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230236AbhCVMVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 08:21:14 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE8CC061756
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 05:21:12 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id l22so7330134vsr.13
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 05:21:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=XGgimpglaRwteb/Bgl+pO/u/VHpnAlSvFxg2F0n2KCo=;
+        b=p6ePlsePjZxtZiq6dspm5RqfO23b/cRwiaAUzyGDHXFYH5sx1t4bJGWn0FOttl90Fl
+         9l+Pfmy1A5eZFy/TSoAvoVzQdfoD2qAan4ZvPA6wRfZWyReRLg4ebDoHO03QxuwMUSbG
+         Xw/8chYtadgBTlSZOweb9p+3rtNCRRcjugB/lnaBMco22zR1SkNQM6lzIQNj8EexBez6
+         v7JH/YONvbt8dLTbvqGS0sAH1lBuk1leff10dNlL9TDI1CpIRaVwIzuXwq2+NNyRsGqx
+         z1w0fgf4bGexsX5E3k40FkRmO1RTFVZAOD6tpBLRoVWKOKlZDiXK9Zj5nr2RvdtstoJq
+         nujA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XGgimpglaRwteb/Bgl+pO/u/VHpnAlSvFxg2F0n2KCo=;
+        b=LiP2X4ax6/y76wDOLtER5WCR2AQnDYZ/a/Z9GoBv5kWFvqboVvjVDv8AQ2k5wQG5xf
+         k4uXa4TLjJKDLxUfrWExkrQ/b+bdf25vfMuG0/QELVk6Jlvv4Q9logbgcSzo8vi+FTxG
+         31yLbNIRjocYZ15Tq9AfB34e5qzjSd0fJThENxCTnOszg/T1JOZ0qPgmgR5RUtpH+6kP
+         zgcJ04667eZC99ddjapgdIHonXRXBLxXMBNkWcIMUeRGO6pJIan1UuJ/NdXCZbGsu/K4
+         jxBiBimZFrQWGoTCmWH4txIlPYOreyPuc5cX6JpZCeDtYHcMwirYKHTN0IFMt4N+nTDs
+         Gyeg==
+X-Gm-Message-State: AOAM530VgAGdrYTsgEWiCkbqCNlyzaw4q+rghsgzU6R0UFU3ae4X4D27
+        K7ZKDyJ1HYflw25rapqaPTOtAUIvIJWQe8XUtuWMUA==
+X-Google-Smtp-Source: ABdhPJxi1HPq3PGcbuB9unHpIbKlJszyykT5Ik5ywDW/5koSttdd0dNdIDei/RcqxPZPwkzSrOy7RcSt9jXbJOzDcy4=
+X-Received: by 2002:a67:2a85:: with SMTP id q127mr8477457vsq.19.1616415672109;
+ Mon, 22 Mar 2021 05:21:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com> <20210315132501.441681-9-Jerome.Pouiller@silabs.com>
+In-Reply-To: <20210315132501.441681-9-Jerome.Pouiller@silabs.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 22 Mar 2021 13:20:35 +0100
+Message-ID: <CAPDyKFqJf=vUqpQg3suDCadKrFTkQWFTY_qp=+yDK=_Lu9gJGg@mail.gmail.com>
+Subject: Re: [PATCH v5 08/24] wfx: add bus_sdio.c
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, 15 Mar 2021 at 14:25, Jerome Pouiller
+<Jerome.Pouiller@silabs.com> wrote:
+>
+> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>
+> Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> ---
+>  drivers/net/wireless/silabs/wfx/bus_sdio.c | 259 +++++++++++++++++++++
+>  1 file changed, 259 insertions(+)
+>  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio.c
 
-gcc warns about a pointless condition:
+[...]
 
-drivers/isdn/hardware/mISDN/hfcmulti.c: In function 'hfcmulti_interrupt':
-drivers/isdn/hardware/mISDN/hfcmulti.c:2752:17: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
- 2752 |                 ; /* external IRQ */
+> +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> +       { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200)=
+ },
+> +       { },
+> +};
+> +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> +
+> +struct sdio_driver wfx_sdio_driver =3D {
+> +       .name =3D "wfx-sdio",
+> +       .id_table =3D wfx_sdio_ids,
+> +       .probe =3D wfx_sdio_probe,
+> +       .remove =3D wfx_sdio_remove,
+> +       .drv =3D {
+> +               .owner =3D THIS_MODULE,
+> +               .of_match_table =3D wfx_sdio_of_match,
 
-As the check has no effect, just remove it.
+It's not mandatory to support power management, like system
+suspend/resume. However, as this looks like this is a driver for an
+embedded SDIO device, you probably want this.
 
-Suggested-by: Leon Romanovsky <leon@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: remove the line instead of adding {}
----
- drivers/isdn/hardware/mISDN/hfcmulti.c | 2 --
- 1 file changed, 2 deletions(-)
+If that is the case, please assign the dev_pm_ops here and implement
+the ->suspend|resume() callbacks.
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardware/mISDN/hfcmulti.c
-index 7013a3f08429..14092152b786 100644
---- a/drivers/isdn/hardware/mISDN/hfcmulti.c
-+++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
-@@ -2748,8 +2748,6 @@ hfcmulti_interrupt(int intno, void *dev_id)
- 		if (hc->ctype != HFC_TYPE_E1)
- 			ph_state_irq(hc, r_irq_statech);
- 	}
--	if (status & V_EXT_IRQSTA)
--		; /* external IRQ */
- 	if (status & V_LOST_STA) {
- 		/* LOST IRQ */
- 		HFC_outb(hc, R_INC_RES_FIFO, V_RES_LOST); /* clear irq! */
--- 
-2.29.2
+[...]
 
+Kind regards
+Uffe
