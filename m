@@ -2,136 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E446344E65
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FA23344E67
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 19:22:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230206AbhCVSVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 14:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43192 "EHLO
+        id S231609AbhCVSWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 14:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbhCVSVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:21:23 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 864DEC061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 11:21:22 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r12so22880037ejr.5
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 11:21:22 -0700 (PDT)
+        with ESMTP id S229840AbhCVSVy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 14:21:54 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D3FC061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 11:21:52 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id u19so9169622pgh.10
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 11:21:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=bAKm4lOGYaNlnuE1ZmImv7GP9oc+Qs5InjcvoRmOmxI=;
-        b=N1DCjsQPD7s4miSn3AeCdoTCZdE4HUw5Bx6ljZm0zXAxZLvjtp6tx5OKtvnbvaZACG
-         MhzfOhm1eLnEgVfgVminLVua/ygDxz1Ya3pJGJ+7/BPZgeXgKJorgvvTXN+2WD/qQCDC
-         HS9oagNzzsGGs7yD3CBABYTwfZuvjdEthySaPINEFk6O1WZnnQr1xBpB60zMVUKA9Tu9
-         D3odUhZB/P4TbChM1y0fhF5FFS3ci2xUErBQvw+IeyCVwrxmLuKPxeyx08ihbz7itX4Q
-         i+D6AetQwZT68UFQL9Qk6xRprz2EkzyKAFLtwi0q0mUaNfmWxQFkde2N1ST6INQH8osb
-         vY/g==
+        bh=Nxd4ehcRB+EzIkIZyZJwvOpb0K1GzeoO8rHw1Rz9f3Q=;
+        b=kGJeeEvjaGriSgnyk8W1MH1bDThpV6t8ZTdKXua0Q/Lflqe4e05bvXLY6Q5ndylO1i
+         il6QUkRjNxcQpN/Pl0Xhip7ua5JBg8CB3R2qx1yLfaNxUcLgkUtCJ599/IdgnCx6h15O
+         epDE8iyIxVXKDs7bGHWLENYL0ChxkVaubvkr6l7QBY7ooxlO1RKFYhYubl67BvFMWo48
+         1rl4GCtUfiGv3OvPiOsLbr8LySq+MXr63DmL8LdtAPlcemCT6ByCbPr9juO96u/1Wc/P
+         ZsezjNu0mnijES63EuEszfjN6ne2YFf/KztuzWVncVmfuXiBpaKvAnT2l7yyFSeVDY2l
+         ZefQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=bAKm4lOGYaNlnuE1ZmImv7GP9oc+Qs5InjcvoRmOmxI=;
-        b=HvEQCeMFIWA3u7QHr2M/bW+Dk51gFZn+bAM0Bcf5oo+jnbofzEuQGvcnHKTQsNhdAs
-         p/IcO8OPh8a86FITJJVfyF5XAogO3TuZaNaFy/KOQDRs6jsBMXcIKbNrVVeCTrqsDUxt
-         61Nz0g+MfzdhH3wLyYiNVapE2txIbObWjEMNPk/rbPTZ+PKZFmEqzU1TiuvDSoVoFfhA
-         7MvzQcCxy3MA/TC6wc7Ijky0q/hAj8EY46WCFV0VasAF5ovGpZu3zJFD/lCUwY3wIZ82
-         SBNwhZ8bpA05zG961I1Qm7v6kznwXJG/bTgM9Qw9NS/ONWT44b5WeI6J5wJBSrbahjVS
-         ZkXQ==
-X-Gm-Message-State: AOAM531cpyAZ7/JtJ0ZbW5s57vvc6Uk0u2yKYZEIn1ZETYF5140+oanq
-        nwTb1RZCAji1L9CMCKRWfZI=
-X-Google-Smtp-Source: ABdhPJwZcwSwexbvaNaqvHOEUPXHH6xNmVaMbvUlaHO36q8ZEpNf7FFuKPQKErK1J7gLHHsSFz8Nqw==
-X-Received: by 2002:a17:907:20b7:: with SMTP id pw23mr1141895ejb.168.1616437281306;
-        Mon, 22 Mar 2021 11:21:21 -0700 (PDT)
-Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id hd37sm9624587ejc.114.2021.03.22.11.21.20
+        bh=Nxd4ehcRB+EzIkIZyZJwvOpb0K1GzeoO8rHw1Rz9f3Q=;
+        b=hPKS09TIqrjV+7sf8FmeMxB3jV1ZL9YYwQf+C9qFMLPVLPKHwJys3gAWncvjXE1mVs
+         I4WYRc7yHBUdjOckWNYpEIdQrnvJepc0/RdBFczl2eXcHMt7FYGKniBjrVPDgxZ/U6ax
+         L0eJD9E/yhvwb0aMU1IOJMXyfeT6OHuwgyMraWt7LHshLC9gQ9jOF7z4t25n9IAhDjUZ
+         JTdRMVbLfx63RKDwNRtyriDvEHedPAHG7ADSFcBMVlXBb5WDjEvpSMj5dUAgRGB7nnZW
+         +MTNL9wZ9f2rpPBmyko2bX3GC8QiV/eJmQNWXnDBaPvWGs4V5nuwuhDVKkdGuu7bIQPl
+         mg5w==
+X-Gm-Message-State: AOAM533MTW+NjFxdDcr2yrle0f/HL18lmChtyqFHsY8C+znfasT7f3qa
+        cdXwjlMcl00I7vUtUCcZgTc=
+X-Google-Smtp-Source: ABdhPJxV0WBsQ35Zg8e+MXhA5BOYVG89MMzHyHUE0DqTlyHaDpLEePPO39rNZGQcwxVRXX/2vTWQwA==
+X-Received: by 2002:a63:c84a:: with SMTP id l10mr716964pgi.159.1616437312421;
+        Mon, 22 Mar 2021 11:21:52 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2ce7:87d:6920:2d0])
+        by smtp.gmail.com with ESMTPSA id g18sm14320837pfb.178.2021.03.22.11.21.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 11:21:20 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        netdev@vger.kernel.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net] net: bridge: don't notify switchdev for local FDB addresses
-Date:   Mon, 22 Mar 2021 20:21:08 +0200
-Message-Id: <20210322182108.4121827-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 22 Mar 2021 11:21:51 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Guenter Roeck <groeck@google.com>
+Subject: [PATCH net-next] net: set initial device refcount to 1
+Date:   Mon, 22 Mar 2021 11:21:45 -0700
+Message-Id: <20210322182145.531377-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Eric Dumazet <edumazet@google.com>
 
-As explained in this discussion:
-https://lore.kernel.org/netdev/20210117193009.io3nungdwuzmo5f7@skbuf/
+When adding CONFIG_PCPU_DEV_REFCNT, I forgot that the
+initial net device refcount was 0.
 
-the switchdev notifiers for FDB entries managed to have a zero-day bug.
-The bridge would not say that this entry is local:
+When CONFIG_PCPU_DEV_REFCNT is not set, this means
+the first dev_hold() triggers an illegal refcount
+operation (addition on 0)
 
-ip link add br0 type bridge
-ip link set swp0 master br0
-bridge fdb add dev swp0 00:01:02:03:04:05 master local
+refcount_t: addition on 0; use-after-free.
+WARNING: CPU: 0 PID: 1 at lib/refcount.c:25 refcount_warn_saturate+0x128/0x1a4
 
-and the switchdev driver would be more than happy to offload it as a
-normal static FDB entry. This is despite the fact that 'local' and
-non-'local' entries have completely opposite directions: a local entry
-is locally terminated and not forwarded, whereas a static entry is
-forwarded and not locally terminated. So, for example, DSA would install
-this entry on swp0 instead of installing it on the CPU port as it should.
+Fix is to change initial (and final) refcount to be 1.
 
-There is an even sadder part, which is that the 'local' flag is implicit
-if 'static' is not specified, meaning that this command produces the
-same result of adding a 'local' entry:
+Also add a missing kerneldoc piece, as reported by
+Stephen Rothwell.
 
-bridge fdb add dev swp0 00:01:02:03:04:05 master
-
-I've updated the man pages for 'bridge', and after reading it now, it
-should be pretty clear to any user that the commands above were broken
-and should have never resulted in the 00:01:02:03:04:05 address being
-forwarded (this behavior is coherent with non-switchdev interfaces):
-https://patchwork.kernel.org/project/netdevbpf/cover/20210211104502.2081443-1-olteanv@gmail.com/
-If you're a user reading this and this is what you want, just use:
-
-bridge fdb add dev swp0 00:01:02:03:04:05 master static
-
-Because switchdev should have given drivers the means from day one to
-classify FDB entries as local/non-local, but didn't, it means that all
-drivers are currently broken. So we can just as well omit the switchdev
-notifications for local FDB entries, which is exactly what this patch
-does to close the bug in stable trees. For further development work
-where drivers might want to trap the local FDB entries to the host, we
-can add a 'bool is_local' to br_switchdev_fdb_call_notifiers(), and
-selectively make drivers act upon that bit, while all the others ignore
-those entries if the 'is_local' bit is set.
-
-Fixes: 6b26b51b1d13 ("net: bridge: Add support for notifying devices about FDB add/del")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Fixes: 919067cc845f ("net: add CONFIG_PCPU_DEV_REFCNT")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Guenter Roeck <groeck@google.com>
 ---
- net/bridge/br_switchdev.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/netdevice.h | 1 +
+ net/core/dev.c            | 9 ++++++---
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index b89503832fcc..1e24d9a2c9a7 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -128,6 +128,8 @@ br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb, int type)
- {
- 	if (!fdb->dst)
- 		return;
-+	if (test_bit(BR_FDB_LOCAL, &fdb->flags))
-+		return;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 8f003955c485b81210ed56f7e1c24080b4bb46eb..b11c2c1890b2a28ba2d02fc4466380703a12efaf 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1792,6 +1792,7 @@ enum netdev_ml_priv_type {
+  *
+  *	@proto_down_reason:	reason a netdev interface is held down
+  *	@pcpu_refcnt:		Number of references to this device
++ *	@dev_refcnt:		Number of references to this device
+  *	@todo_list:		Delayed register/unregister
+  *	@link_watch_list:	XXX: need comments on this one
+  *
+diff --git a/net/core/dev.c b/net/core/dev.c
+index be941ed754ac71d0839604bcfdd8ab67c339d27f..95c78279d900796c8a3ed0df59b168d5c5e0e309 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10348,7 +10348,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 	rebroadcast_time = warning_time = jiffies;
+ 	refcnt = netdev_refcnt_read(dev);
  
- 	switch (type) {
- 	case RTM_DELNEIGH:
+-	while (refcnt != 0) {
++	while (refcnt != 1) {
+ 		if (time_after(jiffies, rebroadcast_time + 1 * HZ)) {
+ 			rtnl_lock();
+ 
+@@ -10385,7 +10385,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 
+ 		refcnt = netdev_refcnt_read(dev);
+ 
+-		if (refcnt && time_after(jiffies, warning_time + 10 * HZ)) {
++		if (refcnt != 1 && time_after(jiffies, warning_time + 10 * HZ)) {
+ 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+ 				 dev->name, refcnt);
+ 			warning_time = jiffies;
+@@ -10461,7 +10461,7 @@ void netdev_run_todo(void)
+ 		netdev_wait_allrefs(dev);
+ 
+ 		/* paranoia */
+-		BUG_ON(netdev_refcnt_read(dev));
++		BUG_ON(netdev_refcnt_read(dev) != 1);
+ 		BUG_ON(!list_empty(&dev->ptype_all));
+ 		BUG_ON(!list_empty(&dev->ptype_specific));
+ 		WARN_ON(rcu_access_pointer(dev->ip_ptr));
+@@ -10682,6 +10682,9 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+ 	dev->pcpu_refcnt = alloc_percpu(int);
+ 	if (!dev->pcpu_refcnt)
+ 		goto free_dev;
++	dev_hold(dev);
++#else
++	refcount_set(&dev->dev_refcnt, 1);
+ #endif
+ 
+ 	if (dev_addr_init(dev))
 -- 
-2.25.1
+2.31.0.291.g576ba9dcdaf-goog
 
