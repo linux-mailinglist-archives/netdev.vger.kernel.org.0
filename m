@@ -2,110 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10876343FDF
-	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 12:32:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92899344010
+	for <lists+netdev@lfdr.de>; Mon, 22 Mar 2021 12:44:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbhCVLcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 07:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S230032AbhCVLnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 07:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbhCVLb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 07:31:56 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F972C061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 04:31:55 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id b7so20657019ejv.1
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 04:31:55 -0700 (PDT)
+        with ESMTP id S229728AbhCVLn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 07:43:29 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63187C061574;
+        Mon, 22 Mar 2021 04:43:29 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id h13so18901517eds.5;
+        Mon, 22 Mar 2021 04:43:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0hH7rYyRKArDZ3Ab4/Yhxw9M5G5DAcrHuw30ilWo+lE=;
-        b=aO20ko8i5byt4DlW7ELNGZoV7hqObUrQ4hXtde/KIRFBFtrF7zLFCWW8nzzOyQTeqD
-         wgQRkrBYChx6979/nXct1bvCQt0An7sjrc5HsGnPHb7BGqWaUJ1f3Yhi3+ne0Nl7PKCb
-         /DZ14FxC9EDEapaX6xlomlrZZt6A4LPt8z11kKngB2tzTYJrWGS+AW0b6xjFRw2lfxss
-         SoXQD/zgSGV8D2A/zF+5wWELTq1xlEL0x4YKlCqRhSc3U4fGe7/h/HDuO0a8jJPiguM6
-         CjK4SsiXFbz4352wQ4JK7vUG4uvzlLrVNkKgrO8PMsLSPabR9Xcn7eUQ30cltMlnYtPH
-         pQ8A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=K+wzoALHYH2CFT6jvBrRv/o6c+xMFYhKuXgkU3L4+xE=;
+        b=OBEawwG+XiukXy7wiDxka51smz15Tq/dfez2r/m1ruIEU0kVXP7RF5s1PJV6CiTSRk
+         Ma0IYdBs6Tq93H4rMwzcxYNIHfUe65NoxjRSrdvgVZMlmO/ZV1l7naUJrSTi9dPmSCUa
+         BjnQIov4mAfhtDQGgaRPujNEejU+w4IfNevYMyFCvKEJxwUT+/oTHTEI/pFP60pOEdbc
+         PJa9Lj86EDUzJeW7+Hj8ceSV1XlEtlJEt+U3S3jd9aBX5eANC7yRCZ2p2C+yJdhAR2SG
+         ++oD7DmSMksVZ1auk0O9/vnfUXOcFHKwFhgTUA2jr8nzJdrvQY+8aUpTls4BZuAQhc2G
+         Mkgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0hH7rYyRKArDZ3Ab4/Yhxw9M5G5DAcrHuw30ilWo+lE=;
-        b=YFDcO+fBJd8yOCDBwQ/JftsZZ8phA+4vsuq+R7jyCyO7KTrBmVuGFgX/8XMIh9QGuI
-         cECYaTy/A30VGkwMM3pVB6U8WrxAJSlsdeAN7GNDceTwP0X7n+27oEI5/dTXli7Y9kr5
-         Bk6rYVILwloQlUK7QDG6GN78XbfzoLkrCBy5/HGxJBQ7hJ1KxbVR93w+5VYo1/99VNzX
-         JLVhruHn+Llh5VzB2h82rJuOIZrko9eD+5HGW+ZOilanc8hNUtX1rImS+KbLl6lUPok+
-         Bj9/CMcf4nVTcF+TuLF94+59FgLSVapKg2ftz1XIN64Xr0YWh2bJB+nsXVfIh0TWMq7q
-         qvKg==
-X-Gm-Message-State: AOAM532XhlF29E/guqRY8526j7IXwsPeCq3XosYjRPU5hOCB760+ZTKG
-        +fE1tH0ZBszpDwmivH3qy20=
-X-Google-Smtp-Source: ABdhPJwOOsPcIFtsRvjHOGZoXtEbWt10Wf7tdGKMr7C/D4Ox5tuxVLO5gL1rKHL4xGW0WhyPb4F/eg==
-X-Received: by 2002:a17:906:4cd6:: with SMTP id q22mr18755669ejt.469.1616412714335;
-        Mon, 22 Mar 2021 04:31:54 -0700 (PDT)
-Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id w18sm9664152ejn.23.2021.03.22.04.31.53
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=K+wzoALHYH2CFT6jvBrRv/o6c+xMFYhKuXgkU3L4+xE=;
+        b=uLeXxL4poOqtjLcZXDalQJqdBbZFJAskAjeYNm0tPYgvkR3/sT3k+JJk7gQcv70Ct9
+         thRtNbPAnaB3OqcGNFWJ8c3+xxPl4ADBivYTzqsQZZ7elh6QPgNfwlqcYdlmX2KaiVKY
+         VIi8SIthdM57QAMrA8FHt1ONy0raTAFZw0m+p43cWczMHcnHmSqmQ8m+frS0FFtZsL/f
+         RuCWLB7Jy6UEPc6ghJptv2lRavSM7AOwm1Mt4tZ/nneJgLpbkQLFxWPEUAdVE3H8hLBp
+         IevJjKqKK775K9yY8cY22mwFtIB0SAy0WgKTFDZFb/AZ03D6XuK9tboiXcemiCuK0ypj
+         CXag==
+X-Gm-Message-State: AOAM531+KkQ732MQWiXaAt7chCBwNFA6IbSiPL0GgpLiwPTdVDOK7yg5
+        wgZQ6UBDrK2HQTvTbnqBQ5o=
+X-Google-Smtp-Source: ABdhPJyDxX98p3hRkjCrSQZv6TNHtVpCJ9VRFkv7po7sYdoYLgEIhgld3q+98Ow8tTTzfYIGa6k0gA==
+X-Received: by 2002:a05:6402:382:: with SMTP id o2mr25737957edv.238.1616413408037;
+        Mon, 22 Mar 2021 04:43:28 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id u13sm9552307ejy.31.2021.03.22.04.43.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 04:31:54 -0700 (PDT)
+        Mon, 22 Mar 2021 04:43:27 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 13:43:26 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next] net: move the ptype_all and ptype_base declarations to include/linux/netdevice.h
-Date:   Mon, 22 Mar 2021 13:31:48 +0200
-Message-Id: <20210322113148.3789438-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v2 net-next 06/16] net: dsa: sync multicast router
+ state when joining the bridge
+Message-ID: <20210322114326.svsj5qnyaqrzj6uh@skbuf>
+References: <20210318231829.3892920-1-olteanv@gmail.com>
+ <20210318231829.3892920-7-olteanv@gmail.com>
+ <8735wno2sy.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8735wno2sy.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, Mar 22, 2021 at 12:17:33PM +0100, Tobias Waldekranz wrote:
+> On Fri, Mar 19, 2021 at 01:18, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > Make sure that the multicast router setting of the bridge is picked up
+> > correctly by DSA when joining, regardless of whether there are
+> > sandwiched interfaces or not. The SWITCHDEV_ATTR_ID_BRIDGE_MROUTER port
+> > attribute is only emitted from br_mc_router_state_change.
+> >
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > ---
+> >  net/dsa/port.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/net/dsa/port.c b/net/dsa/port.c
+> > index ac1afe182c3b..8380509ee47c 100644
+> > --- a/net/dsa/port.c
+> > +++ b/net/dsa/port.c
+> > @@ -189,6 +189,10 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+> >  	if (err && err != -EOPNOTSUPP)
+> >  		return err;
+> >  
+> > +	err = dsa_port_mrouter(dp->cpu_dp, br_multicast_router(br), extack);
+> > +	if (err && err != -EOPNOTSUPP)
+> > +		return err;
+> > +
+> >  	return 0;
+> >  }
+> >  
+> > @@ -212,6 +216,12 @@ static void dsa_port_switchdev_unsync(struct dsa_port *dp)
+> >  	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
+> >  
+> >  	/* VLAN filtering is handled by dsa_switch_bridge_leave */
+> > +
+> > +	/* Some drivers treat the notification for having a local multicast
+> > +	 * router by allowing multicast to be flooded to the CPU, so we should
+> > +	 * allow this in standalone mode too.
+> > +	 */
+> > +	dsa_port_mrouter(dp->cpu_dp, true, NULL);
+> 
+> Is this really for the DSA layer to decide? The driver has already been
+> notified that at least one port is now in standalone mode. So if that
+> particular driver then requires all multicast to be flooded towards the
+> CPU, it can make that decision on its own.
+> 
+> E.g. say that you implement standalone mode using a matchall TCAM rule
+> that maps all frames coming in on a particular port to the CPU. You
+> could still leave flooding of unknown multicast off in that case. Now
+> that driver has to figure out if the notification about a multicast
+> router on the CPU is a real router, or the DSA layer telling it
+> something that it can safely ignore.
+> 
+> Today I think that most (all?) DSA drivers treats mrouter in the same
+> way as the multicast flooding bridge flag. But AFAIK, the semantic
+> meaning of the setting is "flood IP multicast to this port because there
+> is a router behind it somewhere". This means unknown _IP_ multicast, but
+> also all known (IGMP/MLD) groups. As most smaller devices cannot
+> separate IP multicast from the non-IP variety, we flood everything. But
+> we should also make sure that the port in question receives all known
+> groups for the _bridge_ in question. Because this is really a bridge
+> setting, though that information is not carried over to the driver
+> today. So reusing it in this way feels like it could be problematic down
+> the road.
 
-ptype_all and ptype_base are declared in net/core/dev.c as non-static,
-because they are used by net-procfs.c too. However, a "make W=1" build
-complains that there was no previous declaration of ptype_all and
-ptype_base in a header file, so this way of declaring things constitutes
-a violation of coding style.
-
-Let's move the extern declarations of ptype_all and ptype_base to the
-linux/netdevice.h file, which is included by net-procfs.c too.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- include/linux/netdevice.h | 3 +++
- net/core/net-procfs.c     | 3 ---
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 8f003955c485..3f5e27e93972 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -5318,6 +5318,9 @@ do {								\
- #define PTYPE_HASH_SIZE	(16)
- #define PTYPE_HASH_MASK	(PTYPE_HASH_SIZE - 1)
- 
-+extern struct list_head ptype_all __read_mostly;
-+extern struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
-+
- extern struct net_device *blackhole_netdev;
- 
- #endif	/* _LINUX_NETDEVICE_H */
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index c714e6a9dad4..d8b9dbabd4a4 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -10,9 +10,6 @@
- #define get_offset(x) ((x) & ((1 << BUCKET_SPACE) - 1))
- #define set_bucket_offset(b, o) ((b) << BUCKET_SPACE | (o))
- 
--extern struct list_head ptype_all __read_mostly;
--extern struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
--
- static inline struct net_device *dev_from_same_bucket(struct seq_file *seq, loff_t *pos)
- {
- 	struct net *net = seq_file_net(seq);
--- 
-2.25.1
-
+I agree with your objections in principle, but somehow I would like to
+make progress with this patch series which is not really about how we
+deal with IP multicast flooding to the CPU port in standalone ports
+mode, so I would like to not get bogged down too much into this for now.
+Don't forget that up until recent commit a8b659e7ff75 ("net: dsa: act as
+passthrough for bridge port flags"), DSA drivers had no real idea
+whether multicast flooding was meant for IP or not. And in standalone
+mode, the way things work now is that the CPU port should see all
+traffic, so it isn't wrong to do what this patch does.
+Unless you see a breaking change introduced by this patch, we can
+revisit this discussion for the "RX filtering on DSA" series, where it
+is more relevant.
