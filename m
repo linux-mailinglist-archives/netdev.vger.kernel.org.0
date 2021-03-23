@@ -2,99 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8172734619B
+	by mail.lfdr.de (Postfix) with ESMTP id 0D01234619A
 	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:37:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbhCWOhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 10:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
+        id S232330AbhCWOhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 10:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232209AbhCWOgg (ORCPT
+        with ESMTP id S232217AbhCWOgg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:36:36 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C918C061574
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:36:34 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id d191so11175686wmd.2
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:36:34 -0700 (PDT)
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44451C061763
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:36:35 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id r10-20020a05600c35cab029010c946c95easo10967162wmq.4
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=6eJZQTDI0Y84I/lOWy3mMS42uiB5oEH6WMZ3z5nS0d0=;
-        b=pHzR/7Z6eHA78L1BvgGTQiQAhJnvTDdjMWpPrwY555vA3/mWm4yfaRMlr8bNgsGM7m
-         ak0EF5URxm+I/b+6ygzCzo72Zm1yKUO2JaXtLrAFS8ulshGks79KiUseLyorblp9TMUe
-         v/ZJN/MHhgqx5Tz2Z2T94XkebPXOA81X338zhTplN2YidosZ2CUBJWw+UYiER84C7r5I
-         cOIUQjhTgj77kWaqc4F6eS/A+I5kHNmQsKQV9og5lvWZpIlDvl4AQlOB3/jS0c4egayd
-         4hORD7/JEj0GVRjYORTpN5fLWB5qYvRA1Q7Xsyyp53ramYBJkp4UifpEOB+uvCkahO5p
-         P6Hg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Na2VZYrK81PcvSfN9T4jEkBcLTcy9RcjMORhpmSECxo=;
+        b=eVfN89Tnee9VIHCl6M3XQiNffocMqRmf3o1UzoKNYPIqw8pSPwuM9xFFKGHyhepItY
+         IOuljWWlf8F+F4DLoOQS5hre4Vu+XUlIpiOKezSmE5t7gmsRDMXsM+uR3SzJA+uuvhF7
+         lhKJeV3Z4pSFR3tOKlwL6KliYsYZAY1VUuIJJnxPEXCSGXaJm/SnkCa+GG4nH5goy/ko
+         UVak2zq8J4ScuuFsA6zacg/tDXqZuJPy2iPvfB7MOmCV+b/WDFlcp1MocCizyhR6zvaf
+         HVYxtWOC+rbsa3UnjSrXPIsMGrny4YjCa8QT5nCVe6UpoWjTA3QsBXKt/BxDqXunUc9Q
+         cx3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6eJZQTDI0Y84I/lOWy3mMS42uiB5oEH6WMZ3z5nS0d0=;
-        b=MkLWXIAi7Qu2J9r4cB0nz12KmOGnuTv+/w4lUy9fBv5IUsg4blwXSsSJGYwrccFkNw
-         U7SI7uJ7W3zrxe/XPmKZrUvfgruIwr8X6NFUAp+e+8xKmj+p1C7SD0cjJFFYS8JFuyGw
-         VKadJTRQBUWg6g5K2Whq/LPFo/hi1vFnkErRK4UHeiHLFPLJL4tcmejG+YKnQBxzxTfy
-         +ixV+1f3J0nCHJHiCN5W2JOGgsQ2bX6/Um4tUuFLYnCWIS3yIEooXm2G4NHHEZImk0AY
-         vkVSkKE/q87kLuh4whpYsLmzPGiARQ2ZcVtO2epUNtlXm5MhZwijLHLPGUnplG5QK8s1
-         PSNw==
-X-Gm-Message-State: AOAM5311nQQ0OTHlZFBgKIuCAmHsH8xtxvWpnHlZnBOk16I0qJ9DZZnZ
-        DgcjSK4eRkZf+NBZLelC03j8TeoICagEhh5c
-X-Google-Smtp-Source: ABdhPJzNoG3ICgEl+qy/NAOtSyA43MMulRHArdsSZSew9OSOkFSE6cHs/90U97lyTvz51qACvI2hHA==
-X-Received: by 2002:a05:600c:4f8e:: with SMTP id n14mr3761882wmq.34.1616510192858;
-        Tue, 23 Mar 2021 07:36:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Na2VZYrK81PcvSfN9T4jEkBcLTcy9RcjMORhpmSECxo=;
+        b=HMl/BDPhGo9QSuz59k4gjv9k0iMnnnXalSOIman9docpwKa7DncfWed5iMe1jn/qsd
+         WFfKROTklYmghOgVBxfXsow/ZpGSDORfNVE5VIZrzVugD47f5m2EOY+5+bUHALI2qk69
+         MUNjHhYLhqHyeVFrIQiWztEF276mNJFa9MdiMjMOJcpU6fIJrCObfk6qBjUPwpedmlNT
+         phnbp8w9sgII8xy3VGSfmhQ8xyXrNJXpVre1gj5SnygVnwBcq8MnBi65SqSsNGaxJR3Q
+         al99Hn1e3elohkzUUG1o/TjqohAw7R7ddogRrC6edScAC3e5rXtAfY1pnoLRkC+8/wi1
+         LvfA==
+X-Gm-Message-State: AOAM531C8gOYcf8oHaX6c17P2QwDVAh8Pi2NbVrHpsu3FnoGOhwBsiBG
+        A9uO/RVq/hZLCAXSXqbsfzp+AQ==
+X-Google-Smtp-Source: ABdhPJx59WCmGz1PEUdkVs0yEmq7gFumgfKsiMxYCXC5BPDzfa6cYPPj6LUPGyRuYo7PRHlbtsI5CQ==
+X-Received: by 2002:a05:600c:214d:: with SMTP id v13mr3713899wml.162.1616510193880;
+        Tue, 23 Mar 2021 07:36:33 -0700 (PDT)
 Received: from localhost.localdomain ([2a01:e0a:82c:5f0:f09e:975c:f695:2be8])
-        by smtp.gmail.com with ESMTPSA id f2sm23995886wrq.34.2021.03.23.07.36.32
+        by smtp.gmail.com with ESMTPSA id f2sm23995886wrq.34.2021.03.23.07.36.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Mar 2021 07:36:32 -0700 (PDT)
+        Tue, 23 Mar 2021 07:36:33 -0700 (PDT)
 From:   Loic Poulain <loic.poulain@linaro.org>
 To:     kuba@kernel.org, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>
-Subject: [RESEND PATCH net-next 1/2] net: mhi: Allow decoupled MTU/MRU
-Date:   Tue, 23 Mar 2021 15:45:06 +0100
-Message-Id: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
+Subject: [RESEND PATCH net-next 2/2] net: mhi: proto_mbim: Adjust MTU and MRU
+Date:   Tue, 23 Mar 2021 15:45:07 +0100
+Message-Id: <1616510707-27210-2-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
+References: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a maximum receive unit (MRU) size is specified, use it for RX
-buffers allocation instead of the MTU.
+MBIM protocol makes the interface asymmetric, ingress data received
+from MHI is MBIM protocol, that can contain multiple aggregated IP
+packets, while egress data received from network stack is IP protocol.
+
+Set a default MTU to 1500 (usual network MTU for WWAN), and MRU to 32K
+which is the default size of MBIM-over-MHI packets.
 
 Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- drivers/net/mhi/mhi.h | 1 +
- drivers/net/mhi/net.c | 4 +++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/mhi/proto_mbim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/mhi/mhi.h b/drivers/net/mhi/mhi.h
-index 12e7407..1d0c499 100644
---- a/drivers/net/mhi/mhi.h
-+++ b/drivers/net/mhi/mhi.h
-@@ -29,6 +29,7 @@ struct mhi_net_dev {
- 	struct mhi_net_stats stats;
- 	u32 rx_queue_sz;
- 	int msg_enable;
-+	unsigned int mru;
- };
+diff --git a/drivers/net/mhi/proto_mbim.c b/drivers/net/mhi/proto_mbim.c
+index 75b5484..29d8577 100644
+--- a/drivers/net/mhi/proto_mbim.c
++++ b/drivers/net/mhi/proto_mbim.c
+@@ -26,6 +26,9 @@
  
- struct mhi_net_proto {
-diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-index f599608..5ec7a29 100644
---- a/drivers/net/mhi/net.c
-+++ b/drivers/net/mhi/net.c
-@@ -265,10 +265,12 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
- 						      rx_refill.work);
- 	struct net_device *ndev = mhi_netdev->ndev;
- 	struct mhi_device *mdev = mhi_netdev->mdev;
--	int size = READ_ONCE(ndev->mtu);
- 	struct sk_buff *skb;
-+	unsigned int size;
- 	int err;
+ #define MBIM_NDP16_SIGN_MASK 0x00ffffff
  
-+	size = mhi_netdev->mru ? mhi_netdev->mru : READ_ONCE(ndev->mtu);
++#define MHI_MBIM_DEFAULT_MRU 32768
++#define MHI_MBIM_DEFAULT_MTU 1500
 +
- 	while (!mhi_queue_is_full(mdev, DMA_FROM_DEVICE)) {
- 		skb = netdev_alloc_skb(ndev, size);
- 		if (unlikely(!skb))
+ struct mbim_context {
+ 	u16 rx_seq;
+ 	u16 tx_seq;
+@@ -282,6 +285,8 @@ static int mbim_init(struct mhi_net_dev *mhi_netdev)
+ 		return -ENOMEM;
+ 
+ 	ndev->needed_headroom = sizeof(struct mbim_tx_hdr);
++	ndev->mtu = MHI_MBIM_DEFAULT_MTU;
++	mhi_netdev->mru = MHI_MBIM_DEFAULT_MRU;
+ 
+ 	return 0;
+ }
 -- 
 2.7.4
 
