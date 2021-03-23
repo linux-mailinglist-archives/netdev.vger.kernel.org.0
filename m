@@ -2,75 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E05C7346D73
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 23:43:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B96B346D91
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 23:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbhCWWnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 18:43:13 -0400
-Received: from mail-il1-f182.google.com ([209.85.166.182]:46007 "EHLO
-        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233781AbhCWWmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 18:42:54 -0400
-Received: by mail-il1-f182.google.com with SMTP id v3so19673152ilj.12;
-        Tue, 23 Mar 2021 15:42:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=KVmKCSdOdE0heS6y/Cbbfc/TApG4WjUWKfbAhWrSGbs=;
-        b=KGcOVs114XCQYsJZpd2UiCd4AurFCr2q63UHwgj7cUsm+YFzYXqSE+9esjcR8njHsm
-         GSWtKmUnVacNjhkM05W/uRjZ9t6hX2uscomDoRSfSUMd8dRke5KIzKMyRKoYfThOTrtZ
-         /KRQ76jbykRmR2U06FFeDhyiZ6N18tpjc4B6EysGWOMT16ME2Ooqfl9IdmjsxHdXCgeo
-         gZ7/X5zfvJYtVWupIPnRtQUg2WQPmNOdA4HJWsh3iVvPd39xdLpPmnlGKfbz01dvoEMx
-         Uhb5JfXx4CsfnICd4vsy9y0YKgt9jWw9t2L+06S4E/KZJ3uvh7987mrs/UCNSvqKOBPB
-         KuDg==
-X-Gm-Message-State: AOAM533+T9vqNAycDV9xx18VZI+AUZxvM0VpenZodXzEcq4zVNIkI4eT
-        +1juWOkYvxm6PsI3w8Tb6Q==
-X-Google-Smtp-Source: ABdhPJwBk7tZXg9j0xfN8xEAYZDHN4Zew5Ma8PpLvYQTNKrWQj5/xQRmwUlUtQCNdhtaFJhzACwpBw==
-X-Received: by 2002:a92:b00d:: with SMTP id x13mr391816ilh.128.1616539373579;
-        Tue, 23 Mar 2021 15:42:53 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id s9sm110713iob.33.2021.03.23.15.42.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 15:42:52 -0700 (PDT)
-Received: (nullmailer pid 1483403 invoked by uid 1000);
-        Tue, 23 Mar 2021 22:42:49 -0000
-Date:   Tue, 23 Mar 2021 16:42:49 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        linux-mmc@vger.kernel.org,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-wireless@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH v5 02/24] dt-bindings: introduce silabs,wfx.yaml
-Message-ID: <20210323224249.GA1483296@robh.at.kernel.org>
-References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com>
- <20210315132501.441681-3-Jerome.Pouiller@silabs.com>
+        id S233948AbhCWWtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 18:49:41 -0400
+Received: from mga05.intel.com ([192.55.52.43]:1239 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234025AbhCWWte (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 18:49:34 -0400
+IronPort-SDR: Wb2pkim3wGAwKEm3jMMaFYLmSb9kWl2z66Zn4ThArHxEAnb5aNiy+P4DhCfHhe/3DXhD9MCNAr
+ ixIjVkuZ9d0g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="275681388"
+X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
+   d="scan'208";a="275681388"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 15:49:19 -0700
+IronPort-SDR: K5Q+Oq+JhbhXFNsH8pIwTOM2hFaA7hm3cLblQz5+UqXf+Pd7EqWd2Yf6KgQ0PHkpyEKRuM4fsp
+ NsJP7CVvEQrg==
+X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
+   d="scan'208";a="525020763"
+Received: from ckane-desk.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.209.48.247])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 15:49:18 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     intel-wired-lan@lists.osuosl.org, sasha.neftin@intel.com,
+        anthony.l.nguyen@intel.com, linux-pci@vger.kernel.org,
+        bhelgaas@google.com, netdev@vger.kernel.org, mlichvar@redhat.com,
+        richardcochran@gmail.com
+Subject: Re: [PATCH next-queue v3 1/3] Revert "PCI: Make pci_enable_ptm()
+ private"
+In-Reply-To: <20210323194046.GA598671@bjorn-Precision-5520>
+References: <20210323194046.GA598671@bjorn-Precision-5520>
+Date:   Tue, 23 Mar 2021 15:49:18 -0700
+Message-ID: <874kh1jxjl.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210315132501.441681-3-Jerome.Pouiller@silabs.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Mar 2021 14:24:39 +0100, Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> Prepare the inclusion of the wfx driver in the kernel.
-> 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> ---
->  .../bindings/net/wireless/silabs,wfx.yaml     | 133 ++++++++++++++++++
->  1 file changed, 133 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-> 
+Bjorn Helgaas <helgaas@kernel.org> writes:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> On Mon, Mar 22, 2021 at 09:18:20AM -0700, Vinicius Costa Gomes wrote:
+>> Make pci_enable_ptm() accessible from the drivers.
+>> 
+>> Even if PTM still works on the platform I am using without calling
+>> this function, it might be possible that it's not always the case.
+>
+> I don't understand the value of this paragraph.  The rest of it makes
+> good sense (although I think we might want to add a wrapper as I
+> mentioned elsewhere).
+>
+
+Sure. Will remove this paragraph, and add the helper as you mentioned.
+Thanks.
+
+
+Cheers,
+-- 
+Vinicius
