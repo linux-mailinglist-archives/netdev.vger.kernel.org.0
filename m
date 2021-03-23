@@ -2,144 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A6534624F
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 16:07:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CEFB346266
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 16:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbhCWPGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 11:06:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47641 "EHLO
+        id S232690AbhCWPIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 11:08:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52490 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232629AbhCWPG0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 11:06:26 -0400
+        by vger.kernel.org with ESMTP id S232688AbhCWPI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 11:08:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616511985;
+        s=mimecast20190719; t=1616512108;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NJl1A50/fsLhyUa1P98rAwzX/DD+4S4HjS9dlvTWw3w=;
-        b=biayTjxqlGozsqF9CsXnvSZ7eR/D3/kPcvfqiUCiNx0PtQ6GpsZ3qVWFua+gu8DZFgJGjb
-        EXV5TPaiokun2pI1SnM85ulJseZNeasBTOEMhtr9JrPyFj1cDWCtEb0jBSrBmLSVCHtVqh
-        nw7Zio5sdn6cJPlZXAp/Ga/33shPrrw=
+        bh=7Dk+kTaXIBxkfJmBKu6XikBMXUgoktdgDa5FmOR121g=;
+        b=DCNnizOGr1mD3hmIQ2ADe1YeF5+vIzvH8jwPoLCMwmeMr6ZvzVesjeVKWk1NGZcQ9BWOG/
+        OqzlrGDlFvR+WGQcnnvIg9MvNvxTuUJLODjA1qNAg7XwzU3zb4u3tv1WQJZlUc3VvPc8c4
+        wZ8BAES5PqAF3M7HxQXFwSegxPWlGWI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-125-xoO57pTLPF29FhvsQ_wpaQ-1; Tue, 23 Mar 2021 11:06:22 -0400
-X-MC-Unique: xoO57pTLPF29FhvsQ_wpaQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-201-d0GLNY50MHKwkdaeWWEmNA-1; Tue, 23 Mar 2021 11:08:23 -0400
+X-MC-Unique: d0GLNY50MHKwkdaeWWEmNA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 00F12801817;
-        Tue, 23 Mar 2021 15:06:20 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BD5B4612A1;
+        Tue, 23 Mar 2021 15:08:21 +0000 (UTC)
 Received: from carbon (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BEB6B10074FC;
-        Tue, 23 Mar 2021 15:06:13 +0000 (UTC)
-Date:   Tue, 23 Mar 2021 16:06:11 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 69805196E3;
+        Tue, 23 Mar 2021 15:08:15 +0000 (UTC)
+Date:   Tue, 23 Mar 2021 16:08:14 +0100
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 6/6] mvneta: recycle buffers
-Message-ID: <20210323160611.28ddc712@carbon>
-In-Reply-To: <20210322170301.26017-7-mcroce@linux.microsoft.com>
-References: <20210322170301.26017-1-mcroce@linux.microsoft.com>
-        <20210322170301.26017-7-mcroce@linux.microsoft.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Message-ID: <20210323160814.62a248fb@carbon>
+In-Reply-To: <20210323104421.GK3697@techsingularity.net>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+        <20210323104421.GK3697@techsingularity.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Mar 2021 18:03:01 +0100
-Matteo Croce <mcroce@linux.microsoft.com> wrote:
+On Tue, 23 Mar 2021 10:44:21 +0000
+Mel Gorman <mgorman@techsingularity.net> wrote:
 
-> From: Matteo Croce <mcroce@microsoft.com>
+> On Mon, Mar 22, 2021 at 09:18:42AM +0000, Mel Gorman wrote:
+> > This series is based on top of Matthew Wilcox's series "Rationalise
+> > __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
+> > test and are not using Andrew's tree as a baseline, I suggest using the
+> > following git tree
+> > 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v5r9
+> >   
 > 
-> Use the new recycling API for page_pool.
-> In a drop rate test, the packet rate increased di 10%,
-> from 269 Kpps to 296 Kpps.
+> Jesper and Chuck, would you mind rebasing on top of the following branch
+> please? 
 > 
-> perf top on a stock system shows:
+> git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v6r2
 > 
-> Overhead  Shared Object     Symbol
->   21.78%  [kernel]          [k] __pi___inval_dcache_area
->   21.66%  [mvneta]          [k] mvneta_rx_swbm
->    7.00%  [kernel]          [k] kmem_cache_alloc
->    6.05%  [kernel]          [k] eth_type_trans
->    4.44%  [kernel]          [k] kmem_cache_free.part.0
->    3.80%  [kernel]          [k] __netif_receive_skb_core
->    3.68%  [kernel]          [k] dev_gro_receive
->    3.65%  [kernel]          [k] get_page_from_freelist
->    3.43%  [kernel]          [k] page_pool_release_page
->    3.35%  [kernel]          [k] free_unref_page
+> The interface is the same so the rebase should be trivial.
 > 
-> And this is the same output with recycling enabled:
-> 
-> Overhead  Shared Object     Symbol
->   24.10%  [kernel]          [k] __pi___inval_dcache_area
->   23.02%  [mvneta]          [k] mvneta_rx_swbm
->    7.19%  [kernel]          [k] kmem_cache_alloc
->    6.50%  [kernel]          [k] eth_type_trans
->    4.93%  [kernel]          [k] __netif_receive_skb_core
->    4.77%  [kernel]          [k] kmem_cache_free.part.0
->    3.93%  [kernel]          [k] dev_gro_receive
->    3.03%  [kernel]          [k] build_skb
->    2.91%  [kernel]          [k] page_pool_put_page
->    2.85%  [kernel]          [k] __xdp_return
-> 
-> The test was done with mausezahn on the TX side with 64 byte raw
-> ethernet frames.
-> 
-> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-> ---
->  drivers/net/ethernet/marvell/mvneta.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index a635cf84608a..8b3250394703 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -2332,7 +2332,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
->  	if (!skb)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
-> +	skb_mark_for_recycle(skb, virt_to_page(xdp->data), &xdp->rxq->mem);
->  
->  	skb_reserve(skb, xdp->data - xdp->data_hard_start);
->  	skb_put(skb, xdp->data_end - xdp->data);
-> @@ -2344,7 +2344,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
->  		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
->  				skb_frag_page(frag), skb_frag_off(frag),
->  				skb_frag_size(frag), PAGE_SIZE);
-> -		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
-> +		skb_mark_for_recycle(skb, skb_frag_page(frag), &xdp->rxq->mem);
->  	}
->  
->  	return skb;
+> Jesper, I'm hoping you see no differences in performance but it's best
+> to check.
 
-This cause skb_mark_for_recycle() to set 'skb->pp_recycle=1' multiple
-times, for the same SKB.  (copy-pasted function below signature to help
-reviewers).
+I will rebase and check again.
 
-This makes me question if we need an API for setting this per page
-fragment?
-Or if the API skb_mark_for_recycle() need to walk the page fragments in
-the SKB and set the info stored in the page for each?
-
+The current performance tests that I'm running, I observe that the
+compiler layout the code in unfortunate ways, which cause I-cache
+performance issues.  I wonder if you could integrate below patch with
+your patchset? (just squash it)
 
 -- 
 Best regards,
   Jesper Dangaard Brouer
   MSc.CS, Principal Kernel Engineer at Red Hat
   LinkedIn: http://www.linkedin.com/in/brouer
+
+[PATCH] mm: optimize code layout for __alloc_pages_bulk
+
+From: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Looking at perf-report and ASM-code for __alloc_pages_bulk() then the code
+activated is suboptimal. The compiler guess wrong and place unlikely code in
+the beginning. Due to the use of WARN_ON_ONCE() macro the UD2 asm
+instruction is added to the code, which confuse the I-cache prefetcher in
+the CPU
+
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ mm/page_alloc.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index f60f51a97a7b..88a5c1ce5b87 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5003,10 +5003,10 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	unsigned int alloc_flags;
+ 	int nr_populated = 0, prep_index = 0;
+ 
+-	if (WARN_ON_ONCE(nr_pages <= 0))
++	if (unlikely(nr_pages <= 0))
+ 		return 0;
+ 
+-	if (WARN_ON_ONCE(page_list && !list_empty(page_list)))
++	if (unlikely(page_list && !list_empty(page_list)))
+ 		return 0;
+ 
+ 	/* Skip populated array elements. */
+@@ -5018,7 +5018,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 		prep_index = nr_populated;
+ 	}
+ 
+-	if (nr_pages == 1)
++	if (unlikely(nr_pages == 1))
+ 		goto failed;
+ 
+ 	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
+@@ -5054,7 +5054,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	 * If there are no allowed local zones that meets the watermarks then
+ 	 * try to allocate a single page and reclaim if necessary.
+ 	 */
+-	if (!zone)
++	if (unlikely(!zone))
+ 		goto failed;
+ 
+ 	/* Attempt the batch allocation */
+@@ -5075,7 +5075,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 
+ 		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+ 								pcp, pcp_list);
+-		if (!page) {
++		if (unlikely(!page)) {
+ 			/* Try and get at least one page */
+ 			if (!nr_populated)
+ 				goto failed_irq;
 
