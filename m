@@ -2,101 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D6734693E
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:42:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5888346940
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:42:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231241AbhCWTlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 15:41:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41586 "EHLO mail.kernel.org"
+        id S231309AbhCWTlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 15:41:23 -0400
+Received: from mga18.intel.com ([134.134.136.126]:46567 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230406AbhCWTks (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 15:40:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C753619C0;
-        Tue, 23 Mar 2021 19:40:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616528447;
-        bh=q1wCghXfGtNESfb8LvUFnXA1QaR3P+eV4arU6McLM0A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=G8VU+Ll65u/RCjl+xDTrGiRlOTmvv3rCiZYy9RDnpusNv67T9a42opv6RdicxTTsU
-         l81QUHbBXlu8Yc+4knMYqr09XyrMIGbc8+buF26naeGqpdhCoGv70oATXPRzBbSqT7
-         rE9c4fiMeUKry6J/Ur4exItOkU3XVYFedGileCPaDK3PZ68uRwz9UII5T28QQgBxTZ
-         QqBu+V9JgVvEnU0hbtnsus8m1VdsN8Idh3pOAcbSO011D9bC/H/xDtaneJAqp9Lw37
-         Xw3q4p/iBYfS1i41A3OLaffeQ83+0Fx28NRi8L9P4/qYWNx68BmAFoL/gQBgBXHD45
-         Qujta7Bgnr6HQ==
-Date:   Tue, 23 Mar 2021 14:40:46 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+        id S229915AbhCWTkw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 15:40:52 -0400
+IronPort-SDR: EKtEONcOmc2ZuCZbW2IURHUMcCaPYV4Cx/nHl29abdImb00PfbaPRwrvmLsbswwSunBIgacj+B
+ yx20XDs6/ejw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="178118859"
+X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
+   d="scan'208";a="178118859"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 12:40:51 -0700
+IronPort-SDR: 50JVbDM3OXVNtr/9fTbaGCYta4bCy8TsLKj4kOe4teHrkNLyvLOKCFUUJiA5ZElecQnWCZKuJQ
+ DkCCGOfYXgLQ==
+X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
+   d="scan'208";a="452283510"
+Received: from ckane-desk.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.209.48.247])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 12:40:50 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
 Cc:     intel-wired-lan@lists.osuosl.org, sasha.neftin@intel.com,
         anthony.l.nguyen@intel.com, linux-pci@vger.kernel.org,
         bhelgaas@google.com, netdev@vger.kernel.org, mlichvar@redhat.com,
         richardcochran@gmail.com
-Subject: Re: [PATCH next-queue v3 1/3] Revert "PCI: Make pci_enable_ptm()
- private"
-Message-ID: <20210323194046.GA598671@bjorn-Precision-5520>
+Subject: Re: [PATCH next-queue v3 2/3] igc: Enable PCIe PTM
+In-Reply-To: <20210323192920.GA597326@bjorn-Precision-5520>
+References: <20210323192920.GA597326@bjorn-Precision-5520>
+Date:   Tue, 23 Mar 2021 12:40:49 -0700
+Message-ID: <87mtutk69q.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210322161822.1546454-2-vinicius.gomes@intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 09:18:20AM -0700, Vinicius Costa Gomes wrote:
-> Make pci_enable_ptm() accessible from the drivers.
-> 
-> Even if PTM still works on the platform I am using without calling
-> this function, it might be possible that it's not always the case.
+Bjorn Helgaas <helgaas@kernel.org> writes:
 
-I don't understand the value of this paragraph.  The rest of it makes
-good sense (although I think we might want to add a wrapper as I
-mentioned elsewhere).
+> On Mon, Mar 22, 2021 at 09:18:21AM -0700, Vinicius Costa Gomes wrote:
+>> In practice, enabling PTM also sets the enabled_ptm flag in the PCI
+>> device, the flag will be used for detecting if PTM is enabled before
+>> adding support for the SYSOFFSET_PRECISE ioctl() (which is added by
+>> implementing the getcrosststamp() PTP function).
+>
+> I think you're referring to the "pci_dev.ptm_enabled" flag.  I'm not
+> sure what the connection to this patch is.  The SYSOFFSET_PRECISE
+> stuff also seems to belong with some other patch.
 
-> Exposing this to the driver enables the driver to use the
-> 'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
-> 
-> This reverts commit ac6c26da29c12fa511c877c273ed5c939dc9e96c.
-> 
-> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> ---
->  drivers/pci/pci.h   | 3 ---
->  include/linux/pci.h | 7 +++++++
->  2 files changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> index ef7c4661314f..2c61557e1cc1 100644
-> --- a/drivers/pci/pci.h
-> +++ b/drivers/pci/pci.h
-> @@ -599,11 +599,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
->  
->  #ifdef CONFIG_PCIE_PTM
->  void pci_ptm_init(struct pci_dev *dev);
-> -int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
->  #else
->  static inline void pci_ptm_init(struct pci_dev *dev) { }
-> -static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-> -{ return -EINVAL; }
->  #endif
->  
->  struct pci_dev_reset_methods {
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index 86c799c97b77..3d3dc07eac3b 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1610,6 +1610,13 @@ static inline bool pci_aer_available(void) { return false; }
->  
->  bool pci_ats_disabled(void);
->  
-> +#ifdef CONFIG_PCIE_PTM
-> +int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-> +#else
-> +static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-> +{ return -EINVAL; }
-> +#endif
-> +
->  void pci_cfg_access_lock(struct pci_dev *dev);
->  bool pci_cfg_access_trylock(struct pci_dev *dev);
->  void pci_cfg_access_unlock(struct pci_dev *dev);
-> -- 
-> 2.31.0
-> 
+Yeah, I will improve the commit message to make it clear that this patch
+is a preparation patch for the one that will add support for
+PTP_SYS_OFFSET_PRECISE/getcrosststamp() and what's the relation with
+PCIe PTM.
+
+>
+> This patch merely enables PTM if it's supported (might be worth
+> expanding Precision Time Measurement for context).
+
+Yes. Will expand the definition in the commit message.
+
+
+Cheers,
+-- 
+Vinicius
