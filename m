@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C723453AB
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:13:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D51033453D6
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbhCWANa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 20:13:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43668 "EHLO mail.kernel.org"
+        id S230453AbhCWA1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 20:27:30 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41908 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230473AbhCWAMv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 20:12:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B94A1619B6
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 00:12:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616458371;
-        bh=ibxP5zDfP0TkJs2Ee1icHqmU6VKbjo5/lQBVOUSDdT4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=J/iCtVhZ9ZNXoD3jRx5Uxe4n/uiKeuLrlLEMpk58g2M/HIjEPMJ001yfM+VpViskX
-         +XNLY41Jkbp06QSq4F/dWEqOhVBAvSnSEm6yY1zFBOto7ceeX2zjOrGjZM8TxKZMm4
-         JMWen4oDQwltTfxKm8lUn8fcC0cS3lkUGsk9+lq8Dp1J90RD2xTJtu3aPSyOCB9sSm
-         DqI6BX3VClOVa490KIxfg80M09EeijbhhcT3hJhVOBGkkhhvh875huYBGyydYrkvS1
-         pUFvbEFfcPs857yeF0k8mhKuZiBYARlrfMNErC6Q+Fv0jHFVo0IjWrM0tng+ae61Ig
-         JrATbp7sf9myw==
-Received: by mail-lj1-f173.google.com with SMTP id r20so23343448ljk.4
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 17:12:50 -0700 (PDT)
-X-Gm-Message-State: AOAM532apGKvR8Yn/psbMTHwaSg3KECEQBZ5zPIERQ0w+62flV52UYZQ
-        dcyYo9EfRTg+dJ1RGydBsSbfFu3e17y7hJmbQ2VddQ==
-X-Google-Smtp-Source: ABdhPJyTWQjBsJRBm75XW+kB699yiYvgjrWxto3SuRfdIVITfc5vc7vvVcU/+ycxvrzp4T6ZflDs0HL16finwKKwnsE=
-X-Received: by 2002:a2e:9b99:: with SMTP id z25mr1295319lji.103.1616458368851;
- Mon, 22 Mar 2021 17:12:48 -0700 (PDT)
+        id S230295AbhCWA1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 20:27:18 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lOUt5-00CUyo-7y; Tue, 23 Mar 2021 01:27:11 +0100
+Date:   Tue, 23 Mar 2021 01:27:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Don Bollinger <don@thebollingers.org>
+Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        'Adrian Pop' <pop.adrian61@gmail.com>,
+        'Michal Kubecek' <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
+Subject: Re: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to
+ dump arbitrary EEPROM data
+Message-ID: <YFk13y19yMC0rr04@lunn.ch>
+References: <1616433075-27051-1-git-send-email-moshe@nvidia.com>
+ <1616433075-27051-2-git-send-email-moshe@nvidia.com>
+ <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org>
 MIME-Version: 1.0
-References: <20210322215201.1097281-1-arnd@kernel.org>
-In-Reply-To: <20210322215201.1097281-1-arnd@kernel.org>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Tue, 23 Mar 2021 01:12:38 +0100
-X-Gmail-Original-Message-ID: <CACYkzJ4KzWbBmCp-ar-amezqUngaoszNLUnPYDc=dXD9VtQBsg@mail.gmail.com>
-Message-ID: <CACYkzJ4KzWbBmCp-ar-amezqUngaoszNLUnPYDc=dXD9VtQBsg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: avoid old-style declaration warnings
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Florent Revest <revest@chromium.org>,
-        Brendan Jackman <jackmanb@chromium.org>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Mikko Ylinen <mikko.ylinen@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 10:52 PM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> gcc -Wextra wants type modifiers in the normal order:
->
-> kernel/bpf/bpf_lsm.c:70:1: error: 'static' is not at beginning of declaration [-Werror=old-style-declaration]
->    70 | const static struct bpf_func_proto bpf_bprm_opts_set_proto = {
->       | ^~~~~
-> kernel/bpf/bpf_lsm.c:91:1: error: 'static' is not at beginning of declaration [-Werror=old-style-declaration]
->    91 | const static struct bpf_func_proto bpf_ima_inode_hash_proto = {
->       | ^~~~~
->
-> Fixes: 3f6719c7b62f ("bpf: Add bpf_bprm_opts_set helper")
-> Fixes: 27672f0d280a ("bpf: Add a BPF helper for getting the IMA hash of an inode")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > +#define ETH_MODULE_EEPROM_PAGE_LEN	256
+> 
+> Sorry to keep raising issues, but I think you want to make this constant
+> 128.
 
-Thanks for fixing!
+Yes, i also think the KAPI should be limited to returning a maximum of
+a 1/2 page per call.
 
-Acked-by: KP Singh <kpsingh@kernel.org>
+> > +#define MODULE_EEPROM_MAX_OFFSET (257 *
+> > ETH_MODULE_EEPROM_PAGE_LEN)
+> 
+> The device actually has 257 addressable chunks of 128 bytes each.  With
+> ETH_MODULE_EEPROM_PAGE_LEN set to 256, your constant is 2X too big.
+> 
+> Note also, SFP devices (but not QSFP or CMIS) actually have another 256
+> bytes available at 0x50, in addition to the full 257*128 at 0x51.  So SFP is
+> actually 259*128 or (256 + 257 * 128).
+> 
+> Devices that don't support pages have much lower limits (256 bytes for
+> QSFP/CMIS and 512 for SFP).  Some SFP only support 256 bytes.  Most devices
+> will return nonsense for pages above 3.  So, this check is really only an
+> absolute limit.  The SFP driver that takes this request will probably check
+> against a more refined MAX length (eg modinfo->eeprom_len).
+> 
+> I suggest setting this constant to 259 * (ETH_MODULE_EEPROM_PAGE_LEN / 2).
+> Let the driver refine it from there.
+
+I don't even see a need for this. The offset should be within one 1/2
+page, of one bank. So offset >= 0 and <= 127. Length is also > 0 and
+<- 127. And offset+length is <= 127.
+
+For the moment, please forget about backwards compatibility with the
+IOCTL interface. Lets get a new clean KAPI and a new clean internal
+API between the ethtool core and the drivers. Once we have that agreed
+on, we can work on the various compatibility shims we need to work
+between old and new APIs in various places.
+
+      Andrew
