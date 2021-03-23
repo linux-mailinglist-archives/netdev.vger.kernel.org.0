@@ -2,151 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DACC1346868
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:04:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 891463468A6
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:13:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232836AbhCWTDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 15:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S233024AbhCWTNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 15:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232792AbhCWTDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 15:03:06 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0C9C061574
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 12:03:05 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id hq27so28884377ejc.9
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 12:03:05 -0700 (PDT)
+        with ESMTP id S232855AbhCWTMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 15:12:44 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD41C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 12:12:43 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id a15so9981969vsi.0
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 12:12:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Q1gH5uTd+e3JNiYZaxTzRpgAiN4+aMrxs68UbB+GghA=;
-        b=n1UlnEfAUA9WotWEVLvWiPU4DboUcx0+JhULeEtv3kiSipgi8f1zaqGB6Qm89F951i
-         Stp89C7wkZVy6EZRC42HkCpP9ZNQ4ircQIg+luY1moglc9GRUJc1oshTqDs/PBaIg1ng
-         ngs/a7AydCc3dgsr3tExvnazR6rPlv4fIDvGnMsUeQ66YKWnR025+VM7KzPj+ofPSlA6
-         i/ifT09LY8j8qAfuUWkqdLC5xwbAVofT3zqVyywggTmyqyoiYsMh/iHWvbhT7mvrde7S
-         eihgyafI9644kziDGn4FSGvfZNDoO1k90StPQIQfAKG9VRyKHk+TB1rY5yKxEHalrRM0
-         itJg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NziR4wdTwbPmQRK5YhnnRmXhP9symav7D77le3H4K+M=;
+        b=PMVJrfgoW6IO/eykiWrjsd3M2rhVX4YPMZxActq4wpEAmRKoODLJqZ5eOI8hAd3Ui/
+         kSzrQ3FuaOzZIBiwn4SSeTiH56nva7fJ7jwJArxrKBI9I08bC2iOW/X4AFzNtLAsNXVw
+         fIdYVNCx+ySgZrYUG4o13ipFMssy5VH6uWnpKJyoinFpA+/8heYRsB9WTXd4ONt/Bv7O
+         +LCu9D9LBylKYOceGf33CRSQzA3Vf9iXuF4A9rSuewX9xMRvJ+rKmskixMa6u1701MFN
+         KAZ3CnQdmXTvVit/bpC9d7KazulRxJUeQ0HNNX5bneUJLaxYamCbK0WSNJFdJKmbm+5W
+         bGZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Q1gH5uTd+e3JNiYZaxTzRpgAiN4+aMrxs68UbB+GghA=;
-        b=BRDc6HWSuf49NBRVh+E28BF8/x1OiFLqwcy4BijJGmfdcRnqK8NyF0yhcaP/YiyEv4
-         hfcxvAAgYIzVRkmJNWVWPErTapF7rL9CwWiVV4dCP6OPKsDTd94pD+dhFkX47k9w5CDC
-         MHUEmNGQ4TndGPkZOVEWsUY/xkDuHZT0ADvMy2pisWF8QECmyBTKoqzS6T7Q3348M1Nm
-         p0bI0xeFctnxTLOjpqGW5KzA8sa7PYK+3mt2oh+jCLzHNML1a1LQ3p8nKxtmPk+7Xjvz
-         48ztbOSm7b8wWb1suCmuhrtrWY6eE1CUuQuO3wo6/D2oFmNPOCK5saWF6OME9WP3JlFP
-         6m2Q==
-X-Gm-Message-State: AOAM531moNOUE7A8YxVPg3hMTYjLALgfzALwvucjmx+wpIbgBQLg3DYg
-        CdOBL0UIkRjQEUJJepjD/M3nc5B7+ac=
-X-Google-Smtp-Source: ABdhPJwXwtZp58g4al3pvvSrv3mdnSbFN8LPXfBRFSt+fTD6XBYpc/0V9hCUYBkNZ9V/enypT92BcA==
-X-Received: by 2002:a17:906:ad4:: with SMTP id z20mr6201454ejf.496.1616526183926;
-        Tue, 23 Mar 2021 12:03:03 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id a22sm11741168ejr.89.2021.03.23.12.03.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 12:03:03 -0700 (PDT)
-Date:   Tue, 23 Mar 2021 21:03:02 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
- reconfiguration of tag protocol
-Message-ID: <20210323190302.2v7ianeuwylxdqjl@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com>
- <20210323113522.coidmitlt6e44jjq@skbuf>
- <87blbalycs.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NziR4wdTwbPmQRK5YhnnRmXhP9symav7D77le3H4K+M=;
+        b=oUwkv7kdSQ4RgTFuh25GDNJbUNEVg6b547twyHnGFvcgfa9O8L8xoZehotUtP/giUc
+         9k4yzVggTXSBrLW+L18564SAcAhBNJfrbpwgW1ZC3/wPiM9mzh/QqUXwv1OhHkOR50yC
+         vyIIKiGXg2nmFF4XlEHGd5f+IwpnHWVfxiE3RVp/Winfoqn0RGTg/yEgh72XsJ/nx+jW
+         qKHoqvL3HR+eoq9OP8LFOOpLMDXfAQarM9ioXXQAo6tMGgaTz73AQkVv6ayywkK3E+dC
+         dQ3iIKpeZbohyS1t1o8NlMXEwnmb8ra8fvxpR791eMmBPeNnmuABGfwZn3sM6m/7kDDY
+         0wWw==
+X-Gm-Message-State: AOAM533JRzwOXv4lI+1xS96tL9RGa6iZxbOKaSp9lKrs82Z98ZjHq2gY
+        I1lTW0ntE5rGZgZFcSClQ4r8BGfN8aDroeCbCBwA6w==
+X-Google-Smtp-Source: ABdhPJzXFydY5TcCz9J1Or2xn4GBkykV9ba3oKyGbccCBa4HxmuOl+Gv/PYBfFODfgfgi/kqTbKgrJDTOyQZhsuqwfY=
+X-Received: by 2002:a67:77c1:: with SMTP id s184mr4758525vsc.55.1616526762989;
+ Tue, 23 Mar 2021 12:12:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87blbalycs.fsf@waldekranz.com>
+References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com>
+ <4503971.bAhddQ8uqO@pc-42> <CAPDyKFoXgV3m-rMKfjqRj91PNjOGaWg6odWG-EGdFKkL+dGWoA@mail.gmail.com>
+ <5713463.b6Cmjs1FeV@pc-42>
+In-Reply-To: <5713463.b6Cmjs1FeV@pc-42>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 23 Mar 2021 20:12:06 +0100
+Message-ID: <CAPDyKFrONrUvbVVVF9iy4P17jZ_Fq+1pGMmsqM6C1hOXOWQnBw@mail.gmail.com>
+Subject: Re: [PATCH v5 08/24] wfx: add bus_sdio.c
+To:     =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 03:48:51PM +0100, Tobias Waldekranz wrote:
-> On Tue, Mar 23, 2021 at 13:35, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > The netdev_uses_dsa thing is a bit trashy, I think that a more polished
-> > version should rather set NETIF_F_RXALL for the DSA master, and have the
-> > dpaa driver act upon that. But first I'm curious if it works.
-> 
-> It does work. Thank you!
-
-Happy to hear that.
-
-> Does setting RXALL mean that the master would accept frames with a bad
-> FCS as well?
-
-Do you mean from the perspective of the network stack, or of the hardware?
-
-As far as the hardware is concerned, here is what the manual has to say:
-
-Frame reception from the network may encounter certain error conditions.
-Such errors are reported by the Ethernet MAC when the frame is transferred
-to the Buffer Manager Interface (BMI). The action taken per error case
-is described below. Besides the interrupts, the BMI is capable of
-recognizing several conditions and setting a corresponding flag in FD
-status field for Host usage. These conditions are as follows:
-
-* Physical Error. One of the following events were detected by the
-  Ethernet MAC: Rx FIFO overflow, FCS error, code error, running
-  disparity error (in applicable modes), FIFO parity error, PHY Sequence
-  error, PHY error control character detected, CRC error. The BMI
-  discards the frame, or enqueue directly to EFQID if FMBM_RCFG[FDOVR]
-  is set [ editor's note: this is what my patch does ]. FPE bit is set
-  in the FD status.
-* Frame size error. The Ethernet MAC detected a frame that its length
-  exceeds the maximum allowed as configured in the MAC registers. The
-  frame is truncated by the MAC to the maximum allowed, and it is marked
-  as truncated. The BMI sets FSE in the FD status and forwards the frame
-  to next module in the FMan as usual.
-* Some other network error may result in the frame being discarded by
-  the MAC and not shown to the BMI. However, the MAC is responsible for
-  counting such errors in its own statistics counters.
-
-So yes, packets with bad FCS are accepted with FMBM_RCFG[FDOVR] set.
-But it would be interesting to see what is the value of "fd_status" in
-rx_default_dqrr() for bad packets. You know, in the DPAA world, the
-correct approach to solve this problem would be to create a
-configuration to describe a "soft examination sequence" for the
-programmable hardware "soft parser", which identifies the DSA tag and
-skips over a programmable number of octets. This allows you to be able
-to continue to do things such as flow steering based on IP headers
-located after the DSA tag, etc. This is not supported in the upstream
-FMan driver however, neither the soft parser itself nor an abstraction
-for making DSA masters DSA-aware. I think it would also require more
-work than it took me to hack up this patch. But at least, if I
-understand correctly, with a soft parser in place, the MAC error
-counters should at least stop incrementing, if that is of any importance
-to you.
-
-> If so, would that mean that we would have to verify it in software?
-
-I don't see any place in the network stack that recalculates the FCS if
-NETIF_F_RXALL is set. Additionally, without NETIF_F_RXFCS, I don't even
-know how could the stack even tell a packet with bad FCS apart from one
-with good FCS. If NETIF_F_RXALL is set, then once a packet is received,
-it's taken for granted as good.
-
-There is a separate hardware bit to include the FCS in the RX buffer, I
-don't think this is what you want/need.
-
-> >> 
-> >> As a workaround, switching to EDSA (thereby always having a proper
-> >> EtherType in the frame) solves the issue.
+On Tue, 23 Mar 2021 at 18:53, J=C3=A9r=C3=B4me Pouiller
+<jerome.pouiller@silabs.com> wrote:
+>
+> On Tuesday 23 March 2021 15:11:56 CET Ulf Hansson wrote:
+> > On Mon, 22 Mar 2021 at 18:14, J=C3=A9r=C3=B4me Pouiller <jerome.pouille=
+r@silabs.com> wrote:
+> > > On Monday 22 March 2021 13:20:35 CET Ulf Hansson wrote:
+> > > > On Mon, 15 Mar 2021 at 14:25, Jerome Pouiller <Jerome.Pouiller@sila=
+bs.com> wrote:
+> > > > >
+> > > > > From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+> > > > >
+> > > > > Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.=
+com>
+> > > > > ---
+> > > > >  drivers/net/wireless/silabs/wfx/bus_sdio.c | 259 +++++++++++++++=
+++++++
+> > > > >  1 file changed, 259 insertions(+)
+> > > > >  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio.c
+> > > >
+> > > > [...]
+> > > >
+> > > > > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> > > > > +       { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILAB=
+S_WF200) },
+> > > > > +       { },
+> > > > > +};
+> > > > > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> > > > > +
+> > > > > +struct sdio_driver wfx_sdio_driver =3D {
+> > > > > +       .name =3D "wfx-sdio",
+> > > > > +       .id_table =3D wfx_sdio_ids,
+> > > > > +       .probe =3D wfx_sdio_probe,
+> > > > > +       .remove =3D wfx_sdio_remove,
+> > > > > +       .drv =3D {
+> > > > > +               .owner =3D THIS_MODULE,
+> > > > > +               .of_match_table =3D wfx_sdio_of_match,
+> > > >
+> > > > It's not mandatory to support power management, like system
+> > > > suspend/resume. However, as this looks like this is a driver for an
+> > > > embedded SDIO device, you probably want this.
+> > > >
+> > > > If that is the case, please assign the dev_pm_ops here and implemen=
+t
+> > > > the ->suspend|resume() callbacks.
+> > >
+> > > I have no platform to test suspend/resume, so I have only a
+> > > theoretical understanding of this subject.
 > >
-> > So basically every user needs to change the tag protocol manually to be
-> > able to receive from port 8? Not sure if that's too friendly.
-> 
-> No it is not friendly at all. My goal was to add it as a device-tree
-> property, but for reasons I will detail in my answer to Andrew, I did
-> not manage to figure out a good way to do that. Happy to take
-> suggestions.
+> > I see.
+> >
+> > >
+> > > I understanding is that with the current implementation, the
+> > > device will be powered off on suspend and then totally reset
+> > > (including reloading of the firmware) on resume. I am wrong?
+> >
+> > You are correct, for a *removable* SDIO card. In this case, the
+> > mmc/sdio core will remove the corresponding SDIO card/device and its
+> > corresponding SDIO func devices at system suspend. It will then be
+> > redetected at system resume (and the SDIO func driver re-probed).
+> >
+> > Although, as this is an embedded SDIO device, per definition it's not
+> > a removable card (MMC_CAP_NONREMOVABLE should be set for the
+> > corresponding mmc host), the SDIO card will stick around and instead
+> > the ->suspend|resume() callback needs to be implemented for the SDIO
+> > func driver.
+>
+> If I follow what has been done in other drivers I would write something
+> like:
+>
+>   static int wfx_sdio_suspend(struct device *dev)
+>   {
+>           struct sdio_func *func =3D dev_to_sdio_func(dev);
+>           struct wfx_sdio_priv *bus =3D sdio_get_drvdata(func);
+>
+>           config_reg_write_bits(bus->core, CFG_IRQ_ENABLE_DATA, 0);
+>           // Necessary to keep device firmware in RAM
+>           return sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
 
-My two cents here are that you should think for the long term. If you
-need it due to a limitation which you have today but might no longer
-have tomorrow, don't put it in the device tree unless you want to
-support it even when you don't need it anymore.
+This will tell the mmc/sdio core to keep the SDIO card powered on
+during system suspend. Thus, it doesn't need to re-initialize it at
+system resume - and the firmware should not need to be re-programmed.
+
+On the other hand, if you don't plan to support system wakeups, it
+would probably be better to power off the card, to avoid wasting
+energy while the system is suspended. I assume that means you need to
+re-program the firmware as well. Normally, it's these kinds of things
+that need to be managed from a ->resume() callback.
+
+>   }
+>
+> However, why not the implementation below?
+>
+>   static int wfx_sdio_suspend(struct device *dev)
+>   {
+>           struct sdio_func *func =3D dev_to_sdio_func(dev);
+>
+>           wfx_sdio_remove(func);
+
+I don't know what wfx_sdio_remove() does, but for sure you would need
+a ->resume() callback to make it possible to restore power/firmware.
+
+>           return 0;
+>   }
+>
+> In both cases, I worry to provide these functions without being able to
+> test them.
+
+Alright, let's simply leave this driver without having the PM
+callbacks assigned. I guess we can revisit this at some later point.
+
+The mmc core will log a message about the missing callbacks, in case
+someone tries to execute system suspend/resume when the driver has
+been probed.
+
+Kind regards
+Uffe
