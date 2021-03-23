@@ -2,245 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8761B345C7D
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 12:09:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01749345C89
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 12:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbhCWLJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 07:09:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46225 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230429AbhCWLJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 07:09:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616497744;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jH64CwItD7+IDNu5T9rDTh1QqhWJhGHEtaUsuBHfOjI=;
-        b=KtR9TPuXH2C6X3zmB0VHWNc0CGD1dHNX50z+7Tm00fB7ZAl2qZ4JahD+DfbD8BrPse85RT
-        pgWew+WoB2+tXQKVp0oPuajpoFkbK/7o5xTx8lIDO1at2DzP1oBd8mZ+qj8VWQQ1U9Zq/z
-        VFaAlJrzPMYIOduOL8JzwI+1+rZOtFE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-351-XYjXjMkUNaOx1Y9hR_U8xA-1; Tue, 23 Mar 2021 07:09:01 -0400
-X-MC-Unique: XYjXjMkUNaOx1Y9hR_U8xA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D7881009466;
-        Tue, 23 Mar 2021 11:08:59 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 38A1F5D9F0;
-        Tue, 23 Mar 2021 11:08:52 +0000 (UTC)
-Date:   Tue, 23 Mar 2021 12:08:51 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Chuck Lever III <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
-Message-ID: <20210323120851.18d430cf@carbon>
-In-Reply-To: <20210322205827.GJ3697@techsingularity.net>
-References: <20210322091845.16437-1-mgorman@techsingularity.net>
-        <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
-        <20210322194948.GI3697@techsingularity.net>
-        <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
-        <20210322205827.GJ3697@techsingularity.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S230365AbhCWLNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 07:13:12 -0400
+Received: from mail-eopbgr680065.outbound.protection.outlook.com ([40.107.68.65]:36864
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230406AbhCWLMr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 07:12:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lmIlQtGyrHRWSeYPG8xrEhdxrqVeegxwuweufKSSBTcRGmg/hxwqwLTJUzU9q6eQJah6vPQ++zF4ReStlpUkPkDLTN5bpVL74Kf7sUE/LXjiCEE5SX9J0xPIrp5vSedTLxMQnUfQk53w7cC2Ke3KbnQUJeQvf12ei9QIcEjvWSYbiZSxDgbu8GQuu7AaOnZWAxIdz869APVu22cSyZ3pzK8/gvoodYuDr5Z/O4pnCSI7HB7kA9pSZ6GfJ4yEpBVxFuQRicIreKuPsWALNiWKqK8ODBt9lu+fV2TGAR30dlhxfsfgEP2uN3S9xjos255qoF3PHEWNHiytGFzC7KdiPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4rbAjwI0goBbosAjM1w8woMAocgKIMpJchcv3Pg8OFc=;
+ b=Q0cKfZYZRKnwvODvOaIGoPd4HCUT1lbl+6QHCOO0uebdvuKzoFJZvIJ1plEtFMEWQugX0nxh27E+xatUZto9fGqC/wFpiKgEkkNGu2S7UyyvFV/G2FllceajoMOXFglA2nmsTGVOaM8aOItALpthDQrIbeiqhMcuhAzORIoqsnmHMkbBGyn418LYw7QVCuoRapyM9xlrrDcn1ugHORYIkUBUGaGGTVKZqf8BE/mCBUwMuw3ms4XBLGieOloH1amkvAJmf9wl+QxhBog1UrFqgHQ3EWoG0c9mJJMe3T+chgC/ydCJWb9eVKoBYvCFbAXXCW0/xvuIlMX6GU2igTfkVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4rbAjwI0goBbosAjM1w8woMAocgKIMpJchcv3Pg8OFc=;
+ b=HW7EAANUneqaEiTJyjMxf6wQcmeRVtevf+RWUaJV4Rm0TbhUozpwGqrDZ30ydZP5JrxkbswagOk7SOR9gDc7n+0V3nVKRS3MQ+JyMaPn5ILyl44jfq/rlbhh3mae4x0Z9RYbGYdwzdjRRfKG4d56+MNx56gSCmiWqHtJ/+j9aH0LNx3f9AOxJaDhXFuexiUnlW7uwRncUsoK3XrpdCCt3s0XyNbuU85YugE1zazJeNOWXBg9zKslHL572SKy+n/k9vjIkm3ZO6WH8Wy+w2Sp04HsEFVl3C7UFUrlFB9CZ/ZEECcq0Gjc3ynmGfKoolnqF1lL1g4uvYgmchhootX47g==
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
+ by DM6PR12MB4548.namprd12.prod.outlook.com (2603:10b6:5:2a1::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.25; Tue, 23 Mar
+ 2021 11:12:44 +0000
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::5c42:cbe:fe28:3a9b]) by DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::5c42:cbe:fe28:3a9b%5]) with mapi id 15.20.3955.027; Tue, 23 Mar 2021
+ 11:12:44 +0000
+Subject: Re: [PATCH v4 net-next 04/11] net: bridge: add helper to replay port
+ and local fdb entries
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
+        linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210322235152.268695-1-olteanv@gmail.com>
+ <20210322235152.268695-5-olteanv@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <f9076daf-7479-8c49-5e7c-ea20d86214c4@nvidia.com>
+Date:   Tue, 23 Mar 2021 13:12:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+In-Reply-To: <20210322235152.268695-5-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZRAP278CA0014.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:10::24) To DM6PR12MB4403.namprd12.prod.outlook.com
+ (2603:10b6:5:2ab::24)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.240.137] (213.179.129.39) by ZRAP278CA0014.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:10::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 11:12:39 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 86045ec6-e134-4540-bb06-08d8edec9515
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4548:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB45481AFDE64AA471581B1AD5DF649@DM6PR12MB4548.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rGq018lnJ+Os9lQvyuGW/6zuxx3nox5/DGRz20oVXiGq5iJ0pJ/9K8HRg+QprfzawTS9UUSCp06vjk9PTNDEk8R2ne+Z/Ln4s3wSQr2269G4DD2QMZb2NsKj2tIQYRcBhT2JyoI1sDeBwHQ8Jxe948qH8YqH7lxTe1+SI6gB5Io1KkX9THijJnpBrEbeDjpOEEbef2f2sjXfcTM6XPuK8gRXpqdPLS9UppdsnbppqpasuzADRAv06Gz5HnNAfTPYjAU/5kcb/s9QvCHEqUPA4Mrjm1ADeOwBO0+LFePKbJTlhtmp/P7AfJYmzwtVc5AZwMz7hggevazESWufWmIJnJLudNH8b2+/ZNBpwWx7GYsIPBqQj85iMquiNX0YVE3kfRr1iyYxIVHGGVVfbYtaR15mWC3EGZ2zS4IcOOIx/ZsdgyZdYzJqvdBo4gBtT3ha1Y9ZUybgURt02JE5nmbQTxP55drlgH5qi2YS9NbWEEXpaEn8zOr1wb2kbhrNBSx8GzS8DiecTw8RoYY7CYW2rEaJTb6NTKAWEDX+czhjKrziWBTmzc8TyoRsioNC2PUfl5qD7vmoDfVPZAyv+zMbm13/5CglRpiT2CbhSk2KoPdXDyFapI7ds4+ya+6/hIPdmgAJ5Uxa/bhCp5NKVFvpyYDpzVq3+fPr2IpCt1aKDPTL4oGUrSQQ2JLUfBFYny1kKe6qd4FIxU6Kn20xsfJya7z9g3Clt77Yp8LoYwMdOqR/EumFQ/baMsF3y8bDLCUfedPH1Nd4q5kW099qEGkaPmXGVVLpTlibEljkWKFwoNE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(346002)(39860400002)(136003)(36756003)(186003)(8936002)(16526019)(4326008)(7416002)(26005)(66946007)(31686004)(31696002)(53546011)(86362001)(6666004)(478600001)(966005)(8676002)(5660300002)(956004)(83380400001)(38100700001)(54906003)(16576012)(110136005)(66556008)(66476007)(2616005)(6486002)(316002)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?WmRJTEdWb0Q3NzFmeWRONzI2S1gyYlFvb3lIU0ZZSE5Ra3V4UzlXalJLVGt0?=
+ =?utf-8?B?M20yZnU0TWtpazlrSlJ3Qjd0RGZ2cjN0ZmNaWFg2TWJYcEZDREN0d0lPZ2JN?=
+ =?utf-8?B?bkNYZ3h4cG9LK015T1NZS1IvT1F2azBCTU16VURyZE1Yc0hvc1JvT2dzMUdM?=
+ =?utf-8?B?WmFGWlZrVGVicG1CejhnU1NOT05jK0RMSWw1NitXT2tWNVFrNXQxNSswRzZa?=
+ =?utf-8?B?M3BDamlxeThNdStVSVhvaU9Ma0JnVEFVcEpKenFKN1dsbWNZdTNkNmhzV09p?=
+ =?utf-8?B?eEN0bnhzYlkrcnJxWmk4d1hGU0FNOHZiRXhXdE1SaUtweUV1QmtDWVJKeE9u?=
+ =?utf-8?B?T3hEczkxWTEwUXFEV0RGMXFJOGtSbmMxRHlSeGRXM282MWZLYTkwWUVmbHY4?=
+ =?utf-8?B?b3NRNDBDL09UaVc3STRhL3VIZkQ4MUF2OGpha1hMZzJpcndoQ3hYWldxbTU3?=
+ =?utf-8?B?Z2EzbllWMnVUN2VyUHpMZ1dDM2thOGZSeEMwemJ2WHAzMER3UUlqZE1laU9p?=
+ =?utf-8?B?bnpxdGRZTENhMFJPMFBocmhtQjZvSURXVHdVTlk2VnpXZEpDbmxxQzNKa3Bw?=
+ =?utf-8?B?b0t5blA5eWVoWTBpQjZjRnUxYjBCSHMrdDFRZHZwTkFvRTEydzhYam16OFlC?=
+ =?utf-8?B?RWNQVUVrd0RLYVNqS1BpWTNRNTdnS2tLSDFVUVRLRHlsSFhFbTJRZ3FZak5I?=
+ =?utf-8?B?OERoR0VUbVh1eFNIU0hZMVlWenFqWHpzcnA5ZWtpTVVJdmNPRktVMHIveE41?=
+ =?utf-8?B?QVNobFlZTU10c2s0U2dNaG1vZjdkVmRkK0ExQ1NBSHVQK1lxcVVFS2wrdkZl?=
+ =?utf-8?B?Tzh2VjZaKzc0bHVFTU9jcUdhQzBUZWI3WmpIaXZNcmZYU0ZadWVLVlo0dUxP?=
+ =?utf-8?B?Rk5VaUtaZlVXN1FkYkc1MENYRXRpTjBBbEsySEdNbldmM1J6dGJvajZaeUQw?=
+ =?utf-8?B?cHVDNGpzM29oRy85bjFjdC9JZGN2dUVCek9JcEIzRUhVUk1HeWVJNlFVS0xJ?=
+ =?utf-8?B?ZFpDY09EZHRQUStjTzJvN25ZZWdjZzR4Q1Zwd1lGMjZWNWRzLzBiRGVuYS9n?=
+ =?utf-8?B?bENzU3o4dG43VFpyamZrTEFObXAwYzBhcWpoS2RJbnRnZmduV0d1eCs1UmdZ?=
+ =?utf-8?B?SzM3a20xWUdzZkFKT21Mbnc2REpLN0Nyd2hrZTdrZHdCUU1sekNOd0d5UXVi?=
+ =?utf-8?B?K3d0VkhTOVo1eDQvZDBXRnM2TWVlSnA2Z1FLUU52TWs5UDVKclRPdnNZTjNN?=
+ =?utf-8?B?Ny9ob3UyWW5tQ3hDbmltN3RmUXVDT3lpRUt0ZC9LRllyOUNscVJTWjhVTnpr?=
+ =?utf-8?B?Z1Y0S0lDclcvYzRJaUpHdElXOUwxaW1jVVJFZ3ROWjIxajEvZXNXV2tSZDZ6?=
+ =?utf-8?B?Snk3ZDhsUWhiTlR1dm5TOWxYRHVNaUFIQ0FqMzJCdEtNNWtjemg2bGJ6ek5z?=
+ =?utf-8?B?TnFzbVpVZ0hnbWZJSmVxRzd6d0Z0M1dtbEJJUHE1Z3p1S29VRVY5dWJET21o?=
+ =?utf-8?B?THpyTWpHRXZkb2xOT093NFR2bS9sRy9ueFpxaE5BL0VUMjd4MXV1VGVySjYr?=
+ =?utf-8?B?ZDJaSUxUcnF3TUdmNm95ODZDUDYyMHFWbjVUajUvUVlFWUdrMitkSkE1bnQy?=
+ =?utf-8?B?Yk5IYkxNSWZza2dqVXhJbzdBUGJKUE9VcndPbTVVM3pwNGNkZWs2ZXZGRUwr?=
+ =?utf-8?B?L2U4NWp6TGM3VkJWZVZHVUF1YVhXU1MzMkxIZDR4ci9rcjNGcysrT1Q2RWRk?=
+ =?utf-8?Q?DpqhRe5PlvcGjVS1EPmJ9kryd1a7RfY8yCaKhuf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86045ec6-e134-4540-bb06-08d8edec9515
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 11:12:44.3752
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +oKGq+HuQe9og6L0bPvKz+9waFpcfm3pPa6Sk35Gyh+aPsBdHEJPNRstUImouBZag/DGUHJu1hNpQ+zGOcFChQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4548
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Mar 2021 20:58:27 +0000
-Mel Gorman <mgorman@techsingularity.net> wrote:
+On 23/03/2021 01:51, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> When a switchdev port starts offloading a LAG that is already in a
+> bridge and has an FDB entry pointing to it:
+> 
+> ip link set bond0 master br0
+> bridge fdb add dev bond0 00:01:02:03:04:05 master static
+> ip link set swp0 master bond0
+> 
+> the switchdev driver will have no idea that this FDB entry is there,
+> because it missed the switchdev event emitted at its creation.
+> 
+> Ido Schimmel pointed this out during a discussion about challenges with
+> switchdev offloading of stacked interfaces between the physical port and
+> the bridge, and recommended to just catch that condition and deny the
+> CHANGEUPPER event:
+> https://lore.kernel.org/netdev/20210210105949.GB287766@shredder.lan/
+> 
+> But in fact, we might need to deal with the hard thing anyway, which is
+> to replay all FDB addresses relevant to this port, because it isn't just
+> static FDB entries, but also local addresses (ones that are not
+> forwarded but terminated by the bridge). There, we can't just say 'oh
+> yeah, there was an upper already so I'm not joining that'.
+> 
+> So, similar to the logic for replaying MDB entries, add a function that
+> must be called by individual switchdev drivers and replays local FDB
+> entries as well as ones pointing towards a bridge port. This time, we
+> use the atomic switchdev notifier block, since that's what FDB entries
+> expect for some reason.
+> 
 
-> On Mon, Mar 22, 2021 at 08:32:54PM +0000, Chuck Lever III wrote:
-> > >> It is returning some confusing (to me) results. I'd like
-> > >> to get these resolved before posting any benchmark
-> > >> results.
-> > >> 
-> > >> 1. When it has visited every array element, it returns the
-> > >> same value as was passed in @nr_pages. That's the N + 1th
-> > >> array element, which shouldn't be touched. Should the
-> > >> allocator return nr_pages - 1 in the fully successful case?
-> > >> Or should the documentation describe the return value as
-> > >> "the number of elements visited" ?
-> > >>   
-> > > 
-> > > I phrased it as "the known number of populated elements in the
-> > > page_array".  
-> > 
-> > The comment you added states:
-> > 
-> > + * For lists, nr_pages is the number of pages that should be allocated.
-> > + *
-> > + * For arrays, only NULL elements are populated with pages and nr_pages
-> > + * is the maximum number of pages that will be stored in the array.
-> > + *
-> > + * Returns the number of pages added to the page_list or the index of the
-> > + * last known populated element of page_array.
-> > 
-> >   
-> > > I did not want to write it as "the number of valid elements
-> > > in the array" because that is not necessarily the case if an array is
-> > > passed in with holes in the middle. I'm open to any suggestions on how
-> > > the __alloc_pages_bulk description can be improved.  
-> > 
-> > The comments states that, for the array case, a /count/ of
-> > pages is passed in, and an /index/ is returned. If you want
-> > to return the same type for lists and arrays, it should be
-> > documented as a count in both cases, to match @nr_pages.
-> > Consumers will want to compare @nr_pages with the return
-> > value to see if they need to call again.
-> >   
+I get the reason to have both bridge and bridge port devices (although the bridge
+is really unnecessary as it can be inferred from the port), but it looks kind of
+weird at first glance, I mean we get all of the port's fdbs and all of the bridge
+fdbs every time (dst == NULL). The code itself is correct and the alternative
+to take only 1 net_device and act based on its type would add another
+step to the process per-port which also doesn't sound good...
+There are a few minor const nits below too, again if there is another version
+please take care of them, for the patch:
+
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+
+> Reported-by: Ido Schimmel <idosch@idosch.org>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  include/linux/if_bridge.h |  9 +++++++
+>  net/bridge/br_fdb.c       | 50 +++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 59 insertions(+)
 > 
-> Then I'll just say it's the known count of pages in the array. That
-> might still be less than the number of requested pages if holes are
-> encountered.
-> 
-> > > The definition of the return value as-is makes sense for either a list
-> > > or an array. Returning "nr_pages - 1" suits an array because it's the
-> > > last valid index but it makes less sense when returning a list.
-> > >   
-> > >> 2. Frequently the allocator returns a number smaller than
-> > >> the total number of elements. As you may recall, sunrpc
-> > >> will delay a bit (via a call to schedule_timeout) then call
-> > >> again. This is supposed to be a rare event, and the delay
-> > >> is substantial. But with the array-based API, a not-fully-
-> > >> successful allocator call seems to happen more than half
-> > >> the time. Is that expected? I'm calling with GFP_KERNEL,
-> > >> seems like the allocator should be trying harder.
-> > >>   
-> > > 
-> > > It's not expected that the array implementation would be worse *unless*
-> > > you are passing in arrays with holes in the middle. Otherwise, the success
-> > > rate should be similar.  
-> > 
-> > Essentially, sunrpc will always pass an array with a hole.
-> > Each RPC consumes the first N elements in the rq_pages array.
-> > Sometimes N == ARRAY_SIZE(rq_pages). AFAIK sunrpc will not
-> > pass in an array with more than one hole. Typically:
-> > 
-> > .....PPPP
-> > 
-> > My results show that, because svc_alloc_arg() ends up calling
-> > __alloc_pages_bulk() twice in this case, it ends up being
-> > twice as expensive as the list case, on average, for the same
-> > workload.
-> >   
-> 
-> Ok, so in this case the caller knows that holes are always at the
-> start. If the API returns an index that is a valid index and populated,
-> it can check the next index and if it is valid then the whole array
-> must be populated.
-> 
-> Right now, the implementation checks for populated elements at the *start*
-> because it is required for calling prep_new_page starting at the correct
-> index and the API cannot make assumptions about the location of the hole.
-> 
-> The patch below would check the rest of the array but note that it's
-> slower for the API to do this check because it has to check every element
-> while the sunrpc user could check one element. Let me know if a) this
-> hunk helps and b) is desired behaviour.
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index c83d38dfe936..4bf20650e5f5 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5107,6 +5107,9 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
->  	} else {
->  		while (prep_index < nr_populated)
->  			prep_new_page(page_array[prep_index++], 0, gfp, 0);
+> diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+> index f6472969bb44..b564c4486a45 100644
+> --- a/include/linux/if_bridge.h
+> +++ b/include/linux/if_bridge.h
+> @@ -147,6 +147,8 @@ void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
+>  bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
+>  u8 br_port_get_stp_state(const struct net_device *dev);
+>  clock_t br_get_ageing_time(struct net_device *br_dev);
+> +int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
+> +		  struct notifier_block *nb);
+>  #else
+>  static inline struct net_device *
+>  br_fdb_find_port(const struct net_device *br_dev,
+> @@ -175,6 +177,13 @@ static inline clock_t br_get_ageing_time(struct net_device *br_dev)
+>  {
+>  	return 0;
+>  }
 > +
-> +		while (nr_populated < nr_pages && page_array[nr_populated])
-> +			nr_populated++;
->  	}
+> +static inline int br_fdb_replay(struct net_device *br_dev,
+> +				struct net_device *dev,
+> +				struct notifier_block *nb)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+>  #endif
 >  
->  	return nr_populated;
+>  #endif
+> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+> index b7490237f3fc..698b79747d32 100644
+> --- a/net/bridge/br_fdb.c
+> +++ b/net/bridge/br_fdb.c
+> @@ -726,6 +726,56 @@ static inline size_t fdb_nlmsg_size(void)
+>  		+ nla_total_size(sizeof(u8)); /* NFEA_ACTIVITY_NOTIFY */
+>  }
+>  
+> +static int br_fdb_replay_one(struct notifier_block *nb,
+> +			     struct net_bridge_fdb_entry *fdb,
+> +			     struct net_device *dev)
+> +{
+> +	struct switchdev_notifier_fdb_info item;
+> +	int err;
+> +
+> +	item.addr = fdb->key.addr.addr;
+> +	item.vid = fdb->key.vlan_id;
+> +	item.added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+> +	item.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+> +	item.info.dev = dev;
+> +
+> +	err = nb->notifier_call(nb, SWITCHDEV_FDB_ADD_TO_DEVICE, &item);
+> +	return notifier_to_errno(err);
+> +}
+> +
+> +int br_fdb_replay(struct net_device *br_dev, struct net_device *dev,
+> +		  struct notifier_block *nb)
 
-I do know that I suggested moving prep_new_page() out of the
-IRQ-disabled loop, but maybe was a bad idea, for several reasons.
+The devices can be const
 
-All prep_new_page does is to write into struct page, unless some
-debugging stuff (like kasan) is enabled. This cache-line is hot as
-LRU-list update just wrote into this cache-line.  As the bulk size goes
-up, as Matthew pointed out, this cache-line might be pushed into
-L2-cache, and then need to be accessed again when prep_new_page() is
-called.
+> +{
+> +	struct net_bridge_fdb_entry *fdb;
+> +	struct net_bridge *br;
+> +	int err = 0;
+> +
+> +	if (!netif_is_bridge_master(br_dev) || !netif_is_bridge_port(dev))
+> +		return -EINVAL;
+> +
+> +	br = netdev_priv(br_dev);
+> +
+> +	rcu_read_lock();
+> +
+> +	hlist_for_each_entry_rcu(fdb, &br->fdb_list, fdb_node) {
+> +		struct net_bridge_port *dst = READ_ONCE(fdb->dst);
 
-Another observation is that moving prep_new_page() into loop reduced
-function size with 253 bytes (which affect I-cache).
+const
 
-   ./scripts/bloat-o-meter mm/page_alloc.o-prep_new_page-outside mm/page_alloc.o-prep_new_page-inside
-    add/remove: 18/18 grow/shrink: 0/1 up/down: 144/-397 (-253)
-    Function                                     old     new   delta
-    __alloc_pages_bulk                          1965    1712    -253
-    Total: Before=60799, After=60546, chg -0.42%
-
-Maybe it is better to keep prep_new_page() inside the loop.  This also
-allows list vs array variant to share the call.  And it should simplify
-the array variant code.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
-[PATCH] mm: move prep_new_page inside IRQ disabled loop
-
-From: Jesper Dangaard Brouer <brouer@redhat.com>
-
-./scripts/bloat-o-meter mm/page_alloc.o-prep_new_page-outside mm/page_alloc.o-prep_new_page-inside
-add/remove: 18/18 grow/shrink: 0/1 up/down: 144/-397 (-253)
-Function                                     old     new   delta
-__alloc_pages_bulk                          1965    1712    -253
-Total: Before=60799, After=60546, chg -0.42%
-
-
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- mm/page_alloc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 88a5c1ce5b87..b4ff09b320bc 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5096,11 +5096,13 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 		else
- 			page_array[nr_populated] = page;
- 		nr_populated++;
-+		prep_new_page(page, 0, gfp, 0);
- 	}
- 
- 	local_irq_restore(flags);
- 
- 	/* Prep pages with IRQs enabled. */
-+/*
- 	if (page_list) {
- 		list_for_each_entry(page, page_list, lru)
- 			prep_new_page(page, 0, gfp, 0);
-@@ -5108,7 +5110,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 		while (prep_index < nr_populated)
- 			prep_new_page(page_array[prep_index++], 0, gfp, 0);
- 	}
--
-+*/
- 	return nr_populated;
- 
- failed_irq:
-
+> +		struct net_device *dst_dev;
+> +
+> +		dst_dev = dst ? dst->dev : br->dev;
+> +		if (dst_dev != br_dev && dst_dev != dev)
+> +			continue;
+> +
+> +		err = br_fdb_replay_one(nb, fdb, dst_dev);
+> +		if (err)
+> +			break;
+> +	}
+> +
+> +	rcu_read_unlock();
+> +
+> +	return err;
+> +}
+> +EXPORT_SYMBOL_GPL(br_fdb_replay);
+> +
+>  static void fdb_notify(struct net_bridge *br,
+>  		       const struct net_bridge_fdb_entry *fdb, int type,
+>  		       bool swdev_notify)
+> 
 
