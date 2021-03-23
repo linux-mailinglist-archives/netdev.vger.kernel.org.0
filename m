@@ -2,127 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE943452B2
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 00:02:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B519345392
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:04:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbhCVXBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 19:01:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50986 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230138AbhCVXBM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 19:01:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D81DE61984;
-        Mon, 22 Mar 2021 23:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616454072;
-        bh=ivkFU65tQWWxYSjMXeE8LovTtaG55iHK7enP6dub3L8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FPnzCrR/bXV/Ds86oqBbL0o8uo3hlY/sbypj3jnFlVvEv2ufX3ME/4OAeFZ4VRVb4
-         P12kEVVLYZ6RzusJ2Dhyh/7jzPDbnUtaT1QAMEUWHB1Sr6ayxNIqhZ+xUQoPPatcnd
-         t4kNZ3Co/WnMhhR8Qbzjbz74RBpwmKQPDfvfSxg1eT477J+2YwDsqE3KI4IuX3Tnvh
-         WS+kKeXJj1VopBdpkdDEeJiPJCRQgT0nUDiAvsyW5fehZZ+OyUADiQHicGyQMALzhJ
-         2mV+R4CP4ss6VnFdIlx8YWlt5m2lwgVguHntOLRT6wuzyOkJk9QRFfJ37yYbDcbVGI
-         udH2PV3kuGGtw==
-Date:   Tue, 23 Mar 2021 00:01:07 +0000
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+        id S229537AbhCWAEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 20:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230516AbhCWADq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 20:03:46 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2ADC061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 17:03:45 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id t14so6698515ilu.3
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 17:03:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OwTS27lmdu1IYVtfbP6cul5sYprN6Y0AzhhQLQ6dKzs=;
+        b=vXZF9RCKjPousn00RfXby2OHMFqI6CWIZ5uvJuzY2rF85yWRPF+Scujn49PlX5zLng
+         EGVucFBSXnJDnDrH7X+XdZCCArX2/ZUw4bMwvh/1XOTmFZF3UiitqlLdazkfTn/Tj70e
+         8BFtdUKewkrB1cKg4sJ/prWVn5HBhgdYl928hW+YG9XgNKR3u/tCa7YuQKBDMoQfTAx4
+         B8PSFe0DpqtCRVCDUZpJsVWq2ZjXOh18jygs/Bz5XvNmXRiGqIyxF3GCxD78/yC9Yx5v
+         AOJ2HliW1umV6qVfNnYbbmvrWcmlrAwbSpVWT6E72Y7RCQpv2yHoYOxfHBLmj2VaYx3s
+         PbcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OwTS27lmdu1IYVtfbP6cul5sYprN6Y0AzhhQLQ6dKzs=;
+        b=CvjnWF/m4a04Oz47rFRGF9JY5HXucc9zG6s+7bGzCKdwqO//qkkg1vxk2yBMV/zp6T
+         xneSyqwEBld7FCnsPxCoUmBxmi6WdlUmncUjH26sdEJVtt3VcoLyCy89Lg7LFSc9lh5A
+         1rAMHoRU9giYKvVLSTYSi5FJ0BoPJwlO1fXG46JXUDszWGKnhw/mEFdLbqtNH4IPfW5L
+         h9Epz/iUh91X5krT7mO+i23HjpAKYbObbv4QWOsbPzl2HnjiBL3Usux4R07uzSQuaHDT
+         vwBb3dICw7XOaxoqj3upDlgS+q5mtvIVtPuT30QrHCsvotIz4TJ9SoffS2m9xabKqs61
+         /QJQ==
+X-Gm-Message-State: AOAM531r6T8J83td0qdeDHmKSQ8y78G+BM4rvqs+PqM881pduTUdylla
+        gE/LdvVrqvOEFIN9nitDcPcn1Q==
+X-Google-Smtp-Source: ABdhPJy+gtujtGv55KnZhN7pqmjC0X5LL4xK9I4liITDzlvYnOOp1msEbt5i8Dgj0jqRcnUH/uYQEg==
+X-Received: by 2002:a05:6e02:1a02:: with SMTP id s2mr2284719ild.48.1616457825182;
+        Mon, 22 Mar 2021 17:03:45 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id b9sm8409627iof.54.2021.03.22.17.03.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Mar 2021 17:03:44 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/2] net: ipa: fix IPA validation
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [RFC net-next 1/2] dt-bindings: ethernet-controller: create a
- type for PHY interface modes
-Message-ID: <20210323000107.3483ce6b@thinkpad>
-In-Reply-To: <YFkH6AKEAaPbhy9f@lunn.ch>
-References: <20210322195001.28036-1-kabel@kernel.org>
-        <YFkH6AKEAaPbhy9f@lunn.ch>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Cc:     Leon Romanovsky <leon@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210320141729.1956732-1-elder@linaro.org>
+ <20210320141729.1956732-3-elder@linaro.org> <YFcCAr19ZXJ9vFQ5@unreal>
+ <dd4619e2-f96a-122f-2cf6-ec19445c6a5c@linaro.org> <YFdO6UnWsm4DAkwc@unreal>
+ <7bc3e7d7-d32f-1454-eecc-661b5dc61aeb@linaro.org> <YFg7yHUeYvQZt+/Z@unreal>
+ <f152c274-6fe0-37a1-3723-330b7bfe249a@linaro.org> <YFkgsHfldCNkaLSB@lunn.ch>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <b24adfcd-1dac-581a-93bb-0ce38133bc0f@linaro.org>
+Date:   Mon, 22 Mar 2021 19:03:43 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YFkgsHfldCNkaLSB@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Mar 2021 22:11:04 +0100
-Andrew Lunn <andrew@lunn.ch> wrote:
+On 3/22/21 5:56 PM, Andrew Lunn wrote:
+>> The solution is to create a user space tool inside the
+>> drivers/net/ipa directory that will link with the kernel
+>> source files and will perform all the basic one-time checks
+>> I want to make.
+> 
+> Hi Alex
+> 
+> Have you found any other driver doing this?  Where do they keep there
+> code?
+> 
+> Could this be a selftest, put somewhere in tools/testing/selftests.
+> 
+> Or can this be a test kernel module. Eg. we have crypt/testmsg.c which
+> runs a number of tests on the crypto subsystem,
+> ./kernel/time/test_udelay.c which runs times on udelay.
+> 
+> Rather than inventing something new, please follow other examples
+> already in the kernel.
 
-> On Mon, Mar 22, 2021 at 08:49:58PM +0100, Marek Beh=C3=BAn wrote:
-> > In order to be able to define a property describing an array of PHY
-> > interface modes, we need to change the current scalar
-> > `phy-connection-type`, which lists the possible PHY interface modes, to
-> > an array of length 1 (otherwise we would need to define the same list at
-> > two different places). =20
->=20
-> Hi Marek
->=20
-> Please could you include a 0/2 patch which explains the big
-> picture. It is not clear to me why you need these properties.  What is
-> the problem you are trying to solve? That should be in the patch
-> series cover note.
->=20
-> 	 Andrew
+I will.  I did see the tools/testing directory and I'll
+look at how people have done things there.
 
-Hi Andrew,
+I need to try to get it working first, then I'll figure
+out where it belongs.  I think I'll be able to do a user
+space test, but it's a little tricky to be sure it's
+actually testing what I want.  If that ends up being
+too hard, I'll look into kernel test module.
 
-sorry, I did not add a cover letter because the second patch commit
-message basically explains the purpose, but now I realize that a cover
-letter could mention a specific example.
+Thanks for the suggestions.
 
-I will include a cover letter in v2.
+					-Alex
 
-Meanwhile I can explain the purpose here:
+>         Andrew
+> 
 
-Some PHYs support interface modes that must not necessarily be wired
-on a board. A good example is Marvell 88x3310 PHY, which supports
-several modes via one SerDes lane (10gbase-r, usxgmii, 5gbase-r,
-2500base-x, sgmii), but also via 2 or 4 SerDes lanes (rxaui and xaui).
-
-So a board utilizing this PHY can have different constraints:
-- the board wiring can have a frequnecy constraint (for example the
-  connection can go via a connector that does not support frequencies
-  greater than 6 GHz, so for 10g link multiple lanse - xaui or rxaui -
-  must be used)
-
-- the board may simply not wire all SerDes lanes
-
-- the MAC does not have to support all these modes
-
-For the first two points it is impossible for the code to know this
-without it being specified in device tree. The last one can be solved in
-code, and Russell King has experimental patches in his repo for this
-(both MAC and PHY driver fill up a supported_interfaces bitmask).
-
-But why can't we just depend on the phy-mode property defined in ethernet
-controller's OF node?
-Becuase this PHY can change its interface mode to the MAC depending on
-the negotiated speed on the copper side. This PHY has several possible
-configurations
-- communicate with the MAC in USXGMII. This is simplest one since the
-  interface mode does not change even if copper speed changes
-- 10gbase-r/5gbase-r/2500base-x/sgmii depending on the copper speed
--      xaui/5gbase-r/2500base-x/sgmii depending on the copper speed
--     rxaui/5gbase-r/2500base-x/sgmii depending on the copper speed
-- 10gbase-r with rate matching
--      xaui with rate matching
--     rxaui with rate matching
-
-One of these configurations is selected by strapping pins, and can be
-read by the marvell10g driver. The driver can then change phy-mode on
-the MAC side.
-
-One problem is that the mode selected by the strapping pins may not
-be ideal. There are some erratas published for this PHY, which say that
-rate-matching is broken in some conditions (speed <=3D 1000), for example.
-Also the rate-matching mode is not optimal if the MAC supports the
-lower-speed modes, because of overhead of sending pause-frames.
-
-So in order to select the best possible configuration, we need to know
-which PHY interface modes are supported on the board.
-
-The most generic solution is to specify a property which either lists
-unsupported PHY modes or supported PHY modes (if missing, assume all
-modes are supported).
-
-Marek
