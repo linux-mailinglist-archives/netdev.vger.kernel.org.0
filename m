@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB3F8345F4C
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 14:16:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F171C345F55
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 14:17:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231715AbhCWNPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 09:15:34 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:49877 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231749AbhCWNPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 09:15:04 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 8AE02521EE1;
-        Tue, 23 Mar 2021 16:14:57 +0300 (MSK)
+        id S231474AbhCWNQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 09:16:38 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:32467 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231592AbhCWNPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 09:15:15 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 79F1576859;
+        Tue, 23 Mar 2021 16:15:12 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1616505297;
-        bh=biGI84Bpq0MRHKSw1OPFmq5AZjINgIY1rMqGZbuyBqA=;
+        s=mail202102; t=1616505312;
+        bh=OR8kR+7kRVbqH+d8r/EG2Iprd9hqIkh/rAcgS4VwKRk=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=Mxr77CkpNc/EmqTclhbU2gB/zky4CmFRXqUne2KJSGxuz9WixDOyW0n+D0iw0L4UD
-         bs2zVy9cWCEYUHNxQfLsgR6LCCcfI+6HabIt6I64TY4qGDcouyDXi/E+RiaPDhIEVU
-         Pdpvse8ziQ1jJjifo2hWMY00qbSforSFogLQ44wRQ3e2YNnCqgJUQ09/cenD7oNSO5
-         UnTIvTSitfK2I1mYlw34edJbe6odr3q3GiGFwVgoRk5BrvooWjmifOt0gKDW/tHjg4
-         9zt/5xvED1PyVVLnGxSI0iatrAqdkQ62vXuzNvN1yt5neIP5MkYdUq0YHIa+VPBJmD
-         OVI/4o9LJQpBg==
+        b=O8LO0rX4gOkOTB1POg3ea6hi3CVu11NY0fWa3d/vF7OlbhwgBadyVDE44EfuTtIFt
+         edF1qETTvJ8/ru9a+FMjZlczP76ltFkatfjuukp8ChMZ4Gdc72J0Zbm2sjmH/eDAMc
+         26JxkjTstdKvjFsTwLSYhweYxIfFJhDklSkjuabUzsWCquw4bE01ohLgHJrWA055cR
+         6RsnxmmdBA2I4w/VdnWbaAiW2JiQzb4e123XTrxduTA2gkAbUUEicHGVQD4cOs/9tw
+         898NdedvnEg4RekqDMWgLmt0Xk+dODrl2UVTkKDITbI8gurs6Lfpvwo74mtvSrDcqV
+         kfU/Xwdxb5xmg==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 39CD3521ED1;
-        Tue, 23 Mar 2021 16:14:57 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 3B3007686F;
+        Tue, 23 Mar 2021 16:15:12 +0300 (MSK)
 Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 23
- Mar 2021 16:14:56 +0300
+ Mar 2021 16:15:11 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,17 +41,18 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
         Colin Ian King <colin.king@canonical.com>,
+        Jeff Vander Stoep <jeffv@google.com>,
         Alexander Popov <alex.popov@linux.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <arseny.krasnov@kaspersky.com>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v7 19/22] vhost/vsock: SEQPACKET feature bit support
-Date:   Tue, 23 Mar 2021 16:14:47 +0300
-Message-ID: <20210323131450.2461998-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v7 20/22] virtio/vsock: SEQPACKET feature bit support
+Date:   Tue, 23 Mar 2021 16:15:02 +0300
+Message-ID: <20210323131505.2462107-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210323130716.2459195-1-arseny.krasnov@kaspersky.com>
 References: <20210323130716.2459195-1-arseny.krasnov@kaspersky.com>
@@ -59,7 +60,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -100,38 +101,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds handling of SEQPACKET bit: if guest sets features with
-this bit cleared, then SOCK_SEQPACKET support will be disabled.
+This adds handling of SEQPACKET bit: guest tries to negotiate it
+with vhost.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- drivers/vhost/vsock.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/vmw_vsock/virtio_transport.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 5af141772068..710d99e61ccc 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -31,7 +31,8 @@
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index 83ae2078c847..ee99bd919a12 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -624,6 +624,10 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+ 	rcu_assign_pointer(the_virtio_vsock, vsock);
  
- enum {
- 	VHOST_VSOCK_FEATURES = VHOST_FEATURES |
--			       (1ULL << VIRTIO_F_ACCESS_PLATFORM)
-+			       (1ULL << VIRTIO_F_ACCESS_PLATFORM) |
-+			       (1ULL << VIRTIO_VSOCK_F_SEQPACKET)
+ 	mutex_unlock(&the_virtio_vsock_mutex);
++
++	if (vdev->features & (1ULL << VIRTIO_VSOCK_F_SEQPACKET))
++		virtio_transport.seqpacket_allow = true;
++
+ 	return 0;
+ 
+ out:
+@@ -707,6 +711,7 @@ static struct virtio_device_id id_table[] = {
  };
  
- enum {
-@@ -796,6 +797,9 @@ static int vhost_vsock_set_features(struct vhost_vsock *vsock, u64 features)
- 			goto err;
- 	}
+ static unsigned int features[] = {
++	VIRTIO_VSOCK_F_SEQPACKET
+ };
  
-+	if (features & (1ULL << VIRTIO_VSOCK_F_SEQPACKET))
-+		vhost_transport.seqpacket_allow = true;
-+
- 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
- 		vq = &vsock->vqs[i];
- 		mutex_lock(&vq->mutex);
+ static struct virtio_driver virtio_vsock_driver = {
 -- 
 2.25.1
 
