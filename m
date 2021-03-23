@@ -2,149 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 867A6345A16
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 09:53:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CCB6345A41
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 10:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbhCWIwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 04:52:34 -0400
-Received: from mail-dm6nam12on2086.outbound.protection.outlook.com ([40.107.243.86]:52065
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229493AbhCWIwV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 04:52:21 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m578CcTJC9H/sW7qAyvrXVplmOMGxmYZMroNH58sgxUYjfDJEz6jhO1VNiJL/rTDkC+v12f9/PEZ5yECx+uiqGfdt3l69h3oRFkx6maoXFtdCwB4kapaeOv0zBH+O2btg1L/pyQF4lVRQPBWxMM9r6IjcquLlEctChToFmZBrXstigFv22Md7cmjAW1ZSKO3Zj6VcU5V2vrjHLpkLctR6BeMLhh5tmeKMAP+CzoLW3aCQyZY36TMZs5b05m8UFGokKFwsh6FF+cMZd6p8EQX5KqqNmFXVtEoYZfhUw8a1pCbhpPwCy60k/PNWnfeanscHF27r525qeGxWaBFkC1uLg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gn9TlnI1+dCa4YSImTmWO/MFA5W7V8eBaqbHmp0FNu4=;
- b=cxuC1rDpYqghP0xLaEq8WnHEd12leFGGcp5cG3xoHFK8TZoESnhxfleD1TwMiHVwN5SR6jjv1C13GVfIOONGUL/YYbj6ToEKVuzK1t9LTus1LPWU6Icd9OqZauFI8sT+EtiQKjw871ctnmXmPAzfX5iTdHSWAyZRqOXsF5TYeOUpauAa4QMq1xfAJUpHOv9nOfVP3+OUrBSLYFdmYdbQ9VSuL2jb1JYsYt9eXt0pj/2Q1xO5Q1i6ffD/Demo2giTnevrqQakLduEuIp5jCLmRRNqWlp7G7TAjjn7PMiKAO7VtRHQLXYvAD7RIC08WUUv7k5J0u6+AsnUnhnDDLcxWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gn9TlnI1+dCa4YSImTmWO/MFA5W7V8eBaqbHmp0FNu4=;
- b=L5qn9eF3uC4y/Z394eqO9VRKSSVj7NALy21MfwlafHZ52c5zgv7V2+0vEJjt0aWxvPAamtn7NicXfpmLr8HT2XZb3fD3WiuD6ve5RLOrkjfjgTuFEd1h1HGxB7Q5jVPMOGvtkbPw7NqbhJp51ncVEJCMozTKwJFMz0nair380iJ3W6GThrMgDt53yK7QOfzd4qaRqpXLuV5vr3/D0OPMMuKLZR1GoR/ABnUmMRkcsll09TuCDFScCLIj3mpneX3hSbI/268e0v+K8hQ7lJPqJgOH42nOZ5v1ZcrdU2B9DkR2Xft4QsW8VSL0yUrNg1KQ0uqSDFUCcxx98F6613g3cg==
-Received: from MWHPR15CA0068.namprd15.prod.outlook.com (2603:10b6:301:4c::30)
- by BN9PR12MB5308.namprd12.prod.outlook.com (2603:10b6:408:105::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Tue, 23 Mar
- 2021 08:52:16 +0000
-Received: from CO1NAM11FT047.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:4c:cafe::e3) by MWHPR15CA0068.outlook.office365.com
- (2603:10b6:301:4c::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend
- Transport; Tue, 23 Mar 2021 08:52:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT047.mail.protection.outlook.com (10.13.174.132) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 08:52:15 +0000
-Received: from [172.27.0.234] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 23 Mar
- 2021 08:52:11 +0000
-Subject: Re: [PATCH] net/mlx5: Fix a potential use after free in
- mlx5e_ktls_del_rx
-To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>, <borisp@nvidia.com>,
-        <saeedm@nvidia.com>, <leon@kernel.org>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <maximmi@mellanox.com>
-CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210322142109.6305-1-lyl2019@mail.ustc.edu.cn>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <0b9cd54f-cab4-7675-cecf-171d4d45b897@nvidia.com>
-Date:   Tue, 23 Mar 2021 10:52:07 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S230022AbhCWJCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 05:02:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51463 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229986AbhCWJBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 05:01:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616490111;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lnKo84NJRibXYx1pHZppaLUJVye8I3wagPHafQ3chwg=;
+        b=P0YK4y1mYD+JZQ74D578GIkAQRpp+lvBoaApWq1J17Cur/vH9BT8a7YxLI/P3tZ8B2FDbX
+        To1Luh5DUcVFaWUqvpE6MoQk2C7k3y2JXzbmuybojuV4yg1XfZdA90iWphDLoqWwa0JUMW
+        UFIRPJiPtZ0J1TYccWUyn2nNwluz5v0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-521-F5AhZnT2N8ib0revLWM4yw-1; Tue, 23 Mar 2021 05:01:47 -0400
+X-MC-Unique: F5AhZnT2N8ib0revLWM4yw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B46AD180FCAA;
+        Tue, 23 Mar 2021 09:01:44 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C191860C5D;
+        Tue, 23 Mar 2021 09:01:38 +0000 (UTC)
+Date:   Tue, 23 Mar 2021 10:01:38 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     brouer@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] page_pool: let the compiler optimize and
+ inline core functions
+Message-ID: <20210323100138.791a77ce@carbon>
+In-Reply-To: <20210322183047.10768-1-alobakin@pm.me>
+References: <20210322183047.10768-1-alobakin@pm.me>
 MIME-Version: 1.0
-In-Reply-To: <20210322142109.6305-1-lyl2019@mail.ustc.edu.cn>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 69dd7c4c-4035-4364-071c-08d8edd8f534
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5308:
-X-Microsoft-Antispam-PRVS: <BN9PR12MB53080B31AAA073A65B11DBB1DC649@BN9PR12MB5308.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Anfrk3sw0Wg9XGSujhrp5RSYnQ4bFmQWd7tYrnfL2Db82ql3pqhVqlhmeFCrj5D8zOvztWWlQxgpnetikshbdLgmSqZwVQjRPo7yvsHzsUHC4J1IrFErG17vCQNdY61ylgOLlaO4iG2Vj9DpqJ/Sn3MtVTPfFZlWmFOulQPNlQXiQDP6OaYVzt8Zo0XGxzpzdpRLb4BmLfNsUXrRptnL/KfsJ0ZHrxApvk7kz1KwjVjloqxiPI+6fVjpX8xrERkaqjmMyTM7dxbFtX5jhWAbKHvqbnqewge8MvLXivf04hCmwcqQTZJd2abbgjVxeCWLbb1cDoF72jKkdvU8UgU+Ana8OBPOfy9mN1FnlRbGGrXt01zLOLL5D/0qOBgqMPx2MGWepQcf5Qf1EPN33EYGIBFH2E2aY/1UBUypnmh6+kGiaFHU92lTNK3uP2Se1xAKdQJG4Xu4upYo2rF5cJ4845tTN9VfRWGmpkqmwrqpkUQChNz2JDGw3pIlRb3EARxPxzw/y3OZCnKvvIisi61mQR6+o44ZgJwkyNcWNnLgcDd2pZzIpQuMq/bOMsblAeeTaU4enyZ0srL27CjYJ/i/Wup7HyEHUgV4CKKhRUl/gcJvW8AiOjkyviT0oE8kvKHviAXf1VtG1WouCyeGX41l5euR2kobNsnCe3+1vW5fwiLQpub18ottDkVYdBU7p11W
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(346002)(136003)(376002)(46966006)(36840700001)(8676002)(4326008)(8936002)(86362001)(478600001)(31686004)(186003)(426003)(82740400003)(36860700001)(31696002)(26005)(36756003)(47076005)(336012)(82310400003)(16576012)(53546011)(5660300002)(6666004)(2906002)(70586007)(7636003)(316002)(54906003)(2616005)(70206006)(16526019)(36906005)(110136005)(356005)(83380400001)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 08:52:15.4382
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69dd7c4c-4035-4364-071c-08d8edd8f534
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT047.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5308
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-22 16:21, Lv Yunlong wrote:
-> My static analyzer tool reported a potential uaf in
-> mlx5e_ktls_del_rx. In this function, if the condition
-> cancel_work_sync(&resync->work) is true, and then
-> priv_rx could be freed. But priv_rx is used later.
+On Mon, 22 Mar 2021 18:30:55 +0000
+Alexander Lobakin <alobakin@pm.me> wrote:
+
+> As per disscussion in Page Pool bulk allocator thread [0],
+> there are two functions in Page Pool core code that are marked as
+> 'noinline'. The reason for this is not so clear, and even if it
+> was made to reduce hotpath overhead, in fact it only makes things
+> worse.
+> As both of these functions as being called only once through the
+> code, they could be inlined/folded into the non-static entry point.
+> However, 'noinline' marks effectively prevent from doing that and
+> induce totally unneeded fragmentation (baseline -> after removal):
 > 
-> I'm unfamiliar with how this function works. Maybe the
-> maintainer forgot to add return after freeing priv_rx?
+> add/remove: 0/3 grow/shrink: 1/0 up/down: 1024/-1096 (-72)
+> Function                                     old     new   delta
+> page_pool_alloc_pages                        100    1124   +1024
+> page_pool_dma_map                            164       -    -164
+> page_pool_refill_alloc_cache                 332       -    -332
+> __page_pool_alloc_pages_slow                 600       -    -600
+> 
+> (taken from Mel's branch, hence factored-out page_pool_dma_map())
 
-Thanks for running a static analyzer over our code! Sadly, the fix is 
-not correct and breaks stuff, and there is no problem with this code.
+I see that the refactor of page_pool_dma_map() caused it to be
+uninlined, that were a mistake.  Thanks for high-lighting that again
+as I forgot about this (even-though I think Alex Duyck did point this
+out earlier).
 
-First of all, mlx5e_ktls_priv_rx_put doesn't necessarily free priv_rx. 
-It decrements the refcount and frees the object only when the refcount 
-goes to zero. Unless there are other bugs, the refcount in this branch 
-is not expected to go to zero, so there is no use-after-free in the code 
-below. The corresponding elevation of the refcount happens before 
-queue_work of resync->work. So, no, we haven't forgot to add a return, 
-we just expect priv_rx to stay alive after this call, and we want to run 
-the cleanup code below this `if`, while your fix skips the cleanup and 
-skips the second mlx5e_ktls_priv_rx_put in the end of this function, 
-leading to a memory leak.
+I am considering if we should allow compiler to inline
+page_pool_refill_alloc_cache + __page_pool_alloc_pages_slow, for the
+sake of performance and I loose the ability to diagnose the behavior
+from perf-report.  Mind that page_pool avoids stat for the sake of
+performance, but these noinline makes it possible to diagnose the
+behavior anyway.
 
-If you'd like to calm down the static analyzer, you could try to add a 
-WARN_ON assertion to check that mlx5e_ktls_priv_rx_put returns false in 
-that `if` (meaning that the object hasn't been freed). If would be nice 
-to have this WARN_ON regardless of static analyzers.
+> 
+> 1124 is a normal hotpath frame size, but these jumps between tiny
+> page_pool_alloc_pages(), page_pool_refill_alloc_cache() and
+> __page_pool_alloc_pages_slow() are really redundant and harmful
+> for performance.
 
-> Fixes: b850bbff96512 ("net/mlx5e: kTLS, Use refcounts to free kTLS RX priv context")
-> Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Well, I disagree. (this is a NACK)
+
+If pages were recycled then the code never had to visit
+__page_pool_alloc_pages_slow().  And today without the bulk page-alloc
+(that we are working on adding together with Mel) we have to visit
+__page_pool_alloc_pages_slow() every time, which is a bad design, but
+I'm trying to fix that.
+
+Matteo is working on recycling here[1]:
+ [1] https://lore.kernel.org/netdev/20210322170301.26017-1-mcroce@linux.microsoft.com/
+
+It would be really great if you could try out his patchset, as it will
+help your driver avoid the slow path of the page_pool.  Given you are
+very detailed oriented, I do want to point out that Matteo's patchset
+is only the first step, as to really improve performance for page_pool,
+we need to bulk return these page_pool pages (it is requires some
+restructure of the core code, that will be confusing at this point).
+
+
+> This simple removal of 'noinline' keywords bumps the throughput
+> on XDP_PASS + napi_build_skb() + napi_gro_receive() on 25+ Mbps
+> for 1G embedded NIC.
+> 
+> [0] https://lore.kernel.org/netdev/20210317222506.1266004-1-alobakin@pm.me
+> 
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 > ---
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
+>  net/core/page_pool.c | 2 --
+>  1 file changed, 2 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-> index d06532d0baa4..54a77df42316 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-> @@ -663,8 +663,10 @@ void mlx5e_ktls_del_rx(struct net_device *netdev, struct tls_context *tls_ctx)
->   		 */
->   		wait_for_completion(&priv_rx->add_ctx);
->   	resync = &priv_rx->resync;
-> -	if (cancel_work_sync(&resync->work))
-> +	if (cancel_work_sync(&resync->work)) {
->   		mlx5e_ktls_priv_rx_put(priv_rx);
-> +		return;
-> +	}
->   
->   	priv_rx->stats->tls_del++;
->   	if (priv_rx->rule.rule)
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index ad8b0707af04..589e4df6ef2b 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -102,7 +102,6 @@ EXPORT_SYMBOL(page_pool_create);
 > 
+>  static void page_pool_return_page(struct page_pool *pool, struct page *page);
+> 
+> -noinline
+>  static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+>  {
+>  	struct ptr_ring *r = &pool->ring;
+> @@ -181,7 +180,6 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
+>  }
+> 
+>  /* slow path */
+> -noinline
+>  static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>  						 gfp_t _gfp)
+>  {
+> --
+> 2.31.0
+> 
+> 
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
