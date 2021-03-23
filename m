@@ -2,63 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF58345544
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:06:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F2CF345540
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229866AbhCWCGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 22:06:16 -0400
-Received: from mail-m17637.qiye.163.com ([59.111.176.37]:58482 "EHLO
-        mail-m17637.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbhCWCGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 22:06:09 -0400
-X-Greylist: delayed 336 seconds by postgrey-1.27 at vger.kernel.org; Mon, 22 Mar 2021 22:06:08 EDT
-Received: from wanjb-virtual-machine.localdomain (unknown [36.152.145.182])
-        by mail-m17637.qiye.163.com (Hmail) with ESMTPA id 03FD3980304;
-        Tue, 23 Mar 2021 10:00:27 +0800 (CST)
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] net: ethernet: indir_table.h is included twice
-Date:   Tue, 23 Mar 2021 10:00:12 +0800
-Message-Id: <20210323020013.138697-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.25.1
+        id S229703AbhCWCEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 22:04:38 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42030 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229472AbhCWCEN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 22:04:13 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lOWOi-00CVqE-Ps; Tue, 23 Mar 2021 03:03:56 +0100
+Date:   Tue, 23 Mar 2021 03:03:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Don Bollinger <don@thebollingers.org>
+Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        'Adrian Pop' <pop.adrian61@gmail.com>,
+        'Michal Kubecek' <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
+Subject: Re: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to
+ dump arbitrary EEPROM data
+Message-ID: <YFlMjO4ZMBCcJqQ7@lunn.ch>
+References: <1616433075-27051-1-git-send-email-moshe@nvidia.com>
+ <1616433075-27051-2-git-send-email-moshe@nvidia.com>
+ <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org>
+ <YFk13y19yMC0rr04@lunn.ch>
+ <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZQ01MTRgaSkJMGR9KVkpNSk1PTU9DSUNJT01VEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PE06Sww6ND8IMDotPhoVGhAv
-        IwMKCQtVSlVKTUpNT01PQ0lDTUpCVTMWGhIXVQwaFRESGhkSFRw7DRINFFUYFBZFWVdZEgtZQVlI
-        TVVKTklVSk9OVUpDSVlXWQgBWUFKQ0lLNwY+
-X-HM-Tid: 0a785ccfd716d992kuws03fd3980304
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-indir_table.h has been included at line 41, so remove 
-the duplicate one at line 43.
+> > I don't even see a need for this. The offset should be within one 1/2
+> page, of
+> > one bank. So offset >= 0 and <= 127. Length is also > 0 and
+> > <- 127. And offset+length is <= 127.
+> 
+> I like the clean approach, but...   How do you request low memory?
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 1 -
- 1 file changed, 1 deletion(-)
+Duh!
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 94cb0217b4f3..aba13e5af216 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -40,7 +40,6 @@
- #include "eswitch.h"
- #include "esw/indir_table.h"
- #include "esw/acl/ofld.h"
--#include "esw/indir_table.h"
- #include "rdma.h"
- #include "en.h"
- #include "fs_core.h"
--- 
-2.25.1
+I got my conditions wrong. Too focused on 1/2 pages to think that two
+of them makes one page!
+
+Lets try again:
+
+offset < 256
+0 < len < 128
+
+if (offset < 128)
+   offset + len < 128
+else
+   offset + len < 256
+
+Does that look better?
+
+Reading bytes from the lower 1/2 of page 0 should give the same data
+as reading data from the lower 1/2 of page 42. So we can allow that,
+but don't be too surprised when an SFP gets it wrong and gives you
+rubbish. I would suggest ethtool(1) never actually does read from the
+lower 1/2 of any page other than 0.
+
+And i agree about documentation. I would suggest a comment in
+ethtool_netlink.h, and the RST documentation.
+
+		   Andrew
 
