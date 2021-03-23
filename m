@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 832A53453E1
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:31:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B51AA3453DF
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:31:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbhCWAap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 20:30:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41226 "EHLO mail.kernel.org"
+        id S231211AbhCWAao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 20:30:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41216 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230414AbhCWAaK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230186AbhCWAaK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 22 Mar 2021 20:30:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id AC3D9619A5;
+Received: by mail.kernel.org (Postfix) with ESMTPS id A30B5619A9;
         Tue, 23 Mar 2021 00:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616459409;
-        bh=X9v4NcfD9rUYyBXtWv13v7WaeqrgwRJBdA965Ni4R+M=;
+        bh=rN2KkvFup9+EGFuI8m1YsmmC4/mKr9QZZqnu1RwXrcE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=O0YkMefA6yW4sY8+/KlHUXZUaOMGZO7W5juL6LulAkDC3gcGUEHSlsVPGuDRsb9gO
-         oC0UO+acd5gYwchPNUUfkXVzzNGL4OqhQ8s3bZ8QZlxpX2N1x6zSqWS8RmAlifQb9q
-         3Bq5xyK5djvsJg//sa4cPYgU5LIdfuXq2hMNkcu25u9O4FAiz3ZOIw9DX4GDPF0+Tv
-         Pk37zVM+aUUiVtjyzMeB5eM4xOjmOJFTTLZi/IEfYS8JdkfGKBnSO6bNr1uZw0C9wr
-         qNlmLsdymCPicoP3pLgkC5fVlr6zn5rEMopnYk/90gSjPDhim6suer/0xeCYkn76AV
-         dMjsCU3l1H7Cg==
+        b=b5SIjS2KO3coZHGcIBaZ1shJKpGHQM7/+fi1ps61H3R4bY82/U7PbnNqhvNfwwBYR
+         eNunOJVOZmY5S0gZf7m6MaaqFpzKB6WpNHzncTZEvX6Y63g/U44ghUcHOTIK2W+hdT
+         hWXhz+owhMTiuajAosfQfO+ri92ViSKsxXSm06Xi9/NKgiYx+hd9SOil/qhdSphn54
+         rpC/7e2cnV0UuJ7tS5NtqyGDhETUwg+JztC5CLpkW9o7HZ5+QOWiEtKCpeB22Bda7s
+         cYzvGwGsZngQ7yfFGX0TG3K6+ft8ucX2zLWCIgh2KfxPUy1W8n0J9e8GCmUDUqHuuX
+         Ps8lk1rfYEIkw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9937E60A1B;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 90B0060A3E;
         Tue, 23 Mar 2021 00:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] isdn: capi: fix mismatched prototypes
+Subject: Re: [PATCH net] net: dsa: don't assign an error value to tag_ops
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161645940962.31154.6242142892110069086.git-patchwork-notify@kernel.org>
+Message-Id: <161645940958.31154.2773844035842131201.git-patchwork-notify@kernel.org>
 Date:   Tue, 23 Mar 2021 00:30:09 +0000
-References: <20210322164447.876440-1-arnd@kernel.org>
-In-Reply-To: <20210322164447.876440-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     isdn@linux-pingi.de, arnd@arndb.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210322202650.45776-1-george.mccollister@gmail.com>
+In-Reply-To: <20210322202650.45776-1-george.mccollister@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,32 +47,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 22 Mar 2021 17:44:29 +0100 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, 22 Mar 2021 15:26:50 -0500 you wrote:
+> Use a temporary variable to hold the return value from
+> dsa_tag_driver_get() instead of assigning it to dst->tag_ops. Leaving
+> an error value in dst->tag_ops can result in deferencing an invalid
+> pointer when a deferred switch configuration happens later.
 > 
-> gcc-11 complains about a prototype declaration that is different
-> from the function definition:
-> 
-> drivers/isdn/capi/kcapi.c:724:44: error: argument 2 of type ‘u8 *’ {aka ‘unsigned char *’} declared as a pointer [-Werror=array-parameter=]
->   724 | u16 capi20_get_manufacturer(u32 contr, u8 *buf)
->       |                                        ~~~~^~~
-> In file included from drivers/isdn/capi/kcapi.c:13:
-> drivers/isdn/capi/kcapi.h:62:43: note: previously declared as an array ‘u8[64]’ {aka ‘unsigned char[64]’}
->    62 | u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN]);
->       |                                        ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/isdn/capi/kcapi.c:790:38: error: argument 2 of type ‘u8 *’ {aka ‘unsigned char *’} declared as a pointer [-Werror=array-parameter=]
->   790 | u16 capi20_get_serial(u32 contr, u8 *serial)
->       |                                  ~~~~^~~~~~
-> In file included from drivers/isdn/capi/kcapi.c:13:
-> drivers/isdn/capi/kcapi.h:64:37: note: previously declared as an array ‘u8[8]’ {aka ‘unsigned char[8]’}
->    64 | u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN]);
->       |                                  ~~~^~~~~~~~~~~~~~~~~~~~~~~
+> Fixes: 357f203bb3b5 ("net: dsa: keep a copy of the tagging protocol in the DSA switch tree")
 > 
 > [...]
 
 Here is the summary with links:
-  - isdn: capi: fix mismatched prototypes
-    https://git.kernel.org/netdev/net/c/5ee7d4c7fbc9
+  - [net] net: dsa: don't assign an error value to tag_ops
+    https://git.kernel.org/netdev/net/c/e0c755a45f6f
 
 You are awesome, thank you!
 --
