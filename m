@@ -2,98 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D01234619A
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D823461C3
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:46:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbhCWOhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 10:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbhCWOgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:36:36 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44451C061763
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:36:35 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id r10-20020a05600c35cab029010c946c95easo10967162wmq.4
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:36:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Na2VZYrK81PcvSfN9T4jEkBcLTcy9RcjMORhpmSECxo=;
-        b=eVfN89Tnee9VIHCl6M3XQiNffocMqRmf3o1UzoKNYPIqw8pSPwuM9xFFKGHyhepItY
-         IOuljWWlf8F+F4DLoOQS5hre4Vu+XUlIpiOKezSmE5t7gmsRDMXsM+uR3SzJA+uuvhF7
-         lhKJeV3Z4pSFR3tOKlwL6KliYsYZAY1VUuIJJnxPEXCSGXaJm/SnkCa+GG4nH5goy/ko
-         UVak2zq8J4ScuuFsA6zacg/tDXqZuJPy2iPvfB7MOmCV+b/WDFlcp1MocCizyhR6zvaf
-         HVYxtWOC+rbsa3UnjSrXPIsMGrny4YjCa8QT5nCVe6UpoWjTA3QsBXKt/BxDqXunUc9Q
-         cx3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Na2VZYrK81PcvSfN9T4jEkBcLTcy9RcjMORhpmSECxo=;
-        b=HMl/BDPhGo9QSuz59k4gjv9k0iMnnnXalSOIman9docpwKa7DncfWed5iMe1jn/qsd
-         WFfKROTklYmghOgVBxfXsow/ZpGSDORfNVE5VIZrzVugD47f5m2EOY+5+bUHALI2qk69
-         MUNjHhYLhqHyeVFrIQiWztEF276mNJFa9MdiMjMOJcpU6fIJrCObfk6qBjUPwpedmlNT
-         phnbp8w9sgII8xy3VGSfmhQ8xyXrNJXpVre1gj5SnygVnwBcq8MnBi65SqSsNGaxJR3Q
-         al99Hn1e3elohkzUUG1o/TjqohAw7R7ddogRrC6edScAC3e5rXtAfY1pnoLRkC+8/wi1
-         LvfA==
-X-Gm-Message-State: AOAM531C8gOYcf8oHaX6c17P2QwDVAh8Pi2NbVrHpsu3FnoGOhwBsiBG
-        A9uO/RVq/hZLCAXSXqbsfzp+AQ==
-X-Google-Smtp-Source: ABdhPJx59WCmGz1PEUdkVs0yEmq7gFumgfKsiMxYCXC5BPDzfa6cYPPj6LUPGyRuYo7PRHlbtsI5CQ==
-X-Received: by 2002:a05:600c:214d:: with SMTP id v13mr3713899wml.162.1616510193880;
-        Tue, 23 Mar 2021 07:36:33 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:82c:5f0:f09e:975c:f695:2be8])
-        by smtp.gmail.com with ESMTPSA id f2sm23995886wrq.34.2021.03.23.07.36.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Mar 2021 07:36:33 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     kuba@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>
-Subject: [RESEND PATCH net-next 2/2] net: mhi: proto_mbim: Adjust MTU and MRU
-Date:   Tue, 23 Mar 2021 15:45:07 +0100
-Message-Id: <1616510707-27210-2-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
-References: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
+        id S232370AbhCWOqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 10:46:20 -0400
+Received: from outbound-smtp01.blacknight.com ([81.17.249.7]:59956 "EHLO
+        outbound-smtp01.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232355AbhCWOpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:45:47 -0400
+Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
+        by outbound-smtp01.blacknight.com (Postfix) with ESMTPS id 4DC8FC4A51
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 14:45:43 +0000 (GMT)
+Received: (qmail 30414 invoked from network); 23 Mar 2021 14:45:43 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 23 Mar 2021 14:45:43 -0000
+Date:   Tue, 23 Mar 2021 14:45:41 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Chuck Lever III <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Message-ID: <20210323144541.GL3697@techsingularity.net>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+ <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
+ <20210322194948.GI3697@techsingularity.net>
+ <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
+ <20210322205827.GJ3697@techsingularity.net>
+ <20210323120851.18d430cf@carbon>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210323120851.18d430cf@carbon>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MBIM protocol makes the interface asymmetric, ingress data received
-from MHI is MBIM protocol, that can contain multiple aggregated IP
-packets, while egress data received from network stack is IP protocol.
+On Tue, Mar 23, 2021 at 12:08:51PM +0100, Jesper Dangaard Brouer wrote:
+> > > <SNIP>
+> > > My results show that, because svc_alloc_arg() ends up calling
+> > > __alloc_pages_bulk() twice in this case, it ends up being
+> > > twice as expensive as the list case, on average, for the same
+> > > workload.
+> > >   
+> > 
+> > Ok, so in this case the caller knows that holes are always at the
+> > start. If the API returns an index that is a valid index and populated,
+> > it can check the next index and if it is valid then the whole array
+> > must be populated.
+> > 
+> > <SNIP>
+> 
+> I do know that I suggested moving prep_new_page() out of the
+> IRQ-disabled loop, but maybe was a bad idea, for several reasons.
+> 
+> All prep_new_page does is to write into struct page, unless some
+> debugging stuff (like kasan) is enabled. This cache-line is hot as
+> LRU-list update just wrote into this cache-line.  As the bulk size goes
+> up, as Matthew pointed out, this cache-line might be pushed into
+> L2-cache, and then need to be accessed again when prep_new_page() is
+> called.
+> 
+> Another observation is that moving prep_new_page() into loop reduced
+> function size with 253 bytes (which affect I-cache).
+> 
+>    ./scripts/bloat-o-meter mm/page_alloc.o-prep_new_page-outside mm/page_alloc.o-prep_new_page-inside
+>     add/remove: 18/18 grow/shrink: 0/1 up/down: 144/-397 (-253)
+>     Function                                     old     new   delta
+>     __alloc_pages_bulk                          1965    1712    -253
+>     Total: Before=60799, After=60546, chg -0.42%
+> 
+> Maybe it is better to keep prep_new_page() inside the loop.  This also
+> allows list vs array variant to share the call.  And it should simplify
+> the array variant code.
+> 
 
-Set a default MTU to 1500 (usual network MTU for WWAN), and MRU to 32K
-which is the default size of MBIM-over-MHI packets.
+I agree. I did not like the level of complexity it incurred for arrays
+or the fact it required that a list to be empty when alloc_pages_bulk()
+is called. I thought the concern for calling prep_new_page() with IRQs
+disabled was a little overblown but did not feel strongly enough to push
+back on it hard given that we've had problems with IRQs being disabled
+for long periods before. At worst, at some point in the future we'll have
+to cap the number of pages that can be requested or enable/disable IRQs
+every X pages.
 
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
----
- drivers/net/mhi/proto_mbim.c | 5 +++++
- 1 file changed, 5 insertions(+)
+New candidate
 
-diff --git a/drivers/net/mhi/proto_mbim.c b/drivers/net/mhi/proto_mbim.c
-index 75b5484..29d8577 100644
---- a/drivers/net/mhi/proto_mbim.c
-+++ b/drivers/net/mhi/proto_mbim.c
-@@ -26,6 +26,9 @@
+git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v6r4
+
+Interface is still the same so a rebase should be trivial. Diff between
+v6r2 and v6r4 is as follows. I like the diffstat if nothing else :P
+
+
+ mm/page_alloc.c | 54 +++++++++++++-----------------------------------------
+ 1 file changed, 13 insertions(+), 41 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 547a84f11310..be1e33a4df39 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4999,25 +4999,20 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	struct alloc_context ac;
+ 	gfp_t alloc_gfp;
+ 	unsigned int alloc_flags;
+-	int nr_populated = 0, prep_index = 0;
+-	bool hole = false;
++	int nr_populated = 0;
  
- #define MBIM_NDP16_SIGN_MASK 0x00ffffff
+ 	if (WARN_ON_ONCE(nr_pages <= 0))
+ 		return 0;
  
-+#define MHI_MBIM_DEFAULT_MRU 32768
-+#define MHI_MBIM_DEFAULT_MTU 1500
+-	if (WARN_ON_ONCE(page_list && !list_empty(page_list)))
+-		return 0;
+-
+-	/* Skip populated array elements. */
+-	if (page_array) {
+-		while (nr_populated < nr_pages && page_array[nr_populated])
+-			nr_populated++;
+-		if (nr_populated == nr_pages)
+-			return nr_populated;
+-		prep_index = nr_populated;
+-	}
++	/*
++	 * Skip populated array elements to determine if any pages need
++	 * to be allocated before disabling IRQs.
++	 */
++	while (page_array && page_array[nr_populated] && nr_populated < nr_pages)
++		nr_populated++;
+ 
+-	if (nr_pages == 1)
++	/* Use the single page allocator for one page. */
++	if (nr_pages - nr_populated == 1)
+ 		goto failed;
+ 
+ 	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
+@@ -5056,22 +5051,17 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	if (!zone)
+ 		goto failed;
+ 
+-retry_hole:
+ 	/* Attempt the batch allocation */
+ 	local_irq_save(flags);
+ 	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+ 	pcp_list = &pcp->lists[ac.migratetype];
+ 
+ 	while (nr_populated < nr_pages) {
+-		/*
+-		 * Stop allocating if the next index has a populated
+-		 * page or the page will be prepared a second time when
+-		 * IRQs are enabled.
+-		 */
 +
- struct mbim_context {
- 	u16 rx_seq;
- 	u16 tx_seq;
-@@ -282,6 +285,8 @@ static int mbim_init(struct mhi_net_dev *mhi_netdev)
- 		return -ENOMEM;
++		/* Skip existing pages */
+ 		if (page_array && page_array[nr_populated]) {
+-			hole = true;
+ 			nr_populated++;
+-			break;
++			continue;
+ 		}
  
- 	ndev->needed_headroom = sizeof(struct mbim_tx_hdr);
-+	ndev->mtu = MHI_MBIM_DEFAULT_MTU;
-+	mhi_netdev->mru = MHI_MBIM_DEFAULT_MRU;
+ 		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+@@ -5092,6 +5082,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 		__count_zid_vm_events(PGALLOC, zone_idx(zone), 1);
+ 		zone_statistics(ac.preferred_zoneref->zone, zone);
  
- 	return 0;
- }
--- 
-2.7.4
++		prep_new_page(page, 0, gfp, 0);
+ 		if (page_list)
+ 			list_add(&page->lru, page_list);
+ 		else
+@@ -5101,25 +5092,6 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 
+ 	local_irq_restore(flags);
+ 
+-	/* Prep pages with IRQs enabled. */
+-	if (page_list) {
+-		list_for_each_entry(page, page_list, lru)
+-			prep_new_page(page, 0, gfp, 0);
+-	} else {
+-		while (prep_index < nr_populated)
+-			prep_new_page(page_array[prep_index++], 0, gfp, 0);
+-
+-		/*
+-		 * If the array is sparse, check whether the array is
+-		 * now fully populated. Continue allocations if
+-		 * necessary.
+-		 */
+-		while (nr_populated < nr_pages && page_array[nr_populated])
+-			nr_populated++;
+-		if (hole && nr_populated < nr_pages)
+-			goto retry_hole;
+-	}
+-
+ 	return nr_populated;
+ 
+ failed_irq:
 
+-- 
+Mel Gorman
+SUSE Labs
