@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2EB23454EA
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 02:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA173454F4
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 02:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbhCWBVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 21:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbhCWBVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 21:21:14 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231DEC061574
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 18:21:14 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id a8so15253902oic.11
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 18:21:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JYxYqwBBeANyqWyQGmvwdqYnwLRNZNV58JDTVavfLTc=;
-        b=a6JdwhHNlMdGaVeyHRZVJp6OtC/hlOt2kSI6OhN2ddlOaHVxVeZeQ8HV+E3FTvmvQI
-         pH1SrynTesuBahTBNhFHiYEUSrRpIW+SEGg/Om+b8Jo2ibJxfOS4B1Nd+F1pWFpuNAjM
-         1XKffvMC9iWDlAG/WJRZCqZ15ztaMjjuJsuMU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JYxYqwBBeANyqWyQGmvwdqYnwLRNZNV58JDTVavfLTc=;
-        b=liYLOCb6A4uYUKW9Yvgus2EQCWjj+TcK6HwWIwq4xiBADtyX6W/qw5OQicscBKg9xM
-         aVWsm/CiVnCkX0HoGYu87skwLJM11KszZnfjSw0cvUMbV2GUnmBDFZoyHb9N/1v4NEGO
-         raZHXxy6mokQzlh9SFLHRgSYxzsOwCri2bzTtT5nBDzvWMzfnLPp/6AKytv61dUb8FIP
-         DmGs7gf7tBIJUnDsYyCTFENQbQwRmCHlTC/TFqa2Me7dSDSeEwWD6TBZ2SkcCEz7nB5g
-         H8GkBXPpkYtKDGt6UM/3HonVSCejQfmJvhfIa3jA85OFhYgJ/q++HzMd5oofjryVGwH9
-         i9yA==
-X-Gm-Message-State: AOAM533l3iCsmCp4cqoDZeX15W0v7+xoHBn4hDfi3HuOOEBbmUhBz2Eo
-        +ypFTneLrBxGHYJL2ZbHDnjf35jvW9wG3w==
-X-Google-Smtp-Source: ABdhPJwHLkG438fXtlE+tfchNBEjNqH0w/vy8+hGJWvnAZeiRHal8i9Uj0KfiEwbp/M1BASgZIRAow==
-X-Received: by 2002:aca:c349:: with SMTP id t70mr1484725oif.87.1616462472894;
-        Mon, 22 Mar 2021 18:21:12 -0700 (PDT)
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com. [209.85.210.43])
-        by smtp.gmail.com with ESMTPSA id e12sm3403616oou.33.2021.03.22.18.21.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Mar 2021 18:21:11 -0700 (PDT)
-Received: by mail-ot1-f43.google.com with SMTP id 31-20020a9d00220000b02901b64b9b50b1so17908654ota.9
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 18:21:10 -0700 (PDT)
-X-Received: by 2002:a9d:1b70:: with SMTP id l103mr2239864otl.203.1616462470404;
- Mon, 22 Mar 2021 18:21:10 -0700 (PDT)
+        id S231500AbhCWBYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 21:24:23 -0400
+Received: from p3plsmtpa11-09.prod.phx3.secureserver.net ([68.178.252.110]:53997
+        "EHLO p3plsmtpa11-09.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230317AbhCWBXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 21:23:52 -0400
+Received: from chrisHP110 ([76.103.216.188])
+        by :SMTPAUTH: with ESMTPA
+        id OVlulYCVtysOoOVlul5DiR; Mon, 22 Mar 2021 18:23:51 -0700
+X-CMAE-Analysis: v=2.4 cv=Q50XX66a c=1 sm=1 tr=0 ts=60594327
+ a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
+ a=kj9zAlcOel0A:10 a=SKD8Yt_7dumfzhw-_5gA:9 a=CjuIK1q_8ugA:10
+X-SECURESERVER-ACCT: don@thebollingers.org
+From:   "Don Bollinger" <don@thebollingers.org>
+To:     "'Andrew Lunn'" <andrew@lunn.ch>
+Cc:     "'Moshe Shemesh'" <moshe@nvidia.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jakub Kicinski'" <kuba@kernel.org>,
+        "'Adrian Pop'" <pop.adrian61@gmail.com>,
+        "'Michal Kubecek'" <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
+        "'Vladyslav Tarasiuk'" <vladyslavt@nvidia.com>,
+        <don@thebollingers.org>
+References: <1616433075-27051-1-git-send-email-moshe@nvidia.com> <1616433075-27051-2-git-send-email-moshe@nvidia.com> <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org> <YFk13y19yMC0rr04@lunn.ch>
+In-Reply-To: <YFk13y19yMC0rr04@lunn.ch>
+Subject: RE: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to dump arbitrary EEPROM data
+Date:   Mon, 22 Mar 2021 18:23:49 -0700
+Message-ID: <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org>
 MIME-Version: 1.0
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
- <1595351666-28193-3-git-send-email-pillair@codeaurora.org>
- <13573549c277b34d4c87c471ff1a7060@codeaurora.org> <d79ae05e-e75a-de2f-f2e3-bc73637e1501@nbd.name>
- <04d7301d5ad7555a0377c7df530ad8522fc00f77.camel@sipsolutions.net>
- <1f2726ff-8ba9-5278-0ec6-b80be475ea98@nbd.name> <06a4f84b-a0d4-3f90-40bb-f02f365460ec@candelatech.com>
-In-Reply-To: <06a4f84b-a0d4-3f90-40bb-f02f365460ec@candelatech.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 22 Mar 2021 18:20:58 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXOotYHmtqOvSwBES6_95bnbAbEu6F7gQ5TjacJWUKdaPw@mail.gmail.com>
-Message-ID: <CA+ASDXOotYHmtqOvSwBES6_95bnbAbEu6F7gQ5TjacJWUKdaPw@mail.gmail.com>
-Subject: Re: [RFC 2/7] ath10k: Add support to process rx packet in thread
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Rajkumar Manoharan <rmanohar@codeaurora.org>,
-        Rakesh Pillai <pillair@codeaurora.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Evan Green <evgreen@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQJDEuFgm6Tcdwd/2H9v4w1v+xnhXwGLU1CXAWGs15oCOWnrmqmPqhwQ
+Content-Language: en-us
+X-CMAE-Envelope: MS4xfI5/9Qsv/Nn5zPUgNeKpwySIiXNjS3IfOhadcs7eSfRdnksIQaG+MG+tePIS4Gj3zlxPTEVv+qqtDE44ZVWtC3Lf+YWeYSuqTiRAipidZTya0nURT4cM
+ cszz+kZTKVDRmCmFDuNVcppaX9I0x8ugJTtKNZMLqXvOQfM00SZNhvuNVzSTZHIAvYxiC3JUeNONHqcCNHQ93+YQwhU/gBZFU8fmb3xouAhL5+7c07ZdPP/B
+ 9WonUv6YkbYscSmv4yZOWACenX3dUqNrcmB9WaCSRVfsCjLHBQqHn9fUYwS04NJwgfaRpxIkVnvszp5Jsd9cssEkkg/2mPqikiqVaWTHbVO3cs2ZSfd3CxrC
+ 83yzA4GJYH93+I72O7FoVE+ZjapQQi0H+t41P/znf+xE5TIWe5xGbsvBAcLFtG8fjnGFj0g6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 4:58 PM Ben Greear <greearb@candelatech.com> wrote:
-> On 7/22/20 6:00 AM, Felix Fietkau wrote:
-> > On 2020-07-22 14:55, Johannes Berg wrote:
-> >> On Wed, 2020-07-22 at 14:27 +0200, Felix Fietkau wrote:
-> >>
-> >>> I'm considering testing a different approach (with mt76 initially):
-> >>> - Add a mac80211 rx function that puts processed skbs into a list
-> >>> instead of handing them to the network stack directly.
-> >>
-> >> Would this be *after* all the mac80211 processing, i.e. in place of the
-> >> rx-up-to-stack?
-> > Yes, it would run all the rx handlers normally and then put the
-> > resulting skbs into a list instead of calling netif_receive_skb or
-> > napi_gro_frags.
->
-> Whatever came of this?  I realized I'm running Felix's patch since his mt76
-> driver needs it.  Any chance it will go upstream?
+> Subject: Re: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to
+> dump arbitrary EEPROM data
+> 
+> > > +#define ETH_MODULE_EEPROM_PAGE_LEN	256
+> >
+> > Sorry to keep raising issues, but I think you want to make this
+> > constant 128.
+> 
+> Yes, i also think the KAPI should be limited to returning a maximum of a
+1/2
+> page per call.
+> 
+> > > +#define MODULE_EEPROM_MAX_OFFSET (257 *
+> > > ETH_MODULE_EEPROM_PAGE_LEN)
+> >
+> > The device actually has 257 addressable chunks of 128 bytes each.
+> > With ETH_MODULE_EEPROM_PAGE_LEN set to 256, your constant is 2X too
+> big.
+> >
+> > Note also, SFP devices (but not QSFP or CMIS) actually have another
+> > 256 bytes available at 0x50, in addition to the full 257*128 at 0x51.
+> > So SFP is actually 259*128 or (256 + 257 * 128).
+> >
+> > Devices that don't support pages have much lower limits (256 bytes for
+> > QSFP/CMIS and 512 for SFP).  Some SFP only support 256 bytes.  Most
+> > devices will return nonsense for pages above 3.  So, this check is
+> > really only an absolute limit.  The SFP driver that takes this request
+> > will probably check against a more refined MAX length (eg modinfo-
+> >eeprom_len).
+> >
+> > I suggest setting this constant to 259 * (ETH_MODULE_EEPROM_PAGE_LEN
+> / 2).
+> > Let the driver refine it from there.
+> 
+> I don't even see a need for this. The offset should be within one 1/2
+page, of
+> one bank. So offset >= 0 and <= 127. Length is also > 0 and
+> <- 127. And offset+length is <= 127.
 
-If you're asking about $subject (moving NAPI/RX to a thread), this
-landed upstream recently:
-http://git.kernel.org/linus/adbb4fb028452b1b0488a1a7b66ab856cdf20715
+I like the clean approach, but...   How do you request low memory?  If all
+of the pages start at offset 0, then page 0 is at page 0, offset 0.  That
+has always referred to low memory.  (I have actually used 'page -1' for this
+in some code I don't share with others.)  I believe all of this code
+currently is consistent with the paged area starting at offset 128.  If that
+changes to start paged memory at offset 0, there are several places that
+will need to be adjusted.
 
-It needs a bit of coaxing to work on a WiFi driver (including: WiFi
-drivers tend to have a different netdev for NAPI than they expose to
-/sys/class/net/), but it's there.
+Whatever choice is made, there should be documentation scattered around in
+the code, man pages and Documentation directories to tell the
+user/programmer whether the paged area starts at offset 0 or offset 128.  It
+is constantly confusing, and there is no obvious answer.
 
-I'm not sure if people had something else in mind in the stuff you're
-quoting though.
+> 
+> For the moment, please forget about backwards compatibility with the IOCTL
+> interface. Lets get a new clean KAPI and a new clean internal API between
+> the ethtool core and the drivers. Once we have that agreed on, we can work
+> on the various compatibility shims we need to work between old and new
+> APIs in various places.
+> 
+>       Andrew
 
-Brian
+Don
+
