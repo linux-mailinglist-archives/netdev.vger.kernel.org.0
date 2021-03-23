@@ -2,181 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074DA346864
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DACC1346868
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbhCWTC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 15:02:28 -0400
-Received: from mail-dm6nam10on2049.outbound.protection.outlook.com ([40.107.93.49]:38017
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232903AbhCWTCW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 15:02:22 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DsfdEGemb0zA2HfaK1qsssAdGuzzqCigSBMkeNUzbsAKnXkehV11tRSI5WJvD8TYybbmizSn6Ldzgw5yl8n/5A/igcoE/Tmf9ViibMe7qXDM4VLLokYDGb7biFiX8uVaI1tiVEjS5NwBS6xsIgfQkb5cTqvtTGuQ0JspsTv11Hv6Es8u1nOHvPjOFOv+MctQesp9UmKZ7KHAXyZxDaAr6DvT7O7uBIXG2nWlRCVx8n4C0SPwoCi9p9YLqOzyXzIzDqGyyEYB0VzAg+Yd+vSBHPU3r+/oW6RdTtS/8WiHWGA0sBkuo9u1JBKjQjA2KosMrIaEq67ybt8RzDlOsrWLBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vcAmQoaR+CG52gxVrCwkpalwxHUIN++iP00jVkqxmQ0=;
- b=hqFhDOVZF+xnuOwRNsfjNOT6wkQu46T40UCB9BrnGqbgcwyPA7ZlRTluDJyNhE5qthEE9L7Lbbmi2yWBiVGayRrWft7sFs0x39j9xE0GHwPF2UXheDXWZLWznF4R3E7+PEK7Jcp1awFCkPRvBx+THbJDtH39ZULnNbG4wHRTXyhvZ8C5CBpKkjMLX/sc2YXGLC515y6JdS07Ft5/TrLpvDVj+PVP6iU+AHdmWbCgAaoPsZFI3BmLws1r+U8YhCqNHcL9+jlTAIep1ZHXJB76FIXAZrfRJ4DePRnqAAU8PpduLXIVTYxIv91BsZ3EdHnbkJEXQ5owgCubshLjMIfs1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vcAmQoaR+CG52gxVrCwkpalwxHUIN++iP00jVkqxmQ0=;
- b=SqKyyRv+MoFmcipnj5B6cmuuA+n0Skoz8W+/D7XiiSzymOQeeaTMtF50KDsmgBEl2Z6BCD+b2buKw1e59wGV1hYzMLrUs1vRzh40nvj8LLkk7lq9oPvx7CfLTJerfvzcJaAeZS0RTQTWAxFT7LdMj7XEVjddu5AAEYfOtvN7GUxOI++ZllEsOqlsZLDFPOF/WB9Zmt4jrSQUn4MTi8xI3Cjk3iUZbJV8al05DJWfd1OY/5Vxnrk8GxY3a3dPcG29uqPklfw8Qw96UELI0C2CsLUrCZDUg8PR/AyMaq+tFHqRtYkZ24+nkKomg3lcxzaBPrJFgsCitNzuyneD6WX/DQ==
-Received: from MWHPR22CA0023.namprd22.prod.outlook.com (2603:10b6:300:ef::33)
- by DM6PR12MB4329.namprd12.prod.outlook.com (2603:10b6:5:211::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Tue, 23 Mar
- 2021 19:02:21 +0000
-Received: from CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:ef:cafe::10) by MWHPR22CA0023.outlook.office365.com
- (2603:10b6:300:ef::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend
- Transport; Tue, 23 Mar 2021 19:02:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT052.mail.protection.outlook.com (10.13.174.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 19:02:21 +0000
-Received: from [172.27.0.234] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 23 Mar
- 2021 19:02:17 +0000
-Subject: Re: [RFC PATCH net] bonding: Work around lockdep_is_held false
- positives
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Nikolay Aleksandrov <nikolay@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>
-References: <20210322123846.3024549-1-maximmi@nvidia.com>
- <YFilJZOraCqD0mVj@unreal> <0f3add4c-45a4-d3cd-96a3-70c1f0e96ee2@nvidia.com>
- <27509.1616522187@famine>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <210a8bf2-5c1f-0c14-ab81-5c0775d7d23d@nvidia.com>
-Date:   Tue, 23 Mar 2021 21:02:13 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S232836AbhCWTDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 15:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232792AbhCWTDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 15:03:06 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0C9C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 12:03:05 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id hq27so28884377ejc.9
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 12:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Q1gH5uTd+e3JNiYZaxTzRpgAiN4+aMrxs68UbB+GghA=;
+        b=n1UlnEfAUA9WotWEVLvWiPU4DboUcx0+JhULeEtv3kiSipgi8f1zaqGB6Qm89F951i
+         Stp89C7wkZVy6EZRC42HkCpP9ZNQ4ircQIg+luY1moglc9GRUJc1oshTqDs/PBaIg1ng
+         ngs/a7AydCc3dgsr3tExvnazR6rPlv4fIDvGnMsUeQ66YKWnR025+VM7KzPj+ofPSlA6
+         i/ifT09LY8j8qAfuUWkqdLC5xwbAVofT3zqVyywggTmyqyoiYsMh/iHWvbhT7mvrde7S
+         eihgyafI9644kziDGn4FSGvfZNDoO1k90StPQIQfAKG9VRyKHk+TB1rY5yKxEHalrRM0
+         itJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q1gH5uTd+e3JNiYZaxTzRpgAiN4+aMrxs68UbB+GghA=;
+        b=BRDc6HWSuf49NBRVh+E28BF8/x1OiFLqwcy4BijJGmfdcRnqK8NyF0yhcaP/YiyEv4
+         hfcxvAAgYIzVRkmJNWVWPErTapF7rL9CwWiVV4dCP6OPKsDTd94pD+dhFkX47k9w5CDC
+         MHUEmNGQ4TndGPkZOVEWsUY/xkDuHZT0ADvMy2pisWF8QECmyBTKoqzS6T7Q3348M1Nm
+         p0bI0xeFctnxTLOjpqGW5KzA8sa7PYK+3mt2oh+jCLzHNML1a1LQ3p8nKxtmPk+7Xjvz
+         48ztbOSm7b8wWb1suCmuhrtrWY6eE1CUuQuO3wo6/D2oFmNPOCK5saWF6OME9WP3JlFP
+         6m2Q==
+X-Gm-Message-State: AOAM531moNOUE7A8YxVPg3hMTYjLALgfzALwvucjmx+wpIbgBQLg3DYg
+        CdOBL0UIkRjQEUJJepjD/M3nc5B7+ac=
+X-Google-Smtp-Source: ABdhPJwXwtZp58g4al3pvvSrv3mdnSbFN8LPXfBRFSt+fTD6XBYpc/0V9hCUYBkNZ9V/enypT92BcA==
+X-Received: by 2002:a17:906:ad4:: with SMTP id z20mr6201454ejf.496.1616526183926;
+        Tue, 23 Mar 2021 12:03:03 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id a22sm11741168ejr.89.2021.03.23.12.03.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Mar 2021 12:03:03 -0700 (PDT)
+Date:   Tue, 23 Mar 2021 21:03:02 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
+ reconfiguration of tag protocol
+Message-ID: <20210323190302.2v7ianeuwylxdqjl@skbuf>
+References: <20210323102326.3677940-1-tobias@waldekranz.com>
+ <20210323113522.coidmitlt6e44jjq@skbuf>
+ <87blbalycs.fsf@waldekranz.com>
 MIME-Version: 1.0
-In-Reply-To: <27509.1616522187@famine>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a487c9e4-9487-4702-3a5c-08d8ee2e2ff0
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4329:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB43298FD5BEB9A6D220E9BB60DC649@DM6PR12MB4329.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3wLsqCXeCGM9gc/p3D+OY/sWX9NN/SyCgmZCiPouJlUfFQsuFNs/ZRsFFHtHGYdKC1FW4L/VIX3vMlmD5LSKF6uui7ABgbWJLsCHTEB4SM90Lg3K1YEUmNkq3sIMPCifFbvjAFwHHsUUJwIReNo0VuJpC7LwwxGZOaV9urHV/IJ/+iRlR7wr7iNHTI0AkX/xgHEN45lPVDailVXmpkJMBH2JhDCYHqYGEKyZ1Gu9qda0ur8iCEsZLSiWpdpP1uL+y5e0xZFzRlv0N33kjFwtC6OFWU5xGA0Ap3SIgGLqg66v+4ygXdwUCo+VGGF5Wbq/F8CU1SfbMEkO7YdziM/XNuuBZgIUoY1x5/lyjVCBgdngTU9cCYHNmiQclFTH6REzAKK445cuFN4mpXWheZdaqjdcKPRxLSz5a6KXoYOvLajpcgc6/P68xj3MZquuF8gY8jaqDt1B6THhAQBm9G9GZiUkKYI0iwGM1sJTB3D1NbAZgDWneAYXIRGyCBcI6n0g46hFggAOLmULivo0m0nKnPrDEK4Fz3JgJ5LodwHy94jvjwmnuB3CL17/R34W+ny/nxpfTaYBOgoXwQxhfl8n/iCcExNMhU6W7IgjYK8oxhorRjQEGTfjLgMc778jmyePaBidrNMCDyKkDn4bplfRTm0vqTx3g8+9gPkHQwpdm0W19zyxTMJd5BHDylrmchMmrXu/cMOarRPJqm4AmWp/7ulGMWFidNKZUzauIOqlk8zSL40TwrTEqHPEa3u5tYhPd4C9UI9FY3ACrI4QihjURw==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(39860400002)(136003)(346002)(396003)(36840700001)(46966006)(7636003)(82310400003)(6666004)(2616005)(36860700001)(82740400003)(336012)(86362001)(4326008)(8676002)(36906005)(426003)(47076005)(356005)(2906002)(36756003)(16526019)(8936002)(70206006)(316002)(54906003)(16576012)(83380400001)(31686004)(31696002)(966005)(26005)(478600001)(70586007)(186003)(6916009)(5660300002)(53546011)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 19:02:21.2404
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a487c9e4-9487-4702-3a5c-08d8ee2e2ff0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT052.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4329
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87blbalycs.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-23 19:56, Jay Vosburgh wrote:
-> Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+On Tue, Mar 23, 2021 at 03:48:51PM +0100, Tobias Waldekranz wrote:
+> On Tue, Mar 23, 2021 at 13:35, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > The netdev_uses_dsa thing is a bit trashy, I think that a more polished
+> > version should rather set NETIF_F_RXALL for the DSA master, and have the
+> > dpaa driver act upon that. But first I'm curious if it works.
 > 
->> On 2021-03-22 16:09, Leon Romanovsky wrote:
->>> On Mon, Mar 22, 2021 at 02:38:46PM +0200, Maxim Mikityanskiy wrote:
->>>> After lockdep gets triggered for the first time, it gets disabled, and
->>>> lockdep_enabled() will return false. It will affect lockdep_is_held(),
->>>> which will start returning true all the time. Normally, it just disables
->>>> checks that expect a lock to be held. However, the bonding code checks
->>>> that a lock is NOT held, which triggers a false positive in WARN_ON.
->>>>
->>>> This commit addresses the issue by replacing lockdep_is_held with
->>>> spin_is_locked, which should have the same effect, but without suffering
->>>> from disabling lockdep.
->>>>
->>>> Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
->>>> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
->>>> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
->>>> ---
->>>> While this patch works around the issue, I would like to discuss better
->>>> options. Another straightforward approach is to extend lockdep API with
->>>> lockdep_is_not_held(), which will be basically !lockdep_is_held() when
->>>> lockdep is enabled, but will return true when !lockdep_enabled().
->>>
->>> lockdep_assert_not_held() was added in this cycle to tip: locking/core
->>> https://yhbt.net/lore/all/161475935945.20312.2870945278690244669.tip-bot2@tip-bot2/
->>> https://yhbt.net/lore/all/878s779s9f.fsf@codeaurora.org/
->>
->> Thanks for this suggestion - I wasn't aware that this macro was recently
->> added and I could use it instead of spin_is_locked.
->>
->> Still, I would like to figure out why the bonding code does this test at
->> all. This lock is not taken by bond_update_slave_arr() itself, so why is
->> that a problem in this code?
-> 
-> 	The goal, I believe, is to insure that the mode_lock is not held
-> by the caller when entering bond_update_slave_arr.  I suspect this is
-> because bond_update_slave_arr may sleep.
+> It does work. Thank you!
 
-If that's the case, this check should be replaced with might_sleep(). 
-There is at least kzalloc that may sleep, so you may be right, and if 
-it's the only reason for this check, it's indeed invalid, as you explain 
-below. However, let's see what the authors of the code say - maybe they 
-meant that during this function call no context must hold this lock - in 
-that case I would like to hear the motivation.
+Happy to hear that.
 
->  One calling context notes this
-> in a comment:
-> 
-> void bond_3ad_handle_link_change(struct slave *slave, char link)
-> {
-> [...]
-> 	/* RTNL is held and mode_lock is released so it's safe
-> 	 * to update slave_array here.
-> 	 */
-> 	bond_update_slave_arr(slave->bond, NULL);
-> 
-> 	However, as far as I can tell, lockdep_is_held() does not test
-> for "lock held by this particular context" but instead is "lock held by
-> any context at all."  As such, I think the test is not valid, and should
-> be removed.
-> 
-> 	The code in question was added by:
-> 
-> commit ee6377147409a00c071b2da853059a7d59979fbc
-> Author: Mahesh Bandewar <maheshb@google.com>
-> Date:   Sat Oct 4 17:45:01 2014 -0700
-> 
->      bonding: Simplify the xmit function for modes that use xmit_hash
-> 
-> 	Mahesh, Nikolay, any thoughts?
-> 
-> 	-J
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-> 
+> Does setting RXALL mean that the master would accept frames with a bad
+> FCS as well?
 
+Do you mean from the perspective of the network stack, or of the hardware?
+
+As far as the hardware is concerned, here is what the manual has to say:
+
+Frame reception from the network may encounter certain error conditions.
+Such errors are reported by the Ethernet MAC when the frame is transferred
+to the Buffer Manager Interface (BMI). The action taken per error case
+is described below. Besides the interrupts, the BMI is capable of
+recognizing several conditions and setting a corresponding flag in FD
+status field for Host usage. These conditions are as follows:
+
+* Physical Error. One of the following events were detected by the
+  Ethernet MAC: Rx FIFO overflow, FCS error, code error, running
+  disparity error (in applicable modes), FIFO parity error, PHY Sequence
+  error, PHY error control character detected, CRC error. The BMI
+  discards the frame, or enqueue directly to EFQID if FMBM_RCFG[FDOVR]
+  is set [ editor's note: this is what my patch does ]. FPE bit is set
+  in the FD status.
+* Frame size error. The Ethernet MAC detected a frame that its length
+  exceeds the maximum allowed as configured in the MAC registers. The
+  frame is truncated by the MAC to the maximum allowed, and it is marked
+  as truncated. The BMI sets FSE in the FD status and forwards the frame
+  to next module in the FMan as usual.
+* Some other network error may result in the frame being discarded by
+  the MAC and not shown to the BMI. However, the MAC is responsible for
+  counting such errors in its own statistics counters.
+
+So yes, packets with bad FCS are accepted with FMBM_RCFG[FDOVR] set.
+But it would be interesting to see what is the value of "fd_status" in
+rx_default_dqrr() for bad packets. You know, in the DPAA world, the
+correct approach to solve this problem would be to create a
+configuration to describe a "soft examination sequence" for the
+programmable hardware "soft parser", which identifies the DSA tag and
+skips over a programmable number of octets. This allows you to be able
+to continue to do things such as flow steering based on IP headers
+located after the DSA tag, etc. This is not supported in the upstream
+FMan driver however, neither the soft parser itself nor an abstraction
+for making DSA masters DSA-aware. I think it would also require more
+work than it took me to hack up this patch. But at least, if I
+understand correctly, with a soft parser in place, the MAC error
+counters should at least stop incrementing, if that is of any importance
+to you.
+
+> If so, would that mean that we would have to verify it in software?
+
+I don't see any place in the network stack that recalculates the FCS if
+NETIF_F_RXALL is set. Additionally, without NETIF_F_RXFCS, I don't even
+know how could the stack even tell a packet with bad FCS apart from one
+with good FCS. If NETIF_F_RXALL is set, then once a packet is received,
+it's taken for granted as good.
+
+There is a separate hardware bit to include the FCS in the RX buffer, I
+don't think this is what you want/need.
+
+> >> 
+> >> As a workaround, switching to EDSA (thereby always having a proper
+> >> EtherType in the frame) solves the issue.
+> >
+> > So basically every user needs to change the tag protocol manually to be
+> > able to receive from port 8? Not sure if that's too friendly.
+> 
+> No it is not friendly at all. My goal was to add it as a device-tree
+> property, but for reasons I will detail in my answer to Andrew, I did
+> not manage to figure out a good way to do that. Happy to take
+> suggestions.
+
+My two cents here are that you should think for the long term. If you
+need it due to a limitation which you have today but might no longer
+have tomorrow, don't put it in the device tree unless you want to
+support it even when you don't need it anymore.
