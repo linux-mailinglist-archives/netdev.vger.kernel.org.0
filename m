@@ -2,95 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6967734660D
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:13:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A84DB346616
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbhCWRMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 13:12:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51953 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230091AbhCWRMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:12:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616519545;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OIQp4HhPuum0LR8G6COtimK4BCBBdtsRsBIz5CKvco8=;
-        b=F/LxRH/WtUC6HE0kD4gDFb7+YIswQY6Fd/iCOnvcZTEZSjXqWgY86vFttoUawykWsVRB2r
-        w3E+hRVqf5xMAoM3sUCcEe3k57z8WzWowQkRVxmxJaLgBmwwwoioi1omPVKMNp5igSOd2r
-        ZyzYixi2v6TnZgeBmapwY61OcO8PMow=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-171-n16PgW9kMkytFSwUMpsLMQ-1; Tue, 23 Mar 2021 13:12:20 -0400
-X-MC-Unique: n16PgW9kMkytFSwUMpsLMQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E0C09107ACCD;
-        Tue, 23 Mar 2021 17:12:18 +0000 (UTC)
-Received: from ovpn-114-241.ams2.redhat.com (ovpn-114-241.ams2.redhat.com [10.36.114.241])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1451C6087C;
-        Tue, 23 Mar 2021 17:12:16 +0000 (UTC)
-Message-ID: <38b220f86f8544e65183945ba716d19158bf3f69.camel@redhat.com>
-Subject: Re: [PATCH net-next 8/8] selftests: net: add UDP GRO forwarding
- self-tests
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
+        id S230027AbhCWRPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229666AbhCWRPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:15:37 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FE5C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:15:33 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id z1so24378405edb.8
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:15:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7kxlgEcdUFm8TUBbNBULfXqJU2RwcDNLA6hcE2ptw0w=;
+        b=j6rZ/jWRRorU6MnJ1POUaoTUoIvmuU9L8aHPP375ZeeE9hm17hlauPiZHM33jDAdlW
+         gXq7W7g9kBFPKfgjXQsJ1j+uZpr4//rfbhzWOETd+uHTQurq1+v/bCxar0qfHhDQU/TF
+         hDnRGOOoN6q+sLFClGlSQQD4kqGj3itv+ZCTTzAVzuWYuwr12hP9/luEEIwKeqqM77nf
+         lhbqaltTKphNRKiS5sWp90nWZe+WONQjIxzxqvWR8AeFOgygMiqpqXEOYZSLNO3domdl
+         Q254+qJNJqBYF4yFiCvJZ8RYVkMVh0YUZmq5clU5yJRpsWbqDoIbj0IQMtzseoiFjIsu
+         U8Yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7kxlgEcdUFm8TUBbNBULfXqJU2RwcDNLA6hcE2ptw0w=;
+        b=LD4Y+NDzY7c+6gNc/X77GNlsyoe9r3ZxjyLDacjNuabUJH63liMc3K+NdLjkbNlTxM
+         d3WdNn4jH8stZ0cRSuBxKJ/HTG7j8v1te8QdqUE9LTACuUt9zO2gS/k8pcq3V4Ts4HGp
+         dpp1Yb76BpHPi/9oSQk15jGl1B0HsavO1hIsFOKZHtYcUApjigQtkIOuBNBb2n2Fa32x
+         BvhliuxBfYvFbPM19Hog/9KgMLYwoNkLbYlm4mYrz65NLubuyR3g7mWHEo2ITOXO9b7z
+         DtXMBbBXKuapGTU3gl4tBpKNcZPaQQIjkvxA9QKUsAq7H793JLTl9HCnuu9jCKsthHIB
+         SDug==
+X-Gm-Message-State: AOAM533bW275nQ3L3LB6rogkWae6qs0FD+bgu2m2INJddXdPYFpQRJGN
+        kdv8XX+Dx27aeZg/F8r1r6PRKpfhCDg=
+X-Google-Smtp-Source: ABdhPJyMYcU0V5+iuWDDowLRaYVL5G/q3o4goiTZC4d5d+g4hTNvuMjYJW+HVkcAbn/KjYWYIDq5XQ==
+X-Received: by 2002:aa7:c889:: with SMTP id p9mr5566176eds.82.1616519730969;
+        Tue, 23 Mar 2021 10:15:30 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id q26sm11470799eja.45.2021.03.23.10.15.30
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Mar 2021 10:15:30 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id j7so21599813wrd.1
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:15:30 -0700 (PDT)
+X-Received: by 2002:adf:fa08:: with SMTP id m8mr5149878wrr.12.1616519729613;
+ Tue, 23 Mar 2021 10:15:29 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210323125233.1743957-1-arnd@kernel.org> <CA+FuTSdZSmBe0UfdmAiE3HxK2wFhEbEktP=xDT8qY9WL+++Cig@mail.gmail.com>
+ <CAK8P3a2r+wjJH3NsHf8XDBRhkbyc_HAbNtizO3L-Us+8_JC2bw@mail.gmail.com>
+In-Reply-To: <CAK8P3a2r+wjJH3NsHf8XDBRhkbyc_HAbNtizO3L-Us+8_JC2bw@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 23 Mar 2021 13:14:51 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScvHD4fTfhzd42hPk_bLPUk0GtbVtq-TZ0=RQerztipBQ@mail.gmail.com>
+Message-ID: <CA+FuTScvHD4fTfhzd42hPk_bLPUk0GtbVtq-TZ0=RQerztipBQ@mail.gmail.com>
+Subject: Re: [RFC net] net: skbuff: fix stack variable out of bounds access
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Date:   Tue, 23 Mar 2021 18:12:15 +0100
-In-Reply-To: <CA+FuTSc6u_YfhTzoHPtzJSkLGMhSsDW5mWvR4-o=YB8e6ieYKQ@mail.gmail.com>
-References: <cover.1616345643.git.pabeni@redhat.com>
-         <a9791dcc26e3f70858eee5d14506f8b36e747960.1616345643.git.pabeni@redhat.com>
-         <CA+FuTSc6u_YfhTzoHPtzJSkLGMhSsDW5mWvR4-o=YB8e6ieYKQ@mail.gmail.com>
+        Alexander Lobakin <alobakin@pm.me>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Mar 23, 2021 at 12:30 PM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> On Tue, Mar 23, 2021 at 3:42 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Tue, Mar 23, 2021 at 8:52 AM Arnd Bergmann <arnd@kernel.org> wrote:
+> > >>
+> > A similar fix already landed in 5.12-rc3: commit b228c9b05876 ("net:
+> > expand textsearch ts_state to fit skb_seq_state"). That fix landed in
+> > 5.12-rc3.
+>
+> Ah nice, even the same BUILD_BUG_ON() ;-)
 
-On Mon, 2021-03-22 at 09:44 -0400, Willem de Bruijn wrote:
-> > diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
-> > new file mode 100755
-> > index 0000000000000..ac7ac56a27524
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/net/udpgro_fwd.sh
-> > @@ -0,0 +1,251 @@
-> > +#!/bin/sh
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +
-> > +readonly BASE="ns-$(mktemp -u XXXXXX)"
-> > +readonly SRC=2
-> > +readonly DST=1
-> > +readonly DST_NAT=100
-> > +readonly NS_SRC=$BASE$SRC
-> > +readonly NS_DST=$BASE$DST
-> > +
-> > +# "baremetal" network used for raw UDP traffic
-> > +readonly BM_NET_V4=192.168.1.
-> > +readonly BM_NET_V6=2001:db8::
-> > +
-> > +# "overlay" network used for UDP over UDP tunnel traffic
-> > +readonly OL_NET_V4=172.16.1.
-> > +readonly OL_NET_V6=2002:db8::
-> 
-> is it okay to use a prod64 prefix for this? should this be another
-> subnet of 2001:db8:: instead? of fd..
+Indeed :) Sorry that your work ended up essentially reproducing that.
 
-It looks like this comment slipped out of my sight... yep, I'll use
-2001:db8:1:: for the overlay network in the next iteration.
+> Too bad it had to be found through runtime testing when it could have been
+> found by the compiler warning.
 
-Thanks!
-
-Paolo
-
+Definitely useful. Had I enabled it, it would have saved me a lot of debug time.
