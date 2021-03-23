@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F2D43455A6
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:45:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3A833455B3
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbhCWCpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 22:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
+        id S229900AbhCWCuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 22:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbhCWCo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 22:44:58 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65FAC061574;
-        Mon, 22 Mar 2021 19:44:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=fPPplkVEUIpxYFEwNetuYs1tuZiCZqATASyjPEZ19NM=; b=W2QkquiXXhfP7Ahz8cYpeFrLib
-        sJKrU5X8P7BQdUQxHhuMYMg8pxQ6u5ITpU8MJB0LF/KKbbE/jUTFJmVLFVAbBKLAIVAwO9Fh9B9Ky
-        CkEAHhxYPzfM/Gcmcm9uU4amgWJbt0Y6jEN54oodxwaclU5y8DBm3wb9aNb40WYpW882RXEm2wStp
-        wwZXdbxjaNCnQ9IoXkefBAVxy1g2OuOU8ui0znjiAvvxUDzxwtrYaAdfDJhUKCMn/csOiGXt6HvAT
-        RM2yb1pdaX3HqU5qNArWQOQYPiDzCqc4jLt/gYyQ8p865BnSKnnLXhdWh5z5f36KU0DVv3qhL43pi
-        SYX1Y9+w==;
-Received: from [2601:1c0:6280:3f0::3ba4]
-        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lOX2E-009Qcb-8S; Tue, 23 Mar 2021 02:44:50 +0000
-Subject: Re: [PATCH net-next] net: ipa: avoid 64-bit modulus
-To:     Alex Elder <elder@linaro.org>, davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210323010505.2149882-1-elder@linaro.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <7efcf4b8-123f-d121-2556-deb9aec5652c@infradead.org>
-Date:   Mon, 22 Mar 2021 19:44:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        with ESMTP id S229494AbhCWCti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 22:49:38 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70A8C061574;
+        Mon, 22 Mar 2021 19:49:36 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id g15so12756841pfq.3;
+        Mon, 22 Mar 2021 19:49:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=qLL8u5RSXlub/wH8MDjMwEUdn29GdY6zDkOzgBhcmM8=;
+        b=e6eJITmSA7f+krGA6GYWV+FebWY2FScfRNz2CdKLYScWisVUw5CtpkC0gPCYyv33R4
+         06rwpmtMSCUw4Ixj9x6NngBxk2s8CTFs+w/ABMXSbWpajG7Rkr/uiyqifrxc/aF7hJg6
+         1ksaqWn9f+/p3t70QhohHvY5T5JYRL/Af2XXhOKWysk/BdBosIh28pk+zfd0am8lXR9V
+         MCQmMQs/Di37wlQPRbcK9aKDoG46ErNIV+FViUr0M4leOSjL9h2re1TFLfUO+ixjYDiL
+         dbo41F8pAen1ytzok1xtsmFDvkvryZ5X4ZQLJzKbCFVjfNsJciltgXnWD7bugTVanECb
+         orMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qLL8u5RSXlub/wH8MDjMwEUdn29GdY6zDkOzgBhcmM8=;
+        b=kDbb5rhBmvP3lwoGpVrNuVDb/N+IkWduW/JlH/E6xotukiKcMiJMOek0l5fUSKwahR
+         hDSA8UnCJqUf7fe3M7uqet48moe8MBKmAjOuLbbSx46J4iWLpgONF0nJHP4GpMT4zyEm
+         m2IUGkCFuG3JmGHkm6XeDvRwrDlF6Zu3GO31tN1mTh34pcO1S2NyL2BcA4t7kc7Q0qOX
+         khLLu7R8jDhZ+Shu4GoUVN5sLHOrg5zqtxE7XgQI3J3fnHBkkGMWJMT2gRQmVfrYCI+9
+         R1oYX0NiJd/lUZ2lAxNNnPsJDkRaTYoPUOmQLFpzl2IQlANc2B8sRsWy9VMxwMU17SQZ
+         v+jw==
+X-Gm-Message-State: AOAM530PxIzzbQoVYK64ZlR+YZU7fodyxv2me7gIMETDTyuZ0McMS2GB
+        FbVzL7HxpUwMnIERzMZIMlo=
+X-Google-Smtp-Source: ABdhPJxZnXmNSgKqUTdnPPFB0+aT9tb/9hccz1qSl82B4/gydZYPw99Jh9P0fbkwK54g7WUGMGf3VA==
+X-Received: by 2002:a63:1026:: with SMTP id f38mr2185821pgl.142.1616467776370;
+        Mon, 22 Mar 2021 19:49:36 -0700 (PDT)
+Received: from Leo-laptop-t470s ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 144sm5483383pfy.75.2021.03.22.19.49.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 19:49:35 -0700 (PDT)
+Date:   Tue, 23 Mar 2021 10:49:23 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bjorn@kernel.org
+Subject: Re: [PATCHv2 bpf-next 2/4] xdp: extend xdp_redirect_map with
+ broadcast support
+Message-ID: <20210323024923.GD2900@Leo-laptop-t470s>
+References: <20210309101321.2138655-1-liuhangbin@gmail.com>
+ <20210309101321.2138655-3-liuhangbin@gmail.com>
+ <87r1kec7ih.fsf@toke.dk>
+ <20210318035200.GB2900@Leo-laptop-t470s>
+ <875z1oczng.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210323010505.2149882-1-elder@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <875z1oczng.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/22/21 6:05 PM, Alex Elder wrote:
-> It is possible for a 32 bit x86 build to use a 64 bit DMA address.
+On Thu, Mar 18, 2021 at 03:19:47PM +0100, Toke Høiland-Jørgensen wrote:
+> Hangbin Liu <liuhangbin@gmail.com> writes:
 > 
-> There are two remaining spots where the IPA driver does a modulo
-> operation to check alignment of a DMA address, and under certain
-> conditions this can lead to a build error on i386 (at least).
+> > On Wed, Mar 17, 2021 at 01:03:02PM +0100, Toke Høiland-Jørgensen wrote:
+> >> FYI, this no longer applies to bpf-next due to Björn's refactor in
+> >> commit: ee75aef23afe ("bpf, xdp: Restructure redirect actions")
+> >
+> > Thanks Toke, I need to see how to get the map via map_id, does
+> > bpf_map_get_curr_or_next() works? Should I call bpf_map_put() after
+> > using?
 > 
-> The alignment checks we're doing are for power-of-2 values, and this
-> means the lower 32 bits of the DMA address can be used.  This ensures
-> both operands to the modulo operator are 32 bits wide.
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Alex Elder <elder@linaro.org>
+> I would expect that to be terrible for performance; I think it would be
+> better to just add back the map pointer into struct bpf_redirect_info.
+> If you only set the map pointer when the multicast flag is set, you can
+> just check that pointer to disambiguate between when you need to call
+> dev_map_enqueue() and dev_map_enqueue_multi(), in which case you don't
+> need to add back the flags member...
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+There are 2 flags, BROADCAST and EXCLUDE_INGRESS. There is no way
+to only check the map pointer and ignore flags..
 
-
-Thanks.
-
-> ---
->  drivers/net/ipa/gsi.c       | 11 +++++++----
->  drivers/net/ipa/ipa_table.c |  9 ++++++---
->  2 files changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-> index 7f3e338ca7a72..b6355827bf900 100644
-> --- a/drivers/net/ipa/gsi.c
-> +++ b/drivers/net/ipa/gsi.c
-> @@ -1436,15 +1436,18 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
->  /* Initialize a ring, including allocating DMA memory for its entries */
->  static int gsi_ring_alloc(struct gsi *gsi, struct gsi_ring *ring, u32 count)
->  {
-> -	size_t size = count * GSI_RING_ELEMENT_SIZE;
-> +	u32 size = count * GSI_RING_ELEMENT_SIZE;
->  	struct device *dev = gsi->dev;
->  	dma_addr_t addr;
->  
-> -	/* Hardware requires a 2^n ring size, with alignment equal to size */
-> +	/* Hardware requires a 2^n ring size, with alignment equal to size.
-> +	 * The size is a power of 2, so we can check alignment using just
-> +	 * the bottom 32 bits for a DMA address of any size.
-> +	 */
->  	ring->virt = dma_alloc_coherent(dev, size, &addr, GFP_KERNEL);
-> -	if (ring->virt && addr % size) {
-> +	if (ring->virt && lower_32_bits(addr) % size) {
->  		dma_free_coherent(dev, size, ring->virt, addr);
-> -		dev_err(dev, "unable to alloc 0x%zx-aligned ring buffer\n",
-> +		dev_err(dev, "unable to alloc 0x%x-aligned ring buffer\n",
->  			size);
->  		return -EINVAL;	/* Not a good error value, but distinct */
->  	} else if (!ring->virt) {
-> diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-> index 988f2c2886b95..4236a50ff03ae 100644
-> --- a/drivers/net/ipa/ipa_table.c
-> +++ b/drivers/net/ipa/ipa_table.c
-> @@ -658,10 +658,13 @@ int ipa_table_init(struct ipa *ipa)
->  		return -ENOMEM;
->  
->  	/* We put the "zero rule" at the base of our table area.  The IPA
-> -	 * hardware requires rules to be aligned on a 128-byte boundary.
-> -	 * Make sure the allocation satisfies this constraint.
-> +	 * hardware requires route and filter table rules to be aligned
-> +	 * on a 128-byte boundary.  As long as the alignment constraint
-> +	 * is a power of 2, we can check alignment using just the bottom
-> +	 * 32 bits for a DMA address of any size.
->  	 */
-> -	if (addr % IPA_TABLE_ALIGN) {
-> +	BUILD_BUG_ON(!is_power_of_2(IPA_TABLE_ALIGN));
-> +	if (lower_32_bits(addr) % IPA_TABLE_ALIGN) {
->  		dev_err(dev, "table address %pad not %u-byte aligned\n",
->  			&addr, IPA_TABLE_ALIGN);
->  		dma_free_coherent(dev, size, virt, addr);
-> 
-
-
--- 
-~Randy
-
+Thanks
+Hangbin
