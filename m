@@ -2,93 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DADA13465EC
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6967734660D
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:13:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbhCWRGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 13:06:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56389 "EHLO
+        id S229890AbhCWRMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:12:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51953 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229923AbhCWRGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:06:15 -0400
+        by vger.kernel.org with ESMTP id S230091AbhCWRMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:12:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616519175;
+        s=mimecast20190719; t=1616519545;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KtNdINBUH3O71CX9nL3/PvcG1x/na61kKw2iN7V6Vns=;
-        b=bDkmaIy9Mi5VELuaZrY5HpcrA/9/aIYFrNTN7NuLTrj/CFMJL4Vz6Gsc65flKjgJ24Tl59
-        ktCIlHl1CBW/VTZ7hhxAr9egOIxtWhIn4xap4LyLaQbw2JP8rEas4TUWk3j5siSQVbhyES
-        CsRJtmgBH1VuI1hH7f35U0WhOv3MgrI=
+        bh=OIQp4HhPuum0LR8G6COtimK4BCBBdtsRsBIz5CKvco8=;
+        b=F/LxRH/WtUC6HE0kD4gDFb7+YIswQY6Fd/iCOnvcZTEZSjXqWgY86vFttoUawykWsVRB2r
+        w3E+hRVqf5xMAoM3sUCcEe3k57z8WzWowQkRVxmxJaLgBmwwwoioi1omPVKMNp5igSOd2r
+        ZyzYixi2v6TnZgeBmapwY61OcO8PMow=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-10-3ne10P5-NzOURwCarP9VdA-1; Tue, 23 Mar 2021 13:06:11 -0400
-X-MC-Unique: 3ne10P5-NzOURwCarP9VdA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-171-n16PgW9kMkytFSwUMpsLMQ-1; Tue, 23 Mar 2021 13:12:20 -0400
+X-MC-Unique: n16PgW9kMkytFSwUMpsLMQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E479C180FCA7;
-        Tue, 23 Mar 2021 17:06:08 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EA96919C45;
-        Tue, 23 Mar 2021 17:06:02 +0000 (UTC)
-Date:   Tue, 23 Mar 2021 18:06:01 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
-Message-ID: <20210323180601.7f8746a8@carbon>
-In-Reply-To: <20210323160814.62a248fb@carbon>
-References: <20210322091845.16437-1-mgorman@techsingularity.net>
-        <20210323104421.GK3697@techsingularity.net>
-        <20210323160814.62a248fb@carbon>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E0C09107ACCD;
+        Tue, 23 Mar 2021 17:12:18 +0000 (UTC)
+Received: from ovpn-114-241.ams2.redhat.com (ovpn-114-241.ams2.redhat.com [10.36.114.241])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1451C6087C;
+        Tue, 23 Mar 2021 17:12:16 +0000 (UTC)
+Message-ID: <38b220f86f8544e65183945ba716d19158bf3f69.camel@redhat.com>
+Subject: Re: [PATCH net-next 8/8] selftests: net: add UDP GRO forwarding
+ self-tests
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Date:   Tue, 23 Mar 2021 18:12:15 +0100
+In-Reply-To: <CA+FuTSc6u_YfhTzoHPtzJSkLGMhSsDW5mWvR4-o=YB8e6ieYKQ@mail.gmail.com>
+References: <cover.1616345643.git.pabeni@redhat.com>
+         <a9791dcc26e3f70858eee5d14506f8b36e747960.1616345643.git.pabeni@redhat.com>
+         <CA+FuTSc6u_YfhTzoHPtzJSkLGMhSsDW5mWvR4-o=YB8e6ieYKQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Mar 2021 16:08:14 +0100
-Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+Hello,
 
-> On Tue, 23 Mar 2021 10:44:21 +0000
-> Mel Gorman <mgorman@techsingularity.net> wrote:
+On Mon, 2021-03-22 at 09:44 -0400, Willem de Bruijn wrote:
+> > diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
+> > new file mode 100755
+> > index 0000000000000..ac7ac56a27524
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/net/udpgro_fwd.sh
+> > @@ -0,0 +1,251 @@
+> > +#!/bin/sh
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +
+> > +readonly BASE="ns-$(mktemp -u XXXXXX)"
+> > +readonly SRC=2
+> > +readonly DST=1
+> > +readonly DST_NAT=100
+> > +readonly NS_SRC=$BASE$SRC
+> > +readonly NS_DST=$BASE$DST
+> > +
+> > +# "baremetal" network used for raw UDP traffic
+> > +readonly BM_NET_V4=192.168.1.
+> > +readonly BM_NET_V6=2001:db8::
+> > +
+> > +# "overlay" network used for UDP over UDP tunnel traffic
+> > +readonly OL_NET_V4=172.16.1.
+> > +readonly OL_NET_V6=2002:db8::
 > 
-> > On Mon, Mar 22, 2021 at 09:18:42AM +0000, Mel Gorman wrote:  
-> > > This series is based on top of Matthew Wilcox's series "Rationalise
-> > > __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
-> > > test and are not using Andrew's tree as a baseline, I suggest using the
-> > > following git tree
-> > > 
-> > > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v5r9
-> > >     
+> is it okay to use a prod64 prefix for this? should this be another
+> subnet of 2001:db8:: instead? of fd..
 
-I've pushed my benchmarks notes for this branch mm-bulk-rebase-v5r9:
+It looks like this comment slipped out of my sight... yep, I'll use
+2001:db8:1:: for the overlay network in the next iteration.
 
- [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org#test-on-mel-git-tree-mm-bulk-rebase-v5r9
+Thanks!
 
-> > Jesper and Chuck, would you mind rebasing on top of the following branch
-> > please? 
-> > 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v6r2
-
-I've rebase on mm-bulk-rebase-v6r4 tomorrow.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Paolo
 
