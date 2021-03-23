@@ -2,116 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A53E3461D7
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:50:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 147C13461E5
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:52:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232263AbhCWOtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 10:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
+        id S232362AbhCWOwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 10:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232136AbhCWOtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:49:24 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623F7C061574
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:49:23 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id 16so25929905ljc.11
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:49:23 -0700 (PDT)
+        with ESMTP id S232283AbhCWOvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:51:39 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD91C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:51:38 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id k8so17945681iop.12
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:51:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=J2SF4K9/ETdvufuKNwH4JIKpqQiWOL6J/SOPiBqGwXE=;
-        b=njEleu9WZQIjEbVT76yJCrn8PDhkqorr6IiY3Iehge1N5itPJk2ChqxmYO3P/zRz8q
-         Cnytzs6wrWmd6jdTfyR4gFOpBWrQYPWC1i18aJ1gNg4NDZEuYZvMMyIoAXn/Ne3pwqi5
-         2uoEMzRQjOjDUqhAYPytexn090y/FasvMgfQjTZO3BklF4DsdG8ZrpHMje15tu4qirMZ
-         yYHGyRSq6xXVuHZXIxNQCJvPBwgMaMvgtsM4NsDOnBBeXOaqd9M0ZsudChd/QCyuUZKX
-         LE1eTeP2Ey9LqI9BMj+qAuRrq2fAIGDOvE3cYgKAMNbXcJXkso+ZUmoLhI/B5yPSzSr7
-         qygg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Cb9buX9rVxx3ke8opkbwPW3pzZmX0QW+zUHbN7SWfEs=;
+        b=u/KA+2in1+Gw7yMSCi+cPIqS1rLeXpjMr2eRniAGVeMkktaYTF5aCZ20ohFhR2uqmZ
+         KVEMVZSSV8zPWbzmcYmElIZ7VRPc2vR5FapKyBVG5pBxDvp2+LuLjhzvchrBsEz996wO
+         MHUBdkwbZZi6+YQNIfESTDX+cjdcdr0tok1/2JGY+d/4j0YgV64Nye1m7SvMSe9Oaazv
+         Y/fZ1mfDoJbSRNlHJleowGI0IxDcIigCP++sElflm30DILobWKQNMlljQC/7d5MwkuEv
+         aN1C91sQMv0xNF7fjaumTGTzBeuf/oLsZyx2mUeU6Kv9XWZUSsCvX4r7cn0VD9kL99NT
+         67Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=J2SF4K9/ETdvufuKNwH4JIKpqQiWOL6J/SOPiBqGwXE=;
-        b=kZFc0Dd0wcuIn9fV3ptU3cdMXkwavDVgT0ejOqbn3lxrM+QegALdU9uoKacl4XNqzk
-         QBUgwIBUsnzfwaxL6h37ztcr8Y+ePnRPW6gn4BkZtFB44Y0l1kwlbzRu6kilpKhsSB0/
-         1dEMd9V++/9QIieDxknkBHgsddksHX2mx7yNjSkZ1dR2OXTx1XVTF+OWaZG0CLUPeGhK
-         DhBL24uoJqveIfEVM005Kt4V/VsQJ7PQ8kVufwQkDHfYU1ssTZxIWuUcCokSnBML7vwe
-         tyDVqzCeJyki3y8recHL3kL297kYx68oWqILmvoR/oQLlr8Gps6lMzd2+pVtiGfh68XL
-         EMMw==
-X-Gm-Message-State: AOAM532Nu9qZgOAZSKryARPBid4hVat2tb+OMXxsl7qcrkfR0VmghUke
-        mJU2bh5x4iazrztVdFT8JlTPgvL92TO+KljqVGI=
-X-Google-Smtp-Source: ABdhPJwIwBS2k/dt10p+CYF3xyRFbh+8kDYuh2NOhXsHizYLI8UfjZ9mQe90RIvpQcqh4GVWnpUrhA==
-X-Received: by 2002:a2e:9084:: with SMTP id l4mr3272962ljg.498.1616510961504;
-        Tue, 23 Mar 2021 07:49:21 -0700 (PDT)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id l17sm895173lfg.178.2021.03.23.07.49.20
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Cb9buX9rVxx3ke8opkbwPW3pzZmX0QW+zUHbN7SWfEs=;
+        b=q7DAI9pFKnZtoR/GqdUSwKgX7MmMD47EC9Prf52hN7aRu7ogs0mwC+0AhSJSKrr4BK
+         2DeErozitTDa2JMWRT/si2YURO2W0SwjdsobxbSHdVJVQBFltRHcO9dzklSUM/kjUmsf
+         I597W4ACBSwqdaGGckWh/UFTxYxxi5p4vHkSsMZLXbkUTPdbImqUgql9pdvGHg70DraW
+         pQl5Nsnvfot2fidbCRQbxTBqmyc6pJHS6GIYl6cfYD2kYIj1P1W44/tzxfZPYTWOYxYw
+         1S0N7H/fFUbWudgJEm/joAZSu2lVBNssYF0YMWxdhXmDYObthcYn3ELShz6czADs/PHU
+         r/ZA==
+X-Gm-Message-State: AOAM532XN2sQuSMSQTJpTNYlhFJc8OPbhpICm0oELyyPt2M6L+K5STUm
+        STIhGOMRwW71IKJP2BWp3/+41tPg9Pubr1N6
+X-Google-Smtp-Source: ABdhPJwvYBU/GUSjVChANxP+L3GLJCcd2Q3GRUSXivKqN5rqQ81SrXdkHMwdPiQdcmHxJZxJS5akeA==
+X-Received: by 2002:a02:9048:: with SMTP id y8mr4825615jaf.66.1616511098363;
+        Tue, 23 Mar 2021 07:51:38 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id o13sm8961147iob.17.2021.03.23.07.51.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 07:49:21 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
-In-Reply-To: <YFnh4dEap/lGX4ix@lunn.ch>
-References: <20210323102326.3677940-1-tobias@waldekranz.com> <YFnh4dEap/lGX4ix@lunn.ch>
-Date:   Tue, 23 Mar 2021 15:49:20 +0100
-Message-ID: <87a6qulybz.fsf@waldekranz.com>
+        Tue, 23 Mar 2021 07:51:37 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/6] net: ipa: versions and registers
+Date:   Tue, 23 Mar 2021 09:51:26 -0500
+Message-Id: <20210323145132.2291316-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 13:41, Andrew Lunn <andrew@lunn.ch> wrote:
-> On Tue, Mar 23, 2021 at 11:23:26AM +0100, Tobias Waldekranz wrote:
->> All devices are capable of using regular DSA tags. Support for
->> Ethertyped DSA tags sort into three categories:
->> 
->> 1. No support. Older chips fall into this category.
->> 
->> 2. Full support. Datasheet explicitly supports configuring the CPU
->>    port to receive FORWARDs with a DSA tag.
->> 
->> 3. Undocumented support. Datasheet lists the configuration from
->>    category 2 as "reserved for future use", but does empirically
->>    behave like a category 2 device.
->> 
->> Because there are ethernet controllers that do not handle regular DSA
->> tags in all cases, it is sometimes preferable to rely on the
->> undocumented behavior, as the alternative is a very crippled
->> system. But, in those cases, make sure to log the fact that an
->> undocumented feature has been enabled.
->
-> Hi Tobias
->
-> I wonder if dynamic reconfiguration is the correct solution here. By
-> default it will be wrong for this board, and you need user space to
-> flip it.
->
-> Maybe a DT property would be better. Extend dsa_switch_parse_of() to
-> look for the optional property dsa,tag-protocol, a string containing
-> the name of the tag ops to be used.
+This series is sort of a mix of things, generally related to
+updating IPA versions and register definitions.
 
-This was my initial approach. It gets quite messy though. Since taggers
-can be modules, there is no way of knowing if a supplied protocol name
-is garbage ("asdf"), or just part of a module in an initrd that is not
-loaded yet when you are probing the tree. Even when the tagger is
-available, there is no way to verify if the driver is compatible with
-it. So I think we would have to:
+The first patch fixes some version-related tests throughout the code
+so the conditions are valid for IPA versions other than the two that
+are currently supported.  Support for additional versions is
+forthcoming, and this is a preparatory step.
 
-- Keep the list of protcol names compiled in with the DSA module, such
-  that "edsa" can be resolved to DSA_TAG_PROTO_EDSA without having the
-  tagger module loaded.
+The second patch adds to the set of defined IPA versions, to include
+all versions between 3.0 and 4.11.
 
-- Add (yet) another op so that we can ask the driver if the given
-  protocol is acceptable. Calling .change_tag_protocol will not work as
-  drivers will assume that the driver's .setup has already executed
-  before it is called.
+The next defines an endpoint initialization register that was
+previously not being configured.  We now initialize that register
+(so that NAT is explicitly disabled) on all AP endpoints.
 
-- Have each driver check (during .setup?) if it should configure the
-  device to use its preferred protocol or if the user has specified
-  something else.
+The fourth adds support for an extra bit in a field in a register,
+which is present starting at IPA v4.5.
 
-That felt like a lot to take on board just to solve a corner case like
-this. I am happy to be told that there is a much easier way to do it, or
-that the above would be acceptable if there isn't one.
+The last two are sort of standalone.  One just moves a function
+definition and makes it private.  The other increases the number of
+GSI channels and events supported by the driver, sufficient for IPA
+v4.5.
+
+					-Alex
+
+Alex Elder (6):
+  net: ipa: reduce IPA version assumptions
+  net: ipa: update version definitions
+  net: ipa: define the ENDP_INIT_NAT register
+  net: ipa: limit local processing context address
+  net: ipa: move ipa_aggr_granularity_val()
+  net: ipa: increase channels and events
+
+ drivers/net/ipa/gsi.c          |  8 +++----
+ drivers/net/ipa/gsi.h          |  4 ++--
+ drivers/net/ipa/ipa_cmd.c      | 26 ++++++++++++---------
+ drivers/net/ipa/ipa_endpoint.c | 42 ++++++++++++++++++++++++----------
+ drivers/net/ipa/ipa_main.c     | 21 ++++++++++++++---
+ drivers/net/ipa/ipa_mem.c      |  6 +++--
+ drivers/net/ipa/ipa_qmi.c      |  2 +-
+ drivers/net/ipa/ipa_reg.h      | 40 ++++++++++++++++++++------------
+ drivers/net/ipa/ipa_version.h  | 10 ++++++--
+ 9 files changed, 107 insertions(+), 52 deletions(-)
+
+-- 
+2.27.0
+
