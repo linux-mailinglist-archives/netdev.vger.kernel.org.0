@@ -2,197 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2C2934669B
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:45:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF1253466A6
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:48:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbhCWRoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 13:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbhCWRoa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:44:30 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BA8C061574;
-        Tue, 23 Mar 2021 10:44:29 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id s21so10430050pjq.1;
-        Tue, 23 Mar 2021 10:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=uTTW2Bp8A8zw/GLQbpb96vNlplssbvzgvQZq5e4cEAY=;
-        b=c5O6Oc4EH3/8pLm+5/KHLgeSeW6qcQliABWb8y1S6RHJFsEXmQOWFAcdfM9npIePNk
-         4HaJmT4/o+WYPr0U9HgFXvfyqVjBwUQGW5gQoc2p7NfRK12wXpaycAa5xQ3mcQyUSCdC
-         Pp40gw/8kNJ3EziFrqN8g/2Mgjw4DsodJrMCBdncyF0Yrs85dkiCZK4xats8P9mNtUKR
-         CW6BK60kM/b4mEMncV43e29W9Oj8xiXLt5hSEsG+EK9pDd08NzqmZzwc0TlIUom5noqg
-         29lxcDytnpJnxn2IFW8ZfF6aZERTgg5mldCPjNUQgpSkc6l2lAVbpccTRZWD+j8+DF4F
-         LtdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=uTTW2Bp8A8zw/GLQbpb96vNlplssbvzgvQZq5e4cEAY=;
-        b=awkamsRhnSBKpdmJX2vFkd1eP3M/nmTgRMQ08y3EWMGXPWvt/68BmCxiVdgIf1pRPR
-         4cNqGN9xE7Pu8RSbG6TNyHXZ15cPQ/URosdqHQWNMpuA0uV3f5NMqBcWaKJpjG+5SEgh
-         dNW074FqvDlfR11Di8FnT0OsTbgMyJKySyHfv+qw1mQvKN58aLO5h3sHYswqNh6cGK0+
-         +hkN+laglgV7/ouEDMHxsnYa1noapvpICLFrYGiobrgwtcp7PH58Anu4EZWoB2ZsHH5O
-         MHkvm87nEV30JjsT6tCn/f2px9r99U/JOuNCBM4kXfpKoTQ/68QgVjvLl4WXCwsi9fnj
-         T1yA==
-X-Gm-Message-State: AOAM530D3Lc6te9m8d4WLEJutDLIxu5oWHnhTrzJcyCvZnnWhv4tTuho
-        wBFkjLMmfBlCVaAONpzH2ok=
-X-Google-Smtp-Source: ABdhPJwaSQJ4DZTqsHRbneBAAHdjShNRlLJ3igGyapleUAzvZkrihLUUvF5E3is1aoVScNNm/PuoeA==
-X-Received: by 2002:a17:90a:4d81:: with SMTP id m1mr5553008pjh.143.1616521469036;
-        Tue, 23 Mar 2021 10:44:29 -0700 (PDT)
-Received: from localhost ([61.12.83.162])
-        by smtp.gmail.com with ESMTPSA id d19sm3201209pjs.55.2021.03.23.10.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 10:44:28 -0700 (PDT)
-Date:   Tue, 23 Mar 2021 23:14:19 +0530
-From:   Sai Kalyaan Palla <saikalyaan63@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sai Kalyaan Palla <saikalyaan63@gmail.com>,
-        Gaurav Singh <gaurav1086@gmail.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Andrew Lunn <andrew@lunn.ch>,
-        David Laight <David.Laight@ACULAB.COM>,
-        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bkkarthik@pesu.pes.edu
-Subject: [PATCH] net: decnet: Fixed multiple Coding Style issues
-Message-ID: <20210323174419.f53s5x26pvjqt57k@ubuntu>
+        id S230173AbhCWRr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:47:28 -0400
+Received: from p3plsmtpa07-06.prod.phx3.secureserver.net ([173.201.192.235]:50551
+        "EHLO p3plsmtpa07-06.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231139AbhCWRrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:47:07 -0400
+Received: from chrisHP110 ([76.103.216.188])
+        by :SMTPAUTH: with ESMTPA
+        id Ol7RlGrZ6bSa5Ol7SlHue3; Tue, 23 Mar 2021 10:47:06 -0700
+X-CMAE-Analysis: v=2.4 cv=OIDiYQWB c=1 sm=1 tr=0 ts=605a299a
+ a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
+ a=kj9zAlcOel0A:10 a=VpK0EM-ZsLwCZQ5F_EUA:9 a=CjuIK1q_8ugA:10
+X-SECURESERVER-ACCT: don@thebollingers.org
+From:   "Don Bollinger" <don@thebollingers.org>
+To:     "'Andrew Lunn'" <andrew@lunn.ch>
+Cc:     "'Moshe Shemesh'" <moshe@nvidia.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jakub Kicinski'" <kuba@kernel.org>,
+        "'Adrian Pop'" <pop.adrian61@gmail.com>,
+        "'Michal Kubecek'" <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
+        "'Vladyslav Tarasiuk'" <vladyslavt@nvidia.com>,
+        <don@thebollingers.org>
+References: <1616433075-27051-1-git-send-email-moshe@nvidia.com> <1616433075-27051-2-git-send-email-moshe@nvidia.com> <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org> <YFk13y19yMC0rr04@lunn.ch> <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org> <YFlMjO4ZMBCcJqQ7@lunn.ch>
+In-Reply-To: <YFlMjO4ZMBCcJqQ7@lunn.ch>
+Subject: RE: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to dump arbitrary EEPROM data
+Date:   Tue, 23 Mar 2021 10:47:05 -0700
+Message-ID: <008901d7200c$8a59db40$9f0d91c0$@thebollingers.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQJDEuFgm6Tcdwd/2H9v4w1v+xnhXwGLU1CXAWGs15oCOWnrmgLz6XUDAje0hBqpZ2CQkA==
+Content-Language: en-us
+X-CMAE-Envelope: MS4xfIl6IivOBUaBYRhuaSFFlpGPtDXqpNse5ZRGyUHip9Vj5kNp3kmlhJDbn46HOUnWjxWxcwCzdi+1w6CYCeYzJIKBJgehG9YL59spgbPKFJEQ20kEq3ZC
+ 6Lu9eRMQd2mMg8ZJAbc3OPcvgtQr0pN5UoipHIuAKk24cg/gmdh/A4JBCKy98U2lZymHq7YC0RLO2sV/Gt1lIcYlthL7pQjHjmxrIcm4Fc+UnCcSUMxkZVek
+ B56fRjzXhUgBVifpkJCT05A0/Y0coMt4OLaVNRROU5QCmy0IhjqLihGvWY7mu9J2Rx2aJxH6bYtFpKVARfZjsz4mxZPPu/J+PbVGFVKhmPgKApVPLVcj7T8w
+ ytM9b1yXAokod3ROQzBQLRnBhr71abLMTDaUU5wJS1p3YJkZbHPCiHLPDOU9Gp9tcjTeofuX
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    Made changes to coding style as suggested by checkpatch.pl
-    changes are of the type:
-            space required before the open parenthesis '('
-            space required after that ','
+> > > I don't even see a need for this. The offset should be within one
+> > > 1/2
+> > page, of
+> > > one bank. So offset >= 0 and <= 127. Length is also > 0 and
+> > > <- 127. And offset+length is <= 127.
+> >
+> > I like the clean approach, but...   How do you request low memory?
+> 
+> Duh!
+> 
+> I got my conditions wrong. Too focused on 1/2 pages to think that two of
+> them makes one page!
+> 
+> Lets try again:
+> 
+> offset < 256
+> 0 < len < 128
 
-Signed-off-by: Sai Kalyaan Palla <saikalyaan63@gmail.com>
----
- net/decnet/dn_route.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+Actually 0 < len <= 128.  Length of 128 is not only legal, but very common.
+"Read the whole 1/2 page block".
 
-diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
-index 940755cdecc9..3e3242577440 100644
---- a/net/decnet/dn_route.c
-+++ b/net/decnet/dn_route.c
-@@ -92,7 +92,7 @@ struct dn_rt_hash_bucket {
- extern struct neigh_table dn_neigh_table;
- 
- 
--static unsigned char dn_hiord_addr[6] = {0xAA,0x00,0x04,0x00,0x00,0x00};
-+static unsigned char dn_hiord_addr[6] = {0xAA, 0x00, 0x04, 0x00, 0x00, 0x00};
- 
- static const int dn_rt_min_delay = 2 * HZ;
- static const int dn_rt_max_delay = 10 * HZ;
-@@ -362,7 +362,7 @@ static void dn_run_flush(struct timer_list *unused)
- 		if (!rt)
- 			goto nothing_to_declare;
- 
--		for(; rt; rt = next) {
-+		for (; rt; rt = next) {
- 			next = rcu_dereference_raw(rt->dn_next);
- 			RCU_INIT_POINTER(rt->dn_next, NULL);
- 			dst_dev_put(&rt->dst);
-@@ -902,7 +902,7 @@ static inline int dn_match_addr(__le16 addr1, __le16 addr2)
- {
- 	__u16 tmp = le16_to_cpu(addr1) ^ le16_to_cpu(addr2);
- 	int match = 16;
--	while(tmp) {
-+	while (tmp) {
- 		tmp >>= 1;
- 		match--;
- 	}
-@@ -1388,7 +1388,7 @@ static int dn_route_input_slow(struct sk_buff *skb)
- 		fld.saddr = src_map;
- 	}
- 
--	switch(res.type) {
-+	switch (res.type) {
- 	case RTN_UNICAST:
- 		/*
- 		 * Forwarding check here, we only check for forwarding
-@@ -1531,7 +1531,7 @@ static int dn_route_input(struct sk_buff *skb)
- 		return 0;
- 
- 	rcu_read_lock();
--	for(rt = rcu_dereference(dn_rt_hash_table[hash].chain); rt != NULL;
-+	for (rt = rcu_dereference(dn_rt_hash_table[hash].chain); rt != NULL;
- 	    rt = rcu_dereference(rt->dn_next)) {
- 		if ((rt->fld.saddr == cb->src) &&
- 		    (rt->fld.daddr == cb->dst) &&
-@@ -1744,13 +1744,13 @@ int dn_cache_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 
- 	s_h = cb->args[0];
- 	s_idx = idx = cb->args[1];
--	for(h = 0; h <= dn_rt_hash_mask; h++) {
-+	for (h = 0; h <= dn_rt_hash_mask; h++) {
- 		if (h < s_h)
- 			continue;
- 		if (h > s_h)
- 			s_idx = 0;
- 		rcu_read_lock_bh();
--		for(rt = rcu_dereference_bh(dn_rt_hash_table[h].chain), idx = 0;
-+		for (rt = rcu_dereference_bh(dn_rt_hash_table[h].chain), idx = 0;
- 			rt;
- 			rt = rcu_dereference_bh(rt->dn_next), idx++) {
- 			if (idx < s_idx)
-@@ -1784,7 +1784,7 @@ static struct dn_route *dn_rt_cache_get_first(struct seq_file *seq)
- 	struct dn_route *rt = NULL;
- 	struct dn_rt_cache_iter_state *s = seq->private;
- 
--	for(s->bucket = dn_rt_hash_mask; s->bucket >= 0; --s->bucket) {
-+	for (s->bucket = dn_rt_hash_mask; s->bucket >= 0; --s->bucket) {
- 		rcu_read_lock_bh();
- 		rt = rcu_dereference_bh(dn_rt_hash_table[s->bucket].chain);
- 		if (rt)
-@@ -1814,7 +1814,7 @@ static void *dn_rt_cache_seq_start(struct seq_file *seq, loff_t *pos)
- 	struct dn_route *rt = dn_rt_cache_get_first(seq);
- 
- 	if (rt) {
--		while(*pos && (rt = dn_rt_cache_get_next(seq, rt)))
-+		while (*pos && (rt = dn_rt_cache_get_next(seq, rt)))
- 			--*pos;
- 	}
- 	return *pos ? NULL : rt;
-@@ -1869,21 +1869,21 @@ void __init dn_route_init(void)
- 
- 	goal = totalram_pages() >> (26 - PAGE_SHIFT);
- 
--	for(order = 0; (1UL << order) < goal; order++)
-+	for (order = 0; (1UL << order) < goal; order++)
- 		/* NOTHING */;
- 
- 	/*
- 	 * Only want 1024 entries max, since the table is very, very unlikely
- 	 * to be larger than that.
- 	 */
--	while(order && ((((1UL << order) * PAGE_SIZE) /
-+	while (order && ((((1UL << order) * PAGE_SIZE) /
- 				sizeof(struct dn_rt_hash_bucket)) >= 2048))
- 		order--;
- 
- 	do {
- 		dn_rt_hash_mask = (1UL << order) * PAGE_SIZE /
- 			sizeof(struct dn_rt_hash_bucket);
--		while(dn_rt_hash_mask & (dn_rt_hash_mask - 1))
-+		while (dn_rt_hash_mask & (dn_rt_hash_mask - 1))
- 			dn_rt_hash_mask--;
- 		dn_rt_hash_table = (struct dn_rt_hash_bucket *)
- 			__get_free_pages(GFP_ATOMIC, order);
-@@ -1898,7 +1898,7 @@ void __init dn_route_init(void)
- 		(long)(dn_rt_hash_mask*sizeof(struct dn_rt_hash_bucket))/1024);
- 
- 	dn_rt_hash_mask--;
--	for(i = 0; i <= dn_rt_hash_mask; i++) {
-+	for (i = 0; i <= dn_rt_hash_mask; i++) {
- 		spin_lock_init(&dn_rt_hash_table[i].lock);
- 		dn_rt_hash_table[i].chain = NULL;
- 	}
--- 
-2.25.1
+> 
+> if (offset < 128)
+>    offset + len < 128
+
+Again, offset + len <= 128
+
+> else
+>    offset + len < 256
+
+offset + len <= 256
+
+> 
+> Does that look better?
+> 
+> Reading bytes from the lower 1/2 of page 0 should give the same data as
+> reading data from the lower 1/2 of page 42. So we can allow that, but
+don't
+> be too surprised when an SFP gets it wrong and gives you rubbish. I would
+
+The spec is clear that the lower half is the same for all pages.  If the SFP
+gives you rubbish you should throw the device in the rubbish.
+
+> suggest ethtool(1) never actually does read from the lower 1/2 of any page
+> other than 0.
+
+I agree, despite my previous comment.  While the spec is clear that should
+work, I believe virtually all such instances are bugs not yet discovered.
+
+And, note that the legacy API provides no way to access lower memory from
+any page but 0.  There's just no syntax for it.  Not that we care about
+legacy :-).
+
+> 
+> And i agree about documentation. I would suggest a comment in
+> ethtool_netlink.h, and the RST documentation.
+> 
+> 		   Andrew
+
+Don
+
 
