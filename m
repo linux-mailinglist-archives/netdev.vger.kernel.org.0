@@ -2,446 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A351A345C67
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 12:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8761B345C7D
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 12:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229986AbhCWLEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 07:04:04 -0400
-Received: from mga12.intel.com ([192.55.52.136]:41160 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229448AbhCWLD2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 07:03:28 -0400
-IronPort-SDR: ePy+5NCHMZBBjzIer0LMRGRkKODZoOzYYNS4XwN3EvUMzqC0GmIWRVyFkI2ll2VX7nLUgIIElI
- GsnfG/1VsRiA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="169787904"
-X-IronPort-AV: E=Sophos;i="5.81,271,1610438400"; 
-   d="scan'208";a="169787904"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 04:03:26 -0700
-IronPort-SDR: 2o/Vm+yTIIzIDuKJWZ1unTTJuOR3VX5RqP3tunNTe5IhWB0lhYnles4+0yJOm7EIed3mSNQDR8
- iSKeV7FT2dhA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,271,1610438400"; 
-   d="scan'208";a="381318391"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga007.fm.intel.com with ESMTP; 23 Mar 2021 04:03:23 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
-        by linux.intel.com (Postfix) with ESMTP id 3F513580718;
-        Tue, 23 Mar 2021 04:03:20 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>
-Subject: [PATCH net-next 1/1] net: stmmac: Add hardware supported cross-timestamp
-Date:   Tue, 23 Mar 2021 19:07:34 +0800
-Message-Id: <20210323110734.3800-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S229590AbhCWLJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 07:09:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46225 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230429AbhCWLJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 07:09:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616497744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jH64CwItD7+IDNu5T9rDTh1QqhWJhGHEtaUsuBHfOjI=;
+        b=KtR9TPuXH2C6X3zmB0VHWNc0CGD1dHNX50z+7Tm00fB7ZAl2qZ4JahD+DfbD8BrPse85RT
+        pgWew+WoB2+tXQKVp0oPuajpoFkbK/7o5xTx8lIDO1at2DzP1oBd8mZ+qj8VWQQ1U9Zq/z
+        VFaAlJrzPMYIOduOL8JzwI+1+rZOtFE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-351-XYjXjMkUNaOx1Y9hR_U8xA-1; Tue, 23 Mar 2021 07:09:01 -0400
+X-MC-Unique: XYjXjMkUNaOx1Y9hR_U8xA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D7881009466;
+        Tue, 23 Mar 2021 11:08:59 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 38A1F5D9F0;
+        Tue, 23 Mar 2021 11:08:52 +0000 (UTC)
+Date:   Tue, 23 Mar 2021 12:08:51 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Chuck Lever III <chuck.lever@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        brouer@redhat.com
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Message-ID: <20210323120851.18d430cf@carbon>
+In-Reply-To: <20210322205827.GJ3697@techsingularity.net>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+        <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
+        <20210322194948.GI3697@techsingularity.net>
+        <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
+        <20210322205827.GJ3697@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@intel.com>
+On Mon, 22 Mar 2021 20:58:27 +0000
+Mel Gorman <mgorman@techsingularity.net> wrote:
 
-Cross timestamping is supported on Integrated Ethernet Controller in
-Intel SoC such as EHL and TGL with Always Running Timer.
+> On Mon, Mar 22, 2021 at 08:32:54PM +0000, Chuck Lever III wrote:
+> > >> It is returning some confusing (to me) results. I'd like
+> > >> to get these resolved before posting any benchmark
+> > >> results.
+> > >> 
+> > >> 1. When it has visited every array element, it returns the
+> > >> same value as was passed in @nr_pages. That's the N + 1th
+> > >> array element, which shouldn't be touched. Should the
+> > >> allocator return nr_pages - 1 in the fully successful case?
+> > >> Or should the documentation describe the return value as
+> > >> "the number of elements visited" ?
+> > >>   
+> > > 
+> > > I phrased it as "the known number of populated elements in the
+> > > page_array".  
+> > 
+> > The comment you added states:
+> > 
+> > + * For lists, nr_pages is the number of pages that should be allocated.
+> > + *
+> > + * For arrays, only NULL elements are populated with pages and nr_pages
+> > + * is the maximum number of pages that will be stored in the array.
+> > + *
+> > + * Returns the number of pages added to the page_list or the index of the
+> > + * last known populated element of page_array.
+> > 
+> >   
+> > > I did not want to write it as "the number of valid elements
+> > > in the array" because that is not necessarily the case if an array is
+> > > passed in with holes in the middle. I'm open to any suggestions on how
+> > > the __alloc_pages_bulk description can be improved.  
+> > 
+> > The comments states that, for the array case, a /count/ of
+> > pages is passed in, and an /index/ is returned. If you want
+> > to return the same type for lists and arrays, it should be
+> > documented as a count in both cases, to match @nr_pages.
+> > Consumers will want to compare @nr_pages with the return
+> > value to see if they need to call again.
+> >   
+> 
+> Then I'll just say it's the known count of pages in the array. That
+> might still be less than the number of requested pages if holes are
+> encountered.
+> 
+> > > The definition of the return value as-is makes sense for either a list
+> > > or an array. Returning "nr_pages - 1" suits an array because it's the
+> > > last valid index but it makes less sense when returning a list.
+> > >   
+> > >> 2. Frequently the allocator returns a number smaller than
+> > >> the total number of elements. As you may recall, sunrpc
+> > >> will delay a bit (via a call to schedule_timeout) then call
+> > >> again. This is supposed to be a rare event, and the delay
+> > >> is substantial. But with the array-based API, a not-fully-
+> > >> successful allocator call seems to happen more than half
+> > >> the time. Is that expected? I'm calling with GFP_KERNEL,
+> > >> seems like the allocator should be trying harder.
+> > >>   
+> > > 
+> > > It's not expected that the array implementation would be worse *unless*
+> > > you are passing in arrays with holes in the middle. Otherwise, the success
+> > > rate should be similar.  
+> > 
+> > Essentially, sunrpc will always pass an array with a hole.
+> > Each RPC consumes the first N elements in the rq_pages array.
+> > Sometimes N == ARRAY_SIZE(rq_pages). AFAIK sunrpc will not
+> > pass in an array with more than one hole. Typically:
+> > 
+> > .....PPPP
+> > 
+> > My results show that, because svc_alloc_arg() ends up calling
+> > __alloc_pages_bulk() twice in this case, it ends up being
+> > twice as expensive as the list case, on average, for the same
+> > workload.
+> >   
+> 
+> Ok, so in this case the caller knows that holes are always at the
+> start. If the API returns an index that is a valid index and populated,
+> it can check the next index and if it is valid then the whole array
+> must be populated.
+> 
+> Right now, the implementation checks for populated elements at the *start*
+> because it is required for calling prep_new_page starting at the correct
+> index and the API cannot make assumptions about the location of the hole.
+> 
+> The patch below would check the rest of the array but note that it's
+> slower for the API to do this check because it has to check every element
+> while the sunrpc user could check one element. Let me know if a) this
+> hunk helps and b) is desired behaviour.
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index c83d38dfe936..4bf20650e5f5 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5107,6 +5107,9 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+>  	} else {
+>  		while (prep_index < nr_populated)
+>  			prep_new_page(page_array[prep_index++], 0, gfp, 0);
+> +
+> +		while (nr_populated < nr_pages && page_array[nr_populated])
+> +			nr_populated++;
+>  	}
+>  
+>  	return nr_populated;
 
-The hardware cross-timestamp result is made available to
-applications through the PTP_SYS_OFFSET_PRECISE ioctl which calls
-stmmac_getcrosststamp().
+I do know that I suggested moving prep_new_page() out of the
+IRQ-disabled loop, but maybe was a bad idea, for several reasons.
 
-Device time is stored in the MAC Auxiliary register. The 64-bit System
-time (ART timestamp) is stored in registers that are only addressable
-by using MDIO space.
+All prep_new_page does is to write into struct page, unless some
+debugging stuff (like kasan) is enabled. This cache-line is hot as
+LRU-list update just wrote into this cache-line.  As the bulk size goes
+up, as Matthew pointed out, this cache-line might be pushed into
+L2-cache, and then need to be accessed again when prep_new_page() is
+called.
 
-Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
-Co-developed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/common.h  |   2 +
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 108 ++++++++++++++++++
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |   8 ++
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  |   2 +
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |   3 +
- .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c |  11 ++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  32 ++++++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.h  |  23 ++++
- include/linux/stmmac.h                        |   4 +
- 9 files changed, 193 insertions(+)
+Another observation is that moving prep_new_page() into loop reduced
+function size with 253 bytes (which affect I-cache).
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 1c0c60bdf854..95469059dca1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -388,6 +388,8 @@ struct dma_features {
- 	unsigned int estsel;
- 	unsigned int fpesel;
- 	unsigned int tbssel;
-+	/* Numbers of Auxiliary Snapshot Inputs */
-+	unsigned int aux_snapshot_n;
- };
- 
- /* RX Buffer size must be multiple of 4/8/16 bytes */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 763b549e3c2d..992294d25706 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -8,6 +8,7 @@
- #include "dwmac-intel.h"
- #include "dwmac4.h"
- #include "stmmac.h"
-+#include "stmmac_ptp.h"
- 
- #define INTEL_MGBE_ADHOC_ADDR	0x15
- #define INTEL_MGBE_XPCS_ADDR	0x16
-@@ -240,6 +241,108 @@ static void intel_mgbe_ptp_clk_freq_config(void *npriv)
- 	writel(gpio_value, priv->ioaddr + GMAC_GPIO_STATUS);
- }
- 
-+static void get_arttime(struct mii_bus *mii, int intel_adhoc_addr,
-+			u64 *art_time)
-+{
-+	u64 ns;
-+
-+	ns = mdiobus_read(mii, intel_adhoc_addr, PMC_ART_VALUE3);
-+	ns <<= GMAC4_ART_TIME_SHIFT;
-+	ns |= mdiobus_read(mii, intel_adhoc_addr, PMC_ART_VALUE2);
-+	ns <<= GMAC4_ART_TIME_SHIFT;
-+	ns |= mdiobus_read(mii, intel_adhoc_addr, PMC_ART_VALUE1);
-+	ns <<= GMAC4_ART_TIME_SHIFT;
-+	ns |= mdiobus_read(mii, intel_adhoc_addr, PMC_ART_VALUE0);
-+
-+	*art_time = ns;
-+}
-+
-+static int intel_crosststamp(ktime_t *device,
-+			     struct system_counterval_t *system,
-+			     void *ctx)
-+{
-+	struct intel_priv_data *intel_priv;
-+
-+	struct stmmac_priv *priv = (struct stmmac_priv *)ctx;
-+	void __iomem *ptpaddr = priv->ptpaddr;
-+	void __iomem *ioaddr = priv->hw->pcsr;
-+	unsigned long flags;
-+	u64 art_time = 0;
-+	u64 ptp_time = 0;
-+	u32 num_snapshot;
-+	u32 gpio_value;
-+	u32 acr_value;
-+	int ret;
-+	u32 v;
-+	int i;
-+
-+	if (!boot_cpu_has(X86_FEATURE_ART))
-+		return -EOPNOTSUPP;
-+
-+	intel_priv = priv->plat->bsp_priv;
-+
-+	/* Enable Internal snapshot trigger */
-+	acr_value = readl(ptpaddr + PTP_ACR);
-+	acr_value &= ~PTP_ACR_MASK;
-+	switch (priv->plat->int_snapshot_num) {
-+	case AUX_SNAPSHOT0:
-+		acr_value |= PTP_ACR_ATSEN0;
-+		break;
-+	case AUX_SNAPSHOT1:
-+		acr_value |= PTP_ACR_ATSEN1;
-+		break;
-+	case AUX_SNAPSHOT2:
-+		acr_value |= PTP_ACR_ATSEN2;
-+		break;
-+	case AUX_SNAPSHOT3:
-+		acr_value |= PTP_ACR_ATSEN3;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+	writel(acr_value, ptpaddr + PTP_ACR);
-+
-+	/* Clear FIFO */
-+	acr_value = readl(ptpaddr + PTP_ACR);
-+	acr_value |= PTP_ACR_ATSFC;
-+	writel(acr_value, ptpaddr + PTP_ACR);
-+
-+	/* Trigger Internal snapshot signal
-+	 * Create a rising edge by just toggle the GPO1 to low
-+	 * and back to high.
-+	 */
-+	gpio_value = readl(ioaddr + GMAC_GPIO_STATUS);
-+	gpio_value &= ~GMAC_GPO1;
-+	writel(gpio_value, ioaddr + GMAC_GPIO_STATUS);
-+	gpio_value |= GMAC_GPO1;
-+	writel(gpio_value, ioaddr + GMAC_GPIO_STATUS);
-+
-+	/* Poll for time sync operation done */
-+	ret = readl_poll_timeout(priv->ioaddr + GMAC_INT_STATUS, v,
-+				 (v & GMAC_INT_TSIE), 100, 10000);
-+
-+	if (ret == -ETIMEDOUT) {
-+		pr_err("%s: Wait for time sync operation timeout\n", __func__);
-+		return ret;
-+	}
-+
-+	num_snapshot = (readl(ioaddr + GMAC_TIMESTAMP_STATUS) &
-+			GMAC_TIMESTAMP_ATSNS_MASK) >>
-+			GMAC_TIMESTAMP_ATSNS_SHIFT;
-+
-+	/* Repeat until the timestamps are from the FIFO last segment */
-+	for (i = 0; i < num_snapshot; i++) {
-+		spin_lock_irqsave(&priv->ptp_lock, flags);
-+		stmmac_get_ptptime(priv, ptpaddr, &ptp_time);
-+		*device = ns_to_ktime(ptp_time);
-+		spin_unlock_irqrestore(&priv->ptp_lock, flags);
-+		get_arttime(priv->mii, intel_priv->mdio_adhoc_addr, &art_time);
-+		*system = convert_art_to_tsc(art_time);
-+	}
-+
-+	return 0;
-+}
-+
- static void common_default_data(struct plat_stmmacenet_data *plat)
- {
- 	plat->clk_csr = 2;	/* clk_csr_i = 20-35MHz & MDC = clk_csr_i/16 */
-@@ -384,6 +487,11 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
- 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
- 
-+	plat->int_snapshot_num = AUX_SNAPSHOT1;
-+
-+	plat->has_crossts = true;
-+	plat->crosststamp = intel_crosststamp;
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index ef8502d2b6e6..462ca7ed095a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -50,6 +50,7 @@
- #define GMAC_L4_ADDR(reg)		(0x904 + (reg) * 0x30)
- #define GMAC_L3_ADDR0(reg)		(0x910 + (reg) * 0x30)
- #define GMAC_L3_ADDR1(reg)		(0x914 + (reg) * 0x30)
-+#define GMAC_TIMESTAMP_STATUS		0x00000b20
- 
- /* RX Queues Routing */
- #define GMAC_RXQCTRL_AVCPQ_MASK		GENMASK(2, 0)
-@@ -144,6 +145,7 @@
- #define GMAC_INT_PCS_PHYIS		BIT(3)
- #define GMAC_INT_PMT_EN			BIT(4)
- #define GMAC_INT_LPI_EN			BIT(5)
-+#define GMAC_INT_TSIE			BIT(12)
- 
- #define	GMAC_PCS_IRQ_DEFAULT	(GMAC_INT_RGSMIIS | GMAC_INT_PCS_LINK |	\
- 				 GMAC_INT_PCS_ANE)
-@@ -260,6 +262,7 @@ enum power_event {
- #define GMAC_HW_RXFIFOSIZE		GENMASK(4, 0)
- 
- /* MAC HW features2 bitmap */
-+#define GMAC_HW_FEAT_AUXSNAPNUM		GENMASK(30, 28)
- #define GMAC_HW_FEAT_PPSOUTNUM		GENMASK(26, 24)
- #define GMAC_HW_FEAT_TXCHCNT		GENMASK(21, 18)
- #define GMAC_HW_FEAT_RXCHCNT		GENMASK(15, 12)
-@@ -305,6 +308,11 @@ enum power_event {
- #define GMAC_L4DP0_SHIFT		16
- #define GMAC_L4SP0			GENMASK(15, 0)
- 
-+/* MAC Timestamp Status */
-+#define GMAC_TIMESTAMP_AUXTSTRIG	BIT(2)
-+#define GMAC_TIMESTAMP_ATSNS_MASK	GENMASK(29, 25)
-+#define GMAC_TIMESTAMP_ATSNS_SHIFT	25
-+
- /*  MTL registers */
- #define MTL_OPERATION_MODE		0x00000c00
- #define MTL_FRPE			BIT(15)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index 8958778d16b7..8954b85eb850 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -412,6 +412,8 @@ static void dwmac4_get_hw_feature(void __iomem *ioaddr,
- 
- 	/* IEEE 1588-2002 */
- 	dma_cap->time_stamp = 0;
-+	/* Number of Auxiliary Snapshot Inputs */
-+	dma_cap->aux_snapshot_n = (hw_cap & GMAC_HW_FEAT_AUXSNAPNUM) >> 28;
- 
- 	/* MAC HW feature3 */
- 	hw_cap = readl(ioaddr + GMAC_HW_FEATURE3);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index 692541c7b419..59bf7078a754 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -508,6 +508,7 @@ struct stmmac_hwtimestamp {
- 	int (*adjust_systime) (void __iomem *ioaddr, u32 sec, u32 nsec,
- 			       int add_sub, int gmac4);
- 	void (*get_systime) (void __iomem *ioaddr, u64 *systime);
-+	void (*get_ptptime)(void __iomem *ioaddr, u64 *ptp_time);
- };
- 
- #define stmmac_config_hw_tstamping(__priv, __args...) \
-@@ -522,6 +523,8 @@ struct stmmac_hwtimestamp {
- 	stmmac_do_callback(__priv, ptp, adjust_systime, __args)
- #define stmmac_get_systime(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, ptp, get_systime, __args)
-+#define stmmac_get_ptptime(__priv, __args...) \
-+	stmmac_do_void_callback(__priv, ptp, get_ptptime, __args)
- 
- /* Helpers to manage the descriptors for chain and ring modes */
- struct stmmac_mode_ops {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index d291612eeafb..113c51bcc0b5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -153,6 +153,16 @@ static void get_systime(void __iomem *ioaddr, u64 *systime)
- 		*systime = ns;
- }
- 
-+static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
-+{
-+	u64 ns;
-+
-+	ns = readl(ptpaddr + PTP_ATNR);
-+	ns += readl(ptpaddr + PTP_ATSR) * NSEC_PER_SEC;
-+
-+	*ptp_time = ns;
-+}
-+
- const struct stmmac_hwtimestamp stmmac_ptp = {
- 	.config_hw_tstamping = config_hw_tstamping,
- 	.init_systime = init_systime,
-@@ -160,4 +170,5 @@ const struct stmmac_hwtimestamp stmmac_ptp = {
- 	.config_addend = config_addend,
- 	.adjust_systime = adjust_systime,
- 	.get_systime = get_systime,
-+	.get_ptptime = get_ptptime,
- };
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index 8b10fd10446f..b164ae22e35f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -9,6 +9,7 @@
- *******************************************************************************/
- #include "stmmac.h"
- #include "stmmac_ptp.h"
-+#include "dwmac4.h"
- 
- /**
-  * stmmac_adjust_freq
-@@ -165,6 +166,36 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 	return ret;
- }
- 
-+/**
-+ * stmmac_get_syncdevicetime
-+ * @device: current device time
-+ * @system: system counter value read synchronously with device time
-+ * @ctx: context provided by timekeeping code
-+ * Description: Read device and system clock simultaneously and return the
-+ * corrected clock values in ns.
-+ **/
-+static int stmmac_get_syncdevicetime(ktime_t *device,
-+				     struct system_counterval_t *system,
-+				     void *ctx)
-+{
-+	struct stmmac_priv *priv = (struct stmmac_priv *)ctx;
-+
-+	if (priv->plat->crosststamp)
-+		return priv->plat->crosststamp(device, system, ctx);
-+	else
-+		return -EOPNOTSUPP;
-+}
-+
-+static int stmmac_getcrosststamp(struct ptp_clock_info *ptp,
-+				 struct system_device_crosststamp *xtstamp)
-+{
-+	struct stmmac_priv *priv =
-+		container_of(ptp, struct stmmac_priv, ptp_clock_ops);
-+
-+	return get_device_system_crosststamp(stmmac_get_syncdevicetime,
-+					     priv, NULL, xtstamp);
-+}
-+
- /* structure describing a PTP hardware clock */
- static struct ptp_clock_info stmmac_ptp_clock_ops = {
- 	.owner = THIS_MODULE,
-@@ -180,6 +211,7 @@ static struct ptp_clock_info stmmac_ptp_clock_ops = {
- 	.gettime64 = stmmac_get_time,
- 	.settime64 = stmmac_set_time,
- 	.enable = stmmac_enable,
-+	.getcrosststamp = stmmac_getcrosststamp,
- };
- 
- /**
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
-index 7abb1d47e7da..f88727ce4d30 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
-@@ -23,6 +23,9 @@
- #define	PTP_STSUR	0x10	/* System Time – Seconds Update Reg */
- #define	PTP_STNSUR	0x14	/* System Time – Nanoseconds Update Reg */
- #define	PTP_TAR		0x18	/* Timestamp Addend Reg */
-+#define	PTP_ACR		0x40	/* Auxiliary Control Reg */
-+#define	PTP_ATNR	0x48	/* Auxiliary Timestamp - Nanoseconds Reg */
-+#define	PTP_ATSR	0x4c	/* Auxiliary Timestamp - Seconds Reg */
- 
- #define	PTP_STNSUR_ADDSUB_SHIFT	31
- #define	PTP_DIGITAL_ROLLOVER_MODE	0x3B9ACA00	/* 10e9-1 ns */
-@@ -64,4 +67,24 @@
- #define	PTP_SSIR_SSINC_MASK		0xff
- #define	GMAC4_PTP_SSIR_SSINC_SHIFT	16
- 
-+/* Auxiliary Control defines */
-+#define	PTP_ACR_ATSFC		BIT(0)	/* Auxiliary Snapshot FIFO Clear */
-+#define	PTP_ACR_ATSEN0		BIT(4)	/* Auxiliary Snapshot 0 Enable */
-+#define	PTP_ACR_ATSEN1		BIT(5)	/* Auxiliary Snapshot 1 Enable */
-+#define	PTP_ACR_ATSEN2		BIT(6)	/* Auxiliary Snapshot 2 Enable */
-+#define	PTP_ACR_ATSEN3		BIT(7)	/* Auxiliary Snapshot 3 Enable */
-+#define	PTP_ACR_MASK		GENMASK(7, 4)	/* Aux Snapshot Mask */
-+#define	PMC_ART_VALUE0		0x01	/* PMC_ART[15:0] timer value */
-+#define	PMC_ART_VALUE1		0x02	/* PMC_ART[31:16] timer value */
-+#define	PMC_ART_VALUE2		0x03	/* PMC_ART[47:32] timer value */
-+#define	PMC_ART_VALUE3		0x04	/* PMC_ART[63:48] timer value */
-+#define	GMAC4_ART_TIME_SHIFT	16	/* ART TIME 16-bits shift */
-+
-+enum aux_snapshot {
-+	AUX_SNAPSHOT0 = 0x10,
-+	AUX_SNAPSHOT1 = 0x20,
-+	AUX_SNAPSHOT2 = 0x40,
-+	AUX_SNAPSHOT3 = 0x80,
-+};
-+
- #endif	/* __STMMAC_PTP_H__ */
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 10abc80b601e..5134e802f39a 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -186,6 +186,8 @@ struct plat_stmmacenet_data {
- 	void (*exit)(struct platform_device *pdev, void *priv);
- 	struct mac_device_info *(*setup)(void *priv);
- 	int (*clks_config)(void *priv, bool enabled);
-+	int (*crosststamp)(ktime_t *device, struct system_counterval_t *system,
-+			   void *ctx);
- 	void *bsp_priv;
- 	struct clk *stmmac_clk;
- 	struct clk *pclk;
-@@ -206,5 +208,7 @@ struct plat_stmmacenet_data {
- 	u8 vlan_fail_q;
- 	unsigned int eee_usecs_rate;
- 	struct pci_dev *pdev;
-+	bool has_crossts;
-+	int int_snapshot_num;
- };
- #endif
+   ./scripts/bloat-o-meter mm/page_alloc.o-prep_new_page-outside mm/page_alloc.o-prep_new_page-inside
+    add/remove: 18/18 grow/shrink: 0/1 up/down: 144/-397 (-253)
+    Function                                     old     new   delta
+    __alloc_pages_bulk                          1965    1712    -253
+    Total: Before=60799, After=60546, chg -0.42%
+
+Maybe it is better to keep prep_new_page() inside the loop.  This also
+allows list vs array variant to share the call.  And it should simplify
+the array variant code.
+
 -- 
-2.25.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+[PATCH] mm: move prep_new_page inside IRQ disabled loop
+
+From: Jesper Dangaard Brouer <brouer@redhat.com>
+
+./scripts/bloat-o-meter mm/page_alloc.o-prep_new_page-outside mm/page_alloc.o-prep_new_page-inside
+add/remove: 18/18 grow/shrink: 0/1 up/down: 144/-397 (-253)
+Function                                     old     new   delta
+__alloc_pages_bulk                          1965    1712    -253
+Total: Before=60799, After=60546, chg -0.42%
+
+
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ mm/page_alloc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 88a5c1ce5b87..b4ff09b320bc 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5096,11 +5096,13 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 		else
+ 			page_array[nr_populated] = page;
+ 		nr_populated++;
++		prep_new_page(page, 0, gfp, 0);
+ 	}
+ 
+ 	local_irq_restore(flags);
+ 
+ 	/* Prep pages with IRQs enabled. */
++/*
+ 	if (page_list) {
+ 		list_for_each_entry(page, page_list, lru)
+ 			prep_new_page(page, 0, gfp, 0);
+@@ -5108,7 +5110,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 		while (prep_index < nr_populated)
+ 			prep_new_page(page_array[prep_index++], 0, gfp, 0);
+ 	}
+-
++*/
+ 	return nr_populated;
+ 
+ failed_irq:
+
 
