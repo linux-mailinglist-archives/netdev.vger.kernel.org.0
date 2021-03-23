@@ -2,123 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44DCF346AEF
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 22:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58972346AF4
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 22:21:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233517AbhCWVTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 17:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233525AbhCWVSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 17:18:32 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9B5C061764
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 14:18:31 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id z21so103245pjr.9
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 14:18:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=IQhrNSzzRo5IK8pWj/871CxEvc5sDb7hvYKb9bWs5PY=;
-        b=KN38NpSiyK1jTjlQ83KhVeIAFt3K80SF6VSS1g2Jd6f/kh8nPpyuIJPztBAAMETnVu
-         L1TuPqVmfYXaileuYB41opce3o14vJUEDGZFQm4mqdPltLJOh35UjMecsZT00vrZ45Z6
-         bMk6r664cLfto6awWP6eqYTsRL/seiWKh2zQiWoafJMIrHgxtgqehsGCuzcsuz8KJR/N
-         qrMlrwM9B3xSJDl67Qq2r65EjcM2nEK8GohueBoYsEWv6SXRhh5Rnmj5Pp6KbTGKyr1e
-         ohWDaFpB0qusp/s6H0LYK787EY8fWslgnUp35D6SDsQXXhOeAO00QXpFaRUJaRvhifnw
-         Gkiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=IQhrNSzzRo5IK8pWj/871CxEvc5sDb7hvYKb9bWs5PY=;
-        b=pBB6p3jhnoJIO6UpLfsoJAoJmujxmC+1lGPzSejadDgh+fInuV2/8gjjLBhq1GYMcD
-         9TRLhw/0AuTcrwepLmpD55ozLCN4eGg2Die2ymKwNPa3uhb0pamJWY5i67gw6ccEHm1T
-         G1aaPGG/DYl8CGs5/K7ZzagBvacUu0gK7VXD4odXnt7jL/MDdtKus4ETSjZXsY2YDQno
-         xvPNlpD4/1mnunDLdm+lXE8lDRQRPqJfWAZXVwu3xGL8IoBvTGjZ8AeaUqyTVUWkNYbZ
-         SllO2v5WE2e5Ct59UsWTS/qG0ew1iLjBvtTQEILJmIHeDhiHFOTlJgD4s3ObSg4IokEB
-         RFwQ==
-X-Gm-Message-State: AOAM530QBOBnH6w1Y5RwNq0C530jt4Dm6khNFDrbIqeXybQeH6sR9d8e
-        15FARUk0t3nC6XXM6DeCXAklEiOMPiSM4jZl1Y2/
-X-Google-Smtp-Source: ABdhPJyA9VXXmhbh2eHFc9vjsbOs7A7JCXheNnJWzX6ciTpOXFtQyV4+cNABNQ9D75XBXirz5fTuzVlC+Uxr7nOd6GNf
-X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f18d:a314:46c6:7a97])
- (user=danielwinkler job=sendgmr) by 2002:a05:6a00:2348:b029:21d:4e83:7898
- with SMTP id j8-20020a056a002348b029021d4e837898mr132848pfj.65.1616534311315;
- Tue, 23 Mar 2021 14:18:31 -0700 (PDT)
-Date:   Tue, 23 Mar 2021 14:18:21 -0700
-Message-Id: <20210323141653.1.I53e6be1f7df0be198b7e55ae9fc45c7f5760132d@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-Subject: [PATCH] Bluetooth: Always call advertising disable before setting params
-From:   Daniel Winkler <danielwinkler@google.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Daniel Winkler <danielwinkler@google.com>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S233454AbhCWVUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 17:20:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56964 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233558AbhCWVUI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 17:20:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 30E6F619D1;
+        Tue, 23 Mar 2021 21:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616534408;
+        bh=sCOR6WrWbz92aMpGV/iILT+sR1NhbsHUA8SyQ+Uq3zk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pKt8Z6TfVuuNQxXzbTxJw3pvslwNKtPjb+jqVA+pOpx02CN5+oK9xPVbb5k5Io3VT
+         lv4dApkXbC5XBUkdv2wzrPRCqU1opif5Jt7BNWiC1AAJ4IMtGeBt55H4OcT8qn77sV
+         VMURb3Bl4q6z6XPy833VgWuKvHCdYHieKZXsljGf223nTVlhDAoRwaV1caZ90j/G0b
+         iSvTwzrcR7apO5DhdfFOIEANdcn7rgBkA91B9kRXfYamWGzWBjc8Sgqmau/ww8A43T
+         3aWvQR5HrmA6xDQW/M2NHtBm82ETR2d/HErqXM/F1Dz+5VGZwoZiL/6fm5k9GjO6vi
+         TEoJQ7IiVaTqw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2C76560A3E;
+        Tue, 23 Mar 2021 21:20:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] net: dsa: hellcreek: Report switch name and ID
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161653440817.5924.3359049395983997424.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Mar 2021 21:20:08 +0000
+References: <20210322185113.18095-1-kurt@kmk-computers.de>
+In-Reply-To: <20210322185113.18095-1-kurt@kmk-computers.de>
+To:     Kurt Kanzenbach <kurt@kmk-computers.de>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In __hci_req_enable_advertising, the HCI_LE_ADV hdev flag is temporarily
-cleared to allow the random address to be set, which exposes a race
-condition when an advertisement is configured immediately (<10ms) after
-software rotation starts to refresh an advertisement.
+Hello:
 
-In normal operation, the HCI_LE_ADV flag is updated as follows:
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-1. adv_timeout_expire is called, HCI_LE_ADV gets cleared in
-   __hci_req_enable_advertising, but hci_req configures an enable
-   request
-2. hci_req is run, enable callback re-sets HCI_LE_ADV flag
+On Mon, 22 Mar 2021 19:51:13 +0100 you wrote:
+> Report the driver name, ASIC ID and the switch name via devlink. This is a
+> useful information for user space tooling.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+> ---
+> Changes since v1:
+> 
+> [...]
 
-However, in this race condition, the following occurs:
+Here is the summary with links:
+  - [net-next,v2] net: dsa: hellcreek: Report switch name and ID
+    https://git.kernel.org/netdev/net-next/c/1ab568e92bf8
 
-1. adv_timeout_expire is called, HCI_LE_ADV gets cleared in
-   __hci_req_enable_advertising, but hci_req configures an enable
-   request
-2. add_advertising is called, which also calls
-   __hci_req_enable_advertising. Because HCI_LE_ADV was cleared in Step
-   1, no "disable" command is queued.
-3. hci_req for adv_timeout_expire is run, which enables advertising and
-   re-sets HCI_LE_ADV
-4. hci_req for add_advertising is run, but because no "disable" command
-   was queued, we try to set advertising parameters while advertising is
-   active, causing a Command Disallowed error, failing the registration.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-To resolve the issue, this patch removes the check for the HCI_LE_ADV
-flag, and always queues the "disable" request, since HCI_LE_ADV could be
-very temporarily out-of-sync. According to the spec, there is no harm in
-calling "disable" when advertising is not active.
-
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-Signed-off-by: Daniel Winkler <danielwinkler@google.com>
----
-
- net/bluetooth/hci_request.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 8ace5d34b01efe..2b4b99f4cedf21 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1547,8 +1547,10 @@ void __hci_req_enable_advertising(struct hci_request *req)
- 	if (!is_advertising_allowed(hdev, connectable))
- 		return;
- 
--	if (hci_dev_test_flag(hdev, HCI_LE_ADV))
--		__hci_req_disable_advertising(req);
-+	/* Request that the controller stop advertising. This can be called
-+	 * whether or not there is an active advertisement.
-+	 */
-+	__hci_req_disable_advertising(req);
- 
- 	/* Clear the HCI_LE_ADV bit temporarily so that the
- 	 * hci_update_random_address knows that it's safe to go ahead
--- 
-2.31.0.291.g576ba9dcdaf-goog
 
