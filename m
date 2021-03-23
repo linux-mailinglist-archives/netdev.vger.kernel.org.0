@@ -2,62 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF75346902
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:28:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97995346911
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 20:30:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233132AbhCWT15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 15:27:57 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:43440 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232231AbhCWT1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 15:27:41 -0400
-Received: from mac-pro.holtmann.net (p4fefce19.dip0.t-ipconnect.de [79.239.206.25])
-        by mail.holtmann.org (Postfix) with ESMTPSA id A724ECECE9;
-        Tue, 23 Mar 2021 20:35:18 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH v1] Bluetooth: Return whether a connection is outbound
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210323115459.v1.1.I3f19b22d6eaaa182123e373a9fa1fa85105aba07@changeid>
-Date:   Tue, 23 Mar 2021 20:27:39 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <3CE31319-DA8C-409E-852B-30C03D0C3174@holtmann.org>
-References: <20210323115459.v1.1.I3f19b22d6eaaa182123e373a9fa1fa85105aba07@changeid>
-To:     Yu Liu <yudiliu@google.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        id S230174AbhCWT3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 15:29:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40560 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230327AbhCWT3W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 15:29:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4C23619C0;
+        Tue, 23 Mar 2021 19:29:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616527762;
+        bh=VFfthgrx5eg5s7ViJTgggc7NvEWm00e/YlW73Py92H8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=E5gLsn81PDKuJBowb2D3xFoo9pj68DMGA5H7CFoXuDyxYPH2V5HoUy86gIhNG8mN6
+         MqHwzY85AX8RDp7gQ7zW9P0eTMZWktgz8qLmhXfcB+jJGg2/T02Pp7jGsvS6vwBm+/
+         anh+5F+U7FDh4Kr6eZTAJyKcuXTzGBu//Kznz+Jt6BNn5noZq5CxZgJc8c7wH/i/wd
+         iwjuCVqfwFVldmvRUt7TI0lPuAukVl5CX95K/Wf9NLbzugO8gN+P8qxxHdoslQKChZ
+         zkUzjJYHL3i88qgqhv8TJdnt8YxTf3kIYauCFLTklBV0ekorAiwWYcQvaXO3TIbWmL
+         uJtZ8li3WRZxw==
+Date:   Tue, 23 Mar 2021 14:29:20 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, sasha.neftin@intel.com,
+        anthony.l.nguyen@intel.com, linux-pci@vger.kernel.org,
+        bhelgaas@google.com, netdev@vger.kernel.org, mlichvar@redhat.com,
+        richardcochran@gmail.com
+Subject: Re: [PATCH next-queue v3 2/3] igc: Enable PCIe PTM
+Message-ID: <20210323192920.GA597326@bjorn-Precision-5520>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210322161822.1546454-3-vinicius.gomes@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yu,
+On Mon, Mar 22, 2021 at 09:18:21AM -0700, Vinicius Costa Gomes wrote:
+> In practice, enabling PTM also sets the enabled_ptm flag in the PCI
+> device, the flag will be used for detecting if PTM is enabled before
+> adding support for the SYSOFFSET_PRECISE ioctl() (which is added by
+> implementing the getcrosststamp() PTP function).
 
-> When an MGMT_EV_DEVICE_CONNECTED event is reported back to the user
-> space we will set the flags to tell if the established connection is
-> outbound or not. This is useful for the user space to log better metrics
-> and error messages.
-> 
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> 
-> Signed-off-by: Yu Liu <yudiliu@google.com>
+I think you're referring to the "pci_dev.ptm_enabled" flag.  I'm not
+sure what the connection to this patch is.  The SYSOFFSET_PRECISE
+stuff also seems to belong with some other patch.
+
+This patch merely enables PTM if it's supported (might be worth
+expanding Precision Time Measurement for context).
+
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 > ---
+>  drivers/net/ethernet/intel/igc/igc_main.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> Changes in v1:
-> - Initial change
-
-please send a patch to describe the API change in doc/mgmt-api.txt first.
-
-Regards
-
-Marcel
-
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index f77feadde8d2..04319ffae288 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -12,6 +12,8 @@
+>  #include <net/pkt_sched.h>
+>  #include <linux/bpf_trace.h>
+>  #include <net/xdp_sock_drv.h>
+> +#include <linux/pci.h>
+> +
+>  #include <net/ipv6.h>
+>  
+>  #include "igc.h"
+> @@ -5792,6 +5794,10 @@ static int igc_probe(struct pci_dev *pdev,
+>  
+>  	pci_enable_pcie_error_reporting(pdev);
+>  
+> +	err = pci_enable_ptm(pdev, NULL);
+> +	if (err < 0)
+> +		dev_err(&pdev->dev, "PTM not supported\n");
+> +
+>  	pci_set_master(pdev);
+>  
+>  	err = -ENOMEM;
+> -- 
+> 2.31.0
+> 
