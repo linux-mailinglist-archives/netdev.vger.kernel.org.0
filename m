@@ -2,252 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 878AF3455C5
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAC4B3455DE
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 04:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbhCWCwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 22:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbhCWCv4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 22:51:56 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5BEC061574;
-        Mon, 22 Mar 2021 19:51:45 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id g20so12966959qkk.1;
-        Mon, 22 Mar 2021 19:51:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aXRkbPr5evH4vo/g8h5sz3BYjvs8YssE9s0+neI0mfM=;
-        b=sLoellt9v8ugioZgjloCW57uqmvQpkX5N68fYMQBim1adkY8rp52LO9FrxuZjxc/GF
-         MOSVOcFeJC9T8ounFkOCRklJhx5mTPT05AhWwNEH4HNDWzPXaOFwXoId+AcmjKyC8U35
-         aH+8aVwJS4T6VzUp1KZbyilfGxX3LZyFAIOMfo3JAqGbcu3obxTNQ5sKPcfEuZOZlVeV
-         mWLGCssRcItCK6AbZQSr5ZR98OA/WOCHivERRPzoSG6MWUFkCfbifHYkOJcxXALrchm2
-         u/gqyKt0APyFN16HGTnijfaI1FA1AxRuaAtNP6LHffinOIIAP3KUC3YjYgGbn+/pGGCb
-         AgZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aXRkbPr5evH4vo/g8h5sz3BYjvs8YssE9s0+neI0mfM=;
-        b=iPKr/dkjHKXBFYhCMtkXQXWiPb76iVvJh49nFQO0MyrOpgmJ8ddWVAWmjDxiW3m+XZ
-         u6YjcFwTSJtkL/oPm7sZcDoXmOZ4UUPQ6ZAlogGRWs6g8qgMicmNjoJlAvgZpg+y+ZUq
-         im2dJXEimo6A47KdiXyzo7ByKPYqlO+4LVeAyVscB+fp+Ic1SE7v7StCaadAMfSuR4De
-         TsnxTddYgRHzI8OQuH5QTqCyp9byFodmLIiP39Ps64gIbunSifEeOlkBIfKQHNIFGttL
-         8RMbEE2jOS8XlNhv1P0o7XkaBHTHex2dmC8V3CHzreTJcyprC49spqc9iRboqG/KtE4z
-         hA1g==
-X-Gm-Message-State: AOAM530pM/OiiDt5t1rrwJdYEa/JkZ2f+a3smlpmEXJOUUWFd7wyNvdF
-        rkcwjizJy69MrnvELm2zYZA=
-X-Google-Smtp-Source: ABdhPJxG99u8YAT+7kA3y9w1Ww1RgiU3DlfrhRnyw1CNtbCpSenq+mSDO/hV6O2RF13QPCS15+sSBA==
-X-Received: by 2002:a05:620a:791:: with SMTP id 17mr3443873qka.170.1616467904835;
-        Mon, 22 Mar 2021 19:51:44 -0700 (PDT)
-Received: from localhost.localdomain ([179.218.4.27])
-        by smtp.gmail.com with ESMTPSA id h13sm292265qtn.26.2021.03.22.19.51.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 19:51:44 -0700 (PDT)
-From:   Pedro Tammela <pctammela@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v2 2/2] bpf: selftests: add tests for batched ops in LPM trie maps
-Date:   Mon, 22 Mar 2021 23:50:54 -0300
-Message-Id: <20210323025058.315763-3-pctammela@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210323025058.315763-1-pctammela@gmail.com>
-References: <20210323025058.315763-1-pctammela@gmail.com>
+        id S229949AbhCWDBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 23:01:42 -0400
+Received: from mail2.candelatech.com ([208.74.158.173]:46352 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229545AbhCWDBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 23:01:32 -0400
+Received: from [192.168.254.6] (unknown [50.34.172.155])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 1A1BB13C2B4;
+        Mon, 22 Mar 2021 20:01:26 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 1A1BB13C2B4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1616468487;
+        bh=rQIz9Srsbox3KK9ITKyPEVOOf772HvkSawM6/pJCdiI=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=PgLrrxDwb6/rrdkZpHooO/DJHyiKBUD10HUxwKQW+Zfr6JxuUtbr1EEmZscxShfD2
+         vTzeKS0R6Bbu4keJr0Sv/b1l80xRuO1ulLXGvlUw5VKB9nRZpugvys2jenD7RkKsbf
+         TnZeoQXOAIkiSdFdarsp02lGDrE3KL4KenmiBaYY=
+Subject: Re: [RFC 2/7] ath10k: Add support to process rx packet in thread
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Rajkumar Manoharan <rmanohar@codeaurora.org>,
+        Rakesh Pillai <pillair@codeaurora.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Doug Anderson <dianders@chromium.org>,
+        Evan Green <evgreen@chromium.org>
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org>
+ <1595351666-28193-3-git-send-email-pillair@codeaurora.org>
+ <13573549c277b34d4c87c471ff1a7060@codeaurora.org>
+ <d79ae05e-e75a-de2f-f2e3-bc73637e1501@nbd.name>
+ <04d7301d5ad7555a0377c7df530ad8522fc00f77.camel@sipsolutions.net>
+ <1f2726ff-8ba9-5278-0ec6-b80be475ea98@nbd.name>
+ <06a4f84b-a0d4-3f90-40bb-f02f365460ec@candelatech.com>
+ <CA+ASDXOotYHmtqOvSwBES6_95bnbAbEu6F7gQ5TjacJWUKdaPw@mail.gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <47d8be60-14ce-0223-bdf3-c34dc2451945@candelatech.com>
+Date:   Mon, 22 Mar 2021 20:01:25 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <CA+ASDXOotYHmtqOvSwBES6_95bnbAbEu6F7gQ5TjacJWUKdaPw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pedro Tammela <pctammela@mojatatu.com>
+On 3/22/21 6:20 PM, Brian Norris wrote:
+> On Mon, Mar 22, 2021 at 4:58 PM Ben Greear <greearb@candelatech.com> wrote:
+>> On 7/22/20 6:00 AM, Felix Fietkau wrote:
+>>> On 2020-07-22 14:55, Johannes Berg wrote:
+>>>> On Wed, 2020-07-22 at 14:27 +0200, Felix Fietkau wrote:
+>>>>
+>>>>> I'm considering testing a different approach (with mt76 initially):
+>>>>> - Add a mac80211 rx function that puts processed skbs into a list
+>>>>> instead of handing them to the network stack directly.
+>>>>
+>>>> Would this be *after* all the mac80211 processing, i.e. in place of the
+>>>> rx-up-to-stack?
+>>> Yes, it would run all the rx handlers normally and then put the
+>>> resulting skbs into a list instead of calling netif_receive_skb or
+>>> napi_gro_frags.
+>>
+>> Whatever came of this?  I realized I'm running Felix's patch since his mt76
+>> driver needs it.  Any chance it will go upstream?
+> 
+> If you're asking about $subject (moving NAPI/RX to a thread), this
+> landed upstream recently:
+> http://git.kernel.org/linus/adbb4fb028452b1b0488a1a7b66ab856cdf20715
+> 
+> It needs a bit of coaxing to work on a WiFi driver (including: WiFi
+> drivers tend to have a different netdev for NAPI than they expose to
+> /sys/class/net/), but it's there.
+> 
+> I'm not sure if people had something else in mind in the stuff you're
+> quoting though.
 
-Uses the already existing infrastructure for testing batched ops.
-The testing code is essentially the same, with minor tweaks for this use
-case.
+No, I got it confused with something Felix did:
 
-Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- .../map_tests/lpm_trie_map_batch_ops.c (new)  | 158 ++++++++++++++++++
- 1 file changed, 158 insertions(+)
+https://github.com/greearb/mt76/blob/master/patches/0001-net-add-support-for-threaded-NAPI-polling.patch
 
-diff --git a/tools/testing/selftests/bpf/map_tests/lpm_trie_map_batch_ops.c b/tools/testing/selftests/bpf/map_tests/lpm_trie_map_batch_ops.c
-new file mode 100644
-index 000000000000..2e986e5e4cac
---- /dev/null
-+++ b/tools/testing/selftests/bpf/map_tests/lpm_trie_map_batch_ops.c
-@@ -0,0 +1,158 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <arpa/inet.h>
-+#include <linux/bpf.h>
-+#include <netinet/in.h>
-+#include <stdio.h>
-+#include <errno.h>
-+#include <string.h>
-+#include <stdlib.h>
-+
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include <test_maps.h>
-+
-+struct test_lpm_key {
-+	__u32 prefix;
-+	struct in_addr ipv4;
-+};
-+
-+static void map_batch_update(int map_fd, __u32 max_entries,
-+			     struct test_lpm_key *keys, int *values)
-+{
-+	__u32 i;
-+	int err;
-+	char buff[16] = { 0 };
-+	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
-+		.elem_flags = 0,
-+		.flags = 0,
-+	);
-+
-+	for (i = 0; i < max_entries; i++) {
-+		keys[i].prefix = 32;
-+		snprintf(buff, 16, "192.168.1.%d", i + 1);
-+		inet_pton(AF_INET, buff, &keys[i].ipv4);
-+		values[i] = i + 1;
-+	}
-+
-+	err = bpf_map_update_batch(map_fd, keys, values, &max_entries, &opts);
-+	CHECK(err, "bpf_map_update_batch()", "error:%s\n", strerror(errno));
-+}
-+
-+static void map_batch_verify(int *visited, __u32 max_entries,
-+			     struct test_lpm_key *keys, int *values)
-+{
-+	char buff[16] = { 0 };
-+	int lower_byte = 0;
-+	__u32 i;
-+
-+	memset(visited, 0, max_entries * sizeof(*visited));
-+	for (i = 0; i < max_entries; i++) {
-+		inet_ntop(AF_INET, &keys[i].ipv4, buff, 32);
-+		CHECK(sscanf(buff, "192.168.1.%d", &lower_byte) == EOF,
-+		      "sscanf()", "error: i %d\n", i);
-+		CHECK(lower_byte != values[i], "key/value checking",
-+		      "error: i %d key %s value %d\n", i, buff, values[i]);
-+		visited[i] = 1;
-+	}
-+	for (i = 0; i < max_entries; i++) {
-+		CHECK(visited[i] != 1, "visited checking",
-+		      "error: keys array at index %d missing\n", i);
-+	}
-+}
-+
-+void test_lpm_trie_map_batch_ops(void)
-+{
-+	struct bpf_create_map_attr xattr = {
-+		.name = "lpm_trie_map",
-+		.map_type = BPF_MAP_TYPE_LPM_TRIE,
-+		.key_size = sizeof(struct test_lpm_key),
-+		.value_size = sizeof(int),
-+		.map_flags = BPF_F_NO_PREALLOC,
-+	};
-+	struct test_lpm_key *keys, key;
-+	int map_fd, *values, *visited;
-+	__u32 step, count, total, total_success;
-+	const __u32 max_entries = 10;
-+	__u64 batch = 0;
-+	int err;
-+	DECLARE_LIBBPF_OPTS(bpf_map_batch_opts, opts,
-+		.elem_flags = 0,
-+		.flags = 0,
-+	);
-+
-+	xattr.max_entries = max_entries;
-+	map_fd = bpf_create_map_xattr(&xattr);
-+	CHECK(map_fd == -1, "bpf_create_map_xattr()", "error:%s\n",
-+	      strerror(errno));
-+
-+	keys = malloc(max_entries * sizeof(struct test_lpm_key));
-+	values = malloc(max_entries * sizeof(int));
-+	visited = malloc(max_entries * sizeof(int));
-+	CHECK(!keys || !values || !visited, "malloc()", "error:%s\n",
-+	      strerror(errno));
-+
-+	total_success = 0;
-+	for (step = 1; step < max_entries; step++) {
-+		map_batch_update(map_fd, max_entries, keys, values);
-+		map_batch_verify(visited, max_entries, keys, values);
-+		memset(keys, 0, max_entries * sizeof(*keys));
-+		memset(values, 0, max_entries * sizeof(*values));
-+		batch = 0;
-+		total = 0;
-+		/* iteratively lookup/delete elements with 'step'
-+		 * elements each.
-+		 */
-+		count = step;
-+		while (true) {
-+			err = bpf_map_lookup_batch(map_fd,
-+				total ? &batch : NULL, &batch,
-+				keys + total, values + total, &count, &opts);
-+
-+			CHECK((err && errno != ENOENT), "lookup with steps",
-+			      "error: %s\n", strerror(errno));
-+
-+			total += count;
-+			if (err)
-+				break;
-+		}
-+
-+		CHECK(total != max_entries, "lookup with steps",
-+		      "total = %u, max_entries = %u\n", total, max_entries);
-+
-+		map_batch_verify(visited, max_entries, keys, values);
-+
-+		total = 0;
-+		count = step;
-+		while (total < max_entries) {
-+			if (max_entries - total < step)
-+				count = max_entries - total;
-+			err = bpf_map_delete_batch(map_fd, keys + total, &count,
-+						   &opts);
-+			CHECK((err && errno != ENOENT), "delete batch",
-+			      "error: %s\n", strerror(errno));
-+			total += count;
-+			if (err)
-+				break;
-+		}
-+		CHECK(total != max_entries, "delete with steps",
-+		      "total = %u, max_entries = %u\n", total, max_entries);
-+
-+		/* check map is empty, errono == ENOENT */
-+		err = bpf_map_get_next_key(map_fd, NULL, &key);
-+		CHECK(!err || errno != ENOENT, "bpf_map_get_next_key()",
-+		      "error: %s\n", strerror(errno));
-+
-+		total_success++;
-+	}
-+
-+	CHECK(total_success == 0, "check total_success",
-+	      "unexpected failure\n");
-+
-+	printf("%s:PASS\n", __func__);
-+
-+	free(keys);
-+	free(values);
-+	free(visited);
-+}
+Maybe the NAPI/RX to a thread thing superceded Felix's patch?
+
+Thanks,
+Ben
+
+> 
+> Brian
+> 
+
+
 -- 
-2.25.1
-
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
