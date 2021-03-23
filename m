@@ -2,182 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9483465BD
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 17:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE18C3465D5
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbhCWQzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 12:55:47 -0400
-Received: from mail2.protonmail.ch ([185.70.40.22]:14862 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233150AbhCWQzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 12:55:39 -0400
-Date:   Tue, 23 Mar 2021 16:55:31 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1616518537; bh=40YUHvnaoKlsOCx6BeoTLExdKdZj3udCVf35HyR4k7Y=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=bpA98RHgt3ozThgVr/Wb9S632VILvu7pvygpXX7MABqSr7m5cQrKZAa2NrjLI2GFW
-         2L56FZuSBWuWZZt6d1nqIQZcrvl3isWy50qQ+xWPVLjjL7sU76jLIHNgbX6dL2bI9h
-         2xorZs5QN87+itaEitK8YmOaIMhoimw1aR4JW371fc7s9pRMtKo0ZmEhd320PucdPv
-         74wL9/ZGgD+/Xo8ddN1P5LxSrIfOQLc2eQLl6FQPe6y/Z3bkhTQObKTOJSparcTLNj
-         36hEftlWtqYm+NjpmZswPiqiESdKoQm8LwB7Q9uMVpQAtjBpZ6LJC0S9kPCuOpqKXw
-         KfHviNMEVJAug==
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 0/6] page_pool: recycle buffers
-Message-ID: <20210323165523.187134-1-alobakin@pm.me>
-In-Reply-To: <CAFnufp1K+t76n9shfOZB_scV7myUWCTXbB+yf5sr-8ORYQxCEQ@mail.gmail.com>
-References: <20210322170301.26017-1-mcroce@linux.microsoft.com> <20210323154112.131110-1-alobakin@pm.me> <YFoNoohTULmcpeCr@enceladus> <20210323170447.78d65d05@carbon> <YFoTBm0mJ4GyuHb6@enceladus> <CAFnufp1K+t76n9shfOZB_scV7myUWCTXbB+yf5sr-8ORYQxCEQ@mail.gmail.com>
+        id S229666AbhCWRCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229631AbhCWRBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:01:43 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3CBC061763
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:01:38 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id c6so15448782qtc.1
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:01:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aMZf3nAnd3Ur++OR8V/tDE1PbcZI5ey7Mp8g1oFzdQ8=;
+        b=hn+/QKTWQ8HIyPatT9wTlycQejd9EC8+QxrYdIXm2iCp2ZexLrV0+iBG3Z8i4zXusA
+         7/JD+um93ZmFKBY28q3Bna9RyArSGxILyxRJAmTuFK9RmO4VEbll8xungPHroHkZ/g/j
+         Dth/GtDL7UnUJzXClUZQNYArZfATgy2XzyDoJHEtIDqTfq26v8tCj7FnIQJ/y7E3y0sn
+         feoWvo6GCwYAJA4V2MXn8K80zZJdVdYqhxi7TJQv2SusDlupOFf0lMAhfNti9jNbB/ci
+         zq7V0lrPsOlc3l7P5BJgApsv4RQ9/BQrTTg6woTtm6gpjiJJknRrdUwG+YCu7gQ1I6pg
+         rYtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aMZf3nAnd3Ur++OR8V/tDE1PbcZI5ey7Mp8g1oFzdQ8=;
+        b=J0GilME2iogsaUNBBTYa2rFmCvSEjwi2O6oZ1P573YrRTKDAg4EeDAJwJl7Ichh8qe
+         /g14oMaXA/HJVDsRtXsERDJjYm+AcUMI81plZ9nRIt0yBOOLYZugabNArKvMkpiy8Z1v
+         jc4xy9bzfA7KvKhh9zi690Ecb71FUqvhcTKlkNEtamPClX+Gaat0N7S14sU/0K/93kxu
+         aoEW0e1FoY2vvRnMrHyGd0SnoP6CI1idOa2uiks2v8c5n9dKArh2WzAncEeNZZjiMwos
+         oCtmz7Rfg9bMzglCccXc4gNpOXDEXOUYwfB2d21w/orJ2e1u+YpaF7DNEOWTeZgEvWGY
+         wQnw==
+X-Gm-Message-State: AOAM532L6aNDTzjIqlf/Fh5fw6tPtyq4wMaVlRdhr1IeoqZifpZZAZf6
+        n+st7CdDVUjuef39RLIIQjvE5Q==
+X-Google-Smtp-Source: ABdhPJzCuLhCkYKHVasYPzgXQeDfWHGfRizwL/eEVZMvB/YhmsZ90glH0Z4eOlPyJJ67gc69/Mr1/w==
+X-Received: by 2002:a05:622a:1389:: with SMTP id o9mr5395247qtk.18.1616518897768;
+        Tue, 23 Mar 2021 10:01:37 -0700 (PDT)
+Received: from localhost (70.44.39.90.res-cmts.bus.ptd.net. [70.44.39.90])
+        by smtp.gmail.com with ESMTPSA id i14sm5006234qtq.81.2021.03.23.10.01.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Mar 2021 10:01:37 -0700 (PDT)
+Date:   Tue, 23 Mar 2021 13:01:36 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Arjun Roy <arjunroy@google.com>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
+Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
+Message-ID: <YFoe8BO0JsbXTHHF@cmpxchg.org>
+References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
+ <YFCH8vzFGmfFRCvV@cmpxchg.org>
+ <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
+ <YFJ+5+NBOBiUbGWS@cmpxchg.org>
+ <CAOFY-A17g-Aq_TsSX8=mD7ZaSAqx3gzUuCJT8K0xwrSuYdP4Kw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOFY-A17g-Aq_TsSX8=mD7ZaSAqx3gzUuCJT8K0xwrSuYdP4Kw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@linux.microsoft.com>
-Date: Tue, 23 Mar 2021 17:28:32 +0100
+On Mon, Mar 22, 2021 at 02:35:11PM -0700, Arjun Roy wrote:
+> To make sure we're on the same page, then, here's a tentative
+> mechanism - I'd rather get buy in before spending too much time on
+> something that wouldn't pass muster afterwards.
+> 
+> A) An opt-in mechanism, that a driver needs to explicitly support, in
+> order to get properly accounted receive zerocopy.
 
-> On Tue, Mar 23, 2021 at 5:10 PM Ilias Apalodimas
-> <ilias.apalodimas@linaro.org> wrote:
-> >
-> > On Tue, Mar 23, 2021 at 05:04:47PM +0100, Jesper Dangaard Brouer wrote:
-> > > On Tue, 23 Mar 2021 17:47:46 +0200
-> > > Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-> > >
-> > > > On Tue, Mar 23, 2021 at 03:41:23PM +0000, Alexander Lobakin wrote:
-> > > > > From: Matteo Croce <mcroce@linux.microsoft.com>
-> > > > > Date: Mon, 22 Mar 2021 18:02:55 +0100
-> > > > >
-> > > > > > From: Matteo Croce <mcroce@microsoft.com>
-> > > > > >
-> > > > > > This series enables recycling of the buffers allocated with the=
- page_pool API.
-> > > > > > The first two patches are just prerequisite to save space in a =
-struct and
-> > > > > > avoid recycling pages allocated with other API.
-> > > > > > Patch 2 was based on a previous idea from Jonathan Lemon.
-> > > > > >
-> > > > > > The third one is the real recycling, 4 fixes the compilation of=
- __skb_frag_unref
-> > > > > > users, and 5,6 enable the recycling on two drivers.
-> > > > > >
-> > > > > > In the last two patches I reported the improvement I have with =
-the series.
-> > > > > >
-> > > > > > The recycling as is can't be used with drivers like mlx5 which =
-do page split,
-> > > > > > but this is documented in a comment.
-> > > > > > In the future, a refcount can be used so to support mlx5 with n=
-o changes.
-> > > > > >
-> > > > > > Ilias Apalodimas (2):
-> > > > > >   page_pool: DMA handling and allow to recycles frames via SKB
-> > > > > >   net: change users of __skb_frag_unref() and add an extra argu=
-ment
-> > > > > >
-> > > > > > Jesper Dangaard Brouer (1):
-> > > > > >   xdp: reduce size of struct xdp_mem_info
-> > > > > >
-> > > > > > Matteo Croce (3):
-> > > > > >   mm: add a signature in struct page
-> > > > > >   mvpp2: recycle buffers
-> > > > > >   mvneta: recycle buffers
-> > > > > >
-> > > > > >  .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c |  2 +-
-> > > > > >  drivers/net/ethernet/marvell/mvneta.c         |  4 +-
-> > > > > >  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 17 +++----
-> > > > > >  drivers/net/ethernet/marvell/sky2.c           |  2 +-
-> > > > > >  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
-> > > > > >  include/linux/mm_types.h                      |  1 +
-> > > > > >  include/linux/skbuff.h                        | 33 +++++++++++=
---
-> > > > > >  include/net/page_pool.h                       | 15 ++++++
-> > > > > >  include/net/xdp.h                             |  5 +-
-> > > > > >  net/core/page_pool.c                          | 47 +++++++++++=
-++++++++
-> > > > > >  net/core/skbuff.c                             | 20 +++++++-
-> > > > > >  net/core/xdp.c                                | 14 ++++--
-> > > > > >  net/tls/tls_device.c                          |  2 +-
-> > > > > >  13 files changed, 138 insertions(+), 26 deletions(-)
-> > > > >
-> > > > > Just for the reference, I've performed some tests on 1G SoC NIC w=
-ith
-> > > > > this patchset on, here's direct link: [0]
-> > > > >
-> > > >
-> > > > Thanks for the testing!
-> > > > Any chance you can get a perf measurement on this?
-> > >
-> > > I guess you mean perf-report (--stdio) output, right?
-> > >
-> >
-> > Yea,
-> > As hinted below, I am just trying to figure out if on Alexander's platf=
-orm the
-> > cost of syncing, is bigger that free-allocate. I remember one armv7 wer=
-e that
-> > was the case.
-> >
-> > > > Is DMA syncing taking a substantial amount of your cpu usage?
-> > >
-> > > (+1 this is an important question)
+Yep, opt-in makes sense. That allows piece-by-piece conversion and
+avoids us having to have a flag day.
 
-Sure, I'll drop perf tools to my test env and share the results,
-maybe tomorrow or in a few days.
-From what I know for sure about MIPS and my platform,
-post-Rx synching (dma_sync_single_for_cpu()) is a no-op, and
-pre-Rx (dma_sync_single_for_device() etc.) is a bit expensive.
-I always have sane page_pool->pp.max_len value (smth about 1668
-for MTU of 1500) to minimize the overhead.
+> B) Failure to opt-in (e.g. unchanged old driver) can either lead to
+> unaccounted zerocopy (ie. existing behaviour) or, optionally,
+> effectively disabled zerocopy (ie. any call to zerocopy will return
+> something like EINVAL) (perhaps controlled via some sysctl, which
+> either lets zerocopy through or not with/without accounting).
 
-By the word, IIRC, all machines shipped with mvpp2 have hardware
-cache coherency units and don't suffer from sync routines at all.
-That may be the reason why mvpp2 wins the most from this series.
+I'd suggest letting it fail gracefully (i.e. no -EINVAL) to not
+disturb existing/working setups during the transition period. But the
+exact policy is easy to change later on if we change our minds on it.
 
-> > > > >
-> > > > > [0] https://lore.kernel.org/netdev/20210323153550.130385-1-alobak=
-in@pm.me
-> > > > >
-> > >
->
-> That would be the same as for mvneta:
->
-> Overhead  Shared Object     Symbol
->   24.10%  [kernel]          [k] __pi___inval_dcache_area
->   23.02%  [mvneta]          [k] mvneta_rx_swbm
->    7.19%  [kernel]          [k] kmem_cache_alloc
->
-> Anyway, I tried to use the recycling *and* napi_build_skb on mvpp2,
-> and I get lower packet rate than recycling alone.
-> I don't know why, we should investigate it.
+> The proposed mechanism would involve:
+> 1) Some way of marking a page as being allocated by a driver that has
+> decided to opt into this mechanism. Say, a page flag, or a memcg flag.
 
-mvpp2 driver doesn't use napi_consume_skb() on its Tx completion path.
-As a result, NAPI percpu caches get refilled only through
-kmem_cache_alloc_bulk(), and most of skbuff_head recycling
-doesn't work.
+Right. I would stress it should not be a memcg flag or any direct
+channel from the network to memcg, as this would limit its usefulness
+while having the same maintenance overhead.
 
-> Regards,
-> --
-> per aspera ad upstream
+It should make the network page a first class MM citizen - like an LRU
+page or a slab page - which can be accounted and introspected as such,
+including from the memcg side.
 
-Oh, I love that one!
+So definitely a page flag.
 
-Al
+> 2) A callback provided by the driver, that takes a struct page*, and
+> returns a boolean. The value of the boolean being true indicates that
+> any and all refs on the page are held by the driver. False means there
+> exists at least one reference that is not held by the driver.
 
+I was thinking the PageNetwork flag would cover this, but maybe I'm
+missing something?
+
+> 3) A branch in put_page() that, for pages marked thus, will consult
+> the driver callback and if it returns true, will uncharge the memcg
+> for the page.
+
+The way I picture it, put_page() (and release_pages) should do this:
+
+void __put_page(struct page *page)
+{
+        if (is_zone_device_page(page)) {
+                put_dev_pagemap(page->pgmap);
+
+                /*
+                 * The page belongs to the device that created pgmap. Do
+                 * not return it to page allocator.
+                 */
+                return;
+        }
++
++	if (PageNetwork(page)) {
++		put_page_network(page);
++		/* Page belongs to the network stack, not the page allocator */
++		return;
++	}
+
+        if (unlikely(PageCompound(page)))
+                __put_compound_page(page);
+        else
+                __put_single_page(page);
+}
+
+where put_page_network() is the network-side callback that uncharges
+the page.
+
+(..and later can be extended to do all kinds of things when informed
+that the page has been freed: update statistics (mod_page_state), put
+it on a private network freelist, or ClearPageNetwork() and give it
+back to the page allocator etc.
+
+But for starters it can set_page_count(page, 1) after the uncharge to
+retain the current silent recycling behavior.)
+
+> The anonymous struct you defined above is part of a union that I think
+> normally is one qword in length (well, could be more depending on the
+> typedefs I saw there) and I think that can be co-opted to provide the
+> driver callback - though, it might require growing the struct by one
+> more qword since there may be drivers like mlx5 that are already using
+> the field already in there  for dma_addr.
+
+The page cache / anonymous struct it's shared with is 5 words (double
+linked list pointers, mapping, index, private), and the network struct
+is currently one word, so you can add 4 words to a PageNetwork() page
+without increasing the size of struct page. That should be plenty of
+space to store auxiliary data for drivers, right?
+
+> Anyways, the callback could then be used by the driver to handle the
+> other accounting quirks you mentioned, without needing to scan the
+> full pool.
+
+Right.
+
+> Of course there are corner cases and such to properly account for, but
+> I just wanted to provide a really rough sketch to see if this
+> (assuming it were properly implemented) was what you had in mind. If
+> so I can put together a v3 patch.
+
+Yeah, makes perfect sense. We can keep iterating like this any time
+you feel you accumulate too many open questions. Not just for MM but
+also for the networking folks - although I suspect that the first step
+would be mostly about the MM infrastructure, and I'm not sure how much
+they care about the internals there ;)
+
+> Per my response to Andrew earlier, this would make it even more
+> confusing whether this is to be applied against net-next or mm trees.
+> But that's a bridge to cross when we get to it.
+
+The mm tree includes -next, so it should be a safe development target
+for the time being.
+
+I would then decide it based on how many changes your patch interacts
+with on either side. Changes to struct page and the put path are not
+very frequent, so I suspect it'll be easy to rebase to net-next and
+route everything through there. And if there are heavy changes on both
+sides, the -mm tree is the better route anyway.
+
+Does that sound reasonable?
