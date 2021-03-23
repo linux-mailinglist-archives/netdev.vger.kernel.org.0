@@ -2,118 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 933253469E2
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 21:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 232D2346A74
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 21:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbhCWUdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 16:33:25 -0400
-Received: from p3plsmtpa07-03.prod.phx3.secureserver.net ([173.201.192.232]:36597
-        "EHLO p3plsmtpa07-03.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233378AbhCWUdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 16:33:01 -0400
-Received: from chrisHP110 ([76.103.216.188])
-        by :SMTPAUTH: with ESMTPA
-        id OnhzlTcHTKQk4OnhzlH5cY; Tue, 23 Mar 2021 13:33:00 -0700
-X-CMAE-Analysis: v=2.4 cv=W6D96Tak c=1 sm=1 tr=0 ts=605a507c
- a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
- a=kj9zAlcOel0A:10 a=cR5ugqiJw0_SYd6LBy0A:9 a=CjuIK1q_8ugA:10
- a=fCgQI5UlmZDRPDxm0A3o:22
-X-SECURESERVER-ACCT: don@thebollingers.org
-From:   "Don Bollinger" <don@thebollingers.org>
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     "'Jakub Kicinski'" <kuba@kernel.org>, <arndb@arndb.de>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <brandon_chuang@edge-core.com>, <wally_wang@accton.com>,
-        <aken_liu@edge-core.com>, <gulv@microsoft.com>,
-        <jolevequ@microsoft.com>, <xinxliu@microsoft.com>,
-        "'netdev'" <netdev@vger.kernel.org>,
-        "'Moshe Shemesh'" <moshe@nvidia.com>, <don@thebollingers.org>
-References: <YD1ScQ+w8+1H//Y+@lunn.ch> <003901d711f2$be2f55d0$3a8e0170$@thebollingers.org> <20210305145518.57a765bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <005e01d71230$ad203be0$0760b3a0$@thebollingers.org> <YEL3ksdKIW7cVRh5@lunn.ch> <018701d71772$7b0ba3f0$7122ebd0$@thebollingers.org> <YEvILa9FK8qQs5QK@lunn.ch> <01ae01d71850$db4f5a20$91ee0e60$@thebollingers.org> <20210315103950.65fedf2c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <001201d719c6$6ac826c0$40587440$@thebollingers.org> <YFJHN+raumcJ5/7M@lunn.ch>
-In-Reply-To: <YFJHN+raumcJ5/7M@lunn.ch>
-Subject: RE: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS EEPROMS
-Date:   Tue, 23 Mar 2021 13:32:59 -0700
-Message-ID: <009601d72023$b73dbde0$25b939a0$@thebollingers.org>
+        id S233137AbhCWUvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 16:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233365AbhCWUug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 16:50:36 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37695C061574
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 13:50:36 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id 16so27406431ljc.11
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 13:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=BQg+UWe15oS+WO3ZurBaCfirVI9mrzGmp4/2Lh4PFc4=;
+        b=Y50dOPNJ4cAEPAMY6Bt7YQNFMxwx2raesfWZvySFD1AhoV4EFXV6aPK1uaM79GiFcv
+         r66Lrxgbd/MdiH7pK/EcreUUeNNeRQPacS1ItlPTC7lGRRlktI2bsjhJy9fOXcu3qrM7
+         N9U/khPnas6FkiSwQWXHXG1ASyDZLRuAkggqyjh0E7jGKXmHLkkZtc2xT84rZMbXYJCh
+         QlKZHvKKcAa8eRrCFSHXLTfLRpHZMbwSY7ZpaeBEKtvAIC5Ka/6xSKnFlYVN/UV+qzJo
+         USdQ3PIw4QEigh+awTPfIX84wsMRNf5ufFBCH/NG/95LwU+UfsYgkUfSwMbCbNMiC+R/
+         bGxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=BQg+UWe15oS+WO3ZurBaCfirVI9mrzGmp4/2Lh4PFc4=;
+        b=lbE1jxXNgZo8Ro3SdFFtxONW2khJisAKM1YV196jmX5jgIbzmet3nE+oMyJrYlbka6
+         e4pf3W0KWj1qfP0AqvDTTQHSErViMAya0tAJ/nqSArY4pEcMCwrTssC6SDBPdkn3X7xm
+         pehhj4n6blzI0vuFaBItTdkm5MJP+tEj58z5KmeHYGX6anqPi4JwXYNHxP74p8J25O2H
+         ZxMJpoGwJP2pykiygOHzBbFbZXmFQRu+ZW0anPneez98usFEd2gVMn1QjEM8xG63CYfH
+         fQG1nrGsAeO5pDVH7HUtrH0U1hjK6udHf3iYdnXznjouSZrL/adASwARXTbTPRicVS9I
+         0cRQ==
+X-Gm-Message-State: AOAM530AUAyukaGNtegx6/Y/kkRWVxuGLwlnsGIlTJi5ti2y5U1S4/wf
+        gYDZhdKoiDiePxtfudx900XTgUPZDtlkSoPu
+X-Google-Smtp-Source: ABdhPJwFWcEhWJknk317rNTTk2B5atho232otPq9AfDSUB2ts7hvc4gGYz4FrqVcAW5LXDVJET7VUw==
+X-Received: by 2002:a2e:7a11:: with SMTP id v17mr4342696ljc.403.1616532634388;
+        Tue, 23 Mar 2021 13:50:34 -0700 (PDT)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id l7sm22030lje.30.2021.03.23.13.50.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Mar 2021 13:50:33 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
+In-Reply-To: <7dd44f34-c972-2b4f-2e71-ec25541feb46@gmail.com>
+References: <20210323102326.3677940-1-tobias@waldekranz.com> <YFnh4dEap/lGX4ix@lunn.ch> <87a6qulybz.fsf@waldekranz.com> <7dd44f34-c972-2b4f-2e71-ec25541feb46@gmail.com>
+Date:   Tue, 23 Mar 2021 21:50:33 +0100
+Message-ID: <875z1hmw6e.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQD1wSRROFm+pfi0LxH9mVlD+9L7SgHJzBD7AopQEOUDOo8ypAGU1SetAlPUPSACJ/UZ9QI33dQVAf1peR4CCKQDaAINVcRpq6Vr/PA=
-Content-Language: en-us
-X-CMAE-Envelope: MS4xfJIBAaH3F7AJSZAd+ZLEFUXgT+ZEGtO5iikfJf7m00SE+/yRB+kjCgbKImese4nXhErx8z6PS8EYRMM9OyDwnjukgoygonEYPwehDc5Kf73/3TemuZiQ
- i3tcfxDyohE6IpeYcHzKHX94jQEO57I/TgSAISPjAOOwy4XSAG17M4ZT5yp7F1vmeGAO2yFfb5FBal9zp3g/lk+mrXELe5APX0/OOs2f6sY9YY8hRIujAgxV
- plETaQDBbgBpgClvARdPm0/HzNzXJLJ7pROO8q3nop6Qhx2VUtD2KceyVIj5YoFz4XsfPSnifbzkNb9TPNHze2ujKM3TEYtsN9Bb3DLMEsnc9+SW2IRPhf6x
- 6W25ymm9eor60uh53OBHT5yFTVr7tMAcnqHm+FfGLEY7yYl7/IZRCTPyu2uJbr3JQ+MDx10irxoDhuMYivwXywX/zw7L5tsAXQhN+sWdXXMLIkwzFNcXjpl2
- YXtxiQJoeOt8KP49FKGPiuYwzS49mkj92AtVsPmWz0UmPzQsQtrM0NqOSfEofHkq+QTbNZOTzXQ4/ZeqDL3ihtM8FNPc/+KoKanpqfmEZBP1Sg6eYebE1lkg
- mAAedEj333AQZEe1OZaRQ9yj
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I have offered, in every response, to collaborate with the simple
-> > integration to use optoe as the default upstream driver to access the
-> > module EEPROMs.  optoe would be superior to the existing default
-> > routines in sfp.c
-> 
-> Actually, i'm not sure they would be. Since the KAPI issues are pretty
-much a
-> NACK on their own, i didn't bother raising other issues. Both Russell King
-and
-> I has issues with quirks and hotplug.
-> 
-> Our experience is that a number of SFPs are broken, they don't follow the
-> standard. Some you cannot perform more than 16 bytes reads without them
-> locking up. Others will perform a 16 byte read, but only give you one
-useful
-> byte of data. So you have to read enough of the EEPROM a byte at a time to
-> get the vendor and product strings in order to determine what quirks need
-> to be applied. optoe has nothing like this. Either you don't care and only
-> support well behaved SFPs, or you have the quirk handling in user space,
-in
-> the various vendor code blobs, repeated again and again. To make optoe
-> generically usable, you are going to have to push the quirk handling into
-> optoe. The brokenness should be hidden from userspace.
+On Tue, Mar 23, 2021 at 09:53, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> On 3/23/2021 7:49 AM, Tobias Waldekranz wrote:
+>> On Tue, Mar 23, 2021 at 13:41, Andrew Lunn <andrew@lunn.ch> wrote:
+>>> On Tue, Mar 23, 2021 at 11:23:26AM +0100, Tobias Waldekranz wrote:
+>>>> All devices are capable of using regular DSA tags. Support for
+>>>> Ethertyped DSA tags sort into three categories:
+>>>>
+>>>> 1. No support. Older chips fall into this category.
+>>>>
+>>>> 2. Full support. Datasheet explicitly supports configuring the CPU
+>>>>    port to receive FORWARDs with a DSA tag.
+>>>>
+>>>> 3. Undocumented support. Datasheet lists the configuration from
+>>>>    category 2 as "reserved for future use", but does empirically
+>>>>    behave like a category 2 device.
+>>>>
+>>>> Because there are ethernet controllers that do not handle regular DSA
+>>>> tags in all cases, it is sometimes preferable to rely on the
+>>>> undocumented behavior, as the alternative is a very crippled
+>>>> system. But, in those cases, make sure to log the fact that an
+>>>> undocumented feature has been enabled.
+>>>
+>>> Hi Tobias
+>>>
+>>> I wonder if dynamic reconfiguration is the correct solution here. By
+>>> default it will be wrong for this board, and you need user space to
+>>> flip it.
+>>>
+>>> Maybe a DT property would be better. Extend dsa_switch_parse_of() to
+>>> look for the optional property dsa,tag-protocol, a string containing
+>>> the name of the tag ops to be used.
+>> 
+>> This was my initial approach. It gets quite messy though. Since taggers
+>> can be modules, there is no way of knowing if a supplied protocol name
+>> is garbage ("asdf"), or just part of a module in an initrd that is not
+>> loaded yet when you are probing the tree. Even when the tagger is
+>> available, there is no way to verify if the driver is compatible with
+>> it. So I think we would have to:
+>> 
+>> - Keep the list of protcol names compiled in with the DSA module, such
+>>   that "edsa" can be resolved to DSA_TAG_PROTO_EDSA without having the
+>>   tagger module loaded.
+>> 
+>> - Add (yet) another op so that we can ask the driver if the given
+>>   protocol is acceptable. Calling .change_tag_protocol will not work as
+>>   drivers will assume that the driver's .setup has already executed
+>>   before it is called.
+>> 
+>> - Have each driver check (during .setup?) if it should configure the
+>>   device to use its preferred protocol or if the user has specified
+>>   something else.
+>> 
+>> That felt like a lot to take on board just to solve a corner case like
+>> this. I am happy to be told that there is a much easier way to do it, or
+>> that the above would be acceptable if there isn't one.
+>> 
+>
+> The other problem with specifying the tag within the Device Tree is that
+> you are half way between providing a policy (which tag to use) and
+> describing how the hardware works (which tag is actually supported).
 
-Interesting.  I would throw away such devices.  That's why switch vendors
-publish supported parts lists.
+Yeah it is a grey area for sure. Still, I think of it more as a hint
+from the OEM. You could argue that the "label" property is policy, you
+could also see it as a recommendation that will make the product easier
+to use.
 
-Can you point me to the code that is handling those quirks?  Since I haven't
-seen those problems, I don't know what they are and how to address them.
+We can of course keep modifying drivers as incompatible ones are
+discovered, hoping that we will never hit one that does not allow you to
+disable the block responsible for dropping the frames.
 
-Note there are a VAST number of data items in those EEPROMs, including
-proprietary capabilities.  Many of the items are configuration dependent,
-and mean different things depending on the value of other data items.  Most
-of these items are not of any interest to kernel networking.  I try to
-minimize the size of the kernel footprint and move those decoding and
-management functions to user space.
+I guess one argument for applying this change anyway is that it gives
+you an easy way to test if your controller behaves better if all frames
+are guaranteed to honor Ethernet II. Especially for users that might not
+be comfortable with building their own kernels.
 
-> 
-> And then you repeat all the quirk handling sfp.c has. That does not scale,
-we
-> don't want the same quirks in two different places. However, because SFPs
-> are hot pluggable, you need to re-evaluate the quirks whenever there is a
-> hot-plug event. optoe has no idea if there has been a hotplug event, since
-it
-> does not have access to the GPIOs. Your user space vendor code might
-> know, it has access to the GPIOs. So maybe you could add an IOCTL call or
-> something, to let optoe know the module has changed and it needs to
-> update its quirks. Or for every user space read, you actually re-read the
-> vendor IDs and refresh the quirks before performing the read the user
-> actually wants. That all seems ugly and is missing from the current patch.
-
-Actually I do need to know whether the device supports paging, that's the
-only device state I need.  Since I don't detect hotplug events, I read the
-'paging supported' bit on every read that changes the page register.  
-
-There is a GPIO line to detect 'presence', which presumably could be
-accessed via device tree configuration with the GPIO driver.  I haven't
-figured out how to connect those pieces so I just read the page register on
-every access.  Adding that would be a useful feature.
-
-> 
-> I fully agree with Jakub NACK.
-> 
->   Andrew
-
-Don
+> FWIW, the b53/bcm_sf2 binding allows one to specify whether an internal
+> port should have Broadcom tags enabled because the accelerator behind
+> that port would require it (brcm,use-bcm-hdr).
 
