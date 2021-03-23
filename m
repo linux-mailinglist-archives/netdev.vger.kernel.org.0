@@ -2,82 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D681345658
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 04:39:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5613456A1
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 05:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbhCWDic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 23:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        id S229560AbhCWERi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 00:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhCWDiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Mar 2021 23:38:18 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9287EC061574;
-        Mon, 22 Mar 2021 20:38:17 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id mz6-20020a17090b3786b02900c16cb41d63so9541600pjb.2;
-        Mon, 22 Mar 2021 20:38:17 -0700 (PDT)
+        with ESMTP id S229448AbhCWERK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 00:17:10 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E771C061574;
+        Mon, 22 Mar 2021 21:17:10 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id n11so10417705pgm.12;
+        Mon, 22 Mar 2021 21:17:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b5HV1xHdxdx/M9zJqeRyyYopwE56XgIHxgZRsBKDb7k=;
-        b=hzD+mUcsuf07pobGU/UCZYrzjGrjYAtZL0XaMoV8EGuTxmRdO23x2In2iIrI0gsNIq
-         WfG+ifPQ7xrh68/mV170/e49FJbS/5dq9xvCuSzGS81Kz6KA07SWzq+Y2rJW17PAsF4D
-         gSR7G8c7H34vpq6T40VsNqce6wKmYfptXhtRK9/u4dcaUHcPlklxF3CkbpAwoa0uEyaR
-         FYCscPI1b6QYfNDkxkhIUL0cz1fn7lhG2Ah7g0xVgkO8I2VU+epBsV+P+A6N353pOzLv
-         Y7zuWWSE3pWJU/DuHmHT73Rw1L3vGvptfJXnTJBCZpcdTHmKB6vmclvA1VoIkgpqPwjN
-         eDjw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=CUX3mLQWrZfnyxdTSeCG3Sj7YKQRqZrfDF48jRcdMOg=;
+        b=Ja/S0tV/SRAeSgHwdw3vK1MNNCSKdgNrd4rq0qwI+vutZrYyUtx8vwTz4utgJsGk8T
+         lBpdejYddDuaLdR5XQUfHWZHcWcTHsJTLKJnr2QcbcnhrI8uo0D6n6kby+tIPKtk9Ego
+         kWVU6WaV4f5hrV8U6F6EXF7iGKj3oQLCOF1EpXv0E8cWw/Pseob4Kzv/DReQOmA0rKC2
+         aUET/7hoGrv7v8jozzOWMrAZYNcxIrUhTUE3nW4nEXiop4WRjv2Iw7oT+DGR3y0BbrOg
+         tmcmiH3jUWW4BisYrUXuqOcC0ce81vtSr0kquLA5anJLqy1XYYUXvd5o67Frs48QUmKr
+         HyNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b5HV1xHdxdx/M9zJqeRyyYopwE56XgIHxgZRsBKDb7k=;
-        b=IJ4t/r6syRHjuxMwhMnaG43X/1WmKu3xhrYrjPkjP0uX3HtOaX0deAerQenZgsXAmw
-         MKUffyDm4Cut6ry8OsMYVP9v+yR90HM70yBKYyiJCF5YR0/QKOgPITMTqnZlOimEIZNq
-         +f2rshSq2At7pPkCPtpZf+RkgKoOU2XhoBxFFvxPTfb1axjjlyinmPmkDIj7hba4gdhz
-         rX2ePjsfuI+XlKsk+gROIt6XTu7r4Vh9TK8HIqIDTfdEE8BdXDx4sXTWrIAO+0HFV6N0
-         WoVlt+qf66OCPeUK+9aaH3GiV/O52nQ+yFytiPtNLsDWJP0S+svm3WV5hjHNU68YCraf
-         J5Kw==
-X-Gm-Message-State: AOAM531ianzRCSi6WB/c5GYlWoW4xzJV/fTa2BffLymixO5OkXn9WhcO
-        zo88B1YcbdUAa9XwOPM2mwcQIk5FY2WEUawTK5w=
-X-Google-Smtp-Source: ABdhPJzraWPPHcrLYiGZacjy+KtOsXJtn3LIcEolKdtlrQuvOBLqi0ukNfd5Bep3jPXpGjeuQWS1f6USjmQFvKht2BM=
-X-Received: by 2002:a17:90a:43a2:: with SMTP id r31mr2367388pjg.52.1616470697183;
- Mon, 22 Mar 2021 20:38:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=CUX3mLQWrZfnyxdTSeCG3Sj7YKQRqZrfDF48jRcdMOg=;
+        b=l6U5A8Yv8ewkt67KVPHZLaKqxCg5ZuAIgehBNfSu8KvJyew3HLqdODTkmFHi41bUdM
+         auAqoNUrGcyo0m4vE0TSQGMJtzFagFm4XpJxVzRkgZ6L8P8Z+IJ9pNS6JxnX+AGham+G
+         f5+yUlX8mBw1xmVvMiCp2y+lL4mGh4K/nkwKwOxnGmmX6YS0yKcu/LaV0O37esEc2JhW
+         OyhoyV2BKe91UD+IEmXM38rB164YoIjikMihKxPMN4go33xp/dCjoD2Yqi9Ipy67+UUd
+         5VwfqGHExnGhHcod4NyBh3+/kVp0MLJgm3xgG1Cy/KZw7aB7+ubWO42MhihpKUQa+uqe
+         rK9g==
+X-Gm-Message-State: AOAM531dGk5sL6Ii672OqsffUEi2CMSyJyy1y9uG7C2xIYHUXMn9JZVc
+        e6IysZbX7LqsvsdA55c4Afn7MW0j5cLaoA==
+X-Google-Smtp-Source: ABdhPJw2iM5Godyx1NKH/CekPRZlUpMb2ROBXPNMM9MyrR9xlXknQJwkQuISrS3SaivsUfFFxD/QJw==
+X-Received: by 2002:a65:430b:: with SMTP id j11mr2432448pgq.143.1616473030034;
+        Mon, 22 Mar 2021 21:17:10 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:48:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id i8sm861786pjl.32.2021.03.22.21.17.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 21:17:09 -0700 (PDT)
+Date:   Mon, 22 Mar 2021 21:17:07 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
+ PTP getcrosststamp()
+Message-ID: <20210323041707.GB25323@hoboy.vegasvil.org>
+References: <20201114025704.GA15240@hoboy.vegasvil.org>
+ <874klo7pwp.fsf@intel.com>
+ <20201117014926.GA26272@hoboy.vegasvil.org>
+ <87d00b5uj7.fsf@intel.com>
+ <20201118125451.GC23320@hoboy.vegasvil.org>
+ <87czvrkxol.fsf@vcostago-mobl2.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <20210323003808.16074-1-xiyou.wangcong@gmail.com>
- <20210323003808.16074-3-xiyou.wangcong@gmail.com> <93f9be88-2803-93cd-df6b-43f494c0f67d@huawei.com>
-In-Reply-To: <93f9be88-2803-93cd-df6b-43f494c0f67d@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 22 Mar 2021 20:38:05 -0700
-Message-ID: <CAM_iQpXoWmk2anOHmVJH0z+ih3mcEY8ghid+OjsZPAGbL0qKqQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v6 02/12] skmsg: introduce a spinlock to protect ingress_msg
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87czvrkxol.fsf@vcostago-mobl2.amr.corp.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 6:25 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->
-> On 2021/3/23 8:37, Cong Wang wrote:
-> > +static inline struct sk_msg *sk_psock_next_msg(struct sk_psock *psock,
-> > +                                            struct sk_msg *msg)
-> > +{
-> > +     struct sk_msg *ret;
->
-> Nit:
-> Use msg instead of ret to be consistently with sk_psock_dequeue_msg()
-> and sk_psock_next_msg().
+On Mon, Mar 22, 2021 at 08:36:26AM -0700, Vinicius Costa Gomes wrote:
+> After a long time, a couple of internal misunderstandings, fixing some
+> typos in the delay adjustment constants and better error handling, this
+> one shot method is working well.
+> 
+> I will propose a new version, implementing PTP_SYS_OFFSET_PRECISE using
+> the one shot way.
 
-Please read it carefully, clearly 'msg' is already a parameter name here.
-
-Thanks.
++1
