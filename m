@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08845346E05
+	by mail.lfdr.de (Postfix) with ESMTP id F190A346E08
 	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234404AbhCXADy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 20:03:54 -0400
+        id S234411AbhCXADz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 20:03:55 -0400
 Received: from mga17.intel.com ([192.55.52.151]:37587 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234346AbhCXADW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 20:03:22 -0400
-IronPort-SDR: GF0U/I4Rd4DcQigF0DloB/TlD4NXGZJizSK4p+NRTXeDO2X6SaAIWOvYEztVefDIuZZW//OQEo
- WCfWajkHcckw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="170556544"
+        id S234348AbhCXADX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 20:03:23 -0400
+IronPort-SDR: +JQsI1A++1kn6f+VV68XCJ0W5PsIx1NSiOimM99Tw/aqZeSJWj3RiUMbjTkjyGVy4o1PocS3CQ
+ +GTizE/tbrzQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="170556548"
 X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
-   d="scan'208";a="170556544"
+   d="scan'208";a="170556548"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:22 -0700
-IronPort-SDR: orT+E9sk2pbBJMwulH25UhdfSn4TWld7H4t3xu9BesvOLYiaHceqiwLxkkApcdub3JS9y89k/W
- 2k6i1l8ZErXA==
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:23 -0700
+IronPort-SDR: 4tAJpTYCCWUVZ3a4o46Nt7TrQ9uvZ8JgrfPCAY4dIJmKBCzcR6PL5tnxuFVjp1i+bXmq7m4btb
+ nfczmqDYKAvg==
 X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
-   d="scan'208";a="381542188"
+   d="scan'208";a="381542194"
 Received: from ssaleem-mobl.amr.corp.intel.com ([10.209.103.207])
   by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:21 -0700
 From:   Shiraz Saleem <shiraz.saleem@intel.com>
@@ -30,9 +30,9 @@ To:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
 Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         david.m.ertman@intel.com, anthony.l.nguyen@intel.com,
         Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH v2 02/23] ice: Initialize RDMA support
-Date:   Tue, 23 Mar 2021 18:59:46 -0500
-Message-Id: <20210324000007.1450-3-shiraz.saleem@intel.com>
+Subject: [PATCH v2 03/23] ice: Implement iidc operations
+Date:   Tue, 23 Mar 2021 18:59:47 -0500
+Message-Id: <20210324000007.1450-4-shiraz.saleem@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20210324000007.1450-1-shiraz.saleem@intel.com>
 References: <20210324000007.1450-1-shiraz.saleem@intel.com>
@@ -44,787 +44,1282 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dave Ertman <david.m.ertman@intel.com>
 
-Probe the device's capabilities to see if it supports RDMA. If so, allocate
-and reserve resources to support its operation; populate structures with
-initial values.
+Add implementations for supporting iidc operations for device operation
+such as allocation of resources and event notifications.
 
 Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
 ---
- drivers/net/ethernet/intel/ice/Makefile         |   1 +
- drivers/net/ethernet/intel/ice/ice.h            |  33 ++++
- drivers/net/ethernet/intel/ice/ice_adminq_cmd.h |   1 +
- drivers/net/ethernet/intel/ice/ice_common.c     |  17 +-
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c    |  35 ++++
- drivers/net/ethernet/intel/ice/ice_dcb_lib.h    |   3 +
- drivers/net/ethernet/intel/ice/ice_idc.c        | 232 ++++++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_idc_int.h    |  17 ++
- drivers/net/ethernet/intel/ice/ice_lag.c        |   2 +
- drivers/net/ethernet/intel/ice/ice_lib.c        |  11 ++
- drivers/net/ethernet/intel/ice/ice_lib.h        |   2 +-
- drivers/net/ethernet/intel/ice/ice_main.c       |  99 +++++++++-
- drivers/net/ethernet/intel/ice/ice_type.h       |   1 +
- 13 files changed, 446 insertions(+), 8 deletions(-)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_idc.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_idc_int.h
+ drivers/net/ethernet/intel/ice/ice.h             |   1 +
+ drivers/net/ethernet/intel/ice/ice_adminq_cmd.h  |  32 ++
+ drivers/net/ethernet/intel/ice/ice_common.c      | 200 +++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h      |   9 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c     |  25 +-
+ drivers/net/ethernet/intel/ice/ice_hw_autogen.h  |   3 +-
+ drivers/net/ethernet/intel/ice/ice_idc.c         | 439 +++++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_idc_int.h     |   3 +
+ drivers/net/ethernet/intel/ice/ice_main.c        |  50 ++-
+ drivers/net/ethernet/intel/ice/ice_sched.c       |  69 +++-
+ drivers/net/ethernet/intel/ice/ice_switch.c      |  27 ++
+ drivers/net/ethernet/intel/ice/ice_switch.h      |   4 +
+ drivers/net/ethernet/intel/ice/ice_type.h        |   3 +
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c |  34 ++
+ 14 files changed, 876 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index 73da4f7..5d00352 100644
---- a/drivers/net/ethernet/intel/ice/Makefile
-+++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -22,6 +22,7 @@ ice-y := ice_main.o	\
- 	 ice_ethtool_fdir.o \
- 	 ice_flex_pipe.o \
- 	 ice_flow.o	\
-+	 ice_idc.o	\
- 	 ice_devlink.o	\
- 	 ice_fw_update.o \
- 	 ice_lag.o	\
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 3577064..ebd2159 100644
+index ebd2159..561f8fd 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -51,6 +51,7 @@
- #include "ice_switch.h"
- #include "ice_common.h"
- #include "ice_sched.h"
-+#include "ice_idc_int.h"
- #include "ice_virtchnl_pf.h"
- #include "ice_sriov.h"
- #include "ice_fdir.h"
-@@ -74,6 +75,8 @@
- #define ICE_MIN_LAN_OICR_MSIX	1
- #define ICE_MIN_MSIX		(ICE_MIN_LAN_TXRX_MSIX + ICE_MIN_LAN_OICR_MSIX)
- #define ICE_FDIR_MSIX		1
-+#define ICE_RDMA_NUM_AEQ_MSIX	4
-+#define ICE_MIN_RDMA_MSIX	2
- #define ICE_NO_VSI		0xffff
- #define ICE_VSI_MAP_CONTIG	0
- #define ICE_VSI_MAP_SCATTER	1
-@@ -84,6 +87,7 @@
- #define ICE_MAX_LG_RSS_QS	256
- #define ICE_RES_VALID_BIT	0x8000
- #define ICE_RES_MISC_VEC_ID	(ICE_RES_VALID_BIT - 1)
-+#define ICE_RES_RDMA_VEC_ID	(ICE_RES_MISC_VEC_ID - 1)
- #define ICE_INVAL_Q_INDEX	0xffff
- #define ICE_INVAL_VFID		256
- 
-@@ -362,12 +366,14 @@ struct ice_q_vector {
- 
- enum ice_pf_flags {
- 	ICE_FLAG_FLTR_SYNC,
-+	ICE_FLAG_IWARP_ENA,
- 	ICE_FLAG_RSS_ENA,
- 	ICE_FLAG_SRIOV_ENA,
- 	ICE_FLAG_SRIOV_CAPABLE,
- 	ICE_FLAG_DCB_CAPABLE,
- 	ICE_FLAG_DCB_ENA,
- 	ICE_FLAG_FD_ENA,
-+	ICE_FLAG_AUX_ENA,
- 	ICE_FLAG_ADV_FEATURES,
- 	ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA,
- 	ICE_FLAG_TOTAL_PORT_SHUTDOWN_ENA,
-@@ -427,6 +433,8 @@ struct ice_pf {
- 	struct mutex sw_mutex;		/* lock for protecting VSI alloc flow */
- 	struct mutex tc_mutex;		/* lock to protect TC changes */
- 	u32 msg_enable;
-+	u16 num_rdma_msix;		/* Total MSIX vectors for RDMA driver */
-+	u16 rdma_base_vector;
- 
- 	/* spinlock to protect the AdminQ wait list */
- 	spinlock_t aq_wait_lock;
-@@ -459,6 +467,8 @@ struct ice_pf {
- 	unsigned long tx_timeout_last_recovery;
- 	u32 tx_timeout_recovery_level;
- 	char int_name[ICE_INT_NAME_STR_LEN];
-+	struct iidc_core_dev_info **cdev_infos;
-+	int aux_idx;
- 	u32 sw_int_count;
- 
- 	__le64 nvm_phy_type_lo; /* NVM PHY type low */
-@@ -622,6 +632,11 @@ static inline void ice_clear_sriov_cap(struct ice_pf *pf)
- void ice_fill_rss_lut(u8 *lut, u16 rss_table_size, u16 rss_size);
- int ice_schedule_reset(struct ice_pf *pf, enum ice_reset_req reset);
- void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
-+int ice_init_aux_devices(struct ice_pf *pf);
-+int
-+ice_for_each_aux(struct ice_pf *pf, void *data,
-+		 int (*fn)(struct iidc_core_dev_info *, void *));
-+void ice_cdev_info_refresh_msix(struct ice_pf *pf);
- const char *ice_stat_str(enum ice_status stat_err);
- const char *ice_aq_str(enum ice_aq_err aq_err);
- bool ice_is_wol_supported(struct ice_pf *pf);
-@@ -645,4 +660,22 @@ int ice_aq_wait_for_event(struct ice_pf *pf, u16 opcode, unsigned long timeout,
- int ice_stop(struct net_device *netdev);
- void ice_service_task_schedule(struct ice_pf *pf);
- 
-+/**
-+ * ice_set_rdma_cap - enable RDMA support
-+ * @pf: PF struct
-+ */
-+static inline void ice_set_rdma_cap(struct ice_pf *pf)
-+{
-+	if (pf->hw.func_caps.common_cap.iwarp && pf->num_rdma_msix)
-+		set_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+}
-+
-+/**
-+ * ice_clear_rdma_cap - disable RDMA support
-+ * @pf: PF struct
-+ */
-+static inline void ice_clear_rdma_cap(struct ice_pf *pf)
-+{
-+	clear_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+}
- #endif /* _ICE_H_ */
+@@ -327,6 +327,7 @@ struct ice_vsi {
+ 	u16 req_rxq;			 /* User requested Rx queues */
+ 	u16 num_rx_desc;
+ 	u16 num_tx_desc;
++	u16 qset_handle[ICE_MAX_TRAFFIC_CLASS];
+ 	struct ice_tc_cfg tc_cfg;
+ 	struct bpf_prog *xdp_prog;
+ 	struct ice_ring **xdp_rings;	 /* XDP ring array */
 diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 8018658..81735e5 100644
+index 81735e5..8a07bed 100644
 --- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
 +++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -115,6 +115,7 @@ struct ice_aqc_list_caps_elem {
- #define ICE_AQC_CAPS_PENDING_OROM_VER			0x004B
- #define ICE_AQC_CAPS_NET_VER				0x004C
- #define ICE_AQC_CAPS_PENDING_NET_VER			0x004D
-+#define ICE_AQC_CAPS_IWARP				0x0051
- #define ICE_AQC_CAPS_NVM_MGMT				0x0080
+@@ -1684,6 +1684,36 @@ struct ice_aqc_dis_txq_item {
+ 	__le16 q_id[];
+ } __packed;
  
- 	u8 major_ver;
++/* Add Tx RDMA Queue Set (indirect 0x0C33) */
++struct ice_aqc_add_rdma_qset {
++	u8 num_qset_grps;
++	u8 reserved[7];
++	__le32 addr_high;
++	__le32 addr_low;
++};
++
++/* This is the descriptor of each qset entry for the Add Tx RDMA Queue Set
++ * command (0x0C33). Only used within struct ice_aqc_add_rdma_qset.
++ */
++struct ice_aqc_add_tx_rdma_qset_entry {
++	__le16 tx_qset_id;
++	u8 rsvd[2];
++	__le32 qset_teid;
++	struct ice_aqc_txsched_elem info;
++};
++
++/* The format of the command buffer for Add Tx RDMA Queue Set(0x0C33)
++ * is an array of the following structs. Please note that the length of
++ * each struct ice_aqc_add_rdma_qset is variable due to the variable
++ * number of queues in each group!
++ */
++struct ice_aqc_add_rdma_qset_data {
++	__le32 parent_teid;
++	__le16 num_qsets;
++	u8 rsvd[2];
++	struct ice_aqc_add_tx_rdma_qset_entry rdma_qsets[];
++};
++
+ /* Configure Firmware Logging Command (indirect 0xFF09)
+  * Logging Information Read Response (indirect 0xFF10)
+  * Note: The 0xFF10 command has no input parameters.
+@@ -1879,6 +1909,7 @@ struct ice_aq_desc {
+ 		struct ice_aqc_get_set_rss_key get_set_rss_key;
+ 		struct ice_aqc_add_txqs add_txqs;
+ 		struct ice_aqc_dis_txqs dis_txqs;
++		struct ice_aqc_add_rdma_qset add_rdma_qset;
+ 		struct ice_aqc_add_get_update_free_vsi vsi_cmd;
+ 		struct ice_aqc_add_update_free_vsi_resp add_update_free_vsi_res;
+ 		struct ice_aqc_fw_logging fw_logging;
+@@ -2027,6 +2058,7 @@ enum ice_adminq_opc {
+ 	/* Tx queue handling commands/events */
+ 	ice_aqc_opc_add_txqs				= 0x0C30,
+ 	ice_aqc_opc_dis_txqs				= 0x0C31,
++	ice_aqc_opc_add_rdma_qset			= 0x0C33,
+ 
+ 	/* package commands */
+ 	ice_aqc_opc_download_pkg			= 0x0C40,
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 3d9475e..d7b15c3 100644
+index d7b15c3..b98c3c5 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -1057,7 +1057,8 @@ enum ice_status ice_check_reset(struct ice_hw *hw)
- 				 GLNVM_ULD_POR_DONE_1_M |\
- 				 GLNVM_ULD_PCIER_DONE_2_M)
- 
--	uld_mask = ICE_RESET_DONE_MASK;
-+	uld_mask = ICE_RESET_DONE_MASK | (hw->func_caps.common_cap.iwarp ?
-+					  GLNVM_ULD_PE_DONE_M : 0);
- 
- 	/* Device is Active; check Global Reset processes are done */
- 	for (cnt = 0; cnt < ICE_PF_RESET_WAIT_COUNT; cnt++) {
-@@ -1854,6 +1855,10 @@ static u32 ice_get_num_per_func(struct ice_hw *hw, u32 max)
- 		ice_debug(hw, ICE_DBG_INIT, "%s: nvm_unified_update = %d\n", prefix,
- 			  caps->nvm_unified_update);
- 		break;
-+	case ICE_AQC_CAPS_IWARP:
-+		caps->iwarp = (number == 1);
-+		ice_debug(hw, ICE_DBG_INIT, "%s: iwarp = %d\n", prefix, caps->iwarp);
-+		break;
- 	case ICE_AQC_CAPS_MAX_MTU:
- 		caps->max_mtu = number;
- 		ice_debug(hw, ICE_DBG_INIT, "%s: max_mtu = %d\n",
-@@ -1887,6 +1892,16 @@ static u32 ice_get_num_per_func(struct ice_hw *hw, u32 max)
- 		caps->maxtc = 4;
- 		ice_debug(hw, ICE_DBG_INIT, "reducing maxtc to %d (based on #ports)\n",
- 			  caps->maxtc);
-+		if (caps->iwarp) {
-+			ice_debug(hw, ICE_DBG_INIT, "forcing RDMA off\n");
-+			caps->iwarp = 0;
-+		}
-+
-+		/* print message only when processing device capabilities
-+		 * during initialization.
-+		 */
-+		if (caps == &hw->dev_caps.common_cap)
-+			dev_info(ice_hw_to_dev(hw), "RDMA functionality is not available with the current device configuration.\n");
- 	}
+@@ -3577,6 +3577,54 @@ enum ice_status
+ 	return status;
  }
  
++/**
++ * ice_aq_add_rdma_qsets
++ * @hw: pointer to the hardware structure
++ * @num_qset_grps: Number of RDMA Qset groups
++ * @qset_list: list of qset groups to be added
++ * @buf_size: size of buffer for indirect command
++ * @cd: pointer to command details structure or NULL
++ *
++ * Add Tx RDMA Qsets (0x0C33)
++ */
++static enum ice_status
++ice_aq_add_rdma_qsets(struct ice_hw *hw, u8 num_qset_grps,
++		      struct ice_aqc_add_rdma_qset_data *qset_list,
++		      u16 buf_size, struct ice_sq_cd *cd)
++{
++	struct ice_aqc_add_rdma_qset_data *list;
++	struct ice_aqc_add_rdma_qset *cmd;
++	struct ice_aq_desc desc;
++	u16 i, sum_size = 0;
++
++	cmd = &desc.params.add_rdma_qset;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_add_rdma_qset);
++
++	if (!qset_list)
++		return ICE_ERR_PARAM;
++
++	if (num_qset_grps > ICE_LAN_TXQ_MAX_QGRPS)
++		return ICE_ERR_PARAM;
++
++	for (i = 0, list = qset_list; i < num_qset_grps; i++) {
++		u16 num_qsets = le16_to_cpu(list->num_qsets);
++
++		sum_size += struct_size(list, rdma_qsets, num_qsets);
++		list = (struct ice_aqc_add_rdma_qset_data *)(list->rdma_qsets +
++							     num_qsets);
++	}
++
++	if (buf_size != sum_size)
++		return ICE_ERR_PARAM;
++
++	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
++
++	cmd->num_qset_grps = num_qset_grps;
++
++	return ice_aq_send_cmd(hw, &desc, qset_list, buf_size, cd);
++}
++
+ /* End of FW Admin Queue command wrappers */
+ 
+ /**
+@@ -4075,6 +4123,158 @@ enum ice_status
+ }
+ 
+ /**
++ * ice_cfg_vsi_rdma - configure the VSI RDMA queues
++ * @pi: port information structure
++ * @vsi_handle: software VSI handle
++ * @tc_bitmap: TC bitmap
++ * @max_rdmaqs: max RDMA queues array per TC
++ *
++ * This function adds/updates the VSI RDMA queues per TC.
++ */
++enum ice_status
++ice_cfg_vsi_rdma(struct ice_port_info *pi, u16 vsi_handle, u16 tc_bitmap,
++		 u16 *max_rdmaqs)
++{
++	return ice_cfg_vsi_qs(pi, vsi_handle, tc_bitmap, max_rdmaqs,
++			      ICE_SCHED_NODE_OWNER_RDMA);
++}
++
++/**
++ * ice_ena_vsi_rdma_qset
++ * @pi: port information structure
++ * @vsi_handle: software VSI handle
++ * @tc: TC number
++ * @rdma_qset: pointer to RDMA qset
++ * @num_qsets: number of RDMA qsets
++ * @qset_teid: pointer to qset node teids
++ *
++ * This function adds RDMA qset
++ */
++enum ice_status
++ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
++		      u16 *rdma_qset, u16 num_qsets, u32 *qset_teid)
++{
++	struct ice_aqc_txsched_elem_data node = { 0 };
++	struct ice_aqc_add_rdma_qset_data *buf;
++	struct ice_sched_node *parent;
++	enum ice_status status;
++	struct ice_hw *hw;
++	u16 i, buf_size;
++
++	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
++		return ICE_ERR_CFG;
++	hw = pi->hw;
++
++	if (!ice_is_vsi_valid(hw, vsi_handle))
++		return ICE_ERR_PARAM;
++
++	buf_size = struct_size(buf, rdma_qsets, num_qsets);
++	buf = kzalloc(buf_size, GFP_KERNEL);
++	if (!buf)
++		return ICE_ERR_NO_MEMORY;
++	mutex_lock(&pi->sched_lock);
++
++	parent = ice_sched_get_free_qparent(pi, vsi_handle, tc,
++					    ICE_SCHED_NODE_OWNER_RDMA);
++	if (!parent) {
++		status = ICE_ERR_PARAM;
++		goto rdma_error_exit;
++	}
++	buf->parent_teid = parent->info.node_teid;
++	node.parent_teid = parent->info.node_teid;
++
++	buf->num_qsets = cpu_to_le16(num_qsets);
++	for (i = 0; i < num_qsets; i++) {
++		buf->rdma_qsets[i].tx_qset_id = cpu_to_le16(rdma_qset[i]);
++		buf->rdma_qsets[i].info.valid_sections =
++			ICE_AQC_ELEM_VALID_GENERIC | ICE_AQC_ELEM_VALID_CIR |
++			ICE_AQC_ELEM_VALID_EIR;
++		buf->rdma_qsets[i].info.generic = 0;
++		buf->rdma_qsets[i].info.cir_bw.bw_profile_idx =
++			cpu_to_le16(ICE_SCHED_DFLT_RL_PROF_ID);
++		buf->rdma_qsets[i].info.cir_bw.bw_alloc =
++			cpu_to_le16(ICE_SCHED_DFLT_BW_WT);
++		buf->rdma_qsets[i].info.eir_bw.bw_profile_idx =
++			cpu_to_le16(ICE_SCHED_DFLT_RL_PROF_ID);
++		buf->rdma_qsets[i].info.eir_bw.bw_alloc =
++			cpu_to_le16(ICE_SCHED_DFLT_BW_WT);
++	}
++	status = ice_aq_add_rdma_qsets(hw, 1, buf, buf_size, NULL);
++	if (status) {
++		ice_debug(hw, ICE_DBG_RDMA, "add RDMA qset failed\n");
++		goto rdma_error_exit;
++	}
++	node.data.elem_type = ICE_AQC_ELEM_TYPE_LEAF;
++	for (i = 0; i < num_qsets; i++) {
++		node.node_teid = buf->rdma_qsets[i].qset_teid;
++		status = ice_sched_add_node(pi, hw->num_tx_sched_layers - 1,
++					    &node);
++		if (status)
++			break;
++		qset_teid[i] = le32_to_cpu(node.node_teid);
++	}
++rdma_error_exit:
++	mutex_unlock(&pi->sched_lock);
++	kfree(buf);
++	return status;
++}
++
++/**
++ * ice_dis_vsi_rdma_qset - free RDMA resources
++ * @pi: port_info struct
++ * @count: number of RDMA qsets to free
++ * @qset_teid: TEID of qset node
++ * @q_id: list of queue IDs being disabled
++ */
++enum ice_status
++ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
++		      u16 *q_id)
++{
++	struct ice_aqc_dis_txq_item *qg_list;
++	enum ice_status status = 0;
++	struct ice_hw *hw;
++	u16 qg_size;
++	int i;
++
++	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
++		return ICE_ERR_CFG;
++
++	hw = pi->hw;
++
++	qg_size = struct_size(qg_list, q_id, 1);
++	qg_list = kzalloc(qg_size, GFP_KERNEL);
++	if (!qg_list)
++		return ICE_ERR_NO_MEMORY;
++
++	mutex_lock(&pi->sched_lock);
++
++	for (i = 0; i < count; i++) {
++		struct ice_sched_node *node;
++
++		node = ice_sched_find_node_by_teid(pi->root, qset_teid[i]);
++		if (!node)
++			continue;
++
++		qg_list->parent_teid = node->info.parent_teid;
++		qg_list->num_qs = 1;
++		qg_list->q_id[0] =
++			cpu_to_le16(q_id[i] |
++				    ICE_AQC_Q_DIS_BUF_ELEM_TYPE_RDMA_QSET);
++
++		status = ice_aq_dis_lan_txq(hw, 1, qg_list, qg_size,
++					    ICE_NO_RESET, 0, NULL);
++		if (status)
++			break;
++
++		ice_free_sched_node(pi, node);
++	}
++
++	mutex_unlock(&pi->sched_lock);
++	kfree(qg_list);
++	return status;
++}
++
++/**
+  * ice_replay_pre_init - replay pre initialization
+  * @hw: pointer to the HW struct
+  *
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index baf4064..fbd9421 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -147,6 +147,15 @@ enum ice_status
+ 		  bool write, struct ice_sq_cd *cd);
+ 
+ enum ice_status
++ice_cfg_vsi_rdma(struct ice_port_info *pi, u16 vsi_handle, u16 tc_bitmap,
++		 u16 *max_rdmaqs);
++enum ice_status
++ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
++		      u16 *rdma_qset, u16 num_qsets, u32 *qset_teid);
++enum ice_status
++ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
++		      u16 *q_id);
++enum ice_status
+ ice_dis_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u8 num_queues,
+ 		u16 *q_handle, u16 *q_ids, u32 *q_teids,
+ 		enum ice_disq_rst_src rst_src, u16 vmvf_num,
 diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index 1e8f71f..3aebfa8 100644
+index 3aebfa8..ce04445 100644
 --- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -640,6 +640,7 @@ static int ice_dcb_noncontig_cfg(struct ice_pf *pf)
- void ice_pf_dcb_recfg(struct ice_pf *pf)
- {
- 	struct ice_dcbx_cfg *dcbcfg = &pf->hw.port_info->qos_cfg.local_dcbx_cfg;
-+	struct iidc_core_dev_info *rcdi;
- 	u8 tc_map = 0;
- 	int v, ret;
+@@ -275,6 +275,7 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
+ 	struct ice_dcbx_cfg *old_cfg, *curr_cfg;
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	int ret = ICE_DCB_NO_HW_CHG;
++	struct iidc_event *event;
+ 	struct ice_vsi *pf_vsi;
  
-@@ -675,6 +676,9 @@ void ice_pf_dcb_recfg(struct ice_pf *pf)
+ 	curr_cfg = &pf->hw.port_info->qos_cfg.local_dcbx_cfg;
+@@ -313,6 +314,15 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
+ 		goto free_cfg;
+ 	}
+ 
++	/* Notify aux drivers about impending change to TCs */
++	event = kzalloc(sizeof(*event), GFP_KERNEL);
++	if (!event)
++		return -ENOMEM;
++
++	set_bit(IIDC_EVENT_BEFORE_TC_CHANGE, event->type);
++	ice_send_event_to_auxs(pf, event);
++	kfree(event);
++
+ 	/* avoid race conditions by holding the lock while disabling and
+ 	 * re-enabling the VSI
+ 	 */
+@@ -676,9 +686,22 @@ void ice_pf_dcb_recfg(struct ice_pf *pf)
  		if (vsi->type == ICE_VSI_PF)
  			ice_dcbnl_set_all(vsi);
  	}
-+	rcdi = ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
-+	if (rcdi)
-+		ice_setup_dcb_qos_info(pf, &rcdi->qos_info);
- }
- 
- /**
-@@ -816,6 +820,37 @@ void ice_update_dcb_stats(struct ice_pf *pf)
- }
- 
- /**
-+ * ice_setup_dcb_qos_info - Setup DCB QoS information
-+ * @pf: ptr to ice_pf
-+ * @qos_info: QoS param instance
-+ */
-+void ice_setup_dcb_qos_info(struct ice_pf *pf, struct iidc_qos_params *qos_info)
-+{
-+	struct ice_dcbx_cfg *dcbx_cfg;
-+	unsigned int i;
-+	u32 up2tc;
++	/* Notify the aux drivers that TC change is finished */
+ 	rcdi = ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
+-	if (rcdi)
++	if (rcdi) {
++		struct iidc_event *event;
 +
-+	dcbx_cfg = &pf->hw.port_info->qos_cfg.local_dcbx_cfg;
-+	up2tc = rd32(&pf->hw, PRTDCB_TUP2TC);
-+	qos_info->num_apps = dcbx_cfg->numapps;
+ 		ice_setup_dcb_qos_info(pf, &rcdi->qos_info);
 +
-+	qos_info->num_tc = ice_dcb_get_num_tc(dcbx_cfg);
++		event = kzalloc(sizeof(*event), GFP_KERNEL);
++		if (!event)
++			return;
 +
-+	for (i = 0; i < IIDC_MAX_USER_PRIORITY; i++)
-+		qos_info->up2tc[i] = (up2tc >> (i * 3)) & 0x7;
-+
-+	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
-+		qos_info->tc_info[i].rel_bw =
-+			dcbx_cfg->etscfg.tcbwtable[i];
-+
-+	for (i = 0; i < qos_info->num_apps; i++) {
-+		qos_info->apps[i].priority = dcbx_cfg->app[i].priority;
-+		qos_info->apps[i].prot_id = dcbx_cfg->app[i].prot_id;
-+		qos_info->apps[i].selector = dcbx_cfg->app[i].selector;
++		set_bit(IIDC_EVENT_AFTER_TC_CHANGE, event->type);
++		event->info.port_qos = rcdi->qos_info;
++		ice_send_event_to_auxs(pf, event);
++		kfree(event);
 +	}
-+}
-+
-+/**
-  * ice_dcb_process_lldp_set_mib_change - Process MIB change
-  * @pf: ptr to ice_pf
-  * @event: pointer to the admin queue receive event
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.h b/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
-index 35c21d9..b41c7ba 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
-@@ -31,6 +31,8 @@
- ice_tx_prepare_vlan_flags_dcb(struct ice_ring *tx_ring,
- 			      struct ice_tx_buf *first);
- void
-+ice_setup_dcb_qos_info(struct ice_pf *pf, struct iidc_qos_params *qos_info);
-+void
- ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 				    struct ice_rq_event_info *event);
- void ice_vsi_cfg_netdev_tc(struct ice_vsi *vsi, u8 ena_tc);
-@@ -116,6 +118,7 @@ static inline bool ice_is_dcb_active(struct ice_pf __always_unused *pf)
- #define ice_update_dcb_stats(pf) do {} while (0)
- #define ice_pf_dcb_recfg(pf) do {} while (0)
- #define ice_vsi_cfg_dcb_rings(vsi) do {} while (0)
-+#define ice_setup_dcb_qos_info(pf, qos_info) do {} while (0)
- #define ice_dcb_process_lldp_set_mib_change(pf, event) do {} while (0)
- #define ice_set_cgd_num(tlan_ctx, ring) do {} while (0)
- #define ice_vsi_cfg_netdev_tc(vsi, ena_tc) do {} while (0)
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+index 093a181..b544290 100644
+--- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
++++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
+@@ -110,8 +110,6 @@
+ #define VPGEN_VFRSTAT_VFRD_M			BIT(0)
+ #define VPGEN_VFRTRIG(_VF)			(0x00090000 + ((_VF) * 4))
+ #define VPGEN_VFRTRIG_VFSWR_M			BIT(0)
+-#define PFHMC_ERRORDATA				0x00520500
+-#define PFHMC_ERRORINFO				0x00520400
+ #define GLINT_CTL				0x0016CC54
+ #define GLINT_CTL_DIS_AUTOMASK_M		BIT(0)
+ #define GLINT_CTL_ITR_GRAN_200_S		16
+@@ -159,6 +157,7 @@
+ #define PFINT_OICR_GRST_M			BIT(20)
+ #define PFINT_OICR_PCI_EXCEPTION_M		BIT(21)
+ #define PFINT_OICR_HMC_ERR_M			BIT(26)
++#define PFINT_OICR_PE_PUSH_M			BIT(27)
+ #define PFINT_OICR_PE_CRITERR_M			BIT(28)
+ #define PFINT_OICR_VFLR_M			BIT(29)
+ #define PFINT_OICR_SWINT_M			BIT(31)
 diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-new file mode 100644
-index 00000000..ef54cf7
---- /dev/null
+index ef54cf7..916c356 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc.c
 +++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -0,0 +1,232 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2021, Intel Corporation. */
-+
-+/* Inter-Driver Communication */
-+#include "ice.h"
-+#include "ice_lib.h"
-+#include "ice_dcb_lib.h"
-+
-+static DEFINE_IDA(ice_cdev_info_ida);
-+
-+static struct cdev_info_id ice_cdev_ids[] = ASSIGN_IIDC_INFO;
-+
-+/**
-+ * ice_for_each_aux - iterate across and call function for each aux driver
-+ * @pf: pointer to private board struct
-+ * @data: data to pass to function on each call
-+ * @fn: pointer to function to call for each aux driver
-+ */
-+int
-+ice_for_each_aux(struct ice_pf *pf, void *data,
-+		 int (*fn)(struct iidc_core_dev_info *, void *))
-+{
-+	unsigned int i;
-+
-+	if (!pf->cdev_infos)
-+		return 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(ice_cdev_ids); i++) {
-+		struct iidc_core_dev_info *cdev_info;
-+
-+		cdev_info = pf->cdev_infos[i];
-+		if (cdev_info) {
-+			int ret = fn(cdev_info, data);
-+
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_unroll_cdev_info - destroy cdev_info resources
-+ * @cdev_info: ptr to cdev_info struct
-+ * @data: ptr to opaque data
+@@ -11,6 +11,34 @@
+ static struct cdev_info_id ice_cdev_ids[] = ASSIGN_IIDC_INFO;
+ 
+ /**
++ * ice_get_auxiliary_ops - retrieve iidc_auxiliary_ops struct
++ * @cdev_info: pointer to iidc_core_dev_info struct
 + *
-+ * This function releases resources for cdev_info objects.
-+ * Meant to be called from a ice_for_each_aux invocation
++ * This function has to be called with a device_lock on the
++ * cdev_info->adev.dev to avoid race conditions.
 + */
-+int ice_unroll_cdev_info(struct iidc_core_dev_info *cdev_info,
-+			 void __always_unused *data)
++struct iidc_auxiliary_ops *
++ice_get_auxiliary_ops(struct iidc_core_dev_info *cdev_info)
 +{
++	struct iidc_auxiliary_drv *iadrv;
++	struct auxiliary_device *adev;
++
 +	if (!cdev_info)
-+		return 0;
-+
-+	kfree(cdev_info);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_cdev_info_refresh_msix - load new values into iidc_core_dev_info structs
-+ * @pf: pointer to private board struct
-+ */
-+void ice_cdev_info_refresh_msix(struct ice_pf *pf)
-+{
-+	struct iidc_core_dev_info *cdev_info;
-+	unsigned int i;
-+
-+	if (!pf->cdev_infos)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(ice_cdev_ids); i++) {
-+		if (!pf->cdev_infos[i])
-+			continue;
-+
-+		cdev_info = pf->cdev_infos[i];
-+
-+		switch (cdev_info->cdev_info_id) {
-+		case IIDC_RDMA_ID:
-+			cdev_info->msix_count = pf->num_rdma_msix;
-+			cdev_info->msix_entries =
-+				&pf->msix_entries[pf->rdma_base_vector];
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+}
-+
-+/**
-+ * ice_reserve_cdev_info_qvector - Reserve vector resources for aux drivers
-+ * @pf: board private structure to initialize
-+ */
-+static int ice_reserve_cdev_info_qvector(struct ice_pf *pf)
-+{
-+	if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+		int index;
-+
-+		index = ice_get_res(pf, pf->irq_tracker, pf->num_rdma_msix, ICE_RES_RDMA_VEC_ID);
-+		if (index < 0)
-+			return index;
-+		pf->num_avail_sw_msix -= pf->num_rdma_msix;
-+		pf->rdma_base_vector = (u16)index;
-+	}
-+	return 0;
-+}
-+
-+/**
-+ * ice_find_cdev_info_by_id - find cdev_info instance by its ID
-+ * @pf: pointer to private board struct
-+ * @cdev_info_id: aux driver ID
-+ */
-+struct iidc_core_dev_info *
-+ice_find_cdev_info_by_id(struct ice_pf *pf, int cdev_info_id)
-+{
-+	struct iidc_core_dev_info *cdev_info = NULL;
-+	unsigned int i;
-+
-+	if (!pf->cdev_infos)
 +		return NULL;
 +
-+	for (i = 0; i < ARRAY_SIZE(ice_cdev_ids); i++) {
-+		cdev_info = pf->cdev_infos[i];
-+		if (cdev_info && cdev_info->cdev_info_id == cdev_info_id)
-+			break;
-+		cdev_info = NULL;
-+	}
-+	return cdev_info;
++	adev = cdev_info->adev;
++	if (!adev || !adev->dev.driver)
++		return NULL;
++
++	iadrv = container_of(adev->dev.driver, struct iidc_auxiliary_drv,
++			     adrv.driver);
++	if (!iadrv)
++		return NULL;
++
++	return iadrv->ops;
 +}
 +
 +/**
-+ * ice_cdev_info_update_vsi - update the pf_vsi info in cdev_info struct
-+ * @cdev_info: pointer to cdev_info struct
-+ * @data: opaque pointer - VSI to be updated
+  * ice_for_each_aux - iterate across and call function for each aux driver
+  * @pf: pointer to private board struct
+  * @data: data to pass to function on each call
+@@ -41,6 +69,40 @@
+ }
+ 
+ /**
++ * ice_send_event_to_aux - send event to a specific aux driver
++ * @cdev_info: pointer to iidc_core_dev_info struct for this aux
++ * @data: opaque pointer used to pass event struct
++ *
++ * This function is only meant to be called through a ice_for_each_aux call
 + */
-+int ice_cdev_info_update_vsi(struct iidc_core_dev_info *cdev_info, void *data)
++static int
++ice_send_event_to_aux(struct iidc_core_dev_info *cdev_info, void *data)
 +{
-+	struct ice_vsi *vsi = data;
++	struct iidc_event *event = data;
++	struct iidc_auxiliary_ops *ops;
 +
-+	if (!cdev_info)
-+		return 0;
++	device_lock(&cdev_info->adev->dev);
++	ops = ice_get_auxiliary_ops(cdev_info);
++	if (ops && ops->event_handler)
++		ops->event_handler(cdev_info, event);
++	device_unlock(&cdev_info->adev->dev);
 +
-+	cdev_info->vport_id = vsi->vsi_num;
 +	return 0;
 +}
 +
 +/**
-+ * ice_init_aux_devices - initializes cdev_info objects and aux devices
-+ * @pf: ptr to ice_pf
++ * ice_send_event_to_auxs - send event to all auxiliary drivers
++ * @pf: pointer to pf struct
++ * @event: pointer to iidc_event to propagate
++ *
++ * event struct to be populated by caller
 + */
-+int ice_init_aux_devices(struct ice_pf *pf)
++int ice_send_event_to_auxs(struct ice_pf *pf, struct iidc_event *event)
 +{
-+	struct ice_vsi *vsi = ice_get_main_vsi(pf);
-+	struct pci_dev *pdev = pf->pdev;
-+	struct device *dev = &pdev->dev;
-+	unsigned int i;
-+	int ret;
++	return ice_for_each_aux(pf, event, ice_send_event_to_aux);
++}
 +
-+	/* Reserve vector resources */
-+	ret = ice_reserve_cdev_info_qvector(pf);
-+	if (ret) {
-+		dev_err(dev, "failed to reserve vectors for aux drivers\n");
-+		return ret;
-+	}
++/**
+  * ice_unroll_cdev_info - destroy cdev_info resources
+  * @cdev_info: ptr to cdev_info struct
+  * @data: ptr to opaque data
+@@ -90,6 +152,371 @@ void ice_cdev_info_refresh_msix(struct ice_pf *pf)
+ }
+ 
+ /**
++ * ice_find_vsi - Find the VSI from VSI ID
++ * @pf: The PF pointer to search in
++ * @vsi_num: The VSI ID to search for
++ */
++static struct ice_vsi *ice_find_vsi(struct ice_pf *pf, u16 vsi_num)
++{
++	int i;
 +
-+	/* This PFs auxiliary ID value */
-+	pf->aux_idx = ida_alloc(&ice_cdev_info_ida, GFP_KERNEL);
-+	if (pf->aux_idx < 0) {
-+		dev_err(dev, "failed to allocate device ID for aux drvs\n");
++	ice_for_each_vsi(pf, i)
++		if (pf->vsi[i] && pf->vsi[i]->vsi_num == vsi_num)
++			return  pf->vsi[i];
++	return NULL;
++}
++
++/**
++ * ice_alloc_rdma_qsets - Allocate Leaf Nodes for RDMA Qset
++ * @cdev_info: aux driver that is requesting the Leaf Nodes
++ * @res: Resources to be allocated
++ * @partial_acceptable: If partial allocation is acceptable
++ *
++ * This function allocates Leaf Nodes for given RDMA Qset resources
++ * for the aux object.
++ */
++static int
++ice_alloc_rdma_qsets(struct iidc_core_dev_info *cdev_info,
++		     struct iidc_res *res,
++		     int __always_unused partial_acceptable)
++{
++	u16 max_rdmaqs[ICE_MAX_TRAFFIC_CLASS];
++	enum ice_status status;
++	struct ice_vsi *vsi;
++	struct device *dev;
++	struct ice_pf *pf;
++	int i, ret = 0;
++	u32 *qset_teid;
++	u16 *qs_handle;
++
++	if (!cdev_info || !res)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(cdev_info->pdev);
++	dev = ice_pf_to_dev(pf);
++
++	if (!test_bit(ICE_FLAG_IWARP_ENA, pf->flags))
++		return -EINVAL;
++
++	if (res->cnt_req > ICE_MAX_TXQ_PER_TXQG)
++		return -EINVAL;
++
++	qset_teid = kcalloc(res->cnt_req, sizeof(*qset_teid), GFP_KERNEL);
++	if (!qset_teid)
++		return -ENOMEM;
++
++	qs_handle = kcalloc(res->cnt_req, sizeof(*qs_handle), GFP_KERNEL);
++	if (!qs_handle) {
++		kfree(qset_teid);
 +		return -ENOMEM;
 +	}
 +
-+	for (i = 0; i < ARRAY_SIZE(ice_cdev_ids); i++) {
-+		struct iidc_core_dev_info *cdev_info;
-+		struct iidc_qos_params *qos_info;
-+		struct msix_entry *entry = NULL;
-+		int j;
++	ice_for_each_traffic_class(i)
++		max_rdmaqs[i] = 0;
 +
-+		cdev_info = kzalloc(sizeof(*cdev_info), GFP_KERNEL);
-+		if (!cdev_info) {
-+			ida_simple_remove(&ice_cdev_info_ida, pf->aux_idx);
-+			pf->aux_idx = -1;
-+			return -ENOMEM;
++	for (i = 0; i < res->cnt_req; i++) {
++		struct iidc_rdma_qset_params *qset;
++
++		qset = &res->res[i].res.qsets;
++		if (qset->vport_id != cdev_info->vport_id) {
++			dev_err(dev, "RDMA QSet invalid VSI requested\n");
++			ret = -EINVAL;
++			goto out;
 +		}
++		max_rdmaqs[qset->tc]++;
++		qs_handle[i] = qset->qs_handle;
++	}
 +
-+		pf->cdev_infos[i] = cdev_info;
++	vsi = ice_find_vsi(pf, cdev_info->vport_id);
++	if (!vsi) {
++		dev_err(dev, "RDMA QSet invalid VSI\n");
++		ret = -EINVAL;
++		goto out;
++	}
 +
-+		cdev_info->hw_addr = (u8 __iomem *)pf->hw.hw_addr;
-+		cdev_info->cdev_info_id = ice_cdev_ids[i].id;
-+		cdev_info->vport_id = vsi->vsi_num;
-+		cdev_info->netdev = vsi->netdev;
++	status = ice_cfg_vsi_rdma(vsi->port_info, vsi->idx, vsi->tc_cfg.ena_tc,
++				  max_rdmaqs);
++	if (status) {
++		dev_err(dev, "Failed VSI RDMA qset config\n");
++		ret = -EINVAL;
++		goto out;
++	}
 +
-+		cdev_info->pdev = pdev;
-+		qos_info = &cdev_info->qos_info;
++	for (i = 0; i < res->cnt_req; i++) {
++		struct iidc_rdma_qset_params *qset;
 +
-+		/* setup qos_info fields with defaults */
-+		qos_info->num_apps = 0;
-+		qos_info->num_tc = 1;
-+
-+		for (j = 0; j < IIDC_MAX_USER_PRIORITY; j++)
-+			qos_info->up2tc[j] = 0;
-+
-+		qos_info->tc_info[0].rel_bw = 100;
-+		for (j = 1; j < IEEE_8021QAZ_MAX_TCS; j++)
-+			qos_info->tc_info[j].rel_bw = 0;
-+
-+		/* for DCB, override the qos_info defaults. */
-+		ice_setup_dcb_qos_info(pf, qos_info);
-+
-+		/* make sure aux specific resources such as msix_count and
-+		 * msix_entries are initialized
-+		 */
-+		switch (ice_cdev_ids[i].id) {
-+		case IIDC_RDMA_ID:
-+			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+				cdev_info->msix_count = pf->num_rdma_msix;
-+				entry = &pf->msix_entries[pf->rdma_base_vector];
-+			}
-+			cdev_info->rdma_protocol = IIDC_RDMA_PROTOCOL_IWARP;
-+			cdev_info->rdma_limits_sel = IIDC_RDMA_LIMITS_SEL_3;
-+			break;
-+		default:
-+			break;
++		qset = &res->res[i].res.qsets;
++		status = ice_ena_vsi_rdma_qset(vsi->port_info, vsi->idx,
++					       qset->tc, &qs_handle[i], 1,
++					       &qset_teid[i]);
++		if (status) {
++			dev_err(dev, "Failed VSI RDMA qset enable\n");
++			ret = -EINVAL;
++			goto out;
 +		}
++		vsi->qset_handle[qset->tc] = qset->qs_handle;
++		qset->teid = qset_teid[i];
++	}
 +
-+		cdev_info->msix_entries = entry;
++out:
++	kfree(qset_teid);
++	kfree(qs_handle);
++	return ret;
++}
++
++/**
++ * ice_free_rdma_qsets - Free leaf nodes for RDMA Qset
++ * @cdev_info: aux driver that requested qsets to be freed
++ * @res: Resource to be freed
++ */
++static int
++ice_free_rdma_qsets(struct iidc_core_dev_info *cdev_info, struct iidc_res *res)
++{
++	enum ice_status status;
++	int count, i, ret = 0;
++	struct ice_vsi *vsi;
++	struct device *dev;
++	struct ice_pf *pf;
++	u16 vsi_id;
++	u32 *teid;
++	u16 *q_id;
++
++	if (!cdev_info || !res)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(cdev_info->pdev);
++	dev = ice_pf_to_dev(pf);
++
++	count = res->res_allocated;
++	if (count > ICE_MAX_TXQ_PER_TXQG)
++		return -EINVAL;
++
++	teid = kcalloc(count, sizeof(*teid), GFP_KERNEL);
++	if (!teid)
++		return -ENOMEM;
++
++	q_id = kcalloc(count, sizeof(*q_id), GFP_KERNEL);
++	if (!q_id) {
++		kfree(teid);
++		return -ENOMEM;
++	}
++
++	vsi_id = res->res[0].res.qsets.vport_id;
++	vsi = ice_find_vsi(pf, vsi_id);
++	if (!vsi) {
++		dev_err(dev, "RDMA Invalid VSI\n");
++		ret = -EINVAL;
++		goto rdma_free_out;
++	}
++
++	for (i = 0; i < count; i++) {
++		struct iidc_rdma_qset_params *qset;
++
++		qset = &res->res[i].res.qsets;
++		if (qset->vport_id != vsi_id) {
++			dev_err(dev, "RDMA Invalid VSI ID\n");
++			ret = -EINVAL;
++			goto rdma_free_out;
++		}
++		q_id[i] = qset->qs_handle;
++		teid[i] = qset->teid;
++
++		vsi->qset_handle[qset->tc] = 0;
++	}
++
++	status = ice_dis_vsi_rdma_qset(vsi->port_info, count, teid, q_id);
++	if (status)
++		ret = -EINVAL;
++
++rdma_free_out:
++	kfree(teid);
++	kfree(q_id);
++
++	return ret;
++}
++
++/**
++ * ice_cdev_info_alloc_res - Allocate requested resources for aux objects
++ * @cdev_info: struct for aux driver that is requesting resources
++ * @res: Resources to be allocated
++ * @partial_acceptable: If partial allocation is acceptable
++ *
++ * This function allocates requested resources for the aux object.
++ */
++static int
++ice_cdev_info_alloc_res(struct iidc_core_dev_info *cdev_info,
++			struct iidc_res *res, int partial_acceptable)
++{
++	struct ice_pf *pf;
++	int ret;
++
++	if (!cdev_info || !res)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(cdev_info->pdev);
++	if (!ice_pf_state_is_nominal(pf))
++		return -EBUSY;
++
++	switch (res->res_type) {
++	case IIDC_RDMA_QSETS_TXSCHED:
++		ret = ice_alloc_rdma_qsets(cdev_info, res, partial_acceptable);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
 +	}
 +
 +	return ret;
 +}
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc_int.h b/drivers/net/ethernet/intel/ice/ice_idc_int.h
-new file mode 100644
-index 00000000..67b63c6
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_idc_int.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2021, Intel Corporation. */
 +
-+#ifndef _ICE_IDC_INT_H_
-+#define _ICE_IDC_INT_H_
-+
-+#include <linux/net/intel/iidc.h>
-+#include "ice.h"
-+
-+struct ice_pf;
-+
-+int ice_cdev_info_update_vsi(struct iidc_core_dev_info *cdev_info, void *data);
-+int ice_unroll_cdev_info(struct iidc_core_dev_info *cdev_info, void *data);
-+struct iidc_core_dev_info *
-+ice_find_cdev_info_by_id(struct ice_pf *pf, int cdev_info_id);
-+
-+#endif /* !_ICE_IDC_INT_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_lag.c b/drivers/net/ethernet/intel/ice/ice_lag.c
-index 4599fc3..37c18c6 100644
---- a/drivers/net/ethernet/intel/ice/ice_lag.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lag.c
-@@ -172,6 +172,7 @@ static void ice_lag_info_event(struct ice_lag *lag, void *ptr)
- 	}
- 
- 	ice_clear_sriov_cap(pf);
-+	ice_clear_rdma_cap(pf);
- 
- 	lag->bonded = true;
- 	lag->role = ICE_LAG_UNSET;
-@@ -222,6 +223,7 @@ static void ice_lag_info_event(struct ice_lag *lag, void *ptr)
- 	}
- 
- 	ice_set_sriov_cap(pf);
-+	ice_set_rdma_cap(pf);
- 	lag->bonded = false;
- 	lag->role = ICE_LAG_NONE;
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 8d4e2ad..a897ce0 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -600,6 +600,17 @@ bool ice_is_safe_mode(struct ice_pf *pf)
- }
- 
- /**
-+ * ice_is_aux_ena
-+ * @pf: pointer to the PF struct
++/**
++ * ice_cdev_info_free_res - Free given resources
++ * @cdev_info: struct for aux driver that is requesting freeing of resources
++ * @res: Resources to be freed
 + *
-+ * returns true if aux devices/drivers are supported, false otherwise
++ * Free/Release resources allocated to given aux objects.
 + */
-+bool ice_is_aux_ena(struct ice_pf *pf)
++static int
++ice_cdev_info_free_res(struct iidc_core_dev_info *cdev_info,
++		       struct iidc_res *res)
 +{
-+	return test_bit(ICE_FLAG_AUX_ENA, pf->flags);
++	int ret;
++
++	if (!cdev_info || !res)
++		return -EINVAL;
++
++	switch (res->res_type) {
++	case IIDC_RDMA_QSETS_TXSCHED:
++		ret = ice_free_rdma_qsets(cdev_info, res);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
 +}
 +
 +/**
-  * ice_vsi_clean_rss_flow_fld - Delete RSS configuration
-  * @vsi: the VSI being cleaned up
-  *
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index 3da1789..0f794d7 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -99,7 +99,7 @@ enum ice_status
- ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
++ * ice_cdev_info_request_reset - accept request from aux driver to perform a reset
++ * @cdev_info: struct for aux driver that is requesting a reset
++ * @reset_type: type of reset the aux driver is requesting
++ */
++static int
++ice_cdev_info_request_reset(struct iidc_core_dev_info *cdev_info,
++			    enum iidc_reset_type reset_type)
++{
++	enum ice_reset_req reset;
++	struct ice_pf *pf;
++
++	if (!cdev_info)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(cdev_info->pdev);
++
++	switch (reset_type) {
++	case IIDC_PFR:
++		reset = ICE_RESET_PFR;
++		break;
++	case IIDC_CORER:
++		reset = ICE_RESET_CORER;
++		break;
++	case IIDC_GLOBR:
++		reset = ICE_RESET_GLOBR;
++		break;
++	default:
++		dev_err(ice_pf_to_dev(pf), "incorrect reset request from aux driver\n");
++		return -EINVAL;
++	}
++
++	return ice_schedule_reset(pf, reset);
++}
++
++/**
++ * ice_cdev_info_update_vsi_filter - update main VSI filters for RDMA
++ * @cdev_info: pointer to struct for aux device updating filters
++ * @vsi_id: VSI HW idx to update filter on
++ * @enable: bool whether to enable or disable filters
++ */
++static int
++ice_cdev_info_update_vsi_filter(struct iidc_core_dev_info *cdev_info,
++				u16 vsi_id, bool enable)
++{
++	enum ice_status status;
++	struct ice_vsi *vsi;
++	struct ice_pf *pf;
++
++	if (!cdev_info)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(cdev_info->pdev);
++
++	vsi = ice_find_vsi(pf, vsi_id);
++	if (!vsi)
++		return -EINVAL;
++
++	status = ice_cfg_iwarp_fltr(&pf->hw, vsi->idx, enable);
++	if (status) {
++		dev_err(ice_pf_to_dev(pf), "Failed to  %sable iWARP filtering\n",
++			enable ? "en" : "dis");
++	} else {
++		if (enable)
++			vsi->info.q_opt_flags |= ICE_AQ_VSI_Q_OPT_PE_FLTR_EN;
++		else
++			vsi->info.q_opt_flags &= ~ICE_AQ_VSI_Q_OPT_PE_FLTR_EN;
++	}
++
++	return ice_status_to_errno(status);
++}
++
++/**
++ * ice_cdev_info_vc_send - send a virt channel message from an aux driver
++ * @cdev_info: pointer to cdev_info struct for aux driver
++ * @vf_id: the absolute VF ID of recipient of message
++ * @msg: pointer to message contents
++ * @len: len of message
++ */
++static int
++ice_cdev_info_vc_send(struct iidc_core_dev_info *cdev_info, u32 vf_id, u8 *msg,
++		      u16 len)
++{
++	enum ice_status status;
++	struct ice_pf *pf;
++
++	if (!cdev_info)
++		return -EINVAL;
++	if (!msg || !len)
++		return -ENOMEM;
++
++	pf = pci_get_drvdata(cdev_info->pdev);
++	if (len > ICE_AQ_MAX_BUF_LEN)
++		return -EINVAL;
++
++	if (ice_is_reset_in_progress(pf->state))
++		return -EBUSY;
++
++	switch (cdev_info->cdev_info_id) {
++	case IIDC_RDMA_ID:
++		if (vf_id >= pf->num_alloc_vfs)
++			return -ENODEV;
++
++		/* VIRTCHNL_OP_IWARP is being used for RoCEv2 msg also */
++		status = ice_aq_send_msg_to_vf(&pf->hw, vf_id, VIRTCHNL_OP_IWARP,
++					       0, msg, len, NULL);
++		break;
++	default:
++		dev_err(ice_pf_to_dev(pf), "aux driver (%i) not supported!",
++			cdev_info->cdev_info_id);
++		return -ENODEV;
++	}
++
++	if (status)
++		dev_err(ice_pf_to_dev(pf), "Unable to send msg to VF, error %s\n",
++			ice_stat_str(status));
++	return ice_status_to_errno(status);
++}
++
++/**
+  * ice_reserve_cdev_info_qvector - Reserve vector resources for aux drivers
+  * @pf: board private structure to initialize
+  */
+@@ -146,6 +573,16 @@ int ice_cdev_info_update_vsi(struct iidc_core_dev_info *cdev_info, void *data)
+ 	return 0;
+ }
  
- bool ice_is_safe_mode(struct ice_pf *pf);
--
-+bool ice_is_aux_ena(struct ice_pf *pf);
- bool ice_is_dflt_vsi_in_use(struct ice_sw *sw);
++/* Initialize the ice_ops struct, which is used in 'ice_init_aux_devices' */
++static const struct iidc_core_ops ops = {
++	.alloc_res			= ice_cdev_info_alloc_res,
++	.free_res			= ice_cdev_info_free_res,
++	.request_reset			= ice_cdev_info_request_reset,
++	.update_vport_filter		= ice_cdev_info_update_vsi_filter,
++	.vc_send			= ice_cdev_info_vc_send,
++
++};
++
+ /**
+  * ice_init_aux_devices - initializes cdev_info objects and aux devices
+  * @pf: ptr to ice_pf
+@@ -208,6 +645,8 @@ int ice_init_aux_devices(struct ice_pf *pf)
  
- bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
+ 		/* for DCB, override the qos_info defaults. */
+ 		ice_setup_dcb_qos_info(pf, qos_info);
++		/* Initialize ice_ops */
++		cdev_info->ops = &ops;
+ 
+ 		/* make sure aux specific resources such as msix_count and
+ 		 * msix_entries are initialized
+diff --git a/drivers/net/ethernet/intel/ice/ice_idc_int.h b/drivers/net/ethernet/intel/ice/ice_idc_int.h
+index 67b63c6..ce100ff 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc_int.h
++++ b/drivers/net/ethernet/intel/ice/ice_idc_int.h
+@@ -9,6 +9,9 @@
+ 
+ struct ice_pf;
+ 
++int ice_send_event_to_auxs(struct ice_pf *pf, struct iidc_event *event);
++struct iidc_auxiliary_ops *
++ice_get_auxiliary_ops(struct iidc_core_dev_info *cdev_info);
+ int ice_cdev_info_update_vsi(struct iidc_core_dev_info *cdev_info, void *data);
+ int ice_unroll_cdev_info(struct iidc_core_dev_info *cdev_info, void *data);
+ struct iidc_core_dev_info *
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 2c23c8f..f569d58 100644
+index f569d58..2913770 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3312,6 +3312,12 @@ static void ice_set_pf_caps(struct ice_pf *pf)
- {
- 	struct ice_hw_func_caps *func_caps = &pf->hw.func_caps;
+@@ -2607,6 +2607,7 @@ static void ice_ena_misc_vector(struct ice_pf *pf)
+ 	       PFINT_OICR_PCI_EXCEPTION_M |
+ 	       PFINT_OICR_VFLR_M |
+ 	       PFINT_OICR_HMC_ERR_M |
++	       PFINT_OICR_PE_PUSH_M |
+ 	       PFINT_OICR_PE_CRITERR_M);
  
-+	clear_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
-+	if (func_caps->common_cap.iwarp) {
-+		set_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+		set_bit(ICE_FLAG_AUX_ENA, pf->flags);
-+	}
- 	clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
- 	if (func_caps->common_cap.dcb)
- 		set_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
-@@ -3391,11 +3397,12 @@ static int ice_init_pf(struct ice_pf *pf)
-  */
- static int ice_ena_msix_range(struct ice_pf *pf)
- {
--	int v_left, v_actual, v_other, v_budget = 0;
-+	int num_cpus, v_left, v_actual, v_other, v_budget = 0;
- 	struct device *dev = ice_pf_to_dev(pf);
- 	int needed, err, i;
+ 	wr32(hw, PFINT_OICR_ENA, val);
+@@ -2677,8 +2678,6 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
  
- 	v_left = pf->hw.func_caps.common_cap.num_msix_vectors;
-+	num_cpus = num_online_cpus();
- 
- 	/* reserve for LAN miscellaneous handler */
- 	needed = ICE_MIN_LAN_OICR_MSIX;
-@@ -3417,13 +3424,23 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 	v_other = v_budget;
- 
- 	/* reserve vectors for LAN traffic */
--	needed = min_t(int, num_online_cpus(), v_left);
-+	needed = num_cpus;
- 	if (v_left < needed)
- 		goto no_hw_vecs_left_err;
- 	pf->num_lan_msix = needed;
- 	v_budget += needed;
- 	v_left -= needed;
- 
-+	/* reserve vectors for RDMA auxiliary driver */
-+	if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+		needed = num_cpus + ICE_RDMA_NUM_AEQ_MSIX;
-+		if (v_left < needed)
-+			goto no_hw_vecs_left_err;
-+		pf->num_rdma_msix = needed;
-+		v_budget += needed;
-+		v_left -= needed;
-+	}
-+
- 	pf->msix_entries = devm_kcalloc(dev, v_budget,
- 					sizeof(*pf->msix_entries), GFP_KERNEL);
- 	if (!pf->msix_entries) {
-@@ -3453,16 +3470,46 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 			err = -ERANGE;
- 			goto msix_err;
- 		} else {
--			int v_traffic = v_actual - v_other;
-+			int v_remain = v_actual - v_other;
-+			int v_rdma = 0, v_min_rdma = 0;
-+
-+			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+				/* Need at least 1 interrupt in addition to
-+				 * AEQ MSIX
-+				 */
-+				v_rdma = ICE_RDMA_NUM_AEQ_MSIX + 1;
-+				v_min_rdma = ICE_MIN_RDMA_MSIX;
-+			}
- 
- 			if (v_actual == ICE_MIN_MSIX ||
--			    v_traffic < ICE_MIN_LAN_TXRX_MSIX)
-+			    v_remain < ICE_MIN_LAN_TXRX_MSIX + v_min_rdma) {
-+				dev_warn(dev, "Not enough MSI-X vectors to support RDMA.\n");
-+				clear_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+
-+				pf->num_rdma_msix = 0;
- 				pf->num_lan_msix = ICE_MIN_LAN_TXRX_MSIX;
--			else
--				pf->num_lan_msix = v_traffic;
-+			} else if ((v_remain < ICE_MIN_LAN_TXRX_MSIX + v_rdma) ||
-+				   (v_remain - v_rdma < v_rdma)) {
-+				/* Support minimum RDMA and give remaining
-+				 * vectors to LAN MSIX
-+				 */
-+				pf->num_rdma_msix = v_min_rdma;
-+				pf->num_lan_msix = v_remain - v_min_rdma;
-+			} else {
-+				/* Split remaining MSIX with RDMA after
-+				 * accounting for AEQ MSIX
-+				 */
-+				pf->num_rdma_msix = (v_remain - ICE_RDMA_NUM_AEQ_MSIX) / 2 +
-+						    ICE_RDMA_NUM_AEQ_MSIX;
-+				pf->num_lan_msix = v_remain - pf->num_rdma_msix;
-+			}
- 
- 			dev_notice(dev, "Enabled %d MSI-X vectors for LAN traffic.\n",
- 				   pf->num_lan_msix);
-+
-+			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags))
-+				dev_notice(dev, "Enabled %d MSI-X vectors for RDMA.\n",
-+					   pf->num_rdma_msix);
+ 		/* If a reset cycle isn't already in progress, we set a bit in
+ 		 * pf->state so that the service task can start a reset/rebuild.
+-		 * We also make note of which reset happened so that peer
+-		 * devices/drivers can be informed.
+ 		 */
+ 		if (!test_and_set_bit(__ICE_RESET_OICR_RECV, pf->state)) {
+ 			if (reset == ICE_RESET_CORER)
+@@ -2705,11 +2704,19 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
  		}
  	}
  
-@@ -3477,6 +3524,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 		needed, v_left);
- 	err = -ERANGE;
- exit_err:
-+	pf->num_rdma_msix = 0;
- 	pf->num_lan_msix = 0;
- 	return err;
- }
-@@ -4267,8 +4315,37 @@ static void ice_print_wake_reason(struct ice_pf *pf)
- probe_done:
- 	/* ready to go, so clear down state bit */
- 	clear_bit(__ICE_DOWN, pf->state);
-+	/* init aux devices only if supported */
-+	if (ice_is_aux_ena(pf)) {
-+		pf->cdev_infos = devm_kcalloc(dev, IIDC_MAX_NUM_AUX,
-+					      sizeof(*pf->cdev_infos),
-+					      GFP_KERNEL);
-+		if (!pf->cdev_infos) {
-+			err = -ENOMEM;
-+			goto err_init_aux_unroll;
-+		}
+-	if (oicr & PFINT_OICR_HMC_ERR_M) {
+-		ena_mask &= ~PFINT_OICR_HMC_ERR_M;
+-		dev_dbg(dev, "HMC Error interrupt - info 0x%x, data 0x%x\n",
+-			rd32(hw, PFHMC_ERRORINFO),
+-			rd32(hw, PFHMC_ERRORDATA));
++#define ICE_AUX_CRIT_ERR (PFINT_OICR_PE_CRITERR_M | PFINT_OICR_HMC_ERR_M | PFINT_OICR_PE_PUSH_M)
++	if (oicr & ICE_AUX_CRIT_ERR) {
++		struct iidc_event *event;
 +
-+		err = ice_init_aux_devices(pf);
-+		if (err) {
-+			dev_err(dev, "Failed to initialize aux devs: %d\n",
-+				err);
-+			err = -EIO;
-+			goto err_init_aux_unroll;
++		ena_mask &= ~ICE_AUX_CRIT_ERR;
++		event = kzalloc(sizeof(*event), GFP_KERNEL);
++		if (event) {
++			set_bit(IIDC_EVENT_CRIT_ERR, event->type);
++			/* report the entire OICR value to aux driver */
++			event->info.reg = oicr;
++			ice_send_event_to_auxs(pf, event);
++			kfree(event);
 +		}
-+	} else {
-+		dev_warn(dev, "RDMA is not supported on this device\n");
-+	}
-+
- 	return 0;
- 
-+err_init_aux_unroll:
-+	if (ice_is_aux_ena(pf)) {
-+		ice_for_each_aux(pf, NULL, ice_unroll_cdev_info);
-+		if (pf->cdev_infos) {
-+			devm_kfree(dev, pf->cdev_infos);
-+			pf->cdev_infos = NULL;
-+		}
-+	}
- err_send_version_unroll:
- 	ice_vsi_release_all(pf);
- err_alloc_sw_unroll:
-@@ -4614,6 +4691,8 @@ static int __maybe_unused ice_resume(struct device *dev)
- 	if (ret)
- 		dev_err(dev, "Cannot restore interrupt scheme: %d\n", ret);
- 
-+	ice_cdev_info_refresh_msix(pf);
-+
- 	clear_bit(__ICE_DOWN, pf->state);
- 	/* Now perform PF reset and rebuild */
- 	reset_type = ICE_RESET_PFR;
-@@ -5980,6 +6059,7 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_hw *hw = &pf->hw;
- 	enum ice_status ret;
-+	struct ice_vsi *vsi;
- 	int err;
- 
- 	if (test_bit(__ICE_DOWN, pf->state))
-@@ -6067,6 +6147,13 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
- 		goto err_vsi_rebuild;
  	}
  
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi) {
-+		dev_err(dev, "No PF_VSI to update aux drivers\n");
-+		goto err_vsi_rebuild;
-+	}
-+	ice_for_each_aux(pf, vsi, ice_cdev_info_update_vsi);
+ 	/* Report any remaining unexpected interrupts */
+@@ -2719,8 +2726,7 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 		/* If a critical error is pending there is no choice but to
+ 		 * reset the device.
+ 		 */
+-		if (oicr & (PFINT_OICR_PE_CRITERR_M |
+-			    PFINT_OICR_PCI_EXCEPTION_M |
++		if (oicr & (PFINT_OICR_PCI_EXCEPTION_M |
+ 			    PFINT_OICR_ECC_ERR_M)) {
+ 			set_bit(__ICE_PFR_REQ, pf->state);
+ 			ice_service_task_schedule(pf);
+@@ -4454,10 +4460,11 @@ static void ice_remove(struct pci_dev *pdev)
+ 		ice_free_vfs(pf);
+ 	}
+ 
+-	set_bit(__ICE_DOWN, pf->state);
+ 	ice_service_task_stop(pf);
+ 
+ 	ice_aq_cancel_waiting_tasks(pf);
++	ice_for_each_aux(pf, NULL, ice_unroll_cdev_info);
++	set_bit(__ICE_DOWN, pf->state);
+ 
+ 	mutex_destroy(&(&pf->hw)->fdir_fltr_lock);
+ 	ice_deinit_lag(pf);
+@@ -6224,7 +6231,9 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
++	struct iidc_event *event;
+ 	u8 count = 0;
++	int err = 0;
+ 
+ 	if (new_mtu == (int)netdev->mtu) {
+ 		netdev_warn(netdev, "MTU is already %u\n", netdev->mtu);
+@@ -6257,27 +6266,38 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 		return -EBUSY;
+ 	}
+ 
++	event = kzalloc(sizeof(*event), GFP_KERNEL);
++	if (!event)
++		return -ENOMEM;
 +
- 	/* If Flow Director is active */
- 	if (test_bit(ICE_FLAG_FD_ENA, pf->flags)) {
- 		err = ice_vsi_rebuild_by_type(pf, ICE_VSI_CTRL);
++	set_bit(IIDC_EVENT_BEFORE_MTU_CHANGE, event->type);
++	ice_send_event_to_auxs(pf, event);
++	clear_bit(IIDC_EVENT_BEFORE_MTU_CHANGE, event->type);
++
+ 	netdev->mtu = (unsigned int)new_mtu;
+ 
+ 	/* if VSI is up, bring it down and then back up */
+ 	if (!test_and_set_bit(__ICE_DOWN, vsi->state)) {
+-		int err;
+-
+ 		err = ice_down(vsi);
+ 		if (err) {
+ 			netdev_err(netdev, "change MTU if_down err %d\n", err);
+-			return err;
++			goto free_event;
+ 		}
+ 
+ 		err = ice_up(vsi);
+ 		if (err) {
+ 			netdev_err(netdev, "change MTU if_up err %d\n", err);
+-			return err;
++			goto free_event;
+ 		}
+ 	}
+ 
+ 	netdev_dbg(netdev, "changed MTU to %d\n", new_mtu);
+-	return 0;
++free_event:
++	set_bit(IIDC_EVENT_AFTER_MTU_CHANGE, event->type);
++	ice_send_event_to_auxs(pf, event);
++	kfree(event);
++
++	return err;
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 2403cb3..c30e7d4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -596,6 +596,50 @@ void ice_free_sched_node(struct ice_port_info *pi, struct ice_sched_node *node)
+ }
+ 
+ /**
++ * ice_alloc_rdma_q_ctx - allocate RDMA queue contexts for the given VSI and TC
++ * @hw: pointer to the HW struct
++ * @vsi_handle: VSI handle
++ * @tc: TC number
++ * @new_numqs: number of queues
++ */
++static enum ice_status
++ice_alloc_rdma_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 new_numqs)
++{
++	struct ice_vsi_ctx *vsi_ctx;
++	struct ice_q_ctx *q_ctx;
++
++	vsi_ctx = ice_get_vsi_ctx(hw, vsi_handle);
++	if (!vsi_ctx)
++		return ICE_ERR_PARAM;
++	/* allocate RDMA queue contexts */
++	if (!vsi_ctx->rdma_q_ctx[tc]) {
++		vsi_ctx->rdma_q_ctx[tc] = devm_kcalloc(ice_hw_to_dev(hw),
++						       new_numqs,
++						       sizeof(*q_ctx),
++						       GFP_KERNEL);
++		if (!vsi_ctx->rdma_q_ctx[tc])
++			return ICE_ERR_NO_MEMORY;
++		vsi_ctx->num_rdma_q_entries[tc] = new_numqs;
++		return 0;
++	}
++	/* num queues are increased, update the queue contexts */
++	if (new_numqs > vsi_ctx->num_rdma_q_entries[tc]) {
++		u16 prev_num = vsi_ctx->num_rdma_q_entries[tc];
++
++		q_ctx = devm_kcalloc(ice_hw_to_dev(hw), new_numqs,
++				     sizeof(*q_ctx), GFP_KERNEL);
++		if (!q_ctx)
++			return ICE_ERR_NO_MEMORY;
++		memcpy(q_ctx, vsi_ctx->rdma_q_ctx[tc],
++		       prev_num * sizeof(*q_ctx));
++		devm_kfree(ice_hw_to_dev(hw), vsi_ctx->rdma_q_ctx[tc]);
++		vsi_ctx->rdma_q_ctx[tc] = q_ctx;
++		vsi_ctx->num_rdma_q_entries[tc] = new_numqs;
++	}
++	return 0;
++}
++
++/**
+  * ice_aq_rl_profile - performs a rate limiting task
+  * @hw: pointer to the HW struct
+  * @opcode: opcode for add, query, or remove profile(s)
+@@ -1749,13 +1793,22 @@ struct ice_sched_node *
+ 	if (!vsi_ctx)
+ 		return ICE_ERR_PARAM;
+ 
+-	prev_numqs = vsi_ctx->sched.max_lanq[tc];
++	if (owner == ICE_SCHED_NODE_OWNER_LAN)
++		prev_numqs = vsi_ctx->sched.max_lanq[tc];
++	else
++		prev_numqs = vsi_ctx->sched.max_rdmaq[tc];
+ 	/* num queues are not changed or less than the previous number */
+ 	if (new_numqs <= prev_numqs)
+ 		return status;
+-	status = ice_alloc_lan_q_ctx(hw, vsi_handle, tc, new_numqs);
+-	if (status)
+-		return status;
++	if (owner == ICE_SCHED_NODE_OWNER_LAN) {
++		status = ice_alloc_lan_q_ctx(hw, vsi_handle, tc, new_numqs);
++		if (status)
++			return status;
++	} else {
++		status = ice_alloc_rdma_q_ctx(hw, vsi_handle, tc, new_numqs);
++		if (status)
++			return status;
++	}
+ 
+ 	if (new_numqs)
+ 		ice_sched_calc_vsi_child_nodes(hw, new_numqs, new_num_nodes);
+@@ -1770,7 +1823,10 @@ struct ice_sched_node *
+ 					       new_num_nodes, owner);
+ 	if (status)
+ 		return status;
+-	vsi_ctx->sched.max_lanq[tc] = new_numqs;
++	if (owner == ICE_SCHED_NODE_OWNER_LAN)
++		vsi_ctx->sched.max_lanq[tc] = new_numqs;
++	else
++		vsi_ctx->sched.max_rdmaq[tc] = new_numqs;
+ 
+ 	return 0;
+ }
+@@ -1836,6 +1892,7 @@ enum ice_status
+ 		 * recreate the child nodes all the time in these cases.
+ 		 */
+ 		vsi_ctx->sched.max_lanq[tc] = 0;
++		vsi_ctx->sched.max_rdmaq[tc] = 0;
+ 	}
+ 
+ 	/* update the VSI child nodes */
+@@ -1965,6 +2022,8 @@ static bool ice_sched_is_leaf_node_present(struct ice_sched_node *node)
+ 		}
+ 		if (owner == ICE_SCHED_NODE_OWNER_LAN)
+ 			vsi_ctx->sched.max_lanq[i] = 0;
++		else
++			vsi_ctx->sched.max_rdmaq[i] = 0;
+ 	}
+ 	status = 0;
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 67c965a..ebb8453 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -302,6 +302,10 @@ static void ice_clear_vsi_q_ctx(struct ice_hw *hw, u16 vsi_handle)
+ 			devm_kfree(ice_hw_to_dev(hw), vsi->lan_q_ctx[i]);
+ 			vsi->lan_q_ctx[i] = NULL;
+ 		}
++		if (vsi->rdma_q_ctx[i]) {
++			devm_kfree(ice_hw_to_dev(hw), vsi->rdma_q_ctx[i]);
++			vsi->rdma_q_ctx[i] = NULL;
++		}
+ 	}
+ }
+ 
+@@ -423,6 +427,29 @@ enum ice_status
+ }
+ 
+ /**
++ * ice_cfg_iwarp_fltr - enable/disable iWARP filtering on VSI
++ * @hw: pointer to HW struct
++ * @vsi_handle: VSI SW index
++ * @enable: boolean for enable/disable
++ */
++enum ice_status
++ice_cfg_iwarp_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable)
++{
++	struct ice_vsi_ctx *ctx;
++
++	ctx = ice_get_vsi_ctx(hw, vsi_handle);
++	if (!ctx)
++		return ICE_ERR_DOES_NOT_EXIST;
++
++	if (enable)
++		ctx->info.q_opt_flags |= ICE_AQ_VSI_Q_OPT_PE_FLTR_EN;
++	else
++		ctx->info.q_opt_flags &= ~ICE_AQ_VSI_Q_OPT_PE_FLTR_EN;
++
++	return ice_update_vsi(hw, vsi_handle, ctx, NULL);
++}
++
++/**
+  * ice_aq_alloc_free_vsi_list
+  * @hw: pointer to the HW struct
+  * @vsi_list_id: VSI list ID returned or used for lookup
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index 8b4f9d3..6821cf7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -26,6 +26,8 @@ struct ice_vsi_ctx {
+ 	u8 vf_num;
+ 	u16 num_lan_q_entries[ICE_MAX_TRAFFIC_CLASS];
+ 	struct ice_q_ctx *lan_q_ctx[ICE_MAX_TRAFFIC_CLASS];
++	u16 num_rdma_q_entries[ICE_MAX_TRAFFIC_CLASS];
++	struct ice_q_ctx *rdma_q_ctx[ICE_MAX_TRAFFIC_CLASS];
+ };
+ 
+ enum ice_sw_fwd_act_type {
+@@ -223,6 +225,8 @@ enum ice_status
+ ice_add_eth_mac(struct ice_hw *hw, struct list_head *em_list);
+ enum ice_status
+ ice_remove_eth_mac(struct ice_hw *hw, struct list_head *em_list);
++enum ice_status
++ice_cfg_iwarp_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable);
+ void ice_remove_vsi_fltr(struct ice_hw *hw, u16 vsi_handle);
+ enum ice_status
+ ice_add_vlan(struct ice_hw *hw, struct list_head *m_list);
 diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index a6cb0c35..4eaab60 100644
+index 4eaab60..0b77358 100644
 --- a/drivers/net/ethernet/intel/ice/ice_type.h
 +++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -244,6 +244,7 @@ struct ice_hw_common_caps {
- 	u8 rss_table_entry_width;	/* RSS Entry width in bits */
+@@ -45,6 +45,7 @@ static inline u32 ice_round_to_num(u32 N, u32 R)
+ #define ICE_DBG_FLOW		BIT_ULL(9)
+ #define ICE_DBG_SW		BIT_ULL(13)
+ #define ICE_DBG_SCHED		BIT_ULL(14)
++#define ICE_DBG_RDMA		BIT_ULL(15)
+ #define ICE_DBG_PKG		BIT_ULL(16)
+ #define ICE_DBG_RES		BIT_ULL(17)
+ #define ICE_DBG_AQ_MSG		BIT_ULL(24)
+@@ -423,6 +424,7 @@ struct ice_sched_node {
+ 	u8 tc_num;
+ 	u8 owner;
+ #define ICE_SCHED_NODE_OWNER_LAN	0
++#define ICE_SCHED_NODE_OWNER_RDMA	2
+ };
  
- 	u8 dcb;
-+	u8 iwarp;
+ /* Access Macros for Tx Sched Elements data */
+@@ -494,6 +496,7 @@ struct ice_sched_vsi_info {
+ 	struct ice_sched_node *ag_node[ICE_MAX_TRAFFIC_CLASS];
+ 	struct list_head list_entry;
+ 	u16 max_lanq[ICE_MAX_TRAFFIC_CLASS];
++	u16 max_rdmaq[ICE_MAX_TRAFFIC_CLASS];
+ };
  
- 	bool nvm_update_pending_nvm;
- 	bool nvm_update_pending_orom;
+ /* driver defines the policy */
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 1f38a8d..fa70abb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -3680,6 +3680,37 @@ static int ice_vc_dis_vlan_stripping(struct ice_vf *vf)
+ }
+ 
+ /**
++ * ice_vc_rdma_msg - send msg to RDMA PF from VF
++ * @vf: pointer to VF info
++ * @msg: pointer to msg buffer
++ * @len: length of the message
++ *
++ * This function is called indirectly from the AQ clean function.
++ */
++static int ice_vc_rdma_msg(struct ice_vf *vf, u8 *msg, u16 len)
++{
++	struct iidc_core_dev_info *rcdi;
++	struct iidc_auxiliary_ops *ops;
++	int ret = 0;
++
++	rcdi = ice_find_cdev_info_by_id(vf->pf, IIDC_RDMA_ID);
++	if (!rcdi) {
++		pr_err("VF attempted to send message to invalid RDMA driver\n");
++		return -EIO;
++	}
++
++	device_lock(&rcdi->adev->dev);
++	ops = ice_get_auxiliary_ops(rcdi);
++	if (ops && ops->vc_receive)
++		ret = ops->vc_receive(rcdi, vf->vf_id, msg, len);
++	device_unlock(&rcdi->adev->dev);
++	if (ret)
++		pr_err("Failed to send message to RDMA driver, error %d\n", ret);
++
++	return ret;
++}
++
++/**
+  * ice_vf_init_vlan_stripping - enable/disable VLAN stripping on initialization
+  * @vf: VF to enable/disable VLAN stripping for on initialization
+  *
+@@ -3816,6 +3847,9 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+ 	case VIRTCHNL_OP_DISABLE_VLAN_STRIPPING:
+ 		err = ice_vc_dis_vlan_stripping(vf);
+ 		break;
++	case VIRTCHNL_OP_IWARP:
++		err = ice_vc_rdma_msg(vf, msg, msglen);
++		break;
+ 	case VIRTCHNL_OP_UNKNOWN:
+ 	default:
+ 		dev_err(dev, "Unsupported opcode %d from VF %d\n", v_opcode,
 -- 
 1.8.3.1
 
