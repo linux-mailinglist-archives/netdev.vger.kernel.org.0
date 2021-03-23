@@ -2,200 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A1A345BD6
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 11:24:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78C16345BF8
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 11:34:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbhCWKYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 06:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbhCWKXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 06:23:37 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541D5C061756
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 03:23:36 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id a198so25812056lfd.7
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 03:23:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=R5vyqdvQKWra7jAt7UHdh8c5uKVuo+2L4j2zPN3PxbQ=;
-        b=yNOywE0I1mgy3dRCqwWqYbUGGGt6/v7thf/EcZGsPBzKqo2FX5a9Vksm5JGeukj4TX
-         lS2xBKUmijbP60jI/ZV2wiu2f+iQFcEpV6HeGwT36LAWg3QU+YBqQFGdVk2B+W/3AnIX
-         aaYbLaJMX4IwvsgHBjGMbt5uOJEyrRfi4+pABnTMh+lYVsoxE40CBH5aGzYlcRQTDs5q
-         39eq74vf9AoJhLkyfNl0Nx7COi+mEFuLwr3V/XnZSjCzVj/yVKXpFn2rZ9kgfEIHT5a5
-         4D84s1zUjjHcXz5BOwAAqq9lvHKqe9f1859ciPwDtuhGuhFXbVrUywjdRXrBflLoFPo3
-         nGGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=R5vyqdvQKWra7jAt7UHdh8c5uKVuo+2L4j2zPN3PxbQ=;
-        b=aQKDkMHbqhiAxWgnrHZHy50Oj+EJRk3Ael+7nHkOtTOqPCH5P/0KdKK/0V3Qq+rP5B
-         ihU6SBbm/QJAf64OXndEzB7jJTPLXZeDHboOjtbgXRYRLVLdp0zUKSA5nVeKCQQ5bzU2
-         idC6+P6XvqvFa8dK8xABYL2NC2huu7WNMLtUsZlRoNH3WTz/xfUhUtSJ+xJ32W5tAD0y
-         EB9tQLZlkgF95VGKaXnVpJN1hAwfpE1ZsbByaGFGnET3xCPy0rk+J15V3hCM/13zgQhs
-         n/A8Z6TS7uyrrfHuD6n+tKXwb2IPCo8U3Jd4Bi4gibriclOwMO0r7rV3XQdV7WkpUM7y
-         n+UQ==
-X-Gm-Message-State: AOAM5313ckppOR9ySpPsI0GnCugjxVjEMnKy09a34VUlOEEHUAXomcWz
-        QwMGzZVcbxNsG/EV7wTqbwmPvg==
-X-Google-Smtp-Source: ABdhPJyMDVA6GAFmgYHsXO3OgY2V0ju5lumyQKW89/wX4ENW0IsvYYE3lIfGaX9tA+WCx+kJ11/T6A==
-X-Received: by 2002:a05:6512:6cd:: with SMTP id u13mr2265385lff.326.1616495014771;
-        Tue, 23 Mar 2021 03:23:34 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id t200sm1858403lff.280.2021.03.23.03.23.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 03:23:34 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
-Date:   Tue, 23 Mar 2021 11:23:26 +0100
-Message-Id: <20210323102326.3677940-1-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
+        id S230338AbhCWKdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 06:33:41 -0400
+Received: from mail-eopbgr690056.outbound.protection.outlook.com ([40.107.69.56]:31645
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230299AbhCWKdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 06:33:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C+wW0WhIHnuyYJN30VzJWRYbdKRDmA2680sLD2Kylvpln7bO7VFEL0Azu9WMuwymt+Q+h08EJSQwIZWnvaJIdmKG97lnGMWnz2zmwrJYLmKf+zhEVsm3WFyeKRaIrgIlsJ4Sy/1f3xtR34nO8oIwSzFBseZToemNOnt8FVf0plJPVM/nCtPVgqOPh/+J42o2AwPxUuNWtqhZdY6UZ36tARfkffJzMEJgGxRqEiJaDtG4gy/28KCacB9PngBU3lES92KIB1P2s7f1xpKrdfs3PSBR7UjnjUGtWocgsw4GvxGT1q2pone//epRFICp/OIEo4dIO7kVFsPD43+AvUN6+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=59bdNzAwt5ZnN90XontxmC0qShXePt3P91IGq/OqWq0=;
+ b=eW6V/88aT5LnYCjXw6fROaOPyOno2s8yvjpiBj0E7nnXaJ3K3Xmxqkc+HWSiFIUcssS3y/ce5GxCNSNnVFuxpgKrzO7F8z0IXfB40gTcIM7hvaqjX+XiOi3QoR7N5wA6J76M+w8IT9KPhDGOWa776eB/hpatUqvbyQVNWJjtMZhT/JWexPknxuSybFWhlXqeUDS/LwXF0Z8M4VZBExyBuxoIetGyK5zKFM+TQrobq9kHLqLqxQudXbQ4atyRcsdavdUI7hOKOLVDu71hn/t7e/Pkw11EW4NhHc1+w9He873rn/Q43Ntqgmwtj+vPImi7+mBcsgYaJLKaVVLT4qexrg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=59bdNzAwt5ZnN90XontxmC0qShXePt3P91IGq/OqWq0=;
+ b=UR/Ap4OOEECP7EHer4RLU0OHM8RgLtatny49SRhrm+WEyW+NT0dk9pv/Khvp2GeB9bQPkCqY5H1zMJIjFMcXQ8QVW2vPo7gRcZw8/OYPZ3ZUirYDzPUlf/IVD7oZpyiHCA6sUHSZZKqhoKj02Wzy1fewXeM4J3YjG7NN6GkPY3ZzrjG0RvQpo9Ld7nbfy+o2JVNzorRYtgRhYdMgqIuQUSvGP5r/Iqt+NITBe9TJujAzIvTYtn+KlEIhIk2O+qHOE5sAd1H+FewfCCbZl5ijwxtBUmcwVlEkJkVh8WATdNEBhaOdqUVtT84qucGDRdVn86bLv1LQS42FHGiMOvjTPQ==
+Authentication-Results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
+ by DM5PR12MB4663.namprd12.prod.outlook.com (2603:10b6:4:a9::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Tue, 23 Mar
+ 2021 10:33:22 +0000
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::5c42:cbe:fe28:3a9b]) by DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::5c42:cbe:fe28:3a9b%5]) with mapi id 15.20.3955.027; Tue, 23 Mar 2021
+ 10:33:22 +0000
+Subject: Re: [PATCH v4 net-next 01/11] net: bridge: add helper for retrieving
+ the current bridge port STP state
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Ivan Vecera <ivecera@redhat.com>,
+        linux-omap@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210322235152.268695-1-olteanv@gmail.com>
+ <20210322235152.268695-2-olteanv@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <2d6ee47b-3fc5-4884-11d3-99544a95219c@nvidia.com>
+Date:   Tue, 23 Mar 2021 12:33:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
+In-Reply-To: <20210322235152.268695-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZR0P278CA0080.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:22::13) To DM6PR12MB4403.namprd12.prod.outlook.com
+ (2603:10b6:5:2ab::24)
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.240.137] (213.179.129.39) by ZR0P278CA0080.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:22::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 10:33:17 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e69c4687-3ed3-4509-ab54-08d8ede7150b
+X-MS-TrafficTypeDiagnostic: DM5PR12MB4663:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM5PR12MB4663F0B375F4CD429B83F165DF649@DM5PR12MB4663.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: z8+lItdhYk7gXA0jgBGAU5xeKRaNiq9PRfAygxuPFKOivtAOKMWIncG1r5b4c9UuwsBxcYVUE6+tPWH5dkdroCe5jM28mgoYC5uSUThVqlTb/JiJf7QqqrtoXiMNQHsf62fX+5eXXBo2tvk9wHQ6c2VrTCmf0PloYELRLxFyinz+bzB+zwMejRl4n5LYMaS+4oIonYGgr9frgQCSy6l2dUMlbc9ffM4zbniE5NecEHEWz8B2ZN9VLU5JERXblKaRhSCFkrN5Cm7VKUoANY+5GJRd34dK33sC3Ge6glVsFWm6xoMbllDOQiVbMDQwXnaeRGvESdwWC/Hea635RhwFrKDW27y6tocF1jkE+SWg9wvQ5mEhuAieMRG5qGY0weoIQlCQUES0C7k6TnoG2/fHqVoXwANHLNprjr2vVKtB38z19QVrKiX6SjsSqfX4L9jvehk+vVTYk8ZNOtWQJLeTcAkFyg/Zl9dgYxAez9t3sPBC2i7WyGqJOfu62DIeyWWgLL8AyhsEGYd0oyfhxZymaxPCvG59qyRWSyi6LZB5+fApNkDEhjUBC+BH5xMh4TdC9+rktqfcGh3TLphdkGLZ2mx/r5cbDaAPYk66wHhxVXwPuEXuQfIkoF4FNBRZQunH6ws3lXitcx1ewKO8dl3FQqRS2hxNnDptYns5xYJ2wiJvb64mdKYQEGcO8TnLFaPkkOqZLkn12eZnxiP4Y6l82A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(366004)(376002)(39860400002)(956004)(8676002)(8936002)(54906003)(2906002)(2616005)(83380400001)(5660300002)(66556008)(4326008)(31696002)(66476007)(31686004)(36756003)(53546011)(6486002)(66946007)(316002)(38100700001)(16526019)(86362001)(7416002)(478600001)(26005)(6666004)(186003)(110136005)(16576012)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?RE9GNlJtdldEM0RZLzVpYTBXdEw4NXZ6V1BpVk5KamovVVFSVUNqWXROSnRk?=
+ =?utf-8?B?U2ZUbTBIUjFwZlR5YnUrazNMK1dHSXN3dWZuL3BaMHArWk5iTm8vWStHWmpS?=
+ =?utf-8?B?QWJvK2tnK1RCTjQ2d2NKN09QL2FVcVp2QVc5bi80Ykd4UU15VjhGV1Nnb3F6?=
+ =?utf-8?B?MGZIZU0vVGR3enJkV1pCTkhYTnp5Z25CSTZxelRkYXZYRGxDOGRFNDNybFRO?=
+ =?utf-8?B?S3QxaHhHR3diNXcwTmJ1akkxbHE3NENyb0Zwd0RJT2RlOVBYeWo5NCtUVXV2?=
+ =?utf-8?B?TUdxYmxBbWNSaVBOeWlaMDJIUEljdmdnNEtwTjBiQm4zQnNTdWpSSENSbFJY?=
+ =?utf-8?B?OUQ0bFUzZDZoLzd4TEk4RmRZR3RueGxrSWdaUGpYUjB4blFMWkpzNHVzVGZB?=
+ =?utf-8?B?TWVoZFQwN2tsalFFRlVheVhJUXQ0VHhJMU5odE02RUpneWtXbEFMWEk0Tk80?=
+ =?utf-8?B?SnE4bjF2VTFnbFJFL1J1OWJ4cVllVjBBMzJKTFFxZ0tjYW9PeXlyWFdwNThq?=
+ =?utf-8?B?K1lQZVJIQ3VrN1V1K2FOK0M0c3lDemlUZVdzcnFYZzgzRy9xakpRbk03MHAv?=
+ =?utf-8?B?NnJqVkNLbVZIT1M5ZVluWXhVc3d1R2hWeU1PeDZXNnFNaUUwaFpTS25DVXNU?=
+ =?utf-8?B?dFV0S24rM2s3NTB3cjJrdGh0U1pwYUIxd2t5T21sREdYLzExOVVZUGJiaEIz?=
+ =?utf-8?B?YTU2SytrS0Q0WUl3MjVCL0MzZkVHSWN3SERteDRqclhKNG1mOTcwcmE2QmZl?=
+ =?utf-8?B?UGZzVCt6b1IveGlPVitkTXVuRm1QVjZnbWk5bFh6Q3MyTUY4cGZ5eW9Lb1gx?=
+ =?utf-8?B?MndkZndnaHVGczd0WWluSUd6aHpZY0lnMVQ0MXBqY1MxMnVCUTREeG1qWXpk?=
+ =?utf-8?B?YVA4RzJlUmRXaXVlbHVWanVZdUM1dXJHVDBRVTBZUDhJV0doS3FDYlZyaStY?=
+ =?utf-8?B?Q2hWNVhIU2kzQXRQRTgyT1hRSVJSK1VkT1pJNEhadWxuWEJCSURWZnp6VExs?=
+ =?utf-8?B?UFB3Z25yMFRGRi9Vb21Jcms3cjlwczV4cWZDZzkzNGpnMTA2emRnWHdnTkFq?=
+ =?utf-8?B?THVtSm5nLzd0dWdxNFhGMU9UODBOUjFJZ0tqcjVwOXkyaHVmSmFPdHhHNEVs?=
+ =?utf-8?B?UTdJNDlncjczckZia0dzUzFUWVVNRjBLd0JKK3BPWVJlaFg4bHc1cmdBUDBp?=
+ =?utf-8?B?Ujl0Y2YwRzdNMmtXVFlBenlRcEgzVHMzMUlZZlhwaGJFcGlEeDA4UkRYL2Y0?=
+ =?utf-8?B?TEZ1dmMxWFV2S1NoVENhZEVjZW5KbUh0RkFmLzhIM2Z6WnlsUnFyYWdMRDZk?=
+ =?utf-8?B?MEZBMWVrTmx3aVhxMWVUTVY2WjdmNnBFNGlPRzJmNVlnRnFmN0c0RVo1T3Ji?=
+ =?utf-8?B?VTZnQWJtMEtCM2FjZG1jWkplNU4rdXJzdE92cnBKMWNUc2lkMUNxRVdYS0s4?=
+ =?utf-8?B?eTRjeDRiazMxem1pSjFpR25RcHVTKzhzUEFueENnMWQ4UURmcW95UU9PY0RQ?=
+ =?utf-8?B?ZDM2YnpIVmZteXpQeDZ0NnJKUzNQODJuaTFpd2RpVnVlQnovRzZKWldFR0Vi?=
+ =?utf-8?B?aUE0eFZVdnhkbUFMSklrQ3BXM1hvSXhjSWFFSUVadTNwMWt0eWhzUHJyY1NE?=
+ =?utf-8?B?T2NOMFVycU1SN3JGTWVDaEo2NjU1YThpQ2FucStya0gxaFhjVXp0VTFDdVpB?=
+ =?utf-8?B?TGVOTE5BQTZ0azF5QVorQ1VBckhrd1lDQkVhN1FXVEJCZTRSUVJPRU51YUVS?=
+ =?utf-8?Q?3+geEyMDlvoN0hlFvPGl6H1SUwwc/yRFosEIGwW?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e69c4687-3ed3-4509-ab54-08d8ede7150b
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 10:33:22.1868
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8lqr3+K31ncd9xl+Qd0VbckEurq0DvhyCab/IzA+TNDZ0+Sa2lovVPGdpKa1RdTOgHVXfG23mzbS+eGJmHrW+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB4663
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All devices are capable of using regular DSA tags. Support for
-Ethertyped DSA tags sort into three categories:
+On 23/03/2021 01:51, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> It may happen that we have the following topology with DSA or any other
+> switchdev driver with LAG offload:
+> 
+> ip link add br0 type bridge stp_state 1
+> ip link add bond0 type bond
+> ip link set bond0 master br0
+> ip link set swp0 master bond0
+> ip link set swp1 master bond0
+> 
+> STP decides that it should put bond0 into the BLOCKING state, and
+> that's that. The ports that are actively listening for the switchdev
+> port attributes emitted for the bond0 bridge port (because they are
+> offloading it) and have the honor of seeing that switchdev port
+> attribute can react to it, so we can program swp0 and swp1 into the
+> BLOCKING state.
+> 
+> But if then we do:
+> 
+> ip link set swp2 master bond0
+> 
+> then as far as the bridge is concerned, nothing has changed: it still
+> has one bridge port. But this new bridge port will not see any STP state
+> change notification and will remain FORWARDING, which is how the
+> standalone code leaves it in.
+> 
+> We need a function in the bridge driver which retrieves the current STP
+> state, such that drivers can synchronize to it when they may have missed
+> switchdev events.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  include/linux/if_bridge.h |  6 ++++++
+>  net/bridge/br_stp.c       | 14 ++++++++++++++
+>  2 files changed, 20 insertions(+)
+> 
 
-1. No support. Older chips fall into this category.
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-2. Full support. Datasheet explicitly supports configuring the CPU
-   port to receive FORWARDs with a DSA tag.
 
-3. Undocumented support. Datasheet lists the configuration from
-   category 2 as "reserved for future use", but does empirically
-   behave like a category 2 device.
-
-Because there are ethernet controllers that do not handle regular DSA
-tags in all cases, it is sometimes preferable to rely on the
-undocumented behavior, as the alternative is a very crippled
-system. But, in those cases, make sure to log the fact that an
-undocumented feature has been enabled.
-
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
-
-In a system using an NXP T1023 SoC connected to a 6390X switch, we
-noticed that TO_CPU frames where not reaching the CPU. This only
-happened on hardware port 8. Looking at the DSA master interface
-(dpaa-ethernet) we could see that an Rx error counter was bumped at
-the same rate. The logs indicated a parser error.
-
-It just so happens that a TO_CPU coming in on device 0, port 8, will
-result in the first two bytes of the DSA tag being one of:
-
-00 40
-00 44
-00 46
-
-My guess is that since these values look like 802.3 length fields, the
-controller's parser will signal an error if the frame length does not
-match what is in the header.
-
-As a workaround, switching to EDSA (thereby always having a proper
-EtherType in the frame) solves the issue.
-
- drivers/net/dsa/mv88e6xxx/chip.c | 41 +++++++++++++++++++++++++++++---
- drivers/net/dsa/mv88e6xxx/chip.h |  3 +++
- 2 files changed, 41 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 95f07fcd4f85..e7ec883d5f6b 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2531,10 +2531,10 @@ static int mv88e6xxx_setup_port_mode(struct mv88e6xxx_chip *chip, int port)
- 		return mv88e6xxx_set_port_mode_normal(chip, port);
- 
- 	/* Setup CPU port mode depending on its supported tag format */
--	if (chip->info->tag_protocol == DSA_TAG_PROTO_DSA)
-+	if (chip->tag_protocol == DSA_TAG_PROTO_DSA)
- 		return mv88e6xxx_set_port_mode_dsa(chip, port);
- 
--	if (chip->info->tag_protocol == DSA_TAG_PROTO_EDSA)
-+	if (chip->tag_protocol == DSA_TAG_PROTO_EDSA)
- 		return mv88e6xxx_set_port_mode_edsa(chip, port);
- 
- 	return -EINVAL;
-@@ -5564,7 +5564,39 @@ static enum dsa_tag_protocol mv88e6xxx_get_tag_protocol(struct dsa_switch *ds,
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 
--	return chip->info->tag_protocol;
-+	return chip->tag_protocol;
-+}
-+
-+static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
-+					 enum dsa_tag_protocol proto)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	enum dsa_tag_protocol old_protocol;
-+	int err;
-+
-+	switch (proto) {
-+	case DSA_TAG_PROTO_EDSA:
-+		if (chip->info->tag_protocol != DSA_TAG_PROTO_EDSA)
-+			dev_warn(chip->dev, "Relying on undocumented EDSA tagging behavior\n");
-+
-+		break;
-+	case DSA_TAG_PROTO_DSA:
-+		break;
-+	default:
-+		return -EPROTONOSUPPORT;
-+	}
-+
-+	old_protocol = chip->tag_protocol;
-+	chip->tag_protocol = proto;
-+
-+	mv88e6xxx_reg_lock(chip);
-+	err = mv88e6xxx_setup_port_mode(chip, port);
-+	mv88e6xxx_reg_unlock(chip);
-+
-+	if (err)
-+		chip->tag_protocol = old_protocol;
-+
-+	return err;
- }
- 
- static int mv88e6xxx_port_mdb_add(struct dsa_switch *ds, int port,
-@@ -6029,6 +6061,7 @@ static int mv88e6xxx_crosschip_lag_leave(struct dsa_switch *ds, int sw_index,
- 
- static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.get_tag_protocol	= mv88e6xxx_get_tag_protocol,
-+	.change_tag_protocol	= mv88e6xxx_change_tag_protocol,
- 	.setup			= mv88e6xxx_setup,
- 	.teardown		= mv88e6xxx_teardown,
- 	.phylink_validate	= mv88e6xxx_validate,
-@@ -6209,6 +6242,8 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	if (err)
- 		goto out;
- 
-+	chip->tag_protocol = chip->info->tag_protocol;
-+
- 	mv88e6xxx_phy_init(chip);
- 
- 	if (chip->info->ops->get_eeprom) {
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index bce6e0dc8535..96b775f3fda2 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -261,6 +261,9 @@ struct mv88e6xxx_region_priv {
- struct mv88e6xxx_chip {
- 	const struct mv88e6xxx_info *info;
- 
-+	/* Currently configured tagging protocol */
-+	enum dsa_tag_protocol tag_protocol;
-+
- 	/* The dsa_switch this private structure is related to */
- 	struct dsa_switch *ds;
- 
--- 
-2.25.1
 
