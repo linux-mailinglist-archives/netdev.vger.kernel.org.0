@@ -2,172 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD8D5345707
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 05:56:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74244345757
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 06:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbhCWEzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 00:55:41 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44960 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229504AbhCWEza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 00:55:30 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12N4rIo4029592;
-        Mon, 22 Mar 2021 21:55:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=QqTSQr1YopmI9J0zXcIKFanJVX6nFX0UgExlWh0RaWE=;
- b=j2rGoQRDtUgnrWzRFkU6m6v7zFiksHvBKthOkkODomiChbhc8QD+LS3RDAQSiVxL3lug
- NQBrkPrJxQXFFr2OZ8TbqaJrZroAdY7uJWKPsc2kLY65J/dcW99nN2W3Xzcqg4dZamiO
- d7US+3ymL0V2MsnkYrq8PgHbgtBpL7jCpeE= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 37e0rhhk6w-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 22 Mar 2021 21:55:17 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 22 Mar 2021 21:55:15 -0700
+        id S229591AbhCWF2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 01:28:16 -0400
+Received: from mail-eopbgr10061.outbound.protection.outlook.com ([40.107.1.61]:42183
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229452AbhCWF2F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 01:28:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gbJgEDgpZbuk75HHOzgTutj6fHqwJm/xGyZ4vvwsc3KSbigYYM1sUQetDYYzdXgBkw1O010t/NsnEF/jMZlqKDOfKLf/vZI3uE0qNNZjDlKBpT1jwTjvVKoPjf6yiR4qkigqkXTrgUf4I/QgpRV6mrGC9/ZYYbu60/YtmJVvDntEvAz0V3v4NhCyLZtfEJokX/bkc0q1CBbsqRDIQq+6yvBtb7FgzdsTDG+f2DNDPiCD8RTW8NGIEe9ACLtE2OTRcrIwx34YO+eMVF7a+3/zIkkGIP7SKYWLo3RoGaYZaoG1Q9F59le1KOWHYCZdown0Nas6Fb3+1mZj83MC17wejw==
+ b=WHfrxUX+J3LKylS2bE9jkMrgWwN/HTZqWYpnM6tgFJtBXkrzQUIqWvyuBlo7nvqX+s5TEOQ/Cb/Z8UEjtuJXfTfzMQHCIOX3TXXhedcsjfglxTERuJYjeRFkcZTE6N9jFyQ38WchQH2xk7m5YL3yG+A/DKp3EYF9kJ53F0HAmbIR3HHmcCHkPrW3Jfkd4pDC6nVUG1+1CNX3eh/8QspacoPgo5/tA5fvvRMHCW2R3BMY5vdumeJdexgNNpBY/D3dO8gfSkhEx0/ruus05Ctqf9XbnKJwSk4SfaVlxNyLr+5R45q4V9oBEcJbJ3OzUza6XU3AydQSJoQoO22uYWX9yQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QqTSQr1YopmI9J0zXcIKFanJVX6nFX0UgExlWh0RaWE=;
- b=RVZtuvOpEZPNjehZFILkPsY4qdlJYc5gL1TgifQe0zZjSXLGyW9dMQhLKHyyUlUFCcHIrEts+iTkY6AdCa/Obhbae/ySt/Epa5hHKr14RSRSLppsFsAT3oesRq0GFnKxHfaqame9m27ypPNP4coUBA80igwGNEGTn3ypiDDTQn+hg8dT5LaNI0xQdpLq+5StlyGBztTVPlzznpiLv3FErXmBE5qeV2INVmuEJ2GpVSZ5WTKN+n1WdaTFXt/w3b6PRTrLXPvd0f1XLwIOEgsO1gjlZeq9snz9pAbn/K2GJtfVTaMcWZTsyDl9A/XxCgpUVcdf14t8zMBIcdiBqKhH4A==
+ bh=47MOGerl3zXcRgDWTl4nKvNKoz4tKGefu/7gHy4zCUg=;
+ b=TDEp32s+sDSBvNQM8JMHkGvDtzLdJvY8eNDMI9Bd4BQTezmf9/xNh8OG/FjSKyzpiCmshPiozzLT4rxmiHiIoTzdqPqZaJg3UhAeuqf/0iLW6ga1+7NrTIHDBXcH4TsHHo9j3aff/jCE3zxnNJUFFFnm+Dx3lIYHLARy1J84AUdLP4VYPd+gm4eKYlPTciefblCU6xeyLWRBCOsJCMabAe/9gQGv1rTIdrvapncD4dt1zWdi4X/gISi8+e12JsVTpwllXl3ynKgT2GImU21d2tsgyjX7oZT+nNf0oGFpbZpdBIX17ybNTwiGV+CuD+ZCr4f06S+R/9RlmAg+9HxGEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2951.namprd15.prod.outlook.com (2603:10b6:a03:f7::24) with
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=47MOGerl3zXcRgDWTl4nKvNKoz4tKGefu/7gHy4zCUg=;
+ b=DnuegtiXM2mL/8sskCC7JPwgAmuOxhfOkSPbrnIsir5SKF2Gaa47s3dYGZEOskh1Lh/Gvy5UP2Ag0WSex9axqK15RpPAHUiBNv3lecE+fQusKjPbW1ZmRl3UVRZeM7S+YqfNWTV2Mwb4nV4Ka+EyuVX8zRYEytPxhx0j/fZjB6A=
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AS8PR04MB8229.eurprd04.prod.outlook.com (2603:10a6:20b:3b3::11)
+ by AM5PR0402MB2833.eurprd04.prod.outlook.com (2603:10a6:203:99::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Tue, 23 Mar
- 2021 04:55:12 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2975:c9d8:3f7f:dbd0]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2975:c9d8:3f7f:dbd0%5]) with mapi id 15.20.3955.027; Tue, 23 Mar 2021
- 04:55:12 +0000
-Date:   Mon, 22 Mar 2021 21:55:08 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 02/15] bpf: btf: Support parsing extern func
-Message-ID: <20210323045508.k7gmz6ndgkftew73@kafai-mbp.dhcp.thefacebook.com>
-References: <20210318233907.r5pxtpe477jumjq6@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzZx+1bN0VazE5t5_z8X+GXFZUmiLbpxZ-WfM_mLba0OYg@mail.gmail.com>
- <20210319052943.lt3mfmjd4iozvf6i@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzbFOQ-45Oo_rdPfHnpSjCDcdDhspGNyRK2_zJjP49VhJw@mail.gmail.com>
- <20210319221950.5cd3ub3gpjcztzmt@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4Bza6Fiv+AFJc9-L=S6Duvm7wyyjvqoDGEED3TDTmwiZvVQ@mail.gmail.com>
- <20210319224532.7wlmhrgtrvkwqmzg@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzZm1o-ZqXTpUcVnbZDX57pGqARwjHjm_=aspgj3ahHZLg@mail.gmail.com>
- <20210320001313.xhwiia46qsjh2k7k@kafai-mbp.dhcp.thefacebook.com>
- <CAEf4BzaJMmmz3JvUJs0ja5yrx_WEssE_R7t_uPAwEHFe+SY9Nw@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
+ 2021 05:28:00 +0000
+Received: from AS8PR04MB8229.eurprd04.prod.outlook.com
+ ([fe80::d3e:5eb7:9d88:c997]) by AS8PR04MB8229.eurprd04.prod.outlook.com
+ ([fe80::d3e:5eb7:9d88:c997%5]) with mapi id 15.20.3955.027; Tue, 23 Mar 2021
+ 05:28:00 +0000
+Date:   Tue, 23 Mar 2021 10:57:40 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux.cj@gmail.com, netdev@vger.kernel.org,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [net-next PATCH v7 04/16] of: mdio: Refactor of_phy_find_device()
+Message-ID: <20210323052740.GA12040@lsv03152.swis.in-blr01.nxp.com>
+References: <20210311062011.8054-1-calvin.johnson@oss.nxp.com>
+ <20210311062011.8054-5-calvin.johnson@oss.nxp.com>
+ <20210316191719.d7nxgywwhczo7tyg@holly.lan>
+ <20210317084433.GA21433@lsv03152.swis.in-blr01.nxp.com>
+ <20210319112115.7l46p3mtptxgjvsf@maple.lan>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzaJMmmz3JvUJs0ja5yrx_WEssE_R7t_uPAwEHFe+SY9Nw@mail.gmail.com>
-X-Originating-IP: [2620:10d:c090:400::5:8f1f]
-X-ClientProxiedBy: MWHPR04CA0068.namprd04.prod.outlook.com
- (2603:10b6:300:6c::30) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+In-Reply-To: <20210319112115.7l46p3mtptxgjvsf@maple.lan>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [14.142.151.118]
+X-ClientProxiedBy: MAXPR01CA0091.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a00:49::33) To AS8PR04MB8229.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3b3::11)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:8f1f) by MWHPR04CA0068.namprd04.prod.outlook.com (2603:10b6:300:6c::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 04:55:11 +0000
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by MAXPR01CA0091.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:49::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 05:27:55 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 67db12cf-4148-4249-09fe-08d8edb7d79a
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2951:
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 6a507b0b-6bfb-4a29-61f5-08d8edbc6c7f
+X-MS-TrafficTypeDiagnostic: AM5PR0402MB2833:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB29511CAAE598430FC2643452D5649@BYAPR15MB2951.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <AM5PR0402MB283344EC8DF5729608C5E98AD2649@AM5PR0402MB2833.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: G8+uWDW502/hMd/9Wr/cNip4V3O4hvMjgJZGdhQ4rT0TH2ZO+smc+IVBdEWVQrWZboPP8D/5gBq43MJidlPSuR1ckGESJyN/BYaX+PqsJLVncNYZt7eW3Z1DlawGTccdzZRpOhCsO7OvPBRspIrrSO6ROZXMHuipc9WISx5H4zMwMcOWx1wspH94C74kCGlaUJV4LAIwnfezTrTydDjg+/9Spv8UyhCTx2oIC6SNuHz6OITFhsq1uMGz8TfGE9+PjfTsJTPN/pL8St3lA0DL3FAM+cTLxUxAPsyF78jef4RNLFHBk94S5xzdAkDyHxvOY7Y/6EBPav/AKTWk6KuvkPVdKSxLSLc7yqx5hhSEogS+CqgAZAuJ8J85QLNbGpsVBxmBP4y6UvP8y+cuqQgsUoDYfYSuqB8y6a1xrvshgf4S+Cka9uca+XBmdFXtgG0597JE1DUO9qNpBdegGTlYvuFNsJKFiUvz1SsUtu3Dj0amHh6MvbWnWJ68d+e9n/+RTph2N2rVOyXWWDPZbc3YhxMT31CvC8jbJ3n0G6Ua6mNz+NSNxu53oTULQXsPmtVWSlGM92ovBko289KLyMIhILqx8lDTDbbIlB1iUa1Vxzr7swlzUnml4W731DFX2PY/TjNUaL5Wd0qryz/OODdfHw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(346002)(136003)(366004)(376002)(8936002)(66476007)(7696005)(83380400001)(66946007)(52116002)(54906003)(86362001)(66556008)(2906002)(4326008)(1076003)(38100700001)(16526019)(9686003)(5660300002)(6666004)(6506007)(478600001)(186003)(6916009)(316002)(55016002)(8676002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?41GVSzO+FgPntlzx6wlDD7FDImo+XIoAsxzKAGIUX2IV0S4iplELSd5fQySE?=
- =?us-ascii?Q?5Shnnmu6lWBJmA4MFlrFMmTOXjTVcdZdfvdWs1jael2Oy/hQyWafd3IIYJGT?=
- =?us-ascii?Q?eNcT6gT0WLP+Sjcct4koeqBmCKU9UGVLXHanJkp01pFjJUjKsO0tm+Y35mYB?=
- =?us-ascii?Q?IHGVt/iThlLRc5pZttrP+IQnLMl6/23eeSwZt8F0H/WShsZpeMf/kg8RslxD?=
- =?us-ascii?Q?XoHUdHY1Nh4Mmt0lbJ9S39xtvXZGOgm3/d8UkgoePrBg7NV67nTHuO77mAx+?=
- =?us-ascii?Q?Ndje3fA1NUbDp08HjX5JohnQfDVN4OL9UfO33jZck1izDhXGe17SYo+BQ/Rs?=
- =?us-ascii?Q?ZuomRGMnySVaFVqkdhEBh19c27nMLQE4xV0tswzdCByOopwOkcjHP5q2uggy?=
- =?us-ascii?Q?bEOlM+PaknHkE4pRCqL+QdFe0eMtsYGu41mJAfRe0xFRZ8SnrgLqJYtsoNHN?=
- =?us-ascii?Q?INXw0OTVgyLP+FE8eQ5aoWIU49gsRtsB5+BLAx+vVk6lUC7nJRl4SG1me2wg?=
- =?us-ascii?Q?wkWu9W/SeqqoKgyy1ZBSWI4wXSAwo7sXl1w+yfInR8wAfaBeuxgREzv7Qebv?=
- =?us-ascii?Q?glL+bu0obG1cB/8EMHbhkc14fnqeX12VU3IEJM7jsiIokWd8OWBHfinH2HVa?=
- =?us-ascii?Q?fw5S8LR91Qf6FtmJZKo4AQRXhW8d3vj/Hks9JFOyksIcsuU3Nzhd8M/SvsyW?=
- =?us-ascii?Q?sdVejjmbWhnw5TEAnAXNTS0CmSnJ/JtNM5fVSmA8aTMY3yQXzh1bH+Ob2h5L?=
- =?us-ascii?Q?OSSND47NeTLnwxUS2NQbKuE2GbA6MgUtKc4W0WKbmAwcHqiY/vrBejk6+apG?=
- =?us-ascii?Q?dFRR+gJcjTFkpnU3yZzSpMHm7lYpaBcRxqTMtE8rJdScqID+A66WCQr7BZCt?=
- =?us-ascii?Q?zUPDgN9hOj/MG4aNg/BR9IqAY8SbFyL7aAkJkZfv9zEnme0ID3ZORZPe6vSm?=
- =?us-ascii?Q?a5ugHiznXeUUfz2SUg2tBsLfFwIN78iE2LAiLHTTGv9CW+W0N/RnaJESbgkO?=
- =?us-ascii?Q?Hz6EVsBnnZu7yAxapjtBplo+whLr8eqZVnef94V3iCybqGqxallLypQwz8sD?=
- =?us-ascii?Q?D2vkB6lwsKMrtHVM6LyeDbz4CbOxQ2bfunwGORnmVZFi5YBkShDXnDgPDYdQ?=
- =?us-ascii?Q?nBxXWwczAgINP28fxV6uOaffqQbu9VhPlEg7vkYsEsDNXlikuUv/NMBmKRBG?=
- =?us-ascii?Q?T2WQpV6rd17KLHkWfKusophFVPXIz/SiBOsRlbs13ioUqgKg5LfYkTmpsaWk?=
- =?us-ascii?Q?qe62a4A1lYeC85gY021bVokWtj6nydi9mARTNinGS7fD7TapPenG2h+ybCNx?=
- =?us-ascii?Q?yGQOiWG3s4+G/gY8mGDGxh4A4wcNTTOtJNJrk6+tiHDmug=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67db12cf-4148-4249-09fe-08d8edb7d79a
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: ovt9CdNZq+vf3e96QGtev73HJv9/KyiV0GMdeWY8uFDcDVefzgkmt6o8LCcvfpZhWc0AbDp1Hwffe+q70NwlOHajzq8tssendklUmi95BIKYNen5DQ/rbEOXOFDQY8VXTfeHop5yJ4V0ieh7Hk/n9E/7YLIChz1U9/JOnSnJaS3C3MAM0nRA6RbLIPGIBuKhdHfSc8WP87tL9QfEGIj60CpWipRgRfEf7KXX/4SjtuL4+Xp2HEp9l8uTSXQDTJpiXKV3XWN46el1ZnGg9qB4me17dlpGHEjoPsGyYP/t8dnSXWytdVqClSNvwC1ARS4WjktXght7fqJ7Z+64pC6O4rK7F39jLOrJbq8B3z4qCuAa/9afgzRNIAdNqnjeMRbjwAzcxbUo8qp8bDytlIwmOFt4QQptwYaP6d7/JKPRs+knco9zAg/ePcRUi4c4I4EATe45IYhwZiYBZVnH4vDXtfrhpg5R8CY0KM+XH2rNHP1zAkyJBOGFG/OdXcqOegTuHWRATIXDFetTF5/l2B23gUoY1tA5tveZ5s2nR5zhFKQeglLj7QYPnaNGhmSobBGacgOe/k+CqRQV3TMVnkUELa5InzhhqGeK0e6/QMTBC3w09gWuleVK3s9PwJSCSWXf0IQzX4fqid1v7ShZDCYJUtaSkmYLwy6ZFqj7YO86QJkFiksUIsKFNqtAKolsvMwefUK/sDXT4enj94Lu/vrpqtgToH9cY4GZvLe32X9TN0dycKyBVolRP0lWz1fY93gA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8229.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(346002)(366004)(376002)(39860400002)(478600001)(2906002)(5660300002)(26005)(8936002)(1006002)(44832011)(6506007)(54906003)(55016002)(83380400001)(86362001)(4326008)(186003)(6666004)(16526019)(966005)(9686003)(66556008)(66946007)(66476007)(7416002)(6916009)(52116002)(7696005)(55236004)(316002)(1076003)(38100700001)(956004)(33656002)(8676002)(110426009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ir3DowFWPsUzSBt65LIQlFaGDMflOtTOQuzPoVdx8S6GPzXp8cGW//6//auP?=
+ =?us-ascii?Q?iwtHoyANtnCShHyhmFHAZU4Pe1mbj25UuJZsIVEdnJanjo8AxZvbI3ir0Dh4?=
+ =?us-ascii?Q?MukSaGSlafo/qCEap7TGQWq7Omm5nyeH6PI7sr5XAZXfj9tJcttDg1lscUlX?=
+ =?us-ascii?Q?q0C00qzmWhWoo1wOLIyPrjoYyBQjygKD9TDlAoZXE44i2REAQdMoEc9dGb9q?=
+ =?us-ascii?Q?sjlENeqE2FE4sCMWHVM3f9yvC9/+nK53g3SORQ/PSfQqeEWaJ4ELnaJndVfH?=
+ =?us-ascii?Q?47uYeyQJ1G4MGKzs51hIy9EHuIThtaSWpU2yYD5fmwP5nx2uceUvNwuqvD8W?=
+ =?us-ascii?Q?oygRsaeWa6F9+lydT9XF64PiSyNcIvzr+0GnV1aFH5TZ0TK0t1DH+3ENWHvc?=
+ =?us-ascii?Q?KAKq0N5nmts8RCTm7l1KCDn2gnLpEsta2HN7tqJ5jqFjbpf9+ETHZqjFeuz4?=
+ =?us-ascii?Q?pB8aszdKrEpLeczvDwh1uMfG5tAtsxbW3+LBLcAmkmTTfDf78fmJP9V4h2S0?=
+ =?us-ascii?Q?0D0p6Fnh3ld+1weihH0ZDD59rO3FrrNToiK841Qafzu28Zv2YlRcQoZl0mA5?=
+ =?us-ascii?Q?LCl+xo12b/lIA/Nfl3MTOBL3V5ZOioEL0t8C74YXkduyOuTO0SKRCq5RWg+5?=
+ =?us-ascii?Q?kLil+TAu5pcEUfJlMsWIx5DlHUHXWH8/V64z2DOIYj5VAC7psgF69xrDEpeQ?=
+ =?us-ascii?Q?ectHwA+5JIbDu9hja3UJ/skl1JN7AMlp0SsgRPW0ryhMY94UuX/VF2VUuXmk?=
+ =?us-ascii?Q?AMXrx0QLuR7Beb37SwCRUFeRCFqfA0SCYzTHAmR7zx45O96O1ZDrUdTskvA7?=
+ =?us-ascii?Q?xCiSNmZfniSVYlnZy24OpR/OXNe8yZ/MQngH1BMJys5Dt2ft1yGYqVMSyHrG?=
+ =?us-ascii?Q?K3//4K8Al+ow3tTWJ3oZOQN0lNv/jqAzhIllK7CMXNtIf4kMtsrB1/FPN+63?=
+ =?us-ascii?Q?ZXeI5dpZ2ROjndNmTCEW73Pv61wKRjvoHUTqVKbN1WFwKXIaDShueS7o6QUX?=
+ =?us-ascii?Q?xDqvf4emMiKdrhFvktvAghc13XuGgNGH5ejBYRQgtAOx1Q/Lc2MMtIApuTpZ?=
+ =?us-ascii?Q?wZCL5InlRKprY6gpg36UOHS7X7EPDg5wnOWuUn7FR0k1Du2gTJgzZBIPnd9w?=
+ =?us-ascii?Q?pA1DqITjKkH2FMPakRYvfx63HPUPb5HwcmEWL4JcyGzR4PAHQ12gDFBVLInF?=
+ =?us-ascii?Q?ImeVkRchcMOmHfkE1atzmM25B+5BZX7Lt5iB02dyBr7uWEUA49NpPRhJXP4o?=
+ =?us-ascii?Q?JcnCRJBRwU0eiia8iTHzDjPHsNhhYuyA/bufdEqC6O/xvhawrUyM0EWR9g6i?=
+ =?us-ascii?Q?//FJu/dYIxxr3jteUaf/Foc3?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a507b0b-6bfb-4a29-61f5-08d8edbc6c7f
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8229.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 04:55:12.6808
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 05:28:00.8024
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iYbqP/BA6V6wyQqcTRvN7fA+EzZKe1IlDOl1vBOQSob9LHdFeaOfBDrkS+w3Wf3c
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2951
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-23_01:2021-03-22,2021-03-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
- impostorscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501
- clxscore=1015 mlxlogscore=999 suspectscore=0 adultscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103230032
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: g0IqF8FR1UvJGtcyQvFAYkbDJHHzEgB7K7dEXyU1KyquE/bKkXjY12Kg4P0J+z7jzkDgK/tZ0IrVRnz/dA5uow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0402MB2833
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 20, 2021 at 10:18:36AM -0700, Andrii Nakryiko wrote:
-> > From test_ksyms.c:
-> > [22] DATASEC '.ksyms' size=0 vlen=5
-> >      type_id=12 offset=0 size=1
-> >      type_id=13 offset=0 size=1
-> >
-> > For extern, does it make sense for the libbpf to assign 0 to
-> > both var offset and size since it does not matter?
+On Fri, Mar 19, 2021 at 11:21:15AM +0000, Daniel Thompson wrote:
+> On Wed, Mar 17, 2021 at 02:15:20PM +0530, Calvin Johnson wrote:
+> > Hi Daniel,
+> > 
+> > On Tue, Mar 16, 2021 at 07:17:19PM +0000, Daniel Thompson wrote:
+> > > On Thu, Mar 11, 2021 at 11:49:59AM +0530, Calvin Johnson wrote:
+> > > > Refactor of_phy_find_device() to use fwnode_phy_find_device().
+> > > > 
+> > > > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > > 
+> > > This patch series is provoking depmod dependency cycles for me and
+> > > it bisected down to this patch (although I think later patches in
+> > > the series add further cycles).
+> > > 
+> > > The problems emerge when running modules_install either directly or
+> > > indirectly via packaging rules such as bindeb-pkg.
+> > > 
+> > > ~~~
+> > > make -j16 INSTALL_MOD_PATH=$PWD/modules modules_install
+> > > ...
+> > >   INSTALL sound/usb/misc/snd-ua101.ko
+> > >   INSTALL sound/usb/snd-usb-audio.ko
+> > >   INSTALL sound/usb/snd-usbmidi-lib.ko
+> > >   INSTALL sound/xen/snd_xen_front.ko
+> > >   DEPMOD  5.12.0-rc3-00009-g1fda33bf463d
+> > > depmod: ERROR: Cycle detected: fwnode_mdio -> of_mdio -> fwnode_mdio
+> > > depmod: ERROR: Found 2 modules in dependency cycles!
+> > > ~~~
+> > > 
+> > > Kconfig can be found here:
+> > > https://gist.github.com/daniel-thompson/6a7d224f3d3950ffa3f63f979b636474
+> > > 
+> > > This Kconfig file is for a highly modular kernel derived from the Debian
+> > > 5.10 arm64 kernel config. I was not able to reproduce using the defconfig
+> > > kernel for arm64.
+> > > 
+> > Thanks for catching this. I'm able to reproduce the issue and will fix it.
+> > 
+> > By the way, is there any integration tool/mechanism out there to which I can
+> > submit the patch series and build for various possible configs like these?
 > 
-> That's how it is generated and yes, I think that's how it should be
-> kept once kernel supports EXTERN VAR. libbpf is adjusting offsets and
-> sizes in addition to marking VAR itself as GLOBAL_ALLOCATED. If kernel
-> supports EXTERN VAR natively, none of that needs to happen (on newer
-> kernels only, of course).
+> Not sure which autotester would be most likely to pick this up.
 > 
-> > In the kernel, it can ensure a datasec only has all extern or no extern.
-> > array_map_check_btf() will ensure the datasec has no extern.
+> This issue is slightly unusual because it broke the install rather then
+> the build... and lots of people (including me) primarily run build
+> tests ;-) .
 > 
-> It certainly makes it less surprising from handling BTF, but it feels
-> like an arbitrary policy, rather than technical restriction. You can
-> mark allocated variables and externs with the same section name and
-> Clang will probably happily generate a single DATASEC with a mix of
-> externs and non-externs. Is that inherently a bad thing? I'm not sure.
-> Basically, I don't know if the kernel should care and enforce or not.
-I have thought a bit more on this.  The offset=0 of extern var
-can be used in the verification but I think it will still have some
-open ended questions like arraymap.
+> Anyhow, I guess the best way to pick up module problems like this is
+> going to be an `allmodconfig` build followed up with `rm -rf modtest;
+> make modules_install INSTALL_MOD_PATH=$PWD/modtest`.
 
-I will use your suggestion in libbpf and do something similar as
-the extern VAR: replace the FUNC in datasec with INT (btf__add_var() if
-needed).
+Thanks Daniel for the info.
 
-> 
-> >
-> > > But of course to support older kernels libbpf will still have to
-> > > do this. EXTERN vars won't reduce the amount of libbpf logic.
+To resolve this issue, I need to add more fwnode MDIO functions.
+I'm working on these. Meanwhile, will separately send out two patches
+that got Reviewed-by tag.
+
+Regards
+Calvin
