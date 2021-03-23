@@ -2,148 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 573CD3465D7
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:02:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DADA13465EC
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:07:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbhCWRCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 13:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbhCWRB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:01:57 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB7FC061763
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:01:57 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id y124-20020a1c32820000b029010c93864955so13422256wmy.5
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 10:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=395prUbwI/IfV0JoklEZBoBsZBXXiAGcosueqqFVoGU=;
-        b=arSFjkI8NS7BWO4Mgnjs45V4EHoKoaHEFT+Vn0Mt1dc0Cve0UVTM+xcz99Opm49sum
-         jYDvL90nVd6IuLycEBXgiS4BpG4ID3m0AdMpm39ufsAD53leRfmLLnuCI4MNtIcgBOx1
-         ZC+ezpnTrBn+2B6/lGnWfHNquOrHQn4gW8xH6cUqt99UlRpqMxegq0UlRIh07feJreVn
-         Db2wk5w6HF8c2xmzl8j5lOdHThGGFJIC9oWMDRwWEe4jV2XiDYwCaL3wTbA5DINqzp12
-         sJvg2cht5mNj4rTdET7L+rneAwsvBIw+eOqR1PmrcOnKZb4MOCN4n7IPh0MMhqmOqDcM
-         vTPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=395prUbwI/IfV0JoklEZBoBsZBXXiAGcosueqqFVoGU=;
-        b=VAniS8UyTbJnxhJL8UxfCQB9OolctjOtBpSVyn5B/h1K8RpE8+paGfpJDg8JK3n58E
-         WZ8eyJnnbEliPtTdnfp32naQx5YOoxq5DZ+VKdbrc7M7ZWUR4c4FC7aMGbA7bUOY+MUh
-         3EaJZZ/YkFKJBLb551tCJRCb1eNkiXjaVauVcVdK4WoFdutgTD3gtnaI0Rbj1dpOzBP2
-         u8/FA/7itKiqxgqGYP3wkuYjQABPzhQyqsVyDXkYeVv10p8KX7yFuKH632N3hz/CY8i5
-         beHeB+IfTXQwq+DrL1te5cjpswOc3C23J1wBujUyAw7Q/G5/eodBITkD8AMUeDwW0dbQ
-         3zZA==
-X-Gm-Message-State: AOAM533pcnZKFhzk2mGCP3HYVyQN6YS4UTeioXgPMoJDrfEAQSCPovcZ
-        jLegxSt3Rw9fX9C5JDllFIAr8g==
-X-Google-Smtp-Source: ABdhPJx0uBaBT5ldzR0t8kGnPj2ob5qwxU3qGJOi/Hspvntaz8KIFl6ssBCW4bmZ2j/L3yKzj2W1bQ==
-X-Received: by 2002:a1c:2683:: with SMTP id m125mr4257280wmm.178.1616518915892;
-        Tue, 23 Mar 2021 10:01:55 -0700 (PDT)
-Received: from enceladus (ppp-94-64-113-158.home.otenet.gr. [94.64.113.158])
-        by smtp.gmail.com with ESMTPSA id q15sm24087968wrr.58.2021.03.23.10.01.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 10:01:55 -0700 (PDT)
-Date:   Tue, 23 Mar 2021 19:01:52 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     Matteo Croce <mcroce@linux.microsoft.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 0/6] page_pool: recycle buffers
-Message-ID: <YFofANKiR3tD9zgm@enceladus>
-References: <20210322170301.26017-1-mcroce@linux.microsoft.com>
- <20210323154112.131110-1-alobakin@pm.me>
- <YFoNoohTULmcpeCr@enceladus>
- <20210323170447.78d65d05@carbon>
- <YFoTBm0mJ4GyuHb6@enceladus>
- <CAFnufp1K+t76n9shfOZB_scV7myUWCTXbB+yf5sr-8ORYQxCEQ@mail.gmail.com>
- <20210323165523.187134-1-alobakin@pm.me>
+        id S229972AbhCWRGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:06:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56389 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229923AbhCWRGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:06:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616519175;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KtNdINBUH3O71CX9nL3/PvcG1x/na61kKw2iN7V6Vns=;
+        b=bDkmaIy9Mi5VELuaZrY5HpcrA/9/aIYFrNTN7NuLTrj/CFMJL4Vz6Gsc65flKjgJ24Tl59
+        ktCIlHl1CBW/VTZ7hhxAr9egOIxtWhIn4xap4LyLaQbw2JP8rEas4TUWk3j5siSQVbhyES
+        CsRJtmgBH1VuI1hH7f35U0WhOv3MgrI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-10-3ne10P5-NzOURwCarP9VdA-1; Tue, 23 Mar 2021 13:06:11 -0400
+X-MC-Unique: 3ne10P5-NzOURwCarP9VdA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E479C180FCA7;
+        Tue, 23 Mar 2021 17:06:08 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA96919C45;
+        Tue, 23 Mar 2021 17:06:02 +0000 (UTC)
+Date:   Tue, 23 Mar 2021 18:06:01 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>, brouer@redhat.com
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Message-ID: <20210323180601.7f8746a8@carbon>
+In-Reply-To: <20210323160814.62a248fb@carbon>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+        <20210323104421.GK3697@techsingularity.net>
+        <20210323160814.62a248fb@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210323165523.187134-1-alobakin@pm.me>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 04:55:31PM +0000, Alexander Lobakin wrote:
-> > > > > >
+On Tue, 23 Mar 2021 16:08:14 +0100
+Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
-[...]
+> On Tue, 23 Mar 2021 10:44:21 +0000
+> Mel Gorman <mgorman@techsingularity.net> wrote:
+> 
+> > On Mon, Mar 22, 2021 at 09:18:42AM +0000, Mel Gorman wrote:  
+> > > This series is based on top of Matthew Wilcox's series "Rationalise
+> > > __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
+> > > test and are not using Andrew's tree as a baseline, I suggest using the
+> > > following git tree
+> > > 
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v5r9
+> > >     
 
-> > > > >
-> > > > > Thanks for the testing!
-> > > > > Any chance you can get a perf measurement on this?
-> > > >
-> > > > I guess you mean perf-report (--stdio) output, right?
-> > > >
-> > >
-> > > Yea,
-> > > As hinted below, I am just trying to figure out if on Alexander's platform the
-> > > cost of syncing, is bigger that free-allocate. I remember one armv7 were that
-> > > was the case.
-> > >
-> > > > > Is DMA syncing taking a substantial amount of your cpu usage?
-> > > >
-> > > > (+1 this is an important question)
-> 
-> Sure, I'll drop perf tools to my test env and share the results,
-> maybe tomorrow or in a few days.
-> From what I know for sure about MIPS and my platform,
-> post-Rx synching (dma_sync_single_for_cpu()) is a no-op, and
-> pre-Rx (dma_sync_single_for_device() etc.) is a bit expensive.
-> I always have sane page_pool->pp.max_len value (smth about 1668
-> for MTU of 1500) to minimize the overhead.
-> 
-> By the word, IIRC, all machines shipped with mvpp2 have hardware
-> cache coherency units and don't suffer from sync routines at all.
-> That may be the reason why mvpp2 wins the most from this series.
+I've pushed my benchmarks notes for this branch mm-bulk-rebase-v5r9:
 
-Yep exactly. It's also the reason why you explicitly have to opt-in using the
-recycling (by marking the skb for it), instead of hiding the feature in the
-page pool internals 
+ [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/page_pool06_alloc_pages_bulk.org#test-on-mel-git-tree-mm-bulk-rebase-v5r9
 
-Cheers
-/Ilias
+> > Jesper and Chuck, would you mind rebasing on top of the following branch
+> > please? 
+> > 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v6r2
 
-> 
-> > > > > >
-> > > > > > [0] https://lore.kernel.org/netdev/20210323153550.130385-1-alobakin@pm.me
-> > > > > >
-> > > >
-> >
-> > That would be the same as for mvneta:
-> >
-> > Overhead  Shared Object     Symbol
-> >   24.10%  [kernel]          [k] __pi___inval_dcache_area
-> >   23.02%  [mvneta]          [k] mvneta_rx_swbm
-> >    7.19%  [kernel]          [k] kmem_cache_alloc
-> >
-> > Anyway, I tried to use the recycling *and* napi_build_skb on mvpp2,
-> > and I get lower packet rate than recycling alone.
-> > I don't know why, we should investigate it.
-> 
-> mvpp2 driver doesn't use napi_consume_skb() on its Tx completion path.
-> As a result, NAPI percpu caches get refilled only through
-> kmem_cache_alloc_bulk(), and most of skbuff_head recycling
-> doesn't work.
-> 
-> > Regards,
-> > --
-> > per aspera ad upstream
-> 
-> Oh, I love that one!
-> 
-> Al
-> 
+I've rebase on mm-bulk-rebase-v6r4 tomorrow.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
