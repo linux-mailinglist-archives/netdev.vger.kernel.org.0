@@ -2,76 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D51033453D6
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 832A53453E1
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 01:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbhCWA1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 20:27:30 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41908 "EHLO vps0.lunn.ch"
+        id S231246AbhCWAap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 20:30:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41226 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230295AbhCWA1S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 20:27:18 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lOUt5-00CUyo-7y; Tue, 23 Mar 2021 01:27:11 +0100
-Date:   Tue, 23 Mar 2021 01:27:11 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Don Bollinger <don@thebollingers.org>
-Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        'Jakub Kicinski' <kuba@kernel.org>,
-        'Adrian Pop' <pop.adrian61@gmail.com>,
-        'Michal Kubecek' <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
-Subject: Re: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to
- dump arbitrary EEPROM data
-Message-ID: <YFk13y19yMC0rr04@lunn.ch>
-References: <1616433075-27051-1-git-send-email-moshe@nvidia.com>
- <1616433075-27051-2-git-send-email-moshe@nvidia.com>
- <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org>
+        id S230414AbhCWAaK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 20:30:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id AC3D9619A5;
+        Tue, 23 Mar 2021 00:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616459409;
+        bh=X9v4NcfD9rUYyBXtWv13v7WaeqrgwRJBdA965Ni4R+M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=O0YkMefA6yW4sY8+/KlHUXZUaOMGZO7W5juL6LulAkDC3gcGUEHSlsVPGuDRsb9gO
+         oC0UO+acd5gYwchPNUUfkXVzzNGL4OqhQ8s3bZ8QZlxpX2N1x6zSqWS8RmAlifQb9q
+         3Bq5xyK5djvsJg//sa4cPYgU5LIdfuXq2hMNkcu25u9O4FAiz3ZOIw9DX4GDPF0+Tv
+         Pk37zVM+aUUiVtjyzMeB5eM4xOjmOJFTTLZi/IEfYS8JdkfGKBnSO6bNr1uZw0C9wr
+         qNlmLsdymCPicoP3pLgkC5fVlr6zn5rEMopnYk/90gSjPDhim6suer/0xeCYkn76AV
+         dMjsCU3l1H7Cg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9937E60A1B;
+        Tue, 23 Mar 2021 00:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] isdn: capi: fix mismatched prototypes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161645940962.31154.6242142892110069086.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Mar 2021 00:30:09 +0000
+References: <20210322164447.876440-1-arnd@kernel.org>
+In-Reply-To: <20210322164447.876440-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     isdn@linux-pingi.de, arnd@arndb.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +#define ETH_MODULE_EEPROM_PAGE_LEN	256
-> 
-> Sorry to keep raising issues, but I think you want to make this constant
-> 128.
+Hello:
 
-Yes, i also think the KAPI should be limited to returning a maximum of
-a 1/2 page per call.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-> > +#define MODULE_EEPROM_MAX_OFFSET (257 *
-> > ETH_MODULE_EEPROM_PAGE_LEN)
+On Mon, 22 Mar 2021 17:44:29 +0100 you wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> The device actually has 257 addressable chunks of 128 bytes each.  With
-> ETH_MODULE_EEPROM_PAGE_LEN set to 256, your constant is 2X too big.
+> gcc-11 complains about a prototype declaration that is different
+> from the function definition:
 > 
-> Note also, SFP devices (but not QSFP or CMIS) actually have another 256
-> bytes available at 0x50, in addition to the full 257*128 at 0x51.  So SFP is
-> actually 259*128 or (256 + 257 * 128).
+> drivers/isdn/capi/kcapi.c:724:44: error: argument 2 of type ‘u8 *’ {aka ‘unsigned char *’} declared as a pointer [-Werror=array-parameter=]
+>   724 | u16 capi20_get_manufacturer(u32 contr, u8 *buf)
+>       |                                        ~~~~^~~
+> In file included from drivers/isdn/capi/kcapi.c:13:
+> drivers/isdn/capi/kcapi.h:62:43: note: previously declared as an array ‘u8[64]’ {aka ‘unsigned char[64]’}
+>    62 | u16 capi20_get_manufacturer(u32 contr, u8 buf[CAPI_MANUFACTURER_LEN]);
+>       |                                        ~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/isdn/capi/kcapi.c:790:38: error: argument 2 of type ‘u8 *’ {aka ‘unsigned char *’} declared as a pointer [-Werror=array-parameter=]
+>   790 | u16 capi20_get_serial(u32 contr, u8 *serial)
+>       |                                  ~~~~^~~~~~
+> In file included from drivers/isdn/capi/kcapi.c:13:
+> drivers/isdn/capi/kcapi.h:64:37: note: previously declared as an array ‘u8[8]’ {aka ‘unsigned char[8]’}
+>    64 | u16 capi20_get_serial(u32 contr, u8 serial[CAPI_SERIAL_LEN]);
+>       |                                  ~~~^~~~~~~~~~~~~~~~~~~~~~~
 > 
-> Devices that don't support pages have much lower limits (256 bytes for
-> QSFP/CMIS and 512 for SFP).  Some SFP only support 256 bytes.  Most devices
-> will return nonsense for pages above 3.  So, this check is really only an
-> absolute limit.  The SFP driver that takes this request will probably check
-> against a more refined MAX length (eg modinfo->eeprom_len).
-> 
-> I suggest setting this constant to 259 * (ETH_MODULE_EEPROM_PAGE_LEN / 2).
-> Let the driver refine it from there.
+> [...]
 
-I don't even see a need for this. The offset should be within one 1/2
-page, of one bank. So offset >= 0 and <= 127. Length is also > 0 and
-<- 127. And offset+length is <= 127.
+Here is the summary with links:
+  - isdn: capi: fix mismatched prototypes
+    https://git.kernel.org/netdev/net/c/5ee7d4c7fbc9
 
-For the moment, please forget about backwards compatibility with the
-IOCTL interface. Lets get a new clean KAPI and a new clean internal
-API between the ethtool core and the drivers. Once we have that agreed
-on, we can work on the various compatibility shims we need to work
-between old and new APIs in various places.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-      Andrew
+
