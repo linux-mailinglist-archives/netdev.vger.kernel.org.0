@@ -2,137 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B5A346677
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:35:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C2934669B
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:45:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbhCWRev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 13:34:51 -0400
-Received: from mail-bn8nam11on2048.outbound.protection.outlook.com ([40.107.236.48]:56544
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230218AbhCWRem (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 13:34:42 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WQOjaTC4k2YrzlB3M90PNi8bfMsdZSDqM7wG+LmOqXrHt2KIWc/bsoxxy+oNSYT7NG8SXNHlhZ8MZJSgHFh6KyRMx0yo9HCKOhA3RmxrEC1HLndu+d6VKxBRWQdUrpSrQZfZlHSCvQ5qFKhwefVjXpdkvd1ULTXI4gkdCf1BR34O31cwmqetpCHSPyLtGJpzui2ivhEN9rbvbmkFtp+/JEsYWMgSt/G8V3n7IaG59wsvnQv0F9o0V6qrngudJAmUvX8tnnPd2iFr0YyubUXBLqUQHWN5xmUaXGbHAMQ8iCW0zB8wIMg4r8+AC5WlTUaZLM+q7iGgtEcwb0cy6yOc5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FIUCOLDTBnMUwbluoTqcorLOSztKzV1R7pEd3hO7RJY=;
- b=HoO5llBx5dM24G2jOvnzECNeO7OTZZNRuLB0GwSV6WGV1Mo8yPv5BxiMt9/BuVYIYdjmO5bcV8p+dTaixEbclXVjD1AP1DF9PisifBRAvIY5gVpmLxWnIYpike53a1G2uLMOf1vnS8NvLOskw4bPd3POIgWIL89LG0hC/nqsY9jyCmlH7944VS35ICbse8EUhvnlqxMGXqXIUJ5FEQ4nduGAKIjQKCg8uhaUNMt7NX1u5qRm+bhnkVPddc4WCuTPCYuwTkZ03WMATfYb70vSGbk6soycD1N+J48jz7d67iCWc3mk6PscOjVgcDBtLocNbSzTPNUFm92Aw+1Q+0pfAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FIUCOLDTBnMUwbluoTqcorLOSztKzV1R7pEd3hO7RJY=;
- b=BxZWmLVBWtmZCCd60T5GR0j0P6ueyrxkU+i1lt4rc4mIs83y2OkQP6f+5g03PyV64UXQsgH+EGZ8xeMpDCup2GIbAvWOYeTZDBMDJdV75Vz7WcA8r0kIUAY0NL07+P7JI9dQk1aocTbZnll1Yh73VDk5SPCq5TQeE2zwC2AABSaGWlCCa1k1LvvAvv8viJn+3sTWP2WSA7yfOk2mTBwrdzLeqH2OgLe+fpjaqE16ZGQCA3BkgLJj5RqosMzuczgrvadbk7MNj3MgOO9RrV+aGZFXWB2rOGKm4VFKZqeGl4LghYFCPkk6IAe/o+YKFYexQSAciFR8/ZOdvtGyxLyG8g==
-Received: from DM5PR05CA0016.namprd05.prod.outlook.com (2603:10b6:3:d4::26) by
- MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Tue, 23 Mar
- 2021 17:34:40 +0000
-Received: from DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:d4:cafe::fa) by DM5PR05CA0016.outlook.office365.com
- (2603:10b6:3:d4::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.10 via Frontend
- Transport; Tue, 23 Mar 2021 17:34:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT006.mail.protection.outlook.com (10.13.173.104) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.3955.18 via Frontend Transport; Tue, 23 Mar 2021 17:34:40 +0000
-Received: from [172.27.0.234] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 23 Mar
- 2021 17:34:36 +0000
-Subject: Re: [RFC PATCH net] bonding: Work around lockdep_is_held false
- positives
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Nikolay Aleksandrov <nikolay@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230374AbhCWRoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230356AbhCWRoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:44:30 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BA8C061574;
+        Tue, 23 Mar 2021 10:44:29 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id s21so10430050pjq.1;
+        Tue, 23 Mar 2021 10:44:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=uTTW2Bp8A8zw/GLQbpb96vNlplssbvzgvQZq5e4cEAY=;
+        b=c5O6Oc4EH3/8pLm+5/KHLgeSeW6qcQliABWb8y1S6RHJFsEXmQOWFAcdfM9npIePNk
+         4HaJmT4/o+WYPr0U9HgFXvfyqVjBwUQGW5gQoc2p7NfRK12wXpaycAa5xQ3mcQyUSCdC
+         Pp40gw/8kNJ3EziFrqN8g/2Mgjw4DsodJrMCBdncyF0Yrs85dkiCZK4xats8P9mNtUKR
+         CW6BK60kM/b4mEMncV43e29W9Oj8xiXLt5hSEsG+EK9pDd08NzqmZzwc0TlIUom5noqg
+         29lxcDytnpJnxn2IFW8ZfF6aZERTgg5mldCPjNUQgpSkc6l2lAVbpccTRZWD+j8+DF4F
+         LtdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=uTTW2Bp8A8zw/GLQbpb96vNlplssbvzgvQZq5e4cEAY=;
+        b=awkamsRhnSBKpdmJX2vFkd1eP3M/nmTgRMQ08y3EWMGXPWvt/68BmCxiVdgIf1pRPR
+         4cNqGN9xE7Pu8RSbG6TNyHXZ15cPQ/URosdqHQWNMpuA0uV3f5NMqBcWaKJpjG+5SEgh
+         dNW074FqvDlfR11Di8FnT0OsTbgMyJKySyHfv+qw1mQvKN58aLO5h3sHYswqNh6cGK0+
+         +hkN+laglgV7/ouEDMHxsnYa1noapvpICLFrYGiobrgwtcp7PH58Anu4EZWoB2ZsHH5O
+         MHkvm87nEV30JjsT6tCn/f2px9r99U/JOuNCBM4kXfpKoTQ/68QgVjvLl4WXCwsi9fnj
+         T1yA==
+X-Gm-Message-State: AOAM530D3Lc6te9m8d4WLEJutDLIxu5oWHnhTrzJcyCvZnnWhv4tTuho
+        wBFkjLMmfBlCVaAONpzH2ok=
+X-Google-Smtp-Source: ABdhPJwaSQJ4DZTqsHRbneBAAHdjShNRlLJ3igGyapleUAzvZkrihLUUvF5E3is1aoVScNNm/PuoeA==
+X-Received: by 2002:a17:90a:4d81:: with SMTP id m1mr5553008pjh.143.1616521469036;
+        Tue, 23 Mar 2021 10:44:29 -0700 (PDT)
+Received: from localhost ([61.12.83.162])
+        by smtp.gmail.com with ESMTPSA id d19sm3201209pjs.55.2021.03.23.10.44.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Mar 2021 10:44:28 -0700 (PDT)
+Date:   Tue, 23 Mar 2021 23:14:19 +0530
+From:   Sai Kalyaan Palla <saikalyaan63@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>
-References: <20210322123846.3024549-1-maximmi@nvidia.com>
- <YFilJZOraCqD0mVj@unreal>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Message-ID: <0f3add4c-45a4-d3cd-96a3-70c1f0e96ee2@nvidia.com>
-Date:   Tue, 23 Mar 2021 19:34:32 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Sai Kalyaan Palla <saikalyaan63@gmail.com>,
+        Gaurav Singh <gaurav1086@gmail.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Laight <David.Laight@ACULAB.COM>,
+        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bkkarthik@pesu.pes.edu
+Subject: [PATCH] net: decnet: Fixed multiple Coding Style issues
+Message-ID: <20210323174419.f53s5x26pvjqt57k@ubuntu>
 MIME-Version: 1.0
-In-Reply-To: <YFilJZOraCqD0mVj@unreal>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1238146f-28aa-49ae-402c-08d8ee21f020
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB419206C4191EE1C7A703BF84DC649@MN2PR12MB4192.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Nl/BmDabm3HrFPG9ZYuthqAhxquCfwVzoLW+xfyuB7u1Gy5iv56LjVibjmiUakkPRm6NBhSzQ+iHelDw/12+6lM32kE7O9SOK65bm3o5L/33zyIsm5w8GFWvZx3i7i9u2mMO0Dk1DYfJv+0iYYbBRj0cX7SO+a7s5JHBBlenf3TaLPsrweIBorttN+elM0iz0fbvRpxZj0MQ/6PpeEx+2ItTpHeJo1QtxVheQJaGyEyBHHtSRcaM+LT3oOo7TZicPBhK3HnateylDX3rYO/CrOvaqTrpg0CCbeuKsRyOTpFLlODb5KESAFnDijxvn8AQfcHm28JC5gXxPctY6bQo7KlRro1pUA70xEkFcXXQBBVHkCO9UJNNd9j4PlAGRJONkGIgPo+eRQQHaM87ygVIAs46N4qdn4XBH06DjHi1eSPvMOSYSKggcY7ihVy1IwRNQuMvLDf4t8UnOcp6VmxKOLPZ+f5xoxfyQAaRchcDwQs+uCB5EBc5AXlponJT+gfTl8ecw9J42AnSvHIvLmBjeIyzuh/6v7h9d7Abk3CrS0xNCl/VQV4jHy6xzRT+tGLtsQvR5fs7GVw5jlWFQDaYFpR+y+zojdYoo7ubyd3xLnAGJtsL9arqUeRrxpOY13B2CMMuU99EPazWTFnXZKvf/O+GYsdlzWwIyEjh1JufxMyPzZkJ8T0ny03qIPi4ZsIipj/F3VeRcegukfrPfCzUk9qI/6E5yq8oziqVZn5mBt+nQYu/hMJe9m6JoMsdLIIhekoeFNBFCiwYHmhs40AZZQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39850400004)(136003)(46966006)(36840700001)(70586007)(31686004)(6916009)(6666004)(31696002)(4326008)(8936002)(186003)(5660300002)(83380400001)(82310400003)(70206006)(8676002)(36756003)(16576012)(316002)(26005)(2616005)(426003)(36906005)(2906002)(54906003)(36860700001)(478600001)(7636003)(356005)(47076005)(16526019)(53546011)(86362001)(966005)(336012)(82740400003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2021 17:34:40.1852
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1238146f-28aa-49ae-402c-08d8ee21f020
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4192
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-22 16:09, Leon Romanovsky wrote:
-> On Mon, Mar 22, 2021 at 02:38:46PM +0200, Maxim Mikityanskiy wrote:
->> After lockdep gets triggered for the first time, it gets disabled, and
->> lockdep_enabled() will return false. It will affect lockdep_is_held(),
->> which will start returning true all the time. Normally, it just disables
->> checks that expect a lock to be held. However, the bonding code checks
->> that a lock is NOT held, which triggers a false positive in WARN_ON.
->>
->> This commit addresses the issue by replacing lockdep_is_held with
->> spin_is_locked, which should have the same effect, but without suffering
->> from disabling lockdep.
->>
->> Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
->> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
->> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
->> ---
->> While this patch works around the issue, I would like to discuss better
->> options. Another straightforward approach is to extend lockdep API with
->> lockdep_is_not_held(), which will be basically !lockdep_is_held() when
->> lockdep is enabled, but will return true when !lockdep_enabled().
-> 
-> lockdep_assert_not_held() was added in this cycle to tip: locking/core
-> https://yhbt.net/lore/all/161475935945.20312.2870945278690244669.tip-bot2@tip-bot2/
-> https://yhbt.net/lore/all/878s779s9f.fsf@codeaurora.org/
+    Made changes to coding style as suggested by checkpatch.pl
+    changes are of the type:
+            space required before the open parenthesis '('
+            space required after that ','
 
-Thanks for this suggestion - I wasn't aware that this macro was recently 
-added and I could use it instead of spin_is_locked.
+Signed-off-by: Sai Kalyaan Palla <saikalyaan63@gmail.com>
+---
+ net/decnet/dn_route.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Still, I would like to figure out why the bonding code does this test at 
-all. This lock is not taken by bond_update_slave_arr() itself, so why is 
-that a problem in this code?
-
-> Thanks
-> 
+diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
+index 940755cdecc9..3e3242577440 100644
+--- a/net/decnet/dn_route.c
++++ b/net/decnet/dn_route.c
+@@ -92,7 +92,7 @@ struct dn_rt_hash_bucket {
+ extern struct neigh_table dn_neigh_table;
+ 
+ 
+-static unsigned char dn_hiord_addr[6] = {0xAA,0x00,0x04,0x00,0x00,0x00};
++static unsigned char dn_hiord_addr[6] = {0xAA, 0x00, 0x04, 0x00, 0x00, 0x00};
+ 
+ static const int dn_rt_min_delay = 2 * HZ;
+ static const int dn_rt_max_delay = 10 * HZ;
+@@ -362,7 +362,7 @@ static void dn_run_flush(struct timer_list *unused)
+ 		if (!rt)
+ 			goto nothing_to_declare;
+ 
+-		for(; rt; rt = next) {
++		for (; rt; rt = next) {
+ 			next = rcu_dereference_raw(rt->dn_next);
+ 			RCU_INIT_POINTER(rt->dn_next, NULL);
+ 			dst_dev_put(&rt->dst);
+@@ -902,7 +902,7 @@ static inline int dn_match_addr(__le16 addr1, __le16 addr2)
+ {
+ 	__u16 tmp = le16_to_cpu(addr1) ^ le16_to_cpu(addr2);
+ 	int match = 16;
+-	while(tmp) {
++	while (tmp) {
+ 		tmp >>= 1;
+ 		match--;
+ 	}
+@@ -1388,7 +1388,7 @@ static int dn_route_input_slow(struct sk_buff *skb)
+ 		fld.saddr = src_map;
+ 	}
+ 
+-	switch(res.type) {
++	switch (res.type) {
+ 	case RTN_UNICAST:
+ 		/*
+ 		 * Forwarding check here, we only check for forwarding
+@@ -1531,7 +1531,7 @@ static int dn_route_input(struct sk_buff *skb)
+ 		return 0;
+ 
+ 	rcu_read_lock();
+-	for(rt = rcu_dereference(dn_rt_hash_table[hash].chain); rt != NULL;
++	for (rt = rcu_dereference(dn_rt_hash_table[hash].chain); rt != NULL;
+ 	    rt = rcu_dereference(rt->dn_next)) {
+ 		if ((rt->fld.saddr == cb->src) &&
+ 		    (rt->fld.daddr == cb->dst) &&
+@@ -1744,13 +1744,13 @@ int dn_cache_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 
+ 	s_h = cb->args[0];
+ 	s_idx = idx = cb->args[1];
+-	for(h = 0; h <= dn_rt_hash_mask; h++) {
++	for (h = 0; h <= dn_rt_hash_mask; h++) {
+ 		if (h < s_h)
+ 			continue;
+ 		if (h > s_h)
+ 			s_idx = 0;
+ 		rcu_read_lock_bh();
+-		for(rt = rcu_dereference_bh(dn_rt_hash_table[h].chain), idx = 0;
++		for (rt = rcu_dereference_bh(dn_rt_hash_table[h].chain), idx = 0;
+ 			rt;
+ 			rt = rcu_dereference_bh(rt->dn_next), idx++) {
+ 			if (idx < s_idx)
+@@ -1784,7 +1784,7 @@ static struct dn_route *dn_rt_cache_get_first(struct seq_file *seq)
+ 	struct dn_route *rt = NULL;
+ 	struct dn_rt_cache_iter_state *s = seq->private;
+ 
+-	for(s->bucket = dn_rt_hash_mask; s->bucket >= 0; --s->bucket) {
++	for (s->bucket = dn_rt_hash_mask; s->bucket >= 0; --s->bucket) {
+ 		rcu_read_lock_bh();
+ 		rt = rcu_dereference_bh(dn_rt_hash_table[s->bucket].chain);
+ 		if (rt)
+@@ -1814,7 +1814,7 @@ static void *dn_rt_cache_seq_start(struct seq_file *seq, loff_t *pos)
+ 	struct dn_route *rt = dn_rt_cache_get_first(seq);
+ 
+ 	if (rt) {
+-		while(*pos && (rt = dn_rt_cache_get_next(seq, rt)))
++		while (*pos && (rt = dn_rt_cache_get_next(seq, rt)))
+ 			--*pos;
+ 	}
+ 	return *pos ? NULL : rt;
+@@ -1869,21 +1869,21 @@ void __init dn_route_init(void)
+ 
+ 	goal = totalram_pages() >> (26 - PAGE_SHIFT);
+ 
+-	for(order = 0; (1UL << order) < goal; order++)
++	for (order = 0; (1UL << order) < goal; order++)
+ 		/* NOTHING */;
+ 
+ 	/*
+ 	 * Only want 1024 entries max, since the table is very, very unlikely
+ 	 * to be larger than that.
+ 	 */
+-	while(order && ((((1UL << order) * PAGE_SIZE) /
++	while (order && ((((1UL << order) * PAGE_SIZE) /
+ 				sizeof(struct dn_rt_hash_bucket)) >= 2048))
+ 		order--;
+ 
+ 	do {
+ 		dn_rt_hash_mask = (1UL << order) * PAGE_SIZE /
+ 			sizeof(struct dn_rt_hash_bucket);
+-		while(dn_rt_hash_mask & (dn_rt_hash_mask - 1))
++		while (dn_rt_hash_mask & (dn_rt_hash_mask - 1))
+ 			dn_rt_hash_mask--;
+ 		dn_rt_hash_table = (struct dn_rt_hash_bucket *)
+ 			__get_free_pages(GFP_ATOMIC, order);
+@@ -1898,7 +1898,7 @@ void __init dn_route_init(void)
+ 		(long)(dn_rt_hash_mask*sizeof(struct dn_rt_hash_bucket))/1024);
+ 
+ 	dn_rt_hash_mask--;
+-	for(i = 0; i <= dn_rt_hash_mask; i++) {
++	for (i = 0; i <= dn_rt_hash_mask; i++) {
+ 		spin_lock_init(&dn_rt_hash_table[i].lock);
+ 		dn_rt_hash_table[i].chain = NULL;
+ 	}
+-- 
+2.25.1
 
