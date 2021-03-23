@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F2CF345540
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:05:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D848345547
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 03:07:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbhCWCEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Mar 2021 22:04:38 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42030 "EHLO vps0.lunn.ch"
+        id S230029AbhCWCGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Mar 2021 22:06:48 -0400
+Received: from m12-15.163.com ([220.181.12.15]:45580 "EHLO m12-15.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229472AbhCWCEN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 22 Mar 2021 22:04:13 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lOWOi-00CVqE-Ps; Tue, 23 Mar 2021 03:03:56 +0100
-Date:   Tue, 23 Mar 2021 03:03:56 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Don Bollinger <don@thebollingers.org>
-Cc:     'Moshe Shemesh' <moshe@nvidia.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        'Jakub Kicinski' <kuba@kernel.org>,
-        'Adrian Pop' <pop.adrian61@gmail.com>,
-        'Michal Kubecek' <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        'Vladyslav Tarasiuk' <vladyslavt@nvidia.com>
-Subject: Re: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to
- dump arbitrary EEPROM data
-Message-ID: <YFlMjO4ZMBCcJqQ7@lunn.ch>
-References: <1616433075-27051-1-git-send-email-moshe@nvidia.com>
- <1616433075-27051-2-git-send-email-moshe@nvidia.com>
- <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org>
- <YFk13y19yMC0rr04@lunn.ch>
- <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org>
+        id S229639AbhCWCGM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 22 Mar 2021 22:06:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9sdXz
+        0tALfOI2leZ5ji9YmZOodSU6t+mAa6CveDIcYk=; b=IJJZSNCn5QbMR9AP184LE
+        9t3LBbpp3jekTwuqPrkLIfR80KhmFdQD/bRNdWQsQ1MpYay/fgSGAiopjE+ojkWa
+        qhSK6Ms4nHsZncadFl3baS7bKPdNsG6UMjIiClc0toP19etOmdYUwPc4KBXZ45aG
+        TzDBxI2wsCBhJ0sQFjQmT8=
+Received: from COOL-20201210PM.ccdomain.com (unknown [218.94.48.178])
+        by smtp11 (Coremail) with SMTP id D8CowACHjgrNTFlg9J8_GA--.21S2;
+        Tue, 23 Mar 2021 10:05:15 +0800 (CST)
+From:   zuoqilin1@163.com
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zuoqilin <zuoqilin@yulong.com>
+Subject: [PATCH] net/smc: Simplify the return expression
+Date:   Tue, 23 Mar 2021 10:05:09 +0800
+Message-Id: <20210323020509.1499-1-zuoqilin1@163.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: D8CowACHjgrNTFlg9J8_GA--.21S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7JF1xWF1UGFWrJFyrJrykuFg_yoWDKFXEk3
+        48Xrs2gFyUZ3Z3ArWftrsIyryfGFsFqw40qFs7ta98Jr45XrWrArn8GFnxC34rCws5JF9F
+        gr4ftFWIy34UCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUezuWPUUUUU==
+X-Originating-IP: [218.94.48.178]
+X-CM-SenderInfo: 52xr1xpolqiqqrwthudrp/xtbBRRteiVPAKqAISQAAsR
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I don't even see a need for this. The offset should be within one 1/2
-> page, of
-> > one bank. So offset >= 0 and <= 127. Length is also > 0 and
-> > <- 127. And offset+length is <= 127.
-> 
-> I like the clean approach, but...   How do you request low memory?
+From: zuoqilin <zuoqilin@yulong.com>
 
-Duh!
+Simplify the return expression of smc_ism_signal_shutdown().
 
-I got my conditions wrong. Too focused on 1/2 pages to think that two
-of them makes one page!
+Signed-off-by: zuoqilin <zuoqilin@yulong.com>
+---
+ net/smc/smc_ism.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Lets try again:
+diff --git a/net/smc/smc_ism.c b/net/smc/smc_ism.c
+index 9c6e958..c3558cc 100644
+--- a/net/smc/smc_ism.c
++++ b/net/smc/smc_ism.c
+@@ -344,7 +344,6 @@ static void smcd_handle_sw_event(struct smc_ism_event_work *wrk)
+ 
+ int smc_ism_signal_shutdown(struct smc_link_group *lgr)
+ {
+-	int rc;
+ 	union smcd_sw_event_info ev_info;
+ 
+ 	if (lgr->peer_shutdown)
+@@ -353,11 +352,10 @@ int smc_ism_signal_shutdown(struct smc_link_group *lgr)
+ 	memcpy(ev_info.uid, lgr->id, SMC_LGR_ID_SIZE);
+ 	ev_info.vlan_id = lgr->vlan_id;
+ 	ev_info.code = ISM_EVENT_REQUEST;
+-	rc = lgr->smcd->ops->signal_event(lgr->smcd, lgr->peer_gid,
++	return lgr->smcd->ops->signal_event(lgr->smcd, lgr->peer_gid,
+ 					  ISM_EVENT_REQUEST_IR,
+ 					  ISM_EVENT_CODE_SHUTDOWN,
+ 					  ev_info.info);
+-	return rc;
+ }
+ 
+ /* worker for SMC-D events */
+-- 
+1.9.1
 
-offset < 256
-0 < len < 128
-
-if (offset < 128)
-   offset + len < 128
-else
-   offset + len < 256
-
-Does that look better?
-
-Reading bytes from the lower 1/2 of page 0 should give the same data
-as reading data from the lower 1/2 of page 42. So we can allow that,
-but don't be too surprised when an SFP gets it wrong and gives you
-rubbish. I would suggest ethtool(1) never actually does read from the
-lower 1/2 of any page other than 0.
-
-And i agree about documentation. I would suggest a comment in
-ethtool_netlink.h, and the RST documentation.
-
-		   Andrew
 
