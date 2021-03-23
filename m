@@ -2,68 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE078346529
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 17:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6CD34652F
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 17:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233340AbhCWQ3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 12:29:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42370 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233150AbhCWQ33 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 12:29:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 29788619C2;
-        Tue, 23 Mar 2021 16:29:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616516969;
-        bh=eBf5ODrXs5Umg1VKVxuL6E8KDcWzaxXh5BAlofVjego=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HSkLjJzufs2M4dIEMmihAx4MLRTCKvxVqtN7nlT3TJxvxetMHBfXpPO2TDDWTuO5a
-         emGA8qldAJqd7NCt2Muyc/n56SPJ1mFSU3pwcmz8mIecAqiLVSysFtMvbsXONge5A7
-         hN67pbJvKHXhf/QB9kp2B12h8nFASvktHbg5vXJvJyXsN299iC8/L1a1McAuvWHntu
-         a6EnixRlsVuwQjBXSBbebVK73hka+zrx9qgC+yGZOcsvuBejtHKWMXMHViGwE44YtL
-         xkPpbeRzLuXE1CdNGU2ZIQ/G2fGuXsJNCmNpgbVnOt3G2w0aZ9NR1nb7TQmFhEn2bf
-         pZJ9smoljdrVA==
-Received: by mail-ot1-f42.google.com with SMTP id w31-20020a9d36220000b02901f2cbfc9743so19750748otb.7;
-        Tue, 23 Mar 2021 09:29:29 -0700 (PDT)
-X-Gm-Message-State: AOAM531fHtKhQegqTvo0zLJo3s4u8RvZpXCh+bykYRTTBLAXIW/rSSli
-        g+KNKuF0H7nEWebml6FTakMjswNb76Qd2XRc9LI=
-X-Google-Smtp-Source: ABdhPJyGmYV3gwAkwIj5JeoP0CPxLSK13pX3mpJFYr0hyF5iRe9TRcgDcCnYaTzVSamWmYnBs/iZGKeO9dgpyV3eF48=
-X-Received: by 2002:a05:6830:14c1:: with SMTP id t1mr5085231otq.305.1616516968456;
- Tue, 23 Mar 2021 09:29:28 -0700 (PDT)
+        id S233299AbhCWQaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 12:30:09 -0400
+Received: from outbound-smtp50.blacknight.com ([46.22.136.234]:40843 "EHLO
+        outbound-smtp50.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233368AbhCWQ3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 12:29:52 -0400
+Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
+        by outbound-smtp50.blacknight.com (Postfix) with ESMTPS id 22A1BFACD1
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 16:29:51 +0000 (GMT)
+Received: (qmail 4407 invoked from network); 23 Mar 2021 16:29:50 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 23 Mar 2021 16:29:50 -0000
+Date:   Tue, 23 Mar 2021 16:29:49 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
+Message-ID: <20210323162949.GM3697@techsingularity.net>
+References: <20210322091845.16437-1-mgorman@techsingularity.net>
+ <20210323104421.GK3697@techsingularity.net>
+ <20210323160814.62a248fb@carbon>
 MIME-Version: 1.0
-References: <20210323125233.1743957-1-arnd@kernel.org> <CA+FuTSdZSmBe0UfdmAiE3HxK2wFhEbEktP=xDT8qY9WL+++Cig@mail.gmail.com>
-In-Reply-To: <CA+FuTSdZSmBe0UfdmAiE3HxK2wFhEbEktP=xDT8qY9WL+++Cig@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 23 Mar 2021 17:29:12 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2r+wjJH3NsHf8XDBRhkbyc_HAbNtizO3L-Us+8_JC2bw@mail.gmail.com>
-Message-ID: <CAK8P3a2r+wjJH3NsHf8XDBRhkbyc_HAbNtizO3L-Us+8_JC2bw@mail.gmail.com>
-Subject: Re: [RFC net] net: skbuff: fix stack variable out of bounds access
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210323160814.62a248fb@carbon>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 3:42 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Tue, Mar 23, 2021 at 8:52 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> >>
-> A similar fix already landed in 5.12-rc3: commit b228c9b05876 ("net:
-> expand textsearch ts_state to fit skb_seq_state"). That fix landed in
-> 5.12-rc3.
+On Tue, Mar 23, 2021 at 04:08:14PM +0100, Jesper Dangaard Brouer wrote:
+> On Tue, 23 Mar 2021 10:44:21 +0000
+> Mel Gorman <mgorman@techsingularity.net> wrote:
+> 
+> > On Mon, Mar 22, 2021 at 09:18:42AM +0000, Mel Gorman wrote:
+> > > This series is based on top of Matthew Wilcox's series "Rationalise
+> > > __alloc_pages wrapper" and does not apply to 5.12-rc2. If you want to
+> > > test and are not using Andrew's tree as a baseline, I suggest using the
+> > > following git tree
+> > > 
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v5r9
+> > >   
+> > 
+> > Jesper and Chuck, would you mind rebasing on top of the following branch
+> > please? 
+> > 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v6r2
+> > 
+> > The interface is the same so the rebase should be trivial.
+> > 
+> > Jesper, I'm hoping you see no differences in performance but it's best
+> > to check.
+> 
+> I will rebase and check again.
+> 
+> The current performance tests that I'm running, I observe that the
+> compiler layout the code in unfortunate ways, which cause I-cache
+> performance issues.  I wonder if you could integrate below patch with
+> your patchset? (just squash it)
+> 
 
-Ah nice, even the same BUILD_BUG_ON() ;-)
+Yes but I'll keep it as a separate patch that is modified slightly.
+Otherwise it might get "fixed" as likely/unlikely has been used
+inappropriately in the past. If there is pushback, I'll squash them
+together.
 
-Too bad it had to be found through runtime testing when it could have been
-found by the compiler warning.
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> 
+> Looking at perf-report and ASM-code for __alloc_pages_bulk() then the code
+> activated is suboptimal. The compiler guess wrong and place unlikely code in
+> the beginning. Due to the use of WARN_ON_ONCE() macro the UD2 asm
+> instruction is added to the code, which confuse the I-cache prefetcher in
+> the CPU
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  mm/page_alloc.c |   10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index f60f51a97a7b..88a5c1ce5b87 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5003,10 +5003,10 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+>  	unsigned int alloc_flags;
+>  	int nr_populated = 0, prep_index = 0;
+>  
+> -	if (WARN_ON_ONCE(nr_pages <= 0))
+> +	if (unlikely(nr_pages <= 0))
+>  		return 0;
+>  
 
-       Arnd
+Ok, I can make this change. It was a defensive check for the new callers
+in case insane values were being passed in. 
+
+> -	if (WARN_ON_ONCE(page_list && !list_empty(page_list)))
+> +	if (unlikely(page_list && !list_empty(page_list)))
+>  		return 0;
+>  
+>  	/* Skip populated array elements. */
+
+FWIW, this check is now gone. The list only had to be empty if
+prep_new_page was deferred until IRQs were enabled to avoid accidentally
+calling prep_new_page() on a page that was already on the list when
+alloc_pages_bulk was called.
+
+> @@ -5018,7 +5018,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+>  		prep_index = nr_populated;
+>  	}
+>  
+> -	if (nr_pages == 1)
+> +	if (unlikely(nr_pages == 1))
+>  		goto failed;
+>  
+>  	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
+
+I'm dropping this because nr_pages == 1 is common for the sunrpc user.
+
+> @@ -5054,7 +5054,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+>  	 * If there are no allowed local zones that meets the watermarks then
+>  	 * try to allocate a single page and reclaim if necessary.
+>  	 */
+> -	if (!zone)
+> +	if (unlikely(!zone))
+>  		goto failed;
+>  
+>  	/* Attempt the batch allocation */
+
+Ok.
+
+> @@ -5075,7 +5075,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+>  
+>  		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+>  								pcp, pcp_list);
+> -		if (!page) {
+> +		if (unlikely(!page)) {
+>  			/* Try and get at least one page */
+>  			if (!nr_populated)
+>  				goto failed_irq;
+
+Hmmm, ok. It depends on memory pressure but I agree !page is unlikely.
+
+Current version applied is
+
+--8<--
+mm/page_alloc: optimize code layout for __alloc_pages_bulk
+
+From: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Looking at perf-report and ASM-code for __alloc_pages_bulk() it is clear
+that the code activated is suboptimal. The compiler guesses wrong and
+places unlikely code at the beginning. Due to the use of WARN_ON_ONCE()
+macro the UD2 asm instruction is added to the code, which confuse the
+I-cache prefetcher in the CPU.
+
+[mgorman: Minor changes and rebasing]
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index be1e33a4df39..1ec18121268b 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5001,7 +5001,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	unsigned int alloc_flags;
+ 	int nr_populated = 0;
+ 
+-	if (WARN_ON_ONCE(nr_pages <= 0))
++	if (unlikely(nr_pages <= 0))
+ 		return 0;
+ 
+ 	/*
+@@ -5048,7 +5048,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 	 * If there are no allowed local zones that meets the watermarks then
+ 	 * try to allocate a single page and reclaim if necessary.
+ 	 */
+-	if (!zone)
++	if (unlikely(!zone))
+ 		goto failed;
+ 
+ 	/* Attempt the batch allocation */
+@@ -5066,7 +5066,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 
+ 		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
+ 								pcp, pcp_list);
+-		if (!page) {
++		if (unlikely(!page)) {
+ 			/* Try and get at least one page */
+ 			if (!nr_populated)
+ 				goto failed_irq;
