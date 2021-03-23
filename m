@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A56D5345F14
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 14:11:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E48345F18
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 14:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231536AbhCWNLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 09:11:18 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:29753 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231577AbhCWNLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 09:11:00 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 4CC0F75F9D;
-        Tue, 23 Mar 2021 16:10:57 +0300 (MSK)
+        id S230258AbhCWNLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 09:11:49 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:47694 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231586AbhCWNLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 09:11:33 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id E1958521EE1;
+        Tue, 23 Mar 2021 16:11:23 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1616505057;
-        bh=4m0TCbUysCCU3w12V8ocGMHQUai7xcDnP1vg5HLlHo8=;
+        s=mail202102; t=1616505084;
+        bh=ERm28xxzug3GBzayEYp1rd+2/Pjtq6tUtQNVqdx3d4c=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=ak5xNt/tXuevMGHEt2WTLf04ZVnu4pmtmTSf24P+zG+cdRulyc8psbGFIcosB0YAE
-         sM6UrGZimpyhEtOX+MjYXgrMj7YARNJtXjzeUXXdIsq72JzNou6gCtFfbu920iMMP7
-         j20C9V8zuZb6ZxLgl9abDcnP9Z9bpR06tgyaETwUtki2IVt6ktoJyqvicD4XIcUf6y
-         HssAN5py91xBkJ84TmMAzfStF9s2BN9M5VSXnzzLezCAWfPruB21/BAaVwD8E7mAgZ
-         LEccmef2mUG03SaoDBWGbZAvXZgkY/JVal2rfHhwyh0b38k9scusMo4NmIsr+edehR
-         /ycFESeHwxDRQ==
+        b=2BY/qtZmJBWntH2pcPG3ed0tN6TDOSdDj6QDNQ2/nG3KBlGEvHW6dA2g7UQnzP/mQ
+         m7dAtaqbwdcFgxcsLhHwIVaVWXxWSw7+AkNMjdtRaSQdsKVXZaQ5Ck+tvfm10Pj468
+         Nyd2NImtRyiAzloXnCb2t04S0BrQgUtpRzb12fcqQIq/oIGh+u7B1rP8IpXmR8C46m
+         zzPm50R7vduVXaDHQWBIk8dnWbeqfmJ3qU9EKNa3ffO3sdghvHxP2RfF5aKnttr6VO
+         qFWCW5c6cWH4A7LGl/ZRPV6n6SDP30hyJjZfsukOWqrIW7Uyt6JIoRHQsWhoFU9e/i
+         zOBBYHfhocukw==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 06B7976226;
-        Tue, 23 Mar 2021 16:10:57 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 70C13521EAF;
+        Tue, 23 Mar 2021 16:11:23 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 23
- Mar 2021 16:10:56 +0300
+ Mar 2021 16:11:22 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,26 +41,26 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
         Colin Ian King <colin.king@canonical.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
         Jeff Vander Stoep <jeffv@google.com>,
         Alexander Popov <alex.popov@linux.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <arseny.krasnov@kaspersky.com>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v7 06/22] af_vsock: implement send logic for SEQPACKET
-Date:   Tue, 23 Mar 2021 16:10:42 +0300
-Message-ID: <20210323131045.2460319-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v7 07/22] af_vsock: rest of SEQPACKET support
+Date:   Tue, 23 Mar 2021 16:11:05 +0300
+Message-ID: <20210323131108.2460465-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210323130716.2459195-1-arseny.krasnov@kaspersky.com>
 References: <20210323130716.2459195-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -74,7 +74,7 @@ X-KSE-AntiSpam-Info: Version: 5.9.20.0
 X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
 X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
 X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;arseniy-pc.avp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;arseniy-pc.avp.ru:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
 X-KSE-AntiSpam-Info: Rate: 10
 X-KSE-AntiSpam-Info: Status: not_detected
 X-KSE-AntiSpam-Info: Method: none
@@ -101,78 +101,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds some logic to current stream enqueue function for SEQPACKET
-support:
-1) Use transport's seqpacket enqueue callback.
-2) Return value from enqueue function is whole record length or error
-   for SOCK_SEQPACKET.
+This does rest of SOCK_SEQPACKET support:
+1) Adds socket ops for SEQPACKET type.
+2) Allows to create socket with SEQPACKET type.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- v6 -> v7:
- 'seqpacket_enqueue' callback interface changed, 'flags' argument was
- removed, because it was 'msg_flags' field of 'msg' argument which is
- already exists.
-
- include/net/af_vsock.h   |  2 ++
- net/vmw_vsock/af_vsock.c | 21 +++++++++++++++------
- 2 files changed, 17 insertions(+), 6 deletions(-)
+ include/net/af_vsock.h   |  1 +
+ net/vmw_vsock/af_vsock.c | 36 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 36 insertions(+), 1 deletion(-)
 
 diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index 7232f6c42a36..b7063820d0bc 100644
+index b7063820d0bc..6c88ba0df588 100644
 --- a/include/net/af_vsock.h
 +++ b/include/net/af_vsock.h
-@@ -138,6 +138,8 @@ struct vsock_transport {
- 	/* SEQ_PACKET. */
- 	int (*seqpacket_dequeue)(struct vsock_sock *vsk, struct msghdr *msg,
+@@ -140,6 +140,7 @@ struct vsock_transport {
  				 int flags, bool *msg_ready, size_t *record_len);
-+	int (*seqpacket_enqueue)(struct vsock_sock *vsk, struct msghdr *msg,
-+				 size_t len);
+ 	int (*seqpacket_enqueue)(struct vsock_sock *vsk, struct msghdr *msg,
+ 				 size_t len);
++	bool (*seqpacket_allow)(void);
  
  	/* Notification. */
  	int (*notify_poll_in)(struct vsock_sock *, size_t, bool *);
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 617ffe42693d..a98e5daa06b7 100644
+index a98e5daa06b7..802afe253781 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -1830,9 +1830,13 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 		 * responsibility to check how many bytes we were able to send.
- 		 */
+@@ -452,6 +452,7 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 		new_transport = transport_dgram;
+ 		break;
+ 	case SOCK_STREAM:
++	case SOCK_SEQPACKET:
+ 		if (vsock_use_local_transport(remote_cid))
+ 			new_transport = transport_local;
+ 		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
+@@ -484,6 +485,14 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 	if (!new_transport || !try_module_get(new_transport->module))
+ 		return -ENODEV;
  
--		written = transport->stream_enqueue(
--				vsk, msg,
--				len - total_written);
-+		if (sk->sk_type == SOCK_SEQPACKET) {
-+			written = transport->seqpacket_enqueue(vsk,
-+						msg, len - total_written);
-+		} else {
-+			written = transport->stream_enqueue(vsk,
-+					msg, len - total_written);
++	if (sk->sk_type == SOCK_SEQPACKET) {
++		if (!new_transport->seqpacket_allow ||
++		    !new_transport->seqpacket_allow()) {
++			module_put(new_transport->module);
++			return -ESOCKTNOSUPPORT;
 +		}
- 		if (written < 0) {
- 			err = -ENOMEM;
- 			goto out_err;
-@@ -1844,12 +1848,17 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 				vsk, written, &send_data);
- 		if (err < 0)
- 			goto out_err;
--
- 	}
- 
- out_err:
--	if (total_written > 0)
--		err = total_written;
-+	if (total_written > 0) {
-+		/* Return number of written bytes only if:
-+		 * 1) SOCK_STREAM socket.
-+		 * 2) SOCK_SEQPACKET socket when whole buffer is sent.
-+		 */
-+		if (sk->sk_type == SOCK_STREAM || total_written == len)
-+			err = total_written;
 +	}
- out:
- 	release_sock(sk);
- 	return err;
++
+ 	ret = new_transport->init(vsk, psk);
+ 	if (ret) {
+ 		module_put(new_transport->module);
+@@ -684,6 +693,7 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
+ 
+ 	switch (sk->sk_socket->type) {
+ 	case SOCK_STREAM:
++	case SOCK_SEQPACKET:
+ 		spin_lock_bh(&vsock_table_lock);
+ 		retval = __vsock_bind_connectible(vsk, addr);
+ 		spin_unlock_bh(&vsock_table_lock);
+@@ -769,7 +779,7 @@ static struct sock *__vsock_create(struct net *net,
+ 
+ static bool sock_type_connectible(u16 type)
+ {
+-	return type == SOCK_STREAM;
++	return (type == SOCK_STREAM) || (type == SOCK_SEQPACKET);
+ }
+ 
+ static void __vsock_release(struct sock *sk, int level)
+@@ -2174,6 +2184,27 @@ static const struct proto_ops vsock_stream_ops = {
+ 	.sendpage = sock_no_sendpage,
+ };
+ 
++static const struct proto_ops vsock_seqpacket_ops = {
++	.family = PF_VSOCK,
++	.owner = THIS_MODULE,
++	.release = vsock_release,
++	.bind = vsock_bind,
++	.connect = vsock_connect,
++	.socketpair = sock_no_socketpair,
++	.accept = vsock_accept,
++	.getname = vsock_getname,
++	.poll = vsock_poll,
++	.ioctl = sock_no_ioctl,
++	.listen = vsock_listen,
++	.shutdown = vsock_shutdown,
++	.setsockopt = vsock_connectible_setsockopt,
++	.getsockopt = vsock_connectible_getsockopt,
++	.sendmsg = vsock_connectible_sendmsg,
++	.recvmsg = vsock_connectible_recvmsg,
++	.mmap = sock_no_mmap,
++	.sendpage = sock_no_sendpage,
++};
++
+ static int vsock_create(struct net *net, struct socket *sock,
+ 			int protocol, int kern)
+ {
+@@ -2194,6 +2225,9 @@ static int vsock_create(struct net *net, struct socket *sock,
+ 	case SOCK_STREAM:
+ 		sock->ops = &vsock_stream_ops;
+ 		break;
++	case SOCK_SEQPACKET:
++		sock->ops = &vsock_seqpacket_ops;
++		break;
+ 	default:
+ 		return -ESOCKTNOSUPPORT;
+ 	}
 -- 
 2.25.1
 
