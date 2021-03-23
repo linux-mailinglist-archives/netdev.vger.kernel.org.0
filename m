@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE07F3456E8
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 05:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2C6345704
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 05:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbhCWEhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 00:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        id S229591AbhCWEzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 00:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbhCWEhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 00:37:16 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FBFC061574;
-        Mon, 22 Mar 2021 21:37:16 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id t16so9837801qvr.12;
-        Mon, 22 Mar 2021 21:37:16 -0700 (PDT)
+        with ESMTP id S229437AbhCWEyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 00:54:43 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCA2C061574;
+        Mon, 22 Mar 2021 21:54:42 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id v70so13163977qkb.8;
+        Mon, 22 Mar 2021 21:54:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eUZjvbWhG8mpAJ9oWPfDqQmrZ+U1xI4KjNvkjd4vAQ8=;
-        b=LjdCpKKQcTWep3Uudz5wlBa4XTvLfZ99MIgawJQyuE3xD8KrfRmvaVMfwmiNlrQenB
-         7j9rvPpNAQPrLiCuwJUqwfN3dU5V7qNt2YW0MJqYZyIDlyEo+Nm4xGKKszbjsTRqUhQ7
-         3YIMZvI9nHlCrRo/2H4IvdCyhu8Kj8ckJIqkoPVDlGYTZp/PxzR3ykXB6NDTSQfYylfS
-         P+TFubmv9memx5a7kTxk365NOxpl2fGn0XVHADzY5x+1NgnuD06GWLnkyH5aKC5sdjzH
-         kv7Q3kpIuCTV+n0E4IKFLv3SGcWPFGRKq5UQvV9nZ/VKHdE1SMHkF0AVQZ+4/3BKe4K8
-         wYmw==
+        bh=QcRlQh1S/zxnKxyt3g/BCdEjQtxtzxHfEqHQxbpK75U=;
+        b=h7U1zimvrj7GoyX7TkR3qcbf+7m5HNJDhy/QRaq0un/mkJtmv8uXV2qKRQqLxIFJ8h
+         xeVSHyM5O3RgeMUhDB7XbsSr1gx4esyQgakp/EGz9nvyXdSEyJiPguKXkwIpCkr0XGLZ
+         PG20ttLT1gg2JWHSa2tDd5c71+qQeIF6v8vtQ3Tltcb5LZCi9/NZt9jT6qQK2kcVHoK1
+         wtyBpPEdZUqxA36VHOy6KHkJwVAAcurHploFqF2B/IqPe7SOLBULTnSz2CpNFmdpjKzt
+         9FR1VtbwGAzFY8K/wjHiwB9KBsAw1pHnjSga6bNKrEXOg2tzFwTUdV6HUgUKxXcpxY+Z
+         LXFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eUZjvbWhG8mpAJ9oWPfDqQmrZ+U1xI4KjNvkjd4vAQ8=;
-        b=gIDsorxrBq0BEMOuzBytX68CAg0j3p6gPfCtG6Zcm6U/XQp1nUS5rH2NGDxHrWW4O+
-         hqVzWYgGawjw6ZPh2xI09JTPLS/m5PSG94+1BtcGI4BfJYshevaArXtL6MZ42mwkMXwL
-         4uZAVie1u8IvTlery1QbkMBfbpvnD2iVvzC31ozMSOtkjTQirVAv/+RvlnsO/hG7X+/K
-         QCEsIRu0y+g/z3ooRu0FtdcJSwh0zlkzCmW/+GdePmefhA/U8AD+nJvZViQQ/DOALNA3
-         /AvJ1IHeG9XBroc8C9vzK0bBnHgVikPXpAMnaLam9HhSRJG5wb/slaT8cI5pjlPKNUNR
-         hXHQ==
-X-Gm-Message-State: AOAM532QuLViheX1/Y5iMoyMOC2CaocJVkP5KLqnQFHSS1yvaBI0gvzw
-        VC5g+YCcI9Eo+MLMj4tx/q4=
-X-Google-Smtp-Source: ABdhPJzpn/qLE7mquJkm8VyguR63pGY+0OA+1ULU+mdB5ZlBroS9tRh9kZb3B44sjkBcdw4ZujIyxQ==
-X-Received: by 2002:ad4:584d:: with SMTP id de13mr3046957qvb.17.1616474235825;
-        Mon, 22 Mar 2021 21:37:15 -0700 (PDT)
+        bh=QcRlQh1S/zxnKxyt3g/BCdEjQtxtzxHfEqHQxbpK75U=;
+        b=rvfWQ/H7+8/Bt7FKZ5cvjjw+83O06qYmnOKAGPh80cDrxzBaqSuK8IpYdcEkF3OT7M
+         vLdLHMcGJULOAnO9qkEqZT7AQX51KbVh1jjKftRWrVWrI59YnEPKovo3/x/mE1zHjCWG
+         ExIhKHKqEzfekBLlGhW5Lbw+9ujxsFk7C2Opp18ek50A9jUkhonfL2lnGr7jOZV6DbKd
+         B3ZU/SBUM1y1V9EJpCxzW8tmUDJc1iay+WVmnC+KWfBYugMJn4FhOXd8TMzQiUAmvsM3
+         IFcLuuWhEMZnXhKBL1RETqb8wH1c7mg5ZzJYscLXfxWZIkr3pKpoEz0RTVT+BC47S16U
+         ZUEw==
+X-Gm-Message-State: AOAM531Qdx3Ze84g9GJgoy7cVApYDWtontTX2Z/mSTY+ppFOvvO7GtDn
+        UXFP8rz02YbQtIrzi4ukE8ERdIM/ZM7lCNsz
+X-Google-Smtp-Source: ABdhPJzQ57h7x+e0PfDKa1SCDPjxDUK2fGVyQ7NusXMc9XQ9odnFQoPWNTIcq3LNNY8AX9K8D+dMbA==
+X-Received: by 2002:ac8:6059:: with SMTP id k25mr2979267qtm.251.1616474797982;
+        Mon, 22 Mar 2021 21:46:37 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.54.208])
-        by smtp.gmail.com with ESMTPSA id b1sm12790054qkk.117.2021.03.22.21.37.09
+        by smtp.gmail.com with ESMTPSA id n3sm10283882qtd.93.2021.03.22.21.46.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Mar 2021 21:37:15 -0700 (PDT)
+        Mon, 22 Mar 2021 21:46:37 -0700 (PDT)
 From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
-        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        unixbhaskar@gmail.com, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, irogers@google.com, kan.liang@linux.intel.com,
+        unixbhaskar@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     rdunlap@infradead.org
-Subject: [PATCH] brcmfmac: A typo fix
-Date:   Tue, 23 Mar 2021 10:06:57 +0530
-Message-Id: <20210323043657.1466296-1-unixbhaskar@gmail.com>
+Subject: [PATCH] perf tools: Trivial spelling fixes
+Date:   Tue, 23 Mar 2021 10:16:05 +0530
+Message-Id: <20210323044605.1788192-1-unixbhaskar@gmail.com>
 X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -68,26 +68,72 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-s/revsion/revision/
+s/succeded/succeeded/ ........five different places
+s/revsions/revisions/
 
 Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/header.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.h
-index ee273e3bb101..e000ef78928c 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.h
-@@ -28,7 +28,7 @@ struct brcmf_usbdev {
- 	int ntxq, nrxq, rxsize;
- 	u32 bus_mtu;
- 	int devid;
--	int chiprev; /* chip revsion number */
-+	int chiprev; /* chip revision number */
- };
+diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
+index 20effdff76ce..97a0eeb6d2ab 100644
+--- a/tools/perf/util/header.c
++++ b/tools/perf/util/header.c
+@@ -127,7 +127,7 @@ static int __do_write_buf(struct feat_fd *ff,  const void *buf, size_t size)
+ 	return 0;
+ }
 
- /* IO Request Block (IRB) */
+-/* Return: 0 if succeded, -ERR if failed. */
++/* Return: 0 if succeeded, -ERR if failed. */
+ int do_write(struct feat_fd *ff, const void *buf, size_t size)
+ {
+ 	if (!ff->buf)
+@@ -135,7 +135,7 @@ int do_write(struct feat_fd *ff, const void *buf, size_t size)
+ 	return __do_write_buf(ff, buf, size);
+ }
+
+-/* Return: 0 if succeded, -ERR if failed. */
++/* Return: 0 if succeeded, -ERR if failed. */
+ static int do_write_bitmap(struct feat_fd *ff, unsigned long *set, u64 size)
+ {
+ 	u64 *p = (u64 *) set;
+@@ -154,7 +154,7 @@ static int do_write_bitmap(struct feat_fd *ff, unsigned long *set, u64 size)
+ 	return 0;
+ }
+
+-/* Return: 0 if succeded, -ERR if failed. */
++/* Return: 0 if succeeded, -ERR if failed. */
+ int write_padded(struct feat_fd *ff, const void *bf,
+ 		 size_t count, size_t count_aligned)
+ {
+@@ -170,7 +170,7 @@ int write_padded(struct feat_fd *ff, const void *bf,
+ #define string_size(str)						\
+ 	(PERF_ALIGN((strlen(str) + 1), NAME_ALIGN) + sizeof(u32))
+
+-/* Return: 0 if succeded, -ERR if failed. */
++/* Return: 0 if succeeded, -ERR if failed. */
+ static int do_write_string(struct feat_fd *ff, const char *str)
+ {
+ 	u32 len, olen;
+@@ -266,7 +266,7 @@ static char *do_read_string(struct feat_fd *ff)
+ 	return NULL;
+ }
+
+-/* Return: 0 if succeded, -ERR if failed. */
++/* Return: 0 if succeeded, -ERR if failed. */
+ static int do_read_bitmap(struct feat_fd *ff, unsigned long **pset, u64 *psize)
+ {
+ 	unsigned long *set;
+@@ -3485,7 +3485,7 @@ static const size_t attr_pipe_abi_sizes[] = {
+  * between host recording the samples, and host parsing the samples is the
+  * same. This is not always the case given that the pipe output may always be
+  * redirected into a file and analyzed on a different machine with possibly a
+- * different endianness and perf_event ABI revsions in the perf tool itself.
++ * different endianness and perf_event ABI revisions in the perf tool itself.
+  */
+ static int try_all_pipe_abis(uint64_t hdr_sz, struct perf_header *ph)
+ {
 --
 2.31.0
 
