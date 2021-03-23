@@ -2,97 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E0334621C
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:58:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89AE2346240
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 16:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232464AbhCWO6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 10:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232328AbhCWO6D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:58:03 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96353C061574;
-        Tue, 23 Mar 2021 07:58:03 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id 31-20020a9d00220000b02901b64b9b50b1so19690209ota.9;
-        Tue, 23 Mar 2021 07:58:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pBTbJ1gqi6qZwGjIPLuEyNrn1jPsCIcXzL71BITfVqc=;
-        b=WXQNB9fjlah/beKPue2wrQpvMFcQ8DSm5+6P1bqhDdQTBRYp0pJHUr763Vs7ZlvwLa
-         L8fGcDyauTE7mItfKvlUxAMyEvBzpvW473HrmtiCirb6LmbVYJoU6i2kF3em2We4uB3a
-         m9/0m9Wh5hGviZI7LBCN0adW/0bwNRjUo5oE2ryqR6ZQsXnEXMKEWlrCRbEHw5CvydKk
-         K5KEpN3w9QV11FLFbM3oD6Jm7Wq7oFa0I9HNOKfTw+YYAB1qBpalBze4IBwWPRpbB4UX
-         FC3dInEH35bCapJCUDLCgjMWVUYz4yTJD6546Fa3mKlpL2B/jJakvmZQ9pdHFO5s7M2Q
-         jWSw==
+        id S232559AbhCWPD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 11:03:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44249 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232356AbhCWPD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 11:03:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616511808;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gzM7fzIa27HA919EKJPeo4/3mZLnET0KAoGtKPohuRo=;
+        b=Kn82Rf/eW1DjUnZFqYCUwikGMUvGcr0y+HQzk2VmW4DETbkaOyQBsbOcb4JymPKbUYkpvw
+        zPKL5Q8YVGFu+oI7DSHtE6ctjCr8lSwP9zwP45sQomgd0NNgs6gdYDoQMcrE+sFDQbSiNy
+        ewmLI4lKrC2phrt1D9a+jmKXOxfEJEA=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-520-9RcvUAqAOVe_aEsKJpWuUQ-1; Tue, 23 Mar 2021 11:03:25 -0400
+X-MC-Unique: 9RcvUAqAOVe_aEsKJpWuUQ-1
+Received: by mail-qv1-f69.google.com with SMTP id ev19so1778896qvb.7
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 08:03:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pBTbJ1gqi6qZwGjIPLuEyNrn1jPsCIcXzL71BITfVqc=;
-        b=A7VKznta7RrO4K/e6eKS/vf11xyMwVVsbtB/dTP7RryfQCOtHF2kpkM0p/tDmAxv9k
-         w7cxFBNKt0AIJWxaFhYX9BT9dxdfh1KHtCOaGj+uRLQelnBem4tuZnt+ExPEUMOU7FbB
-         JFdRNqEn3XU0QboDNumqKJ1sBuHwGBFUkMYbiEyPuFJxQJFrItX1CJXPVZ5uzNmr+F1x
-         8r/IOeOQzbkFMUuljmDp0ouRg/UGiUAlY9jJohFTOjgwwgo8Sw5ICru9lpjcFm2NeP4Y
-         IcYSb1pSO68plJ4asiul/pcgHCEHwtJBMX3sEDGxuJQPM2ayh27KOI58dBSI3i/64vzL
-         9w6w==
-X-Gm-Message-State: AOAM532re/7PBEvhfu7sd41DYFd+sg/oL9nYClHET48/XyvT6sdspqMa
-        wrDPBWLiWGfGb6MGomh3vnM=
-X-Google-Smtp-Source: ABdhPJzSxbq/FoTwpbbJi7IS9UcsaS8Jb5VWG+fVs0bKzHES3xpvO8J2Z9z54n7eKIDeo1pmYyti5g==
-X-Received: by 2002:a05:6830:17d0:: with SMTP id p16mr4623060ota.127.1616511483045;
-        Tue, 23 Mar 2021 07:58:03 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id e12sm3760527oou.33.2021.03.23.07.58.01
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=gzM7fzIa27HA919EKJPeo4/3mZLnET0KAoGtKPohuRo=;
+        b=WXy49lgxd4S1GgsQ+aHYAd0suA360cIysKPhtJLt7rQyjfGadj7zf4uMqCrMqHKGZF
+         MHGCNE8ZcB/uFH/pepdNB0iPKc0Ak0NBbF0OzqSPwZ9mA3323yY5kwNGgRX0Gi6W5Z7H
+         Nis+7dRMdXdk+e4o62A588EYQ4vGJ1ozJDnPP5r1MawFF2fb/576cCPqfl5UT4nj2RI3
+         PgxCUq1mfbyqAOf0XcmzhU2rqLKZmBDYu6SxtiIeL0AC0535BKFPla+m0YJFfe9gI6Cd
+         cJEg7ULLCLY7pskhKp5OFnRKGF52QU1UHJVgciB7+pl1rG+5uG3hHazLTbTt5Q3n904J
+         q6DQ==
+X-Gm-Message-State: AOAM530B6wpRlj3LMAdX51r206/ywPT7U4/EJogKx8vxTyXuR5TBQQTx
+        aocaVokCwI06M4JY5PMW88wjGHBoBCodtvvZPR9yhyQ9fGl2U/ClTJ3soqyf+qOehJOJHmLHEew
+        nXpj7bqCNmfoPeW2z
+X-Received: by 2002:a05:6214:a91:: with SMTP id ev17mr5446735qvb.59.1616511805189;
+        Tue, 23 Mar 2021 08:03:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxhC3u3a88NRfJWWKAbxH4TIEos1Vt/VsjTCAHWQZVhwl7wikb+mI+s0BWAf83yZcp6NK96qw==
+X-Received: by 2002:a05:6214:a91:: with SMTP id ev17mr5446698qvb.59.1616511804907;
+        Tue, 23 Mar 2021 08:03:24 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id d18sm10647197qtd.85.2021.03.23.08.03.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Mar 2021 07:58:02 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/6] page_pool: recycle buffers
-To:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Tue, 23 Mar 2021 08:03:24 -0700 (PDT)
+Subject: Re: [PATCH net-next] airo: work around stack usage warning
+To:     Arnd Bergmann <arnd@kernel.org>, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-References: <20210322170301.26017-1-mcroce@linux.microsoft.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f5ef2e4f-fcba-2e06-86ec-17522744b6a8@gmail.com>
-Date:   Tue, 23 Mar 2021 08:57:57 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.8.1
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210323131634.2669455-1-arnd@kernel.org>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <c6fcc558-7fd4-445b-169e-2c9878a625f2@redhat.com>
+Date:   Tue, 23 Mar 2021 08:03:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-In-Reply-To: <20210322170301.26017-1-mcroce@linux.microsoft.com>
+In-Reply-To: <20210323131634.2669455-1-arnd@kernel.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/22/21 11:02 AM, Matteo Croce wrote:
-> From: Matteo Croce <mcroce@microsoft.com>
-> 
-> This series enables recycling of the buffers allocated with the page_pool API.
-> The first two patches are just prerequisite to save space in a struct and
-> avoid recycling pages allocated with other API.
-> Patch 2 was based on a previous idea from Jonathan Lemon.
-> 
-> The third one is the real recycling, 4 fixes the compilation of __skb_frag_unref
-> users, and 5,6 enable the recycling on two drivers.
 
-patch 4 should be folded into 3; each patch should build without errors.
+On 3/23/21 6:16 AM, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> gcc-11 with KASAN on 32-bit arm produces a warning about a function
+> that needs a lot of stack space:
+>
+> drivers/net/wireless/cisco/airo.c: In function 'setup_card.constprop':
+> drivers/net/wireless/cisco/airo.c:3960:1: error: the frame size of 1512 bytes is larger than 1400 bytes [-Werror=frame-larger-than=]
+>
+> Most of this is from a single large structure that could be dynamically
+> allocated or moved into the per-device structure.  However, as the callers
+> all seem to have a fairly well bounded call chain, the easiest change
+> is to pull out the part of the function that needs the large variables
+> into a separate function and mark that as noinline_for_stack. This does
+> not reduce the total stack usage, but it gets rid of the warning and
+> requires minimal changes otherwise.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/wireless/cisco/airo.c | 117 +++++++++++++++++-------------
+>  1 file changed, 65 insertions(+), 52 deletions(-)
+>
+> diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+> index e35e1380ae43..540ba694899c 100644
+> --- a/drivers/net/wireless/cisco/airo.c
+> +++ b/drivers/net/wireless/cisco/airo.c
+> @@ -3818,6 +3818,68 @@ static inline void set_auth_type(struct airo_info *local, int auth_type)
+>  		local->last_auth = auth_type;
+>  }
+>  
+> +static int noinline_for_stack airo_readconfig(struct airo_info *ai, u8 *mac, int lock)
+> +{
+> +	int i, status;
+> +	/* large variables, so don't inline this function,
+> +	 * maybe change to kmalloc
+> +	 */
+> +	tdsRssiRid rssi_rid;
+> +	CapabilityRid cap_rid;
+> +
+> +	kfree(ai->SSID);
+> +	ai->SSID = NULL;
+> +	// general configuration (read/modify/write)
+> +	status = readConfigRid(ai, lock);
+> +	if (status != SUCCESS) return ERROR;
+> +
+> +	status = readCapabilityRid(ai, &cap_rid, lock);
+> +	if (status != SUCCESS) return ERROR;
+> +
+> +	status = PC4500_readrid(ai, RID_RSSI, &rssi_rid, sizeof(rssi_rid), lock);
+> +	if (status == SUCCESS) {
+> +		if (ai->rssi || (ai->rssi = kmalloc(512, GFP_KERNEL)) != NULL)
+> +			memcpy(ai->rssi, (u8*)&rssi_rid + 2, 512); /* Skip RID length member */
+> +	}
+> +	else {
+> +		kfree(ai->rssi);
+> +		ai->rssi = NULL;
+> +		if (cap_rid.softCap & cpu_to_le16(8))
+> +			ai->config.rmode |= RXMODE_NORMALIZED_RSSI;
+> +		else
+> +			airo_print_warn(ai->dev->name, "unknown received signal "
+> +					"level scale");
+> +	}
+> +	ai->config.opmode = adhoc ? MODE_STA_IBSS : MODE_STA_ESS;
+> +	set_auth_type(ai, AUTH_OPEN);
+> +	ai->config.modulation = MOD_CCK;
+> +
+> +	if (le16_to_cpu(cap_rid.len) >= sizeof(cap_rid) &&
+> +	    (cap_rid.extSoftCap & cpu_to_le16(1)) &&
+> +	    micsetup(ai) == SUCCESS) {
+> +		ai->config.opmode |= MODE_MIC;
+> +		set_bit(FLAG_MIC_CAPABLE, &ai->flags);
+> +	}
+> +
+> +	/* Save off the MAC */
+> +	for (i = 0; i < ETH_ALEN; i++) {
+> +		mac[i] = ai->config.macAddr[i];
+> +	}
+> +
+> +	/* Check to see if there are any insmod configured
+> +	   rates to add */
+> +	if (rates[0]) {
+> +		memset(ai->config.rates, 0, sizeof(ai->config.rates));
+> +		for (i = 0; i < 8 && rates[i]; i++) {
+> +			ai->config.rates[i] = rates[i];
+> +		}
+> +	}
+> +	set_bit (FLAG_COMMIT, &ai->flags);
+> +
+> +	return SUCCESS;
+> +}
+> +
+> +
+>  static u16 setup_card(struct airo_info *ai, u8 *mac, int lock)
+>  {
+>  	Cmd cmd;
+> @@ -3864,58 +3926,9 @@ static u16 setup_card(struct airo_info *ai, u8 *mac, int lock)
+>  	if (lock)
+>  		up(&ai->sem);
+>  	if (ai->config.len == 0) {
+> -		int i;
+> -		tdsRssiRid rssi_rid;
+This is mostly an array, and what I guess is the problem.
+> -		CapabilityRid cap_rid;
+> -
+> -		kfree(ai->SSID);
+> -		ai->SSID = NULL;
+> -		// general configuration (read/modify/write)
+> -		status = readConfigRid(ai, lock);
+> -		if (status != SUCCESS) return ERROR;
+> -
+> -		status = readCapabilityRid(ai, &cap_rid, lock);
+> -		if (status != SUCCESS) return ERROR;
+> -
+> -		status = PC4500_readrid(ai, RID_RSSI,&rssi_rid, sizeof(rssi_rid), lock);
+This is reading into a stack temp
+> -		if (status == SUCCESS) {
+> -			if (ai->rssi || (ai->rssi = kmalloc(512, GFP_KERNEL)) != NULL)
+> -				memcpy(ai->rssi, (u8*)&rssi_rid + 2, 512); /* Skip RID length member */
 
-> 
-> In the last two patches I reported the improvement I have with the series.
-> 
-> The recycling as is can't be used with drivers like mlx5 which do page split,
-> but this is documented in a comment.
-> In the future, a refcount can be used so to support mlx5 with no changes.
+Here is the temp being copied to heap memory.
 
-Is the end goal of the page_pool changes to remove driver private caches?
+This is the only use of rssi_rid
 
+Why not do the alloc in PC4500_read ?
+
+The call would be something like
+
+status = PC4500_readrid(ai, RID_RSSI, &ai->rssi, sizeof(), lock)
+
+or since ai, is common reduce the signature of the function and make the call
+
+PC4500_readid(ai, RID_RSSI, lock)
+
+Tom
+
+> -		}
+> -		else {
+> -			kfree(ai->rssi);
+> -			ai->rssi = NULL;
+> -			if (cap_rid.softCap & cpu_to_le16(8))
+> -				ai->config.rmode |= RXMODE_NORMALIZED_RSSI;
+> -			else
+> -				airo_print_warn(ai->dev->name, "unknown received signal "
+> -						"level scale");
+> -		}
+> -		ai->config.opmode = adhoc ? MODE_STA_IBSS : MODE_STA_ESS;
+> -		set_auth_type(ai, AUTH_OPEN);
+> -		ai->config.modulation = MOD_CCK;
+> -
+> -		if (le16_to_cpu(cap_rid.len) >= sizeof(cap_rid) &&
+> -		    (cap_rid.extSoftCap & cpu_to_le16(1)) &&
+> -		    micsetup(ai) == SUCCESS) {
+> -			ai->config.opmode |= MODE_MIC;
+> -			set_bit(FLAG_MIC_CAPABLE, &ai->flags);
+> -		}
+> -
+> -		/* Save off the MAC */
+> -		for (i = 0; i < ETH_ALEN; i++) {
+> -			mac[i] = ai->config.macAddr[i];
+> -		}
+> -
+> -		/* Check to see if there are any insmod configured
+> -		   rates to add */
+> -		if (rates[0]) {
+> -			memset(ai->config.rates, 0, sizeof(ai->config.rates));
+> -			for (i = 0; i < 8 && rates[i]; i++) {
+> -				ai->config.rates[i] = rates[i];
+> -			}
+> -		}
+> -		set_bit (FLAG_COMMIT, &ai->flags);
+> +		status = airo_readconfig(ai, mac, lock);
+> +		if (status != SUCCESS)
+> +			return ERROR;
+>  	}
+>  
+>  	/* Setup the SSIDs if present */
 
