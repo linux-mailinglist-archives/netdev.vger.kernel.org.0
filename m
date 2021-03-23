@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2448346E12
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:04:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A72A7346E16
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:04:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234418AbhCXAD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 20:03:56 -0400
+        id S234427AbhCXAD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 20:03:57 -0400
 Received: from mga17.intel.com ([192.55.52.151]:37587 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234352AbhCXADY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 20:03:24 -0400
-IronPort-SDR: AQG7QsRROwl0v4j+8qzD3+L64SgpGMui0/0K0O/wPFQFmcY98U6/UnDyzVVrPkuP/gq/hdswim
- W9M01GYVCVXA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="170556556"
+        id S234353AbhCXADZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 20:03:25 -0400
+IronPort-SDR: tpYKHhLTf/TsHVdzYSvQVHEci9ii1VK2EMztqEU/5bDWTbXKm6IdtEuTYTWaMSzRLVHIDaM5TR
+ MefZjIq25t3Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="170556561"
 X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
-   d="scan'208";a="170556556"
+   d="scan'208";a="170556561"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:23 -0700
-IronPort-SDR: rBStZjcoJsKkCENIvYcmkc8LL6CTEZvHPQcb2ZHxEn31wua0tmXR7lifi+Cz0K1ji5g9uODHuE
- iWzj2/dmSBUA==
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:24 -0700
+IronPort-SDR: BLIjnca5IwdflBQiAsGTVW5OkHWsEGkHn2fOzX9u4ihm0MiTNzTtBWWJRLOpa7uR7v5E66aerD
+ wq80FhMHUOSw==
 X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
-   d="scan'208";a="381542200"
+   d="scan'208";a="381542203"
 Received: from ssaleem-mobl.amr.corp.intel.com ([10.209.103.207])
   by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:23 -0700
 From:   Shiraz Saleem <shiraz.saleem@intel.com>
@@ -30,9 +30,9 @@ To:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
 Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         david.m.ertman@intel.com, anthony.l.nguyen@intel.com,
         Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH v2 04/23] ice: Register auxiliary device to provide RDMA
-Date:   Tue, 23 Mar 2021 18:59:48 -0500
-Message-Id: <20210324000007.1450-5-shiraz.saleem@intel.com>
+Subject: [PATCH v2 05/23] ice: Add devlink params support
+Date:   Tue, 23 Mar 2021 18:59:49 -0500
+Message-Id: <20210324000007.1450-6-shiraz.saleem@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20210324000007.1450-1-shiraz.saleem@intel.com>
 References: <20210324000007.1450-1-shiraz.saleem@intel.com>
@@ -42,272 +42,335 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+Add two new runtime RDMA related devlink parameters to ice
+driver. 'rdma_resource_limits_sel' is driver-specific
+while 'rdma_protocol' is generic. Configuration changes
+result in unplugging the auxiliary RDMA device and re-plugging
+it with updated values for irdma auxiiary driver to consume at
+drv.probe()
 
-Register ice client auxiliary RDMA device on the auxiliary bus per
-PCIe device function for the auxiliary driver (irdma) to attach to.
-It allows to realize a single RDMA driver (irdma) capable of working with
-multiple netdev drivers over multi-generation Intel HW supporting RDMA.
-There is no load ordering dependencies between ice and irdma.
-
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
 ---
- drivers/net/ethernet/intel/Kconfig        |   1 +
- drivers/net/ethernet/intel/ice/ice.h      |   8 +-
- drivers/net/ethernet/intel/ice/ice_idc.c  | 123 ++++++++++++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_main.c |   9 +++
- 4 files changed, 140 insertions(+), 1 deletion(-)
+ .../networking/devlink/devlink-params.rst          |   6 +
+ Documentation/networking/devlink/ice.rst           |  35 +++++
+ drivers/net/ethernet/intel/ice/ice_devlink.c       | 146 ++++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_devlink.h       |   6 +
+ drivers/net/ethernet/intel/ice/ice_main.c          |   2 +
+ include/net/devlink.h                              |   4 +
+ net/core/devlink.c                                 |   5 +
+ 7 files changed, 202 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index 5aa8631..cbc5968 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -294,6 +294,7 @@ config ICE
- 	tristate "Intel(R) Ethernet Connection E800 Series Support"
- 	default n
- 	depends on PCI_MSI
-+	select AUXILIARY_BUS
- 	select NET_DEVLINK
- 	select PLDMFW
- 	help
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 561f8fd..41bae4d0 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -34,6 +34,7 @@
- #include <linux/if_bridge.h>
- #include <linux/ctype.h>
- #include <linux/bpf.h>
-+#include <linux/auxiliary_bus.h>
- #include <linux/avf/virtchnl.h>
- #include <linux/cpu_rmap.h>
- #include <net/devlink.h>
-@@ -633,6 +634,8 @@ static inline void ice_clear_sriov_cap(struct ice_pf *pf)
- void ice_fill_rss_lut(u8 *lut, u16 rss_table_size, u16 rss_size);
- int ice_schedule_reset(struct ice_pf *pf, enum ice_reset_req reset);
- void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
-+int ice_plug_aux_devs(struct ice_pf *pf);
-+void ice_unplug_aux_devs(struct ice_pf *pf);
- int ice_init_aux_devices(struct ice_pf *pf);
- int
- ice_for_each_aux(struct ice_pf *pf, void *data,
-@@ -667,8 +670,10 @@ int ice_aq_wait_for_event(struct ice_pf *pf, u16 opcode, unsigned long timeout,
-  */
- static inline void ice_set_rdma_cap(struct ice_pf *pf)
- {
--	if (pf->hw.func_caps.common_cap.iwarp && pf->num_rdma_msix)
-+	if (pf->hw.func_caps.common_cap.iwarp && pf->num_rdma_msix) {
- 		set_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+		ice_plug_aux_devs(pf);
-+	}
- }
+diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
+index 54c9f10..0b454c3 100644
+--- a/Documentation/networking/devlink/devlink-params.rst
++++ b/Documentation/networking/devlink/devlink-params.rst
+@@ -114,3 +114,9 @@ own name.
+        will NACK any attempt of other host to reset the device. This parameter
+        is useful for setups where a device is shared by different hosts, such
+        as multi-host setup.
++   * - ``rdma_protocol``
++     - string
++     - Selects the RDMA protocol selected for multi-protocol devices.
++        - ``iwarp`` iWARP
++	- ``roce`` RoCE
++	- ``ib`` Infiniband
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+index a432dc4..28ac332 100644
+--- a/Documentation/networking/devlink/ice.rst
++++ b/Documentation/networking/devlink/ice.rst
+@@ -193,3 +193,38 @@ Users can request an immediate capture of a snapshot via the
+     0000000000000210 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
  
- /**
-@@ -677,6 +682,7 @@ static inline void ice_set_rdma_cap(struct ice_pf *pf)
-  */
- static inline void ice_clear_rdma_cap(struct ice_pf *pf)
- {
-+	ice_unplug_aux_devs(pf);
- 	clear_bit(ICE_FLAG_IWARP_ENA, pf->flags);
- }
- #endif /* _ICE_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index 916c356..7423443 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -584,6 +584,109 @@ int ice_cdev_info_update_vsi(struct iidc_core_dev_info *cdev_info, void *data)
+     $ devlink region delete pci/0000:01:00.0/device-caps snapshot 1
++
++Parameters
++==========
++
++The ``ice`` driver implements the following generic and driver-specific
++parameters.
++
++.. list-table:: Generic parameters implemented
++
++   * - Name
++     - Mode
++   * - ``rdma_protocol``
++     - runtime
++
++.. list-table:: Driver-specific parameters implemented
++   :widths: 5 5 5 85
++
++   * - Name
++     - Type
++     - Mode
++     - Description
++   * - ``rdma_resource_limits_sel``
++     - string
++     - runtime
++     - Selector to limit the RDMA resources configured for the device. The range
++       is between 0 and 7 with a default value equal to 3. Each selector supports
++       up to the value specified in the table.
++          - 0: 128 QPs
++          - 1: 1K QPs
++          - 2: 2K QPs
++          - 3: 4K QPs
++          - 4: 16K QPs
++          - 5: 64K QPs
++          - 6: 128K QPs
++          - 7: 256K QPs
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index cf685ee..3e53cc4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -449,6 +449,113 @@ static int ice_devlink_info_get(struct devlink *devlink,
+ 	.flash_update = ice_devlink_flash_update,
  };
  
- /**
-+ * ice_cdev_info_adev_release - function to be mapped to aux dev's release op
-+ * @dev: pointer to device to free
-+ */
-+static void ice_cdev_info_adev_release(struct device *dev)
++static int
++ice_devlink_rdma_limits_sel_get(struct devlink *devlink, u32 id,
++				struct devlink_param_gset_ctx *ctx)
 +{
-+	struct iidc_auxiliary_dev *iadev;
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct iidc_core_dev_info *cdev_info =
++		ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
 +
-+	iadev = container_of(dev, struct iidc_auxiliary_dev, adev.dev);
-+	kfree(iadev->adev.name);
-+	kfree(iadev);
++	ctx->val.vu8 = cdev_info->rdma_limits_sel;
++
++	return 0;
 +}
 +
-+/**
-+ * ice_plug_aux_devs - allocate and register one aux dev per cdev_info in PF
-+ * @pf: pointer to pf struct
-+ */
-+int ice_plug_aux_devs(struct ice_pf *pf)
++static int
++ice_devlink_rdma_limits_sel_set(struct devlink *devlink, u32 id,
++				struct devlink_param_gset_ctx *ctx)
 +{
-+	struct iidc_auxiliary_dev *iadev;
-+	int ret, i;
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct iidc_core_dev_info *cdev_info =
++		ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
 +
-+	if (!pf->cdev_infos)
++	if (ctx->val.vu8 != cdev_info->rdma_limits_sel) {
++		ice_unplug_aux_devs(pf);
++		cdev_info->rdma_limits_sel = ctx->val.vu8;
++		ice_plug_aux_devs(pf);
++	}
++
++	return 0;
++}
++
++static int
++ice_devlink_rdma_limits_sel_validate(struct devlink *devlink, u32 id,
++				     union devlink_param_value val,
++				     struct netlink_ext_ack *extack)
++{
++	if (val.vu8 > IIDC_RDMA_LIMITS_SEL_7) {
++		NL_SET_ERR_MSG_MOD(extack, "RDMA resource limits selector range is (0-7)");
++		return -ERANGE;
++	}
++
++	return 0;
++}
++
++static int
++ice_devlink_rdma_prot_get(struct devlink *devlink, u32 id,
++			  struct devlink_param_gset_ctx *ctx)
++{
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct iidc_core_dev_info *cdev_info =
++		ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
++
++	if (cdev_info->rdma_protocol == IIDC_RDMA_PROTOCOL_IWARP)
++		strcpy(ctx->val.vstr, "iwarp");
++	else
++		strcpy(ctx->val.vstr, "roce");
++
++	return 0;
++}
++
++static int
++ice_devlink_rdma_prot_set(struct devlink *devlink, u32 id,
++			  struct devlink_param_gset_ctx *ctx)
++{
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct iidc_core_dev_info *cdev_info =
++		ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
++	enum iidc_rdma_protocol prot = !strcmp(ctx->val.vstr, "iwarp") ?
++					IIDC_RDMA_PROTOCOL_IWARP :
++					IIDC_RDMA_PROTOCOL_ROCEV2;
++
++	if (cdev_info->rdma_protocol != prot) {
++		ice_unplug_aux_devs(pf);
++		cdev_info->rdma_protocol = prot;
++		ice_plug_aux_devs(pf);
++	}
++
++	return 0;
++}
++
++static int
++ice_devlink_rdma_prot_validate(struct devlink *devlink, u32 id,
++			       union devlink_param_value val,
++			       struct netlink_ext_ack *extack)
++{
++	char *value = val.vstr;
++
++	if (!strcmp(value, "iwarp") || !strcmp(value, "roce"))
 +		return 0;
 +
-+	for (i = 0; i < ARRAY_SIZE(ice_cdev_ids); i++) {
-+		struct iidc_core_dev_info *cdev_info;
-+		struct auxiliary_device *adev;
++	NL_SET_ERR_MSG_MOD(extack, "\"iwarp\" and \"roce\" are the only supported values");
 +
-+		cdev_info = pf->cdev_infos[i];
-+		if (!cdev_info)
-+			continue;
-+
-+		iadev = kzalloc(sizeof(*iadev), GFP_KERNEL);
-+		if (!iadev)
-+			return -ENOMEM;
-+
-+		adev = &iadev->adev;
-+		cdev_info->adev = adev;
-+		iadev->cdev_info = cdev_info;
-+
-+		if (ice_cdev_ids[i].id == IIDC_RDMA_ID) {
-+			if (cdev_info->rdma_protocol ==
-+			    IIDC_RDMA_PROTOCOL_IWARP)
-+				adev->name = kasprintf(GFP_KERNEL, "%s_%s",
-+						       ice_cdev_ids[i].name,
-+						       "iwarp");
-+			else
-+				adev->name = kasprintf(GFP_KERNEL, "%s_%s",
-+						       ice_cdev_ids[i].name,
-+						       "roce");
-+		} else {
-+			adev->name = kasprintf(GFP_KERNEL, "%s",
-+					       ice_cdev_ids[i].name);
-+		}
-+		adev->id = pf->aux_idx;
-+		adev->dev.release = ice_cdev_info_adev_release;
-+		adev->dev.parent = &cdev_info->pdev->dev;
-+
-+		ret = auxiliary_device_init(adev);
-+		if (ret) {
-+			cdev_info->adev = NULL;
-+			kfree(adev->name);
-+			kfree(iadev);
-+			return ret;
-+		}
-+
-+		ret = auxiliary_device_add(adev);
-+		if (ret) {
-+			cdev_info->adev = NULL;
-+			auxiliary_device_uninit(adev);
-+			return ret;
-+		}
-+	}
-+
-+	return ret;
++	return -EINVAL;
 +}
 +
-+/**
-+ * ice_unplug_aux_devs - unregister and free aux devs
-+ * @pf: pointer to pf struct
-+ */
-+void ice_unplug_aux_devs(struct ice_pf *pf)
-+{
-+	int i;
++static const struct devlink_param ice_devlink_params[] = {
++	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_RDMA_LIMITS_SELECTOR,
++			     "rdma_resource_limits_sel", DEVLINK_PARAM_TYPE_U8,
++			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			     ice_devlink_rdma_limits_sel_get,
++			     ice_devlink_rdma_limits_sel_set,
++			     ice_devlink_rdma_limits_sel_validate),
++	DEVLINK_PARAM_GENERIC(RDMA_PROTOCOL, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			      ice_devlink_rdma_prot_get,
++			      ice_devlink_rdma_prot_set,
++			      ice_devlink_rdma_prot_validate),
++};
 +
-+	if (!pf->cdev_infos)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(ice_cdev_ids); i++) {
-+		struct iidc_core_dev_info *cdev_info;
-+
-+		cdev_info = pf->cdev_infos[i];
-+		/* if this aux dev has already been unplugged move on */
-+		if (!cdev_info->adev)
-+			continue;
-+
-+		auxiliary_device_delete(cdev_info->adev);
-+		auxiliary_device_uninit(cdev_info->adev);
-+		cdev_info->adev = NULL;
-+	}
-+}
-+
-+/**
-  * ice_init_aux_devices - initializes cdev_info objects and aux devices
-  * @pf: ptr to ice_pf
-  */
-@@ -615,6 +718,19 @@ int ice_init_aux_devices(struct ice_pf *pf)
- 		struct msix_entry *entry = NULL;
- 		int j;
+ static void ice_devlink_free(void *devlink_ptr)
+ {
+ 	devlink_free((struct devlink *)devlink_ptr);
+@@ -491,15 +598,36 @@ int ice_devlink_register(struct ice_pf *pf)
+ {
+ 	struct devlink *devlink = priv_to_devlink(pf);
+ 	struct device *dev = ice_pf_to_dev(pf);
++	union devlink_param_value value;
+ 	int err;
  
-+		/* structure layout needed for container_of's looks like:
-+		 * iidc_auxiliary_dev (container_of super-struct for adev)
-+		 * |--> auxiliary_device
-+		 * |--> *iidc_core_dev_info (pointer from cdev_info struct)
-+		 *
-+		 * The iidc_auxiliary_device has a lifespan as long as it
-+		 * is on the bus.  Once removed it will be freed and a new
-+		 * one allocated if needed to re-add.
-+		 *
-+		 * The iidc_core_dev_info is tied to the life of the PF, and
-+		 * will exist as long as the PF driver is loaded.  It will be
-+		 * freed in the remove flow for the PF driver.
-+		 */
- 		cdev_info = kzalloc(sizeof(*cdev_info), GFP_KERNEL);
- 		if (!cdev_info) {
- 			ida_simple_remove(&ice_cdev_info_ida, pf->aux_idx);
-@@ -667,5 +783,12 @@ int ice_init_aux_devices(struct ice_pf *pf)
- 		cdev_info->msix_entries = entry;
+ 	err = devlink_register(devlink, dev);
++	if (err)
++		goto err;
++
++	err = devlink_params_register(devlink, ice_devlink_params,
++				      ARRAY_SIZE(ice_devlink_params));
+ 	if (err) {
+-		dev_err(dev, "devlink registration failed: %d\n", err);
+-		return err;
++		devlink_unregister(devlink);
++		goto err;
  	}
  
-+	ret = ice_plug_aux_devs(pf);
-+	if (ret) {
-+		ice_unplug_aux_devs(pf);
-+		ice_for_each_aux(pf, NULL, ice_unroll_cdev_info);
-+		ida_simple_remove(&ice_cdev_info_ida, pf->aux_idx);
-+	}
++	value.vu8 = IIDC_RDMA_LIMITS_SEL_3;
++	devlink_param_driverinit_value_set(devlink,
++					   ICE_DEVLINK_PARAM_ID_RDMA_LIMITS_SELECTOR,
++					   value);
 +
- 	return ret;
++	strcpy(value.vstr, "iwarp");
++	devlink_param_driverinit_value_set(devlink,
++					   DEVLINK_PARAM_GENERIC_ID_RDMA_PROTOCOL,
++					   value);
++
+ 	return 0;
++
++err:
++	dev_err(dev, "devlink registration failed: %d\n", err);
++
++	return err;
  }
+ 
+ /**
+@@ -510,10 +638,24 @@ int ice_devlink_register(struct ice_pf *pf)
+  */
+ void ice_devlink_unregister(struct ice_pf *pf)
+ {
++	devlink_params_unregister(priv_to_devlink(pf), ice_devlink_params,
++				  ARRAY_SIZE(ice_devlink_params));
+ 	devlink_unregister(priv_to_devlink(pf));
+ }
+ 
+ /**
++ * ice_devlink_params_publish - Publish devlink param
++ * @pf: the PF structure to cleanup
++ *
++ * Publish previously registered devlink parameters after driver
++ * is initialized
++ */
++void ice_devlink_params_publish(struct ice_pf *pf)
++{
++	devlink_params_publish(priv_to_devlink(pf));
++}
++
++/**
+  * ice_devlink_create_port - Create a devlink port for this VSI
+  * @vsi: the VSI to create a port for
+  *
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
+index e07e744..865f797 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.h
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
+@@ -4,10 +4,16 @@
+ #ifndef _ICE_DEVLINK_H_
+ #define _ICE_DEVLINK_H_
+ 
++enum ice_devlink_param_id {
++	ICE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
++	ICE_DEVLINK_PARAM_ID_RDMA_LIMITS_SELECTOR,
++};
++
+ struct ice_pf *ice_allocate_pf(struct device *dev);
+ 
+ int ice_devlink_register(struct ice_pf *pf);
+ void ice_devlink_unregister(struct ice_pf *pf);
++void ice_devlink_params_publish(struct ice_pf *pf);
+ int ice_devlink_create_port(struct ice_vsi *vsi);
+ void ice_devlink_destroy_port(struct ice_vsi *vsi);
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 2913770..4b03157 100644
+index 4b03157..789aa39 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -466,6 +466,8 @@ static void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked)
- 	if (test_bit(__ICE_PREPARED_FOR_RESET, pf->state))
- 		return;
- 
-+	ice_unplug_aux_devs(pf);
-+
- 	/* Notify VFs of impending reset */
- 	if (ice_check_sq_alive(hw, &hw->mailboxq))
- 		ice_vc_notify_reset(pf);
-@@ -2122,6 +2124,8 @@ int ice_schedule_reset(struct ice_pf *pf, enum ice_reset_req reset)
- 		return -EBUSY;
+@@ -4346,6 +4346,8 @@ static void ice_print_wake_reason(struct ice_pf *pf)
+ 		dev_warn(dev, "RDMA is not supported on this device\n");
  	}
  
-+	ice_unplug_aux_devs(pf);
++	ice_devlink_params_publish(pf);
 +
- 	switch (reset) {
- 	case ICE_RESET_PFR:
- 		set_bit(__ICE_PFR_REQ, pf->state);
-@@ -4463,6 +4467,7 @@ static void ice_remove(struct pci_dev *pdev)
- 	ice_service_task_stop(pf);
+ 	return 0;
  
- 	ice_aq_cancel_waiting_tasks(pf);
-+	ice_unplug_aux_devs(pf);
- 	ice_for_each_aux(pf, NULL, ice_unroll_cdev_info);
- 	set_bit(__ICE_DOWN, pf->state);
+ err_init_aux_unroll:
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 853420d..09e4d76 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -498,6 +498,7 @@ enum devlink_param_generic_id {
+ 	DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
+ 	DEVLINK_PARAM_GENERIC_ID_ENABLE_REMOTE_DEV_RESET,
++	DEVLINK_PARAM_GENERIC_ID_RDMA_PROTOCOL,
  
-@@ -4620,6 +4625,8 @@ static int __maybe_unused ice_suspend(struct device *dev)
- 	 */
- 	disabled = ice_service_task_stop(pf);
+ 	/* add new param generic ids above here*/
+ 	__DEVLINK_PARAM_GENERIC_ID_MAX,
+@@ -538,6 +539,9 @@ enum devlink_param_generic_id {
+ #define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME "enable_remote_dev_reset"
+ #define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
  
-+	ice_unplug_aux_devs(pf);
++#define DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_NAME "rdma_protocol"
++#define DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_TYPE DEVLINK_PARAM_TYPE_STRING
 +
- 	/* Already suspended?, then there is nothing to do */
- 	if (test_and_set_bit(__ICE_SUSPENDED, pf->state)) {
- 		if (!disabled)
-@@ -6193,6 +6200,8 @@ static void ice_rebuild(struct ice_pf *pf, enum ice_reset_req reset_type)
+ #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
+ {									\
+ 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 737b61c..1bb3865 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -3766,6 +3766,11 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+ 		.name = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME,
+ 		.type = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE,
+ 	},
++	{
++		.id = DEVLINK_PARAM_GENERIC_ID_RDMA_PROTOCOL,
++		.name = DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_NAME,
++		.type = DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_TYPE,
++	},
+ };
  
- 	/* if we get here, reset flow is successful */
- 	clear_bit(__ICE_RESET_FAILED, pf->state);
-+
-+	ice_plug_aux_devs(pf);
- 	return;
- 
- err_vsi_rebuild:
+ static int devlink_param_generic_verify(const struct devlink_param *param)
 -- 
 1.8.3.1
 
