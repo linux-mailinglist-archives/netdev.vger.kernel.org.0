@@ -2,222 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6873457E4
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 07:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E45073457FC
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 07:50:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbhCWGjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 02:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        id S230009AbhCWGt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 02:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbhCWGic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 02:38:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056CAC061756
-        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 23:38:32 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1lOag2-0007ur-BO; Tue, 23 Mar 2021 07:38:06 +0100
-Subject: Re: [RFC v3] net: sched: implement TCQ_F_CAN_BYPASS for lockless
- qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     olteanv@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        andriin@fb.com, edumazet@google.com, weiwan@google.com,
-        cong.wang@bytedance.com, ap420073@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@openeuler.org, mkl@pengutronix.de,
-        linux-can@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, bpf@vger.kernel.org,
-        jonas.bonn@netrounds.com, pabeni@redhat.com, mzhivich@akamai.com,
-        johunt@akamai.com, albcamus@gmail.com, kehuan.feng@gmail.com
-References: <1616050402-37023-1-git-send-email-linyunsheng@huawei.com>
- <1616404156-11772-1-git-send-email-linyunsheng@huawei.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Message-ID: <5bef912e-aa7d-8a27-4d18-ac8cf4f7afdf@pengutronix.de>
-Date:   Tue, 23 Mar 2021 07:37:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
-MIME-Version: 1.0
-In-Reply-To: <1616404156-11772-1-git-send-email-linyunsheng@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        with ESMTP id S229943AbhCWGtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 02:49:32 -0400
+Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B81EC061574
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 23:49:28 -0700 (PDT)
+Received: by mail-wr1-x449.google.com with SMTP id y5so654227wrp.2
+        for <netdev@vger.kernel.org>; Mon, 22 Mar 2021 23:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=pditvg/nc0NLp+p2M+bo/XsGI8wzVr1z5D5T5xN+BK0=;
+        b=pD3GJ4+4okoHKwwo6ruL+u4wUBi7/p22gschG4mFHjG+1UHklTrafFGqEVUAEAV1VL
+         HSBAfqGpmArEQJwg1bipPS3fR8+FxmB+QK++3coIYvZkZVSTkZ/ZKvnp0NhfFlynMaTx
+         Lia8SWM8MPDsNxI7IG2J0WyrYJEUFn1eCV+pd5ALQq7A3hBVb/P//I9mv75CoavPoM2r
+         Yrpc5b0vghqmZobcKVN+b7t7zIKD0YKt85YiGO3SVFyL5WMDojbT6YOwjyhnWz56fBZS
+         fOqJ/W5XlWlrFullfwfmE3HZfMcgguY1+D4IChzQAot7rgQv/SYUpxkdwtNNG+YLaTY2
+         PB0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=pditvg/nc0NLp+p2M+bo/XsGI8wzVr1z5D5T5xN+BK0=;
+        b=qiKsPuvDlXwgzQwPkubP+A1SSXAi6u8PoFbF3qErcKh99MzFmOBc+Ar8ndq2iGul9A
+         AUzgd6EZtK2hd0rblzp16OoOsQTvySBrTNmyu12yTNg8MxcdFu840JrENzeoTE8XrnlB
+         m8S+LLOkp5AG6YjJoIpQVjqUb0lhtQersrJOUCRhT1D52BbeRp2xfBRGC1EOkcKnbais
+         OxO4Dhg3XuJTTV6VAhCh2hqe8pd3QlVLr3O8yLsEMk/Cjv2Vsw8EKLsvwyBylSuDjj0p
+         EerWOZPMmNIWxZVTnUcnI7lXKyuMNA4eOjcKynOxxv1lnC4zq3RRSOx/+AmMbuAHnWiu
+         DnfA==
+X-Gm-Message-State: AOAM531kWsT1NwvDqliv2wfsDItNb9utmmjP9zvDnQDDxMlA9RCMnp4+
+        R1bYSanWytkqji47XA7wbCLr75gSeDzO
+X-Google-Smtp-Source: ABdhPJwCEn8gixp+xlt4DyGdnlAg3sme9Kew9fjXQeafOZX+ZOjfUZ+ilzQTeEfnQMi47mt+wi/Q5YfHX7Rp
+X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:d80d:9d4d:16e4:a16c])
+ (user=dvyukov job=sendgmr) by 2002:a05:600c:49aa:: with SMTP id
+ h42mr1828173wmp.49.1616482166965; Mon, 22 Mar 2021 23:49:26 -0700 (PDT)
+Date:   Tue, 23 Mar 2021 07:49:23 +0100
+Message-Id: <20210323064923.2098711-1-dvyukov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
+Subject: [PATCH v2] net: make unregister netdev warning timeout configurable
+From:   Dmitry Vyukov <dvyukov@google.com>
+To:     davem@davemloft.net, edumazet@google.com, leon@kernel.org
+Cc:     Dmitry Vyukov <dvyukov@google.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+netdev_wait_allrefs() issues a warning if refcount does not drop to 0
+after 10 seconds. While 10 second wait generally should not happen
+under normal workload in normal environment, it seems to fire falsely
+very often during fuzzing and/or in qemu emulation (~10x slower).
+At least it's not possible to understand if it's really a false
+positive or not. Automated testing generally bumps all timeouts
+to very high values to avoid flake failures.
+Add net.core.netdev_unregister_timeout_secs sysctl to make
+the timeout configurable for automated testing systems.
+Lowering the timeout may also be useful for e.g. manual bisection.
+The default value matches the current behavior.
 
-On 22.03.21 10:09, Yunsheng Lin wrote:
-> Currently pfifo_fast has both TCQ_F_CAN_BYPASS and TCQ_F_NOLOCK
-> flag set, but queue discipline by-pass does not work for lockless
-> qdisc because skb is always enqueued to qdisc even when the qdisc
-> is empty, see __dev_xmit_skb().
-> 
-> This patch calls sch_direct_xmit() to transmit the skb directly
-> to the driver for empty lockless qdisc too, which aviod enqueuing
-> and dequeuing operation. qdisc->empty is set to false whenever a
-> skb is enqueued, see pfifo_fast_enqueue(), and is set to true when
-> skb dequeuing return NULL, see pfifo_fast_dequeue().
-> 
-> There is a data race between enqueue/dequeue and qdisc->empty
-> setting, qdisc->empty is only used as a hint, so we need to call
-> sch_may_need_requeuing() to see if the queue is really empty and if
-> there is requeued skb, which has higher priority than the current
-> skb.
-> 
-> The performance for ip_forward test increases about 10% with this
-> patch.
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
-> Hi, Vladimir and Ahmad
-> 	Please give it a test to see if there is any out of order
-> packet for this patch, which has removed the priv->lock added in
-> RFC v2.
+Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+Fixes: https://bugzilla.kernel.org/show_bug.cgi?id=211877
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Overnight test (10h, 64 mil frames) didn't see any out-of-order frames
-between 2 FlexCANs on a dual core machine:
+---
+Changes since v1:
+ - use sysctl instead of a config
+---
+ Documentation/admin-guide/sysctl/net.rst | 11 +++++++++++
+ include/linux/netdevice.h                |  1 +
+ net/core/dev.c                           |  6 +++++-
+ net/core/sysctl_net_core.c               | 10 ++++++++++
+ 4 files changed, 27 insertions(+), 1 deletion(-)
 
-Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+index f2ab8a5b6a4b8..2090bfc69aa50 100644
+--- a/Documentation/admin-guide/sysctl/net.rst
++++ b/Documentation/admin-guide/sysctl/net.rst
+@@ -311,6 +311,17 @@ permit to distribute the load on several cpus.
+ If set to 1 (default), timestamps are sampled as soon as possible, before
+ queueing.
+ 
++netdev_unregister_timeout_secs
++------------------------------
++
++Unregister network device timeout in seconds.
++This option controls the timeout (in seconds) used to issue a warning while
++waiting for a network device refcount to drop to 0 during device
++unregistration. A lower value may be useful during bisection to detect
++a leaked reference faster. A larger value may be useful to prevent false
++warnings on slow/loaded systems.
++Default value is 10, minimum 0, maximum 3600.
++
+ optmem_max
+ ----------
+ 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 87a5d186faff4..179c5693f5119 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4611,6 +4611,7 @@ void dev_get_tstats64(struct net_device *dev, struct rtnl_link_stats64 *s);
+ 
+ extern int		netdev_max_backlog;
+ extern int		netdev_tstamp_prequeue;
++extern int		netdev_unregister_timeout_secs;
+ extern int		weight_p;
+ extern int		dev_weight_rx_bias;
+ extern int		dev_weight_tx_bias;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0f72ff5d34ba0..7accbd4a3bec1 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10344,6 +10344,8 @@ int netdev_refcnt_read(const struct net_device *dev)
+ }
+ EXPORT_SYMBOL(netdev_refcnt_read);
+ 
++int netdev_unregister_timeout_secs __read_mostly = 10;
++
+ #define WAIT_REFS_MIN_MSECS 1
+ #define WAIT_REFS_MAX_MSECS 250
+ /**
+@@ -10405,7 +10407,9 @@ static void netdev_wait_allrefs(struct net_device *dev)
+ 
+ 		refcnt = netdev_refcnt_read(dev);
+ 
+-		if (refcnt && time_after(jiffies, warning_time + 10 * HZ)) {
++		if (refcnt &&
++		    time_after(jiffies, warning_time +
++			       netdev_unregister_timeout_secs * HZ)) {
+ 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+ 				 dev->name, refcnt);
+ 			warning_time = jiffies;
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 4567de519603b..d84c8a1b280e2 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -24,6 +24,7 @@
+ 
+ static int two = 2;
+ static int three = 3;
++static int int_3600 = 3600;
+ static int min_sndbuf = SOCK_MIN_SNDBUF;
+ static int min_rcvbuf = SOCK_MIN_RCVBUF;
+ static int max_skb_frags = MAX_SKB_FRAGS;
+@@ -570,6 +571,15 @@ static struct ctl_table net_core_table[] = {
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ONE,
+ 	},
++	{
++		.procname	= "netdev_unregister_timeout_secs",
++		.data		= &netdev_unregister_timeout_secs,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= &int_3600,
++	},
+ 	{ }
+ };
+ 
 
-No performance measurements taken.
-
-> 
-> There is a data race as below:
-> 
->       CPU1                                   CPU2
-> qdisc_run_begin(q)                            .
->         .                                q->enqueue()
-> sch_may_need_requeuing()                      .
->     return true                               .
->         .                                     .
->         .                                     .
->     q->enqueue()                              .
-> 
-> When above happen, the skb enqueued by CPU1 is dequeued after the
-> skb enqueued by CPU2 because sch_may_need_requeuing() return true.
-> If there is not qdisc bypass, the CPU1 has better chance to queue
-> the skb quicker than CPU2.
-> 
-> This patch does not take care of the above data race, because I
-> view this as similar as below:
-> 
-> Even at the same time CPU1 and CPU2 write the skb to two socket
-> which both heading to the same qdisc, there is no guarantee that
-> which skb will hit the qdisc first, becuase there is a lot of
-> factor like interrupt/softirq/cache miss/scheduling afffecting
-> that.
-> 
-> So I hope the above data race will not cause problem for Vladimir
-> and Ahmad.
-> ---
->  include/net/pkt_sched.h   |  1 +
->  include/net/sch_generic.h |  1 -
->  net/core/dev.c            | 22 ++++++++++++++++++++++
->  net/sched/sch_generic.c   | 11 +++++++++++
->  4 files changed, 34 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index f5c1bee..5715ddf 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -122,6 +122,7 @@ void qdisc_warn_nonwc(const char *txt, struct Qdisc *qdisc);
->  bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
->  		     struct net_device *dev, struct netdev_queue *txq,
->  		     spinlock_t *root_lock, bool validate);
-> +bool sch_may_need_requeuing(struct Qdisc *q);
->  
->  void __qdisc_run(struct Qdisc *q);
->  
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index f7a6e14..e08cc77 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -161,7 +161,6 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
->  	if (qdisc->flags & TCQ_F_NOLOCK) {
->  		if (!spin_trylock(&qdisc->seqlock))
->  			return false;
-> -		WRITE_ONCE(qdisc->empty, false);
->  	} else if (qdisc_is_running(qdisc)) {
->  		return false;
->  	}
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index be941ed..317180a 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -3796,9 +3796,31 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
->  	qdisc_calculate_pkt_len(skb, q);
->  
->  	if (q->flags & TCQ_F_NOLOCK) {
-> +		if (q->flags & TCQ_F_CAN_BYPASS && READ_ONCE(q->empty) &&
-> +		    qdisc_run_begin(q)) {
-> +			if (sch_may_need_requeuing(q)) {
-> +				rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-> +				__qdisc_run(q);
-> +				qdisc_run_end(q);
-> +
-> +				goto no_lock_out;
-> +			}
-> +
-> +			qdisc_bstats_cpu_update(q, skb);
-> +
-> +			if (sch_direct_xmit(skb, q, dev, txq, NULL, true) &&
-> +			    !READ_ONCE(q->empty))
-> +				__qdisc_run(q);
-> +
-> +			qdisc_run_end(q);
-> +			return NET_XMIT_SUCCESS;
-> +		}
-> +
->  		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-> +		WRITE_ONCE(q->empty, false);
->  		qdisc_run(q);
->  
-> +no_lock_out:
->  		if (unlikely(to_free))
->  			kfree_skb_list(to_free);
->  		return rc;
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 44991ea..2145fdad 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -146,6 +146,8 @@ static inline void dev_requeue_skb(struct sk_buff *skb, struct Qdisc *q)
->  	}
->  	if (lock)
->  		spin_unlock(lock);
-> +
-> +	WRITE_ONCE(q->empty, false);
->  	__netif_schedule(q);
->  }
->  
-> @@ -273,6 +275,15 @@ static struct sk_buff *dequeue_skb(struct Qdisc *q, bool *validate,
->  	return skb;
->  }
->  
-> +bool sch_may_need_requeuing(struct Qdisc *q)
-> +{
-> +	if (likely(skb_queue_empty(&q->gso_skb) &&
-> +		   !q->ops->peek(q)))
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
->  /*
->   * Transmit possibly several skbs, and handle the return status as
->   * required. Owning running seqcount bit guarantees that
-> 
-
+base-commit: e0c755a45f6fb6e81e3a62a94db0400ef0cdc046
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.31.0.291.g576ba9dcdaf-goog
+
