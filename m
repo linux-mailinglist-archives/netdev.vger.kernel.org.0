@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 234653461EE
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E0334621C
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbhCWOxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 10:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
+        id S232464AbhCWO6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 10:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232384AbhCWOvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:51:44 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DACC0613DA
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:51:44 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id t6so18395618ilp.11
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 07:51:44 -0700 (PDT)
+        with ESMTP id S232328AbhCWO6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:58:03 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96353C061574;
+        Tue, 23 Mar 2021 07:58:03 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id 31-20020a9d00220000b02901b64b9b50b1so19690209ota.9;
+        Tue, 23 Mar 2021 07:58:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FQFA2QStDKmo1XhVZ4KOEMpN+hi3li+F67WfkjwPMWs=;
-        b=zOGbG6kWxYv/NlO/UnfFSMX/b4KNsvakNYB0BuVUaMu+r/cb1KKJkcYzOfVVdxIDQt
-         LKtV5VMiZYglWsahrSr+NInVD4CJhyBYX+qYtAHUR4mEvDr9n6hYmZW5PcK6XT7p9ZCq
-         fJqDixNQyDr3nZEWA9sJEjDDE0agrqcYzc70gayldLDTJx44pQVgMcUsqPDYWKEOWZuu
-         wK7XgpTzbdlNutONYHLM+J7ZjQEsgI9iKNLa9ShWKfbthkb+YeZVmN2cfzXP9giLrIZ4
-         vMoPXTdjgEsufogygjs8N1mPhfzD+6tOAhC8ATMQZoXjxiKgYhDLivA6dKG70UPdZKL7
-         4ScA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pBTbJ1gqi6qZwGjIPLuEyNrn1jPsCIcXzL71BITfVqc=;
+        b=WXQNB9fjlah/beKPue2wrQpvMFcQ8DSm5+6P1bqhDdQTBRYp0pJHUr763Vs7ZlvwLa
+         L8fGcDyauTE7mItfKvlUxAMyEvBzpvW473HrmtiCirb6LmbVYJoU6i2kF3em2We4uB3a
+         m9/0m9Wh5hGviZI7LBCN0adW/0bwNRjUo5oE2ryqR6ZQsXnEXMKEWlrCRbEHw5CvydKk
+         K5KEpN3w9QV11FLFbM3oD6Jm7Wq7oFa0I9HNOKfTw+YYAB1qBpalBze4IBwWPRpbB4UX
+         FC3dInEH35bCapJCUDLCgjMWVUYz4yTJD6546Fa3mKlpL2B/jJakvmZQ9pdHFO5s7M2Q
+         jWSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FQFA2QStDKmo1XhVZ4KOEMpN+hi3li+F67WfkjwPMWs=;
-        b=QVphS9GFjXNYtpO1rQDiOFZE3RtnfLVdv4zDjGvbq3n2Z8XylULgyhBs4BJ2MxTPwZ
-         Htx/5V9bI4IWhiv05I/OZ39bJaZIzvv0A+kJoBQ9qSF7FO01fR7vQbJ2MFigwnDGYPHx
-         L135yoaXR0+7I1nRsQLsoIgAqj9FpRuxmdR3Kzvvf94G7GgcZD4xLa8rIR10n+BUZiKT
-         CQjeng9DetANwxZnyKIPqPZ+3NdcaMdwdAh3YHsQn0foGBXaJtwjk7TjZbvoEebgcPlP
-         EUQ9wulwb1KzAZp/94mzvz/5TiVCDKHxTxuq0e/I8dZdcoTaxMz7kNWyd2ZAezbotX8R
-         S7nw==
-X-Gm-Message-State: AOAM5306LOJlKY015mQby4LjRnl4B5OLYi36ME8Ro85ELNhLrc1SdV27
-        JdIbQH6Jh3kpdGtybryLKljPnWNgL8xyxPke
-X-Google-Smtp-Source: ABdhPJwWaESy2v2a/l30d+CmmAXKFddf6jlFJr2L4jv81ExrD8wwEsTO0K5Rj6BSJ3dsRBCh2XbbKg==
-X-Received: by 2002:a05:6e02:198a:: with SMTP id g10mr4789697ilf.139.1616511103560;
-        Tue, 23 Mar 2021 07:51:43 -0700 (PDT)
-Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id o13sm8961147iob.17.2021.03.23.07.51.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 07:51:43 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/6] net: ipa: increase channels and events
-Date:   Tue, 23 Mar 2021 09:51:32 -0500
-Message-Id: <20210323145132.2291316-7-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210323145132.2291316-1-elder@linaro.org>
-References: <20210323145132.2291316-1-elder@linaro.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pBTbJ1gqi6qZwGjIPLuEyNrn1jPsCIcXzL71BITfVqc=;
+        b=A7VKznta7RrO4K/e6eKS/vf11xyMwVVsbtB/dTP7RryfQCOtHF2kpkM0p/tDmAxv9k
+         w7cxFBNKt0AIJWxaFhYX9BT9dxdfh1KHtCOaGj+uRLQelnBem4tuZnt+ExPEUMOU7FbB
+         JFdRNqEn3XU0QboDNumqKJ1sBuHwGBFUkMYbiEyPuFJxQJFrItX1CJXPVZ5uzNmr+F1x
+         8r/IOeOQzbkFMUuljmDp0ouRg/UGiUAlY9jJohFTOjgwwgo8Sw5ICru9lpjcFm2NeP4Y
+         IcYSb1pSO68plJ4asiul/pcgHCEHwtJBMX3sEDGxuJQPM2ayh27KOI58dBSI3i/64vzL
+         9w6w==
+X-Gm-Message-State: AOAM532re/7PBEvhfu7sd41DYFd+sg/oL9nYClHET48/XyvT6sdspqMa
+        wrDPBWLiWGfGb6MGomh3vnM=
+X-Google-Smtp-Source: ABdhPJzSxbq/FoTwpbbJi7IS9UcsaS8Jb5VWG+fVs0bKzHES3xpvO8J2Z9z54n7eKIDeo1pmYyti5g==
+X-Received: by 2002:a05:6830:17d0:: with SMTP id p16mr4623060ota.127.1616511483045;
+        Tue, 23 Mar 2021 07:58:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id e12sm3760527oou.33.2021.03.23.07.58.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Mar 2021 07:58:02 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/6] page_pool: recycle buffers
+To:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+References: <20210322170301.26017-1-mcroce@linux.microsoft.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f5ef2e4f-fcba-2e06-86ec-17522744b6a8@gmail.com>
+Date:   Tue, 23 Mar 2021 08:57:57 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210322170301.26017-1-mcroce@linux.microsoft.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Increase the maximum number of channels and event rings supported by
-the driver, to allow the maximum available on the SDX55.
+On 3/22/21 11:02 AM, Matteo Croce wrote:
+> From: Matteo Croce <mcroce@microsoft.com>
+> 
+> This series enables recycling of the buffers allocated with the page_pool API.
+> The first two patches are just prerequisite to save space in a struct and
+> avoid recycling pages allocated with other API.
+> Patch 2 was based on a previous idea from Jonathan Lemon.
+> 
+> The third one is the real recycling, 4 fixes the compilation of __skb_frag_unref
+> users, and 5,6 enable the recycling on two drivers.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+patch 4 should be folded into 3; each patch should build without errors.
 
-diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
-index efc980f96109e..d5996bdb20ef5 100644
---- a/drivers/net/ipa/gsi.h
-+++ b/drivers/net/ipa/gsi.h
-@@ -16,8 +16,8 @@
- #include "ipa_version.h"
- 
- /* Maximum number of channels and event rings supported by the driver */
--#define GSI_CHANNEL_COUNT_MAX	17
--#define GSI_EVT_RING_COUNT_MAX	13
-+#define GSI_CHANNEL_COUNT_MAX	23
-+#define GSI_EVT_RING_COUNT_MAX	20
- 
- /* Maximum TLV FIFO size for a channel; 64 here is arbitrary (and high) */
- #define GSI_TLV_MAX		64
--- 
-2.27.0
+> 
+> In the last two patches I reported the improvement I have with the series.
+> 
+> The recycling as is can't be used with drivers like mlx5 which do page split,
+> but this is documented in a comment.
+> In the future, a refcount can be used so to support mlx5 with no changes.
+
+Is the end goal of the page_pool changes to remove driver private caches?
+
 
