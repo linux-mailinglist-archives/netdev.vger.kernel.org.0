@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A82345E8F
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 13:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C10345E90
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 13:54:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbhCWMw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 08:52:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40170 "EHLO mail.kernel.org"
+        id S231308AbhCWMyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 08:54:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231338AbhCWMwk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 08:52:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B99CE619B7;
-        Tue, 23 Mar 2021 12:52:35 +0000 (UTC)
+        id S230258AbhCWMxn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 08:53:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A8B9619B8;
+        Tue, 23 Mar 2021 12:53:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616503957;
-        bh=mRfSmzsVcIVbIadqBeT4oBqLsxBa56oCuRtUUGrMpok=;
+        s=k20201202; t=1616504023;
+        bh=B7zKP0wEFU2/3CWm2Zth2CEFBBqTytn5CoddIaTYU+I=;
         h=From:To:Cc:Subject:Date:From;
-        b=dMqTWv2afZWj5Mau1JMxfYA7kxXLGNPM8ApL0kZgm0672qqwnDpwudjobI59hNCL5
-         AAVnM9vwGVQn8l3bZJv+iJa+sdORsCqm513oGXaRCZymrXkXKFDv1m/C05QoVMt27j
-         okhe0gj56VRxdUOelQO9F0qhbxNDMrhEJWj+RqYbm06XxE4fzgZOI0QxbRX6yvfHyJ
-         TEU8SXNVImuroAMjfjkInlUwIyXgSfnHcgy+OFi+5b+zdYLX0sbHNoBTr/ZITwK0A/
-         t73s18aYtMuuFqGWWwRwBmDKf32qvCGY2nbqutCWSvCPMH0GYfijtpYWJ9WRK/aT0S
-         aJy8Q+Y3tgpiw==
+        b=oKP9MQbSO7Nq/q3n9+857PVW8po2CYEGWqF9iMOK0snF3j70JImIfLbBlYJNV2NTu
+         K0lac8eIdd4H2GuhddVgKlWxnxl52/XouEIc/0nSF0mUhb2KXeTyHUZ6d0M7TVhd1x
+         PETGi0NGmQqcDedfAQ9Tpewc8sVKByJ9xlH9BRHXNDsBjitZEyPtVQlGqAsP1NST9t
+         9B3DCJyeViYxuIA8Hl+HhHIBVt1VsgR5W6VuxTBCTlDZNLF4ryqYoO0H/7Ya8egFsc
+         xajjxOnlxieXLWYOWAgf7mAw7eqb2Y1xkwYAVsg2V4m+a81HKpbFx9gOTH0ykT2Xqu
+         lr2TE7kBTaTSQ==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Alexander Lobakin <alobakin@pm.me>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC net] net: skbuff: fix stack variable out of bounds access
-Date:   Tue, 23 Mar 2021 13:52:24 +0100
-Message-Id: <20210323125233.1743957-1-arnd@kernel.org>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Christina Jacob <cjacob@marvell.com>,
+        Zyta Szpak <zyta@marvell.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Rakesh Babu <rsaladi2@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] octeontx2: fix -Wnonnull warning
+Date:   Tue, 23 Mar 2021 13:53:29 +0100
+Message-Id: <20210323125337.1783611-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -45,57 +50,117 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-gcc-11 warns that the TS_SKB_CB(&state)) cast in skb_find_text()
-leads to an out-of-bounds access in skb_prepare_seq_read() after
-the addition of a new struct member made skb_seq_state longer
-than ts_state:
+When compile testing this driver on a platform on which probe() is
+known to fail at compile time, gcc warns about the cgx_lmactype_string[]
+array being uninitialized:
 
-net/core/skbuff.c: In function ‘skb_find_text’:
-net/core/skbuff.c:3498:26: error: array subscript ‘struct skb_seq_state[0]’ is partly outside array bounds of ‘struct ts_state[1]’ [-Werror=array-bounds]
- 3498 |         st->lower_offset = from;
-      |         ~~~~~~~~~~~~~~~~~^~~~~~
-net/core/skbuff.c:3659:25: note: while referencing ‘state’
- 3659 |         struct ts_state state;
-      |                         ^~~~~
+In function 'strncpy',
+    inlined from 'link_status_user_format' at /git/arm-soc/drivers/net/ethernet/marvell/octeontx2/af/cgx.c:838:2,
+    inlined from 'cgx_link_change_handler' at /git/arm-soc/drivers/net/ethernet/marvell/octeontx2/af/cgx.c:853:2:
+include/linux/fortify-string.h:27:30: error: argument 2 null where non-null expected [-Werror=nonnull]
+   27 | #define __underlying_strncpy __builtin_strncpy
 
-The warning is currently disabled globally, but I found this
-instance during experimental build testing, and it seems
-legitimate.
+Address this by turning the runtime initialization into a fixed array,
+which should also produce better code.
 
-Make the textsearch buffer longer and add a compile-time check to
-ensure the two remain the same length.
-
-Fixes: 97550f6fa592 ("net: compound page support in skb_seq_read")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/linux/textsearch.h | 2 +-
- net/core/skbuff.c          | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 60 +++++++++----------
+ 1 file changed, 28 insertions(+), 32 deletions(-)
 
-diff --git a/include/linux/textsearch.h b/include/linux/textsearch.h
-index 13770cfe33ad..6673e4d4ac2e 100644
---- a/include/linux/textsearch.h
-+++ b/include/linux/textsearch.h
-@@ -23,7 +23,7 @@ struct ts_config;
- struct ts_state
- {
- 	unsigned int		offset;
--	char			cb[40];
-+	char			cb[48];
- };
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 9caa375d01b1..ea5a033a1d0b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -30,10 +30,35 @@
+ static LIST_HEAD(cgx_list);
  
- /**
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 545a472273a5..dd10d4c5f4bf 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3633,6 +3633,7 @@ static unsigned int skb_ts_get_next_block(unsigned int offset, const u8 **text,
- 					  struct ts_config *conf,
- 					  struct ts_state *state)
- {
-+	BUILD_BUG_ON(sizeof(struct skb_seq_state) > sizeof(state->cb));
- 	return skb_seq_read(offset, text, TS_SKB_CB(state));
+ /* Convert firmware speed encoding to user format(Mbps) */
+-static u32 cgx_speed_mbps[CGX_LINK_SPEED_MAX];
++static const u32 cgx_speed_mbps[CGX_LINK_SPEED_MAX] = {
++	[CGX_LINK_NONE] = 0,
++	[CGX_LINK_10M] = 10,
++	[CGX_LINK_100M] = 100,
++	[CGX_LINK_1G] = 1000,
++	[CGX_LINK_2HG] = 2500,
++	[CGX_LINK_5G] = 5000,
++	[CGX_LINK_10G] = 10000,
++	[CGX_LINK_20G] = 20000,
++	[CGX_LINK_25G] = 25000,
++	[CGX_LINK_40G] = 40000,
++	[CGX_LINK_50G] = 50000,
++	[CGX_LINK_80G] = 80000,
++	[CGX_LINK_100G] = 100000,
++};
+ 
+ /* Convert firmware lmac type encoding to string */
+-static char *cgx_lmactype_string[LMAC_MODE_MAX];
++static const char *cgx_lmactype_string[LMAC_MODE_MAX] = {
++	[LMAC_MODE_SGMII] = "SGMII",
++	[LMAC_MODE_XAUI] = "XAUI",
++	[LMAC_MODE_RXAUI] = "RXAUI",
++	[LMAC_MODE_10G_R] = "10G_R",
++	[LMAC_MODE_40G_R] = "40G_R",
++	[LMAC_MODE_QSGMII] = "QSGMII",
++	[LMAC_MODE_25G_R] = "25G_R",
++	[LMAC_MODE_50G_R] = "50G_R",
++	[LMAC_MODE_100G_R] = "100G_R",
++	[LMAC_MODE_USXGMII] = "USXGMII",
++};
+ 
+ /* CGX PHY management internal APIs */
+ static int cgx_fwi_link_change(struct cgx *cgx, int lmac_id, bool en);
+@@ -657,34 +682,6 @@ int cgx_fwi_cmd_generic(u64 req, u64 *resp, struct cgx *cgx, int lmac_id)
+ 	return err;
  }
+ 
+-static inline void cgx_link_usertable_init(void)
+-{
+-	cgx_speed_mbps[CGX_LINK_NONE] = 0;
+-	cgx_speed_mbps[CGX_LINK_10M] = 10;
+-	cgx_speed_mbps[CGX_LINK_100M] = 100;
+-	cgx_speed_mbps[CGX_LINK_1G] = 1000;
+-	cgx_speed_mbps[CGX_LINK_2HG] = 2500;
+-	cgx_speed_mbps[CGX_LINK_5G] = 5000;
+-	cgx_speed_mbps[CGX_LINK_10G] = 10000;
+-	cgx_speed_mbps[CGX_LINK_20G] = 20000;
+-	cgx_speed_mbps[CGX_LINK_25G] = 25000;
+-	cgx_speed_mbps[CGX_LINK_40G] = 40000;
+-	cgx_speed_mbps[CGX_LINK_50G] = 50000;
+-	cgx_speed_mbps[CGX_LINK_80G] = 80000;
+-	cgx_speed_mbps[CGX_LINK_100G] = 100000;
+-
+-	cgx_lmactype_string[LMAC_MODE_SGMII] = "SGMII";
+-	cgx_lmactype_string[LMAC_MODE_XAUI] = "XAUI";
+-	cgx_lmactype_string[LMAC_MODE_RXAUI] = "RXAUI";
+-	cgx_lmactype_string[LMAC_MODE_10G_R] = "10G_R";
+-	cgx_lmactype_string[LMAC_MODE_40G_R] = "40G_R";
+-	cgx_lmactype_string[LMAC_MODE_QSGMII] = "QSGMII";
+-	cgx_lmactype_string[LMAC_MODE_25G_R] = "25G_R";
+-	cgx_lmactype_string[LMAC_MODE_50G_R] = "50G_R";
+-	cgx_lmactype_string[LMAC_MODE_100G_R] = "100G_R";
+-	cgx_lmactype_string[LMAC_MODE_USXGMII] = "USXGMII";
+-}
+-
+ static int cgx_link_usertable_index_map(int speed)
+ {
+ 	switch (speed) {
+@@ -826,7 +823,7 @@ static inline void link_status_user_format(u64 lstat,
+ 					   struct cgx_link_user_info *linfo,
+ 					   struct cgx *cgx, u8 lmac_id)
+ {
+-	char *lmac_string;
++	const char *lmac_string;
+ 
+ 	linfo->link_up = FIELD_GET(RESP_LINKSTAT_UP, lstat);
+ 	linfo->full_duplex = FIELD_GET(RESP_LINKSTAT_FDUPLEX, lstat);
+@@ -1375,7 +1372,6 @@ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	list_add(&cgx->cgx_list, &cgx_list);
+ 
+-	cgx_link_usertable_init();
+ 
+ 	cgx_populate_features(cgx);
  
 -- 
 2.29.2
