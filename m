@@ -2,210 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D823461C3
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:46:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBECF3461C6
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 15:46:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbhCWOqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 10:46:20 -0400
-Received: from outbound-smtp01.blacknight.com ([81.17.249.7]:59956 "EHLO
-        outbound-smtp01.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232355AbhCWOpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:45:47 -0400
-Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
-        by outbound-smtp01.blacknight.com (Postfix) with ESMTPS id 4DC8FC4A51
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 14:45:43 +0000 (GMT)
-Received: (qmail 30414 invoked from network); 23 Mar 2021 14:45:43 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 23 Mar 2021 14:45:43 -0000
-Date:   Tue, 23 Mar 2021 14:45:41 +0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Chuck Lever III <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 0/3 v5] Introduce a bulk order-0 page allocator
-Message-ID: <20210323144541.GL3697@techsingularity.net>
-References: <20210322091845.16437-1-mgorman@techsingularity.net>
- <C1DEE677-47B2-4B12-BA70-6E29F0D199D9@oracle.com>
- <20210322194948.GI3697@techsingularity.net>
- <0E0B33DE-9413-4849-8E78-06B0CDF2D503@oracle.com>
- <20210322205827.GJ3697@techsingularity.net>
- <20210323120851.18d430cf@carbon>
+        id S232377AbhCWOqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 10:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232385AbhCWOp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 10:45:57 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED7BC061574;
+        Tue, 23 Mar 2021 07:45:57 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id l79so17249108oib.1;
+        Tue, 23 Mar 2021 07:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m+gdomP34bExz5vswR3uMTpg5ypgbG8IaKGTNQlEkJs=;
+        b=lL2lPLq+og1BnTbIOjd2GaCNeyEUnPgGAMHWZCPMfUQgb6/sIAu89eNRW5oW1FAf+Z
+         OFE0jSCUN6Oo2m+Fi7CnoD1wcsyxdOXX8ukMjBP2LIz1NOXwyCJDQoY2MxLhvWTMDvau
+         hWQbJdAmq0R4fquG4coKSrx5XQtgBbCG1V9UEOCT9Dt8T29pNRvSUTVeXu4a6v6ZSXGp
+         cwUwWR0ywV5wCKyEqmOsx+ddasQEIlkTVTCU6AmfryLmSx+9YtIs8jJPpmL16ymDUTX0
+         MJABilo7/WFBV13Hf0wtn+AVG4Up5s1c48XBcLuQXi8mEkD7FCVC++YgxiXDvEO70u3w
+         q7nA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m+gdomP34bExz5vswR3uMTpg5ypgbG8IaKGTNQlEkJs=;
+        b=fU2iYWh7SEkXGXPZ9f6DYIAcm/1LLrm5m0xdGtShq6qpRpU/SxmEH9hSeJ3dIEAcEU
+         uYIGkE1ycyvLEPMZL1oJNqMuDM6sbxGjriZzg3J+kzkRUzqddbEvc4lQAv44ytW8Cq9W
+         dFwlboqvuqxK4igFJinrEGG21rX4Q4AScR4YCmBbpUfeVMS/jTc79shS2ZDFMea9w/yI
+         wg5fC8DfQMIQPl27KOJzRhuUVBUCFsjY0ECBZaULnsuU1Kc/5sxYZiP8H9f2X7TFCq8A
+         FBE6Fo6vh4MXvc8HNFVEJlPLcBQLSiuIkEW3laP0bFVd7P0crluxdBSUGK3PwdNnXcKM
+         99tw==
+X-Gm-Message-State: AOAM530ARAxnBxZdRwpHP/LbAE7kFJr6mGFRWzJB0WxqBbicZiYiOnPw
+        z3eu+hF33QBulTUxVtQBAdT7jtAPk5Y=
+X-Google-Smtp-Source: ABdhPJzUpbNE8BFK/b6BOTZk/rRQ5Jvcxj0BmAdWonFmgp/MLokZSvjat1e3xwCcKnTJN1illgiB/w==
+X-Received: by 2002:aca:fc11:: with SMTP id a17mr3515592oii.68.1616510756606;
+        Tue, 23 Mar 2021 07:45:56 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id a73sm3932358oii.26.2021.03.23.07.45.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Mar 2021 07:45:56 -0700 (PDT)
+Subject: Re: [PATCH] net: ipv4: route.c: Remove unnecessary {else} if()
+To:     Yejune Deng <yejune.deng@gmail.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210323102028.11765-1-yejune.deng@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <52f5586c-6ad6-3e0f-59b1-01b742d14fa7@gmail.com>
+Date:   Tue, 23 Mar 2021 08:45:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20210323120851.18d430cf@carbon>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210323102028.11765-1-yejune.deng@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 12:08:51PM +0100, Jesper Dangaard Brouer wrote:
-> > > <SNIP>
-> > > My results show that, because svc_alloc_arg() ends up calling
-> > > __alloc_pages_bulk() twice in this case, it ends up being
-> > > twice as expensive as the list case, on average, for the same
-> > > workload.
-> > >   
-> > 
-> > Ok, so in this case the caller knows that holes are always at the
-> > start. If the API returns an index that is a valid index and populated,
-> > it can check the next index and if it is valid then the whole array
-> > must be populated.
-> > 
-> > <SNIP>
+subject line should have net-next as the target branch
+
+
+On 3/23/21 4:20 AM, Yejune Deng wrote:
+> Put if and else if together, and remove unnecessary judgments, because
+> it's caller can make sure it is true. And add likely() in
+> ipv4_confirm_neigh().
 > 
-> I do know that I suggested moving prep_new_page() out of the
-> IRQ-disabled loop, but maybe was a bad idea, for several reasons.
+> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+> ---
+>  net/ipv4/route.c | 18 +++++++-----------
+>  1 file changed, 7 insertions(+), 11 deletions(-)
 > 
-> All prep_new_page does is to write into struct page, unless some
-> debugging stuff (like kasan) is enabled. This cache-line is hot as
-> LRU-list update just wrote into this cache-line.  As the bulk size goes
-> up, as Matthew pointed out, this cache-line might be pushed into
-> L2-cache, and then need to be accessed again when prep_new_page() is
-> called.
+> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> index fa68c2612252..f4ba07c5c1b1 100644
+> --- a/net/ipv4/route.c
+> +++ b/net/ipv4/route.c
+> @@ -440,7 +440,7 @@ static void ipv4_confirm_neigh(const struct dst_entry *dst, const void *daddr)
+>  	struct net_device *dev = dst->dev;
+>  	const __be32 *pkey = daddr;
+>  
+> -	if (rt->rt_gw_family == AF_INET) {
+> +	if (likely(rt->rt_gw_family == AF_INET)) {
+>  		pkey = (const __be32 *)&rt->rt_gw4;
+>  	} else if (rt->rt_gw_family == AF_INET6) {
+>  		return __ipv6_confirm_neigh_stub(dev, &rt->rt_gw6);
+> @@ -814,19 +814,15 @@ static void ip_do_redirect(struct dst_entry *dst, struct sock *sk, struct sk_buf
+>  
+>  static struct dst_entry *ipv4_negative_advice(struct dst_entry *dst)
+>  {
+> -	struct rtable *rt = (struct rtable *)dst;
+> +	struct rtable *rt = container_of(dst, struct rtable, dst);
+>  	struct dst_entry *ret = dst;
+>  
+> -	if (rt) {
+> -		if (dst->obsolete > 0) {
+> -			ip_rt_put(rt);
+> -			ret = NULL;
+> -		} else if ((rt->rt_flags & RTCF_REDIRECTED) ||
+> -			   rt->dst.expires) {
+> -			ip_rt_put(rt);
+> -			ret = NULL;
+> -		}
+> +	if (dst->obsolete > 0 || rt->dst.expires ||
+> +	    (rt->rt_flags & RTCF_REDIRECTED)) {
+> +		ip_rt_put(rt);
+> +		ret = NULL;
+>  	}
+> +
+>  	return ret;
+>  }
+>  
 > 
-> Another observation is that moving prep_new_page() into loop reduced
-> function size with 253 bytes (which affect I-cache).
-> 
->    ./scripts/bloat-o-meter mm/page_alloc.o-prep_new_page-outside mm/page_alloc.o-prep_new_page-inside
->     add/remove: 18/18 grow/shrink: 0/1 up/down: 144/-397 (-253)
->     Function                                     old     new   delta
->     __alloc_pages_bulk                          1965    1712    -253
->     Total: Before=60799, After=60546, chg -0.42%
-> 
-> Maybe it is better to keep prep_new_page() inside the loop.  This also
-> allows list vs array variant to share the call.  And it should simplify
-> the array variant code.
-> 
 
-I agree. I did not like the level of complexity it incurred for arrays
-or the fact it required that a list to be empty when alloc_pages_bulk()
-is called. I thought the concern for calling prep_new_page() with IRQs
-disabled was a little overblown but did not feel strongly enough to push
-back on it hard given that we've had problems with IRQs being disabled
-for long periods before. At worst, at some point in the future we'll have
-to cap the number of pages that can be requested or enable/disable IRQs
-every X pages.
+This should be 2 separate patches since they are unrelated changes.
 
-New candidate
-
-git://git.kernel.org/pub/scm/linux/kernel/git/mel/linux.git mm-bulk-rebase-v6r4
-
-Interface is still the same so a rebase should be trivial. Diff between
-v6r2 and v6r4 is as follows. I like the diffstat if nothing else :P
-
-
- mm/page_alloc.c | 54 +++++++++++++-----------------------------------------
- 1 file changed, 13 insertions(+), 41 deletions(-)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 547a84f11310..be1e33a4df39 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -4999,25 +4999,20 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 	struct alloc_context ac;
- 	gfp_t alloc_gfp;
- 	unsigned int alloc_flags;
--	int nr_populated = 0, prep_index = 0;
--	bool hole = false;
-+	int nr_populated = 0;
- 
- 	if (WARN_ON_ONCE(nr_pages <= 0))
- 		return 0;
- 
--	if (WARN_ON_ONCE(page_list && !list_empty(page_list)))
--		return 0;
--
--	/* Skip populated array elements. */
--	if (page_array) {
--		while (nr_populated < nr_pages && page_array[nr_populated])
--			nr_populated++;
--		if (nr_populated == nr_pages)
--			return nr_populated;
--		prep_index = nr_populated;
--	}
-+	/*
-+	 * Skip populated array elements to determine if any pages need
-+	 * to be allocated before disabling IRQs.
-+	 */
-+	while (page_array && page_array[nr_populated] && nr_populated < nr_pages)
-+		nr_populated++;
- 
--	if (nr_pages == 1)
-+	/* Use the single page allocator for one page. */
-+	if (nr_pages - nr_populated == 1)
- 		goto failed;
- 
- 	/* May set ALLOC_NOFRAGMENT, fragmentation will return 1 page. */
-@@ -5056,22 +5051,17 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 	if (!zone)
- 		goto failed;
- 
--retry_hole:
- 	/* Attempt the batch allocation */
- 	local_irq_save(flags);
- 	pcp = &this_cpu_ptr(zone->pageset)->pcp;
- 	pcp_list = &pcp->lists[ac.migratetype];
- 
- 	while (nr_populated < nr_pages) {
--		/*
--		 * Stop allocating if the next index has a populated
--		 * page or the page will be prepared a second time when
--		 * IRQs are enabled.
--		 */
-+
-+		/* Skip existing pages */
- 		if (page_array && page_array[nr_populated]) {
--			hole = true;
- 			nr_populated++;
--			break;
-+			continue;
- 		}
- 
- 		page = __rmqueue_pcplist(zone, ac.migratetype, alloc_flags,
-@@ -5092,6 +5082,7 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 		__count_zid_vm_events(PGALLOC, zone_idx(zone), 1);
- 		zone_statistics(ac.preferred_zoneref->zone, zone);
- 
-+		prep_new_page(page, 0, gfp, 0);
- 		if (page_list)
- 			list_add(&page->lru, page_list);
- 		else
-@@ -5101,25 +5092,6 @@ int __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
- 
- 	local_irq_restore(flags);
- 
--	/* Prep pages with IRQs enabled. */
--	if (page_list) {
--		list_for_each_entry(page, page_list, lru)
--			prep_new_page(page, 0, gfp, 0);
--	} else {
--		while (prep_index < nr_populated)
--			prep_new_page(page_array[prep_index++], 0, gfp, 0);
--
--		/*
--		 * If the array is sparse, check whether the array is
--		 * now fully populated. Continue allocations if
--		 * necessary.
--		 */
--		while (nr_populated < nr_pages && page_array[nr_populated])
--			nr_populated++;
--		if (hole && nr_populated < nr_pages)
--			goto retry_hole;
--	}
--
- 	return nr_populated;
- 
- failed_irq:
-
--- 
-Mel Gorman
-SUSE Labs
+For the ipv4_negative_advice, the changelog should note that
+negative_advice handler is only called when dst is non-NULL hence the
+'if (rt)' check can be removed.
