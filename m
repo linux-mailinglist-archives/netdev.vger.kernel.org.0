@@ -2,97 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5652345E89
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 13:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A82345E8F
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 13:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbhCWMvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 08:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbhCWMvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 08:51:38 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DF8C061574;
-        Tue, 23 Mar 2021 05:51:38 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id v186so11590561pgv.7;
-        Tue, 23 Mar 2021 05:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=W73swV/Q5he3Tzf+ydT8yObURaAc6JinvwZwIKuuRdE=;
-        b=dZYXUHWijoTrxu0O/MxB9jXvMLnVbXkMw04Grjg2u6tC73cWCd8bN/k1W5QL2SA9TK
-         cgk1feBNa6NS3UvdpbsMJ+DbgsNB8z8G0GstjudfCuoar/PO+v/Ww8KsqUyu6acBZFzH
-         Ldg3koMQYMCKTWI+iaZd5e787+InPTq/NOlAIQ6PaY0tCww0/kZpSwCL4orjxRzVQF1g
-         sNiTTiNnJMEaXQ/bK5gM04dVcwSm8uqXe+pFE2TO3BwrNCQWvq8VryHylHzqmJNJMOWd
-         DEzimEf9EhRHfj9NNaNtIVjBHCxU9lCge5e++yYmYQc0lAOGvMRmTkPkcvmwNvpBnuE8
-         KYRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=W73swV/Q5he3Tzf+ydT8yObURaAc6JinvwZwIKuuRdE=;
-        b=RR5JpdlHPN3PD4VZoqpNfd/9PzFBnkwJjf+zpDOEIa4cuKHyvqTnzKdbP16wrvPsQj
-         QwXRUI9sV2Vl/MRMMqG66cSEpBAahcc/jN6vbxBv9ThjMPLKTJuO0/MTYbuYb6UsoFka
-         AwwrpaQQ3HvpNHKmo+1AyvnAdgwwMwcp2Y2EmAR4Ehgv5YuRXazVwBeMdCND50wJe29N
-         Yq5XQL7yGYIO+IqVXoC573pRb1295BD0ZYpgJKxZKgCax3mgjZVwxgZlGWRGt0ECp5fo
-         0mxqMX4x+L/Ozm4/yA0G66pLIABb1Wsr4FPnhuyykAy+6GDwUBSyEUGbYDtzIg/HtNC6
-         +Mtg==
-X-Gm-Message-State: AOAM532DoIT99ztzWsqGeQJJYtm7QkJ5Y6DbkytrYtWtw4+X45sgIocF
-        kxpDkj9PkJsBAAyXanfndL4=
-X-Google-Smtp-Source: ABdhPJxuDrAKy3Uzblr2IjLqiyBW2NhHdIddKeLQBGKEakqaTrgX3vmub48+0gOuMI8FfEBcbk/uSA==
-X-Received: by 2002:a17:903:3053:b029:e6:5cde:bef with SMTP id u19-20020a1709033053b02900e65cde0befmr5320783pla.81.1616503897889;
-        Tue, 23 Mar 2021 05:51:37 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:48:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id d6sm16606592pfq.109.2021.03.23.05.51.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 05:51:37 -0700 (PDT)
-Date:   Tue, 23 Mar 2021 05:51:34 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Dipen Patel <dipenp@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Kent Gibson <warthog618@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: GTE - The hardware timestamping engine
-Message-ID: <20210323125134.GA29209@hoboy.vegasvil.org>
-References: <4c46726d-fa35-1a95-4295-bca37c8b6fe3@nvidia.com>
- <CACRpkdbmqww6UQ8CFYo=+bCtVYBJwjMxVixc4vS6D3B+dUHScw@mail.gmail.com>
- <CAK8P3a30CdRKGe++MyBVDLW=p9E1oS+C7d7W4jLE01TAA4k+GA@mail.gmail.com>
- <20210320153855.GA29456@hoboy.vegasvil.org>
- <a58a0ec2-9da8-92bc-c08e-38b1bed6f757@nvidia.com>
- <YFmu1pptAFQLABe3@orome.fritz.box>
+        id S231355AbhCWMw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 08:52:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40170 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231338AbhCWMwk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 08:52:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B99CE619B7;
+        Tue, 23 Mar 2021 12:52:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616503957;
+        bh=mRfSmzsVcIVbIadqBeT4oBqLsxBa56oCuRtUUGrMpok=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dMqTWv2afZWj5Mau1JMxfYA7kxXLGNPM8ApL0kZgm0672qqwnDpwudjobI59hNCL5
+         AAVnM9vwGVQn8l3bZJv+iJa+sdORsCqm513oGXaRCZymrXkXKFDv1m/C05QoVMt27j
+         okhe0gj56VRxdUOelQO9F0qhbxNDMrhEJWj+RqYbm06XxE4fzgZOI0QxbRX6yvfHyJ
+         TEU8SXNVImuroAMjfjkInlUwIyXgSfnHcgy+OFi+5b+zdYLX0sbHNoBTr/ZITwK0A/
+         t73s18aYtMuuFqGWWwRwBmDKf32qvCGY2nbqutCWSvCPMH0GYfijtpYWJ9WRK/aT0S
+         aJy8Q+Y3tgpiw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Alexander Lobakin <alobakin@pm.me>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RFC net] net: skbuff: fix stack variable out of bounds access
+Date:   Tue, 23 Mar 2021 13:52:24 +0100
+Message-Id: <20210323125233.1743957-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YFmu1pptAFQLABe3@orome.fritz.box>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 10:03:18AM +0100, Thierry Reding wrote:
-> I agree. My understanding is the the TSC is basically an SoC-wide clock
-> that can be (and is) used by several hardware blocks. There's an
-> interface for software to read out the value, but it's part of a block
-> called TKE (time-keeping engine, if I recall correctly) that implements
-> various clock sources and watchdog functionality.
+From: Arnd Bergmann <arnd@arndb.de>
 
-...
+gcc-11 warns that the TS_SKB_CB(&state)) cast in skb_find_text()
+leads to an out-of-bounds access in skb_prepare_seq_read() after
+the addition of a new struct member made skb_seq_state longer
+than ts_state:
 
-> Anyway, I think given that the GTE doesn't provide that clock itself but
-> rather just a means of taking a snapshot of that clock and stamping
-> certain events with that, it makes more sense to provide that clock from
-> the TKE driver.
+net/core/skbuff.c: In function ‘skb_find_text’:
+net/core/skbuff.c:3498:26: error: array subscript ‘struct skb_seq_state[0]’ is partly outside array bounds of ‘struct ts_state[1]’ [-Werror=array-bounds]
+ 3498 |         st->lower_offset = from;
+      |         ~~~~~~~~~~~~~~~~~^~~~~~
+net/core/skbuff.c:3659:25: note: while referencing ‘state’
+ 3659 |         struct ts_state state;
+      |                         ^~~~~
 
-It sounds like TKE + GTE together act like a PHC, and GTE doesn't
-need/want its own SW interface.
+The warning is currently disabled globally, but I found this
+instance during experimental build testing, and it seems
+legitimate.
 
-Thanks,
-Richard
+Make the textsearch buffer longer and add a compile-time check to
+ensure the two remain the same length.
+
+Fixes: 97550f6fa592 ("net: compound page support in skb_seq_read")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ include/linux/textsearch.h | 2 +-
+ net/core/skbuff.c          | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/textsearch.h b/include/linux/textsearch.h
+index 13770cfe33ad..6673e4d4ac2e 100644
+--- a/include/linux/textsearch.h
++++ b/include/linux/textsearch.h
+@@ -23,7 +23,7 @@ struct ts_config;
+ struct ts_state
+ {
+ 	unsigned int		offset;
+-	char			cb[40];
++	char			cb[48];
+ };
+ 
+ /**
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 545a472273a5..dd10d4c5f4bf 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3633,6 +3633,7 @@ static unsigned int skb_ts_get_next_block(unsigned int offset, const u8 **text,
+ 					  struct ts_config *conf,
+ 					  struct ts_state *state)
+ {
++	BUILD_BUG_ON(sizeof(struct skb_seq_state) > sizeof(state->cb));
+ 	return skb_seq_read(offset, text, TS_SKB_CB(state));
+ }
+ 
+-- 
+2.29.2
+
