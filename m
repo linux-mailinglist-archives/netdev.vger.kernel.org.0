@@ -2,110 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1253466A6
-	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA2E93466B5
+	for <lists+netdev@lfdr.de>; Tue, 23 Mar 2021 18:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230173AbhCWRr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 13:47:28 -0400
-Received: from p3plsmtpa07-06.prod.phx3.secureserver.net ([173.201.192.235]:50551
-        "EHLO p3plsmtpa07-06.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231139AbhCWRrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:47:07 -0400
-Received: from chrisHP110 ([76.103.216.188])
-        by :SMTPAUTH: with ESMTPA
-        id Ol7RlGrZ6bSa5Ol7SlHue3; Tue, 23 Mar 2021 10:47:06 -0700
-X-CMAE-Analysis: v=2.4 cv=OIDiYQWB c=1 sm=1 tr=0 ts=605a299a
- a=ZkbE6z54K4jjswx6VoHRvg==:117 a=ZkbE6z54K4jjswx6VoHRvg==:17
- a=kj9zAlcOel0A:10 a=VpK0EM-ZsLwCZQ5F_EUA:9 a=CjuIK1q_8ugA:10
-X-SECURESERVER-ACCT: don@thebollingers.org
-From:   "Don Bollinger" <don@thebollingers.org>
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     "'Moshe Shemesh'" <moshe@nvidia.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Adrian Pop'" <pop.adrian61@gmail.com>,
-        "'Michal Kubecek'" <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
-        "'Vladyslav Tarasiuk'" <vladyslavt@nvidia.com>,
-        <don@thebollingers.org>
-References: <1616433075-27051-1-git-send-email-moshe@nvidia.com> <1616433075-27051-2-git-send-email-moshe@nvidia.com> <006801d71f47$a61f09b0$f25d1d10$@thebollingers.org> <YFk13y19yMC0rr04@lunn.ch> <007b01d71f83$2e0538f0$8a0faad0$@thebollingers.org> <YFlMjO4ZMBCcJqQ7@lunn.ch>
-In-Reply-To: <YFlMjO4ZMBCcJqQ7@lunn.ch>
-Subject: RE: [RFC PATCH V4 net-next 1/5] ethtool: Allow network drivers to dump arbitrary EEPROM data
-Date:   Tue, 23 Mar 2021 10:47:05 -0700
-Message-ID: <008901d7200c$8a59db40$9f0d91c0$@thebollingers.org>
+        id S231174AbhCWRtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 13:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230486AbhCWRtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 13:49:25 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAB1C061574;
+        Tue, 23 Mar 2021 10:49:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=mGEfqR1UYPmFe4Iqx4QUJhJA8g5z7S5be6OQeBV2P6c=; b=oLjBoU33t5KC2LpJ1AoIAZq7YP
+        wslL/KfZNrYL74hZ0l3NZqrgA3VVOPNJz4hlbFRLVXAMvX2+vtoxz+3w6SnJmGi9Yt+CG7DOdTGI2
+        rUiNdHGCRhTznZPNxfo4DO7J4Sl2XJm0737x496SomCHArahEn4rdyWOQQ0LRZR0o0IDnvzUV/fiM
+        4PoLE7ZtO9YRoFKTQiJHRZfpVQMerGOnOLnbMDJwCr4lvptaSsSrBWTdfrezbm2gABHtH+Vz5k9H3
+        +Laybg5WGl7qwkxrkdG8edAiaFVYK+u/tIiIkDPMCLVrqAMySATgeUDN2/LmnWJe1N59Z0DcSPvD4
+        R08ut6vw==;
+Received: from [2601:1c0:6280:3f0::3ba4]
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lOl9E-00AMe8-VV; Tue, 23 Mar 2021 17:48:59 +0000
+Subject: Re: [PATCH V2] octeontx2-af: Few mundane typos fixed
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, sgoutham@marvell.com,
+        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
+        hkelam@marvell.com, sbhatta@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210323094327.2386998-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <b2cb2dc4-93f6-8b0e-4d1a-56a1d1c16285@infradead.org>
+Date:   Tue, 23 Mar 2021 10:48:53 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+In-Reply-To: <20210323094327.2386998-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQJDEuFgm6Tcdwd/2H9v4w1v+xnhXwGLU1CXAWGs15oCOWnrmgLz6XUDAje0hBqpZ2CQkA==
-Content-Language: en-us
-X-CMAE-Envelope: MS4xfIl6IivOBUaBYRhuaSFFlpGPtDXqpNse5ZRGyUHip9Vj5kNp3kmlhJDbn46HOUnWjxWxcwCzdi+1w6CYCeYzJIKBJgehG9YL59spgbPKFJEQ20kEq3ZC
- 6Lu9eRMQd2mMg8ZJAbc3OPcvgtQr0pN5UoipHIuAKk24cg/gmdh/A4JBCKy98U2lZymHq7YC0RLO2sV/Gt1lIcYlthL7pQjHjmxrIcm4Fc+UnCcSUMxkZVek
- B56fRjzXhUgBVifpkJCT05A0/Y0coMt4OLaVNRROU5QCmy0IhjqLihGvWY7mu9J2Rx2aJxH6bYtFpKVARfZjsz4mxZPPu/J+PbVGFVKhmPgKApVPLVcj7T8w
- ytM9b1yXAokod3ROQzBQLRnBhr71abLMTDaUU5wJS1p3YJkZbHPCiHLPDOU9Gp9tcjTeofuX
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > I don't even see a need for this. The offset should be within one
-> > > 1/2
-> > page, of
-> > > one bank. So offset >= 0 and <= 127. Length is also > 0 and
-> > > <- 127. And offset+length is <= 127.
-> >
-> > I like the clean approach, but...   How do you request low memory?
+On 3/23/21 2:43 AM, Bhaskar Chowdhury wrote:
+> s/preceeds/precedes/  .....two different places
+> s/rsponse/response/
+> s/cetain/certain/
+> s/precison/precision/
 > 
-> Duh!
+> Fix a sentence construction as per suggestion.
 > 
-> I got my conditions wrong. Too focused on 1/2 pages to think that two of
-> them makes one page!
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+Thanks.
+
+> ---
+>  Changes from V1:
+>   Bad sentence construction missed my eyes , correced by following
+>   Randy's suggestion.
 > 
-> Lets try again:
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.h | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> offset < 256
-> 0 < len < 128
-
-Actually 0 < len <= 128.  Length of 128 is not only legal, but very common.
-"Read the whole 1/2 page block".
-
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+> index ea456099b33c..8a6227287e34 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+> @@ -74,13 +74,13 @@ struct otx2_mbox {
+>  	struct otx2_mbox_dev *dev;
+>  };
 > 
-> if (offset < 128)
->    offset + len < 128
-
-Again, offset + len <= 128
-
-> else
->    offset + len < 256
-
-offset + len <= 256
-
+> -/* Header which preceeds all mbox messages */
+> +/* Header which precedes all mbox messages */
+>  struct mbox_hdr {
+>  	u64 msg_size;	/* Total msgs size embedded */
+>  	u16  num_msgs;   /* No of msgs embedded */
+>  };
 > 
-> Does that look better?
+> -/* Header which preceeds every msg and is also part of it */
+> +/* Header which precedes every msg and is also part of it */
+>  struct mbox_msghdr {
+>  	u16 pcifunc;     /* Who's sending this msg */
+>  	u16 id;          /* Mbox message ID */
+> @@ -277,8 +277,8 @@ struct msg_req {
+>  	struct mbox_msghdr hdr;
+>  };
 > 
-> Reading bytes from the lower 1/2 of page 0 should give the same data as
-> reading data from the lower 1/2 of page 42. So we can allow that, but
-don't
-> be too surprised when an SFP gets it wrong and gives you rubbish. I would
-
-The spec is clear that the lower half is the same for all pages.  If the SFP
-gives you rubbish you should throw the device in the rubbish.
-
-> suggest ethtool(1) never actually does read from the lower 1/2 of any page
-> other than 0.
-
-I agree, despite my previous comment.  While the spec is clear that should
-work, I believe virtually all such instances are bugs not yet discovered.
-
-And, note that the legacy API provides no way to access lower memory from
-any page but 0.  There's just no syntax for it.  Not that we care about
-legacy :-).
-
+> -/* Generic rsponse msg used a ack or response for those mbox
+> - * messages which doesn't have a specific rsp msg format.
+> +/* Generic response msg used an ack or response for those mbox
+> + * messages which don't have a specific rsp msg format.
+>   */
+>  struct msg_rsp {
+>  	struct mbox_msghdr hdr;
+> @@ -299,7 +299,7 @@ struct ready_msg_rsp {
 > 
-> And i agree about documentation. I would suggest a comment in
-> ethtool_netlink.h, and the RST documentation.
+>  /* Structure for requesting resource provisioning.
+>   * 'modify' flag to be used when either requesting more
+> - * or to detach partial of a cetain resource type.
+> + * or to detach partial of a certain resource type.
+>   * Rest of the fields specify how many of what type to
+>   * be attached.
+>   * To request LFs from two blocks of same type this mailbox
+> @@ -489,7 +489,7 @@ struct cgx_set_link_mode_rsp {
+>  };
 > 
-> 		   Andrew
+>  #define RVU_LMAC_FEAT_FC		BIT_ULL(0) /* pause frames */
+> -#define RVU_LMAC_FEAT_PTP		BIT_ULL(1) /* precison time protocol */
+> +#define RVU_LMAC_FEAT_PTP		BIT_ULL(1) /* precision time protocol */
+>  #define RVU_MAC_VERSION			BIT_ULL(2)
+>  #define RVU_MAC_CGX			BIT_ULL(3)
+>  #define RVU_MAC_RPM			BIT_ULL(4)
+> --
 
-Don
 
+-- 
+~Randy
 
