@@ -2,302 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58F4034768A
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 11:53:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 707543476B6
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 12:02:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233932AbhCXKxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 06:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
+        id S234452AbhCXLBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 07:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233834AbhCXKwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 06:52:53 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FBDC061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 03:52:52 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id o126so21743850lfa.0
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 03:52:52 -0700 (PDT)
+        with ESMTP id S231237AbhCXLBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 07:01:32 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAC9C061763;
+        Wed, 24 Mar 2021 04:01:32 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id q26so12257634qkm.6;
+        Wed, 24 Mar 2021 04:01:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=H/whYHoWNwjkmLitGatQIfQ0vbRcaW2ZYplUOrR+xDc=;
-        b=EA4d7ZUTs2K4KDTfSkqndA91iZkzRgEmVMH0mEKMf/isLrxVYs7VzwYcG8QlJgRyBw
-         pdE7HswnogZg8McrXnVurTNzCfPmYjBzOcDtU3lRUHCY1OPbJ2HsX0NSFCPTrnAf9tkl
-         xugPpx7DqMSgqnO65Ck2I3RjeeZLhB5T/d96hU2iqQZVYlJPi/iqzk+AImi0FqPj5yl0
-         dmB60ipBN1LEv012ueT0OGW0eu0qLszOf162LXve1kizUmp1LZ8zHKDDGUBH+24beA+n
-         3kaE+4+LKcwIi13TMYsxOEu+mQUEIEkxgnBSkco1AiMGFyl3KgGGoBjmKVIn4/pEZ2bs
-         uslA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E01fHFK8B0CwUT/NlAoEwx2voqfnNCEWOzjDvw2m6n4=;
+        b=NY7yAw8cgzTULkuOmQLe2iktQaWt4puHb7S1TNfzJGWZHdxtmXziQBVPoR8kCKTFyn
+         +Yz3LuSF505XWHMfmShaq4dINFkf7D/si3f92ZufU9SQt7w7Kmal8sIzimlIC4BqiXdu
+         4sROjr2nLVbDC5t+0JYOUe1av60D0+MHPpWc6DIbOfOw+Tvfg009WQlpu+BtOLpIQV/U
+         OnGCIS1DM0wDVi4oZIAL216VlCG/xmFKx5bdG2JmVp4MHiNi+DJJRB3RaCfsAgDeV7Nn
+         N+KBIbxgQe+aRb2AoiXomVW4ZromWvkZvHY8HGdCHCYWcLMsU3lq1wa0dD+N8PatFXGx
+         ZD6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=H/whYHoWNwjkmLitGatQIfQ0vbRcaW2ZYplUOrR+xDc=;
-        b=cyJyeGdIXtlI4DEiyxEau0vDYrIDdwq3tsazT256UQ4zAWDIWtcGoKoL3ki5mVgZaI
-         GCayMuXp+OFm9e6ovkuWlYcsML4lBc62KO7O/cTa+tEtx6iryvVXQ9YxrQybc+WzU6dr
-         5t8PgfithFXP7+PqVRpVprz4d77CKahcgD8iW0Xk/tDooXIwbaeAEBTrEyEPTo6U/Jvb
-         xs7NKfKfMZuXD/h7FF7gcVzXtudFNRvDIDMFl8iYpugwAihXDIu5fRdnzocr/K0MaJor
-         sV/atRMUxrfcPIOH66TjtLYIqRaPARa/zY6R/Xzs35nu8ArX1Ya8oTWlynUnDLK26aSS
-         TZcg==
-X-Gm-Message-State: AOAM530lhMEpig4JWzuceUNQAlF+yT/kC/s3wOHBytFhiKit6Mc4YwZC
-        iFbyR2audQa6TkC98OLJejyxe65+X1RyT7Th
-X-Google-Smtp-Source: ABdhPJxu8MGQeb/IkKoqMMELub7PcYEg3wI0JS0T/j9dhE655uD0iFNEmNAxu224fhiFroIz6ZiQ5Q==
-X-Received: by 2002:a05:6512:5d7:: with SMTP id o23mr1604194lfo.81.1616583170564;
-        Wed, 24 Mar 2021 03:52:50 -0700 (PDT)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id k9sm266235ljg.57.2021.03.24.03.52.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 03:52:50 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
-In-Reply-To: <20210323231508.zt2knmica7ecuswf@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com> <20210323113522.coidmitlt6e44jjq@skbuf> <87blbalycs.fsf@waldekranz.com> <20210323190302.2v7ianeuwylxdqjl@skbuf> <8735wlmuxh.fsf@waldekranz.com> <20210323231508.zt2knmica7ecuswf@skbuf>
-Date:   Wed, 24 Mar 2021 11:52:49 +0100
-Message-ID: <87y2eclt6m.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E01fHFK8B0CwUT/NlAoEwx2voqfnNCEWOzjDvw2m6n4=;
+        b=AUNDkNTr5+0VedCBimKq+86r+awWk2W7dWKKGgL/RIZ7B4Tdy/1JExkg7LTyLRrfxA
+         1rDnBQ+24Uvj63sHOWr5E6SC75g26DmZJW9NmtM4gQQqzBFaaEJimvk2nDzTJJXLwS7W
+         WVZ8oYPoIzThDbcs3c4VcDXle4lGNqFwhE4FI8fmspwy62Dwc0RaoIpC7XcQHMCSrpDj
+         cOUgqnquFSjr+Smxr8uu1ozms7DrYEfoCSCFvoU9Mb5r1mR/D/WNamaQrFZW4rR6Urd+
+         KOc7vuwCevSR3W/GFXQ6KzT+ubZISYmxzTqAesjYPhSAl+9DUEXolS7nKIWL6BPx564A
+         FQzw==
+X-Gm-Message-State: AOAM531lMmTJSPEBhStdbCE5+FV9FUsgfW8eYp3nFnWBjoMqFMjhcvgK
+        vaEL1Cy5OGyLRTvX0wUiQbVrxcwxsRQPzgp0BGAu5W5fdEKWYg==
+X-Google-Smtp-Source: ABdhPJytap/S1ltJf1op8lX8miHVyKrZXtLRsceZm6unF3ougp9sQStKo5N+OsDjX6fVMFoTNGd+nFyhniTnt3rIt8s=
+X-Received: by 2002:a37:6c3:: with SMTP id 186mr2289123qkg.279.1616583691583;
+ Wed, 24 Mar 2021 04:01:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210324030923.17203-1-yejune.deng@gmail.com> <YFsVzP6P9l0aaIVo@unreal>
+In-Reply-To: <YFsVzP6P9l0aaIVo@unreal>
+From:   Yejune Deng <yejune.deng@gmail.com>
+Date:   Wed, 24 Mar 2021 19:01:19 +0800
+Message-ID: <CABWKuGUPkMHZj6qsAYmCnc==4pP8vyYK-3TRJ9oG8mk=nJBLAw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: ipv4: route.c: add likely() statements
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        yejune@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 01:15, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Mar 23, 2021 at 10:17:30PM +0100, Tobias Waldekranz wrote:
->> On Tue, Mar 23, 2021 at 21:03, Vladimir Oltean <olteanv@gmail.com> wrote:
->> > On Tue, Mar 23, 2021 at 03:48:51PM +0100, Tobias Waldekranz wrote:
->> >> On Tue, Mar 23, 2021 at 13:35, Vladimir Oltean <olteanv@gmail.com> wrote:
->> >> > The netdev_uses_dsa thing is a bit trashy, I think that a more polished
->> >> > version should rather set NETIF_F_RXALL for the DSA master, and have the
->> >> > dpaa driver act upon that. But first I'm curious if it works.
->> >> 
->> >> It does work. Thank you!
->> >
->> > Happy to hear that.
->> >
->> >> Does setting RXALL mean that the master would accept frames with a bad
->> >> FCS as well?
->> >
->> > Do you mean from the perspective of the network stack, or of the hardware?
->> >
->> > As far as the hardware is concerned, here is what the manual has to say:
->> >
->> > Frame reception from the network may encounter certain error conditions.
->> > Such errors are reported by the Ethernet MAC when the frame is transferred
->> > to the Buffer Manager Interface (BMI). The action taken per error case
->> > is described below. Besides the interrupts, the BMI is capable of
->> > recognizing several conditions and setting a corresponding flag in FD
->> > status field for Host usage. These conditions are as follows:
->> >
->> > * Physical Error. One of the following events were detected by the
->> >   Ethernet MAC: Rx FIFO overflow, FCS error, code error, running
->> >   disparity error (in applicable modes), FIFO parity error, PHY Sequence
->> >   error, PHY error control character detected, CRC error. The BMI
->> >   discards the frame, or enqueue directly to EFQID if FMBM_RCFG[FDOVR]
->> >   is set [ editor's note: this is what my patch does ]. FPE bit is set
->> >   in the FD status.
->> > * Frame size error. The Ethernet MAC detected a frame that its length
->> >   exceeds the maximum allowed as configured in the MAC registers. The
->> >   frame is truncated by the MAC to the maximum allowed, and it is marked
->> >   as truncated. The BMI sets FSE in the FD status and forwards the frame
->> >   to next module in the FMan as usual.
->> > * Some other network error may result in the frame being discarded by
->> >   the MAC and not shown to the BMI. However, the MAC is responsible for
->> >   counting such errors in its own statistics counters.
->> >
->> > So yes, packets with bad FCS are accepted with FMBM_RCFG[FDOVR] set.
->> > But it would be interesting to see what is the value of "fd_status" in
->> > rx_default_dqrr() for bad packets. You know, in the DPAA world, the
->> > correct approach to solve this problem would be to create a
->> > configuration to describe a "soft examination sequence" for the
->> > programmable hardware "soft parser", which identifies the DSA tag and
->> 
->> Yeah I know you can do that. It is a very flexible chip that can do all
->> kinds of fancy stuff...
->> 
->> > skips over a programmable number of octets. This allows you to be able
->> > to continue to do things such as flow steering based on IP headers
->> > located after the DSA tag, etc. This is not supported in the upstream
->> > FMan driver however, neither the soft parser itself nor an abstraction
->> > for making DSA masters DSA-aware. I think it would also require more
->> 
->> ...but this is the problem. These accelerators are always guarded by
->> NDAs and proprietary code.
+My reasons are as following: ipv4_confirm_neigh() belongs to
+ipv4_dst_ops that family is AF_INET, and ipv4_neigh_lookup() is also
+added likely() when rt->rt_gw_family is equal to AF_INET.
+
+On Wed, Mar 24, 2021 at 6:34 PM Leon Romanovsky <leon@kernel.org> wrote:
 >
-> Hey, that is simply not true. [ this is even more hilarous, given that
-> you are criticizing NXP about openness in a thread about Marvell hardware ]
-
-NXP is much better than most in this area. That is a big reason why you
-will find NXP/Freescale silicon in a majority of Westermo products.
-
-> I just created an account on nxp.com using my gmail email address, then
-> I typed "T1023" in the search bar, clicked on "T1024", clicked the
-> "Documentation" tab, went to the "Reference Manual" section, hit "More",
-> selected "T1024DPAArm, QorIQ T1024 Data Path Acceleration Architecture
-> (DPAA) Reference Manual", and it downloaded T1042DPAARM.pdf right away.
-> And that has 1373 pages of 'all you can eat' about the DPAA hardware.
-> And this user manual is _specifically_ for the network subsystem, the
-> SoC has a separate user manual (T1024RM.pdf) which has another 2121
-> pages about the other peripherals.
-
-Yes I know all this.
-
->> If NXP could transpile XDP to dpaa/dpaa2 in the kernel like how
->> Netronome does it, we would never even talk to another SoC-vendor.
+> On Wed, Mar 24, 2021 at 11:09:22AM +0800, Yejune Deng wrote:
+> > Add likely() statements in ipv4_confirm_neigh() for 'rt->rt_gw_family
+> > == AF_INET'.
 >
-> 'More complicated than it's worth' is, I believe, what the verdict on
-> that was. DPAA is an unbelievably complicated architecture living in a
-> universe of its own. Also, it was designed at the beginning of the
-> multi-core/multi-queue era, when it wasn't at all clear that Linux would
-> become the dominant operating system for embedded networking, but merely
-> one of the many contenders. So you'll find things like a queuing and
-> buffer management system optimized for dispatching towards many packet
-> processing engines arranged in composable pipelines, and with seemingly
-> exotic features such as order preservation for parallel processing of a
-> single network flow. Whereas in Linux, the dominant model [ coming from x86 ]
-> is that where 1 queue + 1 buffer pool are compressed into 1 ring which
-> goes to 1 CPU, which is a much more efficient data structure for
-> single-core, CPU-intensive processing, so that model won out. The way
-> the Linux drivers for DPAA make use of the hardware features is so poor
-> not because of lack of willpower, but due to an explosive combination of
-> dated hardware design and overengineering.
+> Why? Such macros are beneficial in only specific cases, most of the time,
+> likely/unlikely is cargo cult.
 >
-> And DPAA2 is basically the response to the criticism that with DPAA1 it was
-> stupidly complicated to send a packet. With DPAA2 it's just as complicated,
-> except that now, most of the hardware intricacies are managed by a
-> firmware. The idea behind this was that it was supposed to make the
-> integration with operating systems easier, and many people smarter than
-> me say it's for the better.
->
-> Of course, all of these look like mistakes when seen through the lens of
-> hindsight, but I don't think I can really judge, just observe.
-
-I do not mean to judge either. I am sure that all these desicions were
-the right ones at the time they were taken. It is just surprising to me
-that no SoC vendor has tried on a sub-50 Gbps device.
-
-> But many open source frameworks for packet acceleration with DPAA were
-> tried, rest assured. If you scan the "external/qoriq" project from
-> https://source.codeaurora.org/, I'm sure you'll find more code than you
-> can digest.
->
-> On the other hand, there _is_ support in the mainline kernel for both
-> dpaa and dpaa2 for native XDP, which is a modern framework that gives
-> you decent enough throughput for CPU-based packet processing.
-
-Yes, that is very much appreciated.
-
->> > work than it took me to hack up this patch. But at least, if I
->> > understand correctly, with a soft parser in place, the MAC error
->> > counters should at least stop incrementing, if that is of any importance
->> > to you.
->> 
->> This is the tragedy: I know for a fact that a DSA soft parser exists,
->> but because of the aforementioned maze of NDAs and license agreements
->> we, the community, cannot have nice things.
->
-> Oh yeah? You can even create your own, if you have nerves of steel and a
-> thick enough skin to learn to use the "fmc" (Frame Manager Configuration
-> Tool) program, which is fully open source if you search for it on CAF
-> (and if you can actually make something out of the source code).
-
-Yes, this is what a colleague of mine has done. Which is how I know that
-one exists :)
-
-> And this PDF (hidden so well behind the maze of NDAs, that I just had to
-> google for it, and you don't even need to register to read it):
-> https://www.nxp.com/docs/en/user-guide/LSDKUG_Rev20.12.pdf
-> is chock full of information on what you can do with it, see chapters 8.2.5 and 8.2.6.
-
-Right, but this is where it ends. Using the wealth of information you
-have laid out so far you can use DPAA to do amazing things using open
-components.
-
-...unless you have to do something so incredibly advanced and exotic as
-a masked update of a field. At this point you have two options:
-
-1. Buy the firmware toolchain, which requires signing an NDA.
-2. Buy a single-drop firmware binary for lots of $$$ without any
-   possibility of getting further updates because "you should really be
-   using DPAA2".
-
-> Personally, I am not ashamed to admit that I'm too stupid to use it.
-
-Neither am I, I am very thankful to have people around me who can do
-amazing things that are out of reach for me.
-
-> But to blame the mainline unavailability of these features on lack of
-> openness is unfair. Poor integration with Linux networking concepts?
-> Lack of popularity or demand from Linux users? Maybe, but that would
-> imply a certain circularity, and that would paint things in a
-> not-so-black-and-white tone, which you want to avoid.
-
-Objectively, it is certainly not black-and-white. My guess is that there
-many many happy DPAA users out there. I was describing my subjective
-experience. Perhaps some residual pain from old wounds led me to use a
-harsher tone than necessary.
-
-> If you want to do any sort of development around that area, I'm sure
-> you'd be raised a statue and sung odes to.
-
-We could maybe open up our soft-parser without having to use a custom
-firmware. But I do not know enough about DPAA to judge how hard that
-would be to integrate with what is in the open driver. I will consult
-with the people who do.
-
-> [ enough about DPAA ]
->
->> >> If so, would that mean that we would have to verify it in software?
->> >
->> > I don't see any place in the network stack that recalculates the FCS if
->> > NETIF_F_RXALL is set. Additionally, without NETIF_F_RXFCS, I don't even
->> > know how could the stack even tell a packet with bad FCS apart from one
->> > with good FCS. If NETIF_F_RXALL is set, then once a packet is received,
->> > it's taken for granted as good.
->> 
->> Right, but there is a difference between a user explicitly enabling it
->> on a device and us enabling it because we need it internally in the
->> kernel.
->> 
->> In the first scenario, the user can hardly complain as they have
->> explicitly requested to see all packets on that device. That would not
->> be true in the second one because there would be no way for the user to
->> turn it off. It feels like you would end up in a similar situation as
->> with the user- vs. kernel- promiscuous setting.
->> 
->> It seems to me if we enable it, we are responsible for not letting crap
->> through to the port netdevs.
->
-> Yes, the advantage of NETIF_F_RXALL is that you treat error packets as
-> normal, the disadvantage is that you treat error packets as normal.
->
-> So I think all the options were laid out:
-> - Make the driver use EDSA by default when it can, because that has
->   better compatibility with masters, then users who care about
->   performance can dynamically switch [ back ] to DSA. Pro: is simple,
->   con: may affect somebody relying on the default behavior
-
-I think this is pretty much what is done today for "category 2" devices
-in my original message. The problem is with the devices from "category
-3" where we would prefer to only use documented features of the device
-as long as the master can cope with it. But if the controller refuses to
-cooperate, the scales might tip in favor of using undocumented features.
-
-> - Make your board parse a custom device tree binding which tells it what
->   initial tagging protocol to use. Pro: addresses the con of the above.
->   Con: kinda hacky.
-
-Kinda hacky, yes. OTOH, it is a workaround and not something that you
-have to be aware of unless you actually need it.
-
-> - Make the DSA master ignore parser errors. Pro: see above. Con: see above.
-
-Yeah I think the performace impact of having to checksum every frame
-makes this unattractive.
-
-> - Teach the DSA master to have a minimal understanding of the DSA header.
->   Pro: is the right thing to do, is compatible and better for more
->   advanced use cases. Con: is more complicated than the alternatives.
-
-In cases where this is possible, absolutely!
+> >
+> > Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+> > ---
+> >  net/ipv4/route.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> > index fa68c2612252..5762d9bc671c 100644
+> > --- a/net/ipv4/route.c
+> > +++ b/net/ipv4/route.c
+> > @@ -440,7 +440,7 @@ static void ipv4_confirm_neigh(const struct dst_entry *dst, const void *daddr)
+> >       struct net_device *dev = dst->dev;
+> >       const __be32 *pkey = daddr;
+> >
+> > -     if (rt->rt_gw_family == AF_INET) {
+> > +     if (likely(rt->rt_gw_family == AF_INET)) {
+> >               pkey = (const __be32 *)&rt->rt_gw4;
+> >       } else if (rt->rt_gw_family == AF_INET6) {
+> >               return __ipv6_confirm_neigh_stub(dev, &rt->rt_gw6);
+> > --
+> > 2.29.0
+> >
