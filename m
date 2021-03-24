@@ -2,106 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1805347DA8
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 17:27:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8E51347E32
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 17:51:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235721AbhCXQ1V convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 24 Mar 2021 12:27:21 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:39295 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235114AbhCXQ1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 12:27:12 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-36-mooNmgT4MtSKVwTw4DWRzg-1; Wed, 24 Mar 2021 16:27:10 +0000
-X-MC-Unique: mooNmgT4MtSKVwTw4DWRzg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Wed, 24 Mar 2021 16:27:09 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.012; Wed, 24 Mar 2021 16:27:09 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alex Elder' <elder@linaro.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "evgreen@chromium.org" <evgreen@chromium.org>,
-        "cpratapa@codeaurora.org" <cpratapa@codeaurora.org>,
-        "subashab@codeaurora.org" <subashab@codeaurora.org>,
-        "elder@kernel.org" <elder@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] net: ipa: avoid 64-bit modulus
-Thread-Topic: [PATCH net-next] net: ipa: avoid 64-bit modulus
-Thread-Index: AQHXH4CsHuvM6SpiNkO+MERkTuT8kKqTVWfg
-Date:   Wed, 24 Mar 2021 16:27:09 +0000
-Message-ID: <f77f12f117934e9d9e3b284ed37e87a7@AcuMS.aculab.com>
-References: <20210323010505.2149882-1-elder@linaro.org>
-In-Reply-To: <20210323010505.2149882-1-elder@linaro.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S236897AbhCXQvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 12:51:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43576 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236612AbhCXQu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 12:50:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 85A84619F3;
+        Wed, 24 Mar 2021 16:50:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616604657;
+        bh=HZilA3Ddut5I+CzKgTwN2jWGUXVZvJ89bfSy/1ffutg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MUfwXs27KbWFBqV6CTNGsruGtj2okH9TL+KSympDqPI1JCQWm9LLlXtyTQZzoox+u
+         066ymbbOOaNED6g7Ynyb7yYITsLgo6bic1mrG9trg1juYU2XKA5qRkvQiMgjJZofIJ
+         DoyRSBXNWLgc4xfmiswxlAx5kingOBYdP3vgtSH+3Wo2seTkimy3q34GNCNjLT/prt
+         HcE0TVr0uKzv/fDj/YjZSRyu3FFyorx72/4eVEXXkFN27ubI7uN9IxYOPrhgXGi5xa
+         04rksoqY/zb/vn1zvCiqADj+5KsbNl3GY5q66biqEX3yTzjm6f2d5AnMnbPYeuVZbD
+         DRuh7YwXYCJvw==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next 0/7] net: phy: marvell10g updates
+Date:   Wed, 24 Mar 2021 17:50:16 +0100
+Message-Id: <20210324165023.32352-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Elder
-> Sent: 23 March 2021 01:05
-> It is possible for a 32 bit x86 build to use a 64 bit DMA address.
-> 
-> There are two remaining spots where the IPA driver does a modulo
-> operation to check alignment of a DMA address, and under certain
-> conditions this can lead to a build error on i386 (at least).
-> 
-> The alignment checks we're doing are for power-of-2 values, and this
-> means the lower 32 bits of the DMA address can be used.  This ensures
-> both operands to the modulo operator are 32 bits wide.
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
->  drivers/net/ipa/gsi.c       | 11 +++++++----
->  drivers/net/ipa/ipa_table.c |  9 ++++++---
->  2 files changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-> index 7f3e338ca7a72..b6355827bf900 100644
-> --- a/drivers/net/ipa/gsi.c
-> +++ b/drivers/net/ipa/gsi.c
-> @@ -1436,15 +1436,18 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
->  /* Initialize a ring, including allocating DMA memory for its entries */
->  static int gsi_ring_alloc(struct gsi *gsi, struct gsi_ring *ring, u32 count)
->  {
-> -	size_t size = count * GSI_RING_ELEMENT_SIZE;
-> +	u32 size = count * GSI_RING_ELEMENT_SIZE;
->  	struct device *dev = gsi->dev;
->  	dma_addr_t addr;
-> 
-> -	/* Hardware requires a 2^n ring size, with alignment equal to size */
-> +	/* Hardware requires a 2^n ring size, with alignment equal to size.
-> +	 * The size is a power of 2, so we can check alignment using just
-> +	 * the bottom 32 bits for a DMA address of any size.
-> +	 */
->  	ring->virt = dma_alloc_coherent(dev, size, &addr, GFP_KERNEL);
+Here are some updates for marvell10g PHY driver.
 
-Doesn't dma_alloc_coherent() guarantee that alignment?
-I doubt anywhere else checks?
+Marek Behún (7):
+  net: phy: marvell10g: rename register
+  net: phy: marvell10g: fix typo
+  net: phy: marvell10g: allow 5gabse-r and usxgmii
+  net: phy: marvell10g: add MACTYPE definitions for 88X3310/88X3310P
+  net: phy: marvell10g: save MACTYPE instead of rate_matching boolean
+  net: phy: marvell10g: support more rate matching modes
+  net: phy: marvell10g: support other MACTYPEs
 
-	David
+ drivers/net/phy/marvell10g.c | 102 +++++++++++++++++++++++------------
+ 1 file changed, 67 insertions(+), 35 deletions(-)
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+-- 
+2.26.2
 
