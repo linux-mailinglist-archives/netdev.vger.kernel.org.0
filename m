@@ -2,98 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BC8A3482A4
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:14:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3744E3482A6
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:15:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbhCXUOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237892AbhCXUNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:13:35 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B71C061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 13:13:34 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id o19so29079350edc.3
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 13:13:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tP5DtpUqNNa6r5+B6GU0oJmkSbmMrLPE3dqqcm9iReI=;
-        b=crpRbXuSyu71F6AqnY8WL1naJ2kb2SoZ5B9ZA818IMBn7fibPJwYeBRdKUZG53+nu3
-         5jii0YZDFA9dj+kz3drPPT24YeJkfqqDRv+Wqe5k/yf+d2jXuBtYc+AYNSOze1yXkY4W
-         xuVmAOECx1Kd80cnKcGuHlJ6QIzjzMlJcg4ZCB8y9Q70mP4RSzgXbrI1cLfkhsWkU6SX
-         v20ywk9td07GnkcSBP1mAfR6M/FAAJXoJ7nQdFG98CmZe0qluAttWE+N1Hm3h+de2MWu
-         LazzQSP9DsEv4/InIrrAYKJ8B+ezuktB4zMExXgzKiBN8YkWJH8vkwGJUtlMuhQcU3sX
-         AHAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tP5DtpUqNNa6r5+B6GU0oJmkSbmMrLPE3dqqcm9iReI=;
-        b=A4GSG3sIvEXIxpwT5tmtK+ZKlQGwkQqiXh4wSMSpUfS/A4/fieTjwCFaRKhlfOasMi
-         L70BV7IFji3KNAMrh0M58FHLsLHaCqFRFyLsq2etucPVMZaxjaGweX/wDkJH0dFbXMCZ
-         Lf1/Z6H6+LU+wJxEBNjpNROpYn8JW98hKfKpx8NAfQbSl65gaHDCUn5x3u4t+5GvHdh1
-         DbFjkK8a/a08TwSt8H4RkbcFYGuhN4qqh8fhkLOzfQjDb6LzpI8J2roMr8cpGFaF6dFM
-         nOJhcQiDc3iCLiTolBKTvVCCavgfJvaEyrxwfe6lvZb6+77aWAdZ9fN1HiIEaAr7YX/y
-         ZZhg==
-X-Gm-Message-State: AOAM530m/rt3gLwLxhXmxjpk1V6sIyWaTJOILEwRm4PiDQ6C+D7ML5kz
-        Py942ZXYBwEWolgjEJt+CUI=
-X-Google-Smtp-Source: ABdhPJwVS61ZjeGxpbRCCzPzki1+UlB+qtNw44B3yFjaO/+12vccD5NKlaO8KAKd2JId7OKuQel/Rw==
-X-Received: by 2002:aa7:d44a:: with SMTP id q10mr5345827edr.278.1616616813406;
-        Wed, 24 Mar 2021 13:13:33 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id j7sm1638804edv.40.2021.03.24.13.13.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 13:13:33 -0700 (PDT)
-Date:   Wed, 24 Mar 2021 22:13:31 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: lantiq_xrx200: Ethernet MAC with multiple TX queues
-Message-ID: <20210324201331.camqijtggfbz7c3f@skbuf>
-References: <CAFBinCArx6YONd+ohz76fk2_SW5rj=VY=ivvEMsYKUV-ti4uzw@mail.gmail.com>
+        id S238085AbhCXUPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:15:09 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:52085 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238103AbhCXUOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:44 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id E0E1F5C00C1;
+        Wed, 24 Mar 2021 16:14:43 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=rHDzetONS5/eUNlCy
+        zbY38ESQri1XNWQplr3Ctv7SJk=; b=iWLtIbpXEDaUN7jzPYhi288zVWseEHFMm
+        ybqbURsTlCoEXYmdr9S1C/tP1ahiJE4Ne2g81rJmszbUiFyX1Twsfp3G0hAbDzCC
+        t9JyGcQXatAIoaTK3vNamoqmC6lAbxcKF+Jm1egvSeoke/ZEHii/bToFtJ6vk8KA
+        c7cH/hOx9TB28i4adsVzGpPhvGiV5IgQKuVfpe5cTR2cICROjiCOFNfPl5Cz8E1S
+        Im+9RCD34Lp7M+iaUPj6YRl54k4j46hYjJqLSQJ6Aj+5GGiBcUioNcGAzr2HzgeM
+        C5pg4bTyBJYL6JcPsJQigLv26H71eNHwaxK2c/Jb5t39CkheGgNzg==
+X-ME-Sender: <xms:s51bYJil-_9UgNcm23CbKaY1bGlUnGSvcsMi-8TFsHoL4jARHG8O_Q>
+    <xme:s51bYOAtAtXnK6mnC6sg8zlmwMdsh_VRXu-LY_C3KV0A2n3d1b2SsewkkuWnxctJf
+    CykNMngFoIW0D0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegkedgudefgecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
+    ehteffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheefrdeggeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:s51bYJEgBSmDzuXWCSNgqhZLSW64LQ5UkPHPmH-LMmAG1-bie5CLqg>
+    <xmx:s51bYOSPABtCjyKpL3l4YT1TAWJDxTLbiNZ34sBudqKMTl6eW04rSA>
+    <xmx:s51bYGzg95q1bbSrcBAGV7NEE_R__3Q5u2Q85B3A6ej0F2ZpGmne6Q>
+    <xmx:s51bYAt7K7R7qRK3JSIecrGzLUMlI1yGEllx_mO-P7KJBpcwcGkOvQ>
+Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 536A324033F;
+        Wed, 24 Mar 2021 16:14:41 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 00/10] mlxsw: Add support for resilient nexthop groups
+Date:   Wed, 24 Mar 2021 22:14:14 +0200
+Message-Id: <20210324201424.157387-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFBinCArx6YONd+ohz76fk2_SW5rj=VY=ivvEMsYKUV-ti4uzw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Martin,
+From: Ido Schimmel <idosch@nvidia.com>
 
-On Wed, Mar 24, 2021 at 09:04:16PM +0100, Martin Blumenstingl wrote:
-> Hello,
-> 
-> the PMAC (Ethernet MAC) IP built into the Lantiq xRX200 SoCs has
-> support for multiple (TX) queues.
-> This MAC is connected to the SoC's built-in switch IP (called GSWIP).
-> 
-> Right now the lantiq_xrx200 driver only uses one TX and one RX queue.
-> The vendor driver (which mixes DSA/switch and MAC functionality in one
-> driver) uses the following approach:
-> - eth0 ("lan") uses the first TX queue
-> - eth1 ("wan") uses the second TX queue
-> 
-> With the current (mainline) lantiq_xrx200 driver some users are able
-> to fill up the first (and only) queue.
-> This is why I am thinking about adding support for the second queue to
-> the lantiq_xrx200 driver.
-> 
-> My main question is: how do I do it properly?
-> Initializing the second TX queue seems simple (calling
-> netif_tx_napi_add for a second time).
-> But how do I choose the "right" TX queue in xrx200_start_xmit then?
-> 
-> If my description is too vague then please let me know about any
-> specific questions you have.
-> Also if there's an existing driver that "does things right" I am happy
-> to look at that one.
+This patchset adds support for resilient nexthop groups in mlxsw. As far
+as the hardware is concerned, resilient groups are the same as regular
+groups. The differences lie in how mlxsw manages the individual
+adjacency entries (nexthop buckets) that make up the group.
 
-Is this question specific in any way to DSA?
-Many Ethernet drivers are multi-queue. Some map one queue per CPU, some
-use mqprio to map one or more queues per priority.
+The first difference is that unlike regular groups the driver needs to
+periodically update the kernel about activity of nexthop buckets so that
+the kernel will not treat the buckets as idle, given traffic is
+offloaded from the CPU to the ASIC. This is similar to what mlxsw is
+already doing with respect to neighbour entries. The update interval is
+set to 1 second to allow for short idle timers.
+
+The second difference is that nexthop buckets that correspond to an
+unresolved neighbour must be programmed to the device, as the size of
+the group must remain fixed. This is achieved by programming such
+entries with trap action, in order to trigger neighbour resolution by
+the kernel.
+
+The third difference is atomic replacement of individual nexthop
+buckets. While the driver periodically updates the kernel about activity
+of nexthop buckets, it is possible for a bucket to become active just
+before the kernel decides to replace it with a different nexthop. To
+avoid such situations and connections being reset, the driver instructs
+the device to only replace an adjacency entry if it is inactive.
+Failures are propagated back to the nexthop code.
+
+Patchset overview:
+
+Patches #1-#7 gradually add support for resilient nexthop groups
+
+Patch #8 finally enables such groups to be programmed to the device
+
+Patches #9-#10 add mlxsw-specific selftests
+
+Ido Schimmel (10):
+  mlxsw: spectrum_router: Add support for resilient nexthop groups
+  mlxsw: spectrum_router: Add ability to overwrite adjacency entry only
+    when inactive
+  mlxsw: spectrum_router: Pass payload pointer to nexthop update
+    function
+  mlxsw: spectrum_router: Add nexthop bucket replacement support
+  mlxsw: spectrum_router: Update hardware flags on nexthop buckets
+  mlxsw: reg: Add Router Adjacency Table Activity Dump Register
+  mlxsw: spectrum_router: Periodically update activity of nexthop
+    buckets
+  mlxsw: spectrum_router: Enable resilient nexthop groups to be
+    programmed
+  selftests: mlxsw: Test unresolved neigh trap with resilient nexthop
+    groups
+  selftests: mlxsw: Add resilient nexthop groups configuration tests
+
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  55 +++
+ .../ethernet/mellanox/mlxsw/spectrum_dpipe.c  |   4 +-
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.c   |  10 +-
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.h   |   3 +-
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 422 +++++++++++++++++-
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |   5 +-
+ .../net/mlxsw/devlink_trap_l3_exceptions.sh   |  31 ++
+ .../selftests/drivers/net/mlxsw/rtnetlink.sh  |  82 ++++
+ tools/testing/selftests/net/forwarding/lib.sh |   5 +
+ 9 files changed, 594 insertions(+), 23 deletions(-)
+
+-- 
+2.30.2
+
