@@ -2,76 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CE4347A4C
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:11:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0FEC347B07
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbhCXOLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 10:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235972AbhCXOKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 10:10:51 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3001EC0613DE
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 07:10:51 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id w3so33109902ejc.4
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 07:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mYzeyU6rqmhwKSAVy04zEHqMaPwwbOX6WPUATJHaMsM=;
-        b=oqpg8kHrLRHhj4ZqNFhGBH8Uto75vwFCbtoWOBUy12tflvT0UQg2Ky4F9z1oS1V8yA
-         1toa2Ywoy6w5c1ZYty3OmZ81MF+YX9Nnu0YAj5Yb999W9HUKd+iJC3Okq7YdBF0nYstC
-         dhywNhHJGPd9TCU90sHra52Sy4T5At6S/kyZsKaqZkhLy9DFBmBjy+WN16jwx6w4C4PN
-         g73nzQEYWCwWP7bvTkO7PkPUX3EUckX0nNWYPyjbyvdfb5BHSevUu7HRpr0EmyKQHbgp
-         3VdIIQcqbM0AvZyMY3ghahJR5BK+SzbI0N5xmX905pLcCONqqLBygdu2yD8Mo01klSVs
-         8urg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mYzeyU6rqmhwKSAVy04zEHqMaPwwbOX6WPUATJHaMsM=;
-        b=IrXwsqAPlLq5UOzJK49DuyC70NKeyJW0s2vBddlM8qjOsjVB15UgYXy6uux2WfYBkp
-         X1B3F/OzgJCasAhUJkJ2+0RGd+inmw5GayZq7hmWK92B+6Tbn9Wg0PsmqC/lLufDEr7w
-         mVqdPFFPu0577OrZ+s+YcCMZnaj9prIOLgG//9Ln0BTDPMJPOzaIPtJbvAEqlttbnwbG
-         W3cspA9nPmChbqNZpXAtMgfKTkZwPnrefTnJmiaJXIdMwxHOKUitrrxvIJa/M0lsd0jB
-         tj+magcajG60lHYFMMISUqgTQJ6ktXDuKxcK9sHhRPQXdGU2GHk+d+LZWX6FAUcK+ZYP
-         M9+w==
-X-Gm-Message-State: AOAM53100zTWJEGGsnxxFsJzopPDaobq75k+J71uB6Yt6WmjTDH5ziEm
-        l+rTEUtFSG5DdyJO5msm8qY=
-X-Google-Smtp-Source: ABdhPJwmgfjB6+8SVV+8Nn8qztAOEWY5q/gWYWktno7XV53RSbQtJ9p6AC+79VJ44r+AtEL1K/kBIQ==
-X-Received: by 2002:a17:906:51c3:: with SMTP id v3mr3912276ejk.497.1616595049416;
-        Wed, 24 Mar 2021 07:10:49 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id p3sm990504ejd.7.2021.03.24.07.10.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 07:10:49 -0700 (PDT)
-Date:   Wed, 24 Mar 2021 16:10:47 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
- reconfiguration of tag protocol
-Message-ID: <20210324141047.3ajoylgsysgr7j7j@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com>
- <20210323113522.coidmitlt6e44jjq@skbuf>
- <87blbalycs.fsf@waldekranz.com>
- <20210323190302.2v7ianeuwylxdqjl@skbuf>
- <8735wlmuxh.fsf@waldekranz.com>
- <20210324140317.amzmmngh5lwkcfm4@skbuf>
+        id S236355AbhCXOpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 10:45:16 -0400
+Received: from mga02.intel.com ([134.134.136.20]:2051 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236115AbhCXOoy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 10:44:54 -0400
+IronPort-SDR: 4aTwv4cOjWo/gWVVwjT3GY0JA2Jdbr4MNjnmZ3/MhJChFsm0ruuQipd3qFvvK0E87cwcWxb/0k
+ FpSpQNmNqQtg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="177834544"
+X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
+   d="scan'208";a="177834544"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 07:44:53 -0700
+IronPort-SDR: VqEXriFJELnQHGfVhrVX6LmbZ772bw+318tdkoElJrkNyul8GHHSkx9AY4IWIEU2+XUzgmWTec
+ bLOSJvKLuTCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
+   d="scan'208";a="608127963"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
+  by fmsmga005.fm.intel.com with ESMTP; 24 Mar 2021 07:44:52 -0700
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, bjorn@kernel.org
+Cc:     Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf 0/3] AF_XDP Socket Creation Fixes
+Date:   Wed, 24 Mar 2021 14:13:34 +0000
+Message-Id: <20210324141337.29269-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210324140317.amzmmngh5lwkcfm4@skbuf>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 04:03:17PM +0200, Vladimir Oltean wrote:
-> I think there exists an intermediate approach between processing the
-> frames on the RX queue and installing a soft parser.
+This series fixes some issues around socket creation for AF_XDP.
 
-I meant "RX error queue", sorry for the confusion.
+Patch 1 fixes a potential NULL pointer dereference in
+xsk_socket__create_shared.
+
+Patch 2 ensures that the umem passed to xsk_socket__create(_shared)
+remains unchanged in event of failure.
+
+Patch 3 makes it possible for xsk_socket__create(_shared) to
+succeed even if the rx and tx XDP rings have already been set up, by
+ignoring the return value of the XDP_RX_RING/XDP_TX_RING setsockopt.
+This removes a limitation which existed whereby a user could not retry
+socket creation after a previous failed attempt.
+
+It was chosen to solve the problem by ignoring the return values in
+libbpf instead of modifying the setsockopt handling code in the kernel
+in order to make it possible for the solution to be available across
+all kernels, provided a new enough libbpf is available.
+
+This series applies on commit 87d77e59d1ebc31850697341ab15ca013004b81b
+
+Ciara Loftus (3):
+  libbpf: ensure umem pointer is non-NULL before dereferencing
+  libbpf: restore umem state after socket create failure
+  libbpf: ignore return values of setsockopt for XDP rings.
+
+ tools/lib/bpf/xsk.c | 66 +++++++++++++++++++++++++--------------------
+ 1 file changed, 37 insertions(+), 29 deletions(-)
+
+-- 
+2.17.1
+
