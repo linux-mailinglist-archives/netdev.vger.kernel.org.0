@@ -2,84 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86988347D3C
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 17:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59655347D45
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 17:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236933AbhCXQCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 12:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        id S236951AbhCXQHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 12:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236923AbhCXQCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 12:02:34 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53599C061763;
-        Wed, 24 Mar 2021 09:02:32 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id hq27so33749432ejc.9;
-        Wed, 24 Mar 2021 09:02:32 -0700 (PDT)
+        with ESMTP id S236945AbhCXQHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 12:07:09 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59DAC061763;
+        Wed, 24 Mar 2021 09:07:09 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id q11so8186165pld.11;
+        Wed, 24 Mar 2021 09:07:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=p0h1I2tU40MVEe/iq0GPb6BvRGF0+jimshHBcD8Y96o=;
-        b=UYxL1aPIIPS7dZJFvNFh6Gi7rWcPCnq0LT08QW+F6/HZXq6mbwF8gr9DEQ2z8ZgO7r
-         dZ31Oe2JgNLZIf9KX+4S0UvQ7V8y9v2n7/jYvHfNHjm2k15HIuaVceJG3qkJg1EqLtPB
-         LkJ96zui76hJkuznZNalH0tvK4QFSp9k7YTqifqDGJAnCze1bamfgvt+N2oHMM8ldjPu
-         Ibf1rMbmngk1Gbhy79F6gTXVORnLsE2VieIu639CP+HpZeC19nu8SkRsMO9cIKc/fXhr
-         HaXgNOl1e9UXZKneUfj9dHbbQG9e7QOTVv8j6soU7b+hOIsDZOXsCYmgAqip8RCJmcy3
-         ZAGg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2DGuhHo+Cb6MXVnc++dT+O9N+4yMJ/uTwtOV806nVZc=;
+        b=aZCvdWSe8eBrklJYTBHPKA2791MdJnsa72WyCHU0zyW8niq5HqlO3Y4b+R008MSPDr
+         0dSouNhxPCtSgyhbtEikIN/wNC4kReZ8nSYNZRVA/RRhjnRhJJ/nuJ8XKI/MhgO2vzuI
+         N9hM9YfoMUU0qvcPWQstW8uA0Aukqni4zA+MpvIqRJEKaIOcwWuu8LIHw0iFC31vLEYV
+         5B2bQ5QLoZjDiCbtNhiz3QBK7zmqIJgwkBgEpz+NUKHeNw+fgU8QZubYLJ+Sun+6Phzs
+         m0/SakNmrHU5jNITXrG7Tc1ezkb/+FlSHoDPlEA1WRywVmxaBQlzLPz6XgsR9inck77X
+         EvGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=p0h1I2tU40MVEe/iq0GPb6BvRGF0+jimshHBcD8Y96o=;
-        b=gfw81uvtx1dEaEV1PKTswviesaNawjfHlt+SNfYOmqpOOJOwHfFP6iQZAlOYC5Z1dO
-         oC7stNdbR20J6RRloF4jn7rjhYsywgxA0W9qxymbiBGXd1MiQz7m/Ktz+ikAoho+vo3n
-         yAToG1Wn5YhF/hq14d5/U6HKHcXbXqIOW1OT4rlJAD8KYGDLYs0ZZV8BQU8Wxf7H1x5X
-         8lNAeN73sHHg7pCFKwFq24sZV9iYuwYpU2RHkDvJuEaXjqQFfdl/Mi9lI7ghslvTg0yG
-         6fyLb0BrZ6kmKPVDtWVP9rRmfGBhwdzX4AAGIfnrfzCIC+VgUFQrbCOdEUzFfeh3yoD/
-         WcjA==
-X-Gm-Message-State: AOAM530uQpkOjUYIR7VDRr+ClzmYVUociimcfy+Kc6J/iVqqNUvz3lSK
-        TCeIrEaBr36HN+75vTwP5j4=
-X-Google-Smtp-Source: ABdhPJwpUavXt4EHnTzT+ae8zvQSOiy4MHaEHtHWR/X63xNd+NtmzaX78oG8X3nz4lj7OuTgsBJ6zQ==
-X-Received: by 2002:a17:906:9888:: with SMTP id zc8mr4575571ejb.310.1616601750960;
-        Wed, 24 Mar 2021 09:02:30 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id si7sm1131470ejb.84.2021.03.24.09.02.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2DGuhHo+Cb6MXVnc++dT+O9N+4yMJ/uTwtOV806nVZc=;
+        b=jPhr2Gmd4aZUzKbqwmdmaCWRPRrXYOX0D+XsJU35et+vwLY5gwNlOwDEBxNAD3Y6WM
+         pp0vCxHD+O659W0SSpZzmgJXpE266K4jxN56u1ErZXZY7EEViTEa8HtPTqjmA6YyftKx
+         nt9kL7HrvJQ379ka0ZPZtJBVIBNZgOASM+W9nrr7ocBq2eNROIxZueiK42I/GK93JOyS
+         L8sssh3OabolkmpjKDEmvMiA6jFTJPoIeENRIz7HgYJ2vTc+dy11Doxg9nLVSKe9sJLK
+         FAQqqHCl80Fmf04yxSRgJyCGKyQgRDpXwjcGb67TKkpoaQ1d63Sll87PrmVnJfgPtJw6
+         WTeA==
+X-Gm-Message-State: AOAM533xwJ0zqpdd/nnGkyPK+d9LAHvRbuNZn2yDO+uMaempuQrxYI8p
+        OWt+jO4kT2exIlIQqZEhfgE=
+X-Google-Smtp-Source: ABdhPJwqoQS8s/i4ScXWFBBj+kIldHD276mDS8J1l3BXlV2zYWT+AZhAofSbPb8/8sr0sskkqxkWxw==
+X-Received: by 2002:a17:90a:9b18:: with SMTP id f24mr4061602pjp.96.1616602029216;
+        Wed, 24 Mar 2021 09:07:09 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id b9sm2952708pgn.42.2021.03.24.09.07.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 09:02:30 -0700 (PDT)
-Date:   Wed, 24 Mar 2021 18:02:29 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] net: bridge: Fix missing return assignment from
- br_vlan_replay_one call
-Message-ID: <20210324160229.cyzepir5fnfnfeox@skbuf>
-References: <20210324150950.253698-1-colin.king@canonical.com>
+        Wed, 24 Mar 2021 09:07:08 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH net-next,v2 01/24] net: resolve forwarding path from virtual netdevice and HW destination address
+Date:   Thu, 25 Mar 2021 00:07:02 +0800
+Message-Id: <20210324160702.3056-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210324100354.GA8040@salvia>
+References: <20210324013055.5619-1-pablo@netfilter.org> <20210324013055.5619-2-pablo@netfilter.org> <20210324072711.2835969-1-dqfext@gmail.com> <20210324100354.GA8040@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210324150950.253698-1-colin.king@canonical.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 03:09:50PM +0000, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Wed, Mar 24, 2021 at 11:03:54AM +0100, Pablo Neira Ayuso wrote:
 > 
-> The call to br_vlan_replay_one is returning an error return value but
-> this is not being assigned to err and the following check on err is
-> currently always false because err was initialized to zero. Fix this
-> by assigning err.
-> 
-> Addresses-Coverity: ("'Constant' variable guards dead code")
-> Fixes: 22f67cdfae6a ("net: bridge: add helper to replay VLANs installed on port")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
+> For this scenario specifically, it should be possible extend the
+> existing flowtable netlink API to allow hostapd to flush entries in
+> the flowtable for the client changing AP.
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+The APs are external, are we going to install hostapd to them, and
+let them inform the gateway? They may not even run Linux.
+Roaming can happen in a wired LAN too, see Vladimir's commit message
+90dc8fd36078 ("net: bridge: notify switchdev of disappearance of old FDB entry upon migration").
+
+I think the fastpath should monitor roaming (called "FDB migration" in
+that commit) events, and update/flush the flowtable accordingly. 
