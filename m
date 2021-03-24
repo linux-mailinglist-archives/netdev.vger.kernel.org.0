@@ -2,173 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38879347094
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 05:51:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E542347148
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 06:55:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbhCXEvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 00:51:11 -0400
-Received: from mail-mw2nam10on2057.outbound.protection.outlook.com ([40.107.94.57]:11905
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232587AbhCXEuw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 00:50:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NhVXQGlOUfr8568vPUUd3uyXY2um8vtz+EifQwZG95LxJY4xv3ECk5a7uJKqyHf7K0L6GZU+PQ94CFjIuByxhOLhXbQYIMy6KH0/uMNOEQQGJqsocy46rdIs/kTtzBxEbAgV5dtrjzgPisslACHDds1a1n7lupVuLrhvQ6IFA2m49WysXYDxPAHZkd1xomDi8zdNIeBR9Fd9oEbwf3gOsU81DITVHe78X5FCUsK7kXmIq48eLWvQGXvH7XFZy0YJEwnNiH60ZxhbjgZQB+B9oa4uRlELqhWq372ic7wdCkScmWGGE8jEJOxVjYYSs+xAr6DE88SxE4VDR6OvdMeGqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X4yzwR1CKzS1bg2APn4k1aoH/I1SVD9xG7eDiVY1Pcg=;
- b=nZvbbj66TR3Kr/QeSn0HmF7OlcCh1ztlN9ah3TIFce/gBxh5tGnjSm2KA6knjC5W9du9l4BtFOHXjOLOG8XbONnKUn+vqgeRLiwfKCz4Rgl3K4fLlUc/G3SlHm79bBauhiqnILSyMI9LM6VFZFMxaLWATS02Q9pR1l4Ir2hniBuYYwfTwNkArXy952GkrmRiEJZ66ZdC0GuvuGE4etwPiACi5uoNdI5wWTjERNJXE/2wstZQNwiuhKxIfJ8uky8u6wiAUC7D/h4e9lsm4y9kPwLcsRU6aADeKSMwINajMr6bBEjbxVZr5YTEr3pJwDoRKMDl4E8ViH5rH9kNRREmrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X4yzwR1CKzS1bg2APn4k1aoH/I1SVD9xG7eDiVY1Pcg=;
- b=t/Vu7KOE5EfXF3LruuM+Oa28nIVDwTXIX7B29zuG/YSRgkOdOnzMEmCjyXtbXucKqUx5pin/gKnAFlguwGUzOeK3QeIUdSkIrmHoktZ4iF3V/gXwcbR8Zh8RwYC3nEB/s3VYhBimsRnJy8U/WXSq8fxERyPAjs4MXp8FICbKu5Uabtg2fKgzMdteUz+VbQKW2XHMTVWPWFq8L8z2rQY90csRKUEH0RKJJsAg0AW8rI25Ulh/46Xnz+8HVARtoyFvTrmkrWInfVlzXYerOPVQLi6EGn1lKcN0CWLUCdhbn/yMdQrV0BvvKM7vSQBbBJ3a23PveWeK6xrFfXKw64n4PQ==
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BY5PR12MB4114.namprd12.prod.outlook.com (2603:10b6:a03:20c::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Wed, 24 Mar
- 2021 04:50:51 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::7cec:a7fa:db2e:3073]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::7cec:a7fa:db2e:3073%8]) with mapi id 15.20.3955.027; Wed, 24 Mar 2021
- 04:50:51 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Shiraz Saleem <shiraz.saleem@intel.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "david.m.ertman@intel.com" <david.m.ertman@intel.com>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>
-Subject: RE: [PATCH v2 05/23] ice: Add devlink params support
-Thread-Topic: [PATCH v2 05/23] ice: Add devlink params support
-Thread-Index: AQHXIEFD/G8hoBwdlE6ZByD8K/Qg36qSkJog
-Date:   Wed, 24 Mar 2021 04:50:51 +0000
-Message-ID: <BY5PR12MB43228B823CA619460AAF2099DC639@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20210324000007.1450-1-shiraz.saleem@intel.com>
- <20210324000007.1450-6-shiraz.saleem@intel.com>
-In-Reply-To: <20210324000007.1450-6-shiraz.saleem@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [122.166.131.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3e4002e3-7cd2-4006-2afd-08d8ee806652
-x-ms-traffictypediagnostic: BY5PR12MB4114:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR12MB411481EEFE1D8B45A73C1BB1DC639@BY5PR12MB4114.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PyPcPi5QNTisDbIaaQZZOcMu62mMF1D8bUJei8a3V92/8q+/SZidGhTkl8BPXrOWjLtokwUBVxtbVD/z36z2NfbxGPeivfhNlhar3THa7bIEHHRXKqihV5yZrXccrsQUDlqF24ufPt8r9KJ4Yn8goInQVU4z2GSnQN8qDjKEs89VToVbPf8E9MsnQIiuPqdPCfbN23b3TrPt/dMGSJXP0zbQHzke/ncWhBViokGlRjyNo/bkfD/tdktdw9Jgd3BaQ3s9zQHRbCHMD/ofnsETbgPjZLZZkoQeMwSB/Tbo9/zghKJ5uOHHC8OjXNXOD848wUz/bIzzN/uyU7HvrEqozekpx3Y5eMincX31PHD8yQaxpSScn0txlQIMT8vbxbJrDg8ZFGrVPgdko6hlkH9B2cAjR55dtV+650suHhYSiDUUCVfpsgsylRIKwJq1H5riE5/gFS0wXKz+a8J9nuO+UER1DguaQ2/mMtRt6gqAKCHLUAr4yAFuOjXBS5/xMondu/VX8O8RhXD+Izagk5+HbJd9CuYJ0UdD7YiJgFa1D3JW1KAAczEZMEXRq3uf4M2MEMiYjM36IHbA/Y4MiP+E5P9U3NsnCD/5OZfG7W8wyPvxHMp38pf5R6gPTWQYfKi7R5vnGD3reg4vpejHX7AQBKZUjMncYTOnodCB6WEWvUg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(366004)(376002)(136003)(38100700001)(7696005)(71200400001)(52536014)(8936002)(66946007)(478600001)(8676002)(2906002)(5660300002)(55016002)(9686003)(110136005)(4326008)(54906003)(76116006)(64756008)(86362001)(33656002)(66476007)(186003)(83380400001)(66446008)(26005)(316002)(66556008)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?gF8fsZolzDbo/diI4OEcjCLuyAfuXAU0WRedIhOydt9akbv+Zc0OaVktUe+3?=
- =?us-ascii?Q?OW6+RMGZPeLAa2n5Yk78g3E+oa6m1E3ML3RiTJ5edDOZBhdlV9UjavGmbpO3?=
- =?us-ascii?Q?XAxjE//S6c5xA3+Td25zDzFcsGynlhSwv8ueNUuB/8xDpLTQKjnTnTzBp8Rn?=
- =?us-ascii?Q?DMwLlQaLX6RADADbsE3IkpvsWaBB3kXL6IzQVc8UmnA36wABDfvHany96ldy?=
- =?us-ascii?Q?XCQkcGpQbrNQhKC5vI+aDNB+inAvpcz2Wp0dfEuzGoALmCcKXtH0BiBDBrXv?=
- =?us-ascii?Q?zkrc8IQyA3MPEKgucE1d1VZKyqCZXo6ofz6rpFRyypsGiWpQnOcfUvIgz6PW?=
- =?us-ascii?Q?8dQEVNIXTml5jNPYyseybSnGIETDLtbnZsuQO1FIfJX5LH6y6I+v8OrZldti?=
- =?us-ascii?Q?IPez3EhxJZAm7bwXvd+kKuV99AOVXfh4vz1Me8zJY8aXWpdEc5WXjbshVFNg?=
- =?us-ascii?Q?kxrKnzsQRBsvoKk7pgCYWIYA8kI4KGdewX3Od117f9KD+kmucQf8pt0msCQy?=
- =?us-ascii?Q?X/YhEW1CxASLwCxCtwKsrk3pdH5hGGZAPci7vUcFB0pjLVmBpmtB6fsadb7Z?=
- =?us-ascii?Q?i09wNz5QkzZCi67q+M7hxGQZZQq6tz4to5zqEmvP8HPTL/7dw6RgDiWg9Suc?=
- =?us-ascii?Q?FSeyHyOvUO8ROkQ9KOynvlpWbK51d2DmEfWSUlx9P1Bf3g2NpKU8jiA2gd/Q?=
- =?us-ascii?Q?O9oZ7A5afV/3H4s6GezFxxuVbbYSDRydjCMrnYvYYzvSF202DhSLiYnT/n11?=
- =?us-ascii?Q?T12NWqtGzD3XQNPhEjkJ/QdHmgUZe/+Id0xAT/wEpGAa9lhGMNAIWLjcAKV+?=
- =?us-ascii?Q?bzQCyxyT5Kcu0H81Hv81yx8t68fAAx0PhYDaw4/ZcmVko7zmbndC88AUFSXA?=
- =?us-ascii?Q?IkQsfQa9o3z9EDGt5qWBXOOi8Ndy0jzzlOoPpDUx8i7V1gNFBv7uM5XLxr3r?=
- =?us-ascii?Q?+Q7aJxTsLumYgynMHpZEMwCLFJJyB1DGd8cuH2zTis9RRwqh1dDoIMN5lp88?=
- =?us-ascii?Q?zUa4Q28Ykw+3S7sQIl3mxUsgvhJS0O5D+zB/bV8UkADi/yABLVrv5ktFwysF?=
- =?us-ascii?Q?hJVx+j3Tg2RKyOwvhpNaV9CXFPXUOz+rvfSabK/WH2MfD5ul4WoOWixYwgWS?=
- =?us-ascii?Q?1RFt3hvb9Cj5U1+7zAGHlT4A4VaagGDQDuy0qJAc0QwpBTD7Kk515VaF9noU?=
- =?us-ascii?Q?AhGs2gZWQa4DtWoprTrSEMS6rIB/GZ+A+naPhNqDrFNOXxrlhscIDQk/zBtf?=
- =?us-ascii?Q?l3f3vRRyeWc+09tvVOQybX2TOK6m+i33FJXXJ0VHO6oWAZ1bTEECExoCeDBV?=
- =?us-ascii?Q?XI/mxeamdYqiybrGogjYql59?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S233208AbhCXFyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 01:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233184AbhCXFyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 01:54:33 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642FBC0613DA
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 22:54:33 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lOwTJ-0002YK-FQ; Wed, 24 Mar 2021 06:54:25 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lOwTI-0002y6-2l; Wed, 24 Mar 2021 06:54:24 +0100
+Date:   Wed, 24 Mar 2021 06:54:24 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: Re: [PATCH v2 0/7] remove different PHY fixups
+Message-ID: <20210324055424.u4mbdewg4stndzgh@pengutronix.de>
+References: <20210309112615.625-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e4002e3-7cd2-4006-2afd-08d8ee806652
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Mar 2021 04:50:51.2293
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bNoypceF1/22OUDNPyWxzQYiCSnUYbmValfaZr/mr6VWxBNP/c8bjAd+LdsxCmcQX23/V1FZvuYxQuS/5kSr5g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4114
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210309112615.625-1-o.rempel@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 06:53:31 up 111 days, 19:59, 40 users,  load average: 0.09, 0.05,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shiraz,
+Hi Shawn,
 
-> From: Shiraz Saleem <shiraz.saleem@intel.com>
-> Sent: Wednesday, March 24, 2021 5:30 AM
->=20
-> Add two new runtime RDMA related devlink parameters to ice driver.
-> 'rdma_resource_limits_sel' is driver-specific while 'rdma_protocol' is ge=
-neric.
-> Configuration changes result in unplugging the auxiliary RDMA device and =
-re-
-> plugging it with updated values for irdma auxiiary driver to consume at
-> drv.probe()
->=20
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> ---
->  .../networking/devlink/devlink-params.rst          |   6 +
->  Documentation/networking/devlink/ice.rst           |  35 +++++
->  drivers/net/ethernet/intel/ice/ice_devlink.c       | 146
-> ++++++++++++++++++++-
->  drivers/net/ethernet/intel/ice/ice_devlink.h       |   6 +
->  drivers/net/ethernet/intel/ice/ice_main.c          |   2 +
->  include/net/devlink.h                              |   4 +
->  net/core/devlink.c                                 |   5 +
->  7 files changed, 202 insertions(+), 2 deletions(-)
->=20
+ping, do this patches need some ACK from some one?
 
-[..]
-> +.. list-table:: Driver-specific parameters implemented
-> +   :widths: 5 5 5 85
-> +
-> +   * - Name
-> +     - Type
-> +     - Mode
-> +     - Description
-> +   * - ``rdma_resource_limits_sel``
-> +     - string
-> +     - runtime
-> +     - Selector to limit the RDMA resources configured for the device. T=
-he
-> range
-> +       is between 0 and 7 with a default value equal to 3. Each selector
-> supports
-> +       up to the value specified in the table.
-> +          - 0: 128 QPs
-> +          - 1: 1K QPs
-> +          - 2: 2K QPs
-> +          - 3: 4K QPs
-> +          - 4: 16K QPs
-> +          - 5: 64K QPs
-> +          - 6: 128K QPs
-> +          - 7: 256K QPs
+Regards,
+Oleksij
 
-Resources are better represented as devlink resource.
-Such as,
+On Tue, Mar 09, 2021 at 12:26:08PM +0100, Oleksij Rempel wrote:
+> changes v2:
+> - rebase against latest kernel
+> - fix networking on RIoTBoard
+> 
+> This patch series tries to remove most of the imx6 and imx7 board
+> specific PHY configuration via fixup, as this breaks the PHYs when
+> connected to switch chips or USB Ethernet MACs.
+> 
+> Each patch has the possibility to break boards, but contains a
+> recommendation to fix the problem in a more portable and future-proof
+> way.
+> 
+> regards,
+> Oleksij
+> 
+> Oleksij Rempel (7):
+>   ARM: imx6q: remove PHY fixup for KSZ9031
+>   ARM: imx6q: remove TX clock delay of ar8031_phy_fixup()
+>   ARM: imx6q: remove hand crafted PHY power up in ar8035_phy_fixup()
+>   ARM: imx6q: remove clk-out fixup for the Atheros AR8031 and AR8035
+>     PHYs
+>   ARM: imx6q: remove Atheros AR8035 SmartEEE fixup
+>   ARM: imx6sx: remove Atheros AR8031 PHY fixup
+>   ARM: imx7d: remove Atheros AR8031 PHY fixup
+> 
+>  arch/arm/boot/dts/imx6dl-riotboard.dts  |  2 +
+>  arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts |  2 +-
+>  arch/arm/mach-imx/mach-imx6q.c          | 85 -------------------------
+>  arch/arm/mach-imx/mach-imx6sx.c         | 26 --------
+>  arch/arm/mach-imx/mach-imx7d.c          | 22 -------
+>  5 files changed, 3 insertions(+), 134 deletions(-)
+> 
+> -- 
+> 2.29.2
+> 
+> 
 
-$ devlink resource set pci/0000:06:00.0 /rdma/max_qps 16384
-$ devlink resource set pci/0000:06:00.0 /rdma/max_cqs 8192
-$ devlink resource set pci/0000:06:00.0 /rdma/max_mrs 16384
-
-Please move from param to resource.
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
