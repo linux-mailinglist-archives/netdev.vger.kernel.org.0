@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B59347956
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:16:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EDC347957
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:16:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235110AbhCXNQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 09:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
+        id S235142AbhCXNQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 09:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234688AbhCXNPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:15:34 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D14C0613E0
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:33 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id n198so21430277iod.0
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:33 -0700 (PDT)
+        with ESMTP id S234706AbhCXNPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:15:35 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E44C0613E1
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:34 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id b10so21392203iot.4
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jEdK7HODEXGaHkN0tnvNi4JdIE04/obrX1IK6/1t7T4=;
-        b=yd5bAmiXbtr+I8BpZsrowONFEdcu9LIc0uxTJpFW/umz0BZFdG+gFe6M/fT5HPi4GD
-         AZ3P4EzTCvhIUPgsIeB4TMyIud5TZTTylwcx1w8pg5+ZNLAtJoJgCTFzM3+7mzojfBJd
-         XqBN5DYmqBRgkPMVNA2+MMXYYOkHMy300TCLOQzJ3swRBXSedCiLPUXrLStvNEHtqNzs
-         BC8XZPNWu9+kDyHpDHr9jA5GdEe/eLKvIZ5jLxkIcgbGGEHmOLr+OkPLxzffqtNlvyXb
-         y8tRdtTybASbk9Cot0Nbfui8pZWbmCBe3lGnYg+99qv4PUEs9bpiv3CYtzTUH00pBNjS
-         ZQYA==
+        bh=qKrY3MtVV0SjI4PDoOYPSEatpvEs6DJpVc9j1EaE/t0=;
+        b=L3n+VQn1qdXmxu7Rh61rfDoILCtfUVK8hsLTP4ZuGECASWlB/wKK/f4aTw45pgnN/f
+         wZfqgjPdz4HRKnfe5cY2R6U09qIFv0jmaldskybBClMKo71rqSOanamk5DEuJiozGnYK
+         872KCjNsmphXPIwu5VXGGKgXFDkYUyo+n8FQvvTIuvpMXM2Oqj620Ws5Nk/ygbo5KdJd
+         C5J+3q2h1TwWN2VYe+xtXAwStuoJ48o3cAnm7hVw38SZVOlsCasDJW4tkG29fphO3yXW
+         NW29fzaEa4d4dZjpVoFh2O+ubJ5bnyjeRerzbus0PG/169Zr/bVRg6wX7JzGcIup0NST
+         /Vgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jEdK7HODEXGaHkN0tnvNi4JdIE04/obrX1IK6/1t7T4=;
-        b=i/JaKbbpRKMS/zPCwG3kiPoos4lRF8FXRIWhmO+8Ld20e3/s+xH87HIM9ZX6VaEiCO
-         ed1ZJmuY8czz6bMKYhkvVh0PbhVk7ZVEt27GVpeLr2lLQ+p28905J27DNoxQXw5xX2y4
-         bKi5XUt3r5Lpu7OffjxxnsXpcYk1IkoUj9RvxwkUuJaMMq6JrEAhWxwNhHmZgO4HCcsQ
-         P23mkYOxwRHfPNg3jRrlSNue4yqqrMUFMA5zBq2JRom7IrmBwoFowcMNvwe97f79UWSr
-         PA3J0SL9kvPuGZryihddZMqubpvWcNrrNgMrz1FLietfMTPI48pRZIW+aEeim9Rx47rG
-         jFHg==
-X-Gm-Message-State: AOAM532OmvVcLkGCfKlbGFwlS4oE0tcJeo0lwC0nPcba8WhClIwLPrWH
-        WdPoe/ejp7DH8NQhHddbzT7/wA==
-X-Google-Smtp-Source: ABdhPJxCQk2NaFFUj5DSTJ/Hin8w5JteNpb2QDiHIQ4dkUk3JoGciH49oGv6htzeYaPv6kskaHR7Bg==
-X-Received: by 2002:a02:cb8f:: with SMTP id u15mr2735141jap.45.1616591732787;
-        Wed, 24 Mar 2021 06:15:32 -0700 (PDT)
+        bh=qKrY3MtVV0SjI4PDoOYPSEatpvEs6DJpVc9j1EaE/t0=;
+        b=tGrZ4jHnSUuMhF7Qi7bR7hSpbSEQPYwHiFtHKTjibrH+3kFMNdzpm6zj5rfHfdN8So
+         3ExbpxdMaX834vaSTd6EL7S7Rf0G+h2xpJQ4sNvoY8N1PFRZdUwxAC7CA8XHcbFTvo6/
+         zvi/NSgtLa2SCiBlI+AlgGxFwaeYE3ednKJH6+ARmabR8B6O4bBi39pw7PNPleTdt14C
+         RWqp1rSxCAVlyyMUNCXnEUnQZVti7pmIP8MgveQReNqsEwLW95YqiJSLRjVvYCJ/bOWr
+         sSEvy6Awjuk6MmxYLePgeiAV2ua0VbK0MO8gNazKaBghCX9RmrBSaQJ+crwsUYk9O6i+
+         iA4A==
+X-Gm-Message-State: AOAM532fr3wEYHUsGL1RJkB/14x5FoU6FiuFe8uNeyp3QmpHKSEOwKfC
+        jEShzEqgSpJeTYHJYipWIUICxw==
+X-Google-Smtp-Source: ABdhPJy9LIgxH4R/07ozWEIAcUy8IHgGKJ07llkCBlBWankLC6a6R2mdT8gd0OUb1dls93yKhRzBQA==
+X-Received: by 2002:a5e:8c16:: with SMTP id n22mr2423380ioj.156.1616591733651;
+        Wed, 24 Mar 2021 06:15:33 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
         by smtp.gmail.com with ESMTPSA id n7sm1160486ile.12.2021.03.24.06.15.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 06:15:32 -0700 (PDT)
+        Wed, 24 Mar 2021 06:15:33 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/6] net: ipa: update version definitions
-Date:   Wed, 24 Mar 2021 08:15:24 -0500
-Message-Id: <20210324131528.2369348-3-elder@linaro.org>
+Subject: [PATCH net-next v2 3/6] net: ipa: define the ENDP_INIT_NAT register
+Date:   Wed, 24 Mar 2021 08:15:25 -0500
+Message-Id: <20210324131528.2369348-4-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210324131528.2369348-1-elder@linaro.org>
 References: <20210324131528.2369348-1-elder@linaro.org>
@@ -64,60 +64,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add IPA version definitions for all IPA v3.x and v4.x.  Fix the GSI
-version associated with IPA version 4.1.
+Define the ENDP_INIT_NAT register for setting up the NAT
+configuration for an endpoint.  We aren't using NAT at this
+time, so explicitly set the type to BYPASS for all endpoints.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
-v2: - Add kernel-doc descriptions for ipa_version members.
+ drivers/net/ipa/ipa_endpoint.c | 17 ++++++++++++++++-
+ drivers/net/ipa/ipa_reg.h      | 14 +++++++++++++-
+ 2 files changed, 29 insertions(+), 2 deletions(-)
 
- drivers/net/ipa/ipa_version.h | 29 ++++++++++++++++++++++-------
- 1 file changed, 22 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_version.h b/drivers/net/ipa/ipa_version.h
-index 2944e2a890231..ee2b3d02f3cd3 100644
---- a/drivers/net/ipa/ipa_version.h
-+++ b/drivers/net/ipa/ipa_version.h
-@@ -8,17 +8,32 @@
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 5f93bd60c7586..38e83cd467b52 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
  
- /**
-  * enum ipa_version
-+ * @IPA_VERSION_3_0:	IPA version 3.0/GSI version 1.0
-+ * @IPA_VERSION_3_1:	IPA version 3.1/GSI version 1.1
-+ * @IPA_VERSION_3_5:	IPA version 3.5/GSI version 1.2
-+ * @IPA_VERSION_3_5_1:	IPA version 3.5.1/GSI version 1.3
-+ * @IPA_VERSION_4_0:	IPA version 4.0/GSI version 2.0
-+ * @IPA_VERSION_4_1:	IPA version 4.1/GSI version 2.0
-+ * @IPA_VERSION_4_2:	IPA version 4.2/GSI version 2.2
-+ * @IPA_VERSION_4_5:	IPA version 4.5/GSI version 2.5
-+ * @IPA_VERSION_4_7:	IPA version 4.7/GSI version 2.7
-+ * @IPA_VERSION_4_9:	IPA version 4.9/GSI version 2.9
-+ * @IPA_VERSION_4_11:	IPA version 4.11/GSI version 2.11 (2.1.1)
-  *
-  * Defines the version of IPA (and GSI) hardware present on the platform.
-- * It seems this might be better defined elsewhere, but having it here gets
-- * it where it's needed.
+ /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+- * Copyright (C) 2019-2020 Linaro Ltd.
++ * Copyright (C) 2019-2021 Linaro Ltd.
   */
- enum ipa_version {
--	IPA_VERSION_3_5_1,	/* GSI version 1.3.0 */
--	IPA_VERSION_4_0,	/* GSI version 2.0 */
--	IPA_VERSION_4_1,	/* GSI version 2.1 */
--	IPA_VERSION_4_2,	/* GSI version 2.2 */
--	IPA_VERSION_4_5,	/* GSI version 2.5 */
-+	IPA_VERSION_3_0,
-+	IPA_VERSION_3_1,
-+	IPA_VERSION_3_5,
-+	IPA_VERSION_3_5_1,
-+	IPA_VERSION_4_0,
-+	IPA_VERSION_4_1,
-+	IPA_VERSION_4_2,
-+	IPA_VERSION_4_5,
-+	IPA_VERSION_4_7,
-+	IPA_VERSION_4_9,
-+	IPA_VERSION_4_11,
+ 
+ #include <linux/types.h>
+@@ -468,6 +468,20 @@ static void ipa_endpoint_init_cfg(struct ipa_endpoint *endpoint)
+ 	iowrite32(val, endpoint->ipa->reg_virt + offset);
+ }
+ 
++static void ipa_endpoint_init_nat(struct ipa_endpoint *endpoint)
++{
++	u32 offset;
++	u32 val;
++
++	if (!endpoint->toward_ipa)
++		return;
++
++	offset = IPA_REG_ENDP_INIT_NAT_N_OFFSET(endpoint->endpoint_id);
++	val = u32_encode_bits(IPA_NAT_BYPASS, NAT_EN_FMASK);
++
++	iowrite32(val, endpoint->ipa->reg_virt + offset);
++}
++
+ /**
+  * ipa_endpoint_init_hdr() - Initialize HDR endpoint configuration register
+  * @endpoint:	Endpoint pointer
+@@ -1488,6 +1502,7 @@ static void ipa_endpoint_program(struct ipa_endpoint *endpoint)
+ 	else
+ 		(void)ipa_endpoint_program_suspend(endpoint, false);
+ 	ipa_endpoint_init_cfg(endpoint);
++	ipa_endpoint_init_nat(endpoint);
+ 	ipa_endpoint_init_hdr(endpoint);
+ 	ipa_endpoint_init_hdr_ext(endpoint);
+ 	ipa_endpoint_init_hdr_metadata_mask(endpoint);
+diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
+index 36fe746575f6b..bba088e80cd1e 100644
+--- a/drivers/net/ipa/ipa_reg.h
++++ b/drivers/net/ipa/ipa_reg.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 
+ /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+- * Copyright (C) 2018-2020 Linaro Ltd.
++ * Copyright (C) 2018-2021 Linaro Ltd.
+  */
+ #ifndef _IPA_REG_H_
+ #define _IPA_REG_H_
+@@ -388,6 +388,18 @@ enum ipa_cs_offload_en {
+ 	IPA_CS_OFFLOAD_DL		= 0x2,
  };
  
- #endif /* _IPA_VERSION_H_ */
++/* Valid only for TX (IPA consumer) endpoints */
++#define IPA_REG_ENDP_INIT_NAT_N_OFFSET(ep) \
++					(0x0000080c + 0x0070 * (ep))
++#define NAT_EN_FMASK				GENMASK(1, 0)
++
++/** enum ipa_nat_en - ENDP_INIT_NAT register NAT_EN field value */
++enum ipa_nat_en {
++	IPA_NAT_BYPASS			= 0x0,
++	IPA_NAT_SRC			= 0x1,
++	IPA_NAT_DST			= 0x2,
++};
++
+ #define IPA_REG_ENDP_INIT_HDR_N_OFFSET(ep) \
+ 					(0x00000810 + 0x0070 * (ep))
+ #define HDR_LEN_FMASK				GENMASK(5, 0)
 -- 
 2.27.0
 
