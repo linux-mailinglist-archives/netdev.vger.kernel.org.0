@@ -2,216 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 326D3347794
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 12:43:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A55203477AA
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 12:48:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233002AbhCXLmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 07:42:40 -0400
-Received: from mail2.protonmail.ch ([185.70.40.22]:41067 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbhCXLmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 07:42:32 -0400
-Date:   Wed, 24 Mar 2021 11:42:06 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1616586135; bh=iAg3e2S/SIIqfMztGYOAyklPoK/Ma1o4j6PXJdfhC8I=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=hKRi7c27vm6w5WiPPi0nM4g0Z8Owpa6SayoShEUe4m52EWFmLaQlkkupm3Ce2KQns
-         fhUU8Jn1Zd93TzcS4HKK3Hrx3PT6HPus3ql67jnDgkyFqMj0dUY1naX6e3LaTYgHKE
-         UF0J4TJKDz+Am1Z3JAJsa0GfFHBRVxtyuUD+3vJPuJVIPkFDmxiCnCwB8eLp/pkhdz
-         i5W9Hz7piBak6tg1AJAxPhjrF42CWZ4vElQjQy34DNfT041xxTH5IiE7sBS6MwFZr+
-         3x8Jdt0vqRwF+WX54hygQAUrJK24PcHxnq+jwgo44/HSvBz6WpTXXN5VgPy5W13RN8
-         Y3wO8eRZ+yRZA==
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 0/6] page_pool: recycle buffers
-Message-ID: <20210324114158.3433-1-alobakin@pm.me>
-In-Reply-To: <YFrvTtS8E/C5vYgo@enceladus>
-References: <20210322170301.26017-1-mcroce@linux.microsoft.com> <20210323154112.131110-1-alobakin@pm.me> <YFoNoohTULmcpeCr@enceladus> <20210323170447.78d65d05@carbon> <YFoTBm0mJ4GyuHb6@enceladus> <CAFnufp1K+t76n9shfOZB_scV7myUWCTXbB+yf5sr-8ORYQxCEQ@mail.gmail.com> <20210323165523.187134-1-alobakin@pm.me> <YFofANKiR3tD9zgm@enceladus> <20210323200338.578264-1-alobakin@pm.me> <YFrvTtS8E/C5vYgo@enceladus>
+        id S230465AbhCXLsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 07:48:01 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:14461 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230437AbhCXLr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 07:47:59 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4F55yj5ZpVzwQNq;
+        Wed, 24 Mar 2021 19:45:33 +0800 (CST)
+Received: from [10.67.103.87] (10.67.103.87) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.498.0; Wed, 24 Mar 2021
+ 19:47:23 +0800
+Subject: Re: [bug report] net: hns3: vf indexing in hclge_add_fd_entry()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>,
+        <patrick.dengpeng@huawei.com>
+References: <YFrj1qbwIxrAo+jk@mwanda>
+From:   "shenjian (K)" <shenjian15@huawei.com>
+Message-ID: <d4ae2398-f3bf-367c-231e-371729a87415@huawei.com>
+Date:   Wed, 24 Mar 2021 19:47:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+In-Reply-To: <YFrj1qbwIxrAo+jk@mwanda>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.87]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date: Wed, 24 Mar 2021 09:50:38 +0200
+Hello Dan,
 
-> Hi Alexander,
+Thanks for your  report!
 
-Hi!
 
-> On Tue, Mar 23, 2021 at 08:03:46PM +0000, Alexander Lobakin wrote:
-> > From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> > Date: Tue, 23 Mar 2021 19:01:52 +0200
-> >
-> > > On Tue, Mar 23, 2021 at 04:55:31PM +0000, Alexander Lobakin wrote:
-> > > > > > > > >
-> > >
-> > > [...]
-> > >
-> > > > > > > >
-> > > > > > > > Thanks for the testing!
-> > > > > > > > Any chance you can get a perf measurement on this?
-> > > > > > >
-> > > > > > > I guess you mean perf-report (--stdio) output, right?
-> > > > > > >
-> > > > > >
-> > > > > > Yea,
-> > > > > > As hinted below, I am just trying to figure out if on Alexander=
-'s platform the
-> > > > > > cost of syncing, is bigger that free-allocate. I remember one a=
-rmv7 were that
-> > > > > > was the case.
-> > > > > >
-> > > > > > > > Is DMA syncing taking a substantial amount of your cpu usag=
-e?
-> > > > > > >
-> > > > > > > (+1 this is an important question)
-> > > >
-> > > > Sure, I'll drop perf tools to my test env and share the results,
-> > > > maybe tomorrow or in a few days.
-> >
-> > Oh we-e-e-ell...
-> > Looks like I've been fooled by I-cache misses or smth like that.
-> > That happens sometimes, not only on my machines, and not only on
-> > MIPS if I'm not mistaken.
-> > Sorry for confusing you guys.
-> >
-> > I got drastically different numbers after I enabled CONFIG_KALLSYMS +
-> > CONFIG_PERF_EVENTS for perf tools.
-> > The only difference in code is that I rebased onto Mel's
-> > mm-bulk-rebase-v6r4.
-> >
-> > (lunar is my WIP NIC driver)
-> >
-> > 1. 5.12-rc3 baseline:
-> >
-> > TCP: 566 Mbps
-> > UDP: 615 Mbps
-> >
-> > perf top:
-> >      4.44%  [lunar]              [k] lunar_rx_poll_page_pool
-> >      3.56%  [kernel]             [k] r4k_wait_irqoff
-> >      2.89%  [kernel]             [k] free_unref_page
-> >      2.57%  [kernel]             [k] dma_map_page_attrs
-> >      2.32%  [kernel]             [k] get_page_from_freelist
-> >      2.28%  [lunar]              [k] lunar_start_xmit
-> >      1.82%  [kernel]             [k] __copy_user
-> >      1.75%  [kernel]             [k] dev_gro_receive
-> >      1.52%  [kernel]             [k] cpuidle_enter_state_coupled
-> >      1.46%  [kernel]             [k] tcp_gro_receive
-> >      1.35%  [kernel]             [k] __rmemcpy
-> >      1.33%  [nf_conntrack]       [k] nf_conntrack_tcp_packet
-> >      1.30%  [kernel]             [k] __dev_queue_xmit
-> >      1.22%  [kernel]             [k] pfifo_fast_dequeue
-> >      1.17%  [kernel]             [k] skb_release_data
-> >      1.17%  [kernel]             [k] skb_segment
-> >
-> > free_unref_page() and get_page_from_freelist() consume a lot.
-> >
-> > 2. 5.12-rc3 + Page Pool recycling by Matteo:
-> > TCP: 589 Mbps
-> > UDP: 633 Mbps
-> >
-> > perf top:
-> >      4.27%  [lunar]              [k] lunar_rx_poll_page_pool
-> >      2.68%  [lunar]              [k] lunar_start_xmit
-> >      2.41%  [kernel]             [k] dma_map_page_attrs
-> >      1.92%  [kernel]             [k] r4k_wait_irqoff
-> >      1.89%  [kernel]             [k] __copy_user
-> >      1.62%  [kernel]             [k] dev_gro_receive
-> >      1.51%  [kernel]             [k] cpuidle_enter_state_coupled
-> >      1.44%  [kernel]             [k] tcp_gro_receive
-> >      1.40%  [kernel]             [k] __rmemcpy
-> >      1.38%  [nf_conntrack]       [k] nf_conntrack_tcp_packet
-> >      1.37%  [kernel]             [k] free_unref_page
-> >      1.35%  [kernel]             [k] __dev_queue_xmit
-> >      1.30%  [kernel]             [k] skb_segment
-> >      1.28%  [kernel]             [k] get_page_from_freelist
-> >      1.27%  [kernel]             [k] r4k_dma_cache_inv
-> >
-> > +20 Mbps increase on both TCP and UDP. free_unref_page() and
-> > get_page_from_freelist() dropped down the list significantly.
-> >
-> > 3. 5.12-rc3 + Page Pool recycling + PP bulk allocator (Mel & Jesper):
-> > TCP: 596
-> > UDP: 641
-> >
-> > perf top:
-> >      4.38%  [lunar]              [k] lunar_rx_poll_page_pool
-> >      3.34%  [kernel]             [k] r4k_wait_irqoff
-> >      3.14%  [kernel]             [k] dma_map_page_attrs
-> >      2.49%  [lunar]              [k] lunar_start_xmit
-> >      1.85%  [kernel]             [k] dev_gro_receive
-> >      1.76%  [kernel]             [k] free_unref_page
-> >      1.76%  [kernel]             [k] __copy_user
-> >      1.65%  [kernel]             [k] inet_gro_receive
-> >      1.57%  [kernel]             [k] tcp_gro_receive
-> >      1.48%  [kernel]             [k] cpuidle_enter_state_coupled
-> >      1.43%  [nf_conntrack]       [k] nf_conntrack_tcp_packet
-> >      1.42%  [kernel]             [k] __rmemcpy
-> >      1.25%  [kernel]             [k] skb_segment
-> >      1.21%  [kernel]             [k] r4k_dma_cache_inv
-> >
-> > +10 Mbps on top of recycling.
-> > get_page_from_freelist() is gone.
-> > NAPI polling, CPU idle cycle (r4k_wait_irqoff) and DMA mapping
-> > routine became the top consumers.
+在 2021/3/24 15:01, Dan Carpenter 写道:
+> Hello Jian Shen,
 >
-> Again, thanks for the extensive testing.
-> I assume you dont use page pool to map the buffers right?
-> Because if the ampping is preserved the only thing you have to do is sync=
- it
-> after the packet reception
-
-No, I use Page Pool for both DMA mapping and synching for device.
-The reason why DMA mapping takes a lot of CPU is that I test NATing,
-so NIC firstly receives the frames and then xmits them with modified
-headers -> this DMA map overhead is from lunar_start_xmit(), not
-Rx path.
-The actual Rx synching is r4k_dma_cache_inv() and it's not that
-expensive.
-
-> >
-> > 4-5. __always_inline for rmqueue_bulk() and __rmqueue_pcplist(),
-> > removing 'noinline' from net/core/page_pool.c etc.
-> >
-> > ...makes absolutely no sense anymore.
-> > I see Mel took Jesper's patch to make __rmqueue_pcplist() inline into
-> > mm-bulk-rebase-v6r5, not sure if it's really needed now.
-> >
-> > So I'm really glad we sorted out the things and I can see the real
-> > performance improvements from both recycling and bulk allocations.
-> >
+> The patch 5f2b1238b33c: "net: hns3: refactor out
+> hclge_add_fd_entry()" from Mar 22, 2021, leads to the following
+> static checker warning:
 >
-> Those will probably be even bigger with and io(sm)/mu present
-
-Sure, DMA mapping is way more expensive through IOMMUs. I don't have
-one on my boards, so can't collect any useful info.
-
-> [...]
+> 	drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:6512 hclge_fd_parse_ring_cookie()
+> 	warn: array off by one? 'hdev->vport[vf]'
 >
-> Cheers
-> /Ilias
+> drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+>    6493  static int hclge_fd_parse_ring_cookie(struct hclge_dev *hdev, u64 ring_cookie,
+>    6494                                        u16 *vport_id, u8 *action, u16 *queue_id)
+>    6495  {
+>    6496          struct hclge_vport *vport = hdev->vport;
+>    6497
+>    6498          if (ring_cookie == RX_CLS_FLOW_DISC) {
+>    6499                  *action = HCLGE_FD_ACTION_DROP_PACKET;
+>    6500          } else {
+>    6501                  u32 ring = ethtool_get_flow_spec_ring(ring_cookie);
+>    6502                  u8 vf = ethtool_get_flow_spec_ring_vf(ring_cookie);
+>    6503                  u16 tqps;
+>    6504
+>    6505                  if (vf > hdev->num_req_vfs) {
+>                              ^^^^^^^^^^^^^^^^^^^^^^
+>
+> The is off by one but checking hdev->num_req_vfs in this context doesn't
+> make sense.  Should it instead be check hdev->num_alloc_vport?  Also
+> should we add HCLGE_VF_VPORT_START_NUM?
+>
+> 		vf = ethtool_get_flow_spec_ring_vf(ring_cookie);
+> 		vf += HCLGE_VF_VPORT_START_NUM;
+> 		if (vf >= hdev->num_alloc_vport)
+> 			return -EINVAL;
+>
+>    6506                          dev_err(&hdev->pdev->dev,
+>    6507                                  "Error: vf id (%u) > max vf num (%u)\n",
+>                                                             ^^
+> Use >=
+>
+>    6508                                  vf, hdev->num_req_vfs);
+>    6509                          return -EINVAL;
+>    6510                  }
+>    6511
+>    6512                  *vport_id = vf ? hdev->vport[vf].vport_id : vport->vport_id;
+>                                                 ^^^^^^^^^
+>    6513                  tqps = hdev->vport[vf].nic.kinfo.num_tqps;
+>                                            ^^^
+> The vport array has hdev->num_vmdq_vport + hdev->num_req_vfs + 1;
+> elements.  ->vport[0] is tqp_main_vport.  The next elements are
+> hdev->num_vmdq_vport and the last part of the array is hdev->num_req_vfs.
+>
+> Another possibility is that perhaps this is what was intended?
+>
+> 			idx = vf + 1 + hdev->num_vmdq_vport;
+>
+> 			*vport_id = vf ? vport[idx].vport_id : vport[0].vport_id;
+> 			tqps = vport[idx].nic.kinfo.num_tqps;
+>
+> There is related code that offers clues but I'm not sure what to do.
+>
+>    6514
+>    6515                  if (ring >= tqps) {
+>    6516                          dev_err(&hdev->pdev->dev,
+>    6517                                  "Error: queue id (%u) > max tqp num (%u)\n",
+>    6518                                  ring, tqps - 1);
+>    6519                          return -EINVAL;
+>    6520                  }
+>    6521
+>    6522                  *action = HCLGE_FD_ACTION_SELECT_QUEUE;
+>    6523                  *queue_id = ring;
+>    6524          }
+>    6525
+>    6526          return 0;
+>    6527  }
+>
+> [ snip ]
+>
+>    9111  static bool hclge_check_vf_mac_exist(struct hclge_vport *vport, int vf_idx,
+>    9112                                       u8 *mac_addr)
+>    9113  {
+>    9114          struct hclge_mac_vlan_tbl_entry_cmd req;
+>    9115          struct hclge_dev *hdev = vport->back;
+>    9116          struct hclge_desc desc;
+>    9117          u16 egress_port = 0;
+>    9118          int i;
+>    9119
+>    9120          if (is_zero_ether_addr(mac_addr))
+>    9121                  return false;
+>    9122
+>    9123          memset(&req, 0, sizeof(req));
+>    9124          hnae3_set_field(egress_port, HCLGE_MAC_EPORT_VFID_M,
+>    9125                          HCLGE_MAC_EPORT_VFID_S, vport->vport_id);
+>    9126          req.egress_port = cpu_to_le16(egress_port);
+>    9127          hclge_prepare_mac_addr(&req, mac_addr, false);
+>    9128
+>    9129          if (hclge_lookup_mac_vlan_tbl(vport, &req, &desc, false) != -ENOENT)
+>    9130                  return true;
+>    9131
+>    9132          vf_idx += HCLGE_VF_VPORT_START_NUM;
+>                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> We're are skipping the first element.  Should it instead be?:
+>
+> 	vf_idx += hdev->num_vmdq_vport + 1;
+>
+>    9133          for (i = hdev->num_vmdq_vport + 1; i < hdev->num_alloc_vport; i++)
+>                           ^^^^^^^^^^^^^^^^^^^^^^^^
+> We're only checking the last part of the array.
+>
+>    9134                  if (i != vf_idx &&
+>    9135                      ether_addr_equal(mac_addr, hdev->vport[i].vf_info.mac))
+>    9136                          return true;
+>    9137
+>    9138          return false;
+>    9139  }
+>
+> Another thing that's not clear to me is how pci_num_vf() relates to
+> this.  I suspect that it is the same as hdev->num_vmdq_vport, but I
+> can't be sure.
+>
+> regards,
+> dan carpenter
+> .
+The use for num_vmdq_vport is confusing. At the beginning, the HNS3 
+driver is planed to support
+VMDQ . Whereafter the hardware supports SR-IOV with better performance. 
+So VMDQ feature is
+discarded,  but the codes of vmdq is remained. For the value of 
+num_vmdq_vport is always 0, so the
+vport id of VF is actually start from 1. That's why the driver still work.
 
-Thanks,
-Al
+As the num_vmdq_vport is actually useless and confusing, I will send a 
+patch to remove it soon.
+
+regards,
+Jian Shen
+
+
 
