@@ -2,45 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D0673474B8
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 10:32:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5EF63474D5
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 10:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235032AbhCXJc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 05:32:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236243AbhCXJcH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 05:32:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4031A61A07;
-        Wed, 24 Mar 2021 09:32:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616578326;
-        bh=H1ZA9F/FjCNa3FF4dTmgJwcqG8AEiMqEkQhzmBz7a8g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QwL4d+3Wp7SsbuLFveFYAjv5S6bMwP+MMxtAZE+O8WrTjvo9tiYOj1q/1zl/7Hgb4
-         nsdlMwcfqIGDCGHrC7UTfAAnn1nDzT7M1n/jQ2ETy/tV+s7pYNj4/QEhuDeMvJFRE5
-         u/js21ec3KEmAW6QncrDxz4VtlyZ2CEFyIaW5k9Hu/GONfIJMBQHlsX4R7VzU4ZdB5
-         zwSpYWIXAwL6LYoIc2x6KW4EceFDHueLO6edEmYdLrhmsCLNwbzLu8yVUCPDqA/idF
-         SO87JOPUEhj5u+I4q/5/ZgUg45GhLCtj2t5F/zf62WC4iG4yRKkoGrQJuSV6ze7fxS
-         QpH0tWFNgiolA==
-Date:   Wed, 24 Mar 2021 11:32:03 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: make unregister netdev warning timeout
- configurable
-Message-ID: <YFsHEwkqCq91ngwn@unreal>
-References: <20210323064923.2098711-1-dvyukov@google.com>
+        id S236230AbhCXJkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 05:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236297AbhCXJk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 05:40:28 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2779C0613DE
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 02:40:27 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id m132so13420443ybf.2
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 02:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8fXoPqzOon3/AnLhTIqZhn57sU6mwxraeo5GXfFqhvg=;
+        b=s9NvS4U8Ig4059GjRGpH2V1LgDT0SSmXw/RvxetCi6c5G8TdpLfrADMWS4lW9lAgc3
+         pgIJig/Vst0Lnq9EYiDUPtXnVDQpQEXhDmGAXZT51Mpb6ear+Uh4s2Em/Z5IDBhQD6rW
+         2QAD+3Z69BDVnW0Iq+i92MIZAiIUdu6OjIO4HDbAkiePNoEc7o1U02KydbUSAUWUtg54
+         Jvu68paxqCGSrGvNEJwCdcB/MLR86o08vmbBblm5cCkMJU97VmF6bWuT7KL0xHiXHhPR
+         at9CnKnBL+cx2KvA/KBIvKciWtYuNYymZHjjJysrgXRx/PGszgo/zSZeocwReWJQ9d7r
+         H8Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8fXoPqzOon3/AnLhTIqZhn57sU6mwxraeo5GXfFqhvg=;
+        b=Lpov80G6VZ8/wvQj//vsaQXoCOmRm/tJWjU3SOi/SzImK3RdlhzponyC5RMmwbZ+ab
+         z1fNWlddN4vv0EavPcExFeqUCBIrf/PVa+9uIk+zxRwP0mqVGOKHdAeGXkCJa4B4u9tb
+         4wpgbWPAx3n+nfCJiNotr8v2tKiqFkvr8SVrTGoM7MKL1kZxzXCm4cbXq9MNlxCFRc/T
+         Wc/4LkP3jZ58tvA1nplzl7RCc/51lHvJvIr/XEWhmSpn5fww83s+DS8yu3pz07lCiapS
+         QRskkV0S3ygc3W2mxatQr5TbUTzCVAQ3VFmU5DYRwz6uAg92cKmUtDq8bmFmgzLrgTe5
+         zWyA==
+X-Gm-Message-State: AOAM531hhY3Soyj2l3+Kx1tKMg9OQ0/d0f9i2bdID9Ri+LbUmDhZSESg
+        ErmnVX1lMoOwJYo/BnUOjNCW7jyutmJ/vzRNZbwVWw==
+X-Google-Smtp-Source: ABdhPJwbqJ2PbXW0TL6FBGkCFHGN+vTkmD0nM48igVc7R3eWp7LYzKexoFogTGRCPKrkFxjWxfUa5x+UHu+7n+4K5Z4=
+X-Received: by 2002:a25:1f83:: with SMTP id f125mr3645600ybf.132.1616578826501;
+ Wed, 24 Mar 2021 02:40:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20210323064923.2098711-1-dvyukov@google.com>
 In-Reply-To: <20210323064923.2098711-1-dvyukov@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 24 Mar 2021 10:40:15 +0100
+Message-ID: <CANn89iJOignHVg-QOtEB_RVqca=pMczJv-k=CEtPRH0d4fSdgA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: make unregister netdev warning timeout configurable
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Leon Romanovsky <leon@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 07:49:23AM +0100, Dmitry Vyukov wrote:
+On Tue, Mar 23, 2021 at 7:49 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
 > netdev_wait_allrefs() issues a warning if refcount does not drop to 0
 > after 10 seconds. While 10 second wait generally should not happen
 > under normal workload in normal environment, it seems to fire falsely
@@ -52,22 +73,36 @@ On Tue, Mar 23, 2021 at 07:49:23AM +0100, Dmitry Vyukov wrote:
 > the timeout configurable for automated testing systems.
 > Lowering the timeout may also be useful for e.g. manual bisection.
 > The default value matches the current behavior.
-> 
+>
 > Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
 > Fixes: https://bugzilla.kernel.org/show_bug.cgi?id=211877
 > Cc: netdev@vger.kernel.org
 > Cc: linux-kernel@vger.kernel.org
-> 
+>
 > ---
 > Changes since v1:
 >  - use sysctl instead of a config
 > ---
->  Documentation/admin-guide/sysctl/net.rst | 11 +++++++++++
->  include/linux/netdevice.h                |  1 +
->  net/core/dev.c                           |  6 +++++-
->  net/core/sysctl_net_core.c               | 10 ++++++++++
->  4 files changed, 27 insertions(+), 1 deletion(-)
-> 
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+>         },
+> +       {
+> +               .procname       = "netdev_unregister_timeout_secs",
+> +               .data           = &netdev_unregister_timeout_secs,
+> +               .maxlen         = sizeof(unsigned int),
+> +               .mode           = 0644,
+> +               .proc_handler   = proc_dointvec_minmax,
+> +               .extra1         = SYSCTL_ZERO,
+> +               .extra2         = &int_3600,
+> +       },
+>         { }
+>  };
+>
+
+If we allow the sysctl to be 0, then we risk a flood of pr_emerg()
+(one per jiffy ?)
+
+If you really want the zero value, you need to change pr_emerg() to
+pr_emerg_ratelimited()
+
+Also, please base your patch on net-next, to avoid future merge conflicts
+with my prior patch add2d7363107 "net: set initial device refcount to 1".
