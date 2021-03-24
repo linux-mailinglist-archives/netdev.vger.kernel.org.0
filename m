@@ -2,100 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A4434743A
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 10:13:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C18BB347440
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 10:13:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbhCXJMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 05:12:33 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:33559 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234540AbhCXJMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 05:12:00 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-70-F_iQyAaGNv6_r3BEezM2zQ-1; Wed, 24 Mar 2021 09:11:56 +0000
-X-MC-Unique: F_iQyAaGNv6_r3BEezM2zQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Wed, 24 Mar 2021 09:11:55 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.012; Wed, 24 Mar 2021 09:11:55 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Martin Sebor' <msebor@gmail.com>, Ingo Molnar <mingo@kernel.org>,
-        "Arnd Bergmann" <arnd@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Martin Sebor" <msebor@gcc.gnu.org>, Ning Sun <ning.sun@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "x86@kernel.org" <x86@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "tboot-devel@lists.sourceforge.net" 
-        <tboot-devel@lists.sourceforge.net>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
+        id S231709AbhCXJNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 05:13:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:33394 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234491AbhCXJMs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 05:12:48 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1616577167; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LlyCilLi9gnBQ4mdjJqJRMAwnGbNttrFvrQ8qOm68Tk=;
+        b=AET6m3NbPsqJB3GOclSVNFMwSnrJB4ce4z7ng4tRUBK9Awatz2PP7NupRzMmeP/QbMw/AZ
+        dCFh+cnMzx8hL1j6QjYMfT3O3xwgFW8sIljFq5UjpMp/79nVnZWhvrVzHGRPWVQT4Axku+
+        4ICeAbKXdv7KNhrW0MPF7YkzwJnJSX0=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 36992AC16;
+        Wed, 24 Mar 2021 09:12:47 +0000 (UTC)
+Date:   Wed, 24 Mar 2021 10:12:46 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Arjun Roy <arjunroy@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Will Deacon <will@kernel.org>
-Subject: RE: [PATCH 02/11] x86: tboot: avoid Wstringop-overread-warning
-Thread-Topic: [PATCH 02/11] x86: tboot: avoid Wstringop-overread-warning
-Thread-Index: AQHXH2fn7jNrPkUb50e9k3rL2a+D9qqS2/oQ
-Date:   Wed, 24 Mar 2021 09:11:55 +0000
-Message-ID: <0aa198a1dd904231bcc29454bf19a812@AcuMS.aculab.com>
-References: <20210322160253.4032422-1-arnd@kernel.org>
- <20210322160253.4032422-3-arnd@kernel.org>
- <20210322202958.GA1955909@gmail.com>
- <b944a853-0e4b-b767-0175-cc2c1edba759@gmail.com>
-In-Reply-To: <b944a853-0e4b-b767-0175-cc2c1edba759@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
+Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
+Message-ID: <YFsA78FfzICrnFf7@dhcp22.suse.cz>
+References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
+ <YFCH8vzFGmfFRCvV@cmpxchg.org>
+ <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
+ <YFJ+5+NBOBiUbGWS@cmpxchg.org>
+ <YFn8bLBMt7txj3AZ@dhcp22.suse.cz>
+ <CAOFY-A22Pp3Z0apYBWtOJCD8TxfrbZ_HE9Xd6eUds8aEvRL+uw@mail.gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOFY-A22Pp3Z0apYBWtOJCD8TxfrbZ_HE9Xd6eUds8aEvRL+uw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogTWFydGluIFNlYm9yDQo+IFNlbnQ6IDIyIE1hcmNoIDIwMjEgMjI6MDgNCi4uLg0KPiBJ
-biBHQ0MgMTEsIGFsbCBhY2Nlc3Mgd2FybmluZ3MgZXhwZWN0IG9iamVjdHMgdG8gYmUgZWl0aGVy
-IGRlY2xhcmVkDQo+IG9yIGFsbG9jYXRlZC4gIFBvaW50ZXJzIHdpdGggY29uc3RhbnQgdmFsdWVz
-IGFyZSB0YWtlbiB0byBwb2ludCB0bw0KPiBub3RoaW5nIHZhbGlkIChhcyBBcm5kIG1lbnRpb25l
-ZCBhYm92ZSwgdGhpcyBpcyB0byBkZXRlY3QgaW52YWxpZA0KPiBhY2Nlc3NlcyB0byBtZW1iZXJz
-IG9mIHN0cnVjdHMgYXQgYWRkcmVzcyB6ZXJvKS4NCj4gDQo+IE9uZSBwb3NzaWJsZSBzb2x1dGlv
-biB0byB0aGUga25vd24gYWRkcmVzcyBwcm9ibGVtIGlzIHRvIGV4dGVuZCBHQ0MNCj4gYXR0cmli
-dXRlcyBhZGRyZXNzIGFuZCBpbyB0aGF0IHBpbiBhbiBvYmplY3QgdG8gYSBoYXJkd2lyZWQgYWRk
-cmVzcw0KPiB0byBhbGwgdGFyZ2V0cyAoYXQgdGhlIG1vbWVudCB0aGV5J3JlIHN1cHBvcnRlZCBv
-biBqdXN0IG9uZSBvciB0d28NCj4gdGFyZ2V0cykuICBJJ20gbm90IHN1cmUgdGhpcyBjYW4gc3Rp
-bGwgaGFwcGVuIGJlZm9yZSBHQ0MgMTEgcmVsZWFzZXMNCj4gc29tZXRpbWUgaW4gQXByaWwgb3Ig
-TWF5Lg0KDQpBIGRpZmZlcmVudCBzb2x1dGlvbiBpcyB0byBkZWZpbmUgYSBub3JtYWwgQyBleHRl
-cm5hbCBkYXRhIGl0ZW0NCmFuZCB0aGVuIGFzc2lnbiBhIGZpeGVkIGFkZHJlc3Mgd2l0aCBhbiBh
-c20gc3RhdGVtZW50IG9yIGluDQp0aGUgbGlua2VyIHNjcmlwdC4NCg0KCURhdmlkDQoNCi0NClJl
-Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
-b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
-Cg==
+On Tue 23-03-21 11:47:54, Arjun Roy wrote:
+> On Tue, Mar 23, 2021 at 7:34 AM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Wed 17-03-21 18:12:55, Johannes Weiner wrote:
+> > [...]
+> > > Here is an idea of how it could work:
+> > >
+> > > struct page already has
+> > >
+> > >                 struct {        /* page_pool used by netstack */
+> > >                         /**
+> > >                          * @dma_addr: might require a 64-bit value even on
+> > >                          * 32-bit architectures.
+> > >                          */
+> > >                         dma_addr_t dma_addr;
+> > >                 };
+> > >
+> > > and as you can see from its union neighbors, there is quite a bit more
+> > > room to store private data necessary for the page pool.
+> > >
+> > > When a page's refcount hits zero and it's a networking page, we can
+> > > feed it back to the page pool instead of the page allocator.
+> > >
+> > > From a first look, we should be able to use the PG_owner_priv_1 page
+> > > flag for network pages (see how this flag is overloaded, we can add a
+> > > PG_network alias). With this, we can identify the page in __put_page()
+> > > and __release_page(). These functions are already aware of different
+> > > types of pages and do their respective cleanup handling. We can
+> > > similarly make network a first-class citizen and hand pages back to
+> > > the network allocator from in there.
+> >
+> > For compound pages we have a concept of destructors. Maybe we can extend
+> > that for order-0 pages as well. The struct page is heavily packed and
+> > compound_dtor shares the storage without other metadata
+> >                                         int    pages;    /*    16     4 */
+> >                         unsigned char compound_dtor;     /*    16     1 */
+> >                         atomic_t   hpage_pinned_refcount; /*    16     4 */
+> >                         pgtable_t  pmd_huge_pte;         /*    16     8 */
+> >                         void *     zone_device_data;     /*    16     8 */
+> >
+> > But none of those should really require to be valid when a page is freed
+> > unless I am missing something. It would really require to check their
+> > users whether they can leave the state behind. But if we can establish a
+> > contract that compound_dtor can be always valid when a page is freed
+> > this would be really a nice and useful abstraction because you wouldn't
+> > have to care about the specific type of page.
+> >
+> > But maybe I am just overlooking the real complexity there.
+> > --
+> 
+> For now probably the easiest way is to have network pages be first
+> class with a specific flag as previously discussed and have concrete
+> handling for it, rather than trying to establish the contract across
+> page types.
 
+If you are going to claim a page flag then it would be much better to
+have it more generic. Flags are really scarce and if all you care about
+is PageHasDestructor() and provide one via page->dtor then the similar
+mechanism can be reused by somebody else. Or does anything prevent that?
+-- 
+Michal Hocko
+SUSE Labs
