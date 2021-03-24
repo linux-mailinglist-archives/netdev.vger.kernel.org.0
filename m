@@ -2,110 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4404D346E96
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA853346E9E
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234301AbhCXBVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:21:44 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:42141 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230114AbhCXBVk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 21:21:40 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F4r6p1GBsz9sWV;
-        Wed, 24 Mar 2021 12:21:38 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1616548898;
-        bh=CKifn0z86IKcRhsxJ3SNEoPSfhGODKU1yWl6/rCV2e0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=st+1XGjJboPmiNh3ngNoDeqcOCvYvOLUuUM4X0CiczPhPJtw47FaOot9wfj0Aefvx
-         f1vY4XJ4PcuxwLp+dHld+ThbAR+6+nd/SvTxY+D/ri/bQ734HwnxG/szva+OQ9206K
-         ZS+x00jC3E1ZUifiJD+y5yrJmFM/ZQMWkKlfW2LC0tEVnq7znvpXRf8UWBAynpXGmi
-         soTFoBQFe/BrQgAoE7JhPzzHX9UEWOSwbzFpRbfaZmxHv+nTLA9jk4CznMjbNhYg0g
-         +SzwiBhypbMYGXRIR2SSUa8hI7eeSP2ISCrKagqshDMgXtCLp42B8/UZyA8IGKo9pT
-         jRPmZG03Zv54g==
-Date:   Wed, 24 Mar 2021 12:21:37 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Wan Jiabing <wanjiabing@vivo.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210324122137.5ff8f0b2@canb.auug.org.au>
+        id S234315AbhCXBWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 21:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234325AbhCXBWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:22:40 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A763DC061763;
+        Tue, 23 Mar 2021 18:22:40 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id l1so13524487pgb.5;
+        Tue, 23 Mar 2021 18:22:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ADszsJaW4d0lhPtJTdxVvedwy5zTVymuRYgLJjqUZYs=;
+        b=sNpJYd+vI5TDLCjPigF1d04oHMmyaRf5MORj9VcyYMFLmVZs0i/5Y+JIbP9rvprNFf
+         tbj+BX0Qq2YJoZ4HPf8eeyT9+hRGInQZyUFilGygIr30kg6hqqDlFXxTr0lCj42KJtd7
+         /gHPb/J5zDP4EsSLpEuk95VtG0q3IdIN4AXV0XlXKycwJk1sjP+rjwwqmVx+9TI0SkaF
+         ylYMCz9maoias7TQvUr/MtldcxnMHmsHilxrJg555nF78qRWlpGsVoDCgcpRESGi9khu
+         s4qlksVY7G6UcetrHWf5ZwD7iJZc0eeYv7Ew2uVPLJ29Hx+KOYvITBWODUG4IH8faf33
+         QbIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ADszsJaW4d0lhPtJTdxVvedwy5zTVymuRYgLJjqUZYs=;
+        b=r+La5UkU8mKs22DZsGBIAozQmqikLPZXFPYy4BBX+0dwKAXOQN3YLwjom1DZeCshIy
+         CwTebGi0Y+Scv5ymBtORH0dU769ANgEwjjEThuve9D2hJ/JQyz3v3LQ6N9rPQkydlP2q
+         dk8iqIs4CAx+I1tZvJ64pekxu6w3yBeN4mtY7/oeoljl9cl1d0x5wt/T9+ZBMywaLKR/
+         oTnNn9hrMM/0U4tqjVQwo6WBUuUq409jsU446zRgFGakcpxBH4cNEjFlNOssCQXM2NbE
+         IHQ8rmoWiJnVVrsrC85qMYtO1+vl72Wmb6qEuirRGGLGkUzQnHPzTHBZcxU/1qbUou9Y
+         T3Tg==
+X-Gm-Message-State: AOAM533PAOYMVu1LLpyq/q8XHaZgsfyr+o5ylKQUHAvsC54YwBZkvVjV
+        KBLzUzTkRrWhxa9Zvs27GS8=
+X-Google-Smtp-Source: ABdhPJz6NsxW1Ed0pTj3gqatCldwJ6Zts1dE8DTzvjPPAfghQYbQ7fpJHt0DQ7GRLTmDSqdIu/wyeA==
+X-Received: by 2002:a65:6559:: with SMTP id a25mr880957pgw.106.1616548960119;
+        Tue, 23 Mar 2021 18:22:40 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:7d9f])
+        by smtp.gmail.com with ESMTPSA id f15sm366495pgg.84.2021.03.23.18.22.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Mar 2021 18:22:39 -0700 (PDT)
+Date:   Tue, 23 Mar 2021 18:22:37 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH bpf] bpf: Take module reference for ip in module code
+Message-ID: <20210324012237.65pf4s52oqlicea3@ast-mbp>
+References: <20210323211533.1931242-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/mQspNTZzRq=1d96KhQCGZS2";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210323211533.1931242-1-jolsa@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/mQspNTZzRq=1d96KhQCGZS2
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Mar 23, 2021 at 10:15:33PM +0100, Jiri Olsa wrote:
+> Currently module can be unloaded even if there's a trampoline
+> register in it. It's easily reproduced by running in parallel:
+> 
+>   # while :; do ./test_progs -t module_attach; done
+>   # while :; do ./test_progs -t fentry_test; done
+> 
+> Taking the module reference in case the trampoline's ip is
+> within the module code. Releasing it when the trampoline's
+> ip is unregistered.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/bpf/trampoline.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index 1f3a4be4b175..f6cb179842b2 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -87,6 +87,27 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+>  	return tr;
+>  }
+>  
+> +static struct module *ip_module_get(unsigned long ip)
+> +{
+> +	struct module *mod;
+> +	int err = 0;
+> +
+> +	preempt_disable();
+> +	mod = __module_text_address(ip);
+> +	if (mod && !try_module_get(mod))
+> +		err = -ENOENT;
+> +	preempt_enable();
+> +	return err ? ERR_PTR(err) : mod;
+> +}
+> +
+> +static void ip_module_put(unsigned long ip)
+> +{
+> +	struct module *mod = __module_text_address(ip);
 
-Hi all,
+Conceptually looks correct, but how did you test it?!
+Just doing your reproducer:
+while :; do ./test_progs -t module_attach; done & while :; do ./test_progs -t fentry_test; done
 
-Today's linux-next merge of the net-next tree got a conflict in:
+I immediately hit:
+[   19.461162] WARNING: CPU: 1 PID: 232 at kernel/module.c:264 module_assert_mutex_or_preempt+0x2e/0x40
+[   19.477126] Call Trace:
+[   19.477464]  __module_address+0x28/0xf0
+[   19.477865]  ? __bpf_trace_bpf_testmod_test_write_bare+0x10/0x10 [bpf_testmod]
+[   19.478711]  __module_text_address+0xe/0x60
+[   19.479156]  bpf_trampoline_update+0x2ff/0x470
 
-  drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
+Which points to an obvious bug above.
 
-between commit:
+How did you debug it to this module going away issue?
+Why does test_progs -t fentry_test help to repro?
+Or does it?
+It doesn't touch anything in modules.
 
-  7c1ef1959b6f ("net/mlx5: SF, do not use ecpu bit for vhca state processin=
-g")
-
-from the net tree and commit:
-
-  4c94fe88cde4 ("net: ethernet: Remove duplicate include of vhca_event.h")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-index a5a0f60bef66,3c8a00dd573a..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-@@@ -5,8 -5,7 +5,7 @@@
-  #include "priv.h"
-  #include "sf.h"
-  #include "mlx5_ifc_vhca_event.h"
-- #include "vhca_event.h"
- -#include "ecpf.h"
- +#include "mlx5_core.h"
- =20
-  struct mlx5_sf_hw {
-  	u32 usr_sfnum;
-
---Sig_/mQspNTZzRq=1d96KhQCGZS2
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBalCEACgkQAVBC80lX
-0GxGhggAkcnlhlxZJSg3roN3rb7jKPsaYdFSTrYakDIcpM2Z2i4HX901XrTfbTr2
-ztOzYNfSQugxUnY6+yXxjUIdPUXaolVfXGApZF6yRPBZ7TksLR3QL2GUomcaWvOK
-5krEJMmmmOwT3qMsfJgo40IQt4LjQzuPRZz7Jr7WEa2g5aSwC4TDcXMBj6BVj1b8
-tzcTj1/7QOZbs+jXKtekirp6Aq0hPPHuyAu1wqvgTfPcullzziQ/IItqL0GuoUF7
-uLKj7l1LqOw0Sgj0mEo31agRRYh3x5F1KykR5+c78R4wslyWfdkSxuAC4TW8Dp3x
-kqbhPCfNcWgnHMzyad2MMql6Xv8SHw==
-=NSQ5
------END PGP SIGNATURE-----
-
---Sig_/mQspNTZzRq=1d96KhQCGZS2--
+> +
+> +	if (mod)
+> +		module_put(mod);
