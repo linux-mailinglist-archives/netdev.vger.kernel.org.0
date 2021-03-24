@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4472A3482A8
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:15:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB1E3482AA
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:15:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238116AbhCXUPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:15:11 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:48691 "EHLO
+        id S238138AbhCXUPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:15:12 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:49781 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238106AbhCXUOq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:46 -0400
+        by vger.kernel.org with ESMTP id S238110AbhCXUOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:48 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D5A2C5C005E;
-        Wed, 24 Mar 2021 16:14:45 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 3D1D65C00CA;
+        Wed, 24 Mar 2021 16:14:48 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:45 -0400
+  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=Nqfck1eA6df7C/THbcH3ugAXHqE8UJCATPGLJ4kD0Xo=; b=cJSqPtfx
-        iO+jg4yoM/NkNToidUuLdaFHVBc5jsQEWyrFcJWSn1NKYq0BJ5iovT0am/9Ct23g
-        CFTueB90L3oK5MG0Wsq5em9JAbze3o19Y6IgQxSuPq9sdFluTFph1y9z7FKAKG7q
-        /BBIsfdFWAiy22e024LFBumGE3MSgHhuqS38iuOujJKm907Tk63kDG1xZeSSLY9z
-        9fwpSbu2W+Sr0l+4FsM5QhBBwgvkrbRbeyG7LQm5JRazgyPgZrdjrkWD6KLiUMLS
-        MNxvpqmSmN4fcUI+EXCVE6KC2kAOi7nO+RSkvDg5oMy0TaCKCkqk4i1FLBamk5Kl
-        nGariJ8yEhDijQ==
-X-ME-Sender: <xms:tZ1bYK9xw-bBoi4B6hKR4Utd7Z1dOnWlMwS7XH8u6YpM8toblhAu3w>
-    <xme:tZ1bYKu9pLAIe3tpted2hMVUWkPykdYHhd6TTJ4CjaJLBvyaO8oVwUmJ0AbcM92Gd
-    V3xd-dmf1woigg>
+        fm2; bh=dgo2kfSA3tve4cjNHw+uJI4WmKLvZ47xH0+PN2eDRgg=; b=cEDqMhBI
+        dHzeIsYMTrBRE6xA0ayYAcdV6zanyjX+54kRGv2Rf6e+0R4w7/unTZmn2qKcQT/A
+        x2R0ESUeMgtj4ipC2iDzpO3IcnLbG0j4AgVXQj585zc5vEdQtvVrArcgOgDhGuKN
+        D+xhjow2Dsiw4CsDY915ckkVmo0YvmEKwygwvg0x2hFp300MdnrNiBCP9qnDrhpJ
+        b1jqNHnJfH8PubHkeOkIiESojDuwQTJykPuLRKRWMjFf+FkG1EXzrX1gO7xd36v8
+        Rh1WsTFuxVGlXU1OY5t7cTffMImueM8gNLayUPF14BX3+syFgGmUsrRkiL/T/3TY
+        9dAgjNRMyyd/JA==
+X-ME-Sender: <xms:uJ1bYLUofdxhfI6ii4mXWicKMMC4pYOfK0_O0eoU4hIBkDiP9ZLcjw>
+    <xme:uJ1bYDkPrxhOYFv10_GnMQmXFXBx7PCjBKVoQQCUdOgm5IFVcN9BTjWWBgauAMB3v
+    WH6pm0yLURcMBc>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegkedgudefgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeg
-    geenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    geenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:tZ1bYAC8kFOV6jPAwm6t203zEZd2MbpT2TUUIqbZrquzzKslULl3Ew>
-    <xmx:tZ1bYCd4azKgBl3aBZD1ezcbCAlUeae5AVGcVOWdNkFKI7urbjhcsQ>
-    <xmx:tZ1bYPP27Ne9QTWyBupk1sWqB269RG1E6kcAJ8E60FkqIbzKBaHbvg>
-    <xmx:tZ1bYEprdo_qx2pXzHjpmGl_ztclaMYyMhQHvVcrNS2JjNVDsMA1nA>
+X-ME-Proxy: <xmx:uJ1bYHYJIzg_H6xskOzpbJW3Uwgc-FzA0aVzln2uhgd5pPfTIOOyWQ>
+    <xmx:uJ1bYGV3FrM0o-UXaLCVIz0JWltAbCuOIGEGhlTqG63tU3ugLqutew>
+    <xmx:uJ1bYFlYNVNGP3USrQPh7nRrXTWylFggBZ3OTrwhGQ6UNRm8Hpmc6A>
+    <xmx:uJ1bYOAeN_Ai_xsZTaQmpgV-K-fHH1dzIe7I7HqwO36YOm2P0Pm5pg>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id AA54A240422;
-        Wed, 24 Mar 2021 16:14:43 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 25CD624041F;
+        Wed, 24 Mar 2021 16:14:45 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 01/10] mlxsw: spectrum_router: Add support for resilient nexthop groups
-Date:   Wed, 24 Mar 2021 22:14:15 +0200
-Message-Id: <20210324201424.157387-2-idosch@idosch.org>
+Subject: [PATCH net-next 02/10] mlxsw: spectrum_router: Add ability to overwrite adjacency entry only when inactive
+Date:   Wed, 24 Mar 2021 22:14:16 +0200
+Message-Id: <20210324201424.157387-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210324201424.157387-1-idosch@idosch.org>
 References: <20210324201424.157387-1-idosch@idosch.org>
@@ -64,103 +64,199 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Parse the configuration of resilient nexthop groups to existing mlxsw
-data structures. Unlike non-resilient groups, nexthops without a valid
-MAC or router interface (RIF) are programmed with a trap action instead
-of not being programmed at all.
+Allow the driver to instruct the device to only overwrite an adjacency
+entry if its activity is cleared. Currently, adjacency entry is always
+overwritten, regardless of activity.
+
+This will be used by subsequent patches to prevent replacement of active
+nexthop buckets.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 26 ++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ .../ethernet/mellanox/mlxsw/spectrum_dpipe.c  |  3 +-
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.c   |  9 +++--
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.h   |  3 +-
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 34 ++++++++++++-------
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |  2 +-
+ 5 files changed, 32 insertions(+), 19 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
+index af2093fc5025..9ff286ba9bf0 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dpipe.c
+@@ -1196,7 +1196,8 @@ static int mlxsw_sp_dpipe_table_adj_counters_update(void *priv, bool enable)
+ 		else
+ 			mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
+ 		mlxsw_sp_nexthop_eth_update(mlxsw_sp,
+-					    adj_index + adj_hash_index, nh);
++					    adj_index + adj_hash_index, nh,
++					    true);
+ 	}
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+index 459049c8d065..5e7d9805b349 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+@@ -127,14 +127,17 @@ bool mlxsw_sp_l3addr_is_zero(union mlxsw_sp_l3addr addr)
+ 
+ static int
+ mlxsw_sp_ipip_nexthop_update_gre4(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+-				  struct mlxsw_sp_ipip_entry *ipip_entry)
++				  struct mlxsw_sp_ipip_entry *ipip_entry,
++				  bool force)
+ {
+ 	u16 rif_index = mlxsw_sp_ipip_lb_rif_index(ipip_entry->ol_lb);
+ 	__be32 daddr4 = mlxsw_sp_ipip_netdev_daddr4(ipip_entry->ol_dev);
+ 	char ratr_pl[MLXSW_REG_RATR_LEN];
++	enum mlxsw_reg_ratr_op op;
+ 
+-	mlxsw_reg_ratr_pack(ratr_pl, MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY,
+-			    true, MLXSW_REG_RATR_TYPE_IPIP,
++	op = force ? MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY :
++		     MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY_ON_ACTIVITY;
++	mlxsw_reg_ratr_pack(ratr_pl, op, true, MLXSW_REG_RATR_TYPE_IPIP,
+ 			    adj_index, rif_index);
+ 	mlxsw_reg_ratr_ipip4_entry_pack(ratr_pl, be32_to_cpu(daddr4));
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h
+index 87bef9880e5e..af7dd19f50e6 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.h
+@@ -40,7 +40,8 @@ struct mlxsw_sp_ipip_ops {
+ 	enum mlxsw_sp_l3proto ul_proto; /* Underlay. */
+ 
+ 	int (*nexthop_update)(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+-			      struct mlxsw_sp_ipip_entry *ipip_entry);
++			      struct mlxsw_sp_ipip_entry *ipip_entry,
++			      bool force);
+ 
+ 	bool (*can_offload)(const struct mlxsw_sp *mlxsw_sp,
+ 			    const struct net_device *ol_dev);
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 75c9fc47cd69..db859c2bd810 100644
+index db859c2bd810..63c2c7a84c64 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -2911,7 +2911,8 @@ struct mlxsw_sp_nexthop_group_info {
- 	u16 count;
- 	int sum_norm_weight;
- 	u8 adj_index_valid:1,
--	   gateway:1; /* routes using the group use a gateway */
-+	   gateway:1, /* routes using the group use a gateway */
-+	   is_resilient:1;
- 	struct mlxsw_sp_nexthop nexthops[0];
- #define nh_rif	nexthops[0].rif
- };
-@@ -3905,6 +3906,9 @@ static void __mlxsw_sp_nexthop_neigh_update(struct mlxsw_sp_nexthop *nh,
- 	if (!removing) {
- 		nh->action = MLXSW_SP_NEXTHOP_ACTION_FORWARD;
- 		nh->should_offload = 1;
-+	} else if (nh->nhgi->is_resilient) {
-+		nh->action = MLXSW_SP_NEXTHOP_ACTION_TRAP;
-+		nh->should_offload = 1;
- 	} else {
- 		nh->should_offload = 0;
+@@ -3419,16 +3419,19 @@ static int mlxsw_sp_adj_index_mass_update(struct mlxsw_sp *mlxsw_sp,
+ 
+ static int __mlxsw_sp_nexthop_eth_update(struct mlxsw_sp *mlxsw_sp,
+ 					 u32 adj_index,
+-					 struct mlxsw_sp_nexthop *nh)
++					 struct mlxsw_sp_nexthop *nh,
++					 bool force)
+ {
+ 	struct mlxsw_sp_neigh_entry *neigh_entry = nh->neigh_entry;
+ 	char ratr_pl[MLXSW_REG_RATR_LEN];
++	enum mlxsw_reg_ratr_op op;
+ 	u16 rif_index;
+ 
+ 	rif_index = nh->rif ? nh->rif->rif_index :
+ 			      mlxsw_sp->router->lb_rif_index;
+-	mlxsw_reg_ratr_pack(ratr_pl, MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY,
+-			    true, MLXSW_REG_RATR_TYPE_ETHERNET,
++	op = force ? MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY :
++		     MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY_ON_ACTIVITY;
++	mlxsw_reg_ratr_pack(ratr_pl, op, true, MLXSW_REG_RATR_TYPE_ETHERNET,
+ 			    adj_index, rif_index);
+ 	switch (nh->action) {
+ 	case MLXSW_SP_NEXTHOP_ACTION_FORWARD:
+@@ -3456,7 +3459,7 @@ static int __mlxsw_sp_nexthop_eth_update(struct mlxsw_sp *mlxsw_sp,
+ }
+ 
+ int mlxsw_sp_nexthop_eth_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+-				struct mlxsw_sp_nexthop *nh)
++				struct mlxsw_sp_nexthop *nh, bool force)
+ {
+ 	int i;
+ 
+@@ -3464,7 +3467,7 @@ int mlxsw_sp_nexthop_eth_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+ 		int err;
+ 
+ 		err = __mlxsw_sp_nexthop_eth_update(mlxsw_sp, adj_index + i,
+-						    nh);
++						    nh, force);
+ 		if (err)
+ 			return err;
  	}
-@@ -4484,6 +4488,15 @@ mlxsw_sp_nexthop_obj_init(struct mlxsw_sp *mlxsw_sp,
- 	if (nh_obj->is_reject)
- 		mlxsw_sp_nexthop_obj_blackhole_init(mlxsw_sp, nh);
+@@ -3474,17 +3477,19 @@ int mlxsw_sp_nexthop_eth_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
  
-+	/* In a resilient nexthop group, all the nexthops must be written to
-+	 * the adjacency table. Even if they do not have a valid neighbour or
-+	 * RIF.
-+	 */
-+	if (nh_grp->nhgi->is_resilient && !nh->should_offload) {
-+		nh->action = MLXSW_SP_NEXTHOP_ACTION_TRAP;
-+		nh->should_offload = 1;
-+	}
-+
- 	return 0;
+ static int __mlxsw_sp_nexthop_ipip_update(struct mlxsw_sp *mlxsw_sp,
+ 					  u32 adj_index,
+-					  struct mlxsw_sp_nexthop *nh)
++					  struct mlxsw_sp_nexthop *nh,
++					  bool force)
+ {
+ 	const struct mlxsw_sp_ipip_ops *ipip_ops;
  
- err_type_init:
-@@ -4500,6 +4513,7 @@ static void mlxsw_sp_nexthop_obj_fini(struct mlxsw_sp *mlxsw_sp,
- 	mlxsw_sp_nexthop_type_fini(mlxsw_sp, nh);
- 	list_del(&nh->router_list_node);
- 	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
-+	nh->should_offload = 0;
+ 	ipip_ops = mlxsw_sp->router->ipip_ops_arr[nh->ipip_entry->ipipt];
+-	return ipip_ops->nexthop_update(mlxsw_sp, adj_index, nh->ipip_entry);
++	return ipip_ops->nexthop_update(mlxsw_sp, adj_index, nh->ipip_entry,
++					force);
+ }
+ 
+ static int mlxsw_sp_nexthop_ipip_update(struct mlxsw_sp *mlxsw_sp,
+ 					u32 adj_index,
+-					struct mlxsw_sp_nexthop *nh)
++					struct mlxsw_sp_nexthop *nh, bool force)
+ {
+ 	int i;
+ 
+@@ -3492,7 +3497,7 @@ static int mlxsw_sp_nexthop_ipip_update(struct mlxsw_sp *mlxsw_sp,
+ 		int err;
+ 
+ 		err = __mlxsw_sp_nexthop_ipip_update(mlxsw_sp, adj_index + i,
+-						     nh);
++						     nh, force);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -3501,7 +3506,7 @@ static int mlxsw_sp_nexthop_ipip_update(struct mlxsw_sp *mlxsw_sp,
+ }
+ 
+ static int mlxsw_sp_nexthop_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+-				   struct mlxsw_sp_nexthop *nh)
++				   struct mlxsw_sp_nexthop *nh, bool force)
+ {
+ 	/* When action is discard or trap, the nexthop must be
+ 	 * programmed as an Ethernet nexthop.
+@@ -3509,9 +3514,11 @@ static int mlxsw_sp_nexthop_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+ 	if (nh->type == MLXSW_SP_NEXTHOP_TYPE_ETH ||
+ 	    nh->action == MLXSW_SP_NEXTHOP_ACTION_DISCARD ||
+ 	    nh->action == MLXSW_SP_NEXTHOP_ACTION_TRAP)
+-		return mlxsw_sp_nexthop_eth_update(mlxsw_sp, adj_index, nh);
++		return mlxsw_sp_nexthop_eth_update(mlxsw_sp, adj_index, nh,
++						   force);
+ 	else
+-		return mlxsw_sp_nexthop_ipip_update(mlxsw_sp, adj_index, nh);
++		return mlxsw_sp_nexthop_ipip_update(mlxsw_sp, adj_index, nh,
++						    force);
  }
  
  static int
-@@ -4509,6 +4523,7 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
- {
- 	struct mlxsw_sp_nexthop_group_info *nhgi;
- 	struct mlxsw_sp_nexthop *nh;
-+	bool is_resilient = false;
- 	unsigned int nhs;
- 	int err, i;
+@@ -3534,7 +3541,8 @@ mlxsw_sp_nexthop_group_update(struct mlxsw_sp *mlxsw_sp,
+ 		if (nh->update || reallocate) {
+ 			int err = 0;
  
-@@ -4519,6 +4534,10 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
- 	case NH_NOTIFIER_INFO_TYPE_GRP:
- 		nhs = info->nh_grp->num_nh;
- 		break;
-+	case NH_NOTIFIER_INFO_TYPE_RES_TABLE:
-+		nhs = info->nh_res_table->num_nh_buckets;
-+		is_resilient = true;
-+		break;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -4529,6 +4548,7 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
- 	nh_grp->nhgi = nhgi;
- 	nhgi->nh_grp = nh_grp;
- 	nhgi->gateway = mlxsw_sp_nexthop_obj_is_gateway(mlxsw_sp, info);
-+	nhgi->is_resilient = is_resilient;
- 	nhgi->count = nhs;
- 	for (i = 0; i < nhgi->count; i++) {
- 		struct nh_notifier_single_info *nh_obj;
-@@ -4544,6 +4564,10 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
- 			nh_obj = &info->nh_grp->nh_entries[i].nh;
- 			weight = info->nh_grp->nh_entries[i].weight;
- 			break;
-+		case NH_NOTIFIER_INFO_TYPE_RES_TABLE:
-+			nh_obj = &info->nh_res_table->nhs[i];
-+			weight = 1;
-+			break;
- 		default:
- 			err = -EINVAL;
- 			goto err_nexthop_obj_init;
+-			err = mlxsw_sp_nexthop_update(mlxsw_sp, adj_index, nh);
++			err = mlxsw_sp_nexthop_update(mlxsw_sp, adj_index, nh,
++						      true);
+ 			if (err)
+ 				return err;
+ 			nh->update = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index 01fd9a3d5944..3bb2a06359a3 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -209,7 +209,7 @@ bool mlxsw_sp_nexthop_group_has_ipip(struct mlxsw_sp_nexthop *nh);
+ int mlxsw_sp_nexthop_counter_get(struct mlxsw_sp *mlxsw_sp,
+ 				 struct mlxsw_sp_nexthop *nh, u64 *p_counter);
+ int mlxsw_sp_nexthop_eth_update(struct mlxsw_sp *mlxsw_sp, u32 adj_index,
+-				struct mlxsw_sp_nexthop *nh);
++				struct mlxsw_sp_nexthop *nh, bool force);
+ void mlxsw_sp_nexthop_counter_alloc(struct mlxsw_sp *mlxsw_sp,
+ 				    struct mlxsw_sp_nexthop *nh);
+ void mlxsw_sp_nexthop_counter_free(struct mlxsw_sp *mlxsw_sp,
 -- 
 2.30.2
 
