@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 236F734836C
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 22:09:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF66348381
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 22:20:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238211AbhCXVJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 17:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        id S238246AbhCXVT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 17:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238238AbhCXVJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 17:09:06 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B3CC06174A
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 14:09:05 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id w8so134408pjf.4
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 14:09:05 -0700 (PDT)
+        with ESMTP id S238233AbhCXVTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 17:19:31 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87264C06174A;
+        Wed, 24 Mar 2021 14:19:31 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id q5so18415075pfh.10;
+        Wed, 24 Mar 2021 14:19:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PQbDHXjXaqlAFHMDY7A7uM49NjRsJ5cIjIXV7sJv99Q=;
-        b=gIuj3uOiPj/PNlW9fwm/9ByUMQ5cUWkFuXzXpc1zStJXRr0pVh3ipBEgv3e7z0Ntrq
-         qQ3UXKGA4W70Z0/6rDLvbEyY0mzbJ0d7YRTaYN68GlciuuL9mNR1MHHPdqQp/4ZT4o5c
-         9rNPNVESA0J/gPEOlgYlk/domTOB4rGmWXPHXA9a1lI4DOvltU/Ncfum1F/rwR9I1oA6
-         wvoj8H1WML7o9oXo8rrBUeTI6fcTVSPyttsgnbjas7fWq6m0WBPlr7s16Ow29+ES8IP8
-         U1HJE0V9GFniXWSTd2z1sjgmsp/0BfNfNbH5+fg37P6fsuOtrIBDv0L21p5+4ueIGGj/
-         sd0A==
+        bh=+aMOd0WVJY1oWCTcKOvtin4y2EZdTSkVDMUS/tqikpY=;
+        b=azAqSnDSyKgCLKocRpMm7jxYVZI0jAjl7Xhxd7719/tT7SjJYv2sAEJTEWYZad/F5Q
+         HDYKZsXT4W3sW9MmJCl1a03B6LtkUV7r7lxWtVyMJC9LA03EMPb8epn/OhAWMV46z8Hp
+         Nasy4VVh3wQqFMyl9xJyG+aU8jZtHIUvC7gFQ7znGjruHs/01hlR1/PHJYYF2tNaXY72
+         CJqruhQEPm23MuTCFtsGTFX98QQgV1kfdu9wc8vNGRwxFfAm3+Dz6oWhJaBBDb/Ptp91
+         z/Gc4vxYKaP06bld+nTqLRrqo16wJ69zykTWFXiORnshAr9CKGPuL9MP2hwrSPjtUEKq
+         c1uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PQbDHXjXaqlAFHMDY7A7uM49NjRsJ5cIjIXV7sJv99Q=;
-        b=j54s22Bf3zTrI4jnBR3lCf7AWXBvwbdFJcVZkysMyf2cQwEdpBRUEK6gSBBB8UiUpl
-         fq/16udZW9kskZYxpy3KCb7YEzXSo0+s1x6Eelu6HUOUlOKSOXhZRRvoHzl7TqD0vxyz
-         RppMiOtoR3Y43v+azMbBh2qN7FhQCkixECgPyl7QHcjnBVBrhsHM0IUyHeIDoJisVrSs
-         O0+x85tDgAJShfg0/5eC3//agak4cpVGvvv1tzeyRdrGZBYZzaIpnaNVtLc49ZPdVfXW
-         GlYoRv+YsR3GMjayJkmtFziQE+HESOr6Zvpx7H6tCeRq/ic8kJj0GkwEessf1AiCQfFg
-         j6SA==
-X-Gm-Message-State: AOAM533zKifs99TPYSzAgEU69um7HSCkZ0qVsMFMfU6rSxOVWfwyP0qq
-        qgK0mUkfJnjYsC/9QIar2ms=
-X-Google-Smtp-Source: ABdhPJyroMe01qc+a8lTzCFbJbRYXsnEjTIa3PXiDiApl9RXtY818DxGoCFLA8RAx+bMbXIDtvYZxA==
-X-Received: by 2002:a17:90a:c81:: with SMTP id v1mr5234080pja.23.1616620145247;
-        Wed, 24 Mar 2021 14:09:05 -0700 (PDT)
+        bh=+aMOd0WVJY1oWCTcKOvtin4y2EZdTSkVDMUS/tqikpY=;
+        b=YskM7GHzAvp8nvc+njwyVLVMwd8KIjc8BVeIUnuDX5t0w/k/gQFV7OsG1548boi602
+         fHS3P6T6R3L5iBvtGrabixzvECRcbh/W0woez1hZutltLanhfnX2P8XcKIp03CFp+Q+7
+         9TUoIEveDycukXd3CTlC1I76skAFHGzGvOINKM95Lk1miG5/BBxgLRmk0GiL5nR2X8xO
+         LZQOJhayRwsn1pS8Yoi72GMuDm1RWXUCwIzYtAZK0dk9xx44YXdRTAYHkgcXSlmQmp6B
+         Bdrf9b4zPNxv3Nuhjd3eswAxJ3exf+KF/rkhJT0533BVBMwb6JJ75LnM0S+w6mOu8q6s
+         rXmQ==
+X-Gm-Message-State: AOAM5320nXCtCFiDq6OCr9hw1M1brCiY3LE/TpduGI4b5/XpIMipurRM
+        1cmqUI7hlzZIea5fo5wpMvk=
+X-Google-Smtp-Source: ABdhPJzV60N8RwFtQFqZ4dnZyrdt7a5ZxkJlrn5k746EVO/ZIZNxKAB6BR9GB28r56QXdQEPiJli2Q==
+X-Received: by 2002:a63:2e87:: with SMTP id u129mr4676053pgu.107.1616620770592;
+        Wed, 24 Mar 2021 14:19:30 -0700 (PDT)
 Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x2sm3196327pgb.89.2021.03.24.14.09.03
+        by smtp.gmail.com with ESMTPSA id 3sm3499917pfh.13.2021.03.24.14.19.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Mar 2021 14:09:04 -0700 (PDT)
-Subject: Re: lantiq_xrx200: Ethernet MAC with multiple TX queues
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
-        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-References: <CAFBinCArx6YONd+ohz76fk2_SW5rj=VY=ivvEMsYKUV-ti4uzw@mail.gmail.com>
- <20210324201331.camqijtggfbz7c3f@skbuf>
+        Wed, 24 Mar 2021 14:19:30 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/2] dt-bindings: define property describing
+ supported ethernet PHY modes
+To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Cc:     pali@kernel.org
+References: <20210324103556.11338-1-kabel@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <874dd389-dd67-65a6-8ccc-cc1d9fa904a2@gmail.com>
-Date:   Wed, 24 Mar 2021 14:09:02 -0700
+Message-ID: <e4e088a4-1538-1e7d-241d-e43b69742811@gmail.com>
+Date:   Wed, 24 Mar 2021 14:19:28 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210324201331.camqijtggfbz7c3f@skbuf>
+In-Reply-To: <20210324103556.11338-1-kabel@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -72,40 +74,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/24/2021 1:13 PM, Vladimir Oltean wrote:
-> Hi Martin,
+On 3/24/2021 3:35 AM, Marek Behún wrote:
+> Hello,
 > 
-> On Wed, Mar 24, 2021 at 09:04:16PM +0100, Martin Blumenstingl wrote:
->> Hello,
->>
->> the PMAC (Ethernet MAC) IP built into the Lantiq xRX200 SoCs has
->> support for multiple (TX) queues.
->> This MAC is connected to the SoC's built-in switch IP (called GSWIP).
->>
->> Right now the lantiq_xrx200 driver only uses one TX and one RX queue.
->> The vendor driver (which mixes DSA/switch and MAC functionality in one
->> driver) uses the following approach:
->> - eth0 ("lan") uses the first TX queue
->> - eth1 ("wan") uses the second TX queue
->>
->> With the current (mainline) lantiq_xrx200 driver some users are able
->> to fill up the first (and only) queue.
->> This is why I am thinking about adding support for the second queue to
->> the lantiq_xrx200 driver.
->>
->> My main question is: how do I do it properly?
->> Initializing the second TX queue seems simple (calling
->> netif_tx_napi_add for a second time).
->> But how do I choose the "right" TX queue in xrx200_start_xmit then?
+> the Marvell Alaska PHYs (88X3310, 88E2110) can, depending on their
+> configuration, change the PHY mode to the MAC, depending on the
+> copper/fiber speed.
+> 
+> The 88X3310, for example, can be configured (via MACTYPE register)
+> so that it communicates with the MAC in sgmii for 10/100/1000mbps,
+> 2500base-x for 2500mbps, 5gbase-r for 5gbps and either 10gbase-r,
+> xaui or rxaui for 10gbps. Or the PHY may communicate with the MAC
+> in usxgmii, or one of the 10gbase-r, rxaui or xaui modes with rate
+> matching.
+> 
+> So for the 10gbps mode we have options 10gbase-r, xaui, rxaui and
+> usxgmii. The MAC can support some of these modes, and if it does more
+> than one, we need to know which one to use. Not all of these modes
+> must necessarily be supported by the board (xaui required wiring for
+> 4 SerDes lanes, for example, and 10gbase-r requires wiring capable
+> of transmitting at 10.3125 GBd).
+> 
+> The MACTYPE is upon HW reset configured by strapping pins - so the
+> board should have a correct mode configured after HW reset.
+> 
+> One problem with this is that some boards configure the MACTYPE to
+> a rate matching mode, which, according to the errata, is broken in
+> some situations (it does not work for 10/100/1000, for example).
+> 
+> Another problem is that if lower modes are supported, we should
+> maybe use them in order to save power.
 
-If you use DSA you will have a DSA slave network device which will be
-calling into dev_queue_xmit() into the DSA master which will be the
-xrx200 driver, so it's fairly simple for you to implement a queue
-selection within the xrx200 tagger for instance.
+That is an interesting proposal but if you want it to be truly valuable,
+does not that mean that an user ought to be able to switch between any
+of the supported PHY <=> MAC interfaces at runtime, and then within
+those interfaces to the speeds that yield the best power savings?
 
-You can take a look at how net/dsa/tag_brcm.c and
-drivers/net/ethernet/broadcom/bcmsysport.c work as far as mapping queues
-from the DSA slave network device queue/port number into a queue number
-for the DSA master.
+> 
+> But for this we need to know which phy-modes are supported on the
+> board.
+> 
+> This series adds documentation for a new ethernet PHY property,
+> called `supported-mac-connection-types`.
+
+That naming does not quite make sense to me, if we want to describe the
+MAC supported connection types, then those would naturally be within the
+Ethernet MAC Device Tree node, no? If we are describing what the PHY is
+capable, then we should be dropping "mac" from the property name not to
+create confusion.
+
+> 
+> When this property is present for a PHY node, only the phy-modes
+> listed in this property should be considered to be functional on
+> the board.
+
+Can you post the code that is going to utilize these properties so we
+have a clearer picture of how and what you need to solve?
+
+> 
+> The second patch adds binding for this property.
+> 
+> The first patch does some YAML magic in ethernet-controller.yaml
+> in order to be able to reuse the PHY modes enum, so that the same
+> list does not have to be defined twice.
+> 
+> Marek
+> 
+> Marek Behún (2):
+>   dt-bindings: ethernet-controller: create a type for PHY interface
+>     modes
+>   dt-bindings: ethernet-phy: define `supported-mac-connection-types`
+>     property
+> 
+>  .../bindings/net/ethernet-controller.yaml     | 89 ++++++++++---------
+>  .../devicetree/bindings/net/ethernet-phy.yaml | 18 ++++
+>  2 files changed, 66 insertions(+), 41 deletions(-)
+> 
+
 -- 
 Florian
