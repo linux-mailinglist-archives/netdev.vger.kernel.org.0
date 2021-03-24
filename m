@@ -2,71 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E67347E5A
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 17:59:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EBB9347E61
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 18:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236973AbhCXQ6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 12:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54294 "EHLO
+        id S236630AbhCXRAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 13:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236579AbhCXQ6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 12:58:49 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AD7C061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 09:58:40 -0700 (PDT)
+        with ESMTP id S234343AbhCXRAY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 13:00:24 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9708C061763;
+        Wed, 24 Mar 2021 10:00:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=WkSSktRhFxCI0+g2YuqRaHtOth0bcrEVBxdwpgKGsn8=; b=h7sdtVfQhuTBX/JdckETRrWyD
-        EZkjmCM4o7Vzvpn2BTcOIgD0NTix+9g5Qe+bthVt1IgWkOKLAOoYPinnldYLiFl6nr1nfaP8hlZQ7
-        g3GLRyhplEp1oCxwa84Iy/i0TCm3apn9PFoGyXiaQtqxMI6hvfTM3BGrugMx1tDXTqxs9Jj/23L8J
-        lUXM4CKOQP9YUJdyHoWeY/XOpAba5U1jd0jQYMMcX3rrAoui+QNK/+nFn6xSnBkGtD+U3A/9ya1sb
-        j1aIVV/eXXWtdPoqssYh1y6QS8U+HouipGua1Ucbug1QTupKFnm6ZAHENYtWLTnc+bcxt5Ec8J2EZ
-        r2F1ZIOJg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51672)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lP6q6-0000jk-Au; Wed, 24 Mar 2021 16:58:38 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lP6q4-0005Cm-DC; Wed, 24 Mar 2021 16:58:36 +0000
-Date:   Wed, 24 Mar 2021 16:58:36 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
-Subject: Re: [PATCH net-next 4/7] net: phy: marvell10g: add MACTYPE
- definitions for 88X3310/88X3310P
-Message-ID: <20210324165836.GF1463@shell.armlinux.org.uk>
-References: <20210324165023.32352-1-kabel@kernel.org>
- <20210324165023.32352-5-kabel@kernel.org>
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=+uk2xeABGkHiooQn7k65Uy5rAnQd1BMsBmMwXXODHko=; b=Q70qjq1z1RpzBbSxwCkI9JmcEF
+        eDirFRu4VBM91928vtLLM0Y8fVQ6EZysxPpa+Xa/MPKwIjgYaOte5wR9aTFFQhy62vr898CrFyYux
+        KKZADXXNQDP2tGOKcA9465oharQGzN0YCi11/dWdOba0wBx6/94q2GpzgVU9TU7L6u8HZb/nVN90I
+        vfcZhSFF8Q1nOTSbQfvnnXz2GWk0PiMmfgOZb6hza3DaB1/i2k0CXsliaxC5f8DFBHs1gWWkLZWjb
+        hahdVBe4lBzqGDyRnKQUZk2DBURw8KVtaKkFvWiFzOEUMtKAfEYxxI/JJ/YRJZf8Osvl8GyT8Rvuu
+        LA1ycgfw==;
+Received: from [2601:1c0:6280:3f0::3ba4]
+        by casper.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lP6qG-00BbkN-FK; Wed, 24 Mar 2021 16:59:32 +0000
+Subject: Re: [PATCH net-next] net/tls: Fix a typo in tls_device.c
+To:     Wang Hai <wanghai38@huawei.com>, borisp@nvidia.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210324061622.8665-1-wanghai38@huawei.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <b32aa177-5829-be9b-88ec-c1c1b333a6e4@infradead.org>
+Date:   Wed, 24 Mar 2021 09:58:45 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210324165023.32352-5-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <20210324061622.8665-1-wanghai38@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 05:50:20PM +0100, Marek Behún wrote:
-> Add all MACTYPE definitions for 88X3310/88X3310P.
+On 3/23/21 11:16 PM, Wang Hai wrote:
+> s/beggining/beginning/
 > 
-> In order to have consistent naming, rename
-> MV_V2_PORT_CTRL_MACTYPE_RATE_MATCH to
-> MV_V2_PORT_CTRL_MACTYPE_10GR_RATE_MATCH.
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
 
-We probably ought to note that the 88x3310 and 88x3340 will be detected
-by this driver, but have different MACTYPE definitions.
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+> ---
+>  net/tls/tls_device.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+> index f7fb7d2c1de1..89a5d4fad0a2 100644
+> --- a/net/tls/tls_device.c
+> +++ b/net/tls/tls_device.c
+> @@ -601,7 +601,7 @@ struct tls_record_info *tls_get_record(struct tls_offload_context_tx *context,
+>  	if (!info ||
+>  	    before(seq, info->end_seq - info->len)) {
+>  		/* if retransmit_hint is irrelevant start
+> -		 * from the beggining of the list
+> +		 * from the beginning of the list
+>  		 */
+>  		info = list_first_entry_or_null(&context->records_list,
+>  						struct tls_record_info, list);
+> 
+
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+~Randy
+
