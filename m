@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFD95347F44
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 18:23:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7D1347F5E
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 18:31:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237168AbhCXRXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 13:23:11 -0400
-Received: from mga06.intel.com ([134.134.136.31]:16672 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237098AbhCXRW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 13:22:59 -0400
-IronPort-SDR: cQtKDfGSRClLmG3tg20PD7vnKE61zdl5Iy47lu7s8sWzMA5CBf7KgaDKt61tL4HaJj+00Su1S3
- pZ8MXBc748TA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="252110427"
-X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; 
-   d="scan'208";a="252110427"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 10:22:57 -0700
-IronPort-SDR: q7x5MCG+vkoOU9Zt5AI1qoSHSHC0Zp99QAlPGLHuv2CUXVcGAPnke24VDa6jskQUUfvyu5ceVQ
- Ar5TomltcFSQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; 
-   d="scan'208";a="443059639"
-Received: from stinkbox.fi.intel.com (HELO stinkbox) ([10.237.72.171])
-  by FMSMGA003.fm.intel.com with SMTP; 24 Mar 2021 10:22:49 -0700
-Received: by stinkbox (sSMTP sendmail emulation); Wed, 24 Mar 2021 19:22:48 +0200
-Date:   Wed, 24 Mar 2021 19:22:48 +0200
-From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Arnd Bergmann <arnd@kernel.org>, linux-kernel@vger.kernel.org,
-        Martin Sebor <msebor@gcc.gnu.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Arnd Bergmann <arnd@arndb.de>,
-        x86@kernel.org, Ning Sun <ning.sun@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        =?iso-8859-1?Q?Jos=E9?= Roberto de Souza 
-        <jose.souza@intel.com>, Matt Roper <matthew.d.roper@intel.com>,
-        Aditya Swarup <aditya.swarup@intel.com>
-Subject: Re: [PATCH 10/11] drm/i915: avoid stringop-overread warning on
- pri_latency
-Message-ID: <YFt1aBFwJI+z97g3@intel.com>
-References: <20210322160253.4032422-1-arnd@kernel.org>
- <20210322160253.4032422-11-arnd@kernel.org>
- <874kh04lin.fsf@intel.com>
+        id S237160AbhCXRat convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 24 Mar 2021 13:30:49 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54544 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237030AbhCXRaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 13:30:18 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12OHT1cT020868
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 10:30:17 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 37fpghpana-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 10:30:17 -0700
+Received: from intmgw001.06.ash9.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 24 Mar 2021 10:30:01 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 503682ED2BAA; Wed, 24 Mar 2021 10:29:57 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next] libbpf: constify few bpf_program getters
+Date:   Wed, 24 Mar 2021 10:29:41 -0700
+Message-ID: <20210324172941.2609884-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <874kh04lin.fsf@intel.com>
-X-Patchwork-Hint: comment
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-24_13:2021-03-24,2021-03-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ mlxlogscore=920 priorityscore=1501 suspectscore=0 malwarescore=0
+ spamscore=0 phishscore=0 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ adultscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2103240127
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 05:30:24PM +0200, Jani Nikula wrote:
-> On Mon, 22 Mar 2021, Arnd Bergmann <arnd@kernel.org> wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > gcc-11 warns about what appears to be an out-of-range array access:
-> >
-> > In function ‘snb_wm_latency_quirk’,
-> >     inlined from ‘ilk_setup_wm_latency’ at drivers/gpu/drm/i915/intel_pm.c:3108:3:
-> > drivers/gpu/drm/i915/intel_pm.c:3057:9: error: ‘intel_print_wm_latency’ reading 16 bytes from a region of size 10 [-Werror=stringop-overread]
-> >  3057 |         intel_print_wm_latency(dev_priv, "Primary", dev_priv->wm.pri_latency);
-> >       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > drivers/gpu/drm/i915/intel_pm.c: In function ‘ilk_setup_wm_latency’:
-> > drivers/gpu/drm/i915/intel_pm.c:3057:9: note: referencing argument 3 of type ‘const u16 *’ {aka ‘const short unsigned int *’}
-> > drivers/gpu/drm/i915/intel_pm.c:2994:13: note: in a call to function ‘intel_print_wm_latency’
-> >  2994 | static void intel_print_wm_latency(struct drm_i915_private *dev_priv,
-> >       |             ^~~~~~~~~~~~~~~~~~~~~~
-> >
-> > My guess is that this code is actually safe because the size of the
-> > array depends on the hardware generation, and the function checks for
-> > that, but at the same time I would not expect the compiler to work it
-> > out correctly, and the code seems a little fragile with regards to
-> > future changes. Simply increasing the size of the array should help.
-> 
-> Agreed, I don't think there's an issue, but the code could use a bunch
-> of improvements.
-> 
-> Like, we have intel_print_wm_latency() for debug logging and
-> wm_latency_show() for debugfs, and there's a bunch of duplication and
-> ugh.
+bpf_program__get_type() and bpf_program__get_expected_attach_type() shouldn't
+modify given bpf_program, so mark input parameter as const struct bpf_program.
+This eliminates unnecessary compilation warnings or explicit casts in user
+programs.
 
-There is all this ancient stuff in review limbo...
-https://patchwork.freedesktop.org/series/50802/
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/lib/bpf/libbpf.c | 4 ++--
+ tools/lib/bpf/libbpf.h | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 058b643cbcb1..cac56381ee59 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8457,7 +8457,7 @@ int bpf_program__nth_fd(const struct bpf_program *prog, int n)
+ 	return fd;
+ }
+ 
+-enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog)
++enum bpf_prog_type bpf_program__get_type(const struct bpf_program *prog)
+ {
+ 	return prog->type;
+ }
+@@ -8502,7 +8502,7 @@ BPF_PROG_TYPE_FNS(extension, BPF_PROG_TYPE_EXT);
+ BPF_PROG_TYPE_FNS(sk_lookup, BPF_PROG_TYPE_SK_LOOKUP);
+ 
+ enum bpf_attach_type
+-bpf_program__get_expected_attach_type(struct bpf_program *prog)
++bpf_program__get_expected_attach_type(const struct bpf_program *prog)
+ {
+ 	return prog->expected_attach_type;
+ }
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index a1a424b9b8ff..89ade7d7b31c 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -361,12 +361,12 @@ LIBBPF_API int bpf_program__set_struct_ops(struct bpf_program *prog);
+ LIBBPF_API int bpf_program__set_extension(struct bpf_program *prog);
+ LIBBPF_API int bpf_program__set_sk_lookup(struct bpf_program *prog);
+ 
+-LIBBPF_API enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog);
++LIBBPF_API enum bpf_prog_type bpf_program__get_type(const struct bpf_program *prog);
+ LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
+ 				      enum bpf_prog_type type);
+ 
+ LIBBPF_API enum bpf_attach_type
+-bpf_program__get_expected_attach_type(struct bpf_program *prog);
++bpf_program__get_expected_attach_type(const struct bpf_program *prog);
+ LIBBPF_API void
+ bpf_program__set_expected_attach_type(struct bpf_program *prog,
+ 				      enum bpf_attach_type type);
 -- 
-Ville Syrjälä
-Intel
+2.30.2
+
