@@ -2,145 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7500E348484
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 23:22:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 390843484A2
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 23:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238816AbhCXWVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 18:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238836AbhCXWVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 18:21:37 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F369FC0613E0
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 15:21:36 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id w8so203482pjf.4
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 15:21:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jIDPF7ri84OLFsNd4OhxmJPSCi5FNfpE4FjtwEiJamI=;
-        b=RiBXhaenM9VBbNf7Ikof8uRUzpei4NDWIP7Ov/61XaLR+CqRNKdKd7fevMR7JsPQSn
-         dak0k7Il33xba+i95mj9167kOtqh9O/gBnyrBpD3mYXz+NZec2sWUmXXD+jKJMkdYHmZ
-         S+kX+o7ONkaASTwWepkBXvtypIYfNzOTkqHPjiHglI7PlYC22lTTYnLEDwcMwTCgkxec
-         wRO9mcct/h+YU/KkpwyhIU78PUQXyAKvNNIsc77BBuYWU+MYo1EK/fOQTtdF7aj/WVKb
-         qWktnXp87q3dMVTR2qYDoRBCoPIB64pUP9Gyq3wDM/GVZaCK+gv6QQIbZe8N95o3IkGQ
-         IQ+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jIDPF7ri84OLFsNd4OhxmJPSCi5FNfpE4FjtwEiJamI=;
-        b=jlFf6CNmB85RVI26mYhClQhdVV8uVh3IK5LH+nX76eBoEgjfeTJYt6HLmS9BY+QB9y
-         M3ogcFaG8Et6O9IbnlXHvN2MfAPNWK9hHb+YjrEKEDRgUy2jdmmaf4y1tNi7dF2YmhGG
-         08Ew6mNojBJ4P/1J4hFnkN7SDnzBXdIjEUqkeru19n9rA62z4mR/w6tS+Pb0ErL0lhjf
-         ivlRhK2w2QYqlBd2Glebu5+T6V0qm9Pv4Qtw/9+nostJ9QdUi2ywAT+2SOy6HyFhvNca
-         dS2cPdNos3nM7QaLMzUY7bwg+V6ZqzM+vrUu0bg5dErkcueELJmlFn0nMcF9mTPU3+RI
-         t20A==
-X-Gm-Message-State: AOAM532GxzI+VyJLXoCyJNb8cNqXF2KYuFv25OUtgn8Eo+xqaBDBKGBk
-        uySAqKbn4nb5ZMoFBo5KF005zSXg+AqdBMTCWIIXz1B9uOrxDG15
-X-Google-Smtp-Source: ABdhPJxO78gga38eOSSGkRb7JR3LPL4ca3GN3Kg63kSbnkYrOAUmk+vpnbWzVH0WjGPGdqNPQJZhFiJatpAuCeF1xyw=
-X-Received: by 2002:a17:90b:947:: with SMTP id dw7mr5682193pjb.178.1616624496196;
- Wed, 24 Mar 2021 15:21:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
- <YFCH8vzFGmfFRCvV@cmpxchg.org> <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
- <YFJ+5+NBOBiUbGWS@cmpxchg.org> <CAOFY-A17g-Aq_TsSX8=mD7ZaSAqx3gzUuCJT8K0xwrSuYdP4Kw@mail.gmail.com>
- <YFoe8BO0JsbXTHHF@cmpxchg.org> <CAOFY-A2dfWS91b10R9Pu-5T-uT2qF9h9Lm8GaJfV9shfjP4Wbg@mail.gmail.com>
- <CALvZod527EgYmkqWdoLCARj2BD2=YWVCC9Dk87gfQRG8NViX_A@mail.gmail.com>
-In-Reply-To: <CALvZod527EgYmkqWdoLCARj2BD2=YWVCC9Dk87gfQRG8NViX_A@mail.gmail.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Wed, 24 Mar 2021 15:21:25 -0700
-Message-ID: <CAOFY-A0GtpeFUrp+eK1__pOm=gkp3ahNXXkm6rztrz_O2FFfeQ@mail.gmail.com>
-Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
+        id S235279AbhCXWaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 18:30:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52718 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235316AbhCXW3y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 18:29:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB24961A1B;
+        Wed, 24 Mar 2021 22:29:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616624994;
+        bh=XAPgz67pTTnDTV8GH2L/woOzdZnDbxcZrscqWA3R7PU=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=DCLek7pPWRxVjSMfBwYYXp4F5GHn92nqsC8jgSQMhGEH2dKMuhBR515IOJHQIltm9
+         T/wuM4zKlJnWHjiCMF7SU24Q6f354VXyepamhkQURNwkI5T/A3Pt/jJsT/KYhycC7Y
+         bDrrdvbqELdBGC6PXor4UZl2q5gpS8anuCJhEPWLsSoGRii8oRQQuwrADhLDDmhqqo
+         pIrXIsWl2lv318wGP/WIDRZTQLv05mtmnTSz03Rio716Bc8rNlmBsIas4oOu0d9Uny
+         bLyYWhR7xDki7AWStkMmeomNhf/GNBTLt9fl9yaDukq1NVEKwIfkwI25BzvpwkNM5k
+         ngYwuBQtUf+Xw==
+Message-ID: <3f8d7d14f8d88f6e7667a489eee8651fda596462.camel@kernel.org>
+Subject: Re: [PATCH net] net/mlx5e: Fix ipsec/tls netdev features build
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     wenxu@ucloud.cn, kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Date:   Wed, 24 Mar 2021 15:29:52 -0700
+In-Reply-To: <1616559339-1853-1-git-send-email-wenxu@ucloud.cn>
+References: <1616559339-1853-1-git-send-email-wenxu@ucloud.cn>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 11:26 AM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Tue, Mar 23, 2021 at 11:42 AM Arjun Roy <arjunroy@google.com> wrote:
-> >
-> [...]
-> >
-> > To summarize then, it seems to me that we're on the same page now.
-> > I'll put together a tentative v3 such that:
-> > 1. It uses pre-charging, as previously discussed.
-> > 2. It uses a page flag to delineate pages of a certain networking sort
-> > (ie. this mechanism).
-> > 3. It avails itself of up to 4 words of data inside struct page,
-> > inside the networking specific struct.
-> > 4. And it sets up this opt-in lifecycle notification for drivers that
-> > choose to use it, falling back to existing behaviour without.
-> >
->
-> Arjun, if you don't mind, can you explain how the lifetime of such a
-> page will look like?
->
-> For example:
->
-> Driver:
-> page = dev_alloc_page()
-> /* page has 1 ref */
+On Wed, 2021-03-24 at 12:15 +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> Ipsec and tls netdev features build should be done after the
+> mlx5e_init_ipesc/tls which finishs the init for the ipsec/tls
+> in the driver.
+> 
+> Fixes: 3ef14e463f6e ("net/mlx5e: Separate between netdev objects and
+> mlx5e profiles initialization")
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index 158f947..14c3f1f 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -5218,8 +5218,6 @@ static void mlx5e_build_nic_netdev(struct
+> net_device *netdev)
+>         netdev->priv_flags       |= IFF_UNICAST_FLT;
+>  
+>         mlx5e_set_netdev_dev_addr(netdev);
+> -       mlx5e_ipsec_build_netdev(priv);
+> -       mlx5e_tls_build_netdev(priv);
+>  }
+>  
+>  void mlx5e_create_q_counters(struct mlx5e_priv *priv)
+> @@ -5274,10 +5272,15 @@ static int mlx5e_nic_init(struct
+> mlx5_core_dev *mdev,
+>         err = mlx5e_ipsec_init(priv);
+>         if (err)
+>                 mlx5_core_err(mdev, "IPSec initialization failed,
+> %d\n", err);
+> +       else
+> +               mlx5e_ipsec_build_netdev(priv);
+> +
+>  
 
-Yes, this is the case.
+Hi Wenxu, thanks for the patch. 
+I know that IPSec got broken and i am working on a fix now,
 
-> dev_map_page(page)
-> /* I don't think dev_map_page() takes a ref on page, so the ref remains 1. */
->
+Regarding your patch it is wrong to call ipsec/tls_build_netdev here
+since it is too late, the netdev might be registered already and we
+shouldn't be updating netdev->features directly. 
 
-To be clear, do you mean things like DMA setup here? Or specifically
-what do you mean by dev_map_page?
-
-> On incoming traffic the page goes to skb and which then gets assigned
-> to a struct sock. Does the kernel increase refcnt of the page on these
-> operations?
->
-
-Adding a page to an skb will mean that, when the skb is cleaned up, a
-page ref is dropped:
-https://github.com/torvalds/linux/blob/master/net/core/skbuff.c#L666
-
-So a driver may bump the refcount for the page, before adding it to the skb:
-https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c#L442
-
-
-> The page gets mapped into user space which increments its refcnt.
->
-Yes.
-
-> After processing the data, the application unmaps the page and its
-> refcnt will be decremented.
->
-Yes.
+My plan is to setup the netdev features regardless of the
+mlx5e_ipsec_init() state, and to remove the dependency.
 
 
-> __put_page() will be called when refcnt reaches 0, so, the initial
-> refcnt which the driver has acquired, has to be transferred to the
-> next layer. So, I am trying to understand how that will work?
+>         err = mlx5e_tls_init(priv);
+>         if (err)
+>                 mlx5_core_err(mdev, "TLS initialization failed,
+> %d\n", err);
+> +       else
+> +               mlx5e_tls_build_netdev(priv);
+>  
+>         err = mlx5e_devlink_port_register(priv);
+>         if (err)
 
-Ah, I see - there was a miscommunication. Johannes mentioned
-__put_page() but I read put_page().
-That is where I was planning on adding the interposition for these
-network pages.
+Did you encounter any issues with TLS ? because currently i don't see
+any dependency between mlx5e_tls_build_netdev() and mlx5e_tls_init()
+and the code should work as is.. but i might be missing something,
+anyway I will provide a similar fix to ipsec.
 
-So in put_page(), if it turns out it's a network page, we do our
-handling then as I described in prior emails. Sorry for the confusion.
+Thanks For the report again.
 
-Thanks,
--Arjun
+Saeed.
+
+
