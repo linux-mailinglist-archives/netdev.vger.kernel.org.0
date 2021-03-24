@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9936347CEE
+	by mail.lfdr.de (Postfix) with ESMTP id 6D850347CED
 	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 16:46:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236809AbhCXPpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 11:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S236800AbhCXPpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 11:45:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236575AbhCXPpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 11:45:07 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20934C061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:45:07 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id w3so33667690ejc.4
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:45:07 -0700 (PDT)
+        with ESMTP id S236704AbhCXPpJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 11:45:09 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD30EC0613DE
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:45:08 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id z1so28220959edb.8
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:45:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aLF9/T9mkPW+SfBx7lQUOj7k/f+2p+3Z4GNj0XsfqnA=;
-        b=mDK/GcE4HPWi9hSPv/MiCgP4+pQG+9H7FKcZYYIZ6KGH81Or6u65QgTbFieSzE//RS
-         VO2nm6HdUIYqr7DFc4bgul7mnMKUFWgu8i7Ur+LRLLlOyoh3nV4JonzV5ZYfyMdA47NS
-         cTdgQ+uiQxAwd7EsAkKYP7s87BBoEvCohUmUUUMv/1V+fiejf4nm9cnWiu5o6Cy1V1Oo
-         wUQd8pnsP5pRRdmrm4zg6ShCAihsVbnErSiGdnFm+5GwSJxRqep4f81sFvnl3hMCSa13
-         oRJIIpCbKO1y9nx3x81tTwvPqFsnCFEH2TXOLJb7GyKOw4+0sVGOgQBrQl4ApGMiLXUA
-         zQPw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gUNHHN+a05PbMPS4FsZBMqlmcyf5xosnMltACvnqWr4=;
+        b=CsnVviYdfYDdMW0izohFXEuTUdA2Gvq9qBO9bA23r+0JOx9sughwpzav6fnvZw78u0
+         AILGXuGI275eA7QeZ0Mb0Yb1PZqvZz/PrZkYX15VM4IKHRPMp8T/HeZ8LKlodVpvyYJK
+         8wuONzj/mqndZlzydBCtUavxIa7Gr+GSpdbRQM1iMyxeIennsuqOqB/tNK1q1gwdK98c
+         GDFeB5+NgQ92cwjfqYKaQJ0hyieFnvhUfqRZiWMMWVOE7kJ/OIG0DfDISzSkrE1aaDAP
+         gYs1cTijZgpxJ1/F2pdDJuxVe1bqAckkJLsSvdGJKsPoJHW88QLK3TKW6howV4GKuG0f
+         hEcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aLF9/T9mkPW+SfBx7lQUOj7k/f+2p+3Z4GNj0XsfqnA=;
-        b=tsLDxyo71WDF92PoqXS50iJoRNwFLVV8V5lqTEMg9rHOZ/xDVSPvzN6+H5BHryJ5b0
-         ETFPNHbpnwx+DvJfrhpZIpSRLON3kjXNGDXvt1yibgaSocHtGN5lzZNeVfax3ibnVYzm
-         0ueE5AXnX3nnH6QE1X3pRWtGsyIWt85itltzgrGPy+KcxaRgL6sEK8v0oA09pkmv3J2o
-         yRdqMIkLP3EQds7pNfwyqq1WCP5FG2EZrJZRjOZYVs+79BZHkoL3DFS/D0lyYkg+fc3A
-         iBen1QiJVHNtfrBV+03gIvc/NVkPp24LGP3lKD1YIsTxIhu7gIZKTzy3CZWGPlrqEMEq
-         lTNg==
-X-Gm-Message-State: AOAM531U46m3z19b/CJ4Ho0dRLMlYF3aNJnh4OhQtBmKyaFdMiApIzb2
-        AJiiXrmEL7LVTZ0ER1qgfo+H07Mr3c8=
-X-Google-Smtp-Source: ABdhPJyTnT69b+6HKHTfWqRQ5BUGTr05lO7QiFcgLUyzsP3bR1aOlvsJd94wieZ9NMnd3Q8AojpC+w==
-X-Received: by 2002:a17:906:489b:: with SMTP id v27mr4363722ejq.1.1616600705815;
-        Wed, 24 Mar 2021 08:45:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gUNHHN+a05PbMPS4FsZBMqlmcyf5xosnMltACvnqWr4=;
+        b=lolZImtQdqyUOGXyU87ApnV1AqIpOE16BiTkEzYeM7eupalV+lVEUNg29sU+Jj1x8j
+         FsF8MrMIhYaUuQ8RgBvZcuV2Kw08YS8IXMwJxJheQTHF5D/MdnLBYUkGzL5l4wBsJlFz
+         ueS4Q+BuedwYUV9OFGQdHlxMrYOxIU2Ji6R0TRqTqgg//eHNLDAGS87tvdr4ak6LAJDw
+         +uHmDnuC9SLxdyMrywqkHTT0zM5vfrcPJUdXmC3mJBscajtj18mKYMoJn5UXtnIM9Ey/
+         BugNf9JwuqRf/0vepW6PHIi82oNW5Ft0406NRFdI94B2hq5FI1lxgVJ3AyW8+1uDpUhs
+         EeoQ==
+X-Gm-Message-State: AOAM530fxeusEGsf+VWYf7QANtiKH4q+AQ/TZ+X1mPu/EJC9b+ghKbNC
+        ev2L6GQhkwYLhTwe/ntQ7ow=
+X-Google-Smtp-Source: ABdhPJy0SpVYwbrNepffdOAJ4iJ+2FQJalqPSYS4uTVpWSzhrwfp5V9i6Of3KzSmR80isMRNrNM7Zg==
+X-Received: by 2002:a05:6402:2552:: with SMTP id l18mr4020811edb.71.1616600706699;
+        Wed, 24 Mar 2021 08:45:06 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
         by smtp.gmail.com with ESMTPSA id w24sm1317542edt.44.2021.03.24.08.45.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 08:45:05 -0700 (PDT)
+        Wed, 24 Mar 2021 08:45:06 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 1/2] net: enetc: don't depend on system endianness in enetc_set_vlan_ht_filter
-Date:   Wed, 24 Mar 2021 17:44:54 +0200
-Message-Id: <20210324154455.1899941-1-olteanv@gmail.com>
+Subject: [PATCH net-next 2/2] net: enetc: don't depend on system endianness in enetc_set_mac_ht_flt
+Date:   Wed, 24 Mar 2021 17:44:55 +0200
+Message-Id: <20210324154455.1899941-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210324154455.1899941-1-olteanv@gmail.com>
+References: <20210324154455.1899941-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -64,72 +66,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-ENETC has a 64-entry hash table for VLAN RX filtering per Station
-Interface, which is accessed through two 32-bit registers: VHFR0 holding
-the low portion, and VHFR1 holding the high portion.
+When enetc runs out of exact match entries for unicast address
+filtering, it switches to an approach based on hash tables, where
+multiple MAC addresses might end up in the same bucket.
 
-The enetc_set_vlan_ht_filter function looks at the pf->vlan_ht_filter
-bitmap, which is fundamentally an unsigned long variable, and casts it
-to a u32 array of two elements. It puts the first u32 element into VHFR0
-and the second u32 element into VHFR1.
+However, the enetc_set_mac_ht_flt function currently depends on the
+system endianness, because it interprets the 64-bit hash value as an
+array of two u32 elements. Modify this to use lower_32_bits and
+upper_32_bits.
 
-It is easy to imagine that this will not work on big endian systems
-(although, yes, we have bigger problems, because currently enetc assumes
-that the CPU endianness is equal to the controller endianness, aka
-little endian - but let's assume that we could add a cpu_to_le32 in
-enetc_wd_reg and a le32_to_cpu in enetc_rd_reg).
+Tested by forcing enetc to go into hash table mode by creating two
+macvlan upper interfaces:
 
-Let's use lower_32_bits and upper_32_bits which are designed to work
-regardless of endianness.
+ip link add link eno0 address 00:01:02:03:00:00 eno0.0 type macvlan && ip link set eno0.0 up
+ip link add link eno0 address 00:01:02:03:00:01 eno0.1 type macvlan && ip link set eno0.1 up
 
-Tested that both the old and the new method produce the same results:
+and verified that the same bit values are written to the registers
+before and after:
 
-$ ethtool -K eth1 rx-vlan-filter on
-$ ip link add link eth1 name eth1.100 type vlan id 100
-enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x0 VHFR1 0x20
-enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x0 VHFR1 0x20
-$ ip link add link eth1 name eth1.101 type vlan id 101
-enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x0 VHFR1 0x30
-enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x0 VHFR1 0x30
-$ ip link add link eth1 name eth1.34 type vlan id 34
-enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x0 VHFR1 0x34
-enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x0 VHFR1 0x34
-$ ip link add link eth1 name eth1.1024 type vlan id 1024
-enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x1 VHFR1 0x34
-enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x1 VHFR1 0x34
+enetc_sync_mac_filters: addr 00:00:80:00:40:10 exact match 0
+enetc_sync_mac_filters: addr 00:00:00:00:80:00 exact match 0
+enetc_set_mac_ht_flt: hash 0x80008000000000 UMHFR0 0x0 UMHFR1 0x800080
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_pf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index 3a7a9102eccb..9c69ca516192 100644
+index 9c69ca516192..5e95afd61c87 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -248,10 +248,10 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
+@@ -129,16 +129,20 @@ static void enetc_clear_mac_ht_flt(struct enetc_si *si, int si_idx, int type)
  }
  
- static void enetc_set_vlan_ht_filter(struct enetc_hw *hw, int si_idx,
--				     u32 *hash)
-+				     unsigned long hash)
+ static void enetc_set_mac_ht_flt(struct enetc_si *si, int si_idx, int type,
+-				 u32 *hash)
++				 unsigned long hash)
  {
--	enetc_port_wr(hw, ENETC_PSIVHFR0(si_idx), *hash);
--	enetc_port_wr(hw, ENETC_PSIVHFR1(si_idx), *(hash + 1));
-+	enetc_port_wr(hw, ENETC_PSIVHFR0(si_idx), lower_32_bits(hash));
-+	enetc_port_wr(hw, ENETC_PSIVHFR1(si_idx), upper_32_bits(hash));
- }
+ 	bool err = si->errata & ENETC_ERR_UCMCSWP;
  
- static int enetc_vid_hash_idx(unsigned int vid)
-@@ -279,7 +279,7 @@ static void enetc_sync_vlan_ht_filter(struct enetc_pf *pf, bool rehash)
- 		}
+ 	if (type == UC) {
+-		enetc_port_wr(&si->hw, ENETC_PSIUMHFR0(si_idx, err), *hash);
+-		enetc_port_wr(&si->hw, ENETC_PSIUMHFR1(si_idx), *(hash + 1));
++		enetc_port_wr(&si->hw, ENETC_PSIUMHFR0(si_idx, err),
++			      lower_32_bits(hash));
++		enetc_port_wr(&si->hw, ENETC_PSIUMHFR1(si_idx),
++			      upper_32_bits(hash));
+ 	} else { /* MC */
+-		enetc_port_wr(&si->hw, ENETC_PSIMMHFR0(si_idx, err), *hash);
+-		enetc_port_wr(&si->hw, ENETC_PSIMMHFR1(si_idx), *(hash + 1));
++		enetc_port_wr(&si->hw, ENETC_PSIMMHFR0(si_idx, err),
++			      lower_32_bits(hash));
++		enetc_port_wr(&si->hw, ENETC_PSIMMHFR1(si_idx),
++			      upper_32_bits(hash));
  	}
- 
--	enetc_set_vlan_ht_filter(&pf->si->hw, 0, (u32 *)pf->vlan_ht_filter);
-+	enetc_set_vlan_ht_filter(&pf->si->hw, 0, *pf->vlan_ht_filter);
  }
  
- static int enetc_vlan_rx_add_vid(struct net_device *ndev, __be16 prot, u16 vid)
+@@ -182,7 +186,7 @@ static void enetc_sync_mac_filters(struct enetc_pf *pf)
+ 		if (i == UC)
+ 			enetc_clear_mac_flt_entry(si, pos);
+ 
+-		enetc_set_mac_ht_flt(si, 0, i, (u32 *)f->mac_hash_table);
++		enetc_set_mac_ht_flt(si, 0, i, *f->mac_hash_table);
+ 	}
+ }
+ 
 -- 
 2.25.1
 
