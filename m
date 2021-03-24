@@ -2,133 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA853346E9E
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F4088346EB2
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234315AbhCXBWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        id S234538AbhCXBbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 21:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234325AbhCXBWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:22:40 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A763DC061763;
-        Tue, 23 Mar 2021 18:22:40 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id l1so13524487pgb.5;
-        Tue, 23 Mar 2021 18:22:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ADszsJaW4d0lhPtJTdxVvedwy5zTVymuRYgLJjqUZYs=;
-        b=sNpJYd+vI5TDLCjPigF1d04oHMmyaRf5MORj9VcyYMFLmVZs0i/5Y+JIbP9rvprNFf
-         tbj+BX0Qq2YJoZ4HPf8eeyT9+hRGInQZyUFilGygIr30kg6hqqDlFXxTr0lCj42KJtd7
-         /gHPb/J5zDP4EsSLpEuk95VtG0q3IdIN4AXV0XlXKycwJk1sjP+rjwwqmVx+9TI0SkaF
-         ylYMCz9maoias7TQvUr/MtldcxnMHmsHilxrJg555nF78qRWlpGsVoDCgcpRESGi9khu
-         s4qlksVY7G6UcetrHWf5ZwD7iJZc0eeYv7Ew2uVPLJ29Hx+KOYvITBWODUG4IH8faf33
-         QbIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ADszsJaW4d0lhPtJTdxVvedwy5zTVymuRYgLJjqUZYs=;
-        b=r+La5UkU8mKs22DZsGBIAozQmqikLPZXFPYy4BBX+0dwKAXOQN3YLwjom1DZeCshIy
-         CwTebGi0Y+Scv5ymBtORH0dU769ANgEwjjEThuve9D2hJ/JQyz3v3LQ6N9rPQkydlP2q
-         dk8iqIs4CAx+I1tZvJ64pekxu6w3yBeN4mtY7/oeoljl9cl1d0x5wt/T9+ZBMywaLKR/
-         oTnNn9hrMM/0U4tqjVQwo6WBUuUq409jsU446zRgFGakcpxBH4cNEjFlNOssCQXM2NbE
-         IHQ8rmoWiJnVVrsrC85qMYtO1+vl72Wmb6qEuirRGGLGkUzQnHPzTHBZcxU/1qbUou9Y
-         T3Tg==
-X-Gm-Message-State: AOAM533PAOYMVu1LLpyq/q8XHaZgsfyr+o5ylKQUHAvsC54YwBZkvVjV
-        KBLzUzTkRrWhxa9Zvs27GS8=
-X-Google-Smtp-Source: ABdhPJz6NsxW1Ed0pTj3gqatCldwJ6Zts1dE8DTzvjPPAfghQYbQ7fpJHt0DQ7GRLTmDSqdIu/wyeA==
-X-Received: by 2002:a65:6559:: with SMTP id a25mr880957pgw.106.1616548960119;
-        Tue, 23 Mar 2021 18:22:40 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:7d9f])
-        by smtp.gmail.com with ESMTPSA id f15sm366495pgg.84.2021.03.23.18.22.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Mar 2021 18:22:39 -0700 (PDT)
-Date:   Tue, 23 Mar 2021 18:22:37 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH bpf] bpf: Take module reference for ip in module code
-Message-ID: <20210324012237.65pf4s52oqlicea3@ast-mbp>
-References: <20210323211533.1931242-1-jolsa@kernel.org>
+        with ESMTP id S232950AbhCXBbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:31:09 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [IPv6:2001:4b98:dc0:41:216:3eff:fe8c:2bda])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F6C4C061763;
+        Tue, 23 Mar 2021 18:31:09 -0700 (PDT)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 7BBDE62C0E;
+        Wed, 24 Mar 2021 02:30:59 +0100 (CET)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net-next,v2 00/24] netfilter: flowtable enhancements
+Date:   Wed, 24 Mar 2021 02:30:31 +0100
+Message-Id: <20210324013055.5619-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210323211533.1931242-1-jolsa@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 10:15:33PM +0100, Jiri Olsa wrote:
-> Currently module can be unloaded even if there's a trampoline
-> register in it. It's easily reproduced by running in parallel:
-> 
->   # while :; do ./test_progs -t module_attach; done
->   # while :; do ./test_progs -t fentry_test; done
-> 
-> Taking the module reference in case the trampoline's ip is
-> within the module code. Releasing it when the trampoline's
-> ip is unregistered.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/bpf/trampoline.c | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
-> 
-> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-> index 1f3a4be4b175..f6cb179842b2 100644
-> --- a/kernel/bpf/trampoline.c
-> +++ b/kernel/bpf/trampoline.c
-> @@ -87,6 +87,27 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->  	return tr;
->  }
->  
-> +static struct module *ip_module_get(unsigned long ip)
-> +{
-> +	struct module *mod;
-> +	int err = 0;
-> +
-> +	preempt_disable();
-> +	mod = __module_text_address(ip);
-> +	if (mod && !try_module_get(mod))
-> +		err = -ENOENT;
-> +	preempt_enable();
-> +	return err ? ERR_PTR(err) : mod;
-> +}
-> +
-> +static void ip_module_put(unsigned long ip)
-> +{
-> +	struct module *mod = __module_text_address(ip);
+Hi,
 
-Conceptually looks correct, but how did you test it?!
-Just doing your reproducer:
-while :; do ./test_progs -t module_attach; done & while :; do ./test_progs -t fentry_test; done
+[ This is v2 that includes documentation enhancements, including
+  existing limitations. This is a rebase on top on net-next. ]
 
-I immediately hit:
-[   19.461162] WARNING: CPU: 1 PID: 232 at kernel/module.c:264 module_assert_mutex_or_preempt+0x2e/0x40
-[   19.477126] Call Trace:
-[   19.477464]  __module_address+0x28/0xf0
-[   19.477865]  ? __bpf_trace_bpf_testmod_test_write_bare+0x10/0x10 [bpf_testmod]
-[   19.478711]  __module_text_address+0xe/0x60
-[   19.479156]  bpf_trampoline_update+0x2ff/0x470
+The following patchset augments the Netfilter flowtable fastpath to
+support for network topologies that combine IP forwarding, bridge,
+classic VLAN devices, bridge VLAN filtering, DSA and PPPoE. This
+includes support for the flowtable software and hardware datapaths.
 
-Which points to an obvious bug above.
+The following pictures provides an example scenario:
 
-How did you debug it to this module going away issue?
-Why does test_progs -t fentry_test help to repro?
-Or does it?
-It doesn't touch anything in modules.
+                        fast path!
+                .------------------------.
+               /                          \
+               |           IP forwarding  |
+               |          /             \ \/
+               |       br0               wan ..... eth0
+               .       / \                         host C
+               -> veth1  veth2
+                   .           switch/router
+                   .
+                   .
+                 eth0
+                host A
 
-> +
-> +	if (mod)
-> +		module_put(mod);
+The bridge master device 'br0' has an IP address and a DHCP server is
+also assumed to be running to provide connectivity to host A which
+reaches the Internet through 'br0' as default gateway. Then, packet
+enters the IP forwarding path and Netfilter is used to NAT the packets
+before they leave through the wan device.
+
+The general idea is to accelerate forwarding by building a fast path
+that takes packets from the ingress path of the bridge port and place
+them in the egress path of the wan device (and vice versa). Hence,
+skipping the classic bridge and IP stack paths.
+
+** Patch from #1 to #6 add the infrastructure which describes the list of
+   netdevice hops to reach a given destination MAC address in the local
+   network topology.
+
+Patch #1 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
+         netdev_ops.
+
+Patch #2 adds .ndo_fill_forward_path for vlan devices, which provides
+         the next device hop via vlan->real_dev, the vlan ID and the
+         protocol.
+
+Patch #3 adds .ndo_fill_forward_path for bridge devices, which allows to make
+         lookups to the FDB to locate the next device hop (bridge port) in the
+         forwarding path.
+
+Patch #4 extends bridge .ndo_fill_forward_path to support for bridge VLAN
+         filtering.
+
+Patch #5 adds .ndo_fill_forward_path for PPPoE devices.
+
+Patch #6 adds .ndo_fill_forward_path for DSA.
+
+Patches from #7 to #14 update the flowtable software datapath:
+
+Patch #7 adds the transmit path type field to the flow tuple. Two transmit
+         paths are supported so far: the neighbour and the xfrm transmit
+         paths.
+
+Patch #8 and #9 update the flowtable datapath to use dev_fill_forward_path()
+         to obtain the real ingress/egress device for the flowtable datapath.
+         This adds the new ethernet xmit direct path to the flowtable.
+
+Patch #10 adds native flowtable VLAN support (up to 2 VLAN tags) through
+          dev_fill_forward_path(). The flowtable stores the VLAN id and
+          protocol in the flow tuple.
+
+Patch #11 adds native flowtable bridge VLAN filter support through
+          dev_fill_forward_path().
+
+Patch #12 adds native flowtable bridge PPPoE through dev_fill_forward_path().
+
+Patch #13 adds DSA support through dev_fill_forward_path().
+
+Patch #14 extends flowtable selftests to cover for flowtable software
+          datapath enhancements.
+
+** Patches from #15 to #20 update the flowtable hardware offload datapath:
+
+Patch #15 extends the flowtable hardware offload to support for the
+          direct ethernet xmit path. This also includes VLAN support.
+
+Patch #16 stores the egress real device in the flow tuple. The software
+          flowtable datapath uses dev_hard_header() to transmit packets,
+          hence it might refer to VLAN/DSA/PPPoE software device, not
+          the real ethernet device.
+
+Patch #17 deals with switchdev PVID hardware offload to skip it on
+          egress.
+
+Patch #18 adds FLOW_ACTION_PPPOE_PUSH to the flow_offload action API.
+
+Patch #19 extends the flowtable hardware offload to support for PPPoE
+
+Patch #20 adds TC_SETUP_FT support for DSA.
+
+** Patches from #20 to #23: Felix Fietkau adds a new driver which support
+   hardware offload for the mtk PPE engine through the existing flow
+   offload API which supports for the flowtable enhancements coming in
+   this batch.
+
+Patch #24 extends the documentation and describe existing limitations.
+
+Please, apply, thanks.
+
+Felix Fietkau (7):
+  net: bridge: resolve forwarding path for VLAN tag actions in bridge devices
+  net: ppp: resolve forwarding path for bridge pppoe devices
+  net: dsa: resolve forwarding path for dsa slave ports
+  netfilter: flowtable: bridge vlan hardware offload and switchdev
+  net: ethernet: mtk_eth_soc: fix parsing packets in GDM
+  net: ethernet: mtk_eth_soc: add support for initializing the PPE
+  net: ethernet: mtk_eth_soc: add flow offloading support
+
+Pablo Neira Ayuso (17):
+  net: resolve forwarding path from virtual netdevice and HW destination address
+  net: 8021q: resolve forwarding path for vlan devices
+  net: bridge: resolve forwarding path for bridge devices
+  netfilter: flowtable: add xmit path types
+  netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
+  netfilter: flowtable: use dev_fill_forward_path() to obtain egress device
+  netfilter: flowtable: add vlan support
+  netfilter: flowtable: add bridge vlan filtering support
+  netfilter: flowtable: add pppoe support
+  netfilter: flowtable: add dsa support
+  selftests: netfilter: flowtable bridge and vlan support
+  netfilter: flowtable: add offload support for xmit path types
+  netfilter: nft_flow_offload: use direct xmit if hardware offload is enabled
+  net: flow_offload: add FLOW_ACTION_PPPOE_PUSH
+  netfilter: flowtable: support for FLOW_ACTION_PPPOE_PUSH
+  dsa: slave: add support for TC_SETUP_FT
+  docs: nf_flowtable: update documentation with enhancements
+
+ Documentation/networking/nf_flowtable.rst     | 170 +++++-
+ drivers/net/ethernet/mediatek/Makefile        |   2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  41 +-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  23 +-
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 511 ++++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_ppe.h       | 287 ++++++++++
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   | 217 ++++++++
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   | 485 +++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  | 144 +++++
+ drivers/net/ppp/ppp_generic.c                 |  22 +
+ drivers/net/ppp/pppoe.c                       |  23 +
+ include/linux/netdevice.h                     |  59 ++
+ include/linux/ppp_channel.h                   |   3 +
+ include/net/flow_offload.h                    |   4 +
+ include/net/netfilter/nf_flow_table.h         |  47 +-
+ net/8021q/vlan_dev.c                          |  21 +
+ net/bridge/br_device.c                        |  49 ++
+ net/bridge/br_private.h                       |  20 +
+ net/bridge/br_vlan.c                          |  55 ++
+ net/core/dev.c                                |  46 ++
+ net/dsa/slave.c                               |  36 +-
+ net/netfilter/nf_flow_table_core.c            |  49 +-
+ net/netfilter/nf_flow_table_ip.c              | 252 +++++++--
+ net/netfilter/nf_flow_table_offload.c         | 179 ++++--
+ net/netfilter/nft_flow_offload.c              | 211 +++++++-
+ .../selftests/netfilter/nft_flowtable.sh      |  82 +++
+ 26 files changed, 2892 insertions(+), 146 deletions(-)
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe.h
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_regs.h
+
+--
+2.20.1
+
