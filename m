@@ -2,126 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CCF347CA0
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 16:31:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9936347CEE
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 16:46:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236702AbhCXPbB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 24 Mar 2021 11:31:01 -0400
-Received: from mga09.intel.com ([134.134.136.24]:1310 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236683AbhCXPaj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 11:30:39 -0400
-IronPort-SDR: TDT8xas+TqaIoJVkNiEXLLro6tSxpW0oapG8TPTC6sWKawxhr1Y2bBwLEzL0ayTAGLvsVAhDyD
- h+K9Yw2upJzQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="190823083"
-X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; 
-   d="scan'208";a="190823083"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 08:30:38 -0700
-IronPort-SDR: /4dqq/0JWisBWvhTbTEBIBwFyl3ZwxDSlbNQvn9KHdRvSPPQs9Sb14vUi+jgB7se4K1pbShwF/
- LGKAbJDldGYw==
-X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; 
-   d="scan'208";a="415534424"
-Received: from hcarliss-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.54.166])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 08:30:27 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Arnd Bergmann <arnd@kernel.org>, linux-kernel@vger.kernel.org,
-        Martin Sebor <msebor@gcc.gnu.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Arnd Bergmann <arnd@arndb.de>, x86@kernel.org,
-        Ning Sun <ning.sun@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        =?utf-8?Q?Jos=C3=A9?= Roberto de Souza <jose.souza@intel.com>,
-        Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Aditya Swarup <aditya.swarup@intel.com>
-Subject: Re: [PATCH 10/11] drm/i915: avoid stringop-overread warning on pri_latency
-In-Reply-To: <20210322160253.4032422-11-arnd@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20210322160253.4032422-1-arnd@kernel.org> <20210322160253.4032422-11-arnd@kernel.org>
-Date:   Wed, 24 Mar 2021 17:30:24 +0200
-Message-ID: <874kh04lin.fsf@intel.com>
+        id S236809AbhCXPpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 11:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236575AbhCXPpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 11:45:07 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20934C061763
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:45:07 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id w3so33667690ejc.4
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aLF9/T9mkPW+SfBx7lQUOj7k/f+2p+3Z4GNj0XsfqnA=;
+        b=mDK/GcE4HPWi9hSPv/MiCgP4+pQG+9H7FKcZYYIZ6KGH81Or6u65QgTbFieSzE//RS
+         VO2nm6HdUIYqr7DFc4bgul7mnMKUFWgu8i7Ur+LRLLlOyoh3nV4JonzV5ZYfyMdA47NS
+         cTdgQ+uiQxAwd7EsAkKYP7s87BBoEvCohUmUUUMv/1V+fiejf4nm9cnWiu5o6Cy1V1Oo
+         wUQd8pnsP5pRRdmrm4zg6ShCAihsVbnErSiGdnFm+5GwSJxRqep4f81sFvnl3hMCSa13
+         oRJIIpCbKO1y9nx3x81tTwvPqFsnCFEH2TXOLJb7GyKOw4+0sVGOgQBrQl4ApGMiLXUA
+         zQPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aLF9/T9mkPW+SfBx7lQUOj7k/f+2p+3Z4GNj0XsfqnA=;
+        b=tsLDxyo71WDF92PoqXS50iJoRNwFLVV8V5lqTEMg9rHOZ/xDVSPvzN6+H5BHryJ5b0
+         ETFPNHbpnwx+DvJfrhpZIpSRLON3kjXNGDXvt1yibgaSocHtGN5lzZNeVfax3ibnVYzm
+         0ueE5AXnX3nnH6QE1X3pRWtGsyIWt85itltzgrGPy+KcxaRgL6sEK8v0oA09pkmv3J2o
+         yRdqMIkLP3EQds7pNfwyqq1WCP5FG2EZrJZRjOZYVs+79BZHkoL3DFS/D0lyYkg+fc3A
+         iBen1QiJVHNtfrBV+03gIvc/NVkPp24LGP3lKD1YIsTxIhu7gIZKTzy3CZWGPlrqEMEq
+         lTNg==
+X-Gm-Message-State: AOAM531U46m3z19b/CJ4Ho0dRLMlYF3aNJnh4OhQtBmKyaFdMiApIzb2
+        AJiiXrmEL7LVTZ0ER1qgfo+H07Mr3c8=
+X-Google-Smtp-Source: ABdhPJyTnT69b+6HKHTfWqRQ5BUGTr05lO7QiFcgLUyzsP3bR1aOlvsJd94wieZ9NMnd3Q8AojpC+w==
+X-Received: by 2002:a17:906:489b:: with SMTP id v27mr4363722ejq.1.1616600705815;
+        Wed, 24 Mar 2021 08:45:05 -0700 (PDT)
+Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id w24sm1317542edt.44.2021.03.24.08.45.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Mar 2021 08:45:05 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 1/2] net: enetc: don't depend on system endianness in enetc_set_vlan_ht_filter
+Date:   Wed, 24 Mar 2021 17:44:54 +0200
+Message-Id: <20210324154455.1899941-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Mar 2021, Arnd Bergmann <arnd@kernel.org> wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> gcc-11 warns about what appears to be an out-of-range array access:
->
-> In function ‘snb_wm_latency_quirk’,
->     inlined from ‘ilk_setup_wm_latency’ at drivers/gpu/drm/i915/intel_pm.c:3108:3:
-> drivers/gpu/drm/i915/intel_pm.c:3057:9: error: ‘intel_print_wm_latency’ reading 16 bytes from a region of size 10 [-Werror=stringop-overread]
->  3057 |         intel_print_wm_latency(dev_priv, "Primary", dev_priv->wm.pri_latency);
->       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/gpu/drm/i915/intel_pm.c: In function ‘ilk_setup_wm_latency’:
-> drivers/gpu/drm/i915/intel_pm.c:3057:9: note: referencing argument 3 of type ‘const u16 *’ {aka ‘const short unsigned int *’}
-> drivers/gpu/drm/i915/intel_pm.c:2994:13: note: in a call to function ‘intel_print_wm_latency’
->  2994 | static void intel_print_wm_latency(struct drm_i915_private *dev_priv,
->       |             ^~~~~~~~~~~~~~~~~~~~~~
->
-> My guess is that this code is actually safe because the size of the
-> array depends on the hardware generation, and the function checks for
-> that, but at the same time I would not expect the compiler to work it
-> out correctly, and the code seems a little fragile with regards to
-> future changes. Simply increasing the size of the array should help.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Agreed, I don't think there's an issue, but the code could use a bunch
-of improvements.
+ENETC has a 64-entry hash table for VLAN RX filtering per Station
+Interface, which is accessed through two 32-bit registers: VHFR0 holding
+the low portion, and VHFR1 holding the high portion.
 
-Like, we have intel_print_wm_latency() for debug logging and
-wm_latency_show() for debugfs, and there's a bunch of duplication and
-ugh.
+The enetc_set_vlan_ht_filter function looks at the pf->vlan_ht_filter
+bitmap, which is fundamentally an unsigned long variable, and casts it
+to a u32 array of two elements. It puts the first u32 element into VHFR0
+and the second u32 element into VHFR1.
 
-But this seems like the easiest fix for the warning.
+It is easy to imagine that this will not work on big endian systems
+(although, yes, we have bigger problems, because currently enetc assumes
+that the CPU endianness is equal to the controller endianness, aka
+little endian - but let's assume that we could add a cpu_to_le32 in
+enetc_wd_reg and a le32_to_cpu in enetc_rd_reg).
 
-Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Let's use lower_32_bits and upper_32_bits which are designed to work
+regardless of endianness.
 
+Tested that both the old and the new method produce the same results:
 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/gpu/drm/i915/i915_drv.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-> index 26d69d06aa6d..3567602e0a35 100644
-> --- a/drivers/gpu/drm/i915/i915_drv.h
-> +++ b/drivers/gpu/drm/i915/i915_drv.h
-> @@ -1095,11 +1095,11 @@ struct drm_i915_private {
->  		 * in 0.5us units for WM1+.
->  		 */
->  		/* primary */
-> -		u16 pri_latency[5];
-> +		u16 pri_latency[8];
->  		/* sprite */
-> -		u16 spr_latency[5];
-> +		u16 spr_latency[8];
->  		/* cursor */
-> -		u16 cur_latency[5];
-> +		u16 cur_latency[8];
->  		/*
->  		 * Raw watermark memory latency values
->  		 * for SKL for all 8 levels
+$ ethtool -K eth1 rx-vlan-filter on
+$ ip link add link eth1 name eth1.100 type vlan id 100
+enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x0 VHFR1 0x20
+enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x0 VHFR1 0x20
+$ ip link add link eth1 name eth1.101 type vlan id 101
+enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x0 VHFR1 0x30
+enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x0 VHFR1 0x30
+$ ip link add link eth1 name eth1.34 type vlan id 34
+enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x0 VHFR1 0x34
+enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x0 VHFR1 0x34
+$ ip link add link eth1 name eth1.1024 type vlan id 1024
+enetc_set_vlan_ht_filter: method 1: si_idx 0 VHFR0 0x1 VHFR1 0x34
+enetc_set_vlan_ht_filter: method 2: si_idx 0 VHFR0 0x1 VHFR1 0x34
 
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 3a7a9102eccb..9c69ca516192 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -248,10 +248,10 @@ static void enetc_pf_set_rx_mode(struct net_device *ndev)
+ }
+ 
+ static void enetc_set_vlan_ht_filter(struct enetc_hw *hw, int si_idx,
+-				     u32 *hash)
++				     unsigned long hash)
+ {
+-	enetc_port_wr(hw, ENETC_PSIVHFR0(si_idx), *hash);
+-	enetc_port_wr(hw, ENETC_PSIVHFR1(si_idx), *(hash + 1));
++	enetc_port_wr(hw, ENETC_PSIVHFR0(si_idx), lower_32_bits(hash));
++	enetc_port_wr(hw, ENETC_PSIVHFR1(si_idx), upper_32_bits(hash));
+ }
+ 
+ static int enetc_vid_hash_idx(unsigned int vid)
+@@ -279,7 +279,7 @@ static void enetc_sync_vlan_ht_filter(struct enetc_pf *pf, bool rehash)
+ 		}
+ 	}
+ 
+-	enetc_set_vlan_ht_filter(&pf->si->hw, 0, (u32 *)pf->vlan_ht_filter);
++	enetc_set_vlan_ht_filter(&pf->si->hw, 0, *pf->vlan_ht_filter);
+ }
+ 
+ static int enetc_vlan_rx_add_vid(struct net_device *ndev, __be16 prot, u16 vid)
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+2.25.1
+
