@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB359346F49
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 03:14:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51EEB346F66
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 03:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbhCXCOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 22:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60172 "EHLO
+        id S234844AbhCXCWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 22:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbhCXCOC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 22:14:02 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C84C061763
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:13:53 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id x21so25805415eds.4
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:13:52 -0700 (PDT)
+        with ESMTP id S231776AbhCXCVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 22:21:52 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC87DC061763
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:21:51 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id u21so12361940ejo.13
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:21:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4S7ATnAj94hgmdbhqclSsqhCbeP141Mqyrh4e4zIqKc=;
-        b=qNUYNE7Mmy4tFn4Vv22OFj6Ef5U2CoVr83cwDFn+x97WZYIzeSToHIn2MGMZvnKRo3
-         w1EZdWBXM1AfUfo+TBti3kDP7L79IOSVxYMdvUxn9WnjVeKCkQZTMgLaySN2fyhieDRc
-         nYt1fRp2r7r2wjyiOoD7KYF4nv4URRelsQmFyu9mdOAGg9YvbwJzUofArsaD8BpKse70
-         CCq06gjs6A/ytCr7b6fKQwZ0sqcX93IfoB8zUUJRS3Yj0drWFseyhI3OOUoON6YgtP62
-         bioq01Ee1vuylsevUb+iWAhLWKzuIHwlr33wvWpWlGxGKUzhj1ivEkmMTQHsJP7Vkocl
-         mD2Q==
+        bh=Vm7Trzr3UXMzMsWRo+QhPtYKpWMPwZW78mIyQrebMTk=;
+        b=Plz8gBmPbWsfS1tkeKAElCneUOPEdVI3PMQyXcY9iEWvXz/qHvABPnqLcUoCb/ah7g
+         jSj9X+WSiekv+egmcDNUCGkywrHow91dWEUOAnakpslPiGVzxZqrUyFN/wJ3EorqaXze
+         o9PBWQXEzHj8TM/yiQA2mKXO9BO6g2t/Vz/5nybidypaoD0r7PfmSSfg/2vq5w76GqcC
+         3V6hHrCwtRWjDAVVqupx2NR5yIVItxpV3U2a8TbHoRQAETwQGOSegVU8mmfR73bWqV0y
+         M1v1R/cCu04CIsC2jb8NeG5D9dzqs1Jx9ULPy73o10Eh2MZMhto12DmYG7sKaTvmkFFJ
+         a93g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4S7ATnAj94hgmdbhqclSsqhCbeP141Mqyrh4e4zIqKc=;
-        b=TzpS7ns7De8cj+y3whHVELUdIyGC85bBOydSXbUyWOnNyN3urCUKCBzrrd17PJ+4hR
-         DRfzMB/yZT/urndBkOJJamWDYh0eyIUsXYaJAYkrbPg1VdK6kkbCuTsybzRI171cUyT3
-         3xW4/D0v8wa86IYArmxcTo+2RqXT7MREd8g4b7eJJcvf+ddYe7rkcPSfznEeK7PAKhpg
-         CON2CbeifeKaMBZzQtghVC5eAq3k5arBdFS9j4G4z3CAU8ZroEvE26Liwl7BaaAjzfzw
-         Zyl/xzIcYV81KILjN+3q2UMaambnQVHqGXnp0u9ZRRUCAVk0f80I+zp47xzOFj4AG1Us
-         46ZQ==
-X-Gm-Message-State: AOAM530AOqG7rGjjsoMWgHaDEpUq2QO65QHRHzkWQ1SPZNTZyIh+dvaX
-        0KcRLlAXmaWYN76YMKxTodQ+JdA55AA=
-X-Google-Smtp-Source: ABdhPJzbtjy/F922WLss+FDxeNSdSAQrAZJ32R257lMZqKMCGiWcoOTGtzJvRQJ/T+WjmoxDkdgzmw==
-X-Received: by 2002:aa7:dd05:: with SMTP id i5mr877692edv.300.1616552031234;
-        Tue, 23 Mar 2021 19:13:51 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id n26sm387020eds.22.2021.03.23.19.13.49
+        bh=Vm7Trzr3UXMzMsWRo+QhPtYKpWMPwZW78mIyQrebMTk=;
+        b=O1OBDiWsSWQegOXSbwRThH9o1ebOQ4jTZFNN+UOP/pMc5zBqvdvbDBkMcgjk42AYvf
+         ixEVlKSQ2vAY4nhI07zmQCpWNQnp9d1HNFj6KGX081CEbKnsINWP5Rv818PY61HN6qFG
+         Zpc+1Ji/tOcBfOqGtBnH1qdYR6gMwjZtn4K/9LLpMW/uDyIINyjBxx3f7bzJJq1g3TqN
+         FvQGKaZPeY1D32FrAP2be0Vujz13dhbz1A89zEooiVAwd2+H+PoiwQukpDkEKLqsACas
+         8Qcdiz+eoOtUOIj3b/l8yQA4L0bT4O5yN2xbwlV7CGhQZ5Gs5/Ed+GSiO+4r5TOr1t/y
+         bXfg==
+X-Gm-Message-State: AOAM5337icCBS1d+Mu9ZO6xlzYHaSwKxiDLKe4XsFOdhCtRAa+7b1DTJ
+        +him7gOk95y5uxYNDTSmJMGx5GjGhMA=
+X-Google-Smtp-Source: ABdhPJz+HIa32shdwT3VTXmiBhe5mpEN/3qHUu0QgrodxvZ+WoI4Rkpt/3fz7kl/qL9V3bpcROEgTA==
+X-Received: by 2002:a17:906:f203:: with SMTP id gt3mr1168996ejb.346.1616552509992;
+        Tue, 23 Mar 2021 19:21:49 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id h22sm231807eji.80.2021.03.23.19.21.49
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Mar 2021 19:13:49 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id b9so22834494wrt.8
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:13:49 -0700 (PDT)
-X-Received: by 2002:adf:fa08:: with SMTP id m8mr855278wrr.12.1616552028919;
- Tue, 23 Mar 2021 19:13:48 -0700 (PDT)
+        Tue, 23 Mar 2021 19:21:49 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id e18so22840097wrt.6
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:21:49 -0700 (PDT)
+X-Received: by 2002:a05:6000:1803:: with SMTP id m3mr885715wrh.50.1616552508658;
+ Tue, 23 Mar 2021 19:21:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1616345643.git.pabeni@redhat.com> <72d8fc8a6d35a74d267cca6c9eddb3ff7852868b.1616345643.git.pabeni@redhat.com>
- <CA+FuTSfpAzEEz0WZ0EqwKu3CzuvZiD1Vv5+kCos0mL=_Rudkrg@mail.gmail.com> <6d5fae11c4eecda3f59f9491426834fce8c37f7e.camel@redhat.com>
-In-Reply-To: <6d5fae11c4eecda3f59f9491426834fce8c37f7e.camel@redhat.com>
+References: <cover.1616345643.git.pabeni@redhat.com> <c77bb9511c1c10193cc05651ed785506d6aee3e8.1616345643.git.pabeni@redhat.com>
+ <CA+FuTSefLQ07od6Et6H2wO=p8+V2F28VYix4EgghHz6R0Bn9nw@mail.gmail.com> <22bec3983ac3849298fbc15f6284f7643cbe4907.camel@redhat.com>
+In-Reply-To: <22bec3983ac3849298fbc15f6284f7643cbe4907.camel@redhat.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 23 Mar 2021 22:13:10 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSd1R1mU+yP3g=8hzdQXKjGXY=sYvozj10+25-kzTSwWfA@mail.gmail.com>
-Message-ID: <CA+FuTSd1R1mU+yP3g=8hzdQXKjGXY=sYvozj10+25-kzTSwWfA@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/8] udp: properly complete L4 GRO over UDP
- tunnel packet
+Date:   Tue, 23 Mar 2021 22:21:10 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfhU9ng6DuC7W6D8=OTk=5SJpqdz+xrQ12GYg4VtrdDZA@mail.gmail.com>
+Message-ID: <CA+FuTSfhU9ng6DuC7W6D8=OTk=5SJpqdz+xrQ12GYg4VtrdDZA@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/8] udp: never accept GSO_FRAGLIST packets
 To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
+Cc:     Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Steffen Klassert <steffen.klassert@secunet.com>,
@@ -74,102 +72,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 1:00 PM Paolo Abeni <pabeni@redhat.com> wrote:
+On Mon, Mar 22, 2021 at 1:12 PM Paolo Abeni <pabeni@redhat.com> wrote:
 >
-> On Mon, 2021-03-22 at 09:30 -0400, Willem de Bruijn wrote:
+> On Mon, 2021-03-22 at 09:42 -0400, Willem de Bruijn wrote:
 > > On Sun, Mar 21, 2021 at 1:01 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > After the previous patch the stack can do L4 UDP aggregation
-> > > on top of an UDP tunnel.
+> > > Currently the UDP protocol delivers GSO_FRAGLIST packets to
+> > > the sockets without the expected segmentation.
 > > >
-> > > The current GRO complete code tries frag based aggregation first;
-> > > in the above scenario will generate corrupted frames.
+> > > This change addresses the issue introducing and maintaining
+> > > a per socket bitmask of GSO types requiring segmentation.
+> > > Enabling GSO removes SKB_GSO_UDP_L4 from such mask, while
+> > > GSO_FRAGLIST packets are never accepted
 > > >
-> > > We need to try first UDP tunnel based aggregation, if the GRO
-> > > packet requires that. We can use time GRO 'encap_mark' field
-> > > to track the need GRO complete action. If encap_mark is set,
-> > > skip the frag_list aggregation.
+> > > Note: this also updates the 'unused' field size to really
+> > > fit the otherwise existing hole. It's size become incorrect
+> > > after commit bec1f6f69736 ("udp: generate gso with UDP_SEGMENT").
 > > >
-> > > On tunnel encap GRO complete clear such field, so that an inner
-> > > frag_list GRO complete could take action.
-> > >
+> > > Fixes: 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.")
 > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > > > ---
-> > >  net/ipv4/udp_offload.c | 8 +++++++-
-> > >  net/ipv6/udp_offload.c | 3 ++-
-> > >  2 files changed, 9 insertions(+), 2 deletions(-)
+> > >  include/linux/udp.h | 10 ++++++----
+> > >  net/ipv4/udp.c      | 12 +++++++++++-
+> > >  2 files changed, 17 insertions(+), 5 deletions(-)
 > > >
-> > > diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> > > index 25134a3548e99..54e06b88af69a 100644
-> > > --- a/net/ipv4/udp_offload.c
-> > > +++ b/net/ipv4/udp_offload.c
-> > > @@ -642,6 +642,11 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
-> > >                 skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
-> > >                                         : SKB_GSO_UDP_TUNNEL;
-> > >
-> > > +               /* clear the encap mark, so that inner frag_list gro_complete
-> > > +                * can take place
-> > > +                */
-> > > +               NAPI_GRO_CB(skb)->encap_mark = 0;
-> > > +
-> > >                 /* Set encapsulation before calling into inner gro_complete()
-> > >                  * functions to make them set up the inner offsets.
-> > >                  */
-> > > @@ -665,7 +670,8 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
-> > >         const struct iphdr *iph = ip_hdr(skb);
-> > >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
-> > >
-> > > -       if (NAPI_GRO_CB(skb)->is_flist) {
-> > > +       /* do fraglist only if there is no outer UDP encap (or we already processed it) */
-> > > +       if (NAPI_GRO_CB(skb)->is_flist && !NAPI_GRO_CB(skb)->encap_mark) {
+
+> > >         /*
+> > >          * Following member retains the information to create a UDP header
+> > >          * when the socket is uncorked.
+> > > @@ -68,7 +68,10 @@ struct udp_sock {
+> > >  #define UDPLITE_SEND_CC  0x2           /* set via udplite setsockopt         */
+> > >  #define UDPLITE_RECV_CC  0x4           /* set via udplite setsocktopt        */
+> > >         __u8             pcflag;        /* marks socket as UDP-Lite if > 0    */
+> > > -       __u8             unused[3];
+> > > +       __u8             unused[1];
+> > > +       unsigned int     unexpected_gso;/* GSO types this socket can't accept,
+> > > +                                        * any of SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST
+> > > +                                        */
 > >
-> > Sorry, I don't follow. I thought the point was to avoid fraglist if an
-> > outer udp tunnel header is present. But the above code clears the mark
-> > and allows entering the fraglist branch exactly when such a header is
-> > encountered?
+> > An extra unsigned int for this seems overkill.
 >
-> The relevant UDP packet has gone through:
+> Should be more clear after the next patch.
 >
-> [l2/l3 GRO] -> udp_gro_receive  -> udp_sk(sk)->gro_receive -> [some
-> more GRO layers] -> udp_gro_receive (again)
+> Using an explicit 'acceptable GSO types' field makes the patch 5/8
+> quite simple.
 >
-> The first udp_gro_receive set NAPI_GRO_CB(skb)->encap_mark, the
-> latter udp_gro_receive set NAPI_GRO_CB(skb)->is_flist.
->
-> Then, at GRO complete time:
->
-> [l2/l3 GRO] -> udp{4,6}_gro_complete -> udp_sk(sk)->gro_complete ->
-> [more GRO layers] -> udp{4,6}_gro_complete (again).
->
-> In the first udp{4,6}_gro_complete invocation 'encap_mark' is 1, so
-> with this patch we do the 'udp_sk(sk)->gro_complete' path. In the
-> second udp{4,6}_gro_complete invocation 'encap_mark' has been cleared
-> (by udp_gro_complete), so we do the SKB_GSO_FRAGLIST completion.
->
-> In case SKB_GSO_FRAGLIST with no UDP tunnel, 'encap_mark' is 0 and we
-> do the SKB_GSO_FRAGLIST completion.
->
-> Another alternative, possibly more readable, would be avoid clearing
-> 'encap_mark' in udp_gro_complete() and replacing the above check with:
->
->         if (NAPI_GRO_CB(skb)->is_flist &&
->             (!NAPI_GRO_CB(skb)->encap_mark ||
->              (NAPI_GRO_CB(skb)->encap_mark && skb->encapsulation))) {
->
-> I opted otherwise to simplify the conditional expression.
->
-> Please let me know if the above is somewhat more clear and if you have
-> preferecens between the two options.
+> After this patch the 'udp_sock' struct size remains unchanged and even
+> the number of 'udp_sock' cachelines touched for every packet is
+> unchanged.
 
-Got it now, thanks. Yes, this patch makes sense.
+But there is opportunity cost, of course. Next time we need to add
+something to the struct, we will add a new cacheline.
 
-When the GRO layer has built a GSO packet with both inner UDP
-(GSO_UDP_L4) and UDP tunnel header (GSO_UDP_TUNNEL), then on
-completion udp{4,6}_gro_complete will be called twice. This function
-will enter its is_flist branch immediately, even though that is only
-correct on the second call, as GSO_FRAGLIST is only relevant for the
-inner packet. Skip this while encap_mark == 1, identifying processing
-of the outer tunnel header. Clear the field to enter the path on the next
-round, for the inner header.
+A 32-bit field for just 2 bits, where 1 already exists does seem like overkill.
 
-This is subject to only supporting a single layer of encap, but that
-is indeed the current state afaik.
+More importantly, I just think it's less obvious code than a pair of fields
+
+  accepts_udp_l4:1,
+  accepts_udp_fraglist:1,
+
+Local sockets can only accept the first, as there does not exist an
+interface to pass along the multiple frag sizes that a frag_list based
+approach might have.
+
+Sockets with encap_rcv != NULL may opt-in to being able to handle either.
+
+I think explicit code will be more maintainable. At the cost of
+perhaps two branches instead of one, admittedly. But that seems
+premature optimization.
