@@ -2,73 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 459EF348299
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:09:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BC8A3482A4
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:14:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238163AbhCXUJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:09:14 -0400
-Received: from mout.kundenserver.de ([212.227.17.13]:49945 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238158AbhCXUI5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:08:57 -0400
-Received: from mail-oo1-f49.google.com ([209.85.161.49]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MrPVJ-1m2uPY1NxP-00oX6h; Wed, 24 Mar 2021 21:08:55 +0100
-Received: by mail-oo1-f49.google.com with SMTP id i20-20020a4a8d940000b02901bc71746525so6130827ook.2;
-        Wed, 24 Mar 2021 13:08:55 -0700 (PDT)
-X-Gm-Message-State: AOAM531oqSU9AkTn+Wkrjyizeb+UsjzJj7DyMRNM93BHbYDMu+QBKBUV
-        KDvvji6MSCA7cMyNl4AYxBakOrLX+07Mz68qA/A=
-X-Google-Smtp-Source: ABdhPJybTxidmqfUgZw7W8iZwqTPZdKNPoMY0wKBfMJ7hCptmQ98ROSV9GMgRQY6K8Yt9kjE9ik3niJWJDsWSHTT3bQ=
-X-Received: by 2002:a4a:304a:: with SMTP id z10mr4221190ooz.26.1616616533996;
- Wed, 24 Mar 2021 13:08:53 -0700 (PDT)
+        id S238048AbhCXUOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237892AbhCXUNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:13:35 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B71C061763
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 13:13:34 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id o19so29079350edc.3
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 13:13:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tP5DtpUqNNa6r5+B6GU0oJmkSbmMrLPE3dqqcm9iReI=;
+        b=crpRbXuSyu71F6AqnY8WL1naJ2kb2SoZ5B9ZA818IMBn7fibPJwYeBRdKUZG53+nu3
+         5jii0YZDFA9dj+kz3drPPT24YeJkfqqDRv+Wqe5k/yf+d2jXuBtYc+AYNSOze1yXkY4W
+         xuVmAOECx1Kd80cnKcGuHlJ6QIzjzMlJcg4ZCB8y9Q70mP4RSzgXbrI1cLfkhsWkU6SX
+         v20ywk9td07GnkcSBP1mAfR6M/FAAJXoJ7nQdFG98CmZe0qluAttWE+N1Hm3h+de2MWu
+         LazzQSP9DsEv4/InIrrAYKJ8B+ezuktB4zMExXgzKiBN8YkWJH8vkwGJUtlMuhQcU3sX
+         AHAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tP5DtpUqNNa6r5+B6GU0oJmkSbmMrLPE3dqqcm9iReI=;
+        b=A4GSG3sIvEXIxpwT5tmtK+ZKlQGwkQqiXh4wSMSpUfS/A4/fieTjwCFaRKhlfOasMi
+         L70BV7IFji3KNAMrh0M58FHLsLHaCqFRFyLsq2etucPVMZaxjaGweX/wDkJH0dFbXMCZ
+         Lf1/Z6H6+LU+wJxEBNjpNROpYn8JW98hKfKpx8NAfQbSl65gaHDCUn5x3u4t+5GvHdh1
+         DbFjkK8a/a08TwSt8H4RkbcFYGuhN4qqh8fhkLOzfQjDb6LzpI8J2roMr8cpGFaF6dFM
+         nOJhcQiDc3iCLiTolBKTvVCCavgfJvaEyrxwfe6lvZb6+77aWAdZ9fN1HiIEaAr7YX/y
+         ZZhg==
+X-Gm-Message-State: AOAM530m/rt3gLwLxhXmxjpk1V6sIyWaTJOILEwRm4PiDQ6C+D7ML5kz
+        Py942ZXYBwEWolgjEJt+CUI=
+X-Google-Smtp-Source: ABdhPJwVS61ZjeGxpbRCCzPzki1+UlB+qtNw44B3yFjaO/+12vccD5NKlaO8KAKd2JId7OKuQel/Rw==
+X-Received: by 2002:aa7:d44a:: with SMTP id q10mr5345827edr.278.1616616813406;
+        Wed, 24 Mar 2021 13:13:33 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id j7sm1638804edv.40.2021.03.24.13.13.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Mar 2021 13:13:33 -0700 (PDT)
+Date:   Wed, 24 Mar 2021 22:13:31 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Subject: Re: lantiq_xrx200: Ethernet MAC with multiple TX queues
+Message-ID: <20210324201331.camqijtggfbz7c3f@skbuf>
+References: <CAFBinCArx6YONd+ohz76fk2_SW5rj=VY=ivvEMsYKUV-ti4uzw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210322104343.948660-1-arnd@kernel.org> <20210322104343.948660-5-arnd@kernel.org>
-In-Reply-To: <20210322104343.948660-5-arnd@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 24 Mar 2021 21:08:38 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2K-r9ERQxo-UiKpn-MLTu6ORM8FSooh1vXOtrQoU9kzQ@mail.gmail.com>
-Message-ID: <CAK8P3a2K-r9ERQxo-UiKpn-MLTu6ORM8FSooh1vXOtrQoU9kzQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/5] vxge: avoid -Wemtpy-body warnings
-To:     Networking <netdev@vger.kernel.org>, Jon Mason <jdmason@kudzu.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:fijI6r4YMqbAe5M2kVyLTB6NqcK5h28eQt8SXSkYoJnuGFZqnDH
- 4bdZ1UUUptABeCEOHZGh5py8JpkpPM2RP5NBHp6DQww0crfyMEZe3nx6QEk8RUfV3AYcEAA
- 2LQlwmRGIWnXEFaUq6ky+Dv7jnsVp0xsgy5bt1omidvTJrQAm2odgMe+bsXdbMxECELqyoS
- qCYexD8ji5YR3YIAdFxiA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vvtep7z6KLw=:ewumsrakVQjAmz3xOBLYH0
- Y77ofFhvY04rszMboXnmGntYA4pv0DM+XCHKH0M+ET2hwb3lB0zdJT1NfMpJsj2JIErzGYyLt
- DlmNvCa5C2jvpFbswg+R2rc2YDSIEj2PqaEybLNMRZjGBhjRALyJV6xBsNsI8+3NkRfmuwweI
- q/pBWfutZfamnjsCmvKHMhjYe/1gUNibaRsShDA7s+ryJO+18jplyEGZbQ1wzto2bcfQhcURs
- lEzqhJFu1BlqhfEeMJS1Bef9Vq3XAkgv13TZBTejcL+oeuWLJJ881XR9/Mi9ysNEWz42Hll8p
- +am6K9R18edg0/k2qcNbMITQ7BmcVI4dflqomIiNRGiXlguCLt52B5TiWi2/+yu8nf75LwaRC
- aH9yioTKvMqlfTv4Hyysc2CoCiLfS3vg+2wlBKxtdnypsDxkyCGkzNasvjjBFx1Ll0uWw1c4g
- az6z4aziMW1TMBMXvB5HuJvZmpQ2AYY=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCArx6YONd+ohz76fk2_SW5rj=VY=ivvEMsYKUV-ti4uzw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 11:43 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> There are a few warnings about empty debug macros in this driver:
->
-> drivers/net/ethernet/neterion/vxge/vxge-main.c: In function 'vxge_probe':
-> drivers/net/ethernet/neterion/vxge/vxge-main.c:4480:76: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
->  4480 |                                 "Failed in enabling SRIOV mode: %d\n", ret);
->
-> Change them to proper 'do { } while (0)' expressions to make the
-> code a little more robust and avoid the warnings.
->
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hi Martin,
 
-Please disregard this patch, I was accidentally building without -Wformat and
-failed to notice that this introduces a regression. I'll send a new
-version after
-more testing.
+On Wed, Mar 24, 2021 at 09:04:16PM +0100, Martin Blumenstingl wrote:
+> Hello,
+> 
+> the PMAC (Ethernet MAC) IP built into the Lantiq xRX200 SoCs has
+> support for multiple (TX) queues.
+> This MAC is connected to the SoC's built-in switch IP (called GSWIP).
+> 
+> Right now the lantiq_xrx200 driver only uses one TX and one RX queue.
+> The vendor driver (which mixes DSA/switch and MAC functionality in one
+> driver) uses the following approach:
+> - eth0 ("lan") uses the first TX queue
+> - eth1 ("wan") uses the second TX queue
+> 
+> With the current (mainline) lantiq_xrx200 driver some users are able
+> to fill up the first (and only) queue.
+> This is why I am thinking about adding support for the second queue to
+> the lantiq_xrx200 driver.
+> 
+> My main question is: how do I do it properly?
+> Initializing the second TX queue seems simple (calling
+> netif_tx_napi_add for a second time).
+> But how do I choose the "right" TX queue in xrx200_start_xmit then?
+> 
+> If my description is too vague then please let me know about any
+> specific questions you have.
+> Also if there's an existing driver that "does things right" I am happy
+> to look at that one.
 
-       Arnd
+Is this question specific in any way to DSA?
+Many Ethernet drivers are multi-queue. Some map one queue per CPU, some
+use mqprio to map one or more queues per priority.
