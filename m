@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F60F346F1A
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:55:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB359346F49
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 03:14:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234670AbhCXBzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56106 "EHLO
+        id S231959AbhCXCOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 22:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231622AbhCXBzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:55:07 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1487AC061763
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 18:55:07 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id u5so30257408ejn.8
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 18:55:06 -0700 (PDT)
+        with ESMTP id S232022AbhCXCOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 22:14:02 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C84C061763
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:13:53 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id x21so25805415eds.4
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:13:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yFjH0eAyPR/kTBYsoqhWlZOOxSkrWBD+pPSqMnWTM2w=;
-        b=DXrJbE/6WN2Zam1u0CJ4dxSlnDJklc47SufY+O9cqrl3HNdOYYDH25gH5ObenINAH1
-         PJoRvD5dyIGt9JsoB84tJaq36qYH14+hIMBdQIlcu2MEZfQFXu5+7vUjG1QM8HlQhBRk
-         TB6l4kJwOchRx82BQXadV3fqKg8N372HLF7/Zei6n2YQ84z23zt6H/SEs6hWB7GdneZt
-         wfFe6fKuG0c4WBw1smOlZre0dWy41hg06cLBDDMaY4Cmnn0dm1CtiaeTTTLbNC84HvcX
-         mULhIBUR2F+rXWUTBPeMWqKvDf9NckV6WiYsve7meqtUtEkoGWmrdM4AEMB0eWvlUOgA
-         Nvag==
+        bh=4S7ATnAj94hgmdbhqclSsqhCbeP141Mqyrh4e4zIqKc=;
+        b=qNUYNE7Mmy4tFn4Vv22OFj6Ef5U2CoVr83cwDFn+x97WZYIzeSToHIn2MGMZvnKRo3
+         w1EZdWBXM1AfUfo+TBti3kDP7L79IOSVxYMdvUxn9WnjVeKCkQZTMgLaySN2fyhieDRc
+         nYt1fRp2r7r2wjyiOoD7KYF4nv4URRelsQmFyu9mdOAGg9YvbwJzUofArsaD8BpKse70
+         CCq06gjs6A/ytCr7b6fKQwZ0sqcX93IfoB8zUUJRS3Yj0drWFseyhI3OOUoON6YgtP62
+         bioq01Ee1vuylsevUb+iWAhLWKzuIHwlr33wvWpWlGxGKUzhj1ivEkmMTQHsJP7Vkocl
+         mD2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yFjH0eAyPR/kTBYsoqhWlZOOxSkrWBD+pPSqMnWTM2w=;
-        b=dQRadLPKBe4Ov2gex7eDx9ubhxXybgtmM8UJ0h16Jf6qTu0L1Ty150KYn4nGuk+9On
-         N/AixUGn8yQFrH82Mk4r5HDWxKP9R1GP4vnMWnjIxTPL42jsdurRscMINgMmWPmxymou
-         lPVnLI+b7xrfnbrS1JHC1qqwOh+YmN/AlnBIM9AjB9ewPZQCArf2Zv1bgWcVo5+/eptS
-         Egb5UbtJLGMh+KGxjbKaSc6d2ag6NEefRoZ72v0YMPW/HlzDIq470dA6AOLMJyFcF2qM
-         PpeIqVbBCKYREYby1Ql6N6oT5Gyk5X/I+VQidcT3gmi0bw9XUsFblQK0ZpjvpwC75X9L
-         fOMA==
-X-Gm-Message-State: AOAM533YQjfpuC84xgILkcJBBPPpHF1L+URM8u5XvvTwicIsgI7xOGg6
-        xlooYCjqNynWpmVueuv/zK3j/y1e0qM=
-X-Google-Smtp-Source: ABdhPJwugYECK5Fum+wdiHx3Nh04IPAxcph9clVvfGAM02s7aVOJBVGK1KvLLE3AdsqALevKV5niHw==
-X-Received: by 2002:a17:906:2dda:: with SMTP id h26mr1080553eji.163.1616550905137;
-        Tue, 23 Mar 2021 18:55:05 -0700 (PDT)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
-        by smtp.gmail.com with ESMTPSA id lu26sm216472ejb.33.2021.03.23.18.55.04
+        bh=4S7ATnAj94hgmdbhqclSsqhCbeP141Mqyrh4e4zIqKc=;
+        b=TzpS7ns7De8cj+y3whHVELUdIyGC85bBOydSXbUyWOnNyN3urCUKCBzrrd17PJ+4hR
+         DRfzMB/yZT/urndBkOJJamWDYh0eyIUsXYaJAYkrbPg1VdK6kkbCuTsybzRI171cUyT3
+         3xW4/D0v8wa86IYArmxcTo+2RqXT7MREd8g4b7eJJcvf+ddYe7rkcPSfznEeK7PAKhpg
+         CON2CbeifeKaMBZzQtghVC5eAq3k5arBdFS9j4G4z3CAU8ZroEvE26Liwl7BaaAjzfzw
+         Zyl/xzIcYV81KILjN+3q2UMaambnQVHqGXnp0u9ZRRUCAVk0f80I+zp47xzOFj4AG1Us
+         46ZQ==
+X-Gm-Message-State: AOAM530AOqG7rGjjsoMWgHaDEpUq2QO65QHRHzkWQ1SPZNTZyIh+dvaX
+        0KcRLlAXmaWYN76YMKxTodQ+JdA55AA=
+X-Google-Smtp-Source: ABdhPJzbtjy/F922WLss+FDxeNSdSAQrAZJ32R257lMZqKMCGiWcoOTGtzJvRQJ/T+WjmoxDkdgzmw==
+X-Received: by 2002:aa7:dd05:: with SMTP id i5mr877692edv.300.1616552031234;
+        Tue, 23 Mar 2021 19:13:51 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id n26sm387020eds.22.2021.03.23.19.13.49
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Mar 2021 18:55:04 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id j20-20020a05600c1914b029010f31e15a7fso307293wmq.1
-        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 18:55:04 -0700 (PDT)
-X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr601021wmm.120.1616550903872;
- Tue, 23 Mar 2021 18:55:03 -0700 (PDT)
+        Tue, 23 Mar 2021 19:13:49 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id b9so22834494wrt.8
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 19:13:49 -0700 (PDT)
+X-Received: by 2002:adf:fa08:: with SMTP id m8mr855278wrr.12.1616552028919;
+ Tue, 23 Mar 2021 19:13:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1616345643.git.pabeni@redhat.com> <661b8bc7571c4619226fad9a00ca49352f43de45.1616345643.git.pabeni@redhat.com>
- <CA+FuTSc=V_=behQ0MKX3oYdDzZN=V7_CdeNOFXUAa-4TuU5ztA@mail.gmail.com> <efa5f117ad63064f7984655d46eb5140d23b0585.camel@redhat.com>
-In-Reply-To: <efa5f117ad63064f7984655d46eb5140d23b0585.camel@redhat.com>
+References: <cover.1616345643.git.pabeni@redhat.com> <72d8fc8a6d35a74d267cca6c9eddb3ff7852868b.1616345643.git.pabeni@redhat.com>
+ <CA+FuTSfpAzEEz0WZ0EqwKu3CzuvZiD1Vv5+kCos0mL=_Rudkrg@mail.gmail.com> <6d5fae11c4eecda3f59f9491426834fce8c37f7e.camel@redhat.com>
+In-Reply-To: <6d5fae11c4eecda3f59f9491426834fce8c37f7e.camel@redhat.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 23 Mar 2021 21:54:26 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScT9W5V-ak=Wq_7zswyDRo9rzjOK1SQNRxESBCL93BOVQ@mail.gmail.com>
-Message-ID: <CA+FuTScT9W5V-ak=Wq_7zswyDRo9rzjOK1SQNRxESBCL93BOVQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/8] udp: skip fwd/list GRO for tunnel packets
+Date:   Tue, 23 Mar 2021 22:13:10 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSd1R1mU+yP3g=8hzdQXKjGXY=sYvozj10+25-kzTSwWfA@mail.gmail.com>
+Message-ID: <CA+FuTSd1R1mU+yP3g=8hzdQXKjGXY=sYvozj10+25-kzTSwWfA@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/8] udp: properly complete L4 GRO over UDP
+ tunnel packet
 To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Steffen Klassert <steffen.klassert@secunet.com>,
@@ -72,47 +74,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > and there are
-> > > udp tunnel available in the system, we could end-up doing L4
-> > > aggregation for packets targeting the UDP tunnel.
+On Mon, Mar 22, 2021 at 1:00 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Mon, 2021-03-22 at 09:30 -0400, Willem de Bruijn wrote:
+> > On Sun, Mar 21, 2021 at 1:01 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > After the previous patch the stack can do L4 UDP aggregation
+> > > on top of an UDP tunnel.
+> > >
+> > > The current GRO complete code tries frag based aggregation first;
+> > > in the above scenario will generate corrupted frames.
+> > >
+> > > We need to try first UDP tunnel based aggregation, if the GRO
+> > > packet requires that. We can use time GRO 'encap_mark' field
+> > > to track the need GRO complete action. If encap_mark is set,
+> > > skip the frag_list aggregation.
+> > >
+> > > On tunnel encap GRO complete clear such field, so that an inner
+> > > frag_list GRO complete could take action.
+> > >
+> > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > ---
+> > >  net/ipv4/udp_offload.c | 8 +++++++-
+> > >  net/ipv6/udp_offload.c | 3 ++-
+> > >  2 files changed, 9 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> > > index 25134a3548e99..54e06b88af69a 100644
+> > > --- a/net/ipv4/udp_offload.c
+> > > +++ b/net/ipv4/udp_offload.c
+> > > @@ -642,6 +642,11 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
+> > >                 skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
+> > >                                         : SKB_GSO_UDP_TUNNEL;
+> > >
+> > > +               /* clear the encap mark, so that inner frag_list gro_complete
+> > > +                * can take place
+> > > +                */
+> > > +               NAPI_GRO_CB(skb)->encap_mark = 0;
+> > > +
+> > >                 /* Set encapsulation before calling into inner gro_complete()
+> > >                  * functions to make them set up the inner offsets.
+> > >                  */
+> > > @@ -665,7 +670,8 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+> > >         const struct iphdr *iph = ip_hdr(skb);
+> > >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+> > >
+> > > -       if (NAPI_GRO_CB(skb)->is_flist) {
+> > > +       /* do fraglist only if there is no outer UDP encap (or we already processed it) */
+> > > +       if (NAPI_GRO_CB(skb)->is_flist && !NAPI_GRO_CB(skb)->encap_mark) {
 > >
-> > Is this specific to UDP tunnels, or can this also occur with others,
-> > such as GRE? (not implying that this patchset needs to address those
-> > at the same time)
+> > Sorry, I don't follow. I thought the point was to avoid fraglist if an
+> > outer udp tunnel header is present. But the above code clears the mark
+> > and allows entering the fraglist branch exactly when such a header is
+> > encountered?
+>
+> The relevant UDP packet has gone through:
+>
+> [l2/l3 GRO] -> udp_gro_receive  -> udp_sk(sk)->gro_receive -> [some
+> more GRO layers] -> udp_gro_receive (again)
+>
+> The first udp_gro_receive set NAPI_GRO_CB(skb)->encap_mark, the
+> latter udp_gro_receive set NAPI_GRO_CB(skb)->is_flist.
+>
+> Then, at GRO complete time:
+>
+> [l2/l3 GRO] -> udp{4,6}_gro_complete -> udp_sk(sk)->gro_complete ->
+> [more GRO layers] -> udp{4,6}_gro_complete (again).
+>
+> In the first udp{4,6}_gro_complete invocation 'encap_mark' is 1, so
+> with this patch we do the 'udp_sk(sk)->gro_complete' path. In the
+> second udp{4,6}_gro_complete invocation 'encap_mark' has been cleared
+> (by udp_gro_complete), so we do the SKB_GSO_FRAGLIST completion.
+>
+> In case SKB_GSO_FRAGLIST with no UDP tunnel, 'encap_mark' is 0 and we
+> do the SKB_GSO_FRAGLIST completion.
+>
+> Another alternative, possibly more readable, would be avoid clearing
+> 'encap_mark' in udp_gro_complete() and replacing the above check with:
+>
+>         if (NAPI_GRO_CB(skb)->is_flist &&
+>             (!NAPI_GRO_CB(skb)->encap_mark ||
+>              (NAPI_GRO_CB(skb)->encap_mark && skb->encapsulation))) {
+>
+> I opted otherwise to simplify the conditional expression.
+>
+> Please let me know if the above is somewhat more clear and if you have
+> preferecens between the two options.
 
-I suppose GRE tunnels do not advertise GSO_UDP_L4 support, so GSO
-packets would get segmented before entering the tunnel device.
+Got it now, thanks. Yes, this patch makes sense.
 
-Forwarded datagrams exceeding egress device MTU (whether tunnel or
-not) is a wholly separate problem.
+When the GRO layer has built a GSO packet with both inner UDP
+(GSO_UDP_L4) and UDP tunnel header (GSO_UDP_TUNNEL), then on
+completion udp{4,6}_gro_complete will be called twice. This function
+will enter its is_flist branch immediately, even though that is only
+correct on the second call, as GSO_FRAGLIST is only relevant for the
+inner packet. Skip this while encap_mark == 1, identifying processing
+of the outer tunnel header. Clear the field to enter the path on the next
+round, for the inner header.
 
-> I did not look at that before your suggestion. Thanks for pointing out.
->
-> I think the problem is specific to UDP: when processing the outer UDP
-> header that is potentially eligible for both NETIF_F_GSO_UDP_L4 and
-> gro_receive aggregation and that is the root cause of the problem
-> addressed here.
-
-Can you elaborate on the exact problem? The commit mentions "inner
-protocol corruption, as no overaly network parameters is taken in
-account at aggregation time."
-
-My understanding is that these are udp gro aggregated GSO_UDP_L4
-packets forwarded to a udp tunnel device. They are not encapsulated
-yet. Which overlay network parameters are not, but should have been,
-taken account at aggregation time?
-
->
->
-> > > Just skip the fwd GRO if this packet could land in an UDP
-> > > tunnel.
-> >
-> > Could you make more clear that this does not skip UDP GRO, only
-> > switches from fraglist-based to pure SKB_GSO_UDP_L4.
->
-> Sure, I'll try to rewrite the commit message.
->
-> Thanks!
->
-> Paolo
->
+This is subject to only supporting a single layer of encap, but that
+is indeed the current state afaik.
