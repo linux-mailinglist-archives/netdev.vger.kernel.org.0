@@ -2,161 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE58348578
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 00:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1703A34857F
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 00:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232003AbhCXXpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 19:45:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37500 "EHLO mail.kernel.org"
+        id S232357AbhCXXr3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 24 Mar 2021 19:47:29 -0400
+Received: from mga18.intel.com ([134.134.136.126]:42147 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231776AbhCXXpa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 19:45:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CF7261A17;
-        Wed, 24 Mar 2021 23:45:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616629529;
-        bh=WDsmT8Fwstw8a7xa0MI7gnuC2c1vDqVBBCjJ9FULubI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZVNm2f9+ISvF4h0Bc9epTyUO1te47dx3H+d375kpjBUkifrvERk91TagWzs++aXEW
-         /GL7gbdNotGcnFTT5GNCWSqzrVfW+JGGzvpT7JJBbHKuzaeBQt69DKUTd1+lRncYG0
-         PUOBdclVRODU2PswE2YMYc9Jd0vw4ydb4US0lyN0k9yKVUZVLVH01R70nIhSP/yHTq
-         EuyXdRjG65XvQxWyCT6R3CGnS2G7H+AYcUXWNmvBbouiB510srB6wsmw3fJO18YWka
-         2zH++fDzJcdKeqGQvaGMmaXni6AUSIoUpq3D0YmyX2vo7XmwIgAYOQkhPyuzA8fnr6
-         aEM9ouiyDahrg==
-Date:   Thu, 25 Mar 2021 00:45:25 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        pali@kernel.org
-Subject: Re: [PATCH net-next 0/2] dt-bindings: define property describing
- supported ethernet PHY modes
-Message-ID: <20210325004525.734f3040@thinkpad>
-In-Reply-To: <755130b4-2fab-2b53-456f-e2304b1922f2@gmail.com>
-References: <20210324103556.11338-1-kabel@kernel.org>
-        <e4e088a4-1538-1e7d-241d-e43b69742811@gmail.com>
-        <20210325000007.19a38bce@thinkpad>
-        <755130b4-2fab-2b53-456f-e2304b1922f2@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S234898AbhCXXq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 19:46:57 -0400
+IronPort-SDR: FYawhP1L8bPQIGFrnlPh1X++U448w3kWNamt6gnf2BswZFHt6COolIF4M317DNtANmx5hal2QA
+ YHfOIPBpmb4w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="178363352"
+X-IronPort-AV: E=Sophos;i="5.81,276,1610438400"; 
+   d="scan'208";a="178363352"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 16:46:43 -0700
+IronPort-SDR: xpoIvy36speLUBKlET1zW6DVnHarpb48WlWjuG3JPOlfp74K3fLmClHswbuFI4qo5ZRTja8ncR
+ eZfQ/ypW3ocw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,276,1610438400"; 
+   d="scan'208";a="413949654"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga007.jf.intel.com with ESMTP; 24 Mar 2021 16:46:43 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 24 Mar 2021 16:46:42 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 24 Mar 2021 16:46:42 -0700
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
+ Wed, 24 Mar 2021 16:46:42 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>, Leon Romanovsky <leon@kernel.org>
+CC:     "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: RE: [PATCH v2 08/23] RDMA/irdma: Register auxiliary driver and
+ implement private channel OPs
+Thread-Topic: [PATCH v2 08/23] RDMA/irdma: Register auxiliary driver and
+ implement private channel OPs
+Thread-Index: AQHXIEEe8YLi1xzKuUiZSQHXOrFbqaqTnVIAgAADsACAAAShAIAABPuAgAAOWBA=
+Date:   Wed, 24 Mar 2021 23:46:42 +0000
+Message-ID: <cc3dfb411c2248fdb3a5adc042d22893@intel.com>
+References: <20210324000007.1450-1-shiraz.saleem@intel.com>
+ <20210324000007.1450-9-shiraz.saleem@intel.com> <YFtC9hWHYiCR9vIC@unreal>
+ <20210324140046.GA481507@nvidia.com> <YFtJ8EraVBJsYjuT@unreal>
+ <20210324143509.GB481507@nvidia.com>
+In-Reply-To: <20210324143509.GB481507@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Mar 2021 16:16:41 -0700
-Florian Fainelli <f.fainelli@gmail.com> wrote:
-
-> On 3/24/2021 4:00 PM, Marek Beh=C3=BAn wrote:
-> > On Wed, 24 Mar 2021 14:19:28 -0700
-> > Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >  =20
-> >>> Another problem is that if lower modes are supported, we should
-> >>> maybe use them in order to save power.   =20
-> >>
-> >> That is an interesting proposal but if you want it to be truly valuabl=
-e,
-> >> does not that mean that an user ought to be able to switch between any
-> >> of the supported PHY <=3D> MAC interfaces at runtime, and then within
-> >> those interfaces to the speeds that yield the best power savings? =20
-> >=20
-> > If the code determines that there are multiple working configurations,
-> > it theoretically could allow the user to switch between them.
-> >=20
-> > My idea was that this should be done by kernel, though.
-> >=20
-> > But power saving is not the main problem I am trying to solve.
-> > What I am trying to solve is that if a board does not support all modes
-> > supported by the MAC and PHY, because they are not wired or something,
-> > we need to know about that so that we can select the correct mode for
-> > PHYs that change this mode at runtime. =20
->=20
-> OK so the runtime part comes from plugging in various SFP modules into a
-> cage but other than that, for a "fixed" link such as a SFF or a soldered
-> down PHY, do we agree that there would be no runtime changing of the
-> 'phy-mode'?
-
-No, we do not. The PHY can be configured (by strapping pins or by
-sw) to change phy-mode depending on the autonegotiated copper speed.
-
-So if you plug in an ethernet cable where on the otherside is only 1g
-capable device, the PHY will change mode to sgmii. But if you then plug
-a 5g capable device, the PHY will change mode to 5gbase-r.
-
-This happens if the PHY is configured into one of these changing
-configurations. It can also be configured to USXGMII, or 10GBASER with
-rate matching.
-
-Not many MACs in kernel support USXGMII currently.
-
-And if you use rate matching mode, and the copper side is
-linked in lower speed (2.5g for example), and the MAC will start
-sending too many packets, the internal buffer in the PHY is only 16 KB,
-so it will fill up quickly. So you need pause frames support. But this
-is broken for speeds <=3D 1g, according to erratum.
-
-So you really want to change modes. The rate matching mode is
-basically useless.
-
->=20
-> What I am trying to understand is why this needs to be added to the
-> Device Tree as opposed to a bitmask within the PHY driver that indicates
-> the various interface mode capabilities which, looking at the code you
-> shared below, is how you make decisions ultimately.
-
-Because someone can create a board with a SOC where MAC is capable of
-all of the following modes: 10gbase-r, xaui, rxaui, 5gbase-r,
-2.5gbase-x, sgmii.
-
-And use Marvell 88X3310 PHY to translate to copper.
-
-But only wire the PHY to the MAC with one SerDes lane. So for 10g,
-10gbase-r mode must be used, xaui and rxaui cannot.
-Or wire the PHY to the MAC with 2 SerDes lanes, but both lanes capable
-only of 6 GHz freq. So for 10g, rxaui must be used.
-
-And then make the mistake of wiring the strapping pins to the
-rate-matching mode, which is useless.
-
-So we need to know which modes are supported if we want to change the
-configuration to a working one.
-
-> >  =20
-> >>>
-> >>> But for this we need to know which phy-modes are supported on the
-> >>> board.
-> >>>
-> >>> This series adds documentation for a new ethernet PHY property,
-> >>> called `supported-mac-connection-types`.   =20
-> >>
-> >> That naming does not quite make sense to me, if we want to describe the
-> >> MAC supported connection types, then those would naturally be within t=
-he
-> >> Ethernet MAC Device Tree node, no? If we are describing what the PHY is
-> >> capable, then we should be dropping "mac" from the property name not to
-> >> create confusion. =20
-> >=20
-> > I put "mac" there to indicate that this is the SerDes to the MAC (i.e.
-> > host side in Marvell PHY). 88X3310 has another SerDes side (Fiber Side).
-> > I guess I put "mac" there so that if in the future we wanted to specify
-> > supported modes for the fiber side, we could add
-> > `supported-fiber-connection-types`. =20
->=20
-> You would traditionally find the words "line side" (copper, optical,
-> etc.) and "MAC side" being used in datasheets, maybe you can use a
-> similar naming here?
-
-So
-  supported-connection-types-mac-side
-  supported-connection-types-line-side
-or maybe media-side?
-
-I am still exploring whether this could be simply defined in the
-ethernet controllers `phy-mode` property, as Rob Herring says. It would
-be simpler...
-
-Marek
+> Subject: Re: [PATCH v2 08/23] RDMA/irdma: Register auxiliary driver and
+> implement private channel OPs
+> 
+> On Wed, Mar 24, 2021 at 04:17:20PM +0200, Leon Romanovsky wrote:
+> > On Wed, Mar 24, 2021 at 11:00:46AM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Mar 24, 2021 at 03:47:34PM +0200, Leon Romanovsky wrote:
+> > > > On Tue, Mar 23, 2021 at 06:59:52PM -0500, Shiraz Saleem wrote:
+> > > > > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > > >
+> > > > > Register auxiliary drivers which can attach to auxiliary RDMA
+> > > > > devices from Intel PCI netdev drivers i40e and ice. Implement
+> > > > > the private channel ops, and register net notifiers.
+> > > > >
+> > > > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > > > > drivers/infiniband/hw/irdma/i40iw_if.c | 229 +++++++++++++
+> > > > >  drivers/infiniband/hw/irdma/main.c     | 382 ++++++++++++++++++++++
+> > > > >  drivers/infiniband/hw/irdma/main.h     | 565
+> +++++++++++++++++++++++++++++++++
+> > > > >  3 files changed, 1176 insertions(+)  create mode 100644
+> > > > > drivers/infiniband/hw/irdma/i40iw_if.c
+> > > > >  create mode 100644 drivers/infiniband/hw/irdma/main.c
+> > > > >  create mode 100644 drivers/infiniband/hw/irdma/main.h
+> > > >
+> > > > <...>
+> > > >
+> > > > > +/* client interface functions */ static const struct
+> > > > > +i40e_client_ops i40e_ops = {
+> > > > > +	.open = i40iw_open,
+> > > > > +	.close = i40iw_close,
+> > > > > +	.l2_param_change = i40iw_l2param_change };
+> > > > > +
+> > > > > +static struct i40e_client i40iw_client = {
+> > > > > +	.ops = &i40e_ops,
+> > > > > +	.type = I40E_CLIENT_IWARP,
+> > > > > +};
+> > > > > +
+> > > > > +static int i40iw_probe(struct auxiliary_device *aux_dev, const
+> > > > > +struct auxiliary_device_id *id) {
+> > > > > +	struct i40e_auxiliary_device *i40e_adev = container_of(aux_dev,
+> > > > > +							       struct
+> i40e_auxiliary_device,
+> > > > > +							       aux_dev);
+> > > > > +	struct i40e_info *cdev_info = i40e_adev->ldev;
+> > > > > +
+> > > > > +	strncpy(i40iw_client.name, "irdma", I40E_CLIENT_STR_LENGTH);
+> > > > > +	cdev_info->client = &i40iw_client;
+> > > > > +	cdev_info->aux_dev = aux_dev;
+> > > > > +
+> > > > > +	return cdev_info->ops->client_device_register(cdev_info);
+> > > >
+> > > > Why do we need all this indirection? I see it as leftover from
+> > > > previous version where you mixed auxdev with your peer registration logic.
+> > >
+> > > I think I said the new stuff has to be done sanely, but the i40iw
+> > > stuff is old and already like this.
+> >
+> > They declared this specific "ops" a couple of lines above and all the
+> > functions are static. At least for the new code, in the irdma, this "ops"
+> > thing is not needed.
+> 
+> It is the code in the 'core' i40iw driver that requries this, AFAICT
+> 
+ Yes.
