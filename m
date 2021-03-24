@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ABC7347B09
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:45:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5784347A76
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:18:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236365AbhCXOpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 10:45:38 -0400
-Received: from mga02.intel.com ([134.134.136.20]:2051 "EHLO mga02.intel.com"
+        id S235922AbhCXORs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 10:17:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236269AbhCXOo6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 10:44:58 -0400
-IronPort-SDR: vU17JzfMV/kzat9tDvFLqbDfSDR6ZgW37O+sfbbRWkcFt+9txVax0MZHJpnGIJDTA/4yJM9Ef5
- Kp4j5iirqX8Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="177834557"
-X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
-   d="scan'208";a="177834557"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 07:44:58 -0700
-IronPort-SDR: yvIM/ZQjg1VokVLh3UkfAtuaUPaLwXkG28iqDd0cW8UjMNr53/DNGx+LPdaE+L57YBdOmTm8xO
- rbfggYg9yytg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
-   d="scan'208";a="608127991"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Mar 2021 07:44:57 -0700
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org
-Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf 3/3] libbpf: ignore return values of setsockopt for XDP rings.
-Date:   Wed, 24 Mar 2021 14:13:37 +0000
-Message-Id: <20210324141337.29269-4-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210324141337.29269-1-ciara.loftus@intel.com>
-References: <20210324141337.29269-1-ciara.loftus@intel.com>
+        id S236117AbhCXOR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 10:17:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D94A060232;
+        Wed, 24 Mar 2021 14:17:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616595444;
+        bh=21DLN6zcpHqU2e0nnAHMIAyzk/GbTw2e3TuMQkrOkiM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Kosb868gr2mt5xEGIJV2ubVpxKwsu5R2uHyPe6NBJJkWFkX+1e6ICJD5JpATQ4pvo
+         NwV0BM7A9EDk43UM1QXXUbeYEkSv5HXtnur+TvZC31+fJ9k2jpz/ZUUG+SGIroVwQh
+         jVhKO0vnLlAc8yhaU48lFrUivr4HLPDTXuHQ9Qgh+94nxTkx6aFy9dlbj1huL7KCfd
+         xd0rMlIeBgIfrXLm9jIl06H8/ffWrGiwFC2+DXGfx3P5nE17cWIw+sUZKC8BbuvWlB
+         1u5RwJo9XMRofLRqqeui3EcNkj96/lOWBiVlx9XoNd3dB8wYtObpm+Gd2+zyOHDRQg
+         5lOB0PbDadabA==
+Date:   Wed, 24 Mar 2021 16:17:20 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, dledford@redhat.com,
+        kuba@kernel.org, davem@davemloft.net, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, david.m.ertman@intel.com,
+        anthony.l.nguyen@intel.com,
+        Mustafa Ismail <mustafa.ismail@intel.com>
+Subject: Re: [PATCH v2 08/23] RDMA/irdma: Register auxiliary driver and
+ implement private channel OPs
+Message-ID: <YFtJ8EraVBJsYjuT@unreal>
+References: <20210324000007.1450-1-shiraz.saleem@intel.com>
+ <20210324000007.1450-9-shiraz.saleem@intel.com>
+ <YFtC9hWHYiCR9vIC@unreal>
+ <20210324140046.GA481507@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210324140046.GA481507@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During xsk_socket__create the XDP_RX_RING and XDP_TX_RING setsockopts
-are called to create the rx and tx rings for the AF_XDP socket. If the ring
-has already been set up, the setsockopt will return an error. However,
-in the event of a failure during xsk_socket__create(_shared) after the
-rings have been set up, the user may wish to retry the socket creation
-using these pre-existing rings. In this case we can ignore the error
-returned by the setsockopts. If there is a true error, the subsequent
-call to mmap() will catch it.
+On Wed, Mar 24, 2021 at 11:00:46AM -0300, Jason Gunthorpe wrote:
+> On Wed, Mar 24, 2021 at 03:47:34PM +0200, Leon Romanovsky wrote:
+> > On Tue, Mar 23, 2021 at 06:59:52PM -0500, Shiraz Saleem wrote:
+> > > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > 
+> > > Register auxiliary drivers which can attach to auxiliary RDMA
+> > > devices from Intel PCI netdev drivers i40e and ice. Implement the private
+> > > channel ops, and register net notifiers.
+> > > 
+> > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > >  drivers/infiniband/hw/irdma/i40iw_if.c | 229 +++++++++++++
+> > >  drivers/infiniband/hw/irdma/main.c     | 382 ++++++++++++++++++++++
+> > >  drivers/infiniband/hw/irdma/main.h     | 565 +++++++++++++++++++++++++++++++++
+> > >  3 files changed, 1176 insertions(+)
+> > >  create mode 100644 drivers/infiniband/hw/irdma/i40iw_if.c
+> > >  create mode 100644 drivers/infiniband/hw/irdma/main.c
+> > >  create mode 100644 drivers/infiniband/hw/irdma/main.h
+> > 
+> > <...>
+> > 
+> > > +/* client interface functions */
+> > > +static const struct i40e_client_ops i40e_ops = {
+> > > +	.open = i40iw_open,
+> > > +	.close = i40iw_close,
+> > > +	.l2_param_change = i40iw_l2param_change
+> > > +};
+> > > +
+> > > +static struct i40e_client i40iw_client = {
+> > > +	.ops = &i40e_ops,
+> > > +	.type = I40E_CLIENT_IWARP,
+> > > +};
+> > > +
+> > > +static int i40iw_probe(struct auxiliary_device *aux_dev, const struct auxiliary_device_id *id)
+> > > +{
+> > > +	struct i40e_auxiliary_device *i40e_adev = container_of(aux_dev,
+> > > +							       struct i40e_auxiliary_device,
+> > > +							       aux_dev);
+> > > +	struct i40e_info *cdev_info = i40e_adev->ldev;
+> > > +
+> > > +	strncpy(i40iw_client.name, "irdma", I40E_CLIENT_STR_LENGTH);
+> > > +	cdev_info->client = &i40iw_client;
+> > > +	cdev_info->aux_dev = aux_dev;
+> > > +
+> > > +	return cdev_info->ops->client_device_register(cdev_info);
+> > 
+> > Why do we need all this indirection? I see it as leftover from previous
+> > version where you mixed auxdev with your peer registration logic.
+> 
+> I think I said the new stuff has to be done sanely, but the i40iw
+> stuff is old and already like this.
 
-Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
+They declared this specific "ops" a couple of lines above and all the
+functions are static. At least for the new code, in the irdma, this "ops"
+thing is not needed.
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- tools/lib/bpf/xsk.c | 34 ++++++++++++++++------------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
-
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index ec3c23299329..1f1c4c11c292 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -904,24 +904,22 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	}
- 	xsk->ctx = ctx;
- 
--	if (rx) {
--		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
--				 &xsk->config.rx_size,
--				 sizeof(xsk->config.rx_size));
--		if (err) {
--			err = -errno;
--			goto out_put_ctx;
--		}
--	}
--	if (tx) {
--		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
--				 &xsk->config.tx_size,
--				 sizeof(xsk->config.tx_size));
--		if (err) {
--			err = -errno;
--			goto out_put_ctx;
--		}
--	}
-+	/* The return values of these setsockopt calls are intentionally not checked.
-+	 * If the ring has already been set up setsockopt will return an error. However,
-+	 * this scenario is acceptable as the user may be retrying the socket creation
-+	 * with rings which were set up in a previous but ultimately unsuccessful call
-+	 * to xsk_socket__create(_shared). The call later to mmap() will fail if there
-+	 * is a real issue and we handle that return value appropriately there.
-+	 */
-+	if (rx)
-+		setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-+			   &xsk->config.rx_size,
-+			   sizeof(xsk->config.rx_size));
-+
-+	if (tx)
-+		setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-+			   &xsk->config.tx_size,
-+			   sizeof(xsk->config.tx_size));
- 
- 	err = xsk_get_mmap_offsets(xsk->fd, &off);
- 	if (err) {
--- 
-2.17.1
-
+> 
+> Though I would be happy to see this fixed too.
+> 
+> Jason
