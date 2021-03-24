@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3744E3482A6
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:15:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4472A3482A8
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:15:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238085AbhCXUPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:15:09 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:52085 "EHLO
+        id S238116AbhCXUPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:15:11 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:48691 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238103AbhCXUOo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:44 -0400
+        by vger.kernel.org with ESMTP id S238106AbhCXUOq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:46 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id E0E1F5C00C1;
-        Wed, 24 Mar 2021 16:14:43 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id D5A2C5C005E;
+        Wed, 24 Mar 2021 16:14:45 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:43 -0400
+  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=rHDzetONS5/eUNlCy
-        zbY38ESQri1XNWQplr3Ctv7SJk=; b=iWLtIbpXEDaUN7jzPYhi288zVWseEHFMm
-        ybqbURsTlCoEXYmdr9S1C/tP1ahiJE4Ne2g81rJmszbUiFyX1Twsfp3G0hAbDzCC
-        t9JyGcQXatAIoaTK3vNamoqmC6lAbxcKF+Jm1egvSeoke/ZEHii/bToFtJ6vk8KA
-        c7cH/hOx9TB28i4adsVzGpPhvGiV5IgQKuVfpe5cTR2cICROjiCOFNfPl5Cz8E1S
-        Im+9RCD34Lp7M+iaUPj6YRl54k4j46hYjJqLSQJ6Aj+5GGiBcUioNcGAzr2HzgeM
-        C5pg4bTyBJYL6JcPsJQigLv26H71eNHwaxK2c/Jb5t39CkheGgNzg==
-X-ME-Sender: <xms:s51bYJil-_9UgNcm23CbKaY1bGlUnGSvcsMi-8TFsHoL4jARHG8O_Q>
-    <xme:s51bYOAtAtXnK6mnC6sg8zlmwMdsh_VRXu-LY_C3KV0A2n3d1b2SsewkkuWnxctJf
-    CykNMngFoIW0D0>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=Nqfck1eA6df7C/THbcH3ugAXHqE8UJCATPGLJ4kD0Xo=; b=cJSqPtfx
+        iO+jg4yoM/NkNToidUuLdaFHVBc5jsQEWyrFcJWSn1NKYq0BJ5iovT0am/9Ct23g
+        CFTueB90L3oK5MG0Wsq5em9JAbze3o19Y6IgQxSuPq9sdFluTFph1y9z7FKAKG7q
+        /BBIsfdFWAiy22e024LFBumGE3MSgHhuqS38iuOujJKm907Tk63kDG1xZeSSLY9z
+        9fwpSbu2W+Sr0l+4FsM5QhBBwgvkrbRbeyG7LQm5JRazgyPgZrdjrkWD6KLiUMLS
+        MNxvpqmSmN4fcUI+EXCVE6KC2kAOi7nO+RSkvDg5oMy0TaCKCkqk4i1FLBamk5Kl
+        nGariJ8yEhDijQ==
+X-ME-Sender: <xms:tZ1bYK9xw-bBoi4B6hKR4Utd7Z1dOnWlMwS7XH8u6YpM8toblhAu3w>
+    <xme:tZ1bYKu9pLAIe3tpted2hMVUWkPykdYHhd6TTJ4CjaJLBvyaO8oVwUmJ0AbcM92Gd
+    V3xd-dmf1woigg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegkedgudefgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
-    ehteffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:s51bYJEgBSmDzuXWCSNgqhZLSW64LQ5UkPHPmH-LMmAG1-bie5CLqg>
-    <xmx:s51bYOSPABtCjyKpL3l4YT1TAWJDxTLbiNZ34sBudqKMTl6eW04rSA>
-    <xmx:s51bYGzg95q1bbSrcBAGV7NEE_R__3Q5u2Q85B3A6ej0F2ZpGmne6Q>
-    <xmx:s51bYAt7K7R7qRK3JSIecrGzLUMlI1yGEllx_mO-P7KJBpcwcGkOvQ>
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
+    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
+    ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeg
+    geenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:tZ1bYAC8kFOV6jPAwm6t203zEZd2MbpT2TUUIqbZrquzzKslULl3Ew>
+    <xmx:tZ1bYCd4azKgBl3aBZD1ezcbCAlUeae5AVGcVOWdNkFKI7urbjhcsQ>
+    <xmx:tZ1bYPP27Ne9QTWyBupk1sWqB269RG1E6kcAJ8E60FkqIbzKBaHbvg>
+    <xmx:tZ1bYEprdo_qx2pXzHjpmGl_ztclaMYyMhQHvVcrNS2JjNVDsMA1nA>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 536A324033F;
-        Wed, 24 Mar 2021 16:14:41 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id AA54A240422;
+        Wed, 24 Mar 2021 16:14:43 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 00/10] mlxsw: Add support for resilient nexthop groups
-Date:   Wed, 24 Mar 2021 22:14:14 +0200
-Message-Id: <20210324201424.157387-1-idosch@idosch.org>
+Subject: [PATCH net-next 01/10] mlxsw: spectrum_router: Add support for resilient nexthop groups
+Date:   Wed, 24 Mar 2021 22:14:15 +0200
+Message-Id: <20210324201424.157387-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210324201424.157387-1-idosch@idosch.org>
+References: <20210324201424.157387-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,68 +64,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This patchset adds support for resilient nexthop groups in mlxsw. As far
-as the hardware is concerned, resilient groups are the same as regular
-groups. The differences lie in how mlxsw manages the individual
-adjacency entries (nexthop buckets) that make up the group.
+Parse the configuration of resilient nexthop groups to existing mlxsw
+data structures. Unlike non-resilient groups, nexthops without a valid
+MAC or router interface (RIF) are programmed with a trap action instead
+of not being programmed at all.
 
-The first difference is that unlike regular groups the driver needs to
-periodically update the kernel about activity of nexthop buckets so that
-the kernel will not treat the buckets as idle, given traffic is
-offloaded from the CPU to the ASIC. This is similar to what mlxsw is
-already doing with respect to neighbour entries. The update interval is
-set to 1 second to allow for short idle timers.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+---
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 26 ++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-The second difference is that nexthop buckets that correspond to an
-unresolved neighbour must be programmed to the device, as the size of
-the group must remain fixed. This is achieved by programming such
-entries with trap action, in order to trigger neighbour resolution by
-the kernel.
-
-The third difference is atomic replacement of individual nexthop
-buckets. While the driver periodically updates the kernel about activity
-of nexthop buckets, it is possible for a bucket to become active just
-before the kernel decides to replace it with a different nexthop. To
-avoid such situations and connections being reset, the driver instructs
-the device to only replace an adjacency entry if it is inactive.
-Failures are propagated back to the nexthop code.
-
-Patchset overview:
-
-Patches #1-#7 gradually add support for resilient nexthop groups
-
-Patch #8 finally enables such groups to be programmed to the device
-
-Patches #9-#10 add mlxsw-specific selftests
-
-Ido Schimmel (10):
-  mlxsw: spectrum_router: Add support for resilient nexthop groups
-  mlxsw: spectrum_router: Add ability to overwrite adjacency entry only
-    when inactive
-  mlxsw: spectrum_router: Pass payload pointer to nexthop update
-    function
-  mlxsw: spectrum_router: Add nexthop bucket replacement support
-  mlxsw: spectrum_router: Update hardware flags on nexthop buckets
-  mlxsw: reg: Add Router Adjacency Table Activity Dump Register
-  mlxsw: spectrum_router: Periodically update activity of nexthop
-    buckets
-  mlxsw: spectrum_router: Enable resilient nexthop groups to be
-    programmed
-  selftests: mlxsw: Test unresolved neigh trap with resilient nexthop
-    groups
-  selftests: mlxsw: Add resilient nexthop groups configuration tests
-
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  55 +++
- .../ethernet/mellanox/mlxsw/spectrum_dpipe.c  |   4 +-
- .../ethernet/mellanox/mlxsw/spectrum_ipip.c   |  10 +-
- .../ethernet/mellanox/mlxsw/spectrum_ipip.h   |   3 +-
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 422 +++++++++++++++++-
- .../ethernet/mellanox/mlxsw/spectrum_router.h |   5 +-
- .../net/mlxsw/devlink_trap_l3_exceptions.sh   |  31 ++
- .../selftests/drivers/net/mlxsw/rtnetlink.sh  |  82 ++++
- tools/testing/selftests/net/forwarding/lib.sh |   5 +
- 9 files changed, 594 insertions(+), 23 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 75c9fc47cd69..db859c2bd810 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -2911,7 +2911,8 @@ struct mlxsw_sp_nexthop_group_info {
+ 	u16 count;
+ 	int sum_norm_weight;
+ 	u8 adj_index_valid:1,
+-	   gateway:1; /* routes using the group use a gateway */
++	   gateway:1, /* routes using the group use a gateway */
++	   is_resilient:1;
+ 	struct mlxsw_sp_nexthop nexthops[0];
+ #define nh_rif	nexthops[0].rif
+ };
+@@ -3905,6 +3906,9 @@ static void __mlxsw_sp_nexthop_neigh_update(struct mlxsw_sp_nexthop *nh,
+ 	if (!removing) {
+ 		nh->action = MLXSW_SP_NEXTHOP_ACTION_FORWARD;
+ 		nh->should_offload = 1;
++	} else if (nh->nhgi->is_resilient) {
++		nh->action = MLXSW_SP_NEXTHOP_ACTION_TRAP;
++		nh->should_offload = 1;
+ 	} else {
+ 		nh->should_offload = 0;
+ 	}
+@@ -4484,6 +4488,15 @@ mlxsw_sp_nexthop_obj_init(struct mlxsw_sp *mlxsw_sp,
+ 	if (nh_obj->is_reject)
+ 		mlxsw_sp_nexthop_obj_blackhole_init(mlxsw_sp, nh);
+ 
++	/* In a resilient nexthop group, all the nexthops must be written to
++	 * the adjacency table. Even if they do not have a valid neighbour or
++	 * RIF.
++	 */
++	if (nh_grp->nhgi->is_resilient && !nh->should_offload) {
++		nh->action = MLXSW_SP_NEXTHOP_ACTION_TRAP;
++		nh->should_offload = 1;
++	}
++
+ 	return 0;
+ 
+ err_type_init:
+@@ -4500,6 +4513,7 @@ static void mlxsw_sp_nexthop_obj_fini(struct mlxsw_sp *mlxsw_sp,
+ 	mlxsw_sp_nexthop_type_fini(mlxsw_sp, nh);
+ 	list_del(&nh->router_list_node);
+ 	mlxsw_sp_nexthop_counter_free(mlxsw_sp, nh);
++	nh->should_offload = 0;
+ }
+ 
+ static int
+@@ -4509,6 +4523,7 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
+ {
+ 	struct mlxsw_sp_nexthop_group_info *nhgi;
+ 	struct mlxsw_sp_nexthop *nh;
++	bool is_resilient = false;
+ 	unsigned int nhs;
+ 	int err, i;
+ 
+@@ -4519,6 +4534,10 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
+ 	case NH_NOTIFIER_INFO_TYPE_GRP:
+ 		nhs = info->nh_grp->num_nh;
+ 		break;
++	case NH_NOTIFIER_INFO_TYPE_RES_TABLE:
++		nhs = info->nh_res_table->num_nh_buckets;
++		is_resilient = true;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -4529,6 +4548,7 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
+ 	nh_grp->nhgi = nhgi;
+ 	nhgi->nh_grp = nh_grp;
+ 	nhgi->gateway = mlxsw_sp_nexthop_obj_is_gateway(mlxsw_sp, info);
++	nhgi->is_resilient = is_resilient;
+ 	nhgi->count = nhs;
+ 	for (i = 0; i < nhgi->count; i++) {
+ 		struct nh_notifier_single_info *nh_obj;
+@@ -4544,6 +4564,10 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
+ 			nh_obj = &info->nh_grp->nh_entries[i].nh;
+ 			weight = info->nh_grp->nh_entries[i].weight;
+ 			break;
++		case NH_NOTIFIER_INFO_TYPE_RES_TABLE:
++			nh_obj = &info->nh_res_table->nhs[i];
++			weight = 1;
++			break;
+ 		default:
+ 			err = -EINVAL;
+ 			goto err_nexthop_obj_init;
 -- 
 2.30.2
 
