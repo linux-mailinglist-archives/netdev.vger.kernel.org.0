@@ -2,101 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7CAB347206
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 08:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 260D034720C
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 08:08:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235672AbhCXHGn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 24 Mar 2021 03:06:43 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:37100 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235676AbhCXHGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 03:06:38 -0400
-Received: from mac-pro.holtmann.net (p4fefce19.dip0.t-ipconnect.de [79.239.206.25])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 4D665CECD2;
-        Wed, 24 Mar 2021 08:14:11 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH] Bluetooth: Always call advertising disable before setting
- params
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210323141653.1.I53e6be1f7df0be198b7e55ae9fc45c7f5760132d@changeid>
-Date:   Wed, 24 Mar 2021 08:06:32 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S235703AbhCXHH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 03:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235692AbhCXHH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 03:07:29 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98F2C061763;
+        Wed, 24 Mar 2021 00:07:28 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id r10-20020a05600c35cab029010c946c95easo557930wmq.4;
+        Wed, 24 Mar 2021 00:07:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LknztGgqkN///91+7Wug8dejmfXPPMToN8QWuG2wkMU=;
+        b=dgAtPKFUuWUjQ37dOc0OLRQ0W9XnjH6AH5XU+e3dkmMhR8GOQCP+fNdliZAZiSlf9Q
+         6VULApcmccdCtUVHvey5bDGWLcozs2T2kLB5K0suVa6Rxk4KCMfdgQhtzsnLIyGAbzXy
+         ccZ6FAg6rHsVUfTlG6/E7kTWzbnR+IQffaThyQH3U4k0Q8Wqkl1v31MMmFamw+HJ0Msy
+         XA+77Z/l7ctIY7ZCK7Kz6xqZx2IvGq56aBKu8A4QXEYVwMI6bOszq4b0WLhFRhMV5HoI
+         wt9+wjNbDoP6KBFVlhn/rAKoD5WQlQ3hfdVoGXHgpFlrNr2W6xiwR/5qEXCN7LxAv9DM
+         dsiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LknztGgqkN///91+7Wug8dejmfXPPMToN8QWuG2wkMU=;
+        b=ID3sI41Dk3JOkqzcR8RrlZTXcY65EzknE/4vFePnhbgbirVmeEAbx8PAzFfcnbBBGh
+         HYeOz5VSvVMgVygaGg0p23V9wyLSiSVn3lcr/qi+SwzPOp2ActfuNRvS2O6akR/Wajli
+         DeIa20/i/zqYNRewJ1y/NWN4s9KSz7ljfbMIXe02y55H48xpv67wqkA1If9WGPYdpF0N
+         3n8ezqEr4xKLoTEDIMJA07uNjS/n+xKEP4SoSqJsVkT6tLNwoXMMgKl/VXRAC5eceXR3
+         j+H4MdoWugvXg6Z341srE4nPNsRKpuP3SG15xx1Y07ktfOB5MY76k9JajYZ9rEUVsImh
+         xJnw==
+X-Gm-Message-State: AOAM5319hDQeEjwbhzvWwRglHhwOQ5DBKcaG5vwEwiffsuvRF0zP8hrt
+        jHJUa2rXjDBh4YTbZjNVeY3c1JlcEW276uKx+G3ESX7yYeM=
+X-Google-Smtp-Source: ABdhPJy0wnrY40S+myN8rvn+oXVBzTkCjecFMbUqih6KehEfQvOmvYIj8UWdYmlrUNybkx14OeUW0Xe9NcHgLb5GPQQ=
+X-Received: by 2002:a05:600c:47d7:: with SMTP id l23mr1421587wmo.155.1616569647596;
+ Wed, 24 Mar 2021 00:07:27 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210323123245.346491-1-colin.king@canonical.com>
+In-Reply-To: <20210323123245.346491-1-colin.king@canonical.com>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Wed, 24 Mar 2021 12:37:15 +0530
+Message-ID: <CA+sq2CekDZgxec43sBOZ4nLJwVE=PdGdHwYogWAPvyCNwZ0Wnw@mail.gmail.com>
+Subject: Re: [PATCH] octeontx2-af: Fix memory leak of object buf
+To:     Colin King <colin.king@canonical.com>
+Cc:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <8E70C497-BDCE-471F-9ECD-790E2FE3B024@holtmann.org>
-References: <20210323141653.1.I53e6be1f7df0be198b7e55ae9fc45c7f5760132d@changeid>
-To:     Daniel Winkler <danielwinkler@google.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        Rakesh Babu <rsaladi2@marvell.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
-
-> In __hci_req_enable_advertising, the HCI_LE_ADV hdev flag is temporarily
-> cleared to allow the random address to be set, which exposes a race
-> condition when an advertisement is configured immediately (<10ms) after
-> software rotation starts to refresh an advertisement.
-> 
-> In normal operation, the HCI_LE_ADV flag is updated as follows:
-> 
-> 1. adv_timeout_expire is called, HCI_LE_ADV gets cleared in
->   __hci_req_enable_advertising, but hci_req configures an enable
->   request
-> 2. hci_req is run, enable callback re-sets HCI_LE_ADV flag
-> 
-> However, in this race condition, the following occurs:
-> 
-> 1. adv_timeout_expire is called, HCI_LE_ADV gets cleared in
->   __hci_req_enable_advertising, but hci_req configures an enable
->   request
-> 2. add_advertising is called, which also calls
->   __hci_req_enable_advertising. Because HCI_LE_ADV was cleared in Step
->   1, no "disable" command is queued.
-> 3. hci_req for adv_timeout_expire is run, which enables advertising and
->   re-sets HCI_LE_ADV
-> 4. hci_req for add_advertising is run, but because no "disable" command
->   was queued, we try to set advertising parameters while advertising is
->   active, causing a Command Disallowed error, failing the registration.
-> 
-> To resolve the issue, this patch removes the check for the HCI_LE_ADV
-> flag, and always queues the "disable" request, since HCI_LE_ADV could be
-> very temporarily out-of-sync. According to the spec, there is no harm in
-> calling "disable" when advertising is not active.
-> 
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> Signed-off-by: Daniel Winkler <danielwinkler@google.com>
+On Tue, Mar 23, 2021 at 6:07 PM Colin King <colin.king@canonical.com> wrote:
+>
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> Currently the error return path when lfs fails to allocate is not free'ing
+> the memory allocated to buf. Fix this by adding the missing kfree.
+>
+> Addresses-Coverity: ("Resource leak")
+> Fixes: f7884097141b ("octeontx2-af: Formatting debugfs entry rsrc_alloc.")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > ---
-> 
-> net/bluetooth/hci_request.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-> index 8ace5d34b01efe..2b4b99f4cedf21 100644
-> --- a/net/bluetooth/hci_request.c
-> +++ b/net/bluetooth/hci_request.c
-> @@ -1547,8 +1547,10 @@ void __hci_req_enable_advertising(struct hci_request *req)
-> 	if (!is_advertising_allowed(hdev, connectable))
-> 		return;
-> 
-> -	if (hci_dev_test_flag(hdev, HCI_LE_ADV))
-> -		__hci_req_disable_advertising(req);
-> +	/* Request that the controller stop advertising. This can be called
-> +	 * whether or not there is an active advertisement.
-> +	 */
-> +	__hci_req_disable_advertising(req);
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+> index 8ec17ee72b5d..9bf8eaabf9ab 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+> @@ -253,8 +253,10 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
+>                 return -ENOSPC;
+>
+>         lfs = kzalloc(lf_str_size, GFP_KERNEL);
+> -       if (!lfs)
+> +       if (!lfs) {
+> +               kfree(buf);
+>                 return -ENOMEM;
+> +       }
+>         off +=  scnprintf(&buf[off], buf_size - 1 - off, "%-*s", lf_str_size,
+>                           "pcifunc");
+>         for (index = 0; index < BLK_COUNT; index++)
+> --
+> 2.30.2
+>
 
-can you include a btmon trace that shows that we don’t get a HCI error. Since if we get one, then the complete request will fail. And that has further side effects.
-
-Regards
-
-Marcel
-
+Thanks for the fix,
+Acked-by: Sunil Goutham <sgoutham@marvell.com>
