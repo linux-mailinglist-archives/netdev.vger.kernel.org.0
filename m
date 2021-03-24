@@ -2,104 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3278347A25
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:04:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 054EB347A44
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbhCXODs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 10:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235592AbhCXODW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 10:03:22 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B524BC061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 07:03:20 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id u21so15089704ejo.13
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 07:03:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L6pU77ncTueRda3bNpW6dzLS5Gme3yEAkFZNrYFN3bU=;
-        b=HPJDdbfRFr9QZ8dcBdJEyx5ZvLYOBq+eg9iNAOV+yCLkv8Svmw8gEYvlRjdnxXna/+
-         KcTG2Q8Rn/3qnQXpb57nYaH6mBKbJf5X16B9yHbOCDzaN1B7q8cOr0HbH/LUPVtOvUb2
-         vcOWn3mk/bmg983qcVkTYkK5qhS+a5HSi87nS2zCG2K4r/HhFzORYWDWdlRrIrVVEKy5
-         ujPbNjDAEtFWc32bx7s+QXFzQa4F13wLwbAQ/7reAtez8p29nkUmi/bsWNPwc6kxAWcb
-         hk55UWh2qeOM5JAcg+XMaPI1CyZvyoie2tjvGS60iM91zZtIgtTBa5GsGyzWxEoLot2P
-         M1Lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L6pU77ncTueRda3bNpW6dzLS5Gme3yEAkFZNrYFN3bU=;
-        b=IrVRa//lwOebTIGx2vuxb3RV1huL4e2gY2TKq7bg46FDChXTF4AM3fAuD7AfHrR8ih
-         gy2b+5Y1ooMtRhjwdohzXGcdtUCmfnAUVmqamQaTJiLtv5InbXOC0pUAvl2RMIgtLxnl
-         LScx0c41jMblZrvenhcLdSpJdQe0ZmpgATBeb7ulB9yf2y6cJ/ruJ0ZZOZcNLVxGkgMu
-         a5Z2G0qxm+HbWWA8mwmLz/8QVuAi6D+Bjdqwpc3q3KwcdDjkox3DhGj8BLUn8MDBrgGy
-         K6FlMRy3HQmHcIgC55rSht2xNaQjvcoBHukIB8jIcY4M5Jcx3sM+3BeJ+xqxXfZgmBe0
-         UHHA==
-X-Gm-Message-State: AOAM532jOGovbTSjCmHeKjhi+zbeoh+svlKm5Ik6NC20FCzBuFLkEghF
-        zlw7e14LYnt3qLDDVMzP1YE=
-X-Google-Smtp-Source: ABdhPJwMiPDmf/4LN8v5F2GHceaX93m7elaM+OW0sD5RVUBVrY6GPvgLIM58o7QTOE6t0rdKS52rBA==
-X-Received: by 2002:a17:906:cb0a:: with SMTP id lk10mr3803305ejb.479.1616594599397;
-        Wed, 24 Mar 2021 07:03:19 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id ho11sm929528ejc.112.2021.03.24.07.03.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 07:03:18 -0700 (PDT)
-Date:   Wed, 24 Mar 2021 16:03:17 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
- reconfiguration of tag protocol
-Message-ID: <20210324140317.amzmmngh5lwkcfm4@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com>
- <20210323113522.coidmitlt6e44jjq@skbuf>
- <87blbalycs.fsf@waldekranz.com>
- <20210323190302.2v7ianeuwylxdqjl@skbuf>
- <8735wlmuxh.fsf@waldekranz.com>
+        id S235873AbhCXOJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 10:09:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58826 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236024AbhCXOJT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 10:09:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7559361A19;
+        Wed, 24 Mar 2021 14:09:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616594958;
+        bh=kUeduJvsn84YXK4bb+nA/McA014H6YlfcxV8YdUzx3c=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=g5tN3X39v4CBpYTRwQSSANQMcQAjtQ0i7a91DTY0hS1REXVgg/9mR5LrRIu3ui6nX
+         +gxElPPx478f7TF0BZapsvKQjpTJIlNl20ZRNXuNa2FEDuHmI4xDyzf7x1w6cYdsWu
+         c5a8G3MSsiSELCuUFNIKrgn9FUCSSAlplMKkBTj7VrAFjcoXRDZMG9oAh/z9EYVlHO
+         X0kbiLI3oCDds98BmuyKZKC9fC8y4hx67dAInrZ3MEO9aHNdO5GiNPMgK5N08Na2uA
+         74IU4GBpqmGirHNS6o2phbNC9sOxh/qDwPxUoCdOhx6Gf1SVz/6Cf2Kcc+UIo6ndBf
+         pgTB0FFUgqjDg==
+Received: by mail-ed1-f47.google.com with SMTP id x21so27785606eds.4;
+        Wed, 24 Mar 2021 07:09:18 -0700 (PDT)
+X-Gm-Message-State: AOAM530hk/DAqtBOJKnISE9EZEUK/4V1cWvRR9reFp9eJTvxSaitvGPp
+        9RcWF8kp3DAf7LI06QAbWfzF+df5n0md3I70Tg==
+X-Google-Smtp-Source: ABdhPJyX/mnmW8cOTU8Sw4MGnxx016fUPpFqLwU8o1JmDdCtaDbw6aJLQmZ4vQbXdwM/zUEMfjI7V7vjMjhQEE+N8hQ=
+X-Received: by 2002:a05:6402:c88:: with SMTP id cm8mr3662119edb.62.1616594956908;
+ Wed, 24 Mar 2021 07:09:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8735wlmuxh.fsf@waldekranz.com>
+References: <20210318104036.3175910-1-lee.jones@linaro.org>
+ <CAL_JsqKueTWKbXNuN+74COR1LT6XLyw61GqCLpOgv-knNtEdKg@mail.gmail.com> <20210323083631.GE2916463@dell>
+In-Reply-To: <20210323083631.GE2916463@dell>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 24 Mar 2021 08:09:04 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqL_V-BgZpSCLL4JQHF3OC-60RPeExkDLf-uSohnpcBdOA@mail.gmail.com>
+Message-ID: <CAL_JsqL_V-BgZpSCLL4JQHF3OC-60RPeExkDLf-uSohnpcBdOA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/10] Rid W=1 warnings from OF
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Colin Cross <ccross@android.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Josh Cartwright <joshc@codeaurora.org>,
+        Kees Cook <keescook@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        netdev <netdev@vger.kernel.org>,
+        Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tony Luck <tony.luck@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 10:17:30PM +0100, Tobias Waldekranz wrote:
-> > I don't see any place in the network stack that recalculates the FCS if
-> > NETIF_F_RXALL is set. Additionally, without NETIF_F_RXFCS, I don't even
-> > know how could the stack even tell a packet with bad FCS apart from one
-> > with good FCS. If NETIF_F_RXALL is set, then once a packet is received,
-> > it's taken for granted as good.
-> 
-> Right, but there is a difference between a user explicitly enabling it
-> on a device and us enabling it because we need it internally in the
-> kernel.
-> 
-> In the first scenario, the user can hardly complain as they have
-> explicitly requested to see all packets on that device. That would not
-> be true in the second one because there would be no way for the user to
-> turn it off. It feels like you would end up in a similar situation as
-> with the user- vs. kernel- promiscuous setting.
-> 
-> It seems to me if we enable it, we are responsible for not letting crap
-> through to the port netdevs.
+On Tue, Mar 23, 2021 at 2:36 AM Lee Jones <lee.jones@linaro.org> wrote:
+>
+> On Mon, 22 Mar 2021, Rob Herring wrote:
+>
+> > On Thu, Mar 18, 2021 at 4:40 AM Lee Jones <lee.jones@linaro.org> wrote:
+> > >
+> > > This set is part of a larger effort attempting to clean-up W=1
+> > > kernel builds, which are currently overwhelmingly riddled with
+> > > niggly little warnings.
+> > >
+> > > v2:
+> > >  - Provided some descriptions to exported functions
+> > >
+> > > Lee Jones (10):
+> > >   of: device: Fix function name in header and provide missing
+> > >     descriptions
+> > >   of: dynamic: Fix incorrect parameter name and provide missing
+> > >     descriptions
+> > >   of: platform: Demote kernel-doc abuse
+> > >   of: base: Fix some formatting issues and provide missing descriptions
+> > >   of: property: Provide missing member description and remove excess
+> > >     param
+> > >   of: address: Provide descriptions for 'of_address_to_resource's params
+> > >   of: fdt: Demote kernel-doc abuses and fix function naming
+> > >   of: of_net: Provide function name and param description
+> > >   of: overlay: Fix function name disparity
+> > >   of: of_reserved_mem: Demote kernel-doc abuses
+> > >
+> > >  drivers/of/address.c         |  3 +++
+> > >  drivers/of/base.c            | 16 +++++++++++-----
+> > >  drivers/of/device.c          |  7 ++++++-
+> > >  drivers/of/dynamic.c         |  4 +++-
+> > >  drivers/of/fdt.c             | 23 ++++++++++++-----------
+> > >  drivers/of/of_net.c          |  3 +++
+> > >  drivers/of/of_reserved_mem.c |  6 +++---
+> > >  drivers/of/overlay.c         |  2 +-
+> > >  drivers/of/platform.c        |  2 +-
+> > >  drivers/of/property.c        |  2 +-
+> > >  10 files changed, 44 insertions(+), 24 deletions(-)
+> >
+> > I still see some warnings (note this is with DT files added to doc
+> > build). Can you send follow-up patches:
+> >
+> > ../include/linux/of.h:1193: warning: Function parameter or member
+> > 'output' not described in 'of_property_read_string_index'
+> > ../include/linux/of.h:1193: warning: Excess function parameter
+> > 'out_string' description in 'of_property_read_string_index'
+> > ../include/linux/of.h:1461: warning: cannot understand function
+> > prototype: 'enum of_overlay_notify_action '
+> > ../drivers/of/base.c:1781: warning: Excess function parameter 'prob'
+> > description in '__of_add_property'
+> > ../drivers/of/base.c:1804: warning: Excess function parameter 'prob'
+> > description in 'of_add_property'
+> > ../drivers/of/base.c:1855: warning: Function parameter or member
+> > 'prop' not described in 'of_remove_property'
+> > ../drivers/of/base.c:1855: warning: Excess function parameter 'prob'
+> > description in 'of_remove_property'
+>
+> You don't want much do you! ;)
 
-I think there exists an intermediate approach between processing the
-frames on the RX queue and installing a soft parser.
+Hey, want to fix all the schema warnings for me? ;)
 
-The BMI of FMan RX ports has a configurable pipeline through Next
-Invoked Actions (NIA). Through the FMBM_RFNE register (Rx Frame Next
-Engine), it is possible to change the Next Invoked Action from the
-default value (which is the hardware parser). You can choose to make the
-Buffer Manager Interface enqueue the packet directly to the Queue
-Manager Interface (QMI). This will effectively bypass the hardware
-parser, so DSA frames will never be sent to the error queue if they have
-an invalid EtherType/Length field.
+>
+> Sure, I plan to clean up all of the kernel with subsequent patches.
+>
+> > BTW, there some more which I guess W=1 doesn't find:
+> >
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:906: WARNING: Block quote ends without a blank
+> > line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1465: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1469: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1473: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1517: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1521: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1526: WARNING: Unexpected indentation.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1528: WARNING: Block quote ends without a blank
+> > line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1529: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1533: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:19:
+> > ../drivers/of/base.c:1705: WARNING: Definition list ends without a
+> > blank line; unexpected unindent.
+> > /home/rob/proj/git/linux-dt/Documentation/driver-api/devicetree:49:
+> > ../drivers/of/overlay.c:1183: WARNING: Inline emphasis start-string
+> > without end-string.
+>
+> What command did you use to find these?
 
-Additionally, frames with a bad FCS should still be discarded, as that
-is done by the MAC (an earlier stage compared to the BMI).
+make htmldocs
+
+(with the DT files added to the docs)
+
+These turn out to be the tip of the iceberg. There's all sorts of
+formatting issues. Tabs are a problem and the 'Return' section is
+wrong. These are only found looking at the output.
+
+Rob
