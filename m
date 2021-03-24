@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E0E3482AE
+	by mail.lfdr.de (Postfix) with ESMTP id 547F53482AF
 	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238175AbhCXUPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:15:21 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:33283 "EHLO
+        id S238181AbhCXUPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:15:23 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:52527 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237868AbhCXUO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:57 -0400
+        by vger.kernel.org with ESMTP id S238121AbhCXUO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:14:59 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 236F35C015A;
-        Wed, 24 Mar 2021 16:14:57 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 647AB5C015B;
+        Wed, 24 Mar 2021 16:14:59 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:57 -0400
+  by compute3.internal (MEProxy); Wed, 24 Mar 2021 16:14:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=kTxBMvuO1LcEfM3cWU8i1UoxNZTCC/5O6tnUCpvguS4=; b=dOeQDXJH
-        dZoYSeUVFkUxuEROn0m0kXoZ2uaSK8pMVsO4FE/Iw9E/T5qPTu3NLhWzmg1KPiw6
-        csS3YOjG7Bd3LPl3qBd291Rn52dzfPK9YqkcOOgbwziRdBdR0Exb4Ea0VAi8CJdh
-        UVWCn4U9Y1QX/XVyYxWfo++rk+2Sw9ITOkwhzbwJQJZfzKxCkOddWqKyATdxtBqp
-        1WusK87mHBoGtfJwZ5DCoVkpVRiTcJJTUhEsSGr9kPT1/CCuSYFMPBzRgueqCaIt
-        Wd9u6os3vIVZScpvRPHJcZPGRUEAwko/VsOvrRceXdd7PyHyh/c1m0VlBzuu2Epq
-        wJNC8gu4q3ILmg==
-X-ME-Sender: <xms:wZ1bYJryNUcUFQLZ0Qk-kaU3FNiXTnnEHXU3OEEvF-CtbCyFlu4HKw>
-    <xme:wZ1bYLrD3EMlNqV10FVgGh0kqp3qjBYF6_RbRo_9zTRmgVXdKKHEpWvwxlB4j2bOm
-    suc3-8CjfcMOdc>
+        fm2; bh=9YxUJmaic4ikWoVPwmF/iPAjpSEDDux4ZdreCWT9gHA=; b=i41c3qPs
+        FJrrMmG6siNtMs5aLh7Erj1mom+oONmcdA03h+imzC2sfLVvo8hBxdfCMc/E2ltX
+        nCWZTIA2vPZsOt+EPCCXW/xYeH4BeOa7xnQAQzVH5883a/6DUIz3V6NO4Lk7jXW0
+        o2qgvGiVEIzIq8GZ3Xlu4U26N4DuUGAxx6445TONhgistw9O+XZ6CS71gsZtiYrM
+        YnIIdimC5paXDZI9woDRkRUPDMmUt46EsUo99viOCq2Cgn220F+dxkm1P5SwpTaE
+        XuPYxrgsd/lBCATCCOxbVL/nQqWqgeLLp4iQKLMCkt+u035kt1SG+2xOEsxuRKqY
+        hh3QzLSJkSy1Jw==
+X-ME-Sender: <xms:w51bYAflnzDHwTk0mbQMdbdhOBlNjnW5HveZppIqDjtGkUF1VHeb6Q>
+    <xme:w51bYCJPwvjkjinuJ6zYpaSLGRl-x6nXAcgmiEfwNZH8_Vur9YVtnc66Z9vj48J-j
+    BRo01iuQdImfwo>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegkedgudefgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
     ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeg
-    geenucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    geenucevlhhushhtvghrufhiiigvpeehnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:wZ1bYGPKsO8_WAzybVmhMWzfapcT6kLtGa_-JSouZgLi7yRxZmFLSQ>
-    <xmx:wZ1bYE6KQpbXJkirmoby8ASnGgW-o_KQ5fzaWeNMGbE1WGjL7sWBlg>
-    <xmx:wZ1bYI67wiIBfXnni7Lg6L_4nYAM_3iX0L-MjFxO0pdu1B2LEnmyaw>
-    <xmx:wZ1bYD2c8UrlcEcX7GuVPO90SY5wES08iC9MdJVfVzLUWRHcJBpEIA>
+X-ME-Proxy: <xmx:w51bYOYyUY5BKatVVp-it1DKISFO2mbU9kotKa7D4DXE6VYqxf9oZA>
+    <xmx:w51bYNs8AK6rDxxJmPZxCYGlyReH9uEDj8-cagGieng4nXIubqA0BA>
+    <xmx:w51bYLu0qV9E0W842alanC11UzVyBC_i5mUMOOYBk-GWbYCe1N4pSQ>
+    <xmx:w51bYBTSb1QYddOqyulh7FLvK3VRaAaTUSwj-0ddmO_ZpJKlfEBu4w>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 28A60240422;
-        Wed, 24 Mar 2021 16:14:54 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7ED99240422;
+        Wed, 24 Mar 2021 16:14:57 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 06/10] mlxsw: reg: Add Router Adjacency Table Activity Dump Register
-Date:   Wed, 24 Mar 2021 22:14:20 +0200
-Message-Id: <20210324201424.157387-7-idosch@idosch.org>
+Subject: [PATCH net-next 07/10] mlxsw: spectrum_router: Periodically update activity of nexthop buckets
+Date:   Wed, 24 Mar 2021 22:14:21 +0200
+Message-Id: <20210324201424.157387-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210324201424.157387-1-idosch@idosch.org>
 References: <20210324201424.157387-1-idosch@idosch.org>
@@ -64,90 +64,197 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The RATRAD register is used to dump and optionally clear activity bits
-of router adjacency table entries. Will be used by the next patch to
-query and clear the activity of nexthop buckets in a resilient nexthop
-group.
+The kernel periodically checks the idle time of nexthop buckets to
+determine if they are idle and can be re-populated with a new nexthop.
+
+When the resilient nexthop group is offloaded to hardware, the kernel
+will not see activity on nexthop buckets unless it is reported from
+hardware.
+
+Therefore, periodically (every 1 second) query the hardware for activity
+of adjacency entries used as part of a resilient nexthop group and
+report it to the nexthop code.
+
+The activity is only queried if resilient nexthop groups are in use. The
+delayed work is canceled otherwise.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 55 +++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 100 ++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |   2 +
+ 2 files changed, 102 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index d33c79ad1810..900b4bf5bb5b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8130,6 +8130,60 @@ mlxsw_reg_rtdp_ipip4_pack(char *payload, u16 irif,
- 	mlxsw_reg_rtdp_ipip_expected_gre_key_set(payload, expected_gre_key);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 862c8667813b..1d74341596da 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -2913,6 +2913,7 @@ struct mlxsw_sp_nexthop_group_info {
+ 	u8 adj_index_valid:1,
+ 	   gateway:1, /* routes using the group use a gateway */
+ 	   is_resilient:1;
++	struct list_head list; /* member in nh_res_grp_list */
+ 	struct mlxsw_sp_nexthop nexthops[0];
+ #define nh_rif	nexthops[0].rif
+ };
+@@ -4373,8 +4374,85 @@ static void mlxsw_sp_nexthop_rif_gone_sync(struct mlxsw_sp *mlxsw_sp,
+ 	}
  }
  
-+/* RATRAD - Router Adjacency Table Activity Dump Register
-+ * ------------------------------------------------------
-+ * The RATRAD register is used to dump and optionally clear activity bits of
-+ * router adjacency table entries.
-+ */
-+#define MLXSW_REG_RATRAD_ID 0x8022
-+#define MLXSW_REG_RATRAD_LEN 0x210
-+
-+MLXSW_REG_DEFINE(ratrad, MLXSW_REG_RATRAD_ID, MLXSW_REG_RATRAD_LEN);
-+
-+enum {
-+	/* Read activity */
-+	MLXSW_REG_RATRAD_OP_READ_ACTIVITY,
-+	/* Read and clear activity */
-+	MLXSW_REG_RATRAD_OP_READ_CLEAR_ACTIVITY,
-+};
-+
-+/* reg_ratrad_op
-+ * Access: Operation
-+ */
-+MLXSW_ITEM32(reg, ratrad, op, 0x00, 30, 2);
-+
-+/* reg_ratrad_ecmp_size
-+ * ecmp_size is the amount of sequential entries from adjacency_index. Valid
-+ * ranges:
-+ * Spectrum-1: 32-64, 512, 1024, 2048, 4096
-+ * Spectrum-2/3: 32-128, 256, 512, 1024, 2048, 4096
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, ratrad, ecmp_size, 0x00, 0, 13);
-+
-+/* reg_ratrad_adjacency_index
-+ * Index into the adjacency table.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, ratrad, adjacency_index, 0x04, 0, 24);
-+
-+/* reg_ratrad_activity_vector
-+ * Activity bit per adjacency index.
-+ * Bits higher than ecmp_size are reserved.
-+ * Access: RO
-+ */
-+MLXSW_ITEM_BIT_ARRAY(reg, ratrad, activity_vector, 0x10, 0x200, 1);
-+
-+static inline void mlxsw_reg_ratrad_pack(char *payload, u32 adjacency_index,
-+					 u16 ecmp_size)
++static void
++mlxsw_sp_nh_grp_activity_get(struct mlxsw_sp *mlxsw_sp,
++			     const struct mlxsw_sp_nexthop_group *nh_grp,
++			     unsigned long *activity)
 +{
-+	MLXSW_REG_ZERO(ratrad, payload);
-+	mlxsw_reg_ratrad_op_set(payload,
-+				MLXSW_REG_RATRAD_OP_READ_CLEAR_ACTIVITY);
-+	mlxsw_reg_ratrad_ecmp_size_set(payload, ecmp_size);
-+	mlxsw_reg_ratrad_adjacency_index_set(payload, adjacency_index);
++	char *ratrad_pl;
++	int i, err;
++
++	ratrad_pl = kmalloc(MLXSW_REG_RATRAD_LEN, GFP_KERNEL);
++	if (!ratrad_pl)
++		return;
++
++	mlxsw_reg_ratrad_pack(ratrad_pl, nh_grp->nhgi->adj_index,
++			      nh_grp->nhgi->count);
++	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ratrad), ratrad_pl);
++	if (err)
++		goto out;
++
++	for (i = 0; i < nh_grp->nhgi->count; i++) {
++		if (!mlxsw_reg_ratrad_activity_vector_get(ratrad_pl, i))
++			continue;
++		bitmap_set(activity, i, 1);
++	}
++
++out:
++	kfree(ratrad_pl);
 +}
 +
- /* RIGR-V2 - Router Interface Group Register Version 2
-  * ---------------------------------------------------
-  * The RIGR_V2 register is used to add, remove and query egress interface list
-@@ -12114,6 +12168,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(rtar),
- 	MLXSW_REG(ratr),
- 	MLXSW_REG(rtdp),
-+	MLXSW_REG(ratrad),
- 	MLXSW_REG(rdpm),
- 	MLXSW_REG(ricnt),
- 	MLXSW_REG(rrcr),
+ #define MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL 1000 /* ms */
+ 
++static void
++mlxsw_sp_nh_grp_activity_update(struct mlxsw_sp *mlxsw_sp,
++				const struct mlxsw_sp_nexthop_group *nh_grp)
++{
++	unsigned long *activity;
++
++	activity = bitmap_zalloc(nh_grp->nhgi->count, GFP_KERNEL);
++	if (!activity)
++		return;
++
++	mlxsw_sp_nh_grp_activity_get(mlxsw_sp, nh_grp, activity);
++	nexthop_res_grp_activity_update(mlxsw_sp_net(mlxsw_sp), nh_grp->obj.id,
++					nh_grp->nhgi->count, activity);
++
++	bitmap_free(activity);
++}
++
++static void
++mlxsw_sp_nh_grp_activity_work_schedule(struct mlxsw_sp *mlxsw_sp)
++{
++	unsigned int interval = MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL;
++
++	mlxsw_core_schedule_dw(&mlxsw_sp->router->nh_grp_activity_dw,
++			       msecs_to_jiffies(interval));
++}
++
++static void mlxsw_sp_nh_grp_activity_work(struct work_struct *work)
++{
++	struct mlxsw_sp_nexthop_group_info *nhgi;
++	struct mlxsw_sp_router *router;
++	bool reschedule = false;
++
++	router = container_of(work, struct mlxsw_sp_router,
++			      nh_grp_activity_dw.work);
++
++	mutex_lock(&router->lock);
++
++	list_for_each_entry(nhgi, &router->nh_res_grp_list, list) {
++		mlxsw_sp_nh_grp_activity_update(router->mlxsw_sp, nhgi->nh_grp);
++		reschedule = true;
++	}
++
++	mutex_unlock(&router->lock);
++
++	if (!reschedule)
++		return;
++	mlxsw_sp_nh_grp_activity_work_schedule(router->mlxsw_sp);
++}
++
+ static int
+ mlxsw_sp_nexthop_obj_single_validate(struct mlxsw_sp *mlxsw_sp,
+ 				     const struct nh_notifier_single_info *nh,
+@@ -4632,6 +4710,15 @@ mlxsw_sp_nexthop_obj_group_info_init(struct mlxsw_sp *mlxsw_sp,
+ 		goto err_group_refresh;
+ 	}
+ 
++	/* Add resilient nexthop groups to a list so that the activity of their
++	 * nexthop buckets will be periodically queried and cleared.
++	 */
++	if (nhgi->is_resilient) {
++		if (list_empty(&mlxsw_sp->router->nh_res_grp_list))
++			mlxsw_sp_nh_grp_activity_work_schedule(mlxsw_sp);
++		list_add(&nhgi->list, &mlxsw_sp->router->nh_res_grp_list);
++	}
++
+ 	return 0;
+ 
+ err_group_refresh:
+@@ -4650,8 +4737,15 @@ mlxsw_sp_nexthop_obj_group_info_fini(struct mlxsw_sp *mlxsw_sp,
+ 				     struct mlxsw_sp_nexthop_group *nh_grp)
+ {
+ 	struct mlxsw_sp_nexthop_group_info *nhgi = nh_grp->nhgi;
++	struct mlxsw_sp_router *router = mlxsw_sp->router;
+ 	int i;
+ 
++	if (nhgi->is_resilient) {
++		list_del(&nhgi->list);
++		if (list_empty(&mlxsw_sp->router->nh_res_grp_list))
++			cancel_delayed_work(&router->nh_grp_activity_dw);
++	}
++
+ 	for (i = nhgi->count - 1; i >= 0; i--) {
+ 		struct mlxsw_sp_nexthop *nh = &nhgi->nexthops[i];
+ 
+@@ -9652,6 +9746,10 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ 	if (err)
+ 		goto err_ll_op_ctx_init;
+ 
++	INIT_LIST_HEAD(&mlxsw_sp->router->nh_res_grp_list);
++	INIT_DELAYED_WORK(&mlxsw_sp->router->nh_grp_activity_dw,
++			  mlxsw_sp_nh_grp_activity_work);
++
+ 	INIT_LIST_HEAD(&mlxsw_sp->router->nexthop_neighs_list);
+ 	err = __mlxsw_sp_router_init(mlxsw_sp);
+ 	if (err)
+@@ -9775,6 +9873,7 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ err_rifs_init:
+ 	__mlxsw_sp_router_fini(mlxsw_sp);
+ err_router_init:
++	cancel_delayed_work_sync(&mlxsw_sp->router->nh_grp_activity_dw);
+ 	mlxsw_sp_router_ll_op_ctx_fini(router);
+ err_ll_op_ctx_init:
+ 	mlxsw_sp_router_xm_fini(mlxsw_sp);
+@@ -9806,6 +9905,7 @@ void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
+ 	mlxsw_sp_ipips_fini(mlxsw_sp);
+ 	mlxsw_sp_rifs_fini(mlxsw_sp);
+ 	__mlxsw_sp_router_fini(mlxsw_sp);
++	cancel_delayed_work_sync(&mlxsw_sp->router->nh_grp_activity_dw);
+ 	mlxsw_sp_router_ll_op_ctx_fini(mlxsw_sp->router);
+ 	mlxsw_sp_router_xm_fini(mlxsw_sp);
+ 	mutex_destroy(&mlxsw_sp->router->lock);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index b85c5f6c2262..be7708a375e1 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -80,6 +80,8 @@ struct mlxsw_sp_router {
+ 	struct mlxsw_sp_router_xm *xm;
+ 	const struct mlxsw_sp_adj_grp_size_range *adj_grp_size_ranges;
+ 	size_t adj_grp_size_ranges_count;
++	struct delayed_work nh_grp_activity_dw;
++	struct list_head nh_res_grp_list;
+ };
+ 
+ struct mlxsw_sp_fib_entry_priv {
 -- 
 2.30.2
 
