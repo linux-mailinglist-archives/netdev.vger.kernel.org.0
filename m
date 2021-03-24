@@ -2,99 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E91347974
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:20:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E57347952
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:16:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbhCXNU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 09:20:29 -0400
-Received: from mga18.intel.com ([134.134.136.126]:55486 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234852AbhCXNUK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 09:20:10 -0400
-IronPort-SDR: vqtXr38qjjINZ/SV90fGC9u6oE844BSs5H9oqq0yP9mmSISOjxEwiVA4nkq69m9cI+EHtmcMi0
- jmpnlsY+mQFw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="178257396"
-X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
-   d="scan'208";a="178257396"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 06:20:08 -0700
-IronPort-SDR: +BvFiJ81LORotHafL8+gXDF9is7UnaqfRprgC429p7UniZ/NGm7i4V/ONnw/q4mjPV4zBbF4hq
- 3wt+mPd+pbeA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
-   d="scan'208";a="514185134"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Mar 2021 06:20:06 -0700
-Date:   Wed, 24 Mar 2021 14:09:18 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com, john.fastabend@gmail.com
-Subject: Re: [PATCH v3 bpf-next 06/17] libbpf: xsk: use bpf_link
-Message-ID: <20210324130918.GA6932@ranger.igk.intel.com>
-References: <20210322205816.65159-1-maciej.fijalkowski@intel.com>
- <20210322205816.65159-7-maciej.fijalkowski@intel.com>
- <87wnty7teq.fsf@toke.dk>
+        id S234858AbhCXNQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 09:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234620AbhCXNPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:15:32 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE846C0613DE
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:31 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id j26so21396449iog.13
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oPFA6rVxHKxBQf4a3Xn6w1bxyecBN3XKdCmIzpzW6iI=;
+        b=YUN+OMrgxvni1bhoTXWvikyICShXhRAcIYY65R2qWT8dKQ9C2LhB7m2uAovivNnWTS
+         mE6S/u3FzHduklf/WYV8yE9Y/OWri7YCehdUpiPcAPyyzropeRmcqJ8YSUwJ5A3p6sXB
+         Q3yXE+rQk05eziqAc5ysqpvmusGf0p9cEYQaSBeEWysugZ5t4b79osPH3aPebGwEGZO/
+         1rvnGlMV8vo+fCBl3E4ZZFWRw+nmC7nyy6kR1nehlMIunL2E9QA2f9QLnXmA/l7BgmiU
+         A3BrrqR9xxW05Sgq8JzuW/JyOF4JL+Wa37BpALJ0IMp7sr8odq2BEtDeHcFUQAODZ0Np
+         B/aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oPFA6rVxHKxBQf4a3Xn6w1bxyecBN3XKdCmIzpzW6iI=;
+        b=j6B1i9Zq3Zj6mmyIFnq7miEFV2Ajr1y93SL4YT89C1FSSvkMU8ZCM8VWt6KTJBWg8E
+         MvgE6L/rivhtPZh4a3KArpp+9FqvyH2cvpWs0PCMy3gMPd20XiJezBgxQQmJ4nQwwLv+
+         zJQ2jEDth/UJ1kYIszJfa3nDXyAQP5ytKIiRmy4mOemkk4KMmNafdONbJQnyeQZokLbw
+         PlCv4oq6FxyUn+UFRYE9cJUa6LErHhCeIMMhMV/Ztfyp4M6qUFqav9gp7nTIPfp8WiF2
+         fSG1oLTBAdIZe5d9hsg/fbRFvTtxRx8xjnky2ovtYmLjsjr3ImXeHig1sABNRMLsxoAX
+         DhtQ==
+X-Gm-Message-State: AOAM532spxixCipZkQaFnrFRarRcVpYOrcHg80vxJcU3xwLjBXEMjm/D
+        3jsmpcnhCC0paHqeIhkVftaFAg==
+X-Google-Smtp-Source: ABdhPJw5nl75LHisWPGEDM7ykRNxz1p6iL7XlaPCh2TtwZVdsbyrweDkGyv7pUd9gGuTMW/4xNo7Eg==
+X-Received: by 2002:a02:ab94:: with SMTP id t20mr2883601jan.49.1616591731092;
+        Wed, 24 Mar 2021 06:15:31 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id n7sm1160486ile.12.2021.03.24.06.15.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Mar 2021 06:15:30 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] net: ipa: versions and registers
+Date:   Wed, 24 Mar 2021 08:15:22 -0500
+Message-Id: <20210324131528.2369348-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87wnty7teq.fsf@toke.dk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 10:47:09PM +0100, Toke Høiland-Jørgensen wrote:
-> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> 
-> > Currently, if there are multiple xdpsock instances running on a single
-> > interface and in case one of the instances is terminated, the rest of
-> > them are left in an inoperable state due to the fact of unloaded XDP
-> > prog from interface.
-> >
-> > Consider the scenario below:
-> >
-> > // load xdp prog and xskmap and add entry to xskmap at idx 10
-> > $ sudo ./xdpsock -i ens801f0 -t -q 10
-> >
-> > // add entry to xskmap at idx 11
-> > $ sudo ./xdpsock -i ens801f0 -t -q 11
-> >
-> > terminate one of the processes and another one is unable to work due to
-> > the fact that the XDP prog was unloaded from interface.
-> >
-> > To address that, step away from setting bpf prog in favour of bpf_link.
-> > This means that refcounting of BPF resources will be done automatically
-> > by bpf_link itself.
-> >
-> > Provide backward compatibility by checking if underlying system is
-> > bpf_link capable. Do this by looking up/creating bpf_link on loopback
-> > device. If it failed in any way, stick with netlink-based XDP prog.
-> > Otherwise, use bpf_link-based logic.
-> 
-> So how is the caller supposed to know which of the cases happened?
-> Presumably they need to do their own cleanup in that case? AFAICT you're
-> changing the code to always clobber the existing XDP program on detach
-> in the fallback case, which seems like a bit of an aggressive change? :)
+Version 2 of this series adds kernel-doc descriptions for all
+members of the ipa_version enumerated type in patch 2.
 
-Sorry Toke, I was offline yesterday.
-Yeah once again I went too far and we shouldn't do:
+The original description of the series is below.
 
-bpf_set_link_xdp_fd(xsk->ctx->ifindex, -1, 0);
+					-Alex
 
-if xsk_lookup_bpf_maps(xsk) returned non-zero value which implies that the
-underlying prog is not AF_XDP related.
+This series is sort of a mix of things, generally related to
+updating IPA versions and register definitions.
 
-closing prog_fd (and link_fd under the condition that system is bpf_link
-capable) is enough for that case.
+The first patch fixes some version-related tests throughout the code
+so the conditions are valid for IPA versions other than the two that
+are currently supported.  Support for additional versions is
+forthcoming, and this is a preparatory step.
 
-If we agree on that and there's nothing else that I missed, I'll send a
-v4.
+The second patch adds to the set of defined IPA versions, to include
+all versions between 3.0 and 4.11.
 
-Thanks for review!
+The next defines an endpoint initialization register that was
+previously not being configured.  We now initialize that register
+(so that NAT is explicitly disabled) on all AP endpoints.
 
-> 
-> -Toke
-> 
+The fourth adds support for an extra bit in a field in a register,
+which is present starting at IPA v4.5.
+
+The last two are sort of standalone.  One just moves a function
+definition and makes it private.  The other increases the number of
+GSI channels and events supported by the driver, sufficient for IPA
+v4.5.
+
+					-Alex
+
+
+Alex Elder (6):
+  net: ipa: reduce IPA version assumptions
+  net: ipa: update version definitions
+  net: ipa: define the ENDP_INIT_NAT register
+  net: ipa: limit local processing context address
+  net: ipa: move ipa_aggr_granularity_val()
+  net: ipa: increase channels and events
+
+ drivers/net/ipa/gsi.c          |  8 +++----
+ drivers/net/ipa/gsi.h          |  4 ++--
+ drivers/net/ipa/ipa_cmd.c      | 26 ++++++++++++---------
+ drivers/net/ipa/ipa_endpoint.c | 42 ++++++++++++++++++++++++----------
+ drivers/net/ipa/ipa_main.c     | 21 ++++++++++++++---
+ drivers/net/ipa/ipa_mem.c      |  6 +++--
+ drivers/net/ipa/ipa_qmi.c      |  2 +-
+ drivers/net/ipa/ipa_reg.h      | 40 ++++++++++++++++++++------------
+ drivers/net/ipa/ipa_version.h  | 29 +++++++++++++++++------
+ 9 files changed, 121 insertions(+), 57 deletions(-)
+
+-- 
+2.27.0
+
