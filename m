@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 081FA346ECF
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16DCC346ECD
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:32:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234625AbhCXBb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:31:56 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:60560 "EHLO
+        id S234616AbhCXBbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 21:31:55 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:60566 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234485AbhCXBbR (ORCPT
+        with ESMTP id S234486AbhCXBbR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:31:17 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 18866630C3;
+        by mail.netfilter.org (Postfix) with ESMTPSA id B1257630CA;
         Wed, 24 Mar 2021 02:31:05 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next,v2 07/24] netfilter: flowtable: add xmit path types
-Date:   Wed, 24 Mar 2021 02:30:38 +0100
-Message-Id: <20210324013055.5619-8-pablo@netfilter.org>
+Subject: [PATCH net-next,v2 08/24] netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
+Date:   Wed, 24 Mar 2021 02:30:39 +0100
+Message-Id: <20210324013055.5619-9-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210324013055.5619-1-pablo@netfilter.org>
 References: <20210324013055.5619-1-pablo@netfilter.org>
@@ -29,165 +29,204 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the xmit_type field that defines the two supported xmit paths in the
-flowtable data plane, which are the neighbour and the xfrm xmit paths.
-This patch prepares for new flowtable xmit path types to come.
+Obtain the ingress device in the tuple from the route in the reply
+direction. Use dev_fill_forward_path() instead to get the real ingress
+device for this flow.
+
+Fall back to use the ingress device that the IP forwarding route
+provides if:
+
+- dev_fill_forward_path() finds no real ingress device.
+- the ingress device that is obtained is not part of the flowtable
+  devices.
+- this route has a xfrm policy.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
-v2: resolve conflicts from rebasing on top of net-next: inconditional
-    dst_check() call.
+v2: no changes.
 
- include/net/netfilter/nf_flow_table.h | 11 +++++++++--
- net/netfilter/nf_flow_table_core.c    |  1 +
- net/netfilter/nf_flow_table_ip.c      | 14 ++++++++------
- net/netfilter/nft_flow_offload.c      | 20 ++++++++++++++++++--
- 4 files changed, 36 insertions(+), 10 deletions(-)
+ include/net/netfilter/nf_flow_table.h |   3 +
+ net/netfilter/nf_flow_table_core.c    |   3 +-
+ net/netfilter/nft_flow_offload.c      | 102 +++++++++++++++++++++++++-
+ 3 files changed, 103 insertions(+), 5 deletions(-)
 
 diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index fb165697c8a1..828fcfbd5e6f 100644
+index 828fcfbd5e6f..dca9fc66405f 100644
 --- a/include/net/netfilter/nf_flow_table.h
 +++ b/include/net/netfilter/nf_flow_table.h
-@@ -89,6 +89,11 @@ enum flow_offload_tuple_dir {
- };
- #define FLOW_OFFLOAD_DIR_MAX	IP_CT_DIR_MAX
- 
-+enum flow_offload_xmit_type {
-+	FLOW_OFFLOAD_XMIT_NEIGH		= 0,
-+	FLOW_OFFLOAD_XMIT_XFRM,
-+};
-+
- struct flow_offload_tuple {
- 	union {
- 		struct in_addr		src_v4;
-@@ -111,7 +116,8 @@ struct flow_offload_tuple {
- 	/* All members above are keys for lookups, see flow_offload_hash(). */
- 	struct { }			__hash;
- 
--	u8				dir;
-+	u8				dir:6,
-+					xmit_type:2;
- 
- 	u16				mtu;
- 
-@@ -158,7 +164,8 @@ static inline __s32 nf_flow_timeout_delta(unsigned int timeout)
- 
+@@ -165,6 +165,9 @@ static inline __s32 nf_flow_timeout_delta(unsigned int timeout)
  struct nf_flow_route {
  	struct {
--		struct dst_entry	*dst;
-+		struct dst_entry		*dst;
-+		enum flow_offload_xmit_type	xmit_type;
+ 		struct dst_entry		*dst;
++		struct {
++			u32			ifindex;
++		} in;
+ 		enum flow_offload_xmit_type	xmit_type;
  	} tuple[FLOW_OFFLOAD_DIR_MAX];
  };
- 
 diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 8ffd3f3c288c..573be4d1efb5 100644
+index 573be4d1efb5..51e3e1b08e1c 100644
 --- a/net/netfilter/nf_flow_table_core.c
 +++ b/net/netfilter/nf_flow_table_core.c
-@@ -95,6 +95,7 @@ static int flow_offload_fill_route(struct flow_offload *flow,
+@@ -79,7 +79,6 @@ static int flow_offload_fill_route(struct flow_offload *flow,
+ 				   enum flow_offload_tuple_dir dir)
+ {
+ 	struct flow_offload_tuple *flow_tuple = &flow->tuplehash[dir].tuple;
+-	struct dst_entry *other_dst = route->tuple[!dir].dst;
+ 	struct dst_entry *dst = route->tuple[dir].dst;
+ 
+ 	if (!dst_hold_safe(route->tuple[dir].dst))
+@@ -94,7 +93,7 @@ static int flow_offload_fill_route(struct flow_offload *flow,
+ 		break;
  	}
  
- 	flow_tuple->iifidx = other_dst->dev->ifindex;
-+	flow_tuple->xmit_type = route->tuple[dir].xmit_type;
+-	flow_tuple->iifidx = other_dst->dev->ifindex;
++	flow_tuple->iifidx = route->tuple[dir].in.ifindex;
+ 	flow_tuple->xmit_type = route->tuple[dir].xmit_type;
  	flow_tuple->dst_cache = dst;
  
- 	return 0;
-diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-index 3be58b6d60af..e9bef38a356b 100644
---- a/net/netfilter/nf_flow_table_ip.c
-+++ b/net/netfilter/nf_flow_table_ip.c
-@@ -235,8 +235,6 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 
- 	dir = tuplehash->tuple.dir;
- 	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
--	rt = (struct rtable *)flow->tuplehash[dir].tuple.dst_cache;
--	outdev = rt->dst.dev;
- 
- 	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)))
- 		return NF_ACCEPT;
-@@ -265,13 +263,16 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 	if (flow_table->flags & NF_FLOWTABLE_COUNTER)
- 		nf_ct_acct_update(flow->ct, tuplehash->tuple.dir, skb->len);
- 
--	if (unlikely(dst_xfrm(&rt->dst))) {
-+	rt = (struct rtable *)tuplehash->tuple.dst_cache;
-+
-+	if (unlikely(tuplehash->tuple.xmit_type == FLOW_OFFLOAD_XMIT_XFRM)) {
- 		memset(skb->cb, 0, sizeof(struct inet_skb_parm));
- 		IPCB(skb)->iif = skb->dev->ifindex;
- 		IPCB(skb)->flags = IPSKB_FORWARDED;
- 		return nf_flow_xmit_xfrm(skb, state, &rt->dst);
- 	}
- 
-+	outdev = rt->dst.dev;
- 	skb->dev = outdev;
- 	nexthop = rt_nexthop(rt, flow->tuplehash[!dir].tuple.src_v4.s_addr);
- 	skb_dst_set_noref(skb, &rt->dst);
-@@ -456,8 +457,6 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
- 
- 	dir = tuplehash->tuple.dir;
- 	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
--	rt = (struct rt6_info *)flow->tuplehash[dir].tuple.dst_cache;
--	outdev = rt->dst.dev;
- 
- 	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)))
- 		return NF_ACCEPT;
-@@ -485,13 +484,16 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
- 	if (flow_table->flags & NF_FLOWTABLE_COUNTER)
- 		nf_ct_acct_update(flow->ct, tuplehash->tuple.dir, skb->len);
- 
--	if (unlikely(dst_xfrm(&rt->dst))) {
-+	rt = (struct rt6_info *)tuplehash->tuple.dst_cache;
-+
-+	if (unlikely(tuplehash->tuple.xmit_type == FLOW_OFFLOAD_XMIT_XFRM)) {
- 		memset(skb->cb, 0, sizeof(struct inet6_skb_parm));
- 		IP6CB(skb)->iif = skb->dev->ifindex;
- 		IP6CB(skb)->flags = IP6SKB_FORWARDED;
- 		return nf_flow_xmit_xfrm(skb, state, &rt->dst);
- 	}
- 
-+	outdev = rt->dst.dev;
- 	skb->dev = outdev;
- 	nexthop = rt6_nexthop(rt, &flow->tuplehash[!dir].tuple.src_v6);
- 	skb_dst_set_noref(skb, &rt->dst);
 diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index 3a6c84fb2c90..1da2bb24f6c0 100644
+index 1da2bb24f6c0..15f90c31feb0 100644
 --- a/net/netfilter/nft_flow_offload.c
 +++ b/net/netfilter/nft_flow_offload.c
-@@ -19,6 +19,22 @@ struct nft_flow_offload {
- 	struct nft_flowtable	*flowtable;
- };
+@@ -31,14 +31,104 @@ static void nft_default_forward_path(struct nf_flow_route *route,
+ 				     struct dst_entry *dst_cache,
+ 				     enum ip_conntrack_dir dir)
+ {
++	route->tuple[!dir].in.ifindex	= dst_cache->dev->ifindex;
+ 	route->tuple[dir].dst		= dst_cache;
+ 	route->tuple[dir].xmit_type	= nft_xmit_type(dst_cache);
+ }
  
-+static enum flow_offload_xmit_type nft_xmit_type(struct dst_entry *dst)
++static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
++				     const struct dst_entry *dst_cache,
++				     const struct nf_conn *ct,
++				     enum ip_conntrack_dir dir,
++				     struct net_device_path_stack *stack)
 +{
-+	if (dst_xfrm(dst))
-+		return FLOW_OFFLOAD_XMIT_XFRM;
++	const void *daddr = &ct->tuplehash[!dir].tuple.src.u3;
++	struct net_device *dev = dst_cache->dev;
++	unsigned char ha[ETH_ALEN];
++	struct neighbour *n;
++	u8 nud_state;
 +
-+	return FLOW_OFFLOAD_XMIT_NEIGH;
++	n = dst_neigh_lookup(dst_cache, daddr);
++	if (!n)
++		return -1;
++
++	read_lock_bh(&n->lock);
++	nud_state = n->nud_state;
++	ether_addr_copy(ha, n->ha);
++	read_unlock_bh(&n->lock);
++	neigh_release(n);
++
++	if (!(nud_state & NUD_VALID))
++		return -1;
++
++	return dev_fill_forward_path(dev, ha, stack);
 +}
 +
-+static void nft_default_forward_path(struct nf_flow_route *route,
-+				     struct dst_entry *dst_cache,
-+				     enum ip_conntrack_dir dir)
++struct nft_forward_info {
++	const struct net_device *indev;
++};
++
++static void nft_dev_path_info(const struct net_device_path_stack *stack,
++			      struct nft_forward_info *info)
 +{
-+	route->tuple[dir].dst		= dst_cache;
-+	route->tuple[dir].xmit_type	= nft_xmit_type(dst_cache);
++	const struct net_device_path *path;
++	int i;
++
++	for (i = 0; i < stack->num_paths; i++) {
++		path = &stack->path[i];
++		switch (path->type) {
++		case DEV_PATH_ETHERNET:
++			info->indev = path->dev;
++			break;
++		case DEV_PATH_VLAN:
++		case DEV_PATH_BRIDGE:
++		default:
++			info->indev = NULL;
++			break;
++		}
++	}
++}
++
++static bool nft_flowtable_find_dev(const struct net_device *dev,
++				   struct nft_flowtable *ft)
++{
++	struct nft_hook *hook;
++	bool found = false;
++
++	list_for_each_entry_rcu(hook, &ft->hook_list, list) {
++		if (hook->ops.dev != dev)
++			continue;
++
++		found = true;
++		break;
++	}
++
++	return found;
++}
++
++static void nft_dev_forward_path(struct nf_flow_route *route,
++				 const struct nf_conn *ct,
++				 enum ip_conntrack_dir dir,
++				 struct nft_flowtable *ft)
++{
++	const struct dst_entry *dst = route->tuple[dir].dst;
++	struct net_device_path_stack stack;
++	struct nft_forward_info info = {};
++
++	if (nft_dev_fill_forward_path(route, dst, ct, dir, &stack) >= 0)
++		nft_dev_path_info(&stack, &info);
++
++	if (!info.indev || !nft_flowtable_find_dev(info.indev, ft))
++		return;
++
++	route->tuple[!dir].in.ifindex = info.indev->ifindex;
 +}
 +
  static int nft_flow_route(const struct nft_pktinfo *pkt,
  			  const struct nf_conn *ct,
  			  struct nf_flow_route *route,
-@@ -44,8 +60,8 @@ static int nft_flow_route(const struct nft_pktinfo *pkt,
- 	if (!other_dst)
- 		return -ENOENT;
+-			  enum ip_conntrack_dir dir)
++			  enum ip_conntrack_dir dir,
++			  struct nft_flowtable *ft)
+ {
+ 	struct dst_entry *this_dst = skb_dst(pkt->skb);
+ 	struct dst_entry *other_dst = NULL;
+@@ -63,6 +153,12 @@ static int nft_flow_route(const struct nft_pktinfo *pkt,
+ 	nft_default_forward_path(route, this_dst, dir);
+ 	nft_default_forward_path(route, other_dst, !dir);
  
--	route->tuple[dir].dst		= this_dst;
--	route->tuple[!dir].dst		= other_dst;
-+	nft_default_forward_path(route, this_dst, dir);
-+	nft_default_forward_path(route, other_dst, !dir);
- 
++	if (route->tuple[dir].xmit_type	== FLOW_OFFLOAD_XMIT_NEIGH &&
++	    route->tuple[!dir].xmit_type == FLOW_OFFLOAD_XMIT_NEIGH) {
++		nft_dev_forward_path(route, ct, dir, ft);
++		nft_dev_forward_path(route, ct, !dir, ft);
++	}
++
  	return 0;
  }
+ 
+@@ -90,8 +186,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 	struct nft_flow_offload *priv = nft_expr_priv(expr);
+ 	struct nf_flowtable *flowtable = &priv->flowtable->data;
+ 	struct tcphdr _tcph, *tcph = NULL;
++	struct nf_flow_route route = {};
+ 	enum ip_conntrack_info ctinfo;
+-	struct nf_flow_route route;
+ 	struct flow_offload *flow;
+ 	enum ip_conntrack_dir dir;
+ 	struct nf_conn *ct;
+@@ -128,7 +224,7 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 		goto out;
+ 
+ 	dir = CTINFO2DIR(ctinfo);
+-	if (nft_flow_route(pkt, ct, &route, dir) < 0)
++	if (nft_flow_route(pkt, ct, &route, dir, priv->flowtable) < 0)
+ 		goto err_flow_route;
+ 
+ 	flow = flow_offload_alloc(ct);
 -- 
 2.20.1
 
