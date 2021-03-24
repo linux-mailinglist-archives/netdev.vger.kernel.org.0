@@ -2,128 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9003483D4
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 22:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A2D3483E7
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 22:42:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234167AbhCXVfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 17:35:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26534 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234068AbhCXVfI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 17:35:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616621707;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6BnFLXKVdKYd+FoHFgU/6B9JS5Q/kAb0dewwrIr5OVo=;
-        b=GVHrNuml0fxIswC3UNeJMDR0Kzi7+zG+f5nM9XQhg5wiDBNmycgNbzQt9tjYEut7y26SK/
-        AiuZxMlE9YFYYgS6Iu4LIDnS8dHVewBbb2Fid6o66Kax04r2mao/JOGj/bNZvMRHMLJoXY
-        0k8+YaIDFJlMHMXGAUE50pLwTbkZIp8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-40-u3BcfBy3OJWg78JhInYkYQ-1; Wed, 24 Mar 2021 17:35:05 -0400
-X-MC-Unique: u3BcfBy3OJWg78JhInYkYQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 254FF801817;
-        Wed, 24 Mar 2021 21:35:04 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.69])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5E1E65D9DE;
-        Wed, 24 Mar 2021 21:35:00 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 4E956300A2A79;
-        Wed, 24 Mar 2021 22:34:59 +0100 (CET)
-Subject: [PATCH mel-git 3/3] net: page_pool: convert to use
- alloc_pages_bulk_array variant
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Mel Gorman <mgorman@techsingularity.net>, linux-mm@kvack.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, chuck.lever@oracle.com,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 24 Mar 2021 22:34:59 +0100
-Message-ID: <161662169926.940814.10878534922009676003.stgit@firesoul>
-In-Reply-To: <161662166301.940814.9765023867613542235.stgit@firesoul>
-References: <161662166301.940814.9765023867613542235.stgit@firesoul>
-User-Agent: StGit/0.19
+        id S230439AbhCXVmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 17:42:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38076 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238601AbhCXVmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 17:42:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C533861A02;
+        Wed, 24 Mar 2021 21:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616622129;
+        bh=pO+YZkBPwbdWBeIQV1r0YqV0t1K+79FUzdDrMRVn0gs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KvRoVtbPYEjXPLMeNonhQ1KBOHLBoegTdROJcg7+MIb/hNrazviSXstRPl7uv6Ohj
+         kzibuRP3GH15o4Qle8swoOTBCDexBCU1OEw8kRFs6aG8bW8nn4eeYB3O0s/U0voabv
+         XwVoLIoWDuY64JpUc5djaqBqFwbQjiZ94mJdFR2kQoDDEzqK012bPrbyXXQXKsFTod
+         yz3jatVdYgT3ZwNAfaoZOAkpZVxhcunWdBMfGqv7cKltVLoNkHPKiBrXZhJCPsEZwD
+         x2nDzk25Dad+zxDWb7pU1uWpx2LqOLqA3HQ/hHAkc2k51T83WLggdLiQesH3DLYOhx
+         FUFGxLrG1IwHg==
+Date:   Wed, 24 Mar 2021 14:42:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [RESEND PATCH net-next 1/2] net: mhi: Allow decoupled MTU/MRU
+Message-ID: <20210324144208.462e9f97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
+References: <1616510707-27210-1-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the API variant alloc_pages_bulk_array from page_pool
-was done in a separate patch to ease benchmarking the
-variants separately.  Maintainers can squash patch if preferred.
+On Tue, 23 Mar 2021 15:45:06 +0100 Loic Poulain wrote:
+> If a maximum receive unit (MRU) size is specified, use it for RX
+> buffers allocation instead of the MTU.
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- include/net/page_pool.h |    2 +-
- net/core/page_pool.c    |   22 ++++++++++++++++------
- 2 files changed, 17 insertions(+), 7 deletions(-)
+I don't think this patch represents a logical change. You should merge
+your patches into one.
 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index b5b195305346..6d517a37c18b 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -65,7 +65,7 @@
- #define PP_ALLOC_CACHE_REFILL	64
- struct pp_alloc_cache {
- 	u32 count;
--	void *cache[PP_ALLOC_CACHE_SIZE];
-+	struct page *cache[PP_ALLOC_CACHE_SIZE];
- };
- 
- struct page_pool_params {
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 3bf6e7f5fc89..9ec1aa9640ad 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -233,24 +233,34 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	const int bulk = PP_ALLOC_CACHE_REFILL;
- 	unsigned int pp_flags = pool->p.flags;
- 	unsigned int pp_order = pool->p.order;
--	struct page *page, *next;
--	LIST_HEAD(page_list);
-+	struct page *page;
-+	int i, nr_pages;
- 
- 	/* Don't support bulk alloc for high-order pages */
- 	if (unlikely(pp_order))
- 		return __page_pool_alloc_page_order(pool, gfp);
- 
--	if (unlikely(!alloc_pages_bulk_list(gfp, bulk, &page_list)))
-+	/* Unnecessary as alloc cache is empty, but guarantees zero count */
-+	if (unlikely(pool->alloc.count > 0))
-+		return pool->alloc.cache[--pool->alloc.count];
-+
-+	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
-+	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
-+
-+	nr_pages = alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
-+	if (unlikely(!nr_pages))
- 		return NULL;
- 
--	list_for_each_entry_safe(page, next, &page_list, lru) {
--		list_del(&page->lru);
-+	/* Pages have been filled into alloc.cache array, but count is zero and
-+	 * page element have not been (possibly) DMA mapped.
-+	 */
-+	for (i = 0; i < nr_pages; i++) {
-+		page = pool->alloc.cache[i];
- 		if ((pp_flags & PP_FLAG_DMA_MAP) &&
- 		    unlikely(!page_pool_dma_map(pool, page))) {
- 			put_page(page);
- 			continue;
- 		}
--		/* Alloc cache have room as it is empty on function call */
- 		pool->alloc.cache[pool->alloc.count++] = page;
- 		/* Track how many pages are held 'in-flight' */
- 		pool->pages_state_hold_cnt++;
-
+> diff --git a/drivers/net/mhi/mhi.h b/drivers/net/mhi/mhi.h
+> index 12e7407..1d0c499 100644
+> --- a/drivers/net/mhi/mhi.h
+> +++ b/drivers/net/mhi/mhi.h
+> @@ -29,6 +29,7 @@ struct mhi_net_dev {
+>  	struct mhi_net_stats stats;
+>  	u32 rx_queue_sz;
+>  	int msg_enable;
+> +	unsigned int mru;
+>  };
+>  
+>  struct mhi_net_proto {
+> diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
+> index f599608..5ec7a29 100644
+> --- a/drivers/net/mhi/net.c
+> +++ b/drivers/net/mhi/net.c
+> @@ -265,10 +265,12 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
+>  						      rx_refill.work);
+>  	struct net_device *ndev = mhi_netdev->ndev;
+>  	struct mhi_device *mdev = mhi_netdev->mdev;
+> -	int size = READ_ONCE(ndev->mtu);
+>  	struct sk_buff *skb;
+> +	unsigned int size;
+>  	int err;
+>  
+> +	size = mhi_netdev->mru ? mhi_netdev->mru : READ_ONCE(ndev->mtu);
+> +
+>  	while (!mhi_queue_is_full(mdev, DMA_FROM_DEVICE)) {
+>  		skb = netdev_alloc_skb(ndev, size);
+>  		if (unlikely(!skb))
 
