@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A85347E36
+	by mail.lfdr.de (Postfix) with ESMTP id CF9ED347E37
 	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 17:52:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236988AbhCXQva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 12:51:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43680 "EHLO mail.kernel.org"
+        id S236997AbhCXQvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 12:51:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43700 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236778AbhCXQvG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 12:51:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CDD2D61A11;
-        Wed, 24 Mar 2021 16:51:04 +0000 (UTC)
+        id S236794AbhCXQvI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 12:51:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A7042619F3;
+        Wed, 24 Mar 2021 16:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616604666;
-        bh=Bqrd7a8qdQzviEJ9iRpTvmEogpJ7AAzj+1nv4IO8P1w=;
+        s=k20201202; t=1616604668;
+        bh=nO0rdJOckCx5r3n49T0yn9+navnCZWJe3TcAr5ewsx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXCE2CxP5Ytm4ecAXvRPu6tuN9H5gDfGu9ewrkU70g+AlMBnZ19rMpDgBZf1383pw
-         RIVvBMqGJ5is6oFAwqpHlxDLf9LNxAS+yra4lm7HYZ77hM3mkyRFl/0+/xUAu0kYsL
-         Km3z8mCWSJwBmugg6TH333q4SsIZMVq60SAwBFVG+HhLBmlUn62gYBs/Dg6cbP8/ol
-         BbgUHx/HL/0VQqFGDYXLzeGFqyYvgh1ZslW5NCOU0CvlEIBz3m9IzFpoYbTIKhYWV1
-         5pMFqinzlIQ2o2VRn3dpv3EGxOKdAd4nZ9yakezt3Mf+MIh6y3K3uW//nCiHguCSWn
-         7CV7kIxNS+wNw==
+        b=GFEZYcYjTbErnKIOijV3EJOa2JyT5lxtZkexCyPfWfw+eGza8M07XBm9TCr/gRwvF
+         bjTJy0EmHOvUwd3BAlMZ8o6elzLfiYkLbOBY8xdE3lXpc0d2kpb3a5OCYe1/wW3OUE
+         rWejyhshlOI8zmDJ7j82km5In/rWQoEtI6z3o0VOQ76TAFQbP28sbJdEkJdvJ7sT4W
+         ZAZs5Z9ZiVxi7tPfvXVBoYtVDrgcRlyTDKkLh+sZSHWRkqqCMO2tfuEsCr5/JQTSL9
+         njSZeOCIitGpJdkTiLhB1dR2Ibu4dLGELdCTcBin60NMVJ4XUhccixKvfeAqfYNuyS
+         Ix++2cv0psmLw==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
@@ -30,9 +30,9 @@ To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org
 Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 5/7] net: phy: marvell10g: save MACTYPE instead of rate_matching boolean
-Date:   Wed, 24 Mar 2021 17:50:21 +0100
-Message-Id: <20210324165023.32352-6-kabel@kernel.org>
+Subject: [PATCH net-next 6/7] net: phy: marvell10g: support more rate matching modes
+Date:   Wed, 24 Mar 2021 17:50:22 +0100
+Message-Id: <20210324165023.32352-7-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210324165023.32352-1-kabel@kernel.org>
 References: <20210324165023.32352-1-kabel@kernel.org>
@@ -43,46 +43,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Save MACTYPE instead of rate_matching boolean. We will need this for
-other configurations.
+The 88X3310P supports rate matching mode also for XAUI and RXAUI.
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/phy/marvell10g.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 46e853f2d41b..b4f9831b4db6 100644
+index b4f9831b4db6..c764795a142a 100644
 --- a/drivers/net/phy/marvell10g.c
 +++ b/drivers/net/phy/marvell10g.c
-@@ -100,7 +100,7 @@ enum {
+@@ -596,13 +596,22 @@ static void mv3310_update_interface(struct phy_device *phydev)
+ {
+ 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
  
- struct mv3310_priv {
- 	u32 firmware_ver;
--	bool rate_match;
-+	u8 mactype;
- 
- 	struct device *hwmon_dev;
- 	char *hwmon_name;
-@@ -486,8 +486,7 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
- 	if (val < 0)
- 		return val;
--	priv->rate_match = ((val & MV_V2_PORT_CTRL_MACTYPE_MASK) ==
--			MV_V2_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH);
-+	priv->mactype = val & MV_V2_PORT_CTRL_MACTYPE_MASK;
- 
- 	/* Enable EDPD mode - saving 600mW */
- 	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
-@@ -601,7 +600,7 @@ static void mv3310_update_interface(struct phy_device *phydev)
- 	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
+-	/* In "XFI with Rate Matching" mode the PHY interface is fixed at
+-	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
++	/* In all of the "* with Rate Matching" modes the PHY interface is fixed
++	 * at 10Gb. The PHY adapts the rate to actual wire speed with help of
  	 * internal 16KB buffer.
  	 */
--	if (priv->rate_match) {
-+	if (priv->mactype == MV_V2_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH) {
+-	if (priv->mactype == MV_V2_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH) {
++	switch (priv->mactype) {
++	case MV_V2_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH:
  		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
  		return;
++	case MV_V2_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH:
++		phydev->interface = PHY_INTERFACE_MODE_XAUI;
++		return;
++	case MV_V2_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH:
++		phydev->interface = PHY_INTERFACE_MODE_RXAUI;
++		return;
++	default:
++		break;
  	}
+ 
+ 	if ((phydev->interface == PHY_INTERFACE_MODE_SGMII ||
 -- 
 2.26.2
 
