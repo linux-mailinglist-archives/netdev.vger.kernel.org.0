@@ -2,166 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AB2347988
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:25:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 266A734799D
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234844AbhCXNYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 09:24:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        id S235267AbhCXNaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 09:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233465AbhCXNYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:24:05 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0154EC061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:24:05 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id l4so32826895ejc.10
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:24:04 -0700 (PDT)
+        with ESMTP id S234574AbhCXN3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:29:52 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3DBC061763
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:29:51 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id u21so14898496ejo.13
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:29:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Rc56inwkkfB0f+O1lJ3Y86UFuxahIugag5/occy9VQs=;
-        b=oGgt46aMDAXXRrPvbv12Cqn2PpVoArvHMG1vDWJ2ap/h6+6+dzjyeutsG5iwLQ88FL
-         wjF9r2WQWr78W9LCX4ot/IQhEmrZh76o0sCJaaBd5aaUx46R8zQWUy9YibCz/PsM2/5V
-         QxfTtApu7XHMd6gSIEiRMRig85j2ehTLtGimf/GflPdkbDg31AzwdG8cspiSKcSn6wUR
-         rJaGPCD1lJ2EBTEKmMgUbJLozXqpsiWq+8/uz5xNK0RxnPP1RbDwUhhx0AFEI6LlsCP2
-         Igy6Gkr2dUD86MaHK440c+bMSF9uYnt2553RmrSoLwaVWFmPzOK5XQZjilliY7Eu/i6E
-         Ru/w==
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PgVEYZSY9NfCWwR2RJxuZCY5immorWw9IvrU7FEyMZY=;
+        b=UfacaA3RcLXv73AcHDgJVuzH7YaisiE/ItZkS1uBCiSsqiLdWBFj5OF+zflnrnsnYx
+         thUzVL+tmZYONqMfijfYvZh9KKy38ZVe3ey1RBu19Et4GjUIPC2BNLhXkOOj251o6RaW
+         8XtBzRFZKyeNdJxct3Rszmmy3GIlPfZ2VEtjw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Rc56inwkkfB0f+O1lJ3Y86UFuxahIugag5/occy9VQs=;
-        b=cRpt8LLyVnL9cJrl1BGgWnsk0m2s2tyx+vjiz9YKIuEStl3f0BjbOqcTd5W2bz8vGZ
-         vnN/yheYd8RfTCZcc6cfLFbUY2vTEtqk9I+TyxrmZILb6+YdkzGrfBSnWHAIY54xulL8
-         ++EUWzvAvUBSbYuQun3oHOBbep0EfUlqVKtnfxbLavGWSooUcdgVn9YiugdUIphcIDCG
-         2syTuzPrNL8gBSeNwXP3XcqVqA1JB/Ol8USWDzb+Zgo1LSC44m8Mn0urcHRVX7HZWlDW
-         ZUETsEQojHhhpmfEF1Z8GBkRrQZainlQ/2EZ3P2lsGdugwxZ8WWZuTURp68sHnNv/wKf
-         lGGg==
-X-Gm-Message-State: AOAM533YRT1cscNYZOIRsLuBrZpeZcTv1jnO1i5CIDpgVNDtzXbWXO4q
-        VyIv7WhK4bkurbCoLUYq2m8=
-X-Google-Smtp-Source: ABdhPJw/3Hm9hHWVbdAmizQH9h6Wx+1fzGlbbVWO1fRrxfyXYtJh0zJDYDOZIbiAIUjRxmog8W6K/w==
-X-Received: by 2002:a17:906:4e17:: with SMTP id z23mr3676733eju.439.1616592243666;
-        Wed, 24 Mar 2021 06:24:03 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id s13sm1133495edr.86.2021.03.24.06.24.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 06:24:02 -0700 (PDT)
-Date:   Wed, 24 Mar 2021 15:24:01 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
- reconfiguration of tag protocol
-Message-ID: <20210324132401.twbjcqw7vgiqscn2@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com>
- <20210323113522.coidmitlt6e44jjq@skbuf>
- <87blbalycs.fsf@waldekranz.com>
- <20210323190302.2v7ianeuwylxdqjl@skbuf>
- <8735wlmuxh.fsf@waldekranz.com>
- <20210323231508.zt2knmica7ecuswf@skbuf>
- <87y2eclt6m.fsf@waldekranz.com>
- <20210324113403.gtxcdtnsvqriyn26@skbuf>
- <87sg4kln8l.fsf@waldekranz.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PgVEYZSY9NfCWwR2RJxuZCY5immorWw9IvrU7FEyMZY=;
+        b=Df29QShK83iCciyBm1W30gDK9jqXo0PBj4ogARVYSa3/75HvGjxhmLus+wza5gaByu
+         tsq6eOaT6daYMMfDTwPkCdOPmO7fHEfUcuURR+/8+cfN2edXHJlA8OyZ+vndIF6UHoTd
+         6ITKAej5s2Q2IYyQoNZYo5j5vnwIhOJLG07qBi5/27stLEfqGwjAtMJLPAUKq6nwfPaB
+         KNr0WDRLkExV8JKBA3tzWkwZfFMlzlzf2s7v0Fvi1p0R2DlvtzrXmNBvKxQaSwzsBalt
+         gO8XG5CpscW4zEy87ImkS5v2U7cSmhrKIPlphJ4a5sV/yCh2jvaWRPQsVrZVXo44uzV3
+         u2Yg==
+X-Gm-Message-State: AOAM5320pirikC3HgCZ+cAoc1Rf+551C5f1cFu3ECeg3vMUYWoPSAfu9
+        ACcpzISPbNgyIcBx6q/CxnoPYQ==
+X-Google-Smtp-Source: ABdhPJxwxP/zoW96bzshYo9WwqHEtz/uzdvBB0Uh76Zv+xKUOFCRnDORCj3YobzDL1Kd8hSaa2YApQ==
+X-Received: by 2002:a17:906:3159:: with SMTP id e25mr3694270eje.303.1616592590531;
+        Wed, 24 Mar 2021 06:29:50 -0700 (PDT)
+Received: from [192.168.1.149] ([80.208.71.248])
+        by smtp.gmail.com with ESMTPSA id u16sm1178887edq.4.2021.03.24.06.29.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Mar 2021 06:29:50 -0700 (PDT)
+Subject: Re: [PATCH] [v2] hinic: avoid gcc -Wrestrict warning
+To:     Arnd Bergmann <arnd@kernel.org>, Bin Luo <luobin9@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210324130731.1513798-1-arnd@kernel.org>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <f3d1c643-56ef-7fe0-52f0-1f030c890a38@rasmusvillemoes.dk>
+Date:   Wed, 24 Mar 2021 14:29:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87sg4kln8l.fsf@waldekranz.com>
+In-Reply-To: <20210324130731.1513798-1-arnd@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 02:01:14PM +0100, Tobias Waldekranz wrote:
-> On Wed, Mar 24, 2021 at 13:34, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Wed, Mar 24, 2021 at 11:52:49AM +0100, Tobias Waldekranz wrote:
-> >> >> This is the tragedy: I know for a fact that a DSA soft parser exists,
-> >> >> but because of the aforementioned maze of NDAs and license agreements
-> >> >> we, the community, cannot have nice things.
-> >> >
-> >> > Oh yeah? You can even create your own, if you have nerves of steel and a
-> >> > thick enough skin to learn to use the "fmc" (Frame Manager Configuration
-> >> > Tool) program, which is fully open source if you search for it on CAF
-> >> > (and if you can actually make something out of the source code).
-> >> 
-> >> Yes, this is what a colleague of mine has done. Which is how I know that
-> >> one exists :)
-> >> 
-> >> > And this PDF (hidden so well behind the maze of NDAs, that I just had to
-> >> > google for it, and you don't even need to register to read it):
-> >> > https://www.nxp.com/docs/en/user-guide/LSDKUG_Rev20.12.pdf
-> >> > is chock full of information on what you can do with it, see chapters 8.2.5 and 8.2.6.
-> >> 
-> >> Right, but this is where it ends. Using the wealth of information you
-> >> have laid out so far you can use DPAA to do amazing things using open
-> >> components.
-> >> 
-> >> ...unless you have to do something so incredibly advanced and exotic as
-> >> a masked update of a field. At this point you have two options:
-> >> 
-> >> 1. Buy the firmware toolchain, which requires signing an NDA.
-> >> 2. Buy a single-drop firmware binary for lots of $$$ without any
-> >>    possibility of getting further updates because "you should really be
-> >>    using DPAA2".
-> >
-> > Uhm, what?
-> > By "firmware" I assume you mean "FMan microcode"?
-> >
-> > To my knowledge, the standard FMan microcode distributed _freely_ with
-> > the LSDK has support for Header Manipulation, you just need to create a
-> > Header Manipulation Command Descriptor (HMCD) and pass it to the
-> > microcode through an O/H port. I believe that:
-> > (a) the Header Manipulation descriptors allow you to perform raw mask
-> >     based field updates too, not just for standard protocols
+On 24/03/2021 14.07, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> This is not the story we were told.
-
-Wait, aren't we talking about HdrMan OPCODE 0x19 ("Replace Field in Header")?
-
-> > (b) fmc already has some support for sending Header Manipulation
-> >     descriptors to the microcode
-> >
-> > And by "firmware toolchain" you mean the FMan microcode SDK?
-> > https://www.nxp.com/design/software/embedded-software/linux-software-and-development-tools/dpaa-fman-microcode-sdk-source-code-software-kit:DPAA-FMAN-SDK
-> >
-> > In the description for that product it says:
-> >
-> >   For MOST of NXP communications customers, the microcode that is freely
-> >   accessible via the NXP LSDK or SDK for QorIQ or Layerscape processors
-> >   will handle any communications offload task you could throw at the DPAA.
-> >
-> > So why on earth would you need that? And does it really surprise you
+> With extra warnings enabled, gcc complains that snprintf should not
+> take the same buffer as source and destination:
 > 
-> Because NXP said we needed it.
+> drivers/net/ethernet/huawei/hinic/hinic_ethtool.c: In function 'hinic_set_settings_to_hw':
+> drivers/net/ethernet/huawei/hinic/hinic_ethtool.c:480:9: error: 'snprintf' argument 4 overlaps destination object 'set_link_str' [-Werror=restrict]
+>   480 |   err = snprintf(set_link_str, SET_LINK_STR_MAX_LEN,
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   481 |           "%sspeed %d ", set_link_str, speed);
+>       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/huawei/hinic/hinic_ethtool.c:464:7: note: destination object referenced by 'restrict'-qualified argument 1 was declared here
+>   464 |  char set_link_str[SET_LINK_STR_MAX_LEN] = {0};
 > 
-> > that it costs money, especially considering the fact that you're going
-> > to need heaps of support for it anyway?
+> Rewrite this to avoid the nested sprintf and instead use separate
+> buffers, which is simpler.
 > 
-> No, it surprised me that we had to pay for a solution to a problem that
-> we were promised would be solvable using the stock firmware.
 
-Maybe the FMan version of your particular device does not support that
-HM command, or maybe you needed a slightly different behavior compared
-to what HM opcode 0x19 does, and there was a misunderstanding on either
-ends resulting in the impression that what you need could be achievable
-through that type of descriptor? Either way, the way you phrased things:
-| unless you have to do something so incredibly advanced and exotic as
-| a masked update of a field
-is very unfair, oversimplifying and misleading.
+This looks much better. Thanks.
 
-> > Seriously, what is your point? You're complaining about having the
-> > option to write your own microcode for the RISC cores inside the network
-> > controller, when the standard one already comes with a lot of features?
-> > What would you prefer, not having that option?
-> >
-> > This is a strawman. None of the features we talked about in this thread,
-> > soft parser for DSA tags or masked header manipulation, should require
-> > custom microcode.
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> v2: rework according to feedback from Rasmus. This one could
+>     easily avoid most of the pitfalls
+> ---
+>  .../net/ethernet/huawei/hinic/hinic_ethtool.c | 25 ++++++++-----------
+>  1 file changed, 10 insertions(+), 15 deletions(-)
 > 
-> I never made that claim. I was describing our experience with DPAA on
-> the whole.
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+> index c340d9acba80..d7e20dab6e48 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+> @@ -34,7 +34,7 @@
+>  #include "hinic_rx.h"
+>  #include "hinic_dev.h"
+>  
+> -#define SET_LINK_STR_MAX_LEN	128
+> +#define SET_LINK_STR_MAX_LEN	16
+>  
+>  #define GET_SUPPORTED_MODE	0
+>  #define GET_ADVERTISED_MODE	1
+> @@ -462,24 +462,19 @@ static int hinic_set_settings_to_hw(struct hinic_dev *nic_dev,
+>  {
+>  	struct hinic_link_ksettings_info settings = {0};
+>  	char set_link_str[SET_LINK_STR_MAX_LEN] = {0};
+> +	const char *autoneg_str;
+>  	struct net_device *netdev = nic_dev->netdev;
+>  	enum nic_speed_level speed_level = 0;
+>  	int err;
+>  
+> -	err = snprintf(set_link_str, SET_LINK_STR_MAX_LEN, "%s",
+> -		       (set_settings & HILINK_LINK_SET_AUTONEG) ?
+> -		       (autoneg ? "autong enable " : "autong disable ") : "");
+> -	if (err < 0 || err >= SET_LINK_STR_MAX_LEN) {
+> -		netif_err(nic_dev, drv, netdev, "Failed to snprintf link state, function return(%d) and dest_len(%d)\n",
+> -			  err, SET_LINK_STR_MAX_LEN);
+> -		return -EFAULT;
+> -	}
+> +	autoneg_str = (set_settings & HILINK_LINK_SET_AUTONEG) ?
+> +		      (autoneg ? "autong enable " : "autong disable ") : "";
+>  
+>  	if (set_settings & HILINK_LINK_SET_SPEED) {
+>  		speed_level = hinic_ethtool_to_hw_speed_level(speed);
+>  		err = snprintf(set_link_str, SET_LINK_STR_MAX_LEN,
+> -			       "%sspeed %d ", set_link_str, speed);
+> -		if (err <= 0 || err >= SET_LINK_STR_MAX_LEN) {
+> +			       "speed %d ", speed);
+> +		if (err >= SET_LINK_STR_MAX_LEN) {
+>  			netif_err(nic_dev, drv, netdev, "Failed to snprintf link speed, function return(%d) and dest_len(%d)\n",
+>  				  err, SET_LINK_STR_MAX_LEN);
+>  			return -EFAULT;
 
-I fail to see how we ended up talking about custom FMan microcode then.
-I did not bring it up, and it is completely irrelevant to the discussion
-about soft parser for DSA.
+It's not your invention of course, but this both seems needlessly harsh
+and EFAULT is a weird error to return. It's just a printk() message that
+might be truncated, and now that the format string only has a %d
+specifier, it can actually be verified statically that overflow will
+never happen (though I don't know or think gcc can do that, perhaps
+there's some locale nonsense in the standard that allows using
+utf16-encoded sanskrit runes). So probably that test should just be
+dropped, but that's a separate thing.
+
+Reviewed-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+
