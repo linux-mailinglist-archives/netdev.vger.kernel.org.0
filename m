@@ -2,135 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E435E3479EC
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2AF93479F7
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbhCXNs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 09:48:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39814 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235407AbhCXNsS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:48:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616593698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QHQRvsM7dTA+mGVVFFUUQLQlWpIhbOfd5Hm9ljWiRQs=;
-        b=PjSaQrtSa+EbclITbYNRbr71r/Y7VUaR1EpIMUdyanq7jDfPnZHKl1E7K/USeQI82CP7Q7
-        CzT9vspl8foTJWGBFG0slRV6peYSI8rYreZI6+lFKx/BagoxkDRXWNhgGWpxrD8mMKVIJ4
-        GEn3GOK/MySX+vuvMie075EvxWXvXJE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-257-VvCc3_a7Mh2f1hyAmOYYAA-1; Wed, 24 Mar 2021 09:48:14 -0400
-X-MC-Unique: VvCc3_a7Mh2f1hyAmOYYAA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3C383BFF97;
-        Wed, 24 Mar 2021 13:47:44 +0000 (UTC)
-Received: from krava (unknown [10.40.196.25])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4E1EE843E8;
-        Wed, 24 Mar 2021 13:47:41 +0000 (UTC)
-Date:   Wed, 24 Mar 2021 14:47:40 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH bpf] bpf: Take module reference for ip in module code
-Message-ID: <YFtC/O399QhHZtpb@krava>
-References: <20210323211533.1931242-1-jolsa@kernel.org>
- <20210324012237.65pf4s52oqlicea3@ast-mbp>
- <YFsjGkIwpXm5IYdR@krava>
+        id S235714AbhCXNwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 09:52:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50514 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235459AbhCXNwX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 09:52:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8096E61A01;
+        Wed, 24 Mar 2021 13:52:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616593943;
+        bh=cHOHMXVQ+yn3s7ZWXL7fRhJN7XJst2LEeIiATt8XCc8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X1I/uyBrMwFF8ZbyYK5TzANtHVt+2KVbbCzAihjbpJvcprSe47vwn6oUDnClOzpEq
+         /lTwZL3iompfsgUcWXQ63eNVJ5HICxe/MHMIi02fsPh1DcFCZAJgH0BxCtNiwvrJiU
+         CjxsEiIh1ZEMFj0QlUS5WUBdyeXuWslnCYFF1JHZlzSvcSNk8o55vPcFodmaTINsVA
+         WZMPHu7EN9mldxabdCcbT0R9ZaL+y+CBaTMBk56FX2agJtuJJj1l1j4xyBkWWFZXEi
+         wg7GSpYDkNOWO3FDgBWCgrlh8jPG62rECHHwjcdQiplBmpXBz376qNhutXeva9nSIA
+         GCBC5uCoyWLwQ==
+From:   Dinh Nguyen <dinguyen@kernel.org>
+To:     davem@davemloft.net
+Cc:     dinguyen@kernel.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: micrel-ksz90x1.txt: correct documentation
+Date:   Wed, 24 Mar 2021 08:52:19 -0500
+Message-Id: <20210324135219.2951959-1-dinguyen@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YFsjGkIwpXm5IYdR@krava>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 12:31:42PM +0100, Jiri Olsa wrote:
-> On Tue, Mar 23, 2021 at 06:22:37PM -0700, Alexei Starovoitov wrote:
-> > On Tue, Mar 23, 2021 at 10:15:33PM +0100, Jiri Olsa wrote:
-> > > Currently module can be unloaded even if there's a trampoline
-> > > register in it. It's easily reproduced by running in parallel:
-> > > 
-> > >   # while :; do ./test_progs -t module_attach; done
-> > >   # while :; do ./test_progs -t fentry_test; done
-> > > 
-> > > Taking the module reference in case the trampoline's ip is
-> > > within the module code. Releasing it when the trampoline's
-> > > ip is unregistered.
-> > > 
-> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > ---
-> > >  kernel/bpf/trampoline.c | 32 ++++++++++++++++++++++++++++++++
-> > >  1 file changed, 32 insertions(+)
-> > > 
-> > > diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-> > > index 1f3a4be4b175..f6cb179842b2 100644
-> > > --- a/kernel/bpf/trampoline.c
-> > > +++ b/kernel/bpf/trampoline.c
-> > > @@ -87,6 +87,27 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
-> > >  	return tr;
-> > >  }
-> > >  
-> > > +static struct module *ip_module_get(unsigned long ip)
-> > > +{
-> > > +	struct module *mod;
-> > > +	int err = 0;
-> > > +
-> > > +	preempt_disable();
-> > > +	mod = __module_text_address(ip);
-> > > +	if (mod && !try_module_get(mod))
-> > > +		err = -ENOENT;
-> > > +	preempt_enable();
-> > > +	return err ? ERR_PTR(err) : mod;
-> > > +}
-> > > +
-> > > +static void ip_module_put(unsigned long ip)
-> > > +{
-> > > +	struct module *mod = __module_text_address(ip);
-> > 
-> > Conceptually looks correct, but how did you test it?!
-> > Just doing your reproducer:
-> > while :; do ./test_progs -t module_attach; done & while :; do ./test_progs -t fentry_test; done
-> > 
-> > I immediately hit:
-> > [   19.461162] WARNING: CPU: 1 PID: 232 at kernel/module.c:264 module_assert_mutex_or_preempt+0x2e/0x40
-> > [   19.477126] Call Trace:
-> > [   19.477464]  __module_address+0x28/0xf0
-> > [   19.477865]  ? __bpf_trace_bpf_testmod_test_write_bare+0x10/0x10 [bpf_testmod]
-> > [   19.478711]  __module_text_address+0xe/0x60
-> > [   19.479156]  bpf_trampoline_update+0x2ff/0x470
-> 
-> I don't have lockdep enabled.. ah the module_mutex is held
-> during module init, that's why all the code I was using as
-> a reference did not take it.. sorry, will fix
+Correct the Micrel phy documentation for the ksz9021 and ksz9031 phys
+for how the phy skews are set.
 
-ah it's the missing preempt_disable ;-) ok
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+---
+ .../bindings/net/micrel-ksz90x1.txt           | 96 ++++++++++++++++++-
+ 1 file changed, 94 insertions(+), 2 deletions(-)
 
-jirka
-
-> 
-> > 
-> > Which points to an obvious bug above.
-> > 
-> > How did you debug it to this module going away issue?
-> > Why does test_progs -t fentry_test help to repro?
-> > Or does it?
-> > It doesn't touch anything in modules.
-> 
-> test_prog also loads/unloads that module, but it could be
-> just insmod/rmmod instead, will change
-> 
-> jirka
+diff --git a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+index b921731cd970..df9e844dd6bc 100644
+--- a/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
++++ b/Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
+@@ -65,6 +65,71 @@ KSZ9031:
+   step is 60ps. The default value is the neutral setting, so setting
+   rxc-skew-ps=<0> actually results in -900 picoseconds adjustment.
+ 
++  The KSZ9031 hardware supports a range of skew values from negative to
++  positive, where the specific range is property dependent. All values
++  specified in the devicetree are offset by the minimum value so they
++  can be represented as positive integers in the devicetree since it's
++  difficult to represent a negative number in the devictree.
++
++  The following 5-bit values table apply to rxc-skew-ps and txc-skew-ps.
++
++  Pad Skew Value	Delay (ps)	Devicetree Value
++  ------------------------------------------------------
++  0_0000		-900ps		0
++  0_0001		-840ps		60
++  0_0010		-780ps		120
++  0_0011		-720ps		180
++  0_0100		-660ps		240
++  0_0101		-600ps		300
++  0_0110		-540ps		360
++  0_0111		-480ps		420
++  0_1000		-420ps		480
++  0_1001		-360ps		540
++  0_1010		-300ps		600
++  0_1011		-240ps		660
++  0_1100		-180ps		720
++  0_1101		-120ps		780
++  0_1110		-60ps		840
++  0_1111		0ps		900
++  1_0000		60ps		960
++  1_0001		120ps		1020
++  1_0010		180ps		1080
++  1_0011		240ps		1140
++  1_0100		300ps		1200
++  1_0101		360ps		1260
++  1_0110		420ps		1320
++  1_0111		480ps		1380
++  1_1000		540ps		1440
++  1_1001		600ps		1500
++  1_1010		660ps		1560
++  1_1011		720ps		1620
++  1_1100		780ps		1680
++  1_1101		840ps		1740
++  1_1110		900ps		1800
++  1_1111		960ps		1860
++
++  The following 4-bit values table apply to the txdX-skew-ps, rxdX-skew-ps
++  data pads, and the rxdv-skew-ps, txen-skew-ps control pads.
++
++  Pad Skew Value	Delay (ps)	Devicetree Value
++  ------------------------------------------------------
++  0000			-420ps		0
++  0001			-360ps		60
++  0010			-300ps		120
++  0011			-240ps		180
++  0100			-180ps		240
++  0101			-120ps		300
++  0110			-60ps		360
++  0111			0ps		420
++  1000			60ps		480
++  1001			120ps		540
++  1010			180ps		600
++  1011			240ps		660
++  1100			300ps		720
++  1101			360ps		780
++  1110			420ps		840
++  1111			480ps		900
++
+   Optional properties:
+ 
+     Maximum value of 1860, default value 900:
+@@ -120,11 +185,21 @@ KSZ9131:
+ 
+ Examples:
+ 
++	/* Attach to an Ethernet device with autodetected PHY */
++	&enet {
++		rxc-skew-ps = <1800>;
++		rxdv-skew-ps = <0>;
++		txc-skew-ps = <1800>;
++		txen-skew-ps = <0>;
++		status = "okay";
++	};
++
++	/* Attach to an explicitly-specified PHY */
+ 	mdio {
+ 		phy0: ethernet-phy@0 {
+-			rxc-skew-ps = <3000>;
++			rxc-skew-ps = <1800>;
+ 			rxdv-skew-ps = <0>;
+-			txc-skew-ps = <3000>;
++			txc-skew-ps = <1800>;
+ 			txen-skew-ps = <0>;
+ 			reg = <0>;
+ 		};
+@@ -133,3 +208,20 @@ Examples:
+ 		phy = <&phy0>;
+ 		phy-mode = "rgmii-id";
+ 	};
++
++References
++
++  Micrel ksz9021rl/rn Data Sheet, Revision 1.2. Dated 2/13/2014.
++  http://www.micrel.com/_PDF/Ethernet/datasheets/ksz9021rl-rn_ds.pdf
++
++  Micrel ksz9031rnx Data Sheet, Revision 2.1. Dated 11/20/2014.
++  http://www.micrel.com/_PDF/Ethernet/datasheets/KSZ9031RNX.pdf
++
++Notes:
++
++  Note that a previous version of the Micrel ksz9021rl/rn Data Sheet
++  was missing extended register 106 (transmit data pad skews), and
++  incorrectly specified the ps per step as 200ps/step instead of
++  120ps/step. The latest update to this document reflects the latest
++  revision of the Micrel specification even though usage in the kernel
++  still reflects that incorrect document.
+-- 
+2.25.1
 
