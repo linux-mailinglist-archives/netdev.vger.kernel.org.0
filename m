@@ -2,90 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3712B347409
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 09:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC2134741A
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 10:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234056AbhCXI5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 04:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
+        id S234376AbhCXJE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 05:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231696AbhCXI5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 04:57:11 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E216C061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 01:57:10 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id l4so31530683ejc.10
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 01:57:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bGrFoUWO78DHinCnOm8Cd58bA9eS8nD5CEjgHc47CWU=;
-        b=xkodvHDrCcm1mswly1za4QGf6ZYnOgQE5f2au/oESMx8I5h2ptJirNaU0N1uFCDLxE
-         e0BNzu7HuM/ULiCLPYp76cMv3qtgpd3RgyVcP6sABo8hVer4WQHhq7spzcrjK6etWmI+
-         KqPmMymhqALvhT5mQgHHVySBkZ8GCjT9yMsA6PsPIGc4csqsTNrPEEvItlctaD1of15B
-         k0NeSlSpm2mAUYeoie9NR1PAK0wxuuLaK7bzAW3WrpXPfvpaHm1Eg7+JDDxseYG6hjVh
-         4jL3ifJ2S3VxMTJIS4uem4cC9e7gaOiVGYtsFCCtnukKZlol9aIAnE6nsYIjG/sfjgxM
-         lc7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bGrFoUWO78DHinCnOm8Cd58bA9eS8nD5CEjgHc47CWU=;
-        b=Qyq90E1J3WGbxqkz8g0d3ygHsHlcmNG0qIiTsLdgdrbaR0XEiR3c1WAQqlcGCJ+1wr
-         3ydXLu3LHbizgWffJvYTiQzWHJPVdAhNUsbo6+7lBK4DNSP/tO3IdWU7KdQ2fZxYXeVz
-         XqO4aLfs+h6RClcMSZqNBCkQVXKpHneVEWFPt1T98LpxBIWhDOKCSgqv9dQ8JzDYrVAM
-         2xC1kltDIju7Y1oDpc/HkQtnyPMuBcTwBVx2Fmww1TiFSnHRJWrCsU0HexaxrQN70j05
-         Aer6pYmB2q9b0LHf4WPr25w1+4cHUVkb0o6yzke8ujtSP9PGUMUOLuOCWhLZ+ucAd+hF
-         G0Dw==
-X-Gm-Message-State: AOAM533C2asBDVbvqcZcaDwryyqXt8GqETdLTArUMrXiXOy52pXzsvqh
-        vsPmPPj1H61NzGvJ3yZbor+d4AbQQWzGJY5XaAEr
-X-Google-Smtp-Source: ABdhPJy1amFIC8PhAf53lebi6UrN3nLJlRvNr8nkHWtZ1LH1vCCA+ReclSL3bXScIhTgASF5pFEXwnHMDawdZcwejYQ=
-X-Received: by 2002:a17:907:a042:: with SMTP id gz2mr2474707ejc.174.1616576229395;
- Wed, 24 Mar 2021 01:57:09 -0700 (PDT)
+        with ESMTP id S231882AbhCXJEX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 05:04:23 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576B9C061763;
+        Wed, 24 Mar 2021 02:04:23 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1lOzQy-0002RB-O8; Wed, 24 Mar 2021 10:04:12 +0100
+Date:   Wed, 24 Mar 2021 10:04:12 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-stable <stable@vger.kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        lkft-triage@lists.linaro.org, Netdev <netdev@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 5.10 104/157] mptcp: put subflow sock on connect error
+Message-ID: <20210324090412.GB27244@breakpoint.cc>
+References: <20210322121933.746237845@linuxfoundation.org>
+ <20210322121937.071435221@linuxfoundation.org>
+ <CA+G9fYvRM+9DmGuKM0ErDnrYBOmZ6zzmMkrWevMJqOzhejWwZg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210315053721.189-1-xieyongji@bytedance.com> <20210315053721.189-11-xieyongji@bytedance.com>
- <9a2835b1-1f0e-5646-6c77-524e6ccdc613@redhat.com>
-In-Reply-To: <9a2835b1-1f0e-5646-6c77-524e6ccdc613@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 24 Mar 2021 16:56:58 +0800
-Message-ID: <CACycT3uosBGNwTEaW7h8GdDvHjoXWR1Se_kszQJ5Vubjp5C8MA@mail.gmail.com>
-Subject: Re: Re: [PATCH v5 10/11] vduse: Add config interrupt support
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYvRM+9DmGuKM0ErDnrYBOmZ6zzmMkrWevMJqOzhejWwZg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 12:45 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2021/3/15 =E4=B8=8B=E5=8D=881:37, Xie Yongji =E5=86=99=E9=81=93=
-:
-> > This patch introduces a new ioctl VDUSE_INJECT_CONFIG_IRQ
-> > to support injecting config interrupt.
+Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> On Mon, 22 Mar 2021 at 18:15, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
 > >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->
->
-> I suggest to squash this into path 9.
->
+> > From: Florian Westphal <fw@strlen.de>
+> >
+> > [ Upstream commit f07157792c633b528de5fc1dbe2e4ea54f8e09d4 ]
+> >
+> > mptcp_add_pending_subflow() performs a sock_hold() on the subflow,
+> > then adds the subflow to the join list.
+> >
+> > Without a sock_put the subflow sk won't be freed in case connect() fails.
+> >
+> > unreferenced object 0xffff88810c03b100 (size 3000):
+> > [..]
+> >     sk_prot_alloc.isra.0+0x2f/0x110
+> >     sk_alloc+0x5d/0xc20
+> >     inet6_create+0x2b7/0xd30
+> >     __sock_create+0x17f/0x410
+> >     mptcp_subflow_create_socket+0xff/0x9c0
+> >     __mptcp_subflow_connect+0x1da/0xaf0
+> >     mptcp_pm_nl_work+0x6e0/0x1120
+> >     mptcp_worker+0x508/0x9a0
+> >
+> > Fixes: 5b950ff4331ddda ("mptcp: link MPC subflow into msk only after accept")
 
-Will do it in v6.
+I don't see this change in 5.10, so why is this fix queued up?
 
-Thanks,
-Yongji
+> I have reported the following warnings and kernel crash on 5.10.26-rc2 [1]
+> The bisect reported that issue pointing out to this commit.
+> 
+> commit 460916534896e6d4f80a37152e0948db33376873
+> mptcp: put subflow sock on connect error
+> 
+> This problem is specific to 5.10.26-rc2.
+> 
+> Warning:
+> --------
+> [ 1040.114695] refcount_t: addition on 0; use-after-free.
+> [ 1040.119857] WARNING: CPU: 3 PID: 31925 at
+> /usr/src/kernel/lib/refcount.c:25 refcount_warn_saturate+0xd7/0x100
+> [ 1040.129769] Modules linked in: act_mirred cls_u32 sch_netem sch_etf
+> ip6table_nat xt_nat iptable_nat nf_nat ip6table_filter xt_conntrack
+> nf_conntrack nf_defrag_ipv4 libcrc32c ip6_tables nf_defrag_ipv6 sch_fq
+> iptable_filter xt_mark ip_tables cls_bpf sch_ingress algif_hash
+> x86_pkg_temp_thermal fuse [last unloaded: test_blackhole_dev]
+> [ 1040.159030] CPU: 3 PID: 31925 Comm: mptcp_connect Tainted: G
+> W     K   5.10.26-rc2 #1
+> [ 1040.167459] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
+> 2.2 05/23/2018
+> [ 1040.174851] RIP: 0010:refcount_warn_saturate+0xd7/0x100
+> 
+> And
+> 
+> Kernel Panic:
+> -------------
+> [ 1069.557485] BUG: kernel NULL pointer dereference, address: 0000000000000010
+> [ 1069.564446] #PF: supervisor read access in kernel mode
+> [ 1069.569583] #PF: error_code(0x0000) - not-present page
+> [ 1069.574714] PGD 0 P4D 0
+> [ 1069.577246] Oops: 0000 [#1] SMP PTI
+> > index 16adba172fb9..591546d0953f 100644
+> > --- a/net/mptcp/subflow.c
+> > +++ b/net/mptcp/subflow.c
+> > @@ -1133,6 +1133,7 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
+> >         spin_lock_bh(&msk->join_list_lock);
+> >         list_add_tail(&subflow->node, &msk->join_list);
+> >         spin_unlock_bh(&msk->join_list_lock);
+> > +       sock_put(mptcp_subflow_tcp_sock(subflow));
+> >
+> >         return err;
+
+Crash is not surprising, the backport puts the socket in the 'success' path
+(list_add_tail).
+
+I don't see why this is in -stable, the faulty commit is not there?
+
+The upstream patch is:
+        list_del(&subflow->node);
+        spin_unlock_bh(&msk->join_list_lock);
++	sock_put(mptcp_subflow_tcp_sock(subflow));
+
+[ Note the 'list_del', this is in the error unwind path ]
