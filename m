@@ -2,111 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29ABD348483
+	by mail.lfdr.de (Postfix) with ESMTP id 7500E348484
 	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 23:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238804AbhCXWVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 18:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        id S238816AbhCXWVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 18:21:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238817AbhCXWVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 18:21:18 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9147FC06174A
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 15:21:17 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id dm8so239410edb.2
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 15:21:17 -0700 (PDT)
+        with ESMTP id S238836AbhCXWVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 18:21:37 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F369FC0613E0
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 15:21:36 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id w8so203482pjf.4
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 15:21:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NBXUm2vKXZ84tMJ7ojnsB2u2e7ExNQlFn/yPklS+aW0=;
-        b=NBNKCZMxwSQtoFj2SKFL9Af1YdIMmyckUjLs2kHAOKgy6S8l7Jf+4+4k2eRAujCLau
-         0Kn+WKkRSiERGYQV5VTO3A5IJLZMaD6hOAelt9v4xPHPzzL34WxuVoZgfJf6vjjIBP8g
-         7eaPc2YpuB1w3yzRgGnENPO9d6oKuRbC63u6E56xk0hwdORcNx2Qe7tMduHR2BLaaR6l
-         tYbhWEYw4Hvrk3606Kr0ceo5sWVMvAoHoLMGaNlrzFnGSt8H09/hZRndIHx9KB5B3/Ot
-         BNN/ycAL1zT8ZdCCDT+fBHDU6AacI4v18shXvpIJe7ym5f4LkfTBF+ewRo+f8RM04n3r
-         kivA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jIDPF7ri84OLFsNd4OhxmJPSCi5FNfpE4FjtwEiJamI=;
+        b=RiBXhaenM9VBbNf7Ikof8uRUzpei4NDWIP7Ov/61XaLR+CqRNKdKd7fevMR7JsPQSn
+         dak0k7Il33xba+i95mj9167kOtqh9O/gBnyrBpD3mYXz+NZec2sWUmXXD+jKJMkdYHmZ
+         S+kX+o7ONkaASTwWepkBXvtypIYfNzOTkqHPjiHglI7PlYC22lTTYnLEDwcMwTCgkxec
+         wRO9mcct/h+YU/KkpwyhIU78PUQXyAKvNNIsc77BBuYWU+MYo1EK/fOQTtdF7aj/WVKb
+         qWktnXp87q3dMVTR2qYDoRBCoPIB64pUP9Gyq3wDM/GVZaCK+gv6QQIbZe8N95o3IkGQ
+         IQ+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NBXUm2vKXZ84tMJ7ojnsB2u2e7ExNQlFn/yPklS+aW0=;
-        b=NvIykMy6yDDOzsv9x/8jtR8OlxfjgY7RMPxwXTGyvOc7xCiv+ZEaO8jYFQrUvDSxdl
-         g7bap/aDbOupJsOhNr4dNlI9vxlGnbA1tM8O6O6EacXS7tsCnUKSen0VUkuYVLCBGxJb
-         vpwvlFu9naak6kwAt0HEPe6g6UWurHk9N+hzKmiquDjkg+pPuWjmOpTrUdUTLGa0czbd
-         ieVDPyLKJITdpSO0xQql+HhEvekN6bDJSrhHtI9A5WYviLGaZapqcVh1D7nmlstJ6IeQ
-         QamModU/+RzgtYBf3tUOstrpkQA5Zns1E0HEOiarHVpmNpsV4ej00Ju3ngbwSpbH+gov
-         4fXQ==
-X-Gm-Message-State: AOAM532rVJnq9ugg4E5A+OElkpD+rJJyz8IJftIEafYCwr7ia7TXyB9T
-        LpfUD0Y6HdvMnvroA+o9ql4=
-X-Google-Smtp-Source: ABdhPJwW4lV5a2DvFBRNmE6dpHl9S7ZxaTM15LirLhMnb2FM0Fnhlpb1JKkmKfapD7OAFMxIQ0+Ydw==
-X-Received: by 2002:a05:6402:614:: with SMTP id n20mr5746251edv.58.1616624476294;
-        Wed, 24 Mar 2021 15:21:16 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id bm10sm1807690edb.2.2021.03.24.15.21.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 15:21:15 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 00:21:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        netdev@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
-        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Subject: Re: lantiq_xrx200: Ethernet MAC with multiple TX queues
-Message-ID: <20210324222114.4uh5modod373njuh@skbuf>
-References: <CAFBinCArx6YONd+ohz76fk2_SW5rj=VY=ivvEMsYKUV-ti4uzw@mail.gmail.com>
- <20210324201331.camqijtggfbz7c3f@skbuf>
- <874dd389-dd67-65a6-8ccc-cc1d9fa904a2@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jIDPF7ri84OLFsNd4OhxmJPSCi5FNfpE4FjtwEiJamI=;
+        b=jlFf6CNmB85RVI26mYhClQhdVV8uVh3IK5LH+nX76eBoEgjfeTJYt6HLmS9BY+QB9y
+         M3ogcFaG8Et6O9IbnlXHvN2MfAPNWK9hHb+YjrEKEDRgUy2jdmmaf4y1tNi7dF2YmhGG
+         08Ew6mNojBJ4P/1J4hFnkN7SDnzBXdIjEUqkeru19n9rA62z4mR/w6tS+Pb0ErL0lhjf
+         ivlRhK2w2QYqlBd2Glebu5+T6V0qm9Pv4Qtw/9+nostJ9QdUi2ywAT+2SOy6HyFhvNca
+         dS2cPdNos3nM7QaLMzUY7bwg+V6ZqzM+vrUu0bg5dErkcueELJmlFn0nMcF9mTPU3+RI
+         t20A==
+X-Gm-Message-State: AOAM532GxzI+VyJLXoCyJNb8cNqXF2KYuFv25OUtgn8Eo+xqaBDBKGBk
+        uySAqKbn4nb5ZMoFBo5KF005zSXg+AqdBMTCWIIXz1B9uOrxDG15
+X-Google-Smtp-Source: ABdhPJxO78gga38eOSSGkRb7JR3LPL4ca3GN3Kg63kSbnkYrOAUmk+vpnbWzVH0WjGPGdqNPQJZhFiJatpAuCeF1xyw=
+X-Received: by 2002:a17:90b:947:: with SMTP id dw7mr5682193pjb.178.1616624496196;
+ Wed, 24 Mar 2021 15:21:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874dd389-dd67-65a6-8ccc-cc1d9fa904a2@gmail.com>
+References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
+ <YFCH8vzFGmfFRCvV@cmpxchg.org> <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
+ <YFJ+5+NBOBiUbGWS@cmpxchg.org> <CAOFY-A17g-Aq_TsSX8=mD7ZaSAqx3gzUuCJT8K0xwrSuYdP4Kw@mail.gmail.com>
+ <YFoe8BO0JsbXTHHF@cmpxchg.org> <CAOFY-A2dfWS91b10R9Pu-5T-uT2qF9h9Lm8GaJfV9shfjP4Wbg@mail.gmail.com>
+ <CALvZod527EgYmkqWdoLCARj2BD2=YWVCC9Dk87gfQRG8NViX_A@mail.gmail.com>
+In-Reply-To: <CALvZod527EgYmkqWdoLCARj2BD2=YWVCC9Dk87gfQRG8NViX_A@mail.gmail.com>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Wed, 24 Mar 2021 15:21:25 -0700
+Message-ID: <CAOFY-A0GtpeFUrp+eK1__pOm=gkp3ahNXXkm6rztrz_O2FFfeQ@mail.gmail.com>
+Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Wed, Mar 24, 2021 at 11:26 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Tue, Mar 23, 2021 at 11:42 AM Arjun Roy <arjunroy@google.com> wrote:
+> >
+> [...]
+> >
+> > To summarize then, it seems to me that we're on the same page now.
+> > I'll put together a tentative v3 such that:
+> > 1. It uses pre-charging, as previously discussed.
+> > 2. It uses a page flag to delineate pages of a certain networking sort
+> > (ie. this mechanism).
+> > 3. It avails itself of up to 4 words of data inside struct page,
+> > inside the networking specific struct.
+> > 4. And it sets up this opt-in lifecycle notification for drivers that
+> > choose to use it, falling back to existing behaviour without.
+> >
+>
+> Arjun, if you don't mind, can you explain how the lifetime of such a
+> page will look like?
+>
+> For example:
+>
+> Driver:
+> page = dev_alloc_page()
+> /* page has 1 ref */
 
-On Wed, Mar 24, 2021 at 02:09:02PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 3/24/2021 1:13 PM, Vladimir Oltean wrote:
-> > Hi Martin,
-> > 
-> > On Wed, Mar 24, 2021 at 09:04:16PM +0100, Martin Blumenstingl wrote:
-> >> Hello,
-> >>
-> >> the PMAC (Ethernet MAC) IP built into the Lantiq xRX200 SoCs has
-> >> support for multiple (TX) queues.
-> >> This MAC is connected to the SoC's built-in switch IP (called GSWIP).
-> >>
-> >> Right now the lantiq_xrx200 driver only uses one TX and one RX queue.
-> >> The vendor driver (which mixes DSA/switch and MAC functionality in one
-> >> driver) uses the following approach:
-> >> - eth0 ("lan") uses the first TX queue
-> >> - eth1 ("wan") uses the second TX queue
-> >>
-> >> With the current (mainline) lantiq_xrx200 driver some users are able
-> >> to fill up the first (and only) queue.
-> >> This is why I am thinking about adding support for the second queue to
-> >> the lantiq_xrx200 driver.
-> >>
-> >> My main question is: how do I do it properly?
-> >> Initializing the second TX queue seems simple (calling
-> >> netif_tx_napi_add for a second time).
-> >> But how do I choose the "right" TX queue in xrx200_start_xmit then?
-> 
-> If you use DSA you will have a DSA slave network device which will be
-> calling into dev_queue_xmit() into the DSA master which will be the
-> xrx200 driver, so it's fairly simple for you to implement a queue
-> selection within the xrx200 tagger for instance.
-> 
-> You can take a look at how net/dsa/tag_brcm.c and
-> drivers/net/ethernet/broadcom/bcmsysport.c work as far as mapping queues
-> from the DSA slave network device queue/port number into a queue number
-> for the DSA master.
+Yes, this is the case.
 
-What are the benefits of mapping packets to TX queues of the DSA master
-from the DSA layer?
+> dev_map_page(page)
+> /* I don't think dev_map_page() takes a ref on page, so the ref remains 1. */
+>
+
+To be clear, do you mean things like DMA setup here? Or specifically
+what do you mean by dev_map_page?
+
+> On incoming traffic the page goes to skb and which then gets assigned
+> to a struct sock. Does the kernel increase refcnt of the page on these
+> operations?
+>
+
+Adding a page to an skb will mean that, when the skb is cleaned up, a
+page ref is dropped:
+https://github.com/torvalds/linux/blob/master/net/core/skbuff.c#L666
+
+So a driver may bump the refcount for the page, before adding it to the skb:
+https://github.com/torvalds/linux/blob/master/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c#L442
+
+
+> The page gets mapped into user space which increments its refcnt.
+>
+Yes.
+
+> After processing the data, the application unmaps the page and its
+> refcnt will be decremented.
+>
+Yes.
+
+
+> __put_page() will be called when refcnt reaches 0, so, the initial
+> refcnt which the driver has acquired, has to be transferred to the
+> next layer. So, I am trying to understand how that will work?
+
+Ah, I see - there was a miscommunication. Johannes mentioned
+__put_page() but I read put_page().
+That is where I was planning on adding the interposition for these
+network pages.
+
+So in put_page(), if it turns out it's a network page, we do our
+handling then as I described in prior emails. Sorry for the confusion.
+
+Thanks,
+-Arjun
