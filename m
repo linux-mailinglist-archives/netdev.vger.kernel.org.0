@@ -2,24 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 943F9346EDF
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:32:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11E74346EE0
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234526AbhCXBcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:32:05 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:60614 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234527AbhCXBbX (ORCPT
+        id S234704AbhCXBcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 21:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234528AbhCXBbX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:31:23 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [IPv6:2001:4b98:dc0:41:216:3eff:fe8c:2bda])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09DC3C061763;
+        Tue, 23 Mar 2021 18:31:23 -0700 (PDT)
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 29252630C3;
+        by mail.netfilter.org (Postfix) with ESMTPSA id AEA41630BB;
         Wed, 24 Mar 2021 02:31:14 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next,v2 23/24] net: ethernet: mtk_eth_soc: add flow offloading support
-Date:   Wed, 24 Mar 2021 02:30:54 +0100
-Message-Id: <20210324013055.5619-24-pablo@netfilter.org>
+Subject: [PATCH net-next,v2 24/24] docs: nf_flowtable: update documentation with enhancements
+Date:   Wed, 24 Mar 2021 02:30:55 +0100
+Message-Id: <20210324013055.5619-25-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210324013055.5619-1-pablo@netfilter.org>
 References: <20210324013055.5619-1-pablo@netfilter.org>
@@ -29,588 +32,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+This patch updates the flowtable documentation to describe recent
+enhancements:
 
-This adds support for offloading IPv4 routed flows, including SNAT/DNAT,
-one VLAN, PPPoE and DSA.
+- Offload action is available after the first packets go through the
+  classic forwarding path.
+- IPv4 and IPv6 are supported. Only TCP and UDP layer 4 are supported at
+  this stage.
+- Tuple has been augmented to track VLAN id and PPPoE session id.
+- Bridge and IP forwarding integration, including bridge VLAN filtering
+  support.
+- Hardware offload support.
+- Describe the [OFFLOAD] and [HW_OFFLOAD] tags in the conntrack table
+  listing.
+- Replace 'flow offload' by 'flow add' in example rulesets (preferred
+  syntax).
+- Describe existing cache limitations.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
-v2: formerly, patch #22 now patch #23.
+v2: not coming in v1. Update documentation including existing limitations.
 
- drivers/net/ethernet/mediatek/Makefile        |   2 +-
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   |   5 +
- drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  10 +-
- .../net/ethernet/mediatek/mtk_ppe_offload.c   | 485 ++++++++++++++++++
- 4 files changed, 500 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+ Documentation/networking/nf_flowtable.rst | 170 ++++++++++++++++++----
+ 1 file changed, 143 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/Makefile b/drivers/net/ethernet/mediatek/Makefile
-index 871dc3e113e2..79d4cdbbcbf5 100644
---- a/drivers/net/ethernet/mediatek/Makefile
-+++ b/drivers/net/ethernet/mediatek/Makefile
-@@ -4,5 +4,5 @@
- #
+diff --git a/Documentation/networking/nf_flowtable.rst b/Documentation/networking/nf_flowtable.rst
+index 6cdf9a1724b6..d87f253b9d39 100644
+--- a/Documentation/networking/nf_flowtable.rst
++++ b/Documentation/networking/nf_flowtable.rst
+@@ -4,35 +4,38 @@
+ Netfilter's flowtable infrastructure
+ ====================================
  
- obj-$(CONFIG_NET_MEDIATEK_SOC) += mtk_eth.o
--mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_ppe.o mtk_ppe_debugfs.o
-+mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_ppe.o mtk_ppe_debugfs.o mtk_ppe_offload.o
- obj-$(CONFIG_NET_MEDIATEK_STAR_EMAC) += mtk_star_emac.o
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 67605b9a3916..0396f0db855f 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2843,6 +2843,7 @@ static const struct net_device_ops mtk_netdev_ops = {
- #ifdef CONFIG_NET_POLL_CONTROLLER
- 	.ndo_poll_controller	= mtk_poll_controller,
- #endif
-+	.ndo_setup_tc		= mtk_eth_setup_tc,
- };
+-This documentation describes the software flowtable infrastructure available in
+-Netfilter since Linux kernel 4.16.
++This documentation describes the Netfilter flowtable infrastructure which allows
++you to define a fastpath through the flowtable datapath. This infrastructure
++also provides hardware offload support. The flowtable supports for the layer 3
++IPv4 and IPv6 and the layer 4 TCP and UDP protocols.
  
- static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
-@@ -3104,6 +3105,10 @@ static int mtk_probe(struct platform_device *pdev)
- 				   eth->base + MTK_ETH_PPE_BASE, 2);
- 		if (err)
- 			goto err_free_dev;
-+
-+		err = mtk_eth_offload_init(eth);
-+		if (err)
-+			goto err_free_dev;
+ Overview
+ --------
+ 
+-Initial packets follow the classic forwarding path, once the flow enters the
+-established state according to the conntrack semantics (ie. we have seen traffic
+-in both directions), then you can decide to offload the flow to the flowtable
+-from the forward chain via the 'flow offload' action available in nftables.
++Once the first packet of the flow successfully goes through the IP forwarding
++path, from the second packet on, you might decide to offload the flow to the
++flowtable through your ruleset. The flowtable infrastructure provides a rule
++action that allows you to specify when to add a flow to the flowtable.
+ 
+-Packets that find an entry in the flowtable (ie. flowtable hit) are sent to the
+-output netdevice via neigh_xmit(), hence, they bypass the classic forwarding
+-path (the visible effect is that you do not see these packets from any of the
+-netfilter hooks coming after the ingress). In case of flowtable miss, the packet
+-follows the classic forward path.
++A packet that finds a matching entry in the flowtable (ie. flowtable hit) is
++transmitted to the output netdevice via neigh_xmit(), hence, packets bypass the
++classic IP forwarding path (the visible effect is that you do not see these
++packets from any of the Netfilter hooks coming after ingress). In case that
++there is no matching entry in the flowtable (ie. flowtable miss), the packet
++follows the classic IP forwarding path.
+ 
+-The flowtable uses a resizable hashtable, lookups are based on the following
+-7-tuple selectors: source, destination, layer 3 and layer 4 protocols, source
+-and destination ports and the input interface (useful in case there are several
+-conntrack zones in place).
++The flowtable uses a resizable hashtable. Lookups are based on the following
++n-tuple selectors: layer 2 protocol encapsulation (VLAN and PPPoE), layer 3
++source and destination, layer 4 source and destination ports and the input
++interface (useful in case there are several conntrack zones in place).
+ 
+-Flowtables are populated via the 'flow offload' nftables action, so the user can
+-selectively specify what flows are placed into the flow table. Hence, packets
+-follow the classic forwarding path unless the user explicitly instruct packets
+-to use this new alternative forwarding path via nftables policy.
++The 'flow add' action allows you to populate the flowtable, the user selectively
++specifies what flows are placed into the flowtable. Hence, packets follow the
++classic IP forwarding path unless the user explicitly instruct flows to use this
++new alternative forwarding path via policy.
+ 
+-This is represented in Fig.1, which describes the classic forwarding path
+-including the Netfilter hooks and the flowtable fastpath bypass.
++The flowtable datapath is represented in Fig.1, which describes the classic IP
++forwarding path including the Netfilter hooks and the flowtable fastpath bypass.
+ 
+ ::
+ 
+@@ -67,11 +70,13 @@ including the Netfilter hooks and the flowtable fastpath bypass.
+ 	       Fig.1 Netfilter hooks and flowtable interactions
+ 
+ The flowtable entry also stores the NAT configuration, so all packets are
+-mangled according to the NAT policy that matches the initial packets that went
+-through the classic forwarding path. The TTL is decremented before calling
+-neigh_xmit(). Fragmented traffic is passed up to follow the classic forwarding
+-path given that the transport selectors are missing, therefore flowtable lookup
+-is not possible.
++mangled according to the NAT policy that is specified from the classic IP
++forwarding path. The TTL is decremented before calling neigh_xmit(). Fragmented
++traffic is passed up to follow the classic IP forwarding path given that the
++transport header is missing, in this case, flowtable lookups are not possible.
++TCP RST and FIN packets are also passed up to the classic IP forwarding path to
++release the flow gracefully. Packets that exceed the MTU are also passed up to
++the classic forwarding path to report packet-too-big ICMP errors to the sender.
+ 
+ Example configuration
+ ---------------------
+@@ -85,7 +90,7 @@ flowtable and add one rule to your forward chain::
+ 		}
+ 		chain y {
+ 			type filter hook forward priority 0; policy accept;
+-			ip protocol tcp flow offload @f
++			ip protocol tcp flow add @f
+ 			counter packets 0 bytes 0
+ 		}
  	}
+@@ -103,6 +108,117 @@ flow is offloaded, you will observe that the counter rule in the example above
+ does not get updated for the packets that are being forwarded through the
+ forwarding bypass.
  
- 	for (i = 0; i < MTK_MAX_DEVS; i++) {
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 66ed537bc133..1a6750c08bb9 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -15,6 +15,7 @@
- #include <linux/u64_stats_sync.h>
- #include <linux/refcount.h>
- #include <linux/phylink.h>
-+#include <linux/rhashtable.h>
- #include "mtk_ppe.h"
- 
- #define MTK_QDMA_PAGE_SIZE	2048
-@@ -41,7 +42,8 @@
- 				 NETIF_F_HW_VLAN_CTAG_RX | \
- 				 NETIF_F_SG | NETIF_F_TSO | \
- 				 NETIF_F_TSO6 | \
--				 NETIF_F_IPV6_CSUM)
-+				 NETIF_F_IPV6_CSUM |\
-+				 NETIF_F_HW_TC)
- #define MTK_HW_FEATURES_MT7628	(NETIF_F_SG | NETIF_F_RXCSUM)
- #define NEXT_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
- 
-@@ -914,6 +916,7 @@ struct mtk_eth {
- 	int				ip_align;
- 
- 	struct mtk_ppe			ppe;
-+	struct rhashtable		flow_table;
- };
- 
- /* struct mtk_mac -	the structure that holds the info about the MACs of the
-@@ -958,4 +961,9 @@ int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
- int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);
- int mtk_gmac_rgmii_path_setup(struct mtk_eth *eth, int mac_id);
- 
-+int mtk_eth_offload_init(struct mtk_eth *eth);
-+int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
-+		     void *type_data);
++You can identify offloaded flows through the [OFFLOAD] tag when listing your
++connection tracking table.
++
++::
++	# conntrack -L
++	tcp      6 src=10.141.10.2 dst=192.168.10.2 sport=52728 dport=5201 src=192.168.10.2 dst=192.168.10.1 sport=5201 dport=52728 [OFFLOAD] mark=0 use=2
 +
 +
- #endif /* MTK_ETH_H */
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-new file mode 100644
-index 000000000000..d0c46786571f
---- /dev/null
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -0,0 +1,485 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ *  Copyright (C) 2020 Felix Fietkau <nbd@nbd.name>
-+ */
++Layer 2 encapsulation
++---------------------
 +
-+#include <linux/if_ether.h>
-+#include <linux/rhashtable.h>
-+#include <linux/if_ether.h>
-+#include <linux/ip.h>
-+#include <net/flow_offload.h>
-+#include <net/pkt_cls.h>
-+#include <net/dsa.h>
-+#include "mtk_eth_soc.h"
++Since Linux kernel 5.13, the flowtable infrastructure discovers the real
++netdevice behind VLAN and PPPoE netdevices. The flowtable software datapath
++parses the VLAN and PPPoE layer 2 headers to extract the ethertype and the
++VLAN ID / PPPoE session ID which are used for the flowtable lookups. The
++flowtable datapath also deals with layer 2 decapsulation.
 +
-+struct mtk_flow_data {
-+	struct ethhdr eth;
++You do not need to add the PPPoE and the VLAN devices to your flowtable,
++instead the real device is sufficient for the flowtable to track your flows.
 +
-+	union {
-+		struct {
-+			__be32 src_addr;
-+			__be32 dst_addr;
-+		} v4;
-+	};
++Bridge and IP forwarding
++------------------------
 +
-+	__be16 src_port;
-+	__be16 dst_port;
++Since Linux kernel 5.13, you can add bridge ports to the flowtable. The
++flowtable infrastructure discovers the topology behind the bridge device. This
++allows the flowtable to define a fastpath bypass between the bridge ports
++(represented as eth1 and eth2 in the example figure below) and the gateway
++device (represented as eth0) in your switch/router.
 +
-+	struct {
-+		u16 id;
-+		__be16 proto;
-+		u8 num;
-+	} vlan;
-+	struct {
-+		u16 sid;
-+		u8 num;
-+	} pppoe;
-+};
++::
++                      fastpath bypass
++               .-------------------------.
++              /                           \
++              |           IP forwarding   |
++              |          /             \ \/
++              |       br0               eth0 ..... eth0
++              .       / \                          *host B*
++               -> eth1  eth2
++                   .           *switch/router*
++                   .
++                   .
++                 eth0
++               *host A*
 +
-+struct mtk_flow_entry {
-+	struct rhash_head node;
-+	unsigned long cookie;
-+	u16 hash;
-+};
++The flowtable infrastructure also supports for bridge VLAN filtering actions
++such as PVID and untagged. You can also stack a classic VLAN device on top of
++your bridge port.
 +
-+static const struct rhashtable_params mtk_flow_ht_params = {
-+	.head_offset = offsetof(struct mtk_flow_entry, node),
-+	.head_offset = offsetof(struct mtk_flow_entry, cookie),
-+	.key_len = sizeof(unsigned long),
-+	.automatic_shrinking = true,
-+};
++If you would like that your flowtable defines a fastpath between your bridge
++ports and your IP forwarding path, you have to add your bridge ports (as
++represented by the real netdevice) to your flowtable definition.
 +
-+static u32
-+mtk_eth_timestamp(struct mtk_eth *eth)
-+{
-+	return mtk_r32(eth, 0x0010) & MTK_FOE_IB1_BIND_TIMESTAMP;
-+}
++Counters
++--------
 +
-+static int
-+mtk_flow_set_ipv4_addr(struct mtk_foe_entry *foe, struct mtk_flow_data *data,
-+		       bool egress)
-+{
-+	return mtk_foe_entry_set_ipv4_tuple(foe, egress,
-+					    data->v4.src_addr, data->src_port,
-+					    data->v4.dst_addr, data->dst_port);
-+}
++The flowtable can synchronize packet and byte counters with the existing
++connection tracking entry by specifying the counter statement in your flowtable
++definition, e.g.
 +
-+static void
-+mtk_flow_offload_mangle_eth(const struct flow_action_entry *act, void *eth)
-+{
-+	void *dest = eth + act->mangle.offset;
-+	const void *src = &act->mangle.val;
-+
-+	if (act->mangle.offset > 8)
-+		return;
-+
-+	if (act->mangle.mask == 0xffff) {
-+		src += 2;
-+		dest += 2;
-+	}
-+
-+	memcpy(dest, src, act->mangle.mask ? 2 : 4);
-+}
-+
-+
-+static int
-+mtk_flow_mangle_ports(const struct flow_action_entry *act,
-+		      struct mtk_flow_data *data)
-+{
-+	u32 val = ntohl(act->mangle.val);
-+
-+	switch (act->mangle.offset) {
-+	case 0:
-+		if (act->mangle.mask == ~htonl(0xffff))
-+			data->dst_port = cpu_to_be16(val);
-+		else
-+			data->src_port = cpu_to_be16(val >> 16);
-+		break;
-+	case 2:
-+		data->dst_port = cpu_to_be16(val);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+mtk_flow_mangle_ipv4(const struct flow_action_entry *act,
-+		     struct mtk_flow_data *data)
-+{
-+	__be32 *dest;
-+
-+	switch (act->mangle.offset) {
-+	case offsetof(struct iphdr, saddr):
-+		dest = &data->v4.src_addr;
-+		break;
-+	case offsetof(struct iphdr, daddr):
-+		dest = &data->v4.dst_addr;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	memcpy(dest, &act->mangle.val, sizeof(u32));
-+
-+	return 0;
-+}
-+
-+static int
-+mtk_flow_get_dsa_port(struct net_device **dev)
-+{
-+#if IS_ENABLED(CONFIG_NET_DSA)
-+	struct dsa_port *dp;
-+
-+	dp = dsa_port_from_netdev(*dev);
-+	if (IS_ERR(dp))
-+		return -ENODEV;
-+
-+	if (dp->cpu_dp->tag_ops->proto != DSA_TAG_PROTO_MTK)
-+		return -ENODEV;
-+
-+	*dev = dp->cpu_dp->master;
-+
-+	return dp->index;
-+#else
-+	return -ENODEV;
-+#endif
-+}
-+
-+static int
-+mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
-+			   struct net_device *dev)
-+{
-+	int pse_port, dsa_port;
-+
-+	dsa_port = mtk_flow_get_dsa_port(&dev);
-+	if (dsa_port >= 0)
-+		mtk_foe_entry_set_dsa(foe, dsa_port);
-+
-+	if (dev == eth->netdev[0])
-+		pse_port = 1;
-+	else if (dev == eth->netdev[1])
-+		pse_port = 2;
-+	else
-+		return -EOPNOTSUPP;
-+
-+	mtk_foe_entry_set_pse_port(foe, pse_port);
-+
-+	return 0;
-+}
-+
-+static int
-+mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
-+	struct flow_action_entry *act;
-+	struct mtk_flow_data data = {};
-+	struct mtk_foe_entry foe;
-+	struct net_device *odev = NULL;
-+	struct mtk_flow_entry *entry;
-+	int offload_type = 0;
-+	u16 addr_type = 0;
-+	u32 timestamp;
-+	u8 l4proto = 0;
-+	int err = 0;
-+	int hash;
-+	int i;
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META)) {
-+		struct flow_match_meta match;
-+
-+		flow_rule_match_meta(rule, &match);
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
-+		struct flow_match_control match;
-+
-+		flow_rule_match_control(rule, &match);
-+		addr_type = match.key->addr_type;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
-+		struct flow_match_basic match;
-+
-+		flow_rule_match_basic(rule, &match);
-+		l4proto = match.key->ip_proto;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	flow_action_for_each(i, act, &rule->action) {
-+		switch (act->id) {
-+		case FLOW_ACTION_MANGLE:
-+			if (act->mangle.htype == FLOW_ACT_MANGLE_HDR_TYPE_ETH)
-+				mtk_flow_offload_mangle_eth(act, &data.eth);
-+			break;
-+		case FLOW_ACTION_REDIRECT:
-+			odev = act->dev;
-+			break;
-+		case FLOW_ACTION_CSUM:
-+			break;
-+		case FLOW_ACTION_VLAN_PUSH:
-+			if (data.vlan.num == 1 ||
-+			    act->vlan.proto != htons(ETH_P_8021Q))
-+				return -EOPNOTSUPP;
-+
-+			data.vlan.id = act->vlan.vid;
-+			data.vlan.proto = act->vlan.proto;
-+			data.vlan.num++;
-+			break;
-+		case FLOW_ACTION_PPPOE_PUSH:
-+			if (data.pppoe.num == 1)
-+				return -EOPNOTSUPP;
-+
-+			data.pppoe.sid = act->pppoe.sid;
-+			data.pppoe.num++;
-+			break;
-+		default:
-+			return -EOPNOTSUPP;
++::
++	table inet x {
++		flowtable f {
++			hook ingress priority 0; devices = { eth0, eth1 };
++			counter
 +		}
++		...
 +	}
 +
-+	switch (addr_type) {
-+	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
-+		offload_type = MTK_PPE_PKT_TYPE_IPV4_HNAPT;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
++Counter support is available since Linux kernel 5.7.
 +
-+	if (!is_valid_ether_addr(data.eth.h_source) ||
-+	    !is_valid_ether_addr(data.eth.h_dest))
-+		return -EINVAL;
++Hardware offload
++----------------
 +
-+	err = mtk_foe_entry_prepare(&foe, offload_type, l4proto, 0,
-+				    data.eth.h_source,
-+				    data.eth.h_dest);
-+	if (err)
-+		return err;
++If your network device provides hardware offload support, you can turn it on by
++means of the 'offload' flag in your flowtable definition, e.g.
 +
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_PORTS)) {
-+		struct flow_match_ports ports;
-+
-+		flow_rule_match_ports(rule, &ports);
-+		data.src_port = ports.key->src;
-+		data.dst_port = ports.key->dst;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-+		struct flow_match_ipv4_addrs addrs;
-+
-+		flow_rule_match_ipv4_addrs(rule, &addrs);
-+
-+		data.v4.src_addr = addrs.key->src;
-+		data.v4.dst_addr = addrs.key->dst;
-+
-+		mtk_flow_set_ipv4_addr(&foe, &data, false);
-+	}
-+
-+	flow_action_for_each(i, act, &rule->action) {
-+		if (act->id != FLOW_ACTION_MANGLE)
-+			continue;
-+
-+		switch (act->mangle.htype) {
-+		case FLOW_ACT_MANGLE_HDR_TYPE_TCP:
-+		case FLOW_ACT_MANGLE_HDR_TYPE_UDP:
-+			err = mtk_flow_mangle_ports(act, &data);
-+			break;
-+		case FLOW_ACT_MANGLE_HDR_TYPE_IP4:
-+			err = mtk_flow_mangle_ipv4(act, &data);
-+			break;
-+		case FLOW_ACT_MANGLE_HDR_TYPE_ETH:
-+			/* handled earlier */
-+			break;
-+		default:
-+			return -EOPNOTSUPP;
++::
++	table inet x {
++		flowtable f {
++			hook ingress priority 0; devices = { eth0, eth1 };
++			flags offload;
 +		}
-+
-+		if (err)
-+			return err;
++		...
 +	}
 +
-+	if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-+		err = mtk_flow_set_ipv4_addr(&foe, &data, true);
-+		if (err)
-+			return err;
-+	}
++There is a workqueue that adds the flows to the hardware. Note that a few
++packets might still run over the flowtable software path until the workqueue has
++a chance to offload the flow to the network device.
 +
-+	if (data.vlan.num == 1) {
-+		if (data.vlan.proto != htons(ETH_P_8021Q))
-+			return -EOPNOTSUPP;
++You can identify hardware offloaded flows through the [HW_OFFLOAD] tag when
++listing your connection tracking table. Please, note that the [OFFLOAD] tag
++refers to the software offload mode, so there is a distinction between [OFFLOAD]
++which refers to the software flowtable fastpath and [HW_OFFLOAD] which refers
++to the hardware offload datapath being used by the flow.
 +
-+		mtk_foe_entry_set_vlan(&foe, data.vlan.id);
-+	}
-+	if (data.pppoe.num == 1)
-+		mtk_foe_entry_set_pppoe(&foe, data.pppoe.sid);
++The flowtable hardware offload infrastructure also supports for the DSA
++(Distributed Switch Architecture).
 +
-+	err = mtk_flow_set_output_device(eth, &foe, odev);
-+	if (err)
-+		return err;
++Limitations
++-----------
 +
-+	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-+	if (!entry)
-+		return -ENOMEM;
++The flowtable behaves like a cache. The flowtable entries might get stale if
++either the destination MAC address or the egress netdevice that is used for
++transmission changes.
 +
-+	entry->cookie = f->cookie;
-+	timestamp = mtk_eth_timestamp(eth);
-+	hash = mtk_foe_entry_commit(&eth->ppe, &foe, timestamp);
-+	if (hash < 0) {
-+		err = hash;
-+		goto free;
-+	}
++This might be a problem if:
 +
-+	entry->hash = hash;
-+	err = rhashtable_insert_fast(&eth->flow_table, &entry->node,
-+				     mtk_flow_ht_params);
-+	if (err < 0)
-+		goto clear_flow;
++- You run the flowtable in software mode and you combine bridge and IP
++  forwarding in your setup.
++- Hardware offload is enabled.
 +
-+	return 0;
-+clear_flow:
-+	mtk_foe_entry_clear(&eth->ppe, hash);
-+free:
-+	kfree(entry);
-+	return err;
-+}
-+
-+static int
-+mtk_flow_offload_destroy(struct mtk_eth *eth, struct flow_cls_offload *f)
-+{
-+	struct mtk_flow_entry *entry;
-+
-+	entry = rhashtable_lookup(&eth->flow_table, &f->cookie,
-+				  mtk_flow_ht_params);
-+	if (!entry)
-+		return -ENOENT;
-+
-+	mtk_foe_entry_clear(&eth->ppe, entry->hash);
-+	rhashtable_remove_fast(&eth->flow_table, &entry->node,
-+			       mtk_flow_ht_params);
-+	kfree(entry);
-+
-+	return 0;
-+}
-+
-+static int
-+mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
-+{
-+	struct mtk_flow_entry *entry;
-+	int timestamp;
-+	u32 idle;
-+
-+	entry = rhashtable_lookup(&eth->flow_table, &f->cookie,
-+				  mtk_flow_ht_params);
-+	if (!entry)
-+		return -ENOENT;
-+
-+	timestamp = mtk_foe_entry_timestamp(&eth->ppe, entry->hash);
-+	if (timestamp < 0)
-+		return -ETIMEDOUT;
-+
-+	idle = mtk_eth_timestamp(eth) - timestamp;
-+	f->stats.lastused = jiffies - idle * HZ;
-+
-+	return 0;
-+}
-+
-+static int
-+mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
-+{
-+	struct flow_cls_offload *cls = type_data;
-+	struct net_device *dev = cb_priv;
-+	struct mtk_mac *mac = netdev_priv(dev);
-+	struct mtk_eth *eth = mac->hw;
-+
-+	if (!tc_can_offload(dev))
-+		return -EOPNOTSUPP;
-+
-+	if (type != TC_SETUP_CLSFLOWER)
-+		return -EOPNOTSUPP;
-+
-+	switch (cls->command) {
-+	case FLOW_CLS_REPLACE:
-+		return mtk_flow_offload_replace(eth, cls);
-+	case FLOW_CLS_DESTROY:
-+		return mtk_flow_offload_destroy(eth, cls);
-+	case FLOW_CLS_STATS:
-+		return mtk_flow_offload_stats(eth, cls);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
-+{
-+	struct mtk_mac *mac = netdev_priv(dev);
-+	struct mtk_eth *eth = mac->hw;
-+	static LIST_HEAD(block_cb_list);
-+	struct flow_block_cb *block_cb;
-+	flow_setup_cb_t *cb;
-+
-+	if (!eth->ppe.foe_table)
-+		return -EOPNOTSUPP;
-+
-+	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
-+		return -EOPNOTSUPP;
-+
-+	cb = mtk_eth_setup_tc_block_cb;
-+	f->driver_block_list = &block_cb_list;
-+
-+	switch (f->command) {
-+	case FLOW_BLOCK_BIND:
-+		block_cb = flow_block_cb_lookup(f->block, cb, dev);
-+		if (block_cb) {
-+			flow_block_cb_incref(block_cb);
-+			return 0;
-+		}
-+		block_cb = flow_block_cb_alloc(cb, dev, dev, NULL);
-+		if (IS_ERR(block_cb))
-+			return PTR_ERR(block_cb);
-+
-+		flow_block_cb_add(block_cb, f);
-+		list_add_tail(&block_cb->driver_list, &block_cb_list);
-+		return 0;
-+	case FLOW_BLOCK_UNBIND:
-+		block_cb = flow_block_cb_lookup(f->block, cb, dev);
-+		if (!block_cb)
-+			return -ENOENT;
-+
-+		if (flow_block_cb_decref(block_cb)) {
-+			flow_block_cb_remove(block_cb, f);
-+			list_del(&block_cb->driver_list);
-+		}
-+		return 0;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
-+		     void *type_data)
-+{
-+	if (type == TC_SETUP_FT)
-+		return mtk_eth_setup_tc_block(dev, type_data);
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+int mtk_eth_offload_init(struct mtk_eth *eth)
-+{
-+	if (!eth->ppe.foe_table)
-+		return 0;
-+
-+	return rhashtable_init(&eth->flow_table, &mtk_flow_ht_params);
-+}
+ More reading
+ ------------
+ 
 -- 
 2.20.1
 
