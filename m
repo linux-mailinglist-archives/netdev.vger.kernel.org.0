@@ -2,175 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0A13473BA
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 09:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 658DF3473DB
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 09:44:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbhCXIcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 04:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233734AbhCXIcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 04:32:19 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D21CC0613DE
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 01:32:19 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id u21so13467845ejo.13
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 01:32:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9wesJELvx+bK90Yan+GlwOUfkFnftNNGgIWX46f5DhQ=;
-        b=L5atFcpsn0qNbjNj7+QZ02Oz0hoT2IwnUUb1X3pIkgCn/fQL0kEomBej8koaqkwTX6
-         VOe+lESjI9UHyARWxWYqibBuTvTD685c4Xo0v2pzZX+89XuODZzvzBS5O7OBrnJooOar
-         tgrPuh7FYK9KU06ShlIMEU+MvsonPD6XDVFoPLvVV3tl/8H1BiOXAYh+LHbypOJiBiEf
-         EIk+/0Ul+rMGLlg7sXk14gAzOKZ2+N3cxLvo1u3fhKpe374sAw6n232doa7z01aXaZIR
-         FlayPGPnu4/MJWtlHTGBNWWYPPe7JiH6tH1eKFL8IEfVDXq8NCiSC/tIHQoMrrOM60GG
-         5ftw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9wesJELvx+bK90Yan+GlwOUfkFnftNNGgIWX46f5DhQ=;
-        b=hakpUclvuNErLuziYlje2BYtizKINkLcelpSQvkkRXgfAdmuyxYSo4qh8DNmX7WM0l
-         K379WIR2ZXeTnD4V/FHYFjmkecRIcVoTfM9Zo/faJMbcUvTs00fbFeVd3ywG5TZBRi/6
-         gr1P/RZDSck6FWGSu39Ukg37HHrZ2j44KO7GkwT14snUENqpPq/UqxZ27FltATwRvtjg
-         +VGwvdxorHZXKtZV8MUn2WMH76wKDhXeis1zito6PGZdcnrkD7uoxDsnXYymtyj9xwiL
-         5fo+HbnTslDFF8SAUm+mgjF2mwDujC1to9tNANroHNrDnq73RZifZwhd7bWd90gAJLvv
-         VntQ==
-X-Gm-Message-State: AOAM532hm+tWyRV4tIQmRNdXhbFJpFYLJnKMWq8kr/nfsOROZgsu1Qvt
-        XNLcEyV4RyVHEupl7EE91peqNgxEiqG8MDfKqqL0Lw==
-X-Google-Smtp-Source: ABdhPJwuTFnAurZuzernlxyfX3QtBwNudCt6QCdVR9y0FMZrPDSlDQGybI886gY9MvLiyhEhD6FSCvVcRKHGerG7zE8=
-X-Received: by 2002:a17:907:720a:: with SMTP id dr10mr2343237ejc.375.1616574737826;
- Wed, 24 Mar 2021 01:32:17 -0700 (PDT)
+        id S234321AbhCXIoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 04:44:20 -0400
+Received: from mga02.intel.com ([134.134.136.20]:40371 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234314AbhCXInu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 04:43:50 -0400
+IronPort-SDR: i675sr7hMHy3cUZz0FT1vrdipM40tIYLO9slcZbCENHhjs80L2Im53qlb3pA0p1XEXkhVFiA2z
+ DNaSFCXQBAFg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="177776929"
+X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
+   d="scan'208";a="177776929"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2021 01:43:50 -0700
+IronPort-SDR: 36JgTRJwl2Yyj+cX8VPZjfw8611F8CvLMMOfNmWES6dH1JZlFUMddiytBycFK9R8L/Lf2WFYTg
+ MeNtGYDzV43A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,274,1610438400"; 
+   d="scan'208";a="452508533"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga001.jf.intel.com with ESMTP; 24 Mar 2021 01:43:50 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 24 Mar 2021 01:43:49 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 24 Mar 2021 01:43:49 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Wed, 24 Mar 2021 01:43:49 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Wed, 24 Mar 2021 01:43:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KR83Iu6bIjFVVr3gXHn02dnJbG5KCCOCR+4soiUmyH1rX3+Z+AZV9XwjjZh0hwO1wSnFWEyGxid9gFvHeGWp7/lfw8AXb+huwbuIEgVrkXOSKrDLMYUhh9dJKg58lY7O5CI/dXscIkoveBUl3xF20dR/B08Cs960HPcXc1/QHZtGRkIttp1cFaAPghcwDBjjuSGQhXYOHBfflHFMDiysiZhEvH9gDZy60iN20yIYMP8CFNxUxyQmm1zvH5mWIXfrPTe+FiXR+0Sh0e9abRuvRaqeGikrVH4Oe61XQPR7v4yOfwE0TRU64SULEet7MmZ9NpSuWSOeeEsIeKaZwzfWsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VoJee1lQqhzW1ojkJsLcTlstl9PKkhsmdwxGcuLrS/Q=;
+ b=mNDF+72FpsEDIzUiZiuAu/NUbVEqp7pdikZQULzWvaQIHsIqzR7YHQYBUEw2jhnP7/oPuWS1eSPjX4EvamQxfNPPL0AoFYTV3RDoYr13RLcou3AT2FPovUmhkUJj1WaaiR0txVjnjYyn+lXmVoC0NV27XbKou/AvX4F7Qal7aTx/MObtb9XESWtCyDbe/J/a7CZ2M6RdjZfMOX8eLnsaS3Oyrrx+az2kvh44Adzg8e27rG1WuNlfyw+U8XaMUTgYzlevPGhHkfeH92UGIfYHKiztrx2b7AZuugyzGMJn2gPYnr0kKaiaUy/3hYqPzSHeiRW0sRGeutWwbJPcdbieqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VoJee1lQqhzW1ojkJsLcTlstl9PKkhsmdwxGcuLrS/Q=;
+ b=EcR1dhSZiAWIk+ZHsFsVmsmq3Kf82J/T0o5b+HYJX6mBgkYNSs7ABTSBI7biBxdjryi+bZpEMbuFR64/2kQid98/fRU47fMGvOiwG1AvF4WVAsPF6kklig9Lk3jxO97OzfFSOZwaAUFeKe1MItjBqpKeLx7pMC5UuLOOLtIc2TI=
+Received: from SN6PR11MB3136.namprd11.prod.outlook.com (2603:10b6:805:da::30)
+ by SA0PR11MB4606.namprd11.prod.outlook.com (2603:10b6:806:71::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.23; Wed, 24 Mar
+ 2021 08:43:47 +0000
+Received: from SN6PR11MB3136.namprd11.prod.outlook.com
+ ([fe80::5567:bb0:fc06:911c]) by SN6PR11MB3136.namprd11.prod.outlook.com
+ ([fe80::5567:bb0:fc06:911c%7]) with mapi id 15.20.3955.025; Wed, 24 Mar 2021
+ 08:43:46 +0000
+From:   "Voon, Weifeng" <weifeng.voon@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "Alexandre Torgue" <alexandre.torgue@st.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>
+Subject: RE: [RESEND v1 net-next 3/5] net: stmmac: introduce MSI Interrupt
+ routines for mac, safety, RX & TX
+Thread-Topic: [RESEND v1 net-next 3/5] net: stmmac: introduce MSI Interrupt
+ routines for mac, safety, RX & TX
+Thread-Index: AQHXGl6D5u7FcW5YjU+hoGa8akSEOaqHIjWAgAuf1uA=
+Date:   Wed, 24 Mar 2021 08:43:46 +0000
+Message-ID: <SN6PR11MB3136CE39DA28B20378A25D6988639@SN6PR11MB3136.namprd11.prod.outlook.com>
+References: <20210316121823.18659-1-weifeng.voon@intel.com>
+        <20210316121823.18659-4-weifeng.voon@intel.com>
+ <20210316142941.3ea1e24d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210316142941.3ea1e24d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [161.142.179.154]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b8ebd7e8-eabf-45f8-70cc-08d8eea0f07c
+x-ms-traffictypediagnostic: SA0PR11MB4606:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SA0PR11MB46068B9F41F63106ACCFAD3F88639@SA0PR11MB4606.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /tSoNk4qPgHJHtOoBb9OMujPVbCF1RCUfzAfMxS9QVmSDSz/TqOP7BhLGtkarKaMBUfjaoYRN8ccJmPxbR9XUkN8nz3nhkeU9fK9YxtgOu+BX7IO2qCxuDbTHyzKt5V4Mx7uozkimVASCs3wLPhYkRP/4t0avC1jvKLBGVS5kGqxHV1XZF2jakzBZtOn3J/bVDgbfh4KJdM+Qz0PszVaPhf+xnz88xrSn0PopMCkRDol7znssuIO29kDNVda7An7xaX+2VGzJiet33b1AXmu6q7uovASyMTbzQ/SvlJyQLF9CEEhqEzgwXeilEJx9vgr86gp3TnosG/n0pXyxZnCuBUa9PdOaeVateQym8ZF4Dtk3otFN/k8a+zxxmMUray6N7mr2v9Bx4W53l5yZ0csX0ig079kpkGXDZIh2K8/LBW2muPGfI7hdaJGOgx/bH0HvZlO0pSkNbNrMTxXMX5jrNgeSuzI2mCarB/Iy+Xkbx7K0Mlrxe35sayU2EmW6qo3IpWKNw4XywjMGg4S6zlkNtFu+su44TGgBPClL7Dr1vXL1XrjN4GQReH1vKbu9NRSJOw9vgENCH78lNn2x+O+wY490sHIqRcW0Bqfob90vJO9Ba7Lue85QoLdYdN2UXekU4zuuyiCNwEZ1VgOyad69Lnf1yQsRrtZ41D0jefjodbIuioJdntwMvHp0colixNhvv8CEw0n4A14SpR+ijXNFDsRMi5Q2ZH0VQ/JNPJNxOv9NYR3O7okXdnyL3rRGGz0
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3136.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39860400002)(376002)(346002)(366004)(396003)(66946007)(316002)(76116006)(66446008)(54906003)(86362001)(107886003)(33656002)(478600001)(64756008)(8936002)(5660300002)(71200400001)(966005)(6506007)(38100700001)(7416002)(83380400001)(66556008)(66476007)(9686003)(8676002)(52536014)(4326008)(7696005)(186003)(26005)(55016002)(2906002)(6916009);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?FCIJg9ivUZv2BPVVrDERBznC0OBkabfTBJTi0RXfQ5yGkMboNKDa1TppiwRG?=
+ =?us-ascii?Q?kn2v5TcKoN1mhnTlHWqj+D104SzsoSKtgyXl4mhV1+KFdpPmd3TPuD39BXXf?=
+ =?us-ascii?Q?d989kIhiRBGMM++OxU/O+e/SPuiDrBiBQsU9mkaZbhOETtFpophF3BVzXqGS?=
+ =?us-ascii?Q?EKsiJsvo0nVP2DqoKOJcf8Y/VspdyPFRAThiICHRvkQk0gv97NBvEGSUfhUR?=
+ =?us-ascii?Q?NGA9ieSc1NtS9OXD5XSi+BGXYYs8P/JkLz5pCDvoJmxXlbp9DC9X3BBUuujp?=
+ =?us-ascii?Q?FoiAN9Qh6rpm6usQt85Xm+n0q9mks9gm3L4Ic1FHmft8+F4vdC4fq/XTgOm3?=
+ =?us-ascii?Q?gYkmQ6fvUfQMTGepU0/Ke57l2fZ50MuPOdTQ9BmX4Oa7D7ZHbsXsRelOqTbn?=
+ =?us-ascii?Q?E4DMpXPH/kb6wSojhJxcg3CE16gPR5coTFSoL7nr+/iraQGIH86aGVVWsE27?=
+ =?us-ascii?Q?+ZMXn6wT8mikAitsKt8nWTEEm0vKaqy9yYSQ3mb1w3guju0fCyW5SFcy54Co?=
+ =?us-ascii?Q?mGjIKjvUwKUHReJueXz4YmaK/sq379SvP7idbcumrqVLCfWiC9cdUGfxuKV0?=
+ =?us-ascii?Q?9cFjBJ6gtceKeVeBhaglVYJW85/1wzMU6D8SWCBoSt3dTl+S5jteUZUJX72f?=
+ =?us-ascii?Q?7zUY+vozmkLPxItjXBc2nZ/59H5TIKMVYKuOMYaL4nNJFMzDIjxGQJF154BE?=
+ =?us-ascii?Q?oEt5UArTmfbMY/s5BqT/iX13vl1Cjrb+FbWnOJeqZDIZ+JAABDUk1EYS69KD?=
+ =?us-ascii?Q?KRd96hCwNX/8Tgw7HZBpdM9iQzThiWuraWW1JEjgDJQG+IrnguAILYIhztYd?=
+ =?us-ascii?Q?7RwaCi7xcJw6tmWL/OJDWpv1LCwilUzaC/U/bhaX/Qf9GOk9fE1pPfdvqjMe?=
+ =?us-ascii?Q?jyYa7rL7O1rMB2C1nhpBF1UKf/fBAXBl8nH2qHZv6XyDhk4s8Jb6XsxI4wVs?=
+ =?us-ascii?Q?t3xVI8m1lhkHIvGI+pejsisCpWIRp1xdVEmGyeEJ0lBDPPfNPoUyT5MxPA4U?=
+ =?us-ascii?Q?K7aH2ISH7PAW7LR4Yd3/TyuT/wguzsCBiYU2L7Rs/fSN7LBmM0yzsED7d/lW?=
+ =?us-ascii?Q?amOoMssxuo6LRZUdD3vHQFJ89yu1o4KktjVVPoE5MJfDurB4bz/JG2iNuyu2?=
+ =?us-ascii?Q?snmwdCh+UXcS9/Y/8bk+5pZDR92Ae8QXXNzeLhdaTAuHiOm+DSiTQ7CwiRZo?=
+ =?us-ascii?Q?oE2ed4OKVgoKwXAECYH+GNi11J6LHg+SY+fMcJtUB/A9szIBHrjgvsghfcFu?=
+ =?us-ascii?Q?Mqjy97tr8jKyeuk/wxdsL10QuCnMcHtjksuRSVq3BLoaitwcEDG41I1u+8nN?=
+ =?us-ascii?Q?VHoyoNERrqwPvOIuFJSgfU/Q?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20210322121933.746237845@linuxfoundation.org> <20210322121937.071435221@linuxfoundation.org>
-In-Reply-To: <20210322121937.071435221@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 24 Mar 2021 14:02:06 +0530
-Message-ID: <CA+G9fYvRM+9DmGuKM0ErDnrYBOmZ6zzmMkrWevMJqOzhejWwZg@mail.gmail.com>
-Subject: Re: [PATCH 5.10 104/157] mptcp: put subflow sock on connect error
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-stable <stable@vger.kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        lkft-triage@lists.linaro.org, Netdev <netdev@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3136.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8ebd7e8-eabf-45f8-70cc-08d8eea0f07c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Mar 2021 08:43:46.8231
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UvehGvEKgPuwRc1JDBNu+n+SyVhIXFSWf/7+wO3lQpCJPOEcOmCpmmtem2jt9WKJwAbRzoK/NUikeTGc4cONCA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4606
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Mar 2021 at 18:15, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> From: Florian Westphal <fw@strlen.de>
->
-> [ Upstream commit f07157792c633b528de5fc1dbe2e4ea54f8e09d4 ]
->
-> mptcp_add_pending_subflow() performs a sock_hold() on the subflow,
-> then adds the subflow to the join list.
->
-> Without a sock_put the subflow sk won't be freed in case connect() fails.
->
-> unreferenced object 0xffff88810c03b100 (size 3000):
-> [..]
->     sk_prot_alloc.isra.0+0x2f/0x110
->     sk_alloc+0x5d/0xc20
->     inet6_create+0x2b7/0xd30
->     __sock_create+0x17f/0x410
->     mptcp_subflow_create_socket+0xff/0x9c0
->     __mptcp_subflow_connect+0x1da/0xaf0
->     mptcp_pm_nl_work+0x6e0/0x1120
->     mptcp_worker+0x508/0x9a0
->
-> Fixes: 5b950ff4331ddda ("mptcp: link MPC subflow into msk only after accept")
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> On Tue, 16 Mar 2021 20:18:21 +0800 Voon Weifeng wrote:
+> > From: Ong Boon Leong <boon.leong.ong@intel.com>
+> >
+> > Now we introduce MSI interrupt service routines and hook these
+> > routines up if stmmac_open() sees valid irq line being requested:-
+> >
+> > stmmac_mac_interrupt()    :- MAC (dev->irq), WOL (wol_irq), LPI (lpi_ir=
+q)
+> > stmmac_safety_interrupt() :- Safety Feat Correctible Error (sfty_ce_irq=
+)
+> >                              & Uncorrectible Error (sfty_ue_irq)
+> > stmmac_msi_intr_rx()      :- For all RX MSI irq (rx_irq)
+> > stmmac_msi_intr_tx()      :- For all TX MSI irq (tx_irq)
+>=20
+> Do you split RX and TX irqs out on purpose? Most commonly one queue pair
+> maps to one CPU, so using single IRQ for Rx and Tx results in fewer IRQs
+> being triggered and better system performance.
 
-I have reported the following warnings and kernel crash on 5.10.26-rc2 [1]
-The bisect reported that issue pointing out to this commit.
+Yes, the RX and TX irqs are split out on purpose as the hardware is designe=
+d
+to have independent MSI vector. You can refer the 4th patch in the this pat=
+chset.
+https://patchwork.kernel.org/project/netdevbpf/patch/20210316121823.18659-5=
+-weifeng.voon@intel.com/ =20
+This design also gives us the flexibility to group RX/TX MSI vectors to spe=
+cific CPU freely.
 
-commit 460916534896e6d4f80a37152e0948db33376873
-mptcp: put subflow sock on connect error
-
-This problem is specific to 5.10.26-rc2.
-
-Warning:
---------
-[ 1040.114695] refcount_t: addition on 0; use-after-free.
-[ 1040.119857] WARNING: CPU: 3 PID: 31925 at
-/usr/src/kernel/lib/refcount.c:25 refcount_warn_saturate+0xd7/0x100
-[ 1040.129769] Modules linked in: act_mirred cls_u32 sch_netem sch_etf
-ip6table_nat xt_nat iptable_nat nf_nat ip6table_filter xt_conntrack
-nf_conntrack nf_defrag_ipv4 libcrc32c ip6_tables nf_defrag_ipv6 sch_fq
-iptable_filter xt_mark ip_tables cls_bpf sch_ingress algif_hash
-x86_pkg_temp_thermal fuse [last unloaded: test_blackhole_dev]
-[ 1040.159030] CPU: 3 PID: 31925 Comm: mptcp_connect Tainted: G
-W     K   5.10.26-rc2 #1
-[ 1040.167459] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
-2.2 05/23/2018
-[ 1040.174851] RIP: 0010:refcount_warn_saturate+0xd7/0x100
-
-And
-
-Kernel Panic:
--------------
-[ 1069.557485] BUG: kernel NULL pointer dereference, address: 0000000000000010
-[ 1069.564446] #PF: supervisor read access in kernel mode
-[ 1069.569583] #PF: error_code(0x0000) - not-present page
-[ 1069.574714] PGD 0 P4D 0
-[ 1069.577246] Oops: 0000 [#1] SMP PTI
-[ 1069.580730] CPU: 1 PID: 17 Comm: ksoftirqd/1 Tainted: G        W
- K   5.10.26-rc2 #1
-[ 1069.588719] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
-2.2 05/23/2018
-[ 1069.596106] RIP: 0010:selinux_socket_sock_rcv_skb+0x3f/0x290
-...
-[ 1069.961697] Kernel panic - not syncing: Fatal exception in interrupt
-[ 1069.968083] Kernel Offset: 0x18600000 from 0xffffffff81000000
-(relocation range: 0xffffffff80000000-0xffffffffbfffffff)
-
-steps to reproduce:
---------------------------
-          - cd /opt/kselftests/mainline/net/mptcp
-          - ./mptcp_join.sh  || true
-
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-
-crash test link:
-https://lkft.validation.linaro.org/scheduler/job/2436164
-
-Revert this commit and test job:
-https://lkft.validation.linaro.org/scheduler/job/2437401#L1207
+Weifeng
 
 
-> ---
->  net/mptcp/subflow.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> index 16adba172fb9..591546d0953f 100644
-> --- a/net/mptcp/subflow.c
-> +++ b/net/mptcp/subflow.c
-> @@ -1133,6 +1133,7 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
->         spin_lock_bh(&msk->join_list_lock);
->         list_add_tail(&subflow->node, &msk->join_list);
->         spin_unlock_bh(&msk->join_list_lock);
-> +       sock_put(mptcp_subflow_tcp_sock(subflow));
->
->         return err;
->
+> > Each of IRQs will have its unique name so that we can differentiate
+> > them easily under /proc/interrupts.
+> >
+> > Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> > Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+>=20
+> > +static int stmmac_request_irq(struct net_device *dev)
+>=20
+> This function is a one huge if statement, please factor out both sides in=
+to
+> separate subfunctions.
 
-url:
-[1] https://lore.kernel.org/stable/20210323182123.3ce89282@yaviniv.e18.physik.tu-muenchen.de/T/#m7994b86b52391a746e7d5be214885a5a1b2f9713
+Noted. Will do.
 
--- 
-Linaro LKFT
-https://lkft.linaro.org
+>=20
+> > +	netdev_info(priv->dev, "PASS: requesting IRQs\n");
+>=20
+> Does the user really need to know interrupts were requested on every prob=
+e?
+
+Will remove.
+
+>=20
+> > +	return ret;
+>=20
+> return 0; ?
+
+Good catch, will fix.
+
+>=20
+> > +irq_error:
+> > +	stmmac_free_irq(dev, irq_err, irq_idx);
+> > +	return ret;
+> > +}
