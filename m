@@ -2,270 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E74346EE0
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27DBC346EE7
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:34:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234704AbhCXBcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        id S234690AbhCXBdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 21:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234528AbhCXBbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:31:23 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [IPv6:2001:4b98:dc0:41:216:3eff:fe8c:2bda])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09DC3C061763;
-        Tue, 23 Mar 2021 18:31:23 -0700 (PDT)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id AEA41630BB;
-        Wed, 24 Mar 2021 02:31:14 +0100 (CET)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next,v2 24/24] docs: nf_flowtable: update documentation with enhancements
-Date:   Wed, 24 Mar 2021 02:30:55 +0100
-Message-Id: <20210324013055.5619-25-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210324013055.5619-1-pablo@netfilter.org>
-References: <20210324013055.5619-1-pablo@netfilter.org>
+        with ESMTP id S231634AbhCXBdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:33:20 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDD6C061763;
+        Tue, 23 Mar 2021 18:33:20 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id x17so8549027iog.2;
+        Tue, 23 Mar 2021 18:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gCd/lcF9fZe1u74op7ACEyE0msKcZYPEEA0XtYL+crQ=;
+        b=W7EsSvfrCp9parhWmvlf44nTmJGzGuFl95x81clgZsZR8GIox8cX/pzNBjSzwXO1Gh
+         uYt42RXXLlTtzVhSFJWMiVRgzjlChnWbuxvsKsuF9GH4YS+fUl2xTZUbCr8L/puH+EDO
+         OfPpcdq02HNeroKt6vZwws/EpGoaGSQnKczrqE0tWsH7Fk6KMryq2IvFvu1PhACXUXaJ
+         CmHycGgJjR/bBSUfm84pPKjW+rFYLBE57a5qi5+vJkbMUi9AywOvIqg7GW2N0Zt4nJqR
+         7vHFPr/AefCHLu/o4RLzep1ahwaX6augClvkO0rxQWRAVeJ3241nry4Xk1FBZh7Qga3s
+         BRhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gCd/lcF9fZe1u74op7ACEyE0msKcZYPEEA0XtYL+crQ=;
+        b=pE2c+HCSuCVS2Q50N9ACFPQO7wbHvdk5fIrkiDavA6PDuy2ux4fv/5gKNQwnJEe6tM
+         4zvrXsYHwD+uOQ+rNataCJR+V+HDa9V9WKF47VIJFbnQnKXO39El2VnsQeuB8RLCcAC2
+         KvH1gEdlHYtl/KZPIk8s8RamO797D7cOcZpOY5rRTGGOE55hIaSfcOmPyi5Nb5TZE2rw
+         VP8Lj1tHVpW4aocAaamZF4bilLljkSlMlBBtXDiwRW4s54am/0zhfM2oA+K+F/ShWAb8
+         dJgeBRrNvzlMTvW+OzGktzwbVlXJXP2tyXXhOvBORM0mVcLOoO9KgdUFfg58X1UMX8yC
+         ITrQ==
+X-Gm-Message-State: AOAM530Nxz1GEZc7eoTPLjwkthaxw9WuleHtroF8kang9ufMU6M749Sv
+        cS+S7Fd5avuO/V3uj6B1mMoFBcvnEuam3WYej/s=
+X-Google-Smtp-Source: ABdhPJyrV/FaA9Vw9cRKxPcdE0YDPrCXuKhGjPjEQBHOt+PjJQND2ibEPWI1v2BtGHoPOvTMLg22btNz1rwQelOXLL0=
+X-Received: by 2002:a02:9645:: with SMTP id c63mr735828jai.84.1616549599613;
+ Tue, 23 Mar 2021 18:33:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210311020954.842341-1-ilya.lipnitskiy@gmail.com> <YEpWVAnYLkytpIWB@lunn.ch>
+In-Reply-To: <YEpWVAnYLkytpIWB@lunn.ch>
+From:   Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Date:   Tue, 23 Mar 2021 18:33:08 -0700
+Message-ID: <CALCv0x02RQ=TQDjRNwAN1FJVFEwAbFYiif6JGtV=V4b2u0beKw@mail.gmail.com>
+Subject: Re: [PATCH net-next,v2 1/3] net: dsa: mt7530: setup core clock even
+ in TRGMII mode
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch updates the flowtable documentation to describe recent
-enhancements:
+On Thu, Mar 11, 2021 at 9:41 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Wed, Mar 10, 2021 at 06:09:52PM -0800, Ilya Lipnitskiy wrote:
+> > A recent change to MIPS ralink reset logic made it so mt7530 actually
+> > resets the switch on platforms such as mt7621 (where bit 2 is the reset
+> > line for the switch). That exposed an issue where the switch would not
+> > function properly in TRGMII mode after a reset.
+> >
+> > Reconfigure core clock in TRGMII mode to fix the issue.
+> >
+> > Tested on Ubiquiti ER-X (MT7621) with TRGMII mode enabled.
+>
+> Please don't submit the same patch to net and net-next.  Anything
+> which is accepted into net, will get merged into net-next about a week
+> later. If your other two patches depend on this patch, you need to
+> wait for the merge to happen, then submit them.
+I don't mind waiting, but it's been more than a week now. When is the
+next merge of net-next into net planned to happen?
 
-- Offload action is available after the first packets go through the
-  classic forwarding path.
-- IPv4 and IPv6 are supported. Only TCP and UDP layer 4 are supported at
-  this stage.
-- Tuple has been augmented to track VLAN id and PPPoE session id.
-- Bridge and IP forwarding integration, including bridge VLAN filtering
-  support.
-- Hardware offload support.
-- Describe the [OFFLOAD] and [HW_OFFLOAD] tags in the conntrack table
-  listing.
-- Replace 'flow offload' by 'flow add' in example rulesets (preferred
-  syntax).
-- Describe existing cache limitations.
-
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v2: not coming in v1. Update documentation including existing limitations.
-
- Documentation/networking/nf_flowtable.rst | 170 ++++++++++++++++++----
- 1 file changed, 143 insertions(+), 27 deletions(-)
-
-diff --git a/Documentation/networking/nf_flowtable.rst b/Documentation/networking/nf_flowtable.rst
-index 6cdf9a1724b6..d87f253b9d39 100644
---- a/Documentation/networking/nf_flowtable.rst
-+++ b/Documentation/networking/nf_flowtable.rst
-@@ -4,35 +4,38 @@
- Netfilter's flowtable infrastructure
- ====================================
- 
--This documentation describes the software flowtable infrastructure available in
--Netfilter since Linux kernel 4.16.
-+This documentation describes the Netfilter flowtable infrastructure which allows
-+you to define a fastpath through the flowtable datapath. This infrastructure
-+also provides hardware offload support. The flowtable supports for the layer 3
-+IPv4 and IPv6 and the layer 4 TCP and UDP protocols.
- 
- Overview
- --------
- 
--Initial packets follow the classic forwarding path, once the flow enters the
--established state according to the conntrack semantics (ie. we have seen traffic
--in both directions), then you can decide to offload the flow to the flowtable
--from the forward chain via the 'flow offload' action available in nftables.
-+Once the first packet of the flow successfully goes through the IP forwarding
-+path, from the second packet on, you might decide to offload the flow to the
-+flowtable through your ruleset. The flowtable infrastructure provides a rule
-+action that allows you to specify when to add a flow to the flowtable.
- 
--Packets that find an entry in the flowtable (ie. flowtable hit) are sent to the
--output netdevice via neigh_xmit(), hence, they bypass the classic forwarding
--path (the visible effect is that you do not see these packets from any of the
--netfilter hooks coming after the ingress). In case of flowtable miss, the packet
--follows the classic forward path.
-+A packet that finds a matching entry in the flowtable (ie. flowtable hit) is
-+transmitted to the output netdevice via neigh_xmit(), hence, packets bypass the
-+classic IP forwarding path (the visible effect is that you do not see these
-+packets from any of the Netfilter hooks coming after ingress). In case that
-+there is no matching entry in the flowtable (ie. flowtable miss), the packet
-+follows the classic IP forwarding path.
- 
--The flowtable uses a resizable hashtable, lookups are based on the following
--7-tuple selectors: source, destination, layer 3 and layer 4 protocols, source
--and destination ports and the input interface (useful in case there are several
--conntrack zones in place).
-+The flowtable uses a resizable hashtable. Lookups are based on the following
-+n-tuple selectors: layer 2 protocol encapsulation (VLAN and PPPoE), layer 3
-+source and destination, layer 4 source and destination ports and the input
-+interface (useful in case there are several conntrack zones in place).
- 
--Flowtables are populated via the 'flow offload' nftables action, so the user can
--selectively specify what flows are placed into the flow table. Hence, packets
--follow the classic forwarding path unless the user explicitly instruct packets
--to use this new alternative forwarding path via nftables policy.
-+The 'flow add' action allows you to populate the flowtable, the user selectively
-+specifies what flows are placed into the flowtable. Hence, packets follow the
-+classic IP forwarding path unless the user explicitly instruct flows to use this
-+new alternative forwarding path via policy.
- 
--This is represented in Fig.1, which describes the classic forwarding path
--including the Netfilter hooks and the flowtable fastpath bypass.
-+The flowtable datapath is represented in Fig.1, which describes the classic IP
-+forwarding path including the Netfilter hooks and the flowtable fastpath bypass.
- 
- ::
- 
-@@ -67,11 +70,13 @@ including the Netfilter hooks and the flowtable fastpath bypass.
- 	       Fig.1 Netfilter hooks and flowtable interactions
- 
- The flowtable entry also stores the NAT configuration, so all packets are
--mangled according to the NAT policy that matches the initial packets that went
--through the classic forwarding path. The TTL is decremented before calling
--neigh_xmit(). Fragmented traffic is passed up to follow the classic forwarding
--path given that the transport selectors are missing, therefore flowtable lookup
--is not possible.
-+mangled according to the NAT policy that is specified from the classic IP
-+forwarding path. The TTL is decremented before calling neigh_xmit(). Fragmented
-+traffic is passed up to follow the classic IP forwarding path given that the
-+transport header is missing, in this case, flowtable lookups are not possible.
-+TCP RST and FIN packets are also passed up to the classic IP forwarding path to
-+release the flow gracefully. Packets that exceed the MTU are also passed up to
-+the classic forwarding path to report packet-too-big ICMP errors to the sender.
- 
- Example configuration
- ---------------------
-@@ -85,7 +90,7 @@ flowtable and add one rule to your forward chain::
- 		}
- 		chain y {
- 			type filter hook forward priority 0; policy accept;
--			ip protocol tcp flow offload @f
-+			ip protocol tcp flow add @f
- 			counter packets 0 bytes 0
- 		}
- 	}
-@@ -103,6 +108,117 @@ flow is offloaded, you will observe that the counter rule in the example above
- does not get updated for the packets that are being forwarded through the
- forwarding bypass.
- 
-+You can identify offloaded flows through the [OFFLOAD] tag when listing your
-+connection tracking table.
-+
-+::
-+	# conntrack -L
-+	tcp      6 src=10.141.10.2 dst=192.168.10.2 sport=52728 dport=5201 src=192.168.10.2 dst=192.168.10.1 sport=5201 dport=52728 [OFFLOAD] mark=0 use=2
-+
-+
-+Layer 2 encapsulation
-+---------------------
-+
-+Since Linux kernel 5.13, the flowtable infrastructure discovers the real
-+netdevice behind VLAN and PPPoE netdevices. The flowtable software datapath
-+parses the VLAN and PPPoE layer 2 headers to extract the ethertype and the
-+VLAN ID / PPPoE session ID which are used for the flowtable lookups. The
-+flowtable datapath also deals with layer 2 decapsulation.
-+
-+You do not need to add the PPPoE and the VLAN devices to your flowtable,
-+instead the real device is sufficient for the flowtable to track your flows.
-+
-+Bridge and IP forwarding
-+------------------------
-+
-+Since Linux kernel 5.13, you can add bridge ports to the flowtable. The
-+flowtable infrastructure discovers the topology behind the bridge device. This
-+allows the flowtable to define a fastpath bypass between the bridge ports
-+(represented as eth1 and eth2 in the example figure below) and the gateway
-+device (represented as eth0) in your switch/router.
-+
-+::
-+                      fastpath bypass
-+               .-------------------------.
-+              /                           \
-+              |           IP forwarding   |
-+              |          /             \ \/
-+              |       br0               eth0 ..... eth0
-+              .       / \                          *host B*
-+               -> eth1  eth2
-+                   .           *switch/router*
-+                   .
-+                   .
-+                 eth0
-+               *host A*
-+
-+The flowtable infrastructure also supports for bridge VLAN filtering actions
-+such as PVID and untagged. You can also stack a classic VLAN device on top of
-+your bridge port.
-+
-+If you would like that your flowtable defines a fastpath between your bridge
-+ports and your IP forwarding path, you have to add your bridge ports (as
-+represented by the real netdevice) to your flowtable definition.
-+
-+Counters
-+--------
-+
-+The flowtable can synchronize packet and byte counters with the existing
-+connection tracking entry by specifying the counter statement in your flowtable
-+definition, e.g.
-+
-+::
-+	table inet x {
-+		flowtable f {
-+			hook ingress priority 0; devices = { eth0, eth1 };
-+			counter
-+		}
-+		...
-+	}
-+
-+Counter support is available since Linux kernel 5.7.
-+
-+Hardware offload
-+----------------
-+
-+If your network device provides hardware offload support, you can turn it on by
-+means of the 'offload' flag in your flowtable definition, e.g.
-+
-+::
-+	table inet x {
-+		flowtable f {
-+			hook ingress priority 0; devices = { eth0, eth1 };
-+			flags offload;
-+		}
-+		...
-+	}
-+
-+There is a workqueue that adds the flows to the hardware. Note that a few
-+packets might still run over the flowtable software path until the workqueue has
-+a chance to offload the flow to the network device.
-+
-+You can identify hardware offloaded flows through the [HW_OFFLOAD] tag when
-+listing your connection tracking table. Please, note that the [OFFLOAD] tag
-+refers to the software offload mode, so there is a distinction between [OFFLOAD]
-+which refers to the software flowtable fastpath and [HW_OFFLOAD] which refers
-+to the hardware offload datapath being used by the flow.
-+
-+The flowtable hardware offload infrastructure also supports for the DSA
-+(Distributed Switch Architecture).
-+
-+Limitations
-+-----------
-+
-+The flowtable behaves like a cache. The flowtable entries might get stale if
-+either the destination MAC address or the egress netdevice that is used for
-+transmission changes.
-+
-+This might be a problem if:
-+
-+- You run the flowtable in software mode and you combine bridge and IP
-+  forwarding in your setup.
-+- Hardware offload is enabled.
-+
- More reading
- ------------
- 
--- 
-2.20.1
-
+Ilya
