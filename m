@@ -2,99 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2F9347B25
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 15:51:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3D6347B8D
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 16:03:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236380AbhCXOvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 10:51:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31849 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236343AbhCXOvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 10:51:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616597462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qwqc010LQRL9qP/xrAIAyc+UAyyvJ/OsN6lHYuFZfWc=;
-        b=N32mkmEwfqKyGXZDH1SLU//5HVTdBvN4vZx4qwjAI+20Ac/y3e2pNa4ZJFoskCLx0LvO9j
-        jO4inKfMnEllNcWdx0DWIMA6XOtPJ0zJkxiPdISf73kNguA3FwJGK8vOvmEQG2QqtS9wGJ
-        8v3l+D28gvW3WiiwJ+F7wV2REDMip84=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-578--Ayr5fs4Oc2_hS6JNCQVIg-1; Wed, 24 Mar 2021 10:51:00 -0400
-X-MC-Unique: -Ayr5fs4Oc2_hS6JNCQVIg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8030E87A83A;
-        Wed, 24 Mar 2021 14:50:59 +0000 (UTC)
-Received: from ovpn-115-125.ams2.redhat.com (ovpn-115-125.ams2.redhat.com [10.36.115.125])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE77A196A8;
-        Wed, 24 Mar 2021 14:50:57 +0000 (UTC)
-Message-ID: <7974ce16adc27164afa63170483bb4371894c5e1.camel@redhat.com>
-Subject: !
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Date:   Wed, 24 Mar 2021 15:50:56 +0100
-In-Reply-To: <CA+FuTScT9W5V-ak=Wq_7zswyDRo9rzjOK1SQNRxESBCL93BOVQ@mail.gmail.com>
-References: <cover.1616345643.git.pabeni@redhat.com>
-         <661b8bc7571c4619226fad9a00ca49352f43de45.1616345643.git.pabeni@redhat.com>
-         <CA+FuTSc=V_=behQ0MKX3oYdDzZN=V7_CdeNOFXUAa-4TuU5ztA@mail.gmail.com>
-         <efa5f117ad63064f7984655d46eb5140d23b0585.camel@redhat.com>
-         <CA+FuTScT9W5V-ak=Wq_7zswyDRo9rzjOK1SQNRxESBCL93BOVQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S236424AbhCXPDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 11:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236290AbhCXPC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 11:02:56 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1689C061763
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:02:55 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id o126so22951340lfa.0
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 08:02:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=V5GwcDMvbaXxFAhYGvN7DXehnPHfkjr8U1lrokIw4NA=;
+        b=fBFnUWqf2skBlWu1e9J0BXREF5JdELQ8ewl5ZpfsxsE/8myNELKyVrsu3JmHtFLNsu
+         U3EnMAMfJrBnB6xfUOw1V0y+tkvnqPe84EizRKHypq1pJOghoX89ud08PxyB1Db8Enlw
+         hA1a9IQU+JrRo1Adwye1/jazl+2IpRU39Ikkr+1OuxbSwjixbqy9NRn6hprTP18FUFjM
+         MCRdRxrGzRqli+zbBFB6HMvpoL37SqM+e/XcZs1lXo/h+SlwuZbYf7DqtVOnHliF10tS
+         +1PcXfKx5Xlqb1pE1He6m8pUh+yuWGfLXmEJu9UA3h7yi4UBrJdRwX6jX2gCSlVS8Ar/
+         Sdpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=V5GwcDMvbaXxFAhYGvN7DXehnPHfkjr8U1lrokIw4NA=;
+        b=FPiCZ1YgBhYFtoKh6e4Dq2PkKAfJKRdNSxEGBI2tF0lOZ5vfixqPcQPasA1i5784/J
+         ci2LCh4eG0Rzlie/Y32XwjKFfBs2UimXLXH5LQS2ynvYLOWZXMFrHUI3q3U7FforSPf+
+         xffqnXJ5NdcLwmekYnA1Z7ctmNKG0LgA6dYQARC7/gDXS0joYN4mRI3GiugXgWiVLdko
+         /Ielqgux6SSmJXBN9uWKwyFLB07OarGVO4Tvl2to/nzT5cY5cd2mXIXw6/dBQpe6Uf8b
+         auJEXSWzAiGTuLa5RnRvJUVJ/U1+0DqRICKovLpS3IRC+wIK5n0iokkvcSfyjnS86I0f
+         Ta2A==
+X-Gm-Message-State: AOAM530fbYtKXuwqbdzF50tGZCpwyP0/IkKUbiRvuGR8hNmtjDH/vIty
+        yHhHZZPsOhvagtJuqpd3QdufHBkzdN4rYZta
+X-Google-Smtp-Source: ABdhPJxtI4bB3zWlCpzLN1wkndmgGN8zJYCCFooEM/vrVthokq8Ctqej5Db1DVlqcwOU2d4MU13iRQ==
+X-Received: by 2002:a05:6512:405:: with SMTP id u5mr2144074lfk.574.1616598174001;
+        Wed, 24 Mar 2021 08:02:54 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id f23sm338441lja.43.2021.03.24.08.02.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Mar 2021 08:02:53 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
+In-Reply-To: <20210324140317.amzmmngh5lwkcfm4@skbuf>
+References: <20210323102326.3677940-1-tobias@waldekranz.com> <20210323113522.coidmitlt6e44jjq@skbuf> <87blbalycs.fsf@waldekranz.com> <20210323190302.2v7ianeuwylxdqjl@skbuf> <8735wlmuxh.fsf@waldekranz.com> <20210324140317.amzmmngh5lwkcfm4@skbuf>
+Date:   Wed, 24 Mar 2021 16:02:52 +0100
+Message-ID: <87pmzolhlv.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-03-23 at 21:54 -0400, Willem de Bruijn wrote:
-> > I did not look at that before your suggestion. Thanks for pointing out.
-> > 
-> > I think the problem is specific to UDP: when processing the outer UDP
-> > header that is potentially eligible for both NETIF_F_GSO_UDP_L4 and
-> > gro_receive aggregation and that is the root cause of the problem
-> > addressed here.
-> 
-> Can you elaborate on the exact problem? The commit mentions "inner
-> protocol corruption, as no overaly network parameters is taken in
-> account at aggregation time."
-> 
-> My understanding is that these are udp gro aggregated GSO_UDP_L4
-> packets forwarded to a udp tunnel device. They are not encapsulated
-> yet. Which overlay network parameters are not, but should have been,
-> taken account at aggregation time?
+On Wed, Mar 24, 2021 at 16:03, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Mar 23, 2021 at 10:17:30PM +0100, Tobias Waldekranz wrote:
+>> > I don't see any place in the network stack that recalculates the FCS if
+>> > NETIF_F_RXALL is set. Additionally, without NETIF_F_RXFCS, I don't even
+>> > know how could the stack even tell a packet with bad FCS apart from one
+>> > with good FCS. If NETIF_F_RXALL is set, then once a packet is received,
+>> > it's taken for granted as good.
+>> 
+>> Right, but there is a difference between a user explicitly enabling it
+>> on a device and us enabling it because we need it internally in the
+>> kernel.
+>> 
+>> In the first scenario, the user can hardly complain as they have
+>> explicitly requested to see all packets on that device. That would not
+>> be true in the second one because there would be no way for the user to
+>> turn it off. It feels like you would end up in a similar situation as
+>> with the user- vs. kernel- promiscuous setting.
+>> 
+>> It seems to me if we enable it, we are responsible for not letting crap
+>> through to the port netdevs.
+>
+> I think there exists an intermediate approach between processing the
+> frames on the RX queue and installing a soft parser.
+>
+> The BMI of FMan RX ports has a configurable pipeline through Next
+> Invoked Actions (NIA). Through the FMBM_RFNE register (Rx Frame Next
+> Engine), it is possible to change the Next Invoked Action from the
+> default value (which is the hardware parser). You can choose to make the
+> Buffer Manager Interface enqueue the packet directly to the Queue
+> Manager Interface (QMI). This will effectively bypass the hardware
+> parser, so DSA frames will never be sent to the error queue if they have
+> an invalid EtherType/Length field.
+>
+> Additionally, frames with a bad FCS should still be discarded, as that
+> is done by the MAC (an earlier stage compared to the BMI).
 
-The scenario is as follow: 
-
-* a NIC has NETIF_F_GRO_UDP_FWD or NETIF_F_GRO_FRAGLIST enabled
-* an UDP tunnel is configured/enabled in the system
-* the above NIC receives some UDP-tunneled packets, targeting the
-mentioned tunnel
-* the packets go through gro_receive and they reache
-'udp_gro_receive()' while processing the outer UDP header.
-
-without this patch, udp_gro_receive_segment() will kick in and the
-outer UDP header will be aggregated according to SKB_GSO_FRAGLIST
-or SKB_GSO_UDP_L4, even if this is really e.g. a vxlan packet.
-
-Different vxlan ids will be ignored/aggregated to the same GSO packet.
-Inner headers will be ignored, too, so that e.g. TCP over vxlan push
-packets will be held in the GRO engine till the next flush, etc.
-
-Please let me know if the above is more clear.
-
-Thanks!
-
-Paolo
-
+Yeah this sounds like the perfect middle ground. I guess that would then
+be activated with an `if (netdev_uses_dsa(dev))`-guard in the driver,
+like how Florian solved it for stmmac? Since it is not quite "rx-all".
