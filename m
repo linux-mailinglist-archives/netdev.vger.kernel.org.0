@@ -2,76 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 635C8348294
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 459EF348299
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238071AbhCXUHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:07:35 -0400
-Received: from mail-io1-f52.google.com ([209.85.166.52]:46738 "EHLO
-        mail-io1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238170AbhCXUHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:07:09 -0400
-Received: by mail-io1-f52.google.com with SMTP id j26so22833236iog.13;
-        Wed, 24 Mar 2021 13:07:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=kQ8EfIai0iW2bIIQK0w4Z5qSxl9rVxcELF+Eo3Tf2YU=;
-        b=kOgr6ar5LmlJ3xK+vriwT8/Ry6ZRS8goKGCg72ztIl6EvL3K3FwJfdz+CcBNGgc+qe
-         MrtBmVpgA+SxIrpglEQAg/1Iu3HKSyQHamgUu1WdmsvoO4XqtSTturG3IH6IGutCB8pC
-         kslyyJ/33v/5emjtTic7KhpLqf4hqV3zAED8dCsEqlPlBGe/zUULb2RDgdXfLxjhj68G
-         mARWYbzLMClu2Nh4dDwTusaDPzK1VrTgu+zmDNN14aKMP712/Popx1b10wanZ1DXz8R3
-         I76bMTG/DHM8BMKbw+guiRSDe1cyONocObpkGmH5ODIBu6G0/Ofl0D8TOBqpvZsSwHoF
-         KPaQ==
-X-Gm-Message-State: AOAM5302oxQEvZibMPHq51/98aBuPgZmeKVQcpqUX90/C1z2CW2+jcpQ
-        Wd8NBZirD9OlEJeXJho3UA==
-X-Google-Smtp-Source: ABdhPJx0+97Pr/JkbHMlL2UCLm05Zhgoan9kw7ATFj5Cv/Hz995ecWbwg/NXjiAh3m4sMsXnmG31Eg==
-X-Received: by 2002:a05:6638:378c:: with SMTP id w12mr4456448jal.127.1616616428402;
-        Wed, 24 Mar 2021 13:07:08 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id z12sm1619693ilb.18.2021.03.24.13.07.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 13:07:07 -0700 (PDT)
-Received: (nullmailer pid 3539458 invoked by uid 1000);
-        Wed, 24 Mar 2021 20:07:06 -0000
-Date:   Wed, 24 Mar 2021 14:07:06 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        devicetree@vger.kernel.org, pali@kernel.org
-Subject: Re: [PATCH net-next 1/2] dt-bindings: ethernet-controller: create a
- type for PHY interface modes
-Message-ID: <20210324200706.GA3528805@robh.at.kernel.org>
-References: <20210324103556.11338-1-kabel@kernel.org>
- <20210324103556.11338-2-kabel@kernel.org>
+        id S238163AbhCXUJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:09:14 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:49945 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238158AbhCXUI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:08:57 -0400
+Received: from mail-oo1-f49.google.com ([209.85.161.49]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MrPVJ-1m2uPY1NxP-00oX6h; Wed, 24 Mar 2021 21:08:55 +0100
+Received: by mail-oo1-f49.google.com with SMTP id i20-20020a4a8d940000b02901bc71746525so6130827ook.2;
+        Wed, 24 Mar 2021 13:08:55 -0700 (PDT)
+X-Gm-Message-State: AOAM531oqSU9AkTn+Wkrjyizeb+UsjzJj7DyMRNM93BHbYDMu+QBKBUV
+        KDvvji6MSCA7cMyNl4AYxBakOrLX+07Mz68qA/A=
+X-Google-Smtp-Source: ABdhPJybTxidmqfUgZw7W8iZwqTPZdKNPoMY0wKBfMJ7hCptmQ98ROSV9GMgRQY6K8Yt9kjE9ik3niJWJDsWSHTT3bQ=
+X-Received: by 2002:a4a:304a:: with SMTP id z10mr4221190ooz.26.1616616533996;
+ Wed, 24 Mar 2021 13:08:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210324103556.11338-2-kabel@kernel.org>
+References: <20210322104343.948660-1-arnd@kernel.org> <20210322104343.948660-5-arnd@kernel.org>
+In-Reply-To: <20210322104343.948660-5-arnd@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 24 Mar 2021 21:08:38 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2K-r9ERQxo-UiKpn-MLTu6ORM8FSooh1vXOtrQoU9kzQ@mail.gmail.com>
+Message-ID: <CAK8P3a2K-r9ERQxo-UiKpn-MLTu6ORM8FSooh1vXOtrQoU9kzQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] vxge: avoid -Wemtpy-body warnings
+To:     Networking <netdev@vger.kernel.org>, Jon Mason <jdmason@kudzu.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:fijI6r4YMqbAe5M2kVyLTB6NqcK5h28eQt8SXSkYoJnuGFZqnDH
+ 4bdZ1UUUptABeCEOHZGh5py8JpkpPM2RP5NBHp6DQww0crfyMEZe3nx6QEk8RUfV3AYcEAA
+ 2LQlwmRGIWnXEFaUq6ky+Dv7jnsVp0xsgy5bt1omidvTJrQAm2odgMe+bsXdbMxECELqyoS
+ qCYexD8ji5YR3YIAdFxiA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vvtep7z6KLw=:ewumsrakVQjAmz3xOBLYH0
+ Y77ofFhvY04rszMboXnmGntYA4pv0DM+XCHKH0M+ET2hwb3lB0zdJT1NfMpJsj2JIErzGYyLt
+ DlmNvCa5C2jvpFbswg+R2rc2YDSIEj2PqaEybLNMRZjGBhjRALyJV6xBsNsI8+3NkRfmuwweI
+ q/pBWfutZfamnjsCmvKHMhjYe/1gUNibaRsShDA7s+ryJO+18jplyEGZbQ1wzto2bcfQhcURs
+ lEzqhJFu1BlqhfEeMJS1Bef9Vq3XAkgv13TZBTejcL+oeuWLJJ881XR9/Mi9ysNEWz42Hll8p
+ +am6K9R18edg0/k2qcNbMITQ7BmcVI4dflqomIiNRGiXlguCLt52B5TiWi2/+yu8nf75LwaRC
+ aH9yioTKvMqlfTv4Hyysc2CoCiLfS3vg+2wlBKxtdnypsDxkyCGkzNasvjjBFx1Ll0uWw1c4g
+ az6z4aziMW1TMBMXvB5HuJvZmpQ2AYY=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 11:35:55AM +0100, Marek Behún wrote:
-> In order to be able to define a property describing an array of PHY
-> interface modes, we need to change the current scalar
-> `phy-connection-type`, which lists the possible PHY interface modes, to
-> an array of length 1 (otherwise we would need to define the same list at
-> two different places).
-> 
-> Moreover Rob Herring says that we cannot reuse the values of a property;
-> we need to $ref a type.
-> 
-> Move the definition of possible PHY interface modes from the
-> `phy-connection-type` property to an array type definition
-> `phy-connection-type-array`, and simply reference this type in the
-> original property.
+On Mon, Mar 22, 2021 at 11:43 AM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> There are a few warnings about empty debug macros in this driver:
+>
+> drivers/net/ethernet/neterion/vxge/vxge-main.c: In function 'vxge_probe':
+> drivers/net/ethernet/neterion/vxge/vxge-main.c:4480:76: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+>  4480 |                                 "Failed in enabling SRIOV mode: %d\n", ret);
+>
+> Change them to proper 'do { } while (0)' expressions to make the
+> code a little more robust and avoid the warnings.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Why not just extend phy-connection-type to support more than 1 entry?
+Please disregard this patch, I was accidentally building without -Wformat and
+failed to notice that this introduces a regression. I'll send a new
+version after
+more testing.
+
+       Arnd
