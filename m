@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45EDC347957
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:16:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CFE734795C
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:16:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235142AbhCXNQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 09:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
+        id S235220AbhCXNQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 09:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234706AbhCXNPf (ORCPT
+        with ESMTP id S234712AbhCXNPf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:15:35 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E44C0613E1
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:34 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id b10so21392203iot.4
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:34 -0700 (PDT)
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BAAC0613E4
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:35 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id j26so21396654iog.13
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:15:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qKrY3MtVV0SjI4PDoOYPSEatpvEs6DJpVc9j1EaE/t0=;
-        b=L3n+VQn1qdXmxu7Rh61rfDoILCtfUVK8hsLTP4ZuGECASWlB/wKK/f4aTw45pgnN/f
-         wZfqgjPdz4HRKnfe5cY2R6U09qIFv0jmaldskybBClMKo71rqSOanamk5DEuJiozGnYK
-         872KCjNsmphXPIwu5VXGGKgXFDkYUyo+n8FQvvTIuvpMXM2Oqj620Ws5Nk/ygbo5KdJd
-         C5J+3q2h1TwWN2VYe+xtXAwStuoJ48o3cAnm7hVw38SZVOlsCasDJW4tkG29fphO3yXW
-         NW29fzaEa4d4dZjpVoFh2O+ubJ5bnyjeRerzbus0PG/169Zr/bVRg6wX7JzGcIup0NST
-         /Vgw==
+        bh=urnf0slLMOPXg7nga5dabZHaUvtoQMaa3zOQvFLPfpg=;
+        b=XXnUftby1PJstg1QGnrNCyvVockAvhoQ4xBqC3Kf5fXe0U9HwzNSpk/AcZ6lMxVnV5
+         YpIHmEPU26v+ECSQKHWVT15lyU8o90U+CdvemETr7dq3mWdRX89pRvWPVH0uCSq5BIcs
+         oZhyUN3H7ptyM0YL7XbZ4AvLU8CLuY0vM1bpVE9rwnl2GsYK+MO0tAWcKzxMRdSMTc+K
+         GKwQA294TDJ0NoaOOzaZLFpDIOlg1JPImV/q9OyZS2cGs0Shc73ISRQF5w9x1Tvl435X
+         pTn97IR50kxQ8CsvOXIDGhuQStJ6UTPv2WcpJQm9ZnKB+S7AbTWDU7z4TNEd0VqWfvQE
+         sGUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qKrY3MtVV0SjI4PDoOYPSEatpvEs6DJpVc9j1EaE/t0=;
-        b=tGrZ4jHnSUuMhF7Qi7bR7hSpbSEQPYwHiFtHKTjibrH+3kFMNdzpm6zj5rfHfdN8So
-         3ExbpxdMaX834vaSTd6EL7S7Rf0G+h2xpJQ4sNvoY8N1PFRZdUwxAC7CA8XHcbFTvo6/
-         zvi/NSgtLa2SCiBlI+AlgGxFwaeYE3ednKJH6+ARmabR8B6O4bBi39pw7PNPleTdt14C
-         RWqp1rSxCAVlyyMUNCXnEUnQZVti7pmIP8MgveQReNqsEwLW95YqiJSLRjVvYCJ/bOWr
-         sSEvy6Awjuk6MmxYLePgeiAV2ua0VbK0MO8gNazKaBghCX9RmrBSaQJ+crwsUYk9O6i+
-         iA4A==
-X-Gm-Message-State: AOAM532fr3wEYHUsGL1RJkB/14x5FoU6FiuFe8uNeyp3QmpHKSEOwKfC
-        jEShzEqgSpJeTYHJYipWIUICxw==
-X-Google-Smtp-Source: ABdhPJy9LIgxH4R/07ozWEIAcUy8IHgGKJ07llkCBlBWankLC6a6R2mdT8gd0OUb1dls93yKhRzBQA==
-X-Received: by 2002:a5e:8c16:: with SMTP id n22mr2423380ioj.156.1616591733651;
-        Wed, 24 Mar 2021 06:15:33 -0700 (PDT)
+        bh=urnf0slLMOPXg7nga5dabZHaUvtoQMaa3zOQvFLPfpg=;
+        b=DSQ/41xBLP57tqKg5KOX7fb8tv6/8uDHCag6iIaVtlgWsA2mENer6iTHsQdp1Jd5Fd
+         d8zQoIOKdWCxf8+rjQvveZD69ZJdQGOMSgJ7JIWRDSsKR6WgT5iJCaomtgSHvBofGjqO
+         fziFE5QYV/cBJOcAOITQvoq+7X20iWgtNl+BnfPhi9OkWt5PJRWicf1FgQbrm+THVuz8
+         JQv0bZI76WlGK2DdsIFbHuddQjaqr4+aaAKh1jrG1upB5rJ9U/aSvjC3afgMxW2vu+5Z
+         RjIo3Iqu32IeO69pN/6GUVph6t4qrvgpVm2sF2eI7DoYhzsKh8mBUyDoGjcz/QuqySsa
+         Gvyw==
+X-Gm-Message-State: AOAM530je6lhKa+ED6SYqKixTq5fU0MAsY7crZPWWw+Knp5RBiRui2u3
+        ucbOy5FzXR82lM+Z6OZYQrzrqegAnZeEWdQW
+X-Google-Smtp-Source: ABdhPJwhm6deOM+Slv8dvjshL8No2AngclJGGLSLkeePXmkZ61SPgto/1KAIFFtRV6Yn6foyp7Hgiw==
+X-Received: by 2002:a02:cad9:: with SMTP id f25mr2799645jap.26.1616591734490;
+        Wed, 24 Mar 2021 06:15:34 -0700 (PDT)
 Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id n7sm1160486ile.12.2021.03.24.06.15.32
+        by smtp.gmail.com with ESMTPSA id n7sm1160486ile.12.2021.03.24.06.15.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 06:15:33 -0700 (PDT)
+        Wed, 24 Mar 2021 06:15:34 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 3/6] net: ipa: define the ENDP_INIT_NAT register
-Date:   Wed, 24 Mar 2021 08:15:25 -0500
-Message-Id: <20210324131528.2369348-4-elder@linaro.org>
+Subject: [PATCH net-next v2 4/6] net: ipa: limit local processing context address
+Date:   Wed, 24 Mar 2021 08:15:26 -0500
+Message-Id: <20210324131528.2369348-5-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210324131528.2369348-1-elder@linaro.org>
 References: <20210324131528.2369348-1-elder@linaro.org>
@@ -64,90 +64,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define the ENDP_INIT_NAT register for setting up the NAT
-configuration for an endpoint.  We aren't using NAT at this
-time, so explicitly set the type to BYPASS for all endpoints.
+Not all of the bits of the LOCAL_PKT_PROC_CNTXT register are valid.
+Until IPA v4.5, there are 17 valid bits (though the bottom three
+must be zero).  Starting with IPA v4.5, 18 bits are valid.
+
+Introduce proc_cntxt_base_addr_encoded() to encode the base address
+for use in the register using only the valid bits.
+
+Shorten the name of the register (omit "_BASE") to avoid the need to
+wrap the line in the one place it's used.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 17 ++++++++++++++++-
- drivers/net/ipa/ipa_reg.h      | 14 +++++++++++++-
- 2 files changed, 29 insertions(+), 2 deletions(-)
+ drivers/net/ipa/ipa_mem.c |  6 ++++--
+ drivers/net/ipa/ipa_reg.h | 14 ++++++++++++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 5f93bd60c7586..38e83cd467b52 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- 
- /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
-- * Copyright (C) 2019-2020 Linaro Ltd.
-+ * Copyright (C) 2019-2021 Linaro Ltd.
-  */
- 
- #include <linux/types.h>
-@@ -468,6 +468,20 @@ static void ipa_endpoint_init_cfg(struct ipa_endpoint *endpoint)
- 	iowrite32(val, endpoint->ipa->reg_virt + offset);
- }
- 
-+static void ipa_endpoint_init_nat(struct ipa_endpoint *endpoint)
-+{
-+	u32 offset;
+diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
+index f25029b9ec857..32907dde5dc6a 100644
+--- a/drivers/net/ipa/ipa_mem.c
++++ b/drivers/net/ipa/ipa_mem.c
+@@ -61,6 +61,7 @@ int ipa_mem_setup(struct ipa *ipa)
+ 	struct gsi_trans *trans;
+ 	u32 offset;
+ 	u16 size;
 +	u32 val;
-+
-+	if (!endpoint->toward_ipa)
-+		return;
-+
-+	offset = IPA_REG_ENDP_INIT_NAT_N_OFFSET(endpoint->endpoint_id);
-+	val = u32_encode_bits(IPA_NAT_BYPASS, NAT_EN_FMASK);
-+
-+	iowrite32(val, endpoint->ipa->reg_virt + offset);
-+}
-+
- /**
-  * ipa_endpoint_init_hdr() - Initialize HDR endpoint configuration register
-  * @endpoint:	Endpoint pointer
-@@ -1488,6 +1502,7 @@ static void ipa_endpoint_program(struct ipa_endpoint *endpoint)
- 	else
- 		(void)ipa_endpoint_program_suspend(endpoint, false);
- 	ipa_endpoint_init_cfg(endpoint);
-+	ipa_endpoint_init_nat(endpoint);
- 	ipa_endpoint_init_hdr(endpoint);
- 	ipa_endpoint_init_hdr_ext(endpoint);
- 	ipa_endpoint_init_hdr_metadata_mask(endpoint);
+ 
+ 	/* Get a transaction to define the header memory region and to zero
+ 	 * the processing context and modem memory regions.
+@@ -89,8 +90,9 @@ int ipa_mem_setup(struct ipa *ipa)
+ 	gsi_trans_commit_wait(trans);
+ 
+ 	/* Tell the hardware where the processing context area is located */
+-	iowrite32(ipa->mem_offset + ipa->mem[IPA_MEM_MODEM_PROC_CTX].offset,
+-		  ipa->reg_virt + IPA_REG_LOCAL_PKT_PROC_CNTXT_BASE_OFFSET);
++	offset = ipa->mem_offset + ipa->mem[IPA_MEM_MODEM_PROC_CTX].offset;
++	val = proc_cntxt_base_addr_encoded(ipa->version, offset);
++	iowrite32(val, ipa->reg_virt + IPA_REG_LOCAL_PKT_PROC_CNTXT_OFFSET);
+ 
+ 	return 0;
+ }
 diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-index 36fe746575f6b..bba088e80cd1e 100644
+index bba088e80cd1e..cbfef27bbcf2c 100644
 --- a/drivers/net/ipa/ipa_reg.h
 +++ b/drivers/net/ipa/ipa_reg.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 */
+@@ -217,8 +217,18 @@ static inline u32 ipa_reg_bcr_val(enum ipa_version version)
+ 	return 0x00000000;
+ }
  
- /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
-- * Copyright (C) 2018-2020 Linaro Ltd.
-+ * Copyright (C) 2018-2021 Linaro Ltd.
-  */
- #ifndef _IPA_REG_H_
- #define _IPA_REG_H_
-@@ -388,6 +388,18 @@ enum ipa_cs_offload_en {
- 	IPA_CS_OFFLOAD_DL		= 0x2,
- };
+-/* The value of the next register must be a multiple of 8 */
+-#define IPA_REG_LOCAL_PKT_PROC_CNTXT_BASE_OFFSET	0x000001e8
++/* The value of the next register must be a multiple of 8 (bottom 3 bits 0) */
++#define IPA_REG_LOCAL_PKT_PROC_CNTXT_OFFSET		0x000001e8
++
++/* Encoded value for LOCAL_PKT_PROC_CNTXT register BASE_ADDR field */
++static inline u32 proc_cntxt_base_addr_encoded(enum ipa_version version,
++					       u32 addr)
++{
++	if (version < IPA_VERSION_4_5)
++		return u32_encode_bits(addr, GENMASK(16, 0));
++
++	return u32_encode_bits(addr, GENMASK(17, 0));
++}
  
-+/* Valid only for TX (IPA consumer) endpoints */
-+#define IPA_REG_ENDP_INIT_NAT_N_OFFSET(ep) \
-+					(0x0000080c + 0x0070 * (ep))
-+#define NAT_EN_FMASK				GENMASK(1, 0)
-+
-+/** enum ipa_nat_en - ENDP_INIT_NAT register NAT_EN field value */
-+enum ipa_nat_en {
-+	IPA_NAT_BYPASS			= 0x0,
-+	IPA_NAT_SRC			= 0x1,
-+	IPA_NAT_DST			= 0x2,
-+};
-+
- #define IPA_REG_ENDP_INIT_HDR_N_OFFSET(ep) \
- 					(0x00000810 + 0x0070 * (ep))
- #define HDR_LEN_FMASK				GENMASK(5, 0)
+ /* ipa->available defines the valid bits in the AGGR_FORCE_CLOSE register */
+ #define IPA_REG_AGGR_FORCE_CLOSE_OFFSET			0x000001ec
 -- 
 2.27.0
 
