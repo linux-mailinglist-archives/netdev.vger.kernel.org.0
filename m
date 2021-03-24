@@ -2,53 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF3B347933
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE77234793D
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 14:06:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234256AbhCXNEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 09:04:32 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:55152 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233182AbhCXND5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 09:03:57 -0400
-X-Greylist: delayed 11693 seconds by postgrey-1.27 at vger.kernel.org; Wed, 24 Mar 2021 09:03:57 EDT
-Received: from [192.168.178.106] (p57bc9f24.dip0.t-ipconnect.de [87.188.159.36])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 6EEED4C40BB;
-        Wed, 24 Mar 2021 13:03:54 +0000 (UTC)
-Subject: Re: [PATCH] net: axienet: allow setups without MDIO
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-References: <20210324094855.1604778-1-daniel@zonque.org>
- <YFsyv3FZlz+Tah9s@lunn.ch>
+        id S234152AbhCXNGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 09:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234706AbhCXNFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 09:05:51 -0400
+Received: from mail.bugwerft.de (mail.bugwerft.de [IPv6:2a03:6000:1011::59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92395C061763
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 06:05:51 -0700 (PDT)
+Received: from hq-00021.holoplot.net (p57bc9f24.dip0.t-ipconnect.de [87.188.159.36])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 07CF74C40BB;
+        Wed, 24 Mar 2021 13:05:50 +0000 (UTC)
 From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <161c58bd-7d04-beeb-50e2-25a44a397b2b@zonque.org>
-Date:   Wed, 24 Mar 2021 14:03:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+To:     radhey.shyam.pandey@xilinx.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Daniel Mack <daniel@zonque.org>
+Subject: [PATCH v2] net: axienet: allow setups without MDIO
+Date:   Wed, 24 Mar 2021 14:05:36 +0100
+Message-Id: <20210324130536.1663062-1-daniel@zonque.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <YFsyv3FZlz+Tah9s@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/21 1:38 PM, Andrew Lunn wrote:
-> On Wed, Mar 24, 2021 at 10:48:55AM +0100, Daniel Mack wrote:
->> In setups with fixed-link settings on the hardware bus there is no mdio node
->> in DTS. axienet_probe() already handles that gracefully but lp->mii_bus is
->> then NULL.
->>
->> Fix code that tries to blindly grab the MDIO lock by introducing two helper
->> functions that make the locking conditional.
-> 
-> Hi Danial
-> 
-> What about axienet_dma_err_handler()?
+In setups with fixed-link settings there is no mdio node in DTS.
+axienet_probe() already handles that gracefully but lp->mii_bus is
+then NULL.
 
-Ah, I missed that one. Thanks a lot! Will send a v2.
+Fix code that tries to blindly grab the MDIO lock by introducing two helper
+functions that make the locking conditional.
 
+Signed-off-by: Daniel Mack <daniel@zonque.org>
+---
+v2:
+  * Also fix axienet_dma_err_handler, as pointed out by Andrew Lunn
 
-Daniel
+ drivers/net/ethernet/xilinx/xilinx_axienet.h      | 12 ++++++++++++
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 12 ++++++------
+ 2 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+index 1e966a39967e5..aca7f82f6791b 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+@@ -504,6 +504,18 @@ static inline u32 axinet_ior_read_mcr(struct axienet_local *lp)
+ 	return axienet_ior(lp, XAE_MDIO_MCR_OFFSET);
+ }
+ 
++static inline void axienet_lock_mii(struct axienet_local *lp)
++{
++	if (lp->mii_bus)
++		mutex_lock(&lp->mii_bus->mdio_lock);
++}
++
++static inline void axienet_unlock_mii(struct axienet_local *lp)
++{
++	if (lp->mii_bus)
++		mutex_unlock(&lp->mii_bus->mdio_lock);
++}
++
+ /**
+  * axienet_iow - Memory mapped Axi Ethernet register write
+  * @lp:         Pointer to axienet local structure
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 3a8775e0ca552..61380c6b65b86 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1053,9 +1053,9 @@ static int axienet_open(struct net_device *ndev)
+ 	 * including the MDIO. MDIO must be disabled before resetting.
+ 	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
+ 	 */
+-	mutex_lock(&lp->mii_bus->mdio_lock);
++	axienet_lock_mii(lp);
+ 	ret = axienet_device_reset(ndev);
+-	mutex_unlock(&lp->mii_bus->mdio_lock);
++	axienet_unlock_mii(lp);
+ 
+ 	ret = phylink_of_phy_connect(lp->phylink, lp->dev->of_node, 0);
+ 	if (ret) {
+@@ -1148,9 +1148,9 @@ static int axienet_stop(struct net_device *ndev)
+ 	}
+ 
+ 	/* Do a reset to ensure DMA is really stopped */
+-	mutex_lock(&lp->mii_bus->mdio_lock);
++	axienet_lock_mii(lp);
+ 	__axienet_device_reset(lp);
+-	mutex_unlock(&lp->mii_bus->mdio_lock);
++	axienet_unlock_mii(lp);
+ 
+ 	cancel_work_sync(&lp->dma_err_task);
+ 
+@@ -1709,9 +1709,9 @@ static void axienet_dma_err_handler(struct work_struct *work)
+ 	 * including the MDIO. MDIO must be disabled before resetting.
+ 	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
+ 	 */
+-	mutex_lock(&lp->mii_bus->mdio_lock);
++	axienet_lock_mii(lp);
+ 	__axienet_device_reset(lp);
+-	mutex_unlock(&lp->mii_bus->mdio_lock);
++	axienet_unlock_mii(lp);
+ 
+ 	for (i = 0; i < lp->tx_bd_num; i++) {
+ 		cur_p = &lp->tx_bd_v[i];
+-- 
+2.30.2
+
