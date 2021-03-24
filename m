@@ -2,165 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5369D348337
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 21:55:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C506934834F
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 22:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238292AbhCXUx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 16:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49070 "EHLO
+        id S238231AbhCXU7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 16:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237729AbhCXUxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:53:48 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8C5C061763
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 13:53:47 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id a198so34034597lfd.7
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 13:53:47 -0700 (PDT)
+        with ESMTP id S238188AbhCXU7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 16:59:24 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7359C06174A;
+        Wed, 24 Mar 2021 13:59:23 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id 19so303495ilj.2;
+        Wed, 24 Mar 2021 13:59:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9IAjIh7gf44rR4epDI0vFAr+lh0+8IoyQ48EbdutPC4=;
-        b=X+i+XcHts81gTX2YQSoV3UFieH2kepMG7Wygr2n+8tt5NHgaQ+mstmTUI3J5ISoI7U
-         SUl3tiJvsbwRVOLXnmugaf7VxQxxdhAWYfBnAG00WyqH9bu/e4yNA5k3oEymKHyTzkLh
-         TTT+a8G71fKF6cc1A4Vkr/zD4HBlTVppNUf5AaI1iqxq87iXB7fbncGKeplOfgTH82ws
-         hdeCH/aQeXDSvTbv1qPdy2Lh7zjA6lcDs1+f+DHw1q7iu3l5yphxkZpMqeDxCa8CTxyZ
-         5VTmYNZSiJct4WOQqCy68/ZoK5rI3L/qFEYbBPrXDsH1QW2R7QyRDf07jo8vRTObrEez
-         ApCg==
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=NESGUyPvHL7cCoVnbsS2gymQUCnVSgr6wRyH7bS6EFQ=;
+        b=S+BLe/cT5ZlLK94ci/pFtEACTd3Pq/k3Y8J6rLZ2FwYP0HptAdHmNPN8/LASu3grfw
+         hii1c9YKX3kuA7OBxONq2PzssbtlCIFBq4TEoADxm/Xh1jWVdYikuZRxikUx7isy1KHT
+         EPv2Crsr98o1ZlPnBDKfe2GkQZy2QkcYP15hD8Glc5FqSKcFEVJ+vpAJY+L0pgTbh/ii
+         TQ6wwVYfN1+W3HOGs8DffGZrWxzVVFRSRT2fuB1KivwsFcFiHzCGYVQdWBJMDqIQHdqv
+         qUqqxfY1GgKeHbaiQoFiFm7zj1EBUY2GwCmQ0PaQvzGxNk7BVR4RaWfZrhyMOpPbfEUW
+         KvHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9IAjIh7gf44rR4epDI0vFAr+lh0+8IoyQ48EbdutPC4=;
-        b=g+2c1QJjYJygoutJv4oqq0teDWGCYUpuQtWax82mQxeNg1ZuyaSjmaMmJqYCyrL0N9
-         XaIKf/Yenouq+rhOznIVljB4kWBiFswwDDdBAhejtlUnVhlk9WOZpse4REasY+KGLRDm
-         QBTsrpgKTFXmLLtQ7UgSjwxSvdLpEnouA4/WZFXyg9k4RkOjNamau4k/tKQG7nMjUSlS
-         qjc/j2DtdmfAIf+QJl1RybTaj9YC/EKd1lwsZiCvgGFUtMkE780HlIBrBprH5fGGQPNG
-         i73uyu9S+Zg9m2SNfML5TUqJfZ6gDXNuTLYYHICWuThLgdd9NVulxrrIBLWMFUedacYP
-         lrGQ==
-X-Gm-Message-State: AOAM531xmGEjsH8fyiqQCzMJcoPNHDexHZNta3ok5kXn18T2NSztoOOv
-        MacQrguyZR/rudPCCgMm+upy1aajO641dCj65wv5GQ==
-X-Google-Smtp-Source: ABdhPJw0lQ/lHICaIcFDzikDJKy0JhvudtbKraeVHNse46qud1jmkyD20uZNubiTW6uoYiF8GjRukNZVynWF7Og7DJA=
-X-Received: by 2002:a19:c14a:: with SMTP id r71mr2932916lff.358.1616619225992;
- Wed, 24 Mar 2021 13:53:45 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=NESGUyPvHL7cCoVnbsS2gymQUCnVSgr6wRyH7bS6EFQ=;
+        b=eZZ4Sd1dKIcZ2bBbujLEyJ1GJs4UGg2GElfV62HWgt8uehane7vIjhDLIM5FXFPSXS
+         27wS7jBwd4su1nTUL4JQM1mUM8cJVwqj1BrZO+K87cc7ZssrVNrbJnJEJsvW/z3fyHuu
+         wnlOwpzaz8PpAoODeK+MKWaBL72fRAL4aaeqmSI4r2uiSD8lx6naZhVdHxJsy7N1e6h/
+         Xh1CNhM1hJAAHZRtejPC+mJK6Efv3C+NliIc95fhupaDelQ/5/4v7IrwjRpscqKTd7y2
+         HQWaxAKDdBeaqsEO8xuNntbA906ztIJZVd89n/R9Jh5ltOS9k+c/KIpw+Zd11Xz4XUed
+         YQWg==
+X-Gm-Message-State: AOAM533kHuXjQswUagr9OAbjhcJMTyURbzS6ITLeUW3Nx0Cs6hjNR6eA
+        t0X8qUEN+zMGuhKwDr4mWRU=
+X-Google-Smtp-Source: ABdhPJxmLxcgn41PV9qTp+HG9HlZoDocxzhEeL6RPFP7ANZwg98VbqPkMBiUQqAR/iKLCM76iGhsMw==
+X-Received: by 2002:a05:6e02:13ad:: with SMTP id h13mr4227115ilo.32.1616619563227;
+        Wed, 24 Mar 2021 13:59:23 -0700 (PDT)
+Received: from [127.0.1.1] ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id m1sm1363105ilh.69.2021.03.24.13.59.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Mar 2021 13:59:22 -0700 (PDT)
+Subject: [bpf PATCH 0/2] bpf, sockmap fixes
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     john.fastabend@gmail.com, andrii@kernel.org, daniel@iogearbox.net,
+        ast@fb.com
+Cc:     xiyou.wangcong@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, lmb@cloudflare.com
+Date:   Wed, 24 Mar 2021 13:59:10 -0700
+Message-ID: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
- <YFCH8vzFGmfFRCvV@cmpxchg.org> <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
- <YFJ+5+NBOBiUbGWS@cmpxchg.org> <YFn8bLBMt7txj3AZ@dhcp22.suse.cz>
- <CAOFY-A22Pp3Z0apYBWtOJCD8TxfrbZ_HE9Xd6eUds8aEvRL+uw@mail.gmail.com>
- <YFsA78FfzICrnFf7@dhcp22.suse.cz> <CAOFY-A1+TT5EgT0oVEkGgHAaJavbLzbKp5fQx_uOrMtw-7VEiA@mail.gmail.com>
-In-Reply-To: <CAOFY-A1+TT5EgT0oVEkGgHAaJavbLzbKp5fQx_uOrMtw-7VEiA@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 24 Mar 2021 13:53:34 -0700
-Message-ID: <CALvZod6HQ=bG2K1YPofmD=7q3OX+FoRHbzLHcGAMSKOXtfn9dw@mail.gmail.com>
-Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
-To:     Arjun Roy <arjunroy@google.com>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 1:39 PM Arjun Roy <arjunroy@google.com> wrote:
->
-> On Wed, Mar 24, 2021 at 2:12 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Tue 23-03-21 11:47:54, Arjun Roy wrote:
-> > > On Tue, Mar 23, 2021 at 7:34 AM Michal Hocko <mhocko@suse.com> wrote:
-> > > >
-> > > > On Wed 17-03-21 18:12:55, Johannes Weiner wrote:
-> > > > [...]
-> > > > > Here is an idea of how it could work:
-> > > > >
-> > > > > struct page already has
-> > > > >
-> > > > >                 struct {        /* page_pool used by netstack */
-> > > > >                         /**
-> > > > >                          * @dma_addr: might require a 64-bit value even on
-> > > > >                          * 32-bit architectures.
-> > > > >                          */
-> > > > >                         dma_addr_t dma_addr;
-> > > > >                 };
-> > > > >
-> > > > > and as you can see from its union neighbors, there is quite a bit more
-> > > > > room to store private data necessary for the page pool.
-> > > > >
-> > > > > When a page's refcount hits zero and it's a networking page, we can
-> > > > > feed it back to the page pool instead of the page allocator.
-> > > > >
-> > > > > From a first look, we should be able to use the PG_owner_priv_1 page
-> > > > > flag for network pages (see how this flag is overloaded, we can add a
-> > > > > PG_network alias). With this, we can identify the page in __put_page()
-> > > > > and __release_page(). These functions are already aware of different
-> > > > > types of pages and do their respective cleanup handling. We can
-> > > > > similarly make network a first-class citizen and hand pages back to
-> > > > > the network allocator from in there.
-> > > >
-> > > > For compound pages we have a concept of destructors. Maybe we can extend
-> > > > that for order-0 pages as well. The struct page is heavily packed and
-> > > > compound_dtor shares the storage without other metadata
-> > > >                                         int    pages;    /*    16     4 */
-> > > >                         unsigned char compound_dtor;     /*    16     1 */
-> > > >                         atomic_t   hpage_pinned_refcount; /*    16     4 */
-> > > >                         pgtable_t  pmd_huge_pte;         /*    16     8 */
-> > > >                         void *     zone_device_data;     /*    16     8 */
-> > > >
-> > > > But none of those should really require to be valid when a page is freed
-> > > > unless I am missing something. It would really require to check their
-> > > > users whether they can leave the state behind. But if we can establish a
-> > > > contract that compound_dtor can be always valid when a page is freed
-> > > > this would be really a nice and useful abstraction because you wouldn't
-> > > > have to care about the specific type of page.
-> > > >
-> > > > But maybe I am just overlooking the real complexity there.
-> > > > --
-> > >
-> > > For now probably the easiest way is to have network pages be first
-> > > class with a specific flag as previously discussed and have concrete
-> > > handling for it, rather than trying to establish the contract across
-> > > page types.
-> >
-> > If you are going to claim a page flag then it would be much better to
-> > have it more generic. Flags are really scarce and if all you care about
-> > is PageHasDestructor() and provide one via page->dtor then the similar
-> > mechanism can be reused by somebody else. Or does anything prevent that?
->
-> The way I see it - the fundamental want here is, for some arbitrary
-> page that we are dropping a reference on, to be able to tell that the
-> provenance of the page is some network driver's page pool. If we added
-> an enum target to compound_dtor, if we examine that offset in the page
-> and look at that value, what guarantee do we have that the page isn't
-> instead some other kind of page, and the byte value there was just
-> coincidentally the one we were looking for (but it wasn't a network
-> driver pool page)?
->
-> Existing users of compound_dtor seem to check first that a
-> PageCompound() or PageHead() return true - the specific scenario here,
-> of receiving network packets, those pages will tend to not be compound
-> (and more specifically, compound pages are explicitly disallowed for
-> TCP receive zerocopy).
->
-> Given that's the case, the options seem to be:
-> 1) Use a page flag - with the downside that they are a severely
-> limited resource,
-> 2) Use some bits inside page->memcg_data - this I believe Johannes had
-> reasons against, and it isn't always the case that MEMCG support is
-> enabled.
-> 3) Use compound_dtor - but I think this would have problems for the
-> prior reasons.
+This addresses an issue found while reviewing latest round of sock
+map patches and an issue reported from CI via Andrii.
 
-I don't think Michal is suggesting to use PageCompound() or
-PageHead(). He is suggesting to add a more general page flag
-(PageHasDestructor) and corresponding page->dtor, so other potential
-users can use it too.
+The CI discovered issue was introduced by over correcting our
+previously broken memory accounting. After the fix, "bpf, sockmap:
+Avoid returning unneeded EAGAIN when redirecting to self" we fixed
+a dropped packet and a missing fwd_alloc calculations, but pushed
+it too far back into the packet pipeline creating an issue in the
+unlikely case socket tear down happens with an enqueued skb. See
+patch for details.
+
+Tested with usual suspects: test_sockmap, test_maps, test_progs
+and test_progs-no_alu32.
+
+---
+
+John Fastabend (2):
+      bpf, sockmap: fix sk->prot unhash op reset
+      bpf, sockmap: fix incorrect fwd_alloc accounting
+
+
+ include/linux/skmsg.h |    1 -
+ net/core/skmsg.c      |   13 ++++++-------
+ net/tls/tls_main.c    |    6 ++++++
+ 3 files changed, 12 insertions(+), 8 deletions(-)
+
+--
+Signature
