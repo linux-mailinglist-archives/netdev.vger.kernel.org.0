@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D347346E47
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F415C346E52
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234490AbhCXAaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 20:30:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47238 "EHLO mail.kernel.org"
+        id S233909AbhCXAqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 20:46:55 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43800 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233699AbhCXAaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 20:30:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 10810619E5;
-        Wed, 24 Mar 2021 00:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616545809;
-        bh=Yv6DSkJeCZKdwLbIeklfC/Gkz2mF9S04LMwbHWme2cE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L/myjKuz0/JNwkcBgkwq1N7vo6lIdJxts+eINjpgNfdUvoTHjBXkzPNFJB1Oujlwv
-         r5gBZzYyws7pMR0fQYKZ5H3sSWy3DFDpZZ1BOAQ6w1IR3A1yFIU7VFVt3tYxVAfi62
-         2wTxRjDO3WkvZ+m3AiNCoWX8W6QANNSFD+YnbT78XZp6KtgxNqgt2IfmPOgqsj/UOI
-         L3tbFzjMoz4avlO2sDzKx9WIeRXnv8G4F+HaP2eHMDXoDkI9XwEZ6U8XcrIJSMOtGZ
-         JaKtPlG8Cw1wqx12+5rZsHLHGuRPwphgvi6XwPMe9M1nCnVCF8sSh3dVwlCE/4phzH
-         iXPwBOq37gVXw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0251D60A3E;
-        Wed, 24 Mar 2021 00:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230465AbhCXAod (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 20:44:33 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lOrd9-00CgG6-Tb; Wed, 24 Mar 2021 01:44:15 +0100
+Date:   Wed, 24 Mar 2021 01:44:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
+ reconfiguration of tag protocol
+Message-ID: <YFqLX+o2n2qRVW8M@lunn.ch>
+References: <20210323102326.3677940-1-tobias@waldekranz.com>
+ <YFnh4dEap/lGX4ix@lunn.ch>
+ <87a6qulybz.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: ethernet: Remove duplicate include of vhca_event.h
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161654580900.18092.16312775969990333697.git-patchwork-notify@kernel.org>
-Date:   Wed, 24 Mar 2021 00:30:09 +0000
-References: <20210323020605.139644-1-wanjiabing@vivo.com>
-In-Reply-To: <20210323020605.139644-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, parav@nvidia.com, vuhuong@nvidia.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kael_w@yeah.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87a6qulybz.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> This was my initial approach. It gets quite messy though. Since taggers
+> can be modules, there is no way of knowing if a supplied protocol name
+> is garbage ("asdf"), or just part of a module in an initrd that is not
+> loaded yet when you are probing the tree.
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Hi Tobias
 
-On Tue, 23 Mar 2021 10:05:48 +0800 you wrote:
-> vhca_event.h has been included at line 4, so remove the
-> duplicate one at line 8.
-> 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c | 1 -
->  1 file changed, 1 deletion(-)
+I don't think that is an issue. We currently lookup the tagger in
+dsa_port_parse_cpu(). If it does not exist, we return
+-EPROBE_DEFER. Either it eventually gets loaded, or the driver core
+gives up. I don't see why the same cannot be done for a DT
+property. If dsa_find_tagger_by_name() does not find the tagger return
+-EPROBE_DEFER. Garbage will result in the switch never loading, and
+the DT writer will go find their typo.
 
-Here is the summary with links:
-  - net: ethernet: Remove duplicate include of vhca_event.h
-    https://git.kernel.org/netdev/net-next/c/4c94fe88cde4
+> Even when the tagger is available, there is no way to verify if the
+> driver is compatible with it.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I would of though, calling the switch drivers change_tag_protocol() op
+will that for you. If it comes back with -EINVAL, or -EOPNOTSUPP, you
+know it is not compatible.
 
+So i guess i would keep all the code you are adding here to allow
+dynamic setting of the protocol. And add more code in
+dsa_switch_parse_of() to parse the optional tagging protocol name,
+error out -EPROBE_DEFER if it is not known yet, otherwise store it
+away in something like dst->tag_ops_name. And then probably in
+dsa_switch_setup(), if dst->tag_ops_name is not NULL, invoke the
+dynamic change code to perform the actual change.
 
+	Andrew
