@@ -2,28 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C107347170
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 07:14:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87022347182
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 07:17:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233112AbhCXGNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 02:13:46 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:14137 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232833AbhCXGNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 02:13:34 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F4yYJ0xPPz19Gq5;
-        Wed, 24 Mar 2021 14:11:32 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.498.0; Wed, 24 Mar 2021
- 14:13:26 +0800
+        id S235446AbhCXGRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 02:17:10 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:14456 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232934AbhCXGQk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 02:16:40 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4F4ycv4sDjzjMRS;
+        Wed, 24 Mar 2021 14:14:39 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.498.0; Wed, 24 Mar 2021
+ 14:16:36 +0800
 From:   Wang Hai <wanghai38@huawei.com>
-To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <willemb@google.com>,
+        <xie.he.0141@gmail.com>, <john.ogness@linutronix.de>,
+        <yonatanlinik@gmail.com>, <gustavoars@kernel.org>,
+        <tannerlove@google.com>, <eyal.birger@gmail.com>,
+        <orcohen@paloaltonetworks.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net/tls: Fix a typo in tls_device.c
-Date:   Wed, 24 Mar 2021 14:16:22 +0800
-Message-ID: <20210324061622.8665-1-wanghai38@huawei.com>
+Subject: [PATCH net-next] net/packet: Fix a typo in af_packet.c
+Date:   Wed, 24 Mar 2021 14:19:31 +0800
+Message-ID: <20210324061931.11012-1-wanghai38@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -33,27 +36,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-s/beggining/beginning/
+s/sequencially/sequentially/
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- net/tls/tls_device.c | 2 +-
+ net/packet/af_packet.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index f7fb7d2c1de1..89a5d4fad0a2 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -601,7 +601,7 @@ struct tls_record_info *tls_get_record(struct tls_offload_context_tx *context,
- 	if (!info ||
- 	    before(seq, info->end_seq - info->len)) {
- 		/* if retransmit_hint is irrelevant start
--		 * from the beggining of the list
-+		 * from the beginning of the list
- 		 */
- 		info = list_first_entry_or_null(&context->records_list,
- 						struct tls_record_info, list);
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 6bbc7a448593..fe29fc1b8b9d 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2057,7 +2057,7 @@ static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
+  * and skb->cb are mangled. It works because (and until) packets
+  * falling here are owned by current CPU. Output packets are cloned
+  * by dev_queue_xmit_nit(), input packets are processed by net_bh
+- * sequencially, so that if we return skb to original state on exit,
++ * sequentially, so that if we return skb to original state on exit,
+  * we will not harm anyone.
+  */
+ 
 -- 
 2.17.1
 
