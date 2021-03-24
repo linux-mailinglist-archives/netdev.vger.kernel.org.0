@@ -2,181 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA80346F0B
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:50:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A216346F0E
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 02:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234635AbhCXBtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 21:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
+        id S234332AbhCXBuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 21:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234526AbhCXBtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:49:18 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A105BC061765;
-        Tue, 23 Mar 2021 18:49:18 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so348024pjv.1;
-        Tue, 23 Mar 2021 18:49:18 -0700 (PDT)
+        with ESMTP id S231960AbhCXBtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Mar 2021 21:49:51 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61387C061763
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 18:49:51 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id l4so30231728ejc.10
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 18:49:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Kcc6sYOncKNza4pyjGfSR1hgCICN528qKEruGPFUaW0=;
-        b=i/K/lP2EMNf5mL/ks+jU5qNCAiaM+A4q5Dbzv8tWCoJNfyhniaLAG+lOI7DnGGOst8
-         E/cXZbjoQkNuMSz8fGShcDE5oyVMUfE/nxZ8uhcjhI+qwA5u2x9UUFXqzoEc3XclHswI
-         8eK8ukUX4NXRS+uvPtt7q91dDlMMo9U73FrLrIYDygxtdwgS2zOmzZxk4TQkqADUNQgA
-         AHMBAeG5P1uzR57lXRyXfoC8Yv09xGfjylKRafhs3/H8K1oHng2zTNoNbm+rvv/KYsao
-         Bnkwmgd6KGMgpVatkM/uCyQo52FUYJaarkVNahNbVv4+Gu2cqUSSYJ/RhT2UxDhVtNxh
-         Jg0w==
+         :cc;
+        bh=zBC3rmjxFpZkScp/zwk+BypjKuhZfkHU74K62cdOBVs=;
+        b=DAoAF/LrWZ1dC4g+zPSA8no4JPObDVnLU+udRt1BY3V71RbrQuoH783NlGey0d/2nR
+         +ZHlHgh3VrYARI7kYqZFuc4YEew3Avf1vP0Q6ZHCEzQymxZqXgTm3VcCAbZVXqpLkxnD
+         AMQJYniLMirm7jO1lf3oIiCn079RhwUIqOGzgBu3v/wjIDKTnlPj3dQ7uubRshJw4HmF
+         5hafKeQvnmNRjwJ8QQf/tTAW1MHj8vY8n/XpLUDN0QXcR3AMxpSiapx0/3h9s4RMTL7K
+         5vIf4huiyAy2gLatkAa2K+4cfDyf5pSrOquG1C1AO4ryszfQkv3RZ+Iw/3pme7bUfmDi
+         2ypA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Kcc6sYOncKNza4pyjGfSR1hgCICN528qKEruGPFUaW0=;
-        b=okc/WnaoRRP7URWrL5jIDwcCF+dXJYvE5KQxt2+a4S3Y5bHqPlEGwipm2EbrY6bxGk
-         FK/KeMJizIffHaja6hrAQwiWILIFg7Hh39jLyW7rtHgCTBtbxV9T3zdjbI03EMSWrBXv
-         krP3EtUgjDK43kNkcWdnMv1TlwRnl2EgkuTznAHi5z6BizWYU8YwKq/TY+6SbDPc2ExZ
-         Z7jy/hDw9kBMNMgRCO8ryGrW7AOehjGPuWOByH7YWkvlKti+M4OqfcOFU8GqYSgmg0NJ
-         6lg1NDcoGC/NE2F7BA+qUatzX1F1nv7sv4fQdEBccNMRuV+hIH0YrOwIkLUEB9vKepiz
-         vWFA==
-X-Gm-Message-State: AOAM531uNhO3RK5dU/JKnNTxhk+Qy3ZRiWEoLj608MpxxNtL/TMk5hvl
-        8uiOrwUb/lnZWmD8JJleWECn8QaMTiUgVaqxOeM=
-X-Google-Smtp-Source: ABdhPJwSaV2t0JL7d34dMYVjA5vhuv0+uustAjzX/a1J/kIDwNGzbXYxD8SD9PUz9jzxjHc6LckTWoVTeiQmegxvwes=
-X-Received: by 2002:a17:90a:7061:: with SMTP id f88mr937998pjk.56.1616550557213;
- Tue, 23 Mar 2021 18:49:17 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=zBC3rmjxFpZkScp/zwk+BypjKuhZfkHU74K62cdOBVs=;
+        b=nbm8XASftaNeKgyTTYArW9/Z9xynYk5e4jT4RA/xu0eGzCKKu18eK03LnQghKtT10D
+         R1gZO1Gpk/GRj5AygulZFjrhZhox1SZ9U3gokP3xHkPdwKGUNTjdxh4UQ3bk4gjIcH3q
+         ZwScGuXPtGi8NJM/ndHlzNRdI8SlArBCe1VYcltIqujYuIZ/yJLYp0csuPLgjvBBILrd
+         tXEuoXmqtm07HOEA4pqM5G1OTSLUiXjfFcHzq1NX+zyJ3jae2JXVyPAGIwNhVoX8nJ+F
+         y15hXbqZYOSF1uO/jDjbsviipehLHwyh9rzCngh4MFyjJ2YYslgmlif7vg3fJsQnnUbh
+         w9nw==
+X-Gm-Message-State: AOAM532ysH85QSHsJnCH+7yp4dDweQsrZX5rZEHlnoOyfilxea0+VTU5
+        uGVmTk1W1/rtFrKZaIW0BNPuPlSMQDQ=
+X-Google-Smtp-Source: ABdhPJxowc8ptU13GOXgVl4OIchpjhNtMC49YA5ftOgLndRL5FbcVVed+4s4Ok/q1S40j5SvEXwsVw==
+X-Received: by 2002:a17:906:3f88:: with SMTP id b8mr1135987ejj.36.1616550589828;
+        Tue, 23 Mar 2021 18:49:49 -0700 (PDT)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
+        by smtp.gmail.com with ESMTPSA id s18sm368174edc.21.2021.03.23.18.49.49
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Mar 2021 18:49:49 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id c8so9871432wrq.11
+        for <netdev@vger.kernel.org>; Tue, 23 Mar 2021 18:49:49 -0700 (PDT)
+X-Received: by 2002:a5d:640b:: with SMTP id z11mr700645wru.327.1616550588777;
+ Tue, 23 Mar 2021 18:49:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <1615603667-22568-1-git-send-email-linyunsheng@huawei.com>
- <1615777818-13969-1-git-send-email-linyunsheng@huawei.com>
- <20210315115332.1647e92b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAM_iQpXvVZxBRHF6PBDOYSOSCj08nPyfcY0adKuuTg=cqffV+w@mail.gmail.com>
- <87eegddhsj.fsf@toke.dk> <CAHmME9qDU7VRmBV+v0tzLiUpMJykjswSDwqc9P43ZwG1UD7mzw@mail.gmail.com>
- <3bae7b26-9d7f-15b8-d466-ff5c26d08b35@huawei.com> <CAM_iQpVvR1eUQxgihWrZ==X=xQjaaeH_qkehvU0Y2R6i9eM-Qw@mail.gmail.com>
- <9d045462-051e-0cde-24d0-349dd397e2b7@huawei.com>
-In-Reply-To: <9d045462-051e-0cde-24d0-349dd397e2b7@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 23 Mar 2021 18:49:06 -0700
-Message-ID: <CAM_iQpVgARDaUd3jdvSA11j=Q_K6KvcKfn7DQavGYXUWmvLZtw@mail.gmail.com>
-Subject: Re: [Linuxarm] Re: [RFC v2] net: sched: implement TCQ_F_CAN_BYPASS
- for lockless qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+References: <cover.1616345643.git.pabeni@redhat.com> <4bff28fbaa8c53ca836eb2b9bdabcc3057118916.1616345643.git.pabeni@redhat.com>
+ <CA+FuTScSPJAh+6XnwnP32W+OmEzCVi8aKundnt2dJNzoKgUthg@mail.gmail.com>
+ <43f56578c91f8abd8e3d1e8c73be1c4d5162089f.camel@redhat.com> <CA+FuTSd6fOaj6bJssyXeyL-LWvSEdSH+QchHUG8Ga-=EQ634Lg@mail.gmail.com>
+In-Reply-To: <CA+FuTSd6fOaj6bJssyXeyL-LWvSEdSH+QchHUG8Ga-=EQ634Lg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 23 Mar 2021 21:49:10 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdV=vRGtNcmtdtnEVKLCSca4HyftNEntTGXAPQRFccuMA@mail.gmail.com>
+Message-ID: <CA+FuTSdV=vRGtNcmtdtnEVKLCSca4HyftNEntTGXAPQRFccuMA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@openeuler.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 21, 2021 at 5:55 PM Yunsheng Lin <linyunsheng@huawei.com> wrote=
-:
->
-> On 2021/3/20 2:15, Cong Wang wrote:
-> > On Thu, Mar 18, 2021 at 12:33 AM Yunsheng Lin <linyunsheng@huawei.com> =
-wrote:
-> >>
-> >> On 2021/3/17 21:45, Jason A. Donenfeld wrote:
-> >>> On 3/17/21, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> >>>> Cong Wang <xiyou.wangcong@gmail.com> writes:
-> >>>>
-> >>>>> On Mon, Mar 15, 2021 at 2:07 PM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
-> >>>>>>
-> >>>>>> I thought pfifo was supposed to be "lockless" and this change
-> >>>>>> re-introduces a lock between producer and consumer, no?
-> >>>>>
-> >>>>> It has never been truly lockless, it uses two spinlocks in the ring
-> >>>>> buffer
-> >>>>> implementation, and it introduced a q->seqlock recently, with this =
-patch
-> >>>>> now we have priv->lock, 4 locks in total. So our "lockless" qdisc e=
-nds
-> >>>>> up having more locks than others. ;) I don't think we are going to =
-a
-> >>>>> right direction...
-> >>>>
-> >>>> Just a thought, have you guys considered adopting the lockless MSPC =
-ring
-> >>>> buffer recently introduced into Wireguard in commit:
-> >>>>
-> >>>> 8b5553ace83c ("wireguard: queueing: get rid of per-peer ring buffers=
-")
-> >>>>
-> >>>> Jason indicated he was willing to work on generalising it into a
-> >>>> reusable library if there was a use case for it. I haven't quite tho=
-ugh
-> >>>> through the details of whether this would be such a use case, but
-> >>>> figured I'd at least mention it :)
-> >>>
-> >>> That offer definitely still stands. Generalization sounds like a lot =
-of fun.
-> >>>
-> >>> Keep in mind though that it's an eventually consistent queue, not an
-> >>> immediately consistent one, so that might not match all use cases. It
-> >>> works with wg because we always trigger the reader thread anew when i=
-t
-> >>> finishes, but that doesn't apply to everyone's queueing setup.
-> >>
-> >> Thanks for mentioning this.
-> >>
-> >> "multi-producer, single-consumer" seems to match the lockless qdisc's
-> >> paradigm too, for now concurrent enqueuing/dequeuing to the pfifo_fast=
-'s
-> >> queues() is not allowed, it is protected by producer_lock or consumer_=
-lock.
-> >>
-> >> So it would be good to has lockless concurrent enqueuing, while dequeu=
-ing
-> >> can be protected by qdisc_lock() or q->seqlock, which meets the "multi=
--producer,
-> >> single-consumer" paradigm.
-> >
-> > I don't think so. Usually we have one queue for each CPU so we can expe=
-ct
-> > each CPU has a lockless qdisc assigned, but we can not assume this in
-> > the code, so we still have to deal with multiple CPU's sharing a lockle=
-ss qdisc,
-> > and we usually enqueue and dequeue in process context, so it means we c=
-ould
-> > have multiple producers and multiple consumers.
->
-> For lockless qdisc, dequeuing is always within the qdisc_run_begin() and
-> qdisc_run_end(), so multiple consumers is protected with each other by
-> q->seqlock .
+> > > > @@ -2168,6 +2168,7 @@ static int udp_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+> > > >  static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> > > >  {
+> > > >         struct sk_buff *next, *segs;
+> > > > +       int csum_level;
+> > > >         int ret;
+> > > >
+> > > >         if (likely(!udp_unexpected_gso(sk, skb)))
+> > > > @@ -2175,9 +2176,18 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> > > >
+> > > >         BUILD_BUG_ON(sizeof(struct udp_skb_cb) > SKB_GSO_CB_OFFSET);
+> > > >         __skb_push(skb, -skb_mac_offset(skb));
+> > > > +       csum_level = !!(skb_shinfo(skb)->gso_type &
+> > > > +                       (SKB_GSO_UDP_TUNNEL | SKB_GSO_UDP_TUNNEL_CSUM));
+> > > >         segs = udp_rcv_segment(sk, skb, true);
+> > > >         skb_list_walk_safe(segs, skb, next) {
+> > > >                 __skb_pull(skb, skb_transport_offset(skb));
+> > > > +
+> > > > +               /* UDP GSO packets looped back after adding UDP encap land here with CHECKSUM none,
+> > > > +                * instead of adding another check in the tunnel fastpath, we can force valid
+> > > > +                * csums here (packets are locally generated).
+> > > > +                * Additionally fixup the UDP CB
+> > > > +                */
 
-So are you saying you will never go lockless for lockless qdisc? I thought
-you really want to go lockless with Jason's proposal of MPMC ring buffer
-code.
-
->
-> For enqueuing, multiple consumers is protected by producer_lock, see
-> pfifo_fast_enqueue() -> skb_array_produce() -> ptr_ring_produce().
-
-I think you seriously misunderstand how we classify MPMC or MPSC,
-it is not about how we lock them, it is about whether we truly have
-a single or multiple consumers regardless of locks used, because the
-goal is to go lockless.
-
-> I am not sure if lockless MSPC can work with the process context, but
-> even if not, the enqueuing is also protected by rcu_read_lock_bh(),
-> which provides some kind of atomicity, so that producer_lock can be
-> reomved when lockless MSPC is used.
-
-
-Not sure if I can even understand what you are saying here, Jason's
-code only disables preemption with busy wait, I can't see why it can
-not be used in the process context.
-
-Thanks.
+Btw, instead of this comment plus a comment in the ipv6 code that
+points back to this ipv4 comment, I would move the explanation to
+the udp_post_segment_fix_csum function itself.
