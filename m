@@ -2,73 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72B09346E30
-	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB1D346DF8
+	for <lists+netdev@lfdr.de>; Wed, 24 Mar 2021 01:01:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234515AbhCXAEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Mar 2021 20:04:13 -0400
-Received: from mga17.intel.com ([192.55.52.151]:37624 "EHLO mga17.intel.com"
+        id S231374AbhCXAAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Mar 2021 20:00:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234381AbhCXADq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 23 Mar 2021 20:03:46 -0400
-IronPort-SDR: XwxcD26wZWbfdd5MEXZ2YDCr3lrdgnD6DPatLm0SbUBLL3hkA/s9XqtCeFrp3YHb+AmwGbeGJ+
- 7bY3vvMa/b3Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9932"; a="170556675"
-X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
-   d="scan'208";a="170556675"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:46 -0700
-IronPort-SDR: IAjqE2wQFx4oOaiYY/ZHBLkmsyGmquzE5v7IvB5+BWhQ07hc9DGVLEAfV3qY9ed6dI/NFo0b3u
- Tfg6Ci+hFd1A==
-X-IronPort-AV: E=Sophos;i="5.81,272,1610438400"; 
-   d="scan'208";a="381542336"
-Received: from ssaleem-mobl.amr.corp.intel.com ([10.209.103.207])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2021 17:03:45 -0700
-From:   Shiraz Saleem <shiraz.saleem@intel.com>
-To:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
-        davem@davemloft.net
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        david.m.ertman@intel.com, anthony.l.nguyen@intel.com,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH v2 23/23] RDMA/irdma: Update MAINTAINERS file
-Date:   Tue, 23 Mar 2021 19:00:07 -0500
-Message-Id: <20210324000007.1450-24-shiraz.saleem@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20210324000007.1450-1-shiraz.saleem@intel.com>
-References: <20210324000007.1450-1-shiraz.saleem@intel.com>
+        id S230439AbhCXAAf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 23 Mar 2021 20:00:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E6D74619C7;
+        Wed, 24 Mar 2021 00:00:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616544035;
+        bh=7N28Wlu3fdXZtrj0PoWN3PLzhZB9znvo/bmGq1SSlfg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ieORxGcVNm8OUxZzr1dVAd556d+eBCgw5bIdr3mE5ql+AjH8zd3o3p5Hsd9CFNtTW
+         Dce3CIbMTtyg28hvwtTKSXcvW069n85aVXQfqk3Ypg/F1eiQ+37ZW/nM1TDwd2YD5z
+         lVe8Fb2RWZM9XNTdA3RZ+9MrWa7TpDj87JeMlxU//aiS/ttqg4aEUZ7vyoH8YdgVNz
+         RJU8UmNWWfZRybYpE6PPRfraE3bNJCm9kT46GwW1YSiFQZ/ork7ttq6iQylHeiq3lD
+         wto6WjZOG/iKf2+aBo2JjFxJJZMNe1Ue864TryaX6yNToo0+8Bos2uwCTGiidWziOT
+         AAAHbL7Wk/ztw==
+Date:   Tue, 23 Mar 2021 17:00:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: Patch version tags
+Message-ID: <20210323170033.2e4411e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <83989a05-0491-bd1d-dc31-f963c3dd6096@linaro.org>
+References: <83989a05-0491-bd1d-dc31-f963c3dd6096@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add maintainer entry for irdma driver.
+On Thu, 18 Mar 2021 08:48:35 -0500 Alex Elder wrote:
+> Simple question.  Maybe it's been asked before.
+> 
+> Do you prefer "PATCH v2 net-next ..." or "PATCH net-next v2 ..."?
+> 
+> Both work.  Which is better?  Which makes more sense to you?
 
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 211fbc4..6b0aeaf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8958,6 +8958,14 @@ F:	drivers/net/ethernet/intel/*/
- F:	include/linux/avf/virtchnl.h
- F:	include/linux/net/intel/iidc.h
- 
-+INTEL ETHERNET PROTOCOL DRIVER FOR RDMA
-+M:	Mustafa Ismail <mustafa.ismail@intel.com>
-+M:	Shiraz Saleem <shiraz.saleem@intel.com>
-+L:	linux-rdma@vger.kernel.org
-+S:	Supported
-+F:	drivers/infiniband/hw/irdma/
-+F:	include/uapi/rdma/irdma-abi.h
-+
- INTEL FRAMEBUFFER DRIVER (excluding 810 and 815)
- M:	Maik Broemme <mbroemme@libmpq.org>
- L:	linux-fbdev@vger.kernel.org
--- 
-1.8.3.1
-
+FWIW I believe Dave has used the "PATCH net-next v2" format in the past.
