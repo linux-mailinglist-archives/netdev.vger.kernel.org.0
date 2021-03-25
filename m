@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9BB349114
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 12:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A8534911B
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 12:45:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230467AbhCYLoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 07:44:15 -0400
-Received: from outbound-smtp26.blacknight.com ([81.17.249.194]:52722 "EHLO
-        outbound-smtp26.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231645AbhCYLnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 07:43:52 -0400
+        id S230220AbhCYLoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 07:44:39 -0400
+Received: from outbound-smtp09.blacknight.com ([46.22.139.14]:49939 "EHLO
+        outbound-smtp09.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231210AbhCYLoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 07:44:05 -0400
 Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
-        by outbound-smtp26.blacknight.com (Postfix) with ESMTPS id 4AE51CAB55
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:43:51 +0000 (GMT)
-Received: (qmail 19111 invoked from network); 25 Mar 2021 11:43:51 -0000
+        by outbound-smtp09.blacknight.com (Postfix) with ESMTPS id 8FDEE1C35B7
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:44:01 +0000 (GMT)
+Received: (qmail 19650 invoked from network); 25 Mar 2021 11:44:01 -0000
 Received: from unknown (HELO stampy.112glenside.lan) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPA; 25 Mar 2021 11:43:51 -0000
+  by 81.17.254.9 with ESMTPA; 25 Mar 2021 11:44:01 -0000
 From:   Mel Gorman <mgorman@techsingularity.net>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Chuck Lever <chuck.lever@oracle.com>,
@@ -31,9 +31,9 @@ Cc:     Chuck Lever <chuck.lever@oracle.com>,
         Linux-MM <linux-mm@kvack.org>,
         Linux-NFS <linux-nfs@vger.kernel.org>,
         Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 7/9] SUNRPC: Refresh rq_pages using a bulk page allocator
-Date:   Thu, 25 Mar 2021 11:42:26 +0000
-Message-Id: <20210325114228.27719-8-mgorman@techsingularity.net>
+Subject: [PATCH 8/9] net: page_pool: refactor dma_map into own function page_pool_dma_map
+Date:   Thu, 25 Mar 2021 11:42:27 +0000
+Message-Id: <20210325114228.27719-9-mgorman@techsingularity.net>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210325114228.27719-1-mgorman@techsingularity.net>
 References: <20210325114228.27719-1-mgorman@techsingularity.net>
@@ -43,69 +43,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Reduce the rate at which nfsd threads hammer on the page allocator.
-This improves throughput scalability by enabling the threads to run
-more independently of each other.
+In preparation for next patch, move the dma mapping into its own
+function, as this will make it easier to follow the changes.
 
-[mgorman: Update interpretation of alloc_pages_bulk return value]
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+[ilias.apalodimas: make page_pool_dma_map return boolean]
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 ---
- net/sunrpc/svc_xprt.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ net/core/page_pool.c | 45 +++++++++++++++++++++++++-------------------
+ 1 file changed, 26 insertions(+), 19 deletions(-)
 
-diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
-index 609bda97d4ae..0c27c3291ca1 100644
---- a/net/sunrpc/svc_xprt.c
-+++ b/net/sunrpc/svc_xprt.c
-@@ -643,30 +643,29 @@ static int svc_alloc_arg(struct svc_rqst *rqstp)
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index ad8b0707af04..40e1b2beaa6c 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -180,14 +180,37 @@ static void page_pool_dma_sync_for_device(struct page_pool *pool,
+ 					 pool->p.dma_dir);
+ }
+ 
++static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
++{
++	dma_addr_t dma;
++
++	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
++	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
++	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
++	 * This mapping is kept for lifetime of page, until leaving pool.
++	 */
++	dma = dma_map_page_attrs(pool->p.dev, page, 0,
++				 (PAGE_SIZE << pool->p.order),
++				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
++	if (dma_mapping_error(pool->p.dev, dma))
++		return false;
++
++	page->dma_addr = dma;
++
++	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
++		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
++
++	return true;
++}
++
+ /* slow path */
+ noinline
+ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+ 						 gfp_t _gfp)
  {
- 	struct svc_serv *serv = rqstp->rq_server;
- 	struct xdr_buf *arg = &rqstp->rq_arg;
--	int pages;
--	int i;
-+	unsigned long pages, filled;
++	unsigned int pp_flags = pool->p.flags;
+ 	struct page *page;
+ 	gfp_t gfp = _gfp;
+-	dma_addr_t dma;
  
--	/* now allocate needed pages.  If we get a failure, sleep briefly */
- 	pages = (serv->sv_max_mesg + 2 * PAGE_SIZE) >> PAGE_SHIFT;
- 	if (pages > RPCSVC_MAXPAGES) {
--		pr_warn_once("svc: warning: pages=%u > RPCSVC_MAXPAGES=%lu\n",
-+		pr_warn_once("svc: warning: pages=%lu > RPCSVC_MAXPAGES=%lu\n",
- 			     pages, RPCSVC_MAXPAGES);
- 		/* use as many pages as possible */
- 		pages = RPCSVC_MAXPAGES;
+ 	/* We could always set __GFP_COMP, and avoid this branch, as
+ 	 * prep_new_page() can handle order-0 with __GFP_COMP.
+@@ -211,30 +234,14 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+ 	if (!page)
+ 		return NULL;
+ 
+-	if (!(pool->p.flags & PP_FLAG_DMA_MAP))
+-		goto skip_dma_map;
+-
+-	/* Setup DMA mapping: use 'struct page' area for storing DMA-addr
+-	 * since dma_addr_t can be either 32 or 64 bits and does not always fit
+-	 * into page private data (i.e 32bit cpu with 64bit DMA caps)
+-	 * This mapping is kept for lifetime of page, until leaving pool.
+-	 */
+-	dma = dma_map_page_attrs(pool->p.dev, page, 0,
+-				 (PAGE_SIZE << pool->p.order),
+-				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+-	if (dma_mapping_error(pool->p.dev, dma)) {
++	if ((pp_flags & PP_FLAG_DMA_MAP) &&
++	    unlikely(!page_pool_dma_map(pool, page))) {
+ 		put_page(page);
+ 		return NULL;
  	}
--	for (i = 0; i < pages ; i++)
--		while (rqstp->rq_pages[i] == NULL) {
--			struct page *p = alloc_page(GFP_KERNEL);
--			if (!p) {
--				set_current_state(TASK_INTERRUPTIBLE);
--				if (signalled() || kthread_should_stop()) {
--					set_current_state(TASK_RUNNING);
--					return -EINTR;
--				}
--				schedule_timeout(msecs_to_jiffies(500));
--			}
--			rqstp->rq_pages[i] = p;
-+
-+	for (;;) {
-+		filled = alloc_pages_bulk_array(GFP_KERNEL, pages,
-+						rqstp->rq_pages);
-+		if (filled == pages)
-+			break;
-+
-+		set_current_state(TASK_INTERRUPTIBLE);
-+		if (signalled() || kthread_should_stop()) {
-+			set_current_state(TASK_RUNNING);
-+			return -EINTR;
- 		}
-+		schedule_timeout(msecs_to_jiffies(500));
-+	}
- 	rqstp->rq_page_end = &rqstp->rq_pages[pages];
- 	rqstp->rq_pages[pages] = NULL; /* this might be seen in nfsd_splice_actor() */
+-	page->dma_addr = dma;
  
+-	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+-		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+-
+-skip_dma_map:
+ 	/* Track how many pages are held 'in-flight' */
+ 	pool->pages_state_hold_cnt++;
+-
+ 	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
+ 
+ 	/* When page just alloc'ed is should/must have refcnt 1. */
 -- 
 2.26.2
 
