@@ -2,96 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11DB6348670
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:35:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A19A5348694
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:52:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbhCYBfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 21:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231449AbhCYBek (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 21:34:40 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9B0C06174A
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:34:39 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id w3so295981ejc.4
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=G8ps5OwcN6QR08doybv2cmjir2yfFiadbkKaYq0vh5Q=;
-        b=ckh1skhlI07SGXQCe9hSoTCLCXzfJjoEboWPYyhWVCtl/65Jmq4nY0yE//PjqA0O+r
-         +lMfHfL4F+wEEGbBDqImc/nat+izJF5VFF9hmhRyfFBzm7n2WOORCi+kOb0ScPUSpuiB
-         ITCgN7d6U0gy5+m0y/agD8kxzSPdtaFz21fpyU/OeOQUgs7SJ658ZDTE8kKNtfHOjCU3
-         V0BUAewBnd8xzMM1D5P7Ss61RhJPtisZogWR8hM5RmV+oLr1hyPvDz+IJmXefFPp7S/M
-         FsW3acvDRBnpLKp8Bb7dx/te3u6HVyeRfEFOTCLuAG+z2XUdkeiK5xqomWvdkHKJ+EMf
-         Rr8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G8ps5OwcN6QR08doybv2cmjir2yfFiadbkKaYq0vh5Q=;
-        b=kbPSAq5a3D24YQTcvgGWurSAYtjF7EmSIQ2lUe0pjYSqb7VR28mta6YVSS/WWGLsHC
-         7g82mGz2W/SiNg/Xite/PV8XPIbNML8vY8XL+S6NKBCUX6Kx6zhy1HQqD+WC/CWu9wal
-         EL8tdSjLvLCPRAQ4GnSVSC+fK2N3dQdJN5yvTZbIioxAogdKmDbvgm0x01rcc5dr6pis
-         ca0UwzHRR02tPkYtCB8PaYdXlrQljl2tZ9UA8YRjv6a8FY6Ikg+x0F3k29jfi1l4sCnq
-         fCAstxClaFkgqS7DYd7ba5LsXYlZmjaRP8b3PlTvPNOSEqImXlLEuyFPrd0Hyg3GFQkU
-         txGg==
-X-Gm-Message-State: AOAM531svtJHG5bpicLHtKLCBdh9iqpQwFA0PTQiKaIAEdzcyM1hniS6
-        DG44bFQxe61bCY3tNMgEM7k=
-X-Google-Smtp-Source: ABdhPJz5dl6HCN21LnIVLIHk++b8IToOhm5k/ajTEDB1FIWaudkCPgqcsIkR7aYOSY+7G5Q13nl7uw==
-X-Received: by 2002:a17:906:5d05:: with SMTP id g5mr6662004ejt.489.1616636078455;
-        Wed, 24 Mar 2021 18:34:38 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id b12sm1916102eds.94.2021.03.24.18.34.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 18:34:38 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 03:34:32 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic
- reconfiguration of tag protocol
-Message-ID: <20210325013432.muugsogq4mzmalpd@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com>
- <20210323113522.coidmitlt6e44jjq@skbuf>
- <87blbalycs.fsf@waldekranz.com>
- <20210323190302.2v7ianeuwylxdqjl@skbuf>
- <8735wlmuxh.fsf@waldekranz.com>
- <20210324140317.amzmmngh5lwkcfm4@skbuf>
- <87pmzolhlv.fsf@waldekranz.com>
- <20210324150807.f2amekt2jdcvqhhl@skbuf>
- <87mtuslemq.fsf@waldekranz.com>
+        id S235887AbhCYBvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 21:51:50 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24946 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233541AbhCYBvc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 21:51:32 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12P1pUYp024144
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:51:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=KY+WZnkEa22ickUop0q6SJahepXHa94vn9tr1IV0XK0=;
+ b=p/LpBLTYO50yOgzox94G+pEyKRGovI1jyiZg4n/VoY5UdnLQh7knFl5Jz5wEIhan/O2u
+ rgX7l/y1Vb0ujyVBm1DbOekUeDWgjdf9GpUjyKjoqwnDG9CLFqmpl9jCA9Y3NdhUh7oI
+ zQjPXte07+AwCtHosPgqQrtju9KfEJBjS/M= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 37fpbm8wp0-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:51:32 -0700
+Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 24 Mar 2021 18:51:25 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 2FF5A29429CE; Wed, 24 Mar 2021 18:51:24 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
+Date:   Wed, 24 Mar 2021 18:51:24 -0700
+Message-ID: <20210325015124.1543397-1-kafai@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87mtuslemq.fsf@waldekranz.com>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-24_14:2021-03-24,2021-03-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ adultscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
+ malwarescore=0 clxscore=1015 phishscore=0 suspectscore=0 mlxscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2103250012
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 05:07:09PM +0100, Tobias Waldekranz wrote:
-> But even if the parser was enabled, it would never get anywhere since
-> the Ethertype would look like random garbage. Unless we have the soft
-> parser, but then it is not the middle ground anymore :)
+This series adds support to allow bpf program calling kernel function.
 
-Garbage, true, but garbage with enough entropy to allow for some sort of
-RFS (ideally you can get the source port field from the DSA tag into the
-area covered by the n-tuple on which the master performs hashing). This
-is the way in which the switches inside NXP LS1028A and T1040 work.
+The use case included in this set is to allow bpf-tcp-cc to directly
+call some tcp-cc helper functions (e.g. "tcp_cong_avoid_ai()").  Those
+functions have already been used by some kernel tcp-cc implementations.
 
-> I suppose you would like to test for netdev_uses_dsa_and_violates_8023,
-> that way you could still do RSS on DSA devices using regular 1Q-tags for
-> example. Do we want to add this property to the taggers so that we do
-> not degrade performance for any existing users?
+This set will also allow the bpf-tcp-cc program to directly call the
+kernel tcp-cc implementation,  For example, a bpf_dctcp may only want to
+implement its own dctcp_cwnd_event() and reuse other dctcp_*() directly
+from the kernel tcp_dctcp.c instead of reimplementing (or
+copy-and-pasting) them.
 
-Yes, so T1040 is one such example of device that would be negatively
-affected by this change. There isn't a good solution to solve all
-problems: there will be some Marvell switches which can't operate in
-EDSA mode, and there will be some DSA masters that can't parse Marvell
-DSA tags. Eventually all possible combinations of workarounds will have
-to be implemented. But for now, I think I prefer to see the simplest
-one, which has just become the one based on device tree.
+The tcp-cc kernel functions mentioned above will be white listed
+for the struct_ops bpf-tcp-cc programs to use in a later patch.
+The white listed functions are not bounded to a fixed ABI contract.
+Those functions have already been used by the existing kernel tcp-cc.
+If any of them has changed, both in-tree and out-of-tree kernel tcp-cc
+implementations have to be changed.  The same goes for the struct_ops
+bpf-tcp-cc programs which have to be adjusted accordingly.
+
+Please see individual patch for details.
+
+v2:
+- Patch 2 in v1 is removed.  No need to support extern func in kernel.
+  Changed libbpf to adjust the .ksyms datasec for extern func
+  in patch 11. (Andrii)
+- Name change: btf_check_func_arg_match() and btf_check_subprog_arg_match=
+()
+  in patch 2. (Andrii)
+- Always set unreliable on any error in patch 2 since it does not
+  matter. (Andrii)
+- s/kern_func/kfunc/ and s/descriptor/desc/ in this set. (Andrii)
+- Remove some unnecessary changes in disasm.h and disasm.c
+  in patch 3.  In particular, no need to change the function
+  signature in bpf_insn_revmap_call_t.  Also, removed the changes
+  in print_bpf_insn().
+- Fixed an issue in check_kfunc_call() when the calling kernel function
+  returns a pointer in patch 3.  Added a selftest.
+- Adjusted the verifier selftests due to the changes in the verifier log
+  in patch 3.
+- Fixed a comparison issue in kfunc_desc_cmp_by_imm() in patch 3. (Andrii=
+)
+- Name change: is_ldimm64_insn(),
+  new helper: is_call_insn() in patch 10 (Andrii)
+- Move btf_func_linkage() from btf.h to libbpf.c in patch 11. (Andrii)
+- Fixed the linker error when CONFIG_BPF_SYSCALL is not defined.
+  Moved the check_kfunc_call from filter.c to test_run.c in patch 14.
+  (kernel test robot)
+
+Martin KaFai Lau (14):
+  bpf: Simplify freeing logic in linfo and jited_linfo
+  bpf: Refactor btf_check_func_arg_match
+  bpf: Support bpf program calling kernel function
+  bpf: Support kernel function call in x86-32
+  tcp: Rename bictcp function prefix to cubictcp
+  bpf: tcp: Put some tcp cong functions in allowlist for bpf-tcp-cc
+  libbpf: Refactor bpf_object__resolve_ksyms_btf_id
+  libbpf: Refactor codes for finding btf id of a kernel symbol
+  libbpf: Rename RELO_EXTERN to RELO_EXTERN_VAR
+  libbpf: Record extern sym relocation first
+  libbpf: Support extern kernel function
+  bpf: selftests: Rename bictcp to bpf_cubic
+  bpf: selftests: bpf_cubic and bpf_dctcp calling kernel functions
+  bpf: selftests: Add kfunc_call test
+
+ arch/x86/net/bpf_jit_comp.c                   |   5 +
+ arch/x86/net/bpf_jit_comp32.c                 | 198 +++++++++
+ include/linux/bpf.h                           |  34 +-
+ include/linux/btf.h                           |   6 +
+ include/linux/filter.h                        |   4 +-
+ include/uapi/linux/bpf.h                      |   4 +
+ kernel/bpf/btf.c                              | 218 ++++++----
+ kernel/bpf/core.c                             |  47 +--
+ kernel/bpf/disasm.c                           |  13 +-
+ kernel/bpf/syscall.c                          |   4 +-
+ kernel/bpf/verifier.c                         | 376 +++++++++++++++--
+ net/bpf/test_run.c                            |  28 ++
+ net/core/filter.c                             |   1 +
+ net/ipv4/bpf_tcp_ca.c                         |  41 ++
+ net/ipv4/tcp_cubic.c                          |  24 +-
+ tools/include/uapi/linux/bpf.h                |   4 +
+ tools/lib/bpf/libbpf.c                        | 389 +++++++++++++-----
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |  29 +-
+ .../selftests/bpf/prog_tests/kfunc_call.c     |  59 +++
+ tools/testing/selftests/bpf/progs/bpf_cubic.c |  36 +-
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c |  22 +-
+ .../selftests/bpf/progs/kfunc_call_test.c     |  47 +++
+ .../bpf/progs/kfunc_call_test_subprog.c       |  42 ++
+ tools/testing/selftests/bpf/verifier/calls.c  |  12 +-
+ .../selftests/bpf/verifier/dead_code.c        |  10 +-
+ 25 files changed, 1334 insertions(+), 319 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_sub=
+prog.c
+
+--=20
+2.30.2
+
