@@ -2,342 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E843486B5
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:54:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93C823486BC
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:57:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239821AbhCYBxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 21:53:33 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52492 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236026AbhCYBw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 21:52:58 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12P1m4WO000879
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:52:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=wGR0kgmfrZuC7LIuwDqMcaIrrKpdBc6lGFTJDlJYubI=;
- b=oXAODE0kHiavMe9cxGyKYrqCSX9UZOvBEogA4yKRtxn1x83Ot4F3WgxXO4rGMdIANRy0
- HE1KeY8ybynLvvZnrnB/smXSg3MaVaAUXwuEE23jBqXL883S8Og4zCC4Jwg+1FN6qlJB
- kO7kXevheqemhJiDaq9OBw6yqNUCrUNVppg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 37fn33sjd2-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:52:58 -0700
-Received: from intmgw001.05.ash7.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 24 Mar 2021 18:52:57 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id CB91529429DE; Wed, 24 Mar 2021 18:52:52 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2 bpf-next 14/14] bpf: selftests: Add kfunc_call test
-Date:   Wed, 24 Mar 2021 18:52:52 -0700
-Message-ID: <20210325015252.1551395-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210325015124.1543397-1-kafai@fb.com>
-References: <20210325015124.1543397-1-kafai@fb.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
+        id S233659AbhCYB5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 21:57:15 -0400
+Received: from mail-db8eur05on2095.outbound.protection.outlook.com ([40.107.20.95]:20446
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231288AbhCYB5I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 24 Mar 2021 21:57:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KJ+9fbcERqvTeMI6XPon4WnXqumwWK5BhQcCzbGs44BWBDsoGhRY5Qtp3gxZcOcFejE/k+dHrxIxIrPkRPa3k2+nkY5YvLm+2Gtrs9kRtOl/YH+bkSFRVbhJB/eZ58MHuQRERbCUCd2GN5i5Yf4xT/9G3GPJJIhajmfFZf4SI6SzkUdn6DIIfzYRgPaDQ0UsfIj4uk3LG765gSNKkfuNDEBVymmAlW7xeQWbzZYBLG6/W9KnG8t4BAxO0/hDB2a1AUjXJuoTa54Ib3ayzjsHD73KwZuiz/FyFIDCQ36zWwKi131HKPFUSzLKbnHOVBmsz4t2C7G89uh3zB78wVnPYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hfWX0U9qBokI4dmD5xab0cV9MKzM2Mp7olZzFZcUfiM=;
+ b=Q3xVXXM56ih0QLNXfNgPDDgWp6yQG0mkQVvdAbrdtOulVSfxoxej4v7BXLswYrL2IrLfrCC8SqhLc2Lv+Vx4gHq5vZpm6IVtQ7acDfWEeH6PxVvf4YXFTJCMq4humCcHfjLBgLYz0qBBOAt6DUotplrvR3ztVUFv6dLV+n99Wobfa8T/kRRL3dtf2n5wxLQwod6utZW2TCbcDxTZV22htEi8eG+FC6NLcqB+6zP6Org66mkEd53xcmUArtnz/r1XA5fAG+wNbDkqT/EORHowMM6tvhysLWxMedWw533sx/3/Ovp++B+9guIELvAV529XXnJRntACv/3qnwTDwxXPzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hfWX0U9qBokI4dmD5xab0cV9MKzM2Mp7olZzFZcUfiM=;
+ b=MDbqKFJcVFJ1Yq1o/DnPy9ANqfHievfeBFLOJ5TvDA+qY8/EwzepqLfqNaNXp13VN2Xc3x2YtezWyHQCGRyMIqzW8vnoFhhnd41RsMp5Rz8o9qm+tYK71WfxDR/J65YyEb6uXMeRg502voz8T6djXahaHvdB2zVpiY8PwMBzYyM=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=dektech.com.au;
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
+ by VI1PR05MB6719.eurprd05.prod.outlook.com (2603:10a6:800:133::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Thu, 25 Mar
+ 2021 01:57:06 +0000
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::5573:2fb4:56e0:1cc3]) by VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::5573:2fb4:56e0:1cc3%6]) with mapi id 15.20.3955.024; Thu, 25 Mar 2021
+ 01:57:05 +0000
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tuan.a.vo@dektech.com.au, tung.q.nguyen@dektech.com.au
+Subject: [net-next] tipc: add extack messages for bearer/media failure
+Date:   Thu, 25 Mar 2021 08:56:41 +0700
+Message-Id: <20210325015641.7063-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-24_14:2021-03-24,2021-03-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
- priorityscore=1501 mlxlogscore=999 phishscore=0 spamscore=0 suspectscore=0
- adultscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103250011
-X-FB-Internal: deliver
+X-Originating-IP: [113.20.114.51]
+X-ClientProxiedBy: SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19)
+ To VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (113.20.114.51) by SGBP274CA0007.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24 via Frontend Transport; Thu, 25 Mar 2021 01:57:03 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dd850151-31c0-4f4d-b5aa-08d8ef314a51
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6719:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6719FC68CB9C32EA73212E8DF1629@VI1PR05MB6719.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6sSJ99e7dZls9sMQivVU2qAAqo2SdOaxec1Np2LtLEQo+EVgaVBEG8lvD3VaGQawqhKK2TsbkJ9U1y6kg9+0IpLirnahsAnVdKi2f5/c8z21hvHetxMCObTNXYDyo9NgDD6w9cKNrQMe01GDM5LWiMzfNpe6uLd+G+S7Qe3OC4QFWKw4u+lPBKJzZjdppxCi7jdl+8+wrWz23hsJcij6qBxpz7AAQvLuVXAOD3lVCmv+VPKJL7hPCZ/WlS+uzOF2XQ63i6HhdgVnxRdVb00c8Zigg4XUPa/MVpmLfe7PrtYw9vGgYxiIzkh93SUNooH3CIbmXSR5ouA4/Klshfm11EFsIj4qCk/WdN7pFtW/7jcG0/IRr+xbtEkOJHkf72saXACN/BHdNLL8xniuBmt8BGtj3VYcltJHfB0o10DRXaz2YxxTeYDbFfByBIyNR2dNJqMVhw3CDofUO2IUqNl33f+etiaEd6NQfAhtCrCKkk7UFQXjuInUBqJo6F3CkXn5jSAJD8sdXVxUt6kJ18FuW9MfFiDZCrptKLccqF05ztQG5Hf+BkFxzZmML5n9aVSrLWcfvlKfDfcfYcdjEqN9Pp0tQYXlHVdiUDJAX0bx6Ec6M6sj4OrUKrr1yX6L94qhCRpPk5IqovfmXLsHit1isA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(366004)(39840400004)(376002)(346002)(2906002)(103116003)(55016002)(66556008)(66476007)(66946007)(83380400001)(15650500001)(86362001)(8676002)(8936002)(316002)(38100700001)(36756003)(186003)(16526019)(478600001)(52116002)(26005)(6636002)(7696005)(956004)(1076003)(2616005)(6666004)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?a3nqxJ8ppTetltUYrFzVR88cWUQRTN21LZx0BFOYAI+8H3fU4eLQ/B0LFWq2?=
+ =?us-ascii?Q?rnKx7OziRwdGY17mDUwhiMyAN4pw0TJgFAhCw95d2VGpEqtYG8OoS19JKZkt?=
+ =?us-ascii?Q?HqW+nkfqNqhI2M0hQ09J6uXOio/6po4AqxJAf7jh/cDdGKvFXHC6Pq2CsLxk?=
+ =?us-ascii?Q?WsWJr1OIACWH6tB1rAd+meohiyExAyuPUuuzDiYrFdAVQoqhsr7G85zeO1wC?=
+ =?us-ascii?Q?fk1w1I0y46pTwEPb2lmtgWO4IV8cpHKgS8sPdfAtOEDCsnScApOP5CYmlu8w?=
+ =?us-ascii?Q?Ea27PEaZxgBcYIelc0NJnRiKI70CILw5B4RilQusvS61/fMektKeYOIzgGJ9?=
+ =?us-ascii?Q?bD3c/n5E0hbFZNalnIFN6Td0x93Nw2naT8snBNdqStn1MD5Q24Bw1/tTSieQ?=
+ =?us-ascii?Q?ctX/3zFNCClV6L3e++hOoEEoqu72L0ihkDTPTGaWWoqb3fuVVFskeEaEtOzr?=
+ =?us-ascii?Q?+66nR3HoddsmeQDaNsbXYNPHOhto5z7vLjfVFgCqHDORARVfKUaCdtu6Z7Kn?=
+ =?us-ascii?Q?o6L4HXy1hFH1XqsGuMoPD1/ywZcKpB5xz+9OuCbvHkfOGpAcUPDw0FjUjjCr?=
+ =?us-ascii?Q?A1DnLkBG4/8QZ1l0OMBPjsq6EM8Eiskqya5Fq9kgsv3d7+6wpAh57MW7sVNw?=
+ =?us-ascii?Q?bS9b0p6YfwHZCJHVs7sozla5LO2CrXUzNANVeVJXUmgLlYJBKTMdhw6lEYTb?=
+ =?us-ascii?Q?O/kMQkzVNTiCjHRw+fpu/G9IdCf3ea+sezeEtYp4R7ffQowNpeufyW3sEEP+?=
+ =?us-ascii?Q?wXSnJiOjCpawKteld34cDt41lB0SdAr1i4Rdqin3sv9CoekVwOYG2hZAp/MG?=
+ =?us-ascii?Q?fFwXhDM4aNiwGJCn5z1GAyXYhvKUBcDeI3v8FLh7Ze19CLLi5rr1BqS+taBT?=
+ =?us-ascii?Q?XJlckqaXB6SIYc12SvtQXxM4SLKt0QdldQO1zunG1I/87L42kyoNTF30kZAO?=
+ =?us-ascii?Q?UuGqlC9BVnV5tQTg8nW+UctzaC3ETmrqLXlRGdRdbjP4MSkM9XUzOc27z6On?=
+ =?us-ascii?Q?8TWiAb4uX+2p9sJDWngAvRTYPqZARNVvwO1FzFce75CxXjScOPfZTIAWCp9F?=
+ =?us-ascii?Q?sh/gjkj2CaOPn0zhV1T00F17tBiuFEV3Uy6MOoif5jcvqmUUG0OpYZD0SWgW?=
+ =?us-ascii?Q?47OnJwcMYrV8A78jTUBKblplHbk4iTtxGh6nZk71OPuprO9pVcGxnCNIjzsp?=
+ =?us-ascii?Q?1GJ5QNcRAVU+FThxMbCwJ64rhb/5xFOsmiuduSHBdZihT8oJNlPkz+C7TyD8?=
+ =?us-ascii?Q?cXr0CGZEoW0IQMM5gWbnl4PoXNWJbG0EKu+NsyhYgVXoxnGiph5S7G4TDUgL?=
+ =?us-ascii?Q?PG9MWPNGl5tyLRAtAU0Jn7P8?=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd850151-31c0-4f4d-b5aa-08d8ef314a51
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 01:57:05.5428
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QE6COZ9UQAIAX00myBbVuEZXeC2PUExkjkscOfQZ/I+wDjcugbg7TYLAWKwpfFDWa837ST7IaMT+DORiCzt+KH0ua/ReZKdRS3sTJ6g3AEA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6719
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a few kernel function bpf_kfunc_call_test*() for the
-selftest's test_run purpose.  They will be allowed for tc_cls prog.
+Add extack error messages for -EINVAL errors when enabling bearer,
+getting/setting properties for a media/bearer
 
-The selftest calling the kernel function bpf_kfunc_call_test*()
-is also added in this patch.
-
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 ---
- include/linux/bpf.h                           |  6 ++
- net/bpf/test_run.c                            | 28 +++++++++
- net/core/filter.c                             |  1 +
- .../selftests/bpf/prog_tests/kfunc_call.c     | 59 +++++++++++++++++++
- .../selftests/bpf/progs/kfunc_call_test.c     | 47 +++++++++++++++
- .../bpf/progs/kfunc_call_test_subprog.c       | 42 +++++++++++++
- 6 files changed, 183 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/kfunc_call.c
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_sub=
-prog.c
+ net/tipc/bearer.c | 50 +++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 40 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index c6439e96fa4a..4b31b30c4961 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1501,6 +1501,7 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
- int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
- 				const union bpf_attr *kattr,
- 				union bpf_attr __user *uattr);
-+bool bpf_prog_test_check_kfunc_call(u32 kfunc_id);
- bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info);
-@@ -1700,6 +1701,11 @@ static inline int bpf_prog_test_run_sk_lookup(stru=
-ct bpf_prog *prog,
- 	return -ENOTSUPP;
- }
-=20
-+static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id)
-+{
-+	return false;
-+}
-+
- static inline void bpf_map_put(struct bpf_map *map)
- {
- }
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 0abdd67f44b1..7f3bce909b42 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -2,6 +2,7 @@
- /* Copyright (c) 2017 Facebook
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index a4389ef08a98..1090f21fcfac 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -243,7 +243,8 @@ void tipc_bearer_remove_dest(struct net *net, u32 bearer_id, u32 dest)
   */
- #include <linux/bpf.h>
-+#include <linux/btf_ids.h>
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include <linux/etherdevice.h>
-@@ -209,10 +210,37 @@ int noinline bpf_modify_return_test(int a, int *b)
- 	*b +=3D 1;
- 	return a + *b;
- }
-+
-+u64 noinline bpf_kfunc_call_test1(struct sock *sk, u32 a, u64 b, u32 c, =
-u64 d)
-+{
-+	return a + b + c + d;
-+}
-+
-+int noinline bpf_kfunc_call_test2(struct sock *sk, u32 a, u32 b)
-+{
-+	return a + b;
-+}
-+
-+struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
-+{
-+	return sk;
-+}
-+
- __diag_pop();
-=20
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-=20
-+BTF_SET_START(test_sk_kfunc_ids)
-+BTF_ID(func, bpf_kfunc_call_test1)
-+BTF_ID(func, bpf_kfunc_call_test2)
-+BTF_ID(func, bpf_kfunc_call_test3)
-+BTF_SET_END(test_sk_kfunc_ids)
-+
-+bool bpf_prog_test_check_kfunc_call(u32 kfunc_id)
-+{
-+	return btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id);
-+}
-+
- static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
- 			   u32 headroom, u32 tailroom)
+ static int tipc_enable_bearer(struct net *net, const char *name,
+ 			      u32 disc_domain, u32 prio,
+-			      struct nlattr *attr[])
++			      struct nlattr *attr[],
++			      struct netlink_ext_ack *extack)
  {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 10dac9dd5086..8a7d23c75ee3 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -9805,6 +9805,7 @@ const struct bpf_verifier_ops tc_cls_act_verifier_o=
-ps =3D {
- 	.convert_ctx_access	=3D tc_cls_act_convert_ctx_access,
- 	.gen_prologue		=3D tc_cls_act_prologue,
- 	.gen_ld_abs		=3D bpf_gen_ld_abs,
-+	.check_kfunc_call	=3D bpf_prog_test_check_kfunc_call,
- };
-=20
- const struct bpf_prog_ops tc_cls_act_prog_ops =3D {
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/=
-testing/selftests/bpf/prog_tests/kfunc_call.c
-new file mode 100644
-index 000000000000..7fc0951ee75f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -0,0 +1,59 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+#include "kfunc_call_test.skel.h"
-+#include "kfunc_call_test_subprog.skel.h"
-+
-+static void test_main(void)
-+{
-+	struct kfunc_call_test *skel;
-+	int prog_fd, retval, err;
-+
-+	skel =3D kfunc_call_test__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	prog_fd =3D bpf_program__fd(skel->progs.kfunc_call_test1);
-+	err =3D bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, (__u32 *)&retval, NULL);
-+	ASSERT_OK(err, "bpf_prog_test_run(test1)");
-+	ASSERT_EQ(retval, 12, "test1-retval");
-+
-+	prog_fd =3D bpf_program__fd(skel->progs.kfunc_call_test2);
-+	err =3D bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, (__u32 *)&retval, NULL);
-+	ASSERT_OK(err, "bpf_prog_test_run(test2)");
-+	ASSERT_EQ(retval, 3, "test2-retval");
-+
-+	kfunc_call_test__destroy(skel);
-+}
-+
-+static void test_subprog(void)
-+{
-+	struct kfunc_call_test_subprog *skel;
-+	int prog_fd, retval, err;
-+
-+	skel =3D kfunc_call_test_subprog__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		return;
-+
-+	prog_fd =3D bpf_program__fd(skel->progs.kfunc_call_test1);
-+	err =3D bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, (__u32 *)&retval, NULL);
-+	ASSERT_OK(err, "bpf_prog_test_run(test1)");
-+	ASSERT_EQ(retval, 10, "test1-retval");
-+	ASSERT_NEQ(skel->data->active_res, -1, "active_res");
-+	ASSERT_EQ(skel->data->sk_state, BPF_TCP_CLOSE, "sk_state");
-+
-+	kfunc_call_test_subprog__destroy(skel);
-+}
-+
-+void test_kfunc_call(void)
-+{
-+	if (test__start_subtest("main"))
-+		test_main();
-+
-+	if (test__start_subtest("subprog"))
-+		test_subprog();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/=
-testing/selftests/bpf/progs/kfunc_call_test.c
-new file mode 100644
-index 000000000000..470f8723e463
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_tcp_helpers.h"
-+
-+extern int bpf_kfunc_call_test2(struct sock *sk, __u32 a, __u32 b) __ksy=
-m;
-+extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
-+				  __u32 c, __u64 d) __ksym;
-+
-+SEC("classifier")
-+int kfunc_call_test2(struct __sk_buff *skb)
-+{
-+	struct bpf_sock *sk =3D skb->sk;
-+
-+	if (!sk)
-+		return -1;
-+
-+	sk =3D bpf_sk_fullsock(sk);
-+	if (!sk)
-+		return -1;
-+
-+	return bpf_kfunc_call_test2((struct sock *)sk, 1, 2);
-+}
-+
-+SEC("classifier")
-+int kfunc_call_test1(struct __sk_buff *skb)
-+{
-+	struct bpf_sock *sk =3D skb->sk;
-+	__u64 a =3D 1ULL << 32;
-+	__u32 ret;
-+
-+	if (!sk)
-+		return -1;
-+
-+	sk =3D bpf_sk_fullsock(sk);
-+	if (!sk)
-+		return -1;
-+
-+	a =3D bpf_kfunc_call_test1((struct sock *)sk, 1, a | 2, 3, a | 4);
-+	ret =3D a >> 32;   /* ret should be 2 */
-+	ret +=3D (__u32)a; /* ret should be 12 */
-+
-+	return ret;
-+}
-+
-+char _license[] SEC("license") =3D "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c =
-b/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c
-new file mode 100644
-index 000000000000..b2dcb7d9cb03
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c
-@@ -0,0 +1,42 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_tcp_helpers.h"
-+
-+extern const int bpf_prog_active __ksym;
-+extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
-+				  __u32 c, __u64 d) __ksym;
-+extern struct sock *bpf_kfunc_call_test3(struct sock *sk) __ksym;
-+int active_res =3D -1;
-+int sk_state =3D -1;
-+
-+int __noinline f1(struct __sk_buff *skb)
-+{
-+	struct bpf_sock *sk =3D skb->sk;
-+	int *active;
-+
-+	if (!sk)
-+		return -1;
-+
-+	sk =3D bpf_sk_fullsock(sk);
-+	if (!sk)
-+		return -1;
-+
-+	active =3D (int *)bpf_per_cpu_ptr(&bpf_prog_active,
-+					bpf_get_smp_processor_id());
-+	if (active)
-+		active_res =3D *active;
-+
-+	sk_state =3D bpf_kfunc_call_test3((struct sock *)sk)->__sk_common.skc_s=
-tate;
-+
-+	return (__u32)bpf_kfunc_call_test1((struct sock *)sk, 1, 2, 3, 4);
-+}
-+
-+SEC("classifier")
-+int kfunc_call_test1(struct __sk_buff *skb)
-+{
-+	return f1(skb);
-+}
-+
-+char _license[] SEC("license") =3D "GPL";
---=20
-2.30.2
+ 	struct tipc_net *tn = tipc_net(net);
+ 	struct tipc_bearer_names b_names;
+@@ -257,17 +258,20 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 
+ 	if (!bearer_name_validate(name, &b_names)) {
+ 		errstr = "illegal name";
++		NL_SET_ERR_MSG(extack, "Illegal name");
+ 		goto rejected;
+ 	}
+ 
+ 	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
+ 		errstr = "illegal priority";
++		NL_SET_ERR_MSG(extack, "Illegal priority");
+ 		goto rejected;
+ 	}
+ 
+ 	m = tipc_media_find(b_names.media_name);
+ 	if (!m) {
+ 		errstr = "media not registered";
++		NL_SET_ERR_MSG(extack, "Media not registered");
+ 		goto rejected;
+ 	}
+ 
+@@ -281,6 +285,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 			break;
+ 		if (!strcmp(name, b->name)) {
+ 			errstr = "already enabled";
++			NL_SET_ERR_MSG(extack, "Already enabled");
+ 			goto rejected;
+ 		}
+ 		bearer_id++;
+@@ -292,6 +297,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 			name, prio);
+ 		if (prio == TIPC_MIN_LINK_PRI) {
+ 			errstr = "cannot adjust to lower";
++			NL_SET_ERR_MSG(extack, "Cannot adjust to lower");
+ 			goto rejected;
+ 		}
+ 		pr_warn("Bearer <%s>: trying with adjusted priority\n", name);
+@@ -302,6 +308,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 
+ 	if (bearer_id >= MAX_BEARERS) {
+ 		errstr = "max 3 bearers permitted";
++		NL_SET_ERR_MSG(extack, "Max 3 bearers permitted");
+ 		goto rejected;
+ 	}
+ 
+@@ -315,6 +322,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	if (res) {
+ 		kfree(b);
+ 		errstr = "failed to enable media";
++		NL_SET_ERR_MSG(extack, "Failed to enable media");
+ 		goto rejected;
+ 	}
+ 
+@@ -331,6 +339,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	if (res) {
+ 		bearer_disable(net, b);
+ 		errstr = "failed to create discoverer";
++		NL_SET_ERR_MSG(extack, "Failed to create discoverer");
+ 		goto rejected;
+ 	}
+ 
+@@ -909,6 +918,7 @@ int tipc_nl_bearer_get(struct sk_buff *skb, struct genl_info *info)
+ 	bearer = tipc_bearer_find(net, name);
+ 	if (!bearer) {
+ 		err = -EINVAL;
++		NL_SET_ERR_MSG(info->extack, "Bearer not found");
+ 		goto err_out;
+ 	}
+ 
+@@ -948,8 +958,10 @@ int __tipc_nl_bearer_disable(struct sk_buff *skb, struct genl_info *info)
+ 	name = nla_data(attrs[TIPC_NLA_BEARER_NAME]);
+ 
+ 	bearer = tipc_bearer_find(net, name);
+-	if (!bearer)
++	if (!bearer) {
++		NL_SET_ERR_MSG(info->extack, "Bearer not found");
+ 		return -EINVAL;
++	}
+ 
+ 	bearer_disable(net, bearer);
+ 
+@@ -1007,7 +1019,8 @@ int __tipc_nl_bearer_enable(struct sk_buff *skb, struct genl_info *info)
+ 			prio = nla_get_u32(props[TIPC_NLA_PROP_PRIO]);
+ 	}
+ 
+-	return tipc_enable_bearer(net, bearer, domain, prio, attrs);
++	return tipc_enable_bearer(net, bearer, domain, prio, attrs,
++				  info->extack);
+ }
+ 
+ int tipc_nl_bearer_enable(struct sk_buff *skb, struct genl_info *info)
+@@ -1046,6 +1059,7 @@ int tipc_nl_bearer_add(struct sk_buff *skb, struct genl_info *info)
+ 	b = tipc_bearer_find(net, name);
+ 	if (!b) {
+ 		rtnl_unlock();
++		NL_SET_ERR_MSG(info->extack, "Bearer not found");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1086,8 +1100,10 @@ int __tipc_nl_bearer_set(struct sk_buff *skb, struct genl_info *info)
+ 	name = nla_data(attrs[TIPC_NLA_BEARER_NAME]);
+ 
+ 	b = tipc_bearer_find(net, name);
+-	if (!b)
++	if (!b) {
++		NL_SET_ERR_MSG(info->extack, "Bearer not found");
+ 		return -EINVAL;
++	}
+ 
+ 	if (attrs[TIPC_NLA_BEARER_PROP]) {
+ 		struct nlattr *props[TIPC_NLA_PROP_MAX + 1];
+@@ -1106,12 +1122,18 @@ int __tipc_nl_bearer_set(struct sk_buff *skb, struct genl_info *info)
+ 		if (props[TIPC_NLA_PROP_WIN])
+ 			b->max_win = nla_get_u32(props[TIPC_NLA_PROP_WIN]);
+ 		if (props[TIPC_NLA_PROP_MTU]) {
+-			if (b->media->type_id != TIPC_MEDIA_TYPE_UDP)
++			if (b->media->type_id != TIPC_MEDIA_TYPE_UDP) {
++				NL_SET_ERR_MSG(info->extack,
++					       "MTU property is unsupported");
+ 				return -EINVAL;
++			}
+ #ifdef CONFIG_TIPC_MEDIA_UDP
+ 			if (tipc_udp_mtu_bad(nla_get_u32
+-					     (props[TIPC_NLA_PROP_MTU])))
++					     (props[TIPC_NLA_PROP_MTU]))) {
++				NL_SET_ERR_MSG(info->extack,
++					       "MTU value is out-of-range");
+ 				return -EINVAL;
++			}
+ 			b->mtu = nla_get_u32(props[TIPC_NLA_PROP_MTU]);
+ 			tipc_node_apply_property(net, b, TIPC_NLA_PROP_MTU);
+ #endif
+@@ -1239,6 +1261,7 @@ int tipc_nl_media_get(struct sk_buff *skb, struct genl_info *info)
+ 	rtnl_lock();
+ 	media = tipc_media_find(name);
+ 	if (!media) {
++		NL_SET_ERR_MSG(info->extack, "Media not found");
+ 		err = -EINVAL;
+ 		goto err_out;
+ 	}
+@@ -1275,9 +1298,10 @@ int __tipc_nl_media_set(struct sk_buff *skb, struct genl_info *info)
+ 	name = nla_data(attrs[TIPC_NLA_MEDIA_NAME]);
+ 
+ 	m = tipc_media_find(name);
+-	if (!m)
++	if (!m) {
++		NL_SET_ERR_MSG(info->extack, "Media not found");
+ 		return -EINVAL;
+-
++	}
+ 	if (attrs[TIPC_NLA_MEDIA_PROP]) {
+ 		struct nlattr *props[TIPC_NLA_PROP_MAX + 1];
+ 
+@@ -1293,12 +1317,18 @@ int __tipc_nl_media_set(struct sk_buff *skb, struct genl_info *info)
+ 		if (props[TIPC_NLA_PROP_WIN])
+ 			m->max_win = nla_get_u32(props[TIPC_NLA_PROP_WIN]);
+ 		if (props[TIPC_NLA_PROP_MTU]) {
+-			if (m->type_id != TIPC_MEDIA_TYPE_UDP)
++			if (m->type_id != TIPC_MEDIA_TYPE_UDP) {
++				NL_SET_ERR_MSG(info->extack,
++					       "MTU property is unsupported");
+ 				return -EINVAL;
++			}
+ #ifdef CONFIG_TIPC_MEDIA_UDP
+ 			if (tipc_udp_mtu_bad(nla_get_u32
+-					     (props[TIPC_NLA_PROP_MTU])))
++					     (props[TIPC_NLA_PROP_MTU]))) {
++				NL_SET_ERR_MSG(info->extack,
++					       "MTU value is out-of-range");
+ 				return -EINVAL;
++			}
+ 			m->mtu = nla_get_u32(props[TIPC_NLA_PROP_MTU]);
+ #endif
+ 		}
+-- 
+2.25.1
 
