@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47FBC3499D1
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 19:58:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE2E349A06
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 20:12:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbhCYS5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 14:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
+        id S230166AbhCYTMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 15:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbhCYS5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 14:57:17 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC78EC06174A;
-        Thu, 25 Mar 2021 11:57:16 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id c204so3016839pfc.4;
-        Thu, 25 Mar 2021 11:57:16 -0700 (PDT)
+        with ESMTP id S230009AbhCYTLm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 15:11:42 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5A7C06174A;
+        Thu, 25 Mar 2021 12:11:42 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id x126so3004812pfc.13;
+        Thu, 25 Mar 2021 12:11:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cb4rdnuLp99nvgBCEc1MpzgC638yA5gEtV6ZjkDqsso=;
-        b=WBLfKdFXmOOAXB5FIUqh+8rXQAsHO8BV2718zQWe6JbhcmQVhkSHmBsQV7Ms8vTcY8
-         FhFAPnMZHQA6u+djJxsldvouSYFJhPUs/51OUEbGLaALt8KFE0NlxYnGlxwkVhQnjYxo
-         gyQmPb7EA+S00Cs5xUcRnBR/peEgjVqonHdPcPYorFMVhqtSUErZvaLitqkiuhfuqETP
-         vEUZyvIP7WIGn0HanB5RZH5ZTfPI1kW4Pv+9tCL1IpD1n9RwSWgUHRjnIrGy6jgs2y6G
-         7JDHIpyxnObZ4EVxBzmI54oHWSY7h1b4D93SwHyXJvBxkupTsfgK54Mm91JbRMiEIvqD
-         o48w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=O6BUmoVALUOMOrdFrqvxYj6lFfNbs+jP8qOgg/KmhBc=;
+        b=b+kvqkofrku/I2KsaAuP8m8gXXMZEPWOohB8R0ZxPLBXpoG2EX6CHpSXs015L9wf8Y
+         2PIg61n6QWE1V1ZwfwT4u62OjN//fPHGs/Y2tlh9oyuilwXTx33yKPX43DlayNLjUppg
+         /rEn6JjFqQY3F1dzkrLd/I56qDKg4f7s0DRpIfQlr5+3Yq4qNzPy+/PWyVmO8yqblz45
+         YZdb8w27O1Wnfj+bZ2oMbiWof6UU7KjWfmm8lPOkfmbvZNuTeFClw37BCsy0uhsHZPrG
+         sw0dMOcD+TP0Mr/PC46cmD1ppdUBHVcnqkHTf/WzVPGDfasVQPBRTPKsf6PohkryWWJD
+         MbMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cb4rdnuLp99nvgBCEc1MpzgC638yA5gEtV6ZjkDqsso=;
-        b=SwMdOw2VQufQd9CIjI0KGULEG2FdJS2p4aEUV7eP2F3zHrRQ/cYkZDdUBoW0Ewq5dl
-         X9ps7SLlCcAYUA6kpXeeuoEMl0wAO3MsV1lD1f4Nc0Uue7Jsp0SnE/RcMeYEV7JLg9mF
-         kJzAZOF3/Zi/hteKr/3vO2DfA5xEnodQUJ1j3XDdIUcgsKGVisytBZHH/3zJalB5p1J1
-         Xq/vtVuzXcwpJ6C6exbyKB5yYMtUNg0yy71kjY+SQF3N5cPqVRpxtXWOLYaTaGMDs3Ga
-         0JaTZ572DxYwDKV60rasQO0NTu4soDpIUC2yNc9u13G8VQ5GqYWE9+Q14zCCsmee6vcP
-         3TuA==
-X-Gm-Message-State: AOAM531xCh78FrAYZJTNKkrKYjNDg0N2J6Jb9VG7ABMblMKwhjJtVhKW
-        RXhcNSnmjgwPiqDCtjhXjoT3rEBRrB4asni91hw=
-X-Google-Smtp-Source: ABdhPJwExiMjzWa63UeE7o2Y+uS8sDRz6b6WBKjy17XfLlHfnz+kQum8nwU0FPtjhdifs1vcGlMevGmnb9HOGjy2KDc=
-X-Received: by 2002:a62:92cc:0:b029:1fa:515d:808f with SMTP id
- o195-20020a6292cc0000b02901fa515d808fmr9125198pfd.43.1616698636133; Thu, 25
- Mar 2021 11:57:16 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O6BUmoVALUOMOrdFrqvxYj6lFfNbs+jP8qOgg/KmhBc=;
+        b=ongOXkCYe2EZKt62dXqogEo4W408JpS0IZatvH+xVA+imUZksFwkYWT2FjdgQ6aMrL
+         ELOLiwV3PUmMqxdcV0ZQXvDTTU+hQdG5yUVOEQVuWibNfLdYKCu6kwbYjzrFhvtTCAVk
+         AGvPv0ZfhqgyfEhKfX1ahjc3L9OlR7mYYjbxLbyC7SevdT88Fj+7KIdNQ8LGElyXow2s
+         jsdu0sWQktpfrIgCt6QFkGATTvTMEej4urEIVZpAFElMEAguIDD0KV7uYJaiusgBQMAY
+         dTRg8CMjfYu762KS9aFFa5qrrC/WD9gHhPyjfAPP9pxVNWD6ZmJ/XJfWNAeaDZ4vkbyV
+         kHGg==
+X-Gm-Message-State: AOAM533ucZHkJkYxDqc/vdfBXtu/Elif8pm5wesnUFXiR7erSl+6bsde
+        ne8AFVYTNvuDnh6I54wR4qY=
+X-Google-Smtp-Source: ABdhPJy62bPBzXU8Dftgv417LSmA9fJVevEj5b8FKs/niHS/ftyRYizek4y5makkPH3TvgZMZEVnaw==
+X-Received: by 2002:a17:902:b68b:b029:e6:cda9:39d with SMTP id c11-20020a170902b68bb02900e6cda9039dmr11451732pls.63.1616699501689;
+        Thu, 25 Mar 2021 12:11:41 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n184sm6760331pfd.205.2021.03.25.12.11.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Mar 2021 12:11:41 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: b53: spi: add missing
+ MODULE_DEVICE_TABLE
+To:     Qinglang Miao <miaoqinglang@huawei.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+References: <20210325091954.1920344-1-miaoqinglang@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <10778792-bf0a-1fb1-b0a6-00e30af1727e@gmail.com>
+Date:   Thu, 25 Mar 2021 12:11:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
- <161661956953.28508.2297266338306692603.stgit@john-Precision-5820-Tower>
- <CAM_iQpUNUE8cmyNaALG1dZtCfJGah2pggDNk-eVbyxexnA4o_g@mail.gmail.com> <605bf553d16f_64fde2081@john-XPS-13-9370.notmuch>
-In-Reply-To: <605bf553d16f_64fde2081@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 25 Mar 2021 11:57:05 -0700
-Message-ID: <CAM_iQpUdOkbs5MPcfTqNcPV3f0EXU7CQhuV9y2UDrOZ4SawvvA@mail.gmail.com>
-Subject: Re: [bpf PATCH 1/2] bpf, sockmap: fix sk->prot unhash op reset
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210325091954.1920344-1-miaoqinglang@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 7:28 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> Cong Wang wrote:
-> > On Wed, Mar 24, 2021 at 1:59 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-> > > index 47b7c5334c34..ecb5634b4c4a 100644
-> > > --- a/net/tls/tls_main.c
-> > > +++ b/net/tls/tls_main.c
-> > > @@ -754,6 +754,12 @@ static void tls_update(struct sock *sk, struct proto *p,
-> > >
-> > >         ctx = tls_get_ctx(sk);
-> > >         if (likely(ctx)) {
-> > > +               /* TLS does not have an unhash proto in SW cases, but we need
-> > > +                * to ensure we stop using the sock_map unhash routine because
-> > > +                * the associated psock is being removed. So use the original
-> > > +                * unhash handler.
-> > > +                */
-> > > +               WRITE_ONCE(sk->sk_prot->unhash, p->unhash);
-> > >                 ctx->sk_write_space = write_space;
-> > >                 ctx->sk_proto = p;
-> >
-> > It looks awkward to update sk->sk_proto inside tls_update(),
-> > at least when ctx!=NULL.
->
-> hmm. It doesn't strike me as paticularly awkward but OK.
 
-I read tls_update() as "updating ctx when it is initialized", with your
-patch, we are updating sk->sk_prot->unhash too when updating ctx,
-pretty much like a piggyback, hence it reads odd to me.
 
-Thanks.
+On 3/25/2021 2:19 AM, Qinglang Miao wrote:
+> This patch adds missing MODULE_DEVICE_TABLE definition which generates
+> correct modalias for automatic loading of this driver when it is built
+> as an external module.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
