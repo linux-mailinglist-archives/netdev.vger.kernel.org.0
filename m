@@ -2,97 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C126349307
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:27:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B20EA349322
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:34:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbhCYN02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:26:28 -0400
-Received: from outbound-smtp16.blacknight.com ([46.22.139.233]:40767 "EHLO
-        outbound-smtp16.blacknight.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229764AbhCYN0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:26:00 -0400
-Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
-        by outbound-smtp16.blacknight.com (Postfix) with ESMTPS id 684521C362A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 13:25:58 +0000 (GMT)
-Received: (qmail 25209 invoked from network); 25 Mar 2021 13:25:58 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 25 Mar 2021 13:25:58 -0000
-Date:   Thu, 25 Mar 2021 13:25:56 +0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Net <netdev@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux-NFS <linux-nfs@vger.kernel.org>
-Subject: Re: [PATCH 0/9 v6] Introduce a bulk order-0 page allocator with two
- in-tree users
-Message-ID: <20210325132556.GS3697@techsingularity.net>
-References: <20210325114228.27719-1-mgorman@techsingularity.net>
- <20210325125001.GW1719932@casper.infradead.org>
+        id S230347AbhCYNeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 09:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230339AbhCYNdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:33:40 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7BEC06175F;
+        Thu, 25 Mar 2021 06:33:40 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id z1so2424105edb.8;
+        Thu, 25 Mar 2021 06:33:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rTsRHpZndxgeS88GP9I79vuy4E3KHPhBU7D9Qw0WHCM=;
+        b=g9CIjKlm8pC7lTaO6uioaZLuZC7fssojA8XJFkYo5/aLirEkOJVBCwx8YMv2zhwGB/
+         Qa2M0sLrbOWVGBVSzz7xnqlK0m8q76T0WEJeVlIsUI4X6czuSc2crrOcL4v8HBeFuo/M
+         bHRzYDJhTP9xpkrIVAwvHn13mtNG6XbgbgVTNWL6XCX8XbwMwY3MZQD6lqy03mjBzA4h
+         2B12c0rlZypC+/dH48k+ZfPYGxjhsHozVWcfkJJ2iaAeDWNCK5prMO8JJ73cQReZc1/g
+         UT18/by426/eKF+CvLHsKL0Z3sf0DcMMSBQqowcpMPIK5LUlZo5hTAx4XFnma4mmXGFl
+         NAwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rTsRHpZndxgeS88GP9I79vuy4E3KHPhBU7D9Qw0WHCM=;
+        b=Lj7/G9J/WLVrCmo+33it9flnyNVmYuU6RVhzeOjMxtARUpAWpOImTtJLWLIpzffwd+
+         Dow2xhuK1EUiYsoU2GIKBB6f+U5seTq7/hxnjV1HJLZbp7ivknENRBznb1pvJXOENQgq
+         AK2x2Za+hWMdaWrFnP4I252iDdh90uTUTP8+vv/iGxycxAcUUj9A9mYUVTnjlG1fPQ8T
+         E6rVNjvmVGI7/3exunvOf7MFYTRoR6TWKxd4mRpcmn6JWH0Srv0BICnBuVipEYK57MH3
+         108hsrTFS8DvRoNBTnbPKhyG/h353YRXlWtjKbBUWC8wLK6ID8F7BQqaG1hUcHwQYSz0
+         MKIw==
+X-Gm-Message-State: AOAM530iWW6Jr02WkIiBJbuqXJqMJsnmIO/Gp0Luaqa9Q6wQWDe/wZVX
+        7Mgr4P4loeUCGxw9WBQ/rwcDaLPER9XtBqUlfJ0=
+X-Google-Smtp-Source: ABdhPJxqmMPzuMrRzVuL37n6W7+MhKOw+Qkoq79g9Qi9zRISYcKyjKP6R1Xm2pEhuzO54fISTX6r5adSAeKLqF37+Kk=
+X-Received: by 2002:aa7:d0cb:: with SMTP id u11mr9144416edo.163.1616679218814;
+ Thu, 25 Mar 2021 06:33:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20210325125001.GW1719932@casper.infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20210325124225.2760-1-linux.amoon@gmail.com> <20210325124225.2760-2-linux.amoon@gmail.com>
+ <YFyIvxOHwIs3R/IT@lunn.ch>
+In-Reply-To: <YFyIvxOHwIs3R/IT@lunn.ch>
+From:   Anand Moon <linux.amoon@gmail.com>
+Date:   Thu, 25 Mar 2021 19:03:28 +0530
+Message-ID: <CANAwSgRHHwOtWb87aeqF=kio53xCO0_c_ZkF+9hKohWoyji6dg@mail.gmail.com>
+Subject: Re: [PATCHv1 1/6] dt-bindings: net: ethernet-phy: Fix the parsing of
+ ethernet-phy compatible string
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        netdev@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic@lists.infradead.org, Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 12:50:01PM +0000, Matthew Wilcox wrote:
-> On Thu, Mar 25, 2021 at 11:42:19AM +0000, Mel Gorman wrote:
-> > This series introduces a bulk order-0 page allocator with sunrpc and
-> > the network page pool being the first users. The implementation is not
-> > efficient as semantics needed to be ironed out first. If no other semantic
-> > changes are needed, it can be made more efficient.  Despite that, this
-> > is a performance-related for users that require multiple pages for an
-> > operation without multiple round-trips to the page allocator. Quoting
-> > the last patch for the high-speed networking use-case
-> > 
-> >             Kernel          XDP stats       CPU     pps           Delta
-> >             Baseline        XDP-RX CPU      total   3,771,046       n/a
-> >             List            XDP-RX CPU      total   3,940,242    +4.49%
-> >             Array           XDP-RX CPU      total   4,249,224   +12.68%
-> > 
-> > >From the SUNRPC traces of svc_alloc_arg()
-> > 
-> > 	Single page: 25.007 us per call over 532,571 calls
-> > 	Bulk list:    6.258 us per call over 517,034 calls
-> > 	Bulk array:   4.590 us per call over 517,442 calls
-> > 
-> > Both potential users in this series are corner cases (NFS and high-speed
-> > networks) so it is unlikely that most users will see any benefit in the
-> > short term. Other potential other users are batch allocations for page
-> > cache readahead, fault around and SLUB allocations when high-order pages
-> > are unavailable. It's unknown how much benefit would be seen by converting
-> > multiple page allocation calls to a single batch or what difference it may
-> > make to headline performance.
-> 
-> We have a third user, vmalloc(), with a 16% perf improvement.  I know the
-> email says 21% but that includes the 5% improvement from switching to
-> kvmalloc() to allocate area->pages.
-> 
-> https://lore.kernel.org/linux-mm/20210323133948.GA10046@pc638.lan/
-> 
+Hi Andrew,
 
-That's fairly promising. Assuming the bulk allocator gets merged, it would
-make sense to add vmalloc on top. That's for bringing it to my attention
-because it's far more relevant than my imaginary potential use cases.
+On Thu, 25 Mar 2021 at 18:27, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Mar 25, 2021 at 12:42:20PM +0000, Anand Moon wrote:
+> > Fix the parsing of check of pattern ethernet-phy-ieee802.3 used
+> > by the device tree to initialize the mdio phy.
+> >
+> > As per the of_mdio below 2 are valid compatible string
+> >       "ethernet-phy-ieee802.3-c22"
+> >       "ethernet-phy-ieee802.3-c45"
+>
+> Nope, this is not the full story. Yes, you can have these compatible
+> strings. But you can also use the PHY ID,
+> e.g. ethernet-phy-idAAAA.BBBB, where AAAA and BBBB are what you find in
+> registers 2 and 3 of the PHY.
+>
 
-> I don't know how many _frequent_ vmalloc users we have that will benefit
-> from this, but it's probably more than will benefit from improvements
-> to 200Gbit networking performance.
+Oops I did not read the drivers/net/mdio/of_mdio.c completely.
+Thanks for letting me know so in the next series,
+I will try to add the below compatible string as per the description in the dts.
 
-I think it was 100Gbit being looked at but your point is still valid and
-there is no harm in incrementally improving over time.
+               compatible = "ethernet-phy-id001c.c916",
+                            "ethernet-phy-ieee802.3-c22";
 
--- 
-Mel Gorman
-SUSE Labs
+> > Cc: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > index 2766fe45bb98..cfc7909d3e56 100644
+> > --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > @@ -33,7 +33,7 @@ properties:
+> >          description: PHYs that implement IEEE802.3 clause 22
+> >        - const: ethernet-phy-ieee802.3-c45
+> >          description: PHYs that implement IEEE802.3 clause 45
+> > -      - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
+> > +      - pattern: "^ethernet-phy-ieee[0-9]{3}\\.[0-9][-][a-f0-9]{4}$"
+>
+> So here you need, in addition to, not instead of.
+>
+> Please test you change on for example imx6ul-14x14-evk.dtsi
+>
+
+Yes I have gone through the test case.
+
+>    Andrew
+
+- Anand
