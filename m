@@ -2,131 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D7134870D
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 03:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 323633486F9
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 03:35:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235338AbhCYCq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 22:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230487AbhCYCqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 22:46:18 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27DCC06174A;
-        Wed, 24 Mar 2021 19:46:17 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id j11so858246ilu.13;
-        Wed, 24 Mar 2021 19:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=by2Wfmj5o/U0bNeUiqbM06edFn5/IV35knV2eyk/CgI=;
-        b=Z+0YIDdKk2k0B/jzcyuv5quKziiJRhi2GqAPhkOE7XbkoXuo8HAt0HNVjcNqNAo2Jy
-         mTbBxDFfC9jjdoGXDD3baNhYK3uR0PbeZTgo4ATaD10uc9EhUBrSR3IS1mzw+dQ2Ws4+
-         qimVwTwEdSZV5uaOKg7Kcy51PJcC4fyCHSKUhrnovRNz0t+/2NzE5HWFatHhzJBZE2nh
-         ZxAy9o4G2FLCJMD3Jw03dZUl99phSvYctrkwrXZgOWCqQL0CrGO9dqC34aUwlroKs6th
-         zDIf7/nvOvPCGjR6CmtDYdrjVFZ2TdHTp4LiQfsCqfwkP+pgU5sFnhzbRD1jEL0o8nKM
-         mv4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=by2Wfmj5o/U0bNeUiqbM06edFn5/IV35knV2eyk/CgI=;
-        b=aDmPSNI2X9ATAHXSt9Ga6pfZ28qM4+8MvoVSmge4ktZDKLy3T4Ff5NpcZ4+3H26z6k
-         vB0fR1AhlGoQZY2sM1UPBjH13E1wcp/vN9ADXtsg3g5/MPHEo68gSN9C8KGoEPYr3nM/
-         X+TtHHlOyfMhsXR/zIq/QoWWUH3HWukH1T2Qz97VmWn8khsLHLdClIgSToXyO2uznAPw
-         zqqIfNFY84pwi1ZyurQroCSq8EBk60iWgzt0OAHbmVfo3QriUZpMgfRCohfkgjSuj7px
-         8NUmdOhKa2Ac/VxSrE/T+gGGSdO+mY63hpjupa8RVFBAvkbiqXMfgoAfbUXMru0YpY2N
-         otag==
-X-Gm-Message-State: AOAM531WWMULt4D28AEftwtEqBUVPLkyKkhaaaO9Tzn03SS5Q81hgsj+
-        1iCr9fT/DMwkR4g39pVWsfw=
-X-Google-Smtp-Source: ABdhPJyWfqatJfjRXK+XmtnfurZgzbz0IDs6bumVmrIP0b6g1xK3Oja8h9+iLk3Q3EpmEV5BA+0ZJQ==
-X-Received: by 2002:a05:6e02:12c6:: with SMTP id i6mr4846404ilm.235.1616640377482;
-        Wed, 24 Mar 2021 19:46:17 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id i67sm1981718ioa.3.2021.03.24.19.46.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 19:46:17 -0700 (PDT)
-Date:   Wed, 24 Mar 2021 19:46:09 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <605bf9718f2fc_64fde2082b@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAM_iQpVShCqWx1CYUOO9SrgWw7ztVP6j=v=W9dAd9FbChGZauQ@mail.gmail.com>
-References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
- <161661958954.28508.16923012330549206770.stgit@john-Precision-5820-Tower>
- <CAM_iQpVShCqWx1CYUOO9SrgWw7ztVP6j=v=W9dAd9FbChGZauQ@mail.gmail.com>
-Subject: Re: [bpf PATCH 2/2] bpf, sockmap: fix incorrect fwd_alloc accounting
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S232495AbhCYCee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 22:34:34 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:14581 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236075AbhCYCeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 22:34:15 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F5Tdm6Mj2z19J36;
+        Thu, 25 Mar 2021 10:32:12 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 25 Mar 2021 10:34:06 +0800
+From:   'Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <zhengyongjun3@huawei.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH net-next] net: usb: lan78xx: remove unused including <linux/version.h>
+Date:   Thu, 25 Mar 2021 10:48:00 +0800
+Message-ID: <20210325024800.1240388-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.104.82]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> On Wed, Mar 24, 2021 at 2:00 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> >
-> > Incorrect accounting fwd_alloc can result in a warning when the socket
-> > is torn down,
-> >
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[...]
+Remove including <linux/version.h> that don't need it.
 
-> > To resolve lets only account for sockets on the ingress queue that are
-> > still associated with the current socket. On the redirect case we will
-> > check memory limits per 6fa9201a89898, but will omit fwd_alloc accounting
-> > until skb is actually enqueued. When the skb is sent via skb_send_sock_locked
-> > or received with sk_psock_skb_ingress memory will be claimed on psock_other.
-                     ^^^^^^^^^^^^^^^^^^^^
-> 
-> You mean sk_psock_skb_ingress(), right?
-
-Yes.
-
-[...]
-
-> > @@ -880,12 +876,13 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
-> >                 kfree_skb(skb);
-> >                 goto out;
-> >         }
-> > -       skb_set_owner_r(skb, sk);
-> >         prog = READ_ONCE(psock->progs.skb_verdict);
-> >         if (likely(prog)) {
-> > +               skb->sk = psock->sk;
-> 
-> Why is skb_orphan() not needed here?
-
-These come from strparser which do not have skb->sk set.
-
-> 
-> Nit: You can just use 'sk' here, so "skb->sk = sk".
-
-Sure that is a bit nicer, will respin with this.
-
-> 
-> 
-> >                 tcp_skb_bpf_redirect_clear(skb);
-> >                 ret = sk_psock_bpf_run(psock, prog, skb);
-> >                 ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
-> > +               skb->sk = NULL;
-> 
-> Why do you want to set it to NULL here?
-
-So we don't cause the stack to throw other errors later if we
-were to call skb_orphan for example. Various places in the skb
-helpers expect both skb->sk and skb->destructor to be set together
-and here we are just using it as a mechanism to feed the sk into
-the BPF program side. The above skb_set_owner_r for example
-would likely BUG().
-
-> 
-> Thanks.
-
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ drivers/net/usb/lan78xx.c | 1 -
+ 1 file changed, 1 deletion(-)
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index e81c5699c952..6acc5e904518 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2,7 +2,6 @@
+ /*
+  * Copyright (C) 2015 Microchip Technology
+  */
+-#include <linux/version.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
 
