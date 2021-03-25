@@ -2,95 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1F334966B
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AA6E349770
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:57:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbhCYQHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 12:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbhCYQHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:07:25 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79675C06174A;
-        Thu, 25 Mar 2021 09:07:24 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id u5-20020a7bcb050000b029010e9316b9d5so1489270wmj.2;
-        Thu, 25 Mar 2021 09:07:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eWpCpE1+dEBlLLFBkFHX/N/lZnfYujelxC3R7euwMPk=;
-        b=kZac+IZtuE3REeWsFl0JncKaTi7IibI543AXwLmh0EW5ppCVeTPNtm59dvWMbGFs/d
-         S0UeLnG4WxDRilGEuyQzW+s9t6mVCanWDTrb8b6MutCm8yHxnLLVg0iK1C66d83TfZXk
-         GC/BsvF+0w9WFftV88ovvbF5w2bF95kVG1EJmYuUKwQeOkVWnzywnYXty99xstCR9BP2
-         4K3ia1diopY9+iaOsvFRH+he9gLL3qDKCwNcvhUrolTwrcMhB5eUuvtLJfNjowaqEOR4
-         fXdK1SMEf7NyHoOOLqxJznu3ZcWKm7UoqhNqyjEtM6PGo3fwQgr9XiIwcfjetwz2mITP
-         iFSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eWpCpE1+dEBlLLFBkFHX/N/lZnfYujelxC3R7euwMPk=;
-        b=Uhp5EyCV3EfQhbziTi+XFB7lnDyRHI5+DhbGrCLxKcqROQYW/uNpmfTjjfwv+xRXwU
-         /bf0yga+SJJf+Cw9DD1Gg7C+1V7Gl+wxQzW94z522FlPTl5W8MCR+fKJutpkHTW8Rs01
-         BXXJmDZqSmScwtsBowZpTTM4ORIOgdmAHCp/yq4DCGp18wGqepyQLCT5zw4P54vAds5B
-         zT6FhssxX8uwR4J3y0JsJZZEsFgK7zgBAeJ30hmiODrawSFyA9PJ5zrJqyU/N/YiJ/Dz
-         GCJYBl6+sUcjZGqPsFW1ytYek9cDAaAD4WdcxX+9QCIEPDw0gBigeOZLQub79PhFvfNF
-         /9Qw==
-X-Gm-Message-State: AOAM530ZL+WPI7l93gsCtBdcTGRCDHU9x0YuslviB23czktcUjczizc8
-        GfeS8oSgqOzJ/I63mQGj0PlRXSZ50w4=
-X-Google-Smtp-Source: ABdhPJz4GxIgv7kIhqwJfdzPDbbkws+oUEJtSojtt7tWB4RMk4qpTAtrL3VofKD1lveiTsqdMLQGLQ==
-X-Received: by 2002:a7b:c7ca:: with SMTP id z10mr8597937wmk.117.1616688442909;
-        Thu, 25 Mar 2021 09:07:22 -0700 (PDT)
-Received: from [192.168.1.101] ([37.165.105.49])
-        by smtp.gmail.com with ESMTPSA id m2sm4321236wmp.1.2021.03.25.09.07.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Mar 2021 09:07:22 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: change netdev_unregister_timeout_secs
- min value to 1
-To:     Dmitry Vyukov <dvyukov@google.com>, edumazet@google.com,
-        davem@davemloft.net
-Cc:     leon@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210325145245.3160366-1-dvyukov@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ea4e412d-f8b3-8c77-88db-344f14a36869@gmail.com>
-Date:   Thu, 25 Mar 2021 17:07:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S229995AbhCYQ5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 12:57:07 -0400
+Received: from lan.nucleusys.com ([92.247.61.126]:34580 "EHLO
+        mail.nucleusys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229626AbhCYQ5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:57:04 -0400
+X-Greylist: delayed 2647 seconds by postgrey-1.27 at vger.kernel.org; Thu, 25 Mar 2021 12:57:03 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
+        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=9+BEITjcOB4Up5oAxEJfwAcVar0gxPpkiEJ8nLYig+I=; b=ieNXDU27KppfuW3RtKoBNCYKVC
+        LR9/fGV4FP9oyvzSatYPjlPGlSUzEBge5avHw+Rk/GwNEZkNNCotCIy85XtZQa4iOj6Rae0h0fYh2
+        GD/H4SIRJM2/dPOgibRkskhAvF8EJrcELdcbVv3r/g2/q2ghxXKP9BRpgm4eXb6JzRAs=;
+Received: from [151.251.251.23] (helo=carbon)
+        by mail.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <petkan@nucleusys.com>)
+        id 1lPSbG-0008Dw-5U; Thu, 25 Mar 2021 18:12:47 +0200
+Date:   Thu, 25 Mar 2021 18:12:46 +0200
+From:   Petko Manolov <petkan@nucleusys.com>
+To:     'Qiheng Lin <linqiheng@huawei.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH net-next] net: usb: pegasus: Remove duplicated include
+ from pegasus.c
+Message-ID: <YFy2fnV7GQLOKkRy@carbon>
+Mail-Followup-To: 'Qiheng Lin <linqiheng@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+References: <20210325145652.13469-1-linqiheng@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210325145245.3160366-1-dvyukov@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210325145652.13469-1-linqiheng@huawei.com>
+X-Spam-Score: -1.0 (-)
+X-Spam-Report: Spam detection software, running on the system "zztop",
+ has NOT identified this incoming email as spam.  The original
+ message has been attached to this so you can view it or label
+ similar future email.  If you have any questions, see
+ the administrator of that system for details.
+ Content preview:  On 21-03-25 22:56:52, 'Qiheng Lin wrote: > From: Qiheng Lin
+    <linqiheng@huawei.com> > > Remove duplicated include. It is not duplicated
+    so do not remove it. Go ahead and look carefully at the code, please. 
+ Content analysis details:   (-1.0 points, 5.0 required)
+  pts rule name              description
+ ---- ---------------------- --------------------------------------------------
+ -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 21-03-25 22:56:52, 'Qiheng Lin wrote:
+> From: Qiheng Lin <linqiheng@huawei.com>
+> 
+> Remove duplicated include.
+
+It is not duplicated so do not remove it.  Go ahead and look carefully at the
+code, please.
 
 
-On 3/25/21 3:52 PM, Dmitry Vyukov wrote:
-> netdev_unregister_timeout_secs=0 can lead to printing the
-> "waiting for dev to become free" message every jiffy.
-> This is too frequent and unnecessary.
-> Set the min value to 1 second.
-> 
-> Also fix the merge issue introduced by
-> "net: make unregister netdev warning timeout configurable":
-> it changed "refcnt != 1" to "refcnt".
-> 
-> Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-> Suggested-by: Eric Dumazet <edumazet@google.com>
-> Fixes: 5aa3afe107d9 ("net: make unregister netdev warning timeout configurable")
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
+		Petko
+
+
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
 > ---
-> Changes since v1:
->  - fix merge issue related to refcnt check
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Thanks !
-
+>  drivers/net/usb/pegasus.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+> index 9a907182569c..e0ee5c096396 100644
+> --- a/drivers/net/usb/pegasus.c
+> +++ b/drivers/net/usb/pegasus.c
+> @@ -65,7 +65,6 @@ static struct usb_eth_dev usb_dev_id[] = {
+>  	{.name = pn, .vendor = vid, .device = pid, .private = flags},
+>  #define PEGASUS_DEV_CLASS(pn, vid, pid, dclass, flags) \
+>  	PEGASUS_DEV(pn, vid, pid, flags)
+> -#include "pegasus.h"
+>  #undef	PEGASUS_DEV
+>  #undef	PEGASUS_DEV_CLASS
+>  	{NULL, 0, 0, 0},
+> @@ -84,7 +83,6 @@ static struct usb_device_id pegasus_ids[] = {
+>  #define PEGASUS_DEV_CLASS(pn, vid, pid, dclass, flags) \
+>  	{.match_flags = (USB_DEVICE_ID_MATCH_DEVICE | USB_DEVICE_ID_MATCH_DEV_CLASS), \
+>  	.idVendor = vid, .idProduct = pid, .bDeviceClass = dclass},
+> -#include "pegasus.h"
+>  #undef	PEGASUS_DEV
+>  #undef	PEGASUS_DEV_CLASS
+>  	{},
+> 
+> 
