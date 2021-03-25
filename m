@@ -2,196 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF558348AE1
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 08:57:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F8C348AFB
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 09:01:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbhCYH5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 03:57:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44810 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229890AbhCYH5L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 03:57:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 700C9619FE;
-        Thu, 25 Mar 2021 07:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616659031;
-        bh=AWwzjhVwk56MPKn55kMRr3oXMxia1qmyjjZvUXEzbk8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=p+wwrOW062LBdfkRkvAHoew3jP+SV8LvZx3QxqI789eS15sdowbyMuec4xus/eJnd
-         o43GV537235VXqhdUHTnrH0TyYyogCbi4ucc1kFBLO/Pa8EejSgV12bS+AiQN9EYTg
-         gcEkCB+bLFgTCOJgGfjC82hk8e5QC2rqvExn8bLmQaYALIyaykqaZtECClSpPH0RTZ
-         SkJ42lVZMQ16EuAOAFMzth5KL16JLtOo+3IXJ+ov54Cu4pyJ1yP199Pbx18JxowGr3
-         TY+CXmoSwfzx+7/Y0ufNEFy3ylhah9/49+43egbK+OtBILZIuo/XyrOekQCOvNWevD
-         HaCOL9Bhf1Sgg==
-Date:   Thu, 25 Mar 2021 09:57:07 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        linux-pci@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v8 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <YFxCU+l3npHIIluv@unreal>
-References: <20210314124256.70253-1-leon@kernel.org>
- <YFW8yPWT8yyXzy6c@unreal>
+        id S229908AbhCYIBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 04:01:12 -0400
+Received: from mail-bn7nam10on2069.outbound.protection.outlook.com ([40.107.92.69]:57922
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229669AbhCYIBE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 04:01:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QYK1bCOQbZN3N0S9gP+NevKu7N3HMBAERCDnNIGCvWJJc9ZxnKisiE0NibH5sx2ovrkKj7azHJZxQze7PkxLJzBThOC0LMyHIfHdskNcb2+vV9Amx+OfRc066PQJcEw05OU0wj/zqN1jd5KH/6dite80OKaYUL6bIpsTGsh23FqaXXqU8WUjcchnDRMSqfwYnkcct9DCiEc3E9nOuWWPzQAIOQOByhKmP/DazLFIJiizvUpK/LC+V5YuNf4Vj4Py9CcN4WcroqJW1/LEjeQKQTQLa8m8V3E/rfVXhgIXaA4e141thjKd4YVrYhSe1o6FcV0dHxGW+S23hFfORXtLvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+c8+HktjxTcP1ZRonkxpUpkjZM3VCzEbIBVevr69M/0=;
+ b=ntu00z4SeP/eDcTJtu1o8G/PusSJ/4DO3clRpe6KLINDF2e7aL0/5xJ4Z+xngj2fPYdtCmQ9q9tTBEWtJRfzoj3LurHPfxpx+WRZDmR+bjyq7xuX1IAJOatdoPEyKfnMEEVUGPtXboLrwP8WjbJWZ89C1keqlT2P/+06fhBOFzeL0mQHpQZhImDyXfREWCDYAowbYlG0sC/9ZaI//ylQEUN6C9goYu1iJP0kzCwYbFtAI8c6RpYwefiHaVLb3faR9Iu8vIS1m1mejEmT1n6QyQzyQg/ve+ZoDrdH6X5IwHReYqE5dra+V5q/OFQtwDCXARr2EzlYhhlvbJKb8CmL7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+c8+HktjxTcP1ZRonkxpUpkjZM3VCzEbIBVevr69M/0=;
+ b=I4FHg3N9iTVUGrlU0aFcsmSguQ9XVNH+VSlsG+6tKbBIMLatE2lrl24sKEbiS7Gd4n/7JjmxRWX3RNwbLg9/Ce78wQxEDcxYcqb8toQ7C9x643x20TmAyXxRw1zFXfAg4NM42rAAnP0oRLyjd5NGu9k4DRCH9k4XpUD3JTAvh8eXeFygcLYDMcAYh4evtq6MIVfwuu8nhknYLjNwfqjK3Zlp8pAuNnWhIiQZyuIe8iTO5q0wVf4gC/1vsj+Sz8mOZAR7Mh3JWAC5NAVwj45zzFp6aKiZ3Vii5E12/EVN8T/5dqPckk+bw14il6QrWxdrMmGc9ZFCWhDK2K2LPjFVXw==
+Received: from MWHPR15CA0052.namprd15.prod.outlook.com (2603:10b6:301:4c::14)
+ by MN2PR12MB3933.namprd12.prod.outlook.com (2603:10b6:208:162::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Thu, 25 Mar
+ 2021 08:01:00 +0000
+Received: from CO1NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:4c:cafe::2a) by MWHPR15CA0052.outlook.office365.com
+ (2603:10b6:301:4c::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26 via Frontend
+ Transport; Thu, 25 Mar 2021 08:01:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT042.mail.protection.outlook.com (10.13.174.250) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3955.18 via Frontend Transport; Thu, 25 Mar 2021 08:01:00 +0000
+Received: from [10.26.49.14] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 25 Mar
+ 2021 08:00:59 +0000
+Subject: Re: Regression v5.12-rc3: net: stmmac: re-init rx buffers when mac
+ resume back
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <708edb92-a5df-ecc4-3126-5ab36707e275@nvidia.com>
+ <DB8PR04MB679546EC2493ABC35414CCF9E6639@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <0d0ddc16-dc74-e589-1e59-91121c1ad4e0@nvidia.com>
+ <DB8PR04MB6795863753DAD71F1F64F81DE6629@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <8e92b562-fa8f-0a2b-d8da-525ee52fc2d4@nvidia.com>
+Date:   Thu, 25 Mar 2021 08:00:56 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YFW8yPWT8yyXzy6c@unreal>
+In-Reply-To: <DB8PR04MB6795863753DAD71F1F64F81DE6629@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dbe294b6-d1bf-4ee1-b586-08d8ef64214b
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3933:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3933161D6F6464F5C1B90239D9629@MN2PR12MB3933.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pBfxkR8zR6tKex88d5Tontn7ovsJTSKAHlDdnou06mVuWuF43Xo36tUWvbMnRFRnKgFD6e48cyJW/wYy87srRz9Hw+uLmRmpkhph1PS2JTVXNVMwkhHs5t9CCXZqwRbKrsVfc58xykq3EAfXMCXR2MJihPxN4123lO3hBOOal1eL6TMUdIaHKG8XDxtFSwD9Mmw3f6h40atiLeZqGkMJeUs/SS7r8das8mOlAwnOGQeO0bhIiKghq+vpbTUfIfNb9RXaN4F8Rt6cGk5uAIQZc1tjquvCTzlg6VuJViFo+o5PvSDlr5j8fjijyzWeTc8n+V7YsLX5j0oESzgteeE42lr71EFtVn4iXd3++WGEShHOFWDi4JFVMeIjZD/FgLyY5Eh/IjO8HtBbtFAapzfiY7bJombaKG0OTN0ZDURZ+n0k6x1WZY3wvWCZab0qU6pS7r8hPStlFB3yDLvzUDVjrQCriwR8un3hiCDUxkZExpOsK3JvRzgavQyaXEhDPR1OHM0aU8nVI8WLXsg2JFPchGC7+skiKBUkImHcZN7/G81pW36vxKqQZmbPRtPmwFex35DIgh4OKcbUSBgCWKLyFVopvNMVFlaMXyioFcHW9k3fVQ8FlUhYGf0GC/7Y6bV7+G1HVbNrscAkgXG6ED8BFoi4WCwd+WK25sTB0rTdg9JQmq6IAIWkJKJSs+xMdHXK
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(376002)(346002)(36840700001)(46966006)(70586007)(316002)(8936002)(70206006)(31686004)(82310400003)(53546011)(5660300002)(336012)(31696002)(8676002)(186003)(4326008)(6916009)(16576012)(6666004)(36756003)(26005)(83380400001)(86362001)(36906005)(478600001)(2616005)(2906002)(54906003)(426003)(7636003)(356005)(47076005)(16526019)(36860700001)(82740400003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 08:01:00.6263
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: dbe294b6-d1bf-4ee1-b586-08d8ef64214b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3933
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bjorn,
 
-Can you please help us progress with the series?
-
-It needs to go from mlx5-next to net-next and maybe to rdma-next too
-and we need enough time to keep the series for automatic testing in
-all those branches.
-
-The code was posted on -rc1 [1] while we are in -rc4 already.
-
-[1] https://lore.kernel.org/linux-pci/20210301075524.441609-1-leon@kernel.org/
-
-Thanks
-
-On Sat, Mar 20, 2021 at 11:13:44AM +0200, Leon Romanovsky wrote:
-> Gentle reminder
+On 25/03/2021 07:53, Joakim Zhang wrote:
 > 
-> Thanks
+>> -----Original Message-----
+>> From: Jon Hunter <jonathanh@nvidia.com>
+>> Sent: 2021年3月24日 20:39
+>> To: Joakim Zhang <qiangqing.zhang@nxp.com>
+>> Cc: netdev@vger.kernel.org; Linux Kernel Mailing List
+>> <linux-kernel@vger.kernel.org>; linux-tegra <linux-tegra@vger.kernel.org>;
+>> Jakub Kicinski <kuba@kernel.org>
+>> Subject: Re: Regression v5.12-rc3: net: stmmac: re-init rx buffers when mac
+>> resume back
+>>
+>>
+>>
+>> On 24/03/2021 12:20, Joakim Zhang wrote:
+>>
+>> ...
+>>
+>>> Sorry for this breakage at your side.
+>>>
+>>> You mean one of your boards? Does other boards with STMMAC can work
+>> fine?
+>>
+>> We have two devices with the STMMAC and one works OK and the other fails.
+>> They are different generation of device and so there could be some
+>> architectural differences which is causing this to only be seen on one device.
+> It's really strange, but I also don't know what architectural differences could affect this. Sorry.
+
+
+Maybe caching somewhere? In other words, could there be any cache
+flushing that we are missing here?
+
+>>> We do daily test with NFS to mount rootfs, on issue found. And I add this
+>> patch at the resume patch, and on error check, this should not break suspend.
+>>> I even did the overnight stress test, there is no issue found.
+>>>
+>>> Could you please do more test to see where the issue happen?
+>>
+>> The issue occurs 100% of the time on the failing board and always on the first
+>> resume from suspend. Is there any more debug I can enable to track down
+>> what the problem is?
+>>
 > 
-> On Sun, Mar 14, 2021 at 02:42:52PM +0200, Leon Romanovsky wrote:
-> > ---------------------------------------------------------------------------------
-> > Changelog
-> > v8:
-> >  * Added "physical/virtual function" words near PF and VF acronyms.
-> > v7: https://lore.kernel.org/linux-pci/20210301075524.441609-1-leon@kernel.org
-> >  * Rebase on top v5.12-rc1
-> >  * More english fixes
-> >  * Returned to static sysfs creation model as was implemented in v0/v1.
-> > v6: https://lore.kernel.org/linux-pci/20210209133445.700225-1-leon@kernel.org
-> >  * Patch 1:
-> >    * English fixes
-> >    * Moved pci_vf_set_msix_vec_count() from msi.c to iov.c
-> >    * Embedded pci_vf_set_msix_vec_count() into sriov_vf_msix_count_store
-> >    * Deleted sriov_vf_msix_count_show
-> >    * Deleted vfs_overlay folder
-> >    * Renamed functions *_vfs_overlay_* to be *_vf_overlay_*
-> >    * Deleted is_supported and attribute_group because it confused people more than
-> >      it gave advantage.
-> >    * Changed vf_total_msix to be callback
-> >  * Patch 3:
-> >    * Fixed english as suggested by Bjorn
-> >    * Added more explanations to the commit message
-> >  * Patch 4:
-> >    * Protected enable/disable with capability check
-> > v5: https://lore.kernel.org/linux-pci/20210126085730.1165673-1-leon@kernel.org
-> >  * Patch 1:
-> >   * Added forgotten "inline" keyword when declaring empty functions.
-> > v4: https://lore.kernel.org/linux-pci/20210124131119.558563-1-leon@kernel.org
-> >  * Used sysfs_emit() instead of sprintf() in new sysfs entries.
-> >  * Changed EXPORT_SYMBOL to be EXPORT_SYMBOL_GPL for pci_iov_virtfn_devfn().
-> >  * Rewrote sysfs registration code to be driven by PF that wants to enable VF
-> >    overlay instead of creating to all SR-IOV devices.
-> >  * Grouped all such functionality under new "vfs_overlay" folder.
-> >  * Combined two PCI patches into one.
-> > v3: https://lore.kernel.org/linux-pci/20210117081548.1278992-1-leon@kernel.org
-> >  * Renamed pci_set_msix_vec_count to be pci_vf_set_msix_vec_count.
-> >  * Added VF msix_cap check to hide sysfs entry if device doesn't support msix.
-> >  * Changed "-" to be ":" in the mlx5 patch to silence CI warnings about missing
-> >    kdoc description.
-> >  * Split differently error print in mlx5 driver to avoid checkpatch warning.
-> > v2: https://lore.kernel.org/linux-pci/20210114103140.866141-1-leon@kernel.org
-> >  * Patch 1:
-> >   * Renamed vf_msix_vec sysfs knob to be sriov_vf_msix_count
-> >   * Added PF and VF device locks during set MSI-X call to protect from parallel
-> >     driver bind/unbind operations.
-> >   * Removed extra checks when reading sriov_vf_msix, because users will
-> >     be able to distinguish between supported/not supported by looking on
-> >     sriov_vf_total_msix count.
-> >   * Changed all occurrences of "numb" to be "count"
-> >   * Changed returned error from EOPNOTSUPP to be EBUSY if user tries to set
-> >     MSI-X count after driver already bound to the VF.
-> >   * Added extra comment in pci_set_msix_vec_count() to emphasize that driver
-> >     should not be bound.
-> >  * Patch 2:
-> >   * Changed vf_total_msix from int to be u32 and updated function signatures
-> >     accordingly.
-> >   * Improved patch title
-> > v1: https://lore.kernel.org/linux-pci/20210110150727.1965295-1-leon@kernel.org
-> >  * Improved wording and commit messages of first PCI patch
-> >  * Added extra PCI patch to provide total number of MSI-X vectors
-> >  * Prohibited read of vf_msix_vec sysfs file if driver doesn't support write
-> >  * Removed extra function definition in pci.h
-> > v0: https://lore.kernel.org/linux-pci/20210103082440.34994-1-leon@kernel.org
-> > 
-> > --------------------------------------------------------------------
-> > Hi,
-> > 
-> > The number of MSI-X vectors is PCI property visible through lspci, that
-> > field is read-only and configured by the device.
-> > 
-> > The static assignment of an amount of MSI-X vectors doesn't allow utilize
-> > the newly created VF because it is not known to the device the future load
-> > and configuration where that VF will be used.
-> > 
-> > The VFs are created on the hypervisor and forwarded to the VMs that have
-> > different properties (for example number of CPUs).
-> > 
-> > To overcome the inefficiency in the spread of such MSI-X vectors, we
-> > allow the kernel to instruct the device with the needed number of such
-> > vectors, before VF is initialized and bounded to the driver.
-> > 
-> > Before this series:
-> > [root@server ~]# lspci -vs 0000:08:00.2
-> > 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> > ....
-> >         Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
-> > 
-> > Configuration script:
-> > 1. Start fresh
-> > echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-> > modprobe -q -r mlx5_ib mlx5_core
-> > 2. Ensure that driver doesn't run and it is safe to change MSI-X
-> > echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
-> > 3. Load driver for the PF
-> > modprobe mlx5_core
-> > 4. Configure one of the VFs with new number
-> > echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-> > echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
-> > 
-> > After this series:
-> > [root@server ~]# lspci -vs 0000:08:00.2
-> > 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> > ....
-> >         Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
-> > 
-> > Thanks
-> > 
-> > Leon Romanovsky (4):
-> >   PCI: Add a sysfs file to change the MSI-X table size of SR-IOV VFs
-> >   net/mlx5: Add dynamic MSI-X capabilities bits
-> >   net/mlx5: Dynamically assign MSI-X vectors count
-> >   net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
-> > 
-> >  Documentation/ABI/testing/sysfs-bus-pci       |  29 +++++
-> >  .../net/ethernet/mellanox/mlx5/core/main.c    |   6 ++
-> >  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  12 +++
-> >  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  73 +++++++++++++
-> >  .../net/ethernet/mellanox/mlx5/core/sriov.c   |  48 ++++++++-
-> >  drivers/pci/iov.c                             | 102 ++++++++++++++++--
-> >  drivers/pci/pci-sysfs.c                       |   3 +-
-> >  drivers/pci/pci.h                             |   3 +-
-> >  include/linux/mlx5/mlx5_ifc.h                 |  11 +-
-> >  include/linux/pci.h                           |   8 ++
-> >  10 files changed, 284 insertions(+), 11 deletions(-)
-> > 
-> > --
-> > 2.30.2
-> > 
+> As commit messages described, the patch aims to re-init rx buffers address, since the address is not fixed, so I only can 
+> recycle and then re-allocate all of them. The page pool is allocated once when open the net device.
+> 
+> Could you please debug if it fails at some functions, such as page_pool_dev_alloc_pages() ?
+
+
+Yes that was the first thing I tried, but no obvious failures from
+allocating the pools.
+
+Are you certain that the problem you are seeing, that is being fixed by
+this change, is generic to all devices? The commit message states that
+'descriptor write back by DMA could exhibit unusual behavior', is this a
+known issue in the STMMAC controller? If so does this impact all
+versions and what is the actual problem?
+
+Jon
+
+-- 
+nvpublic
