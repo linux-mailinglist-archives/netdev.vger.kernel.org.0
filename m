@@ -2,107 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFACE3493D9
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 15:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D3A3493F9
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 15:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbhCYOOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 10:14:39 -0400
-Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:59451 "EHLO
-        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230078AbhCYOOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 10:14:12 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.west.internal (Postfix) with ESMTP id 69337F63;
-        Thu, 25 Mar 2021 10:14:09 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 25 Mar 2021 10:14:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
-         h=message-id:subject:from:to:cc:date:content-type:mime-version
-        :content-transfer-encoding; s=fm2; bh=KkT11HUqTYeekK/o5YdPaXG6g8
-        jljOZ2mrwXvPkeXAE=; b=dQ4nZaKjvnp48a2uvqiivRJXmVcwkam7mlQyUPyZ1g
-        BtOv8AwSOgocDMZ9HZGAd5kExHi9iw+rxbXp3nqdf4V+JYnfuhaph4zo0yvOwmyp
-        3rBugGDnpUCJW/I21IOb4Rywq7yC0SER8yH9PZrdffyheuoHXUU39fIFnE5CkEvO
-        9TUhUu9FPMS8ON/t+Spf1N1W9c1wZI0sFNsZfEXbiw7XTaDgjOIlZrm6aiostXqB
-        sOo8bYgjTldR42Lu8+7T4yfk5olvsbuFrlVLcjituQsoE/e6QiQaATpuwve2QBSP
-        lV/wz35iVO6Kyn4XkH85TE+YtvxrX26/+0n0YCPR/rMA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:message-id:mime-version:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=KkT11H
-        UqTYeekK/o5YdPaXG6g8jljOZ2mrwXvPkeXAE=; b=W2SOTziiF5KI5hWuNQtjxX
-        kX1elsDm8jRPosj2+YZ6px2FeMtK/Dl4f6j72eD9LY0EA8zUhccTzEFJiBmTLcLC
-        cKp8FkNIPsQCcpwhLbXBOIjzMeu/bO5mEzYgzOr5u7PB8KEnaj4O+cRcIIwo30AU
-        /GdqtWZfs28OVg0bVEOcFG0L+nbPXrxjopsnZcsD1xWn/Tx7ZliF9idnY/QVK1mB
-        qDyFCTSk8dbbyVtIRCr34qaDYd59VywsaWkSBLipJKuHiLiXRyDoIyBMnp/OO2aC
-        gspTsYqHUMSFtSYEt680NcygrsK9gYM3VwWpZ52JnJ/DJcyCyc863Nfb25lXwvOg
-        ==
-X-ME-Sender: <xms:r5pcYJZJcx3IJXT1bXr_5ye5bmnKBiG2g88DjmWQRGg60_1coeFRug>
-    <xme:r5pcYPYdtG3_OentIhSgv9f-z-iW0JA5RnORNuzWq9QUFJFsAYUIKmJJXYKnP6Bec
-    kVWdjhazlQ4qS9YxA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehtddgieefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepkffuhffvffgtfggggfesthejredttderjeenucfhrhhomhepvehhrhhishcu
-    vfgrlhgsohhtuceotghhrhhishesthgrlhgsohhthhhomhgvrdgtohhmqeenucggtffrrg
-    htthgvrhhnpeejvdduffdugeekudfgudehhffggfdvgefhuefhveelfeefledutedvkedv
-    feekveenucffohhmrghinhepohhfohhnohdrohhrghenucfkphepuddvkedrvddrheeird
-    duvdelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    tghhrhhishesthgrlhgsohhthhhomhgvrdgtohhm
-X-ME-Proxy: <xmx:r5pcYFm224Sh94gcdbP_j5ckJKFqTdxPCQpPjXZijvzjNxyAPAPCww>
-    <xmx:r5pcYLaAm4GqNFP8rI1swRCWFjCoJSeV62TX5vBQkwZkYvvDa41ngQ>
-    <xmx:r5pcYEqjqGb49ZL2u6HY1VAUS2UUYQysA48WaQHdPkXArhASy1ZPOw>
-    <xmx:sZpcYAmPvPie6cQ9gOLD-vBnyzZQxMZk7_GTvvzGMbMMelDy3Yf9Tox_P4A>
-Received: from CMU-974457.ANDREW.CMU.EDU (cmu-974457.andrew.cmu.edu [128.2.56.129])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6EBAA108006C;
-        Thu, 25 Mar 2021 10:14:07 -0400 (EDT)
-Message-ID: <76b036b7cc79c6d4b0236119d48c952622ebc27f.camel@talbothome.com>
-Subject: Point of Contact to submit mmsd upstream patches, or is mmsd
- abandoned?
-From:   Chris Talbot <chris@talbothome.com>
-To:     ofono@ofono.org, netdev@vger.kernel.org
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Denis Kenzior <denkenz@gmail.com>,
-        =?ISO-8859-1?Q?S=E9bastien?= Bianti 
-        <sebastien.bianti@linux.intel.com>,
-        Christophe Guiraud <christophe.guiraud@linux.intel.com>,
-        Regis Merlino <regis.merlino@linux.intel.com>,
-        Ronald Tessier <ronald.tessier@linux.intel.com>,
-        Jens Rehsack <sno@NetBSD.org>,
-        "debian-on-mobile-maintainers@alioth-lists.debian.net" 
-        <debian-on-mobile-maintainers@alioth-lists.debian.net>,
-        ankit.navik@gmail.com
-Date:   Thu, 25 Mar 2021 10:14:07 -0400
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        id S231363AbhCYO1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 10:27:05 -0400
+Received: from outbound-smtp47.blacknight.com ([46.22.136.64]:41631 "EHLO
+        outbound-smtp47.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231289AbhCYO02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 10:26:28 -0400
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp47.blacknight.com (Postfix) with ESMTPS id E3800FA8F2
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 14:26:25 +0000 (GMT)
+Received: (qmail 8307 invoked from network); 25 Mar 2021 14:26:25 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 25 Mar 2021 14:26:25 -0000
+Date:   Thu, 25 Mar 2021 14:26:24 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Uladzislau Rezki <urezki@gmail.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/9 v6] Introduce a bulk order-0 page allocator with two
+ in-tree users
+Message-ID: <20210325142624.GT3697@techsingularity.net>
+References: <20210325114228.27719-1-mgorman@techsingularity.net>
+ <20210325125001.GW1719932@casper.infradead.org>
+ <20210325132556.GS3697@techsingularity.net>
+ <20210325140657.GA1908@pc638.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20210325140657.GA1908@pc638.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Mar 25, 2021 at 03:06:57PM +0100, Uladzislau Rezki wrote:
+> > On Thu, Mar 25, 2021 at 12:50:01PM +0000, Matthew Wilcox wrote:
+> > > On Thu, Mar 25, 2021 at 11:42:19AM +0000, Mel Gorman wrote:
+> > > > This series introduces a bulk order-0 page allocator with sunrpc and
+> > > > the network page pool being the first users. The implementation is not
+> > > > efficient as semantics needed to be ironed out first. If no other semantic
+> > > > changes are needed, it can be made more efficient.  Despite that, this
+> > > > is a performance-related for users that require multiple pages for an
+> > > > operation without multiple round-trips to the page allocator. Quoting
+> > > > the last patch for the high-speed networking use-case
+> > > > 
+> > > >             Kernel          XDP stats       CPU     pps           Delta
+> > > >             Baseline        XDP-RX CPU      total   3,771,046       n/a
+> > > >             List            XDP-RX CPU      total   3,940,242    +4.49%
+> > > >             Array           XDP-RX CPU      total   4,249,224   +12.68%
+> > > > 
+> > > > >From the SUNRPC traces of svc_alloc_arg()
+> > > > 
+> > > > 	Single page: 25.007 us per call over 532,571 calls
+> > > > 	Bulk list:    6.258 us per call over 517,034 calls
+> > > > 	Bulk array:   4.590 us per call over 517,442 calls
+> > > > 
+> > > > Both potential users in this series are corner cases (NFS and high-speed
+> > > > networks) so it is unlikely that most users will see any benefit in the
+> > > > short term. Other potential other users are batch allocations for page
+> > > > cache readahead, fault around and SLUB allocations when high-order pages
+> > > > are unavailable. It's unknown how much benefit would be seen by converting
+> > > > multiple page allocation calls to a single batch or what difference it may
+> > > > make to headline performance.
+> > > 
+> > > We have a third user, vmalloc(), with a 16% perf improvement.  I know the
+> > > email says 21% but that includes the 5% improvement from switching to
+> > > kvmalloc() to allocate area->pages.
+> > > 
+> > > https://lore.kernel.org/linux-mm/20210323133948.GA10046@pc638.lan/
+> > > 
+> > 
+> > That's fairly promising. Assuming the bulk allocator gets merged, it would
+> > make sense to add vmalloc on top. That's for bringing it to my attention
+> > because it's far more relevant than my imaginary potential use cases.
+> > 
+> For the vmalloc we should be able to allocating on a specific NUMA node,
+> at least the current interface takes it into account. As far as i see
+> the current interface allocate on a current node:
+> 
+> static inline unsigned long
+> alloc_pages_bulk_array(gfp_t gfp, unsigned long nr_pages, struct page **page_array)
+> {
+>     return __alloc_pages_bulk(gfp, numa_mem_id(), NULL, nr_pages, NULL, page_array);
+> }
+> 
+> Or am i missing something?
+> 
 
-Apoligies if you get this email multiple times.
+No, you're not missing anything. Options would be to add a helper similar
+alloc_pages_node or to directly call __alloc_pages_bulk specifying a node
+and using GFP_THISNODE. prepare_alloc_pages() should pick the correct
+zonelist containing only the required node.
 
-I have been working on the assumption that the ofono mailing list is
-the correct avenue to submit patches for mmsd, and I have attempted to
-submit patches on a couple of occasions:
-
-https://lists.ofono.org/hyperkitty/list/ofono@ofono.org/thread/HFGZCER3I6G52SPSG44OC4KTHDO2ZEC6/
-
-https://lists.ofono.org/hyperkitty/list/ofono@ofono.org/thread/CVOWCDC7H4G4F3N4RTUPPLOTJQ7LCHDY/
-
-I have also attempted to contact the ofono group on the IRC mailing
-list in February, January, and December in regards to submitting
-patches. I have yet to recieve a reply.
-
-At the suggestion of some other devs, I am casting a wider net to try
-to get in contact with someone to see a) who do I contact about
-submitting mmsd patches and b) is it abandoned?
-
-Thank you!
+> --
+> Vlad Rezki
 
 -- 
-Respectfully,
-Chris Talbot
-
+Mel Gorman
+SUSE Labs
