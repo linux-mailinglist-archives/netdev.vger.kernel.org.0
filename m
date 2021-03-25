@@ -2,155 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A19A5348694
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:52:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE4B348698
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235887AbhCYBvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 21:51:50 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24946 "EHLO
+        id S235928AbhCYBvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 21:51:51 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:4130 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233541AbhCYBvc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 21:51:32 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12P1pUYp024144
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:51:32 -0700
+        by vger.kernel.org with ESMTP id S235890AbhCYBvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 21:51:39 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12P1iZig002443
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:51:39 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=KY+WZnkEa22ickUop0q6SJahepXHa94vn9tr1IV0XK0=;
- b=p/LpBLTYO50yOgzox94G+pEyKRGovI1jyiZg4n/VoY5UdnLQh7knFl5Jz5wEIhan/O2u
- rgX7l/y1Vb0ujyVBm1DbOekUeDWgjdf9GpUjyKjoqwnDG9CLFqmpl9jCA9Y3NdhUh7oI
- zQjPXte07+AwCtHosPgqQrtju9KfEJBjS/M= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 37fpbm8wp0-5
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=UhQzRUGVqlmpaG5oxzZCogmkiHGM1EY6HiPT46rYNso=;
+ b=Bv6yBgPEM8aGzu40jBTCbIt9EAV+60+vt35nV2kI5Hb6MABtpZ4JQzLyHFL5RfHSIqof
+ sj3tb692w/0kZQRqY+H0Vlf9UNQ4jAujDCI1P182Lvv2fSIvkPhmHCllNBUyMTybsQ3p
+ 4mrBMmDCh23jpIVsKI4S9T/2g5FMU3yM89w= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 37fp7xrxnr-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:51:32 -0700
-Received: from intmgw006.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 24 Mar 2021 18:51:39 -0700
+Received: from intmgw002.06.ash9.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 24 Mar 2021 18:51:25 -0700
+ 15.1.2176.2; Wed, 24 Mar 2021 18:51:38 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 2FF5A29429CE; Wed, 24 Mar 2021 18:51:24 -0700 (PDT)
+        id 6BFA529429CE; Wed, 24 Mar 2021 18:51:30 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
-Date:   Wed, 24 Mar 2021 18:51:24 -0700
-Message-ID: <20210325015124.1543397-1-kafai@fb.com>
+Subject: [PATCH v2 bpf-next 01/14] bpf: Simplify freeing logic in linfo and jited_linfo
+Date:   Wed, 24 Mar 2021 18:51:30 -0700
+Message-ID: <20210325015130.1544323-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210325015124.1543397-1-kafai@fb.com>
+References: <20210325015124.1543397-1-kafai@fb.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
  definitions=2021-03-24_14:2021-03-24,2021-03-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- adultscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
- malwarescore=0 clxscore=1015 phishscore=0 suspectscore=0 mlxscore=0
- bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2103250012
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ bulkscore=0 spamscore=0 clxscore=1015 impostorscore=0 mlxscore=0
+ adultscore=0 suspectscore=0 mlxlogscore=999 lowpriorityscore=0
+ phishscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2103250011
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds support to allow bpf program calling kernel function.
+This patch simplifies the linfo freeing logic by combining
+"bpf_prog_free_jited_linfo()" and "bpf_prog_free_unused_jited_linfo()"
+into the new "bpf_prog_jit_attempt_done()".
+It is a prep work for the kernel function call support.  In a later
+patch, freeing the kernel function call descriptors will also
+be done in the "bpf_prog_jit_attempt_done()".
 
-The use case included in this set is to allow bpf-tcp-cc to directly
-call some tcp-cc helper functions (e.g. "tcp_cong_avoid_ai()").  Those
-functions have already been used by some kernel tcp-cc implementations.
+"bpf_prog_free_linfo()" is removed since it is only called by
+"__bpf_prog_put_noref()".  The kvfree() are directly called
+instead.
 
-This set will also allow the bpf-tcp-cc program to directly call the
-kernel tcp-cc implementation,  For example, a bpf_dctcp may only want to
-implement its own dctcp_cwnd_event() and reuse other dctcp_*() directly
-from the kernel tcp_dctcp.c instead of reimplementing (or
-copy-and-pasting) them.
+It also takes this chance to s/kcalloc/kvcalloc/ for the jited_linfo
+allocation.
 
-The tcp-cc kernel functions mentioned above will be white listed
-for the struct_ops bpf-tcp-cc programs to use in a later patch.
-The white listed functions are not bounded to a fixed ABI contract.
-Those functions have already been used by the existing kernel tcp-cc.
-If any of them has changed, both in-tree and out-of-tree kernel tcp-cc
-implementations have to be changed.  The same goes for the struct_ops
-bpf-tcp-cc programs which have to be adjusted accordingly.
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+---
+ include/linux/filter.h |  3 +--
+ kernel/bpf/core.c      | 35 ++++++++++++-----------------------
+ kernel/bpf/syscall.c   |  3 ++-
+ kernel/bpf/verifier.c  |  4 ++--
+ 4 files changed, 17 insertions(+), 28 deletions(-)
 
-Please see individual patch for details.
-
-v2:
-- Patch 2 in v1 is removed.  No need to support extern func in kernel.
-  Changed libbpf to adjust the .ksyms datasec for extern func
-  in patch 11. (Andrii)
-- Name change: btf_check_func_arg_match() and btf_check_subprog_arg_match=
-()
-  in patch 2. (Andrii)
-- Always set unreliable on any error in patch 2 since it does not
-  matter. (Andrii)
-- s/kern_func/kfunc/ and s/descriptor/desc/ in this set. (Andrii)
-- Remove some unnecessary changes in disasm.h and disasm.c
-  in patch 3.  In particular, no need to change the function
-  signature in bpf_insn_revmap_call_t.  Also, removed the changes
-  in print_bpf_insn().
-- Fixed an issue in check_kfunc_call() when the calling kernel function
-  returns a pointer in patch 3.  Added a selftest.
-- Adjusted the verifier selftests due to the changes in the verifier log
-  in patch 3.
-- Fixed a comparison issue in kfunc_desc_cmp_by_imm() in patch 3. (Andrii=
-)
-- Name change: is_ldimm64_insn(),
-  new helper: is_call_insn() in patch 10 (Andrii)
-- Move btf_func_linkage() from btf.h to libbpf.c in patch 11. (Andrii)
-- Fixed the linker error when CONFIG_BPF_SYSCALL is not defined.
-  Moved the check_kfunc_call from filter.c to test_run.c in patch 14.
-  (kernel test robot)
-
-Martin KaFai Lau (14):
-  bpf: Simplify freeing logic in linfo and jited_linfo
-  bpf: Refactor btf_check_func_arg_match
-  bpf: Support bpf program calling kernel function
-  bpf: Support kernel function call in x86-32
-  tcp: Rename bictcp function prefix to cubictcp
-  bpf: tcp: Put some tcp cong functions in allowlist for bpf-tcp-cc
-  libbpf: Refactor bpf_object__resolve_ksyms_btf_id
-  libbpf: Refactor codes for finding btf id of a kernel symbol
-  libbpf: Rename RELO_EXTERN to RELO_EXTERN_VAR
-  libbpf: Record extern sym relocation first
-  libbpf: Support extern kernel function
-  bpf: selftests: Rename bictcp to bpf_cubic
-  bpf: selftests: bpf_cubic and bpf_dctcp calling kernel functions
-  bpf: selftests: Add kfunc_call test
-
- arch/x86/net/bpf_jit_comp.c                   |   5 +
- arch/x86/net/bpf_jit_comp32.c                 | 198 +++++++++
- include/linux/bpf.h                           |  34 +-
- include/linux/btf.h                           |   6 +
- include/linux/filter.h                        |   4 +-
- include/uapi/linux/bpf.h                      |   4 +
- kernel/bpf/btf.c                              | 218 ++++++----
- kernel/bpf/core.c                             |  47 +--
- kernel/bpf/disasm.c                           |  13 +-
- kernel/bpf/syscall.c                          |   4 +-
- kernel/bpf/verifier.c                         | 376 +++++++++++++++--
- net/bpf/test_run.c                            |  28 ++
- net/core/filter.c                             |   1 +
- net/ipv4/bpf_tcp_ca.c                         |  41 ++
- net/ipv4/tcp_cubic.c                          |  24 +-
- tools/include/uapi/linux/bpf.h                |   4 +
- tools/lib/bpf/libbpf.c                        | 389 +++++++++++++-----
- tools/testing/selftests/bpf/bpf_tcp_helpers.h |  29 +-
- .../selftests/bpf/prog_tests/kfunc_call.c     |  59 +++
- tools/testing/selftests/bpf/progs/bpf_cubic.c |  36 +-
- tools/testing/selftests/bpf/progs/bpf_dctcp.c |  22 +-
- .../selftests/bpf/progs/kfunc_call_test.c     |  47 +++
- .../bpf/progs/kfunc_call_test_subprog.c       |  42 ++
- tools/testing/selftests/bpf/verifier/calls.c  |  12 +-
- .../selftests/bpf/verifier/dead_code.c        |  10 +-
- 25 files changed, 1334 insertions(+), 319 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/kfunc_call.c
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_test_sub=
-prog.c
-
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index b2b85b2cad8e..0d9c710eb050 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -877,8 +877,7 @@ void bpf_prog_free_linfo(struct bpf_prog *prog);
+ void bpf_prog_fill_jited_linfo(struct bpf_prog *prog,
+ 			       const u32 *insn_to_jit_off);
+ int bpf_prog_alloc_jited_linfo(struct bpf_prog *prog);
+-void bpf_prog_free_jited_linfo(struct bpf_prog *prog);
+-void bpf_prog_free_unused_jited_linfo(struct bpf_prog *prog);
++void bpf_prog_jit_attempt_done(struct bpf_prog *prog);
+=20
+ struct bpf_prog *bpf_prog_alloc(unsigned int size, gfp_t gfp_extra_flags=
+);
+ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_ex=
+tra_flags);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 3a283bf97f2f..4a6dd327446b 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -143,25 +143,22 @@ int bpf_prog_alloc_jited_linfo(struct bpf_prog *pro=
+g)
+ 	if (!prog->aux->nr_linfo || !prog->jit_requested)
+ 		return 0;
+=20
+-	prog->aux->jited_linfo =3D kcalloc(prog->aux->nr_linfo,
+-					 sizeof(*prog->aux->jited_linfo),
+-					 GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
++	prog->aux->jited_linfo =3D kvcalloc(prog->aux->nr_linfo,
++					  sizeof(*prog->aux->jited_linfo),
++					  GFP_KERNEL_ACCOUNT | __GFP_NOWARN);
+ 	if (!prog->aux->jited_linfo)
+ 		return -ENOMEM;
+=20
+ 	return 0;
+ }
+=20
+-void bpf_prog_free_jited_linfo(struct bpf_prog *prog)
++void bpf_prog_jit_attempt_done(struct bpf_prog *prog)
+ {
+-	kfree(prog->aux->jited_linfo);
+-	prog->aux->jited_linfo =3D NULL;
+-}
+-
+-void bpf_prog_free_unused_jited_linfo(struct bpf_prog *prog)
+-{
+-	if (prog->aux->jited_linfo && !prog->aux->jited_linfo[0])
+-		bpf_prog_free_jited_linfo(prog);
++	if (prog->aux->jited_linfo &&
++	    (!prog->jited || !prog->aux->jited_linfo[0])) {
++		kvfree(prog->aux->jited_linfo);
++		prog->aux->jited_linfo =3D NULL;
++	}
+ }
+=20
+ /* The jit engine is responsible to provide an array
+@@ -217,12 +214,6 @@ void bpf_prog_fill_jited_linfo(struct bpf_prog *prog=
+,
+ 			insn_to_jit_off[linfo[i].insn_off - insn_start - 1];
+ }
+=20
+-void bpf_prog_free_linfo(struct bpf_prog *prog)
+-{
+-	bpf_prog_free_jited_linfo(prog);
+-	kvfree(prog->aux->linfo);
+-}
+-
+ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int =
+size,
+ 				  gfp_t gfp_extra_flags)
+ {
+@@ -1866,15 +1857,13 @@ struct bpf_prog *bpf_prog_select_runtime(struct b=
+pf_prog *fp, int *err)
+ 			return fp;
+=20
+ 		fp =3D bpf_int_jit_compile(fp);
+-		if (!fp->jited) {
+-			bpf_prog_free_jited_linfo(fp);
++		bpf_prog_jit_attempt_done(fp);
+ #ifdef CONFIG_BPF_JIT_ALWAYS_ON
++		if (!fp->jited) {
+ 			*err =3D -ENOTSUPP;
+ 			return fp;
+-#endif
+-		} else {
+-			bpf_prog_free_unused_jited_linfo(fp);
+ 		}
++#endif
+ 	} else {
+ 		*err =3D bpf_prog_offload_compile(fp);
+ 		if (*err)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index c859bc46d06c..78a653e25df0 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1689,7 +1689,8 @@ static void __bpf_prog_put_noref(struct bpf_prog *p=
+rog, bool deferred)
+ {
+ 	bpf_prog_kallsyms_del_all(prog);
+ 	btf_put(prog->aux->btf);
+-	bpf_prog_free_linfo(prog);
++	kvfree(prog->aux->jited_linfo);
++	kvfree(prog->aux->linfo);
+ 	if (prog->aux->attach_btf)
+ 		btf_put(prog->aux->attach_btf);
+=20
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index e26c5170c953..0cfe39023fe5 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -11742,7 +11742,7 @@ static int jit_subprogs(struct bpf_verifier_env *=
+env)
+ 	prog->bpf_func =3D func[0]->bpf_func;
+ 	prog->aux->func =3D func;
+ 	prog->aux->func_cnt =3D env->subprog_cnt;
+-	bpf_prog_free_unused_jited_linfo(prog);
++	bpf_prog_jit_attempt_done(prog);
+ 	return 0;
+ out_free:
+ 	for (i =3D 0; i < env->subprog_cnt; i++) {
+@@ -11765,7 +11765,7 @@ static int jit_subprogs(struct bpf_verifier_env *=
+env)
+ 		insn->off =3D 0;
+ 		insn->imm =3D env->insn_aux_data[i].call_imm;
+ 	}
+-	bpf_prog_free_jited_linfo(prog);
++	bpf_prog_jit_attempt_done(prog);
+ 	return err;
+ }
+=20
 --=20
 2.30.2
 
