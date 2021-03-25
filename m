@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 516433497DF
+	by mail.lfdr.de (Postfix) with ESMTP id 9D8A83497E0
 	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:25:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbhCYRYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 13:24:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20996 "EHLO
+        id S230098AbhCYRYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 13:24:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58234 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229908AbhCYRY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 13:24:29 -0400
+        by vger.kernel.org with ESMTP id S229984AbhCYRYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 13:24:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616693068;
+        s=mimecast20190719; t=1616693071;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kj+02GhskfLY0G3Xmm+DUMuMtaEG0DTXPMkRuwd9xU8=;
-        b=gU0a9MUWvdfWn6WwnMnxjCkBU3YUrz0GlxbCB816Ovsns8xosR+yM0LkmPfEsGZZ2NvSdM
-        Oe7jC5m/Z7hFQaY/grNNH9SQIwbflcib5qGcJEruBIMQtrKCOiNhd8RO2Seh+70lkdD7A1
-        TLNKY03raDCTeZ+gOCyjpc8OKVyRLZ8=
+        bh=6ILxEghaIijc/ZBEYoThX2CXg3jWa3dtNjMIooaRA6c=;
+        b=PeSKF8EaLJ0sRTrUs9r+5sWI7Rh9NbYDiPJbsB+s4J45vvTQce747SHpsteqCIrd4bnCoO
+        I4xnLpfevefGTDtHBZJGKJSJ+3ptc/u9k/6oo6RlrD0dedQDFjyTUCTT+QX/u3CkrKnUNo
+        it32NkvhxKZHDaNI94QRFHRwcy+/g4k=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-405-bmg7UaSgOB-DRWTz3OxDjg-1; Thu, 25 Mar 2021 13:24:25 -0400
-X-MC-Unique: bmg7UaSgOB-DRWTz3OxDjg-1
+ us-mta-525-IQOOhvi3OU-olXng0Ox0Aw-1; Thu, 25 Mar 2021 13:24:27 -0400
+X-MC-Unique: IQOOhvi3OU-olXng0Ox0Aw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5BE11801817;
-        Thu, 25 Mar 2021 17:24:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A0E783DD33;
+        Thu, 25 Mar 2021 17:24:25 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-113-211.ams2.redhat.com [10.36.113.211])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CC228764F2;
-        Thu, 25 Mar 2021 17:24:21 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B1C11794A0;
+        Thu, 25 Mar 2021 17:24:23 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -40,9 +40,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Willem de Bruijn <willemb@google.com>,
         Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
-Date:   Thu, 25 Mar 2021 18:24:00 +0100
-Message-Id: <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 2/8] udp: skip L4 aggregation for UDP tunnel packets
+Date:   Thu, 25 Mar 2021 18:24:01 +0100
+Message-Id: <400ebbc750178183155a9419cd5c3d32f53abcef.1616692794.git.pabeni@redhat.com>
 In-Reply-To: <cover.1616692794.git.pabeni@redhat.com>
 References: <cover.1616692794.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -52,88 +52,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When UDP packets generated locally by a socket with UDP_SEGMENT
-traverse the following path:
+If NETIF_F_GRO_FRAGLIST or NETIF_F_GRO_UDP_FWD are enabled, and there
+are UDP tunnels available in the system, udp_gro_receive() could end-up
+doing L4 aggregation (either SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST) at
+the outer UDP tunnel level for packets effectively carrying and UDP
+tunnel header.
 
-UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
-	UDP tunnel (rx) -> UDP socket (no UDP_GRO)
+That could cause inner protocol corruption. If e.g. the relevant
+packets carry a vxlan header, different vxlan ids will be ignored/
+aggregated to the same GSO packet. Inner headers will be ignored, too,
+so that e.g. TCP over vxlan push packets will be held in the GRO
+engine till the next flush, etc.
 
-they are segmented as part of the rx socket receive operation, and
-present a CHECKSUM_NONE after segmentation.
+Just skip the SKB_GSO_UDP_L4 and SKB_GSO_FRAGLIST code path if the
+current packet could land in a UDP tunnel, and let udp_gro_receive()
+do GRO via udp_sk(sk)->gro_receive.
 
-Additionally the segmented packets UDP CB still refers to the original
-GSO packet len. Overall that causes unexpected/wrong csum validation
-errors later in the UDP receive path.
+The check implemented in this patch is broader than what is strictly
+needed, as the existing UDP tunnel could be e.g. configured on top of
+a different device: we could end-up skipping GRO at-all for some packets.
 
-We could possibly address the issue with some additional checks and
-csum mangling in the UDP tunnel code. Since the issue affects only
-this UDP receive slow path, let's set a suitable csum status there.
+Anyhow, the latter is a very thin corner case and covering it would add
+quite a bit of complexity.
 
 v1 -> v2:
- - restrict the csum update to the packets strictly needing them
- - hopefully clarify the commit message and code comments
+ - hopefully clarify the commit message
 
+Fixes: 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.")
+Fixes: 36707061d6ba ("udp: allow forwarding of plain (non-fraglisted) UDP GRO packets")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- include/net/udp.h | 18 ++++++++++++++++++
- net/ipv4/udp.c    |  2 ++
- net/ipv6/udp.c    |  1 +
- 3 files changed, 21 insertions(+)
+ net/ipv4/udp_offload.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index d4d064c592328..7fc735919f4df 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -515,6 +515,24 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
- 	return segs;
- }
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index c5b4b586570fe..25134a3548e99 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -515,21 +515,24 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+ 	unsigned int off = skb_gro_offset(skb);
+ 	int flush = 1;
  
-+static inline void udp_post_segment_fix_csum(struct sk_buff *skb)
-+{
-+	/* UDP-lite can't land here - no GRO */
-+	WARN_ON_ONCE(UDP_SKB_CB(skb)->partial_cov);
-+
-+	/* UDP packets generated with UDP_SEGMENT and traversing:
-+	 * UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) -> UDP tunnel (rx)
-+	 * land here with CHECKSUM_NONE. Instead of adding another check
-+	 * in the tunnel fastpath, we can force valid csums here:
-+	 * packets are locally generated and the GRO engine already validated
-+	 * the csum.
-+	 * Additionally fixup the UDP CB
++	/* we can do L4 aggregation only if the packet can't land in a tunnel
++	 * otherwise we could corrupt the inner stream
 +	 */
-+	UDP_SKB_CB(skb)->cscov = skb->len;
-+	if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
-+		skb->csum_valid = 1;
-+}
-+
- #ifdef CONFIG_BPF_SYSCALL
- struct sk_psock;
- struct proto *udp_bpf_get_proto(struct sock *sk, struct sk_psock *psock);
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4a0478b17243a..fe85dcf8c0087 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2178,6 +2178,8 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 	segs = udp_rcv_segment(sk, skb, true);
- 	skb_list_walk_safe(segs, skb, next) {
- 		__skb_pull(skb, skb_transport_offset(skb));
-+
-+		udp_post_segment_fix_csum(skb);
- 		ret = udp_queue_rcv_one_skb(sk, skb);
- 		if (ret > 0)
- 			ip_protocol_deliver_rcu(dev_net(skb->dev), skb, ret);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index d25e5a9252fdb..fa2f547383925 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -749,6 +749,7 @@ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 	skb_list_walk_safe(segs, skb, next) {
- 		__skb_pull(skb, skb_transport_offset(skb));
+ 	NAPI_GRO_CB(skb)->is_flist = 0;
+-	if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
+-		NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
++	if (!sk || !udp_sk(sk)->gro_receive) {
++		if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
++			NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled : 1;
  
-+		udp_post_segment_fix_csum(skb);
- 		ret = udpv6_queue_rcv_one_skb(sk, skb);
- 		if (ret > 0)
- 			ip6_protocol_deliver_rcu(dev_net(skb->dev), skb, ret,
+-	if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
+-	    (sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist) {
+-		pp = call_gro_receive(udp_gro_receive_segment, head, skb);
++		if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
++		    (sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist)
++			pp = call_gro_receive(udp_gro_receive_segment, head, skb);
+ 		return pp;
+ 	}
+ 
+-	if (!sk || NAPI_GRO_CB(skb)->encap_mark ||
++	if (NAPI_GRO_CB(skb)->encap_mark ||
+ 	    (uh->check && skb->ip_summed != CHECKSUM_PARTIAL &&
+ 	     NAPI_GRO_CB(skb)->csum_cnt == 0 &&
+-	     !NAPI_GRO_CB(skb)->csum_valid) ||
+-	    !udp_sk(sk)->gro_receive)
++	     !NAPI_GRO_CB(skb)->csum_valid))
+ 		goto out;
+ 
+ 	/* mark that this skb passed once through the tunnel gro layer */
 -- 
 2.26.2
 
