@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91A74349001
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 12:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E662034901A
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 12:33:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbhCYLb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 07:31:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35460 "EHLO mail.kernel.org"
+        id S231927AbhCYLb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 07:31:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231352AbhCYL3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 07:29:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E98C661A3B;
-        Thu, 25 Mar 2021 11:27:26 +0000 (UTC)
+        id S230231AbhCYL3b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 07:29:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A7C561A35;
+        Thu, 25 Mar 2021 11:27:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616671647;
-        bh=Y0ZCc5Bmanmc/FIOXXPlkJRrjauYRsPgoYbUy4EQJ90=;
+        s=k20201202; t=1616671660;
+        bh=uBIhWWjaumqUkT48h+0CFrN6UT3+lsecp0oxcgqB+l0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YWffYd9ocFP8oVaLmIA8+JUvNwWvmNPhZy9fEjtdWdFj6Shle/9o+rRYC5p6YpCs8
-         UbnCD89js+ZkyWRtya6S0xyOJosZsGK+61542SB1eCqUwhapYq9C18lZsEW64mA9ML
-         62sdFc7rgXdul0BqESswW8QnnC1Q3hG9iQEwOrn67bTtLDLAfZZdTpKZ1DE1tWuTC8
-         hZ2MRgrfe/Ab1y1/eROYj0AwhQgosQzh+pn9dtU7hDY6iQ5mSGBgf6yow+tD2pq+Mb
-         wBb1Q/gWqiyKZszxm30dp1mQp4sc2RgE45yQ9V1vCxAEtYX/xq6O/uTbW9c9qd5KiA
-         vEjJ54RmLibZw==
+        b=t1M3trFFjrYvrnqMneur+zObD9A/jRGEniPC/n6NPWLhDXMM16jdk7Oinl+pOqF2s
+         b6Z01I2ZBWrY79cQ93nXaREaaCpAxVujdkR25RydYvTdOV0+bSTibDoMKIbgDXpx/I
+         /48hV/kafooP+jPu64AeBOpNGprxq0Un0FZNi1FtEpgglCCIbVDp+fdptD6NiKBoja
+         FHtSNQluEIUUYjJwWGiR6/VY2O9YX5Pe2MWpomXl913NSFVJK8rjFsSIEzKkP0lfq2
+         DUTMQgZuB2HABebiP4bXD44irf57gNlpiSFIA+zZkq/Q4t9pj1LCSDeg2wq+jDkUKo
+         fbkLc4szhWR4Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "J. Bruce Fields" <bfields@redhat.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/20] rpc: fix NULL dereference on kmalloc failure
-Date:   Thu, 25 Mar 2021 07:27:06 -0400
-Message-Id: <20210325112724.1928174-2-sashal@kernel.org>
+Cc:     Laurent Vivier <lvivier@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 12/20] vhost: Fix vhost_vq_reset()
+Date:   Thu, 25 Mar 2021 07:27:16 -0400
+Message-Id: <20210325112724.1928174-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210325112724.1928174-1-sashal@kernel.org>
 References: <20210325112724.1928174-1-sashal@kernel.org>
@@ -43,62 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "J. Bruce Fields" <bfields@redhat.com>
+From: Laurent Vivier <lvivier@redhat.com>
 
-[ Upstream commit 0ddc942394013f08992fc379ca04cffacbbe3dae ]
+[ Upstream commit beb691e69f4dec7bfe8b81b509848acfd1f0dbf9 ]
 
-I think this is unlikely but possible:
+vhost_reset_is_le() is vhost_init_is_le(), and in the case of
+cross-endian legacy, vhost_init_is_le() depends on vq->user_be.
 
-svc_authenticate sets rq_authop and calls svcauth_gss_accept.  The
-kmalloc(sizeof(*svcdata), GFP_KERNEL) fails, leaving rq_auth_data NULL,
-and returning SVC_DENIED.
+vq->user_be is set by vhost_disable_cross_endian().
 
-This causes svc_process_common to go to err_bad_auth, and eventually
-call svc_authorise.  That calls ->release == svcauth_gss_release, which
-tries to dereference rq_auth_data.
+But in vhost_vq_reset(), we have:
 
-Signed-off-by: J. Bruce Fields <bfields@redhat.com>
-Link: https://lore.kernel.org/linux-nfs/3F1B347F-B809-478F-A1E9-0BE98E22B0F0@oracle.com/T/#t
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+    vhost_reset_is_le(vq);
+    vhost_disable_cross_endian(vq);
+
+And so user_be is used before being set.
+
+To fix that, reverse the lines order as there is no other dependency
+between them.
+
+Signed-off-by: Laurent Vivier <lvivier@redhat.com>
+Link: https://lore.kernel.org/r/20210312140913.788592-1-lvivier@redhat.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/auth_gss/svcauth_gss.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/vhost/vhost.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
-index ab086081be9c..a85d78d2bdb7 100644
---- a/net/sunrpc/auth_gss/svcauth_gss.c
-+++ b/net/sunrpc/auth_gss/svcauth_gss.c
-@@ -1766,11 +1766,14 @@ static int
- svcauth_gss_release(struct svc_rqst *rqstp)
- {
- 	struct gss_svc_data *gsd = (struct gss_svc_data *)rqstp->rq_auth_data;
--	struct rpc_gss_wire_cred *gc = &gsd->clcred;
-+	struct rpc_gss_wire_cred *gc;
- 	struct xdr_buf *resbuf = &rqstp->rq_res;
- 	int stat = -EINVAL;
- 	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
- 
-+	if (!gsd)
-+		goto out;
-+	gc = &gsd->clcred;
- 	if (gc->gc_proc != RPC_GSS_PROC_DATA)
- 		goto out;
- 	/* Release can be called twice, but we only wrap once. */
-@@ -1811,10 +1814,10 @@ svcauth_gss_release(struct svc_rqst *rqstp)
- 	if (rqstp->rq_cred.cr_group_info)
- 		put_group_info(rqstp->rq_cred.cr_group_info);
- 	rqstp->rq_cred.cr_group_info = NULL;
--	if (gsd->rsci)
-+	if (gsd && gsd->rsci) {
- 		cache_put(&gsd->rsci->h, sn->rsc_cache);
--	gsd->rsci = NULL;
--
-+		gsd->rsci = NULL;
-+	}
- 	return stat;
- }
- 
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 98b6eb902df9..732327756ee1 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -322,8 +322,8 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+ 	vq->kick = NULL;
+ 	vq->call_ctx = NULL;
+ 	vq->log_ctx = NULL;
+-	vhost_reset_is_le(vq);
+ 	vhost_disable_cross_endian(vq);
++	vhost_reset_is_le(vq);
+ 	vq->busyloop_timeout = 0;
+ 	vq->umem = NULL;
+ 	vq->iotlb = NULL;
 -- 
 2.30.1
 
