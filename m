@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E21F34992D
+	by mail.lfdr.de (Postfix) with ESMTP id 52E3234992C
 	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 19:09:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbhCYSIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 14:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
+        id S230059AbhCYSIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 14:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbhCYSIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 14:08:30 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FC1C06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:08:30 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id l123so2867170pfl.8
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:08:30 -0700 (PDT)
+        with ESMTP id S230146AbhCYSId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 14:08:33 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2170C06175F
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:08:32 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id y5so2899195pfn.1
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:08:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mKM7oVa6y4nRhPmxzoHcqCS8UgaRTsod5Gj4cIVnOUQ=;
-        b=Ik5DyOQ0268vxwbOq0Xv8E063JV8OgGI298Wr5PCP4bFrNVDB0mB0qSsquH9aHqOzn
-         JWM01LW5f2QvpZxckwge7YWHlq7J6S9ki1KuL5sDloilPskq51KV4/fhcLpmSLk2onDZ
-         U7CyYKBph2aX8MNxbByWuYqHAchrP+JOjCo/YBqk1BQTaNKd+YxbYUhoreYJpHljCP/W
-         9/sCrh+X7KBjxtFeRXZx8A0G6RzE7H7OTjGCfkOiRmbo85rZzV3v7qzbn6by5VWUj079
-         Yu4iiUmLTBbSsYoA1Z1An0CoiOpaCv16G+AY8+5E9I8dvd9TMrie6SHb3GVk7UZyGK/d
-         i1yw==
+        bh=YNpC8NhdW9tWzF3J/HjQSg/ShP8h4yjI1tok4iieMKU=;
+        b=aIq9hR1DM6Rbj5yROX6c7dJXBwxR/x9g2T27J0zJhz160wFriAmisKdBOzGDZY5HMm
+         ic8EznSZU7aeuq/D8ag9R9jWyRzaSf2cPggJ+CVMucJTuaMzGV1Purz84CsR93IZZff4
+         s26ABsCYViX8+Nl5YH833ulPKIcrXWvXQbU86XbSdRjMbzrO2sNbzoLRd4jp8BqrPc7+
+         CQQl2yq0z/U+hyna/4Q4lXiDMnSUKiKkoGh6ek6NNvw4N3BF/RxqwnRdUEO7rvO/g9mO
+         Ps9xLiXygbhAzgwJ+eoMpe38UQRjoX9zK6qsTn0mfCyeu4CeGfSekp91TuDPiFoGSmWL
+         lhMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mKM7oVa6y4nRhPmxzoHcqCS8UgaRTsod5Gj4cIVnOUQ=;
-        b=U4GQ+cR4g5Nr24mfH/ZnhR4L+lRymX4waoTd2Ns9UTlOJmEWex/Fc17HqtWJbEVgSW
-         IctASM5PKgjeHxPewIBFdMdvsE79ihrJoEO1BrI+VCX025x/iC0NFgkSIbwrzMscmowM
-         NMVAkPg4rQ+PIXEWUuoZl2iEOfA/Sxni7ayvUOTqvYKVo8stjrqufsZW7ClhJRQKonEw
-         cynCxGO/pgDEiA73nDkh3PRzgCbfCjV+xxkN37l+ObtrndjO8US+QXkxQdz7Cq3rCq3X
-         nmm1QIScZzMAZzil399PVrSCvZoodjkSoyzyVkjPJHZicz8DbEMIdrSFOeBoev5zntQw
-         tRuA==
-X-Gm-Message-State: AOAM5324DSRnODvkeGlbilLlRSP1bp6/5ksOvFNTpN8pYyEjo9uTWPlI
-        s5AtaXPg8QbsdNH54715myc=
-X-Google-Smtp-Source: ABdhPJyV+7uWw9+TVLJy/QfjjfsMbXnQPoKU4kqNbz1aGGM6n40WwXBtc4DF4mAukwjPlR6O+Wbi5A==
-X-Received: by 2002:a63:b12:: with SMTP id 18mr8673782pgl.45.1616695710056;
-        Thu, 25 Mar 2021 11:08:30 -0700 (PDT)
+        bh=YNpC8NhdW9tWzF3J/HjQSg/ShP8h4yjI1tok4iieMKU=;
+        b=mDN1ok5VboewkBxbfbN6hZoJtaq5NTVCiFuJcKU16wHbjQlaq5JiRcgSd9HcjRZAbS
+         7bpD6exvS1VFA5yap+EopIyDqUIN5qWNX13PfhViNYr/kmbhlcoAVmiZdqQNw2t9aPEl
+         bRN6Mr2e3Jca9JtuFuA+FqS2NyxHcUbJ/3B9F56vMG30BlDTWNRont3ElMwkM68RO0wC
+         Ccy4VZ0lND9eGPeh04bOytsGilyjAaIEx08LpbP/v6gJZMuNYOgw/fb/0YiS2d0ZWFbH
+         ziBGdlBwjWCo2urGE4FYb+4g1yDryM8TNaRlYKqyOt52TEgg9qikN/kaCHMjdAlq490W
+         M5fg==
+X-Gm-Message-State: AOAM530RWe0QC2J4G2/3bjiXyKMZfWAf8Hp6jsZb4ELW9qNCcxEAvrFb
+        9YeB1di5eh8unB4nMJ8/HNg=
+X-Google-Smtp-Source: ABdhPJxj8M83zPPAiy3jGJ9WCYG2Bf6Xn/liweJiWTlbjB8WwedER7GOvHoJnW4c5W0Gw2zxsqvEGQ==
+X-Received: by 2002:a62:6413:0:b029:1f3:a5b4:d978 with SMTP id y19-20020a6264130000b02901f3a5b4d978mr9174564pfb.44.1616695712251;
+        Thu, 25 Mar 2021 11:08:32 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2c0c:35d8:b060:81b3])
-        by smtp.gmail.com with ESMTPSA id j20sm5968359pjn.27.2021.03.25.11.08.29
+        by smtp.gmail.com with ESMTPSA id j20sm5968359pjn.27.2021.03.25.11.08.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 11:08:29 -0700 (PDT)
+        Thu, 25 Mar 2021 11:08:31 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 1/5] sysctl: add proc_dou8vec_minmax()
-Date:   Thu, 25 Mar 2021 11:08:13 -0700
-Message-Id: <20210325180817.840042-2-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 2/5] ipv4: shrink netns_ipv4 with sysctl conversions
+Date:   Thu, 25 Mar 2021 11:08:14 -0700
+Message-Id: <20210325180817.840042-3-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
 In-Reply-To: <20210325180817.840042-1-eric.dumazet@gmail.com>
 References: <20210325180817.840042-1-eric.dumazet@gmail.com>
@@ -67,140 +67,250 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Networking has many sysctls that could fit in one u8.
+These sysctls that can fit in one byte instead of one int
+are converted to save space and thus reduce cache line misses.
 
-This patch adds proc_dou8vec_minmax() for this purpose.
-
-Note that the .extra1 and .extra2 fields are pointing
-to integers, because it makes conversions easier.
+ - icmp_echo_ignore_all, icmp_echo_ignore_broadcasts,
+ - icmp_ignore_bogus_error_responses, icmp_errors_use_inbound_ifaddr
+ - tcp_ecn, tcp_ecn_fallback
+ - ip_default_ttl, ip_no_pmtu_disc, ip_fwd_use_pmtu
+ - ip_nonlocal_bind, ip_autobind_reuse
+ - ip_dynaddr, ip_early_demux, raw_l3mdev_accept
+ - nexthop_compat_mode, fwmark_reflect
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- fs/proc/proc_sysctl.c  |  6 ++++
- include/linux/sysctl.h |  2 ++
- kernel/sysctl.c        | 65 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 73 insertions(+)
+ include/net/netns/ipv4.h   | 32 +++++++++----------
+ net/ipv4/sysctl_net_ipv4.c | 64 +++++++++++++++++++-------------------
+ 2 files changed, 48 insertions(+), 48 deletions(-)
 
-diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-index 984e42f8cb112ab026560835517630fe843462c2..7256b8962e3cb42a1f40050b61d44b47d959b70a 100644
---- a/fs/proc/proc_sysctl.c
-+++ b/fs/proc/proc_sysctl.c
-@@ -1108,6 +1108,11 @@ static int sysctl_check_table_array(const char *path, struct ctl_table *table)
- 			err |= sysctl_err(path, table, "array not allowed");
- 	}
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 9e3cb2722b804bc6618632128185c311e5210146..7b572d468fde5ae104ecdf4bd5b8118290deb81d 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -83,36 +83,36 @@ struct netns_ipv4 {
+ 	struct xt_table		*nat_table;
+ #endif
  
-+	if (table->proc_handler == proc_dou8vec_minmax) {
-+		if (table->maxlen != sizeof(u8))
-+			err |= sysctl_err(path, table, "array not allowed");
-+	}
-+
- 	return err;
- }
+-	int sysctl_icmp_echo_ignore_all;
+-	int sysctl_icmp_echo_ignore_broadcasts;
+-	int sysctl_icmp_ignore_bogus_error_responses;
++	u8 sysctl_icmp_echo_ignore_all;
++	u8 sysctl_icmp_echo_ignore_broadcasts;
++	u8 sysctl_icmp_ignore_bogus_error_responses;
++	u8 sysctl_icmp_errors_use_inbound_ifaddr;
+ 	int sysctl_icmp_ratelimit;
+ 	int sysctl_icmp_ratemask;
+-	int sysctl_icmp_errors_use_inbound_ifaddr;
  
-@@ -1123,6 +1128,7 @@ static int sysctl_check_table(const char *path, struct ctl_table *table)
- 		    (table->proc_handler == proc_douintvec) ||
- 		    (table->proc_handler == proc_douintvec_minmax) ||
- 		    (table->proc_handler == proc_dointvec_minmax) ||
-+		    (table->proc_handler == proc_dou8vec_minmax) ||
- 		    (table->proc_handler == proc_dointvec_jiffies) ||
- 		    (table->proc_handler == proc_dointvec_userhz_jiffies) ||
- 		    (table->proc_handler == proc_dointvec_ms_jiffies) ||
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 51298a4f4623573a6628718193331fb4f31d5469..d99ca99837debe2ab1f1141faf4e2566ae9b0ddb 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -53,6 +53,8 @@ int proc_douintvec(struct ctl_table *, int, void *, size_t *, loff_t *);
- int proc_dointvec_minmax(struct ctl_table *, int, void *, size_t *, loff_t *);
- int proc_douintvec_minmax(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos);
-+int proc_dou8vec_minmax(struct ctl_table *table, int write, void *buffer,
-+			size_t *lenp, loff_t *ppos);
- int proc_dointvec_jiffies(struct ctl_table *, int, void *, size_t *, loff_t *);
- int proc_dointvec_userhz_jiffies(struct ctl_table *, int, void *, size_t *,
- 		loff_t *);
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 62fbd09b5dc1c03eca02f0f99af6b9e0d1df44ac..90d2892ef6a3fcf9ad0043b660128fa45de26778 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1034,6 +1034,65 @@ int proc_douintvec_minmax(struct ctl_table *table, int write,
- 				 do_proc_douintvec_minmax_conv, &param);
- }
+ 	struct local_ports ip_local_ports;
  
-+/**
-+ * proc_dou8vec_minmax - read a vector of unsigned chars with min/max values
-+ * @table: the sysctl table
-+ * @write: %TRUE if this is a write to the sysctl file
-+ * @buffer: the user buffer
-+ * @lenp: the size of the user buffer
-+ * @ppos: file position
-+ *
-+ * Reads/writes up to table->maxlen/sizeof(u8) unsigned chars
-+ * values from/to the user buffer, treated as an ASCII string. Negative
-+ * strings are not allowed.
-+ *
-+ * This routine will ensure the values are within the range specified by
-+ * table->extra1 (min) and table->extra2 (max).
-+ *
-+ * Returns 0 on success or an error on write when the range check fails.
-+ */
-+int proc_dou8vec_minmax(struct ctl_table *table, int write,
-+			void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	struct ctl_table tmp;
-+	unsigned int min = 0, max = 255U, val;
-+	u8 *data = table->data;
-+	struct do_proc_douintvec_minmax_conv_param param = {
-+		.min = &min,
-+		.max = &max,
-+	};
-+	int res;
-+
-+	/* Do not support arrays yet. */
-+	if (table->maxlen != sizeof(u8))
-+		return -EINVAL;
-+
-+	if (table->extra1) {
-+		min = *(unsigned int *) table->extra1;
-+		if (min > 255U)
-+			return -EINVAL;
-+	}
-+	if (table->extra2) {
-+		max = *(unsigned int *) table->extra2;
-+		if (max > 255U)
-+			return -EINVAL;
-+	}
-+
-+	tmp = *table;
-+
-+	tmp.maxlen = sizeof(val);
-+	tmp.data = &val;
-+	val = *data;
-+	res = do_proc_douintvec(&tmp, write, buffer, lenp, ppos,
-+				do_proc_douintvec_minmax_conv, &param);
-+	if (res)
-+		return res;
-+	if (write)
-+		*data = val;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(proc_dou8vec_minmax);
-+
- static int do_proc_dopipe_max_size_conv(unsigned long *lvalp,
- 					unsigned int *valp,
- 					int write, void *data)
-@@ -1582,6 +1641,12 @@ int proc_douintvec_minmax(struct ctl_table *table, int write,
- 	return -ENOSYS;
- }
+-	int sysctl_tcp_ecn;
+-	int sysctl_tcp_ecn_fallback;
++	u8 sysctl_tcp_ecn;
++	u8 sysctl_tcp_ecn_fallback;
  
-+int proc_dou8vec_minmax(struct ctl_table *table, int write,
-+			void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	return -ENOSYS;
-+}
-+
- int proc_dointvec_jiffies(struct ctl_table *table, int write,
- 		    void *buffer, size_t *lenp, loff_t *ppos)
- {
+-	int sysctl_ip_default_ttl;
+-	int sysctl_ip_no_pmtu_disc;
+-	int sysctl_ip_fwd_use_pmtu;
++	u8 sysctl_ip_default_ttl;
++	u8 sysctl_ip_no_pmtu_disc;
++	u8 sysctl_ip_fwd_use_pmtu;
+ 	int sysctl_ip_fwd_update_priority;
+-	int sysctl_ip_nonlocal_bind;
+-	int sysctl_ip_autobind_reuse;
++	u8 sysctl_ip_nonlocal_bind;
++	u8 sysctl_ip_autobind_reuse;
+ 	/* Shall we try to damage output packets if routing dev changes? */
+-	int sysctl_ip_dynaddr;
+-	int sysctl_ip_early_demux;
++	u8 sysctl_ip_dynaddr;
++	u8 sysctl_ip_early_demux;
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+-	int sysctl_raw_l3mdev_accept;
++	u8 sysctl_raw_l3mdev_accept;
+ #endif
+ 	int sysctl_tcp_early_demux;
+ 	int sysctl_udp_early_demux;
+ 
+-	int sysctl_nexthop_compat_mode;
++	u8 sysctl_nexthop_compat_mode;
+ 
+-	int sysctl_fwmark_reflect;
++	u8 sysctl_fwmark_reflect;
+ 	int sysctl_tcp_fwmark_accept;
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	int sysctl_tcp_l3mdev_accept;
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index f55095d3ed1656fdb8badaed7eb58832c5063299..e5ff17526603c274d50350bc1ebb21e20c598c9a 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -595,30 +595,30 @@ static struct ctl_table ipv4_net_table[] = {
+ 	{
+ 		.procname	= "icmp_echo_ignore_all",
+ 		.data		= &init_net.ipv4.sysctl_icmp_echo_ignore_all,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "icmp_echo_ignore_broadcasts",
+ 		.data		= &init_net.ipv4.sysctl_icmp_echo_ignore_broadcasts,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "icmp_ignore_bogus_error_responses",
+ 		.data		= &init_net.ipv4.sysctl_icmp_ignore_bogus_error_responses,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "icmp_errors_use_inbound_ifaddr",
+ 		.data		= &init_net.ipv4.sysctl_icmp_errors_use_inbound_ifaddr,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "icmp_ratelimit",
+@@ -645,9 +645,9 @@ static struct ctl_table ipv4_net_table[] = {
+ 	{
+ 		.procname	= "raw_l3mdev_accept",
+ 		.data		= &init_net.ipv4.sysctl_raw_l3mdev_accept,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
++		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+@@ -655,30 +655,30 @@ static struct ctl_table ipv4_net_table[] = {
+ 	{
+ 		.procname	= "tcp_ecn",
+ 		.data		= &init_net.ipv4.sysctl_tcp_ecn,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "tcp_ecn_fallback",
+ 		.data		= &init_net.ipv4.sysctl_tcp_ecn_fallback,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "ip_dynaddr",
+ 		.data		= &init_net.ipv4.sysctl_ip_dynaddr,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "ip_early_demux",
+ 		.data		= &init_net.ipv4.sysctl_ip_early_demux,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname       = "udp_early_demux",
+@@ -697,18 +697,18 @@ static struct ctl_table ipv4_net_table[] = {
+ 	{
+ 		.procname       = "nexthop_compat_mode",
+ 		.data           = &init_net.ipv4.sysctl_nexthop_compat_mode,
+-		.maxlen         = sizeof(int),
++		.maxlen         = sizeof(u8),
+ 		.mode           = 0644,
+-		.proc_handler   = proc_dointvec_minmax,
++		.proc_handler   = proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+ 	{
+ 		.procname	= "ip_default_ttl",
+ 		.data		= &init_net.ipv4.sysctl_ip_default_ttl,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
++		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= &ip_ttl_min,
+ 		.extra2		= &ip_ttl_max,
+ 	},
+@@ -729,16 +729,16 @@ static struct ctl_table ipv4_net_table[] = {
+ 	{
+ 		.procname	= "ip_no_pmtu_disc",
+ 		.data		= &init_net.ipv4.sysctl_ip_no_pmtu_disc,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "ip_forward_use_pmtu",
+ 		.data		= &init_net.ipv4.sysctl_ip_fwd_use_pmtu,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "ip_forward_update_priority",
+@@ -752,25 +752,25 @@ static struct ctl_table ipv4_net_table[] = {
+ 	{
+ 		.procname	= "ip_nonlocal_bind",
+ 		.data		= &init_net.ipv4.sysctl_ip_nonlocal_bind,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "ip_autobind_reuse",
+ 		.data		= &init_net.ipv4.sysctl_ip_autobind_reuse,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
++		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1         = SYSCTL_ZERO,
+ 		.extra2         = SYSCTL_ONE,
+ 	},
+ 	{
+ 		.procname	= "fwmark_reflect",
+ 		.data		= &init_net.ipv4.sysctl_fwmark_reflect,
+-		.maxlen		= sizeof(int),
++		.maxlen		= sizeof(u8),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
++		.proc_handler	= proc_dou8vec_minmax,
+ 	},
+ 	{
+ 		.procname	= "tcp_fwmark_accept",
 -- 
 2.31.0.291.g576ba9dcdaf-goog
 
