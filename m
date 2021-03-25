@@ -2,91 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC1C7349D0A
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 00:53:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8384A349D0C
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 00:53:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbhCYXvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 19:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231465AbhCYXvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 19:51:10 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3416C06175F
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 16:51:09 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id 15so5429223ljj.0
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 16:51:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RwgWCG0EilsxWEf/l9wl28dzUzphjxy8qzggPKyOVms=;
-        b=QwUbOly5CBlTXhyMfV6B0kwfR0uM96bywmpYQUSNQpBCP5ZGFvzx2uV7wMIQiine5G
-         YvYIOGNl3IVmj2Ep0WrgKQ5W4WXkzxX/3ZNTtLUh5ZVa0vu6qdpEJN0cEW++hoGA2kTm
-         q2m7YVJUODcm9tXh6dvV2+VJ+2qxuGLNsuXS6v6+g8DwvUoUVYRR/KubLhStLRKBtM06
-         EwVY3LO+fHP1HkNeiFQWq+OMGhp8qCjtPrxKHV0pRDwHzw6jccpDiKVmZhbUubrdYiJW
-         n4K8GYuCilX3suqWhZ8XX3BjiYGtTEoEiIiSk7X6YREtkZdwNIJPMz+4aTpxxGlfU4VU
-         P8+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RwgWCG0EilsxWEf/l9wl28dzUzphjxy8qzggPKyOVms=;
-        b=AZEt6FKZ9fTidM4vyv+OvklXtOR+qZDsInIUUDoqu9SP0dW2OcnOP+5XX7ltVYQfHC
-         zwmsGDHTkeZDPcU/kWZNbex1A69DqAgOIx/hpfj+zqH4kiLx4cI/PrSJs2Mpk9cx0kRE
-         N091VsTj8UKIy4XtilcMuTDHR21nShi7z6QvlPwTKMXxSz25KqoOKKcLXNq2ew/OR6t0
-         u7fAZ8yQ+BgLK+f6ubKgLqu0sCN0K7iAq9SKjA/5a5orCFKcATCQixP0f5tGpOVdh7Pe
-         ZSFOJi6JrCcHloEgucVmAOVhIDaF1PaAAkCxKP34IHfkcECWyaVTBDmZu37AYTn8bG5E
-         IeEg==
-X-Gm-Message-State: AOAM530+WllHaG5/fnO4UkximePRKj/8FlDUhq3ySlRsJjoNS+WIKLRa
-        cl0FHCE/Htmqj8az8guOdNCct6p9aRb0EAOmAkXNEw==
-X-Google-Smtp-Source: ABdhPJzL4e8Ue6pPom45rweGtEsx9ljLB94UQjAA6ERXa5+xPorz2hrRIe2EgkKoX9CeL+o/REm+UsXFpROhfPpPw48=
-X-Received: by 2002:a05:651c:387:: with SMTP id e7mr7254054ljp.425.1616716268168;
- Thu, 25 Mar 2021 16:51:08 -0700 (PDT)
+        id S229761AbhCYXwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 19:52:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229812AbhCYXwI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 19:52:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id DC8DB61A33;
+        Thu, 25 Mar 2021 23:52:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616716327;
+        bh=YoeSCBZuwmZaiEC1IHDfucuuBXYbPLZGL6t8Dkr/rHM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ohjydKps5PRNRNh0CLaRnvHQxhcgCv0rOQBfdzt+NgAQG4A+tARA8g0+lghGlgEXU
+         MNf2GNfik1yrv64qRe7u0PjCslW6mY6rBPCkyqnb062H13htRpqqeqMrvtfrrurv46
+         HCvLkEHwmuhn7E8EbIfMieVM9Yobw1ezRUFnBDLOt3z0ttCOaTfB8d231wuLvMFZ2T
+         l5cP+YM+haskRT2iX4DJ1tuSZBPx5atveaxDbbCqVLSnOSDfrd9MI8ZdWCYGkmES5P
+         NQs81cHACzHrPAxCkarytVySOmKLeNRP5L7RM5dzKF/4mwxt14ukPHzlDIxuqG6B49
+         evJ0jrIOhBkSw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CBF0D609E8;
+        Thu, 25 Mar 2021 23:52:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1616658992-135804-1-git-send-email-huangdaode@huawei.com> <1616658992-135804-3-git-send-email-huangdaode@huawei.com>
-In-Reply-To: <1616658992-135804-3-git-send-email-huangdaode@huawei.com>
-From:   Catherine Sullivan <csully@google.com>
-Date:   Thu, 25 Mar 2021 16:50:28 -0700
-Message-ID: <CAH_-1qxV6cjfLkP-XeJEy1mWLGR6p8o-ZMdS39HeP186ozbaHg@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: gve: remove duplicated allowed
-To:     Daode Huang <huangdaode@huawei.com>
-Cc:     Sagi Shahar <sagis@google.com>, Jon Olson <jonolson@google.com>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        David Awogbemila <awogbemila@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        Kuo Zhao <kuozhao@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 net] net: dsa: only unset VLAN filtering when last port
+ leaves last VLAN-aware bridge
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161671632783.13409.1230205311868215983.git-patchwork-notify@kernel.org>
+Date:   Thu, 25 Mar 2021 23:52:07 +0000
+References: <20210324095639.1354700-1-olteanv@gmail.com>
+In-Reply-To: <20210324095639.1354700-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        kurt@linutronix.de, tobias@waldekranz.com, vladimir.oltean@nxp.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 1:00 AM Daode Huang <huangdaode@huawei.com> wrote:
->
-> fix the WARNING of Possible repeated word: 'allowed'
->
-> Signed-off-by: Daode Huang <huangdaode@huawei.com>
+Hello:
 
-Reviewed-by: Catherine Sullivan <csully@google.com>
+This patch was applied to netdev/net.git (refs/heads/master):
 
-> ---
->  drivers/net/ethernet/google/gve/gve_ethtool.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-> index e40e052..5fb05cf 100644
-> --- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-> +++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-> @@ -388,7 +388,7 @@ static int gve_set_channels(struct net_device *netdev,
->
->         gve_get_channels(netdev, &old_settings);
->
-> -       /* Changing combined is not allowed allowed */
-> +       /* Changing combined is not allowed */
->         if (cmd->combined_count != old_settings.combined_count)
->                 return -EINVAL;
->
-> --
-> 2.8.1
->
+On Wed, 24 Mar 2021 11:56:39 +0200 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> DSA is aware of switches with global VLAN filtering since the blamed
+> commit, but it makes a bad decision when multiple bridges are spanning
+> the same switch:
+> 
+> ip link add br0 type bridge vlan_filtering 1
+> ip link add br1 type bridge vlan_filtering 1
+> ip link set swp2 master br0
+> ip link set swp3 master br0
+> ip link set swp4 master br1
+> ip link set swp5 master br1
+> ip link set swp5 nomaster
+> ip link set swp4 nomaster
+> [138665.939930] sja1105 spi0.1: port 3: dsa_core: VLAN filtering is a global setting
+> [138665.947514] DSA: failed to notify DSA_NOTIFIER_BRIDGE_LEAVE
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3,net] net: dsa: only unset VLAN filtering when last port leaves last VLAN-aware bridge
+    https://git.kernel.org/netdev/net/c/479dc497db83
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
