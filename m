@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79BF33495CF
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 16:41:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 229753495D1
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 16:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbhCYPlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 11:41:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45213 "EHLO
+        id S231423AbhCYPlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 11:41:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29090 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230095AbhCYPlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 11:41:10 -0400
+        by vger.kernel.org with ESMTP id S230516AbhCYPlM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 11:41:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616686870;
+        s=mimecast20190719; t=1616686871;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=mkkp9Q0MTI7AdziQNjihIsToFOQnGRdMmBYARReRHR8=;
-        b=Godhy7RwE7tRLKh3q7+MRXoy/pRwdNw6ceDstoC/3OrpmbuV5/TkmfBzT2KOIu/V+e9J9M
-        sOW6hLGPGqIJfF31tacfd4eiPEbqFNBfpqS5Y+j8cnUSKiKxtWO3+ljz/KdcaX2K9+SF5X
-        1QfbIcRlpDvm8ogNkmdqWmmPDGKE0xo=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-298-e1Fh-VgHMcWA1n1CI9NokQ-1; Thu, 25 Mar 2021 11:41:08 -0400
-X-MC-Unique: e1Fh-VgHMcWA1n1CI9NokQ-1
-Received: by mail-ej1-f69.google.com with SMTP id li22so2753781ejb.18
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 08:41:08 -0700 (PDT)
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1pv3/pnycfrVRu1VGxuiha38s0MxnL2KBL2zpqVHqPs=;
+        b=SD5HESCnNadaGAdw44baFdTU5VWdyWLsoGG7AZNPbJP858vzzMDa2msdyI1Zbr00MxglnM
+        3dUC/3pDoz8hw5lZ65a8vL9QJj4+JKpdgao3phMv5vYWsKU/UHHVNMNvAcPTJGrbtn8zFF
+        Q1CAAdoMzETGpMTjhVCsVi3MG8begC0=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-475-YYVIT4qVO1qqhhXf-KFyYw-1; Thu, 25 Mar 2021 11:41:09 -0400
+X-MC-Unique: YYVIT4qVO1qqhhXf-KFyYw-1
+Received: by mail-ej1-f71.google.com with SMTP id e13so2726958ejd.21
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 08:41:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mkkp9Q0MTI7AdziQNjihIsToFOQnGRdMmBYARReRHR8=;
-        b=TYqR39Pa/Xb0xWNLGcQkUw+KW7V1ybA3nOgHLvnhndY9AlR6ATeGUPcUmaf9TG67tK
-         SZSi7yIdyFp6hUafzmDdr/8vjBdTS89pCLf8W5J60QedjBuKpywmyrnPAFCJZLEIbSVu
-         ZnH1NwN0VxgsVfpm7QU+z3g3RK20UEwGW8MFkXqVe9u6Enn7qE2BarD90Tky+5PUCBTe
-         tk7Ir5QtzY0nlC+j98aOED3gjvrQ9kWyP/3WENsZO8mL5D01LogB1DcrW5QenSS5rp/e
-         0W8oPXlmAtJYkgb7WwytF/mb8b9YgRZi2H2uWT8C4dVVZeHgGh8o+U6frYkyXUsVVuEk
-         aYXg==
-X-Gm-Message-State: AOAM532Np9cNHVVv7aDR+Ja/qLpCaNI387IuB+777kfDGvcXK61TKdET
-        q0ez+c8S2A88Lgp2VrhUCuAtcna2Z/B/y6dyb+NpEXIGb3Tsof8UXhhdK7j/sLkQcZL59MEGBMx
-        UO5AGP5yvXe84eMdB
-X-Received: by 2002:a05:6402:3075:: with SMTP id bs21mr9881949edb.274.1616686866892;
-        Thu, 25 Mar 2021 08:41:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwbS3IF7eYaEHpPKdXhHOnLZDplOR/zM2ItMw4kIIUGr3miGy47ZMbfbD0l7DE1Lw9tw2rqLQ==
-X-Received: by 2002:a05:6402:3075:: with SMTP id bs21mr9881901edb.274.1616686866392;
-        Thu, 25 Mar 2021 08:41:06 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id jx22sm2567701ejc.105.2021.03.25.08.41.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1pv3/pnycfrVRu1VGxuiha38s0MxnL2KBL2zpqVHqPs=;
+        b=OOLtAgsBdSHzSyVVjRw6JZoWElpbDYkFokwIh2BuwJsFAbvGjeOlGUtrBSKRMKZp65
+         UpO0RFLzWHaMzQR5WA9j2xdHJhGqMdRBrcWdBS/oMW9s7/pSa/R9K1H7AowQxVhDihXB
+         olksAmY/Mc5u9JyUaW8HsI9fBEOg35+TNbdyCANUdCUvYNlj+yGEHVWi8VQhnAA3Ppi3
+         AeD485c7l3I/V4GghYuRH0M76ZpltR6l4P8WSaaVH+Ix9kEtqyng3wXHnKOLrVkQYYdY
+         0DVVShUn0wbtCUkbcvVGbf0sNm6ELaQzmZUMjZ0Lbi18M73YrdeQafE5YFd2H9yED4YI
+         GYog==
+X-Gm-Message-State: AOAM532stPx3DNb4LEtfrkcC3MfvAAMvo0/LjAuR2B51BuVaJ5+nfyQo
+        ZxhrneBeYzcORvee7tGFQTEbWtg/tF+jO3Bi1kCtZlrDSlt9t+wYTdH2x7zwPQ5G0B63P4rKupD
+        pL2HfP+0pT2vHtoi5
+X-Received: by 2002:a17:906:7842:: with SMTP id p2mr10621175ejm.87.1616686868501;
+        Thu, 25 Mar 2021 08:41:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxB9z7SvrRgAr/XRHVbv0Ypve+lfCS12OxaE8vE9phJpo+BTalmijrbZUf4chfPUcnZ4ioI6w==
+X-Received: by 2002:a17:906:7842:: with SMTP id p2mr10621153ejm.87.1616686868340;
+        Thu, 25 Mar 2021 08:41:08 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id o6sm2849100edw.24.2021.03.25.08.41.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 08:41:05 -0700 (PDT)
+        Thu, 25 Mar 2021 08:41:07 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 35F841801A3; Thu, 25 Mar 2021 16:41:05 +0100 (CET)
+        id D385A18028C; Thu, 25 Mar 2021 16:41:05 +0100 (CET)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -66,10 +67,12 @@ Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Andrea Arcangeli <aarcange@redhat.com>,
         Clark Williams <williams@redhat.com>, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH bpf 1/2] bpf: enforce that struct_ops programs be GPL-only
-Date:   Thu, 25 Mar 2021 16:40:33 +0100
-Message-Id: <20210325154034.85346-1-toke@redhat.com>
+Subject: [PATCH bpf 2/2] bpf/selftests: test that kernel rejects a TCP CC with an invalid license
+Date:   Thu, 25 Mar 2021 16:40:34 +0100
+Message-Id: <20210325154034.85346-2-toke@redhat.com>
 X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20210325154034.85346-1-toke@redhat.com>
+References: <20210325154034.85346-1-toke@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -77,40 +80,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the introduction of the struct_ops program type, it became possible to
-implement kernel functionality in BPF, making it viable to use BPF in place
-of a regular kernel module for these particular operations.
+This adds a selftest to check that the verifier rejects a TCP CC struct_ops
+with a non-GPL license. To save having to add a whole new BPF object just
+for this, reuse the dctcp CC, but rewrite the license field before loading.
 
-Thus far, the only user of this mechanism is for implementing TCP
-congestion control algorithms. These are clearly marked as GPL-only when
-implemented as modules (as seen by the use of EXPORT_SYMBOL_GPL for
-tcp_register_congestion_control()), so it seems like an oversight that this
-was not carried over to BPF implementations. And sine this is the only user
-of the struct_ops mechanism, just enforcing GPL-only for the struct_ops
-program type seems like the simplest way to fix this.
-
-Fixes: 0baf26b0fcd7 ("bpf: tcp: Support tcp_congestion_ops in bpf")
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- kernel/bpf/verifier.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 31 +++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 44e4ec1640f1..48dd0c0f087c 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -12166,6 +12166,11 @@ static int check_struct_ops_btf_id(struct bpf_verifier_env *env)
- 		return -ENOTSUPP;
- 	}
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+index 37c5494a0381..613cf8a00b22 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+@@ -227,10 +227,41 @@ static void test_dctcp(void)
+ 	bpf_dctcp__destroy(dctcp_skel);
+ }
  
-+	if (!prog->gpl_compatible) {
-+		verbose(env, "struct ops programs must have a GPL compatible license\n");
-+		return -EINVAL;
-+	}
++static void test_invalid_license(void)
++{
++	/* We want to check that the verifier refuses to load a non-GPL TCP CC.
++	 * Rather than create a whole new file+skeleton, just reuse an existing
++	 * object and rewrite the license in memory after loading. Sine libbpf
++	 * doesn't expose this, we define a struct that includes the first couple
++	 * of internal fields for struct bpf_object so we can overwrite the right
++	 * bits. Yes, this is a bit of a hack, but it makes the test a lot simpler.
++	 */
++	struct bpf_object_fragment {
++		char name[BPF_OBJ_NAME_LEN];
++		char license[64];
++	} *obj;
++	struct bpf_dctcp *skel;
++	int err;
 +
- 	t = st_ops->type;
- 	member_idx = prog->expected_attach_type;
- 	if (member_idx >= btf_type_vlen(t)) {
++	skel = bpf_dctcp__open();
++	if (CHECK(!skel, "bpf_dctcp__open", "failed\n"))
++		return;
++
++	obj = (void *)skel->obj;
++	obj->license[0] = 'X'; // turns 'GPL' into 'XPL' which will fail the check
++
++	err = bpf_dctcp__load(skel);
++	CHECK(err != -LIBBPF_ERRNO__VERIFY, "bpf_dctcp__load", "err:%d\n", err);
++
++	bpf_dctcp__destroy(skel);
++}
++
+ void test_bpf_tcp_ca(void)
+ {
+ 	if (test__start_subtest("dctcp"))
+ 		test_dctcp();
+ 	if (test__start_subtest("cubic"))
+ 		test_cubic();
++	if (test__start_subtest("invalid_license"))
++		test_invalid_license();
+ }
 -- 
 2.31.0
 
