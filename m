@@ -2,138 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B05734875B
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 04:11:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0328348760
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 04:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbhCYDLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 23:11:04 -0400
-Received: from mail-bn8nam11on2064.outbound.protection.outlook.com ([40.107.236.64]:1376
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229908AbhCYDKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 23:10:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZaX1xur9twV5EXl6lSwi0/Ui5pfM9RBaR/ZpbPEVWPCOJEUz137Qy7egLFZwRY5ZEipbxvkFuaIP5cTv9KyKS4EB5js0yECjH9/OgkpgfOnGLLa9ntZ8q/HeWWj90SZp6Z185WTN80liZ/L0J5U+DFxosITN2HVf6CS586arl8MP3mdaPctombYqEYqp75CxTHcKAItrezFIXLJR/Fb4NlYHUf5ASkA88YwK2yydXh1tIgZgQ+T2M1FakYDTUkeWf0YE1QMZaiiEdw9XKfMnpkqDo7RCZNIl37lq67SYdAqbH1HgkVsxnJZYGTtV5V2DC6Nqp4idTaP8EMvw2hBHtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wllqje+r2pCzjDw+pVhl/aTifk3OgfA+2d2taf/LC5Q=;
- b=MufT36o/8hV2/kTAUmw1fBaO1V22PSDzMDIAcBubdm8qVV5gZZqCDv/TDF07NF2CPf1H78N7MZj3Cev2MdVBFJaSVAMRY1GeEl6Y+LxWbXKF2jvJWKUQcCvQA70p32TE0R6kxsIoxuuVaNiyelGDjWHFExX+rSzJVBBnKLIZhIvWMb9Ay8IHMifzHTbC50awX3tZVwxXPzXGdPJp7y2IocNfXh+0pPitAXKSoHZQFPGshZlfYrbW+jSy3Fw6HPPTLPTx4OPCxtikRhg1QP5GoBVGBFYEMSy1tnyF917sssnY1YDapZR8kpRXAHgxRZgXGC8DLhzkhpi4fRE3EmkFoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wllqje+r2pCzjDw+pVhl/aTifk3OgfA+2d2taf/LC5Q=;
- b=jZccKRjZVrH2Ng8XCY1U1SgVzLF+QB2lIK8zQWQXluX2Is+MDSCZ7yLTU6aGIbeONyfpKbAcEH9zsHMviKwpBBn/xVtu0NhveuyfSE5/SIVUSBy72axKvbzEgjmmoEzeWCMZC7916g+nft+1vt+BVQJN5ji3S57E9ruL3oewiJw=
-Authentication-Results: amd.com; dkim=none (message not signed)
- header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
-Received: from BL0PR12MB2484.namprd12.prod.outlook.com (2603:10b6:207:4e::19)
- by MN2PR12MB4222.namprd12.prod.outlook.com (2603:10b6:208:19a::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Thu, 25 Mar
- 2021 03:10:46 +0000
-Received: from BL0PR12MB2484.namprd12.prod.outlook.com
- ([fe80::cdfb:3847:eeaf:5f86]) by BL0PR12MB2484.namprd12.prod.outlook.com
- ([fe80::cdfb:3847:eeaf:5f86%5]) with mapi id 15.20.3912.027; Thu, 25 Mar 2021
- 03:10:46 +0000
-From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Subject: [PATCH net] amd-xgbe: Update DMA coherency values
-Date:   Thu, 25 Mar 2021 08:39:12 +0530
-Message-Id: <20210325030912.2541181-1-Shyam-sundar.S-k@amd.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [165.204.156.251]
-X-ClientProxiedBy: MAXPR01CA0112.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:5d::30) To BL0PR12MB2484.namprd12.prod.outlook.com
- (2603:10b6:207:4e::19)
+        id S231552AbhCYDNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 23:13:09 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:13689 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229908AbhCYDMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 23:12:45 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F5VTY6f4jznVHq;
+        Thu, 25 Mar 2021 11:10:09 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 25 Mar 2021 11:12:37 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <olteanv@gmail.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andriin@fb.com>, <edumazet@google.com>, <weiwan@google.com>,
+        <cong.wang@bytedance.com>, <ap420073@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <bpf@vger.kernel.org>, <jonas.bonn@netrounds.com>,
+        <pabeni@redhat.com>, <mzhivich@akamai.com>, <johunt@akamai.com>,
+        <albcamus@gmail.com>, <kehuan.feng@gmail.com>,
+        <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        <alexander.duyck@gmail.com>
+Subject: [PATCH net v3] net: sched: fix packet stuck problem for lockless qdisc
+Date:   Thu, 25 Mar 2021 11:13:11 +0800
+Message-ID: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jatayu.amd.com (165.204.156.251) by MAXPR01CA0112.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:5d::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25 via Frontend Transport; Thu, 25 Mar 2021 03:10:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 27d9ce2a-8c3b-4961-8683-08d8ef3b9515
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4222:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4222CD15176C67EF207B8CD99A629@MN2PR12MB4222.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ajUZCeOfxi+Rcja2OqnBWu/0d+bdTpJHR6cwmeHwwieRh0PflsSIeqmwRiCLZOL6OVGGYMocvzf3OHW9dSkmWbTnn5RfKelgQG8t8WErKmRAM0D9QmlToSziyXmkRNxHr8KaMblebspN+CaCEhg2XrQ0uyWefY32s1yw9x1rKuZmORSe7wJ0VAP47SwTt982EHHmo3gPgfNwePVVb9+wfSrMSwnBnAtl67xFXeuJ/M/1VSG6fbRmBmid9nhMTJs6C4kHub67aS8Wt0XSR3ya3WvM7ZNoEZrUPrNdoiAsrIF1fn7dNwE6rlwbSuu6sHnAo1f1ByBrsVQLQEDytBqtOW73Q2iTDv3M2c77QKAyzJ0Eue6a6ePfgAwN5DBNh70voryVRr4N5IeI1wNFoa9KwL1hx/LwiQzo/EBbcY1uRTfl3zbfHN1/Bh5m/Mk/w1+55T2GIBcBa/gkSmLo+s/kMOB8juBrFpEiy9EeOdPMExe03wqowReghYuYgJAm/VzlqWt2sJ3nt1IHkxO5xQ4oPdN/AeOavejpiq5qowdWkX9rsEWvVbybhrnSdsF6b6pHej47fJVkvjwyVIhkU1nQSLXqNKVl3UE3DGsG5voHFgom3aMbqjmBlOrELoDl+zYkgL2lHs6P87+xZ8Uy1g26Xg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB2484.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(39860400002)(396003)(366004)(136003)(1076003)(2906002)(478600001)(2616005)(38100700001)(86362001)(956004)(6486002)(16526019)(7696005)(6666004)(83380400001)(186003)(66946007)(8936002)(36756003)(66556008)(26005)(110136005)(316002)(52116002)(8676002)(5660300002)(66476007)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?faGR5aRPYnrvXBHxep7TaABhtk/hDMWJZIhTQLDYa0h7IGk94ebvm6XhgeEt?=
- =?us-ascii?Q?kTL9TMN7Fj9MLzvhSSHtrevxm0e2wxG6+Tj11wsC2ZQK5CDuS9m2isrILFQg?=
- =?us-ascii?Q?j+dPMpCJ0lyloipn8kZEu5W8EzbpAOu5QNDCn8FB2PNVJQTbrHQSDO7wfBC1?=
- =?us-ascii?Q?cHMN5iaZGyRUn2JyDYWrIIEBGXsr4EfY1XeB5JrOv9/H8VP8FZKBu7fA4UnW?=
- =?us-ascii?Q?zLmmOJMocABrawDfCW51BLRQumCT8Pq/mq8lIdFq2Lf5A1eEaeCE6PnvQWL+?=
- =?us-ascii?Q?MjCQwc01qZhWyYHq/Hsr9NDhuvh+x7+JgU7jjXqYbvsV3ay0/BJ79t/F4qRq?=
- =?us-ascii?Q?JS89PK3HscyXeg79LkKr8tRTZFfy9EDsTBLT5Bt2T85tO8D9ZeiTsSGLf14r?=
- =?us-ascii?Q?6VvrM9J9/ef2LUIelMLXxqgX2wFu8yVd1CgVnpx553M5ne+vBcb+Hpb2qPn6?=
- =?us-ascii?Q?QT4n5Tdgqk7Nug3pmVnqHEtMAklLduoFyY/WYXvEhTWPTEttsPGx4mH0bGe9?=
- =?us-ascii?Q?vfZpZd08DouBUO/EPiSOwhCxUOHIJOMu9ew2AHObztEnE8z1z55C3iMLdPj0?=
- =?us-ascii?Q?sgz2lLMHQjMKdSobQkaaJiO3PCjgfptnl2udpXFR/IvBVZrPIUcKMLpOOiMn?=
- =?us-ascii?Q?tgT9YT3zgUFboxuvXRy0s3mxJuitCsKHg5oNOMC+ZpSxVj25bnVhev/kD/Gb?=
- =?us-ascii?Q?S00frKxfUJdN7DCw8/YMj8fwllRpJKNCSBvtMJUeCRQAQTJyvbR5gC5LoFIr?=
- =?us-ascii?Q?7zZaymBSPeGYBf/UHV5/VxCCtsbl+ef6+w9wLum566sIrRgZxNnLRkRgpDZt?=
- =?us-ascii?Q?iTkbBj1NqKu1hB6Af+rHXMtlb7bkHQwcfVG8aiJUpYkSxPLMs6BXLPDO7qTQ?=
- =?us-ascii?Q?ggCrNwOUv/NKSTev3fl00IdQvb9MLboJJ5K46cOkU5k28NPX5zAjHPk1aV1R?=
- =?us-ascii?Q?bgSpJvxVy8UtVQKZJPShATW046JwKmGMVbsIAT7BmaaF1r7vGXozil83TIAA?=
- =?us-ascii?Q?KrPJxtHum4c8qry9XcsBdCPXL6+bz5pDpR9C6HBADsh1ZkvBDy7M+D047BmW?=
- =?us-ascii?Q?hEQTo37atzaZanOgnGVAh5tw/DoKqyuNiubku7zh5phszw2jlaD0sLJQkV1N?=
- =?us-ascii?Q?iymeYgIZnizVsRk8KHUa/26tHhHGi4HIHpviuJX+qgdRHRUUJI7hN/CUuK+R?=
- =?us-ascii?Q?Us/DnRezO9ad/tN3UkNbJBJA6Nbaqh2KauiqKyGVwX109aEDXPJRszcAuvSl?=
- =?us-ascii?Q?G5aLy7Tm9uGBA0iBk9PsthOGZNLmlu8oRSrJq6breeKBmy/qWqLqCqv3OX/+?=
- =?us-ascii?Q?Njgu99UOoYomTTHgcz9qKTfQ?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27d9ce2a-8c3b-4961-8683-08d8ef3b9515
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB2484.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 03:10:46.7933
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bvo7ZFjuVlaTqxatWbwQMBg8AOiHakgD5Q8v6jVqbHRcOIZ780SWT7m8WE362/JO5F4hEyN8yvv+ObwNSoT2FA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4222
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on the IOMMU configuration, the current cache control settings can
-result in possible coherency issues. The hardware team has recommended
-new settings for the PCI device path to eliminate the issue.
+Lockless qdisc has below concurrent problem:
+    cpu0                 cpu1
+     .                     .
+q->enqueue                 .
+     .                     .
+qdisc_run_begin()          .
+     .                     .
+dequeue_skb()              .
+     .                     .
+sch_direct_xmit()          .
+     .                     .
+     .                q->enqueue
+     .             qdisc_run_begin()
+     .            return and do nothing
+     .                     .
+qdisc_run_end()            .
 
-Fixes: 6f595959c095 ("amd-xgbe: Adjust register settings to improve performance")
-Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+cpu1 enqueue a skb without calling __qdisc_run() because cpu0
+has not released the lock yet and spin_trylock() return false
+for cpu1 in qdisc_run_begin(), and cpu0 do not see the skb
+enqueued by cpu1 when calling dequeue_skb() because cpu1 may
+enqueue the skb after cpu0 calling dequeue_skb() and before
+cpu0 calling qdisc_run_end().
+
+Lockless qdisc has below another concurrent problem when
+tx_action is involved:
+
+cpu0(serving tx_action)     cpu1             cpu2
+          .                   .                .
+          .              q->enqueue            .
+          .            qdisc_run_begin()       .
+          .              dequeue_skb()         .
+          .                   .            q->enqueue
+          .                   .                .
+          .             sch_direct_xmit()      .
+          .                   .         qdisc_run_begin()
+          .                   .       return and do nothing
+          .                   .                .
+ clear __QDISC_STATE_SCHED    .                .
+ qdisc_run_begin()            .                .
+ return and do nothing        .                .
+          .                   .                .
+          .            qdisc_run_end()         .
+
+This patch fixes the above data race by:
+1. Get the flag before doing spin_trylock().
+2. If the first spin_trylock() return false and the flag is not
+   set before the first spin_trylock(), Set the flag and retry
+   another spin_trylock() in case other CPU may not see the new
+   flag after it releases the lock.
+3. reschedule if the flags is set after the lock is released
+   at the end of qdisc_run_end().
+
+For tx_action case, the flags is also set when cpu1 is at the
+end if qdisc_run_end(), so tx_action will be rescheduled
+again to dequeue the skb enqueued by cpu2.
+
+Only clear the flag before retrying a dequeuing when dequeuing
+returns NULL in order to reduce the overhead of the above double
+spin_trylock() and __netif_schedule() calling.
+
+The performance impact of this patch, tested using pktgen and
+dummy netdev with pfifo_fast qdisc attached:
+
+ threads  without+this_patch   with+this_patch      delta
+    1        2.61Mpps            2.60Mpps           -0.3%
+    2        3.97Mpps            3.82Mpps           -3.7%
+    4        5.62Mpps            5.59Mpps           -0.5%
+    8        2.78Mpps            2.77Mpps           -0.3%
+   16        2.22Mpps            2.22Mpps           -0.0%
+
+Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
+V3: fix a compile error and a few comment typo, remove the
+    __QDISC_STATE_DEACTIVATED checking, and update the
+    performance data.
+V2: Avoid the overhead of fixing the data race as much as
+    possible.
+---
+ include/net/sch_generic.h | 38 +++++++++++++++++++++++++++++++++++++-
+ net/sched/sch_generic.c   | 12 ++++++++++++
+ 2 files changed, 49 insertions(+), 1 deletion(-)
 
-Please queue this patch up for stable, 4.14 and higher.
-
- drivers/net/ethernet/amd/xgbe/xgbe.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/ethernet/amd/xgbe/xgbe.h
-index ba8321ec1ee7..3305979a9f7c 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe.h
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
-@@ -180,9 +180,9 @@
- #define XGBE_DMA_SYS_AWCR	0x30303030
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index f7a6e14..e3f46eb 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -36,6 +36,7 @@ struct qdisc_rate_table {
+ enum qdisc_state_t {
+ 	__QDISC_STATE_SCHED,
+ 	__QDISC_STATE_DEACTIVATED,
++	__QDISC_STATE_NEED_RESCHEDULE,
+ };
  
- /* DMA cache settings - PCI device */
--#define XGBE_DMA_PCI_ARCR	0x00000003
--#define XGBE_DMA_PCI_AWCR	0x13131313
--#define XGBE_DMA_PCI_AWARCR	0x00000313
-+#define XGBE_DMA_PCI_ARCR	0x000f0f0f
-+#define XGBE_DMA_PCI_AWCR	0x0f0f0f0f
-+#define XGBE_DMA_PCI_AWARCR	0x00000f0f
+ struct qdisc_size_table {
+@@ -159,8 +160,38 @@ static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
+ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ {
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
++		bool dont_retry = test_bit(__QDISC_STATE_NEED_RESCHEDULE,
++					   &qdisc->state);
++
++		if (spin_trylock(&qdisc->seqlock))
++			goto nolock_empty;
++
++		/* If the flag is set before doing the spin_trylock() and
++		 * the above spin_trylock() return false, it means other cpu
++		 * holding the lock will do dequeuing for us, or it wil see
++		 * the flag set after releasing lock and reschedule the
++		 * net_tx_action() to do the dequeuing.
++		 */
++		if (dont_retry)
++			return false;
++
++		/* We could do set_bit() before the first spin_trylock(),
++		 * and avoid doing second spin_trylock() completely, then
++		 * we could have multi cpus doing the set_bit(). Here use
++		 * dont_retry to avoid doing the set_bit() and the second
++		 * spin_trylock(), which has 5% performance improvement than
++		 * doing the set_bit() before the first spin_trylock().
++		 */
++		set_bit(__QDISC_STATE_NEED_RESCHEDULE,
++			&qdisc->state);
++
++		/* Retry again in case other CPU may not see the new flag
++		 * after it releases the lock at the end of qdisc_run_end().
++		 */
+ 		if (!spin_trylock(&qdisc->seqlock))
+ 			return false;
++
++nolock_empty:
+ 		WRITE_ONCE(qdisc->empty, false);
+ 	} else if (qdisc_is_running(qdisc)) {
+ 		return false;
+@@ -176,8 +207,13 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ {
+ 	write_seqcount_end(&qdisc->running);
+-	if (qdisc->flags & TCQ_F_NOLOCK)
++	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		spin_unlock(&qdisc->seqlock);
++
++		if (unlikely(test_bit(__QDISC_STATE_NEED_RESCHEDULE,
++				      &qdisc->state)))
++			__netif_schedule(qdisc);
++	}
+ }
  
- /* DMA channel interrupt modes */
- #define XGBE_IRQ_MODE_EDGE	0
+ static inline bool qdisc_may_bulk(const struct Qdisc *qdisc)
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 44991ea..4953430 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -640,8 +640,10 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+ {
+ 	struct pfifo_fast_priv *priv = qdisc_priv(qdisc);
+ 	struct sk_buff *skb = NULL;
++	bool need_retry = true;
+ 	int band;
+ 
++retry:
+ 	for (band = 0; band < PFIFO_FAST_BANDS && !skb; band++) {
+ 		struct skb_array *q = band2list(priv, band);
+ 
+@@ -652,6 +654,16 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+ 	}
+ 	if (likely(skb)) {
+ 		qdisc_update_stats_at_dequeue(qdisc, skb);
++	} else if (need_retry &&
++		   test_and_clear_bit(__QDISC_STATE_NEED_RESCHEDULE,
++				      &qdisc->state)) {
++		/* do another enqueuing after clearing the flag to
++		 * avoid calling __netif_schedule().
++		 */
++		smp_mb__after_atomic();
++		need_retry = false;
++
++		goto retry;
+ 	} else {
+ 		WRITE_ONCE(qdisc->empty, true);
+ 	}
 -- 
-2.25.1
+2.7.4
 
