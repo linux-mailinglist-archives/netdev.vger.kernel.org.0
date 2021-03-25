@@ -2,91 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57F60349C0D
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 23:03:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A167349C40
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 23:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbhCYWCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 18:02:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38096 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230425AbhCYWCa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 18:02:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616709749;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w9rOIKpwbA95BInVBsqrxFma4Tk6j2iapw6W0tMr/Og=;
-        b=aBkpom3+Jzh+gas4l3lKct4sPxqvnmS/aYdJ9nfjs5zY+0YhjDuSvdiQUUIbZf+Cni46zi
-        ICsCshfZJaDT+2D3HH8LDo6Srhw43nsQ2BART9Y/oDPgioilt3aGGk3eOrhZt8mk/xMFUy
-        gqfJCw7UgnO5PJ9KnnvpP9u9YJ0qA28=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-368-uuOp3rfKO1W3suYpqA7tpw-1; Thu, 25 Mar 2021 18:02:27 -0400
-X-MC-Unique: uuOp3rfKO1W3suYpqA7tpw-1
-Received: by mail-ed1-f72.google.com with SMTP id y10so3356381edr.20
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 15:02:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=w9rOIKpwbA95BInVBsqrxFma4Tk6j2iapw6W0tMr/Og=;
-        b=N9xlPz4Ss8II4NF8dF590A4GhWa4k6S6p4wsqENOpOApdN8b6ekHmBymeprxK0zN6U
-         fXjYhsvkniwrs7oBOl9HIlQbdCArUqXaaF39zM6MLAGcmChSuvySMJmvemPLM74QeMJ/
-         DEOiThPAibtpD04fa4MSpWSXeRqHSyALFbCu5dKIstNCutjtjToHNhiWNtwsFCKr5JVt
-         uOUYUSexz85D2/yxjoqhO6D+xT7YdP0XZ0AnUZVowi2DEl4meliN04e76cxC+kIcToHq
-         SYrQBYeAMltuNbD00QgzqaMKJFwOSQhBtqpXjdJoZkrGiJ38+fToAmyJtR1VcYKzlBuT
-         aS+A==
-X-Gm-Message-State: AOAM532q6ofl1xYBMLH35f84zn808bBXQ2XQYpqDrwfNvSHkaIxvyATc
-        ewQC9NXq/UpMCXMPxa2HzgPXcOXXi2DW/uZUt0HM74DagmnK7qxRPVIXoJHLoNI0c4Zo3B4jxQ3
-        Ms0fgRpdU+HiZ9WjV
-X-Received: by 2002:a17:906:ad85:: with SMTP id la5mr11788656ejb.37.1616709746332;
-        Thu, 25 Mar 2021 15:02:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyGpJzC4cCibS6RmSlQYtMZP//X7FCaLqhC2P2oVdltJe+qGqBupZliZGm1OjPZ4PzXb7gqnw==
-X-Received: by 2002:a17:906:ad85:: with SMTP id la5mr11788620ejb.37.1616709745988;
-        Thu, 25 Mar 2021 15:02:25 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id n16sm3305606edr.42.2021.03.25.15.02.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 15:02:25 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id CD3BC1801A3; Thu, 25 Mar 2021 23:02:23 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 bpf-next 03/14] bpf: Support bpf program calling
- kernel function
-In-Reply-To: <20210325015142.1544736-1-kafai@fb.com>
-References: <20210325015124.1543397-1-kafai@fb.com>
- <20210325015142.1544736-1-kafai@fb.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 25 Mar 2021 23:02:23 +0100
-Message-ID: <87wntudh8w.fsf@toke.dk>
+        id S231236AbhCYWaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 18:30:17 -0400
+Received: from mga03.intel.com ([134.134.136.65]:49800 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230285AbhCYW3w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 18:29:52 -0400
+IronPort-SDR: YF7XJmbofHbvT47GoybUjpeAyt2RohejFcXzlrQSSGEtz62dxBx7FZKfp/eE9qT/yi07zfRFF4
+ ErvRe+J6r2Wg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="191063400"
+X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
+   d="scan'208";a="191063400"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2021 15:29:51 -0700
+IronPort-SDR: Dj272vASU5oaYPgd9CXSuopQbkB0/+Guy+NYVGokrLw1BSkzwq5bkXgkWCBzqXJfWQOPRcTzKO
+ giGuIAhxfuTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
+   d="scan'208";a="375246716"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga003.jf.intel.com with ESMTP; 25 Mar 2021 15:29:51 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates 2021-03-25
+Date:   Thu, 25 Mar 2021 15:31:15 -0700
+Message-Id: <20210325223119.3991796-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin KaFai Lau <kafai@fb.com> writes:
+This series contains updates to virtchnl header file and i40e driver.
 
-> This patch adds support to BPF verifier to allow bpf program calling
-> kernel function directly.
+Norbert removes added padding from virtchnl RSS structures as this
+causes issues when iterating over the arrays.
 
-Hi Martin
+Mateusz adds Asym_Pause as supported to allow these settings to be set
+as the hardware supports it.
 
-This is exciting stuff! :)
+Eryk fixes an issue where encountering a VF reset alongside releasing
+VFs could cause a call trace.
 
-Just one quick question about this:
+Arkadiusz moves TC setup before resource setup as previously it was
+possible to enter with a null q_vector causing a kernel oops.
 
-> [ For the future calling function-in-kernel-module support, an array
->   of module btf_fds can be passed at the load time and insn->off
->   can be used to index into this array. ]
+The following are changes since commit e43accba9b071dcd106b5e7643b1b106a158cbb1:
+  psample: Fix user API breakage
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
 
-Is adding the support for extending this to modules also on your radar,
-or is this more of an "in case someone needs it" comment? :)
+Arkadiusz Kubalewski (1):
+  i40e: Fix oops at i40e_rebuild()
 
--Toke
+Eryk Rybak (1):
+  i40e: Fix kernel oops when i40e driver removes VF's
+
+Mateusz Palczewski (1):
+  i40e: Added Asym_Pause to supported link modes
+
+Norbert Ciosek (1):
+  virtchnl: Fix layout of RSS structures
+
+ drivers/net/ethernet/intel/i40e/i40e.h             |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c     |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c        | 11 +++++------
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |  9 +++++++++
+ include/linux/avf/virtchnl.h                       |  2 --
+ 5 files changed, 16 insertions(+), 8 deletions(-)
+
+-- 
+2.26.2
 
