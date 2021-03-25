@@ -2,116 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BE8C348B14
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 09:04:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E3D6348B1D
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 09:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbhCYIEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 04:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbhCYIEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 04:04:05 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53CF3C06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 01:04:04 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id q29so1192892lfb.4
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 01:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=BLM9RBVaDjv91npDOqFDmADhoFS0gfEgEmOc4WLb1p4=;
-        b=RhDzLJEnSvomh5MVdiv5YSjhaJs50134j+na7zcfSgGBeAOxZRjCSgmsD/pxbV/dui
-         o59p+g69AzWkUVxzT/CHPgjYYOlWX17Y3jzAryiShd2Crj9bz7nGFXGiNlKfWO5LeeIb
-         itFtm+D0bXsjX3TgeN0/BFm5yj1KJScAVBJnivCcFmheeY2EEomksy9w63XK2ZcHLRU4
-         3fTuWUt8LhIl/gkDv/kTJRiWSGI/avRZVKM73aRabfPHcDlfuXDBjx+52KoG3uTcv8Fl
-         V7yQTu9NpEl9SODXQLz02zFK5v5gk+Ljz6hqJqQkmwsIExohzgH/+BFkx3a05OZssbTf
-         lz1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=BLM9RBVaDjv91npDOqFDmADhoFS0gfEgEmOc4WLb1p4=;
-        b=hQMv0JRsugDJlicc+KqGwgd9sRT5GdE1gjOSQvlnoVA4OsHsAtVWLYo2qEg2Q0tTt5
-         IXw0l/HfcP8im8OvWha1dS/h/nUGU82lkX4JyWKebds/mFHLLpwk8w6yQmKN0KG3ajrd
-         ta/xoL1JhA148wEXBzpFOTcTgp+oqlj16ydek7kBjh6DD5VGfsomWU9l/DKvPaW6xJ8Y
-         /xtwpm5lCODx0GH3TG/4hOjZ/SZgzAGBPTeLOxfdaISlXNlN08SCLKW1ovXjegk4V0nU
-         NZdxJqH+yBiQImA/QY3mSOCfysWLvyms5D2fKK6UcHXdNEmWM7X2biL3V+nRFMHh17GO
-         1Bgg==
-X-Gm-Message-State: AOAM533dXXrQgQh5wyCPEcc7aXaw2Kvh9+r4v9BP9gacKgowzvPygh3E
-        c/G8rIbYt8GOzYXwtdJ3NXnsKzS7WrTPHqD3
-X-Google-Smtp-Source: ABdhPJzcqO19KeTgX+6TBpp5wZsjnCpbdQfKde5MtnlJ/tlisdij2DAcZ1iDBXfyHn7lcLNC9QSyvg==
-X-Received: by 2002:ac2:5221:: with SMTP id i1mr4366671lfl.160.1616659442558;
-        Thu, 25 Mar 2021 01:04:02 -0700 (PDT)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id q3sm452418lfr.33.2021.03.25.01.04.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 01:04:02 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
-In-Reply-To: <20210325013432.muugsogq4mzmalpd@skbuf>
-References: <20210323102326.3677940-1-tobias@waldekranz.com> <20210323113522.coidmitlt6e44jjq@skbuf> <87blbalycs.fsf@waldekranz.com> <20210323190302.2v7ianeuwylxdqjl@skbuf> <8735wlmuxh.fsf@waldekranz.com> <20210324140317.amzmmngh5lwkcfm4@skbuf> <87pmzolhlv.fsf@waldekranz.com> <20210324150807.f2amekt2jdcvqhhl@skbuf> <87mtuslemq.fsf@waldekranz.com> <20210325013432.muugsogq4mzmalpd@skbuf>
-Date:   Thu, 25 Mar 2021 09:04:01 +0100
-Message-ID: <87k0pvlkwe.fsf@waldekranz.com>
+        id S229676AbhCYIF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 04:05:26 -0400
+Received: from mail-eopbgr00056.outbound.protection.outlook.com ([40.107.0.56]:43241
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229760AbhCYIFB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 04:05:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YVR3TOP8+uxVEpnwqK3LWYPPs7hLmbVv2ez9Z11QrWwMu0ZamC3amUG+GbhxybuajqtDYSoYBpTWcNS2Hve2GDSB+b08ZskFdIB5zjnhRqgdF2cADXv3LhMioezssrwWldCXObhbnkKLtCvZXu3R/2TCZ7d+g/eUs5tteDRKVK0L+rOWvLK4DV6tX33PzQOVt5mWiO9d99NeZV4XbeEbW6Npn7jSF/OmZB7bCnBt7ho4OyZJp/Md7EstIenfGjRh/mVqnHO6132vAsZGG2XIlzYAyTewlDTn9vd99giisa16UN/RXKtzGVXH1zUOXEDXGnRhXnrgayByZyT12FxsLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ISTx2WzrDCgMo2aTSVbMqNmnzzvtW0kr1AdmEt5JlHE=;
+ b=Fq7rnugWuzQm+FA30Xp3RCxt2WI8J1aWAx4+LHuERC+KIPR7wNOp1r6my2MZuikD9M4TpZCC3UPt7v1omt+fG4jfyk8hTLvuLDnjlnwNVDAe9p0JWqoroYxLrcy2QpKy7jZhbdeluaQIRH94UKNh3HRZXAsge5eaYZS56N77vJ2l35PFWqeO+Lil9vlVZNeh+h4Vsd8N7OfUt5GSgDO3fesbbvqrgo0tGpYnLSS3mOab2bX1+S0pnRnIoRG3DpYjkCK2Hs4F/Hv/DeXHX71VEq21lvUwIL6apNjD0xXZ0islWA3gNHaAJhEb5n01k886uvERdSzo2YFDxZp+gTZpFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ISTx2WzrDCgMo2aTSVbMqNmnzzvtW0kr1AdmEt5JlHE=;
+ b=QLp1IUdyiFVzrkrw3gcl6A5LK0oyP2NXgzfgLe83DuO7acQ0dRKtj9DPXGISgxVArjXSU4mjZI8eaUiE4PM3qAMBAjrrPayx5LNAdyK2mCoWI7sw9bvKRtfPuBsT2gnLlwz+fEq320RzuSlT7t5ZBPxH3LDuE4QxxAAfUbHRuS8=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB7PR04MB4955.eurprd04.prod.outlook.com (2603:10a6:10:19::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Thu, 25 Mar
+ 2021 08:04:58 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5%6]) with mapi id 15.20.3977.025; Thu, 25 Mar 2021
+ 08:04:58 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: FEC unbind/bind feature
+Thread-Topic: FEC unbind/bind feature
+Thread-Index: AdchTA4mhHE+X6FhQBmQJxJLMagesA==
+Date:   Thu, 25 Mar 2021 08:04:58 +0000
+Message-ID: <DB8PR04MB6795E5896375A9A9FED55A84E6629@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 37b23b39-5b66-4ff0-69a5-08d8ef64aee4
+x-ms-traffictypediagnostic: DB7PR04MB4955:
+x-microsoft-antispam-prvs: <DB7PR04MB4955BA91F4C1D5EFFB5F0DAAE6629@DB7PR04MB4955.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: M1V+wu53t7hEgPK0G3IXqekxXCF6DBDl8vMOzjwhj6XyYrrx/QoLehAcxQcw3uTz300vC1D08wZVEplcjfatZPA9tuDfj4azD+fM6gO/QTixifH5tEspqF+Aib948y/m4Q18so8zEmBZ0EiDSl1dUg81IsBuJ0l7KJEa8TGN120s2tHiX27PC7l3gIyNoxzqR0EA15atSd5O8g3JZTc7DvJKTJzc5w5oJ1fcP05XWzN4r6Z3pp9jT9p8iS/OMYgKOV+RRjL9f353IXvrzkLQBNTkbMHm5ElLK0xHMi5O5yEeu0cBwpbx3Xmc4fa8Jaax30TOnI83ZAqwK5zzjkaAf5r2O9GyUo6ieArAQBZ1Wk/YvMGlsne5mP6nIaLN56hvW9opEl5tgMcImWto0J+x/oNqFSTEySNBAGFm51ahM3nPechwqt24UcKmikFriSfnBovxEeK41wtdbVX93x8ya3RkZMpLFtqxmh9FWEM8tt8326kaAsbB8SvOO31bhZXq8G11qqpqkC9EmB0SUIQKCCnZvP5AZx/n+6boZ6bV4eR39c2mDNP7UbDohiGNl1dCVl9lsMSP9RDWN25hqD/GUH0icJvi/xEXAE7UovKtVBFshS2jbW/RjJfQ7fxpdJzXE4ZfR5k3/lQWXEt1hPvmBrhoEOfta8gBLb7eZIo2Dxo8NvauPrkjnXhfhbLpeBONo9flyCFjyV3yS0cDNdaDCfB9YmuNv1XBHmJOFzx6xOA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(39860400002)(366004)(136003)(8676002)(8936002)(3480700007)(26005)(38100700001)(186003)(86362001)(71200400001)(4326008)(83380400001)(110136005)(76116006)(66556008)(478600001)(66446008)(7696005)(66476007)(6506007)(5660300002)(64756008)(84040400003)(66946007)(9686003)(55016002)(316002)(33656002)(2906002)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?gjp3rsdo7DUWN0M+fv56NEqIVZQfklmv2FaN7SwH0D3nMwOputYdnR+saF4n?=
+ =?us-ascii?Q?Oan0lQ19mUI7HmjHn0WmqPfu24Vw8nkghBsoByA3CbyIL0FRVL18s7827kHQ?=
+ =?us-ascii?Q?j4PgAHYKcqsayijsXmeiAKtqzhRAyQXq4Q5EzhkZ4MQJuWDawRO++LFdhZy+?=
+ =?us-ascii?Q?AQ+JFla9pqWkYjrbeuDDXZzzR/u4EYfSFxtDlfb/AHy0Zvxz2u5+sBDwDMBb?=
+ =?us-ascii?Q?JbxvAJuBoPQuqRLdV1ULMfyHCn7/64WocyEaIs2Usrb3SryhNaMtznlU1HQr?=
+ =?us-ascii?Q?zPFcsV1mauWMWufpTc3/yBWBe4erOmiLPcW3IM9eVEHqn9BUDbbgtEjFEqTP?=
+ =?us-ascii?Q?hqLv44Ub9eSV9v8sr1GiEfDDRT1c8Mrjxgztrmv0cAgTcr3smK7R9jcdmfpE?=
+ =?us-ascii?Q?NFfJipLVHqETsNKP9pGdOvoq2rnbxxdD3LAmmpgk0JW8EmYpdIoBkWKfpevz?=
+ =?us-ascii?Q?3uQzcWrysGy0Pej1EK4/pp+AYTSvVXmJowa9n0cBL0d7n/AGSfIS4DpALg/s?=
+ =?us-ascii?Q?WDFaXbzpdRgcjytoa6d2XMFp+ur2xa8GvmbU3FAlhQVQUhldcvepffvlyzzb?=
+ =?us-ascii?Q?Sq0C41E/goP80/6+supbilEzJsRvPYZ6F09z1vKx03aR2n72e8zep6dZghcs?=
+ =?us-ascii?Q?/ETq++jlVSifo2xjnk5JFZDMj3nvPoPsbEeBa0C/txl4OiKUobzj9xZ5j4m0?=
+ =?us-ascii?Q?Nj9tOrDm5HpXQCXSmySqjG2SZwvKLjZ7zGzPOOfJbolaqUaEJYc20Exfb90d?=
+ =?us-ascii?Q?8U+3Dv6FXLJ/3BnpKGJWIAtSKur+KW0uC3dm8F8ii4EjRrJclEdf8AfUHF15?=
+ =?us-ascii?Q?2x2jGRIaf+4k6hXvvnxj0AUAzze4n2Bw4GYYm5XuPoQ50ou5D+sgGDkI61We?=
+ =?us-ascii?Q?4JFUhfmew6dsUm5X3gY0XCig1i78Ps06UoLw3mwYQcIgJ/Ob6ztzRDa0juPQ?=
+ =?us-ascii?Q?tahFknSledA9ZkpilHsWGWVDbalgVQYSvgJIRoqv+Ki3t53/+2ZlKktFXpBS?=
+ =?us-ascii?Q?vq2aSgb/Es+vH/DSclmGXyUk9RPTWRu2fu9007PgJjSMAqhk+rPUp9CBpDvy?=
+ =?us-ascii?Q?TkHFZFMP41Z81Nzby0EZuvJpJx4JIVQ4H/QFmH3UqApVN6eMLLBX8P8iqNn0?=
+ =?us-ascii?Q?eKjoTzwX8Y1/+lKhARS7yQmnkrAIEFHxlT18spllDzu6/f1gQxFfXyjfiLc9?=
+ =?us-ascii?Q?d86dicHCyH7oJwh/9Z6Kk1zX9fv/Vb0suI1IDUFgZBERFn2M6h9+/yYvp6Lf?=
+ =?us-ascii?Q?+y3Fw863DVTmwFAgU9MlgOujLZPnWROm5JcpphHQyDfIbV+fukimQl6laY6M?=
+ =?us-ascii?Q?KenuWjrMq0aBkVP+F3GUShfM?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37b23b39-5b66-4ff0-69a5-08d8ef64aee4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2021 08:04:58.1315
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: S9elLDRkANYsJA0Dq/1NTByyoKUSDlVT+ozUo95f+vWLxQkTzF+LTYoaVMMeORB8x/LeQQW3NUUfKKyWogTCrQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4955
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 03:34, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Wed, Mar 24, 2021 at 05:07:09PM +0100, Tobias Waldekranz wrote:
->> But even if the parser was enabled, it would never get anywhere since
->> the Ethertype would look like random garbage. Unless we have the soft
->> parser, but then it is not the middle ground anymore :)
->
-> Garbage, true, but garbage with enough entropy to allow for some sort of
-> RFS (ideally you can get the source port field from the DSA tag into the
-> area covered by the n-tuple on which the master performs hashing). This
-> is the way in which the switches inside NXP LS1028A and T1040 work.
 
-I see what you are saying. Any given flow would still have the same
-not-really-an-Ethertype.
+Hi Andrew, Florian, Heiner
 
->> I suppose you would like to test for netdev_uses_dsa_and_violates_8023,
->> that way you could still do RSS on DSA devices using regular 1Q-tags for
->> example. Do we want to add this property to the taggers so that we do
->> not degrade performance for any existing users?
->
-> Yes, so T1040 is one such example of device that would be negatively
-> affected by this change. There isn't a good solution to solve all
-> problems: there will be some Marvell switches which can't operate in
-> EDSA mode, and there will be some DSA masters that can't parse Marvell
-> DSA tags. Eventually all possible combinations of workarounds will have
-> to be implemented. But for now, I think I prefer to see the simplest
-> one, which has just become the one based on device tree.
+You are all Ethernet MDIO bus and PHY experts, I have some questions may ne=
+ed your help, thanks a lot in advance.
 
-Alright, it seems like everyone agrees then. I will look into it.
+For many board designs, if it has dual MAC instances, they always share one=
+ MDIO bus to save PINs. Such as, i.MX6UL EVK board:
 
-Just to avoid a DenverCoder9 situation; I tried changing the NIA in
-FMBM_RFNE like you suggested:
+&fec1 {
+	pinctrl-names =3D "default";
+	pinctrl-0 =3D <&pinctrl_enet1>;
+	phy-mode =3D "rmii";
+	phy-handle =3D <&ethphy0>;
+	phy-supply =3D <&reg_peri_3v3>;
+	status =3D "okay";
+};
 
-8< ---
+&fec2 {
+	pinctrl-names =3D "default";
+	pinctrl-0 =3D <&pinctrl_enet2>;
+	phy-mode =3D "rmii";
+	phy-handle =3D <&ethphy1>;
+	phy-supply =3D <&reg_peri_3v3>;
+	status =3D "okay";
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
-index d9baac0dbc7d..5aa5b4068f2d 100644
---- a/drivers/net/ethernet/freescale/fman/fman_port.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_port.c
-@@ -543,7 +543,7 @@ static int init_bmi_rx(struct fman_port *port)
-        /* NIA */
-        tmp = (u32)cfg->rx_fd_bits << BMI_NEXT_ENG_FD_BITS_SHIFT;
- 
--       tmp |= NIA_ENG_HWP;
-+       tmp |= NIA_ENG_BMI | NIA_BMI_AC_ENQ_FRAME;
-        iowrite32be(tmp, &regs->fmbm_rfne);
- 
-        /* Parser Next Engine NIA */
+	mdio {
+		#address-cells =3D <1>;
+		#size-cells =3D <0>;
 
-8< ---
+		ethphy0: ethernet-phy@2 {
+			compatible =3D "ethernet-phy-id0022.1560";
+			reg =3D <2>;
+			micrel,led-mode =3D <1>;
+			clocks =3D <&clks IMX6UL_CLK_ENET_REF>;
+			clock-names =3D "rmii-ref";
 
-From what I can tell, this works as expected. TO_CPUs from port 8 can
-ingress the device with this in place.
+		};
+
+		ethphy1: ethernet-phy@1 {
+			compatible =3D "ethernet-phy-id0022.1560";
+			reg =3D <1>;
+			micrel,led-mode =3D <1>;
+			clocks =3D <&clks IMX6UL_CLK_ENET2_REF>;
+			clock-names =3D "rmii-ref";
+		};
+	};
+};
+
+For FEC driver now, there is a patch from Fabio to prevent unbind/bind feat=
+ure since dual FEC controllers share one MDIO bus. (https://git.kernel.org/=
+pub/scm/linux/kernel/git/next/linux-next.git/commit/drivers/net/ethernet/fr=
+eescale/fec_main.c?h=3Dnext-20210324&id=3D272bb0e9e8cdc76e04baeefa0cd43019d=
+aa0841b)
+If we unbind fec2 and then fec1 can't work since MDIO bus is controlled by =
+FEC1, FEC2 can't use it independently.
+
+My question is that if we want to implement unbind/bind feature, what need =
+we do? It seems to abstract an independent MDIO bus for dual FEC instances.=
+ I look at the MDIO dt bindings, it seems support such case as it has "reg"=
+ property. (Documentation/devicetree/bindings/net/mdio.yaml)
+
+Is there any implements existing in the Linux kernel for a reference? From =
+your opinions, do you think it is necessary to improve it?
+
+Best Regards,
+Joakim Zhang
+
