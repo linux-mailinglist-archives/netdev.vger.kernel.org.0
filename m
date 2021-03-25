@@ -2,125 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B4803494A9
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 15:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DAD43494AF
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 15:54:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231184AbhCYOxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 10:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55984 "EHLO
+        id S230337AbhCYOyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 10:54:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231332AbhCYOwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 10:52:51 -0400
-Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9237AC06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 07:52:50 -0700 (PDT)
-Received: by mail-ej1-x649.google.com with SMTP id mj6so2677606ejb.11
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 07:52:50 -0700 (PDT)
+        with ESMTP id S231299AbhCYOyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 10:54:03 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B62C06174A
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 07:54:03 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id y18so1979786qky.11
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 07:54:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=STCmlN6hY8DEQEj8NFVnXDEzIL1GeEra4hxCSiYhbXY=;
-        b=taC5jvh3MEbb3x/VpcyVnUS3GzEsskrjQBkhyFLV30MQ4LFf3yzzz/YJtsLTdFLLun
-         r88T+m7Z7VF1FGbuY1jO1iOr0tcZSYdfVC4MNkEIJ5ykJFVIeKhfIm79GpIQxFDCo1uK
-         rzGOvi2nsHDB5FRbgtvxAn4L4+PIaQ9nzGuUUAyw1BFFrdigBOEE2wBUgMuCJ8d1XpeI
-         rA6WgbNFTJG+MNYYkR7SiYZI+vibj3Mb+s+di0nKviqVpyg/FOCEUTzm25ApV8lo7iUR
-         fWSYWf/jIoJ9g0I56MVR8c4dA8INEfM7G2L0QE61UAeLgU/WHTlTqIbWm0nARqyWB/0x
-         3Ahw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WcUAfakiaRflXJsbFLsUfCZemSovJNHWXiRp28Iky/s=;
+        b=Dmt9ROX72lZBYf7Mz+uAwKzOzzentjY7qaEzLmonFU4p6Azby+5hx1JfR54diifhZN
+         7jWv9nyFfUSIav577e0aj/TpyaFG+OsmkUAc5BCy4jUtva24pRv0awSv16FF+ToV0IHu
+         gTP8UtqOO9kwpn9uTLT/iCe8z2cv+S8cP/C1yNfhFpi98RCX3ivUsqsvl4PmX/7S7nK5
+         6KlKeM46LvuLy6R04B6+lfqDIHpOtS49Xl8vqa+IiR79CMZl9hKUrTjG19iXjwIQWmch
+         PJyHMjeq5AnipQmDbxuV4Ivedfz3eaBNsAFHO9rOVbWExPQODOtQUe4ct9MfVmZGQ03w
+         TlDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=STCmlN6hY8DEQEj8NFVnXDEzIL1GeEra4hxCSiYhbXY=;
-        b=uYBfY4Clu+4vSRbtX3MoF0FU2nTgsTNxno1gNoXBPvkBtT12UxQZY2wxY//dHdxOA2
-         6EmkCTQw1v7C3rAIBhd0Dq4YCena5X1cHgyoRW2qjPCkNVQDUWQap522QllmnUICBtjU
-         CH+lo8LOh1hne448udQ7KUzhht8caQK1oqKHdtYyWXUBEB2NyRMh2AmrpzOl72RtS2ZE
-         jf7ZaF+hCdTah9gj3ASsUUOztfXxOT/XwQU4vCXwXzyGTfhgy3fYpjiJ3eHj4kEBIZP7
-         ++sNI/Y9imBUVXe9ggKNIhsBVgTdbN7m5I64Sf9UARddqNT9X7RgP44G/YLQH2/g1ENR
-         EFNA==
-X-Gm-Message-State: AOAM533LlviZUySZFLl8y6LEPvnUj0TWrVVJ/iYjgKvxbs3Fws5lTqdU
-        OIVQcPVEdIV4Eh/5fdL2mJcOGW+mYncS
-X-Google-Smtp-Source: ABdhPJzPMq20S+OQH/A85v07sokOWto4Kz4w81RF3hg0Dh+DAdDletZLiRIbANYepwqvHntnpNuAOAMbtxOv
-X-Received: from dvyukov-desk.muc.corp.google.com ([2a00:79e0:15:13:8903:2da7:c857:1a50])
- (user=dvyukov job=sendgmr) by 2002:a17:906:524f:: with SMTP id
- y15mr9740993ejm.65.1616683968822; Thu, 25 Mar 2021 07:52:48 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 15:52:45 +0100
-Message-Id: <20210325145245.3160366-1-dvyukov@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-Subject: [PATCH net-next v2] net: change netdev_unregister_timeout_secs min
- value to 1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WcUAfakiaRflXJsbFLsUfCZemSovJNHWXiRp28Iky/s=;
+        b=o6s+XOH+gs2eQHM0wV0Qf5QDc+pG3T5KrgufGoFUlqhONWYfzr8vcuCSF52PjgL7ji
+         QrvXNU8KhZRqlYCkCUCvJrYSqHxbk6gfIcXVU6d9BJYngyRnxvFgIfipyqzSHCh9fXNz
+         WEr9IP4KC68O5e9H/KrQzdoPc23LOeTuPXhaqQeecmkttvQSMs5CR/nXYMkEmf48dNF0
+         QeINIf2P8S/0EpjXzSCPH4UJH4Xskd/Dl8m7HokTQWPBWdgfAXZfdzRq25ocwDjKj75W
+         7wU9HODC8aulwSs8bRGpL5zEhCC92k/msa1EwDDcjTDXpvF+XL70YMAKROADx7ZGjPCk
+         vdnQ==
+X-Gm-Message-State: AOAM532oPtpKmap7aEXL9atlfrfT6gNXjkxqOEMxN3M5QglDF33hO3x8
+        HBqtSy1kZPZXQmuitg9UxhjYOPX0+ent0mNBVDK24w==
+X-Google-Smtp-Source: ABdhPJySEzdLTk7YsG7O3I3ubTJVxsPdVO8ILzkXXeBfiykqa8dLEyAFFCePMfOYEQeo2m2g6DxfFSw4Uk9/L02NOfg=
+X-Received: by 2002:a05:620a:2095:: with SMTP id e21mr8353814qka.265.1616684042120;
+ Thu, 25 Mar 2021 07:54:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210325103105.3090303-1-dvyukov@google.com> <651b7d2d-21b2-8bf4-3dc8-e351c35b5218@gmail.com>
+ <CACT4Y+ad6bwMbQ6OwrdypCsNRvYTMtMf0KR2EpVOhPOZvnxeNA@mail.gmail.com> <c6e79b82-50dd-633c-8d63-77c059538338@gmail.com>
+In-Reply-To: <c6e79b82-50dd-633c-8d63-77c059538338@gmail.com>
 From:   Dmitry Vyukov <dvyukov@google.com>
-To:     edumazet@google.com, davem@davemloft.net
-Cc:     leon@kernel.org, Dmitry Vyukov <dvyukov@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 25 Mar 2021 15:53:50 +0100
+Message-ID: <CACT4Y+ZVPrZMs3Uq0O1iSCtmwnNHKzbYV2W2Mu43cerrWZt6rA@mail.gmail.com>
+Subject: Re: [PATCH] net: change netdev_unregister_timeout_secs min value to 1
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Leon Romanovsky <leon@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev_unregister_timeout_secs=0 can lead to printing the
-"waiting for dev to become free" message every jiffy.
-This is too frequent and unnecessary.
-Set the min value to 1 second.
+On Thu, Mar 25, 2021 at 3:43 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> On 3/25/21 3:38 PM, Dmitry Vyukov wrote:
+> > On Thu, Mar 25, 2021 at 3:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >> On 3/25/21 11:31 AM, Dmitry Vyukov wrote:
+> >>> netdev_unregister_timeout_secs=0 can lead to printing the
+> >>> "waiting for dev to become free" message every jiffy.
+> >>> This is too frequent and unnecessary.
+> >>> Set the min value to 1 second.
+> >>>
+> >>> Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
+> >>> Suggested-by: Eric Dumazet <edumazet@google.com>
+> >>> Fixes: 5aa3afe107d9 ("net: make unregister netdev warning timeout configurable")
+> >>> Cc: netdev@vger.kernel.org
+> >>> Cc: linux-kernel@vger.kernel.org
+> >>> ---
+> >>
+> >> Please respin your patch, and fix the merge issue [1]
+> >
+> > Is net-next rebuilt and rebased? Do I send v4 of the whole change?
+> > I cannot base it on net-next now, because net-next already includes
+> > most of it... so what should I use as base then?
+> >
+> >> For networking patches it is customary to tell if its for net or net-next tree.
+> >>
+> >> [1]
+> >> diff --git a/net/core/dev.c b/net/core/dev.c
+> >> index 4bb6dcdbed8b856c03dc4af8b7fafe08984e803f..7bb00b8b86c6494c033cf57460f96ff3adebe081 100644
+> >> --- a/net/core/dev.c
+> >> +++ b/net/core/dev.c
+> >> @@ -10431,7 +10431,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
+> >>
+> >>                 refcnt = netdev_refcnt_read(dev);
+> >>
+> >> -               if (refcnt &&
+> >> +               if (refcnt != 1 &&
+> >>                     time_after(jiffies, warning_time +
+> >>                                netdev_unregister_timeout_secs * HZ)) {
+> >>                         pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+>
+> Please include my fix into your patch.
+>
+> Send a V2, based on current net-next.
+>
+> net-next is never rebased, we have to fix the bug by adding a fix on top of it.
 
-Also fix the merge issue introduced by
-"net: make unregister netdev warning timeout configurable":
-it changed "refcnt != 1" to "refcnt".
-
-Signed-off-by: Dmitry Vyukov <dvyukov@google.com>
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Fixes: 5aa3afe107d9 ("net: make unregister netdev warning timeout configurable")
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
-Changes since v1:
- - fix merge issue related to refcnt check
----
- Documentation/admin-guide/sysctl/net.rst | 2 +-
- net/core/dev.c                           | 2 +-
- net/core/sysctl_net_core.c               | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index 2090bfc69aa50..c941b214e0b7f 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -320,7 +320,7 @@ waiting for a network device refcount to drop to 0 during device
- unregistration. A lower value may be useful during bisection to detect
- a leaked reference faster. A larger value may be useful to prevent false
- warnings on slow/loaded systems.
--Default value is 10, minimum 0, maximum 3600.
-+Default value is 10, minimum 1, maximum 3600.
- 
- optmem_max
- ----------
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4bb6dcdbed8b8..7bb00b8b86c64 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10431,7 +10431,7 @@ static void netdev_wait_allrefs(struct net_device *dev)
- 
- 		refcnt = netdev_refcnt_read(dev);
- 
--		if (refcnt &&
-+		if (refcnt != 1 &&
- 		    time_after(jiffies, warning_time +
- 			       netdev_unregister_timeout_secs * HZ)) {
- 			pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index d84c8a1b280e2..c8496c1142c9d 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -577,7 +577,7 @@ static struct ctl_table net_core_table[] = {
- 		.maxlen		= sizeof(unsigned int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= SYSCTL_ZERO,
-+		.extra1		= SYSCTL_ONE,
- 		.extra2		= &int_3600,
- 	},
- 	{ }
-
-base-commit: 84c7f6c33f42a12eb036ebf0f0e3670799304120
--- 
-2.31.0.291.g576ba9dcdaf-goog
-
+Ah, got it. Mailed:
+[PATCH net-next v2] net: change netdev_unregister_timeout_secs min value to 1
