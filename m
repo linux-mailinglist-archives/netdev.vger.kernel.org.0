@@ -2,99 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 726B2348D41
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 10:43:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1970A348D4D
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 10:46:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230007AbhCYJnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 05:43:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35567 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229898AbhCYJmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 05:42:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616665374;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iazG2kvbVV7z7jI0Hl0WMxl3hq3T9QCm0mrnWD6S1vM=;
-        b=HZTTwqpzI5d25dA+u+5V1+FbZO0bikzsheye5w95tALiqhsMxz7v6633IuXdbfPj5LanJl
-        SEOvIrzH0fPCep8L3dTPaDgwJ63xtOpmmDqozhrEbV9rcBZq0oNVNBl8g8PhGU76hbYYzj
-        ntTA+Qs8qgwjyxUjcy0I/fEvZO0dqI0=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-171-c23pBBrTPQyokxVHtAecWw-1; Thu, 25 Mar 2021 05:42:52 -0400
-X-MC-Unique: c23pBBrTPQyokxVHtAecWw-1
-Received: by mail-wr1-f72.google.com with SMTP id p15so2371039wre.13
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 02:42:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iazG2kvbVV7z7jI0Hl0WMxl3hq3T9QCm0mrnWD6S1vM=;
-        b=K0QGUoXLAa560e+xXhmounO72GVAxxNoz0bE7eyu2aD/bf+QZpTkhgHRzTUqyKy29o
-         8kHhOtGNVNDWqzlGCrF5yXvMp2eAGrZmFiF57qDvEGDuCUKMxUJG9avJleLI9tdkIVuq
-         0GzOP+M41zQlqZKCxwC2UcFCP8QxyLYFGJJYRSVsqIwnAYG7xjYqdD6bIBWpdtoqNDGE
-         2IjuSx3uM7akkuTvQY+LBaLcNm7cPNBIdsParOL8pjEqWFohCFizpzVCTghhE4m6Vpay
-         ie+B9DguhzoI941lHeio4uM5Fjt9ErrDbqhAyxxaAtBOefNnlpWsN5Jq448Ma42aZgWH
-         XmWg==
-X-Gm-Message-State: AOAM532UFnYYRG+xpRH5Iz9SNGcAgYadmtKKtzktSRF5XAOYcbl4xVRt
-        FlxKa/4U9uugv5tV5ZWv7kNy2B9c+ay1ZeK0vy/R72YXJlPtqk6w2woTNkNQK9Ql5iQAVegzLYE
-        exWB8QOQdlUA8KiSR
-X-Received: by 2002:a5d:4e0e:: with SMTP id p14mr7877657wrt.64.1616665370845;
-        Thu, 25 Mar 2021 02:42:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxmI0XTmVVlZKGjXd72cRR6QIqVv7OMV2LK555R2VZPMAHPAdbuj1iy4hwRCKLYd5iX47irTg==
-X-Received: by 2002:a5d:4e0e:: with SMTP id p14mr7877623wrt.64.1616665370676;
-        Thu, 25 Mar 2021 02:42:50 -0700 (PDT)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id j13sm7019686wrt.29.2021.03.25.02.42.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 02:42:50 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 10:42:47 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Jeff Vander Stoep <jeffv@google.com>,
-        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v7 06/22] af_vsock: implement send logic for SEQPACKET
-Message-ID: <20210325094247.np2hdgwzgcjpgsia@steredhat>
-References: <20210323130716.2459195-1-arseny.krasnov@kaspersky.com>
- <20210323131045.2460319-1-arseny.krasnov@kaspersky.com>
+        id S230012AbhCYJqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 05:46:14 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:54628 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229995AbhCYJqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 05:46:05 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1616665565; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
+ To: From: Sender; bh=xLZMPOc+Bf0JSFPQICytoPaldsUvFtyL1tpTNNRZGmo=; b=fgEDhRe1Rsg9SJr4BWLHu0GCxHolNL4f4qNsTKjOwrffA2IXarxBHJl+AXPmB/CgdTiOx93U
+ lejPjg08n9x9VD/QWdlndiocjpA9L6C2B2UTc+mx2yKxZn2fpA+90cqQEfuw+9a92kGiChhU
+ MULi2KZtT8YwCGx3a8sdrbOHuOc=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 605c5bd12b0e10a0ba26d3fa (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 25 Mar 2021 09:45:53
+ GMT
+Sender: pillair=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C9E29C433ED; Thu, 25 Mar 2021 09:45:53 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        PDS_BAD_THREAD_QP_64,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from Pillair (unknown [103.149.159.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: pillair)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 770E0C433CA;
+        Thu, 25 Mar 2021 09:45:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 770E0C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=pillair@codeaurora.org
+From:   "Rakesh Pillai" <pillair@codeaurora.org>
+To:     "'Felix Fietkau'" <nbd@nbd.name>,
+        "'Ben Greear'" <greearb@candelatech.com>,
+        "'Brian Norris'" <briannorris@chromium.org>
+Cc:     "'Johannes Berg'" <johannes@sipsolutions.net>,
+        "'Rajkumar Manoharan'" <rmanohar@codeaurora.org>,
+        "'ath10k'" <ath10k@lists.infradead.org>,
+        "'linux-wireless'" <linux-wireless@vger.kernel.org>,
+        "'Linux Kernel'" <linux-kernel@vger.kernel.org>,
+        "'Kalle Valo'" <kvalo@codeaurora.org>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        "'Jakub Kicinski'" <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        "'Doug Anderson'" <dianders@chromium.org>,
+        "'Evan Green'" <evgreen@chromium.org>
+References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org> <1595351666-28193-3-git-send-email-pillair@codeaurora.org> <13573549c277b34d4c87c471ff1a7060@codeaurora.org> <d79ae05e-e75a-de2f-f2e3-bc73637e1501@nbd.name> <04d7301d5ad7555a0377c7df530ad8522fc00f77.camel@sipsolutions.net> <1f2726ff-8ba9-5278-0ec6-b80be475ea98@nbd.name> <06a4f84b-a0d4-3f90-40bb-f02f365460ec@candelatech.com> <CA+ASDXOotYHmtqOvSwBES6_95bnbAbEu6F7gQ5TjacJWUKdaPw@mail.gmail.com> <47d8be60-14ce-0223-bdf3-c34dc2451945@candelatech.com> <633feaed-7f34-15d3-1899-81eb1d6ae14f@nbd.name>
+In-Reply-To: <633feaed-7f34-15d3-1899-81eb1d6ae14f@nbd.name>
+Subject: RE: [RFC 2/7] ath10k: Add support to process rx packet in thread
+Date:   Thu, 25 Mar 2021 15:15:44 +0530
+Message-ID: <003701d7215b$a44ae030$ece0a090$@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210323131045.2460319-1-arseny.krasnov@kaspersky.com>
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQG1Bu1FBYi7G1oVhHY/01uT1gSslwH2O/GCAtCmWRoBYxlAVQH0T8LwAZ17l3YBXZ7u8AIxJEyGAbYhhCACZ7wzuKpNZQxQ
+Content-Language: en-us
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 23, 2021 at 04:10:42PM +0300, Arseny Krasnov wrote:
->This adds some logic to current stream enqueue function for SEQPACKET
->support:
->1) Use transport's seqpacket enqueue callback.
->2) Return value from enqueue function is whole record length or error
->   for SOCK_SEQPACKET.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> v6 -> v7:
-> 'seqpacket_enqueue' callback interface changed, 'flags' argument was
-> removed, because it was 'msg_flags' field of 'msg' argument which is
-> already exists.
->
-> include/net/af_vsock.h   |  2 ++
-> net/vmw_vsock/af_vsock.c | 21 +++++++++++++++------
-> 2 files changed, 17 insertions(+), 6 deletions(-)
 
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> -----Original Message-----
+> From: Felix Fietkau <nbd@nbd.name>
+> Sent: Tuesday, March 23, 2021 1:16 PM
+> To: Ben Greear <greearb@candelatech.com>; Brian Norris
+> <briannorris@chromium.org>
+> Cc: Johannes Berg <johannes@sipsolutions.net>; Rajkumar Manoharan
+> <rmanohar@codeaurora.org>; Rakesh Pillai <pillair@codeaurora.org>; =
+ath10k
+> <ath10k@lists.infradead.org>; linux-wireless <linux-
+> wireless@vger.kernel.org>; Linux Kernel =
+<linux-kernel@vger.kernel.org>;
+> Kalle Valo <kvalo@codeaurora.org>; David S. Miller
+> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
+> netdev@vger.kernel.org; Doug Anderson <dianders@chromium.org>; Evan
+> Green <evgreen@chromium.org>
+> Subject: Re: [RFC 2/7] ath10k: Add support to process rx packet in =
+thread
+>=20
+>=20
+> On 2021-03-23 04:01, Ben Greear wrote:
+> > On 3/22/21 6:20 PM, Brian Norris wrote:
+> >> On Mon, Mar 22, 2021 at 4:58 PM Ben Greear
+> <greearb@candelatech.com> wrote:
+> >>> On 7/22/20 6:00 AM, Felix Fietkau wrote:
+> >>>> On 2020-07-22 14:55, Johannes Berg wrote:
+> >>>>> On Wed, 2020-07-22 at 14:27 +0200, Felix Fietkau wrote:
+> >>>>>
+> >>>>>> I'm considering testing a different approach (with mt76 =
+initially):
+> >>>>>> - Add a mac80211 rx function that puts processed skbs into a =
+list
+> >>>>>> instead of handing them to the network stack directly.
+> >>>>>
+> >>>>> Would this be *after* all the mac80211 processing, i.e. in place =
+of the
+> >>>>> rx-up-to-stack?
+> >>>> Yes, it would run all the rx handlers normally and then put the
+> >>>> resulting skbs into a list instead of calling netif_receive_skb =
+or
+> >>>> napi_gro_frags.
+> >>>
+> >>> Whatever came of this?  I realized I'm running Felix's patch since =
+his mt76
+> >>> driver needs it.  Any chance it will go upstream?
+> >>
+> >> If you're asking about $subject (moving NAPI/RX to a thread), this
+> >> landed upstream recently:
+> >> =
+http://git.kernel.org/linus/adbb4fb028452b1b0488a1a7b66ab856cdf20715
+> >>
+> >> It needs a bit of coaxing to work on a WiFi driver (including: WiFi
+> >> drivers tend to have a different netdev for NAPI than they expose =
+to
+> >> /sys/class/net/), but it's there.
+> >>
+> >> I'm not sure if people had something else in mind in the stuff =
+you're
+> >> quoting though.
+> >
+> > No, I got it confused with something Felix did:
+> >
+> > https://github.com/greearb/mt76/blob/master/patches/0001-net-add-
+> support-for-threaded-NAPI-polling.patch
+> >
+> > Maybe the NAPI/RX to a thread thing superceded Felix's patch?
+> Yes, it did and it's in linux-next already.
+> I sent the following change to make mt76 use it:
+> https://github.com/nbd168/wireless/commit/1d4ff31437e5aaa999bd7a
+
+Hi Felix / Ben,
+
+In case of ath10k (snoc based targets), we have a lot of processing in =
+the NAPI context.
+Even moving this to threaded NAPI is not helping much due to the load.
+
+Breaking the tasks into multiple context (with the patch series I =
+posted) is helping in improving the throughput.
+With the current rx_thread based approach, the rx processing is broken =
+into two parallel contexts
+1) reaping the packets from the HW
+2) processing these packets list and handing it over to mac80211 (and =
+later to the network stack)
+
+This is the primary reason for choosing the rx thread approach.
+
+Thanks,
+Rakesh.
+
+>=20
+> - Felix
 
