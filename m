@@ -2,149 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 087B2349356
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:53:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1F234935B
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:55:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbhCYNw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:52:27 -0400
-Received: from mail-bn8nam12on2069.outbound.protection.outlook.com ([40.107.237.69]:62400
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230348AbhCYNv7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 09:51:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KMqAytPW3hQ5/dAcWKSbzAYTqOQo0+7P+dW5ewZP76N21ZgQoef7aiHSE7o+1WcxbFOtaxlgC5ArHdePwgd7If43LhzbZFf+KpM4TO7444J7R1qkjhULejsMa+GPN5sPQPUku2oN/Nmo5k4ZFtNQ2MtKd2XgcJ0/45oOgrzT82/tWSt0z+YBNMIrIq0c20GpyPZYkn6wpnbl/O2zAb4JL3dIwZG+DGSG5Ch/fAfpmYCdRKwFc9roHe8OFEMU6ix1VRgqOsWy7JjB3c0VODpA5McPjDVWrFDdafRHYHHniKStRkdrtEcu+M2JYhhVg0xdfGPcpj2Balqfc9DRB/jbIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8JQHh76Pw3jOXtXgjUfv7Mpj3IfQl3KkQhoJQ99eKKY=;
- b=LzxGYWeg70a9XRX1KtYg2BT2Jc7M4Y5J2vbwjQTjIjFX0KD5ui7dY5mQUbBWF4QjwZXhSs0k9p9n+qi8Juocc9qUL+psyZ27kWYcIqT0FE3/C+7mFvQSkiYHchHyGeZLEXXDjzrXzKZEeYuIZV9eT2iXd5ZoREtWqZ8tJyNv/wuFr832CDokXxOUqgEdv6NhdkM3OyPK0JowWmYHO96PxW8+vocHzQs+w2HhzObzHSjOC1wkK/HWozpPQlR7Ex5Ea7hFf4qXVtmmy0YYd4WEzE8rLilx6uVvq1mJ+ORiwmfz04EpoOb+T8JZxfYDubyHxdCOimbZdiWNmkUFIDI01Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8JQHh76Pw3jOXtXgjUfv7Mpj3IfQl3KkQhoJQ99eKKY=;
- b=O8x99WgClUD2t6/K+8VMoI6dZQiirp41Y34VMjMgcYdiqGKMQKRB6k8NJcqOku8MCU8815Ik+Ip6YaMSU4+D8HGYwrfDUmfxHDZvQ1EVrhqUMTreTWwiRztEay3BPtxpQpOCcDwTlUYlloksTYUSEBPVI0wkhPo/+fio5kQ04lo=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1355.namprd12.prod.outlook.com (2603:10b6:3:6e::7) by
- DM6PR12MB4436.namprd12.prod.outlook.com (2603:10b6:5:2a3::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3977.25; Thu, 25 Mar 2021 13:51:52 +0000
-Received: from DM5PR12MB1355.namprd12.prod.outlook.com
- ([fe80::c9b6:a9ce:b253:db70]) by DM5PR12MB1355.namprd12.prod.outlook.com
- ([fe80::c9b6:a9ce:b253:db70%6]) with mapi id 15.20.3955.027; Thu, 25 Mar 2021
- 13:51:52 +0000
-Subject: Re: [PATCH net] amd-xgbe: Update DMA coherency values
-To:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20210325030912.2541181-1-Shyam-sundar.S-k@amd.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-Message-ID: <f24a0081-d9bf-65d4-92d9-e0a24c63c3d1@amd.com>
-Date:   Thu, 25 Mar 2021 08:51:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-In-Reply-To: <20210325030912.2541181-1-Shyam-sundar.S-k@amd.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [67.79.209.213]
-X-ClientProxiedBy: SA0PR11CA0001.namprd11.prod.outlook.com
- (2603:10b6:806:d3::6) To DM5PR12MB1355.namprd12.prod.outlook.com
- (2603:10b6:3:6e::7)
+        id S230281AbhCYNyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 09:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229731AbhCYNyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:54:02 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762F3C06174A
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 06:54:02 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id w3so3061463ejc.4
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 06:54:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4v+WL+8/8I7OT61HmrQ11cXzrTvlBNNG6BBJbin+vLY=;
+        b=pFpTdBzMJbY/VMamFXQTYuCP/H1v0+ZwqPS/I+DdhNPhLoAEyN0dL8cHASEZuj7wSe
+         KGPScpolZ7o3B7MgwSkai6Ic1IlI2xQEmlVUPZSz4CsEqvIVHz5ozak4cHVCcxTX0EFJ
+         xcA5YLgUB0nq/3V3zceL3RgerralPEkQ8mh56ZQfVs+r+aQ8ku/I59WdcTIY1t89DfOH
+         HI3YFAl6eojmvZNfSQRf/h9dI6eMx2+E5bzXtI+5TOsQ0ctKocfhEWAVpPcf04fhjIjh
+         pgQEzmBY5pKLy/hYjfIFtEL23yVOxYX88VVJXILZqrfT0slCngTs6imAAwvPPGfJ43qB
+         hXGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4v+WL+8/8I7OT61HmrQ11cXzrTvlBNNG6BBJbin+vLY=;
+        b=TGIolmZmMSRhDp2uepNeGUElVNwYxOcjIpKnVKSNGsxF2h7mjGz1Do+fvgYK0UTqK/
+         olhyE8dmDQdajme+k8RbaDbOZCEhFG2x4HaDh43BKG6yKd9Za89ZNZtVqFJK8n/LAjnc
+         r2ShejwBz4WHfdHkLEZtvBndq8y/JLFB5v7y1rbc7M2y6trFNeHbsTQd7WsgZLCY3oCj
+         1CTQfB14EDPFGX4ZRcz4EIF8ySorfyKvCKZYkzlkpgG3b2kK/e/AZcnS0QrdZ+uMtXBs
+         Q+yrRDCsTFZO2K7PTYOL+Ys9fZVYgem913wuWGvw+nEQcMG9L4nCy0w+5LFIZPL3n/vi
+         Fx2A==
+X-Gm-Message-State: AOAM531pjSf8aWU19L0pBCJjYXUupYvEpL4MCicDHvpfyPBEvmV93nA3
+        +UhTKVkseSyw2w1cMaD+71heKORwv20=
+X-Google-Smtp-Source: ABdhPJxQgpEek4PqpNnMLAk3gjb6pf5FsAzZVjJmk5MSWfNPS3x4sq1BhioFWNgUAcTHShlmBpwPeg==
+X-Received: by 2002:a17:906:d114:: with SMTP id b20mr9558949ejz.449.1616680440812;
+        Thu, 25 Mar 2021 06:54:00 -0700 (PDT)
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
+        by smtp.gmail.com with ESMTPSA id b4sm2445951eja.47.2021.03.25.06.54.00
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Mar 2021 06:54:00 -0700 (PDT)
+Received: by mail-wr1-f42.google.com with SMTP id e18so2370088wrt.6
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 06:54:00 -0700 (PDT)
+X-Received: by 2002:a5d:640b:: with SMTP id z11mr8923616wru.327.1616680439662;
+ Thu, 25 Mar 2021 06:53:59 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from office-linux.texastahm.com (67.79.209.213) by SA0PR11CA0001.namprd11.prod.outlook.com (2603:10b6:806:d3::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26 via Frontend Transport; Thu, 25 Mar 2021 13:51:51 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 576a10c0-f4ee-4999-d0df-08d8ef952499
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4436:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB443621B4F3379247A76822B6EC629@DM6PR12MB4436.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 83bXx2E25zKwAITNacr7WM2w48+9BJWXSlyMSVI6dH4gDnTp+S4tKeZXDDaAR45Vug5U2atRTUsRHP12f1Lq8ENegXX8IsITQlI8bH2qdeovIUQhzbwrMaKzh8z46Mm9odo5D5A2B2fp9BeLSo3XciQO+WURgZdzkWEzbS8sdRtlf51hI28pgE1p4JPIqeTNntMPBUxWoBNFYx+G68CaiP1Z/Lr/iy/+euBZNvcpbWaYAM2GOnMEK2c1ZPT6OAv5DOwPAav1F9Ox+QgOVoHfh5Jt0IxbwdY3JkOsaI52x9DoeZXT1X+nGbCc5PPWzHUsr2TJ1QyXBUj0rGOkWkUunsrsmnXptcmUS9lJUqHGUo06qWSn47xPHcrSoPZzLVHO4aS2xiCf2w0RUdhflu39KOlJxTdbtEhmLU8ue2DmxLdNYe35adw8egzu8hyNvlRJJdMLE5PbMcm9hk4/NzzjOPN+e5XERfzlPpzLV6lrvzF//bKha3KkplDhx6bHO+J9E/unROzCxa+33wChkVLgb2ZMM6e5DV8+1BNmdNlzggnjIlHKlzQbpZmwlw3w4NAUrlKabawvwKgriKoBNf2JC4b4aYTMGzN3fUfcpQpjb4MIy3OmHLmsWd9a5S22msArAykrDcok2Ayd1aC+kStY5FQsC1W/RZjH+anDAJjQvf+43zO8LFYG4DTFpo0uJ1v7Xn0cI7S9pTsen3D7dsz2IA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1355.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(396003)(366004)(136003)(66556008)(2906002)(66946007)(6512007)(186003)(31686004)(6486002)(66476007)(31696002)(38100700001)(8676002)(2616005)(26005)(36756003)(5660300002)(956004)(8936002)(83380400001)(53546011)(86362001)(478600001)(110136005)(16526019)(6506007)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?ZXpHLzE0anc0UmFUUkRLdHJIV3JoazFaaHh0bW5leXd5ZC8rdWl0VXRFaXdR?=
- =?utf-8?B?cm9hb29OUVVLQ3h3TlRlVUZObUNZTDJTSzZLQ2I0QmVwYzdDMXQvcXY0NVRo?=
- =?utf-8?B?NWtuNk1yc05zS21yd0EzVncvMWVOZWQ5YWROdURJemc0cjlrMU1Wa0tKcG5w?=
- =?utf-8?B?Z1Z2a2RCdFBmZnlQM0kydElSZU9yQWZxeDB3OTdONVN3eFM2MmlQcTZWU3RX?=
- =?utf-8?B?Wk5NZ2VyditQalVQUE9EemtLOURzOHhJTkhCcmdvUjYzenF2SlpyL1FEak5k?=
- =?utf-8?B?bjRyeFdGUlFiSzdoUEdrbkFmTU1FR3hQZGtVRmhBU0wxcVNBZGNES3lUc3Fy?=
- =?utf-8?B?elFjN2ptWlArRGk3YmptZkVJdWZYbmFRSVhBSEp2RzlJOUdBNlBnSFBGVVZX?=
- =?utf-8?B?bkNzMm1kWndGTUJIRHVjMEVzbTVTZmVpVzFSVUsvUGJ5bitkSE43dWsvdzBq?=
- =?utf-8?B?Y3ZKRFo0b3JOVFVHeW9wZEdaaDIvTUVpa29yU204NWNHRjhEK3lycTR3djRv?=
- =?utf-8?B?a1JDdVFSSFFvM01qMk5pWDdXNUJ3K3BLVEZRT0ZldFVFaVY2WC9VZ2ZxYkxn?=
- =?utf-8?B?MWk2Z3hPRmMzN0dSN1JoUTJTRXlMU0tzY21xOUNzcEtWdG55U1BoTWVFWTJw?=
- =?utf-8?B?VnpEOWtyUGQycXplTktKcVNwQnJGb2lpSzJyc2d3a0R3SlpPL24zQzZxM0hS?=
- =?utf-8?B?NDRMc2xudEhxRW9iaHpFN0ZXcEt6RktKTDlvUUNqb1JVNThVQWI4TFlWeXJC?=
- =?utf-8?B?OUExU2Z0WVh1RTduMVBsRHcxR3o4cEczNkp4TFFWTVdxNW5BM0xZQTZ3eG1t?=
- =?utf-8?B?WnB5dmhKUmg3Rzk0RHZpM1ZRWGxwMktFMUd5eWQzSU9OVkFJRkZ1QWVZZzg4?=
- =?utf-8?B?Q3NNNUlDN0lYVWhQU2tqOC9aSnhYZnFKYmNkdy9nU005VTNBdWZHVmZ5ZWdp?=
- =?utf-8?B?c2xGeGRrY0U5NDVXSzNwWEd3Ui8xdklGbHlBQktOczJWaGkxcEJHc3BaSlhL?=
- =?utf-8?B?T3grYnovZXNrOGZZWmMvYVZZaDAzdmpCTVF4WUpEZlN1NWZSWVNRdWZpcGM1?=
- =?utf-8?B?cGdTYWRFRmtQV1krb1BMWjVHK0lWb0RlWDFPak1SckhBKy9mdkxHS2tudStz?=
- =?utf-8?B?TUI5MjlvdlJ2TTMvVXUvWXdsNitNbUx1cldMcVZCTmFrNW9xNDRkLzN5Mi8y?=
- =?utf-8?B?QXFSa1NqdUhZQWR1bitTRldoMFRDV0RQN2JrMUJZM2F0Vjl2blpnNEJpYzhm?=
- =?utf-8?B?WjFTNjdkMjBHTlR4bUVJT24yR3FWblZ2RkFYREFBM2c5Q2FSR1U3b2xYTkR5?=
- =?utf-8?B?Ym92TU0rbTlKSUhRRUZtb0VGZzNmdWVKS3I4YkdDSW80TXlFckd0cURVU3Ji?=
- =?utf-8?B?L2pHRXZnSEFzRGpJcEhJbXBQb3UrNlNGZ0tLL2ZlSEVIRnk3S2tvM3ZNUzBk?=
- =?utf-8?B?MVZyY0Eva2EwNzhEbWZhYUh0TzdoV1ovRW5QSWFtOW9OUlpjUTZuZkkzTVlW?=
- =?utf-8?B?a3M4SEhtaUhzeFVVbHNIY2FPenZiUm02NzR5cmovS09EamtiZ1h2ZmJINWpH?=
- =?utf-8?B?Z1A2NldPNWtmTWRGTjRiQStxNm5oODBUOFJBL3l6MFdJMys0aG1GdGp4eERF?=
- =?utf-8?B?clJWT0xGRnJidUFCVVBXci82bjhvVDQ5MHl6U083akp6N1c2UmF6bXhKcHk0?=
- =?utf-8?B?UXZQTUVTbENGL3FlR204ZnhDZjg1MytFd2IzRjNlVmVmNW96SXdSU0ZPaGRy?=
- =?utf-8?Q?Vfg3iBozcARbJuzBp/At5qQRS0LXLUUcCiPhi01?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 576a10c0-f4ee-4999-d0df-08d8ef952499
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1355.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 13:51:51.9729
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9k2+hlrn5/w9nsc84k/3RQc+m2x6O3Qcl1WywI+LnDxy+UaiZgUznuvjekhZAvKHqxpEHH/jwf5lh/S8WEsGog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4436
+References: <cover.1616345643.git.pabeni@redhat.com> <4bff28fbaa8c53ca836eb2b9bdabcc3057118916.1616345643.git.pabeni@redhat.com>
+ <CA+FuTScSPJAh+6XnwnP32W+OmEzCVi8aKundnt2dJNzoKgUthg@mail.gmail.com>
+ <43f56578c91f8abd8e3d1e8c73be1c4d5162089f.camel@redhat.com>
+ <CA+FuTSd6fOaj6bJssyXeyL-LWvSEdSH+QchHUG8Ga-=EQ634Lg@mail.gmail.com>
+ <5143c873078583ef0f12d08ccf966d6b4640b9ee.camel@redhat.com>
+ <CA+FuTScdNaWxNWMp+tpZrEGmO=eW1cpHQi=1Rz9cYQQ8oz+2CA@mail.gmail.com> <6377ac88cd76e7d948a0f4ea5f8bfffd3fac1710.camel@redhat.com>
+In-Reply-To: <6377ac88cd76e7d948a0f4ea5f8bfffd3fac1710.camel@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 25 Mar 2021 09:53:22 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSepOe88N_jY+9F5gTu6ShzMa8rOZzi6CAsF+4k6iPeajw@mail.gmail.com>
+Message-ID: <CA+FuTSepOe88N_jY+9F5gTu6ShzMa8rOZzi6CAsF+4k6iPeajw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/21 10:09 PM, Shyam Sundar S K wrote:
-> Based on the IOMMU configuration, the current cache control settings can
-> result in possible coherency issues. The hardware team has recommended
-> new settings for the PCI device path to eliminate the issue.
-> 
-> Fixes: 6f595959c095 ("amd-xgbe: Adjust register settings to improve performance")
-> Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+On Thu, Mar 25, 2021 at 6:57 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Wed, 2021-03-24 at 18:36 -0400, Willem de Bruijn wrote:
+> > > > This is a UDP GSO packet egress packet that was further encapsulated
+> > > > with a GSO_UDP_TUNNEL on egress, then looped to the ingress path?
+> > > >
+> > > > Then in the ingress path it has traversed the GRO layer.
+> > > >
+> > > > Is this veth with XDP? That seems unlikely for GSO packets. But there
+> > > > aren't many paths that will loop a packet through napi_gro_receive or
+> > > > napi_gro_frags.
+> > >
+> > > This patch addresses the following scenario:
+> > >
+> > > sk ->vxlan -> veth -> (xdp in use, TSO disabled, GRO on) -> veth -> vxlan -> sk
+> > >
+> > > What I meant here is that the issue is not visible with:
+> > >
+> > > (baremetal, NETIF_F_GRO_UDP_FWD | NETIF_F_GRO_FRAGLIST enabled -> vxlan -> sk
+> > >
+> > > > > with the appropriate features bit set, will validate the checksum for
+> > > > > both the inner and the outer header - udp{4,6}_gro_receive will be
+> > > > > traversed twice, the fist one for the outer header, the 2nd for the
+> > > > > inner.
+> > > >
+> > > > GRO will validate multiple levels of checksums with CHECKSUM_COMPLETE.
+> > > > It can only validate the outer checksum with CHECKSUM_UNNECESSARY, I
+> > > > believe?
+> > >
+> > > I possibly miss some bits here ?!?
+> > >
+> > > AFAICS:
+> > >
+> > > udp4_gro_receive() -> skb_gro_checksum_validate_zero_check() ->
+> > > __skb_gro_checksum_validate -> (if  not already valid)
+> > > __skb_gro_checksum_validate_complete() -> (if not CHECKSUM_COMPLETE)
+> > > __skb_gro_checksum_complete()
+> > >
+> > > the latter will validate the UDP checksum at the current nesting level
+> > > (and set the csum-related bits in the GRO skb cb to the same status
+> > > as CHECKSUM_COMPLETE)
+> > >
+> > > When processing UDP over UDP tunnel packet, the gro call chain will be:
+> > >
+> > > [l2/l3 GRO] -> udp4_gro_receive (validate outher header csum) ->
+> > > udp_sk(sk)->gro_receive -> [other gro layers] ->
+> > > udp4_gro_receive (validate inner header csum) -> ...
+> >
+> > Agreed. But __skb_gro_checksum_validate on the first invocation will
+> > call skb_gro_incr_csum_unnecessary, so that on the second invocation
+> > csum_cnt == 0 and triggers a real checksum validation?
+> >
+> > At least, that is my understanding. Intuitively, CHECKSUM_UNNECESSARY
+> > only validates the first checksum, so says nothing about the validity
+> > of any subsequent ones.
+> >
+> > But it seems I'm mistaken?
+>
+> AFAICS, it depends ;) From skbuff.h:
+>
+>  *   skb->csum_level indicates the number of consecutive checksums found in
+>  *   the packet minus one that have been verified as CHECKSUM_UNNECESSARY.
+>
+> if skb->csum_level > 0, the NIC validate additional headers. The intel
+> ixgbe driver use that for vxlan RX csum offload. Such field translates
+> into:
+>
+>         NAPI_GRO_CB(skb)->csum_cnt
+>
+> inside the GRO engine, and skb_gro_incr_csum_unnecessary takes care of
+> the updating it after validation.
 
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+True. I glanced over those cases.
 
-> ---
-> 
-> Please queue this patch up for stable, 4.14 and higher.
-> 
->  drivers/net/ethernet/amd/xgbe/xgbe.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe.h b/drivers/net/ethernet/amd/xgbe/xgbe.h
-> index ba8321ec1ee7..3305979a9f7c 100644
-> --- a/drivers/net/ethernet/amd/xgbe/xgbe.h
-> +++ b/drivers/net/ethernet/amd/xgbe/xgbe.h
-> @@ -180,9 +180,9 @@
->  #define XGBE_DMA_SYS_AWCR	0x30303030
->  
->  /* DMA cache settings - PCI device */
-> -#define XGBE_DMA_PCI_ARCR	0x00000003
-> -#define XGBE_DMA_PCI_AWCR	0x13131313
-> -#define XGBE_DMA_PCI_AWARCR	0x00000313
-> +#define XGBE_DMA_PCI_ARCR	0x000f0f0f
-> +#define XGBE_DMA_PCI_AWCR	0x0f0f0f0f
-> +#define XGBE_DMA_PCI_AWARCR	0x00000f0f
->  
->  /* DMA channel interrupt modes */
->  #define XGBE_IRQ_MODE_EDGE	0
-> 
+More importantly, where exactly do these looped packets get converted
+from CHECKSUM_PARTIAL to CHECKSUM_NONE before this patch?
+
+> > __skb_gro_checksum_validate has an obvious exception for locally
+> > generated packets by excluding CHECKSUM_PARTIAL. Looped packets
+> > usually have CHECKSUM_PARTIAL set. Unfortunately, this is similar to
+> > the issue that I looked at earlier this year with looped UDP packets
+> > with MSG_MORE: those are also changed to CHECKSUM_NONE (and exposed a
+> > checksum bug: 52cbd23a119c).
+> >
+> > Is there perhaps some other way that we can identify that these are
+> > local packets? They should trivially avoid all checksum checks.
+> >
+> > > > As for looped packets with CHECKSUM_PARTIAL: we definitely have found
+> > > > bugs in that path before. I think it's fine to set csum_valid on any
+> > > > packets that can unambiguously be identified as such. Hence the
+> > > > detailed questions above on which exact packets this code is
+> > > > targeting, so that there are not accidental false positives that look
+> > > > the same but have a different ip_summed.
+> > >
+> > > I see this change is controversial.
+> >
+> > I have no concerns with the fix. It is just a very narrow path (veth +
+> > xdp - tso + gro ..), and to minimize risk I would try to avoid
+> > updating state of unrelated packets. That was my initial comment: I
+> > don't understand the need for the else clause.
+>
+> The branch is there because I wrote this patch before the patches 5,6,7
+> later in this series. GSO UDP L4 over UDP tunnel packets were segmented
+> at the UDP tunnel level, and that 'else' branch preserves the
+> appropriate 'csum_level' value to avoid later (if/when the packet lands
+> in a plain UDP socket) csum validation.
+>
+> > > Since the addressed scenario is
+> > > really a corner case, a simpler alternative would be
+> > > replacing udp_post_segment_fix_csum with:
+> > >
+> > > static inline void udp_post_segment_fix_cb(struct sk_buff *skb, int level)
+> > > {
+> > >         /* UDP-lite can't land here - no GRO */
+> > >         WARN_ON_ONCE(UDP_SKB_CB(skb)->partial_cov);
+> > >
+> > >         /* UDP CB mirrors the GSO packet, we must re-init it */
+> > >         UDP_SKB_CB(skb)->cscov = skb->len;
+> > > }
+> > >
+> > > the downside will be an additional, later, unneeded csum validation for the
+> > >
+> > > sk ->vxlan -> veth -> (xdp in use, TSO disabled, GRO on) -> veth -> vxlan -> sk
+> > >
+> > > scenario. WDYT?
+> >
+> > No, let's definitely avoid an unneeded checksum verification.
+>
+> Ok.
+>
+> My understanding is that the following should be better:
+>
+> static inline void udp_post_segment_fix_csum(struct sk_buff *skb)
+> {
+>         /* UDP-lite can't land here - no GRO */
+>         WARN_ON_ONCE(UDP_SKB_CB(skb)->partial_cov);
+>
+>         /* UDP packets generated with UDP_SEGMENT and traversing:
+>          * UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) -> UDP tunnel (rx)
+>          * land here with CHECKSUM_NONE. Instead of adding another check
+>          * in the tunnel fastpath, we can force valid csums here:
+>          * packets are locally generated and the GRO engine already validated
+>          * the csum.
+>          * Additionally fixup the UDP CB
+>          */
+>         UDP_SKB_CB(skb)->cscov = skb->len;
+>         if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+>                 skb->csum_valid = 1;
+> }
+>
+> I'll use the above in v2.
+
+Do I understand correctly that this avoids matching tunneled packets
+that arrive from the network with rx checksumming disabled, because
+__skb_gro_checksum_complete will have been called on the outer packet
+and have set skb->csum_valid?
+
+Yes, this just (1) identifying the packet as being of local source and
+then (2) setting csum_valid sounds great to me, thanks.
