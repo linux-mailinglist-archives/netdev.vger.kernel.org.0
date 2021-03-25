@@ -2,87 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9177348E89
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 12:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C952D348EEF
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 12:26:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhCYLIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 07:08:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59791 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229847AbhCYLIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 07:08:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616670517;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fKj3N7qjc3wKOxA3NoAZDiYAxmrNm7GOxG509L79+1k=;
-        b=cu7S7EHiaulfggoULBC4P4taWnfY/OR6EnUoKO/WN792PjJI4fzLuch2hn/dlD6/F1Kntt
-        OKVl8FLVZDRNllWHTLCmxa4/O2NpYGjA2GZwXyUbbIAZhol6X8bWokErwYdeNMaoDqO4sA
-        hgWoGtnty2pz+sQgmurf/iAonWYij0Y=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-175-_p_mT9bCNsqjYfMvruQVgw-1; Thu, 25 Mar 2021 07:08:35 -0400
-X-MC-Unique: _p_mT9bCNsqjYfMvruQVgw-1
-Received: by mail-wm1-f71.google.com with SMTP id g187so23260wme.3
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 04:08:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fKj3N7qjc3wKOxA3NoAZDiYAxmrNm7GOxG509L79+1k=;
-        b=rZEX39MQgZTfnolhQ6uzVWpIZIoq2i4IQqHJNcTlzHNYecGUAueephhji8vR69X4Pe
-         itQJ91kyfA41YecYu83kOnNKDL2eOtOrQ3HyPBYdsQNiaUWOCNy84vcrhCTJ3bDUvsit
-         JjDHHaCod5Xnl2Hmk/yv2olL0rMgmJ+8ApXD5kJ4NW1tIg77cWWPEXTgciWA/gBTxkFA
-         b+OoG4VfrvS5yGQfFtqZfawO0kE9pKb+3N89luxyUoW7WfZ2OKq0PeTqpZ6/vn5ALGBS
-         UyA8jtH51P1T4nyIVCqbkB8SlOpyMxsoWluZGTiWEpogS3AfjOq5guyIoWoL2GgR8vNU
-         aCHw==
-X-Gm-Message-State: AOAM530YOIAIX6nmHJF1K04LhJET5MBR/DOIKhThfNNEm59UNIMM3QtT
-        8Um0IBb6TXJ2rPFzElEotd8SP58mJddoL232DO8TjFn4k9E05klqSgvBhJDcmqAghCIkLXhuV4Y
-        SXnpWSLf6ETvIesyW
-X-Received: by 2002:a05:600c:204f:: with SMTP id p15mr7394511wmg.165.1616670514617;
-        Thu, 25 Mar 2021 04:08:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyiEtLL2V7byI4WDi3Jbt4TeRDQzSQxBNNRwTIXQ/L2sd55YH0ycog2gsdgUk7sVz7dGg2BRg==
-X-Received: by 2002:a05:600c:204f:: with SMTP id p15mr7394472wmg.165.1616670514357;
-        Thu, 25 Mar 2021 04:08:34 -0700 (PDT)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id w22sm5958086wmi.22.2021.03.25.04.08.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 04:08:33 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 12:08:31 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
-        parav@nvidia.com, bob.liu@oracle.com, hch@infradead.org,
-        rdunlap@infradead.org, willy@infradead.org,
-        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
-        corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH v5 03/11] vhost-vdpa: protect concurrent access to vhost
- device iotlb
-Message-ID: <20210325110831.v57e4xg7twzzcu7n@steredhat>
-References: <20210315053721.189-1-xieyongji@bytedance.com>
- <20210315053721.189-4-xieyongji@bytedance.com>
+        id S230182AbhCYLZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 07:25:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229948AbhCYLZJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 07:25:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F98161A24;
+        Thu, 25 Mar 2021 11:25:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616671509;
+        bh=+Osgp3BwPhN458vMwDW2wPQlrcTN99xc3KHloFf73qY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gfNHA3Ap1rMZy5Ak1st7GdM+P/6LqeNy3J+bxoe33wZLe3yYPU4FzTNA4ID+d1iT2
+         RdFSoLKiGTimNKBhgiERVQEdgqSJ8+xP6Rvaiv3XfAEYNo8dkJ0m1XonKqCmWUg1Ee
+         Qc3s7z8Y7mqlXWGgRj/nLtb7GJJx34Txv0RfITReXoBkoEwWm1icNnJdzrMg+p6UJL
+         XPQUQHd+5uoV0m+1XX3jRkIthQnR0F7QBX1Ad+tkK1qBOZxAUWwbfi463VsCyIsCQ9
+         cE6Gl6fZJNc7HO6ZsrP5zQcGOUcYWx1J1Bx7oHYzIAxyNe5CVklSILNHtRHj4a0drQ
+         58uLau9lRYomA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "J. Bruce Fields" <bfields@redhat.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.11 07/44] rpc: fix NULL dereference on kmalloc failure
+Date:   Thu, 25 Mar 2021 07:24:22 -0400
+Message-Id: <20210325112459.1926846-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20210325112459.1926846-1-sashal@kernel.org>
+References: <20210325112459.1926846-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210315053721.189-4-xieyongji@bytedance.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 15, 2021 at 01:37:13PM +0800, Xie Yongji wrote:
->Use vhost_dev->mutex to protect vhost device iotlb from
->concurrent access.
->
->Fixes: 4c8cf318("vhost: introduce vDPA-based backend")
->Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->---
-> drivers/vhost/vdpa.c | 6 +++++-
-> 1 file changed, 5 insertions(+), 1 deletion(-)
+From: "J. Bruce Fields" <bfields@redhat.com>
 
+[ Upstream commit 0ddc942394013f08992fc379ca04cffacbbe3dae ]
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+I think this is unlikely but possible:
+
+svc_authenticate sets rq_authop and calls svcauth_gss_accept.  The
+kmalloc(sizeof(*svcdata), GFP_KERNEL) fails, leaving rq_auth_data NULL,
+and returning SVC_DENIED.
+
+This causes svc_process_common to go to err_bad_auth, and eventually
+call svc_authorise.  That calls ->release == svcauth_gss_release, which
+tries to dereference rq_auth_data.
+
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+Link: https://lore.kernel.org/linux-nfs/3F1B347F-B809-478F-A1E9-0BE98E22B0F0@oracle.com/T/#t
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sunrpc/auth_gss/svcauth_gss.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
+index bd4678db9d76..6dff64374bfe 100644
+--- a/net/sunrpc/auth_gss/svcauth_gss.c
++++ b/net/sunrpc/auth_gss/svcauth_gss.c
+@@ -1825,11 +1825,14 @@ static int
+ svcauth_gss_release(struct svc_rqst *rqstp)
+ {
+ 	struct gss_svc_data *gsd = (struct gss_svc_data *)rqstp->rq_auth_data;
+-	struct rpc_gss_wire_cred *gc = &gsd->clcred;
++	struct rpc_gss_wire_cred *gc;
+ 	struct xdr_buf *resbuf = &rqstp->rq_res;
+ 	int stat = -EINVAL;
+ 	struct sunrpc_net *sn = net_generic(SVC_NET(rqstp), sunrpc_net_id);
+ 
++	if (!gsd)
++		goto out;
++	gc = &gsd->clcred;
+ 	if (gc->gc_proc != RPC_GSS_PROC_DATA)
+ 		goto out;
+ 	/* Release can be called twice, but we only wrap once. */
+@@ -1870,10 +1873,10 @@ svcauth_gss_release(struct svc_rqst *rqstp)
+ 	if (rqstp->rq_cred.cr_group_info)
+ 		put_group_info(rqstp->rq_cred.cr_group_info);
+ 	rqstp->rq_cred.cr_group_info = NULL;
+-	if (gsd->rsci)
++	if (gsd && gsd->rsci) {
+ 		cache_put(&gsd->rsci->h, sn->rsc_cache);
+-	gsd->rsci = NULL;
+-
++		gsd->rsci = NULL;
++	}
+ 	return stat;
+ }
+ 
+-- 
+2.30.1
 
