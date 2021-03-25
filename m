@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F43534986B
+	by mail.lfdr.de (Postfix) with ESMTP id CF8B234986C
 	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbhCYRju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 13:39:50 -0400
+        id S230298AbhCYRjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 13:39:51 -0400
 Received: from mga03.intel.com ([134.134.136.65]:27389 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229904AbhCYRjf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 13:39:35 -0400
-IronPort-SDR: jYjcAwswRfsXvAdnHU0SeccJTcX2AC1B8XG5VUwoNc+evKWVT09mITW6BZnTe4ULaElTbzsDIV
- RZ0ZXw32Sv4A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="191016825"
+        id S230064AbhCYRjj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 13:39:39 -0400
+IronPort-SDR: muPQ5JnTvjW/2FSxZxLMWQE/TGluTLaS/fDRQfoAa29gKSwKRfCtEMxVx+eUf3ug4JUB3EWI5M
+ VvuUu2RSMqnA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="191016843"
 X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
-   d="scan'208";a="191016825"
+   d="scan'208";a="191016843"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2021 10:39:35 -0700
-IronPort-SDR: DfFE/CNkxPsTA0HKaarl8JglBVFfo1iBIp+P81yFoqESPQRL5rPHTGTWl1GslCtg219L88B68r
- yiofeYq4UFNw==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2021 10:39:38 -0700
+IronPort-SDR: 0hFyAKLCiHgyi8/DV1Uk0KEAkAJD9gjMGBKTu+UtdBaplzzPCSNdfMHnwOtreDvKYvq2u4NZSY
+ l62/m9uzksgw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
-   d="scan'208";a="416112340"
+   d="scan'208";a="416112357"
 Received: from climb.png.intel.com ([10.221.118.165])
-  by orsmga008.jf.intel.com with ESMTP; 25 Mar 2021 10:39:31 -0700
+  by orsmga008.jf.intel.com with ESMTP; 25 Mar 2021 10:39:35 -0700
 From:   Voon Weifeng <weifeng.voon@intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
@@ -39,9 +39,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>,
         Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH v2 net-next 4/5] stmmac: intel: add support for multi-vector msi and msi-x
-Date:   Fri, 26 Mar 2021 01:39:15 +0800
-Message-Id: <20210325173916.13203-5-weifeng.voon@intel.com>
+Subject: [PATCH v2 net-next 5/5] net: stmmac: use interrupt mode INTM=1 for multi-MSI
+Date:   Fri, 26 Mar 2021 01:39:16 +0800
+Message-Id: <20210325173916.13203-6-weifeng.voon@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210325173916.13203-1-weifeng.voon@intel.com>
 References: <20210325173916.13203-1-weifeng.voon@intel.com>
@@ -49,195 +49,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
+From: "Wong, Vee Khee" <vee.khee.wong@intel.com>
 
-Intel mgbe controller supports multi-vector interrupts:
-msi_rx_vec	0,2,4,6,8,10,12,14
-msi_tx_vec	1,3,5,7,9,11,13,15
-msi_sfty_ue_vec	26
-msi_sfty_ce_vec	27
-msi_lpi_vec	28
-msi_mac_vec	29
+For interrupt mode INTM=0, TX/RX transfer complete will trigger signal
+not only on sbd_perch_[tx|rx]_intr_o (Transmit/Receive Per Channel) but
+also on the sbd_intr_o (Common).
 
-During probe(), the driver will starts with request allocation for
-multi-vector interrupts. If it fails, then it will automatically fallback
-to request allocation for single interrupts.
+As for multi-MSI implementation, setting interrupt mode INTM=1 is more
+efficient as each TX intr and RX intr (TI/RI) will be handled by TX/RX ISR
+without the need of calling the common MAC ISR.
 
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Updated the TX/RX NORMAL interrupts status checking process as the
+NIS status bit is not asserted for any RI/TI events for INTM=1.
+
+Signed-off-by: Wong, Vee Khee <vee.khee.wong@intel.com>
 Co-developed-by: Voon Weifeng <weifeng.voon@intel.com>
 Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
 Changes:
 v1 -> v2
- - Moved the msi tx/rx base vector check before alloc irq
- - Restuctured the clean up code after fail to alloc irq and fail to probe
- - Unprepared and unregistered the stmmac-clk if fail to alloc irq
+ -Moved the readl and writel into the if statement as it is only executed
+  when multi msi is enabled
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 120 ++++++++++++++++--
- 1 file changed, 111 insertions(+), 9 deletions(-)
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  |  7 ++++++
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  3 +++
+ .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  | 23 +++++++++----------
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  1 +
+ include/linux/stmmac.h                        |  1 +
+ 5 files changed, 23 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 992294d25706..08b4852eed4c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -492,6 +492,14 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	plat->has_crossts = true;
- 	plat->crosststamp = intel_crosststamp;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+index 8954b85eb850..cb17f6c35e54 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+@@ -161,6 +161,13 @@ static void dwmac4_dma_init(void __iomem *ioaddr,
+ 		value |= DMA_SYS_BUS_EAME;
  
-+	/* Setup MSI vector offset specific to Intel mGbE controller */
-+	plat->msi_mac_vec = 29;
-+	plat->msi_lpi_vec = 28;
-+	plat->msi_sfty_ce_vec = 27;
-+	plat->msi_sfty_ue_vec = 26;
-+	plat->msi_rx_base_vec = 0;
-+	plat->msi_tx_base_vec = 1;
+ 	writel(value, ioaddr + DMA_SYS_BUS_MODE);
 +
- 	return 0;
++	if (dma_cfg->multi_msi_en) {
++		value = readl(ioaddr + DMA_BUS_MODE);
++		value &= ~DMA_BUS_MODE_INTM_MASK;
++		value |= (DMA_BUS_MODE_INTM_MODE1 << DMA_BUS_MODE_INTM_SHIFT);
++		writel(value, ioaddr + DMA_BUS_MODE);
++	}
  }
  
-@@ -776,6 +784,79 @@ static const struct stmmac_pci_info quark_info = {
- 	.setup = quark_default_data,
+ static void _dwmac4_dump_dma_regs(void __iomem *ioaddr, u32 channel,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+index 5c0c53832adb..05481eb13ba6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+@@ -25,6 +25,9 @@
+ #define DMA_TBS_CTRL			0x00001050
+ 
+ /* DMA Bus Mode bitmap */
++#define DMA_BUS_MODE_INTM_MASK		GENMASK(17, 16)
++#define DMA_BUS_MODE_INTM_SHIFT		16
++#define DMA_BUS_MODE_INTM_MODE1		0x1
+ #define DMA_BUS_MODE_SFT_RESET		BIT(0)
+ 
+ /* DMA SYS Bus Mode bitmap */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+index 3fa602dabf49..e63270267578 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+@@ -166,20 +166,19 @@ int dwmac4_dma_interrupt(void __iomem *ioaddr,
+ 		}
+ 	}
+ 	/* TX/RX NORMAL interrupts */
+-	if (likely(intr_status & DMA_CHAN_STATUS_NIS)) {
++	if (likely(intr_status & DMA_CHAN_STATUS_NIS))
+ 		x->normal_irq_n++;
+-		if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
+-			x->rx_normal_irq_n++;
+-			ret |= handle_rx;
+-		}
+-		if (likely(intr_status & (DMA_CHAN_STATUS_TI |
+-					  DMA_CHAN_STATUS_TBU))) {
+-			x->tx_normal_irq_n++;
+-			ret |= handle_tx;
+-		}
+-		if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
+-			x->rx_early_irq++;
++	if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
++		x->rx_normal_irq_n++;
++		ret |= handle_rx;
++	}
++	if (likely(intr_status & (DMA_CHAN_STATUS_TI |
++		DMA_CHAN_STATUS_TBU))) {
++		x->tx_normal_irq_n++;
++		ret |= handle_tx;
+ 	}
++	if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
++		x->rx_early_irq++;
+ 
+ 	writel(intr_status & intr_en, ioaddr + DMA_CHAN_STATUS(chan));
+ 	return ret;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 459477db455c..f4fa5402cd64 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5620,6 +5620,7 @@ int stmmac_dvr_probe(struct device *device,
+ 	priv->plat = plat_dat;
+ 	priv->ioaddr = res->addr;
+ 	priv->dev->base_addr = (unsigned long)res->addr;
++	priv->plat->dma_cfg->multi_msi_en = priv->plat->multi_msi_en;
+ 
+ 	priv->dev->irq = res->irq;
+ 	priv->wol_irq = res->wol_irq;
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index afc12b9385db..e338ef7abc00 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -96,6 +96,7 @@ struct stmmac_dma_cfg {
+ 	int mixed_burst;
+ 	bool aal;
+ 	bool eame;
++	bool multi_msi_en;
  };
  
-+static int stmmac_config_single_msi(struct pci_dev *pdev,
-+				    struct plat_stmmacenet_data *plat,
-+				    struct stmmac_resources *res)
-+{
-+	int ret;
-+
-+	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
-+	if (ret < 0) {
-+		dev_info(&pdev->dev, "%s: Single IRQ enablement failed\n",
-+			 __func__);
-+		return ret;
-+	}
-+
-+	res->irq = pci_irq_vector(pdev, 0);
-+	res->wol_irq = res->irq;
-+	plat->multi_msi_en = 0;
-+	dev_info(&pdev->dev, "%s: Single IRQ enablement successful\n",
-+		 __func__);
-+
-+	return 0;
-+}
-+
-+static int stmmac_config_multi_msi(struct pci_dev *pdev,
-+				   struct plat_stmmacenet_data *plat,
-+				   struct stmmac_resources *res)
-+{
-+	int ret;
-+	int i;
-+
-+	if (plat->msi_rx_base_vec >= STMMAC_MSI_VEC_MAX ||
-+	    plat->msi_tx_base_vec >= STMMAC_MSI_VEC_MAX) {
-+		dev_info(&pdev->dev, "%s: Invalid RX & TX vector defined\n",
-+			 __func__);
-+		return -1;
-+	}
-+
-+	ret = pci_alloc_irq_vectors(pdev, 2, STMMAC_MSI_VEC_MAX,
-+				    PCI_IRQ_MSI | PCI_IRQ_MSIX);
-+	if (ret < 0) {
-+		dev_info(&pdev->dev, "%s: multi MSI enablement failed\n",
-+			 __func__);
-+		return ret;
-+	}
-+
-+	/* For RX MSI */
-+	for (i = 0; i < plat->rx_queues_to_use; i++) {
-+		res->rx_irq[i] = pci_irq_vector(pdev,
-+						plat->msi_rx_base_vec + i * 2);
-+	}
-+
-+	/* For TX MSI */
-+	for (i = 0; i < plat->tx_queues_to_use; i++) {
-+		res->tx_irq[i] = pci_irq_vector(pdev,
-+						plat->msi_tx_base_vec + i * 2);
-+	}
-+
-+	if (plat->msi_mac_vec < STMMAC_MSI_VEC_MAX)
-+		res->irq = pci_irq_vector(pdev, plat->msi_mac_vec);
-+	if (plat->msi_wol_vec < STMMAC_MSI_VEC_MAX)
-+		res->wol_irq = pci_irq_vector(pdev, plat->msi_wol_vec);
-+	if (plat->msi_lpi_vec < STMMAC_MSI_VEC_MAX)
-+		res->lpi_irq = pci_irq_vector(pdev, plat->msi_lpi_vec);
-+	if (plat->msi_sfty_ce_vec < STMMAC_MSI_VEC_MAX)
-+		res->sfty_ce_irq = pci_irq_vector(pdev, plat->msi_sfty_ce_vec);
-+	if (plat->msi_sfty_ue_vec < STMMAC_MSI_VEC_MAX)
-+		res->sfty_ue_irq = pci_irq_vector(pdev, plat->msi_sfty_ue_vec);
-+
-+	plat->multi_msi_en = 1;
-+	dev_info(&pdev->dev, "%s: multi MSI enablement successful\n", __func__);
-+
-+	return 0;
-+}
-+
- /**
-  * intel_eth_pci_probe
-  *
-@@ -833,18 +914,24 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 	plat->bsp_priv = intel_priv;
- 	intel_priv->mdio_adhoc_addr = INTEL_MGBE_ADHOC_ADDR;
- 
-+	/* Initialize all MSI vectors to invalid so that it can be set
-+	 * according to platform data settings below.
-+	 * Note: MSI vector takes value from 0 upto 31 (STMMAC_MSI_VEC_MAX)
-+	 */
-+	plat->msi_mac_vec = STMMAC_MSI_VEC_MAX;
-+	plat->msi_wol_vec = STMMAC_MSI_VEC_MAX;
-+	plat->msi_lpi_vec = STMMAC_MSI_VEC_MAX;
-+	plat->msi_sfty_ce_vec = STMMAC_MSI_VEC_MAX;
-+	plat->msi_sfty_ue_vec = STMMAC_MSI_VEC_MAX;
-+	plat->msi_rx_base_vec = STMMAC_MSI_VEC_MAX;
-+	plat->msi_tx_base_vec = STMMAC_MSI_VEC_MAX;
-+
- 	ret = info->setup(pdev, plat);
- 	if (ret)
- 		return ret;
- 
--	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
--	if (ret < 0)
--		return ret;
--
- 	memset(&res, 0, sizeof(res));
- 	res.addr = pcim_iomap_table(pdev)[0];
--	res.wol_irq = pci_irq_vector(pdev, 0);
--	res.irq = pci_irq_vector(pdev, 0);
- 
- 	if (plat->eee_usecs_rate > 0) {
- 		u32 tx_lpi_usec;
-@@ -853,13 +940,28 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 		writel(tx_lpi_usec, res.addr + GMAC_1US_TIC_COUNTER);
- 	}
- 
-+	ret = stmmac_config_multi_msi(pdev, plat, &res);
-+	if (ret) {
-+		ret = stmmac_config_single_msi(pdev, plat, &res);
-+		if (ret) {
-+			dev_err(&pdev->dev, "%s: ERROR: failed to enable IRQ\n",
-+				__func__);
-+			goto err_alloc_irq;
-+		}
-+	}
-+
- 	ret = stmmac_dvr_probe(&pdev->dev, plat, &res);
- 	if (ret) {
--		pci_free_irq_vectors(pdev);
--		clk_disable_unprepare(plat->stmmac_clk);
--		clk_unregister_fixed_rate(plat->stmmac_clk);
-+		goto err_dvr_probe;
- 	}
- 
-+	return 0;
-+
-+err_dvr_probe:
-+	pci_free_irq_vectors(pdev);
-+err_alloc_irq:
-+	clk_disable_unprepare(plat->stmmac_clk);
-+	clk_unregister_fixed_rate(plat->stmmac_clk);
- 	return ret;
- }
- 
+ #define AXI_BLEN	7
 -- 
 2.17.1
 
