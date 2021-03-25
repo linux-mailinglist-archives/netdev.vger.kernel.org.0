@@ -2,100 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3A434935C
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:55:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 497DE3493A9
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 15:07:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbhCYNyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:54:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59932 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230076AbhCYNye (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 09:54:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 107E061A1F;
-        Thu, 25 Mar 2021 13:54:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616680474;
-        bh=9cCh/Ri/z2+Odfp8fgNhXZatXuIlfKT2e35U/11gViM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=OIhAdEKeaPTNJBVu93gYKdMbSV5Tw07ueeAvGhnnK90bVV2lIxm+jzZisLdQBA7Vp
-         JNHVmNuWj6AVDRXzsCtBSCzXidJrqiUtFy8ga+JYmotBT7wkV7QLvml8btnkf8uq09
-         E33fNbIb6lOCNkZrY5kn4HNzGxcrhRZpZFkVw13ag/Ps+Dn15qLDYv1TCPPAW4fmfk
-         8tpKNRC9TpjXf1zr5uUju82A5UvVUsQOH5Tw5H9dKnIxtgvyq4shrtUdEjsIfW9+qS
-         f+QqNfWMbgCiozlQKi6gpP7l4QYOavoUPe0SEBf2w1TVGbrtRTGMgHn0QBUpedi67O
-         2519mPJ63v9rw==
-Received: by mail-ed1-f54.google.com with SMTP id x21so2516848eds.4;
-        Thu, 25 Mar 2021 06:54:33 -0700 (PDT)
-X-Gm-Message-State: AOAM533OnYqR4Laf7xteXo4atqrpfGnbayExa3kmWe21EDZc5SwTAfvQ
-        MEOD+qlaYDXg0l8xmxanToGjmYxZZPJuoicmNg==
-X-Google-Smtp-Source: ABdhPJx0cV0wVkph5mUWnXkmOeU9aKgZeiIm7OQv6WVwA/pSaJ+FPCIEbzNLc0D2XD53h0EXxaOZo/j7Jk81NKks7x8=
-X-Received: by 2002:a05:6402:c88:: with SMTP id cm8mr9196883edb.62.1616680472700;
- Thu, 25 Mar 2021 06:54:32 -0700 (PDT)
+        id S231349AbhCYOHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 10:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230101AbhCYOHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 10:07:02 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAB7C06174A;
+        Thu, 25 Mar 2021 07:07:02 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id o126so2772010lfa.0;
+        Thu, 25 Mar 2021 07:07:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=pdIHv4/PD3czenmhqB9tk+MCiZEZtlstx+3pXZSdYn4=;
+        b=F12bWCPR2Sk/Xp80UpS74JjBunFCXBeGVh+ZXV3vONkt0eMBNYFrL/dpr5xerdl9EE
+         i2fyMsvej+qJO5pLJx63a4npSLONUy84IQxRp+1zwrY1UBl5ucLfjWLUZt1ysf6PnQ0M
+         saJ0XzaKxaeg+gAH/wC0vDOvC1b7wrOCGmURVTMW1ebZj/u0LkyOkF01zvXQLcIjyr95
+         ZKtRuwmHtZ0+1LrWaAeEKPLCeCYjHqOdlc3PYGJuvlCqXSp+44+QhvaMe/nTA6dGtBUo
+         5XmWXgb4z/0AEQJb212Rbj7z4OXIS1YXKZNOYdjmL/lEw3p8Ww3WIdTX2P+3MMrwh6H4
+         mjiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=pdIHv4/PD3czenmhqB9tk+MCiZEZtlstx+3pXZSdYn4=;
+        b=h6imK0qvdjPPzhR3XdfzbUVSaZkKGeRdZFCUlAOyAfB3MMVvbmeh4gUn/n2Pyt88gk
+         9yxdyKrcqvMKNCDbhH8NB71ezqPaDoKFJcQZZKsjg2rAaYfCPMSoEleLyRriYWztQbEr
+         koDLA3EnJQUoMjhPipCZsGjiK6OoUyYJtCX1B/HQS2yHo+GqL1QM7dgQAJWD1BfIoX0v
+         s5/jq51Xi14p7cIKYty39sEHVNf6Xirnx2pQ71FxAGWSxvUxEEkUyn1Xe0SYYTgEkZHG
+         k3dprFIzEyajfh7qSN/DYuq3nZQV3DMmQ76ZDcDaxAE4bCN/H0322Sx/185yVLMoPRjP
+         eTGA==
+X-Gm-Message-State: AOAM532GNtRzphAwI1wY6skBtCbzHyavvgM/4nHKkUHZ8OTORK5XQvY8
+        oMLC3FoNBCUvCyqYqKuWNB0=
+X-Google-Smtp-Source: ABdhPJxuXe7GPMoX2rzQ9o37NfAMuSKZftGbZ2nH6SMWR56QnP9ZM9G8QG3JrpaL5VlbnllG5eee/g==
+X-Received: by 2002:a19:7d7:: with SMTP id 206mr5283288lfh.98.1616681220353;
+        Thu, 25 Mar 2021 07:07:00 -0700 (PDT)
+Received: from pc638.lan (h5ef52e3d.seluork.dyn.perspektivbredband.net. [94.245.46.61])
+        by smtp.gmail.com with ESMTPSA id g5sm771424ljj.21.2021.03.25.07.06.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 07:06:59 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Thu, 25 Mar 2021 15:06:57 +0100
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/9 v6] Introduce a bulk order-0 page allocator with two
+ in-tree users
+Message-ID: <20210325140657.GA1908@pc638.lan>
+References: <20210325114228.27719-1-mgorman@techsingularity.net>
+ <20210325125001.GW1719932@casper.infradead.org>
+ <20210325132556.GS3697@techsingularity.net>
 MIME-Version: 1.0
-References: <20210312195214.4002847-1-robert.hancock@calian.com>
- <20210312195214.4002847-2-robert.hancock@calian.com> <20210324170806.GA3252450@robh.at.kernel.org>
- <9d9c8eb80f9b1573931a948e69ec0a44b65491b7.camel@calian.com>
-In-Reply-To: <9d9c8eb80f9b1573931a948e69ec0a44b65491b7.camel@calian.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 25 Mar 2021 07:54:21 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKxVH+Z2m09+JFMON8DTeuK4kK73qWB-qxT=_AnZ_L0-g@mail.gmail.com>
-Message-ID: <CAL_JsqKxVH+Z2m09+JFMON8DTeuK4kK73qWB-qxT=_AnZ_L0-g@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 v3 1/2] dt-bindings: net: xilinx_axienet:
- Document additional clocks
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210325132556.GS3697@techsingularity.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 11:19 AM Robert Hancock
-<robert.hancock@calian.com> wrote:
->
-> On Wed, 2021-03-24 at 11:08 -0600, Rob Herring wrote:
-> > On Fri, Mar 12, 2021 at 01:52:13PM -0600, Robert Hancock wrote:
-> > > Update DT bindings to describe all of the clocks that the axienet
-> > > driver will now be able to make use of.
-> > >
-> > > Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-> > > ---
-> > >  .../bindings/net/xilinx_axienet.txt           | 25 ++++++++++++++-----
-> > >  1 file changed, 19 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> > > b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> > > index 2cd452419ed0..b8e4894bc634 100644
-> > > --- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> > > +++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
-> > > @@ -42,11 +42,23 @@ Optional properties:
-> > >               support both 1000BaseX and SGMII modes. If set, the phy-mode
-> > >               should be set to match the mode selected on core reset (i.e.
-> > >               by the basex_or_sgmii core input line).
-> > > -- clocks   : AXI bus clock for the device. Refer to common clock bindings.
-> > > -             Used to calculate MDIO clock divisor. If not specified, it is
-> > > -             auto-detected from the CPU clock (but only on platforms where
-> > > -             this is possible). New device trees should specify this - the
-> > > -             auto detection is only for backward compatibility.
-> > > +- clock-names:       Tuple listing input clock names. Possible clocks:
-> > > +             s_axi_lite_clk: Clock for AXI register slave interface
-> > > +             axis_clk: AXI4-Stream clock for TXD RXD TXC and RXS
-> > > interfaces
-> > > +             ref_clk: Ethernet reference clock, used by signal delay
-> > > +                      primitives and transceivers
-> > > +             mgt_clk: MGT reference clock (used by optional internal
-> > > +                      PCS/PMA PHY)
-> >
-> > '_clk' is redundant.
->
-> True, but there are existing device trees which already referenced these names
-> because those are what was used by the Xilinx version of this driver and hence
-> the Xilinx device tree generation software. So for compatibility I think we are
-> kind of stuck with those names..
+> On Thu, Mar 25, 2021 at 12:50:01PM +0000, Matthew Wilcox wrote:
+> > On Thu, Mar 25, 2021 at 11:42:19AM +0000, Mel Gorman wrote:
+> > > This series introduces a bulk order-0 page allocator with sunrpc and
+> > > the network page pool being the first users. The implementation is not
+> > > efficient as semantics needed to be ironed out first. If no other semantic
+> > > changes are needed, it can be made more efficient.  Despite that, this
+> > > is a performance-related for users that require multiple pages for an
+> > > operation without multiple round-trips to the page allocator. Quoting
+> > > the last patch for the high-speed networking use-case
+> > > 
+> > >             Kernel          XDP stats       CPU     pps           Delta
+> > >             Baseline        XDP-RX CPU      total   3,771,046       n/a
+> > >             List            XDP-RX CPU      total   3,940,242    +4.49%
+> > >             Array           XDP-RX CPU      total   4,249,224   +12.68%
+> > > 
+> > > >From the SUNRPC traces of svc_alloc_arg()
+> > > 
+> > > 	Single page: 25.007 us per call over 532,571 calls
+> > > 	Bulk list:    6.258 us per call over 517,034 calls
+> > > 	Bulk array:   4.590 us per call over 517,442 calls
+> > > 
+> > > Both potential users in this series are corner cases (NFS and high-speed
+> > > networks) so it is unlikely that most users will see any benefit in the
+> > > short term. Other potential other users are batch allocations for page
+> > > cache readahead, fault around and SLUB allocations when high-order pages
+> > > are unavailable. It's unknown how much benefit would be seen by converting
+> > > multiple page allocation calls to a single batch or what difference it may
+> > > make to headline performance.
+> > 
+> > We have a third user, vmalloc(), with a 16% perf improvement.  I know the
+> > email says 21% but that includes the 5% improvement from switching to
+> > kvmalloc() to allocate area->pages.
+> > 
+> > https://lore.kernel.org/linux-mm/20210323133948.GA10046@pc638.lan/
+> > 
+> 
+> That's fairly promising. Assuming the bulk allocator gets merged, it would
+> make sense to add vmalloc on top. That's for bringing it to my attention
+> because it's far more relevant than my imaginary potential use cases.
+> 
+For the vmalloc we should be able to allocating on a specific NUMA node,
+at least the current interface takes it into account. As far as i see
+the current interface allocate on a current node:
 
-upstream? If not, then it doesn't matter what downstream is doing.
-However, this isn't that important, so it's fine.
+static inline unsigned long
+alloc_pages_bulk_array(gfp_t gfp, unsigned long nr_pages, struct page **page_array)
+{
+    return __alloc_pages_bulk(gfp, numa_mem_id(), NULL, nr_pages, NULL, page_array);
+}
 
-Acked-by: Rob Herring <robh@kernel.org>
+Or am i missing something?
+
+--
+Vlad Rezki
