@@ -2,174 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8B234986C
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3FE634989D
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:51:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbhCYRjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 13:39:51 -0400
-Received: from mga03.intel.com ([134.134.136.65]:27389 "EHLO mga03.intel.com"
+        id S229812AbhCYRvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 13:51:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:51262 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230064AbhCYRjj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 13:39:39 -0400
-IronPort-SDR: muPQ5JnTvjW/2FSxZxLMWQE/TGluTLaS/fDRQfoAa29gKSwKRfCtEMxVx+eUf3ug4JUB3EWI5M
- VvuUu2RSMqnA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="191016843"
-X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
-   d="scan'208";a="191016843"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2021 10:39:38 -0700
-IronPort-SDR: 0hFyAKLCiHgyi8/DV1Uk0KEAkAJD9gjMGBKTu+UtdBaplzzPCSNdfMHnwOtreDvKYvq2u4NZSY
- l62/m9uzksgw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
-   d="scan'208";a="416112357"
-Received: from climb.png.intel.com ([10.221.118.165])
-  by orsmga008.jf.intel.com with ESMTP; 25 Mar 2021 10:39:35 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
+        id S229547AbhCYRuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 13:50:40 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1616694638; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1FeCnC7WnMeWEj1gEjR7GjHOI7D/MTEeLRIo3/QZ87I=;
+        b=bZAJb6mLyiAMxcYv0r40lqxfJfIz0ihLWV4bk7vzIJNh5hPJ+eEuKDstI9YikR9cKGp6Ll
+        TcgCo2d5VBwmadG4q4RyCi0yXJ+VP4ewWHYbqcT0TYOGWe0SgOquLhuLOnytimqlhZVJUk
+        2M+e8raAOYjJaSFiw4KyiNuQ+mb6z9I=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 52C86AC16;
+        Thu, 25 Mar 2021 17:50:38 +0000 (UTC)
+Date:   Thu, 25 Mar 2021 18:50:30 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Arjun Roy <arjunroy@google.com>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH v2 net-next 5/5] net: stmmac: use interrupt mode INTM=1 for multi-MSI
-Date:   Fri, 26 Mar 2021 01:39:16 +0800
-Message-Id: <20210325173916.13203-6-weifeng.voon@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210325173916.13203-1-weifeng.voon@intel.com>
-References: <20210325173916.13203-1-weifeng.voon@intel.com>
+        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
+Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
+Message-ID: <YFzNZjuYjIgy1Sb9@dhcp22.suse.cz>
+References: <YFCH8vzFGmfFRCvV@cmpxchg.org>
+ <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
+ <YFJ+5+NBOBiUbGWS@cmpxchg.org>
+ <YFn8bLBMt7txj3AZ@dhcp22.suse.cz>
+ <CAOFY-A22Pp3Z0apYBWtOJCD8TxfrbZ_HE9Xd6eUds8aEvRL+uw@mail.gmail.com>
+ <YFsA78FfzICrnFf7@dhcp22.suse.cz>
+ <YFut+cZhsJec7Pud@cmpxchg.org>
+ <CAOFY-A0Y0ye74bnpcWsKOPZMJSrFW8mJxVJrpwiy2dcGgUJ5Tw@mail.gmail.com>
+ <YFxRpKfwQwobt7IK@dhcp22.suse.cz>
+ <YFy+iPiL1YbjjapV@cmpxchg.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YFy+iPiL1YbjjapV@cmpxchg.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Wong, Vee Khee" <vee.khee.wong@intel.com>
+On Thu 25-03-21 12:47:04, Johannes Weiner wrote:
+> On Thu, Mar 25, 2021 at 10:02:28AM +0100, Michal Hocko wrote:
+> > On Wed 24-03-21 15:49:15, Arjun Roy wrote:
+> > > On Wed, Mar 24, 2021 at 2:24 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
+> > > >
+> > > > On Wed, Mar 24, 2021 at 10:12:46AM +0100, Michal Hocko wrote:
+> > > > > On Tue 23-03-21 11:47:54, Arjun Roy wrote:
+> > > > > > On Tue, Mar 23, 2021 at 7:34 AM Michal Hocko <mhocko@suse.com> wrote:
+> > > > > > >
+> > > > > > > On Wed 17-03-21 18:12:55, Johannes Weiner wrote:
+> > > > > > > [...]
+> > > > > > > > Here is an idea of how it could work:
+> > > > > > > >
+> > > > > > > > struct page already has
+> > > > > > > >
+> > > > > > > >                 struct {        /* page_pool used by netstack */
+> > > > > > > >                         /**
+> > > > > > > >                          * @dma_addr: might require a 64-bit value even on
+> > > > > > > >                          * 32-bit architectures.
+> > > > > > > >                          */
+> > > > > > > >                         dma_addr_t dma_addr;
+> > > > > > > >                 };
+> > > > > > > >
+> > > > > > > > and as you can see from its union neighbors, there is quite a bit more
+> > > > > > > > room to store private data necessary for the page pool.
+> > > > > > > >
+> > > > > > > > When a page's refcount hits zero and it's a networking page, we can
+> > > > > > > > feed it back to the page pool instead of the page allocator.
+> > > > > > > >
+> > > > > > > > From a first look, we should be able to use the PG_owner_priv_1 page
+> > > > > > > > flag for network pages (see how this flag is overloaded, we can add a
+> > > > > > > > PG_network alias). With this, we can identify the page in __put_page()
+> > > > > > > > and __release_page(). These functions are already aware of different
+> > > > > > > > types of pages and do their respective cleanup handling. We can
+> > > > > > > > similarly make network a first-class citizen and hand pages back to
+> > > > > > > > the network allocator from in there.
+> > > > > > >
+> > > > > > > For compound pages we have a concept of destructors. Maybe we can extend
+> > > > > > > that for order-0 pages as well. The struct page is heavily packed and
+> > > > > > > compound_dtor shares the storage without other metadata
+> > > > > > >                                         int    pages;    /*    16     4 */
+> > > > > > >                         unsigned char compound_dtor;     /*    16     1 */
+> > > > > > >                         atomic_t   hpage_pinned_refcount; /*    16     4 */
+> > > > > > >                         pgtable_t  pmd_huge_pte;         /*    16     8 */
+> > > > > > >                         void *     zone_device_data;     /*    16     8 */
+> > > > > > >
+> > > > > > > But none of those should really require to be valid when a page is freed
+> > > > > > > unless I am missing something. It would really require to check their
+> > > > > > > users whether they can leave the state behind. But if we can establish a
+> > > > > > > contract that compound_dtor can be always valid when a page is freed
+> > > > > > > this would be really a nice and useful abstraction because you wouldn't
+> > > > > > > have to care about the specific type of page.
+> > > >
+> > > > Yeah technically nobody should leave these fields behind, but it
+> > > > sounds pretty awkward to manage an overloaded destructor with a
+> > > > refcounted object:
+> > > >
+> > > > Either every put would have to check ref==1 before to see if it will
+> > > > be the one to free the page, and then set up the destructor before
+> > > > putting the final ref. But that means we can't support lockless
+> > > > tryget() schemes like we have in the page cache with a destructor.
+> > 
+> > I do not follow the ref==1 part. I mean to use the hugetlb model where
+> > the destructore is configured for the whole lifetime until the page is
+> > freed back to the allocator (see below).
+> 
+> That only works if the destructor field doesn't overlap with a member
+> the page type itself doesn't want to use. Page types that do want to
+> use it would need to keep that field exclusive.
 
-For interrupt mode INTM=0, TX/RX transfer complete will trigger signal
-not only on sbd_perch_[tx|rx]_intr_o (Transmit/Receive Per Channel) but
-also on the sbd_intr_o (Common).
+Right.
 
-As for multi-MSI implementation, setting interrupt mode INTM=1 is more
-efficient as each TX intr and RX intr (TI/RI) will be handled by TX/RX ISR
-without the need of calling the common MAC ISR.
+> We couldn't use it for LRU pages e.g. because it overlaps with the
+> lru.next pointer.
 
-Updated the TX/RX NORMAL interrupts status checking process as the
-NIS status bit is not asserted for any RI/TI events for INTM=1.
+Dang, I have completely missed this. I was looking at pahole because
+struct page is unreadable in the C code but I tricked myself to only
+look at offset 16. The initial set of candidate looked really
+promissing. But overlapping with list_head is a deal breaker. This makes
+use of dtor for most order-0 pages indeed unfeasible. Maybe dtor can be
+rellocated but that is certain a rabbit hole people (rightfully) avoid
+as much as possible. So you are right and going with networking specific
+way is more reasonable.
 
-Signed-off-by: Wong, Vee Khee <vee.khee.wong@intel.com>
-Co-developed-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
-Changes:
-v1 -> v2
- -Moved the readl and writel into the if statement as it is only executed
-  when multi msi is enabled
----
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  |  7 ++++++
- .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  3 +++
- .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  | 23 +++++++++----------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  1 +
- include/linux/stmmac.h                        |  1 +
- 5 files changed, 23 insertions(+), 12 deletions(-)
+[...]
+> So again, yes it would be nice to have generic destructors, but I just
+> don't see how it's practical.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-index 8954b85eb850..cb17f6c35e54 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
-@@ -161,6 +161,13 @@ static void dwmac4_dma_init(void __iomem *ioaddr,
- 		value |= DMA_SYS_BUS_EAME;
- 
- 	writel(value, ioaddr + DMA_SYS_BUS_MODE);
-+
-+	if (dma_cfg->multi_msi_en) {
-+		value = readl(ioaddr + DMA_BUS_MODE);
-+		value &= ~DMA_BUS_MODE_INTM_MASK;
-+		value |= (DMA_BUS_MODE_INTM_MODE1 << DMA_BUS_MODE_INTM_SHIFT);
-+		writel(value, ioaddr + DMA_BUS_MODE);
-+	}
- }
- 
- static void _dwmac4_dump_dma_regs(void __iomem *ioaddr, u32 channel,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-index 5c0c53832adb..05481eb13ba6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
-@@ -25,6 +25,9 @@
- #define DMA_TBS_CTRL			0x00001050
- 
- /* DMA Bus Mode bitmap */
-+#define DMA_BUS_MODE_INTM_MASK		GENMASK(17, 16)
-+#define DMA_BUS_MODE_INTM_SHIFT		16
-+#define DMA_BUS_MODE_INTM_MODE1		0x1
- #define DMA_BUS_MODE_SFT_RESET		BIT(0)
- 
- /* DMA SYS Bus Mode bitmap */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-index 3fa602dabf49..e63270267578 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-@@ -166,20 +166,19 @@ int dwmac4_dma_interrupt(void __iomem *ioaddr,
- 		}
- 	}
- 	/* TX/RX NORMAL interrupts */
--	if (likely(intr_status & DMA_CHAN_STATUS_NIS)) {
-+	if (likely(intr_status & DMA_CHAN_STATUS_NIS))
- 		x->normal_irq_n++;
--		if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
--			x->rx_normal_irq_n++;
--			ret |= handle_rx;
--		}
--		if (likely(intr_status & (DMA_CHAN_STATUS_TI |
--					  DMA_CHAN_STATUS_TBU))) {
--			x->tx_normal_irq_n++;
--			ret |= handle_tx;
--		}
--		if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
--			x->rx_early_irq++;
-+	if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
-+		x->rx_normal_irq_n++;
-+		ret |= handle_rx;
-+	}
-+	if (likely(intr_status & (DMA_CHAN_STATUS_TI |
-+		DMA_CHAN_STATUS_TBU))) {
-+		x->tx_normal_irq_n++;
-+		ret |= handle_tx;
- 	}
-+	if (unlikely(intr_status & DMA_CHAN_STATUS_ERI))
-+		x->rx_early_irq++;
- 
- 	writel(intr_status & intr_en, ioaddr + DMA_CHAN_STATUS(chan));
- 	return ret;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 459477db455c..f4fa5402cd64 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5620,6 +5620,7 @@ int stmmac_dvr_probe(struct device *device,
- 	priv->plat = plat_dat;
- 	priv->ioaddr = res->addr;
- 	priv->dev->base_addr = (unsigned long)res->addr;
-+	priv->plat->dma_cfg->multi_msi_en = priv->plat->multi_msi_en;
- 
- 	priv->dev->irq = res->irq;
- 	priv->wol_irq = res->wol_irq;
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index afc12b9385db..e338ef7abc00 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -96,6 +96,7 @@ struct stmmac_dma_cfg {
- 	int mixed_burst;
- 	bool aal;
- 	bool eame;
-+	bool multi_msi_en;
- };
- 
- #define AXI_BLEN	7
+just to clarify on this. I didn't really mean to use this mechanism to
+all/most pages I just wanted to have PageHasDestructor rather than
+PageNetwork because both would express a special nead for freeing but
+that would require that the dtor would be outside of lru.
+
+Thanks!
 -- 
-2.17.1
-
+Michal Hocko
+SUSE Labs
