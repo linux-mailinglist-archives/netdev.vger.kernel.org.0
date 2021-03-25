@@ -2,186 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FAFF3486BE
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 02:58:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1ACC3486D2
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 03:09:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233726AbhCYB5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 21:57:45 -0400
-Received: from mail-vi1eur05on2101.outbound.protection.outlook.com ([40.107.21.101]:27328
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233537AbhCYB5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 24 Mar 2021 21:57:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FjmvO+yYBWnluV1I9ed3Xg06HjwCKu4xAbsinq457X0vrQ9Ql6MYsTzoBD9t9oGKeACx9yku+meKrLgCeOIPAcVOl+gwQ2aZBOCnQxS5YF3lrbTi/mTT6/MS3s83eiJq8c1KaZ2ACCc+6s/C/FG0mtDp2KEf113wEpUsUA1mDtgskFW0KU745X1CmwcHEckxBMTCaQ0HlxDU9hp6tzn6mjWkbNaoYGrIflV2nQoB5Vh4pCshLmi9T9XZ3Rxsyl03ko6dqI12mYmr9em1F6hJIi5mfcwQj65I6Bk269Mug2BhULOgrOp3BLIXmdmWukWq+6KdkI5ALNnzOsTKusj1uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lr5sr1wzpBmFyb310tBfNtHprMJ2S74iCd/I1qZ5GbI=;
- b=MGzBE8br1YNdh0aJmQLbfqrUeUZ1LHvgeIS0EMZ/7qqfi4A5GQUCJLpNMdekdZVLprlT+mPHu2UwFkIEz5oXca5wiSM66DqZqlVuab4kc+M9H+AkURv9H8do1v6pDqhwb32WIF4/yWX+UpDKp/jYH/oUgQO3MWFZd1oJozn2FQ+3ylkfJCXGf33RR48isP8y2JX4jJtI5NmM0mxPguFC/BG37meCvB/soQLteeWqHuW0nXtpLkrg9Ph3RDGk0UloPN+a6qGMOMwKQkMVLLSIimjrlVGFjfU1iD8BLiJkArCu36nL3DX2yeuFVx0V55avF19S0OLXKY26GxpaoIOalw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lr5sr1wzpBmFyb310tBfNtHprMJ2S74iCd/I1qZ5GbI=;
- b=Pajba2NcWBBNRg9olCHqfJGoo7jFA4zZpvOa+s4V3oaBW1ba+cN65O5qNkLhBe+6Rw2cpqfROEaauYiIw2QV0Q1ZJRjxacZvvjKjx7JObPCUxTGF5P4yNAx1aco9V7M49iXzRWJP5MJl0p8Q4Z4YmfUHiZUHnypkwGSjb5fuJvc=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=dektech.com.au;
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
- by VI1PR05MB6719.eurprd05.prod.outlook.com (2603:10a6:800:133::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Thu, 25 Mar
- 2021 01:57:17 +0000
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::5573:2fb4:56e0:1cc3]) by VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::5573:2fb4:56e0:1cc3%6]) with mapi id 15.20.3955.024; Thu, 25 Mar 2021
- 01:57:17 +0000
-From:   Hoang Le <hoang.h.le@dektech.com.au>
-To:     netdev@vger.kernel.org, dsahern@gmail.com,
-        tipc-discussion@lists.sourceforge.net, jmaloy@redhat.com,
-        maloy@donjonn.com, ying.xue@windriver.com,
-        tuan.a.vo@dektech.com.au, tung.q.nguyen@dektech.com.au
-Subject: [iproute2-next] tipc: add support for the netlink extack
-Date:   Thu, 25 Mar 2021 08:56:53 +0700
-Message-Id: <20210325015653.7112-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [14.161.14.188]
-X-ClientProxiedBy: SGAP274CA0016.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::28)
- To VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
+        id S233988AbhCYCJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 22:09:05 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3499 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233752AbhCYCIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 22:08:51 -0400
+Received: from DGGEML403-HUB.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4F5T4f3KKvzRTnV;
+        Thu, 25 Mar 2021 10:06:58 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEML403-HUB.china.huawei.com (10.3.17.33) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Thu, 25 Mar 2021 10:08:48 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Thu, 25 Mar
+ 2021 10:08:48 +0800
+Subject: Re: [PATCH net v2] net: sched: fix packet stuck problem for lockless
+ qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "Cong Wang ." <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        <linux-can@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        Josh Hunt <johunt@akamai.com>,
+        "Jike Song" <albcamus@gmail.com>,
+        Kehuan Feng <kehuan.feng@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+References: <1616552677-39016-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpXAedg31hPx674u4Q4fj0DweADPSn0n_KghgRBWDoOOfw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <364d994a-9234-fe52-a8ad-ab17934e6205@huawei.com>
+Date:   Thu, 25 Mar 2021 10:08:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by SGAP274CA0016.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24 via Frontend Transport; Thu, 25 Mar 2021 01:57:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 816a0f53-382d-4483-b5cf-08d8ef315170
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6719:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB67197C221A069BF7C3F61E9EF1629@VI1PR05MB6719.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pmwMHHo7x12lYdxmwJMqpmSOkb4exDShVDADxoEhah9M4gFYa3bspc4Fph/mBVZ7JQb+cYHA8/6EpGPTp10a7GhNXpu2YzCXUtVgetPMkqn0aZ8HPYGk7EYfyZ7dQEBh4xA5TbXIhefIOpvhK9wP6XWL/jSLrfOh0m/jzdCJG2VJNG047eYUsNNm0GN01FG+VVLOV+ZnysRaK0II75EROWWGqrYsaGvYOV9Xq/ycFJkwsC/Lm4+rveReWDJpOfqoCtta6rhALad2lKmH1J0bPXNQNeQqMtkhSZRR81Is0tNlRQ3hwCKkLACYArYsKy7zKUtYvl4cqeFyx+Dilq41bKiExhP2oCx2K7obg1GGPyFXwhmj0k2xvIBmYowbTZE68QYCPpwWPAQffHZhKedqnTOY5g67JSxNcvd2ieMK004VBcL5zDAym5muaoYvjNEJ2RVUCe9E+/RC8bcgShJWJggUeGIcfAnuUShARPL4c3yGNn83WHehYE5ljqrQCnBJf79diR82oU46JL8cQ/Vme0cuyhpbm1qReYYdLRk/HaxR1ddtpI5ODI58puxtzfubj5GUshgYMEUccV0HdR9SFuHAHtrVNhBlKQiULxewLc7TjtumH8i798iHbEeszcJPKkesSy2nUsaH4U6NHx6peg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(366004)(39840400004)(376002)(346002)(2906002)(103116003)(55016002)(66556008)(66476007)(66946007)(83380400001)(86362001)(8676002)(8936002)(316002)(38100700001)(36756003)(186003)(16526019)(478600001)(52116002)(26005)(6636002)(7696005)(956004)(1076003)(2616005)(6666004)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?w9b7Xqf1dbrgZ1nFez7nuhaXKX2vHQDkG5giD8pqz7ITpd0BMsfbt6T/yAHK?=
- =?us-ascii?Q?BDfEOSANOwz40pU86skDFlVmRugtj5bxwau/eKCl0+N2rFbBjP1TeWrfwPhH?=
- =?us-ascii?Q?Kpex+oRIC4ys5giMTy2IcVCxCwsCmFlILs8RfxXUBKjcHF/v4XfdlVrCDaGa?=
- =?us-ascii?Q?l8+k/nB79lrAJS8u/pDTW0v7ei+l/eifLwsO7MemfsBPyD9JwSEE4HOkeXyP?=
- =?us-ascii?Q?GsYzN40T/ogc7LIguhtBdJOzZIeGJ1ZUPs3ftD8zEQWZFEmtbFsNj3Ncbsvd?=
- =?us-ascii?Q?SKjYIUzcUfc73pWkQtTGdNooyUo47/j9tIWPcyLNdUrvXQfXGhgZ2WNWuDjO?=
- =?us-ascii?Q?WEmqiBDGorgUS50koyeoVXmeq/LI3dK4ajWPY4PVb701wrAtrTrz5UxUSNr6?=
- =?us-ascii?Q?wOKntsbS9QZp8l9shBvRvwi8XFIvYY6SaMkJPzIQdyng2vufuzz3yA9E8gAn?=
- =?us-ascii?Q?TFXVUVLszcKcpPd5djC9Xu8YSP51Oqx2fSPEOuY+WFjA75MfBAhMxXTfeCiP?=
- =?us-ascii?Q?t2q+8Vn9Z3/iucG6rW7S3iEANFzcvTqzkvM7E09z+8SE/cnbF4Ha610hdOeq?=
- =?us-ascii?Q?OnAouaCywnoj9cHZn7OUzmwXhdgU/Dj2CLK627uuNwVMf0CJo4ldbX/wuKUx?=
- =?us-ascii?Q?O9vrowhEr4ZjtQYv59rnG41uPrsQVzfWaEcejxnJws05AbuaTdpCzJnkEf7e?=
- =?us-ascii?Q?yYqCfeuXZmypWUm6CsL7oGqrVOFQ/+W332syoSGl4gL18mUUSGOi0TIh3x4t?=
- =?us-ascii?Q?uYyr17mV/0W4qKdCa/vLrMbovBSxzUXMtdozDE8rmksfT8Wwk8p5lm4UwJpY?=
- =?us-ascii?Q?Y3ADzVwJ5q37T5miyfEW5l/jpBzkICCLBPVJFS/AuZvSF204KAYPlCPhY4Y7?=
- =?us-ascii?Q?tTxhS8WntReBzqxyNxh0np88FXRJ5Nfxoy+yYwI9WQXeQhKv8C7k5HROhv1V?=
- =?us-ascii?Q?uou5OklKUdETXWMPYhC/2BR0EMWgR62PnN7MTT8f8ymPQLNiMweahdgvHl2v?=
- =?us-ascii?Q?cIqb/6tpBlUYF3IqJhLvMCDOohicoAmx8FKAfp496y6XDUsEELfNYN1wQF7s?=
- =?us-ascii?Q?kRv5K0G3INnjM2be6qOxXkyX/tfcLH8IlF0pKornvdLwP/wfHlAVim3Aqa5V?=
- =?us-ascii?Q?AARzG8y805MGkXv9lUmpmCgKYnACPFDpcfLuae8mPhDCNkrpZsN5SkjSHuB2?=
- =?us-ascii?Q?FpoRQRUqosdU6IX82AFwTFYggxLOTCLXc1YnrKhktF33J5B5x3vigtxZm3yg?=
- =?us-ascii?Q?+FGPqkGo3YeV8jou2cemusJsljGmEU3h0QhSQSan7Xw+ZQCyPqwAEINLYWjU?=
- =?us-ascii?Q?YWLdRAaurVomGWcamE+A8KSv?=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 816a0f53-382d-4483-b5cf-08d8ef315170
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 01:57:17.4520
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: quTEvGKXWiHJCK01QHXnsSsfVuRMhMitmdrwTJO5DNzhw+jjXRv+9yQi4ge4hdsvZQLfkZI6xzgeU6zLmSCa+B4HyM25Ckh4krymnrv0zF0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6719
+In-Reply-To: <CAM_iQpXAedg31hPx674u4Q4fj0DweADPSn0n_KghgRBWDoOOfw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support extack in tipc to dump the netlink extack error messages
-(i.e -EINVAL) sent from kernel.
+On 2021/3/25 3:20, Cong Wang wrote:
+> On Tue, Mar 23, 2021 at 7:24 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>> @@ -176,8 +207,23 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+>>  static inline void qdisc_run_end(struct Qdisc *qdisc)
+>>  {
+>>         write_seqcount_end(&qdisc->running);
+>> -       if (qdisc->flags & TCQ_F_NOLOCK)
+>> +       if (qdisc->flags & TCQ_F_NOLOCK) {
+>>                 spin_unlock(&qdisc->seqlock);
+>> +
+>> +               /* qdisc_run_end() is protected by RCU lock, and
+>> +                * qdisc reset will do a synchronize_net() after
+>> +                * setting __QDISC_STATE_DEACTIVATED, so testing
+>> +                * the below two bits separately should be fine.
+> 
+> Hmm, why synchronize_net() after setting this bit is fine? It could
+> still be flipped right after you test RESCHEDULE bit.
 
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
----
- tipc/msg.c | 29 ++++++++++++++++++++++-------
- 1 file changed, 22 insertions(+), 7 deletions(-)
+That depends on when it will be fliped again.
 
-diff --git a/tipc/msg.c b/tipc/msg.c
-index dc09d05048f3..f29b2f8d35ad 100644
---- a/tipc/msg.c
-+++ b/tipc/msg.c
-@@ -18,6 +18,7 @@
- #include <linux/genetlink.h>
- #include <libmnl/libmnl.h>
- 
-+#include "libnetlink.h"
- #include "msg.h"
- 
- int parse_attrs(const struct nlattr *attr, void *data)
-@@ -49,6 +50,7 @@ static struct mnl_socket *msg_send(struct nlmsghdr *nlh)
- {
- 	int ret;
- 	struct mnl_socket *nl;
-+	int one = 1;
- 
- 	nl = mnl_socket_open(NETLINK_GENERIC);
- 	if (nl == NULL) {
-@@ -56,6 +58,8 @@ static struct mnl_socket *msg_send(struct nlmsghdr *nlh)
- 		return NULL;
- 	}
- 
-+	/* support to get extended ACK */
-+	mnl_socket_setsockopt(nl, NETLINK_EXT_ACK, &one, sizeof(one));
- 	ret = mnl_socket_bind(nl, 0, MNL_SOCKET_AUTOPID);
- 	if (ret < 0) {
- 		perror("mnl_socket_bind");
-@@ -73,21 +77,32 @@ static struct mnl_socket *msg_send(struct nlmsghdr *nlh)
- 
- static int msg_recv(struct mnl_socket *nl, mnl_cb_t callback, void *data, int seq)
- {
--	int ret;
- 	unsigned int portid;
- 	char buf[MNL_SOCKET_BUFFER_SIZE];
-+	struct nlmsghdr *h;
-+	size_t num_bytes;
-+	int is_err = 0;
-+	int ret = 0;
- 
- 	portid = mnl_socket_get_portid(nl);
- 
--	ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
--	while (ret > 0) {
--		ret = mnl_cb_run(buf, ret, seq, portid, callback, data);
-+	num_bytes = mnl_socket_recvfrom(nl, buf, sizeof(buf));
-+	while (num_bytes > 0) {
-+		ret = mnl_cb_run(buf, num_bytes, seq, portid, callback, data);
- 		if (ret <= 0)
- 			break;
--		ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
-+		num_bytes = mnl_socket_recvfrom(nl, buf, sizeof(buf));
-+	}
-+
-+	if (ret == -1) {
-+		if (num_bytes > 0) {
-+			h = (struct nlmsghdr *)buf;
-+			is_err = nl_dump_ext_ack(h, NULL);
-+		}
-+
-+		if (!is_err)
-+			perror("error");
- 	}
--	if (ret == -1)
--		perror("error");
- 
- 	mnl_socket_close(nl);
- 
--- 
-2.25.1
+As I see:
+1. __QDISC_STATE_DEACTIVATED is set during dev_deactivate() process,
+   which should also wait for all process related to "test_bit(
+   __QDISC_STATE_NEED_RESCHEDULE, &q->state)" to finish by calling
+   synchronize_net() and checking some_qdisc_is_busy().
+
+2. it is cleared during dev_activate() process.
+
+And dev_deactivate() and dev_activate() is protected by RTNL lock, or
+serialized by linkwatch.
+
+> 
+> 
+>> +                * For qdisc_run() in net_tx_action() case, we
+>> +                * really should provide rcu protection explicitly
+>> +                * for document purposes or PREEMPT_RCU.
+>> +                */
+>> +               if (unlikely(test_bit(__QDISC_STATE_NEED_RESCHEDULE,
+>> +                                     &qdisc->state) &&
+>> +                            !test_bit(__QDISC_STATE_DEACTIVATED,
+>> +                                      &qdisc->state)))
+> 
+> Why do you want to test __QDISC_STATE_DEACTIVATED bit at all?
+> dev_deactivate_many() will wait for those scheduled but being
+> deactivated, so what's the problem of scheduling it even with this bit?
+
+The problem I tried to fix is:
+
+  CPU0(calling dev_deactivate)   CPU1(calling qdisc_run_end)   CPU2(calling tx_atcion)
+             .                       __netif_schedule()                   .
+             .                     set __QDISC_STATE_SCHED                .
+             .                                .                           .
+clear __QDISC_STATE_DEACTIVATED               .                           .
+     synchronize_net()                        .                           .
+             .                                .                           .
+             .                                .              clear __QDISC_STATE_SCHED
+             .                                .                           .
+ some_qdisc_is_busy() return false            .                           .
+             .                                .                           .
+             .                                .                      qdisc_run()
+
+some_qdisc_is_busy() checks if the qdisc is busy by checking __QDISC_STATE_SCHED
+and spin_is_locked(&qdisc->seqlock) for lockless qdisc, and some_qdisc_is_busy()
+return false for CPU0 because CPU2 has cleared the __QDISC_STATE_SCHED and has not
+taken the qdisc->seqlock yet, qdisc is clearly still busy when qdisc_run() is run
+by CPU2 later.
+
+So you are right, testing __QDISC_STATE_DEACTIVATED does not completely solve
+the above data race, and there are __netif_schedule() called by dev_requeue_skb()
+and __qdisc_run() too, which need the same fixing.
+
+So will remove the __QDISC_STATE_DEACTIVATED testing for this patch first, and
+deal with it later.
+
+> 
+> Thanks.
+> 
+> .
+> 
 
