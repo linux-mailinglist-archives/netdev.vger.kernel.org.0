@@ -2,153 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1ACC3486D2
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 03:09:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82AD63486EE
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 03:29:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233988AbhCYCJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Mar 2021 22:09:05 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3499 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233752AbhCYCIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 22:08:51 -0400
-Received: from DGGEML403-HUB.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4F5T4f3KKvzRTnV;
-        Thu, 25 Mar 2021 10:06:58 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- DGGEML403-HUB.china.huawei.com (10.3.17.33) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Thu, 25 Mar 2021 10:08:48 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Thu, 25 Mar
- 2021 10:08:48 +0800
-Subject: Re: [PATCH net v2] net: sched: fix packet stuck problem for lockless
- qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S236075AbhCYC3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Mar 2021 22:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239499AbhCYC2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 22:28:47 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774DDC06174A;
+        Wed, 24 Mar 2021 19:28:43 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id f19so426848ion.3;
+        Wed, 24 Mar 2021 19:28:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=UvS3KB/EM5kPn3926ZA2eghzsu/UwvCjZqmmfQbNVgE=;
+        b=tsmv3LPcYi4KGh40ThEQnN04O7Qhc+4Yiis7LQBH9BEuR2AhHJH/ETB4qHJo76W9rE
+         Fzn4NgbG9QtGoaTYkwIz0gIxIM6Co24qsoUimtY1w4m5HXFsxBA76C2iNUhMvKzRqNoo
+         rxjv6I07dSxYrNi33RbljO2UzLOQtHYS8OFagqJwJpcooQKeHrY5UBtxF3xLLtcDRrml
+         tG+TSuYzXDmRESyCF4RFm5LW5T8eFe/C+uKcMWS/hLE5zaDAtPmENPdA7ghELyeRL2Bx
+         M4NAjK9Y9yPa9b7Gv5htaGO9SeUBvuXftwgB9ZfpKmeac/3LR3EanQb/vXZPBbODExzb
+         Pr7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=UvS3KB/EM5kPn3926ZA2eghzsu/UwvCjZqmmfQbNVgE=;
+        b=AcP0KBcAg3w8y6LCnxdpSsYtdZdHj2CHzbFe94orbaOcgrTwTz+/QGme1i8WSimEGE
+         oyIkHUkiPpopNFGDXt6nnQ3+tEa6RPqAMIzRu7cil9WlbBEp7rFNwkJm00qmJ/MR1q6j
+         tihkoM2Bq2hUDJgUX5+ZWIjsrVZrQZSRCZ1nvOPzkn+lWzJ4KA1xzktlYrMa1uI0HL2a
+         goGfARUGvt0Gzfne02T4i5+LUUlGLjnpR1sZ6EJmoC/EhKvcZozYQjRlug5ZfU293Etb
+         RYnBHyjsxbQf3X/WV+In+wvOCjStI7ckCKmHH/EufFLTlz4pWXITOxyYuStyz25T2wcw
+         d5pg==
+X-Gm-Message-State: AOAM530h5bUQCd2zkK02AuAuFZkZ8fWjgG1UuSlww6aoU6xSIyuVZijb
+        GFKH0JaMg1JqsPnuR9LtfFs=
+X-Google-Smtp-Source: ABdhPJwu7ez9+UPPgyMagJMw54rMck2sWWn32dc567L+9CKkSUh8ki3wR0eLsQQ352T6vDpaRDbvOw==
+X-Received: by 2002:a6b:8b0e:: with SMTP id n14mr4798702iod.199.1616639322977;
+        Wed, 24 Mar 2021 19:28:42 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id e13sm2016971ilr.0.2021.03.24.19.28.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Mar 2021 19:28:42 -0700 (PDT)
+Date:   Wed, 24 Mar 2021 19:28:35 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@openeuler.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        <linux-can@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jonas Bonn <jonas.bonn@netrounds.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        Josh Hunt <johunt@akamai.com>,
-        "Jike Song" <albcamus@gmail.com>,
-        Kehuan Feng <kehuan.feng@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>, <atenart@kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-References: <1616552677-39016-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpXAedg31hPx674u4Q4fj0DweADPSn0n_KghgRBWDoOOfw@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <364d994a-9234-fe52-a8ad-ab17934e6205@huawei.com>
-Date:   Thu, 25 Mar 2021 10:08:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-In-Reply-To: <CAM_iQpXAedg31hPx674u4Q4fj0DweADPSn0n_KghgRBWDoOOfw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <605bf553d16f_64fde2081@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpUNUE8cmyNaALG1dZtCfJGah2pggDNk-eVbyxexnA4o_g@mail.gmail.com>
+References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
+ <161661956953.28508.2297266338306692603.stgit@john-Precision-5820-Tower>
+ <CAM_iQpUNUE8cmyNaALG1dZtCfJGah2pggDNk-eVbyxexnA4o_g@mail.gmail.com>
+Subject: Re: [bpf PATCH 1/2] bpf, sockmap: fix sk->prot unhash op reset
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/3/25 3:20, Cong Wang wrote:
-> On Tue, Mar 23, 2021 at 7:24 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->> @@ -176,8 +207,23 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
->>  static inline void qdisc_run_end(struct Qdisc *qdisc)
->>  {
->>         write_seqcount_end(&qdisc->running);
->> -       if (qdisc->flags & TCQ_F_NOLOCK)
->> +       if (qdisc->flags & TCQ_F_NOLOCK) {
->>                 spin_unlock(&qdisc->seqlock);
->> +
->> +               /* qdisc_run_end() is protected by RCU lock, and
->> +                * qdisc reset will do a synchronize_net() after
->> +                * setting __QDISC_STATE_DEACTIVATED, so testing
->> +                * the below two bits separately should be fine.
+Cong Wang wrote:
+> On Wed, Mar 24, 2021 at 1:59 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> > index 47b7c5334c34..ecb5634b4c4a 100644
+> > --- a/net/tls/tls_main.c
+> > +++ b/net/tls/tls_main.c
+> > @@ -754,6 +754,12 @@ static void tls_update(struct sock *sk, struct proto *p,
+> >
+> >         ctx = tls_get_ctx(sk);
+> >         if (likely(ctx)) {
+> > +               /* TLS does not have an unhash proto in SW cases, but we need
+> > +                * to ensure we stop using the sock_map unhash routine because
+> > +                * the associated psock is being removed. So use the original
+> > +                * unhash handler.
+> > +                */
+> > +               WRITE_ONCE(sk->sk_prot->unhash, p->unhash);
+> >                 ctx->sk_write_space = write_space;
+> >                 ctx->sk_proto = p;
 > 
-> Hmm, why synchronize_net() after setting this bit is fine? It could
-> still be flipped right after you test RESCHEDULE bit.
+> It looks awkward to update sk->sk_proto inside tls_update(),
+> at least when ctx!=NULL.
 
-That depends on when it will be fliped again.
-
-As I see:
-1. __QDISC_STATE_DEACTIVATED is set during dev_deactivate() process,
-   which should also wait for all process related to "test_bit(
-   __QDISC_STATE_NEED_RESCHEDULE, &q->state)" to finish by calling
-   synchronize_net() and checking some_qdisc_is_busy().
-
-2. it is cleared during dev_activate() process.
-
-And dev_deactivate() and dev_activate() is protected by RTNL lock, or
-serialized by linkwatch.
+hmm. It doesn't strike me as paticularly awkward but OK.
 
 > 
+> What is wrong with updating it in sk_psock_restore_proto()
+> when inet_csk_has_ulp() is true? It looks better to me.
+
+It could be wrong if inet_csk_has_ulp has an unhash callback
+already assigned. But, because we know inet_csk_has_ulp()
+really means is_tls_attached() it would be fine.
+
 > 
->> +                * For qdisc_run() in net_tx_action() case, we
->> +                * really should provide rcu protection explicitly
->> +                * for document purposes or PREEMPT_RCU.
->> +                */
->> +               if (unlikely(test_bit(__QDISC_STATE_NEED_RESCHEDULE,
->> +                                     &qdisc->state) &&
->> +                            !test_bit(__QDISC_STATE_DEACTIVATED,
->> +                                      &qdisc->state)))
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index 6c09d94be2e9..da5dc3ef0ee3 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -360,8 +360,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
+>  static inline void sk_psock_restore_proto(struct sock *sk,
+>                                           struct sk_psock *psock)
+>  {
+> -       sk->sk_prot->unhash = psock->saved_unhash;
+>         if (inet_csk_has_ulp(sk)) {
+> +               sk->sk_prot->unhash = psock->sk_proto->unhash;
+>                 tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
+>         } else {
+>                 sk->sk_write_space = psock->saved_write_space;
 > 
-> Why do you want to test __QDISC_STATE_DEACTIVATED bit at all?
-> dev_deactivate_many() will wait for those scheduled but being
-> deactivated, so what's the problem of scheduling it even with this bit?
+> 
+> sk_psock_restore_proto() is the only caller of tcp_update_ulp()
+> so should be equivalent.
 
-The problem I tried to fix is:
-
-  CPU0(calling dev_deactivate)   CPU1(calling qdisc_run_end)   CPU2(calling tx_atcion)
-             .                       __netif_schedule()                   .
-             .                     set __QDISC_STATE_SCHED                .
-             .                                .                           .
-clear __QDISC_STATE_DEACTIVATED               .                           .
-     synchronize_net()                        .                           .
-             .                                .                           .
-             .                                .              clear __QDISC_STATE_SCHED
-             .                                .                           .
- some_qdisc_is_busy() return false            .                           .
-             .                                .                           .
-             .                                .                      qdisc_run()
-
-some_qdisc_is_busy() checks if the qdisc is busy by checking __QDISC_STATE_SCHED
-and spin_is_locked(&qdisc->seqlock) for lockless qdisc, and some_qdisc_is_busy()
-return false for CPU0 because CPU2 has cleared the __QDISC_STATE_SCHED and has not
-taken the qdisc->seqlock yet, qdisc is clearly still busy when qdisc_run() is run
-by CPU2 later.
-
-So you are right, testing __QDISC_STATE_DEACTIVATED does not completely solve
-the above data race, and there are __netif_schedule() called by dev_requeue_skb()
-and __qdisc_run() too, which need the same fixing.
-
-So will remove the __QDISC_STATE_DEACTIVATED testing for this patch first, and
-deal with it later.
+Agree it is equivalent. I don't mind moving the assignment around
+if folks think its nicer.
 
 > 
 > Thanks.
-> 
-> .
-> 
-
