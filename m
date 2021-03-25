@@ -2,139 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 229753495D1
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 16:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3DB34962D
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 16:55:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbhCYPlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 11:41:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29090 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230516AbhCYPlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 11:41:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616686871;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1pv3/pnycfrVRu1VGxuiha38s0MxnL2KBL2zpqVHqPs=;
-        b=SD5HESCnNadaGAdw44baFdTU5VWdyWLsoGG7AZNPbJP858vzzMDa2msdyI1Zbr00MxglnM
-        3dUC/3pDoz8hw5lZ65a8vL9QJj4+JKpdgao3phMv5vYWsKU/UHHVNMNvAcPTJGrbtn8zFF
-        Q1CAAdoMzETGpMTjhVCsVi3MG8begC0=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-475-YYVIT4qVO1qqhhXf-KFyYw-1; Thu, 25 Mar 2021 11:41:09 -0400
-X-MC-Unique: YYVIT4qVO1qqhhXf-KFyYw-1
-Received: by mail-ej1-f71.google.com with SMTP id e13so2726958ejd.21
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 08:41:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1pv3/pnycfrVRu1VGxuiha38s0MxnL2KBL2zpqVHqPs=;
-        b=OOLtAgsBdSHzSyVVjRw6JZoWElpbDYkFokwIh2BuwJsFAbvGjeOlGUtrBSKRMKZp65
-         UpO0RFLzWHaMzQR5WA9j2xdHJhGqMdRBrcWdBS/oMW9s7/pSa/R9K1H7AowQxVhDihXB
-         olksAmY/Mc5u9JyUaW8HsI9fBEOg35+TNbdyCANUdCUvYNlj+yGEHVWi8VQhnAA3Ppi3
-         AeD485c7l3I/V4GghYuRH0M76ZpltR6l4P8WSaaVH+Ix9kEtqyng3wXHnKOLrVkQYYdY
-         0DVVShUn0wbtCUkbcvVGbf0sNm6ELaQzmZUMjZ0Lbi18M73YrdeQafE5YFd2H9yED4YI
-         GYog==
-X-Gm-Message-State: AOAM532stPx3DNb4LEtfrkcC3MfvAAMvo0/LjAuR2B51BuVaJ5+nfyQo
-        ZxhrneBeYzcORvee7tGFQTEbWtg/tF+jO3Bi1kCtZlrDSlt9t+wYTdH2x7zwPQ5G0B63P4rKupD
-        pL2HfP+0pT2vHtoi5
-X-Received: by 2002:a17:906:7842:: with SMTP id p2mr10621175ejm.87.1616686868501;
-        Thu, 25 Mar 2021 08:41:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxB9z7SvrRgAr/XRHVbv0Ypve+lfCS12OxaE8vE9phJpo+BTalmijrbZUf4chfPUcnZ4ioI6w==
-X-Received: by 2002:a17:906:7842:: with SMTP id p2mr10621153ejm.87.1616686868340;
-        Thu, 25 Mar 2021 08:41:08 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id o6sm2849100edw.24.2021.03.25.08.41.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 08:41:07 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D385A18028C; Thu, 25 Mar 2021 16:41:05 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Clark Williams <williams@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf 2/2] bpf/selftests: test that kernel rejects a TCP CC with an invalid license
-Date:   Thu, 25 Mar 2021 16:40:34 +0100
-Message-Id: <20210325154034.85346-2-toke@redhat.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20210325154034.85346-1-toke@redhat.com>
-References: <20210325154034.85346-1-toke@redhat.com>
+        id S229592AbhCYPzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 11:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229614AbhCYPy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 11:54:59 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6F6C06174A
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 08:54:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=gWMn7yci7LqeFqb9y1unE5cPZzZTY6okFaDcxWUko0U=; b=I8rGKkDbvRDgnBGoIgPe0ymZQ
+        o21aM90AkcI/qZ/JHevam6/aTB4pzukygFUGm3/jEkk/uMdwtyfu9IsF+1Fna9vHlRqVI/IV4jdBi
+        NV0EMR75pgxRk+G6ctHwJn39ja+cC7qtyX1Yumel8FJLG2HvhjlWfaipU1l7D0wML740wLNgbxXkr
+        v6o5Uub43JvXABpQapQkrqrSeDzVks/R7tWFtISBa9tqlj80jlp9tuxOpt7y4ROm5TRUfaJb2M0nB
+        dpuN54ptue0xF35agv5/EMf7rT2OGgyLCtGpg3vzEVB1E8KDzL72UJq2/qekNU4EV9VkMJAGEtwnI
+        muwhelltA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51738)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lPSJy-0001zH-HY; Thu, 25 Mar 2021 15:54:54 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lPSJw-00068V-U5; Thu, 25 Mar 2021 15:54:52 +0000
+Date:   Thu, 25 Mar 2021 15:54:52 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
+Subject: Re: [PATCH net-next v2 11/12] net: phy: marvell10g: print exact model
+Message-ID: <20210325155452.GO1463@shell.armlinux.org.uk>
+References: <20210325131250.15901-1-kabel@kernel.org>
+ <20210325131250.15901-12-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210325131250.15901-12-kabel@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a selftest to check that the verifier rejects a TCP CC struct_ops
-with a non-GPL license. To save having to add a whole new BPF object just
-for this, reuse the dctcp CC, but rewrite the license field before loading.
+On Thu, Mar 25, 2021 at 02:12:49PM +0100, Marek Beh�n wrote:
+> @@ -443,12 +446,24 @@ static int mv3310_probe(struct phy_device *phydev)
+>  
+>  	switch (phydev->drv->phy_id) {
+>  	case MARVELL_PHY_ID_88X3310:
+> +		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_XGSTAT);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		has_macsec = !(ret & MV_PMA_XGSTAT_NO_MACSEC);
+> +
+>  		if (nports == 4)
+>  			priv->model = MV_MODEL_88X3340;
+>  		else if (nports == 1)
+>  			priv->model = MV_MODEL_88X3310;
+>  		break;
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 31 +++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-index 37c5494a0381..613cf8a00b22 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-@@ -227,10 +227,41 @@ static void test_dctcp(void)
- 	bpf_dctcp__destroy(dctcp_skel);
- }
- 
-+static void test_invalid_license(void)
-+{
-+	/* We want to check that the verifier refuses to load a non-GPL TCP CC.
-+	 * Rather than create a whole new file+skeleton, just reuse an existing
-+	 * object and rewrite the license in memory after loading. Sine libbpf
-+	 * doesn't expose this, we define a struct that includes the first couple
-+	 * of internal fields for struct bpf_object so we can overwrite the right
-+	 * bits. Yes, this is a bit of a hack, but it makes the test a lot simpler.
-+	 */
-+	struct bpf_object_fragment {
-+		char name[BPF_OBJ_NAME_LEN];
-+		char license[64];
-+	} *obj;
-+	struct bpf_dctcp *skel;
-+	int err;
-+
-+	skel = bpf_dctcp__open();
-+	if (CHECK(!skel, "bpf_dctcp__open", "failed\n"))
-+		return;
-+
-+	obj = (void *)skel->obj;
-+	obj->license[0] = 'X'; // turns 'GPL' into 'XPL' which will fail the check
-+
-+	err = bpf_dctcp__load(skel);
-+	CHECK(err != -LIBBPF_ERRNO__VERIFY, "bpf_dctcp__load", "err:%d\n", err);
-+
-+	bpf_dctcp__destroy(skel);
-+}
-+
- void test_bpf_tcp_ca(void)
- {
- 	if (test__start_subtest("dctcp"))
- 		test_dctcp();
- 	if (test__start_subtest("cubic"))
- 		test_cubic();
-+	if (test__start_subtest("invalid_license"))
-+		test_invalid_license();
- }
+The 88X3310 and 88X3340 can be differentiated by bit 3 in the revision.
+In other words, 88X3310 is 0x09a0..0x09a7, and 88X3340 is
+0x09a8..0x09af. We could add a separate driver structure, which would
+then allow the kernel to print a more specific string via standard
+methods, like we do for other PHYs. Not sure whether that would work
+for the 88X21x0 family though.
 -- 
-2.31.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
