@@ -2,89 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C25653497C7
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F14253497CC
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:22:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229981AbhCYRVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 13:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbhCYRVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 13:21:03 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4CDC06174A;
-        Thu, 25 Mar 2021 10:21:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=hPUcNfmFYXF+F9jzXnSZaB8Uasyr3U6TOgw5rvhcYrY=; b=Pju/W9tTFQ8NqKnBc9hn5aiZf7
-        5MZdWFrRCsSJeG3WwZKteFexx8AGhGs4v7gUv7LPSO6KXE5rTBOWY4VCYnyfvdl+i68DpHbmFVVNW
-        4sqbp1+2uQXcSeRp4qqFx+zdEx1AcG6LiG1laL7bmSjpmQHBFHK5apmvAchS55xwRqdVeRXYTh2LZ
-        Lqr/4n132NWt4qd+JhVgW2F8+HaRDwM9mkNUHghhnaH4ARrybguOkg2ynm3g2YewZnALnBGem24Ne
-        D4T4Ts/us/WD9vLPbLqnI6UK4GIu0Qe72p1s1w79kFgdSq1sNT5jJXcZJ6twV+CRSaF4/UP0q8/bb
-        zYaL1EAA==;
-Received: from [2601:1c0:6280:3f0::3ba4]
-        by desiato.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lPTfH-001tq9-7b; Thu, 25 Mar 2021 17:20:59 +0000
-Subject: Re: [PATCH] Bluetooth: L2CAP: Rudimentary typo fixes
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210325043544.29248-1-unixbhaskar@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <2c93a1a3-2717-29ef-4fc1-b41c61e02780@infradead.org>
-Date:   Thu, 25 Mar 2021 10:20:56 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S230027AbhCYRWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 13:22:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41568 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229629AbhCYRVq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 13:21:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1340D61A0E;
+        Thu, 25 Mar 2021 17:21:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616692906;
+        bh=OgKWZEOsJOK4/SVXsL7MTI612oZFPQhN5a0ZrYVs5Aw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Mln6K4ETpsF7fXVHN7FbRe0JZdRt+oUhar/kUUDoYPq8YG/QLMU8nry6pElxi6Y9r
+         gtDNh9l+AoBnTkeKnwM+Wer0iZ06AGBDEUQ4Lt9xMhyhjAPpp5apn/WWos0OcVQ7Du
+         Quyk1n0/DoyB+unu9q5n3V5jq4Oy1sYL15lXv9JPrREOuMCUXIpsy8p93HfvPNdIY7
+         UMO+FcHfqTxBwk3LDBDRzE2CwFTVvXbCLEPx9BwdpU0bBFowIrn1tUMav0/CtUxRCe
+         3RT2VuGXvJA9XnnHSfWDq3bNcw/3FeSth0v6OuPzixhTihSYJWLgte4bE4ZlXbZEhk
+         ljsgsBqmtkzjQ==
+Date:   Thu, 25 Mar 2021 12:21:44 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Keith Busch <kbusch@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210325172144.GA696830@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <20210325043544.29248-1-unixbhaskar@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210311214424.GQ2356281@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/21 9:35 PM, Bhaskar Chowdhury wrote:
+On Thu, Mar 11, 2021 at 05:44:24PM -0400, Jason Gunthorpe wrote:
+> On Fri, Mar 12, 2021 at 05:50:34AM +0900, Keith Busch wrote:
+> > On Thu, Mar 11, 2021 at 04:22:34PM -0400, Jason Gunthorpe wrote:
+> > > On Thu, Mar 11, 2021 at 12:16:02PM -0700, Keith Busch wrote:
+> > > > On Thu, Mar 11, 2021 at 12:17:29PM -0600, Bjorn Helgaas wrote:
+> > > > > On Wed, Mar 10, 2021 at 03:34:01PM -0800, Alexander Duyck wrote:
+> > > > > > 
+> > > > > > I'm not so much worried about management software as the
+> > > > > > fact that this is a vendor specific implementation detail
+> > > > > > that is shaping how the kernel interfaces are meant to
+> > > > > > work. Other than the mlx5 I don't know if there are any
+> > > > > > other vendors really onboard with this sort of solution.
+> > > > > 
+> > > > > I know this is currently vendor-specific, but I thought the
+> > > > > value proposition of dynamic configuration of VFs for
+> > > > > different clients sounded compelling enough that other
+> > > > > vendors would do something similar.  But I'm not an SR-IOV
+> > > > > guy and have no vendor insight, so maybe that's not the
+> > > > > case?
+> > > > 
+> > > > NVMe has a similar feature defined by the standard where a PF
+> > > > controller can dynamically assign MSIx vectors to VFs. The
+> > > > whole thing is managed in user space with an ioctl, though. I
+> > > > guess we could wire up the driver to handle it through this
+> > > > sysfs interface too, but I think the protocol specific tooling
+> > > > is more appropriate for nvme.
+> > > 
+> > > Really? Why not share a common uAPI?
+> > 
+> > We associate interrupt vectors with other dynamically assigned
+> > nvme specific resources (IO queues), and these are not always
+> > allocated 1:1.
 > 
-> s/minium/minimum/
-> s/procdure/procedure/
+> mlx5 is doing that too, the end driver gets to assign the MSI vector
+> to a CPU and then dynamically attach queues to it.
 > 
-> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
-
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-> ---
->  net/bluetooth/l2cap_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> I'm not sure I get why nvme would want to link those two things as
+> the CPU assignment and queue attach could happen in a VM while the
+> MSIX should be in the host?
 > 
-> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> index 72c2f5226d67..b38e80a0e819 100644
-> --- a/net/bluetooth/l2cap_core.c
-> +++ b/net/bluetooth/l2cap_core.c
-> @@ -1690,7 +1690,7 @@ static void l2cap_le_conn_ready(struct l2cap_conn *conn)
->  		smp_conn_security(hcon, hcon->pending_sec_level);
+> > A common uAPI for MSIx only gets us half way to configuring the
+> > VFs for that particular driver.
+> >
+> > > Do you have a standards reference for this?
+> > 
+> > Yes, sections 5.22 and 8.5 from this spec:
+> > 
+> >   https://nvmexpress.org/wp-content/uploads/NVM-Express-1_4a-2020.03.09-Ratified.pdf
+> > 
+> > An example of open source tooling implementing this is nvme-cli's
+> > "nvme virt-mgmt" command.
 > 
->  	/* For LE slave connections, make sure the connection interval
-> -	 * is in the range of the minium and maximum interval that has
-> +	 * is in the range of the minimum and maximum interval that has
->  	 * been configured for this connection. If not, then trigger
->  	 * the connection update procedure.
->  	 */
-> @@ -7542,7 +7542,7 @@ static void l2cap_data_channel(struct l2cap_conn *conn, u16 cid,
->  	BT_DBG("chan %p, len %d", chan, skb->len);
+> Oh it is fascinating! 8.5.2 looks like exactly the same thing being
+> implemented here for mlx5, including changing the "Read only" config
+> space value
 > 
->  	/* If we receive data on a fixed channel before the info req/rsp
-> -	 * procdure is done simply assume that the channel is supported
-> +	 * procedure is done simply assume that the channel is supported
->  	 * and mark it as ready.
->  	 */
->  	if (chan->chan_type == L2CAP_CHAN_FIXED)
-> --
+> Still confused why this shouldn't be the same API??
 
+NVMe and mlx5 have basically identical functionality in this respect.
+Other devices and vendors will likely implement similar functionality.
+It would be ideal if we had an interface generic enough to support
+them all.
 
--- 
-~Randy
+Is the mlx5 interface proposed here sufficient to support the NVMe
+model?  I think it's close, but not quite, because the the NVMe
+"offline" state isn't explicitly visible in the mlx5 model.
 
+I'd like to see an argument that nvme-cli *could* be implemented on
+top of this.  nvme-cli uses an ioctl and we may not want to
+reimplement it with a new interface, but if Leon's interface is
+*capable* of supporting the NVMe model, it's a good clue that it may
+also work for future devices.
+
+If this isn't quite enough to support the NVMe model, what would it
+take to get there?
+
+Bjorn
