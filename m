@@ -2,155 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A423492EA
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:14:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6E73492FB
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbhCYNOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:14:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52808 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230163AbhCYNNq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 09:13:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9FBB1619A3;
-        Thu, 25 Mar 2021 13:13:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616678026;
-        bh=pYFKKdkwNtpe0POAWCWJVc+BLLceRhX5L8OI7ja2qt0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z3OH+Mgyi10kNKPKjllRXPcxe6rGpoBSz5aO8J92XjenT/ifZjXcfa9HYJIOeblgo
-         ATqpkYIOI833BSPBcEr6lHyTMBP1BRxOvo6HPpygcdY7DV/54bcxkNSbKo2BjP+vz5
-         LsYqO3g6qIgAANO7HvKNOP3JHlSc34wbg4LSTJdlRKxsJH8zeFay85sWz2FqYwYp/o
-         DE92d2BEfbNYV2Qg8P+70H8m9l3z+ivloRqLXX4nyZ0qPbmpfhQ+KiQiCIEoT4QXIi
-         SGPBjTOR3w+y0PckiPEPJ/YLzel1ZiBJ8yi7m2LuO8Sm34aLozP242HWHb57vkg4Vu
-         ZpWSd8ke+Gisg==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        id S230134AbhCYNT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 09:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230155AbhCYNTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:19:32 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2006C06174A;
+        Thu, 25 Mar 2021 06:19:31 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id o16so2316986wrn.0;
+        Thu, 25 Mar 2021 06:19:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yM+7txaY3YaPXxI4ZrWQxkRlDAfwRXr5c8eBWKInYrQ=;
+        b=Y/6H+C9Ccxwfb26nyliwjTZ6wUHcKjA6cY1a3ELSQhduNGnkbMLX/s4ClGf9azMDvM
+         6w6eVC2vqUKf4I3eQ6rzw9UWM2mi+t4bjUcyLA19m/UJNNXsumxyi8hNGJBzs43yybMd
+         Fdcmu6BgPrv0gxs7sEeUGbTYibJnISr0doSjtzLX+0Z1BsXwuWZPP2epdzG/herOodI+
+         D5lotveJ9EBPGljf/Hujdzg1m8S9pEEZYKmJSwNWKySB8WiDR+gD+2Obk9J6aXZUHipA
+         ePBprKPtmEooD/mf4l8Rjh4kerm70pFEfQGRxkeZO1PuSAEo+SHxEUKYv/n1ZZ/HqWme
+         VpWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yM+7txaY3YaPXxI4ZrWQxkRlDAfwRXr5c8eBWKInYrQ=;
+        b=EtNPzCScRqxFL1QbfX9DQ3MRk2lwvJLBygkZb8SKAoQYkj+9e5rYFPyYYTwxKyBnAO
+         ZprxmDZe2X55owfyVqhEOS0LDas8SorwSkGac48ciAmvxmrqllE6Gr5Add9sHKsvKHg7
+         ngTD+D0e+HAdyEKrkRpjGFhjmRrRFAuGSrpSwYyVNVrYYrEM0bfozOwPNq5dnqra8p61
+         w9vSdMpftrCBb4jv3Kdff7KrdgffER6tTxg/kb2YCRKAtHNzJmrCDXP2QKEIFs2hbO9d
+         J5FRHIlRxZhKzIOms8fvDrgdeMGCWgt6tzGNOiyuDhyoEMrbrDjcp6lWTZfLCVjfHTsS
+         6Yzg==
+X-Gm-Message-State: AOAM530DuBpDk/wzil6x1BhtfvU0OLgRqn9HNKzG0PqNygHzwpserbHI
+        ZX1Bmyd2HPbboKnre74O1GU=
+X-Google-Smtp-Source: ABdhPJxgNiEwF1vncF6OavhaphzdsDVLGyJbTMXInPwidHzU7AfICxxIUG2+OLej1IihRS+1fGzRUQ==
+X-Received: by 2002:adf:f743:: with SMTP id z3mr9037377wrp.304.1616678370546;
+        Thu, 25 Mar 2021 06:19:30 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f1f:bb00:ec1d:f023:8a26:fc6b? (p200300ea8f1fbb00ec1df0238a26fc6b.dip0.t-ipconnect.de. [2003:ea:8f1f:bb00:ec1d:f023:8a26:fc6b])
+        by smtp.googlemail.com with ESMTPSA id q19sm6298427wmc.44.2021.03.25.06.19.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Mar 2021 06:19:30 -0700 (PDT)
+To:     Anand Moon <linux.amoon@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org
-Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v2 12/12] net: phy: marvell10g: better check for compatible interface
-Date:   Thu, 25 Mar 2021 14:12:50 +0100
-Message-Id: <20210325131250.15901-13-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210325131250.15901-1-kabel@kernel.org>
-References: <20210325131250.15901-1-kabel@kernel.org>
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org
+References: <20210325124225.2760-1-linux.amoon@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCHv1 0/6] Amlogic Soc - Add missing ethernet mdio compatible
+ string
+Message-ID: <4ce8997b-9f20-2c77-2d75-93e038eec6d8@gmail.com>
+Date:   Thu, 25 Mar 2021 14:19:23 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20210325124225.2760-1-linux.amoon@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do a model-specific check for compatible interface:
-- 88X3340 does not support XAUI
-- 88E21XX does not support XAUI and RXAUI
-- 88E21X1 does not support 5gbase-r
+On 25.03.2021 13:42, Anand Moon wrote:
+> On most of the Amlogic SoC I observed that Ethernet would not get
+> initialize when try to deploy the mainline kernel, earlier I tried to
+> fix this issue with by setting ethernet reset but it did not resolve
+> the issue see below.
+> 	resets = <&reset RESET_ETHERNET>;
+> 	reset-names = "stmmaceth";
+> 
+> After checking what was the missing with Rockchip SoC dts
+> I tried to add this missing compatible string and then it
+> started to working on my setup.
+> 
+> Also I tried to fix the device tree binding to validate the changes.
+> 
+> Tested this on my Odroid-N2 and Odroid-C2 (64 bit) setup.
+> I do not have ready Odroid C1 (32 bit) setup so please somebody test.
+> 
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- drivers/net/phy/marvell10g.c | 38 ++++++++++++++++++++++++------------
- 1 file changed, 25 insertions(+), 13 deletions(-)
+When working on the Odroid-C2 I did not have such a problem.
+And if you look at of_mdiobus_child_is_phy() and
+of_mdiobus_register_phy() you'll see that your change shouldn't be
+needed.
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 84f24fcb832c..510e27c766e6 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -124,6 +124,7 @@ enum mv3310_model {
- 
- struct mv3310_priv {
- 	enum mv3310_model model;
-+	bool has_5g;
- 
- 	u32 firmware_ver;
- 	phy_interface_t const_interface;
-@@ -399,7 +400,7 @@ static int mv3310_probe(struct phy_device *phydev)
- {
- 	struct mv3310_priv *priv;
- 	u32 mmd_mask = MDIO_DEVS_PMAPMD | MDIO_DEVS_AN;
--	bool has_5g, has_macsec;
-+	bool has_macsec;
- 	int ret, nports;
- 
- 	if (!phydev->is_c45 ||
-@@ -451,6 +452,7 @@ static int mv3310_probe(struct phy_device *phydev)
- 			return ret;
- 
- 		has_macsec = !(ret & MV_PMA_XGSTAT_NO_MACSEC);
-+		priv->has_5g = true;
- 
- 		if (nports == 4)
- 			priv->model = MV_MODEL_88X3340;
-@@ -462,7 +464,7 @@ static int mv3310_probe(struct phy_device *phydev)
- 		if (ret < 0)
- 			return ret;
- 
--		has_5g = ret & MDIO_PCS_SPEED_5G;
-+		priv->has_5g = ret & MDIO_PCS_SPEED_5G;
- 
- 		if (nports == 8)
- 			priv->model = MV_MODEL_88E218X;
-@@ -476,7 +478,7 @@ static int mv3310_probe(struct phy_device *phydev)
- 	switch (priv->model) {
- 	case MV_MODEL_88E211X:
- 	case MV_MODEL_88E218X:
--		phydev_info(phydev, "model 88E21%d%d\n", nports, !has_5g);
-+		phydev_info(phydev, "model 88E21%d%d\n", nports, !priv->has_5g);
- 		break;
- 	case MV_MODEL_88X3310:
- 	case MV_MODEL_88X3340:
-@@ -543,6 +545,15 @@ static int mv2110_init_interface(struct phy_device *phydev)
- 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
- 	int mactype;
- 
-+	/* Check that the PHY interface type is compatible */
-+	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
-+	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
-+	    (phydev->interface != PHY_INTERFACE_MODE_5GBASER ||
-+	     !priv->has_5g) &&
-+	    phydev->interface != PHY_INTERFACE_MODE_10GBASER &&
-+	    phydev->interface != PHY_INTERFACE_MODE_USXGMII)
-+		return -ENODEV;
-+
- 	mactype = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_21X0_PORT_CTRL);
- 	if (mactype < 0)
- 		return mactype;
-@@ -573,6 +584,17 @@ static int mv3310_init_interface(struct phy_device *phydev)
- 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
- 	int mactype;
- 
-+	/* Check that the PHY interface type is compatible */
-+	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
-+	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
-+	    phydev->interface != PHY_INTERFACE_MODE_5GBASER &&
-+	    (phydev->interface != PHY_INTERFACE_MODE_XAUI ||
-+	     priv->model == MV_MODEL_88X3340) &&
-+	    phydev->interface != PHY_INTERFACE_MODE_RXAUI &&
-+	    phydev->interface != PHY_INTERFACE_MODE_10GBASER &&
-+	    phydev->interface != PHY_INTERFACE_MODE_USXGMII)
-+		return -ENODEV;
-+
- 	mactype = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
- 	if (mactype < 0)
- 		return mactype;
-@@ -610,16 +632,6 @@ static int mv3310_config_init(struct phy_device *phydev)
- {
- 	int err;
- 
--	/* Check that the PHY interface type is compatible */
--	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
--	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
--	    phydev->interface != PHY_INTERFACE_MODE_5GBASER &&
--	    phydev->interface != PHY_INTERFACE_MODE_XAUI &&
--	    phydev->interface != PHY_INTERFACE_MODE_RXAUI &&
--	    phydev->interface != PHY_INTERFACE_MODE_10GBASER &&
--	    phydev->interface != PHY_INTERFACE_MODE_USXGMII)
--		return -ENODEV;
--
- 	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
- 
- 	/* Power up so reset works */
--- 
-2.26.2
+Could you please elaborate on:
+- What is the exact problem you're facing? Best add a dmesg log.
+- Which kernel version are you using?
+
+
+> Best Regards
+> -Anand
+> 
+> Anand Moon (6):
+>   dt-bindings: net: ethernet-phy: Fix the parsing of ethernet-phy
+>     compatible string
+>   arm: dts: meson: Add missing ethernet phy mdio compatible string
+>   arm64: dts: meson-gxbb: Add missing ethernet phy mimo compatible
+>     string
+>   arm64: dts: meson-gxl: Add missing ethernet phy mdio compatible string
+>   arm64: dts: meson-g12: Add missing ethernet phy mdio compatible string
+>   arm64: dts: meson-glx: Fix the ethernet phy mdio compatible string
+> 
+>  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 +++---
+>  arch/arm/boot/dts/meson8b-ec100.dts                     | 1 +
+>  arch/arm/boot/dts/meson8b-mxq.dts                       | 1 +
+>  arch/arm/boot/dts/meson8b-odroidc1.dts                  | 1 +
+>  arch/arm/boot/dts/meson8m2-mxiii-plus.dts               | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-axg-s400.dts          | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts      | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi   | 3 ++-
+>  arch/arm64/boot/dts/amlogic/meson-g12b-w400.dtsi        | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi  | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts      | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts    | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts  | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts     | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts         | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi    | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi       | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxl-s905d-p230.dts    | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi              | 2 +-
+>  arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts   | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts     | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxm-q200.dts          | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts      | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-gxm-vega-s96.dts      | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi      | 1 +
+>  arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi       | 1 +
+>  26 files changed, 29 insertions(+), 5 deletions(-)
+> 
 
