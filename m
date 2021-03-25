@@ -2,104 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA6E349770
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:57:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2434134968B
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:18:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbhCYQ5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 12:57:07 -0400
-Received: from lan.nucleusys.com ([92.247.61.126]:34580 "EHLO
-        mail.nucleusys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhCYQ5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:57:04 -0400
-X-Greylist: delayed 2647 seconds by postgrey-1.27 at vger.kernel.org; Thu, 25 Mar 2021 12:57:03 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=nucleusys.com; s=x; h=In-Reply-To:Content-Type:MIME-Version:References:
-        Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9+BEITjcOB4Up5oAxEJfwAcVar0gxPpkiEJ8nLYig+I=; b=ieNXDU27KppfuW3RtKoBNCYKVC
-        LR9/fGV4FP9oyvzSatYPjlPGlSUzEBge5avHw+Rk/GwNEZkNNCotCIy85XtZQa4iOj6Rae0h0fYh2
-        GD/H4SIRJM2/dPOgibRkskhAvF8EJrcELdcbVv3r/g2/q2ghxXKP9BRpgm4eXb6JzRAs=;
-Received: from [151.251.251.23] (helo=carbon)
-        by mail.nucleusys.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <petkan@nucleusys.com>)
-        id 1lPSbG-0008Dw-5U; Thu, 25 Mar 2021 18:12:47 +0200
-Date:   Thu, 25 Mar 2021 18:12:46 +0200
-From:   Petko Manolov <petkan@nucleusys.com>
-To:     'Qiheng Lin <linqiheng@huawei.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Hulk Robot <hulkci@huawei.com>
-Subject: Re: [PATCH net-next] net: usb: pegasus: Remove duplicated include
- from pegasus.c
-Message-ID: <YFy2fnV7GQLOKkRy@carbon>
-Mail-Followup-To: 'Qiheng Lin <linqiheng@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Hulk Robot <hulkci@huawei.com>
-References: <20210325145652.13469-1-linqiheng@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210325145652.13469-1-linqiheng@huawei.com>
-X-Spam-Score: -1.0 (-)
-X-Spam-Report: Spam detection software, running on the system "zztop",
- has NOT identified this incoming email as spam.  The original
- message has been attached to this so you can view it or label
- similar future email.  If you have any questions, see
- the administrator of that system for details.
- Content preview:  On 21-03-25 22:56:52, 'Qiheng Lin wrote: > From: Qiheng Lin
-    <linqiheng@huawei.com> > > Remove duplicated include. It is not duplicated
-    so do not remove it. Go ahead and look carefully at the code, please. 
- Content analysis details:   (-1.0 points, 5.0 required)
-  pts rule name              description
- ---- ---------------------- --------------------------------------------------
- -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
+        id S229448AbhCYQRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 12:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229624AbhCYQRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:17:12 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67F1C06174A;
+        Thu, 25 Mar 2021 09:17:12 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id m11so2541974pfc.11;
+        Thu, 25 Mar 2021 09:17:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=BSzjAGgCw63gBBm4851CZ2FBYt1vflt0KQxjA+y8wUo=;
+        b=lcVi/cV2vXS+/+f3hRNhK81O78ARTTqAuWrWGAMkiOCwQYEdjy+xlqmd5vuG5K/GA/
+         XpKacLB/fMoDNJphO5CchycguOUi/UNlWMhmVH8It0j7KyrxeN/EIdfZyX23JDcvgx0I
+         3kV7LHka8Ieluffj8mTZVnMixvKoPjRnfQJLf4/yrfp30LAzQWE3bZ2MfM1OZ1cMXWcI
+         vVTDwy2jWB0p3U04mTEQlAM613XnmZ+JnArZCqyPdrhy8r3yU4Yh42K0wv67z5L2UghM
+         eqdTpCRMFhoIS+5qdWwmALYz5xTchZ8e0H98XvkDb32VutJwKDQzV7bp5V9E90JKUj1m
+         /b+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BSzjAGgCw63gBBm4851CZ2FBYt1vflt0KQxjA+y8wUo=;
+        b=jlO38IxR4Hfq5V2CnA9e2Uzy/YSsTT+y03lkIjCOuLnuvTqe0+FK8KAgrNLkw1Wn98
+         Cw0q+DibYXm6r9IKm+p+GExqXGdGA+PgJQl2f8uFePoJ9Lvl19BgRYsOnX5JCoQMa0KY
+         PuUfXGceSdeIr+Quw2/ogMdeLUFxLqmQyGfTJgWTIZ1oLc4DAdKuo6xaHLJ0M6GYb7CR
+         8I4YhBQhl8cOtllixpCn/aqm5HsqZqkbGwi68TmFE47mfJ+wKRBQOPpBNlJOiSx4y+yB
+         f4jsQegggU+v8WZ6DPQ4+gIWpe+e6Aasyt25L9n6sDQSy13OpKF/OlfSDT3vjWz43AH1
+         Z0fw==
+X-Gm-Message-State: AOAM53193JfeKzAvYGEayxK66i+L5KpOeSTUHVYc8HYIipKSekmFrL5i
+        jvjPmZYtXyVp+XvGs32Edzljp1jMmGWVLw==
+X-Google-Smtp-Source: ABdhPJxUN5QK9MbeZl03qj8GTUvsg+nKRCCQ4r8AhliZsCKa7Xp2xRICo0IQVMfx1mXyi/pqhXLMsg==
+X-Received: by 2002:a17:902:da81:b029:e5:de44:af5b with SMTP id j1-20020a170902da81b02900e5de44af5bmr10472610plx.27.1616689031898;
+        Thu, 25 Mar 2021 09:17:11 -0700 (PDT)
+Received: from localhost.localdomain ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id s15sm6416917pgs.28.2021.03.25.09.17.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 09:17:11 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     ap420073@gmail.com, jwi@linux.ibm.com, kgraul@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-s390@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
+Subject: [PATCH net-next v3 0/7] mld: change context from atomic to sleepable
+Date:   Thu, 25 Mar 2021 16:16:50 +0000
+Message-Id: <20210325161657.10517-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21-03-25 22:56:52, 'Qiheng Lin wrote:
-> From: Qiheng Lin <linqiheng@huawei.com>
-> 
-> Remove duplicated include.
+This patchset changes the context of MLD module.
+Before this patchset, MLD functions are atomic context so it couldn't use
+sleepable functions and flags.
 
-It is not duplicated so do not remove it.  Go ahead and look carefully at the
-code, please.
+There are several reasons why MLD functions are under atomic context.
+1. It uses timer API.
+Timer expiration functions are executed in the atomic context.
+2. atomic locks
+MLD functions use rwlock and spinlock to protect their own resources.
 
+So, in order to switch context, this patchset converts resources to use
+RCU and removes atomic locks and timer API.
 
-		Petko
+1. The first patch convert from the timer API to delayed work.
+Timer API is used for delaying some works.
+MLD protocol has a delay mechanism, which is used for replying to a query.
+If a listener receives a query from a router, it should send a response
+after some delay. But because of timer expire function is executed in
+the atomic context, this patch convert from timer API to the delayed work.
 
+2. The fourth patch deletes inet6_dev->mc_lock.
+The mc_lock has protected inet6_dev->mc_tomb pointer.
+But this pointer is already protected by RTNL and it isn't be used by
+datapath. So, it isn't be needed and because of this, many atomic context
+critical sections are deleted.
 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
-> ---
->  drivers/net/usb/pegasus.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-> index 9a907182569c..e0ee5c096396 100644
-> --- a/drivers/net/usb/pegasus.c
-> +++ b/drivers/net/usb/pegasus.c
-> @@ -65,7 +65,6 @@ static struct usb_eth_dev usb_dev_id[] = {
->  	{.name = pn, .vendor = vid, .device = pid, .private = flags},
->  #define PEGASUS_DEV_CLASS(pn, vid, pid, dclass, flags) \
->  	PEGASUS_DEV(pn, vid, pid, flags)
-> -#include "pegasus.h"
->  #undef	PEGASUS_DEV
->  #undef	PEGASUS_DEV_CLASS
->  	{NULL, 0, 0, 0},
-> @@ -84,7 +83,6 @@ static struct usb_device_id pegasus_ids[] = {
->  #define PEGASUS_DEV_CLASS(pn, vid, pid, dclass, flags) \
->  	{.match_flags = (USB_DEVICE_ID_MATCH_DEVICE | USB_DEVICE_ID_MATCH_DEV_CLASS), \
->  	.idVendor = vid, .idProduct = pid, .bDeviceClass = dclass},
-> -#include "pegasus.h"
->  #undef	PEGASUS_DEV
->  #undef	PEGASUS_DEV_CLASS
->  	{},
-> 
-> 
+3. The fifth patch convert ip6_sf_socklist to RCU.
+ip6_sf_socklist has been protected by ipv6_mc_socklist->sflock(rwlock).
+But this is already protected by RTNL So if it is converted to use RCU
+in order to be used in the datapath, the sflock is no more needed.
+So, its control path context can be switched to sleepable.
+
+4. The sixth patch convert ip6_sf_list to RCU.
+The reason for this patch is the same as the previous patch.
+
+5. The seventh patch convert ifmcaddr6 to RCU.
+The reason for this patch is the same as the previous patch.
+
+6. Add new workqueues for processing query/report event.
+By this patch, query and report events are processed by workqueue
+So context is sleepable, not atomic.
+While this logic, it acquires RTNL.
+
+7. Add new mc_lock.
+The purpose of this lock is to protect per-interface mld data.
+Per-interface mld data is usually used by query/report event handler.
+So, query/report event workers need only this lock instead of RTNL.
+Therefore, it could reduce bottleneck.
+
+Changelog:
+v2 -> v3:
+1. Do not use msecs_to_jiffies().
+(by Cong Wang)
+2. Do not add unnecessary rtnl_lock() and rtnl_unlock().
+(by Cong Wang)
+3. Fix sparse warnings because of rcu annotation.
+(by kernel test robot)
+   - Remove some rcu_assign_pointer(), which was used for non-rcu pointer.
+   - Add union for rcu pointer.
+   - Use rcu API in mld_clear_zeros().
+   - Remove remained rcu_read_unlock().
+   - Use rcu API for tomb resources.
+4. withdraw prevopus 2nd and 3rd patch.
+   - "separate two flags from ifmcaddr6->mca_flags"
+   - "add a new delayed_work, mc_delrec_work"
+5. Add 6th and 7th patch.
+
+v1 -> v2:
+1. Withdraw unnecessary refactoring patches.
+(by Cong Wang, Eric Dumazet, David Ahern)
+    a) convert from array to list.
+    b) function rename.
+2. Separate big one patch into small several patches.
+3. Do not rename 'ifmcaddr6->mca_lock'.
+In the v1 patch, this variable was changed to 'ifmcaddr6->mca_work_lock'.
+But this is actually not needed.
+4. Do not use atomic_t for 'ifmcaddr6->mca_sfcount' and
+'ipv6_mc_socklist'->sf_count'.
+5. Do not add mld_check_leave_group() function.
+6. Do not add ip6_mc_del_src_bulk() function.
+7. Do not add ip6_mc_add_src_bulk() function.
+8. Do not use rcu_read_lock() in the qeth_l3_add_mcast_rtnl().
+(by Julian Wiedmann)
+
+Taehee Yoo (7):
+  mld: convert from timer to delayed work
+  mld: get rid of inet6_dev->mc_lock
+  mld: convert ipv6_mc_socklist->sflist to RCU
+  mld: convert ip6_sf_list to RCU
+  mld: convert ifmcaddr6 to RCU
+  mld: add new workqueues for process mld events
+  mld: add mc_lock for protecting per-interface mld data
+
+ drivers/s390/net/qeth_l3_main.c |    6 +-
+ include/net/if_inet6.h          |   37 +-
+ include/net/mld.h               |    3 +
+ net/batman-adv/multicast.c      |    6 +-
+ net/ipv6/addrconf.c             |    9 +-
+ net/ipv6/addrconf_core.c        |    2 +-
+ net/ipv6/af_inet6.c             |    2 +-
+ net/ipv6/icmp.c                 |    4 +-
+ net/ipv6/mcast.c                | 1080 ++++++++++++++++++-------------
+ 9 files changed, 678 insertions(+), 471 deletions(-)
+
+-- 
+2.17.1
+
