@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 395A03492E3
+	by mail.lfdr.de (Postfix) with ESMTP id A6FAE3492E8
 	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:14:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230438AbhCYNOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:14:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52692 "EHLO mail.kernel.org"
+        id S230500AbhCYNOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 09:14:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52710 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230260AbhCYNNh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 09:13:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 76F1961A40;
-        Thu, 25 Mar 2021 13:13:35 +0000 (UTC)
+        id S230447AbhCYNNj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 09:13:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E600619AB;
+        Thu, 25 Mar 2021 13:13:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616678016;
-        bh=HtnNEpMDvH9xaCq97fCpG41bYejqVE/v2dFNuPhpvy8=;
+        s=k20201202; t=1616678018;
+        bh=SU4/OBPxMwNPXzLqu65mukDmGKUUnfnnnaECcXsYwjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPxE+AA+5rCwsB99SeVOzyIvtdjCIkBQJUUtgspXskhD7kj75vggGXnK7bnzyZEZx
-         uFKlJ/ETjysEokh3MeWjc/AAUvnyREqnlIgCZiiXaOQ/ThugzHOy8s2QRuSzMzIGtp
-         lycyBhD+9ylNlBrvHstDyM3ZkVB9vqtLhnfk+aitb7uLt2huhsEKA8hYcs25S/locx
-         Aix6SmugwVG5L7X6Vp0clcrQTbKXC6t3yh0fO4asaqBJ0Uh0D9isyd+GNboRoNmgqW
-         AxIheECta5EsZMUuWuv66NZEXkg53FUr2pt/PTJaipifiQhGz2IhuR6kAxwRHEyFDP
-         OXPE/9TxCBEUg==
+        b=c47bRiKJ0MIhhjijnITxedbXgf94FyIt8koK1Q6HYp0IRtdzpzW5yIPv6EP9kqgWP
+         mEe34a8NrxSCTt917ciwQWhtsTBSZ6wTkgL1DnBPPZYNF+XH/w0wGMuXwQpBi9Br7s
+         TjviWI/pF4CgqHqY3hHNefYwOHMo1NFnX0OmSHKCxiMK1QHsL8syxggxZh971jwhLN
+         ErFi4azk9lRU3ZhskuTDLM4F3c5mFujoPcyGlH2JN6vfIZf7rw+3FxR6+grGrffoaH
+         ReF43/uc3vWC9ULw9VKOSUrpgqDs7vtD1ZykCUoCsCy2jHNZ3a3zdTuSR+INZuwBkg
+         dOzbEsFc+bT9g==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
@@ -30,9 +30,9 @@ To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org
 Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v2 07/12] net: phy: marvell10g: add code to determine number of ports
-Date:   Thu, 25 Mar 2021 14:12:45 +0100
-Message-Id: <20210325131250.15901-8-kabel@kernel.org>
+Subject: [PATCH net-next v2 08/12] net: phy: marvell10g: support all rate matching modes
+Date:   Thu, 25 Mar 2021 14:12:46 +0100
+Message-Id: <20210325131250.15901-9-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210325131250.15901-1-kabel@kernel.org>
 References: <20210325131250.15901-1-kabel@kernel.org>
@@ -43,91 +43,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add code to determine number of ports, from which we differentiate
-88E211X from 88E218X and 88X3310 from 88X3340.
+Add support for all rate matching modes, not only for 10gbase-r.
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 44 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 43 insertions(+), 1 deletion(-)
+ drivers/net/phy/marvell10g.c | 67 ++++++++++++++++++++++++++++++------
+ 1 file changed, 57 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 556c9b43860e..b49cff895cdd 100644
+index b49cff895cdd..025473512581 100644
 --- a/drivers/net/phy/marvell10g.c
 +++ b/drivers/net/phy/marvell10g.c
-@@ -78,6 +78,10 @@ enum {
- 	/* Temperature read register (88E2110 only) */
- 	MV_PCS_TEMP		= 0x8042,
+@@ -124,6 +124,7 @@ struct mv3310_priv {
+ 	enum mv3310_model model;
  
-+	MV_PCS_ID		= 0xd00d,
-+	MV_PCS_ID_NPORTS_MASK	= 0x0380,
-+	MV_PCS_ID_NPORTS_SHIFT	= 7,
-+
- 	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
- 	 * registers appear to set themselves to the 0x800X when AN is
- 	 * restarted, but status registers appear readable from either.
-@@ -108,7 +112,17 @@ enum {
- 	MV_V2_TEMP_UNKNOWN	= 0x9600, /* unknown function */
- };
- 
-+enum mv3310_model {
-+	MV_MODEL_NA = 0,
-+	MV_MODEL_88E211X,
-+	MV_MODEL_88E218X,
-+	MV_MODEL_88X3310,
-+	MV_MODEL_88X3340,
-+};
-+
- struct mv3310_priv {
-+	enum mv3310_model model;
-+
  	u32 firmware_ver;
++	phy_interface_t const_interface;
  	bool rate_match;
  
-@@ -382,7 +396,7 @@ static int mv3310_probe(struct phy_device *phydev)
+ 	struct device *hwmon_dev;
+@@ -512,11 +513,56 @@ static bool mv3310_has_pma_ngbaset_quirk(struct phy_device *phydev)
+ 		MV_PHY_ALASKA_NBT_QUIRK_MASK) == MV_PHY_ALASKA_NBT_QUIRK_REV;
+ }
+ 
+-static int mv3310_config_init(struct phy_device *phydev)
++static int mv2110_init_interface(struct phy_device *phydev)
++{
++	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++	int mactype;
++
++	mactype = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_21X0_PORT_CTRL);
++	if (mactype < 0)
++		return mactype;
++
++	mactype &= MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK;
++
++	if (mactype == MV_PMA_21X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH) {
++		priv->rate_match = true;
++		priv->const_interface = PHY_INTERFACE_MODE_10GBASER;
++	}
++
++	return 0;
++}
++
++static int mv3310_init_interface(struct phy_device *phydev)
  {
- 	struct mv3310_priv *priv;
- 	u32 mmd_mask = MDIO_DEVS_PMAPMD | MDIO_DEVS_AN;
--	int ret;
-+	int ret, nports;
+ 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++	int mactype;
++
++	mactype = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
++	if (mactype < 0)
++		return mactype;
++
++	mactype &= MV_V2_33X0_PORT_CTRL_MACTYPE_MASK;
++
++	if (mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH ||
++	    mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH ||
++	    (mactype == MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH &&
++	     priv->model == MV_MODEL_88X3310))
++		priv->rate_match = true;
++
++	if (mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH)
++		priv->const_interface = PHY_INTERFACE_MODE_10GBASER;
++	else if (mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH)
++		priv->const_interface = PHY_INTERFACE_MODE_RXAUI;
++	else if (priv->model == MV_MODEL_88X3310 &&
++		 mactype == MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH)
++		priv->const_interface = PHY_INTERFACE_MODE_XAUI;
++
++	return 0;
++}
++
++static int mv3310_config_init(struct phy_device *phydev)
++{
+ 	int err;
+-	int val;
  
- 	if (!phydev->is_c45 ||
- 	    (phydev->c45_ids.devices_in_package & mmd_mask) != mmd_mask)
-@@ -420,6 +434,34 @@ static int mv3310_probe(struct phy_device *phydev)
- 		    priv->firmware_ver >> 24, (priv->firmware_ver >> 16) & 255,
- 		    (priv->firmware_ver >> 8) & 255, priv->firmware_ver & 255);
+ 	/* Check that the PHY interface type is compatible */
+ 	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
+@@ -535,11 +581,12 @@ static int mv3310_config_init(struct phy_device *phydev)
+ 	if (err)
+ 		return err;
  
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_ID);
-+	if (ret < 0)
-+		return ret;
-+
-+	nports = ((ret & MV_PCS_ID_NPORTS_MASK) >> MV_PCS_ID_NPORTS_SHIFT) + 1;
-+
-+	switch (phydev->drv->phy_id) {
-+	case MARVELL_PHY_ID_88X3310:
-+		if (nports == 4)
-+			priv->model = MV_MODEL_88X3340;
-+		else if (nports == 1)
-+			priv->model = MV_MODEL_88X3310;
-+		break;
-+	case MARVELL_PHY_ID_88E2110:
-+		if (nports == 8)
-+			priv->model = MV_MODEL_88E218X;
-+		else if (nports == 1)
-+			priv->model = MV_MODEL_88E211X;
-+		break;
-+	default:
-+		unreachable();
-+	}
-+
-+	if (!priv->model) {
-+		phydev_err(phydev, "unknown PHY model (nports = %i)\n", nports);
-+		return -ENODEV;
-+	}
-+
- 	/* Powering down the port when not in use saves about 600mW */
- 	ret = mv3310_power_down(phydev);
- 	if (ret)
+-	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
+-	if (val < 0)
+-		return val;
+-	priv->rate_match = ((val & MV_V2_33X0_PORT_CTRL_MACTYPE_MASK) ==
+-			MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH);
++	if (phydev->drv->phy_id == MARVELL_PHY_ID_88E2110)
++		err = mv2110_init_interface(phydev);
++	else
++		err = mv3310_init_interface(phydev);
++	if (err < 0)
++		return err;
+ 
+ 	/* Enable EDPD mode - saving 600mW */
+ 	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
+@@ -649,12 +696,12 @@ static void mv3310_update_interface(struct phy_device *phydev)
+ {
+ 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+ 
+-	/* In "XFI with Rate Matching" mode the PHY interface is fixed at
+-	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
++	/* In all of the "* with Rate Matching" modes the PHY interface is fixed
++	 * at 10Gb. The PHY adapts the rate to actual wire speed with help of
+ 	 * internal 16KB buffer.
+ 	 */
+ 	if (priv->rate_match) {
+-		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
++		phydev->interface = priv->const_interface;
+ 		return;
+ 	}
+ 
 -- 
 2.26.2
 
