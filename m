@@ -2,61 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CD6349268
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 13:51:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5F9349281
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 13:58:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbhCYMvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 08:51:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46890 "EHLO vps0.lunn.ch"
+        id S230140AbhCYM5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 08:57:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46924 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230155AbhCYMux (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 08:50:53 -0400
+        id S229617AbhCYM5m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 08:57:42 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lPPRr-00Cx7G-0C; Thu, 25 Mar 2021 13:50:51 +0100
-Date:   Thu, 25 Mar 2021 13:50:50 +0100
+        id 1lPPYN-00CxB2-I4; Thu, 25 Mar 2021 13:57:35 +0100
+Date:   Thu, 25 Mar 2021 13:57:35 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Hariprasad Kelam <hkelam@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 0/8] configuration support for switch headers &
- phy
-Message-ID: <YFyHKqUpG9th+F62@lunn.ch>
-References: <MWHPR18MB14217B983EFC521DAA2EEAD2DE649@MWHPR18MB1421.namprd18.prod.outlook.com>
- <YFpO7n9uDt167ANk@lunn.ch>
- <CA+sq2CeT2m2QcrzSn6g5rxUfmJDVQqjYFayW+bcuopCCoYuQ6Q@mail.gmail.com>
+To:     Anand Moon <linux.amoon@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCHv1 1/6] dt-bindings: net: ethernet-phy: Fix the parsing of
+ ethernet-phy compatible string
+Message-ID: <YFyIvxOHwIs3R/IT@lunn.ch>
+References: <20210325124225.2760-1-linux.amoon@gmail.com>
+ <20210325124225.2760-2-linux.amoon@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+sq2CeT2m2QcrzSn6g5rxUfmJDVQqjYFayW+bcuopCCoYuQ6Q@mail.gmail.com>
+In-Reply-To: <20210325124225.2760-2-linux.amoon@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > So you completely skipped how this works with mv88e6xxx or
-> > prestera. If you need this private flag for some out of mainline
-> > Marvell SDK, it is very unlikely to be accepted.
-> >
-> >         Andrew
+On Thu, Mar 25, 2021 at 12:42:20PM +0000, Anand Moon wrote:
+> Fix the parsing of check of pattern ethernet-phy-ieee802.3 used
+> by the device tree to initialize the mdio phy.
 > 
-> What we are trying to do here has no dependency on DSA drivers and
-> neither impacts that functionality.
+> As per the of_mdio below 2 are valid compatible string
+> 	"ethernet-phy-ieee802.3-c22"
+> 	"ethernet-phy-ieee802.3-c45"
 
-So this is an indirect way of saying: Yes, this is for some out of
-mainline Marvell SDK.
+Nope, this is not the full story. Yes, you can have these compatible
+strings. But you can also use the PHY ID,
+e.g. ethernet-phy-idAAAA.BBBB, where AAAA and BBBB are what you find in
+registers 2 and 3 of the PHY.
 
-> Here we are just notifying the HW to parse the packets properly.
+> Cc: Rob Herring <robh@kernel.org>
+> Signed-off-by: Anand Moon <linux.amoon@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> index 2766fe45bb98..cfc7909d3e56 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> @@ -33,7 +33,7 @@ properties:
+>          description: PHYs that implement IEEE802.3 clause 22
+>        - const: ethernet-phy-ieee802.3-c45
+>          description: PHYs that implement IEEE802.3 clause 45
+> -      - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
+> +      - pattern: "^ethernet-phy-ieee[0-9]{3}\\.[0-9][-][a-f0-9]{4}$"
 
-But the correct way for this to happen is probably some kernel
-internal API between the MAC and the DSA driver. Mainline probably has
-no need for this private flag.
+So here you need, in addition to, not instead of.
+
+Please test you change on for example imx6ul-14x14-evk.dtsi
 
    Andrew
