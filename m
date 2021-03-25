@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8631C34968F
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:18:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2E2349691
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:18:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbhCYQRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229812AbhCYQRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 25 Mar 2021 12:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbhCYQR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:17:27 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4891EC06174A;
-        Thu, 25 Mar 2021 09:17:27 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id v10so2264727pgs.12;
-        Thu, 25 Mar 2021 09:17:27 -0700 (PDT)
+        with ESMTP id S229666AbhCYQRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:17:32 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B45BC06174A;
+        Thu, 25 Mar 2021 09:17:32 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id m7so2276808pgj.8;
+        Thu, 25 Mar 2021 09:17:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ePd2nzr069/DYs7GoG+OEBXQEkaa1ywzcceGhv7GEG8=;
-        b=m6wAPab30HqSMyCpRBFxYu6SsuvJL4a2GR83OUNL+Ez1HnRm+DjbnLVYhszR5On8Eh
-         N/CptTpVL0oIg6cB3VP51CMKRpgOHndXLkbA5VgegMRUlbYhvgVXrSIdZY2hqiRLBYXj
-         W0KHDwxr4FJ2W72oAdCOriaAO8JSLcFCk/2akn0gSR0IYnFoI91TXP/0f77TTIckaRCj
-         5VLcs1AEmAFkqd0aVaZfNWEqREyV3twnaxf/7ltGV30Z5TrNaXP5qRWZTkBPuxRxhTtu
-         6fC1E/5hHm3DXKIuIig4kxS0IT23MhW8CnV8Ju0gdt2CkOmKtw3+n8NXmv9ahqk7KMSw
-         zvCg==
+        bh=IuIs2AKwnOT5DUwxOE4TuFWPiYz5xOK1TFqmiizyDz8=;
+        b=ici/bBrX1/HjB0wZZLvZ5yssoU7veWtbPefnk8eraB/EZiybfkSauEsPcv9VOgO0EI
+         hjrLkLR8BAgJu0EnAcKRrEUxREM7oyx7UHs65CGEx+WtPpSLDiHp57hTVhMs32F8oRUG
+         zhekjqVYB0lEHHX4eH6uZ+Vn5RCiEQJ0yQV7yJh9RUDPIy3b4iouKmg3sGoz1cjcYCG/
+         NZ/0ek1A0PbDzbGa0jUyDO0ZRX4R1Ri08zRVQlI9xoRXkh9XRHeIHUjUTxkqL3cdFUft
+         Zo5Ac2hC0wlMbVEsh9NJ8TDE7KF0pLCnZ+O4nnbTQef7bfcs7sCpGcTMo+UKpvPkM8ZV
+         92RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ePd2nzr069/DYs7GoG+OEBXQEkaa1ywzcceGhv7GEG8=;
-        b=N2vnn56SdyhjgIyGVi/jvND3EC7RIHxOGGqsnTrQj5BxkPqXL/DEvzPLgysroSF1gu
-         ANGwDeUGz9mKnzHRJk2NRndfhnMd/nQhjIqUANWG/mL/ahlD9AAQ+GweHU7l1oOUZt7s
-         eKJ/0xxgziQVIpEkyzDTX9Gh2DY0o3tbnbq5Y84DipyY9xyT6xcAcQ6QlpGc19Iwsywb
-         M8te1tZpA0wrXnB4+ITIIo/gn6yQcabpNTeHVg9UqgV0/oB5jHxX0wTw3eArzpC68GGa
-         3PV/wk4xI28CcXMwf1wJENBVRqtWZm/Dqoo83ie32QZ5vq58n9p5BRxaT/clrlViJbOw
-         FwTQ==
-X-Gm-Message-State: AOAM531UnZ4oByIxBQcJXHiEXPOjSzOYAncBetuIQ8tUz/7d9yYyVAjr
-        2KeoFnHYl6jvmE6o1ISRnSgwcKcXIJCwOQ==
-X-Google-Smtp-Source: ABdhPJzhqHePcmN04ovx0DTYY4JGja6x2uYx4U8Im8/HFshcqrFZZAN5feDAUemXBrrt6lLSnpmRXw==
-X-Received: by 2002:a17:902:aa0c:b029:e5:da5f:5f66 with SMTP id be12-20020a170902aa0cb02900e5da5f5f66mr10371163plb.81.1616689046466;
-        Thu, 25 Mar 2021 09:17:26 -0700 (PDT)
+        bh=IuIs2AKwnOT5DUwxOE4TuFWPiYz5xOK1TFqmiizyDz8=;
+        b=B+FoYuOrb3dIKdMbdZXdfjDMwNPSV1fZSy8CXwy2maAFqxmQUzcrjYWc1NrsEeGWfj
+         WrcDI7gRX1TAmxBwrWDlAs2uuJvIr6CW8fkkAZw/XU6R6Rnc0p8RMy4a1mRYB/pDFnbz
+         af0uemCqaMQL2SW6fm5YojwclkAj9Ir3uOd4f7Ku/kls6J4bJjqXRTeJkKGGrRIoSXLK
+         PVf3p152SXPO/JSQyCTDxWclTN0ZfqEt1AKAFJN5Yy1hs+lo0nxPnLWVQ39D+OL8AyBR
+         koxk/GAeFtin0AtWXWUTAtVlJEIwBig3Je9MEg4FjcaagfHxQVtVOHh12mN7FSa4L0tt
+         RyHw==
+X-Gm-Message-State: AOAM530KW7VkY1zOpKPfu84Vb8M7GZER0LNjCO+Aqx11f8YsoI1717fY
+        Tb8yY2gm/q3rWRxdJ//qUnc+wdqX9Gqy1A==
+X-Google-Smtp-Source: ABdhPJxDj3+JcV6hrKJfEAh+aS9/XIvZrCshWY2TM5aHQnQ3oX+RvMbIq8Lg/YTXSeueA/KO/7Q39g==
+X-Received: by 2002:a63:1845:: with SMTP id 5mr8336415pgy.244.1616689051287;
+        Thu, 25 Mar 2021 09:17:31 -0700 (PDT)
 Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id s15sm6416917pgs.28.2021.03.25.09.17.21
+        by smtp.gmail.com with ESMTPSA id s15sm6416917pgs.28.2021.03.25.09.17.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 09:17:25 -0700 (PDT)
+        Thu, 25 Mar 2021 09:17:30 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     ap420073@gmail.com, jwi@linux.ibm.com, kgraul@linux.ibm.com,
@@ -53,9 +53,9 @@ Cc:     ap420073@gmail.com, jwi@linux.ibm.com, kgraul@linux.ibm.com,
         mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
         sven@narfation.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         linux-s390@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
-Subject: [PATCH net-next v3 3/7] mld: convert ipv6_mc_socklist->sflist to RCU
-Date:   Thu, 25 Mar 2021 16:16:53 +0000
-Message-Id: <20210325161657.10517-4-ap420073@gmail.com>
+Subject: [PATCH net-next v3 4/7] mld: convert ip6_sf_list to RCU
+Date:   Thu, 25 Mar 2021 16:16:54 +0000
+Message-Id: <20210325161657.10517-5-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210325161657.10517-1-ap420073@gmail.com>
 References: <20210325161657.10517-1-ap420073@gmail.com>
@@ -63,11 +63,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sflist has been protected by rwlock so that the critical section
-is atomic context.
-In order to switch this context, changing locking is needed.
-The sflist actually already protected by RTNL So if it's converted
-to use RCU, its control path context can be switched to sleepable.
+The ip6_sf_list has been protected by mca_lock(spin_lock) so that the
+critical section is atomic context. In order to switch this context,
+changing locking is needed. The ip6_sf_list actually already protected
+by RTNL So if it's converted to use RCU, its control path context can
+be switched to sleepable.
+But It doesn't remove mca_lock yet because ifmcaddr6 isn't converted
+to RCU yet. So, It's not fully converted to the sleepable context.
 
 Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
@@ -77,185 +79,494 @@ v2 -> v3:
 v1 -> v2:
  - Separated from previous big one patch.
 
- include/net/if_inet6.h |  4 ++--
- net/ipv6/mcast.c       | 52 ++++++++++++++++++------------------------
- 2 files changed, 24 insertions(+), 32 deletions(-)
+ include/net/if_inet6.h |   7 +-
+ net/ipv6/mcast.c       | 200 ++++++++++++++++++++++++++---------------
+ 2 files changed, 130 insertions(+), 77 deletions(-)
 
 diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 1080d2248304..062294aeeb6d 100644
+index 062294aeeb6d..7875a3208426 100644
 --- a/include/net/if_inet6.h
 +++ b/include/net/if_inet6.h
-@@ -78,6 +78,7 @@ struct inet6_ifaddr {
- struct ip6_sf_socklist {
- 	unsigned int		sl_max;
- 	unsigned int		sl_count;
+@@ -97,12 +97,13 @@ struct ipv6_mc_socklist {
+ };
+ 
+ struct ip6_sf_list {
+-	struct ip6_sf_list	*sf_next;
++	struct ip6_sf_list __rcu *sf_next;
+ 	struct in6_addr		sf_addr;
+ 	unsigned long		sf_count[2];	/* include/exclude counts */
+ 	unsigned char		sf_gsresp;	/* include in g & s response? */
+ 	unsigned char		sf_oldin;	/* change state */
+ 	unsigned char		sf_crcount;	/* retrans. left to send */
 +	struct rcu_head		rcu;
- 	struct in6_addr		sl_addr[];
  };
  
-@@ -91,8 +92,7 @@ struct ipv6_mc_socklist {
- 	int			ifindex;
- 	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
- 	struct ipv6_mc_socklist __rcu *next;
--	rwlock_t		sflock;
--	struct ip6_sf_socklist	*sflist;
-+	struct ip6_sf_socklist	__rcu *sflist;
- 	struct rcu_head		rcu;
- };
- 
+ #define MAF_TIMER_RUNNING	0x01
+@@ -115,8 +116,8 @@ struct ifmcaddr6 {
+ 	struct in6_addr		mca_addr;
+ 	struct inet6_dev	*idev;
+ 	struct ifmcaddr6	*next;
+-	struct ip6_sf_list	*mca_sources;
+-	struct ip6_sf_list	*mca_tomb;
++	struct ip6_sf_list	__rcu *mca_sources;
++	struct ip6_sf_list	__rcu *mca_tomb;
+ 	unsigned int		mca_sfmode;
+ 	unsigned char		mca_crcount;
+ 	unsigned long		mca_sfcount[2];
 diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-index 35962aa3cc22..9da55d23a13c 100644
+index 9da55d23a13c..bc0fb4815c97 100644
 --- a/net/ipv6/mcast.c
 +++ b/net/ipv6/mcast.c
-@@ -178,8 +178,7 @@ static int __ipv6_sock_mc_join(struct sock *sk, int ifindex,
+@@ -113,10 +113,25 @@ int sysctl_mld_qrv __read_mostly = MLD_QRV_DEFAULT;
+  */
  
- 	mc_lst->ifindex = dev->ifindex;
- 	mc_lst->sfmode = mode;
--	rwlock_init(&mc_lst->sflock);
--	mc_lst->sflist = NULL;
-+	RCU_INIT_POINTER(mc_lst->sflist, NULL);
+ #define for_each_pmc_rcu(np, pmc)				\
+-	for (pmc = rcu_dereference(np->ipv6_mc_list);		\
+-	     pmc != NULL;					\
++	for (pmc = rcu_dereference((np)->ipv6_mc_list);		\
++	     pmc;						\
+ 	     pmc = rcu_dereference(pmc->next))
  
- 	/*
- 	 *	now add/increase the group membership on the device
-@@ -335,7 +334,6 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
- 	struct net *net = sock_net(sk);
- 	int i, j, rv;
- 	int leavegroup = 0;
--	int pmclocked = 0;
- 	int err;
- 
- 	source = &((struct sockaddr_in6 *)&pgsr->gsr_source)->sin6_addr;
-@@ -364,7 +362,7 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
- 		goto done;
- 	}
- 	/* if a source filter was set, must be the same mode as before */
--	if (pmc->sflist) {
-+	if (rcu_access_pointer(pmc->sflist)) {
- 		if (pmc->sfmode != omode) {
- 			err = -EINVAL;
- 			goto done;
-@@ -376,10 +374,7 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
- 		pmc->sfmode = omode;
- 	}
- 
--	write_lock(&pmc->sflock);
--	pmclocked = 1;
--
--	psl = pmc->sflist;
-+	psl = rtnl_dereference(pmc->sflist);
- 	if (!add) {
- 		if (!psl)
- 			goto done;	/* err = -EADDRNOTAVAIL */
-@@ -429,9 +424,11 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
- 		if (psl) {
- 			for (i = 0; i < psl->sl_count; i++)
- 				newpsl->sl_addr[i] = psl->sl_addr[i];
--			sock_kfree_s(sk, psl, IP6_SFLSIZE(psl->sl_max));
-+			atomic_sub(IP6_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
-+			kfree_rcu(psl, rcu);
- 		}
--		pmc->sflist = psl = newpsl;
-+		psl = newpsl;
-+		rcu_assign_pointer(pmc->sflist, psl);
- 	}
- 	rv = 1;	/* > 0 for insert logic below if sl_count is 0 */
- 	for (i = 0; i < psl->sl_count; i++) {
-@@ -447,8 +444,6 @@ int ip6_mc_source(int add, int omode, struct sock *sk,
- 	/* update the interface list */
- 	ip6_mc_add_src(idev, group, omode, 1, source, 1);
- done:
--	if (pmclocked)
--		write_unlock(&pmc->sflock);
- 	read_unlock_bh(&idev->lock);
- 	rcu_read_unlock();
- 	if (leavegroup)
-@@ -526,17 +521,16 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
- 		(void) ip6_mc_add_src(idev, group, gsf->gf_fmode, 0, NULL, 0);
- 	}
- 
--	write_lock(&pmc->sflock);
--	psl = pmc->sflist;
-+	psl = rtnl_dereference(pmc->sflist);
- 	if (psl) {
- 		(void) ip6_mc_del_src(idev, group, pmc->sfmode,
- 			psl->sl_count, psl->sl_addr, 0);
--		sock_kfree_s(sk, psl, IP6_SFLSIZE(psl->sl_max));
-+		atomic_sub(IP6_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
-+		kfree_rcu(psl, rcu);
- 	} else
- 		(void) ip6_mc_del_src(idev, group, pmc->sfmode, 0, NULL, 0);
--	pmc->sflist = newpsl;
-+	rcu_assign_pointer(pmc->sflist, newpsl);
- 	pmc->sfmode = gsf->gf_fmode;
--	write_unlock(&pmc->sflock);
- 	err = 0;
- done:
- 	read_unlock_bh(&idev->lock);
-@@ -585,16 +579,14 @@ int ip6_mc_msfget(struct sock *sk, struct group_filter *gsf,
- 	if (!pmc)		/* must have a prior join */
- 		goto done;
- 	gsf->gf_fmode = pmc->sfmode;
--	psl = pmc->sflist;
-+	psl = rtnl_dereference(pmc->sflist);
- 	count = psl ? psl->sl_count : 0;
- 	read_unlock_bh(&idev->lock);
- 	rcu_read_unlock();
- 
- 	copycount = count < gsf->gf_numsrc ? count : gsf->gf_numsrc;
- 	gsf->gf_numsrc = count;
--	/* changes to psl require the socket lock, and a write lock
--	 * on pmc->sflock. We have the socket lock so reading here is safe.
--	 */
++#define for_each_psf_rtnl(mc, psf)				\
++	for (psf = rtnl_dereference((mc)->mca_sources);		\
++	     psf;						\
++	     psf = rtnl_dereference(psf->sf_next))
 +
- 	for (i = 0; i < copycount; i++, p++) {
- 		struct sockaddr_in6 *psin6;
- 		struct sockaddr_storage ss;
-@@ -630,8 +622,7 @@ bool inet6_mc_check(struct sock *sk, const struct in6_addr *mc_addr,
- 		rcu_read_unlock();
- 		return np->mc_all;
- 	}
--	read_lock(&mc->sflock);
--	psl = mc->sflist;
-+	psl = rcu_dereference(mc->sflist);
- 	if (!psl) {
- 		rv = mc->sfmode == MCAST_EXCLUDE;
- 	} else {
-@@ -646,7 +637,6 @@ bool inet6_mc_check(struct sock *sk, const struct in6_addr *mc_addr,
- 		if (mc->sfmode == MCAST_EXCLUDE && i < psl->sl_count)
- 			rv = false;
- 	}
--	read_unlock(&mc->sflock);
- 	rcu_read_unlock();
- 
- 	return rv;
-@@ -2422,19 +2412,21 @@ static void igmp6_join_group(struct ifmcaddr6 *ma)
- static int ip6_mc_leave_src(struct sock *sk, struct ipv6_mc_socklist *iml,
- 			    struct inet6_dev *idev)
++#define for_each_psf_rcu(mc, psf)				\
++	for (psf = rcu_dereference((mc)->mca_sources);		\
++	     psf;						\
++	     psf = rcu_dereference(psf->sf_next))
++
++#define for_each_psf_tomb(mc, psf)				\
++	for (psf = rtnl_dereference((mc)->mca_tomb);		\
++	     psf;						\
++	     psf = rtnl_dereference(psf->sf_next))
++
+ static int unsolicited_report_interval(struct inet6_dev *idev)
  {
-+	struct ip6_sf_socklist *psl;
- 	int err;
+ 	int iv;
+@@ -734,10 +749,14 @@ static void mld_add_delrec(struct inet6_dev *idev, struct ifmcaddr6 *im)
+ 	if (pmc->mca_sfmode == MCAST_INCLUDE) {
+ 		struct ip6_sf_list *psf;
  
--	write_lock_bh(&iml->sflock);
--	if (!iml->sflist) {
-+	psl = rtnl_dereference(iml->sflist);
+-		pmc->mca_tomb = im->mca_tomb;
+-		pmc->mca_sources = im->mca_sources;
+-		im->mca_tomb = im->mca_sources = NULL;
+-		for (psf = pmc->mca_sources; psf; psf = psf->sf_next)
++		rcu_assign_pointer(pmc->mca_tomb,
++				   rtnl_dereference(im->mca_tomb));
++		rcu_assign_pointer(pmc->mca_sources,
++				   rtnl_dereference(im->mca_sources));
++		RCU_INIT_POINTER(im->mca_tomb, NULL);
++		RCU_INIT_POINTER(im->mca_sources, NULL);
 +
-+	if (!psl) {
- 		/* any-source empty exclude case */
- 		err = ip6_mc_del_src(idev, &iml->addr, iml->sfmode, 0, NULL, 0);
- 	} else {
- 		err = ip6_mc_del_src(idev, &iml->addr, iml->sfmode,
--				iml->sflist->sl_count, iml->sflist->sl_addr, 0);
--		sock_kfree_s(sk, iml->sflist, IP6_SFLSIZE(iml->sflist->sl_max));
--		iml->sflist = NULL;
-+				psl->sl_count, psl->sl_addr, 0);
-+		RCU_INIT_POINTER(iml->sflist, NULL);
-+		atomic_sub(IP6_SFLSIZE(psl->sl_max), &sk->sk_omem_alloc);
-+		kfree_rcu(psl, rcu);
++		for_each_psf_rtnl(pmc, psf)
+ 			psf->sf_crcount = pmc->mca_crcount;
  	}
--	write_unlock_bh(&iml->sflock);
- 	return err;
+ 	spin_unlock_bh(&im->mca_lock);
+@@ -748,9 +767,9 @@ static void mld_add_delrec(struct inet6_dev *idev, struct ifmcaddr6 *im)
+ 
+ static void mld_del_delrec(struct inet6_dev *idev, struct ifmcaddr6 *im)
+ {
+-	struct ifmcaddr6 *pmc, *pmc_prev;
+-	struct ip6_sf_list *psf;
++	struct ip6_sf_list *psf, *sources, *tomb;
+ 	struct in6_addr *pmca = &im->mca_addr;
++	struct ifmcaddr6 *pmc, *pmc_prev;
+ 
+ 	pmc_prev = NULL;
+ 	for (pmc = idev->mc_tomb; pmc; pmc = pmc->next) {
+@@ -769,9 +788,16 @@ static void mld_del_delrec(struct inet6_dev *idev, struct ifmcaddr6 *im)
+ 	if (pmc) {
+ 		im->idev = pmc->idev;
+ 		if (im->mca_sfmode == MCAST_INCLUDE) {
+-			swap(im->mca_tomb, pmc->mca_tomb);
+-			swap(im->mca_sources, pmc->mca_sources);
+-			for (psf = im->mca_sources; psf; psf = psf->sf_next)
++			tomb = rcu_replace_pointer(im->mca_tomb,
++						   rtnl_dereference(pmc->mca_tomb),
++						   lockdep_rtnl_is_held());
++			rcu_assign_pointer(pmc->mca_tomb, tomb);
++
++			sources = rcu_replace_pointer(im->mca_sources,
++						      rtnl_dereference(pmc->mca_sources),
++						      lockdep_rtnl_is_held());
++			rcu_assign_pointer(pmc->mca_sources, sources);
++			for_each_psf_rtnl(im, psf)
+ 				psf->sf_crcount = idev->mc_qrv;
+ 		} else {
+ 			im->mca_crcount = idev->mc_qrv;
+@@ -803,12 +829,12 @@ static void mld_clear_delrec(struct inet6_dev *idev)
+ 		struct ip6_sf_list *psf, *psf_next;
+ 
+ 		spin_lock_bh(&pmc->mca_lock);
+-		psf = pmc->mca_tomb;
+-		pmc->mca_tomb = NULL;
++		psf = rtnl_dereference(pmc->mca_tomb);
++		RCU_INIT_POINTER(pmc->mca_tomb, NULL);
+ 		spin_unlock_bh(&pmc->mca_lock);
+ 		for (; psf; psf = psf_next) {
+-			psf_next = psf->sf_next;
+-			kfree(psf);
++			psf_next = rtnl_dereference(psf->sf_next);
++			kfree_rcu(psf, rcu);
+ 		}
+ 	}
+ 	read_unlock_bh(&idev->lock);
+@@ -990,7 +1016,7 @@ bool ipv6_chk_mcast_addr(struct net_device *dev, const struct in6_addr *group,
+ 				struct ip6_sf_list *psf;
+ 
+ 				spin_lock_bh(&mc->mca_lock);
+-				for (psf = mc->mca_sources; psf; psf = psf->sf_next) {
++				for_each_psf_rcu(mc, psf) {
+ 					if (ipv6_addr_equal(&psf->sf_addr, src_addr))
+ 						break;
+ 				}
+@@ -1089,7 +1115,7 @@ static bool mld_xmarksources(struct ifmcaddr6 *pmc, int nsrcs,
+ 	int i, scount;
+ 
+ 	scount = 0;
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next) {
++	for_each_psf_rcu(pmc, psf) {
+ 		if (scount == nsrcs)
+ 			break;
+ 		for (i = 0; i < nsrcs; i++) {
+@@ -1122,7 +1148,7 @@ static bool mld_marksources(struct ifmcaddr6 *pmc, int nsrcs,
+ 	/* mark INCLUDE-mode sources */
+ 
+ 	scount = 0;
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next) {
++	for_each_psf_rcu(pmc, psf) {
+ 		if (scount == nsrcs)
+ 			break;
+ 		for (i = 0; i < nsrcs; i++) {
+@@ -1532,7 +1558,7 @@ mld_scount(struct ifmcaddr6 *pmc, int type, int gdeleted, int sdeleted)
+ 	struct ip6_sf_list *psf;
+ 	int scount = 0;
+ 
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next) {
++	for_each_psf_rtnl(pmc, psf) {
+ 		if (!is_in(pmc, psf, type, gdeleted, sdeleted))
+ 			continue;
+ 		scount++;
+@@ -1707,14 +1733,16 @@ static struct sk_buff *add_grhead(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ #define AVAILABLE(skb)	((skb) ? skb_availroom(skb) : 0)
+ 
+ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+-	int type, int gdeleted, int sdeleted, int crsend)
++				int type, int gdeleted, int sdeleted,
++				int crsend)
+ {
++	struct ip6_sf_list *psf, *psf_prev, *psf_next;
++	int scount, stotal, first, isquery, truncate;
++	struct ip6_sf_list __rcu **psf_list;
+ 	struct inet6_dev *idev = pmc->idev;
+ 	struct net_device *dev = idev->dev;
+-	struct mld2_report *pmr;
+ 	struct mld2_grec *pgr = NULL;
+-	struct ip6_sf_list *psf, *psf_next, *psf_prev, **psf_list;
+-	int scount, stotal, first, isquery, truncate;
++	struct mld2_report *pmr;
+ 	unsigned int mtu;
+ 
+ 	if (pmc->mca_flags & MAF_NOREPORT)
+@@ -1733,7 +1761,7 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 
+ 	psf_list = sdeleted ? &pmc->mca_tomb : &pmc->mca_sources;
+ 
+-	if (!*psf_list)
++	if (!rcu_access_pointer(*psf_list))
+ 		goto empty_source;
+ 
+ 	pmr = skb ? (struct mld2_report *)skb_transport_header(skb) : NULL;
+@@ -1749,10 +1777,12 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 	}
+ 	first = 1;
+ 	psf_prev = NULL;
+-	for (psf = *psf_list; psf; psf = psf_next) {
++	for (psf = rtnl_dereference(*psf_list);
++	     psf;
++	     psf = psf_next) {
+ 		struct in6_addr *psrc;
+ 
+-		psf_next = psf->sf_next;
++		psf_next = rtnl_dereference(psf->sf_next);
+ 
+ 		if (!is_in(pmc, psf, type, gdeleted, sdeleted) && !crsend) {
+ 			psf_prev = psf;
+@@ -1799,10 +1829,12 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 			psf->sf_crcount--;
+ 			if ((sdeleted || gdeleted) && psf->sf_crcount == 0) {
+ 				if (psf_prev)
+-					psf_prev->sf_next = psf->sf_next;
++					rcu_assign_pointer(psf_prev->sf_next,
++							   rtnl_dereference(psf->sf_next));
+ 				else
+-					*psf_list = psf->sf_next;
+-				kfree(psf);
++					rcu_assign_pointer(*psf_list,
++							   rtnl_dereference(psf->sf_next));
++				kfree_rcu(psf, rcu);
+ 				continue;
+ 			}
+ 		}
+@@ -1866,21 +1898,26 @@ static void mld_send_report(struct inet6_dev *idev, struct ifmcaddr6 *pmc)
+ /*
+  * remove zero-count source records from a source filter list
+  */
+-static void mld_clear_zeros(struct ip6_sf_list **ppsf)
++static void mld_clear_zeros(struct ip6_sf_list __rcu **ppsf)
+ {
+ 	struct ip6_sf_list *psf_prev, *psf_next, *psf;
+ 
+ 	psf_prev = NULL;
+-	for (psf = *ppsf; psf; psf = psf_next) {
+-		psf_next = psf->sf_next;
++	for (psf = rtnl_dereference(*ppsf);
++	     psf;
++	     psf = psf_next) {
++		psf_next = rtnl_dereference(psf->sf_next);
+ 		if (psf->sf_crcount == 0) {
+ 			if (psf_prev)
+-				psf_prev->sf_next = psf->sf_next;
++				rcu_assign_pointer(psf_prev->sf_next,
++						   rtnl_dereference(psf->sf_next));
+ 			else
+-				*ppsf = psf->sf_next;
+-			kfree(psf);
+-		} else
++				rcu_assign_pointer(*ppsf,
++						   rtnl_dereference(psf->sf_next));
++			kfree_rcu(psf, rcu);
++		} else {
+ 			psf_prev = psf;
++		}
+ 	}
  }
  
+@@ -1913,8 +1950,9 @@ static void mld_send_cr(struct inet6_dev *idev)
+ 				mld_clear_zeros(&pmc->mca_sources);
+ 			}
+ 		}
+-		if (pmc->mca_crcount == 0 && !pmc->mca_tomb &&
+-		    !pmc->mca_sources) {
++		if (pmc->mca_crcount == 0 &&
++		    !rcu_access_pointer(pmc->mca_tomb) &&
++		    !rcu_access_pointer(pmc->mca_sources)) {
+ 			if (pmc_prev)
+ 				pmc_prev->next = pmc_next;
+ 			else
+@@ -2111,7 +2149,7 @@ static int ip6_mc_del1_src(struct ifmcaddr6 *pmc, int sfmode,
+ 	int rv = 0;
+ 
+ 	psf_prev = NULL;
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next) {
++	for_each_psf_rtnl(pmc, psf) {
+ 		if (ipv6_addr_equal(&psf->sf_addr, psfsrc))
+ 			break;
+ 		psf_prev = psf;
+@@ -2126,17 +2164,22 @@ static int ip6_mc_del1_src(struct ifmcaddr6 *pmc, int sfmode,
+ 
+ 		/* no more filters for this source */
+ 		if (psf_prev)
+-			psf_prev->sf_next = psf->sf_next;
++			rcu_assign_pointer(psf_prev->sf_next,
++					   rtnl_dereference(psf->sf_next));
+ 		else
+-			pmc->mca_sources = psf->sf_next;
++			rcu_assign_pointer(pmc->mca_sources,
++					   rtnl_dereference(psf->sf_next));
++
+ 		if (psf->sf_oldin && !(pmc->mca_flags & MAF_NOREPORT) &&
+ 		    !mld_in_v1_mode(idev)) {
+ 			psf->sf_crcount = idev->mc_qrv;
+-			psf->sf_next = pmc->mca_tomb;
+-			pmc->mca_tomb = psf;
++			rcu_assign_pointer(psf->sf_next,
++					   rtnl_dereference(pmc->mca_tomb));
++			rcu_assign_pointer(pmc->mca_tomb, psf);
+ 			rv = 1;
+-		} else
+-			kfree(psf);
++		} else {
++			kfree_rcu(psf, rcu);
++		}
+ 	}
+ 	return rv;
+ }
+@@ -2188,7 +2231,7 @@ static int ip6_mc_del_src(struct inet6_dev *idev, const struct in6_addr *pmca,
+ 		pmc->mca_sfmode = MCAST_INCLUDE;
+ 		pmc->mca_crcount = idev->mc_qrv;
+ 		idev->mc_ifc_count = pmc->mca_crcount;
+-		for (psf = pmc->mca_sources; psf; psf = psf->sf_next)
++		for_each_psf_rtnl(pmc, psf)
+ 			psf->sf_crcount = 0;
+ 		mld_ifc_event(pmc->idev);
+ 	} else if (sf_setstate(pmc) || changerec)
+@@ -2207,7 +2250,7 @@ static int ip6_mc_add1_src(struct ifmcaddr6 *pmc, int sfmode,
+ 	struct ip6_sf_list *psf, *psf_prev;
+ 
+ 	psf_prev = NULL;
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next) {
++	for_each_psf_rtnl(pmc, psf) {
+ 		if (ipv6_addr_equal(&psf->sf_addr, psfsrc))
+ 			break;
+ 		psf_prev = psf;
+@@ -2219,9 +2262,10 @@ static int ip6_mc_add1_src(struct ifmcaddr6 *pmc, int sfmode,
+ 
+ 		psf->sf_addr = *psfsrc;
+ 		if (psf_prev) {
+-			psf_prev->sf_next = psf;
+-		} else
+-			pmc->mca_sources = psf;
++			rcu_assign_pointer(psf_prev->sf_next, psf);
++		} else {
++			rcu_assign_pointer(pmc->mca_sources, psf);
++		}
+ 	}
+ 	psf->sf_count[sfmode]++;
+ 	return 0;
+@@ -2232,13 +2276,15 @@ static void sf_markstate(struct ifmcaddr6 *pmc)
+ 	struct ip6_sf_list *psf;
+ 	int mca_xcount = pmc->mca_sfcount[MCAST_EXCLUDE];
+ 
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next)
++	for_each_psf_rtnl(pmc, psf) {
+ 		if (pmc->mca_sfcount[MCAST_EXCLUDE]) {
+ 			psf->sf_oldin = mca_xcount ==
+ 				psf->sf_count[MCAST_EXCLUDE] &&
+ 				!psf->sf_count[MCAST_INCLUDE];
+-		} else
++		} else {
+ 			psf->sf_oldin = psf->sf_count[MCAST_INCLUDE] != 0;
++		}
++	}
+ }
+ 
+ static int sf_setstate(struct ifmcaddr6 *pmc)
+@@ -2249,7 +2295,7 @@ static int sf_setstate(struct ifmcaddr6 *pmc)
+ 	int new_in, rv;
+ 
+ 	rv = 0;
+-	for (psf = pmc->mca_sources; psf; psf = psf->sf_next) {
++	for_each_psf_rtnl(pmc, psf) {
+ 		if (pmc->mca_sfcount[MCAST_EXCLUDE]) {
+ 			new_in = mca_xcount == psf->sf_count[MCAST_EXCLUDE] &&
+ 				!psf->sf_count[MCAST_INCLUDE];
+@@ -2259,8 +2305,7 @@ static int sf_setstate(struct ifmcaddr6 *pmc)
+ 			if (!psf->sf_oldin) {
+ 				struct ip6_sf_list *prev = NULL;
+ 
+-				for (dpsf = pmc->mca_tomb; dpsf;
+-				     dpsf = dpsf->sf_next) {
++				for_each_psf_tomb(pmc, dpsf) {
+ 					if (ipv6_addr_equal(&dpsf->sf_addr,
+ 					    &psf->sf_addr))
+ 						break;
+@@ -2268,10 +2313,12 @@ static int sf_setstate(struct ifmcaddr6 *pmc)
+ 				}
+ 				if (dpsf) {
+ 					if (prev)
+-						prev->sf_next = dpsf->sf_next;
++						rcu_assign_pointer(prev->sf_next,
++								   rtnl_dereference(dpsf->sf_next));
+ 					else
+-						pmc->mca_tomb = dpsf->sf_next;
+-					kfree(dpsf);
++						rcu_assign_pointer(pmc->mca_tomb,
++								   rtnl_dereference(dpsf->sf_next));
++					kfree_rcu(dpsf, rcu);
+ 				}
+ 				psf->sf_crcount = qrv;
+ 				rv++;
+@@ -2282,7 +2329,8 @@ static int sf_setstate(struct ifmcaddr6 *pmc)
+ 			 * add or update "delete" records if an active filter
+ 			 * is now inactive
+ 			 */
+-			for (dpsf = pmc->mca_tomb; dpsf; dpsf = dpsf->sf_next)
++
++			for_each_psf_tomb(pmc, dpsf)
+ 				if (ipv6_addr_equal(&dpsf->sf_addr,
+ 				    &psf->sf_addr))
+ 					break;
+@@ -2291,9 +2339,9 @@ static int sf_setstate(struct ifmcaddr6 *pmc)
+ 				if (!dpsf)
+ 					continue;
+ 				*dpsf = *psf;
+-				/* pmc->mca_lock held by callers */
+-				dpsf->sf_next = pmc->mca_tomb;
+-				pmc->mca_tomb = dpsf;
++				rcu_assign_pointer(dpsf->sf_next,
++						   rtnl_dereference(pmc->mca_tomb));
++				rcu_assign_pointer(pmc->mca_tomb, dpsf);
+ 			}
+ 			dpsf->sf_crcount = qrv;
+ 			rv++;
+@@ -2356,7 +2404,7 @@ static int ip6_mc_add_src(struct inet6_dev *idev, const struct in6_addr *pmca,
+ 
+ 		pmc->mca_crcount = idev->mc_qrv;
+ 		idev->mc_ifc_count = pmc->mca_crcount;
+-		for (psf = pmc->mca_sources; psf; psf = psf->sf_next)
++		for_each_psf_rtnl(pmc, psf)
+ 			psf->sf_crcount = 0;
+ 		mld_ifc_event(idev);
+ 	} else if (sf_setstate(pmc))
+@@ -2370,16 +2418,20 @@ static void ip6_mc_clear_src(struct ifmcaddr6 *pmc)
+ {
+ 	struct ip6_sf_list *psf, *nextpsf;
+ 
+-	for (psf = pmc->mca_tomb; psf; psf = nextpsf) {
+-		nextpsf = psf->sf_next;
+-		kfree(psf);
++	for (psf = rtnl_dereference(pmc->mca_tomb);
++	     psf;
++	     psf = nextpsf) {
++		nextpsf = rtnl_dereference(psf->sf_next);
++		kfree_rcu(psf, rcu);
+ 	}
+-	pmc->mca_tomb = NULL;
+-	for (psf = pmc->mca_sources; psf; psf = nextpsf) {
+-		nextpsf = psf->sf_next;
+-		kfree(psf);
++	RCU_INIT_POINTER(pmc->mca_tomb, NULL);
++	for (psf = rtnl_dereference(pmc->mca_sources);
++	     psf;
++	     psf = nextpsf) {
++		nextpsf = rtnl_dereference(psf->sf_next);
++		kfree_rcu(psf, rcu);
+ 	}
+-	pmc->mca_sources = NULL;
++	RCU_INIT_POINTER(pmc->mca_sources, NULL);
+ 	pmc->mca_sfmode = MCAST_EXCLUDE;
+ 	pmc->mca_sfcount[MCAST_INCLUDE] = 0;
+ 	pmc->mca_sfcount[MCAST_EXCLUDE] = 1;
+@@ -2789,7 +2841,7 @@ static inline struct ip6_sf_list *igmp6_mcf_get_first(struct seq_file *seq)
+ 		im = idev->mc_list;
+ 		if (likely(im)) {
+ 			spin_lock_bh(&im->mca_lock);
+-			psf = im->mca_sources;
++			psf = rcu_dereference(im->mca_sources);
+ 			if (likely(psf)) {
+ 				state->im = im;
+ 				state->idev = idev;
+@@ -2806,7 +2858,7 @@ static struct ip6_sf_list *igmp6_mcf_get_next(struct seq_file *seq, struct ip6_s
+ {
+ 	struct igmp6_mcf_iter_state *state = igmp6_mcf_seq_private(seq);
+ 
+-	psf = psf->sf_next;
++	psf = rcu_dereference(psf->sf_next);
+ 	while (!psf) {
+ 		spin_unlock_bh(&state->im->mca_lock);
+ 		state->im = state->im->next;
+@@ -2828,7 +2880,7 @@ static struct ip6_sf_list *igmp6_mcf_get_next(struct seq_file *seq, struct ip6_s
+ 		if (!state->im)
+ 			break;
+ 		spin_lock_bh(&state->im->mca_lock);
+-		psf = state->im->mca_sources;
++		psf = rcu_dereference(state->im->mca_sources);
+ 	}
+ out:
+ 	return psf;
 -- 
 2.17.1
 
