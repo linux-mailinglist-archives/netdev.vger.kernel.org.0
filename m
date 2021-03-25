@@ -2,76 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8F634976C
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:57:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C25653497C7
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbhCYQ5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 12:57:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35732 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229676AbhCYQ4e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 12:56:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 78F9961A1E;
-        Thu, 25 Mar 2021 16:56:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616691393;
-        bh=wRaAhLbh9NCbtCyYhkmo3GWSVY0PKP/VKh1PPalCLQo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ykc3aQxKdPkFUY9o30U1Dx0+ACkFptR9D2p8CRnaHOyOOCfC7Ic0Ond8Af7QS8i6I
-         FkaWUCHDFmdeKMUIuwUIWwfj2uRzitDW2R7j0wWPJUh4bigGzW4Xwv0OxSJrVMJKsh
-         DXZ/YoXHDdVpzasxhiiaUUO0gX+fLozz0PjGiEr9aLvDkLuHfx/GDcwn0nY7uJ3+IV
-         z3Li1stcHmHU9TfTv0VYqk4iwVht8Bra+Sp2fxGT7ZXQ6YL8wrYqx4zoOP++4X0K/u
-         nOlXNPbRBliYLG4U98fz/G8EPMPToCpi/gK18oYcMFLO6G1aRbPopCz4zjZchin1uS
-         YTHK+zGowi0kA==
-Date:   Thu, 25 Mar 2021 17:56:29 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
-Subject: Re: [PATCH net-next v2 11/12] net: phy: marvell10g: print exact
- model
-Message-ID: <20210325175629.7e670f34@thinkpad>
-In-Reply-To: <20210325155452.GO1463@shell.armlinux.org.uk>
-References: <20210325131250.15901-1-kabel@kernel.org>
-        <20210325131250.15901-12-kabel@kernel.org>
-        <20210325155452.GO1463@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S229981AbhCYRVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 13:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229547AbhCYRVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 13:21:03 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A4CDC06174A;
+        Thu, 25 Mar 2021 10:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=hPUcNfmFYXF+F9jzXnSZaB8Uasyr3U6TOgw5rvhcYrY=; b=Pju/W9tTFQ8NqKnBc9hn5aiZf7
+        5MZdWFrRCsSJeG3WwZKteFexx8AGhGs4v7gUv7LPSO6KXE5rTBOWY4VCYnyfvdl+i68DpHbmFVVNW
+        4sqbp1+2uQXcSeRp4qqFx+zdEx1AcG6LiG1laL7bmSjpmQHBFHK5apmvAchS55xwRqdVeRXYTh2LZ
+        Lqr/4n132NWt4qd+JhVgW2F8+HaRDwM9mkNUHghhnaH4ARrybguOkg2ynm3g2YewZnALnBGem24Ne
+        D4T4Ts/us/WD9vLPbLqnI6UK4GIu0Qe72p1s1w79kFgdSq1sNT5jJXcZJ6twV+CRSaF4/UP0q8/bb
+        zYaL1EAA==;
+Received: from [2601:1c0:6280:3f0::3ba4]
+        by desiato.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lPTfH-001tq9-7b; Thu, 25 Mar 2021 17:20:59 +0000
+Subject: Re: [PATCH] Bluetooth: L2CAP: Rudimentary typo fixes
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210325043544.29248-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <2c93a1a3-2717-29ef-4fc1-b41c61e02780@infradead.org>
+Date:   Thu, 25 Mar 2021 10:20:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210325043544.29248-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Mar 2021 15:54:52 +0000
-Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+On 3/24/21 9:35 PM, Bhaskar Chowdhury wrote:
+> 
+> s/minium/minimum/
+> s/procdure/procedure/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-> On Thu, Mar 25, 2021 at 02:12:49PM +0100, Marek Beh=C3=BAn wrote:
-> > @@ -443,12 +446,24 @@ static int mv3310_probe(struct phy_device *phydev)
-> > =20
-> >  	switch (phydev->drv->phy_id) {
-> >  	case MARVELL_PHY_ID_88X3310:
-> > +		ret =3D phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_XGSTAT);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		has_macsec =3D !(ret & MV_PMA_XGSTAT_NO_MACSEC);
-> > +
-> >  		if (nports =3D=3D 4)
-> >  			priv->model =3D MV_MODEL_88X3340;
-> >  		else if (nports =3D=3D 1)
-> >  			priv->model =3D MV_MODEL_88X3310;
-> >  		break; =20
->=20
-> The 88X3310 and 88X3340 can be differentiated by bit 3 in the revision.
-> In other words, 88X3310 is 0x09a0..0x09a7, and 88X3340 is
-> 0x09a8..0x09af. We could add a separate driver structure, which would
-> then allow the kernel to print a more specific string via standard
-> methods, like we do for other PHYs. Not sure whether that would work
-> for the 88X21x0 family though.
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-OK I will look into this. What are your thoughts on the other patches?
+> ---
+>  net/bluetooth/l2cap_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> index 72c2f5226d67..b38e80a0e819 100644
+> --- a/net/bluetooth/l2cap_core.c
+> +++ b/net/bluetooth/l2cap_core.c
+> @@ -1690,7 +1690,7 @@ static void l2cap_le_conn_ready(struct l2cap_conn *conn)
+>  		smp_conn_security(hcon, hcon->pending_sec_level);
+> 
+>  	/* For LE slave connections, make sure the connection interval
+> -	 * is in the range of the minium and maximum interval that has
+> +	 * is in the range of the minimum and maximum interval that has
+>  	 * been configured for this connection. If not, then trigger
+>  	 * the connection update procedure.
+>  	 */
+> @@ -7542,7 +7542,7 @@ static void l2cap_data_channel(struct l2cap_conn *conn, u16 cid,
+>  	BT_DBG("chan %p, len %d", chan, skb->len);
+> 
+>  	/* If we receive data on a fixed channel before the info req/rsp
+> -	 * procdure is done simply assume that the channel is supported
+> +	 * procedure is done simply assume that the channel is supported
+>  	 * and mark it as ready.
+>  	 */
+>  	if (chan->chan_type == L2CAP_CHAN_FIXED)
+> --
 
-Marek
+
+-- 
+~Randy
+
