@@ -2,48 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4100F349AE8
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 21:17:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59ADB349AFC
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 21:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbhCYURJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 16:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbhCYURC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 16:17:02 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B84C06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 13:17:02 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id D2B4B4D25213B;
-        Thu, 25 Mar 2021 13:17:00 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 13:16:57 -0700 (PDT)
-Message-Id: <20210325.131657.226015113506997776.davem@davemloft.net>
-To:     linux@roeck-us.net
-Cc:     yangbo.lu@nxp.com, netdev@vger.kernel.org, richardcochran@gmail.com
-Subject: Re: [PATCH] ptp_qoriq: fix overflow in ptp_qoriq_adjfine() u64
- calcalation
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210325102307.GA163632@roeck-us.net>
-References: <20210323080229.28283-1-yangbo.lu@nxp.com>
-        <20210325102307.GA163632@roeck-us.net>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S230207AbhCYU2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 16:28:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32154 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229833AbhCYU2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 16:28:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616704105;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mzd7N7glHdCdA+MLUC2WowC34WAEzmgYDTepXDCp7BQ=;
+        b=dYkgRzozPuInvS9FhoGuQ6u2iLiN02bvdj6jjThI76iw2t+Gn2eNWxiOTufWrS15IKkxNk
+        ZLv92ajjVyCBt/I/GWp7gfSw/5Cy3iNpIcuvGAKXCfO3DIZduE+74zSJCdCBcZmYOwmIjf
+        KXYfEFBqM79x2LQT7/Q8LZ4eoa5zWLs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-288-Uh2U5tAOPzWJkE-VPdWjRA-1; Thu, 25 Mar 2021 16:28:21 -0400
+X-MC-Unique: Uh2U5tAOPzWJkE-VPdWjRA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 117D1CC621;
+        Thu, 25 Mar 2021 20:28:20 +0000 (UTC)
+Received: from maya.cloud.tilaa.com (unknown [10.36.110.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D7A6C60939;
+        Thu, 25 Mar 2021 20:28:19 +0000 (UTC)
+Received: from elisabeth (032-140-100-005.ip-addr.inexio.net [5.100.140.32])
+        by maya.cloud.tilaa.com (Postfix) with ESMTPSA id 24B2440098;
+        Thu, 25 Mar 2021 21:28:17 +0100 (CET)
+Date:   Thu, 25 Mar 2021 21:28:14 +0100
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, echaudro@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/2] net: do not modify the shared tunnel info when
+ PMTU triggers an ICMP reply
+Message-ID: <20210325212806.1ae8fec5@elisabeth>
+In-Reply-To: <20210325153533.770125-1-atenart@kernel.org>
+References: <20210325153533.770125-1-atenart@kernel.org>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 25 Mar 2021 13:17:01 -0700 (PDT)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guenter Roeck <linux@roeck-us.net>
-Date: Thu, 25 Mar 2021 03:23:07 -0700
+On Thu, 25 Mar 2021 16:35:31 +0100
+Antoine Tenart <atenart@kernel.org> wrote:
 
-> mul_u64_u64_div_u64() is not exported. As result, every build with
-> CONFIG_PTP_1588_CLOCK_QORIQ=m (ie every allmodconfig build) fails with:
+> Hi,
 > 
-> ERROR: modpost: "mul_u64_u64_div_u64" [drivers/ptp/ptp-qoriq.ko] undefined!
+> The series fixes an issue were a shared ip_tunnel_info is modified when
+> PMTU triggers an ICMP reply in vxlan and geneve, making following
+> packets in that flow to have a wrong destination address if the flow
+> isn't updated. A detailled information is given in each of the two
+> commits.
 > 
-> or a similar error.
+> This was tested manually with OVS and I ran the PTMU selftests with
+> kmemleak enabled (all OK, none was skipped).
+> 
+> Thanks!
+> Antoine
+> 
+> Antoine Tenart (2):
+>   vxlan: do not modify the shared tunnel info when PMTU triggers an ICMP
+>     reply
+>   geneve: do not modify the shared tunnel info when PMTU triggers an
+>     ICMP reply
 
-I fixed this with a follow-up commit to export the symbol.
+For the series,
+
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+
+Thanks for fixing this!
+
+-- 
+Stefano
+
