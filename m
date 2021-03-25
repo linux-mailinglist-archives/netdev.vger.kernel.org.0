@@ -2,81 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F0F3492FF
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C126349307
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:27:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbhCYNVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:21:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47074 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229764AbhCYNVe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 09:21:34 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lPPvX-00CxTf-QS; Thu, 25 Mar 2021 14:21:31 +0100
-Date:   Thu, 25 Mar 2021 14:21:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Hariprasad Kelam <hkelam@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 0/8] configuration support for switch headers &
- phy
-Message-ID: <YFyOW5X0Nrjz8w/v@lunn.ch>
-References: <MWHPR18MB14217B983EFC521DAA2EEAD2DE649@MWHPR18MB1421.namprd18.prod.outlook.com>
- <YFpO7n9uDt167ANk@lunn.ch>
- <CA+sq2CeT2m2QcrzSn6g5rxUfmJDVQqjYFayW+bcuopCCoYuQ6Q@mail.gmail.com>
- <YFyHKqUpG9th+F62@lunn.ch>
- <CA+sq2CfvscPPNTq4PR-6hjYhQuj=u2nmLa0Jq2cKRNCA-PypGQ@mail.gmail.com>
+        id S230213AbhCYN02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 09:26:28 -0400
+Received: from outbound-smtp16.blacknight.com ([46.22.139.233]:40767 "EHLO
+        outbound-smtp16.blacknight.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229764AbhCYN0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:26:00 -0400
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp16.blacknight.com (Postfix) with ESMTPS id 684521C362A
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 13:25:58 +0000 (GMT)
+Received: (qmail 25209 invoked from network); 25 Mar 2021 13:25:58 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.22.4])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 25 Mar 2021 13:25:58 -0000
+Date:   Thu, 25 Mar 2021 13:25:56 +0000
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Subject: Re: [PATCH 0/9 v6] Introduce a bulk order-0 page allocator with two
+ in-tree users
+Message-ID: <20210325132556.GS3697@techsingularity.net>
+References: <20210325114228.27719-1-mgorman@techsingularity.net>
+ <20210325125001.GW1719932@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <CA+sq2CfvscPPNTq4PR-6hjYhQuj=u2nmLa0Jq2cKRNCA-PypGQ@mail.gmail.com>
+In-Reply-To: <20210325125001.GW1719932@casper.infradead.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 06:32:12PM +0530, Sunil Kovvuri wrote:
-> On Thu, Mar 25, 2021 at 6:20 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > > So you completely skipped how this works with mv88e6xxx or
-> > > > prestera. If you need this private flag for some out of mainline
-> > > > Marvell SDK, it is very unlikely to be accepted.
-> > > >
-> > > >         Andrew
-> > >
-> > > What we are trying to do here has no dependency on DSA drivers and
-> > > neither impacts that functionality.
-> >
-> > So this is an indirect way of saying: Yes, this is for some out of
-> > mainline Marvell SDK.
-> >
-> > > Here we are just notifying the HW to parse the packets properly.
-> >
-> > But the correct way for this to happen is probably some kernel
-> > internal API between the MAC and the DSA driver. Mainline probably has
-> > no need for this private flag.
-> >
-> >    Andrew
+On Thu, Mar 25, 2021 at 12:50:01PM +0000, Matthew Wilcox wrote:
+> On Thu, Mar 25, 2021 at 11:42:19AM +0000, Mel Gorman wrote:
+> > This series introduces a bulk order-0 page allocator with sunrpc and
+> > the network page pool being the first users. The implementation is not
+> > efficient as semantics needed to be ironed out first. If no other semantic
+> > changes are needed, it can be made more efficient.  Despite that, this
+> > is a performance-related for users that require multiple pages for an
+> > operation without multiple round-trips to the page allocator. Quoting
+> > the last patch for the high-speed networking use-case
+> > 
+> >             Kernel          XDP stats       CPU     pps           Delta
+> >             Baseline        XDP-RX CPU      total   3,771,046       n/a
+> >             List            XDP-RX CPU      total   3,940,242    +4.49%
+> >             Array           XDP-RX CPU      total   4,249,224   +12.68%
+> > 
+> > >From the SUNRPC traces of svc_alloc_arg()
+> > 
+> > 	Single page: 25.007 us per call over 532,571 calls
+> > 	Bulk list:    6.258 us per call over 517,034 calls
+> > 	Bulk array:   4.590 us per call over 517,442 calls
+> > 
+> > Both potential users in this series are corner cases (NFS and high-speed
+> > networks) so it is unlikely that most users will see any benefit in the
+> > short term. Other potential other users are batch allocations for page
+> > cache readahead, fault around and SLUB allocations when high-order pages
+> > are unavailable. It's unknown how much benefit would be seen by converting
+> > multiple page allocation calls to a single batch or what difference it may
+> > make to headline performance.
 > 
-> Didn't get why you say so.
-> HW expects some info from SW to do the packet parsing properly and
-> this is specific to this hardware.
+> We have a third user, vmalloc(), with a 16% perf improvement.  I know the
+> email says 21% but that includes the 5% improvement from switching to
+> kvmalloc() to allocate area->pages.
+> 
+> https://lore.kernel.org/linux-mm/20210323133948.GA10046@pc638.lan/
+> 
 
-Anything which needs out of mainline code is going to be rejected,
-unless you can show there is an in mainline use case as well. Which is
-why i keep pointing you to mv88e6xxx and prestira. That provides the
-necessary {E}DSA tags. You have an mv88e6xxx and prestira switch being
-controlled by Linux with DSA tagged frames flowing out of it into your
-MAC driver. What is the big picture use case that requires this
-private flag to enable DSA parsing? Why don't the MAC driver and the
-DSA driver just talk to each other, and setup the parsing?
+That's fairly promising. Assuming the bulk allocator gets merged, it would
+make sense to add vmalloc on top. That's for bringing it to my attention
+because it's far more relevant than my imaginary potential use cases.
 
-	Andrew
+> I don't know how many _frequent_ vmalloc users we have that will benefit
+> from this, but it's probably more than will benefit from improvements
+> to 200Gbit networking performance.
+
+I think it was 100Gbit being looked at but your point is still valid and
+there is no harm in incrementally improving over time.
+
+-- 
+Mel Gorman
+SUSE Labs
