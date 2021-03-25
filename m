@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97DE7349869
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F43534986B
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 18:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbhCYRjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 13:39:49 -0400
+        id S230287AbhCYRju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 13:39:50 -0400
 Received: from mga03.intel.com ([134.134.136.65]:27389 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230158AbhCYRjc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 13:39:32 -0400
-IronPort-SDR: tyxI3tnLX1ZY/Kz6xNDwpk7NLtUUccp2zyud7aKm5WL2ac3lG56P0sAvn+2w2AvdgH5ZBSOZpW
- F2nZVRFJbdAA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="191016811"
+        id S229904AbhCYRjf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 13:39:35 -0400
+IronPort-SDR: jYjcAwswRfsXvAdnHU0SeccJTcX2AC1B8XG5VUwoNc+evKWVT09mITW6BZnTe4ULaElTbzsDIV
+ RZ0ZXw32Sv4A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="191016825"
 X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
-   d="scan'208";a="191016811"
+   d="scan'208";a="191016825"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2021 10:39:31 -0700
-IronPort-SDR: idDEw6/SLDRBSfuUo9zkdddEyF/KbB7bFcOQUOTvCGZqB1Nc1z3SDIM3+voY4f2L1dDS5byivf
- bPb0NwBbKuBg==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2021 10:39:35 -0700
+IronPort-SDR: DfFE/CNkxPsTA0HKaarl8JglBVFfo1iBIp+P81yFoqESPQRL5rPHTGTWl1GslCtg219L88B68r
+ yiofeYq4UFNw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; 
-   d="scan'208";a="416112312"
+   d="scan'208";a="416112340"
 Received: from climb.png.intel.com ([10.221.118.165])
-  by orsmga008.jf.intel.com with ESMTP; 25 Mar 2021 10:39:28 -0700
+  by orsmga008.jf.intel.com with ESMTP; 25 Mar 2021 10:39:31 -0700
 From:   Voon Weifeng <weifeng.voon@intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
@@ -39,9 +39,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>,
         Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH v2 net-next 3/5] net: stmmac: introduce MSI Interrupt routines for mac, safety, RX & TX
-Date:   Fri, 26 Mar 2021 01:39:14 +0800
-Message-Id: <20210325173916.13203-4-weifeng.voon@intel.com>
+Subject: [PATCH v2 net-next 4/5] stmmac: intel: add support for multi-vector msi and msi-x
+Date:   Fri, 26 Mar 2021 01:39:15 +0800
+Message-Id: <20210325173916.13203-5-weifeng.voon@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210325173916.13203-1-weifeng.voon@intel.com>
 References: <20210325173916.13203-1-weifeng.voon@intel.com>
@@ -51,614 +51,193 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ong Boon Leong <boon.leong.ong@intel.com>
 
-Now we introduce MSI interrupt service routines and hook these routines
-up if stmmac_open() sees valid irq line being requested:-
+Intel mgbe controller supports multi-vector interrupts:
+msi_rx_vec	0,2,4,6,8,10,12,14
+msi_tx_vec	1,3,5,7,9,11,13,15
+msi_sfty_ue_vec	26
+msi_sfty_ce_vec	27
+msi_lpi_vec	28
+msi_mac_vec	29
 
-stmmac_mac_interrupt()    :- MAC (dev->irq), WOL (wol_irq), LPI (lpi_irq)
-stmmac_safety_interrupt() :- Safety Feat Correctible Error (sfty_ce_irq)
-                             & Uncorrectible Error (sfty_ue_irq)
-stmmac_msi_intr_rx()      :- For all RX MSI irq (rx_irq)
-stmmac_msi_intr_tx()      :- For all TX MSI irq (tx_irq)
-
-Each of IRQs will have its unique name so that we can differentiate
-them easily under /proc/interrupts.
+During probe(), the driver will starts with request allocation for
+multi-vector interrupts. If it fails, then it will automatically fallback
+to request allocation for single interrupts.
 
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Co-developed-by: Voon Weifeng <weifeng.voon@intel.com>
 Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
 Changes:
 v1 -> v2
- - Refactor out a huge if statement into separate subfunctions.
- - Removed the netdev_info for every successful request of IRQs.
- - Return 0 for each successful request of IRQs.
+ - Moved the msi tx/rx base vector check before alloc irq
+ - Restuctured the clean up code after fail to alloc irq and fail to probe
+ - Unprepared and unregistered the stmmac-clk if fail to alloc irq
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h  |  15 +
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  16 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 437 ++++++++++++++++--
- include/linux/stmmac.h                        |   8 +
- 4 files changed, 431 insertions(+), 45 deletions(-)
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 120 ++++++++++++++++--
+ 1 file changed, 111 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 5afb36a5c94c..c54a56b732b3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -259,6 +259,9 @@ struct stmmac_safety_stats {
- #define DMA_HW_FEAT_ACTPHYIF	0x70000000	/* Active/selected PHY iface */
- #define DEFAULT_DMA_PBL		8
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 992294d25706..08b4852eed4c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -492,6 +492,14 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	plat->has_crossts = true;
+ 	plat->crosststamp = intel_crosststamp;
  
-+/* MSI defines */
-+#define STMMAC_MSI_VEC_MAX	32
++	/* Setup MSI vector offset specific to Intel mGbE controller */
++	plat->msi_mac_vec = 29;
++	plat->msi_lpi_vec = 28;
++	plat->msi_sfty_ce_vec = 27;
++	plat->msi_sfty_ue_vec = 26;
++	plat->msi_rx_base_vec = 0;
++	plat->msi_tx_base_vec = 1;
 +
- /* PCS status and mask defines */
- #define	PCS_ANE_IRQ		BIT(2)	/* PCS Auto-Negotiation */
- #define	PCS_LINK_IRQ		BIT(1)	/* PCS Link */
-@@ -315,6 +318,18 @@ enum dma_irq_dir {
- 	DMA_DIR_RXTX = 0x3,
- };
- 
-+enum request_irq_err {
-+	REQ_IRQ_ERR_ALL,
-+	REQ_IRQ_ERR_TX,
-+	REQ_IRQ_ERR_RX,
-+	REQ_IRQ_ERR_SFTY_UE,
-+	REQ_IRQ_ERR_SFTY_CE,
-+	REQ_IRQ_ERR_LPI,
-+	REQ_IRQ_ERR_WOL,
-+	REQ_IRQ_ERR_MAC,
-+	REQ_IRQ_ERR_NO,
-+};
-+
- /* EEE and LPI defines */
- #define	CORE_IRQ_TX_PATH_IN_LPI_MODE	(1 << 0)
- #define	CORE_IRQ_TX_PATH_EXIT_LPI_MODE	(1 << 1)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 4faad331a4ca..9966f6f10905 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -30,6 +30,10 @@ struct stmmac_resources {
- 	int wol_irq;
- 	int lpi_irq;
- 	int irq;
-+	int sfty_ce_irq;
-+	int sfty_ue_irq;
-+	int rx_irq[MTL_MAX_RX_QUEUES];
-+	int tx_irq[MTL_MAX_TX_QUEUES];
- };
- 
- struct stmmac_tx_info {
-@@ -225,6 +229,18 @@ struct stmmac_priv {
- 	void __iomem *mmcaddr;
- 	void __iomem *ptpaddr;
- 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
-+	int sfty_ce_irq;
-+	int sfty_ue_irq;
-+	int rx_irq[MTL_MAX_RX_QUEUES];
-+	int tx_irq[MTL_MAX_TX_QUEUES];
-+	/*irq name */
-+	char int_name_mac[IFNAMSIZ + 9];
-+	char int_name_wol[IFNAMSIZ + 9];
-+	char int_name_lpi[IFNAMSIZ + 9];
-+	char int_name_sfty_ce[IFNAMSIZ + 10];
-+	char int_name_sfty_ue[IFNAMSIZ + 10];
-+	char int_name_rx_irq[MTL_MAX_TX_QUEUES][IFNAMSIZ + 14];
-+	char int_name_tx_irq[MTL_MAX_TX_QUEUES][IFNAMSIZ + 18];
- 
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *dbgfs_dir;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index abe990b9b07b..459477db455c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -105,6 +105,11 @@ module_param(chain_mode, int, 0444);
- MODULE_PARM_DESC(chain_mode, "To use chain instead of ring mode");
- 
- static irqreturn_t stmmac_interrupt(int irq, void *dev_id);
-+/* For MSI interrupts handling */
-+static irqreturn_t stmmac_mac_interrupt(int irq, void *dev_id);
-+static irqreturn_t stmmac_safety_interrupt(int irq, void *dev_id);
-+static irqreturn_t stmmac_msi_intr_tx(int irq, void *data);
-+static irqreturn_t stmmac_msi_intr_rx(int irq, void *data);
- 
- #ifdef CONFIG_DEBUG_FS
- static const struct net_device_ops stmmac_netdev_ops;
-@@ -2986,6 +2991,260 @@ static void stmmac_hw_teardown(struct net_device *dev)
- 	clk_disable_unprepare(priv->plat->clk_ptp_ref);
+ 	return 0;
  }
  
-+static void stmmac_free_irq(struct net_device *dev,
-+			    enum request_irq_err irq_err, int irq_idx)
+@@ -776,6 +784,79 @@ static const struct stmmac_pci_info quark_info = {
+ 	.setup = quark_default_data,
+ };
+ 
++static int stmmac_config_single_msi(struct pci_dev *pdev,
++				    struct plat_stmmacenet_data *plat,
++				    struct stmmac_resources *res)
 +{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	int j;
-+
-+	switch (irq_err) {
-+	case REQ_IRQ_ERR_ALL:
-+		irq_idx = priv->plat->tx_queues_to_use;
-+		fallthrough;
-+	case REQ_IRQ_ERR_TX:
-+		for (j = irq_idx - 1; j >= 0; j--) {
-+			if (priv->tx_irq[j] > 0)
-+				free_irq(priv->tx_irq[j], &priv->tx_queue[j]);
-+		}
-+		irq_idx = priv->plat->rx_queues_to_use;
-+		fallthrough;
-+	case REQ_IRQ_ERR_RX:
-+		for (j = irq_idx - 1; j >= 0; j--) {
-+			if (priv->rx_irq[j] > 0)
-+				free_irq(priv->rx_irq[j], &priv->rx_queue[j]);
-+		}
-+
-+		if (priv->sfty_ue_irq > 0 && priv->sfty_ue_irq != dev->irq)
-+			free_irq(priv->sfty_ue_irq, dev);
-+		fallthrough;
-+	case REQ_IRQ_ERR_SFTY_UE:
-+		if (priv->sfty_ce_irq > 0 && priv->sfty_ce_irq != dev->irq)
-+			free_irq(priv->sfty_ce_irq, dev);
-+		fallthrough;
-+	case REQ_IRQ_ERR_SFTY_CE:
-+		if (priv->lpi_irq > 0 && priv->lpi_irq != dev->irq)
-+			free_irq(priv->lpi_irq, dev);
-+		fallthrough;
-+	case REQ_IRQ_ERR_LPI:
-+		if (priv->wol_irq > 0 && priv->wol_irq != dev->irq)
-+			free_irq(priv->wol_irq, dev);
-+		fallthrough;
-+	case REQ_IRQ_ERR_WOL:
-+		free_irq(dev->irq, dev);
-+		fallthrough;
-+	case REQ_IRQ_ERR_MAC:
-+	case REQ_IRQ_ERR_NO:
-+		/* If MAC IRQ request error, no more IRQ to free */
-+		break;
-+	}
-+}
-+
-+static int stmmac_request_irq_multi_msi(struct net_device *dev)
-+{
-+	enum request_irq_err irq_err = REQ_IRQ_ERR_NO;
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	int irq_idx = 0;
-+	char *int_name;
-+	int ret;
-+	int i;
-+
-+	/* For common interrupt */
-+	int_name = priv->int_name_mac;
-+	sprintf(int_name, "%s:%s", dev->name, "mac");
-+	ret = request_irq(dev->irq, stmmac_mac_interrupt,
-+			  0, int_name, dev);
-+	if (unlikely(ret < 0)) {
-+		netdev_err(priv->dev,
-+			   "%s: alloc mac MSI %d (error: %d)\n",
-+			   __func__, dev->irq, ret);
-+		irq_err = REQ_IRQ_ERR_MAC;
-+		goto irq_error;
-+	}
-+
-+	/* Request the Wake IRQ in case of another line
-+	 * is used for WoL
-+	 */
-+	if (priv->wol_irq > 0 && priv->wol_irq != dev->irq) {
-+		int_name = priv->int_name_wol;
-+		sprintf(int_name, "%s:%s", dev->name, "wol");
-+		ret = request_irq(priv->wol_irq,
-+				  stmmac_mac_interrupt,
-+				  0, int_name, dev);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: alloc wol MSI %d (error: %d)\n",
-+				   __func__, priv->wol_irq, ret);
-+			irq_err = REQ_IRQ_ERR_WOL;
-+			goto irq_error;
-+		}
-+	}
-+
-+	/* Request the LPI IRQ in case of another line
-+	 * is used for LPI
-+	 */
-+	if (priv->lpi_irq > 0 && priv->lpi_irq != dev->irq) {
-+		int_name = priv->int_name_lpi;
-+		sprintf(int_name, "%s:%s", dev->name, "lpi");
-+		ret = request_irq(priv->lpi_irq,
-+				  stmmac_mac_interrupt,
-+				  0, int_name, dev);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: alloc lpi MSI %d (error: %d)\n",
-+				   __func__, priv->lpi_irq, ret);
-+			irq_err = REQ_IRQ_ERR_LPI;
-+			goto irq_error;
-+		}
-+	}
-+
-+	/* Request the Safety Feature Correctible Error line in
-+	 * case of another line is used
-+	 */
-+	if (priv->sfty_ce_irq > 0 && priv->sfty_ce_irq != dev->irq) {
-+		int_name = priv->int_name_sfty_ce;
-+		sprintf(int_name, "%s:%s", dev->name, "safety-ce");
-+		ret = request_irq(priv->sfty_ce_irq,
-+				  stmmac_safety_interrupt,
-+				  0, int_name, dev);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: alloc sfty ce MSI %d (error: %d)\n",
-+				   __func__, priv->sfty_ce_irq, ret);
-+			irq_err = REQ_IRQ_ERR_SFTY_CE;
-+			goto irq_error;
-+		}
-+	}
-+
-+	/* Request the Safety Feature Uncorrectible Error line in
-+	 * case of another line is used
-+	 */
-+	if (priv->sfty_ue_irq > 0 && priv->sfty_ue_irq != dev->irq) {
-+		int_name = priv->int_name_sfty_ue;
-+		sprintf(int_name, "%s:%s", dev->name, "safety-ue");
-+		ret = request_irq(priv->sfty_ue_irq,
-+				  stmmac_safety_interrupt,
-+				  0, int_name, dev);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: alloc sfty ue MSI %d (error: %d)\n",
-+				   __func__, priv->sfty_ue_irq, ret);
-+			irq_err = REQ_IRQ_ERR_SFTY_UE;
-+			goto irq_error;
-+		}
-+	}
-+
-+	/* Request Rx MSI irq */
-+	for (i = 0; i < priv->plat->rx_queues_to_use; i++) {
-+		if (priv->rx_irq[i] == 0)
-+			continue;
-+
-+		int_name = priv->int_name_rx_irq[i];
-+		sprintf(int_name, "%s:%s-%d", dev->name, "rx", i);
-+		ret = request_irq(priv->rx_irq[i],
-+				  stmmac_msi_intr_rx,
-+				  0, int_name, &priv->rx_queue[i]);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: alloc rx-%d  MSI %d (error: %d)\n",
-+				   __func__, i, priv->rx_irq[i], ret);
-+			irq_err = REQ_IRQ_ERR_RX;
-+			irq_idx = i;
-+			goto irq_error;
-+		}
-+	}
-+
-+	/* Request Tx MSI irq */
-+	for (i = 0; i < priv->plat->tx_queues_to_use; i++) {
-+		if (priv->tx_irq[i] == 0)
-+			continue;
-+
-+		int_name = priv->int_name_tx_irq[i];
-+		sprintf(int_name, "%s:%s-%d", dev->name, "tx", i);
-+		ret = request_irq(priv->tx_irq[i],
-+				  stmmac_msi_intr_tx,
-+				  0, int_name, &priv->tx_queue[i]);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: alloc tx-%d  MSI %d (error: %d)\n",
-+				   __func__, i, priv->tx_irq[i], ret);
-+			irq_err = REQ_IRQ_ERR_TX;
-+			irq_idx = i;
-+			goto irq_error;
-+		}
-+	}
-+
-+	return 0;
-+
-+irq_error:
-+	stmmac_free_irq(dev, irq_err, irq_idx);
-+	return ret;
-+}
-+
-+static int stmmac_request_irq_single(struct net_device *dev)
-+{
-+	enum request_irq_err irq_err = REQ_IRQ_ERR_NO;
-+	struct stmmac_priv *priv = netdev_priv(dev);
 +	int ret;
 +
-+	ret = request_irq(dev->irq, stmmac_interrupt,
-+			  IRQF_SHARED, dev->name, dev);
-+	if (unlikely(ret < 0)) {
-+		netdev_err(priv->dev,
-+			   "%s: ERROR: allocating the IRQ %d (error: %d)\n",
-+			   __func__, dev->irq, ret);
-+		irq_err = REQ_IRQ_ERR_MAC;
++	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
++	if (ret < 0) {
++		dev_info(&pdev->dev, "%s: Single IRQ enablement failed\n",
++			 __func__);
 +		return ret;
 +	}
 +
-+	/* Request the Wake IRQ in case of another line
-+	 * is used for WoL
-+	 */
-+	if (priv->wol_irq > 0 && priv->wol_irq != dev->irq) {
-+		ret = request_irq(priv->wol_irq, stmmac_interrupt,
-+				  IRQF_SHARED, dev->name, dev);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: ERROR: allocating the WoL IRQ %d (%d)\n",
-+				   __func__, priv->wol_irq, ret);
-+			irq_err = REQ_IRQ_ERR_WOL;
-+			return ret;
-+		}
-+	}
-+
-+	/* Request the IRQ lines */
-+	if (priv->lpi_irq > 0 && priv->lpi_irq != dev->irq) {
-+		ret = request_irq(priv->lpi_irq, stmmac_interrupt,
-+				  IRQF_SHARED, dev->name, dev);
-+		if (unlikely(ret < 0)) {
-+			netdev_err(priv->dev,
-+				   "%s: ERROR: allocating the LPI IRQ %d (%d)\n",
-+				   __func__, priv->lpi_irq, ret);
-+			irq_err = REQ_IRQ_ERR_LPI;
-+			goto irq_error;
-+		}
-+	}
++	res->irq = pci_irq_vector(pdev, 0);
++	res->wol_irq = res->irq;
++	plat->multi_msi_en = 0;
++	dev_info(&pdev->dev, "%s: Single IRQ enablement successful\n",
++		 __func__);
 +
 +	return 0;
-+
-+irq_error:
-+	stmmac_free_irq(dev, irq_err, 0);
-+	return ret;
 +}
 +
-+static int stmmac_request_irq(struct net_device *dev)
++static int stmmac_config_multi_msi(struct pci_dev *pdev,
++				   struct plat_stmmacenet_data *plat,
++				   struct stmmac_resources *res)
 +{
-+	struct stmmac_priv *priv = netdev_priv(dev);
 +	int ret;
++	int i;
 +
-+	/* Request the IRQ lines */
-+	if (priv->plat->multi_msi_en)
-+		ret = stmmac_request_irq_multi_msi(dev);
-+	else
-+		ret = stmmac_request_irq_single(dev);
++	if (plat->msi_rx_base_vec >= STMMAC_MSI_VEC_MAX ||
++	    plat->msi_tx_base_vec >= STMMAC_MSI_VEC_MAX) {
++		dev_info(&pdev->dev, "%s: Invalid RX & TX vector defined\n",
++			 __func__);
++		return -1;
++	}
 +
-+	return ret;
++	ret = pci_alloc_irq_vectors(pdev, 2, STMMAC_MSI_VEC_MAX,
++				    PCI_IRQ_MSI | PCI_IRQ_MSIX);
++	if (ret < 0) {
++		dev_info(&pdev->dev, "%s: multi MSI enablement failed\n",
++			 __func__);
++		return ret;
++	}
++
++	/* For RX MSI */
++	for (i = 0; i < plat->rx_queues_to_use; i++) {
++		res->rx_irq[i] = pci_irq_vector(pdev,
++						plat->msi_rx_base_vec + i * 2);
++	}
++
++	/* For TX MSI */
++	for (i = 0; i < plat->tx_queues_to_use; i++) {
++		res->tx_irq[i] = pci_irq_vector(pdev,
++						plat->msi_tx_base_vec + i * 2);
++	}
++
++	if (plat->msi_mac_vec < STMMAC_MSI_VEC_MAX)
++		res->irq = pci_irq_vector(pdev, plat->msi_mac_vec);
++	if (plat->msi_wol_vec < STMMAC_MSI_VEC_MAX)
++		res->wol_irq = pci_irq_vector(pdev, plat->msi_wol_vec);
++	if (plat->msi_lpi_vec < STMMAC_MSI_VEC_MAX)
++		res->lpi_irq = pci_irq_vector(pdev, plat->msi_lpi_vec);
++	if (plat->msi_sfty_ce_vec < STMMAC_MSI_VEC_MAX)
++		res->sfty_ce_irq = pci_irq_vector(pdev, plat->msi_sfty_ce_vec);
++	if (plat->msi_sfty_ue_vec < STMMAC_MSI_VEC_MAX)
++		res->sfty_ue_irq = pci_irq_vector(pdev, plat->msi_sfty_ue_vec);
++
++	plat->multi_msi_en = 1;
++	dev_info(&pdev->dev, "%s: multi MSI enablement successful\n", __func__);
++
++	return 0;
 +}
 +
  /**
-  *  stmmac_open - open entry point of the driver
-  *  @dev : pointer to the device structure.
-@@ -3077,50 +3336,15 @@ static int stmmac_open(struct net_device *dev)
- 	/* We may have called phylink_speed_down before */
- 	phylink_speed_up(priv->phylink);
+  * intel_eth_pci_probe
+  *
+@@ -833,18 +914,24 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 	plat->bsp_priv = intel_priv;
+ 	intel_priv->mdio_adhoc_addr = INTEL_MGBE_ADHOC_ADDR;
  
--	/* Request the IRQ lines */
--	ret = request_irq(dev->irq, stmmac_interrupt,
--			  IRQF_SHARED, dev->name, dev);
--	if (unlikely(ret < 0)) {
--		netdev_err(priv->dev,
--			   "%s: ERROR: allocating the IRQ %d (error: %d)\n",
--			   __func__, dev->irq, ret);
-+	ret = stmmac_request_irq(dev);
-+	if (ret)
- 		goto irq_error;
--	}
++	/* Initialize all MSI vectors to invalid so that it can be set
++	 * according to platform data settings below.
++	 * Note: MSI vector takes value from 0 upto 31 (STMMAC_MSI_VEC_MAX)
++	 */
++	plat->msi_mac_vec = STMMAC_MSI_VEC_MAX;
++	plat->msi_wol_vec = STMMAC_MSI_VEC_MAX;
++	plat->msi_lpi_vec = STMMAC_MSI_VEC_MAX;
++	plat->msi_sfty_ce_vec = STMMAC_MSI_VEC_MAX;
++	plat->msi_sfty_ue_vec = STMMAC_MSI_VEC_MAX;
++	plat->msi_rx_base_vec = STMMAC_MSI_VEC_MAX;
++	plat->msi_tx_base_vec = STMMAC_MSI_VEC_MAX;
++
+ 	ret = info->setup(pdev, plat);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+-	if (ret < 0)
+-		return ret;
 -
--	/* Request the Wake IRQ in case of another line is used for WoL */
--	if (priv->wol_irq != dev->irq) {
--		ret = request_irq(priv->wol_irq, stmmac_interrupt,
--				  IRQF_SHARED, dev->name, dev);
--		if (unlikely(ret < 0)) {
--			netdev_err(priv->dev,
--				   "%s: ERROR: allocating the WoL IRQ %d (%d)\n",
--				   __func__, priv->wol_irq, ret);
--			goto wolirq_error;
--		}
--	}
--
--	/* Request the IRQ lines */
--	if (priv->lpi_irq > 0) {
--		ret = request_irq(priv->lpi_irq, stmmac_interrupt, IRQF_SHARED,
--				  dev->name, dev);
--		if (unlikely(ret < 0)) {
--			netdev_err(priv->dev,
--				   "%s: ERROR: allocating the LPI IRQ %d (%d)\n",
--				   __func__, priv->lpi_irq, ret);
--			goto lpiirq_error;
--		}
--	}
+ 	memset(&res, 0, sizeof(res));
+ 	res.addr = pcim_iomap_table(pdev)[0];
+-	res.wol_irq = pci_irq_vector(pdev, 0);
+-	res.irq = pci_irq_vector(pdev, 0);
  
- 	stmmac_enable_all_queues(priv);
- 	netif_tx_start_all_queues(priv->dev);
+ 	if (plat->eee_usecs_rate > 0) {
+ 		u32 tx_lpi_usec;
+@@ -853,13 +940,28 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 		writel(tx_lpi_usec, res.addr + GMAC_1US_TIC_COUNTER);
+ 	}
  
- 	return 0;
- 
--lpiirq_error:
--	if (priv->wol_irq != dev->irq)
--		free_irq(priv->wol_irq, dev);
--wolirq_error:
--	free_irq(dev->irq, dev);
- irq_error:
- 	phylink_stop(priv->phylink);
- 
-@@ -3170,11 +3394,7 @@ static int stmmac_release(struct net_device *dev)
- 		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
- 
- 	/* Free the IRQ lines */
--	free_irq(dev->irq, dev);
--	if (priv->wol_irq != dev->irq)
--		free_irq(priv->wol_irq, dev);
--	if (priv->lpi_irq > 0)
--		free_irq(priv->lpi_irq, dev);
-+	stmmac_free_irq(dev, REQ_IRQ_ERR_ALL, 0);
- 
- 	if (priv->eee_enabled) {
- 		priv->tx_path_in_lpi_mode = false;
-@@ -4477,15 +4697,136 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+static irqreturn_t stmmac_mac_interrupt(int irq, void *dev_id)
-+{
-+	struct net_device *dev = (struct net_device *)dev_id;
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+
-+	if (unlikely(!dev)) {
-+		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Check if adapter is up */
-+	if (test_bit(STMMAC_DOWN, &priv->state))
-+		return IRQ_HANDLED;
-+
-+	/* To handle Common interrupts */
-+	stmmac_common_interrupt(priv);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t stmmac_safety_interrupt(int irq, void *dev_id)
-+{
-+	struct net_device *dev = (struct net_device *)dev_id;
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+
-+	if (unlikely(!dev)) {
-+		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Check if adapter is up */
-+	if (test_bit(STMMAC_DOWN, &priv->state))
-+		return IRQ_HANDLED;
-+
-+	/* Check if a fatal error happened */
-+	stmmac_safety_feat_interrupt(priv);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t stmmac_msi_intr_tx(int irq, void *data)
-+{
-+	struct stmmac_tx_queue *tx_q = (struct stmmac_tx_queue *)data;
-+	int chan = tx_q->queue_index;
-+	struct stmmac_priv *priv;
-+	int status;
-+
-+	priv = container_of(tx_q, struct stmmac_priv, tx_queue[chan]);
-+
-+	if (unlikely(!data)) {
-+		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Check if adapter is up */
-+	if (test_bit(STMMAC_DOWN, &priv->state))
-+		return IRQ_HANDLED;
-+
-+	status = stmmac_napi_check(priv, chan, DMA_DIR_TX);
-+
-+	if (unlikely(status & tx_hard_error_bump_tc)) {
-+		/* Try to bump up the dma threshold on this failure */
-+		if (unlikely(priv->xstats.threshold != SF_DMA_MODE) &&
-+		    tc <= 256) {
-+			tc += 64;
-+			if (priv->plat->force_thresh_dma_mode)
-+				stmmac_set_dma_operation_mode(priv,
-+							      tc,
-+							      tc,
-+							      chan);
-+			else
-+				stmmac_set_dma_operation_mode(priv,
-+							      tc,
-+							      SF_DMA_MODE,
-+							      chan);
-+			priv->xstats.threshold = tc;
++	ret = stmmac_config_multi_msi(pdev, plat, &res);
++	if (ret) {
++		ret = stmmac_config_single_msi(pdev, plat, &res);
++		if (ret) {
++			dev_err(&pdev->dev, "%s: ERROR: failed to enable IRQ\n",
++				__func__);
++			goto err_alloc_irq;
 +		}
-+	} else if (unlikely(status == tx_hard_error)) {
-+		stmmac_tx_err(priv, chan);
 +	}
 +
-+	return IRQ_HANDLED;
-+}
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat, &res);
+ 	if (ret) {
+-		pci_free_irq_vectors(pdev);
+-		clk_disable_unprepare(plat->stmmac_clk);
+-		clk_unregister_fixed_rate(plat->stmmac_clk);
++		goto err_dvr_probe;
+ 	}
+ 
++	return 0;
 +
-+static irqreturn_t stmmac_msi_intr_rx(int irq, void *data)
-+{
-+	struct stmmac_rx_queue *rx_q = (struct stmmac_rx_queue *)data;
-+	int chan = rx_q->queue_index;
-+	struct stmmac_priv *priv;
-+
-+	priv = container_of(rx_q, struct stmmac_priv, rx_queue[chan]);
-+
-+	if (unlikely(!data)) {
-+		netdev_err(priv->dev, "%s: invalid dev pointer\n", __func__);
-+		return IRQ_NONE;
-+	}
-+
-+	/* Check if adapter is up */
-+	if (test_bit(STMMAC_DOWN, &priv->state))
-+		return IRQ_HANDLED;
-+
-+	stmmac_napi_check(priv, chan, DMA_DIR_RX);
-+
-+	return IRQ_HANDLED;
-+}
-+
- #ifdef CONFIG_NET_POLL_CONTROLLER
- /* Polling receive - used by NETCONSOLE and other diagnostic tools
-  * to allow network I/O with interrupts disabled.
-  */
- static void stmmac_poll_controller(struct net_device *dev)
- {
--	disable_irq(dev->irq);
--	stmmac_interrupt(dev->irq, dev);
--	enable_irq(dev->irq);
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	int i;
-+
-+	/* If adapter is down, do nothing */
-+	if (test_bit(STMMAC_DOWN, &priv->state))
-+		return;
-+
-+	if (priv->plat->multi_msi_en) {
-+		for (i = 0; i < priv->plat->rx_queues_to_use; i++)
-+			stmmac_msi_intr_rx(0, &priv->rx_queue[i]);
-+
-+		for (i = 0; i < priv->plat->tx_queues_to_use; i++)
-+			stmmac_msi_intr_tx(0, &priv->tx_queue[i]);
-+	} else {
-+		disable_irq(dev->irq);
-+		stmmac_interrupt(dev->irq, dev);
-+		enable_irq(dev->irq);
-+	}
++err_dvr_probe:
++	pci_free_irq_vectors(pdev);
++err_alloc_irq:
++	clk_disable_unprepare(plat->stmmac_clk);
++	clk_unregister_fixed_rate(plat->stmmac_clk);
+ 	return ret;
  }
- #endif
  
-@@ -5283,6 +5624,12 @@ int stmmac_dvr_probe(struct device *device,
- 	priv->dev->irq = res->irq;
- 	priv->wol_irq = res->wol_irq;
- 	priv->lpi_irq = res->lpi_irq;
-+	priv->sfty_ce_irq = res->sfty_ce_irq;
-+	priv->sfty_ue_irq = res->sfty_ue_irq;
-+	for (i = 0; i < MTL_MAX_RX_QUEUES; i++)
-+		priv->rx_irq[i] = res->rx_irq[i];
-+	for (i = 0; i < MTL_MAX_TX_QUEUES; i++)
-+		priv->tx_irq[i] = res->tx_irq[i];
- 
- 	if (!IS_ERR_OR_NULL(res->mac))
- 		memcpy(priv->dev->dev_addr, res->mac, ETH_ALEN);
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index febdb43d27e5..afc12b9385db 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -237,5 +237,13 @@ struct plat_stmmacenet_data {
- 	struct pci_dev *pdev;
- 	bool has_crossts;
- 	int int_snapshot_num;
-+	bool multi_msi_en;
-+	int msi_mac_vec;
-+	int msi_wol_vec;
-+	int msi_lpi_vec;
-+	int msi_sfty_ce_vec;
-+	int msi_sfty_ue_vec;
-+	int msi_rx_base_vec;
-+	int msi_tx_base_vec;
- };
- #endif
 -- 
 2.17.1
 
