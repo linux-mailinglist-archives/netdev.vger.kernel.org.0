@@ -2,117 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0499C348DF1
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 11:27:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32487348DF6
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 11:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbhCYK0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 06:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbhCYK0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 06:26:23 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC51FC06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 03:26:22 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id m21-20020a9d7ad50000b02901b83efc84a0so1418184otn.10
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 03:26:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=oOSO3gtp1KeT2tdcKr9tnUm5Fcr5uXjV2hxN+UXFQDY=;
-        b=nr2lmisAHr8h6q7zUYEZhJQHtSMhfspaQY+TSWLBrJqMr9L5/nJT8KzvLtwHYDm74Z
-         Cj7r9qBZzhGpRzfQdag/c2uFqBFlGxop8dPBZUgrVxH3tdMu7R053yQDiprk2QqCc/Ju
-         KKajz+KXAQeAWIu6AJ5ykeCWoCYB0dHcWTdNlch7Seh6IRIIVUSWxjPDV788TTfKPyfJ
-         o9hPXk5fcCDhckvYaHsQGLCe/zhvgforeo78BClMgZ8Hsvut5gtEKi/gtNYLD6yNgaeN
-         LiN21WFHVaw2FN6Y4u4+7A852vSYXkwzBbn3y0RcNzI0UCiJOgBc7JUSK2Pi/en8LKI6
-         iM8Q==
+        id S230177AbhCYK12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 06:27:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49655 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230053AbhCYK1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 06:27:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616668021;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YnnJOjLqRsNOiRCl1VmxWYaDtnFLgBh+G/O9tqpx3N4=;
+        b=eQBdZo0ZAFBCEb79grPnk85P9vptY2tbCFgwjUTqUW7IhML5wO6/qWqZ/cZRv/KeEcshyb
+        XjaEx/+lScB3AwZyapjoQF7KfRc3zut3hc43eAVMmXg/QDHZGkGE2j82E+NmsnQL6fBVNk
+        73w75ob4bN3PIrUDeIOEjvN3jpH+H/c=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-437-G9cBs4XgMx2GoQEmoALU7w-1; Thu, 25 Mar 2021 06:26:59 -0400
+X-MC-Unique: G9cBs4XgMx2GoQEmoALU7w-1
+Received: by mail-wm1-f70.google.com with SMTP id k132so1498571wma.1
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 03:26:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oOSO3gtp1KeT2tdcKr9tnUm5Fcr5uXjV2hxN+UXFQDY=;
-        b=EIB62L4qxuDNw2FjqN0eMyy48q8iVB9lpj+VTuLd4d/MIDM5+aXQ4DN1KOr51SLsKC
-         bD7asfk4D1B+o81u2nqpWuz3AM0dxrrCjPqMVuk3RYaoCs7G+LIL0LP/nPB1xL9lnnLp
-         A3mNdVYryHhE+Vy+xGnHezTl851G2ATtqD8BUgjA7S2WdIZ+879zt/VPQXh0pWXrqFN1
-         RoK4ak4yQRmc57AGGhtvywmU/I8uHZRcD8T5HhM9ANqDBB0+uZT+N5yTvYFO7TVWqNr7
-         RJ1q0kTWKGj0gP8qKRkYz4aCNnhssYco2rRJJ/mAJ5R+/j7q2/awvOuFNjsdRl12BW9A
-         CgTw==
-X-Gm-Message-State: AOAM533EyWfADpOSN4p3lEjF2Y3qtbjpEc8WgQ4n0rToe6GRe72QK90j
-        vNywalYAF8Dggh5PnN+G1+E=
-X-Google-Smtp-Source: ABdhPJzJHdnkAjFYliWkZBoeyJ2ZteQxE3iMSus5nXUEiN8sQSP9RwWf0olY5BEjXjI62vdFxSrpvA==
-X-Received: by 2002:a05:6830:15c5:: with SMTP id j5mr6891422otr.274.1616667981978;
-        Thu, 25 Mar 2021 03:26:21 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m19sm1185020oop.6.2021.03.25.03.26.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 25 Mar 2021 03:26:21 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 25 Mar 2021 03:26:20 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH] ptp_qoriq: fix overflow in ptp_qoriq_adjfine() u64
- calcalation
-Message-ID: <20210325102620.GA121097@roeck-us.net>
-References: <20210323080229.28283-1-yangbo.lu@nxp.com>
- <20210325102307.GA163632@roeck-us.net>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YnnJOjLqRsNOiRCl1VmxWYaDtnFLgBh+G/O9tqpx3N4=;
+        b=XUOYVvCqYDGMuw1QLGvRVcAOsvw3UNUuCm7J8ZmQ2eHUJTDZsGK3OWh4Se3yy4Rf43
+         r51lBbcmr03YZVKEC8w+RRGB8xie9F0omNSZzLhPFNW+2wMIq3iObvD/smJ2lPjcoV+F
+         VvwuZ05PDNK4H2betHSjElV4oc7KdKtST6DjZWaWTncikc9rMs15LAG9ghQt073StzR4
+         9WcWdxMl8KWZDZvzA7sIDDdbdgqk7mN923AIxeZ78yPiGZk9iumzfajvuR+KccRY5Wbg
+         I++XDHaRbs6kANjVxaOA2//DyoBCbYbMBA1OOZBya/0HKlYNtRBTNIbkRAlaKYmb+Jp7
+         VX1g==
+X-Gm-Message-State: AOAM532W6JXlsRgf+zKc9DpalwE69o7mnud2t8UAmbT7u9rqhbioMknc
+        imduXhu7hVyFVhWEOcp6oLdchYNzJB5DLS7RXwvvbKQkVeS6gteUJ4l27q39J8k/A7PxDojyidd
+        Sdcd5DscnvBmG+BlS
+X-Received: by 2002:adf:fd48:: with SMTP id h8mr8238598wrs.229.1616668018214;
+        Thu, 25 Mar 2021 03:26:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwBTujIWNkDzf/wNwRNzZd57i5I9jgY+9t+YqLrMxkr/bkSu6aLA/urK8lINmqRAJa9Wu/cyw==
+X-Received: by 2002:adf:fd48:: with SMTP id h8mr8238578wrs.229.1616668018030;
+        Thu, 25 Mar 2021 03:26:58 -0700 (PDT)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id p17sm5370291wmq.47.2021.03.25.03.26.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 03:26:57 -0700 (PDT)
+Date:   Thu, 25 Mar 2021 11:26:55 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Colin Ian King <colin.king@canonical.com>,
+        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v7 15/22] virtio/vsock: SEQPACKET support feature bit
+Message-ID: <20210325102655.ujyfpapvwnubcggn@steredhat>
+References: <20210323130716.2459195-1-arseny.krasnov@kaspersky.com>
+ <20210323131352.2461534-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20210325102307.GA163632@roeck-us.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20210323131352.2461534-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 03:23:07AM -0700, Guenter Roeck wrote:
-> On Tue, Mar 23, 2021 at 04:02:29PM +0800, Yangbo Lu wrote:
-> > Current calculation for diff of TMR_ADD register value may have
-> > 64-bit overflow in this code line, when long type scaled_ppm is
-> > large.
-> > 
-> > adj *= scaled_ppm;
-> > 
-> > This patch is to resolve it by using mul_u64_u64_div_u64().
-> > 
-> > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> > Acked-by: Richard Cochran <richardcochran@gmail.com>
-> > ---
-> >  drivers/ptp/ptp_qoriq.c | 13 +++++++------
-> >  1 file changed, 7 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-> > index 68beb1bd07c0..f7f220700cb5 100644
-> > --- a/drivers/ptp/ptp_qoriq.c
-> > +++ b/drivers/ptp/ptp_qoriq.c
-> > @@ -189,15 +189,16 @@ int ptp_qoriq_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-> >  	tmr_add = ptp_qoriq->tmr_add;
-> >  	adj = tmr_add;
-> >  
-> > -	/* calculate diff as adj*(scaled_ppm/65536)/1000000
-> > -	 * and round() to the nearest integer
-> > +	/*
-> > +	 * Calculate diff and round() to the nearest integer
-> > +	 *
-> > +	 * diff = adj * (ppb / 1000000000)
-> > +	 *      = adj * scaled_ppm / 65536000000
-> >  	 */
-> > -	adj *= scaled_ppm;
-> > -	diff = div_u64(adj, 8000000);
-> > -	diff = (diff >> 13) + ((diff >> 12) & 1);
-> > +	diff = mul_u64_u64_div_u64(adj, scaled_ppm, 32768000000);
-> 
-> mul_u64_u64_div_u64() is not exported. As result, every build with
-> CONFIG_PTP_1588_CLOCK_QORIQ=m (ie every allmodconfig build) fails with:
-> 
-> ERROR: modpost: "mul_u64_u64_div_u64" [drivers/ptp/ptp-qoriq.ko] undefined!
-> 
-> or a similar error.
-> 
-Ah, never mind. I see this is fixed in mainline (export added).
-I see the problem in pending-fixes and in next-20210325.
+On Tue, Mar 23, 2021 at 04:13:49PM +0300, Arseny Krasnov wrote:
+>This adds new virtio vsock specific feature bit which means
+>SOCK_SEQPACKET support. Guest negotiates this bit with vhost,
+>thus checking that vhost side supports SEQPACKET.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> include/uapi/linux/virtio_vsock.h | 3 +++
+> 1 file changed, 3 insertions(+)
 
-Sorry for the noise.
+Since you have this patch, I think you can generalize the title, update 
+the description, and merge here the changes I mentioned in patch 11/22 
+about changes of include/uapi/linux/virtio_vsock.h.
 
-Guenter
+So you can have a single patch with the new virtio-spec defines and 
+structs related to SEQPACKET, of course then we move it before patch 11.
+
+What do you think?
+
+Stefano
+
+>
+>diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
+>index 692f8078cced..619aaebb355a 100644
+>--- a/include/uapi/linux/virtio_vsock.h
+>+++ b/include/uapi/linux/virtio_vsock.h
+>@@ -38,6 +38,9 @@
+> #include <linux/virtio_ids.h>
+> #include <linux/virtio_config.h>
+>
+>+/* The feature bitmap for virtio vsock */
+>+#define VIRTIO_VSOCK_F_SEQPACKET	0	/* SOCK_SEQPACKET supported */
+>+
+> struct virtio_vsock_config {
+> 	__le64 guest_cid;
+> } __attribute__((packed));
+>-- 
+>2.25.1
+>
+
