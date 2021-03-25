@@ -2,107 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C263485C1
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 01:12:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B3F3485BE
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 01:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbhCYALy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S231847AbhCYALy (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 24 Mar 2021 20:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231820AbhCYALe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 20:11:34 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397FBC06174A;
-        Wed, 24 Mar 2021 17:11:34 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id a22-20020a17090aa516b02900c1215e9b33so1961137pjq.5;
-        Wed, 24 Mar 2021 17:11:34 -0700 (PDT)
+        with ESMTP id S231675AbhCYAL3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Mar 2021 20:11:29 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E23C06174A;
+        Wed, 24 Mar 2021 17:11:29 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id l123so165554pfl.8;
+        Wed, 24 Mar 2021 17:11:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L88O0BW7wQbwhjCdIIhzzEKl+qvvq9wqufLgOCyN/mI=;
-        b=leqxAWb3Qyz33DMTBFPpgq8dQE4KfUtyyEkXyP5nghdztcV6W+ZuzcPinKiQByCaol
-         1XEYpXv1nDPc2RQs1VVmV9mKJOrYO7cHo3tRPDv+GaqE1zZKRpe701qnPKJ512szzxSS
-         AGvq+JVmMtOcHfedR34tGApy6lzaVlDKWdAQEFilsyNj7f2mRRhDmWLZn6VSV9I+0sxe
-         weUisbTaa5CnpBmrymVAf96M8hnWwuYHFjl8PDyJuABCoI9x3Y1Us+iBMC9PeQ6X2KNe
-         Avi7414I9jvZwLRIdcvWkAhT3ICC7leJDs7RXn7WjXLJtq7rmUboJTeyKiw7zxnz85qK
-         Xz1w==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=At9VfTXYGbpEkv+bskSHgsrNIlMHMh6pA+O0p4XadnY=;
+        b=JzHSHvAX/LmZfhKzSPTiyFsFoa9SM/Kpb55eEqknyhg7p+1zVBFJIwifRXpQKvIKm7
+         29WO2+sDSiLmPobMyej3B+6FTj7xVQcee/04lgRq32n77iD96JVMaSZYwDJdTKz150Fc
+         ur1Nx+rvyU76xwx/rpEieTou8Co9g5rvcDLQiRjXi2C7zEdZ6PSSOqtHEnxQQp3HQQ2i
+         m8r3K1+H5iq2/rdNqF9eVaRgE9BEOPTxT6mis4zlDREzwEnBQl2JIW0Ob/3+yaG9utr4
+         ahHWCMETJc3mrqqQoQQ8FeqFI1W8YIVUvyxvvGl3zAVvXCuxNvZkf9u7B1TLLJygq1oi
+         D7Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L88O0BW7wQbwhjCdIIhzzEKl+qvvq9wqufLgOCyN/mI=;
-        b=EXvHqO9f+FHblKJRQzOaNXc+WaVqnz/+mqm796Bsl+8TI3s5M8JpL29Auo+nzJdqTt
-         Bns+PbEwCnPt5P1FhIBgPLvVogPw7OJlCNteRzQ8F6ixnrgMa8/0MzD3F5/2JeawiJK3
-         3BA9wjl8dpd8ZLyxaaQyMJmo4RztAZD8JQRW2NbRfE2TArAkqP8GeAgKXVT/DDq5VaUI
-         RQE6jM4fBzH35mBaqXd2M4OXdJdWiGb790woICOsSmldWkeCFhdMkSu73UIFj2lU3TL5
-         Vt+5eKpnxQTWmaWb1YrvcX2zke3TVP/r50G/3LOLa4n2Il4QeS4HC77VDYzyhlagQ5rc
-         /2Zg==
-X-Gm-Message-State: AOAM533HZDWBC4KJoDyq/F/0TJ2T8Su5qphpEaOd+sFu5UjVqviJzNCR
-        uZYr3EqrE1Cs4DhzBRJRP8zw2VJmNkO347wbwog=
-X-Google-Smtp-Source: ABdhPJw9A7YtieUzAo/LOSxFJvLCv92K8ZswZbRrmTdjBCVefpnsmm4Exwa0JomZ57IDemxpdqtMjGxTILpUo+S4MOc=
-X-Received: by 2002:a17:90a:7061:: with SMTP id f88mr6038598pjk.56.1616631093769;
- Wed, 24 Mar 2021 17:11:33 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=At9VfTXYGbpEkv+bskSHgsrNIlMHMh6pA+O0p4XadnY=;
+        b=e9eCkVMFqqDQTfipZEEHdN0s4F0JgDz2xNGdc4Tyeki7Q361SWFiDjVWqlVbdXgRso
+         GcO08PrRQJDUQ7D/hLwLwZrdPHsjYg6xC6qubEP7dybI2+WmjNURXrvIRe08x7Aac9Zl
+         66/4MwAzD+MRSrt7DlioMkzjlOoqfBKOTOZZkmCHz4qYXYj3RANu+OsaI+PUerlxeLxR
+         gb8PFD0YFrlElGLIOdGmTgyUe56qFt0o7hKHVBHzXaAA4Kn8QDeboQYd54tb+Rdv5O3O
+         f/TNY3L68UUwpbhCQWVsXuI7I+KI5z72XIml/k/wqXvOi/VGjodxiKIgR99ytFYw2j8o
+         novw==
+X-Gm-Message-State: AOAM530bLVqwt3x6ZUZqIf9yflzGaXmRyuyxzkKGUseUUn27I6XMdT7m
+        1jwpbqCg0AqL/hn5Yu+IcDU=
+X-Google-Smtp-Source: ABdhPJxuN0W54NrcBNuvTfuzBaLxCKaqo+Y8auW6dMf5X8dyxepuoPY7idwk2DQMeNOBjQdUlF/y4g==
+X-Received: by 2002:a63:1a0d:: with SMTP id a13mr5009262pga.167.1616631088452;
+        Wed, 24 Mar 2021 17:11:28 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id ds3sm3496417pjb.23.2021.03.24.17.11.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Mar 2021 17:11:27 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/2] dt-bindings: define property describing
+ supported ethernet PHY modes
+To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        pali@kernel.org
+References: <20210324103556.11338-1-kabel@kernel.org>
+ <e4e088a4-1538-1e7d-241d-e43b69742811@gmail.com>
+ <20210325000007.19a38bce@thinkpad>
+ <755130b4-2fab-2b53-456f-e2304b1922f2@gmail.com>
+ <20210325004525.734f3040@thinkpad>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <5fc6fea9-d4c1-bb7e-8f0d-da38c7147825@gmail.com>
+Date:   Wed, 24 Mar 2021 17:11:25 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
- <161661956953.28508.2297266338306692603.stgit@john-Precision-5820-Tower>
-In-Reply-To: <161661956953.28508.2297266338306692603.stgit@john-Precision-5820-Tower>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 24 Mar 2021 17:11:22 -0700
-Message-ID: <CAM_iQpUNUE8cmyNaALG1dZtCfJGah2pggDNk-eVbyxexnA4o_g@mail.gmail.com>
-Subject: Re: [bpf PATCH 1/2] bpf, sockmap: fix sk->prot unhash op reset
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210325004525.734f3040@thinkpad>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 1:59 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-> index 47b7c5334c34..ecb5634b4c4a 100644
-> --- a/net/tls/tls_main.c
-> +++ b/net/tls/tls_main.c
-> @@ -754,6 +754,12 @@ static void tls_update(struct sock *sk, struct proto *p,
->
->         ctx = tls_get_ctx(sk);
->         if (likely(ctx)) {
-> +               /* TLS does not have an unhash proto in SW cases, but we need
-> +                * to ensure we stop using the sock_map unhash routine because
-> +                * the associated psock is being removed. So use the original
-> +                * unhash handler.
-> +                */
-> +               WRITE_ONCE(sk->sk_prot->unhash, p->unhash);
->                 ctx->sk_write_space = write_space;
->                 ctx->sk_proto = p;
-
-It looks awkward to update sk->sk_proto inside tls_update(),
-at least when ctx!=NULL.
-
-What is wrong with updating it in sk_psock_restore_proto()
-when inet_csk_has_ulp() is true? It looks better to me.
-
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 6c09d94be2e9..da5dc3ef0ee3 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -360,8 +360,8 @@ static inline void sk_psock_update_proto(struct sock *sk,
- static inline void sk_psock_restore_proto(struct sock *sk,
-                                          struct sk_psock *psock)
- {
--       sk->sk_prot->unhash = psock->saved_unhash;
-        if (inet_csk_has_ulp(sk)) {
-+               sk->sk_prot->unhash = psock->sk_proto->unhash;
-                tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
-        } else {
-                sk->sk_write_space = psock->saved_write_space;
 
 
-sk_psock_restore_proto() is the only caller of tcp_update_ulp()
-so should be equivalent.
+On 3/24/2021 4:45 PM, Marek Behún wrote:
+> On Wed, 24 Mar 2021 16:16:41 -0700
+> Florian Fainelli <f.fainelli@gmail.com> wrote:
+> 
+>> On 3/24/2021 4:00 PM, Marek Behún wrote:
+>>> On Wed, 24 Mar 2021 14:19:28 -0700
+>>> Florian Fainelli <f.fainelli@gmail.com> wrote:
+>>>   
+>>>>> Another problem is that if lower modes are supported, we should
+>>>>> maybe use them in order to save power.    
+>>>>
+>>>> That is an interesting proposal but if you want it to be truly valuable,
+>>>> does not that mean that an user ought to be able to switch between any
+>>>> of the supported PHY <=> MAC interfaces at runtime, and then within
+>>>> those interfaces to the speeds that yield the best power savings?  
+>>>
+>>> If the code determines that there are multiple working configurations,
+>>> it theoretically could allow the user to switch between them.
+>>>
+>>> My idea was that this should be done by kernel, though.
+>>>
+>>> But power saving is not the main problem I am trying to solve.
+>>> What I am trying to solve is that if a board does not support all modes
+>>> supported by the MAC and PHY, because they are not wired or something,
+>>> we need to know about that so that we can select the correct mode for
+>>> PHYs that change this mode at runtime.  
+>>
+>> OK so the runtime part comes from plugging in various SFP modules into a
+>> cage but other than that, for a "fixed" link such as a SFF or a soldered
+>> down PHY, do we agree that there would be no runtime changing of the
+>> 'phy-mode'?
+> 
+> No, we do not. The PHY can be configured (by strapping pins or by
+> sw) to change phy-mode depending on the autonegotiated copper speed.
+> 
+> So if you plug in an ethernet cable where on the otherside is only 1g
+> capable device, the PHY will change mode to sgmii. But if you then plug
+> a 5g capable device, the PHY will change mode to 5gbase-r.
+> 
+> This happens if the PHY is configured into one of these changing
+> configurations. It can also be configured to USXGMII, or 10GBASER with
+> rate matching.
+> 
+> Not many MACs in kernel support USXGMII currently.
+> 
+> And if you use rate matching mode, and the copper side is
+> linked in lower speed (2.5g for example), and the MAC will start
+> sending too many packets, the internal buffer in the PHY is only 16 KB,
+> so it will fill up quickly. So you need pause frames support. But this
+> is broken for speeds <= 1g, according to erratum.
+> 
+> So you really want to change modes. The rate matching mode is
+> basically useless.
 
-Thanks.
+OK, so whenever there is a link change you are presumably reading the
+mode in which the PHY has been reconfigured to, asking the MAC to
+configured itself appropriately based on that, and if there is no
+intersection, error out?
+
+> 
+>>
+>> What I am trying to understand is why this needs to be added to the
+>> Device Tree as opposed to a bitmask within the PHY driver that indicates
+>> the various interface mode capabilities which, looking at the code you
+>> shared below, is how you make decisions ultimately.
+> 
+> Because someone can create a board with a SOC where MAC is capable of
+> all of the following modes: 10gbase-r, xaui, rxaui, 5gbase-r,
+> 2.5gbase-x, sgmii.
+> 
+> And use Marvell 88X3310 PHY to translate to copper.
+> 
+> But only wire the PHY to the MAC with one SerDes lane. So for 10g,
+> 10gbase-r mode must be used, xaui and rxaui cannot.
+> Or wire the PHY to the MAC with 2 SerDes lanes, but both lanes capable
+> only of 6 GHz freq. So for 10g, rxaui must be used.
+> 
+> And then make the mistake of wiring the strapping pins to the
+> rate-matching mode, which is useless.
+> 
+> So we need to know which modes are supported if we want to change the
+> configuration to a working one.
+
+OK, so you need to know the PCB limitations which would be coming via
+Device Tree and what mode the PHY has been configured into at the time
+you attach/connect to the PHY which you could read from the device itself.
+
+> 
+>>>   
+>>>>>
+>>>>> But for this we need to know which phy-modes are supported on the
+>>>>> board.
+>>>>>
+>>>>> This series adds documentation for a new ethernet PHY property,
+>>>>> called `supported-mac-connection-types`.    
+>>>>
+>>>> That naming does not quite make sense to me, if we want to describe the
+>>>> MAC supported connection types, then those would naturally be within the
+>>>> Ethernet MAC Device Tree node, no? If we are describing what the PHY is
+>>>> capable, then we should be dropping "mac" from the property name not to
+>>>> create confusion.  
+>>>
+>>> I put "mac" there to indicate that this is the SerDes to the MAC (i.e.
+>>> host side in Marvell PHY). 88X3310 has another SerDes side (Fiber Side).
+>>> I guess I put "mac" there so that if in the future we wanted to specify
+>>> supported modes for the fiber side, we could add
+>>> `supported-fiber-connection-types`.  
+>>
+>> You would traditionally find the words "line side" (copper, optical,
+>> etc.) and "MAC side" being used in datasheets, maybe you can use a
+>> similar naming here?
+> 
+> So
+>   supported-connection-types-mac-side
+>   supported-connection-types-line-side
+> or maybe media-side?
+
+Yes, that sounds a bit better and more descriptive.
+
+> 
+> I am still exploring whether this could be simply defined in the
+> ethernet controllers `phy-mode` property, as Rob Herring says. It would
+> be simpler...
+
+OK.
+-- 
+Florian
