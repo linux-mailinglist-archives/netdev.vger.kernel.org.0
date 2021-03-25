@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 802C4348834
+	by mail.lfdr.de (Postfix) with ESMTP id 0E0E3348833
 	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 06:05:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229944AbhCYFFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 01:05:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47976 "EHLO mail.kernel.org"
+        id S229933AbhCYFFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 01:05:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229709AbhCYFEt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 01:04:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 468F461A1F;
+        id S229716AbhCYFEu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 01:04:50 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF7C661A26;
         Thu, 25 Mar 2021 05:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616648689;
-        bh=5U9a+BeSLAvJuIVXkuFm5oZFKhAHwtbWo07PsXv8t+g=;
+        s=k20201202; t=1616648690;
+        bh=0SCwwd+q02qMtvdw2Hqx3/cqYHztqsspJ01MMJEuB/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QolL6RvrbGowVbPCB57lBosggsVYf4LQW0Q4GY/yNcOkTEoimDgDU2SYUQsW5fwA9
-         2wNizibl1sqNKNxROXUZHaPYcooev4ij1PwMXsA6mPrG22rWZcVVmRabjl99oP//fI
-         lqKXMzezWu9AkAPoUmcfjCfY/ka9sno/OMfOImjgXPpz9KO/NLL1QfFQyS3Jsg5n3s
-         5jKp8F4OoOTGI2GWboHPFl9J3YDjalcsrlWKJN55cawIRKQcQzZHmZoRfOefVlWFmd
-         YJF/cKjlhfVzmGNEGAkbFoo9i/Rp4lOb0eZ/8HM0YGzgQMlUenFm5XHFwFTbwi/fqV
-         gtVo/zEEmZ0Gw==
+        b=tVwB0ApD9S3lg127zZYn8CF6nJcRTruGmFOQ76Bp140n3+u7fo36RA8p9DLZc180U
+         tMimlFE1tf7hylqFf/pkC6FinCos9i5DEmqVgIUu/1gPOO3pVLt+b5txdJ59B0DXKH
+         1VxFxZJUZTCXrHCVgVknWkJwDHpmN6Y09c3uAL2yGSi87d8h37EONFlBOiDK/6P+Cq
+         h/pgjRqSYJ73xi/ZrMguXDHGmIP67k+1ik0Il+Bf2delQL4kt/y3JO2zgXXtGeDK9B
+         ohd6s29E1wLFN8nYDCOSlWuKm6zc6EdYinO6/l+89IzQpVOqV+Eiqaf7Ccm386qCQL
+         drrdH7OyxrBLQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/15] net/mlx5e: Generalize direct-TIRs and direct-RQTs API
-Date:   Wed, 24 Mar 2021 22:04:35 -0700
-Message-Id: <20210325050438.261511-13-saeed@kernel.org>
+Subject: [net-next 13/15] net/mlx5e: Generalize PTP implementation
+Date:   Wed, 24 Mar 2021 22:04:36 -0700
+Message-Id: <20210325050438.261511-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210325050438.261511-1-saeed@kernel.org>
 References: <20210325050438.261511-1-saeed@kernel.org>
@@ -43,302 +43,460 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-Add input parameter indicating the size of direct-TIRs/direct-RQTs array
-to be created/destroyed. This allows next patches in the patch-set to
-handle a single direct-TIR pointing to a direct-RQT with a single entry.
+Following patches in the set add support for RX PTP. Rename PTP prefix
+from %s/port_ptp/ptp/g to include RX PTP too.
+
+In addition rename indication (used in statistics context) that PTP-SQ
+was opened: %s/port_ptp_opened/tx_ptp_opened/g. This will simplify adding
+indication that PTP-RQ was opened.
 
 Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  8 ++--
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 43 ++++++++++---------
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 15 ++++---
- .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c | 15 ++++---
- 4 files changed, 45 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  | 10 ++---
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 39 +++++++++----------
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.h  | 12 +++---
+ .../mellanox/mlx5/core/en/reporter_tx.c       |  8 ++--
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 23 ++++++-----
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 18 ++++-----
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  2 +-
+ 8 files changed, 56 insertions(+), 58 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 3051b653bef7..1ff8b79606f9 100644
+index 1ff8b79606f9..c32c2e265c26 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1079,10 +1079,10 @@ int mlx5e_create_indirect_rqt(struct mlx5e_priv *priv);
- int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc);
- void mlx5e_destroy_indirect_tirs(struct mlx5e_priv *priv);
+@@ -706,11 +706,11 @@ struct mlx5e_channel {
+ 	int                        cpu;
+ };
  
--int mlx5e_create_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs);
--void mlx5e_destroy_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs);
--int mlx5e_create_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs);
--void mlx5e_destroy_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs);
-+int mlx5e_create_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n);
-+void mlx5e_destroy_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n);
-+int mlx5e_create_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n);
-+void mlx5e_destroy_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n);
- void mlx5e_destroy_rqt(struct mlx5e_priv *priv, struct mlx5e_rqt *rqt);
+-struct mlx5e_port_ptp;
++struct mlx5e_ptp;
  
- int mlx5e_create_tis(struct mlx5_core_dev *mdev, void *in, u32 *tisn);
+ struct mlx5e_channels {
+ 	struct mlx5e_channel **c;
+-	struct mlx5e_port_ptp  *port_ptp;
++	struct mlx5e_ptp      *ptp;
+ 	unsigned int           num;
+ 	struct mlx5e_params    params;
+ };
+@@ -725,7 +725,7 @@ struct mlx5e_channel_stats {
+ 	struct mlx5e_xdpsq_stats xsksq;
+ } ____cacheline_aligned_in_smp;
+ 
+-struct mlx5e_port_ptp_stats {
++struct mlx5e_ptp_stats {
+ 	struct mlx5e_ch_stats ch;
+ 	struct mlx5e_sq_stats sq[MLX5E_MAX_NUM_TC];
+ 	struct mlx5e_ptp_cq_stats cq[MLX5E_MAX_NUM_TC];
+@@ -854,10 +854,10 @@ struct mlx5e_priv {
+ 	struct mlx5e_stats         stats;
+ 	struct mlx5e_channel_stats channel_stats[MLX5E_MAX_NUM_CHANNELS];
+ 	struct mlx5e_channel_stats trap_stats;
+-	struct mlx5e_port_ptp_stats port_ptp_stats;
++	struct mlx5e_ptp_stats     ptp_stats;
+ 	u16                        max_nch;
+ 	u8                         max_opened_tc;
+-	bool                       port_ptp_opened;
++	bool                       tx_ptp_opened;
+ 	struct hwtstamp_config     tstamp;
+ 	u16                        q_counter;
+ 	u16                        drop_rq_q_counter;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+index fb93edf910b9..2bc6d4362670 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+@@ -116,8 +116,7 @@ static bool mlx5e_ptp_poll_ts_cq(struct mlx5e_cq *cq, int budget)
+ 
+ static int mlx5e_ptp_napi_poll(struct napi_struct *napi, int budget)
+ {
+-	struct mlx5e_port_ptp *c = container_of(napi, struct mlx5e_port_ptp,
+-						napi);
++	struct mlx5e_ptp *c = container_of(napi, struct mlx5e_ptp, napi);
+ 	struct mlx5e_ch_stats *ch_stats = c->stats;
+ 	bool busy = false;
+ 	int work_done = 0;
+@@ -153,7 +152,7 @@ static int mlx5e_ptp_napi_poll(struct napi_struct *napi, int budget)
+ 	return work_done;
+ }
+ 
+-static int mlx5e_ptp_alloc_txqsq(struct mlx5e_port_ptp *c, int txq_ix,
++static int mlx5e_ptp_alloc_txqsq(struct mlx5e_ptp *c, int txq_ix,
+ 				 struct mlx5e_params *params,
+ 				 struct mlx5e_sq_param *param,
+ 				 struct mlx5e_txqsq *sq, int tc,
+@@ -177,7 +176,7 @@ static int mlx5e_ptp_alloc_txqsq(struct mlx5e_port_ptp *c, int txq_ix,
+ 	sq->uar_map   = mdev->mlx5e_res.hw_objs.bfreg.map;
+ 	sq->min_inline_mode = params->tx_min_inline_mode;
+ 	sq->hw_mtu    = MLX5E_SW2HW_MTU(params, params->sw_mtu);
+-	sq->stats     = &c->priv->port_ptp_stats.sq[tc];
++	sq->stats     = &c->priv->ptp_stats.sq[tc];
+ 	sq->ptpsq     = ptpsq;
+ 	INIT_WORK(&sq->recover_work, mlx5e_tx_err_cqe_work);
+ 	if (!MLX5_CAP_ETH(mdev, wqe_vlan_insert))
+@@ -241,7 +240,7 @@ static void mlx5e_ptp_free_traffic_db(struct mlx5e_skb_fifo *skb_fifo)
+ 	kvfree(skb_fifo->fifo);
+ }
+ 
+-static int mlx5e_ptp_open_txqsq(struct mlx5e_port_ptp *c, u32 tisn,
++static int mlx5e_ptp_open_txqsq(struct mlx5e_ptp *c, u32 tisn,
+ 				int txq_ix, struct mlx5e_ptp_params *cparams,
+ 				int tc, struct mlx5e_ptpsq *ptpsq)
+ {
+@@ -291,7 +290,7 @@ static void mlx5e_ptp_close_txqsq(struct mlx5e_ptpsq *ptpsq)
+ 	mlx5e_free_txqsq(sq);
+ }
+ 
+-static int mlx5e_ptp_open_txqsqs(struct mlx5e_port_ptp *c,
++static int mlx5e_ptp_open_txqsqs(struct mlx5e_ptp *c,
+ 				 struct mlx5e_ptp_params *cparams)
+ {
+ 	struct mlx5e_params *params = &cparams->params;
+@@ -319,7 +318,7 @@ static int mlx5e_ptp_open_txqsqs(struct mlx5e_port_ptp *c,
+ 	return err;
+ }
+ 
+-static void mlx5e_ptp_close_txqsqs(struct mlx5e_port_ptp *c)
++static void mlx5e_ptp_close_txqsqs(struct mlx5e_ptp *c)
+ {
+ 	int tc;
+ 
+@@ -327,7 +326,7 @@ static void mlx5e_ptp_close_txqsqs(struct mlx5e_port_ptp *c)
+ 		mlx5e_ptp_close_txqsq(&c->ptpsq[tc]);
+ }
+ 
+-static int mlx5e_ptp_open_cqs(struct mlx5e_port_ptp *c,
++static int mlx5e_ptp_open_cqs(struct mlx5e_ptp *c,
+ 			      struct mlx5e_ptp_params *cparams)
+ {
+ 	struct mlx5e_params *params = &cparams->params;
+@@ -360,7 +359,7 @@ static int mlx5e_ptp_open_cqs(struct mlx5e_port_ptp *c,
+ 		if (err)
+ 			goto out_err_ts_cq;
+ 
+-		ptpsq->cq_stats = &c->priv->port_ptp_stats.cq[tc];
++		ptpsq->cq_stats = &c->priv->ptp_stats.cq[tc];
+ 	}
+ 
+ 	return 0;
+@@ -376,7 +375,7 @@ static int mlx5e_ptp_open_cqs(struct mlx5e_port_ptp *c,
+ 	return err;
+ }
+ 
+-static void mlx5e_ptp_close_cqs(struct mlx5e_port_ptp *c)
++static void mlx5e_ptp_close_cqs(struct mlx5e_ptp *c)
+ {
+ 	int tc;
+ 
+@@ -402,7 +401,7 @@ static void mlx5e_ptp_build_sq_param(struct mlx5_core_dev *mdev,
+ 	mlx5e_build_tx_cq_param(mdev, params, &param->cqp);
+ }
+ 
+-static void mlx5e_ptp_build_params(struct mlx5e_port_ptp *c,
++static void mlx5e_ptp_build_params(struct mlx5e_ptp *c,
+ 				   struct mlx5e_ptp_params *cparams,
+ 				   struct mlx5e_params *orig)
+ {
+@@ -420,7 +419,7 @@ static void mlx5e_ptp_build_params(struct mlx5e_port_ptp *c,
+ 	mlx5e_ptp_build_sq_param(c->mdev, params, &cparams->txq_sq_param);
+ }
+ 
+-static int mlx5e_ptp_open_queues(struct mlx5e_port_ptp *c,
++static int mlx5e_ptp_open_queues(struct mlx5e_ptp *c,
+ 				 struct mlx5e_ptp_params *cparams)
+ {
+ 	int err;
+@@ -441,19 +440,19 @@ static int mlx5e_ptp_open_queues(struct mlx5e_port_ptp *c,
+ 	return err;
+ }
+ 
+-static void mlx5e_ptp_close_queues(struct mlx5e_port_ptp *c)
++static void mlx5e_ptp_close_queues(struct mlx5e_ptp *c)
+ {
+ 	mlx5e_ptp_close_txqsqs(c);
+ 	mlx5e_ptp_close_cqs(c);
+ }
+ 
+-int mlx5e_port_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+-			u8 lag_port, struct mlx5e_port_ptp **cp)
++int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
++		   u8 lag_port, struct mlx5e_ptp **cp)
+ {
+ 	struct net_device *netdev = priv->netdev;
+ 	struct mlx5_core_dev *mdev = priv->mdev;
+ 	struct mlx5e_ptp_params *cparams;
+-	struct mlx5e_port_ptp *c;
++	struct mlx5e_ptp *c;
+ 	unsigned int irq;
+ 	int err;
+ 	int eqn;
+@@ -475,7 +474,7 @@ int mlx5e_port_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	c->netdev   = priv->netdev;
+ 	c->mkey_be  = cpu_to_be32(priv->mdev->mlx5e_res.hw_objs.mkey.key);
+ 	c->num_tc   = params->num_tc;
+-	c->stats    = &priv->port_ptp_stats.ch;
++	c->stats    = &priv->ptp_stats.ch;
+ 	c->lag_port = lag_port;
+ 
+ 	netif_napi_add(netdev, &c->napi, mlx5e_ptp_napi_poll, 64);
+@@ -500,7 +499,7 @@ int mlx5e_port_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	return err;
+ }
+ 
+-void mlx5e_port_ptp_close(struct mlx5e_port_ptp *c)
++void mlx5e_ptp_close(struct mlx5e_ptp *c)
+ {
+ 	mlx5e_ptp_close_queues(c);
+ 	netif_napi_del(&c->napi);
+@@ -508,7 +507,7 @@ void mlx5e_port_ptp_close(struct mlx5e_port_ptp *c)
+ 	kvfree(c);
+ }
+ 
+-void mlx5e_ptp_activate_channel(struct mlx5e_port_ptp *c)
++void mlx5e_ptp_activate_channel(struct mlx5e_ptp *c)
+ {
+ 	int tc;
+ 
+@@ -518,7 +517,7 @@ void mlx5e_ptp_activate_channel(struct mlx5e_port_ptp *c)
+ 		mlx5e_activate_txqsq(&c->ptpsq[tc].txqsq);
+ }
+ 
+-void mlx5e_ptp_deactivate_channel(struct mlx5e_port_ptp *c)
++void mlx5e_ptp_deactivate_channel(struct mlx5e_ptp *c)
+ {
+ 	int tc;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+index 90c98ea63b7f..4cae06f2c312 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+@@ -17,7 +17,7 @@ struct mlx5e_ptpsq {
+ 	struct mlx5e_ptp_cq_stats *cq_stats;
+ };
+ 
+-struct mlx5e_port_ptp {
++struct mlx5e_ptp {
+ 	/* data path */
+ 	struct mlx5e_ptpsq         ptpsq[MLX5E_MAX_NUM_TC];
+ 	struct napi_struct         napi;
+@@ -43,11 +43,11 @@ struct mlx5e_ptp_params {
+ 	struct mlx5e_sq_param      txq_sq_param;
+ };
+ 
+-int mlx5e_port_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+-			u8 lag_port, struct mlx5e_port_ptp **cp);
+-void mlx5e_port_ptp_close(struct mlx5e_port_ptp *c);
+-void mlx5e_ptp_activate_channel(struct mlx5e_port_ptp *c);
+-void mlx5e_ptp_deactivate_channel(struct mlx5e_port_ptp *c);
++int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
++		   u8 lag_port, struct mlx5e_ptp **cp);
++void mlx5e_ptp_close(struct mlx5e_ptp *c);
++void mlx5e_ptp_activate_channel(struct mlx5e_ptp *c);
++void mlx5e_ptp_deactivate_channel(struct mlx5e_ptp *c);
+ 
+ enum {
+ 	MLX5E_SKB_CB_CQE_HWTSTAMP  = BIT(0),
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index 63ee3b9416de..e107801adf48 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -315,8 +315,8 @@ mlx5e_tx_reporter_diagnose_common_config(struct devlink_health_reporter *reporte
+ 	if (err)
+ 		return err;
+ 
+-	generic_ptpsq = priv->channels.port_ptp ?
+-			&priv->channels.port_ptp->ptpsq[0] :
++	generic_ptpsq = priv->channels.ptp ?
++			&priv->channels.ptp->ptpsq[0] :
+ 			NULL;
+ 	if (!generic_ptpsq)
+ 		goto out;
+@@ -346,7 +346,7 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
+ 				      struct netlink_ext_ack *extack)
+ {
+ 	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
+-	struct mlx5e_port_ptp *ptp_ch = priv->channels.port_ptp;
++	struct mlx5e_ptp *ptp_ch = priv->channels.ptp;
+ 
+ 	int i, tc, err = 0;
+ 
+@@ -460,7 +460,7 @@ static int mlx5e_tx_reporter_dump_sq(struct mlx5e_priv *priv, struct devlink_fms
+ static int mlx5e_tx_reporter_dump_all_sqs(struct mlx5e_priv *priv,
+ 					  struct devlink_fmsg *fmsg)
+ {
+-	struct mlx5e_port_ptp *ptp_ch = priv->channels.port_ptp;
++	struct mlx5e_ptp *ptp_ch = priv->channels.ptp;
+ 	struct mlx5_rsc_key key = {};
+ 	int i, tc, err;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index d2d8ba4b3508..1b3183f521cb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -2023,7 +2023,7 @@ static int set_pflag_tx_port_ts(struct net_device *netdev, bool enable)
+ 					 mlx5e_num_channels_changed_ctx, NULL);
+ out:
+ 	if (!err)
+-		priv->port_ptp_opened = true;
++		priv->tx_ptp_opened = true;
+ 
+ 	return err;
+ }
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index eda30bc80a51..9096a7e6f4d6 100644
+index 9096a7e6f4d6..18582e934b61 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2221,12 +2221,12 @@ int mlx5e_create_indirect_rqt(struct mlx5e_priv *priv)
- 	return err;
- }
+@@ -2088,8 +2088,7 @@ int mlx5e_open_channels(struct mlx5e_priv *priv,
+ 	}
  
--int mlx5e_create_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs)
-+int mlx5e_create_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n)
- {
- 	int err;
- 	int ix;
- 
--	for (ix = 0; ix < priv->max_nch; ix++) {
-+	for (ix = 0; ix < n; ix++) {
- 		err = mlx5e_create_rqt(priv, 1 /*size */, &tirs[ix].rqt);
- 		if (unlikely(err))
- 			goto err_destroy_rqts;
-@@ -2242,11 +2242,11 @@ int mlx5e_create_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs)
- 	return err;
- }
- 
--void mlx5e_destroy_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs)
-+void mlx5e_destroy_direct_rqts(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n)
- {
- 	int i;
- 
--	for (i = 0; i < priv->max_nch; i++)
-+	for (i = 0; i < n; i++)
- 		mlx5e_destroy_rqt(priv, &tirs[i].rqt);
- }
- 
-@@ -3247,7 +3247,7 @@ int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
- 	return err;
- }
- 
--int mlx5e_create_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs)
-+int mlx5e_create_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n)
- {
- 	struct mlx5e_tir *tir;
- 	void *tirc;
-@@ -3261,7 +3261,7 @@ int mlx5e_create_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs)
- 	if (!in)
- 		return -ENOMEM;
- 
--	for (ix = 0; ix < priv->max_nch; ix++) {
-+	for (ix = 0; ix < n; ix++) {
- 		memset(in, 0, inlen);
- 		tir = &tirs[ix];
- 		tirc = MLX5_ADDR_OF(create_tir_in, in, ctx);
-@@ -3299,11 +3299,11 @@ void mlx5e_destroy_indirect_tirs(struct mlx5e_priv *priv)
- 		mlx5e_destroy_tir(priv->mdev, &priv->inner_indir_tir[i]);
- }
- 
--void mlx5e_destroy_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs)
-+void mlx5e_destroy_direct_tirs(struct mlx5e_priv *priv, struct mlx5e_tir *tirs, int n)
- {
- 	int i;
- 
--	for (i = 0; i < priv->max_nch; i++)
-+	for (i = 0; i < n; i++)
- 		mlx5e_destroy_tir(priv->mdev, &tirs[i]);
- }
- 
-@@ -4876,6 +4876,7 @@ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
- static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
- {
- 	struct mlx5_core_dev *mdev = priv->mdev;
-+	u16 max_nch = priv->max_nch;
- 	int err;
- 
- 	mlx5e_create_q_counters(priv);
-@@ -4890,7 +4891,7 @@ static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_close_drop_rq;
- 
--	err = mlx5e_create_direct_rqts(priv, priv->direct_tir);
-+	err = mlx5e_create_direct_rqts(priv, priv->direct_tir, max_nch);
- 	if (err)
- 		goto err_destroy_indirect_rqts;
- 
-@@ -4898,15 +4899,15 @@ static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_destroy_direct_rqts;
- 
--	err = mlx5e_create_direct_tirs(priv, priv->direct_tir);
-+	err = mlx5e_create_direct_tirs(priv, priv->direct_tir, max_nch);
- 	if (err)
- 		goto err_destroy_indirect_tirs;
- 
--	err = mlx5e_create_direct_rqts(priv, priv->xsk_tir);
-+	err = mlx5e_create_direct_rqts(priv, priv->xsk_tir, max_nch);
- 	if (unlikely(err))
- 		goto err_destroy_direct_tirs;
- 
--	err = mlx5e_create_direct_tirs(priv, priv->xsk_tir);
-+	err = mlx5e_create_direct_tirs(priv, priv->xsk_tir, max_nch);
- 	if (unlikely(err))
- 		goto err_destroy_xsk_rqts;
- 
-@@ -4935,15 +4936,15 @@ static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
- err_destroy_flow_steering:
- 	mlx5e_destroy_flow_steering(priv);
- err_destroy_xsk_tirs:
--	mlx5e_destroy_direct_tirs(priv, priv->xsk_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->xsk_tir, max_nch);
- err_destroy_xsk_rqts:
--	mlx5e_destroy_direct_rqts(priv, priv->xsk_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->xsk_tir, max_nch);
- err_destroy_direct_tirs:
--	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->direct_tir, max_nch);
- err_destroy_indirect_tirs:
- 	mlx5e_destroy_indirect_tirs(priv);
- err_destroy_direct_rqts:
--	mlx5e_destroy_direct_rqts(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->direct_tir, max_nch);
- err_destroy_indirect_rqts:
- 	mlx5e_destroy_rqt(priv, &priv->indir_rqt);
- err_close_drop_rq:
-@@ -4955,14 +4956,16 @@ static int mlx5e_init_nic_rx(struct mlx5e_priv *priv)
- 
- static void mlx5e_cleanup_nic_rx(struct mlx5e_priv *priv)
- {
-+	u16 max_nch = priv->max_nch;
-+
- 	mlx5e_accel_cleanup_rx(priv);
- 	mlx5e_tc_nic_cleanup(priv);
- 	mlx5e_destroy_flow_steering(priv);
--	mlx5e_destroy_direct_tirs(priv, priv->xsk_tir);
--	mlx5e_destroy_direct_rqts(priv, priv->xsk_tir);
--	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->xsk_tir, max_nch);
-+	mlx5e_destroy_direct_rqts(priv, priv->xsk_tir, max_nch);
-+	mlx5e_destroy_direct_tirs(priv, priv->direct_tir, max_nch);
- 	mlx5e_destroy_indirect_tirs(priv);
--	mlx5e_destroy_direct_rqts(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->direct_tir, max_nch);
- 	mlx5e_destroy_rqt(priv, &priv->indir_rqt);
- 	mlx5e_close_drop_rq(&priv->drop_rq);
- 	mlx5e_destroy_q_counters(priv);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index e5123e9182c0..b597fc3b192b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -753,6 +753,7 @@ int mlx5e_rep_bond_update(struct mlx5e_priv *priv, bool cleanup)
- static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- {
- 	struct mlx5_core_dev *mdev = priv->mdev;
-+	u16 max_nch = priv->max_nch;
- 	int err;
- 
- 	mlx5e_init_l2_addr(priv);
-@@ -767,7 +768,7 @@ static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_close_drop_rq;
- 
--	err = mlx5e_create_direct_rqts(priv, priv->direct_tir);
-+	err = mlx5e_create_direct_rqts(priv, priv->direct_tir, max_nch);
- 	if (err)
- 		goto err_destroy_indirect_rqts;
- 
-@@ -775,7 +776,7 @@ static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_destroy_direct_rqts;
- 
--	err = mlx5e_create_direct_tirs(priv, priv->direct_tir);
-+	err = mlx5e_create_direct_tirs(priv, priv->direct_tir, max_nch);
- 	if (err)
- 		goto err_destroy_indirect_tirs;
- 
-@@ -800,11 +801,11 @@ static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- err_destroy_ttc_table:
- 	mlx5e_destroy_ttc_table(priv, &priv->fs.ttc);
- err_destroy_direct_tirs:
--	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->direct_tir, max_nch);
- err_destroy_indirect_tirs:
- 	mlx5e_destroy_indirect_tirs(priv);
- err_destroy_direct_rqts:
--	mlx5e_destroy_direct_rqts(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->direct_tir, max_nch);
- err_destroy_indirect_rqts:
- 	mlx5e_destroy_rqt(priv, &priv->indir_rqt);
- err_close_drop_rq:
-@@ -814,13 +815,15 @@ static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- 
- static void mlx5e_cleanup_rep_rx(struct mlx5e_priv *priv)
- {
-+	u16 max_nch = priv->max_nch;
-+
- 	mlx5e_ethtool_cleanup_steering(priv);
- 	rep_vport_rx_rule_destroy(priv);
- 	mlx5e_destroy_rep_root_ft(priv);
- 	mlx5e_destroy_ttc_table(priv, &priv->fs.ttc);
--	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->direct_tir, max_nch);
- 	mlx5e_destroy_indirect_tirs(priv);
--	mlx5e_destroy_direct_rqts(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->direct_tir, max_nch);
- 	mlx5e_destroy_rqt(priv, &priv->indir_rqt);
- 	mlx5e_close_drop_rq(&priv->drop_rq);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-index 7eeeb02a78c9..cfdef4211b77 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-@@ -372,6 +372,7 @@ static void mlx5i_destroy_flow_steering(struct mlx5e_priv *priv)
- static int mlx5i_init_rx(struct mlx5e_priv *priv)
- {
- 	struct mlx5_core_dev *mdev = priv->mdev;
-+	u16 max_nch = priv->max_nch;
- 	int err;
- 
- 	mlx5e_create_q_counters(priv);
-@@ -386,7 +387,7 @@ static int mlx5i_init_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_close_drop_rq;
- 
--	err = mlx5e_create_direct_rqts(priv, priv->direct_tir);
-+	err = mlx5e_create_direct_rqts(priv, priv->direct_tir, max_nch);
- 	if (err)
- 		goto err_destroy_indirect_rqts;
- 
-@@ -394,7 +395,7 @@ static int mlx5i_init_rx(struct mlx5e_priv *priv)
- 	if (err)
- 		goto err_destroy_direct_rqts;
- 
--	err = mlx5e_create_direct_tirs(priv, priv->direct_tir);
-+	err = mlx5e_create_direct_tirs(priv, priv->direct_tir, max_nch);
- 	if (err)
- 		goto err_destroy_indirect_tirs;
- 
-@@ -405,11 +406,11 @@ static int mlx5i_init_rx(struct mlx5e_priv *priv)
+ 	if (MLX5E_GET_PFLAG(&chs->params, MLX5E_PFLAG_TX_PORT_TS)) {
+-		err = mlx5e_port_ptp_open(priv, &chs->params, chs->c[0]->lag_port,
+-					  &chs->port_ptp);
++		err = mlx5e_ptp_open(priv, &chs->params, chs->c[0]->lag_port, &chs->ptp);
+ 		if (err)
+ 			goto err_close_channels;
+ 	}
+@@ -2103,8 +2102,8 @@ int mlx5e_open_channels(struct mlx5e_priv *priv,
  	return 0;
  
- err_destroy_direct_tirs:
--	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->direct_tir, max_nch);
- err_destroy_indirect_tirs:
- 	mlx5e_destroy_indirect_tirs(priv);
- err_destroy_direct_rqts:
--	mlx5e_destroy_direct_rqts(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->direct_tir, max_nch);
- err_destroy_indirect_rqts:
- 	mlx5e_destroy_rqt(priv, &priv->indir_rqt);
- err_close_drop_rq:
-@@ -421,10 +422,12 @@ static int mlx5i_init_rx(struct mlx5e_priv *priv)
+ err_close_ptp:
+-	if (chs->port_ptp)
+-		mlx5e_port_ptp_close(chs->port_ptp);
++	if (chs->ptp)
++		mlx5e_ptp_close(chs->ptp);
  
- static void mlx5i_cleanup_rx(struct mlx5e_priv *priv)
+ err_close_channels:
+ 	for (i--; i >= 0; i--)
+@@ -2124,8 +2123,8 @@ static void mlx5e_activate_channels(struct mlx5e_channels *chs)
+ 	for (i = 0; i < chs->num; i++)
+ 		mlx5e_activate_channel(chs->c[i]);
+ 
+-	if (chs->port_ptp)
+-		mlx5e_ptp_activate_channel(chs->port_ptp);
++	if (chs->ptp)
++		mlx5e_ptp_activate_channel(chs->ptp);
+ }
+ 
+ #define MLX5E_RQ_WQES_TIMEOUT 20000 /* msecs */
+@@ -2152,8 +2151,8 @@ static void mlx5e_deactivate_channels(struct mlx5e_channels *chs)
  {
-+	u16 max_nch = priv->max_nch;
-+
- 	mlx5i_destroy_flow_steering(priv);
--	mlx5e_destroy_direct_tirs(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_tirs(priv, priv->direct_tir, max_nch);
- 	mlx5e_destroy_indirect_tirs(priv);
--	mlx5e_destroy_direct_rqts(priv, priv->direct_tir);
-+	mlx5e_destroy_direct_rqts(priv, priv->direct_tir, max_nch);
- 	mlx5e_destroy_rqt(priv, &priv->indir_rqt);
- 	mlx5e_close_drop_rq(&priv->drop_rq);
- 	mlx5e_destroy_q_counters(priv);
+ 	int i;
+ 
+-	if (chs->port_ptp)
+-		mlx5e_ptp_deactivate_channel(chs->port_ptp);
++	if (chs->ptp)
++		mlx5e_ptp_deactivate_channel(chs->ptp);
+ 
+ 	for (i = 0; i < chs->num; i++)
+ 		mlx5e_deactivate_channel(chs->c[i]);
+@@ -2163,8 +2162,8 @@ void mlx5e_close_channels(struct mlx5e_channels *chs)
+ {
+ 	int i;
+ 
+-	if (chs->port_ptp)
+-		mlx5e_port_ptp_close(chs->port_ptp);
++	if (chs->ptp)
++		mlx5e_ptp_close(chs->ptp);
+ 
+ 	for (i = 0; i < chs->num; i++)
+ 		mlx5e_close_channel(chs->c[i]);
+@@ -2756,11 +2755,11 @@ static void mlx5e_build_txq_maps(struct mlx5e_priv *priv)
+ 		}
+ 	}
+ 
+-	if (!priv->channels.port_ptp)
++	if (!priv->channels.ptp)
+ 		return;
+ 
+ 	for (tc = 0; tc < num_tc; tc++) {
+-		struct mlx5e_port_ptp *c = priv->channels.port_ptp;
++		struct mlx5e_ptp *c = priv->channels.ptp;
+ 		struct mlx5e_txqsq *sq = &c->ptpsq[tc].txqsq;
+ 
+ 		priv->txq2sq[sq->txq_ix] = sq;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 92c5b81427b9..32331ac9288c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -407,13 +407,13 @@ static void mlx5e_stats_grp_sw_update_stats_ptp(struct mlx5e_priv *priv,
+ {
+ 	int i;
+ 
+-	if (!priv->port_ptp_opened)
++	if (!priv->tx_ptp_opened)
+ 		return;
+ 
+-	mlx5e_stats_grp_sw_update_stats_ch_stats(s, &priv->port_ptp_stats.ch);
++	mlx5e_stats_grp_sw_update_stats_ch_stats(s, &priv->ptp_stats.ch);
+ 
+ 	for (i = 0; i < priv->max_opened_tc; i++) {
+-		mlx5e_stats_grp_sw_update_stats_sq(s, &priv->port_ptp_stats.sq[i]);
++		mlx5e_stats_grp_sw_update_stats_sq(s, &priv->ptp_stats.sq[i]);
+ 
+ 		/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
+ 		barrier();
+@@ -1851,7 +1851,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(qos) { return; }
+ 
+ static MLX5E_DECLARE_STATS_GRP_OP_NUM_STATS(ptp)
+ {
+-	return priv->port_ptp_opened ?
++	return priv->tx_ptp_opened ?
+ 	       NUM_PTP_CH_STATS +
+ 	       ((NUM_PTP_SQ_STATS + NUM_PTP_CQ_STATS) * priv->max_opened_tc) :
+ 	       0;
+@@ -1861,7 +1861,7 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STRS(ptp)
+ {
+ 	int i, tc;
+ 
+-	if (!priv->port_ptp_opened)
++	if (!priv->tx_ptp_opened)
+ 		return idx;
+ 
+ 	for (i = 0; i < NUM_PTP_CH_STATS; i++)
+@@ -1884,24 +1884,24 @@ static MLX5E_DECLARE_STATS_GRP_OP_FILL_STATS(ptp)
+ {
+ 	int i, tc;
+ 
+-	if (!priv->port_ptp_opened)
++	if (!priv->tx_ptp_opened)
+ 		return idx;
+ 
+ 	for (i = 0; i < NUM_PTP_CH_STATS; i++)
+ 		data[idx++] =
+-			MLX5E_READ_CTR64_CPU(&priv->port_ptp_stats.ch,
++			MLX5E_READ_CTR64_CPU(&priv->ptp_stats.ch,
+ 					     ptp_ch_stats_desc, i);
+ 
+ 	for (tc = 0; tc < priv->max_opened_tc; tc++)
+ 		for (i = 0; i < NUM_PTP_SQ_STATS; i++)
+ 			data[idx++] =
+-				MLX5E_READ_CTR64_CPU(&priv->port_ptp_stats.sq[tc],
++				MLX5E_READ_CTR64_CPU(&priv->ptp_stats.sq[tc],
+ 						     ptp_sq_stats_desc, i);
+ 
+ 	for (tc = 0; tc < priv->max_opened_tc; tc++)
+ 		for (i = 0; i < NUM_PTP_CQ_STATS; i++)
+ 			data[idx++] =
+-				MLX5E_READ_CTR64_CPU(&priv->port_ptp_stats.cq[tc],
++				MLX5E_READ_CTR64_CPU(&priv->ptp_stats.cq[tc],
+ 						     ptp_cq_stats_desc, i);
+ 
+ 	return idx;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index d2efe2455955..cfb6ffd7df54 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -142,7 +142,7 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 				return txq_ix;
+ 		}
+ 
+-		if (unlikely(priv->channels.port_ptp))
++		if (unlikely(priv->channels.ptp))
+ 			if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+ 			    mlx5e_use_ptpsq(skb))
+ 				return mlx5e_select_ptpsq(dev, skb);
 -- 
 2.30.2
 
