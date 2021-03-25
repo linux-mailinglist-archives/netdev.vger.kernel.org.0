@@ -2,87 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE2E349A06
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 20:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2DF349A29
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 20:28:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbhCYTMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 15:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
+        id S230009AbhCYT1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 15:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbhCYTLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 15:11:42 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5A7C06174A;
-        Thu, 25 Mar 2021 12:11:42 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id x126so3004812pfc.13;
-        Thu, 25 Mar 2021 12:11:42 -0700 (PDT)
+        with ESMTP id S229616AbhCYT13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 15:27:29 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5C1C06174A;
+        Thu, 25 Mar 2021 12:27:28 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 32so2838116pgm.1;
+        Thu, 25 Mar 2021 12:27:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=O6BUmoVALUOMOrdFrqvxYj6lFfNbs+jP8qOgg/KmhBc=;
-        b=b+kvqkofrku/I2KsaAuP8m8gXXMZEPWOohB8R0ZxPLBXpoG2EX6CHpSXs015L9wf8Y
-         2PIg61n6QWE1V1ZwfwT4u62OjN//fPHGs/Y2tlh9oyuilwXTx33yKPX43DlayNLjUppg
-         /rEn6JjFqQY3F1dzkrLd/I56qDKg4f7s0DRpIfQlr5+3Yq4qNzPy+/PWyVmO8yqblz45
-         YZdb8w27O1Wnfj+bZ2oMbiWof6UU7KjWfmm8lPOkfmbvZNuTeFClw37BCsy0uhsHZPrG
-         sw0dMOcD+TP0Mr/PC46cmD1ppdUBHVcnqkHTf/WzVPGDfasVQPBRTPKsf6PohkryWWJD
-         MbMQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OYrivqIJMJkbkKIsLLmp5Sa6lUlSfN4t+1tq93chnBU=;
+        b=rXDTZyx5IHZjDIF1PBSMWbdVUKXYXreRSphnTlmUx1rSyu1a5iqahOshFc3ttbJvFj
+         69uKbTXCEUCYnoIgWmBvp/XEjzXqYroE6K4NoKpfkd1h9xQKkwRh6Skgz++GRJG9foIW
+         toiwMimCDBM9QPMRJCO+ai+Riwp+GDYSpnmBkPQMklfjXjr4Cg9xanyFgayP9rN9GJey
+         c1HUPCVccoZXN3tFe/pD4KmKXCxZl+fujLo8UXEorAiyPgLmXKVegmGwar4lqotbK59X
+         jVLlzCLBoNM//0adD/O0lD8Z2obitNBvg6weJ6IXUHrTuApizWN0oavOKLMdFTvQebU1
+         6BgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=O6BUmoVALUOMOrdFrqvxYj6lFfNbs+jP8qOgg/KmhBc=;
-        b=ongOXkCYe2EZKt62dXqogEo4W408JpS0IZatvH+xVA+imUZksFwkYWT2FjdgQ6aMrL
-         ELOLiwV3PUmMqxdcV0ZQXvDTTU+hQdG5yUVOEQVuWibNfLdYKCu6kwbYjzrFhvtTCAVk
-         AGvPv0ZfhqgyfEhKfX1ahjc3L9OlR7mYYjbxLbyC7SevdT88Fj+7KIdNQ8LGElyXow2s
-         jsdu0sWQktpfrIgCt6QFkGATTvTMEej4urEIVZpAFElMEAguIDD0KV7uYJaiusgBQMAY
-         dTRg8CMjfYu762KS9aFFa5qrrC/WD9gHhPyjfAPP9pxVNWD6ZmJ/XJfWNAeaDZ4vkbyV
-         kHGg==
-X-Gm-Message-State: AOAM533ucZHkJkYxDqc/vdfBXtu/Elif8pm5wesnUFXiR7erSl+6bsde
-        ne8AFVYTNvuDnh6I54wR4qY=
-X-Google-Smtp-Source: ABdhPJy62bPBzXU8Dftgv417LSmA9fJVevEj5b8FKs/niHS/ftyRYizek4y5makkPH3TvgZMZEVnaw==
-X-Received: by 2002:a17:902:b68b:b029:e6:cda9:39d with SMTP id c11-20020a170902b68bb02900e6cda9039dmr11451732pls.63.1616699501689;
-        Thu, 25 Mar 2021 12:11:41 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n184sm6760331pfd.205.2021.03.25.12.11.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Mar 2021 12:11:41 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: dsa: b53: spi: add missing
- MODULE_DEVICE_TABLE
-To:     Qinglang Miao <miaoqinglang@huawei.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Hulk Robot <hulkci@huawei.com>
-References: <20210325091954.1920344-1-miaoqinglang@huawei.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <10778792-bf0a-1fb1-b0a6-00e30af1727e@gmail.com>
-Date:   Thu, 25 Mar 2021 12:11:38 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OYrivqIJMJkbkKIsLLmp5Sa6lUlSfN4t+1tq93chnBU=;
+        b=XaY+uZ7NhrGykX+JuUWFt8Idox7uOtOtyiQBoWQjaN+/wyPWCKXBg7fuhxaNzItoSv
+         NExg23OMtiykcV5TI3lVSCQceuvXFnDjWimSXRyLI11+bUyMKqids7x8bvu2ra/0kywx
+         AVW6f6eFUiaqedYzVkrRyBvqSWrALzRJdniW3uNoslhhZCVsRqdwkcc3sIBRvfwijp2K
+         asRaBKez0gOHUz5Z4Y52gjP7dJW9td6v86pUskPXOw4JEC+oQjtUW6F/MY3o/4gCvTHq
+         n6OSKN28NPn4lcZn1oK4UPu/qAbfIJ2KnhOpmvw/W3iXhXSQf7bCXyP8hC9gySG344Ql
+         /G6w==
+X-Gm-Message-State: AOAM533WRF7FyxK469XcT3fBYKTRMNhidas30ewaYskmsP6INbc0yGVQ
+        Hx+v47yj1IsrgB2mun2cW3ATGRrB9vusfhQPdpo=
+X-Google-Smtp-Source: ABdhPJwxPRXYrMgPc3HUi4Z5O1MxJj2fPU876/C8TYGiFdjA36tg+fZtoZS92kFCw71BnRQsOQhNK9YGinSiPK+DJXs=
+X-Received: by 2002:a63:1c4c:: with SMTP id c12mr8752180pgm.179.1616700448425;
+ Thu, 25 Mar 2021 12:27:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210325091954.1920344-1-miaoqinglang@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
+ <161661958954.28508.16923012330549206770.stgit@john-Precision-5820-Tower>
+ <CAM_iQpVShCqWx1CYUOO9SrgWw7ztVP6j=v=W9dAd9FbChGZauQ@mail.gmail.com> <605bf9718f2fc_64fde2082b@john-XPS-13-9370.notmuch>
+In-Reply-To: <605bf9718f2fc_64fde2082b@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 25 Mar 2021 12:27:17 -0700
+Message-ID: <CAM_iQpWzoP9SOQcMPB--jp6C_xnUVAmVtS4yMCN43kL248y4QA@mail.gmail.com>
+Subject: Re: [bpf PATCH 2/2] bpf, sockmap: fix incorrect fwd_alloc accounting
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 24, 2021 at 7:46 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Cong Wang wrote:
+> > On Wed, Mar 24, 2021 at 2:00 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > Incorrect accounting fwd_alloc can result in a warning when the socket
+> > > is torn down,
+> > >
+>
+> [...]
+>
+> > > To resolve lets only account for sockets on the ingress queue that are
+> > > still associated with the current socket. On the redirect case we will
+> > > check memory limits per 6fa9201a89898, but will omit fwd_alloc accounting
+> > > until skb is actually enqueued. When the skb is sent via skb_send_sock_locked
+> > > or received with sk_psock_skb_ingress memory will be claimed on psock_other.
+>                      ^^^^^^^^^^^^^^^^^^^^
+> >
+> > You mean sk_psock_skb_ingress(), right?
+>
+> Yes.
+
+skb_send_sock_locked() actually allocates its own skb when sending, hence
+it uses a different skb for memory accounting.
+
+>
+> [...]
+>
+> > > @@ -880,12 +876,13 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+> > >                 kfree_skb(skb);
+> > >                 goto out;
+> > >         }
+> > > -       skb_set_owner_r(skb, sk);
+> > >         prog = READ_ONCE(psock->progs.skb_verdict);
+> > >         if (likely(prog)) {
+> > > +               skb->sk = psock->sk;
+> >
+> > Why is skb_orphan() not needed here?
+>
+> These come from strparser which do not have skb->sk set.
+
+Hmm, but sk_psock_verdict_recv() passes a clone too, like
+strparser, so either we need it for both, or not at all. Clones
+do not have skb->sk, so I think you can remove the one in
+sk_psock_verdict_recv() too.
 
 
-On 3/25/2021 2:19 AM, Qinglang Miao wrote:
-> This patch adds missing MODULE_DEVICE_TABLE definition which generates
-> correct modalias for automatic loading of this driver when it is built
-> as an external module.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+>
+> >
+> > Nit: You can just use 'sk' here, so "skb->sk = sk".
+>
+> Sure that is a bit nicer, will respin with this.
+>
+> >
+> >
+> > >                 tcp_skb_bpf_redirect_clear(skb);
+> > >                 ret = sk_psock_bpf_run(psock, prog, skb);
+> > >                 ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
+> > > +               skb->sk = NULL;
+> >
+> > Why do you want to set it to NULL here?
+>
+> So we don't cause the stack to throw other errors later if we
+> were to call skb_orphan for example. Various places in the skb
+> helpers expect both skb->sk and skb->destructor to be set together
+> and here we are just using it as a mechanism to feed the sk into
+> the BPF program side. The above skb_set_owner_r for example
+> would likely BUG().
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Sounds reasonable.
+
+Thanks.
