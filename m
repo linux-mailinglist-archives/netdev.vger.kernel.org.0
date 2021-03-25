@@ -2,88 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59ADB349AFC
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 21:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C150349AFF
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 21:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbhCYU2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 16:28:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32154 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229833AbhCYU2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 16:28:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616704105;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mzd7N7glHdCdA+MLUC2WowC34WAEzmgYDTepXDCp7BQ=;
-        b=dYkgRzozPuInvS9FhoGuQ6u2iLiN02bvdj6jjThI76iw2t+Gn2eNWxiOTufWrS15IKkxNk
-        ZLv92ajjVyCBt/I/GWp7gfSw/5Cy3iNpIcuvGAKXCfO3DIZduE+74zSJCdCBcZmYOwmIjf
-        KXYfEFBqM79x2LQT7/Q8LZ4eoa5zWLs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-288-Uh2U5tAOPzWJkE-VPdWjRA-1; Thu, 25 Mar 2021 16:28:21 -0400
-X-MC-Unique: Uh2U5tAOPzWJkE-VPdWjRA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 117D1CC621;
-        Thu, 25 Mar 2021 20:28:20 +0000 (UTC)
-Received: from maya.cloud.tilaa.com (unknown [10.36.110.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D7A6C60939;
-        Thu, 25 Mar 2021 20:28:19 +0000 (UTC)
-Received: from elisabeth (032-140-100-005.ip-addr.inexio.net [5.100.140.32])
-        by maya.cloud.tilaa.com (Postfix) with ESMTPSA id 24B2440098;
-        Thu, 25 Mar 2021 21:28:17 +0100 (CET)
-Date:   Thu, 25 Mar 2021 21:28:14 +0100
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, echaudro@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 0/2] net: do not modify the shared tunnel info when
- PMTU triggers an ICMP reply
-Message-ID: <20210325212806.1ae8fec5@elisabeth>
-In-Reply-To: <20210325153533.770125-1-atenart@kernel.org>
-References: <20210325153533.770125-1-atenart@kernel.org>
-Organization: Red Hat
+        id S230189AbhCYU3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 16:29:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45302 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229930AbhCYU3K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 16:29:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8713619EE;
+        Thu, 25 Mar 2021 20:29:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616704150;
+        bh=8Z3wPneQx1nb8eF9jL8XdhlaNnh+ArmECjF15PWkgfk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ISvAfzP/AYdLr0rNzMc101QiC13aBQlC+zjZUAl6obSr+zPk+OMWZ8Dso3p9iSq1K
+         1XjHechE4gXVnoYrvdOZ1xgU3M/DVyNZuBAU7wLlaM6QkEjw5w64W3A6v0o08U6OfW
+         Bs7p1jMIK82wkiNMnXSXVKdK532IE+tLJylyLArpuAGH1NyA2MjJMCnf+gI/HbkXDi
+         szEKm0f9iE20SW3Xn14uliUHq6+gcPIIcgRlUOesFXC1CBDfSl7peJgwqgc/Ht1Gri
+         bfDT9ds5UVlY/QKCCcLxVNC70XMMFWM5nMdC5Q0rKScor7G3ZzgB3QTU62sNllrxbG
+         vEpmYgFL8GSrg==
+Date:   Thu, 25 Mar 2021 21:29:05 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
+Subject: Re: [PATCH net-next v2 11/12] net: phy: marvell10g: print exact
+ model
+Message-ID: <20210325212905.3d8f8b39@thinkpad>
+In-Reply-To: <20210325155452.GO1463@shell.armlinux.org.uk>
+References: <20210325131250.15901-1-kabel@kernel.org>
+        <20210325131250.15901-12-kabel@kernel.org>
+        <20210325155452.GO1463@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Mar 2021 16:35:31 +0100
-Antoine Tenart <atenart@kernel.org> wrote:
+On Thu, 25 Mar 2021 15:54:52 +0000
+Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
 
-> Hi,
-> 
-> The series fixes an issue were a shared ip_tunnel_info is modified when
-> PMTU triggers an ICMP reply in vxlan and geneve, making following
-> packets in that flow to have a wrong destination address if the flow
-> isn't updated. A detailled information is given in each of the two
-> commits.
-> 
-> This was tested manually with OVS and I ran the PTMU selftests with
-> kmemleak enabled (all OK, none was skipped).
-> 
-> Thanks!
-> Antoine
-> 
-> Antoine Tenart (2):
->   vxlan: do not modify the shared tunnel info when PMTU triggers an ICMP
->     reply
->   geneve: do not modify the shared tunnel info when PMTU triggers an
->     ICMP reply
+> The 88X3310 and 88X3340 can be differentiated by bit 3 in the revision.
+> In other words, 88X3310 is 0x09a0..0x09a7, and 88X3340 is
+> 0x09a8..0x09af. We could add a separate driver structure, which would
+> then allow the kernel to print a more specific string via standard
+> methods, like we do for other PHYs. Not sure whether that would work
+> for the 88X21x0 family though.
 
-For the series,
+According to release notes it seems that we can also differentiate
+88E211X from 88E218X (via bit 3 in register 1.3):
+ 88E211X has 0x09B9
+ 88E218X has 0x09B1
 
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+but not 88E2110 from 88E2111
+    nor 88E2180 from 88E2181.
 
-Thanks for fixing this!
+These can be differentiated via register
+  3.0004.7
+(bit 7 of MDIO_MMD_PCS.MDIO_SPEED., which says whether device is capable
+ of 5g speed)
 
--- 
-Stefano
+I propose creating separate structures for mv88x3340 and mv88e218x.
+We can then print the remaining info as
+  "(not) macsec/ptp capable"
+or
+  "(not) 5g capable"
 
+What do you think?
+
+Marek
