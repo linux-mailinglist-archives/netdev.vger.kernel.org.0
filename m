@@ -2,124 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B20EA349322
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:34:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AD94349325
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 14:35:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbhCYNeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 09:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbhCYNdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:33:40 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7BEC06175F;
-        Thu, 25 Mar 2021 06:33:40 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id z1so2424105edb.8;
-        Thu, 25 Mar 2021 06:33:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rTsRHpZndxgeS88GP9I79vuy4E3KHPhBU7D9Qw0WHCM=;
-        b=g9CIjKlm8pC7lTaO6uioaZLuZC7fssojA8XJFkYo5/aLirEkOJVBCwx8YMv2zhwGB/
-         Qa2M0sLrbOWVGBVSzz7xnqlK0m8q76T0WEJeVlIsUI4X6czuSc2crrOcL4v8HBeFuo/M
-         bHRzYDJhTP9xpkrIVAwvHn13mtNG6XbgbgVTNWL6XCX8XbwMwY3MZQD6lqy03mjBzA4h
-         2B12c0rlZypC+/dH48k+ZfPYGxjhsHozVWcfkJJ2iaAeDWNCK5prMO8JJ73cQReZc1/g
-         UT18/by426/eKF+CvLHsKL0Z3sf0DcMMSBQqowcpMPIK5LUlZo5hTAx4XFnma4mmXGFl
-         NAwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rTsRHpZndxgeS88GP9I79vuy4E3KHPhBU7D9Qw0WHCM=;
-        b=Lj7/G9J/WLVrCmo+33it9flnyNVmYuU6RVhzeOjMxtARUpAWpOImTtJLWLIpzffwd+
-         Dow2xhuK1EUiYsoU2GIKBB6f+U5seTq7/hxnjV1HJLZbp7ivknENRBznb1pvJXOENQgq
-         AK2x2Za+hWMdaWrFnP4I252iDdh90uTUTP8+vv/iGxycxAcUUj9A9mYUVTnjlG1fPQ8T
-         E6rVNjvmVGI7/3exunvOf7MFYTRoR6TWKxd4mRpcmn6JWH0Srv0BICnBuVipEYK57MH3
-         108hsrTFS8DvRoNBTnbPKhyG/h353YRXlWtjKbBUWC8wLK6ID8F7BQqaG1hUcHwQYSz0
-         MKIw==
-X-Gm-Message-State: AOAM530iWW6Jr02WkIiBJbuqXJqMJsnmIO/Gp0Luaqa9Q6wQWDe/wZVX
-        7Mgr4P4loeUCGxw9WBQ/rwcDaLPER9XtBqUlfJ0=
-X-Google-Smtp-Source: ABdhPJxqmMPzuMrRzVuL37n6W7+MhKOw+Qkoq79g9Qi9zRISYcKyjKP6R1Xm2pEhuzO54fISTX6r5adSAeKLqF37+Kk=
-X-Received: by 2002:aa7:d0cb:: with SMTP id u11mr9144416edo.163.1616679218814;
- Thu, 25 Mar 2021 06:33:38 -0700 (PDT)
+        id S230512AbhCYNeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 09:34:37 -0400
+Received: from mail1.protonmail.ch ([185.70.40.18]:20391 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230348AbhCYNeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 09:34:07 -0400
+Date:   Thu, 25 Mar 2021 13:33:57 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1616679243; bh=TNcqNIUGi5IWLeEp3KkdTlzXyUEpBuLEIC37/Wa1Bno=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=NlvHt1XOAsoKLYbRojzvQhEKl/dCwJH25h2fND3oo6JGcBeJOaQ6uOHTcrdu8bAWy
+         YaxG6wwQ/wzjIFrsu1uc9DoU+oN8ML3ReRR0B0PrTwPA+/EBTBht46sonbfO+cS7WY
+         /Dcm3VDXbNq5UeMyGdcsv75ryM+ofhL8VSXEiy/WFWx1nezNk3Gw0/Ehj3Zz3D6rZA
+         5INj5uRlIMIdBMMlu5kXDEuek6OnsdoUmCiYDAqcgfcVBCQDKCpPIBn43yfS+fXem2
+         4/eI/oTNgPa6rXbwupzm8d39KtK8sjR/o7nfkLkXqXlKtqIW0sqine4Fuzl5Akyheq
+         Yk2KHi8rPXA7w==
+To:     Mel Gorman <mgorman@techsingularity.net>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Matthew Wilcox <willy@infradead.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux-NFS <linux-nfs@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH 9/9] net: page_pool: use alloc_pages_bulk in refill code path
+Message-ID: <20210325133340.14527-1-alobakin@pm.me>
+In-Reply-To: <20210325114228.27719-10-mgorman@techsingularity.net>
+References: <20210325114228.27719-1-mgorman@techsingularity.net> <20210325114228.27719-10-mgorman@techsingularity.net>
 MIME-Version: 1.0
-References: <20210325124225.2760-1-linux.amoon@gmail.com> <20210325124225.2760-2-linux.amoon@gmail.com>
- <YFyIvxOHwIs3R/IT@lunn.ch>
-In-Reply-To: <YFyIvxOHwIs3R/IT@lunn.ch>
-From:   Anand Moon <linux.amoon@gmail.com>
-Date:   Thu, 25 Mar 2021 19:03:28 +0530
-Message-ID: <CANAwSgRHHwOtWb87aeqF=kio53xCO0_c_ZkF+9hKohWoyji6dg@mail.gmail.com>
-Subject: Re: [PATCHv1 1/6] dt-bindings: net: ethernet-phy: Fix the parsing of
- ethernet-phy compatible string
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        netdev@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-amlogic@lists.infradead.org, Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+From: Mel Gorman <mgorman@techsingularity.net>
+Date: Thu, 25 Mar 2021 11:42:28 +0000
 
-On Thu, 25 Mar 2021 at 18:27, Andrew Lunn <andrew@lunn.ch> wrote:
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
 >
-> On Thu, Mar 25, 2021 at 12:42:20PM +0000, Anand Moon wrote:
-> > Fix the parsing of check of pattern ethernet-phy-ieee802.3 used
-> > by the device tree to initialize the mdio phy.
-> >
-> > As per the of_mdio below 2 are valid compatible string
-> >       "ethernet-phy-ieee802.3-c22"
-> >       "ethernet-phy-ieee802.3-c45"
+> There are cases where the page_pool need to refill with pages from the
+> page allocator. Some workloads cause the page_pool to release pages
+> instead of recycling these pages.
 >
-> Nope, this is not the full story. Yes, you can have these compatible
-> strings. But you can also use the PHY ID,
-> e.g. ethernet-phy-idAAAA.BBBB, where AAAA and BBBB are what you find in
-> registers 2 and 3 of the PHY.
+> For these workload it can improve performance to bulk alloc pages from
+> the page-allocator to refill the alloc cache.
 >
-
-Oops I did not read the drivers/net/mdio/of_mdio.c completely.
-Thanks for letting me know so in the next series,
-I will try to add the below compatible string as per the description in the dts.
-
-               compatible = "ethernet-phy-id001c.c916",
-                            "ethernet-phy-ieee802.3-c22";
-
-> > Cc: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Anand Moon <linux.amoon@gmail.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> > index 2766fe45bb98..cfc7909d3e56 100644
-> > --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> > @@ -33,7 +33,7 @@ properties:
-> >          description: PHYs that implement IEEE802.3 clause 22
-> >        - const: ethernet-phy-ieee802.3-c45
-> >          description: PHYs that implement IEEE802.3 clause 45
-> > -      - pattern: "^ethernet-phy-id[a-f0-9]{4}\\.[a-f0-9]{4}$"
-> > +      - pattern: "^ethernet-phy-ieee[0-9]{3}\\.[0-9][-][a-f0-9]{4}$"
+> For XDP-redirect workload with 100G mlx5 driver (that use page_pool)
+> redirecting xdp_frame packets into a veth, that does XDP_PASS to create
+> an SKB from the xdp_frame, which then cannot return the page to the
+> page_pool.
 >
-> So here you need, in addition to, not instead of.
+> Performance results under GitHub xdp-project[1]:
+>  [1] https://github.com/xdp-project/xdp-project/blob/master/areas/mem/pag=
+e_pool06_alloc_pages_bulk.org
 >
-> Please test you change on for example imx6ul-14x14-evk.dtsi
+> Mel: The patch "net: page_pool: convert to use alloc_pages_bulk_array
+> variant" was squashed with this patch. From the test page, the array
+> variant was superior with one of the test results as follows.
 >
+> =09Kernel=09=09XDP stats       CPU     pps           Delta
+> =09Baseline=09XDP-RX CPU      total   3,771,046       n/a
+> =09List=09=09XDP-RX CPU      total   3,940,242    +4.49%
+> =09Array=09=09XDP-RX CPU      total   4,249,224   +12.68%
+>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 
-Yes I have gone through the test case.
+I tested it a lot for past two weeks and I'm very satisfied with
+the results, especially the new array-based version.
+Haven't had a chance to test this particular set yet, but still.
 
->    Andrew
+Reviewed-by: Alexander Lobakin <alobakin@pm.me>
 
-- Anand
+Great work, thank you all guys!
+
+> ---
+>  include/net/page_pool.h |  2 +-
+>  net/core/page_pool.c    | 82 ++++++++++++++++++++++++++++-------------
+>  2 files changed, 57 insertions(+), 27 deletions(-)
+>
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index b5b195305346..6d517a37c18b 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -65,7 +65,7 @@
+>  #define PP_ALLOC_CACHE_REFILL=0964
+>  struct pp_alloc_cache {
+>  =09u32 count;
+> -=09void *cache[PP_ALLOC_CACHE_SIZE];
+> +=09struct page *cache[PP_ALLOC_CACHE_SIZE];
+>  };
+>
+>  struct page_pool_params {
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 40e1b2beaa6c..9ec1aa9640ad 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -203,38 +203,17 @@ static bool page_pool_dma_map(struct page_pool *poo=
+l, struct page *page)
+>  =09return true;
+>  }
+>
+> -/* slow path */
+> -noinline
+> -static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> -=09=09=09=09=09=09 gfp_t _gfp)
+> +static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+> +=09=09=09=09=09=09 gfp_t gfp)
+>  {
+> -=09unsigned int pp_flags =3D pool->p.flags;
+>  =09struct page *page;
+> -=09gfp_t gfp =3D _gfp;
+> -
+> -=09/* We could always set __GFP_COMP, and avoid this branch, as
+> -=09 * prep_new_page() can handle order-0 with __GFP_COMP.
+> -=09 */
+> -=09if (pool->p.order)
+> -=09=09gfp |=3D __GFP_COMP;
+> -
+> -=09/* FUTURE development:
+> -=09 *
+> -=09 * Current slow-path essentially falls back to single page
+> -=09 * allocations, which doesn't improve performance.  This code
+> -=09 * need bulk allocation support from the page allocator code.
+> -=09 */
+>
+> -=09/* Cache was empty, do real allocation */
+> -#ifdef CONFIG_NUMA
+> +=09gfp |=3D __GFP_COMP;
+>  =09page =3D alloc_pages_node(pool->p.nid, gfp, pool->p.order);
+> -#else
+> -=09page =3D alloc_pages(gfp, pool->p.order);
+> -#endif
+> -=09if (!page)
+> +=09if (unlikely(!page))
+>  =09=09return NULL;
+>
+> -=09if ((pp_flags & PP_FLAG_DMA_MAP) &&
+> +=09if ((pool->p.flags & PP_FLAG_DMA_MAP) &&
+>  =09    unlikely(!page_pool_dma_map(pool, page))) {
+>  =09=09put_page(page);
+>  =09=09return NULL;
+> @@ -243,6 +222,57 @@ static struct page *__page_pool_alloc_pages_slow(str=
+uct page_pool *pool,
+>  =09/* Track how many pages are held 'in-flight' */
+>  =09pool->pages_state_hold_cnt++;
+>  =09trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
+> +=09return page;
+> +}
+> +
+> +/* slow path */
+> +noinline
+> +static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> +=09=09=09=09=09=09 gfp_t gfp)
+> +{
+> +=09const int bulk =3D PP_ALLOC_CACHE_REFILL;
+> +=09unsigned int pp_flags =3D pool->p.flags;
+> +=09unsigned int pp_order =3D pool->p.order;
+> +=09struct page *page;
+> +=09int i, nr_pages;
+> +
+> +=09/* Don't support bulk alloc for high-order pages */
+> +=09if (unlikely(pp_order))
+> +=09=09return __page_pool_alloc_page_order(pool, gfp);
+> +
+> +=09/* Unnecessary as alloc cache is empty, but guarantees zero count */
+> +=09if (unlikely(pool->alloc.count > 0))
+> +=09=09return pool->alloc.cache[--pool->alloc.count];
+> +
+> +=09/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
+> +=09memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
+> +
+> +=09nr_pages =3D alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
+> +=09if (unlikely(!nr_pages))
+> +=09=09return NULL;
+> +
+> +=09/* Pages have been filled into alloc.cache array, but count is zero a=
+nd
+> +=09 * page element have not been (possibly) DMA mapped.
+> +=09 */
+> +=09for (i =3D 0; i < nr_pages; i++) {
+> +=09=09page =3D pool->alloc.cache[i];
+> +=09=09if ((pp_flags & PP_FLAG_DMA_MAP) &&
+> +=09=09    unlikely(!page_pool_dma_map(pool, page))) {
+> +=09=09=09put_page(page);
+> +=09=09=09continue;
+> +=09=09}
+> +=09=09pool->alloc.cache[pool->alloc.count++] =3D page;
+> +=09=09/* Track how many pages are held 'in-flight' */
+> +=09=09pool->pages_state_hold_cnt++;
+> +=09=09trace_page_pool_state_hold(pool, page,
+> +=09=09=09=09=09   pool->pages_state_hold_cnt);
+> +=09}
+> +
+> +=09/* Return last page */
+> +=09if (likely(pool->alloc.count > 0))
+> +=09=09page =3D pool->alloc.cache[--pool->alloc.count];
+> +=09else
+> +=09=09page =3D NULL;
+>
+>  =09/* When page just alloc'ed is should/must have refcnt 1. */
+>  =09return page;
+> --
+> 2.26.2
+
+Al
+
