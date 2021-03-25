@@ -2,108 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43990349BF3
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 22:50:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47FBC3499D1
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 19:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbhCYVuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 17:50:12 -0400
-Received: from ma1-aaemail-dr-lapp03.apple.com ([17.171.2.72]:58916 "EHLO
-        ma1-aaemail-dr-lapp03.apple.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230440AbhCYVt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 17:49:59 -0400
-X-Greylist: delayed 10762 seconds by postgrey-1.27 at vger.kernel.org; Thu, 25 Mar 2021 17:49:59 EDT
-Received: from pps.filterd (ma1-aaemail-dr-lapp03.apple.com [127.0.0.1])
-        by ma1-aaemail-dr-lapp03.apple.com (8.16.0.42/8.16.0.42) with SMTP id 12PImwn6031904;
-        Thu, 25 Mar 2021 11:50:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=from : content-type :
- content-transfer-encoding : mime-version : subject : message-id : date :
- to; s=20180706; bh=HvRrQdHSok2zeZKp2kJcOzXJjsJYJ5UbdugaLvUYau4=;
- b=fE8/sF6ZnxpaWRmjmy6TT9V9wS+TntK/HxOCFmTa8CzJ4XDtUjpf39sP7UUr/qnhgwT6
- u1Fksx2eRdGyHiEeORwmO2gjz/l+3CvDf7dDzaV3vvUvCyqrPSOHauXbEKt5yraa29eg
- cSVW18wFlQOOdPNtQXGNMU14NYYsW/3HW+agSHPdxeX36luSaglt8raXK/KgZjNgZ+dm
- /3Cd0cJh6++KHEN77dG2e/FGc98Bk+zHdhm4B6CB4ULXLqHV89XIfa52guUd+uScJ8td
- EQgb/eO6REfEfFY0InNV5HeXHbxUz/t1DKL3nFO6ULlx/eqm63s1V9nonusNj5InVrKq vQ== 
-Received: from crk-mailsvcp-mta-lapp04.euro.apple.com (crk-mailsvcp-mta-lapp04.euro.apple.com [17.66.55.17])
-        by ma1-aaemail-dr-lapp03.apple.com with ESMTP id 37dg1vkg0h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Thu, 25 Mar 2021 11:50:33 -0700
-Received: from crk-mailsvcp-mmp-lapp02.euro.apple.com
- (crk-mailsvcp-mmp-lapp02.euro.apple.com [17.72.136.16])
- by crk-mailsvcp-mta-lapp04.euro.apple.com
- (Oracle Communications Messaging Server 8.1.0.7.20201203 64bit (built Dec  3
- 2020))
- with ESMTPS id <0QQJ00U0HGC8DA00@crk-mailsvcp-mta-lapp04.euro.apple.com>; Thu,
- 25 Mar 2021 18:50:32 +0000 (GMT)
-Received: from process_milters-daemon.crk-mailsvcp-mmp-lapp02.euro.apple.com by
- crk-mailsvcp-mmp-lapp02.euro.apple.com
- (Oracle Communications Messaging Server 8.1.0.7.20201203 64bit (built Dec  3
- 2020)) id <0QQJ00300GBY6700@crk-mailsvcp-mmp-lapp02.euro.apple.com>; Thu,
- 25 Mar 2021 18:50:32 +0000 (GMT)
-X-Va-A: 
-X-Va-T-CD: bcd587c70f2b893a4541eb5ac66e0494
-X-Va-E-CD: 148ad133188105e62a3bc79cff51a8db
-X-Va-R-CD: e1500ae658eab21eaee7bfe5430b4792
-X-Va-CD: 0
-X-Va-ID: a53b4dfa-6596-4489-a58b-ec431952f546
-X-V-A:  
-X-V-T-CD: bcd587c70f2b893a4541eb5ac66e0494
-X-V-E-CD: 148ad133188105e62a3bc79cff51a8db
-X-V-R-CD: e1500ae658eab21eaee7bfe5430b4792
-X-V-CD: 0
-X-V-ID: d44ad4c3-bfcc-4bef-8e43-87676770cc53
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-25_07:2021-03-25,2021-03-25 signatures=0
-Received: from [17.232.106.97] (unknown [17.232.106.97])
- by crk-mailsvcp-mmp-lapp02.euro.apple.com
- (Oracle Communications Messaging Server 8.1.0.7.20201203 64bit (built Dec  3
- 2020))
- with ESMTPSA id <0QQJ00LDQGC7IZ00@crk-mailsvcp-mmp-lapp02.euro.apple.com>;
- Thu, 25 Mar 2021 18:50:32 +0000 (GMT)
-From:   Norman Maurer <norman_maurer@apple.com>
-Content-type: text/plain; charset=us-ascii
-Content-transfer-encoding: quoted-printable
-MIME-version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: udp: Add support for getsockopt(..., ..., UDP_GRO, ..., ...);
-Message-id: <5AFF0F2A-96FD-40D6-9CE6-74F7CE8CEB4F@apple.com>
-Date:   Thu, 25 Mar 2021 19:50:31 +0100
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-25_07:2021-03-25,2021-03-25 signatures=0
+        id S230042AbhCYS5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 14:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229616AbhCYS5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 14:57:17 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC78EC06174A;
+        Thu, 25 Mar 2021 11:57:16 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id c204so3016839pfc.4;
+        Thu, 25 Mar 2021 11:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cb4rdnuLp99nvgBCEc1MpzgC638yA5gEtV6ZjkDqsso=;
+        b=WBLfKdFXmOOAXB5FIUqh+8rXQAsHO8BV2718zQWe6JbhcmQVhkSHmBsQV7Ms8vTcY8
+         FhFAPnMZHQA6u+djJxsldvouSYFJhPUs/51OUEbGLaALt8KFE0NlxYnGlxwkVhQnjYxo
+         gyQmPb7EA+S00Cs5xUcRnBR/peEgjVqonHdPcPYorFMVhqtSUErZvaLitqkiuhfuqETP
+         vEUZyvIP7WIGn0HanB5RZH5ZTfPI1kW4Pv+9tCL1IpD1n9RwSWgUHRjnIrGy6jgs2y6G
+         7JDHIpyxnObZ4EVxBzmI54oHWSY7h1b4D93SwHyXJvBxkupTsfgK54Mm91JbRMiEIvqD
+         o48w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cb4rdnuLp99nvgBCEc1MpzgC638yA5gEtV6ZjkDqsso=;
+        b=SwMdOw2VQufQd9CIjI0KGULEG2FdJS2p4aEUV7eP2F3zHrRQ/cYkZDdUBoW0Ewq5dl
+         X9ps7SLlCcAYUA6kpXeeuoEMl0wAO3MsV1lD1f4Nc0Uue7Jsp0SnE/RcMeYEV7JLg9mF
+         kJzAZOF3/Zi/hteKr/3vO2DfA5xEnodQUJ1j3XDdIUcgsKGVisytBZHH/3zJalB5p1J1
+         Xq/vtVuzXcwpJ6C6exbyKB5yYMtUNg0yy71kjY+SQF3N5cPqVRpxtXWOLYaTaGMDs3Ga
+         0JaTZ572DxYwDKV60rasQO0NTu4soDpIUC2yNc9u13G8VQ5GqYWE9+Q14zCCsmee6vcP
+         3TuA==
+X-Gm-Message-State: AOAM531xCh78FrAYZJTNKkrKYjNDg0N2J6Jb9VG7ABMblMKwhjJtVhKW
+        RXhcNSnmjgwPiqDCtjhXjoT3rEBRrB4asni91hw=
+X-Google-Smtp-Source: ABdhPJwExiMjzWa63UeE7o2Y+uS8sDRz6b6WBKjy17XfLlHfnz+kQum8nwU0FPtjhdifs1vcGlMevGmnb9HOGjy2KDc=
+X-Received: by 2002:a62:92cc:0:b029:1fa:515d:808f with SMTP id
+ o195-20020a6292cc0000b02901fa515d808fmr9125198pfd.43.1616698636133; Thu, 25
+ Mar 2021 11:57:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
+ <161661956953.28508.2297266338306692603.stgit@john-Precision-5820-Tower>
+ <CAM_iQpUNUE8cmyNaALG1dZtCfJGah2pggDNk-eVbyxexnA4o_g@mail.gmail.com> <605bf553d16f_64fde2081@john-XPS-13-9370.notmuch>
+In-Reply-To: <605bf553d16f_64fde2081@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 25 Mar 2021 11:57:05 -0700
+Message-ID: <CAM_iQpUdOkbs5MPcfTqNcPV3f0EXU7CQhuV9y2UDrOZ4SawvvA@mail.gmail.com>
+Subject: Re: [bpf PATCH 1/2] bpf, sockmap: fix sk->prot unhash op reset
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for UDP_GRO was added in the past but the implementation for
-getsockopt was missed which did lead to an error when we tried to
-retrieve the setting for UDP_GRO. This patch adds the missing switch
-case for UDP_GRO
+On Wed, Mar 24, 2021 at 7:28 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Cong Wang wrote:
+> > On Wed, Mar 24, 2021 at 1:59 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> > > index 47b7c5334c34..ecb5634b4c4a 100644
+> > > --- a/net/tls/tls_main.c
+> > > +++ b/net/tls/tls_main.c
+> > > @@ -754,6 +754,12 @@ static void tls_update(struct sock *sk, struct proto *p,
+> > >
+> > >         ctx = tls_get_ctx(sk);
+> > >         if (likely(ctx)) {
+> > > +               /* TLS does not have an unhash proto in SW cases, but we need
+> > > +                * to ensure we stop using the sock_map unhash routine because
+> > > +                * the associated psock is being removed. So use the original
+> > > +                * unhash handler.
+> > > +                */
+> > > +               WRITE_ONCE(sk->sk_prot->unhash, p->unhash);
+> > >                 ctx->sk_write_space = write_space;
+> > >                 ctx->sk_proto = p;
+> >
+> > It looks awkward to update sk->sk_proto inside tls_update(),
+> > at least when ctx!=NULL.
+>
+> hmm. It doesn't strike me as paticularly awkward but OK.
 
-Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
-Signed-off-by: Norman Maurer <norman_maurer@apple.com>
----
- net/ipv4/udp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+I read tls_update() as "updating ctx when it is initialized", with your
+patch, we are updating sk->sk_prot->unhash too when updating ctx,
+pretty much like a piggyback, hence it reads odd to me.
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4a0478b17243..99d743eb9dc4 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2754,6 +2754,10 @@ int udp_lib_getsockopt(struct sock *sk, int =
-level, int optname,
- 		val =3D up->gso_size;
- 		break;
-
-+	case UDP_GRO:
-+		val =3D up->gro_enabled;
-+		break;
-+
- 	/* The following two cannot be changed on UDP sockets, the =
-return is
- 	 * always 0 (which corresponds to the full checksum coverage of =
-UDP). */
- 	case UDPLITE_SEND_CSCOV:
---
-2.29.2
-
+Thanks.
