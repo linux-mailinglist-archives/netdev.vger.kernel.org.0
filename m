@@ -2,98 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B34FB3494DD
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 16:02:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40070349509
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 16:12:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230500AbhCYPC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 11:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbhCYPCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 11:02:01 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF50C06174A;
-        Thu, 25 Mar 2021 08:02:01 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id x14so2019609qki.10;
-        Thu, 25 Mar 2021 08:02:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D6lqBkmqDi36o04hy81nixhjopIa3qv0i9AAEd/fUWA=;
-        b=QjNiajmB8gVa1mycAekPlCc88I7cNIkFrq1JW4JZPgh1nb9NQ+NvVOA5X9tVtkqwaQ
-         0tEj4Zr1igynSalGkTsxc5QMi6/DuPBUBzuu7tchXbMgLj00Mv6e/2IgblTY3GzuGvGk
-         MkmONWAcnjYZ9G2tjitB2Zk7oeaRewtFB+p+xR0+jUUxGPfmX7jDuSkVS3dajFc6gFRR
-         hRwmJdSgxakAVPgkj+UwXAglqqbjZVcUSt2J3LI9IwmymGOMzXm+9nidW8v86aXpSRrA
-         GTTnLK+XX0ofgrMfQ0UtZQ/Kre9X7gF1gDtYBABIVy/mOo4cV5jpJzO+cgG7lp/J1Qx3
-         E3Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D6lqBkmqDi36o04hy81nixhjopIa3qv0i9AAEd/fUWA=;
-        b=AgCMc7NGvaM/aDlY608nauW4xLhp3lgACs5lUfR+4/N7thgAOi7qQCpyqhe8TJHEKW
-         z60DTwwkhaYLYF7ZqCBkRLsHYyHliEn8vfM3gYAvSYkH/3UHBdBbhVNX3x0eUUJkuhQI
-         8fSeJfD5APDWc+MX/wjNhGD/DflNaF9XVhD5MGNk8RKBqdqFfAdDxoL3moV4r1/y4tXJ
-         hiulYexFlkT+a4gHkZSGnhrO99T8q6WHXxHrDmARHgm+KYLpD1RUySnaptXTXHSVOFPy
-         cQtvmx2VKNzSgM8Xq/UcG2dxz694pRkjNJbn3njd8piFhhjj7hBP6NwVwkTo8vHPbzpn
-         7vfA==
-X-Gm-Message-State: AOAM530qcfFPE2vsFCldCS/h3nN+yd2Y44DJ2Zgj0C7l+Y5s7wITXW8+
-        PS33PQrmDex6a5hHIk9p92A=
-X-Google-Smtp-Source: ABdhPJyfq2qXFDWvIbGbYdWsuxBVQZT7cmtz7Mh3rfp4HUM45O97U1d5wQivOPeOLXkRRQOsN4ko1Q==
-X-Received: by 2002:a05:620a:11ad:: with SMTP id c13mr8570692qkk.282.1616684520625;
-        Thu, 25 Mar 2021 08:02:00 -0700 (PDT)
-Received: from localhost.localdomain ([179.218.4.27])
-        by smtp.gmail.com with ESMTPSA id c19sm4006766qkl.78.2021.03.25.08.01.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 08:02:00 -0700 (PDT)
-From:   Pedro Tammela <pctammela@gmail.com>
-X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
-Cc:     Pedro Tammela <pctammela@mojatatu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] libbpf: fix bail out from 'ringbuf_process_ring()' on error
-Date:   Thu, 25 Mar 2021 12:01:15 -0300
-Message-Id: <20210325150115.138750-1-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.25.1
+        id S230224AbhCYPMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 11:12:08 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39917 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229524AbhCYPL6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 11:11:58 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 95FE15C00F8;
+        Thu, 25 Mar 2021 11:11:57 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 25 Mar 2021 11:11:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=m+TI7fDtbMIQ2ZxuOSUCfSosKVq
+        BDKs4AB5sOk9PJHA=; b=btgCKPlDhMRjiKADJniFtQ1r16V73Oxu1K46DypnEfu
+        xFovDcyXM+Akxhhl0zDE1a1U0OUu+xBjq/bzguNuFFWTn2LvUHTfuonnREmq66O4
+        NROUC9NHy9v3kk99qHrYQbmj9lDYWipQTmA/uIr60mA6QIHdYPtWREw7h2c1DAic
+        4yo7O1c7xWkUXnXopxA7ke0j2gOSRy49GMEfmQsg3RqLTYNiWYNlbKIhs5ie57qH
+        AavNM4DMsFkpJ4R6Xf/OzI3UR9+IeG6HdUAjr5zWVFu4LwdWpWgs4MgGZlQjpDi2
+        hwqueOYa+8RJjN3Y5YZTtOEwCpE8H4Uq6e0PWsNKl7g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=m+TI7f
+        DtbMIQ2ZxuOSUCfSosKVqBDKs4AB5sOk9PJHA=; b=esiyhBWOIbKD6f/rCpwOqf
+        cPzBPo5sGy4tztOT9atbNkhdwFy51z9zycztXLVXkmOP+tGmVHq/6e6o0WBojP1i
+        w1h+/LQBqbzVq9hX5OvT1pIGEe31q5wapmEMyAVeCcOqnGrYzu2ayFEPRL/IZCYp
+        rIJssJcmdXcO4sUbcAu9jCu0LDRw2S0iGo2EydIKhfkoXQopsgcCfzGmJfwEn2he
+        /2zAbRyhEc/LrEAKCqWazveAkpVcy5XyP7kAL6khXq07vFVbCwx3Q4u/ewdRVIfC
+        //CLvrnkw/fU/eYI6O4gWlyqCfebTGS/YM7p9zdir6YLDyErqOP6mL7ONNitnIug
+        ==
+X-ME-Sender: <xms:O6hcYMrYKs7pBw9avRSUb_AjegUEaO8vlKP28n_D8fvEkgPk_cw7jw>
+    <xme:O6hcYCrmMZX7AMbe87Oy5ui3M9XU7b3OZnO11JdL-gCzQNWCme06Hbe0h8EdVVGMv
+    PmGxjMcDvUJGQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehtddgjeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeef
+    rdekiedrjeegrdeigeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:PKhcYBMUIe2USobE9cLS6QcOM5HIQpyjtaqvd1Hl7TwwpV6MXROzMA>
+    <xmx:PKhcYD4Khu-5f_7RTYc6mToQbsWmzqnJz0KInF9V-BEw9pTQ0ibJgQ>
+    <xmx:PKhcYL7Usdpw6SxFdCcT39CgflXrt7hfswlxXJSktGvrmt7ZCWp7CQ>
+    <xmx:PahcYBTHIYjXboTvyOjzIxd207GaSoBjgQFYILXerhbTBXwGM-bbDA>
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8FAB51080057;
+        Thu, 25 Mar 2021 11:11:55 -0400 (EDT)
+Date:   Thu, 25 Mar 2021 16:11:53 +0100
+From:   Greg KH <greg@kroah.com>
+To:     'Qiheng Lin <linqiheng@huawei.com>
+Cc:     Petko Manolov <petkan@nucleusys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH net-next] net: usb: pegasus: Remove duplicated include
+ from pegasus.c
+Message-ID: <YFyoOX/BULRzvrrI@kroah.com>
+References: <20210325145652.13469-1-linqiheng@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210325145652.13469-1-linqiheng@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current code bails out with negative and positive returns.
-If the callback returns a positive return code, 'ring_buffer__consume()'
-and 'ring_buffer__poll()' will return a spurious number of records
-consumed, but mostly important will continue the processing loop.
+On Thu, Mar 25, 2021 at 10:56:52PM +0800, 'Qiheng Lin wrote:
+> From: Qiheng Lin <linqiheng@huawei.com>
+> 
+> Remove duplicated include.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
+> ---
+>  drivers/net/usb/pegasus.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+> index 9a907182569c..e0ee5c096396 100644
+> --- a/drivers/net/usb/pegasus.c
+> +++ b/drivers/net/usb/pegasus.c
+> @@ -65,7 +65,6 @@ static struct usb_eth_dev usb_dev_id[] = {
+>  	{.name = pn, .vendor = vid, .device = pid, .private = flags},
+>  #define PEGASUS_DEV_CLASS(pn, vid, pid, dclass, flags) \
+>  	PEGASUS_DEV(pn, vid, pid, flags)
+> -#include "pegasus.h"
+>  #undef	PEGASUS_DEV
+>  #undef	PEGASUS_DEV_CLASS
+>  	{NULL, 0, 0, 0},
+> @@ -84,7 +83,6 @@ static struct usb_device_id pegasus_ids[] = {
+>  #define PEGASUS_DEV_CLASS(pn, vid, pid, dclass, flags) \
+>  	{.match_flags = (USB_DEVICE_ID_MATCH_DEVICE | USB_DEVICE_ID_MATCH_DEV_CLASS), \
+>  	.idVendor = vid, .idProduct = pid, .bDeviceClass = dclass},
+> -#include "pegasus.h"
+>  #undef	PEGASUS_DEV
+>  #undef	PEGASUS_DEV_CLASS
+>  	{},
+> 
 
-This patch makes positive returns from the callback a no-op.
+Did you build and test this code now with this change?
 
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- tools/lib/bpf/ringbuf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I think you broke this driver badly now :(
 
-diff --git a/tools/lib/bpf/ringbuf.c b/tools/lib/bpf/ringbuf.c
-index 8caaafe7e312..e7a8d847161f 100644
---- a/tools/lib/bpf/ringbuf.c
-+++ b/tools/lib/bpf/ringbuf.c
-@@ -227,7 +227,7 @@ static int ringbuf_process_ring(struct ring* r)
- 			if ((len & BPF_RINGBUF_DISCARD_BIT) == 0) {
- 				sample = (void *)len_ptr + BPF_RINGBUF_HDR_SZ;
- 				err = r->sample_cb(r->ctx, sample, len);
--				if (err) {
-+				if (err < 0) {
- 					/* update consumer pos and bail out */
- 					smp_store_release(r->consumer_pos,
- 							  cons_pos);
--- 
-2.25.1
+Please think about _why_ the code would have been written this way in
+the first place, it is a bit odd, right?
 
+netdev maintainers, consider this a NAK.
+
+thanks,
+
+greg k-h
