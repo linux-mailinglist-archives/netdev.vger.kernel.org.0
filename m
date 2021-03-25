@@ -2,167 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1970A348D4D
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 10:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44B15348D6F
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 10:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbhCYJqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 05:46:14 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:54628 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbhCYJqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 05:46:05 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1616665565; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
- To: From: Sender; bh=xLZMPOc+Bf0JSFPQICytoPaldsUvFtyL1tpTNNRZGmo=; b=fgEDhRe1Rsg9SJr4BWLHu0GCxHolNL4f4qNsTKjOwrffA2IXarxBHJl+AXPmB/CgdTiOx93U
- lejPjg08n9x9VD/QWdlndiocjpA9L6C2B2UTc+mx2yKxZn2fpA+90cqQEfuw+9a92kGiChhU
- MULi2KZtT8YwCGx3a8sdrbOHuOc=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 605c5bd12b0e10a0ba26d3fa (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 25 Mar 2021 09:45:53
- GMT
-Sender: pillair=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C9E29C433ED; Thu, 25 Mar 2021 09:45:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        PDS_BAD_THREAD_QP_64,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from Pillair (unknown [103.149.159.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pillair)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 770E0C433CA;
-        Thu, 25 Mar 2021 09:45:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 770E0C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=pillair@codeaurora.org
-From:   "Rakesh Pillai" <pillair@codeaurora.org>
-To:     "'Felix Fietkau'" <nbd@nbd.name>,
-        "'Ben Greear'" <greearb@candelatech.com>,
-        "'Brian Norris'" <briannorris@chromium.org>
-Cc:     "'Johannes Berg'" <johannes@sipsolutions.net>,
-        "'Rajkumar Manoharan'" <rmanohar@codeaurora.org>,
-        "'ath10k'" <ath10k@lists.infradead.org>,
-        "'linux-wireless'" <linux-wireless@vger.kernel.org>,
-        "'Linux Kernel'" <linux-kernel@vger.kernel.org>,
-        "'Kalle Valo'" <kvalo@codeaurora.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        "'Doug Anderson'" <dianders@chromium.org>,
-        "'Evan Green'" <evgreen@chromium.org>
-References: <1595351666-28193-1-git-send-email-pillair@codeaurora.org> <1595351666-28193-3-git-send-email-pillair@codeaurora.org> <13573549c277b34d4c87c471ff1a7060@codeaurora.org> <d79ae05e-e75a-de2f-f2e3-bc73637e1501@nbd.name> <04d7301d5ad7555a0377c7df530ad8522fc00f77.camel@sipsolutions.net> <1f2726ff-8ba9-5278-0ec6-b80be475ea98@nbd.name> <06a4f84b-a0d4-3f90-40bb-f02f365460ec@candelatech.com> <CA+ASDXOotYHmtqOvSwBES6_95bnbAbEu6F7gQ5TjacJWUKdaPw@mail.gmail.com> <47d8be60-14ce-0223-bdf3-c34dc2451945@candelatech.com> <633feaed-7f34-15d3-1899-81eb1d6ae14f@nbd.name>
-In-Reply-To: <633feaed-7f34-15d3-1899-81eb1d6ae14f@nbd.name>
-Subject: RE: [RFC 2/7] ath10k: Add support to process rx packet in thread
-Date:   Thu, 25 Mar 2021 15:15:44 +0530
-Message-ID: <003701d7215b$a44ae030$ece0a090$@codeaurora.org>
+        id S229948AbhCYJxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 05:53:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44182 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229576AbhCYJxc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 05:53:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 82A4E61A24;
+        Thu, 25 Mar 2021 09:53:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616666011;
+        bh=zDIkwCmITSxBLdjnUtP8aWuLpPIn7yP+onOPa2fWtIM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=aw+dq7xqFwszvQn+7YjwXW7/fxugShYPXJjaDJagcTuDAOuB8E9nNiKezq66fA/8m
+         hFuPlB/FQy5OaxdMAZxMHga0tzWzb7PQ6p+xNpG4X8bAN7OAf2G+Qkm0llEzqPMeL1
+         Kid4PdS5VCb6nVOuYhBFHH0Yau0kHvVybsDn9ffxag5/mdTWHzlRYsdW/dxayQNar3
+         KY8Ym1MijDJv/mTgzfTa/iwhfzr2YqelyjbMy1v1O0PJUB5A8eiQqK6LL68YF5Ta8p
+         SByPQKDJncOjrUNNBuwi03nuXQ11JZYKUdMwcj0KubiMCvSEyc/5dYjwzZVUc5ZcXd
+         6uORErooXgDMw==
+Received: by mail-oi1-f174.google.com with SMTP id n140so1511569oig.9;
+        Thu, 25 Mar 2021 02:53:31 -0700 (PDT)
+X-Gm-Message-State: AOAM531+Fc0vPk+snEmfO/sX6kulbyC9mLBlEz92JVW/lZGGQK++d02J
+        xEDrMZrr7OU5O4u3f59H+2m+hy9PpwOT9kGs664=
+X-Google-Smtp-Source: ABdhPJyt+33nuIsqD16dqkOAUJq8r6LTgDPW80yQCvhzID/3JW2uxW7CNu42WWpingJPnDTPb6eqRDMwNCcIjLZ5/jc=
+X-Received: by 2002:aca:5945:: with SMTP id n66mr5293345oib.11.1616666010658;
+ Thu, 25 Mar 2021 02:53:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQG1Bu1FBYi7G1oVhHY/01uT1gSslwH2O/GCAtCmWRoBYxlAVQH0T8LwAZ17l3YBXZ7u8AIxJEyGAbYhhCACZ7wzuKpNZQxQ
-Content-Language: en-us
+References: <20210322160253.4032422-1-arnd@kernel.org> <20210322160253.4032422-12-arnd@kernel.org>
+ <87wntv3bgt.fsf@intel.com>
+In-Reply-To: <87wntv3bgt.fsf@intel.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 25 Mar 2021 10:53:14 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0HGiPQ-k6t6roTgeUvVAMMY=fMnGV0+t48yJjz55XFAA@mail.gmail.com>
+Message-ID: <CAK8P3a0HGiPQ-k6t6roTgeUvVAMMY=fMnGV0+t48yJjz55XFAA@mail.gmail.com>
+Subject: Re: [PATCH 11/11] [RFC] drm/i915/dp: fix array overflow warning
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Martin Sebor <msebor@gcc.gnu.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Ning Sun <ning.sun@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Simon Kelley <simon@thekelleys.org.uk>,
+        James Smart <james.smart@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Anders Larsen <al@alarsen.net>, Tejun Heo <tj@kernel.org>,
+        Serge Hallyn <serge@hallyn.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        tboot-devel@lists.sourceforge.net,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        ath11k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>,
+        Manasi Navare <manasi.d.navare@intel.com>,
+        Uma Shankar <uma.shankar@intel.com>,
+        Ankit Nautiyal <ankit.k.nautiyal@intel.com>,
+        Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>,
+        Animesh Manna <animesh.manna@intel.com>,
+        Sean Paul <seanpaul@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 25, 2021 at 9:05 AM Jani Nikula <jani.nikula@linux.intel.com> wrote:
+> > Clearly something is wrong here, but I can't quite figure out what.
+> > Changing the array size to 16 bytes avoids the warning, but is
+> > probably the wrong solution here.
+>
+> Ugh. drm_dp_channel_eq_ok() does not actually require more than
+> DP_LINK_STATUS_SIZE - 2 elements in the link_status. It's some other
+> related functions that do, and in most cases it's convenient to read all
+> those DP_LINK_STATUS_SIZE bytes.
+>
+> However, here the case is slightly different for DP MST, and the change
+> causes reserved DPCD addresses to be read. Not sure it matters, but
+> really I think the problem is what drm_dp_channel_eq_ok() advertizes.
+>
+> I also don't like the array notation with sizes in function parameters
+> in general, because I think it's misleading. Would gcc-11 warn if a
+> function actually accesses the memory out of bounds of the size?
+
+Yes, that is the point of the warning. Using an explicit length in an
+array argument type tells gcc that the function will never access
+beyond the end of that bound, and that passing a short array
+is a bug.
+
+I don't know if this /only/ means triggering a warning, or if gcc
+is also able to make optimizations after classifying this as undefined
+behavior that it would not make for an unspecified length.
+
+> Anyway. I don't think we're going to get rid of the array notation
+> anytime soon, if ever, no matter how much I dislike it, so I think the
+> right fix would be to at least state the correct required size in
+> drm_dp_channel_eq_ok().
+
+Ok. Just to confirm: Changing the declaration to an unspecified length
+avoids the warnings, as does the patch below:
+
+diff --git a/drivers/gpu/drm/drm_dp_helper.c b/drivers/gpu/drm/drm_dp_helper.c
+index eedbb48815b7..6ebeec3d88a7 100644
+--- a/drivers/gpu/drm/drm_dp_helper.c
++++ b/drivers/gpu/drm/drm_dp_helper.c
+@@ -46,12 +46,12 @@
+  */
+
+ /* Helpers for DP link training */
+-static u8 dp_link_status(const u8 link_status[DP_LINK_STATUS_SIZE], int r)
++static u8 dp_link_status(const u8 link_status[DP_LINK_STATUS_SIZE - 2], int r)
+ {
+        return link_status[r - DP_LANE0_1_STATUS];
+ }
+
+-static u8 dp_get_lane_status(const u8 link_status[DP_LINK_STATUS_SIZE],
++static u8 dp_get_lane_status(const u8 link_status[DP_LINK_STATUS_SIZE - 2],
+                             int lane)
+ {
+        int i = DP_LANE0_1_STATUS + (lane >> 1);
+@@ -61,7 +61,7 @@ static u8 dp_get_lane_status(const u8
+link_status[DP_LINK_STATUS_SIZE],
+        return (l >> s) & 0xf;
+ }
+
+-bool drm_dp_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
++bool drm_dp_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE - 2],
+                          int lane_count)
+ {
+        u8 lane_align;
+diff --git a/include/drm/drm_dp_helper.h b/include/drm/drm_dp_helper.h
+index edffd1dcca3e..160f7fd127b1 100644
+--- a/include/drm/drm_dp_helper.h
++++ b/include/drm/drm_dp_helper.h
+@@ -1456,7 +1456,7 @@ enum drm_dp_phy {
+
+ #define DP_LINK_CONSTANT_N_VALUE 0x8000
+ #define DP_LINK_STATUS_SIZE       6
+-bool drm_dp_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
++bool drm_dp_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE - 2],
+                          int lane_count);
+ bool drm_dp_clock_recovery_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
+                              int lane_count);
 
 
-> -----Original Message-----
-> From: Felix Fietkau <nbd@nbd.name>
-> Sent: Tuesday, March 23, 2021 1:16 PM
-> To: Ben Greear <greearb@candelatech.com>; Brian Norris
-> <briannorris@chromium.org>
-> Cc: Johannes Berg <johannes@sipsolutions.net>; Rajkumar Manoharan
-> <rmanohar@codeaurora.org>; Rakesh Pillai <pillair@codeaurora.org>; =
-ath10k
-> <ath10k@lists.infradead.org>; linux-wireless <linux-
-> wireless@vger.kernel.org>; Linux Kernel =
-<linux-kernel@vger.kernel.org>;
-> Kalle Valo <kvalo@codeaurora.org>; David S. Miller
-> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
-> netdev@vger.kernel.org; Doug Anderson <dianders@chromium.org>; Evan
-> Green <evgreen@chromium.org>
-> Subject: Re: [RFC 2/7] ath10k: Add support to process rx packet in =
-thread
->=20
->=20
-> On 2021-03-23 04:01, Ben Greear wrote:
-> > On 3/22/21 6:20 PM, Brian Norris wrote:
-> >> On Mon, Mar 22, 2021 at 4:58 PM Ben Greear
-> <greearb@candelatech.com> wrote:
-> >>> On 7/22/20 6:00 AM, Felix Fietkau wrote:
-> >>>> On 2020-07-22 14:55, Johannes Berg wrote:
-> >>>>> On Wed, 2020-07-22 at 14:27 +0200, Felix Fietkau wrote:
-> >>>>>
-> >>>>>> I'm considering testing a different approach (with mt76 =
-initially):
-> >>>>>> - Add a mac80211 rx function that puts processed skbs into a =
-list
-> >>>>>> instead of handing them to the network stack directly.
-> >>>>>
-> >>>>> Would this be *after* all the mac80211 processing, i.e. in place =
-of the
-> >>>>> rx-up-to-stack?
-> >>>> Yes, it would run all the rx handlers normally and then put the
-> >>>> resulting skbs into a list instead of calling netif_receive_skb =
-or
-> >>>> napi_gro_frags.
-> >>>
-> >>> Whatever came of this?  I realized I'm running Felix's patch since =
-his mt76
-> >>> driver needs it.  Any chance it will go upstream?
-> >>
-> >> If you're asking about $subject (moving NAPI/RX to a thread), this
-> >> landed upstream recently:
-> >> =
-http://git.kernel.org/linus/adbb4fb028452b1b0488a1a7b66ab856cdf20715
-> >>
-> >> It needs a bit of coaxing to work on a WiFi driver (including: WiFi
-> >> drivers tend to have a different netdev for NAPI than they expose =
-to
-> >> /sys/class/net/), but it's there.
-> >>
-> >> I'm not sure if people had something else in mind in the stuff =
-you're
-> >> quoting though.
-> >
-> > No, I got it confused with something Felix did:
-> >
-> > https://github.com/greearb/mt76/blob/master/patches/0001-net-add-
-> support-for-threaded-NAPI-polling.patch
-> >
-> > Maybe the NAPI/RX to a thread thing superceded Felix's patch?
-> Yes, it did and it's in linux-next already.
-> I sent the following change to make mt76 use it:
-> https://github.com/nbd168/wireless/commit/1d4ff31437e5aaa999bd7a
+This obviously needs a good explanation in the code and the changelog text,
+which I don't have, but if the above is what you had in mind, please take that
+and add Reported-by/Tested-by: Arnd Bergmann <arnd@arndb.de>.
 
-Hi Felix / Ben,
-
-In case of ath10k (snoc based targets), we have a lot of processing in =
-the NAPI context.
-Even moving this to threaded NAPI is not helping much due to the load.
-
-Breaking the tasks into multiple context (with the patch series I =
-posted) is helping in improving the throughput.
-With the current rx_thread based approach, the rx processing is broken =
-into two parallel contexts
-1) reaping the packets from the HW
-2) processing these packets list and handing it over to mac80211 (and =
-later to the network stack)
-
-This is the primary reason for choosing the rx thread approach.
-
-Thanks,
-Rakesh.
-
->=20
-> - Felix
-
+       Arnd
