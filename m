@@ -2,547 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9093E349930
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 19:09:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FDAC349934
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 19:09:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbhCYSIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 14:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
+        id S230159AbhCYSJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 14:09:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbhCYSIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 14:08:38 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2BEC06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:08:37 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so1282164pjv.1
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 11:08:37 -0700 (PDT)
+        with ESMTP id S229592AbhCYSJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 14:09:08 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B583C06174A;
+        Thu, 25 Mar 2021 11:09:08 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id l18so3449222edc.9;
+        Thu, 25 Mar 2021 11:09:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=w2UZ3KVv41bK5L/j+bh+X1f4ZrmnMmbzN21+d1MZToQ=;
-        b=mtTbS9rG0HLvlgsDElWSRv/pFQWwBAasbAJ0W1x1CJU4rA5xda2GQCO4nOMeJBqLTO
-         UkkwiRVmIhD4QA/g+HjxLPtYgUphvGTevobbLYqKawVxpZfkxLtmC9YBNxbujSBoSO3b
-         CcF2dJREMxqDRfj7egxZqX5rqsZhQRW19fPFnlfAmaBwsHoPBxMLKIoILbBkGfLAPzYJ
-         U4mh8ZY/hjbg9EA9at4dyCKMBPCvjnSbgEKuDp1Glvb6C3wL47kcPCsypphZ6Rqc/fsx
-         PwldCk7uSmKAeyA5Y6gbJIgK1fqyHI6JF3XTdCW4+NXNPYVtcIUYL+5aW5ZqCahYi7u7
-         YvGg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QkSCPQFeXPyylmo56pnd0Y7oq0+FKHeReHMorAr/nVQ=;
+        b=IOZ4zWJHJ59pqf0Z0YMXJ5qCLpApLxy92Bs0NInudYQZuY2OvYGCyTvh6yYYtPpY4e
+         AHuWIp3p/wwe+g9a2igcGnxcJaLXtMOZk6zGhu6LHO/BympOI2AJgxRoePfJfSURd2Hq
+         Na76cUVW9PAq3RKecTMomPZSfl6+lIIdFtov1V2sxx1g95ip2Tok/6xqnHi0oQj8tJPy
+         aVg043xZn09cqHHZvO9dvKoYwGeCX9RLVmFxZ+mbDbBz9T+XVqCs0XKmW6+OqLWn0n6w
+         xqxcR/1sEY7vMaXXRuUHYS+Eg7uKYmko0CcnR3Rx7vMGBMR9Jky93Y/+YbgrcQs9ppTu
+         H+ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=w2UZ3KVv41bK5L/j+bh+X1f4ZrmnMmbzN21+d1MZToQ=;
-        b=T6w/KeUkh3gnjnatRcaDeldIlMghabHZvyPLEFcL1g/41vXlNv4wbJRpfnaEFT5Ex6
-         Kf6ZmLTZRnZelyr4YD7egN900e9uUrwpltfloQKKiV0SIW6+CLF7/ayClmlRmYl0KAwn
-         A4xjTyF8zmpxnr9eHXX7t2et+mgIy19dU1sI7teoXrtXgmbihcFH/zOEtyeC66Y/czEP
-         KfkBZw/C3vQ0VSylCehTaar0JH2FaZdBgzl+aATJjgXo5MTjiFJ4yVEQiBZCD/s7MVyQ
-         IghQBxNTufEUboACoNmgFl9NWigBvKuyyfPeJxX0mOinFDyhUX1ikVRmMNEJ42lvv4vb
-         XeBQ==
-X-Gm-Message-State: AOAM5329qhBNfDE6r+QiRoLf8kTBnCVg9xqjZsdiWe97J1Xfs+2N1Gkz
-        lGsCdGLiOTrFmR2UHoXTQ7E=
-X-Google-Smtp-Source: ABdhPJz/tp+tOUzapNftKWbIcshypdQ6jISNSWtyTKf4LkKBS5br89fd8O51jeJIuAvdszLQHEM2WQ==
-X-Received: by 2002:a17:90b:903:: with SMTP id bo3mr10320718pjb.198.1616695717538;
-        Thu, 25 Mar 2021 11:08:37 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2c0c:35d8:b060:81b3])
-        by smtp.gmail.com with ESMTPSA id j20sm5968359pjn.27.2021.03.25.11.08.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 11:08:37 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 5/5] tcp: convert elligible sysctls to u8
-Date:   Thu, 25 Mar 2021 11:08:17 -0700
-Message-Id: <20210325180817.840042-6-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-In-Reply-To: <20210325180817.840042-1-eric.dumazet@gmail.com>
-References: <20210325180817.840042-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QkSCPQFeXPyylmo56pnd0Y7oq0+FKHeReHMorAr/nVQ=;
+        b=k+jdriOz+jKKPXbNL1iw+NqQucZz6U+9OQrE3Za65hL3IKXXrInfKBbtV0u91xcKEz
+         vhhncaAUojfxZhh4tKmFs4H7A1Zkzsl23ZRl2rEx5UoKzF7o6kFzs1EJZA+voK9opqAg
+         aMAtn4/x58TrunWygsInWmlWU4zux06DzJ8foMDMaJgJufjLmv09ktO2P9KFyJ9Z/20A
+         ZWTisC6hShM257p2CIp+1chwOtifu7wlDFUsr8VoT8d5SjvpDdSLuSz6aCu96gUB+lFC
+         rC5IPBWuFDDzBSoj+PFvrQ1U10c12IxiJ+iEPq8LD2dl4MU9Ob0vCqqMvhUY6RgEp78Q
+         lj7w==
+X-Gm-Message-State: AOAM533dqcFWDLi4YKpkoFbkncWmKKvDIkS1uV8iej1EPZVPH7ggT4U2
+        fKDnee/C0ma9Re8mWOR6lxY=
+X-Google-Smtp-Source: ABdhPJxT9M6yMYhq1vt19t4zlzgariVKMULdoL1b0+4I9yNyqmcfyt5JwCqj6k6MLdq21EzvOERiKg==
+X-Received: by 2002:aa7:dad7:: with SMTP id x23mr10472177eds.292.1616695746814;
+        Thu, 25 Mar 2021 11:09:06 -0700 (PDT)
+Received: from [10.230.29.202] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id ym4sm2738417ejb.100.2021.03.25.11.09.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Mar 2021 11:09:06 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: lantiq_gswip: Let GSWIP automatically set
+ the xMII clock
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        hauke@hauke-m.de, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+References: <20210324193604.1433230-1-martin.blumenstingl@googlemail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a5c0e846-c838-83b8-9c85-34b3f53dc54e@gmail.com>
+Date:   Thu, 25 Mar 2021 11:09:01 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210324193604.1433230-1-martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
 
-Many tcp sysctls are either bools or small ints that can fit into u8.
 
-Reducing space taken by sysctls can save few cache line misses
-when sending/receiving data while cpu caches are empty,
-for example after cpu idle period.
+On 3/24/2021 12:36 PM, Martin Blumenstingl wrote:
+> The xMII interface clock depends on the PHY interface (MII, RMII, RGMII)
+> as well as the current link speed. Explicitly configure the GSWIP to
+> automatically select the appropriate xMII interface clock.
+> 
+> This fixes an issue seen by some users where ports using an external
+> RMII or RGMII PHY were deaf (no RX or TX traffic could be seen). Most
+> likely this is due to an "invalid" xMII clock being selected either by
+> the bootloader or hardware-defaults.
+> 
+> Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-This is hard to measure with typical network performance tests,
-but after this patch, struct netns_ipv4 has shrunk
-by three cache lines.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/netns/ipv4.h   |  68 +++++++++----------
- net/ipv4/sysctl_net_ipv4.c | 136 ++++++++++++++++++-------------------
- 2 files changed, 102 insertions(+), 102 deletions(-)
+> ---
+> It would be great to have this fix backported to Linux 5.4 and 5.10 to
+> get rid of one more blocker which prevents OpenWrt from switching to
+> this new in-tree driver.
 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 00f250ee441973586198014df8791c60ae298565..d377266d133f076eda7d0469da75d5f7ee1431b9 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -113,11 +113,11 @@ struct netns_ipv4 {
- 	u8 sysctl_nexthop_compat_mode;
- 
- 	u8 sysctl_fwmark_reflect;
--	int sysctl_tcp_fwmark_accept;
-+	u8 sysctl_tcp_fwmark_accept;
- #ifdef CONFIG_NET_L3_MASTER_DEV
--	int sysctl_tcp_l3mdev_accept;
-+	u8 sysctl_tcp_l3mdev_accept;
- #endif
--	int sysctl_tcp_mtu_probing;
-+	u8 sysctl_tcp_mtu_probing;
- 	int sysctl_tcp_mtu_probe_floor;
- 	int sysctl_tcp_base_mss;
- 	int sysctl_tcp_min_snd_mss;
-@@ -125,46 +125,47 @@ struct netns_ipv4 {
- 	u32 sysctl_tcp_probe_interval;
- 
- 	int sysctl_tcp_keepalive_time;
--	int sysctl_tcp_keepalive_probes;
- 	int sysctl_tcp_keepalive_intvl;
-+	u8 sysctl_tcp_keepalive_probes;
- 
--	int sysctl_tcp_syn_retries;
--	int sysctl_tcp_synack_retries;
--	int sysctl_tcp_syncookies;
-+	u8 sysctl_tcp_syn_retries;
-+	u8 sysctl_tcp_synack_retries;
-+	u8 sysctl_tcp_syncookies;
- 	int sysctl_tcp_reordering;
--	int sysctl_tcp_retries1;
--	int sysctl_tcp_retries2;
--	int sysctl_tcp_orphan_retries;
-+	u8 sysctl_tcp_retries1;
-+	u8 sysctl_tcp_retries2;
-+	u8 sysctl_tcp_orphan_retries;
-+	u8 sysctl_tcp_tw_reuse;
- 	int sysctl_tcp_fin_timeout;
- 	unsigned int sysctl_tcp_notsent_lowat;
--	int sysctl_tcp_tw_reuse;
--	int sysctl_tcp_sack;
--	int sysctl_tcp_window_scaling;
--	int sysctl_tcp_timestamps;
--	int sysctl_tcp_early_retrans;
--	int sysctl_tcp_recovery;
--	int sysctl_tcp_thin_linear_timeouts;
--	int sysctl_tcp_slow_start_after_idle;
--	int sysctl_tcp_retrans_collapse;
--	int sysctl_tcp_stdurg;
--	int sysctl_tcp_rfc1337;
--	int sysctl_tcp_abort_on_overflow;
--	int sysctl_tcp_fack;
-+	u8 sysctl_tcp_sack;
-+	u8 sysctl_tcp_window_scaling;
-+	u8 sysctl_tcp_timestamps;
-+	u8 sysctl_tcp_early_retrans;
-+	u8 sysctl_tcp_recovery;
-+	u8 sysctl_tcp_thin_linear_timeouts;
-+	u8 sysctl_tcp_slow_start_after_idle;
-+	u8 sysctl_tcp_retrans_collapse;
-+	u8 sysctl_tcp_stdurg;
-+	u8 sysctl_tcp_rfc1337;
-+	u8 sysctl_tcp_abort_on_overflow;
-+	u8 sysctl_tcp_fack; /* obsolete */
- 	int sysctl_tcp_max_reordering;
--	int sysctl_tcp_dsack;
--	int sysctl_tcp_app_win;
- 	int sysctl_tcp_adv_win_scale;
--	int sysctl_tcp_frto;
--	int sysctl_tcp_nometrics_save;
--	int sysctl_tcp_no_ssthresh_metrics_save;
--	int sysctl_tcp_moderate_rcvbuf;
--	int sysctl_tcp_tso_win_divisor;
--	int sysctl_tcp_workaround_signed_windows;
-+	u8 sysctl_tcp_dsack;
-+	u8 sysctl_tcp_app_win;
-+	u8 sysctl_tcp_frto;
-+	u8 sysctl_tcp_nometrics_save;
-+	u8 sysctl_tcp_no_ssthresh_metrics_save;
-+	u8 sysctl_tcp_moderate_rcvbuf;
-+	u8 sysctl_tcp_tso_win_divisor;
-+	u8 sysctl_tcp_workaround_signed_windows;
- 	int sysctl_tcp_limit_output_bytes;
- 	int sysctl_tcp_challenge_ack_limit;
--	int sysctl_tcp_min_tso_segs;
- 	int sysctl_tcp_min_rtt_wlen;
--	int sysctl_tcp_autocorking;
-+	u8 sysctl_tcp_min_tso_segs;
-+	u8 sysctl_tcp_autocorking;
-+	u8 sysctl_tcp_reflect_tos;
- 	int sysctl_tcp_invalid_ratelimit;
- 	int sysctl_tcp_pacing_ss_ratio;
- 	int sysctl_tcp_pacing_ca_ratio;
-@@ -182,7 +183,6 @@ struct netns_ipv4 {
- 	unsigned int sysctl_tcp_fastopen_blackhole_timeout;
- 	atomic_t tfo_active_disable_times;
- 	unsigned long tfo_active_disable_stamp;
--	int sysctl_tcp_reflect_tos;
- 
- 	int sysctl_udp_wmem_min;
- 	int sysctl_udp_rmem_min;
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 510a326356127c0a822f9a1215737a5c843fd58c..442ff4be1bde236563b6cfea67179de4f30856bf 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -775,17 +775,17 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_fwmark_accept",
- 		.data		= &init_net.ipv4.sysctl_tcp_fwmark_accept,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	{
- 		.procname	= "tcp_l3mdev_accept",
- 		.data		= &init_net.ipv4.sysctl_tcp_l3mdev_accept,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_ONE,
- 	},
-@@ -793,9 +793,9 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_mtu_probing",
- 		.data		= &init_net.ipv4.sysctl_tcp_mtu_probing,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_base_mss",
-@@ -897,9 +897,9 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_keepalive_probes",
- 		.data		= &init_net.ipv4.sysctl_tcp_keepalive_probes,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_keepalive_intvl",
-@@ -911,26 +911,26 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_syn_retries",
- 		.data		= &init_net.ipv4.sysctl_tcp_syn_retries,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= &tcp_syn_retries_min,
- 		.extra2		= &tcp_syn_retries_max
- 	},
- 	{
- 		.procname	= "tcp_synack_retries",
- 		.data		= &init_net.ipv4.sysctl_tcp_synack_retries,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- #ifdef CONFIG_SYN_COOKIES
- 	{
- 		.procname	= "tcp_syncookies",
- 		.data		= &init_net.ipv4.sysctl_tcp_syncookies,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- #endif
- 	{
-@@ -943,24 +943,24 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_retries1",
- 		.data		= &init_net.ipv4.sysctl_tcp_retries1,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra2		= &tcp_retr1_max
- 	},
- 	{
- 		.procname	= "tcp_retries2",
- 		.data		= &init_net.ipv4.sysctl_tcp_retries2,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_orphan_retries",
- 		.data		= &init_net.ipv4.sysctl_tcp_orphan_retries,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_fin_timeout",
-@@ -979,9 +979,9 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_tw_reuse",
- 		.data		= &init_net.ipv4.sysctl_tcp_tw_reuse,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &two,
- 	},
-@@ -1067,88 +1067,88 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_sack",
- 		.data		= &init_net.ipv4.sysctl_tcp_sack,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_window_scaling",
- 		.data		= &init_net.ipv4.sysctl_tcp_window_scaling,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_timestamps",
- 		.data		= &init_net.ipv4.sysctl_tcp_timestamps,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_early_retrans",
- 		.data		= &init_net.ipv4.sysctl_tcp_early_retrans,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &four,
- 	},
- 	{
- 		.procname	= "tcp_recovery",
- 		.data		= &init_net.ipv4.sysctl_tcp_recovery,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname       = "tcp_thin_linear_timeouts",
- 		.data           = &init_net.ipv4.sysctl_tcp_thin_linear_timeouts,
--		.maxlen         = sizeof(int),
-+		.maxlen         = sizeof(u8),
- 		.mode           = 0644,
--		.proc_handler   = proc_dointvec
-+		.proc_handler   = proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_slow_start_after_idle",
- 		.data		= &init_net.ipv4.sysctl_tcp_slow_start_after_idle,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_retrans_collapse",
- 		.data		= &init_net.ipv4.sysctl_tcp_retrans_collapse,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_stdurg",
- 		.data		= &init_net.ipv4.sysctl_tcp_stdurg,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_rfc1337",
- 		.data		= &init_net.ipv4.sysctl_tcp_rfc1337,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_abort_on_overflow",
- 		.data		= &init_net.ipv4.sysctl_tcp_abort_on_overflow,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_fack",
- 		.data		= &init_net.ipv4.sysctl_tcp_fack,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_max_reordering",
-@@ -1160,16 +1160,16 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_dsack",
- 		.data		= &init_net.ipv4.sysctl_tcp_dsack,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_app_win",
- 		.data		= &init_net.ipv4.sysctl_tcp_app_win,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_adv_win_scale",
-@@ -1183,46 +1183,46 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_frto",
- 		.data		= &init_net.ipv4.sysctl_tcp_frto,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_no_metrics_save",
- 		.data		= &init_net.ipv4.sysctl_tcp_nometrics_save,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_no_ssthresh_metrics_save",
- 		.data		= &init_net.ipv4.sysctl_tcp_no_ssthresh_metrics_save,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_ONE,
- 	},
- 	{
- 		.procname	= "tcp_moderate_rcvbuf",
- 		.data		= &init_net.ipv4.sysctl_tcp_moderate_rcvbuf,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_tso_win_divisor",
- 		.data		= &init_net.ipv4.sysctl_tcp_tso_win_divisor,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_workaround_signed_windows",
- 		.data		= &init_net.ipv4.sysctl_tcp_workaround_signed_windows,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec
-+		.proc_handler	= proc_dou8vec_minmax,
- 	},
- 	{
- 		.procname	= "tcp_limit_output_bytes",
-@@ -1241,9 +1241,9 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_min_tso_segs",
- 		.data		= &init_net.ipv4.sysctl_tcp_min_tso_segs,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ONE,
- 		.extra2		= &gso_max_segs,
- 	},
-@@ -1259,9 +1259,9 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname	= "tcp_autocorking",
- 		.data		= &init_net.ipv4.sysctl_tcp_autocorking,
--		.maxlen		= sizeof(int),
-+		.maxlen		= sizeof(u8),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
-+		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_ONE,
- 	},
-@@ -1332,9 +1332,9 @@ static struct ctl_table ipv4_net_table[] = {
- 	{
- 		.procname       = "tcp_reflect_tos",
- 		.data           = &init_net.ipv4.sysctl_tcp_reflect_tos,
--		.maxlen         = sizeof(int),
-+		.maxlen         = sizeof(u8),
- 		.mode           = 0644,
--		.proc_handler   = proc_dointvec_minmax,
-+		.proc_handler   = proc_dou8vec_minmax,
- 		.extra1         = SYSCTL_ZERO,
- 		.extra2         = SYSCTL_ONE,
- 	},
+Given there is a Fixes: tag this should land at some point in the stable
+tree auto-selection. Stable fixes for networking patches follows a
+slightly different path:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n145
+
+> 
+> 
+>  drivers/net/dsa/lantiq_gswip.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+> index 52e865a3912c..809dfa3be6bb 100644
+> --- a/drivers/net/dsa/lantiq_gswip.c
+> +++ b/drivers/net/dsa/lantiq_gswip.c
+> @@ -799,10 +799,15 @@ static int gswip_setup(struct dsa_switch *ds)
+>  	/* Configure the MDIO Clock 2.5 MHz */
+>  	gswip_mdio_mask(priv, 0xff, 0x09, GSWIP_MDIO_MDC_CFG1);
+>  
+> -	/* Disable the xMII link */
+> -	for (i = 0; i < priv->hw_info->max_ports; i++)
+> +	for (i = 0; i < priv->hw_info->max_ports; i++) {
+> +		/* Disable the xMII link */
+>  		gswip_mii_mask_cfg(priv, GSWIP_MII_CFG_EN, 0, i);
+>  
+> +		/* Automatically select the xMII interface clock */
+> +		gswip_mii_mask_cfg(priv, GSWIP_MII_CFG_RATE_MASK,
+> +				   GSWIP_MII_CFG_RATE_AUTO, i);
+> +	}
+> +
+>  	/* enable special tag insertion on cpu port */
+>  	gswip_switch_mask(priv, 0, GSWIP_FDMA_PCTRL_STEN,
+>  			  GSWIP_FDMA_PCTRLp(cpu_port));
+> 
+
 -- 
-2.31.0.291.g576ba9dcdaf-goog
-
+Florian
