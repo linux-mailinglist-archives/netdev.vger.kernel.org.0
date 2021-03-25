@@ -2,231 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 368EC34972A
-	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:47:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AD1D349733
+	for <lists+netdev@lfdr.de>; Thu, 25 Mar 2021 17:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbhCYQrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 12:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbhCYQrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:47:07 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BBBC06174A
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 09:47:07 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id x16so1507261qvk.3
-        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 09:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lykmu0sL2IE2rv4jZbeLXyhZ1F1JsRlETU5Bs7nyK5o=;
-        b=BsGz30j1VHloTirswPHx0/iqWV8KvfY8K9xwN5SEBh7r+qhcAWYtuvNgZYS8YyEqS5
-         s6y1ObPeB/JOuOFnrDGHRXxqWEmGXuyCgr7LogV1bbn0cEgIyg8PfbqhP0etBxq7i1Zs
-         8afKnfczHEr0lWie+hiH0DY6aVfET4wuVv2BwYDIWAvmIT17MjXOlETzpPnEpIsWyJ79
-         2FfTTyn+SmKh7rrP+PzeHEznSBiJhgsJJTgGZUyG2Nu02bVh+/hhK3TjinA0GIgwrH+W
-         PJvtASb7gudzWE/WIIYUkE0vF66e5IMP/T6u0N2pnZGxaar0I8Iq5FWvw6V6aGgPyaKL
-         qulQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lykmu0sL2IE2rv4jZbeLXyhZ1F1JsRlETU5Bs7nyK5o=;
-        b=XYqQ9q6wpv+n+4djMiq5hjemGJuWrEN36Orm+7auBThiLnCeoS/r7uSmQA+JxvMSTP
-         AS3t9g8ks4zBN1kB/zEqAZ1sFIgUM/AXEFXuzs2Ck7D2KuJJeXxZ5VpyIYRjeQlphRnO
-         3cNqZY2hTYXnMuWN8Rn6ibC6mSBCTeokEegrXn9e2FsM2NAE8GPV5WhFy/ARWgBKyuII
-         pUHdsfIkK6cRnWENYhl+hjRglsxPuxwk8bCaJGtmYlVEYb6muUJUa6TfEc87UcBn0cib
-         cEekJeWvUrNt/GyLjIgvF3lSTSoYCVJCTtSSErQxO9iJdFSAxWj8GxeKQDjDXFo9wkUX
-         MZiA==
-X-Gm-Message-State: AOAM533dOvru+V0N977BKmVyiFJ4tBq3aoDDbqq4VsHNoFI6nErao8MF
-        U8RniDlhXD/HwbnmelayU6FQNQ==
-X-Google-Smtp-Source: ABdhPJzqzs3cwWxaMZFEfvUPymuHcq983ghv8dspfemmYC9nSd0j6GAkwdSbZRJH23jjSbL8OVDE5w==
-X-Received: by 2002:ad4:5887:: with SMTP id dz7mr9515403qvb.12.1616690826723;
-        Thu, 25 Mar 2021 09:47:06 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:9738])
-        by smtp.gmail.com with ESMTPSA id 8sm4382779qkc.32.2021.03.25.09.47.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 09:47:05 -0700 (PDT)
-Date:   Thu, 25 Mar 2021 12:47:04 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Arjun Roy <arjunroy@google.com>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
+        id S229592AbhCYQrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 12:47:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53596 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229873AbhCYQrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 12:47:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616690863;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zvm4ttdwyI2zpKh8pXUANo8hDmXVXXRsBCjVUunDBR8=;
+        b=UHjEpV+8K4sjsxfOggeKwZi5YByH9Qx82yiVtyR0DcJmB296ngksRppOZDmFgo5DZj7PZG
+        YbKWBI/GBmtjrzhHJhKsA6m+pb/Mu6qINlx67J57jleK9kpYxS5sZOHmzTC8RlmgOes9Jw
+        rWFhFZpX0eCj6swEqt5KKwnko7ZmqWY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-88-OEOJv7sQP-ClAiOYHuvdgg-1; Thu, 25 Mar 2021 12:47:41 -0400
+X-MC-Unique: OEOJv7sQP-ClAiOYHuvdgg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AA4AB81746B;
+        Thu, 25 Mar 2021 16:47:39 +0000 (UTC)
+Received: from ovpn-113-211.ams2.redhat.com (ovpn-113-211.ams2.redhat.com [10.36.113.211])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A330550DD5;
+        Thu, 25 Mar 2021 16:47:37 +0000 (UTC)
+Message-ID: <030bcf7a14ada8caa464bb33916e5abc19eab67c.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/8] udp: fixup csum for GSO receive slow path
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Yang Shi <shy828301@gmail.com>, Roman Gushchin <guro@fb.com>
-Subject: Re: [mm, net-next v2] mm: net: memcg accounting for TCP rx zerocopy
-Message-ID: <YFy+iPiL1YbjjapV@cmpxchg.org>
-References: <20210316041645.144249-1-arjunroy.kdev@gmail.com>
- <YFCH8vzFGmfFRCvV@cmpxchg.org>
- <CAOFY-A23NBpJQ=mVQuvFib+cREAZ_wC5=FOMzv3YCO69E4qRxw@mail.gmail.com>
- <YFJ+5+NBOBiUbGWS@cmpxchg.org>
- <YFn8bLBMt7txj3AZ@dhcp22.suse.cz>
- <CAOFY-A22Pp3Z0apYBWtOJCD8TxfrbZ_HE9Xd6eUds8aEvRL+uw@mail.gmail.com>
- <YFsA78FfzICrnFf7@dhcp22.suse.cz>
- <YFut+cZhsJec7Pud@cmpxchg.org>
- <CAOFY-A0Y0ye74bnpcWsKOPZMJSrFW8mJxVJrpwiy2dcGgUJ5Tw@mail.gmail.com>
- <YFxRpKfwQwobt7IK@dhcp22.suse.cz>
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Date:   Thu, 25 Mar 2021 17:47:36 +0100
+In-Reply-To: <CA+FuTSepOe88N_jY+9F5gTu6ShzMa8rOZzi6CAsF+4k6iPeajw@mail.gmail.com>
+References: <cover.1616345643.git.pabeni@redhat.com>
+         <4bff28fbaa8c53ca836eb2b9bdabcc3057118916.1616345643.git.pabeni@redhat.com>
+         <CA+FuTScSPJAh+6XnwnP32W+OmEzCVi8aKundnt2dJNzoKgUthg@mail.gmail.com>
+         <43f56578c91f8abd8e3d1e8c73be1c4d5162089f.camel@redhat.com>
+         <CA+FuTSd6fOaj6bJssyXeyL-LWvSEdSH+QchHUG8Ga-=EQ634Lg@mail.gmail.com>
+         <5143c873078583ef0f12d08ccf966d6b4640b9ee.camel@redhat.com>
+         <CA+FuTScdNaWxNWMp+tpZrEGmO=eW1cpHQi=1Rz9cYQQ8oz+2CA@mail.gmail.com>
+         <6377ac88cd76e7d948a0f4ea5f8bfffd3fac1710.camel@redhat.com>
+         <CA+FuTSepOe88N_jY+9F5gTu6ShzMa8rOZzi6CAsF+4k6iPeajw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YFxRpKfwQwobt7IK@dhcp22.suse.cz>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 10:02:28AM +0100, Michal Hocko wrote:
-> On Wed 24-03-21 15:49:15, Arjun Roy wrote:
-> > On Wed, Mar 24, 2021 at 2:24 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> > >
-> > > On Wed, Mar 24, 2021 at 10:12:46AM +0100, Michal Hocko wrote:
-> > > > On Tue 23-03-21 11:47:54, Arjun Roy wrote:
-> > > > > On Tue, Mar 23, 2021 at 7:34 AM Michal Hocko <mhocko@suse.com> wrote:
-> > > > > >
-> > > > > > On Wed 17-03-21 18:12:55, Johannes Weiner wrote:
-> > > > > > [...]
-> > > > > > > Here is an idea of how it could work:
-> > > > > > >
-> > > > > > > struct page already has
-> > > > > > >
-> > > > > > >                 struct {        /* page_pool used by netstack */
-> > > > > > >                         /**
-> > > > > > >                          * @dma_addr: might require a 64-bit value even on
-> > > > > > >                          * 32-bit architectures.
-> > > > > > >                          */
-> > > > > > >                         dma_addr_t dma_addr;
-> > > > > > >                 };
-> > > > > > >
-> > > > > > > and as you can see from its union neighbors, there is quite a bit more
-> > > > > > > room to store private data necessary for the page pool.
-> > > > > > >
-> > > > > > > When a page's refcount hits zero and it's a networking page, we can
-> > > > > > > feed it back to the page pool instead of the page allocator.
-> > > > > > >
-> > > > > > > From a first look, we should be able to use the PG_owner_priv_1 page
-> > > > > > > flag for network pages (see how this flag is overloaded, we can add a
-> > > > > > > PG_network alias). With this, we can identify the page in __put_page()
-> > > > > > > and __release_page(). These functions are already aware of different
-> > > > > > > types of pages and do their respective cleanup handling. We can
-> > > > > > > similarly make network a first-class citizen and hand pages back to
-> > > > > > > the network allocator from in there.
-> > > > > >
-> > > > > > For compound pages we have a concept of destructors. Maybe we can extend
-> > > > > > that for order-0 pages as well. The struct page is heavily packed and
-> > > > > > compound_dtor shares the storage without other metadata
-> > > > > >                                         int    pages;    /*    16     4 */
-> > > > > >                         unsigned char compound_dtor;     /*    16     1 */
-> > > > > >                         atomic_t   hpage_pinned_refcount; /*    16     4 */
-> > > > > >                         pgtable_t  pmd_huge_pte;         /*    16     8 */
-> > > > > >                         void *     zone_device_data;     /*    16     8 */
-> > > > > >
-> > > > > > But none of those should really require to be valid when a page is freed
-> > > > > > unless I am missing something. It would really require to check their
-> > > > > > users whether they can leave the state behind. But if we can establish a
-> > > > > > contract that compound_dtor can be always valid when a page is freed
-> > > > > > this would be really a nice and useful abstraction because you wouldn't
-> > > > > > have to care about the specific type of page.
-> > >
-> > > Yeah technically nobody should leave these fields behind, but it
-> > > sounds pretty awkward to manage an overloaded destructor with a
-> > > refcounted object:
-> > >
-> > > Either every put would have to check ref==1 before to see if it will
-> > > be the one to free the page, and then set up the destructor before
-> > > putting the final ref. But that means we can't support lockless
-> > > tryget() schemes like we have in the page cache with a destructor.
-> 
-> I do not follow the ref==1 part. I mean to use the hugetlb model where
-> the destructore is configured for the whole lifetime until the page is
-> freed back to the allocator (see below).
-
-That only works if the destructor field doesn't overlap with a member
-the page type itself doesn't want to use. Page types that do want to
-use it would need to keep that field exclusive.
-
-We couldn't use it for LRU pages e.g. because it overlaps with the
-lru.next pointer. But if we bother with a 'generic' destructor for
-order-0 pages the LRU pages would actually be a prime candidate for a
-destructor: lru removal, memcg uncharging, page waiter cleanup...
-
-The field is also kind of wasteful. There are only a few different
-dtors but it occupies an entire byte. Page types don't necessarily
-have other bytes they could pair it with, so it might often take up a
-whole word. This is all fine with compound pages because we have all
-this space in the tail pages. It's not good in order-0 pages.
-
-So again, yes it would be nice to have generic destructors, but I just
-don't see how it's practical.
-
-Making network pages first-class objects instead makes a lot more
-sense to me for the time being. It's not like it's some small random
-driver usecase - it's the network stack!
-
-> > Ah, I think I see what you were getting at with your prior email - at
-> > first I thought your suggestion was that, since the driver may have
-> > its own refcount, every put would need to check ref == 1 and call into
-> > the driver if need be.
+On Thu, 2021-03-25 at 09:53 -0400, Willem de Bruijn wrote:
+> On Thu, Mar 25, 2021 at 6:57 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > AFAICS, it depends ;) From skbuff.h:
 > > 
-> > Instead, and correct me if I'm wrong, it seems like what you're advocating is:
-> > 1) The (opted in) driver no longer hangs onto the ref,
-> > 2) Now refcount can go all the way to 0,
-> > 3) And when it does, due to the special destructor this page has, it
-> > goes back to the driver, rather than the system?
-
-Yes, correct.
-
-> > > > If you are going to claim a page flag then it would be much better to
-> > > > have it more generic. Flags are really scarce and if all you care about
-> > > > is PageHasDestructor() and provide one via page->dtor then the similar
-> > > > mechanism can be reused by somebody else. Or does anything prevent that?
-> > >
-> > > I was suggesting to alias PG_owner_priv_1, which currently isn't used
-> > > on network pages. We don't need to allocate a brandnew page flag.
-> > >
+> >  *   skb->csum_level indicates the number of consecutive checksums found in
+> >  *   the packet minus one that have been verified as CHECKSUM_UNNECESSARY.
 > > 
-> > Just to be certain, is there any danger of having a page, that would
-> > not be a network driver page originally, being inside __put_page(),
-> > such that PG_owner_priv_1 is set (but with one of its other overloaded
-> > meanings)?
+> > if skb->csum_level > 0, the NIC validate additional headers. The intel
+> > ixgbe driver use that for vxlan RX csum offload. Such field translates
+> > into:
+> > 
+> >         NAPI_GRO_CB(skb)->csum_cnt
+> > 
+> > inside the GRO engine, and skb_gro_incr_csum_unnecessary takes care of
+> > the updating it after validation.
 > 
-> Yeah this is a real question. And from what Johannes is saying this
-> might pose some problem for this specific flags. I still need to check
-> all the users to be certain. One thing is clear though.  PG_owner_priv_1
-> is not a part of PAGE_FLAGS_CHECK_AT_FREE so it is not checked when a
-> page is freed so it is possible that the flag is left behind when
-> somebody does final put_page which makes things harder.
+> True. I glanced over those cases.
+> 
+> More importantly, where exactly do these looped packets get converted
+> from CHECKSUM_PARTIAL to CHECKSUM_NONE before this patch?
 
-The swapcache holds a reference, so PG_swapcache is never set on the
-final put.
+Very good question! It took a bit finding the exact place.
 
-PG_checked refers to the data stored in file pages. It's possible not
-all filesystems clear it properly on truncate right now, but they
-don't need it once the data itself has become invalid. I double
-checked with Chris Mason.
+int __iptunnel_pull_header(struct sk_buff *skb, int hdr_len,
+			   __be16 inner_proto, bool raw_proto, bool xnet)
+{
+	if (unlikely(!pskb_may_pull(skb, hdr_len)))
+		return -ENOMEM;
 
-PG_pinned pages are Xen pagetables, they aren't actually
-refcounted. PG_xen_remapped pages are dma-remaps and aren't refcounted
-either. PG_foreign pages appear refcounted, but AFAICS the foreign map
-state is against a table that holds refs, so can't be set on put.
+	skb_pull_rcsum(skb, hdr_len);
+        // here ^^^ via skb_pull_rcsum -> skb_postpull_rcsum() -> __skb_postpull_rcsum()
 
-I'll audit the PageChecked sites more closely and send a patch to
-tighten it up and add PG_owner_priv_1 to PAGE_FLAGS_CHECK_AT_FREE.
-That would be better anyway.
+well, this is actually with _this_ patch applied: it does not change
+the place where the ip_summed is set.
 
-> But that would be the case even when the flag is used for network
-> specific handling because you cannot tell it from other potential users
-> who are outside of networking...
+> > My understanding is that the following should be better:
+> > 
+> > static inline void udp_post_segment_fix_csum(struct sk_buff *skb)
+> > {
+> >         /* UDP-lite can't land here - no GRO */
+> >         WARN_ON_ONCE(UDP_SKB_CB(skb)->partial_cov);
+> > 
+> >         /* UDP packets generated with UDP_SEGMENT and traversing:
+> >          * UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) -> UDP tunnel (rx)
+> >          * land here with CHECKSUM_NONE. Instead of adding another check
+> >          * in the tunnel fastpath, we can force valid csums here:
+> >          * packets are locally generated and the GRO engine already validated
+> >          * the csum.
+> >          * Additionally fixup the UDP CB
+> >          */
+> >         UDP_SKB_CB(skb)->cscov = skb->len;
+> >         if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> >                 skb->csum_valid = 1;
+> > }
+> > 
+> > I'll use the above in v2.
+> 
+> Do I understand correctly that this avoids matching tunneled packets
+> that arrive from the network with rx checksumming disabled, because
+> __skb_gro_checksum_complete will have been called on the outer packet
+> and have set skb->csum_valid?
 
-For non-refcounted pages, we'll catch it in the page allocator.
+Exactly. I did the test, and perf probes showed that.
 
-For refcounted pages a bug is a bit trickier, but I don't think worse
-than the baseline risk of aliased page flags in the first place, and
-likely the network destructor would crash on a non-network page
-(assuming there is a driver-specific callback/ops struct in there).
+> Yes, this just (1) identifying the packet as being of local source and
+> then (2) setting csum_valid sounds great to me, thanks.
+
+Will try to submit v2 soon, after some more testing.
+
+Thanks for all the feedback!
+
+Paolo
+
