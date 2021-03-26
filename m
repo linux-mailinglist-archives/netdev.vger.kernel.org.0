@@ -2,63 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E4D349D9B
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:21:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6638A349DCD
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbhCZAUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 20:20:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34648 "EHLO mail.kernel.org"
+        id S229914AbhCZAaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 20:30:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229631AbhCZAUK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 20:20:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 256AC61A41;
-        Fri, 26 Mar 2021 00:20:10 +0000 (UTC)
+        id S229669AbhCZAaL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 20:30:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 889A061A01;
+        Fri, 26 Mar 2021 00:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616718010;
-        bh=202tDrDrG3qsmiV66y3CG2g8JozX4gJyl7tHusiviSc=;
+        s=k20201202; t=1616718610;
+        bh=LdGVXMwlNxo18R1ZDCxDv33Ba2P+L597E+9D9J6RFzA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oBS3NA5Fg/VMufTCFMkx9S1CIolH2udtK4UZXMMF7VrdhQcdwTK+34R1hVWMDxVCI
-         uuVc0xFuDjraiEhrQiC+O5wVlSSiWKwU/KCHoqC3aV1DzHpLuYaRqOPG6bDcWJ2djh
-         742uiK+XE/7Dqp7FFPAWr4JeBfKl4HN+Nxe55KaV1aFB7IZ716lZgzm9oWWl0dEceh
-         /0iXZNP9QJVfZAwMGNuYVY7Z6jdKVAn+pYl/cjPf2WpBMRLhkC86mM/4dg/dyEu1vC
-         Zis7WmIB8qEczVGnYL8TA8NVMcJ61XQYPb9MKR8b/qYVYP5yZAKLHeE1/ESGtteDGt
-         EfJt2xeOVZa1g==
+        b=FmBycWtAkmEowEfSOzWE324QFGisW8JZu8rtBDmouxqo1hILOrdvQxFbr0kBSJsAJ
+         j23FGr6zZQ9hocnmmQJcz6XSRsIjrsQ5OiwEn8huQkgfzy0ivpkzjlRVq+C62NKDRK
+         PuPZErK50vWQQps6GWKaC4ich+B3NnrHtFGqwsFY1AayUkZz3ujMa3nASvtLCecqEO
+         XYnta2s7EqIJ50R8hOb/Cz7VQODNPzKhz9eG54wKmwzgJt3ncBVjmtLdhyiwG/YtDi
+         XBG2kvXzDD7ob2V+AuQ8WScM+gpxNR3N8TdxunTYWEV8A+DKa4PbslMHuuTO76DJ45
+         dzRwVEAMMKMeQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1F99B6008E;
-        Fri, 26 Mar 2021 00:20:10 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 747356096E;
+        Fri, 26 Mar 2021 00:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] drivers: net: ethernet: struct sk_buff is declared
- duplicately
+Subject: Re: [PATCH resend 0/4] nfc: fix Resource leakage and endless loop
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161671801012.29431.14505392166407439391.git-patchwork-notify@kernel.org>
-Date:   Fri, 26 Mar 2021 00:20:10 +0000
-References: <20210325063559.853282-1-wanjiabing@vivo.com>
-In-Reply-To: <20210325063559.853282-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     simon.horman@netronome.com, kuba@kernel.org, davem@davemloft.net,
-        oss-drivers@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kael_w@yeah.net
+Message-Id: <161671861047.2256.9727486806659792945.git-patchwork-notify@kernel.org>
+Date:   Fri, 26 Mar 2021 00:30:10 +0000
+References: <20210325035113.49323-1-nixiaoming@huawei.com>
+In-Reply-To: <20210325035113.49323-1-nixiaoming@huawei.com>
+To:     Xiaoming Ni <nixiaoming@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, kiyin@tencent.com,
+        stable@vger.kernel.org, gregkh@linuxfoundation.org,
+        sameo@linux.intel.com, linville@tuxdriver.com, davem@davemloft.net,
+        kuba@kernel.org, mkl@pengutronix.de, stefan@datenfreihafen.org,
+        matthieu.baerts@tessares.net, netdev@vger.kernel.org,
+        wangle6@huawei.com, xiaoqian9@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 25 Mar 2021 14:35:55 +0800 you wrote:
-> struct sk_buff has been declared. Remove the duplicate.
+On Thu, 25 Mar 2021 11:51:09 +0800 you wrote:
+> fix Resource leakage and endless loop in net/nfc/llcp_sock.c,
+>  reported by "kiyin(尹亮)".
 > 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/net/ethernet/netronome/nfp/nfp_app.h | 1 -
->  1 file changed, 1 deletion(-)
+> Link: https://www.openwall.com/lists/oss-security/2020/11/01/1
+> 
+> Xiaoming Ni (4):
+>   nfc: fix refcount leak in llcp_sock_bind()
+>   nfc: fix refcount leak in llcp_sock_connect()
+>   nfc: fix memory leak in llcp_sock_connect()
+>   nfc: Avoid endless loops caused by repeated llcp_sock_connect()
+> 
+> [...]
 
 Here is the summary with links:
-  - drivers: net: ethernet: struct sk_buff is declared duplicately
-    https://git.kernel.org/netdev/net-next/c/01dc080be6b8
+  - [resend,1/4] nfc: fix refcount leak in llcp_sock_bind()
+    https://git.kernel.org/netdev/net/c/c33b1cc62ac0
+  - [resend,2/4] nfc: fix refcount leak in llcp_sock_connect()
+    https://git.kernel.org/netdev/net/c/8a4cd82d62b5
+  - [resend,3/4] nfc: fix memory leak in llcp_sock_connect()
+    https://git.kernel.org/netdev/net/c/7574fcdbdcb3
+  - [resend,4/4] nfc: Avoid endless loops caused by repeated llcp_sock_connect()
+    https://git.kernel.org/netdev/net/c/4b5db93e7f2a
 
 You are awesome, thank you!
 --
