@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A9234B291
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1946334B293
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:16:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbhCZXQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 19:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
+        id S231129AbhCZXQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 19:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbhCZXQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 19:16:15 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1DFC0613AA;
-        Fri, 26 Mar 2021 16:16:15 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id x9so5407162qto.8;
-        Fri, 26 Mar 2021 16:16:15 -0700 (PDT)
+        with ESMTP id S230139AbhCZXQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 19:16:19 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3A3C0613AA;
+        Fri, 26 Mar 2021 16:16:18 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id 7so6967560qka.7;
+        Fri, 26 Mar 2021 16:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lWmpm99AjPMwsAA+HeeQATviVqadwwf7PdEQKJXK2kQ=;
-        b=BLXb7gDUO5enUcAxfflgvdHId605cDZItpb0L3NYVzxRL5MHmEXMRT1Od/y1svh0pm
-         4h0k6rVphwzCIPKbEtf7ehzZqv7DQn2kWhea+fvS8tYV6158W68X137gSoWylqSX+bTw
-         7r4BMfriu98bvT5QPMGLckfzaU2AYU20omca0Oq+Z1449ZW5heb1HPx+2vIQFr0xXooo
-         KsiHUOnao3h+LdLdtYc7zxAXFpGI6dxQs9dL1Mqjek3krHmk5gol1IFasSuFWmzdnjBY
-         WJNnjDN/oTryArR4e55dj50gKhUM7aznZSy5IdH4Y2tcqJNDyX+skWGZQ8ax3gEiJgxk
-         +2NQ==
+        bh=IiQ4bh1rkaAouzyfz3uw3onrQANu0iOL55nVNupQhFk=;
+        b=eMLnUSmYV+1pMNDRaOvPxFOf64kcnv3QhDQujQGbn/uB3LA3IhZOmAxrhLtFbXMqgt
+         8rJC3Dxd45l2lomutOnoxf/5mz3DB6CzEIrZoG9i9wLEfmHBfHfWL7c9DhxrTO4LBNig
+         LWvr9mGOXBH6fXIdQqjW6ZhvbjIOiCpwDOUOuOxDiO68/r7/A4i+KwKKfo1MFfCr3Tvr
+         utjR/vQG3T0kiX/3cfEhGKJViyfkfd/v0Cyvvv9r1tB2KoBtkGthCt24tGawwnxg27W0
+         /sckKgz0f2Y+DuHSh68uuznmYv/FUjOR6QAzJ6ybalnr+l2G60ZnoLsshU3hzKMQxI1X
+         r/DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lWmpm99AjPMwsAA+HeeQATviVqadwwf7PdEQKJXK2kQ=;
-        b=cWj7KTETjMRctTkqHIIX5dlJsnD0fJE4ciaPBY6ra7qGgBPR+ysm6JQNCIYPVEfQuv
-         3w92y49eKeKJCq/nZ4aYZyoiMhxMCe/ngpC3vs61uXF5TqHUBRFYCU5S40FItBD+XALm
-         n+vP0uV9g5O/UjTaP41zqMqUM6CXCeJOJLsh0WfdRE8XeR8qJMuLSqjz9gCsPJz36okB
-         b1eZrtBHfr+Z4HO7y8ETQF9FrNtV0coeEe01JqURYZOY37VLXTdueV8qYhMGe/DjlJUH
-         zPdr65og7bUXd4Tet5U0DmzbxTyR6Supn+G/llBaTAoNEUVTFOn6ywII2nHLGfy3zoAM
-         8SVw==
-X-Gm-Message-State: AOAM530IxKouChawHfdN7ZVCF4VpgCTaOFdhkeoznQzFuA1sK1XyDIf0
-        E/QFX7anYiLvjuXQNY6UV3A=
-X-Google-Smtp-Source: ABdhPJywQ9kNiskHD1FT9gZHKmIGc0ChOnffk1zNnfcOkPRvCfQW3qyu799DpbdR7lzN8fzTW9zzkw==
-X-Received: by 2002:ac8:688c:: with SMTP id m12mr14431693qtq.74.1616800574420;
-        Fri, 26 Mar 2021 16:16:14 -0700 (PDT)
+        bh=IiQ4bh1rkaAouzyfz3uw3onrQANu0iOL55nVNupQhFk=;
+        b=B7CfBGFxKtbIeiqE1qVcSYfVrheOgg9jeilEnv5fLfLEIi8ZbJZnAsU+GWGxl3iQGv
+         nxyjVlWciH6LP6LzOVRVc/fIcCwx76u22lfN1hON1Tfq8IyyqD7Aj0dfyqVdZCoC6XEz
+         7b+jn2w3hOVu853l1vD/M2KG5vt9bVwNmOXMIGUXUpS5eQv8gGCTezSQ3zAeWpRSLnh2
+         YiP89u5It9FN+O95yS8B3/qCryt7diEK66kLX7zFBwpvb3T/trMAlvP+y67G1ORqMmv+
+         Nm+slVz+48J2U+or+JDGba5pbIuawrv4fRpJGtd1JwERRnlXSWJCJCwRFnfuWdcuJ1GX
+         P/4w==
+X-Gm-Message-State: AOAM531+9QXgI7IV4Tbm7YcVvpA8nTQL3iiyAQ2G59yPcLMDwNkAa/KZ
+        5TPddeYg/erMRmKH/BT+BwM=
+X-Google-Smtp-Source: ABdhPJyutmfKxmzk3/OyR5b9/8ab4ml49JS/CH3IevrYoEcD+dpD0mG5nCEFreQgm6ONV9fZ21Bpqw==
+X-Received: by 2002:a05:620a:12ae:: with SMTP id x14mr15680634qki.25.1616800578208;
+        Fri, 26 Mar 2021 16:16:18 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.58.30])
-        by smtp.gmail.com with ESMTPSA id w78sm7960414qkb.11.2021.03.26.16.16.11
+        by smtp.gmail.com with ESMTPSA id w78sm7960414qkb.11.2021.03.26.16.16.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 16:16:13 -0700 (PDT)
+        Fri, 26 Mar 2021 16:16:17 -0700 (PDT)
 From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, rdunlap@infradead.org
-Subject: [PATCH] af_x25.c: Fix a spello
-Date:   Sat, 27 Mar 2021 04:42:36 +0530
-Message-Id: <20210326231608.24407-1-unixbhaskar@gmail.com>
+Subject: [PATCH] bearer.h: Spellos fixed
+Date:   Sat, 27 Mar 2021 04:42:37 +0530
+Message-Id: <20210326231608.24407-2-unixbhaskar@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1616797633.git.unixbhaskar@gmail.com>
 References: <cover.1616797633.git.unixbhaskar@gmail.com>
@@ -63,26 +63,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-s/facilties/facilities/
+s/initalized/initialized/ ...three different places
 
 Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
- net/x25/af_x25.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/tipc/bearer.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index ff687b97b2d9..44d6566dd23e 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -1018,7 +1018,7 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
-
- 	/*
- 	 * current neighbour/link might impose additional limits
--	 * on certain facilties
-+	 * on certain facilities
- 	 */
-
- 	x25_limit_facilities(&facilities, nb);
+diff --git a/net/tipc/bearer.h b/net/tipc/bearer.h
+index 6bf4550aa1ac..57c6a1a719e2 100644
+--- a/net/tipc/bearer.h
++++ b/net/tipc/bearer.h
+@@ -154,9 +154,9 @@ struct tipc_media {
+  * care of initializing all other fields.
+  */
+ struct tipc_bearer {
+-	void __rcu *media_ptr;			/* initalized by media */
+-	u32 mtu;				/* initalized by media */
+-	struct tipc_media_addr addr;		/* initalized by media */
++	void __rcu *media_ptr;			/* initialized by media */
++	u32 mtu;				/* initialized by media */
++	struct tipc_media_addr addr;		/* initialized by media */
+ 	char name[TIPC_MAX_BEARER_NAME];
+ 	struct tipc_media *media;
+ 	struct tipc_media_addr bcast_addr;
 --
 2.26.2
 
