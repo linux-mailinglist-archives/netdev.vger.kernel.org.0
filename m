@@ -2,120 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE15E34A113
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 06:38:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 886F934A115
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 06:38:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbhCZFhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 01:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
+        id S229914AbhCZFiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 01:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbhCZFhM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 01:37:12 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C66C0613AA;
-        Thu, 25 Mar 2021 22:37:12 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id g8so2414686qvx.1;
-        Thu, 25 Mar 2021 22:37:12 -0700 (PDT)
+        with ESMTP id S229832AbhCZFhr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 01:37:47 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785F0C0613AA;
+        Thu, 25 Mar 2021 22:37:47 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id s2so3491506qtx.10;
+        Thu, 25 Mar 2021 22:37:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6kyG/hi4xMzB4ONd2/d1F0KtKO1/sY3sOs1ymP76/Vs=;
-        b=gLcxXXsLYIMNm7eCFHIMBWGXiOUfYZWPxTIH5wdDD1oF5ZiYT6FSUKBcIBJ+UJelZg
-         hzoCxgyIHQ2C9I31cVgZxMcOPiknvX4VPHjeGBdamUbEvfG+zamRnjCozejnmjvx2C69
-         B1NtkIavzq+OOv3iKl3CLSs9IghX/DdlZllzijR0fDgLx3rzdl6sIgGm3ej4y48DDAAu
-         ElmwnS4udqoXdFZqgcIw3UcotzAH5Nuh9OGpovDMaABqFTffzHF7tNihlMpEvlcD6QZy
-         gusGnj+QuGOdAcSrhMlUA/br8o9LamFgsyBxZuhLrc+rRqee22Xwlysz+nY1jFSJ3HXL
-         WWBA==
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=h4nP/hW2IjsV9gBeIhITMEtfKuipqQCrxcC+20/BgXk=;
+        b=W5JQbo1ZSR8/xcePz/vI7NIkq7xmA3fcS3Ettjk1X7eXteJUqf9d+ettnAQVHMxElG
+         RPZdKwmjgMPZs7H2M5H2M/GWASYLX13rZIz2SZztqc6U81K+MaF/8lq73feQG2TOI6ms
+         dwZp9qS69wV0NJZoHvLXoTbkP85StBzCasj0P2/vhScRxn9xYLprBgI//ZdMnM/5nPGS
+         rRdX4mgcbB4eso5LFRURJg1OqGjkTEzs7Tem/hcol3MmzMxGw4BIfNyIETqvjNZYOyex
+         Urk4jMPCy340RXLG/ad1NL6FYUATogMf4u1aDE9SS93rh2EevSvw2javeIienK9o+JD8
+         wo7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6kyG/hi4xMzB4ONd2/d1F0KtKO1/sY3sOs1ymP76/Vs=;
-        b=UapevZm7/fIV6vk4aXLhLR5vxckp3CmlI3X97bxH8hEsqpb94afYd4Ungp8JvjI/tI
-         Vpw8n/nly5cRLTByFShpEUtG3zgg1x01EmjYH4KqddZgis6vJalBWXSm9hhro7DpvhsC
-         1ck1qdIXwy00p/SX3ObfIJ12WK6jGkx7VjX+11bJXZ68/72TjH/TWu03sDisrj8B2sE7
-         aL3taPfaz4chdOxZjIcpjSijgfwWaueG2FtLEJ+lX2zsXq3XIfqlCM5JbGqCd9CnyLI7
-         zH8ysQzwxPD/DLENq08Ca7acnrkrr8Qn8bZlInvpRs3U0Yte9BxPoEK9/rjA+QKVp+pR
-         8w3w==
-X-Gm-Message-State: AOAM5306QVVAFkIj1X/DM0YLKgOSEwDSjtthKpSQ26lhp7IZDJK/apHq
-        mXapl3Ka02GRwRZbKzzpTHc=
-X-Google-Smtp-Source: ABdhPJwv0Fr0elnTJneHFMjLnzkyQ+3oPupNtvCxb82fI67DaeDZsYwC9xy4h2ilgNK/vVmcoxNTrg==
-X-Received: by 2002:a0c:b218:: with SMTP id x24mr11560217qvd.55.1616737031541;
-        Thu, 25 Mar 2021 22:37:11 -0700 (PDT)
-Received: from localhost.localdomain ([37.19.198.107])
-        by smtp.gmail.com with ESMTPSA id c7sm2363165qtv.48.2021.03.25.22.37.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=h4nP/hW2IjsV9gBeIhITMEtfKuipqQCrxcC+20/BgXk=;
+        b=dqnwatVsYLtlRjZO8sXZrm//xwH0zcATUjTyKaCnmhUf0WGhzyNGpYaftq2r25d0FW
+         PXKmtiDqd/AG/AKNPjpfJ4mHYicygP2ftZ1qfe7hEzOj1SKw53xV2t65dNr1k6mBT8xC
+         KRy4vfuARmtE/mO5BZajQVLoCPzrJZohCgjOWcP4T29keQhTIknxaRPzdxPEybfgIbv8
+         prYpQXdFXMZ+ZeKXbdWKiarV/gJPz7zywpKZuNv6becdtshKYuxLtHbFoAayjQwRged1
+         Swy3MvlIIJddHAWl03XXpijdfIFOZCO1P3ov/bpkp0bL7ImLLiFJhkpttqqAbWLxWpu/
+         De9Q==
+X-Gm-Message-State: AOAM532hTFV1G2g05yOgXQduW/AowM6nqVtBYIuJSRXLqqVKkAu5AYG1
+        XqRGLQw/mvTGY2qZFQA4IDE=
+X-Google-Smtp-Source: ABdhPJzkwVO2xEYSUZuseymSRMxn3v9UzfR9mLYe9dGOUb9AXSfGocDawr/n4bzITyDlPD3isMilsw==
+X-Received: by 2002:ac8:4602:: with SMTP id p2mr11165199qtn.377.1616737066819;
+        Thu, 25 Mar 2021 22:37:46 -0700 (PDT)
+Received: from Gentoo ([37.19.198.107])
+        by smtp.gmail.com with ESMTPSA id y9sm5820069qkm.19.2021.03.25.22.37.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Mar 2021 22:37:11 -0700 (PDT)
+        Thu, 25 Mar 2021 22:37:46 -0700 (PDT)
+Date:   Fri, 26 Mar 2021 11:07:38 +0530
 From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, unixbhaskar@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org
-Subject: [PATCH V2] fddi: skfp: Rudimentary spello fixes
-Date:   Fri, 26 Mar 2021 11:04:55 +0530
-Message-Id: <20210326053456.17792-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.26.2
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rdunlap@infradead.org
+Subject: Re: kinldy see the V2 ..just sent [PATCH] fddi: skfp: Rudimentary
+ spello fixes
+Message-ID: <YF1zImGzPwPsOSu9@Gentoo>
+Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rdunlap@infradead.org
+References: <20210325070835.32041-1-unixbhaskar@gmail.com>
+ <20210325.170911.1934364756284082401.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210325.170911.1934364756284082401.davem@davemloft.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 17:09 Thu 25 Mar 2021, David Miller wrote:
+>From: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+>Date: Thu, 25 Mar 2021 12:38:35 +0530
+>
+>>
+>> s/autohorized/authorized/
+>> s/recsource/resource/
+>> s/measuered/measured/
+>> sauthoriziation/authorization/
+>>
+>> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+>
+>Does not apply cleanly to net-next please respin.
+>
 
-s/autohorized/authorized/
-s/recsource/resource/
-s/measuered/measured/
-s/authoriziation/authorization/
+Kindly look in ,sending a V2 of this patch, hoping, that works!
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- Changes from V1:
- David said the patch didn't applied cleanly,so recreate it.
- Randy found out a glitch in changelog text, fixed it.
-
- drivers/net/fddi/skfp/h/smt.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/fddi/skfp/h/smt.h b/drivers/net/fddi/skfp/h/smt.h
-index a0dbc0f57a55..8d104f13e2c3 100644
---- a/drivers/net/fddi/skfp/h/smt.h
-+++ b/drivers/net/fddi/skfp/h/smt.h
-@@ -411,7 +411,7 @@ struct smt_p_reason {
- #define SMT_RDF_ILLEGAL 0x00000005	/* read only (PMF) */
- #define SMT_RDF_NOPARAM	0x6		/* parameter not supported (PMF) */
- #define SMT_RDF_RANGE	0x8		/* out of range */
--#define SMT_RDF_AUTHOR	0x9		/* not autohorized */
-+#define SMT_RDF_AUTHOR	0x9		/* not authorized */
- #define SMT_RDF_LENGTH	0x0a		/* length error */
- #define SMT_RDF_TOOLONG	0x0b		/* length error */
- #define SMT_RDF_SBA	0x0d		/* SBA denied */
-@@ -450,7 +450,7 @@ struct smt_p_version {
-
- struct smt_p_0015 {
- 	struct smt_para	para ;		/* generic parameter header */
--	u_int		res_type ;	/* recsource type */
-+	u_int		res_type ;	/* resource type */
- } ;
-
- #define	SYNC_BW		0x00000001L	/* Synchronous Bandwidth */
-@@ -489,7 +489,7 @@ struct smt_p_0017 {
- struct smt_p_0018 {
- 	struct smt_para	para ;		/* generic parameter header */
- 	int		sba_ov_req ;	/* total sync bandwidth req for overhead*/
--} ;					/* measuered in bytes per T_Neg */
-+} ;					/* measured in bytes per T_Neg */
-
- /*
-  * P19 : SBA Allocation Address
-@@ -562,7 +562,7 @@ struct smt_p_fsc {
- #define FSC_TYPE2	2		/* Special A/C indicator forwarding */
-
- /*
-- * P00 21 : user defined authoriziation (see pmf.c)
-+ * P00 21 : user defined authorization (see pmf.c)
-  */
- #define SMT_P_AUTHOR	0x0021
-
---
-2.26.2
-
+>Thank you.
