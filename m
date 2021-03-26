@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F3F34A5DB
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 11:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39C2E34A5DC
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 11:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229474AbhCZKvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 06:51:55 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:57331 "EHLO
+        id S230096AbhCZKv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 06:51:56 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:57885 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230104AbhCZKv0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 06:51:26 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8376A5C0A31
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:51:25 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S230180AbhCZKvw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 06:51:52 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id A158A5C0C73
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:51:51 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Fri, 26 Mar 2021 06:51:25 -0400
+  by compute5.internal (MEProxy); Fri, 26 Mar 2021 06:51:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
          h=message-id:subject:from:to:date:content-type:mime-version
-        :content-transfer-encoding; s=fm2; bh=mfLM54NkRzGihGMt1RtjFf1msn
-        m+AjpFdY2ii5u1oQ4=; b=IBh8P9l1vEWPrFve79xNQI0K5wSnjGQO/10qRJdf9O
-        objichibOJi6pqHlstsqE2SJEDAWN0U+1A09pXhwpfuJZcjkXlOsG9h4a7QMvJvv
-        u3J9fZZiTondDjKL7nH7zyul7ZB4mMM4CrQFNKP3b7trvYzt+ppJ83t6E2O777YP
-        BxyOrIIAHNKYhFtms7TBCntReoICnPXtfIiJdefjQjI4L2wS8jZZ5W06MXLh6WHy
-        bIlwwOm4tWSMnaJMT/XJLNGyc7M1i/gLvaX5kFGMa7XxyoHxBHDFIqaSyTh5FAEZ
-        sVUvjbiV/PsLr8BLx+szjPBj+x6qC80oLCyZrzOy7FDg==
+        :content-transfer-encoding; s=fm2; bh=IE5vgu08X3YiLpLNSVCSXrj96/
+        S4zgMPWk8c3r3u50s=; b=1x3ZQgv/ry9334d6/Sz7MvyaqiFLMtcSaN+sM84QDv
+        wy/X0tDcIdVX5Y4NyQp7qkN1mRck9KUDZ+m9XSQ389PJrjOlUOVAvZW46bwhn+Jd
+        tLcLRudyeHP9B4Xvpih8LcywVG9dd4K5fc2NLopMiOOBpeyjwX3iKu1MPq+fEgSK
+        i2MYT4hOpmGpZSQcbc8OEnpPWybbVibE5JR4SUd2tizevQ4uS7iu/9Ov8YRk6Ouc
+        ZqekqA+IqnznnVc4vA17LXXjQYoX1AmM65nb9Dlv3QBQ07hIAuNcE/9/1fs5dn/u
+        7g5C+VLpZu7any8/JJsC6UeM8oxu0WzQ0nkhqPr7qkIA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=content-transfer-encoding:content-type
         :date:from:message-id:mime-version:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=mfLM54
-        NkRzGihGMt1RtjFf1msnm+AjpFdY2ii5u1oQ4=; b=fFBLViJOiFnhepKCWA7Nd7
-        F8GUlCIm4GQDIRri1J6sMmMybbrs84WVr/+S1qb7xLuVwrzayxMWCuD0EM3zt9Q7
-        161O7lYxobxXZ/s0ZTf57nX1uP1r4WWki+AejysoPj9R+Zf5ZGyFkFQB7cgn9qvy
-        77qIiWZFBxHkjPP+eGBWcKcQWqg8htaz0A7dRY6PEFKVCHdvxCtukffH5K9B9NvV
-        4gB3iaiO3q6LvdRZlzXbivDPx7//iuF7KU95BqzrgiV/cUm9oGQuPDqK64Tjv1xn
-        wnTKCnfbjV0MXj9IFuKszpko96rKC9mNH3aFm8oD8DDKj0RSAmYj9zdVieuKhqdQ
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=IE5vgu
+        08X3YiLpLNSVCSXrj96/S4zgMPWk8c3r3u50s=; b=R61EinIroOY8qiKxHhmwjW
+        2Xu+bXB/G0H7/pxq685mrfgsgxV6AMp1izd5K/OU+bYl0RZRUZwkAsDlww0UqFdq
+        JyqhtHxqRKqnoNfsoDCg1LrT5EzjpLrVUU1tqPnAl3/uv9ynMIJ4J7rTQbYscRx9
+        67plqh+Du7LhUOz3Hr/sLTlvinGxpR57iib4X9xHmpkl183VHIlSapndqm0y/oet
+        R9/AXfiaBRTFcmC82tLEjZZbmSAzjlxCu5+n8ENd6ThF8iNcHll6Tu8EHBdVs2OR
+        g2leeGINMb5jQvZPtA/jZuy/zdqpT9mGgQ/9d+fsU1gLhf9q81jZzmAcN2aTAgSA
         ==
-X-ME-Sender: <xms:rbxdYGgVYUG9ffnxsDlQTJDuZdO4-GaJ44gadBS4k31J9TPhh6l_3Q>
-    <xme:rbxdYG8O52PT1Kyl5Kc0ZfE0dtkpIT4ZbQqIBzjKP0w37tZfOg8f5-SWoMusKLlhb
-    haV07JKIjtkn5X_-g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehvddgvdduucetufdoteggodetrfdotf
+X-ME-Sender: <xms:x7xdYPdQFiyPCS4rWbp-Q1bmYpZNFaXUbsZdj9vQSiHkcNss1vX6HQ>
+    <xme:x7xdYAFtxRVQe_jC2La-P_ouIimc4Dg5-pAVbNKZR9yQhEysXEegi-vHLDx8xRd4b
+    cXlodEBUyYOfZEdPA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehvddgvddtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefkuffhvffftggfggfgsehtjeertd
-    dtreejnecuhfhrohhmpeevhhhrihhsthhophhhvghrucfvrghlsghothcuoegthhhrihhs
-    sehtrghlsghothhhohhmvgdrtghomheqnecuggftrfgrthhtvghrnhepieeitdevveegje
-    euveeflefhhfeffeeijeffffeiteeifffhveeigeeghfevffdunecukfhppeejvddrleeh
-    rddvgeefrdduheeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
-    hfrhhomheptghhrhhishesthgrlhgsohhthhhomhgvrdgtohhm
-X-ME-Proxy: <xmx:rbxdYK_U0VHvVmDJkxmP48l58ObsyNefAc5ldJkLE0XAFha4Lf0Hbg>
-    <xmx:rbxdYHC1a_Al94zFY-HV2b7FCAzafqt661vrnXsogVVV-WpK1P0wfQ>
-    <xmx:rbxdYCzqHZW8aZW3ct4UgAJDH2D0BPg9yqLORR96yarWhZbnrRg2pg>
-    <xmx:rbxdYGlRublZCbR6Vt9trc8aDeo7KmgakyMbpHoGjgFO018Dmy5gnA>
+    uceurghilhhouhhtmecufedttdenucgovfgvgihtqfhnlhihqddqteefjeefqddtgeculd
+    ehtddmnecujfgurhepkffuhffvffgtfggggfesthejredttderjeenucfhrhhomhepvehh
+    rhhishhtohhphhgvrhcuvfgrlhgsohhtuceotghhrhhishesthgrlhgsohhthhhomhgvrd
+    gtohhmqeenucggtffrrghtthgvrhhnpeejgeeuudetteeujeehjeeuheeigeeugffhueei
+    gedthfekiedthffhueejgfduudenucffohhmrghinhepphhurhhirdhsmhenucfkphepje
+    dvrdelhedrvdegfedrudehieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
+    mhgrihhlfhhrohhmpegthhhrihhssehtrghlsghothhhohhmvgdrtghomh
+X-ME-Proxy: <xmx:x7xdYAUQGWN87Ff8u9G2PJ-Or7MIHy_7ufkIUAaMOGPaEv27dD-eAg>
+    <xmx:x7xdYPJdlj46cV2gKQYPbV1he8Bm0ZuL2yx61hQb6sN6xZhEYGdMQQ>
+    <xmx:x7xdYA96pQ7CU47d6JovG0p8NL_di80Ft31ZKjZmWkIaN2TdgVEIrQ>
+    <xmx:x7xdYL3102GHxHYjJlvgcUSTKtztjv5yBf5w-jluEb_GYkUKNFFPUQ>
 Received: from SpaceballstheLaptop.talbothome.com (unknown [72.95.243.156])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 46D6E24005B
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:51:25 -0400 (EDT)
-Message-ID: <152c1a9de39bf054725522dcf762097091e5a8a4.camel@talbothome.com>
-Subject: [PATCH 5/9] Allow for a user configurable maximum attachment size
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5B60124005D
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:51:51 -0400 (EDT)
+Message-ID: <7b29e54909eae3a74f6c906339ab6561f2d5c768.camel@talbothome.com>
+Subject: [PATCH 6/9] Update README
 From:   Christopher Talbot <chris@talbothome.com>
 To:     netdev@vger.kernel.org
-Date:   Fri, 26 Mar 2021 06:51:24 -0400
+Date:   Fri, 26 Mar 2021 06:51:51 -0400
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
@@ -67,145 +68,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Android and iOS enforce a maximum attachment size for MMS messages.
-This patch enforces a maximum attachment size for MMS messages and
-makes it user configurable.
-
-The default maximum size is based off of Android, which has a maximum
-MMS size of 1.1 Megabytes
+This updates the README for mmsd
 ---
- src/service.c | 38 ++++++++++++++++++++++++++++++++++----
- 1 file changed, 34 insertions(+), 4 deletions(-)
+ README | 66 +++++++++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 61 insertions(+), 5 deletions(-)
 
-diff --git a/src/service.c b/src/service.c
-index a3b90c5..dede36d 100644
---- a/src/service.c
-+++ b/src/service.c
-@@ -56,6 +56,7 @@
+diff --git a/README b/README
+index e33be69..cecc99f 100644
+--- a/README
++++ b/README
+@@ -2,20 +2,76 @@ Multimedia Messaging Service
+ ****************************
  
- #define MAX_ATTACHMENTS_NUMBER 25
- #define MAX_ATTEMPTS 3
-+#define DEFAULT_MAX_ATTACHMENT_TOTAL_SIZE 1100000
+ Copyright (C) 2010-2011  Intel Corporation. All rights reserved.
++Updated 2021 by: Mohammad Sadiq, kent, kop316, 
++                 fuzzy7k, craftyguy, anteater
++Parts adapted from: https://source.puri.sm/Librem5/purple-mm-sms
++                    Copyright (C) 2018 Purism SPC
++                    
++About
++===========================
++mmsd is a lower level daemon that transmits and recieves MMSes. It
+works with
++both the ofono stack and the Modem Manager stack.
  
- #define SETTINGS_STORE "mms"
- #define SETTINGS_GROUP "Settings"
-@@ -100,6 +101,7 @@ struct mms_service {
-        GHashTable *messages;
-        GKeyFile *settings;
-        gboolean use_delivery_reports;
-+       int max_attach_total_size;
- };
++Please note that mmsd alone will not get MMS working! It is designed
+to work 
++with a higher level chat application to facilitate fetching and 
++sending MMS. It interfaces with other applications via the dbus.
  
- enum mms_request_type {
-@@ -146,7 +148,22 @@ static void mms_load_settings(struct mms_service
-*service)
-                g_key_file_set_boolean(service->settings,
-SETTINGS_GROUP,
-                                                "UseDeliveryReports",
-                                                service-
->use_delivery_reports);
-+               error = NULL;
-        }
+-Compilation and installation
++Compiling mmsd
+ ============================
+-
+ In order to compile proxy daemon you need following software packages:
+        - GCC compiler
+        - D-Bus library
+        - GLib library
+ 
++Installing mmsd
++============================
 +
-+       service->max_attach_total_size =
-+               g_key_file_get_integer(service->settings,
-SETTINGS_GROUP,
-+                                               "TotalMaxAttachmentSize
-", &error);
+ To configure run:
+-       ./configure --prefix=/usr
++    ./bootstrap-configure --prefix=/usr/
+ 
+ Configure automatically searches for all required components and
+packages.
+ 
+-To compile and install run:
+-       make && make install
++To compile, run:
++    make
++       
++And to Install:
++    make install
 +
-+       if (error) {
-+               g_error_free(error);
-+               service->max_attach_total_size =
-DEFAULT_MAX_ATTACHMENT_TOTAL_SIZE;
-+               g_key_file_set_integer(service->settings,
-SETTINGS_GROUP,
-+                                               "TotalMaxAttachmentSize
-",
-+                                               service-
->max_attach_total_size);
-+       }
-+       mms_debug("Maximum Attachment Total Size (in bytes): %d",
-service->max_attach_total_size);
++mmsd will be installed in /${prefix}/libexec (if you are following
+this guide,
++it is /usr/libexec )
 +
- }
- 
- static void mms_request_destroy(struct mms_request *request)
-@@ -414,10 +431,11 @@ static gboolean
-send_message_get_recipients(DBusMessageIter *top_iter,
- }
- 
- static gboolean send_message_get_attachments(DBusMessageIter
-*top_iter,
--                                               struct mms_message
-*msg)
-+                                               struct mms_message
-*msg, struct mms_service *service)
- {
-        DBusMessageIter attachments;
-        unsigned int attach_num = 0;
-+       int attach_total_size = 0;
- 
-        dbus_message_iter_recurse(top_iter, &attachments);
- 
-@@ -430,8 +448,10 @@ static gboolean
-send_message_get_attachments(DBusMessageIter *top_iter,
-                struct mms_attachment *attach;
-                void *ptr;
- 
--               if (++attach_num > MAX_ATTACHMENTS_NUMBER)
-+               if (++attach_num > MAX_ATTACHMENTS_NUMBER) {
-+                       mms_error("Error: Too many attachments!");
-                        return FALSE;
-+               }
- 
-                dbus_message_iter_recurse(&attachments, &entry);
- 
-@@ -466,6 +486,16 @@ static gboolean
-send_message_get_attachments(DBusMessageIter *top_iter,
-                        return FALSE;
-                }
- 
-+               attach_total_size = attach_total_size + attach->length;
++To uninstall, simply remove the "mmsd" binary from /${prefix}/libexec
+or run:
++    sudo make uninstall
 +
-+               mms_debug("Total attachment size: %d",
-attach_total_size);
-+               mms_debug("Maximum Attachment Total Size (in bytes):
-%d", service->max_attach_total_size);
++Note that you must manually configure your favorite service manager to
+run 
++the daemon, as this installer does not configure it to autorun.
 +
-+               if (attach_total_size > service-
->max_attach_total_size) 
-{
-+                       mms_error("Error: Total Attachment size too
-large!");
-+                       return FALSE;
-+               }
++Testing out mmsd
++===========================
++To configure, run:
++    ./bootstrap-configure --enable-debug --enable-maintainer-mode
 +
-                attach->data = ptr;
- 
-                attach->content_id = g_strdup(id);
-@@ -490,7 +520,7 @@ static gboolean
-send_message_get_attachments(DBusMessageIter *top_iter,
- }
- 
- static gboolean send_message_get_args(DBusMessage *dbus_msg,
--                                               struct mms_message
-*msg)
-+                                               struct mms_message
-*msg, struct mms_service *service)
- {
-        DBusMessageIter top_iter;
-        const char *smil;
-@@ -536,7 +566,7 @@ static gboolean send_message_get_args(DBusMessage
-*dbus_msg,
-        if (dbus_message_iter_get_arg_type(&top_iter) !=
-DBUS_TYPE_ARRAY)
-                return FALSE;
- 
--       return send_message_get_attachments(&top_iter, msg);
-+       return send_message_get_attachments(&top_iter, msg, service);
- }
- 
- static struct mms_request *create_request(enum mms_request_type type,
++Make it:
++    make 
++
++Run daemon in foreground with debugging:
++    ./src/mmsd -n -d 'src/*'
++
++General Configuration
++===========================
++On first run, mmsd will write a settings file at
++"$HOME/.mms/$PLUGIN/mms"
++
++IMPORTANT NOTE: If you change settings in this file, mmsd MUST BE
+RESTARTED 
++                for the changes to take effect!
++
++This settings file use sane defaults, but you can change them:
++
++UseDeliveryReports
++        Whether you want delivery reports for MMSes you send
++
++TotalMaxAttachmentSize
++        The maximum size all of your attachments can be before mmsd
+rejects it.
++        NOTE: This value is carrier specific! Changing this value to a
+higher
++              number may cause your carrier to silently reject MMSes
+you send.
++              CHANGE AT YOUR OWN RISK!
+\ No newline at end of file
 -- 
 2.30.0
 
