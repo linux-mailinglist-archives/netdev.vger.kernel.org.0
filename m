@@ -2,176 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C552B34A7F8
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 14:20:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A15B34A7FD
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 14:21:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbhCZNUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 09:20:09 -0400
-Received: from mail-mw2nam12on2071.outbound.protection.outlook.com ([40.107.244.71]:57696
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S229779AbhCZNVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 09:21:14 -0400
+Received: from mail-dm6nam08on2059.outbound.protection.outlook.com ([40.107.102.59]:38113
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229984AbhCZNTk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Mar 2021 09:19:40 -0400
+        id S230104AbhCZNUq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Mar 2021 09:20:46 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n4gu12nnhiU5uReBBH2ljriZ9PGu6EZr9TDPFx1GMDSKQdtANufVXjhSERk7eEJoDiL1DleVW8FbRhSUJFaN4mujfngQyVI/DRP/ffYivE+wi00UcdJVguCoOdj3i//oUtPu7CfwMBMY16LJmuR7KEmCRFA4+/A81go0eUjn47znb9udhG8FjVT+tgSSjGgaAkyQxUyM8dzYxjdt93dMfH40YUEymJIvR6321jyFNibHQGWhv2L4zJfoidYcRWnDKnjyoD+FTeiI1/ld+om+tFGktpaU/GkTH+fGE0xmzy8AJQn5nWFl8dJmc0gTZsE0H91nLngjeAMVXl5p7EZvzA==
+ b=EDRKpF+3uL0NueKQH0gBFWtx4H2F0MeThlQ7zvW78e/3gofBMhkLP1+gcD/h6prCc2rBNs7LPqmmIvET2JW99UE9jU8HJltr93xT47iAcl9qpnbQdIyUzKHqw0AZmhuO3A8uMYlB3SXMpLghcQFHIxFsxvGea1yopddjIw2VRFNTIU+xtbaQQhgvA69LQdFw9r61IZxsQDYyz63c7d7YNxy9wdjkyNFYDRDrQ5P5bWtJ5k2LyNo9pANMHaBC9ogMMfpconlod2xk3q4rAkAI45yf1DPUCQIqY4mIvWHU6TY0vm9tQdFCvW6o4wlQWZdIAC92uYwnwGh972CaGvgpWQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2QyRRexhWNUWIAxAsaeaIXNSvO1kB4vnCzv9CeGHdpg=;
- b=RSNAMpVBS2I/u0GZwn2gosNjul9WHujMAVzjgrYL5KT+OJu7sO+O+Dt68YNWSPOJkUxmriw37XIADlZNWxmHgREAth36ZRK8+BDifhELdFuUpCfluKKPt9IzlPH4g/yai8vEFbNnPgQSVAfh973XyUAMBrbDks3kJsiNU6IlF3kHlf53Ejzei/Zqr0SDnmbEQoTBUFSwia4qwYqAqw9jMfDDKxzhrMrdRQip2I+46DGmWMHXssMp0DaKhmY2tkvt1XPsCw5jGgzsgDjV4TyVHAnbEAvi15n/CB6iTz8/g32WwdjH0aQ6AzUp4UDLrMXyHSR5u0SoXFN5FSGY+sLJVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
+ bh=WL0ShfkFyEyhias3bk/Xqv6gkbgnEswoWgPOsfdSNgE=;
+ b=KEqCWMggjVwJH6x4kuACW7S/UuwH8GOB58wC2yoymYi+/HUyNHXKftvZlwgovw4zgEHRHnzPIwWQJmKGlnF3t9bDtFyss6mm3NHDgpAN52oDOUg2bVQTA0Szb8Iu/vlZmOkU2RmZ9of1Uu4eoU99eRcgxmqQ5nqgAdt52wFxOOzrML4yw21k+n7829LwnGg7X8X8ywY33SdK5oHq2y9nXPIdcrX/0G/qmIaTyO6a0Ujs9Ocqq18h2N85Px7aCD2INpXB7aZRvayQn886Ol+nJy/FAlayVbkuKRbTQAnFIB80MmdSNn5YcH5zV0V33iu+Y3KqI998ICdceo9isAad4Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2QyRRexhWNUWIAxAsaeaIXNSvO1kB4vnCzv9CeGHdpg=;
- b=XHwqdRZHYRQx/U/2Cz9q/6a20nooXs92qsnrXm0zTEbk8OXqHKMOugzsoascLR/C/xchtFnHPOmm9lKvY7Rlp0FtaLSklHeGF2TqRxvJEIiegOo5xTNm+Rz6PYUncHFIHo7dOEt6rKkWGoh3qU6xelMwtgaXTASsI9FmkA/qz0wKOsTBaJCRs4/vE/ec3ka+XQ0pmG7bUcVbwVV5NK/c/8qiX3hIrE9fP941ObhGyw5crHXo50YB4W6i1QIsWX1fGkVNcprLX1eSQ20VIlZh/uBkmPUKyROpRXH/8hpF/Fd5JpNhxW83pdS24+Y9/3EghkFDsHKFP9dW5i8u01oBRg==
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4012.namprd12.prod.outlook.com (2603:10b6:5:1cc::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.29; Fri, 26 Mar
- 2021 13:19:36 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3977.029; Fri, 26 Mar 2021
- 13:19:36 +0000
-Date:   Fri, 26 Mar 2021 10:19:34 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Cc:     Doug Ledford <dledford@redhat.com>, Mark Bloch <mbloch@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Christian Benvenuti <benve@cisco.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Gal Pressman <galpress@amazon.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lijun Ou <oulijun@huawei.com>, linux-rdma@vger.kernel.org,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        target-devel@vger.kernel.org,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        "Wei Hu(Xavier)" <huwei87@hisilicon.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next] RDMA: Support more than 255 rdma ports
-Message-ID: <20210326131934.GA832996@nvidia.com>
-References: <20210301070420.439400-1-leon@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210301070420.439400-1-leon@kernel.org>
-X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: MN2PR20CA0025.namprd20.prod.outlook.com
- (2603:10b6:208:e8::38) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+ bh=WL0ShfkFyEyhias3bk/Xqv6gkbgnEswoWgPOsfdSNgE=;
+ b=q8ocPPDSZ98FcqKHje8b2Bt1py2cknXDroNBEBgxwHf2CpQMHjCHpXLHjeytHrOjPrUtc3Kiesq+KbJq7BRHB7NeoWpVFGNgOwj02RyZ+v6vLZBkFs/lplI5xzRNuZAlMwU2rCTpdLwPUMSUj4tL6UTLp99L82LnxZSLpXHFOr8zXFWZGmAeuUbALX/OacqHl1go9WbZ/bB9XEFJlMNli4AMIl3ywG9adSurthp5vZvEn5qESP8GN2NfiIjpdlp9CWEZKdpZ7CRh9lSdBRuHfn1xULzPSnZ/5sGFPNKeFfuvJfID0BCQ6na4ouB1MVeoQs6NxyXo13hEH9J9tf3OLA==
+Received: from BN6PR1401CA0022.namprd14.prod.outlook.com
+ (2603:10b6:405:4b::32) by CH2PR12MB4118.namprd12.prod.outlook.com
+ (2603:10b6:610:a4::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Fri, 26 Mar
+ 2021 13:20:45 +0000
+Received: from BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:4b:cafe::58) by BN6PR1401CA0022.outlook.office365.com
+ (2603:10b6:405:4b::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26 via Frontend
+ Transport; Fri, 26 Mar 2021 13:20:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT057.mail.protection.outlook.com (10.13.177.49) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.3955.18 via Frontend Transport; Fri, 26 Mar 2021 13:20:45 +0000
+Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 26 Mar
+ 2021 13:20:42 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     Petr Machata <petrm@nvidia.com>, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] nexthop: Rename artifacts related to legacy multipath nexthop groups
+Date:   Fri, 26 Mar 2021 14:20:22 +0100
+Message-ID: <2e29627ba3c4e6edf5ee2c053da52dab22f3d514.1616764400.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR20CA0025.namprd20.prod.outlook.com (2603:10b6:208:e8::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26 via Frontend Transport; Fri, 26 Mar 2021 13:19:36 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lPmNC-003Unh-UI; Fri, 26 Mar 2021 10:19:34 -0300
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 09da628e-fb9a-4189-2c62-08d8f059cd5c
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4012:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4012C3821A002B951F6453C7C2619@DM6PR12MB4012.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Office365-Filtering-Correlation-Id: e305359e-c877-4d49-5beb-08d8f059f691
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4118:
+X-Microsoft-Antispam-PRVS: <CH2PR12MB411875FA89AD6A7C04F4CC24D6619@CH2PR12MB4118.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HYgrT/OsxMlEjF4sH+y3pG8r6zVhhfKlq/U6xxRyrmJfA/ExobYzDXHn0tFMdpc0cNl0N+xvLPFleNlvJ8eeBKZoT4eSJwA2LlBu0NcjL17WH91L8oFtAwxWMWPUjwupcfJ59Pb6irUSkRPrcIAlj6fW54CRlY8Oe2FnYrPDq0O+A1Q0jiKXSJtEDNw3o1j3tI/zEZCfC0MSrYvR2/Hv3AklNW7Ndt2brXVcESJwU/AzbzapU+G4lCzJxyDe4UOB1U9KuRwnqwd/8yH4qzlU6M6Swk28qhQMn4Dn8EEwsgNOz8D7jWeb/r7I/q8pNlNEOq4w1pdUvOzSMy41WeftqnnXde2uZ0f3l3gL7BFnTSZNeQ6SxLtVLSkY9II6xcChpbVH530eRPhGSg56S34amkeXonLB83dvi574TLdMp+WDL2tj8jwv3TDwafv7r27z/508JBNCShTgzCpr3gsRR2AKdsRAhSdn2mxhjVxRdVasVZj+gVxTXHhypqt5bfoHIuXSgmPfPgIbt8yNzM/Hp6SvVXtVr7M4i3eoYAKd+priNRfhn+n0RDVgDjKKpsFppWt/o/CYTWfl/4yYuD8IgCLChDYJwZysCJ/KWHf4xbZDH3TxUvcZH4V8kpL8COV+8ZNnVZmm5P4S1NvYiDBUjf9XTjr4xQSwSPcPp6p9tD7sS4JCw8If6cf7lMon5j8v
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(396003)(366004)(376002)(39860400002)(5660300002)(9746002)(110136005)(36756003)(4326008)(54906003)(33656002)(316002)(9786002)(8936002)(478600001)(66556008)(66476007)(8676002)(2906002)(86362001)(66946007)(7416002)(2616005)(186003)(26005)(426003)(83380400001)(1076003)(38100700001)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?DGFlMZlBbsASrjXGILwkXzElOMSkXa5hAfjvOpsTVUQh7F3CLUFN7yokYTDx?=
- =?us-ascii?Q?jx+mfOkDUmLWQbQRYn5uPd2jQQBDMLB9WY7vvM/NhjkHOB2hDMV5npX3klw1?=
- =?us-ascii?Q?V58gTecYo2ydll2TmHL1f5lIW/2yY+6q9kv2DNpLZtIv+uEwgda75VOVN2TW?=
- =?us-ascii?Q?AfZy60BPmLTQdt/Jbgc3BoFkf+B/af2Qf7MKS4r5uABbCO+wHSaQh7a8XCrw?=
- =?us-ascii?Q?hVQOZpQlhlniAbopuYAoW/UVAQfn1WcFCNMiYUQkUBIfVn54kgPw2d8fjDyt?=
- =?us-ascii?Q?gt/N00swXlyh9jWnX7aKWEkHF6xQ91O1HrGPmUgXQgZdquHI7JphtUE5MHbU?=
- =?us-ascii?Q?1XOzoz3CK7JoxYeE4jRBNew2ThZIq3H9X8fIQB23GkeOAwpa3T0pnPSa4EsT?=
- =?us-ascii?Q?L0VYglDtMVaGDrZriLN+wF31xfblkv51Ny2Er4Zo2bmZWFDQUM6RPj+iQ5VJ?=
- =?us-ascii?Q?hKAmEf9VXAJdR/pTUtVLznrMzrpfrbhPCGZAFJN18vdntYtCT9HCpMNZvFHY?=
- =?us-ascii?Q?dscrajVcs3iQeaR3gUhqJpaWbJK3h0Os4sRhl82u92l8SZyHYNKXWujfixcD?=
- =?us-ascii?Q?j8+ukQeDF5konoLPcj8q75QkzGIcV0hNJg28GmUOQipYzWOO3sErIR1muhHe?=
- =?us-ascii?Q?3rhzukCBsTevsVkeN4IoFLQs+r6EH+oQBBx4/VSHSCoS83Ayxc2acOztiGJe?=
- =?us-ascii?Q?n8Yuja+iz9+A726rAXpQjQyv5Pi74e90x3b8g7cGtOn88XqdTFvaOErtfits?=
- =?us-ascii?Q?DbgPthr3perBJCf9vgjwcxGER0ic/vCjLiBXD29bzVpuYbapTRK/9naJ7f4T?=
- =?us-ascii?Q?n/u5NbWjxjvZJyZ0qKRelIuGpLa5JR6ZcNGsXIYl/G3zb0ZNQaa6fwUPFvZZ?=
- =?us-ascii?Q?F4o3Qa/mxOAyj4h09Tcuh1QhtunScPOUmoUwLoYNxUEeVCrJ7bEKRh3HNHok?=
- =?us-ascii?Q?xvx7NOQtYeaf1OCXaW4BO3qLHGIFJthDq/gURaD5Uvxz67zSxs0DoqYmPJlM?=
- =?us-ascii?Q?QBgY3n9U/rGF+tknlNkT4XOr2BHeN9o2pYiILIcviP/GF5kdAkQcqbNl0ESx?=
- =?us-ascii?Q?2xnWBsSXtePAk2mXjIK4gPODcg+iEOoGwFnvYZ7L5Jgax7a7lwrOZop0tL2S?=
- =?us-ascii?Q?UfhhOX3ikJ1tPgn+uw/YbrV2jC/JE5jTOWF0I/fRwu9zGw0Dy/U5c1SBE8fZ?=
- =?us-ascii?Q?tgJjG4l+jvqzWDl4XtksnkY8JyYPsVCVtc0nAmAddlRZZq3HtegN3U54pne+?=
- =?us-ascii?Q?Ndf9+hc2oLZ6gZkcvkyAQ3uHnuEQ9D7RlmcsvqW80tN6sdkmh7mCNCBNY8rC?=
- =?us-ascii?Q?cIwMSopf+mKQe8NYHgV5Y/+X3skwRL3UL2OoTPm5l9ktnw=3D=3D?=
+X-Microsoft-Antispam-Message-Info: Khp0FMVXjbINpV8qQyuCfcjnVwII+DXjWuc1FP9Z1CBMnGi39cpE0tE9BZcbjhFH96Nkb8bz4oHWBB4AVG/lpIZEEIkSo4mN0c8uUCQhpfy9c7mKOaPCms4sY252U4dwOykc8HGQLRnfNwqdwIxzERdut4CXmIub8ITNr7YD697+fTxu38bl5Gz26UliojIVfXhOFm56O0djyK8b4V1cy/MGK2OJsmjLlAqsgKlmHTWaIhcH1BEtSKLvm6XdSUuvkoSS/F27z3hxOvQLWykPV6UVZT3Cow3b+OwtfBYUtXcexVV3XnHZVNM8Tev4K0DSeVnddYCJ1dq+oyKu342HsWpP8WiHgi9lk49odrxj6YXPjzBUJHR+RRY+29i8YWC854e+oRrl6FwT9eFKc184DAJ8UkqtZlhWCSz9Xs7VK0QlDhXXboExQv3ruIxSUU/yb1ptB1EPpxc3NWRQpS1ZaPoA8TJBval43eP/A8DVXMEBEsOppgZV6rLlPb6L9VOoZoCGGvkNLpqdVu3PzuOseMjbvuzPopdTT+mnW+mevO9jQ2XYZXIUuWG9/ephtreQKQWZkUaDJf1NFVGjp6DwKNnVDSxsH+kSFR26EbdLGwFGU+b+tI0mFbCJLvHDlstUvFHps1DFTj+D9ZeAf4OsPOPlRZ3F0dR9nEAfDMorlFg=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(39860400002)(346002)(136003)(376002)(46966006)(36840700001)(83380400001)(4326008)(54906003)(2906002)(36756003)(86362001)(47076005)(82740400003)(5660300002)(186003)(7636003)(6666004)(26005)(36860700001)(16526019)(316002)(36906005)(336012)(8676002)(82310400003)(426003)(2616005)(8936002)(70206006)(6916009)(70586007)(478600001)(356005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09da628e-fb9a-4189-2c62-08d8f059cd5c
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2021 13:19:36.8066
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2021 13:20:45.0293
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: e305359e-c877-4d49-5beb-08d8f059f691
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hxwRzBaW/qZd6y3qofReAixh4a+D5FC8hRxrWK6GcCaijzygDC0BulRXLS2P3vF0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4012
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4118
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 01, 2021 at 09:04:20AM +0200, Leon Romanovsky wrote:
-> From: Mark Bloch <mbloch@nvidia.com>
-> 
-> Current code uses many different types when dealing with a port of a
-> RDMA device: u8, unsigned int and u32. Switch to u32 to clean up the
-> logic.
-> 
-> This allows us to make (at least) the core view consistent and use the same
-> type. Unfortunately not all places can be converted. Many uverbs functions
-> expect port to be u8 so keep those places in order not to break UAPIs.
-> HW/Spec defined values must also not be changed.
-> 
-> With the switch to u32 we now can support devices with more than 255
-> ports. U32_MAX is reserved to make control logic a bit easier to deal
-> with. As a device with U32_MAX ports probably isn't going to happen any
-> time soon this seems like a non issue.
-> 
-> When a device with more than 255 ports is created uverbs will report
-> the RDMA device as having 255 ports as this is the max currently supported.
-> 
-> The verbs interface is not changed yet because the IBTA spec limits the
-> port size in too many places to be u8 and all applications that relies in
-> verbs won't be able to cope with this change. At this stage, we are
-> extending the interfaces that are using vendor channel solely
-> 
-> Once the limitation is lifted mlx5 in switchdev mode will be able to have
-> thousands of SFs created by the device. As the only instance of an RDMA
-> device that reports more than 255 ports will be a representor device
-> and it exposes itself as a RAW Ethernet only device CM/MAD/IPoIB and other
-> ULPs aren't effected by this change and their sysfs/interfaces that
-> are exposes to userspace can remain unchanged.
-> 
-> While here cleanup some alignment issues and remove unneeded sanity
-> checks (mainly in rdmavt),
-> 
-> Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
+After resilient next-hop groups have been added recently, there are two
+types of multipath next-hop groups: the legacy "mpath", and the new
+"resilient". Calling the legacy next-hop group type "mpath" is unfortunate,
+because that describes the fact that a packet could be forwarded in one of
+several paths, which is also true for the resilient next-hop groups.
 
-Applied to for-next, I suppose this means the irdma driver needs
-re-spinning already.
+Therefore, to make the naming clearer, rename various artifacts to reflect
+the assumptions made. Therefore as of this patch:
 
-Thanks,
-Jason
+- The flag for multipath groups is nh_grp_entry::is_multipath. This
+  includes the legacy and resilient groups, as well as any future group
+  types that behave as multipath groups.
+  Functions that assume this have "mpath" in the name.
+
+- The flag for legacy multipath groups is nh_grp_entry::hash_threshold.
+  Functions that assume this have "hthr" in the name.
+
+- The flag for resilient groups is nh_grp_entry::resilient.
+  Functions that assume this have "res" in the name.
+
+Besides the above, struct nh_grp_entry::mpath was renamed to ::hthr as
+well.
+
+UAPI artifacts were obviously left intact.
+
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ include/net/nexthop.h |  4 ++--
+ net/ipv4/nexthop.c    | 56 +++++++++++++++++++++----------------------
+ 2 files changed, 30 insertions(+), 30 deletions(-)
+
+diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+index ba94868a21d5..ace54bf90b2c 100644
+--- a/include/net/nexthop.h
++++ b/include/net/nexthop.h
+@@ -102,7 +102,7 @@ struct nh_grp_entry {
+ 	union {
+ 		struct {
+ 			atomic_t	upper_bound;
+-		} mpath;
++		} hthr;
+ 		struct {
+ 			/* Member on uw_nh_entries. */
+ 			struct list_head	uw_nh_entry;
+@@ -120,7 +120,7 @@ struct nh_group {
+ 	struct nh_group		*spare; /* spare group for removals */
+ 	u16			num_nh;
+ 	bool			is_multipath;
+-	bool			mpath;
++	bool			hash_threshold;
+ 	bool			resilient;
+ 	bool			fdb_nh;
+ 	bool			has_v4;
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index f09fe3a5608f..5a2fc8798d20 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -116,8 +116,8 @@ static void nh_notifier_single_info_fini(struct nh_notifier_info *info)
+ 	kfree(info->nh);
+ }
+ 
+-static int nh_notifier_mp_info_init(struct nh_notifier_info *info,
+-				    struct nh_group *nhg)
++static int nh_notifier_mpath_info_init(struct nh_notifier_info *info,
++				       struct nh_group *nhg)
+ {
+ 	u16 num_nh = nhg->num_nh;
+ 	int i;
+@@ -181,8 +181,8 @@ static int nh_notifier_grp_info_init(struct nh_notifier_info *info,
+ {
+ 	struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
+ 
+-	if (nhg->mpath)
+-		return nh_notifier_mp_info_init(info, nhg);
++	if (nhg->hash_threshold)
++		return nh_notifier_mpath_info_init(info, nhg);
+ 	else if (nhg->resilient)
+ 		return nh_notifier_res_table_info_init(info, nhg);
+ 	return -EINVAL;
+@@ -193,7 +193,7 @@ static void nh_notifier_grp_info_fini(struct nh_notifier_info *info,
+ {
+ 	struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
+ 
+-	if (nhg->mpath)
++	if (nhg->hash_threshold)
+ 		kfree(info->nh_grp);
+ 	else if (nhg->resilient)
+ 		vfree(info->nh_res_table);
+@@ -406,7 +406,7 @@ static int call_nexthop_res_table_notifiers(struct net *net, struct nexthop *nh,
+ 	 * could potentially veto it in case of unsupported configuration.
+ 	 */
+ 	nhg = rtnl_dereference(nh->nh_grp);
+-	err = nh_notifier_mp_info_init(&info, nhg);
++	err = nh_notifier_mpath_info_init(&info, nhg);
+ 	if (err) {
+ 		NL_SET_ERR_MSG(extack, "Failed to initialize nexthop notifier info");
+ 		return err;
+@@ -661,7 +661,7 @@ static int nla_put_nh_group(struct sk_buff *skb, struct nh_group *nhg)
+ 	u16 group_type = 0;
+ 	int i;
+ 
+-	if (nhg->mpath)
++	if (nhg->hash_threshold)
+ 		group_type = NEXTHOP_GRP_TYPE_MPATH;
+ 	else if (nhg->resilient)
+ 		group_type = NEXTHOP_GRP_TYPE_RES;
+@@ -992,9 +992,9 @@ static bool valid_group_nh(struct nexthop *nh, unsigned int npaths,
+ 		struct nh_group *nhg = rtnl_dereference(nh->nh_grp);
+ 
+ 		/* Nesting groups within groups is not supported. */
+-		if (nhg->mpath) {
++		if (nhg->hash_threshold) {
+ 			NL_SET_ERR_MSG(extack,
+-				       "Multipath group can not be a nexthop within a group");
++				       "Hash-threshold group can not be a nexthop within a group");
+ 			return false;
+ 		}
+ 		if (nhg->resilient) {
+@@ -1151,7 +1151,7 @@ static bool ipv4_good_nh(const struct fib_nh *nh)
+ 	return !!(state & NUD_VALID);
+ }
+ 
+-static struct nexthop *nexthop_select_path_mp(struct nh_group *nhg, int hash)
++static struct nexthop *nexthop_select_path_hthr(struct nh_group *nhg, int hash)
+ {
+ 	struct nexthop *rc = NULL;
+ 	int i;
+@@ -1160,7 +1160,7 @@ static struct nexthop *nexthop_select_path_mp(struct nh_group *nhg, int hash)
+ 		struct nh_grp_entry *nhge = &nhg->nh_entries[i];
+ 		struct nh_info *nhi;
+ 
+-		if (hash > atomic_read(&nhge->mpath.upper_bound))
++		if (hash > atomic_read(&nhge->hthr.upper_bound))
+ 			continue;
+ 
+ 		nhi = rcu_dereference(nhge->nh->nh_info);
+@@ -1212,8 +1212,8 @@ struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
+ 		return nh;
+ 
+ 	nhg = rcu_dereference(nh->nh_grp);
+-	if (nhg->mpath)
+-		return nexthop_select_path_mp(nhg, hash);
++	if (nhg->hash_threshold)
++		return nexthop_select_path_hthr(nhg, hash);
+ 	else if (nhg->resilient)
+ 		return nexthop_select_path_res(nhg, hash);
+ 
+@@ -1710,7 +1710,7 @@ static void replace_nexthop_grp_res(struct nh_group *oldg,
+ 	nh_res_table_upkeep(old_res_table, true, false);
+ }
+ 
+-static void nh_mp_group_rebalance(struct nh_group *nhg)
++static void nh_hthr_group_rebalance(struct nh_group *nhg)
+ {
+ 	int total = 0;
+ 	int w = 0;
+@@ -1725,7 +1725,7 @@ static void nh_mp_group_rebalance(struct nh_group *nhg)
+ 
+ 		w += nhge->weight;
+ 		upper_bound = DIV_ROUND_CLOSEST_ULL((u64)w << 31, total) - 1;
+-		atomic_set(&nhge->mpath.upper_bound, upper_bound);
++		atomic_set(&nhge->hthr.upper_bound, upper_bound);
+ 	}
+ }
+ 
+@@ -1752,7 +1752,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
+ 
+ 	newg->has_v4 = false;
+ 	newg->is_multipath = nhg->is_multipath;
+-	newg->mpath = nhg->mpath;
++	newg->hash_threshold = nhg->hash_threshold;
+ 	newg->resilient = nhg->resilient;
+ 	newg->fdb_nh = nhg->fdb_nh;
+ 	newg->num_nh = nhg->num_nh;
+@@ -1781,8 +1781,8 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
+ 		j++;
+ 	}
+ 
+-	if (newg->mpath)
+-		nh_mp_group_rebalance(newg);
++	if (newg->hash_threshold)
++		nh_hthr_group_rebalance(newg);
+ 	else if (newg->resilient)
+ 		replace_nexthop_grp_res(nhg, newg);
+ 
+@@ -1794,7 +1794,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
+ 	/* Removal of a NH from a resilient group is notified through
+ 	 * bucket notifications.
+ 	 */
+-	if (newg->mpath) {
++	if (newg->hash_threshold) {
+ 		err = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, nhp,
+ 					     &extack);
+ 		if (err)
+@@ -1928,12 +1928,12 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
+ 	oldg = rtnl_dereference(old->nh_grp);
+ 	newg = rtnl_dereference(new->nh_grp);
+ 
+-	if (newg->mpath != oldg->mpath) {
++	if (newg->hash_threshold != oldg->hash_threshold) {
+ 		NL_SET_ERR_MSG(extack, "Can not replace a nexthop group with one of a different type.");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (newg->mpath) {
++	if (newg->hash_threshold) {
+ 		err = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, new,
+ 					     extack);
+ 		if (err)
+@@ -2063,7 +2063,7 @@ static int replace_nexthop_single_notify(struct net *net,
+ 	struct nh_group *nhg = rtnl_dereference(group_nh->nh_grp);
+ 	struct nh_res_table *res_table;
+ 
+-	if (nhg->mpath) {
++	if (nhg->hash_threshold) {
+ 		return call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE,
+ 					      group_nh, extack);
+ 	} else if (nhg->resilient) {
+@@ -2328,8 +2328,8 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+ 	rb_link_node_rcu(&new_nh->rb_node, parent, pp);
+ 	rb_insert_color(&new_nh->rb_node, root);
+ 
+-	/* The initial insertion is a full notification for mpath as well
+-	 * as resilient groups.
++	/* The initial insertion is a full notification for hash-threshold as
++	 * well as resilient groups.
+ 	 */
+ 	rc = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, new_nh, extack);
+ 	if (rc)
+@@ -2438,7 +2438,7 @@ static struct nexthop *nexthop_create_group(struct net *net,
+ 	}
+ 
+ 	if (cfg->nh_grp_type == NEXTHOP_GRP_TYPE_MPATH) {
+-		nhg->mpath = 1;
++		nhg->hash_threshold = 1;
+ 		nhg->is_multipath = true;
+ 	} else if (cfg->nh_grp_type == NEXTHOP_GRP_TYPE_RES) {
+ 		struct nh_res_table *res_table;
+@@ -2455,10 +2455,10 @@ static struct nexthop *nexthop_create_group(struct net *net,
+ 		nhg->is_multipath = true;
+ 	}
+ 
+-	WARN_ON_ONCE(nhg->mpath + nhg->resilient != 1);
++	WARN_ON_ONCE(nhg->hash_threshold + nhg->resilient != 1);
+ 
+-	if (nhg->mpath)
+-		nh_mp_group_rebalance(nhg);
++	if (nhg->hash_threshold)
++		nh_hthr_group_rebalance(nhg);
+ 
+ 	if (cfg->nh_fdb)
+ 		nhg->fdb_nh = 1;
+-- 
+2.26.2
+
