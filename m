@@ -2,108 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 476BF34AE86
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A0834AE8C
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbhCZS0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 14:26:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55273 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230114AbhCZS0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 14:26:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616783166;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VHBvQNlInr7uhqwohEYYJ6fIrcun/FjuvH6xJlp8s4Y=;
-        b=dQBZHk9Sjq16ZU0xSlTJvFODOJfeFiCmNSvrTBnTgPPbXjcpyKQPSucHOIbzIFOR9I5v+t
-        CXV1vTc7I310Y2vDaSwpyOAl4OcU18f0NVwInbD5rJ1NOGgsAjB+EflcUL7pPD4pMAppjZ
-        dWk6gBiTqIFID9jC2Z53GVAS+n4Xq9s=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-196-oTbJ-9bePnyHRomZYGfEtQ-1; Fri, 26 Mar 2021 14:25:55 -0400
-X-MC-Unique: oTbJ-9bePnyHRomZYGfEtQ-1
-Received: by mail-ed1-f71.google.com with SMTP id h2so4841711edw.10
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:25:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=VHBvQNlInr7uhqwohEYYJ6fIrcun/FjuvH6xJlp8s4Y=;
-        b=jLYmVNR5lid1t0MIEmeDzUWiffpgSeuyEoTcQOZbsijTWj9C+exCJBF5pD7Zg9oY3f
-         j/Y1+jmp6qBqG87HvUTlS12NLB/HdUSnClhraWd2UTQ5TOj36BjBkQ6qsCGAg4xAYtJB
-         6zNb2fFZ8d4GS/IZhxG1kHnovfY9UWXYiDJANKvgd2P+f3HdQrjKtx+10N81POAKQIAe
-         yooOh7mHlVuVMpBbNmvB3nNThWs9QqWG5CHHDB/e/QjWY9acVQCr24XXeVCjOkiQnoLD
-         M1dHq7PKb2lkOAf3YCes4yR28IB+p6zwJB+fUgMEOp6i+q8vxfIlNLSKC8RoA/10U8+7
-         SK+g==
-X-Gm-Message-State: AOAM5313/fwqq0pEcd875KP75GNXCfs3EMkjCY3npT/lvk/BvIIwrf9N
-        YRgEUw3S+ePZLwU9CahGrU7fGCxWNOO0mTNIxu9RVjJnllvpSD7h8/NdYzjk/ndSS8BOMUY95kl
-        52G2x7sDgC+axeeYm
-X-Received: by 2002:a50:ee10:: with SMTP id g16mr16193142eds.215.1616783154409;
-        Fri, 26 Mar 2021 11:25:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwo9q1onPVZDjx15tDzJWa1xccA2pTrcCh71KUTRxb9IqNa6T+h3JwEblXu5DFP0NGTrT/j0w==
-X-Received: by 2002:a50:ee10:: with SMTP id g16mr16193124eds.215.1616783154277;
-        Fri, 26 Mar 2021 11:25:54 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id gn19sm3987476ejc.4.2021.03.26.11.25.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 11:25:53 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0B61D1801A3; Fri, 26 Mar 2021 19:25:53 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf v2 2/2] bpf/selftests: test that kernel rejects a
- TCP CC with an invalid license
-In-Reply-To: <CAEf4BzaucswGy+LiXQC0q_zgQEOTtRJ3GQtaeq7CwJJW9EzGig@mail.gmail.com>
-References: <20210325211122.98620-1-toke@redhat.com>
- <20210325211122.98620-2-toke@redhat.com>
- <CAEf4BzaxmrWFBJ1mzzWzu0yb_iFX528cAFVbXrncPEaJBXrd2A@mail.gmail.com>
- <87lfaacks9.fsf@toke.dk>
- <CAEf4BzaucswGy+LiXQC0q_zgQEOTtRJ3GQtaeq7CwJJW9EzGig@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 26 Mar 2021 19:25:53 +0100
-Message-ID: <874kgxbwlq.fsf@toke.dk>
+        id S230286AbhCZS15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 14:27:57 -0400
+Received: from mga05.intel.com ([192.55.52.43]:12659 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229969AbhCZS1e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Mar 2021 14:27:34 -0400
+IronPort-SDR: 0VgK4ySsIU8XFdhU5GOgtlPj16JAE87R9xtfpwKHTP3k8gXoM0msx7lQvUnJcrT2zqgLi/7Uli
+ QXVen7FRHvyA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9935"; a="276342983"
+X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
+   d="scan'208";a="276342983"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 11:27:33 -0700
+IronPort-SDR: ukOQwGLX5QrTOfu/sOr1DdCjH3Wo2bYyu5JdcRQBZO0fAgVLriu/KH73bmYfBdCvZriQyVm2B5
+ BsUyr3wwiPJg==
+X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
+   d="scan'208";a="443456534"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.24.139])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 11:27:33 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 01/13] mptcp: clean-up the rtx path
+Date:   Fri, 26 Mar 2021 11:26:30 -0700
+Message-Id: <20210326182642.136419-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20210326182307.136256-1-mathew.j.martineau@linux.intel.com>
+References: <20210326182307.136256-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+From: Paolo Abeni <pabeni@redhat.com>
 
+After the previous patch we can easily avoid invoking
+the workqueue to perform the retransmission, if the
+msk socket lock is held at rtx timer expiration.
 
->> Ah, thanks! I always get confused about CHECK() as well! Maybe it should
->> be renamed to ASSERT()? But that would require flipping all the if()
->> statements around them as well :/
->
-> Exactly, it's the opposite of assert (ASSERT_NOT %-), that
-> CHECK(!found) is "assert not not found", right?) and it throws me off
-> every. single. time.
+This also simplifies the relevant code.
 
-Yup, me too, I have to basically infer the right meaning from the
-surrounding if statements (i.e., whether it triggers an error path or
-not).
+Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 42 +++++++++++-------------------------------
+ net/mptcp/protocol.h |  1 +
+ 2 files changed, 12 insertions(+), 31 deletions(-)
 
-> Ideally we complete the set of ASSERT_XXX() macros and convert as much
-> as possible to that. We can also have just generic ASSERT() for all
-> other complicated cases.
-
-Totally on board with that! I'll try to remember to fix any selftests I
-fiddle with (and not introduce any new uses of CHECK() of course).
-
--Toke
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 1590b9d4cde2..171b77537dcb 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -2047,28 +2047,21 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	return copied;
+ }
+ 
+-static void mptcp_retransmit_handler(struct sock *sk)
+-{
+-	struct mptcp_sock *msk = mptcp_sk(sk);
+-
+-	set_bit(MPTCP_WORK_RTX, &msk->flags);
+-	mptcp_schedule_work(sk);
+-}
+-
+ static void mptcp_retransmit_timer(struct timer_list *t)
+ {
+ 	struct inet_connection_sock *icsk = from_timer(icsk, t,
+ 						       icsk_retransmit_timer);
+ 	struct sock *sk = &icsk->icsk_inet.sk;
++	struct mptcp_sock *msk = mptcp_sk(sk);
+ 
+ 	bh_lock_sock(sk);
+ 	if (!sock_owned_by_user(sk)) {
+-		mptcp_retransmit_handler(sk);
++		/* we need a process context to retransmit */
++		if (!test_and_set_bit(MPTCP_WORK_RTX, &msk->flags))
++			mptcp_schedule_work(sk);
+ 	} else {
+ 		/* delegate our work to tcp_release_cb() */
+-		if (!test_and_set_bit(TCP_WRITE_TIMER_DEFERRED,
+-				      &sk->sk_tsq_flags))
+-			sock_hold(sk);
++		set_bit(MPTCP_RETRANSMIT, &msk->flags);
+ 	}
+ 	bh_unlock_sock(sk);
+ 	sock_put(sk);
+@@ -2958,17 +2951,16 @@ void __mptcp_check_push(struct sock *sk, struct sock *ssk)
+ 	}
+ }
+ 
+-#define MPTCP_DEFERRED_ALL (TCPF_WRITE_TIMER_DEFERRED)
+-
+ /* processes deferred events and flush wmem */
+ static void mptcp_release_cb(struct sock *sk)
+ {
+-	unsigned long flags, nflags;
+-
+ 	for (;;) {
+-		flags = 0;
++		unsigned long flags = 0;
++
+ 		if (test_and_clear_bit(MPTCP_PUSH_PENDING, &mptcp_sk(sk)->flags))
+ 			flags |= BIT(MPTCP_PUSH_PENDING);
++		if (test_and_clear_bit(MPTCP_RETRANSMIT, &mptcp_sk(sk)->flags))
++			flags |= BIT(MPTCP_RETRANSMIT);
+ 		if (!flags)
+ 			break;
+ 
+@@ -2983,6 +2975,8 @@ static void mptcp_release_cb(struct sock *sk)
+ 		spin_unlock_bh(&sk->sk_lock.slock);
+ 		if (flags & BIT(MPTCP_PUSH_PENDING))
+ 			__mptcp_push_pending(sk, 0);
++		if (flags & BIT(MPTCP_RETRANSMIT))
++			__mptcp_retrans(sk);
+ 
+ 		cond_resched();
+ 		spin_lock_bh(&sk->sk_lock.slock);
+@@ -2998,20 +2992,6 @@ static void mptcp_release_cb(struct sock *sk)
+ 	 */
+ 	__mptcp_update_wmem(sk);
+ 	__mptcp_update_rmem(sk);
+-
+-	do {
+-		flags = sk->sk_tsq_flags;
+-		if (!(flags & MPTCP_DEFERRED_ALL))
+-			return;
+-		nflags = flags & ~MPTCP_DEFERRED_ALL;
+-	} while (cmpxchg(&sk->sk_tsq_flags, flags, nflags) != flags);
+-
+-	sock_release_ownership(sk);
+-
+-	if (flags & TCPF_WRITE_TIMER_DEFERRED) {
+-		mptcp_retransmit_handler(sk);
+-		__sock_put(sk);
+-	}
+ }
+ 
+ void mptcp_subflow_process_delegated(struct sock *ssk)
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 1111a99b024f..0116308f5f69 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -104,6 +104,7 @@
+ #define MPTCP_PUSH_PENDING	6
+ #define MPTCP_CLEAN_UNA		7
+ #define MPTCP_ERROR_REPORT	8
++#define MPTCP_RETRANSMIT	9
+ 
+ static inline bool before64(__u64 seq1, __u64 seq2)
+ {
+-- 
+2.31.0
 
