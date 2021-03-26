@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E793934A477
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 10:33:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8616E34A49A
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 10:37:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230170AbhCZJcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 05:32:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229773AbhCZJcB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Mar 2021 05:32:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D96A761A36;
-        Fri, 26 Mar 2021 09:31:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1616751120;
-        bh=ubfXR8EL0Nl5t2d25uT9t1S9l5tjLbIQe0W8EAvq7No=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=isJSVcGvh/NE5+1o6I2m9d8Cb7Ui/S01Ynz/6l02kiouudbvkx0u8W5Noutb3ZGlV
-         Vzw4HWKBjkOaBuEVK4BO4qKe2YdSwZ1b5Gnj5g6BBl3wNHCPMqC3w6RDKLWOv9OZcQ
-         sz5DEsJVPkjbn3745PQIO+1nqNn0JaQrnCuVAd3g=
-Date:   Fri, 26 Mar 2021 10:31:57 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Du Cheng <ducheng2@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net:qrtr: fix allocator flag of idr_alloc_u32() in
- qrtr_port_assign()
-Message-ID: <YF2qDZkNpn8va28r@kroah.com>
-References: <20210326033345.162531-1-ducheng2@gmail.com>
+        id S229913AbhCZJgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 05:36:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55765 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230372AbhCZJgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 05:36:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1616751374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w8duIT5e1rk48mI9nnfv53pxppSc02hA2rIN3iywONM=;
+        b=E3wbesbg3uv8QhI5eJGJwEyc6RKAgC+r78nFNjkirQpbCPQ5Mucb6iTI5AWFsYTLi6Mjyx
+        0fVqw49jWjlptepYef9PwVcZknHm0RrzVi/HfvIALUxyXVt26TFUCMKrMUwfLfVC/o+udW
+        PogJEP3zVXYv0Gh9SEAKpotdF+4iHxA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-518-n_pU--P2P12wUI6VC2Svxg-1; Fri, 26 Mar 2021 05:36:10 -0400
+X-MC-Unique: n_pU--P2P12wUI6VC2Svxg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AFE7B107BF00;
+        Fri, 26 Mar 2021 09:36:09 +0000 (UTC)
+Received: from ovpn-115-44.ams2.redhat.com (ovpn-115-44.ams2.redhat.com [10.36.115.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 168E518AAB;
+        Fri, 26 Mar 2021 09:36:07 +0000 (UTC)
+Message-ID: <8eadc07055ac1c99bbc55ea10c7b98acc36dde55.camel@redhat.com>
+Subject: Re: [PATCH] udp: Add support for getsockopt(..., ..., UDP_GRO, ...,
+ ...)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Norman Maurer <norman.maurer@googlemail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, dsahern@kernel.org
+Cc:     Norman Maurer <norman_maurer@apple.com>
+Date:   Fri, 26 Mar 2021 10:36:06 +0100
+In-Reply-To: <20210325195614.800687-1-norman_maurer@apple.com>
+References: <20210325195614.800687-1-norman_maurer@apple.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210326033345.162531-1-ducheng2@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 26, 2021 at 11:33:45AM +0800, Du Cheng wrote:
-> change the allocator flag of idr_alloc_u32 from GFP_ATOMIC to
-> GFP_KERNEL, as GFP_ATOMIC caused BUG: "using smp_processor_id() in
-> preemptible" as reported by syzkaller.
+Hello,
+
+On Thu, 2021-03-25 at 20:56 +0100, Norman Maurer wrote:
+> From: Norman Maurer <norman_maurer@apple.com>
 > 
-> Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-> Signed-off-by: Du Cheng <ducheng2@gmail.com>
-> ---
-> Hi David & Jakub,
+> Support for UDP_GRO was added in the past but the implementation for
+> getsockopt was missed which did lead to an error when we tried to
+> retrieve the setting for UDP_GRO. This patch adds the missing switch
+> case for UDP_GRO
 > 
-> Although this is a simple fix to make syzkaller happy, I feel that maybe a more
-> proper fix is to convert qrtr_ports from using IDR to radix_tree (which is in
-> fact xarray) ? 
-> 
-> I found some previous work done in 2019 by Matthew Wilcox:
-> https://lore.kernel.org/netdev/20190820223259.22348-1-willy@infradead.org/t/#mcb60ad4c34e35a6183c7353c8a44ceedfcff297d
-> but that was not merged as of now. My wild guess is that it was probably
-> in conflicti with the conversion of radix_tree to xarray during 2020, and that
-> might cause the direct use of xarray in qrtr.c unfavorable.
-> 
-> Shall I proceed with converting qrtr_pors to use radix_tree (or just xarray)?
+> Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
+> Signed-off-by: Norman Maurer <norman_maurer@apple.com>
 
-Try it and see.  But how would that resolve this issue?  Those other
-structures would also need to allocate memory at this point in time and
-you need to tell it if it can sleep or not.
+The patch LGTM, but please cc the blamed commit author in when you add
+a 'Fixes' tag (me in this case ;)
 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index edb6ac17ceca..ee42e1e1d4d4 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -722,17 +722,17 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
->  	mutex_lock(&qrtr_port_lock);
->  	if (!*port) {
->  		min_port = QRTR_MIN_EPH_SOCKET;
-> -		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
-> +		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_KERNEL);
+Also please specify a target tree, either 'net' or 'net-next', in the
+patch subj. Being declared as a fix, this should target 'net'.
 
-Are you sure that you can sleep in this code path?
+One thing you can do to simplifies the maintainer's life, would be post
+a v2 with the correct tag (and ev. obsolete this patch in patchwork).
 
-thanks,
+Side note: I personally think this is more a new feature (is adds
+getsockopt support for UDP_GRO) than a fix, so I would not have added
+the 'Fixes' tag and I would have targeted net-next, but it's just my
+opinion.
 
-greg k-h
+Cheers,
+
+Paolo
+
