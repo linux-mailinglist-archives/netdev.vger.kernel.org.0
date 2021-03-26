@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E26334B1F6
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 23:12:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD4234B1F8
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 23:12:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbhCZWKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 18:10:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51740 "EHLO mail.kernel.org"
+        id S230434AbhCZWKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 18:10:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229933AbhCZWKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230224AbhCZWKV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 26 Mar 2021 18:10:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0FABF61A2A;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 07F4C61A2B;
         Fri, 26 Mar 2021 22:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616796617;
-        bh=E69KSmfMKhEtJaP3RSCZEN/QecyIm2u/dGnaoIXMpDA=;
+        bh=gWJKmTMRA716KbO7g9u07UDcjg14ZIrEtd4DRFF4eoA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cMV006TogLLxwXJe17pNxaFSPzhzAoNONBoGExFhfzqgUAhv/vMlGpz0H58IAKexb
-         TN15JjNFnVwfHEwK/nqDEiQxII82ZHlWXHHQ/5WzLjf/D0EgJqXvpf1zWlw2dyOcgt
-         uU8Si8k2VzdgvYpHhsh+hK75y7+HbRY61N/GFSVjpj9kHDWwa15IUI0NPkR9GoiotN
-         mTJrHefwAun/hds2pkdKbJopwLRXXFr6WL5FkAMX4/YiMwEu8AyQ+KFQlX3w9qc9lg
-         h46J0tEOC+XS0SowC03ZXxJP0vixM3i6MpPkBgyxsYM4KL8YP9EGuPxo4C9cbu/OXY
-         RVchQHQW7Vz6g==
+        b=R3Dd7qiSUq2nbDz56atTswiqIkJZ6ZUaeQeT0PNDqDGyWFm0L+EjDEYXNjbt/JyaR
+         y6HeQOTWnahfsMtwJ5e5KbDtJPSmnNVJW2DjAPTi47U0SEfUQfoK/r1DA4rFGzst+f
+         h8epH2L0n17uaSmABz7GyT6gN558j0Z9ZcKzwn8lFZpYNgotav8t7T5o6W6aTh4Cc6
+         5iOU0QzHGTE+OX2Fyr/+ZBG+uOsH9DgNrBY3i2kdAYTXbzBEOfrdBEXHgqnt8PMzrk
+         bw50/RhUR+iyDTCNYkjKFdXDk5WP9xNNpFpQSt8l8qHfgP+qEvXH541mhAwQN3p2Qn
+         rxzOK2ei3AAjw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CA280609E6;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C081A6096E;
         Fri, 26 Mar 2021 22:10:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/12] net: ipa: rework resource programming
+Subject: Re: [PATCH net-next 00/13] MPTCP: Cleanup and address advertisement fixes
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161679661682.26244.16042690009163360291.git-patchwork-notify@kernel.org>
+Message-Id: <161679661678.26244.6014812864130596120.git-patchwork-notify@kernel.org>
 Date:   Fri, 26 Mar 2021 22:10:16 +0000
-References: <20210326151122.3121383-1-elder@linaro.org>
-In-Reply-To: <20210326151122.3121383-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210326182307.136256-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20210326182307.136256-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,45 +46,43 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 26 Mar 2021 10:11:10 -0500 you wrote:
-> This series reworks the way IPA resources are defined and
-> programmed.  It is a little long--and I apologize for that--but
-> I think the patches are best taken together as a single unit.
-> 
-> The IPA hardware operates with a set of distinct "resources."  Each
-> hardware instance has a fixed number of each resource type available.
-> Available resources are divided into smaller pools, with each pool
-> shared by endpoints in a "resource group."  Each endpoint is thus
-> assigned to a resource group that determines which pools supply
-> resources the IPA hardware uses to handle the endpoint's processing.
+On Fri, 26 Mar 2021 11:23:07 -0700 you wrote:
+> This patch series contains cleanup and fixes we have been testing in the
+> MPTCP tree. MPTCP uses TCP option headers to advertise additional
+> address information after an initial connection is established. The main
+> fixes here deal with making those advertisements more reliable and
+> improving the way subflows are created after an advertisement is
+> received.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/12] net: ipa: introduce ipa_resource.c
-    https://git.kernel.org/netdev/net-next/c/ee3e6beaa015
-  - [net-next,02/12] net: ipa: fix bug in resource group limit programming
-    https://git.kernel.org/netdev/net-next/c/a749c6c03762
-  - [net-next,03/12] net: ipa: identify resource groups
-    https://git.kernel.org/netdev/net-next/c/47f71d6e677c
-  - [net-next,04/12] net: ipa: add some missing resource limits
-    https://git.kernel.org/netdev/net-next/c/9ab7e7288266
-  - [net-next,05/12] net: ipa: combine resource type definitions
-    https://git.kernel.org/netdev/net-next/c/fd2b7bc32113
-  - [net-next,06/12] net: ipa: index resource limits with type
-    https://git.kernel.org/netdev/net-next/c/4bcfb35e7af9
-  - [net-next,07/12] net: ipa: move ipa_resource_type definition
-    https://git.kernel.org/netdev/net-next/c/cf9a10bd7c49
-  - [net-next,08/12] net: ipa: combine source and destination group limits
-    https://git.kernel.org/netdev/net-next/c/d9d1cddf8b98
-  - [net-next,09/12] net: ipa: combine source and destation resource types
-    https://git.kernel.org/netdev/net-next/c/7336ce1a7ae7
-  - [net-next,10/12] net: ipa: pass data for source and dest resource config
-    https://git.kernel.org/netdev/net-next/c/93c03729c548
-  - [net-next,11/12] net: ipa: record number of groups in data
-    https://git.kernel.org/netdev/net-next/c/4fd704b3608a
-  - [net-next,12/12] net: ipa: support more than 6 resource groups
-    https://git.kernel.org/netdev/net-next/c/3219953bedc5
+  - [net-next,01/13] mptcp: clean-up the rtx path
+    https://git.kernel.org/netdev/net-next/c/2d6f5a2b5720
+  - [net-next,02/13] mptcp: drop argument port from mptcp_pm_announce_addr
+    https://git.kernel.org/netdev/net-next/c/f7efc7771eac
+  - [net-next,03/13] mptcp: skip connecting the connected address
+    https://git.kernel.org/netdev/net-next/c/d84ad04941c3
+  - [net-next,04/13] mptcp: drop unused subflow in mptcp_pm_subflow_established
+    https://git.kernel.org/netdev/net-next/c/62535200be17
+  - [net-next,05/13] mptcp: move to next addr when timeout
+    https://git.kernel.org/netdev/net-next/c/348d5c1dec60
+  - [net-next,06/13] selftests: mptcp: add cfg_do_w for cfg_remove
+    https://git.kernel.org/netdev/net-next/c/2e580a63b5c2
+  - [net-next,07/13] selftests: mptcp: timeout testcases for multi addresses
+    https://git.kernel.org/netdev/net-next/c/8da6229b9524
+  - [net-next,08/13] mptcp: export lookup_anno_list_by_saddr
+    https://git.kernel.org/netdev/net-next/c/d88c476f4a7d
+  - [net-next,09/13] mptcp: move to next addr when subflow creation fail
+    https://git.kernel.org/netdev/net-next/c/557963c383e8
+  - [net-next,10/13] mptcp: drop useless addr_signal clear
+    https://git.kernel.org/netdev/net-next/c/b65d95adb802
+  - [net-next,11/13] mptcp: send ack for rm_addr
+    https://git.kernel.org/netdev/net-next/c/8dd5efb1f91b
+  - [net-next,12/13] mptcp: rename mptcp_pm_nl_add_addr_send_ack
+    https://git.kernel.org/netdev/net-next/c/b46a02381093
+  - [net-next,13/13] selftests: mptcp: signal addresses testcases
+    https://git.kernel.org/netdev/net-next/c/ef360019db40
 
 You are awesome, thank you!
 --
