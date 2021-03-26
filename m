@@ -2,159 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5886434AED0
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:53:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7261F34AEE4
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 20:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbhCZSw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 14:52:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48255 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230159AbhCZSwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 14:52:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616784766;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0mStmjSgV2Rr2281g0XQu9mK+0OcAxFBRItFc2NT/t4=;
-        b=OZm6VMc2kteJ3xJEPf3apZ4yEBsiDKuuU/xSY1CxVqaUXiyedXuSMovswj5rGIyIuKG+pn
-        yAe0cdmRNcxjmk8p8/FS+i1Aw8A94lA1PhIioYyk35wu98IGGJH2cub8o2edVwgMH2eXiA
-        bFrl1B1Uup8smXSkEDh4XMRH4H780UA=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-452-oeSx_tAQNkGAkChgKCCdUg-1; Fri, 26 Mar 2021 14:52:44 -0400
-X-MC-Unique: oeSx_tAQNkGAkChgKCCdUg-1
-Received: by mail-ed1-f69.google.com with SMTP id r6so1399905edh.7
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:52:44 -0700 (PDT)
+        id S230107AbhCZTCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 15:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230114AbhCZTBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 15:01:51 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56ECC0613B2
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 12:01:50 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id q9so3455284qvm.6
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 12:01:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BAL0m/RHqxQpdmmLPAQhvtUtUkOGClZd+wtpp5eE3NI=;
+        b=e7BHdcfCRu7gzQTQZeMe5siu0dEHGNMUdl5PWrnXSxdwPxWx6GhTKar0U60CJTBeUr
+         KoLT0xWW8jIbV4lsZ5XySyARgV3WePqBpemdS5Lp+XvaL2+P/oBXBXI/egBXpNBVHnTf
+         70HLSuF0eTtQVYDJthloPsId7LIGJ8GwuwDU8SMNv9JJMkTWUg07pZ00ZRChYsLb0Axd
+         lMjJQ7tdF8Ds4Ra6Rpt/vG79i04x2IFiHfZPyBtnmpdQHQCGSGSgnCwgWZtOBert80o6
+         a1KmaESeGe9KKy9AcD1KLsy35zf8LMTiKBoNzkahJ6jWrQ2qafE6hMY5stk3iDxGQ+PA
+         K13w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=0mStmjSgV2Rr2281g0XQu9mK+0OcAxFBRItFc2NT/t4=;
-        b=bFMlLfVzeE3cdxN9OEBEwFGQ1R+RlKgax7qPt4qln7FBbjYBxwhSXCZjQqwYEFJthS
-         VfG13nd146PW7nDCl7Z+NL11D8i7PreIZIWNTmD3YP5GkU5BbfgqI0x9HkftAxShCyO1
-         2MOMHtPI5qWqEpPbTPrcPGMHlYqQXi5Twg3BgBxKJb/zUeR6VQwZE8U0DGUBNEuAk5HV
-         EhKqIrZg+OQcw5ShnoqXZhAB5mtY6IZ9svurKgpnZPmKDem6DQDAb6NZEBYzFjk4kZIg
-         OELAaGgnz0R9kNgRl/4FGrkcBJvqQfXINsedYeEHv8lsDXxZnB3b0PEmucTxDReqXWwW
-         zXqg==
-X-Gm-Message-State: AOAM533G71wDIglxDsz1xplAxgX5UcN9a3tTNWvWf4jpjaTYbIjiCYKs
-        P2JWpUytkxpoTFTBgQJOs44Q7XPnBNxa6V7nu6U6zdYAte0vBTBKd/snnJgc2UeqxfrgIlQ4yU0
-        lf/kq+9eDhXTObvXf
-X-Received: by 2002:a17:907:1c05:: with SMTP id nc5mr8329673ejc.320.1616784763327;
-        Fri, 26 Mar 2021 11:52:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw1Xo71TlF/EvM5nrC/rIt2Xq6lfE+fWs1V8BvgOSw+mvIghSEqoTO376l6Z/6b7LOg1slmMw==
-X-Received: by 2002:a17:907:1c05:: with SMTP id nc5mr8329651ejc.320.1616784762967;
-        Fri, 26 Mar 2021 11:52:42 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id t6sm4543368edq.48.2021.03.26.11.52.42
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BAL0m/RHqxQpdmmLPAQhvtUtUkOGClZd+wtpp5eE3NI=;
+        b=g2y7n6kMoo/YLAbuLq0XvQrJn6+amSq4RUXmgbJJ1+JWVFgI0JuW0N9MMsNIaeN9Zr
+         Mxm7at1B5wDkCKVADn2QUJXWpKdLfGLpzSPX8LjfJf49MMTrttDUb2eOg2tQaUSjpU++
+         cPDbAaTvHX8jpOHfHVFWpaZmNy6TA4/MG1gLtXJ+p+h/2PWQDzavo9VIrm/kIgTC3z3z
+         +EJZLJ7VnJNLwPP+wFVYQURmwWikw3Me+xVrJR8nqCYkRgpLDOxuh9rMGrrzzHcwRDL4
+         7wLysCBT3Sf8RAIJhCikx/1WlyNbZXahcIgX4cHoo+hHX72m8LIJiJ9gFuIkao28XYtZ
+         lTwg==
+X-Gm-Message-State: AOAM530uD4ei76UXb1VDqOzjWJYxgNao2JPopmlCCVDx0QL4zIrjiDaN
+        Z1aAvyj50SvQdrN9SUQB2iKPUw==
+X-Google-Smtp-Source: ABdhPJyPPROj/duhNJKoNUDXx1x3dnnvxm/V4m5aDR//p8MIcbL4trIZyfZVH2nljvSUZ016XrlnTA==
+X-Received: by 2002:a05:6214:12a1:: with SMTP id w1mr15062105qvu.57.1616785310073;
+        Fri, 26 Mar 2021 12:01:50 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.115.133])
+        by smtp.gmail.com with ESMTPSA id z11sm7442877qkg.52.2021.03.26.12.01.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 11:52:42 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 8B58D1801A3; Fri, 26 Mar 2021 19:52:41 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com, john.fastabend@gmail.com
-Subject: Re: [PATCH v3 bpf-next 06/17] libbpf: xsk: use bpf_link
-In-Reply-To: <20210326152318.GA43356@ranger.igk.intel.com>
-References: <20210322205816.65159-1-maciej.fijalkowski@intel.com>
- <20210322205816.65159-7-maciej.fijalkowski@intel.com>
- <87wnty7teq.fsf@toke.dk> <20210324130918.GA6932@ranger.igk.intel.com>
- <87a6qsf7hc.fsf@toke.dk> <20210326152318.GA43356@ranger.igk.intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 26 Mar 2021 19:52:41 +0100
-Message-ID: <87v99dagsm.fsf@toke.dk>
+        Fri, 26 Mar 2021 12:01:49 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1lPriO-003mMa-JQ; Fri, 26 Mar 2021 16:01:48 -0300
+Date:   Fri, 26 Mar 2021 16:01:48 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210326190148.GN2710221@ziepe.ca>
+References: <CAKgT0UfK3eTYH+hRRC0FcL0rdncKJi=6h5j6MN0uDA98cHCb9A@mail.gmail.com>
+ <20210326170831.GA890834@bjorn-Precision-5520>
+ <CAKgT0UcXwNKDSP2ciEjM2AWj2xOZwBxkPCdzkUqDKAMtvTTKPg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UcXwNKDSP2ciEjM2AWj2xOZwBxkPCdzkUqDKAMtvTTKPg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
+On Fri, Mar 26, 2021 at 11:50:44AM -0700, Alexander Duyck wrote:
 
-> On Thu, Mar 25, 2021 at 12:38:07AM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
->>=20
->> > On Mon, Mar 22, 2021 at 10:47:09PM +0100, Toke H=C3=B8iland-J=C3=B8rge=
-nsen wrote:
->> >> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
->> >>=20
->> >> > Currently, if there are multiple xdpsock instances running on a sin=
-gle
->> >> > interface and in case one of the instances is terminated, the rest =
-of
->> >> > them are left in an inoperable state due to the fact of unloaded XDP
->> >> > prog from interface.
->> >> >
->> >> > Consider the scenario below:
->> >> >
->> >> > // load xdp prog and xskmap and add entry to xskmap at idx 10
->> >> > $ sudo ./xdpsock -i ens801f0 -t -q 10
->> >> >
->> >> > // add entry to xskmap at idx 11
->> >> > $ sudo ./xdpsock -i ens801f0 -t -q 11
->> >> >
->> >> > terminate one of the processes and another one is unable to work du=
-e to
->> >> > the fact that the XDP prog was unloaded from interface.
->> >> >
->> >> > To address that, step away from setting bpf prog in favour of bpf_l=
-ink.
->> >> > This means that refcounting of BPF resources will be done automatic=
-ally
->> >> > by bpf_link itself.
->> >> >
->> >> > Provide backward compatibility by checking if underlying system is
->> >> > bpf_link capable. Do this by looking up/creating bpf_link on loopba=
-ck
->> >> > device. If it failed in any way, stick with netlink-based XDP prog.
->> >> > Otherwise, use bpf_link-based logic.
->> >>=20
->> >> So how is the caller supposed to know which of the cases happened?
->> >> Presumably they need to do their own cleanup in that case? AFAICT you=
-'re
->> >> changing the code to always clobber the existing XDP program on detach
->> >> in the fallback case, which seems like a bit of an aggressive change?=
- :)
->> >
->> > Sorry Toke, I was offline yesterday.
->> > Yeah once again I went too far and we shouldn't do:
->> >
->> > bpf_set_link_xdp_fd(xsk->ctx->ifindex, -1, 0);
->> >
->> > if xsk_lookup_bpf_maps(xsk) returned non-zero value which implies that=
- the
->> > underlying prog is not AF_XDP related.
->> >
->> > closing prog_fd (and link_fd under the condition that system is bpf_li=
-nk
->> > capable) is enough for that case.
->>=20
->> I think the same thing goes for further down? With your patch, if the
->> code takes the else branch (after checking prog_id), and then ends up
->> going to err_set_bpf_maps, it'll now also do an unconditional
->> bpf_set_link_xdp_fd(), where before it was checking prog_id again and
->> only unloading if it previously loaded the program...
->
-> Hmm it's messy, I think we need a bit of refactoring here. Note that old
-> code was missing a close on ctx->xsks_map_fd if there was an error on
-> xsk_set_bpf_maps(xsk) and prog_id !=3D 0 - given that
-> xsk_lookup_bpf_maps(xsk) succeeded, we therefore have a valid map fd that
-> we need to take care of on error path, for !prog_id case it was taken care
-> of within xsk_delete_bpf_maps(xsk).
->
-> So how about a diff below (on top of this patch), where we separate paths
-> based on prog_id value retrieved earlier? xsk_set_bpf_maps(xsk) is
-> repeated but this way I feel like it's more clear with cleanup/error
-> paths.
->
-> Wdyt?
+> My concern would be that we are defining the user space interface.
+> Once we have this working as a single operation I could see us having
+> to support it that way going forward as somebody will script something
+> not expecting an "offline" sysfs file, and the complaint would be that
+> we are breaking userspace if we require the use of an "offline"
+> file.
 
-Yeah, that's much easier to follow! Nice :)
+Well, we wouldn't do that. The semantic we define here is that the
+msix_count interface 'auto-offlines' if that is what is required. If
+we add some formal offline someday then 'auto-offline' would be a NOP
+when the device is offline and do the same online/offline sequence as
+today if it isn't.
 
--Toke
+> I almost wonder if it wouldn't make sense to just partition this up to
+> handle flexible resources in the future. Maybe something like having
+> the directory setup such that you have "sriov_resources/msix/" and
 
+This is supposed to be about PCI properties, that is why we are doing
+it in the PCI layer.
+
+If you want to see something that handles non-PCI properties too then
+Leon needs to make the whole thing general so the device driver can
+give a list of properties it wants to configure and the core manages
+the thing.
+
+But at that point, why involve the PCI core in the first place? Just
+put the complex configuration in the driver, use configfs or devlink
+or nvmecli or whatever is appropriate.
+
+And we are doing that too, there will also be pre-driver configuration
+in devlink for *non PCI* properties. *shrug*
+
+Jason
