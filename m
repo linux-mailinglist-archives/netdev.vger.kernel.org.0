@@ -2,141 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 606FB34AE95
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:28:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3774534AEA1
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:31:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbhCZS2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 14:28:06 -0400
-Received: from mga14.intel.com ([192.55.52.115]:55919 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230247AbhCZS1i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Mar 2021 14:27:38 -0400
-IronPort-SDR: B5WKSjXP2bcUgdp1c3wCoPOG4mYl+6fSTmJwSQrWflzRpiaEdWZSDYhU0rR1I4PH2TNV/f1MgH
- KMDjH9BSuomQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9935"; a="190642777"
-X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
-   d="scan'208";a="190642777"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 11:27:37 -0700
-IronPort-SDR: 4Q3Zh7p9Q0wf+CrOSBkNmztcUVoO+QtPAxUspI5FP0yFf396rb2KxFQw+3EU0CN96rscVOyF6n
- s+pFNSKgh5Fg==
-X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
-   d="scan'208";a="443456578"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.24.139])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 11:27:37 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 13/13] selftests: mptcp: signal addresses testcases
-Date:   Fri, 26 Mar 2021 11:26:42 -0700
-Message-Id: <20210326182642.136419-13-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20210326182642.136419-1-mathew.j.martineau@linux.intel.com>
-References: <20210326182307.136256-1-mathew.j.martineau@linux.intel.com>
- <20210326182642.136419-1-mathew.j.martineau@linux.intel.com>
+        id S230258AbhCZSbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 14:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229957AbhCZSbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 14:31:06 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF9CC0613AA
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:31:05 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id l4so9806145ejc.10
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:31:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TOVnee5aO55od2eNOXdJeJeFnQPtbxaZgbiCUYuBH5w=;
+        b=VfJjCynbRqUqphPo2Gal+V8t6/3CEa4NM15MH4FuH+YOfFJzDt39RPLzk7g/jMcUmG
+         gwb6twjn9Mdb8uHK7uQeIMoz9vi7l9qxfLUGW1A588peldKh/XcwGPrJTA2qAP4nbRu2
+         cWtPzYm/xHwlEzSQ9hRo5qJXK1p5SxdGW6ueaqCW6Whg3mvlkw1TfyORQlGnMmiLl6Oc
+         s/yfeNm5/55AMwLdeiBMShLD76gIeoGt1Y2vK6Yv7DkobqcOYuPbCZzkjDGnQHFg3hKy
+         FBQY2tjr8KA0B0kGNDvX6Ci55mocFlxXoh57pC4DP1d1yfJx//5btQhxnCG/RwVmKkK+
+         +oaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TOVnee5aO55od2eNOXdJeJeFnQPtbxaZgbiCUYuBH5w=;
+        b=NSUxtfKukP6Kz2VyxLyw3bPrqSqiABMX4bQ0r1+qh1CFSoxgdzQbdBowZqMeJKEjhS
+         Sslq3nFkR5ZCXnxiLvEkW30k9GKoSHhvbPn1Pcg0jTMdtxJ4x4hxsYDrfClw6S18rvIm
+         NRwyPP0DP4fkGfWZS5qOVG4bI473ZFtD6Qvsx0Mkn8ecnHSJloXQlh6fGM2GALSJ0/zg
+         JxWQCz2YEQ58ni4XYZJBg649SPhDBRDBHX3Lqm/rJZJWK69dyKElEfy2RoRXQ7Qq1cbZ
+         ZxBGwDj085dt+Z+/ptuXx4+kJl+j+Lkp083TAeIezZkyiRK0cmZkKdYH9T61nxea+RsT
+         2Tpg==
+X-Gm-Message-State: AOAM531QoF3mDor+aD3dozWe7HH172z3mYhdmMsK4zowbLxs/akzYYF3
+        etytedPqoK5l4bQYXIS305szORMb3as=
+X-Google-Smtp-Source: ABdhPJyV7Oks+50Rtxv2xS6GBY1rwR5cdUox4Td0p1a18dDTeG9XONyh/PnACdIeDB35A+N0mU9a1A==
+X-Received: by 2002:a17:906:b752:: with SMTP id fx18mr17385740ejb.128.1616783464051;
+        Fri, 26 Mar 2021 11:31:04 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id x1sm4191172eji.8.2021.03.26.11.31.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Mar 2021 11:31:03 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id g20so3452015wmk.3
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:31:02 -0700 (PDT)
+X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr14231305wmm.120.1616783462323;
+ Fri, 26 Mar 2021 11:31:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1616692794.git.pabeni@redhat.com> <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+In-Reply-To: <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 26 Mar 2021 14:30:24 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+Message-ID: <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+On Thu, Mar 25, 2021 at 1:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> When UDP packets generated locally by a socket with UDP_SEGMENT
+> traverse the following path:
+>
+> UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
+>         UDP tunnel (rx) -> UDP socket (no UDP_GRO)
+>
+> they are segmented as part of the rx socket receive operation, and
+> present a CHECKSUM_NONE after segmentation.
 
-This patch adds testcases for signalling multi valid and invalid
-addresses for both signal_address_tests and remove_tests.
+would be good to capture how this happens, as it was not immediately obvious.
 
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 58 +++++++++++++++++++
- 1 file changed, 58 insertions(+)
+>
+> Additionally the segmented packets UDP CB still refers to the original
+> GSO packet len. Overall that causes unexpected/wrong csum validation
+> errors later in the UDP receive path.
+>
+> We could possibly address the issue with some additional checks and
+> csum mangling in the UDP tunnel code. Since the issue affects only
+> this UDP receive slow path, let's set a suitable csum status there.
+>
+> v1 -> v2:
+>  - restrict the csum update to the packets strictly needing them
+>  - hopefully clarify the commit message and code comments
+>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 32379efa2276..679de3abaf34 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -785,6 +785,28 @@ signal_address_tests()
- 	run_tests $ns1 $ns2 10.0.1.1
- 	chk_join_nr "multiple subflows and signal" 3 3 3
- 	chk_add_nr 1 1
-+
-+	# signal addresses
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.4.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	run_tests $ns1 $ns2 10.0.1.1
-+	chk_join_nr "signal addresses" 3 3 3
-+	chk_add_nr 3 3
-+
-+	# signal invalid addresses
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.12.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.14.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	run_tests $ns1 $ns2 10.0.1.1
-+	chk_join_nr "signal invalid addresses" 1 1 1
-+	chk_add_nr 3 3
- }
- 
- link_failure_tests()
-@@ -896,6 +918,30 @@ remove_tests()
- 	chk_add_nr 1 1
- 	chk_rm_nr 2 2
- 
-+	# addresses remove
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal id 250
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.4.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	run_tests $ns1 $ns2 10.0.1.1 0 -3 0 slow
-+	chk_join_nr "remove addresses" 3 3 3
-+	chk_add_nr 3 3
-+	chk_rm_nr 3 3 invert
-+
-+	# invalid addresses remove
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.12.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.14.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	run_tests $ns1 $ns2 10.0.1.1 0 -3 0 slow
-+	chk_join_nr "remove invalid addresses" 1 1 1
-+	chk_add_nr 3 3
-+	chk_rm_nr 3 1 invert
-+
- 	# subflows and signal, flush
- 	reset
- 	ip netns exec $ns1 ./pm_nl_ctl limits 0 3
-@@ -930,6 +976,18 @@ remove_tests()
- 	chk_join_nr "flush addresses" 3 3 3
- 	chk_add_nr 3 3
- 	chk_rm_nr 3 3 invert
-+
-+	# invalid addresses flush
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 3 3
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.12.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.3.1 flags signal
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.14.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 3 3
-+	run_tests $ns1 $ns2 10.0.1.1 0 -8 0 slow
-+	chk_join_nr "flush invalid addresses" 1 1 1
-+	chk_add_nr 3 3
-+	chk_rm_nr 3 1 invert
- }
- 
- add_tests()
--- 
-2.31.0
+> +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> +               skb->csum_valid = 1;
 
+Not entirely obvious is that UDP packets arriving on a device with rx
+checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
+this test.
+
+I assume that such packets are not coalesced by the GRO layer in the
+first place. But I can't immediately spot the reason for it..
