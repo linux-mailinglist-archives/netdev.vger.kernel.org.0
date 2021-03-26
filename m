@@ -2,125 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8097E34AE61
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A433D34AE7E
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:24:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbhCZSQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 14:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbhCZSQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 14:16:13 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB869C0613AA
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:16:12 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id e14so9725509ejz.11
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:16:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ueDwB6DQpiQpMEgw8Y7yf7N+xd2IqFKtC5xzd+6Moco=;
-        b=D3jrQdj5M+e3WNIaIXoDU4ogVk5p04fG7ZvNagJ0JZalpWWct0Usi76pxO9os/BcPt
-         vRgO3eVFOGMZjnP1ecFEzmUNqDrMQWa4tltEi34Qc+UoO8I6k8KYv68Ns6dyFetLea/s
-         oAbbwXcJfQxf78qrm+eAwfwEvdvCfhn80+RzJGd3gQ2vwyBsXJxuWAPVY5i6ivNGdf9M
-         Pe37Ns5WHPbnbXV2XAp/GYEBfX1l9Qcgn1obyvFzMy+/bqzvZ/os8aCnn2LDXMpTvAeH
-         44k63HQs44zHpnOaSNDal5ulllBnHjvD88AVxjWYnscG9pRTxAGuLj0hDVrt1MUSVwZj
-         trYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ueDwB6DQpiQpMEgw8Y7yf7N+xd2IqFKtC5xzd+6Moco=;
-        b=bAv/T7hMGQKOXvc08dDQoIxRvUNZYWuIJvaQk7+BJ5uhViCClc3jDLohZer1VRYvsr
-         HWOxxqkDhxTovNwQj/riaCkcK34n/dwr0YvSMV1rabWgRd3lZkUZlDooo4OqDHm2DQ3V
-         C0n4DwjyXjK2b7ZeMlTSXH7vRq3MihqrH6A3PuAUJCe68HBic5LThrXD0t7zOimfJNP4
-         RZaPDOUs81SwiIRjRzYw4yrW5akuvXJm3lys7iiD9ipTCwNIs53T+gOG5THNz/8gXbwe
-         lq968eBhHA4dcAcYJrjj2P4RJHFaxNoBmBYdHKy41vMyFtFHNhGhd99Gm91djbicWKaq
-         NJ5Q==
-X-Gm-Message-State: AOAM531funb1jcpH52FtQhtpSXBoGu3ZLU4I0Auu+/xZoNPhj9fcgtJA
-        uM4RV58Ge+VWR+9PWq0pvd0D/vzYCpg=
-X-Google-Smtp-Source: ABdhPJzWp/cFErWRigM0Rv4vfapfFszpzhtmowAeq81gMQPnGA9SQMwZekrQ0eFnyYigxCK9jfDwxw==
-X-Received: by 2002:a17:906:af91:: with SMTP id mj17mr16390249ejb.230.1616782571127;
-        Fri, 26 Mar 2021 11:16:11 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id i10sm4146807ejv.106.2021.03.26.11.16.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Mar 2021 11:16:10 -0700 (PDT)
-Received: by mail-wr1-f53.google.com with SMTP id x7so6495069wrw.10
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 11:16:10 -0700 (PDT)
-X-Received: by 2002:a05:6000:1803:: with SMTP id m3mr16099044wrh.50.1616782569637;
- Fri, 26 Mar 2021 11:16:09 -0700 (PDT)
+        id S230233AbhCZSXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 14:23:34 -0400
+Received: from mga18.intel.com ([134.134.136.126]:38736 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230106AbhCZSX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Mar 2021 14:23:26 -0400
+IronPort-SDR: VIz0pgnJli9O2lMR2Ba/UmhW4D/QSJNEb/btktyQt7VKF9lL3cXPyCTkSzEVOHC5U/FSpBeisK
+ d0WBqeJvG8jA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9935"; a="178744846"
+X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
+   d="scan'208";a="178744846"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 11:23:25 -0700
+IronPort-SDR: eAWEsXw6dwFPZ6kKBsBbDMX+IlknhR8uR4Yl+Gxi4Y1cVg8kDPkRImzbh8R2Fw0BoUr1BmSShB
+ Trx30JxvBExw==
+X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
+   d="scan'208";a="375569737"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.24.139])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 11:23:25 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 00/13] MPTCP: Cleanup and address advertisement fixes
+Date:   Fri, 26 Mar 2021 11:23:07 -0700
+Message-Id: <20210326182307.136256-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-References: <cover.1616692794.git.pabeni@redhat.com> <7fa75957409a3f5d14198261a7eddb2bf1bff8e1.1616692794.git.pabeni@redhat.com>
-In-Reply-To: <7fa75957409a3f5d14198261a7eddb2bf1bff8e1.1616692794.git.pabeni@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 26 Mar 2021 14:15:32 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScNjt0dTEHM8WprhDZ5G3H0Y4af4fg2Xqs+eCCrNtHwVA@mail.gmail.com>
-Message-ID: <CA+FuTScNjt0dTEHM8WprhDZ5G3H0Y4af4fg2Xqs+eCCrNtHwVA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/8] udp: never accept GSO_FRAGLIST packets
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 1:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Currently the UDP protocol delivers GSO_FRAGLIST packets to
-> the sockets without the expected segmentation.
->
-> This change addresses the issue introducing and maintaining
-> a couple of new fields to explicitly accept SKB_GSO_UDP_L4
-> or GSO_FRAGLIST packets. Additionally updates  udp_unexpected_gso()
-> accordingly.
->
-> UDP sockets enabling UDP_GRO stil keep accept_udp_fraglist
-> zeroed.
->
-> v1 -> v2:
->  - use 2 bits instead of a whole GSO bitmask (Willem)
->
-> Fixes: 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+This patch series contains cleanup and fixes we have been testing in the
+MPTCP tree. MPTCP uses TCP option headers to advertise additional
+address information after an initial connection is established. The main
+fixes here deal with making those advertisements more reliable and
+improving the way subflows are created after an advertisement is
+received.
 
-This looks good to me in principle, thanks for the revision.
 
-I hadn't fully appreciated that gro_enabled implies accept_udp_l4, but
-not necessarily vice versa.
+Patches 1, 2, 4, 10, and 12 are for various cleanup or refactoring.
 
-It is equivalent to (accept_udp_l4 && !up->gro_receive), right?
+Patch 3 skips an extra connection attempt if there's already a subflow
+connection for the newly received advertisement.
 
-Could the extra bit be avoided with
+Patches 5, 6, and 7 make sure that the next address is advertised when
+there are multiple addresses to share, the advertisement has been
+retried, and the peer has not echoed the advertisement. Self tests are
+updated.
 
-"
-+      /* Prefer fraglist GRO unless target is a socket with UDP_GRO,
-+       * which requires all but last segments to be of same gso_size,
-passed in cmsg */
-        if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
--                NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
-+               NAPI_GRO_CB(skb)->is_flist = sk ?
-(!udp_sk(sk)->gro_enabled || udp_sk(sk)->accept_udp_fraglist) : 1;
+Patches 8 and 9 fix a problem similar to 5/6/7, but covers a case where
+the failure was due to a subflow connection not completing.
 
-+     /* Apply transport layer GRO if forwarding is enabled or the
-flow lands at a local socket */
-       if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
-            (sk && udp_sk(sk)->gro_enabled && !up->encap_rcv) ||
-NAPI_GRO_CB(skb)->is_flist) {
-                pp = call_gro_receive(udp_gro_receive_segment, head, skb);
-                return pp;
-        }
+Patches 11 and 13 send a bare ack to revoke an advertisement rather than
+waiting for other activity to trigger a packet send. This mirrors the
+way acks are sent for new advertisements. Self test is included.
 
-+      /* Continue with tunnel GRO */
-"
 
-.. not that the extra bit matters a lot. And these two conditions with
-gro_enabled are not very obvious.
+Geliang Tang (12):
+  mptcp: drop argument port from mptcp_pm_announce_addr
+  mptcp: skip connecting the connected address
+  mptcp: drop unused subflow in mptcp_pm_subflow_established
+  mptcp: move to next addr when timeout
+  selftests: mptcp: add cfg_do_w for cfg_remove
+  selftests: mptcp: timeout testcases for multi addresses
+  mptcp: export lookup_anno_list_by_saddr
+  mptcp: move to next addr when subflow creation fail
+  mptcp: drop useless addr_signal clear
+  mptcp: send ack for rm_addr
+  mptcp: rename mptcp_pm_nl_add_addr_send_ack
+  selftests: mptcp: signal addresses testcases
 
-Just a thought.
+Paolo Abeni (1):
+  mptcp: clean-up the rtx path
+
+ net/mptcp/options.c                           |  3 +-
+ net/mptcp/pm.c                                | 25 ++++--
+ net/mptcp/pm_netlink.c                        | 69 +++++++++------
+ net/mptcp/protocol.c                          | 42 +++-------
+ net/mptcp/protocol.h                          | 12 ++-
+ .../selftests/net/mptcp/mptcp_connect.c       | 10 ++-
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 84 ++++++++++++++++++-
+ 7 files changed, 173 insertions(+), 72 deletions(-)
+
+
+base-commit: 6c996e19949b34d7edebed4f6b0511145c036404
+-- 
+2.31.0
+
