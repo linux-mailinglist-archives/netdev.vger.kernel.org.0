@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E7A349DD4
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE17349DD2
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:30:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbhCZAa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 20:30:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36662 "EHLO mail.kernel.org"
+        id S230096AbhCZAaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 20:30:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36667 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229979AbhCZAaL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229730AbhCZAaL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 25 Mar 2021 20:30:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 906A361A02;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9A7FC61A41;
         Fri, 26 Mar 2021 00:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616718610;
-        bh=WeRjHN1RMhl4ReJ96PGtbxLM7HN0t4tlc4LHAeaBObY=;
+        bh=EiZKWVxjH6LCsHn0ItN/vRqhuZI3koTU0V8hc/1Jo3A=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=p4hwaANBRdyRWnptAugG5GTY1AdSHJjdmibM+3v+VN6sNs6nyLfmmWS3AfUfnWLWx
-         pOSfWYnX81B0T/XMEaoQQE2wtd9SGu1AhmH5fK3aHogosSB368CiZpc5Dmd3WXPg9K
-         sDrEaOy8s5NHkzFu8hv+G63ytisU/dYpK9o5jAd4ie1vN15ETsLjjutib+i9hpdAO9
-         B7gbBcnai5BuHtONGyiVWkX6TB8rhaO/B6CiiMGONk2CrIFpWFKE113jzljE7r2Zb0
-         qaxPkcRR3z1QNAJjQMkws78D6cLovoTDqAWtlxuhLLR8/UXSZOWKGwgsJ2RGhU4QTw
-         zdXBrYKXWM/PA==
+        b=mUeU+Y3jHW2KXX8BFRF3sUiHXRbCXdN00vrlQCSU2WzCKglSOAsadSagGsX6Ad3cX
+         YWZ3Ioop3oelPtac+MZo/Lca3Wjl258Oh+FV955aZnFW5M3tV44kGP13vtKchTkhhT
+         aNg2XyDz5mFQpZ0NhPl+oKRlZIYI6Hu8r0CvUeKCLmVPyd0HWAenHuHkTsTsQMj4B0
+         6jFPLnkOQ+ZhC0+lgrvURlwg1Meg5eWnt4wpKsqJf4NmVBJrvyr/GFkux/aRdY+Lb6
+         b2V4KxBY0xAVe0hzAtnZZI4Muj89fdkVHK8arIaUaGguqeiC8hpH72PQHGZ8g2sclw
+         TFdsRclmSKQGA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 81E2860C25;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8A2D460A6A;
         Fri, 26 Mar 2021 00:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] amd-xgbe: Update DMA coherency values
+Subject: Re: [PATCH v2] net: axienet: allow setups without MDIO
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161671861052.2256.26945333361392247.git-patchwork-notify@kernel.org>
+Message-Id: <161671861056.2256.2487245849622783826.git-patchwork-notify@kernel.org>
 Date:   Fri, 26 Mar 2021 00:30:10 +0000
-References: <20210325030912.2541181-1-Shyam-sundar.S-k@amd.com>
-In-Reply-To: <20210325030912.2541181-1-Shyam-sundar.S-k@amd.com>
-To:     Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-Cc:     thomas.lendacky@amd.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
+References: <20210324130536.1663062-1-daniel@zonque.org>
+In-Reply-To: <20210324130536.1663062-1-daniel@zonque.org>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,19 +46,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 25 Mar 2021 08:39:12 +0530 you wrote:
-> Based on the IOMMU configuration, the current cache control settings can
-> result in possible coherency issues. The hardware team has recommended
-> new settings for the PCI device path to eliminate the issue.
+On Wed, 24 Mar 2021 14:05:36 +0100 you wrote:
+> In setups with fixed-link settings there is no mdio node in DTS.
+> axienet_probe() already handles that gracefully but lp->mii_bus is
+> then NULL.
 > 
-> Fixes: 6f595959c095 ("amd-xgbe: Adjust register settings to improve performance")
-> Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+> Fix code that tries to blindly grab the MDIO lock by introducing two helper
+> functions that make the locking conditional.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] amd-xgbe: Update DMA coherency values
-    https://git.kernel.org/netdev/net/c/d75135082698
+  - [v2] net: axienet: allow setups without MDIO
+    https://git.kernel.org/netdev/net/c/de9c7854e6e1
 
 You are awesome, thank you!
 --
