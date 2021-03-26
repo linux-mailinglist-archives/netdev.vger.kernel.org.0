@@ -2,95 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0656934A3F0
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 10:16:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D736834A439
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 10:24:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbhCZJPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 05:15:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40070 "EHLO
+        id S230105AbhCZJWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 05:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbhCZJO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 05:14:58 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBBEC0613AA;
-        Fri, 26 Mar 2021 02:14:58 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id u19so4177697pgh.10;
-        Fri, 26 Mar 2021 02:14:58 -0700 (PDT)
+        with ESMTP id S229787AbhCZJVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 05:21:41 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EACC0613B1
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 02:21:40 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id n138so6682529lfa.3
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 02:21:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SgzpydaaxwAbGB41ZE8dOawZX1Tt0vq9BgQwoxPWDsI=;
-        b=p+dzsKL5dajHrKnmHkRDfA3aHRTsIFFavDozBICFP2NsQzLyuxVR4qFmtYv7F7vMhL
-         NK+7a03cTxrU+P4RaZ0IPTS7B/MqF706nRAYRBhRBDDRsLFJKr+lAPlYpAf1atkqP7BN
-         q5qAgtR+zW6K04bLEGPKx+RsczCf18VVkUm3BvOqGYs0Hg72QqPoCQOq1Xmj0uPN6F1f
-         oc7C4NEJGyHedR18wRiSS0JbedRgt+R10aH0LuYRwYm8u1xfSXZ37RUNC4YrfW4YK6in
-         PiT5JOTlgizIGkXvMg1nRp56Ravui5zDXHITTohcWOYDgxSxXqnc44msgFfhrO/I+vtP
-         czzg==
+        bh=p6nxZbR4Xgz4AncIrczo5kp+se9vOk+PPXgMHdUhIsg=;
+        b=TC5ioniMTubmFeTpgz6LjRhQLGhK45DHfYA1LoF0jrdnzW3lT59zY8xTjtjOLRjEbd
+         Od7CYRiePEA8ExQ/yhWTZNup5X4MleGgrLev6ByAibtWwAOOVug8re1Smp4v/zaMOq0q
+         H62Tl5nPbSQfzBJnovfy424RgmEhbuUSnf34Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SgzpydaaxwAbGB41ZE8dOawZX1Tt0vq9BgQwoxPWDsI=;
-        b=oNVhT0UC7xLKvG19cfuhEorm2p23CxiWqvIALe19iSBASeFUeZzcatVlElhj5L4gCf
-         a3OfLGalBYWhuFMorchpWiq3vQOOktOivTS/dQ2D/ECzw8fwXIHbCuBXU1/azHY5J63Y
-         +xL+4fL58mJybRMcBpznUnZDjqJWu7xrSui21kkygbsK/8rfKyirDX1SQVKeh3aHo22T
-         /U8buM1+TTUn1LPXy+/TCndnw2X32J/DHUk6r3v0qMsUW+81dldu4Lvikz1ACb9dMzRF
-         LhoEzPINv7RdEeFxLx9L/lKLH60C3xCtnrKE2jU+r9oEnw0ruQqnyNk1J7V1dMG/cb/t
-         QHCA==
-X-Gm-Message-State: AOAM531XMhDDhXEnR7MTowGWaO2FRUk8FJHlaxcpJ4OzhrRybe7BCekx
-        NP/KbbPglqBhui0OyCOd9XsL6t0NLEmh1O8WNgIvUin384LsYEZa
-X-Google-Smtp-Source: ABdhPJxrn+f/cdezqSL0SDAlUgGhU0pFWajEJ3ptyxcMLkkjJMBAz/8PxmWvsCuoHw098Cc2ERDdD8TxdFafqG4Q/cU=
-X-Received: by 2002:a63:c646:: with SMTP id x6mr11815660pgg.126.1616750097843;
- Fri, 26 Mar 2021 02:14:57 -0700 (PDT)
+        bh=p6nxZbR4Xgz4AncIrczo5kp+se9vOk+PPXgMHdUhIsg=;
+        b=BIMbN4d3xuT7hNowipFF5MX2I/vbfmIA8k+0+vBBD37aFS/6qj9mdL1pu23HWlRvGT
+         ixXuqfLucdN6UZIfMZeSJnd7TMOmWky12BYr3fi7w7eUD2Bij5qGJnQOr5YDUuJFm5ij
+         UYXTQguwXfpxv81A/eAk6d+bIEzEhc5XOYUQJ1YtaPBxtSvlgC4QsSZm4LmqVgfFSBpQ
+         9ws3FPNMlYmANoosKacONpNM9VbgtrW4Ez+oAJAe2D6vla4aEivYyXHgyb9fv/1OTshA
+         e9XTHsYY2K9WOuGENsI5Rjp90pyilQRxxncE8LyQmK9cbQV7tuSWshVoZ37iJexXPsdY
+         8xZQ==
+X-Gm-Message-State: AOAM533ebHgEPWRBUaPCsMbVvjDztmGNhEgR+bDjFRUnVToDsrVrWpYT
+        LQKqdfni11xo53NIFpQ6tJOhihDDJLLLwWqdC83CEw==
+X-Google-Smtp-Source: ABdhPJwiYavCv8TB+frrXlrQ71Jl6lZjSBv8FbsLBGmoOuF1aUYslQ8Pmqc/4aJBUD4DqO8GHNwbuB0fznv47Ri6Tck=
+X-Received: by 2002:a05:6512:3226:: with SMTP id f6mr7318541lfe.171.1616750499132;
+ Fri, 26 Mar 2021 02:21:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210324141337.29269-1-ciara.loftus@intel.com> <20210324141337.29269-2-ciara.loftus@intel.com>
-In-Reply-To: <20210324141337.29269-2-ciara.loftus@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 26 Mar 2021 10:14:47 +0100
-Message-ID: <CAJ8uoz0VpWpcKQyWoDAY3=WwBotUvMQ2Nk5t33WJJK-a8QmWpg@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/3] libbpf: ensure umem pointer is non-NULL before dereferencing
-To:     Ciara Loftus <ciara.loftus@intel.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+References: <20210325152146.188654-1-lmb@cloudflare.com> <CAEf4BzbC75N2xHW0kB76AZCbnD+01LA5T+tn4XfBPL=b=xNS4A@mail.gmail.com>
+In-Reply-To: <CAEf4BzbC75N2xHW0kB76AZCbnD+01LA5T+tn4XfBPL=b=xNS4A@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 26 Mar 2021 09:21:28 +0000
+Message-ID: <CACAyw9--2Nj6L-r__A=-Xka97ONE8UqiP=Ku7sY+5GHQHsayGA@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: link: refuse non-zero file_flags in BPF_OBJ_GET
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 3:46 PM Ciara Loftus <ciara.loftus@intel.com> wrote:
+On Fri, 26 Mar 2021 at 04:43, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 >
-> Calls to xsk_socket__create dereference the umem to access the
-> fill_save and comp_save pointers. Make sure the umem is non-NULL
-> before doing this.
+> Makes sense, but see below about details.
 >
-> Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
->
-> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-> ---
->  tools/lib/bpf/xsk.c | 3 +++
->  1 file changed, 3 insertions(+)
+> Also, should we do the same for BPF programs as well? I guess they
+> don't have a "write operation", once loaded, but still...
 
-Thank you for the fix!
+I asked myself the same question, I don't have a good answer. Right
+now it seems like no harm is done, but this will probably bite us
+again in the future. Would you want to backport this? We'd have to
+target commit 6e71b04a8224 ("bpf: Add file mode configuration into bpf
+maps") I think, which appeared in 4.14 (?). Maybe it's better to just
+refuse the flag in bpf-next?
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 526fc35c0b23..443b0cfb45e8 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -1019,6 +1019,9 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
->                        struct xsk_ring_cons *rx, struct xsk_ring_prod *tx,
->                        const struct xsk_socket_config *usr_config)
->  {
-> +       if (!umem)
-> +               return -EFAULT;
-> +
->         return xsk_socket__create_shared(xsk_ptr, ifname, queue_id, umem,
->                                          rx, tx, umem->fill_save,
->                                          umem->comp_save, usr_config);
-> --
-> 2.17.1
 >
+> >  kernel/bpf/inode.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+> > index 1576ff331ee4..2f9e8115ad58 100644
+> > --- a/kernel/bpf/inode.c
+> > +++ b/kernel/bpf/inode.c
+> > @@ -547,7 +547,7 @@ int bpf_obj_get_user(const char __user *pathname, int flags)
+> >         else if (type == BPF_TYPE_MAP)
+> >                 ret = bpf_map_new_fd(raw, f_flags);
+> >         else if (type == BPF_TYPE_LINK)
+> > -               ret = bpf_link_new_fd(raw);
+> > +               ret = (flags) ? -EINVAL : bpf_link_new_fd(raw);
+>
+> nit: unnecessary ()
+>
+>
+> I wonder if EACCESS would make more sense here?
+
+My thinking was: the access mode is fine if we get to this place, but
+the code in question doesn't support that particular flag. EINVAL
+seemed more appropriate. Happy to change it if you prefer.
+
+>And check f_flags, not flags:
+>
+> if (f_flags != O_RDWR)
+>     ret = -EACCESS;
+> else
+>     ret = bpf_link_new_fd(raw);
+
+I'll respin with f_flags. I'd prefer keeping the ternary operator
+version though, since this should ease backporting.
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
