@@ -2,147 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A27134AE46
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:10:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1138434AE5B
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 19:14:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbhCZSJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 14:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S230264AbhCZSOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 14:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbhCZSJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 14:09:42 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731D4C0613AA;
-        Fri, 26 Mar 2021 11:09:42 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id j198so6689008ybj.11;
-        Fri, 26 Mar 2021 11:09:42 -0700 (PDT)
+        with ESMTP id S230152AbhCZSOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 14:14:15 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FB2C0613AA;
+        Fri, 26 Mar 2021 11:14:15 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id g38so6696827ybi.12;
+        Fri, 26 Mar 2021 11:14:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=ZhDceGf5EPwxqOmSXw7vSwKwAN2oE3kPh5APLhrkFoc=;
-        b=rZ5aSSs1FMJf5GOkwaIlzevMhDtIv7GWGcyp/tMZriePwT5YUyIaPyEGKp2gaPLE2l
-         QJNagORWX24s9kDaMB8RWeFqZ5FQpu9tN4mO3Cg3A2kqJfgu7uX822GyYYNo9JvDZjJz
-         6JVN6mF8zW4m8a95krBY959jji1or981S1VIn1uGOnvq1aJ58VLwtr9d2MNIQ/k6gJbs
-         fFNWCW9ZEtoxN+71hkrz07cWEKdhifXdRVS/QYRojYXy7/stfTVT/8CHCRt/L6htJX8g
-         K0as0xRGm/ajFmHbeGvhACS4PRdWsX0Mhr+a6DmJreZzz9nt8AMShYtp6kfrMopsZ1Km
-         WaOw==
+        bh=7jCXw5WhLD4gFwSc47Z8JTVPcESTWmnce5WlZ5xDsXw=;
+        b=M/KMGzwkT5ztwEONqvZ2mccfYiPnkZwWXGvvB7SnvJYgDSxVlvyOfy0roWdv/oUQPb
+         NHjYpejp0DpguLaNoNJHmHSt6V2zFwGbi0HmGorzgGEPMmFMJSf4gmYXDfcIYGTuTcZY
+         t+bIGMvm/AoolKhuQ74bX97AJdNI2NmC6KJRDhuCGFllbpoqapS+u/SXr+wKX2OalXph
+         MQmkHWGQZqpwh8ND1uWT25TDNuE6lAndRsztWqCpQWKOBuR+12iP8zOkQ8NDbubsU2LE
+         fDnafC+SJ+1jUDtrHCf8tkEMuNVNSAgSXC3it4sIb4XpgU4bOkcmdiOh9c+3NlyjdMZ+
+         F7AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZhDceGf5EPwxqOmSXw7vSwKwAN2oE3kPh5APLhrkFoc=;
-        b=QpJXwinGur9eUC1U2plPm5tb1R5daehCqD4VYazwcVGO5L7L3jUwNAHd52M5OJW9tq
-         4PHOiDlxw+YNzkh2+agOKqAdXvhxYP4zfWD/mzwohyXPxE+VpNY8WKO9jqmITvFTFobv
-         BHNrbm1GCOjNNSvSpgrJk2TluVMvOtmFkhW6x3RMWCZNqcsuSYMhRB4OoHr13Wfq65nJ
-         f6s4iYKIRxPLx0eBPHAGu2NoO0TNZ2OHm9qajZXRU8XnpgwKiesCeqozkkj3bmCcxM/X
-         mJ5b6WSKbeLEkuZcZRY7ih93b/JDyWtpPFN60LZRA0M8503seWIu7huRgrKuvxQYef3z
-         tp/Q==
-X-Gm-Message-State: AOAM530xEf5+P9V1TT59Xqb1/JwZLrb/0CuTXlgyBsJ1E8ChgIfAkus2
-        DHezlv4CBXcZ4ysnC7dJTS2hFGHVY2aFheSeQGA=
-X-Google-Smtp-Source: ABdhPJwZWcSa7JQvBA9hqNB5lZjLdckzgvKVymMhVosuDluUt0M9JwkAjau2sBLidm357xNSn5TXDUV43T3H05sAiIo=
-X-Received: by 2002:a25:ab03:: with SMTP id u3mr15164570ybi.347.1616782181703;
- Fri, 26 Mar 2021 11:09:41 -0700 (PDT)
+        bh=7jCXw5WhLD4gFwSc47Z8JTVPcESTWmnce5WlZ5xDsXw=;
+        b=p6o+DPZb+729Aut9tEdxU6W8j8wYgcuM82uJf20Pe9vp6MGTsnGbXG33gDCPwoQLPf
+         v9aO2jN8UF7EdSf1UcSwexOQZdiiqQ43CGvCf0bS3PwY5SIrxoYLKZyF/uPpc0BTKCA8
+         nVuH7mse26PlxvLWCLeSgcKsnRda/nq7i22uHKo2kfbwmNqGTAvorY+nrYU0IFt23tOF
+         RAr1i6VEeIT1rN6/vUdtQUJ3DBx1lYkouGtc7R8JPRWWG/WjDRQ7yizFlBo5EoyPPSZ6
+         7LujwT8OpEV3+eL3smKTs6gqX1VCMB98aKBfp+hNPZlEqXNtmbGFr/ngnjxcUVObgvcf
+         23+g==
+X-Gm-Message-State: AOAM5306GyZn3w+x8QZpwRIScQrBxBUmwZgaTJ87Vd2g3GTk6VdRmrlB
+        xVT4yN/8A9JHRlF3uLidivrjofwJgT+jc3rJPum9gjWevJk=
+X-Google-Smtp-Source: ABdhPJy7y8LfgpzxLfxt0+hBYhrQpknZNwwZsZtDpaRmkahve8A0x3SzZyQ/F/GZQv1T4DW4tngn7SJEbLWoXDlDALw=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr20755555ybo.230.1616782454425;
+ Fri, 26 Mar 2021 11:14:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1616430991.git.christophe.leroy@csgroup.eu>
- <CAEf4BzZjNK_La1t5FGyie02FCABBieZJod49rW4=WtMs7ELLSw@mail.gmail.com> <86028d25-c3fe-3765-f7c3-12448523405a@csgroup.eu>
-In-Reply-To: <86028d25-c3fe-3765-f7c3-12448523405a@csgroup.eu>
+References: <20210325211122.98620-1-toke@redhat.com> <20210325211122.98620-2-toke@redhat.com>
+ <CAEf4BzaxmrWFBJ1mzzWzu0yb_iFX528cAFVbXrncPEaJBXrd2A@mail.gmail.com> <87lfaacks9.fsf@toke.dk>
+In-Reply-To: <87lfaacks9.fsf@toke.dk>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 26 Mar 2021 11:09:30 -0700
-Message-ID: <CAEf4BzaNh2hDmY+9CZWTDOF2gXtPcs9iGYj6PADgH4RuUOPsKQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/8] Implement EBPF on powerpc32
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Fri, 26 Mar 2021 11:14:03 -0700
+Message-ID: <CAEf4BzaucswGy+LiXQC0q_zgQEOTtRJ3GQtaeq7CwJJW9EzGig@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 2/2] bpf/selftests: test that kernel rejects a TCP
+ CC with an invalid license
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, naveen.n.rao@linux.ibm.com,
-        sandipan@linux.ibm.com, open list <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, Networking <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 26, 2021 at 7:42 AM Christophe Leroy
-<christophe.leroy@csgroup.eu> wrote:
+-- Andrii
+
+On Fri, Mar 26, 2021 at 2:43 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 >
->
-> Le 22/03/2021 =C3=A0 18:53, Andrii Nakryiko a =C3=A9crit :
-> > On Mon, Mar 22, 2021 at 9:37 AM Christophe Leroy
-> > <christophe.leroy@csgroup.eu> wrote:
+> > On Thu, Mar 25, 2021 at 2:11 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
 > >>
-> >> This series implements extended BPF on powerpc32. For the implementati=
-on
-> >> details, see the patch before the last.
+> >> This adds a selftest to check that the verifier rejects a TCP CC struc=
+t_ops
+> >> with a non-GPL license.
 > >>
-> >> The following operations are not implemented:
+> >> v2:
+> >> - Use a minimal struct_ops BPF program instead of rewriting bpf_dctcp'=
+s
+> >>   license in memory.
+> >> - Check for the verifier reject message instead of just the return cod=
+e.
 > >>
-> >>                  case BPF_ALU64 | BPF_DIV | BPF_X: /* dst /=3D src */
-> >>                  case BPF_ALU64 | BPF_MOD | BPF_X: /* dst %=3D src */
-> >>                  case BPF_STX | BPF_XADD | BPF_DW: /* *(u64 *)(dst + o=
-ff) +=3D src */
+> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> ---
+> >>  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 44 ++++++++++++++++++=
++
+> >>  .../selftests/bpf/progs/bpf_nogpltcp.c        | 19 ++++++++
+> >>  2 files changed, 63 insertions(+)
+> >>  create mode 100644 tools/testing/selftests/bpf/progs/bpf_nogpltcp.c
 > >>
-> >> The following operations are only implemented for power of two constan=
-ts:
-> >>
-> >>                  case BPF_ALU64 | BPF_MOD | BPF_K: /* dst %=3D imm */
-> >>                  case BPF_ALU64 | BPF_DIV | BPF_K: /* dst /=3D imm */
-> >>
-> >> Below are the results on a powerpc 885:
-> >> - with the patch, with and without bpf_jit_enable
-> >> - without the patch, with bpf_jit_enable (ie with CBPF)
-> >>
-> >> With the patch, with bpf_jit_enable =3D 1 :
-> >>
-> >> [   60.826529] test_bpf: Summary: 378 PASSED, 0 FAILED, [354/366 JIT'e=
-d]
-> >> [   60.832505] test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
-> >>
-> >> With the patch, with bpf_jit_enable =3D 0 :
-> >>
-> >> [   75.186337] test_bpf: Summary: 378 PASSED, 0 FAILED, [0/366 JIT'ed]
-> >> [   75.192325] test_bpf: test_skb_segment: Summary: 2 PASSED, 0 FAILED
-> >>
-> >> Without the patch, with bpf_jit_enable =3D 1 :
-> >>
-> >> [  186.112429] test_bpf: Summary: 371 PASSED, 7 FAILED, [119/366 JIT'e=
-d]
-> >>
-> >> Couldn't run test_progs because it doesn't build (clang 11 crashes dur=
-ing the build).
+> >> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/too=
+ls/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> >> index 37c5494a0381..a09c716528e1 100644
+> >> --- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> >> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> >> @@ -6,6 +6,7 @@
+> >>  #include <test_progs.h>
+> >>  #include "bpf_dctcp.skel.h"
+> >>  #include "bpf_cubic.skel.h"
+> >> +#include "bpf_nogpltcp.skel.h"
 > >
-> > Can you please try checking out the latest clang from sources and use
-> > that one instead?
+> > total nit, but my eyes can't read "nogpltcp"... wouldn't
+> > "bpf_tcp_nogpl" be a bit easier?
 >
-> The crash is fixed, it builds one step more, then fails at:
->
-> [root@PC-server-ldb bpf]# make CROSS_COMPILE=3Dppc-linux- ARCH=3Dpowerpc =
-V=3D1
-> /root/gen_ldb/linux-powerpc/tools/testing/selftests/bpf/host-tools/sbin/b=
-pftool gen skeleton
-> /root/gen_ldb/linux-powerpc/tools/testing/selftests/bpf/atomic_bounds.o >
-> /root/gen_ldb/linux-powerpc/tools/testing/selftests/bpf/atomic_bounds.ske=
-l.h
-> libbpf: elf: endianness mismatch in atomic_bounds.
-> Error: failed to open BPF object file: Endian mismatch
->
-> I'm cross-building on x86 for powerpc/32
+> Haha, yeah, good point - my eyes also just lump it into a blob...
 
-yeah, I'm not sure selftests/bpf supports cross-compiling. bpftool got
-some patches recently to enable cross-compiling, but probably not
-selftests/bpf.
+thanks
 
 >
-> [root@PC-server-ldb bpf]# file atomic_bounds.o
-> atomic_bounds.o: ELF 64-bit MSB relocatable, eBPF, version 1 (SYSV), with=
- debug_info, not stripped
+> >>
+> >>  #define min(a, b) ((a) < (b) ? (a) : (b))
+> >>
+> >> @@ -227,10 +228,53 @@ static void test_dctcp(void)
+> >>         bpf_dctcp__destroy(dctcp_skel);
+> >>  }
+> >>
+> >> +static char *err_str =3D NULL;
+> >> +static bool found =3D false;
+> >> +
+> >> +static int libbpf_debug_print(enum libbpf_print_level level,
+> >> +                             const char *format, va_list args)
+> >> +{
+> >> +       char *log_buf;
+> >> +
+> >> +       if (level !=3D LIBBPF_WARN ||
+> >> +           strcmp(format, "libbpf: \n%s\n")) {
+> >> +               vprintf(format, args);
+> >> +               return 0;
+> >> +       }
+> >> +
+> >> +       log_buf =3D va_arg(args, char *);
+> >> +       if (!log_buf)
+> >> +               goto out;
+> >> +       if (err_str && strstr(log_buf, err_str) !=3D NULL)
+> >> +               found =3D true;
+> >> +out:
+> >> +       printf(format, log_buf);
+> >> +       return 0;
+> >> +}
+> >> +
+> >> +static void test_invalid_license(void)
+> >> +{
+> >> +       libbpf_print_fn_t old_print_fn =3D NULL;
+> >> +       struct bpf_nogpltcp *skel;
+> >> +
+> >> +       err_str =3D "struct ops programs must have a GPL compatible li=
+cense";
+> >> +       old_print_fn =3D libbpf_set_print(libbpf_debug_print);
+> >> +
+> >> +       skel =3D bpf_nogpltcp__open_and_load();
+> >> +       if (CHECK(skel, "bpf_nogplgtcp__open_and_load()", "didn't fail=
+\n"))
+> >
+> > ASSERT_OK_PTR()
+> >
+> >> +               bpf_nogpltcp__destroy(skel);
+> >
+> > you should destroy unconditionally
+> >
+> >> +
+> >> +       CHECK(!found, "errmsg check", "expected string '%s'", err_str)=
+;
+> >
+> > ASSERT_EQ(found, true, "expected_err_msg");
+> >
+> > I can never be sure which way CHECK() is checking
 >
-> Christophe
+> Ah, thanks! I always get confused about CHECK() as well! Maybe it should
+> be renamed to ASSERT()? But that would require flipping all the if()
+> statements around them as well :/
+
+Exactly, it's the opposite of assert (ASSERT_NOT %-), that
+CHECK(!found) is "assert not not found", right?) and it throws me off
+every. single. time. Ideally we complete the set of ASSERT_XXX()
+macros and convert as much as possible to that. We can also have just
+generic ASSERT() for all other complicated cases.
+
+>
+> -Toke
+>
