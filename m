@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25310349F53
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDFEE349F52
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbhCZCHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 22:07:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50656 "EHLO mail.kernel.org"
+        id S230273AbhCZCHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 22:07:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230013AbhCZCHd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 22:07:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EE85B61A3F;
-        Fri, 26 Mar 2021 02:07:32 +0000 (UTC)
+        id S230045AbhCZCHe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 22:07:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AE22C61A42;
+        Fri, 26 Mar 2021 02:07:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616724453;
-        bh=NsV9gJGGjimA9XIR6H1BnS98rY/5v64Tsff2XZMG7xw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IauMTypgpV+AyBjdZ3BdAWkiEORLo1CMAQ7Bc+u7OQNUshNeNX8q5ED6WaBMIIsig
-         A6W8bWRVI22WA/ZD1GRLXjcSMNsIs0whnK5gPG8zEoboNZ5Iv5bHUk7/Q3CkebG6/B
-         Uhp+LyLTqpSCVH1RV9p2vRwNpwSIwSm8zLW/VCzQ8NurPvbKNlgRLaYPtCl8ggJSLt
-         mguCm/kWRofD8TD6DMAdrK9DdN3N7XYmWrv60Y6XdC9E1J5UBZlK+QNjLMGq7sZOIK
-         KRe+7pvEB+Ulq49ERhnttKpW92tSLGkUXAaSk2mdvh3iVdR+NvFwAMdYFecBxj6Eh9
-         2Cpx3SCpjgaiA==
+        s=k20201202; t=1616724454;
+        bh=G4GzRaGULdPY6SQAzChSDbeQZP9ITOBq/B1QcSkovEY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OnLmvoC5bwJHv7qZWVPdNbBINgFyLh+gMAvfGO7GiyEFvGiAW5VkZnLcOqGn/3EK7
+         DT+1Z1Nh/2lZMpHVjrxSVLFrUGez+X+CkBiC+okRE9427m4PrPPnDbKhynfiHyH2sG
+         buy4ODECSWlfA+ILjxh7QevlWurQlZwVR20NGACNk2vKrEBlmiNQUbmI9muHfiil2n
+         uUWa+E4SPFDhQypucMeHi/OQoQu5KU1u4Zl/juhLNWC6fon6ThXqAVVGkFFiHmwkze
+         yoMH2yVfz6HgwyrTRGz+XNsFGuiECVCwhBazdK/dXRmq6Fha5yf2pU2N9Y324Inv8h
+         RPgkcN+S6AA0w==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
@@ -32,42 +32,47 @@ Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
         ayal@nvidia.com, shenjian15@huawei.com, saeedm@nvidia.com,
         mkubecek@suse.cz, andrew@lunn.ch, roopa@nvidia.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 0/6] ethtool: clarify the ethtool FEC interface
-Date:   Thu, 25 Mar 2021 19:07:21 -0700
-Message-Id: <20210326020727.246828-1-kuba@kernel.org>
+Subject: [PATCH net-next v2 1/6] ethtool: fec: fix typo in kdoc
+Date:   Thu, 25 Mar 2021 19:07:22 -0700
+Message-Id: <20210326020727.246828-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210326020727.246828-1-kuba@kernel.org>
+References: <20210326020727.246828-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our FEC configuration interface is one of the more confusing.
-It also lacks any error checking in the core. This certainly
-shows in the varying implementations across the drivers.
+s/porte/the port/
 
-Improve the documentation and add most basic checks. Sadly, it's
-probably too late now to try to enforce much more uniformity.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ include/uapi/linux/ethtool.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Any thoughts & suggestions welcome. Next step is to add netlink
-for FEC, then stats.
-
-v2: 
- - fix patch 5
- - adjust kdoc in patches 3 and 6
-
-Jakub Kicinski (6):
-  ethtool: fec: fix typo in kdoc
-  ethtool: fec: remove long structure description
-  ethtool: fec: sanitize ethtool_fecparam->reserved
-  ethtool: fec: sanitize ethtool_fecparam->active_fec
-  ethtool: fec: sanitize ethtool_fecparam->fec
-  ethtool: clarify the ethtool FEC interface
-
- include/uapi/linux/ethtool.h | 45 +++++++++++++++++++++++++++---------
- net/ethtool/ioctl.c          |  9 ++++++++
- 2 files changed, 43 insertions(+), 11 deletions(-)
-
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index cde753bb2093..1433d6278018 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -1374,15 +1374,15 @@ struct ethtool_per_queue_op {
+ 	__u32	queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
+ 	char	data[];
+ };
+ 
+ /**
+  * struct ethtool_fecparam - Ethernet forward error correction(fec) parameters
+  * @cmd: Command number = %ETHTOOL_GFECPARAM or %ETHTOOL_SFECPARAM
+- * @active_fec: FEC mode which is active on porte
++ * @active_fec: FEC mode which is active on the port
+  * @fec: Bitmask of supported/configured FEC modes
+  * @rsvd: Reserved for future extensions. i.e FEC bypass feature.
+  *
+  * Drivers should reject a non-zero setting of @autoneg when
+  * autoneogotiation is disabled (or not supported) for the link.
+  *
+  */
 -- 
 2.30.2
 
