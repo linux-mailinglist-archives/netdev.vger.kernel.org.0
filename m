@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A80534A5D3
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 11:51:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C62234A5D9
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 11:51:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbhCZKuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 06:50:50 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:55583 "EHLO
+        id S230003AbhCZKvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 06:51:22 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:53277 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229892AbhCZKub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 06:50:31 -0400
+        by vger.kernel.org with ESMTP id S230022AbhCZKux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 06:50:53 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 653275C03F9
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:50:27 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4A91B5C070A
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:50:53 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 26 Mar 2021 06:50:27 -0400
+  by compute4.internal (MEProxy); Fri, 26 Mar 2021 06:50:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
          h=message-id:subject:from:to:date:content-type:mime-version
-        :content-transfer-encoding; s=fm2; bh=IYlfc1XlDL9TKirFUtSm+ZAMmU
-        IUqnlc5TJeSAd9y78=; b=h8MihDBW+gLqcU4bkzCxkKgMByK3uuZKH++pyg+uzB
-        1eSjb0RsxcLV1SqkLiZIh8GvvCvo43L9td6jJsV0iMfVOhEQ1U0PNMpjflVBhhed
-        QgYqK6WndNjOev3cpppVIJeavRHxidsZF+dLLW/aT33UiLVeVgibpaQks5PKQboV
-        nA8k8TwdJnxqTdmtTPuy1BEIH3f4eVZDEg0PM1dMsPUxPAHHhJ+d+ihNF7HXSs8n
-        9b5D/J5TgfyXL1XyUv6xMXX7KG2lQ591QL2eO+XZD55hHTNnAH8K85auvdI9oEsO
-        5L4Trjs7G7dL9CJ9FmnekOJCikU2TRsb1Z8B9NE5G1dw==
+        :content-transfer-encoding; s=fm2; bh=a8KqjxTrvysHAqftoheby3QlpL
+        QG9qIqt6QzMUYXEtU=; b=zCAKeG/pTR/GAuXB8PJz8qKDtFSnekK7ubu2mkYmNP
+        HSKPj14wvHszZqPPb2OFaGu93D3/mQO/pg+1+aYhj9ufekDUQ+IQltkcoVMR4xf8
+        fCkKWuYhZu0+R510clD3zwZ82nV9onUu8dBFFRLhjrdDHvmh9U48KU9Rv7vA1QtH
+        Hd3+sOxEoL6tf+TpY0F7KcDoLO//ZLnOY+xGa/jFq/p1yaIV7HU1QtbJwqPu7iGr
+        pjKV6OvEzyXBgz4JFv32CuaX+OLdiSJX76iOTaEEludMKmqhgNpeHp1l711ZHfqo
+        ORDFeWOS80T8VObny8JhOWwblKVeKIuCkjcATP8jyrOQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=content-transfer-encoding:content-type
         :date:from:message-id:mime-version:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=IYlfc1
-        XlDL9TKirFUtSm+ZAMmUIUqnlc5TJeSAd9y78=; b=N2NXkBccP8ntt2xAtAM1KP
-        IjJ5Ckg8l0PWlBiO58EbxPHW9/tCrA6YEgTjSm4iDCoV8IuKhyOn1GnJGOxf7VJD
-        sRuR9IUWa2z81feR6N0mTq9vchGS60ARbHHlJxp36dv1QS8DC+Bog9T/BCU7b2Pc
-        aqPOsNyfezWZTHqvXk7LttVnxdzuxFFgKffbdHo9sFCzSlD+lvShLh9g/HLsQwVm
-        Fu9wtxslZOEYHJ88/uzTybwE8QRLJ9ngPg/Th5Ewoaio2vtCg6FSAMiqNxz2YBGC
-        b98YetIV12b+aNSvyIYIEal1/02zWh2X5Fqeyr7gZQEDXPn4h5+N6QeCqyT8pY5A
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=a8Kqjx
+        TrvysHAqftoheby3QlpLQG9qIqt6QzMUYXEtU=; b=Uz6iVBsKq64Zo3AHa8ipCc
+        FhlxqF9IcsYi/jGBlXZupQRHOnpgzuHdDXIL1vxxt77w2uw1tBZysPj28Yetprz0
+        uxl92YM4R8wb5jIvv22GAVSNWjFXvK8/Vt3EQr3/mMZx778Td9hJSFI3jdfqJ87x
+        wIt3WXz5AygNoNPmAGhbp5UvsrDxRW6w/Ny03Goq6465RooUoLiBYP2vjkM+yiH2
+        z2r52mv8Kt+D9T3y6IdMgB+NPV1ET9FCk8coe5BXOqpz1dBpq9ktC/dvzTrDPXnn
+        TgXmjT5GZGRH+73FHDa8Dj6F/R7Ahe9fwhkUDIqpJZdK11UqcQFmY0RgLAG6V/BQ
         ==
-X-ME-Sender: <xms:c7xdYHIboH5CZkSrHjYMFy9i3n2jXH_VglL8VGPNE4YJnKt9I157jA>
-    <xme:c7xdYLI34jOVYWTWmCIliVx3MvfcZQ-95fsATvO3trhDnxLcC4-FBxwV6DIX9z7sb
-    IPMUJ2E0MkSdMaoKQ>
+X-ME-Sender: <xms:jbxdYMwzTu8LmU4if6YJEQL22udmErK31EC8ak34NSP1w6QG_O8tRA>
+    <xme:jbxdYARy2xaeexPoW8XsjPfB15WWKMvbCIm9YTgCrQUhc_BCQhdvCpatC2-eF8uhN
+    9gO3U7izEsfV0kZwQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehvddgvddtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefkuffhvffftggfggfgsehtjeertd
     dtreejnecuhfhrohhmpeevhhhrihhsthhophhhvghrucfvrghlsghothcuoegthhhrihhs
     sehtrghlsghothhhohhmvgdrtghomheqnecuggftrfgrthhtvghrnhepieeitdevveegje
     euveeflefhhfeffeeijeffffeiteeifffhveeigeeghfevffdunecukfhppeejvddrleeh
-    rddvgeefrdduheeinecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilh
+    rddvgeefrdduheeinecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilh
     hfrhhomheptghhrhhishesthgrlhgsohhthhhomhgvrdgtohhm
-X-ME-Proxy: <xmx:c7xdYPv60wCKMoP3gu49l8qQXb2oTnN9JQXckPVIB2cruCdeahVq5Q>
-    <xmx:c7xdYAbLBhzOsEAlmoN0HreYtKVCrJ7vFtunDLLkt7PgdZTIcF8k2Q>
-    <xmx:c7xdYOaZF6NAmLTlrabuIspeaJettEq1cjaATzoXKfFcBRCif-iEGw>
-    <xmx:c7xdYHnCeRWmRpUyNCVZzFq4o96v6iOnxuIn638dgpLHVnahj3YfKA>
+X-ME-Proxy: <xmx:jbxdYOV7727LdlP-v1KB-NssyGmjU4WQAxC82L0PM_Wl_5y5iMwc0Q>
+    <xmx:jbxdYKjqRnerDFOoJFjSXY_s25ii5hGm_52dDAlC6mEj6wn85CkhBw>
+    <xmx:jbxdYOCdKL9iquJNDzOiLVh0vhk7CGEzaE7O9X_wc3C_cmVJOAiewg>
+    <xmx:jbxdYBPMDCgVY0OjAPg5_w7VVksq3H1OBc5toDQEb-oBlfYsxz-zHQ>
 Received: from SpaceballstheLaptop.talbothome.com (unknown [72.95.243.156])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 419BC240067
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:50:27 -0400 (EDT)
-Message-ID: <ebd9c45e179668619567f9b8bd9112e7d05d738c.camel@talbothome.com>
-Subject: [PATCH 3/9] Ensure Compatibility with AT&T
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0D408240068
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:50:53 -0400 (EDT)
+Message-ID: <7e6ec700d812d9d3a8d2ec6a621118dad2f8e9dd.camel@talbothome.com>
+Subject: [PATCH 4/9] Fix issue if there is an empty string in encoded text
 From:   Christopher Talbot <chris@talbothome.com>
 To:     netdev@vger.kernel.org
-Date:   Fri, 26 Mar 2021 06:50:26 -0400
+Date:   Fri, 26 Mar 2021 06:50:52 -0400
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
@@ -67,45 +67,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes two issues to ensure compatibility with AT&T:
-1) Explicity close connections to the mmsc
-2) Allow MMS Proxies that are domain names
----
- gweb/gweb.c   | 3 ++-
- src/service.c | 3 +++
- 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/gweb/gweb.c b/gweb/gweb.c
-index f72e137..995d12f 100644
---- a/gweb/gweb.c
-+++ b/gweb/gweb.c
-@@ -1309,7 +1309,8 @@ static guint do_request(GWeb *web, const char
-*url,
-                        session->address = g_strdup(session->host);
+A swedish carrier sends an empty string in the subject line. This
+patch allows mmsd to handle it
+---
+ src/mmsutil.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/mmsutil.c b/src/mmsutil.c
+index 9430bf1..615198f 100644
+--- a/src/mmsutil.c
++++ b/src/mmsutil.c
+@@ -297,6 +297,13 @@ static gboolean extract_encoded_text(struct
+wsp_header_iter *iter, void *user)
+        p = wsp_header_iter_get_val(iter);
+        l = wsp_header_iter_get_val_len(iter);
  
-                memset(&hints, 0, sizeof(struct addrinfo));
--               hints.ai_flags = AI_NUMERICHOST;
-+               /* Comment out next line to have AT&T MMS proxy work */
-+               //hints.ai_flags = AI_NUMERICHOST;
-                hints.ai_family = session->web->family;
- 
-                if (session->addr != NULL) {
-diff --git a/src/service.c b/src/service.c
-index c7ef255..a3b90c5 100644
---- a/src/service.c
-+++ b/src/service.c
-@@ -2527,6 +2527,9 @@ void mms_service_bearer_notify(struct mms_service
-*service, mms_bool_t active,
- 
-        g_web_set_debug(service->web, (GWebDebugFunc)debug_print,
-NULL);
- 
-+       /* Explicitly close connections to work with AT&T */
-+       g_web_set_close_connection(service->web,TRUE);
++       if(l == 0) {
++               DBG("Length is 0! Returning empty string");
++               dec_text = g_strdup("");
++               *out = dec_text;
++               return TRUE;
++       }
 +
-        /* Sometimes no proxy is reported as string instead of NULL */
-        if (g_strcmp0(proxy, "") != 0)
-                g_web_set_proxy(service->web, proxy);
+        switch (wsp_header_iter_get_val_type(iter)) {
+        case WSP_VALUE_TYPE_TEXT:
+                /* Text-string */
 -- 
 2.30.0
 
