@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C921134B1F7
+	by mail.lfdr.de (Postfix) with ESMTP id 7E26334B1F6
 	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 23:12:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbhCZWKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S230378AbhCZWKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 26 Mar 2021 18:10:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51728 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:51740 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230210AbhCZWKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229933AbhCZWKV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 26 Mar 2021 18:10:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F1A92619E4;
-        Fri, 26 Mar 2021 22:10:16 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0FABF61A2A;
+        Fri, 26 Mar 2021 22:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616796617;
-        bh=+VzW2HUmCN+MCTOL3D4+ygRqe318y4yxjNpfkGMjJXk=;
+        bh=E69KSmfMKhEtJaP3RSCZEN/QecyIm2u/dGnaoIXMpDA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vBlNdZyaw6y/e2mQz43gSLfq37nYpsfUn3wScrblBnQuHSwDto2QTMARll1mrUWgi
-         HRKiaEKcUnC7bhqaX+VXQI4tevvjkyJIWHFnyXptHeRwojjew3Ua+TyU+7APQEJDV/
-         9bR2gYLEF74qecOYL6BBzD8/z5YkzhPJtzo1oWWu8DKV9f56ksOH3YMIuiojbMR+31
-         u6sZ8bYd3hiIaieF05SYmfEI+Np+xd/Kz51lKi/C0qySmiNtgdpNLwNUnvPHRyDW+1
-         n1mBf+abvpG2tSAon5j3Dpf8A8+vXPu0nJH+IlTCNGOZt1smj1jJkj2bO96bP4SH4N
-         S4EThjd+S5g8A==
+        b=cMV006TogLLxwXJe17pNxaFSPzhzAoNONBoGExFhfzqgUAhv/vMlGpz0H58IAKexb
+         TN15JjNFnVwfHEwK/nqDEiQxII82ZHlWXHHQ/5WzLjf/D0EgJqXvpf1zWlw2dyOcgt
+         uU8Si8k2VzdgvYpHhsh+hK75y7+HbRY61N/GFSVjpj9kHDWwa15IUI0NPkR9GoiotN
+         mTJrHefwAun/hds2pkdKbJopwLRXXFr6WL5FkAMX4/YiMwEu8AyQ+KFQlX3w9qc9lg
+         h46J0tEOC+XS0SowC03ZXxJP0vixM3i6MpPkBgyxsYM4KL8YP9EGuPxo4C9cbu/OXY
+         RVchQHQW7Vz6g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B02A060970;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CA280609E6;
         Fri, 26 Mar 2021 22:10:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next V2 01/13] net/mlx5e: alloc the correct size for
- indirection_rqt
+Subject: Re: [PATCH net-next 00/12] net: ipa: rework resource programming
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161679661671.26244.10005078830938861176.git-patchwork-notify@kernel.org>
+Message-Id: <161679661682.26244.16042690009163360291.git-patchwork-notify@kernel.org>
 Date:   Fri, 26 Mar 2021 22:10:16 +0000
-References: <20210326025345.456475-2-saeed@kernel.org>
-In-Reply-To: <20210326025345.456475-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        saeedm@nvidia.com, arnd@arndb.de
+References: <20210326151122.3121383-1-elder@linaro.org>
+In-Reply-To: <20210326151122.3121383-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,45 +48,45 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 25 Mar 2021 19:53:33 -0700 you wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
+On Fri, 26 Mar 2021 10:11:10 -0500 you wrote:
+> This series reworks the way IPA resources are defined and
+> programmed.  It is a little long--and I apologize for that--but
+> I think the patches are best taken together as a single unit.
 > 
-> The cited patch allocated the wrong size for the indirection_rqt table,
-> fix that.
-> 
-> Fixes: 2119bda642c4 ("net/mlx5e: allocate 'indirection_rqt' buffer dynamically")
-> CC: Arnd Bergmann <arnd@arndb.de>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> The IPA hardware operates with a set of distinct "resources."  Each
+> hardware instance has a fixed number of each resource type available.
+> Available resources are divided into smaller pools, with each pool
+> shared by endpoints in a "resource group."  Each endpoint is thus
+> assigned to a resource group that determines which pools supply
+> resources the IPA hardware uses to handle the endpoint's processing.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,V2,01/13] net/mlx5e: alloc the correct size for indirection_rqt
-    https://git.kernel.org/netdev/net-next/c/6def6e47e24f
-  - [net-next,V2,02/13] net/mlx5e: Pass q_counter indentifier as parameter to rq_param builders
-    https://git.kernel.org/netdev/net-next/c/6debae2a9d11
-  - [net-next,V2,03/13] net/mlx5e: Move params logic into its dedicated file
-    https://git.kernel.org/netdev/net-next/c/b3a131c2a160
-  - [net-next,V2,04/13] net/mlx5e: Restrict usage of mlx5e_priv in params logic functions
-    https://git.kernel.org/netdev/net-next/c/895649201845
-  - [net-next,V2,05/13] net/mlx5e: Allow creating mpwqe info without channel
-    https://git.kernel.org/netdev/net-next/c/ea886000a8ac
-  - [net-next,V2,06/13] net/mlx5: Add helper to set time-stamp translator on a queue
-    https://git.kernel.org/netdev/net-next/c/183532b77ddc
-  - [net-next,V2,07/13] net/mlx5e: Generalize open RQ
-    https://git.kernel.org/netdev/net-next/c/869c5f926247
-  - [net-next,V2,08/13] net/mlx5e: Generalize RQ activation
-    https://git.kernel.org/netdev/net-next/c/a8dd7ac12fc3
-  - [net-next,V2,09/13] net/mlx5e: Generalize close RQ
-    https://git.kernel.org/netdev/net-next/c/e078e8df4224
-  - [net-next,V2,10/13] net/mlx5e: Generalize direct-TIRs and direct-RQTs API
-    https://git.kernel.org/netdev/net-next/c/42212d997155
-  - [net-next,V2,11/13] net/mlx5e: Generalize PTP implementation
-    https://git.kernel.org/netdev/net-next/c/b0d35de441ab
-  - [net-next,V2,12/13] net/mlx5e: Cleanup PTP
-    https://git.kernel.org/netdev/net-next/c/e569cbd72924
-  - [net-next,V2,13/13] net/mlx5: Fix spelling mistakes in mlx5_core_info message
-    https://git.kernel.org/netdev/net-next/c/31a91220a27d
+  - [net-next,01/12] net: ipa: introduce ipa_resource.c
+    https://git.kernel.org/netdev/net-next/c/ee3e6beaa015
+  - [net-next,02/12] net: ipa: fix bug in resource group limit programming
+    https://git.kernel.org/netdev/net-next/c/a749c6c03762
+  - [net-next,03/12] net: ipa: identify resource groups
+    https://git.kernel.org/netdev/net-next/c/47f71d6e677c
+  - [net-next,04/12] net: ipa: add some missing resource limits
+    https://git.kernel.org/netdev/net-next/c/9ab7e7288266
+  - [net-next,05/12] net: ipa: combine resource type definitions
+    https://git.kernel.org/netdev/net-next/c/fd2b7bc32113
+  - [net-next,06/12] net: ipa: index resource limits with type
+    https://git.kernel.org/netdev/net-next/c/4bcfb35e7af9
+  - [net-next,07/12] net: ipa: move ipa_resource_type definition
+    https://git.kernel.org/netdev/net-next/c/cf9a10bd7c49
+  - [net-next,08/12] net: ipa: combine source and destination group limits
+    https://git.kernel.org/netdev/net-next/c/d9d1cddf8b98
+  - [net-next,09/12] net: ipa: combine source and destation resource types
+    https://git.kernel.org/netdev/net-next/c/7336ce1a7ae7
+  - [net-next,10/12] net: ipa: pass data for source and dest resource config
+    https://git.kernel.org/netdev/net-next/c/93c03729c548
+  - [net-next,11/12] net: ipa: record number of groups in data
+    https://git.kernel.org/netdev/net-next/c/4fd704b3608a
+  - [net-next,12/12] net: ipa: support more than 6 resource groups
+    https://git.kernel.org/netdev/net-next/c/3219953bedc5
 
 You are awesome, thank you!
 --
