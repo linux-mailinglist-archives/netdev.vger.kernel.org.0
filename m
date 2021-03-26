@@ -2,153 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0009F349F58
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 419E7349F59
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:11:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbhCZCHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 22:07:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50832 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230239AbhCZCHi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 22:07:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D4D261A4C;
-        Fri, 26 Mar 2021 02:07:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616724458;
-        bh=V88BEhJjkfaIrGW+HlYxTPDKj05lPfEZYnA1T5CxPGs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aiP1eqHOORio9bcn+S7A8Dv0fvyUlToKVXdRn2AH23Jrm9KJH1cWQZemHm0xLS+Kt
-         gI2AveQEumWAI8aYLSFa7lUAmlZSHC866eDmBvWVsqr9SvVpEYoUu1r3H2jpE/APg6
-         oo6nvnKnfhQPS4ZNk0tUNKR/s7AIutQk8jHk8Ta6NBvtCv5R666BFtV8NLxF/XkO1E
-         H6YLeBknZ9CwliscOAoItqImiAnyBUB/X0GqW9/JRqU8L7uLhVXLgS+2gms+1ebVaI
-         1e8++MGEASqz8vyLNlmhOyvL659utxKkTURMa2Xbgpg3jajIqhyGDHDKOW+O7iUurB
-         3tOE6ncfrecOw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
-        michael.chan@broadcom.com, paul.greenwalt@intel.com,
-        rajur@chelsio.com, jaroslawx.gawin@intel.com, vkochan@marvell.com,
-        alobakin@pm.me, snelson@pensando.io, shayagr@amazon.com,
-        ayal@nvidia.com, shenjian15@huawei.com, saeedm@nvidia.com,
-        mkubecek@suse.cz, andrew@lunn.ch, roopa@nvidia.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 6/6] ethtool: clarify the ethtool FEC interface
-Date:   Thu, 25 Mar 2021 19:07:27 -0700
-Message-Id: <20210326020727.246828-7-kuba@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210326020727.246828-1-kuba@kernel.org>
-References: <20210326020727.246828-1-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S230377AbhCZCK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 22:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230239AbhCZCKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 22:10:34 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB26BC06174A;
+        Thu, 25 Mar 2021 19:10:33 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id n21so3927749ioa.7;
+        Thu, 25 Mar 2021 19:10:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=f4QzQHkIISPtJxpK6emPxDOPAZKulChsIifxFNKcOeI=;
+        b=quzSlVV7O/ubnIoiiGrJZDgzzkzGKXV2JwhndjDAwLnMPdYFlAMD3O2M4lVzJxkacH
+         8pJq8h/wqpeaAaohw22lAA+pslRp+a+kf9goM+Wp7CWsfvSxmkFuW7ajeHbcFmItfb0z
+         59Zg+smu7QCbHDtpN+lsrE+nxL27WfG518MW654Ro8VdjZKTozPScZr1i2NAK72YDPM5
+         aMhiXd8wvwSASimuNI6w6KFIb+hsVO5UPaGjWuE0gmCkd4bef228k8KhW9s/QMXBZz1e
+         bTIgRVdi2Pa1p6aJC6LYckUbDPBtf1Jj/2/vG9enNhoSu9f6FMM/VPCZOC/DGMfSSKfH
+         i1gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=f4QzQHkIISPtJxpK6emPxDOPAZKulChsIifxFNKcOeI=;
+        b=Rj+OfWk+MDYPEY82fOkAwrBZuXAB1ssz5g60EMcQA5HO3Y89cJnlM+DxGG+PmqGR7E
+         IKdicAY1ujurPfgApQSi2ByYWgQnNo4AwXJG9tCPvUcfVMfcOonTsrNL247CFvavE22d
+         GJylnRKttJYu1bD8t85q1/ugZX6zF9Q8EqDuRuj+HUXJPmJGDoNBsFGg9c18U4+hgqOO
+         gpX/7nPeuTrKRTADKTviC9NMd9RJprFKfeUJ45ESW+CZgrxrLDI963dBNicP1pwydlJS
+         UbgZLQ+pkTeX1+ttOk6q0x013SADK+iq0xMsugOMhf26QvE7TiTuMi4j5j9LvnZhan+t
+         oTsQ==
+X-Gm-Message-State: AOAM531MXq85q0vCUSBBT2hVWXNqSUSxQdPLtyaN+19vTowTFA+5XI4V
+        TC+fo0DgvaIRyYIVmON1Uao=
+X-Google-Smtp-Source: ABdhPJwEqGBIP/3XjOGVLC1ymlpWYmj5QFCoyOq9plHe1O2vHawyqHDADMk2zW+LBvW3gOlg2fgFCQ==
+X-Received: by 2002:a02:aa92:: with SMTP id u18mr9972919jai.119.1616724633011;
+        Thu, 25 Mar 2021 19:10:33 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id b9sm3622534iof.54.2021.03.25.19.10.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 19:10:32 -0700 (PDT)
+Date:   Thu, 25 Mar 2021 19:10:23 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <605d428fa91cd_9529c20842@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210323003808.16074-5-xiyou.wangcong@gmail.com>
+References: <20210323003808.16074-1-xiyou.wangcong@gmail.com>
+ <20210323003808.16074-5-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v6 04/12] skmsg: avoid lock_sock() in
+ sk_psock_backlog()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The definition of the FEC driver interface is quite unclear.
-Improve the documentation.
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> We do not have to lock the sock to avoid losing sk_socket,
+> instead we can purge all the ingress queues when we close
+> the socket. Sending or receiving packets after orphaning
+> socket makes no sense.
+> 
+> We do purge these queues when psock refcnt reaches zero but
+> here we want to purge them explicitly in sock_map_close().
+> There are also some nasty race conditions on testing bit
+> SK_PSOCK_TX_ENABLED and queuing/canceling the psock work,
+> we can expand psock->ingress_lock a bit to protect them too.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  include/linux/skmsg.h |  1 +
+>  net/core/skmsg.c      | 51 +++++++++++++++++++++++++++----------------
+>  net/core/sock_map.c   |  1 +
+>  3 files changed, 34 insertions(+), 19 deletions(-)
+> 
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index f2d45a73b2b2..cf23e6e2cf54 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -347,6 +347,7 @@ static inline void sk_psock_report_error(struct sk_psock *psock, int err)
+>  }
+>  
+>  struct sk_psock *sk_psock_init(struct sock *sk, int node);
+> +void sk_psock_stop(struct sk_psock *psock, bool wait);
+>  
+>  #if IS_ENABLED(CONFIG_BPF_STREAM_PARSER)
+>  int sk_psock_init_strp(struct sock *sk, struct sk_psock *psock);
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index 305dddc51857..9176add87643 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -497,7 +497,7 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+>  	if (!ingress) {
+>  		if (!sock_writeable(psock->sk))
+>  			return -EAGAIN;
+> -		return skb_send_sock_locked(psock->sk, skb, off, len);
+> +		return skb_send_sock(psock->sk, skb, off, len);
+>  	}
+>  	return sk_psock_skb_ingress(psock, skb);
+>  }
+> @@ -511,8 +511,6 @@ static void sk_psock_backlog(struct work_struct *work)
+>  	u32 len, off;
+>  	int ret;
 
-This is based on current driver and user space code, as well
-as the discussions about the interface:
+Hi Cong,
 
-RFC v1 (24 Oct 2016): https://lore.kernel.org/netdev/1477363849-36517-1-git-send-email-vidya@cumulusnetworks.com/
- - this version has the autoneg field
- - no active_fec field
- - none vs off confusion is already present
+I'm trying to understand if the workqueue logic will somehow prevent the
+following,
 
-RFC v2 (10 Feb 2017): https://lore.kernel.org/netdev/1486727004-11316-1-git-send-email-vidya@cumulusnetworks.com/
- - autoneg removed
- - active_fec added
+  CPU0                         CPU1
 
-v1 (10 Feb 2017): https://lore.kernel.org/netdev/1486751311-42019-1-git-send-email-vidya@cumulusnetworks.com/
- - no changes in the code
+ work dequeue
+ sk_psock_backlog()
+    ... do backlog
+    ... also maybe sleep
 
-v1 (24 Jun 2017):  https://lore.kernel.org/netdev/1498331985-8525-1-git-send-email-roopa@cumulusnetworks.com/
- - include in tree user
+                               schedule_work()
+                               work_dequeue
+                               sk_psock_backlog()
 
-v2 (27 Jul 2017): https://lore.kernel.org/netdev/1501199248-24695-1-git-send-email-roopa@cumulusnetworks.com/
+          <----- multiple runners -------->
 
-v2: - make enum kdoc reference bits
+ work_complete
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/uapi/linux/ethtool.h | 39 ++++++++++++++++++++++++++++--------
- 1 file changed, 31 insertions(+), 8 deletions(-)
+It seems we could get multiple instances of sk_psock_backlog(), unless
+the max_active is set to 1 in __queue_work() which would push us through
+the WORK_STRUCT_DELAYED state. At least thats my initial read. Before
+it didn't matter because we had the sock_lock to ensure we have only a
+single runner here.
 
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 78027aa0161a..868b513d4f54 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -1372,39 +1372,62 @@ struct ethtool_per_queue_op {
- 	__u32	cmd;
- 	__u32	sub_command;
- 	__u32	queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
- 	char	data[];
- };
- 
- /**
-- * struct ethtool_fecparam - Ethernet forward error correction(fec) parameters
-+ * struct ethtool_fecparam - Ethernet Forward Error Correction parameters
-  * @cmd: Command number = %ETHTOOL_GFECPARAM or %ETHTOOL_SFECPARAM
-- * @active_fec: FEC mode which is active on the port, GET only.
-- * @fec: Bitmask of supported/configured FEC modes
-+ * @active_fec: FEC mode which is active on the port, single bit set, GET only.
-+ * @fec: Bitmask of configured FEC modes.
-  * @reserved: Reserved for future extensions, ignore on GET, write 0 for SET.
-  *
-  * Note that @reserved was never validated on input and ethtool user space
-  * left it uninitialized when calling SET. Hence going forward it can only be
-  * used to return a value to userspace with GET.
-+ *
-+ * FEC modes supported by the device can be read via %ETHTOOL_GLINKSETTINGS.
-+ * FEC settings are configured by link autonegotiation whenever it's enabled.
-+ * With autoneg on %ETHTOOL_GFECPARAM can be used to read the current mode.
-+ *
-+ * When autoneg is disabled %ETHTOOL_SFECPARAM controls the FEC settings.
-+ * It is recommended that drivers only accept a single bit set in @fec.
-+ * When multiple bits are set in @fec drivers may pick mode in an implementation
-+ * dependent way. Drivers should reject mixing %ETHTOOL_FEC_AUTO_BIT with other
-+ * FEC modes, because it's unclear whether in this case other modes constrain
-+ * AUTO or are independent choices.
-+ * Drivers must reject SET requests if they support none of the requested modes.
-+ *
-+ * If device does not support FEC drivers may use %ETHTOOL_FEC_NONE instead
-+ * of returning %EOPNOTSUPP from %ETHTOOL_GFECPARAM.
-+ *
-+ * See enum ethtool_fec_config_bits for definition of valid bits for both
-+ * @fec and @active_fec.
-  */
- struct ethtool_fecparam {
- 	__u32   cmd;
- 	/* bitmask of FEC modes */
- 	__u32   active_fec;
- 	__u32   fec;
- 	__u32   reserved;
- };
- 
- /**
-  * enum ethtool_fec_config_bits - flags definition of ethtool_fec_configuration
-- * @ETHTOOL_FEC_NONE: FEC mode configuration is not supported
-- * @ETHTOOL_FEC_AUTO: Default/Best FEC mode provided by driver
-- * @ETHTOOL_FEC_OFF: No FEC Mode
-- * @ETHTOOL_FEC_RS: Reed-Solomon Forward Error Detection mode
-- * @ETHTOOL_FEC_BASER: Base-R/Reed-Solomon Forward Error Detection mode
-+ * @ETHTOOL_FEC_NONE_BIT: FEC mode configuration is not supported. Should not
-+ *			be used together with other bits. GET only.
-+ * @ETHTOOL_FEC_AUTO_BIT: Select default/best FEC mode automatically, usually
-+ *			based link mode and SFP parameters read from module's
-+ *			EEPROM. This bit does _not_ mean autonegotiation.
-+ * @ETHTOOL_FEC_OFF_BIT: No FEC Mode
-+ * @ETHTOOL_FEC_RS_BIT: Reed-Solomon FEC Mode
-+ * @ETHTOOL_FEC_BASER_BIT: Base-R/Reed-Solomon FEC Mode
-+ * @ETHTOOL_FEC_LLRS_BIT: Low Latency Reed Solomon FEC Mode (25G/50G Ethernet
-+ *			Consortium)
-  */
- enum ethtool_fec_config_bits {
- 	ETHTOOL_FEC_NONE_BIT,
- 	ETHTOOL_FEC_AUTO_BIT,
- 	ETHTOOL_FEC_OFF_BIT,
- 	ETHTOOL_FEC_RS_BIT,
- 	ETHTOOL_FEC_BASER_BIT,
--- 
-2.30.2
+I need to study the workqueue code here to be sure, but I'm thinking
+this might a problem unless we set up the workqueue correctly.
 
+Do you have any extra details on why above can't happen thanks.
+
+>  
+> -	/* Lock sock to avoid losing sk_socket during loop. */
+> -	lock_sock(psock->sk);
+>  	if (state->skb) {
+>  		skb = state->skb;
+>  		len = state->len;
+> @@ -529,7 +527,7 @@ static void sk_psock_backlog(struct work_struct *work)
+>  		skb_bpf_redirect_clear(skb);
+>  		do {
+>  			ret = -EIO;
+> -			if (likely(psock->sk->sk_socket))
+> +			if (!sock_flag(psock->sk, SOCK_DEAD))
+>  				ret = sk_psock_handle_skb(psock, skb, off,
+>  							  len, ingress);
+>  			if (ret <= 0) {
+
+Thanks,
+John
