@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 450ED34A08F
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 05:32:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBEAF34A0AC
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 05:47:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbhCZEcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 00:32:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
+        id S229753AbhCZEob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 00:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231355AbhCZEbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 00:31:50 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F22AC06174A;
-        Thu, 25 Mar 2021 21:31:50 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id l15so4669574ybm.0;
-        Thu, 25 Mar 2021 21:31:50 -0700 (PDT)
+        with ESMTP id S229446AbhCZEn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 00:43:56 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDABC06174A;
+        Thu, 25 Mar 2021 21:43:56 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id x189so4618408ybg.5;
+        Thu, 25 Mar 2021 21:43:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=77bXvTG175JM/Chg4+Z7haekme4dDDgGkrHlXjwMUaU=;
-        b=rXLd55v46YAtZKnc+qt2xGhvcTJFNUUZwn07PU+iPPXwylGf0N/NTW0MZFIi22N/fu
-         JUrMIa9CEOi2rMvOFxTZ6X7pBX2psCZKSO8VF56sxjdq0MWscVHkQHSeVdIrqCO5caSX
-         yYhnJkCmOWjJYhRGaqOAv/pypGxuLXcgj0/AQANVZiAr9Jl/GVDoBd8u18xKMW90fCiI
-         X2HBZQ6IErBMia4y/LHSPvf2o4z4BxIyJibTeVlhsbks+ZPMMcAIhziFaVjtBRBkg1UP
-         NA1dDyxEo7E31c/Z5ScpUDCOjOoE7Lpd9wQp0fwy/vADjCIf5tFznInQcwimL4sWiXa1
-         0cCg==
+        bh=Sw9BDf+hR43G+R1lh14tnMhWbnTkjTfdJgCPvhzZ4o8=;
+        b=iyK9uYmhxkjHoIov7qtMNmCgyPrxsoPlhAg6TDjRV08uQXBFxP1AXs2MdEkwibhfEW
+         S22koi0Pf8++J+GztsNU/n7G6ppTTLcqEWFwdJx5FF/aEe1GjPbT+Lc2bCQokij5dkBJ
+         OWxkjrfQGRB2w76dzlF6M5+4PAJEtFxVWlcBVPNqYB2V2larGRCfOHt3dNnzlhzR7sMF
+         4+ElbL1BXSgUADIMcmKn3M1p1eYuH2XnbIOBcXv5xitFq+jmdrdzt5jYN8KWW3ayfyvq
+         PXr8k19LKsw9ILYEXYJ2cVFTgf26UE0U0STifbnInvMFelRtvIz19SnMcfmWea7ZVtHc
+         vfdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=77bXvTG175JM/Chg4+Z7haekme4dDDgGkrHlXjwMUaU=;
-        b=nJ4Xbx0sb8aC1IhWtbZpL+FR+b9ydGaiWqFVswwpLwgti0TBGK2kPnw6DQOzWaU2IF
-         Fv8hwpcxPdbhr1IJLwD7U6Lc/LCLltXYI1fekCbh/atIR/7eCLyfmCl4iVmMCswiIqIh
-         w1uPL6u6/9eNGfTMyPfA8Z+8SMXsXGkGepX8Pm8dzWBNQ/LSvLCbkoqLEuCs/L1Xr8EF
-         ZWkR+dgBRmmYjb0yJmEuMO7WOEDLinuTBGgfWRs7+b9qfhll58UZSDUoGhd2IPDJOJrn
-         is8UoVgxowC0Kf7/bMhrqTPNMmL8iJ5rkwPmkJjDPuG9H5cy6zu4YlGkLRf+KkUKPP4z
-         GI1Q==
-X-Gm-Message-State: AOAM531ysiPnFf/5o14RHoEsOP9KUrcLglVodSb/CRrR/yOIAcKPMXkG
-        Xb5LMBc5S5kz9etCTS80A2w4VXq+/Licp4cQXKyj9DSNUrg=
-X-Google-Smtp-Source: ABdhPJx0gpfc3Q4cIbZdzJSLjyFgFwqS2iU7/bNMbKTzi6+pdRxHy9XrVvg/k4h2K3kYHcskJPm3rmFBt+HU75QFIkk=
-X-Received: by 2002:a25:ab03:: with SMTP id u3mr10683103ybi.347.1616733109956;
- Thu, 25 Mar 2021 21:31:49 -0700 (PDT)
+        bh=Sw9BDf+hR43G+R1lh14tnMhWbnTkjTfdJgCPvhzZ4o8=;
+        b=Bv5Sw8QrTjnqUJLg5W27VHevws2jU4aDqGt9VgYveSLvfBBF4v7DTfTQ0BKm82htsQ
+         MDjTtv367mwAL3LI8Te4/vzVcxL657uHuoIY1mtJ+6WAcbFy8IzjcByvXQZAjoiwUN5V
+         Vt/rURc4xf/4hWTVk2S7PH5xUlnyN303IJoiwTl5YUmJRldPygy7cKLzSgI0J0A/bk12
+         3pjJB+hb88NROsg/3dXUT9flKU6FPSf0bUKDvnXEt8uRHOHq4vtUFLJ6B9QN0MDBAgVc
+         sAxfn3esu3I0RFLI3nZLi2LEMi3u5I3OjL/wcs9i86/dBnO7QWOlN+C1IKsAHi/LaPCx
+         sNUg==
+X-Gm-Message-State: AOAM532zMIV4WSCVwbGj0at4GpO6rHtBhUakRLTY+yfExdkJoQobLH0o
+        7ok80s9Of5tOOHcDWdNLbpwZspuorNJompf8PHU=
+X-Google-Smtp-Source: ABdhPJzSBa1oJZ2rP+wsQPyWurp+ReZ2TejZxyGBO5aN/eKS95vA3LAxneznOZXzc8pcYnesGEkoiQyng1cz/n5DGl0=
+X-Received: by 2002:a25:ab03:: with SMTP id u3mr10728317ybi.347.1616733835474;
+ Thu, 25 Mar 2021 21:43:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210325150115.138750-1-pctammela@mojatatu.com>
-In-Reply-To: <20210325150115.138750-1-pctammela@mojatatu.com>
+References: <20210325152146.188654-1-lmb@cloudflare.com>
+In-Reply-To: <20210325152146.188654-1-lmb@cloudflare.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 25 Mar 2021 21:31:39 -0700
-Message-ID: <CAEf4Bzby2eo3-s86rgEjOESrQdemBjYsfLCv=WPh0UHTOZQ7Tw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix bail out from 'ringbuf_process_ring()'
- on error
-To:     Pedro Tammela <pctammela@gmail.com>
-Cc:     Pedro Tammela <pctammela@mojatatu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Thu, 25 Mar 2021 21:43:44 -0700
+Message-ID: <CAEf4BzbC75N2xHW0kB76AZCbnD+01LA5T+tn4XfBPL=b=xNS4A@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: link: refuse non-zero file_flags in BPF_OBJ_GET
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
@@ -67,39 +63,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 8:02 AM Pedro Tammela <pctammela@gmail.com> wrote:
+On Thu, Mar 25, 2021 at 8:22 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> The current code bails out with negative and positive returns.
-> If the callback returns a positive return code, 'ring_buffer__consume()'
-> and 'ring_buffer__poll()' will return a spurious number of records
-> consumed, but mostly important will continue the processing loop.
+> Invoking BPF_OBJ_GET on a pinned bpf_link checks the path access
+> permissions based on file_flags, but the returned fd ignores flags.
+> This means that any user can acquire a "read-write" fd for a pinned
+> link with mode 0664 by invoking BPF_OBJ_GET with BPF_F_RDONLY in
+> file_flags. The fd can be used to invoke BPF_LINK_DETACH, etc.
 >
-> This patch makes positive returns from the callback a no-op.
+> Fix this by refusing non-zero flags in BPF_OBJ_GET. Since zero flags
+> imply O_RDWR this requires users to have read-write access to the
+> pinned file, which matches the behaviour of the link primitive.
 >
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> libbpf doesn't expose a way to set file_flags for links, so this
+> change is unlikely to break users.
+>
+> Fixes: 70ed506c3bbc ("bpf: Introduce pinnable bpf_link abstraction")
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 > ---
->  tools/lib/bpf/ringbuf.c | 2 +-
+
+Makes sense, but see below about details.
+
+Also, should we do the same for BPF programs as well? I guess they
+don't have a "write operation", once loaded, but still...
+
+>  kernel/bpf/inode.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
+> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+> index 1576ff331ee4..2f9e8115ad58 100644
+> --- a/kernel/bpf/inode.c
+> +++ b/kernel/bpf/inode.c
+> @@ -547,7 +547,7 @@ int bpf_obj_get_user(const char __user *pathname, int flags)
+>         else if (type == BPF_TYPE_MAP)
+>                 ret = bpf_map_new_fd(raw, f_flags);
+>         else if (type == BPF_TYPE_LINK)
+> -               ret = bpf_link_new_fd(raw);
+> +               ret = (flags) ? -EINVAL : bpf_link_new_fd(raw);
 
-Thanks. Applied to bpf tree and added:
-
-Fixes: bf99c936f947 ("libbpf: Add BPF ring buffer support")
+nit: unnecessary ()
 
 
-> diff --git a/tools/lib/bpf/ringbuf.c b/tools/lib/bpf/ringbuf.c
-> index 8caaafe7e312..e7a8d847161f 100644
-> --- a/tools/lib/bpf/ringbuf.c
-> +++ b/tools/lib/bpf/ringbuf.c
-> @@ -227,7 +227,7 @@ static int ringbuf_process_ring(struct ring* r)
->                         if ((len & BPF_RINGBUF_DISCARD_BIT) == 0) {
->                                 sample = (void *)len_ptr + BPF_RINGBUF_HDR_SZ;
->                                 err = r->sample_cb(r->ctx, sample, len);
-> -                               if (err) {
-> +                               if (err < 0) {
->                                         /* update consumer pos and bail out */
->                                         smp_store_release(r->consumer_pos,
->                                                           cons_pos);
+I wonder if EACCESS would make more sense here? And check f_flags, not flags:
+
+if (f_flags != O_RDWR)
+    ret = -EACCESS;
+else
+    ret = bpf_link_new_fd(raw);
+
+?
+
+>         else
+>                 return -ENOENT;
+>
 > --
-> 2.25.1
+> 2.27.0
 >
