@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C7A634B267
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:01:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C2C234B264
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbhCZXAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 19:00:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35296 "EHLO mail.kernel.org"
+        id S230473AbhCZXAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 19:00:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35314 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230026AbhCZXAN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230043AbhCZXAN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 26 Mar 2021 19:00:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8BDFC61A2A;
+Received: by mail.kernel.org (Postfix) with ESMTPS id AA49361A3F;
         Fri, 26 Mar 2021 23:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616799612;
-        bh=5GrpVsEaWdZ/ZBtaKyb4XXVvS5lm7Sb2LhJu3XeZekc=;
+        bh=qjR03MxN6bU4e+VqS0K6BFiTkKEshbiuj3eumdnfeT8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jiumHMzyZ1G/76cmcaB5hC1HMUDDm13dA0W45QskOiwfniKXn/Q7tgN4CRz3gGB7V
-         mad+g7Mifbmxk0LAZi4m0+t2xkUFzyp+terT2qU51n4W2vY8aso2ljMb/MeLW43mQD
-         9CanxCLN9ucv8csrYwTpentNZSPtQbP7y8UJbtlqwFS4KJVKNe+ttptrTH+DQ2EBj1
-         iC85oFWbU3SJTdiH2XEb8Eptdi+64CMV6AOfuEcE40xgxMvRbM/ZPgYAw9hErrBW2w
-         xAx79cUu660D0umXhlX7i8K1nCFF/DPJ2gvi9jEUia8Z1jG71MJVhnNkz++ssJni20
-         7liD5zyMnp/yg==
+        b=UEvapn0wQHJ2A4lffR/dJTBkjliZIhlFT9vmyFBI0y6Fdij8Fk3jk1wc2g6beeo+c
+         67ZBhZyjPiNVrdCxbE3zdscPYyy/FkBUIIeWVgWLFLNnvCUwGDF518NPcRsbJ18XtN
+         L8mbG3NZ0GxgRozY80y6AZtbO2AvJ/BiU+3coaoMJ/ttYjOTmfK76ESpHRtbGmQm/S
+         LgI+bnhUw/q/C1LjvEj9yyMuKSuVPHiu8xdIcr/4ZJr+lKJGY/pERInlIu0LqebpBp
+         D2SsyxyB8Dr6H0P5StqGjOwDnwnakwzt1WFTj0me6QhsbzRHLXQ0YwJ7MLWOawJDlH
+         6o1ndjX3GusZQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6CF036096E;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9299560192;
         Fri, 26 Mar 2021 23:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/2] axienet clock additions
+Subject: Re: [net-next] tipc: fix kernel-doc warnings
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161679961244.14639.14545749027851847457.git-patchwork-notify@kernel.org>
+Message-Id: <161679961259.14639.7569806421766030836.git-patchwork-notify@kernel.org>
 Date:   Fri, 26 Mar 2021 23:00:12 +0000
-References: <20210326000438.2292548-1-robert.hancock@calian.com>
-In-Reply-To: <20210326000438.2292548-1-robert.hancock@calian.com>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        radhey.shyam.pandey@xilinx.com, robh@kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
+References: <20210326091414.6705-1-hoang.h.le@dektech.com.au>
+In-Reply-To: <20210326091414.6705-1-hoang.h.le@dektech.com.au>
+To:     Hoang Le <hoang.h.le@dektech.com.au>
+Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tuan.a.vo@dektech.com.au, tung.q.nguyen@dektech.com.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 25 Mar 2021 18:04:36 -0600 you wrote:
-> Add support to the axienet driver for controlling all of the clocks that
-> the logic core may utilize.
+On Fri, 26 Mar 2021 16:14:14 +0700 you wrote:
+> Fix kernel-doc warning introduced in
+> commit b83e214b2e04 ("tipc: add extack messages for bearer/media failure"):
 > 
-> Changed since v3:
-> -Added Acked-by to patch 1
-> -Now applies to net-next tree after earlier patches merged in - code
-> unchanged from v3
+> net/tipc/bearer.c:248: warning: Function parameter or member 'extack' not described in 'tipc_enable_bearer'
+> 
+> Fixes: b83e214b2e04 ("tipc: add extack messages for bearer/media failure")
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v4,1/2] dt-bindings: net: xilinx_axienet: Document additional clocks
-    https://git.kernel.org/netdev/net-next/c/a0e55dcd2fa9
-  - [net-next,v4,2/2] net: axienet: Enable more clocks
-    https://git.kernel.org/netdev/net-next/c/b11bfb9a19f9
+  - [net-next] tipc: fix kernel-doc warnings
+    https://git.kernel.org/netdev/net-next/c/bc556d3edd0d
 
 You are awesome, thank you!
 --
