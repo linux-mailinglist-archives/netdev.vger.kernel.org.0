@@ -2,103 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B38834A00B
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 04:04:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1281134A049
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 04:34:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbhCZDD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 23:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S230465AbhCZDeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 23:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbhCZDDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 23:03:40 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E1BC061761;
-        Thu, 25 Mar 2021 20:03:40 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id g38so4398770ybi.12;
-        Thu, 25 Mar 2021 20:03:40 -0700 (PDT)
+        with ESMTP id S230340AbhCZDeI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 23:34:08 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B20C06174A
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 20:34:08 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id d8so249689plh.11
+        for <netdev@vger.kernel.org>; Thu, 25 Mar 2021 20:34:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sNlIQphRGrr6cRggbPFiNOSnzY2c84dt0y88urvI0JE=;
-        b=X27GRIeUb3eSwS/MgD66l3z/ET/AgZH7wejdMPUAvZmWUbiYrv8rbgWDg3GGikSj/o
-         c7yPx7BwQK0zyD7yuBVpO/SQl7UMmHRB46m3aSN7Z9gajo0md4RnPXn7LMpNuKu1OMmk
-         JFeK2HUqSvEJl0INSCBGmBCLG/Gfu0PEBIjC1pSRaPVUCfKnPiArB+rTl5DmPHpBGMHy
-         VmbZS1LZoHaz2mvyC6QTpTd+bA3tQw+TnXr4M6WaKwgGbMF/kq/ONOPvhTmfEG0T8fqM
-         qfvQ3LLaGsuXZe3HR4iE7oHbTUp14te2EPxi2JWJ7RFiwOqjWj1YvV8uY6eE/KFesm/a
-         CTOQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0bvViS9LeLkNUb1dHs3t4SsHS+q0RLU7ZHpOnMbp6xk=;
+        b=kahVZKYy5PkHEkeGcKLRiZee5AIb9OGTrhB4wzEJSH22dYTlt3mdRIxFO7La0yjBQP
+         9NlyJ7fJR66vzPZfHbdS3jBQRTPYG/RzeDfHv1F0cxrUANh4xCJi5X35FmnTVG+RhRiN
+         0rYsF47fcqy9GlXmnuZWjxr7ajst45OeiBPXQ6ZZmZnrfm9O1IG2Ldw6fHPWSBbXEcbF
+         SP/jLHod8Mhf3jiyU3BbbPztoVGUOAQ/t3e3gERCR5TCNw+TW+LbXzyMA8/wPsRqGzOQ
+         T+vcQmuOwFtHFaLf6SklP5T/ws4hsQDZ8BC0Y9+HNyhTEUUovLKn4yu3HII0zMQgMEc3
+         ID6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sNlIQphRGrr6cRggbPFiNOSnzY2c84dt0y88urvI0JE=;
-        b=t7Eycc0LgY3owpWU+RUj3U/O2jXpQpESTUAZ/ZJ0zk7EX0lh1gQwNCjgHPTezBKUpJ
-         fVWbLXVKSo332/2dz0NBwe12Z+fz9JK8a21vGkrwbgWsgTYzGehtlTNCTcWay60xiYRW
-         f7k1dVkcJ/ugTPsbKPuEX9oLvJP5/+KtZ0Fwh6JA8FmUuZa7Z7d30xrh4r7kgGht7JKI
-         mwXa3OwJtptTjwYBaU1zX1Y8oqbIx3G2D0TIwuILto5G1dZIuZHPAu4HBhs1db/5jfr+
-         uevdWarbOEjwAcr7JUbgj0bdlk5QqKMHGWjo3HeWBblBo5s4/iwb2VavGQVjE5fhV2+q
-         OhYQ==
-X-Gm-Message-State: AOAM531L6y+c1voHO9yKC/RHPKpDZaloQEhRrWC61qx+YPsho4gcZBzB
-        Bo/l0JTGC37Cvq9QMxapxD9uMw4MPuEGWBfad6s=
-X-Google-Smtp-Source: ABdhPJx4pAUFdUbbs24Up2QCj3ScMj+P/MgNi9g87WGKSQv6AnT1WbeM/0LJhudgHL9YM7PuXzB36FXOwxnw5iAJJWY=
-X-Received: by 2002:a25:ab03:: with SMTP id u3mr10324206ybi.347.1616727819875;
- Thu, 25 Mar 2021 20:03:39 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0bvViS9LeLkNUb1dHs3t4SsHS+q0RLU7ZHpOnMbp6xk=;
+        b=dAhTjv8Ia+bvypwMbpKWPKDCOiUFO/HShMcL08Y2csOzRr0UrAHKcYvHdsVaNYzlrR
+         dGywGF3v5i/yFUy+lSaOcGETL54rePUg3zm4M0hwQ/fcWFPfA2ENn8JPO5+OHJ/B5urj
+         qeVF9wo2xAbi4wl5NjT1zgExwqkhRrONXklcG47GcNv/32DoxvMfQmktTy/QHUe87IVY
+         cFBtZgG9FJpjtTOuU6PEfOtcQYtATOlqER0r8Ag1AFjkf/qF9YEj0YqgaRY1qoLzvdby
+         Vi1sca5eB5lM0eZN5YqBJk1Dl9uJK0D4rcRZxPECc3jZ0xCxY5JYAmrhna33DIaQRXgr
+         9t6g==
+X-Gm-Message-State: AOAM530bZdEaLDWorSmZpRZUQrfYWpDaHAkcqJhSr0HEA+C+Xf1BGir0
+        NS/XP6Jx8MhaFmEkSBqUYhY=
+X-Google-Smtp-Source: ABdhPJxCpe+h18dOOKyJYOo90HY8kFplcRcyt8nl/AYTSOCvOpCqawvQpeuumO12dTi9i+kRgJ9N0Q==
+X-Received: by 2002:a17:90a:eb0b:: with SMTP id j11mr11395556pjz.62.1616729641449;
+        Thu, 25 Mar 2021 20:34:01 -0700 (PDT)
+Received: from ThinkCentre-M83.wg.ducheng.me ([202.133.196.154])
+        by smtp.gmail.com with ESMTPSA id r10sm6336581pgj.29.2021.03.25.20.33.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 20:34:01 -0700 (PDT)
+From:   Du Cheng <ducheng2@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Du Cheng <ducheng2@gmail.com>,
+        syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
+Subject: [PATCH] net:qrtr: fix allocator flag of idr_alloc_u32() in qrtr_port_assign()
+Date:   Fri, 26 Mar 2021 11:33:45 +0800
+Message-Id: <20210326033345.162531-1-ducheng2@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <161661993201.29133.10763175125024005438.stgit@john-Precision-5820-Tower>
- <161662006586.29133.187705917710998342.stgit@john-Precision-5820-Tower>
-In-Reply-To: <161662006586.29133.187705917710998342.stgit@john-Precision-5820-Tower>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 25 Mar 2021 20:03:28 -0700
-Message-ID: <CAEf4BzZr8fZjxyki4CauU3qZ-Xac_B7jJ4STaJPwTZhYSqN1AQ@mail.gmail.com>
-Subject: Re: [bpf PATCH] bpf, selftests: test_maps generating unrecognized
- data section
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 24, 2021 at 2:07 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> With a relatively recent clang master branch test_map skips a section,
->
->  libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
->
+change the allocator flag of idr_alloc_u32 from GFP_ATOMIC to
+GFP_KERNEL, as GFP_ATOMIC caused BUG: "using smp_processor_id() in
+preemptible" as reported by syzkaller.
 
-So it was on my TODO list for a while to get rid of this by combining
-all .rodata* sections into one at load time. I even outline that in
-"libbpf v1.0" doc ([0]). I just haven't gotten to implementing this
-yet. You can safely ignore this for now. But I also have nothing
-against cleaning up tests, of course.
+Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
+Signed-off-by: Du Cheng <ducheng2@gmail.com>
+---
+Hi David & Jakub,
 
-  [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an11_iaRuec6U-ZESZ54nNTY
+Although this is a simple fix to make syzkaller happy, I feel that maybe a more
+proper fix is to convert qrtr_ports from using IDR to radix_tree (which is in
+fact xarray) ? 
 
+I found some previous work done in 2019 by Matthew Wilcox:
+https://lore.kernel.org/netdev/20190820223259.22348-1-willy@infradead.org/t/#mcb60ad4c34e35a6183c7353c8a44ceedfcff297d
+but that was not merged as of now. My wild guess is that it was probably
+in conflicti with the conversion of radix_tree to xarray during 2020, and that
+might cause the direct use of xarray in qrtr.c unfavorable.
 
-> the cause is some pointless strings from bpf_printks in the BPF program
-> loaded during testing. Remove them so we stop tripping our test bots.
->
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  .../selftests/bpf/progs/sockmap_tcp_msg_prog.c     |    3 ---
->  1 file changed, 3 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c b/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c
-> index fdb4bf4408fa..0f603253f4ed 100644
-> --- a/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c
-> +++ b/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c
-> @@ -16,10 +16,7 @@ int bpf_prog1(struct sk_msg_md *msg)
->         if (data + 8 > data_end)
->                 return SK_DROP;
->
-> -       bpf_printk("data length %i\n", (__u64)msg->data_end - (__u64)msg->data);
->         d = (char *)data;
-> -       bpf_printk("hello sendmsg hook %i %i\n", d[0], d[1]);
-> -
->         return SK_PASS;
->  }
->
->
+Shall I proceed with converting qrtr_pors to use radix_tree (or just xarray)?
+
+Regards,
+Du Cheng
+
+ net/qrtr/qrtr.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index edb6ac17ceca..ee42e1e1d4d4 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -722,17 +722,17 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+ 	mutex_lock(&qrtr_port_lock);
+ 	if (!*port) {
+ 		min_port = QRTR_MIN_EPH_SOCKET;
+-		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
++		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_KERNEL);
+ 		if (!rc)
+ 			*port = min_port;
+ 	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
+ 		rc = -EACCES;
+ 	} else if (*port == QRTR_PORT_CTRL) {
+ 		min_port = 0;
+-		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, 0, GFP_ATOMIC);
++		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, 0, GFP_KERNEL);
+ 	} else {
+ 		min_port = *port;
+-		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, *port, GFP_ATOMIC);
++		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, *port, GFP_KERNEL);
+ 		if (!rc)
+ 			*port = min_port;
+ 	}
+-- 
+2.27.0
+
