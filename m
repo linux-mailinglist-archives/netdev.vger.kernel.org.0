@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 706AD349F54
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 380F6349F56
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbhCZCHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 22:07:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50762 "EHLO mail.kernel.org"
+        id S230338AbhCZCHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 22:07:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50778 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230187AbhCZCHg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230216AbhCZCHg (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 25 Mar 2021 22:07:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 318C961A46;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E8A2861A48;
         Fri, 26 Mar 2021 02:07:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616724455;
-        bh=xr4wdKqvt3LlM8CGlrjdWm5U5X39X5Dj2+0QKh5YAA4=;
+        s=k20201202; t=1616724456;
+        bh=lfa5bdk6rqYx74iXCKJE0oS6OQbbIs4QqRRFaizEddg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hE2+7B5CSnRFYqZaj7JkJf/CFqpemsZua9He1uDqcfHXN56JtEvnua0/AuCd68XrY
-         cTH99V3rpZAumNiop8J0TvYF1KXZ3eEtGpEDGS57QMgeOAiGntAxCGJBK5r1Q3pJoD
-         SAuHFmp8MRIUm+a2vnSX2CZKq5qWjgNaZ5rRyh2jxI0EnSXizZpHO+8tLNuwjdylfV
-         T9Tgj30MZemqO5i4GFJCk89Gf/BeFFETPLcVgoj4LPgKRHnQMoAFoT83HA4RNq4BeP
-         d1yePk+TC6JngmGts2jw22CBZNTuv1Wd51gHS2t1OBb8NKREaoS2ucWG3NYtZYAU3N
-         tzlx5tIcxCNKA==
+        b=l4MEl23rQJb9a3s72ckjSD1vLcSwtDnKqp6c/MW0x2DZkx48YhYEFkQoutvGzGpjk
+         Ojr3Ce0cJMaCL1zUJDJqjuV/v7AUecwbKr7E3xpft9dqORzcQZkSy8ePk100mh6+uR
+         d696VKWlsMCg1+I5XGX98c6TGhRPpy0rruRcDYhuo3J27vxfA5HI1rXT5hqevx53iL
+         DnIEePuwcfEUMwBoFevInGD0I/DDrw8N5QBqxeL4naw1oUOxpab+AloSZfx83NjfhB
+         t8NWmrwM/pAc9Wz9YH51N8dOazjUVWHQIHXHv+u88P/7jbH0/Izjl+i8k5hBoHEF4l
+         QiexCXx/YU/Vg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
@@ -32,9 +32,9 @@ Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
         ayal@nvidia.com, shenjian15@huawei.com, saeedm@nvidia.com,
         mkubecek@suse.cz, andrew@lunn.ch, roopa@nvidia.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 3/6] ethtool: fec: sanitize ethtool_fecparam->reserved
-Date:   Thu, 25 Mar 2021 19:07:24 -0700
-Message-Id: <20210326020727.246828-4-kuba@kernel.org>
+Subject: [PATCH net-next v2 4/6] ethtool: fec: sanitize ethtool_fecparam->active_fec
+Date:   Thu, 25 Mar 2021 19:07:25 -0700
+Message-Id: <20210326020727.246828-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210326020727.246828-1-kuba@kernel.org>
 References: <20210326020727.246828-1-kuba@kernel.org>
@@ -44,71 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct ethtool_fecparam::reserved is never looked at by the core.
-Make sure it's actually 0. Unfortunately we can't return an error
-because old ethtool doesn't zero-initialize the structure for SET.
-On GET we can be more verbose, there are no in tree (ab)users.
-
-Fix up the kdoc on the structure. Remove the mention of FEC
-bypass. Seems like a niche thing to configure in the first
-place.
-
-v2: - also mention the zero-init-on-SET kerfuffle in kdoc
+struct ethtool_fecparam::active_fec is a GET-only field,
+all in-tree drivers correctly ignore it on SET. Clear
+the field on SET to avoid any confusion. Again, we can't
+reject non-zero now since ethtool user space does not
+zero-init the param correctly.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- include/uapi/linux/ethtool.h | 6 +++++-
- net/ethtool/ioctl.c          | 5 +++++
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ include/uapi/linux/ethtool.h | 2 +-
+ net/ethtool/ioctl.c          | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 36bf435d232c..39a7d285b32b 100644
+index 39a7d285b32b..78027aa0161a 100644
 --- a/include/uapi/linux/ethtool.h
 +++ b/include/uapi/linux/ethtool.h
-@@ -1376,15 +1376,19 @@ struct ethtool_per_queue_op {
+@@ -1374,15 +1374,15 @@ struct ethtool_per_queue_op {
+ 	__u32	queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
+ 	char	data[];
  };
  
  /**
   * struct ethtool_fecparam - Ethernet forward error correction(fec) parameters
   * @cmd: Command number = %ETHTOOL_GFECPARAM or %ETHTOOL_SFECPARAM
-  * @active_fec: FEC mode which is active on the port
+- * @active_fec: FEC mode which is active on the port
++ * @active_fec: FEC mode which is active on the port, GET only.
   * @fec: Bitmask of supported/configured FEC modes
-- * @rsvd: Reserved for future extensions. i.e FEC bypass feature.
-+ * @reserved: Reserved for future extensions, ignore on GET, write 0 for SET.
-+ *
-+ * Note that @reserved was never validated on input and ethtool user space
-+ * left it uninitialized when calling SET. Hence going forward it can only be
-+ * used to return a value to userspace with GET.
+  * @reserved: Reserved for future extensions, ignore on GET, write 0 for SET.
+  *
+  * Note that @reserved was never validated on input and ethtool user space
+  * left it uninitialized when calling SET. Hence going forward it can only be
+  * used to return a value to userspace with GET.
   */
- struct ethtool_fecparam {
- 	__u32   cmd;
- 	/* bitmask of FEC modes */
- 	__u32   active_fec;
- 	__u32   fec;
- 	__u32   reserved;
 diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 0788cc3b3114..be3549023d89 100644
+index be3549023d89..237ffe5440ef 100644
 --- a/net/ethtool/ioctl.c
 +++ b/net/ethtool/ioctl.c
-@@ -2564,14 +2564,17 @@ static int ethtool_get_fecparam(struct net_device *dev, void __user *useraddr)
- 	if (!dev->ethtool_ops->get_fecparam)
- 		return -EOPNOTSUPP;
- 
- 	rc = dev->ethtool_ops->get_fecparam(dev, &fecparam);
- 	if (rc)
- 		return rc;
- 
-+	if (WARN_ON_ONCE(fecparam.reserved))
-+		fecparam.reserved = 0;
-+
- 	if (copy_to_user(useraddr, &fecparam, sizeof(fecparam)))
- 		return -EFAULT;
- 	return 0;
- }
- 
- static int ethtool_set_fecparam(struct net_device *dev, void __user *useraddr)
- {
-@@ -2579,14 +2582,16 @@ static int ethtool_set_fecparam(struct net_device *dev, void __user *useraddr)
+@@ -2582,14 +2582,15 @@ static int ethtool_set_fecparam(struct net_device *dev, void __user *useraddr)
  
  	if (!dev->ethtool_ops->set_fecparam)
  		return -EOPNOTSUPP;
@@ -116,15 +90,14 @@ index 0788cc3b3114..be3549023d89 100644
  	if (copy_from_user(&fecparam, useraddr, sizeof(fecparam)))
  		return -EFAULT;
  
-+	fecparam.reserved = 0;
-+
++	fecparam.active_fec = 0;
+ 	fecparam.reserved = 0;
+ 
  	return dev->ethtool_ops->set_fecparam(dev, &fecparam);
  }
  
  /* The main entry point in this file.  Called from net/core/dev_ioctl.c */
  
- int dev_ethtool(struct net *net, struct ifreq *ifr)
- {
 -- 
 2.30.2
 
