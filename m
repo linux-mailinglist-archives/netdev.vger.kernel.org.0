@@ -2,76 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 181AF34B187
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 22:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E286D34B191
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 22:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230229AbhCZVuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 17:50:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42746 "EHLO mail.kernel.org"
+        id S230196AbhCZVyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 17:54:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50340 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230027AbhCZVuL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Mar 2021 17:50:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2CFB961A28;
-        Fri, 26 Mar 2021 21:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616795411;
-        bh=VSiORVhE5bbVWGkpsyZBo/Y2Y+CBK2P+ganjE8Idzes=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lGlpZgxwG77cQdQAEw5do3xJuWXboVQMAj6rEOE7JvMkh9ZPSN9IH4/TRc+cD0axm
-         PBSwwCGcE+hW5XkcaOXXDuiP4NwztkF/zjpEVGK5p5DQqvh6BiB5ZUzvo3eum0zRdv
-         E0yfhJ8Jdm8UTaQB4NHBuZ9KgiBpLyL3acNah4IIXTWFvNDdImg/Rj9Xas2PEaLWm1
-         YyTirPw48TANAlc7NAxvj6Vd7FLgzkYlY2srmEGOAwEGbeQQctbYuYtlXW1Uylciav
-         niXs4Bb0NLLxIGODy5gen6NvUggEbGg1ERQVacuP2+veGbxwvGBfC69ObDVj6y+WOb
-         wJw5D7bO27iqQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0431C6096E;
-        Fri, 26 Mar 2021 21:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230043AbhCZVyU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Mar 2021 17:54:20 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lPuPB-00DDfV-Eg; Fri, 26 Mar 2021 22:54:09 +0100
+Date:   Fri, 26 Mar 2021 22:54:09 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Don Bollinger <don@thebollingers.org>
+Cc:     'Jakub Kicinski' <kuba@kernel.org>, arndb@arndb.de,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        brandon_chuang@edge-core.com, wally_wang@accton.com,
+        aken_liu@edge-core.com, gulv@microsoft.com, jolevequ@microsoft.com,
+        xinxliu@microsoft.com, 'netdev' <netdev@vger.kernel.org>,
+        'Moshe Shemesh' <moshe@nvidia.com>
+Subject: Re: [PATCH v2] eeprom/optoe: driver to read/write SFP/QSFP/CMIS
+ EEPROMS
+Message-ID: <YF5YAQvQXCn4QapJ@lunn.ch>
+References: <20210315103950.65fedf2c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <001201d719c6$6ac826c0$40587440$@thebollingers.org>
+ <YFJHN+raumcJ5/7M@lunn.ch>
+ <009601d72023$b73dbde0$25b939a0$@thebollingers.org>
+ <YFpr2RyiwX10SNbD@lunn.ch>
+ <011301d7226f$dc2426f0$946c74d0$@thebollingers.org>
+ <YF46FI4epRGwlyP8@lunn.ch>
+ <011901d7227c$e00015b0$a0004110$@thebollingers.org>
+ <YF5GA1RbaM1Ht3nl@lunn.ch>
+ <011c01d72284$544c8f50$fce5adf0$@thebollingers.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: use less storage for most sysctl
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161679541101.17455.16509636515797446378.git-patchwork-notify@kernel.org>
-Date:   Fri, 26 Mar 2021 21:50:11 +0000
-References: <20210325180817.840042-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210325180817.840042-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <011c01d72284$544c8f50$fce5adf0$@thebollingers.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 25 Mar 2021 11:08:12 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+> The only thing wrong I can see is that it doesn't use the kernel network
+> stack.  Here's where "you keep missing the point".  The kernel network stack
+> is not being used in these systems.  Implementing EEPROM access through
+> ethtool is of course possible, but it is a lot of work with no benefit on
+> these systems.  The simple approach works.  Let me use it.
 > 
-> This patch series adds a new sysctl type, to allow using u8 instead of
-> "int" or "long int" types.
+> > 
+> > The optoe KAPI needs to handle these 'interesting' SFP modules. The KAPI
+> > design needs to be flexible enough that the driver underneath it can be
+> > extended to support these SFPs. The code does not need to be there, but
+> > the KAPI design needs to allow it. And i personally cannot see how the
+> optoe
+> > KAPI can efficiently support these SFPs.
 > 
-> Then we convert mosts sysctls found in struct netns_ipv4
-> to shrink it by three cache lines.
-> 
-> [...]
+> Help me understand.  Your KAPI specifies ethtool as the KAPI, and the
+> ethtool/netlink stack as the interface through which the data flows.
 
-Here is the summary with links:
-  - [net-next,1/5] sysctl: add proc_dou8vec_minmax()
-    https://git.kernel.org/netdev/net-next/c/cb9444130662
-  - [net-next,2/5] ipv4: shrink netns_ipv4 with sysctl conversions
-    https://git.kernel.org/netdev/net-next/c/4b6bbf17d4e1
-  - [net-next,3/5] ipv4: convert ip_forward_update_priority sysctl to u8
-    https://git.kernel.org/netdev/net-next/c/1c69dedc8fa7
-  - [net-next,4/5] inet: convert tcp_early_demux and udp_early_demux to u8
-    https://git.kernel.org/netdev/net-next/c/2932bcda070d
-  - [net-next,5/5] tcp: convert elligible sysctls to u8
-    https://git.kernel.org/netdev/net-next/c/4ecc1baf362c
+Nearly. It specifies netlink and the netlink messages definitions.
+They happen to be in the ethtool group, but there is no requirement to
+use ethtool(1).
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+But there is a bit more to it.
 
+Either the MAC driver implements the needed code, or it defers to the
+generic sfp.c code. In both cases, you have access to the GPIO
+lines.
 
+If you are using the generic sfp.c, the Device Tree definitions of the
+GPIOs become part of the KAPI. DT is consider ABI.
+
+So the low level code knows when there was been a hotplug. It then can
+determine what quirks to apply for all future reads until the module
+is unplugged.
+
+Your KAPI is missing how optoe gets access to the GPIOs. Without
+knowing if the module has been hotplugged, in a robust manor, you have
+problems with quirks. For every userspace read, you need to assume the
+module has been changed, read the ID information from the EEPROM a
+byte at a time, figure out what quirks to apply, and then do the user
+requested read. I doubt that is good for performance. The design which
+has been chosen is that userspace is monitoring the GPIO lines. So to
+make it efficient, your KAPI need some way to pass down that the
+module has/has not been hot-plugged since the last read.
+
+Or do you see some other way to implement these quirks?
+
+       Andrew
