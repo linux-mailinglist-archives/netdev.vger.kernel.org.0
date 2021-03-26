@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D2B34B302
+	by mail.lfdr.de (Postfix) with ESMTP id 5457434B301
 	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231526AbhCZXWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 19:22:04 -0400
-Received: from mga14.intel.com ([192.55.52.115]:11392 "EHLO mga14.intel.com"
+        id S231475AbhCZXWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 19:22:03 -0400
+Received: from mga14.intel.com ([192.55.52.115]:11386 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231493AbhCZXVm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231518AbhCZXVm (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 26 Mar 2021 19:21:42 -0400
-IronPort-SDR: d659Fo4gElRqrjaAR+6i6IaTv9YtjgS+5d2VFVX1uFj5wK7P67PwXURz4vv7fR4MbDeWht2izn
- GlUjy6+8GDGA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9935"; a="190681443"
+IronPort-SDR: nObgzN3pr3HNBWavPzCV5RiQEHPW/5AJ3d5q1/30jEO8X+pwmxgIg/58j7ovIx5vJKahz2aUkg
+ uRVNyBL1/WbQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9935"; a="190681445"
 X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
-   d="scan'208";a="190681443"
+   d="scan'208";a="190681445"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 16:21:24 -0700
-IronPort-SDR: ZvcyPWiCkVLGidlktZ+qIxB9DpCvovWAdWbNqxzA87PvShqvSPEv1TsE8/1xVTtd8TCPf0ljan
- 6Ly0PhNP/X7A==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2021 16:21:27 -0700
+IronPort-SDR: 9TEjLnyZL6UN3EAoHkteUY1GVp2bq1oBl/vXkNCG3dgTd61f1pJZ6oL2xx7735kK5Ptfci3zXd
+ TZvSEb83yaqQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,281,1610438400"; 
-   d="scan'208";a="410113324"
+   d="scan'208";a="410113337"
 Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Mar 2021 16:21:22 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 26 Mar 2021 16:21:24 -0700
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
         ast@kernel.org, andrii@kernel.org
 Cc:     bjorn.topel@intel.com, magnus.karlsson@intel.com,
         ciara.loftus@intel.com, john.fastabend@gmail.com, toke@redhat.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v4 bpf-next 10/17] selftests: xsk: remove Tx synchronization resources
-Date:   Sat, 27 Mar 2021 00:09:31 +0100
-Message-Id: <20210326230938.49998-11-maciej.fijalkowski@intel.com>
+Subject: [PATCH v4 bpf-next 11/17] selftests: xsk: refactor teardown/bidi test cases and testapp_validate
+Date:   Sat, 27 Mar 2021 00:09:32 +0100
+Message-Id: <20210326230938.49998-12-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210326230938.49998-1-maciej.fijalkowski@intel.com>
 References: <20210326230938.49998-1-maciej.fijalkowski@intel.com>
@@ -43,104 +43,276 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tx thread needs to be started after the Rx side is fully initialized so
-that packets are not xmitted until xsk Rx socket is ready to be used.
+Currently, there is a testapp_sockets() that acts like a wrapper around
+testapp_validate() and it is called for bidi and teardown test types.
+Other test types call testapp_validate() directly.
 
-It can be observed that atomic variable spinning_tx is not checked from
-Rx side in any way, so thread_common_ops can be modified to only address
-the spinning_rx. This means that spinning_tx can be removed altogheter.
+Split testapp_sockets() onto two separate functions so a bunch of bidi
+specific logic can be moved there and out of testapp_validate() itself.
 
-signal_tx_condition is never utilized, so simply remove it.
+Introduce function pointer to ifobject struct which will be used for
+assigning the Rx/Tx function that is assigned to worker thread. Let's
+also have a global ifobject Rx/Tx pointers so it's easier to swap the
+vectors on a second run of a bi-directional test. Thread creation now is
+easey to follow.
+
+switching_notify variable is useless, info about vector switch can be
+printed based on bidi_pass state.
+
+Last but not least, init/destroy synchronization variables only once,
+not per each test.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 15 +++++++--------
- tools/testing/selftests/bpf/xdpxceiver.h |  2 --
- 2 files changed, 7 insertions(+), 10 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 117 ++++++++++++++---------
+ tools/testing/selftests/bpf/xdpxceiver.h |  14 +--
+ 2 files changed, 78 insertions(+), 53 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index b6fd5eb1d620..3db221e548cc 100644
+index 3db221e548cc..aeff5340be49 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -126,7 +126,6 @@ static void pthread_init_mutex(void)
- 	pthread_mutex_init(&sync_mutex, NULL);
- 	pthread_mutex_init(&sync_mutex_tx, NULL);
- 	pthread_cond_init(&signal_rx_condition, NULL);
--	pthread_cond_init(&signal_tx_condition, NULL);
+@@ -896,26 +896,10 @@ static void testapp_validate(void)
+ 	pthread_attr_init(&attr);
+ 	pthread_attr_setstacksize(&attr, THREAD_STACK);
+ 
+-	if ((test_type == TEST_TYPE_BIDI) && bidi_pass) {
+-		pthread_init_mutex();
+-		if (!switching_notify) {
+-			print_verbose("Switching Tx/Rx vectors\n");
+-			switching_notify++;
+-		}
+-	}
+-
+ 	pthread_mutex_lock(&sync_mutex);
+ 
+ 	/*Spawn RX thread */
+-	if (!bidi || !bidi_pass) {
+-		if (pthread_create(&t0, &attr, worker_testapp_validate_rx, ifdict[1]))
+-			exit_with_error(errno);
+-	} else if (bidi && bidi_pass) {
+-		/*switch Tx/Rx vectors */
+-		ifdict[0]->fv.vector = rx;
+-		if (pthread_create(&t0, &attr, worker_testapp_validate_rx, ifdict[0]))
+-			exit_with_error(errno);
+-	}
++	pthread_create(&t0, &attr, ifdict_rx->func_ptr, ifdict_rx);
+ 
+ 	if (clock_gettime(CLOCK_REALTIME, &max_wait))
+ 		exit_with_error(errno);
+@@ -927,15 +911,7 @@ static void testapp_validate(void)
+ 	pthread_mutex_unlock(&sync_mutex);
+ 
+ 	/*Spawn TX thread */
+-	if (!bidi || !bidi_pass) {
+-		if (pthread_create(&t1, &attr, worker_testapp_validate_tx, ifdict[0]))
+-			exit_with_error(errno);
+-	} else if (bidi && bidi_pass) {
+-		/*switch Tx/Rx vectors */
+-		ifdict[1]->fv.vector = tx;
+-		if (pthread_create(&t1, &attr, worker_testapp_validate_tx, ifdict[1]))
+-			exit_with_error(errno);
+-	}
++	pthread_create(&t1, &attr, ifdict_tx->func_ptr, ifdict_tx);
+ 
+ 	pthread_join(t1, NULL);
+ 	pthread_join(t0, NULL);
+@@ -953,18 +929,53 @@ static void testapp_validate(void)
+ 		print_ksft_result();
  }
  
- static void pthread_destroy_mutex(void)
-@@ -134,7 +133,6 @@ static void pthread_destroy_mutex(void)
- 	pthread_mutex_destroy(&sync_mutex);
- 	pthread_mutex_destroy(&sync_mutex_tx);
- 	pthread_cond_destroy(&signal_rx_condition);
--	pthread_cond_destroy(&signal_tx_condition);
- }
- 
- static void *memset32_htonl(void *dest, u32 val, u32 size)
-@@ -754,8 +752,7 @@ static void worker_pkt_validate(void)
- 	}
- }
- 
--static void thread_common_ops(struct ifobject *ifobject, void *bufs, pthread_mutex_t *mutexptr,
--			      atomic_int *spinningptr)
-+static void thread_common_ops(struct ifobject *ifobject, void *bufs, pthread_mutex_t *mutexptr)
+-static void testapp_sockets(void)
++static void testapp_teardown(void)
++{
++	int i;
++
++	for (i = 0; i < MAX_TEARDOWN_ITER; i++) {
++		pkt_counter = 0;
++		prev_pkt = -1;
++		sigvar = 0;
++		print_verbose("Creating socket\n");
++		testapp_validate();
++	}
++
++	print_ksft_result();
++}
++
++static void swap_vectors(struct ifobject *ifobj1, struct ifobject *ifobj2)
++{
++	void *(*tmp_func_ptr)(void *) = ifobj1->func_ptr;
++	enum fvector tmp_vector = ifobj1->fv.vector;
++
++	ifobj1->func_ptr = ifobj2->func_ptr;
++	ifobj1->fv.vector = ifobj2->fv.vector;
++
++	ifobj2->func_ptr = tmp_func_ptr;
++	ifobj2->fv.vector = tmp_vector;
++
++	ifdict_tx = ifobj1;
++	ifdict_rx = ifobj2;
++}
++
++static void testapp_bidi(void)
  {
- 	int ctr = 0;
- 	int ret;
-@@ -780,13 +777,15 @@ static void thread_common_ops(struct ifobject *ifobject, void *bufs, pthread_mut
- 	 */
- 	pthread_mutex_lock(mutexptr);
- 	while (ret && ctr < SOCK_RECONF_CTR) {
--		atomic_store(spinningptr, 1);
-+		if (ifobject->fv.vector == rx)
-+			atomic_store(&spinning_rx, 1);
- 		xsk_configure_umem(ifobject, bufs, num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE);
- 		ret = xsk_configure_socket(ifobject);
- 		usleep(USLEEP_MAX);
- 		ctr++;
+-	for (int i = 0; i < ((test_type == TEST_TYPE_TEARDOWN) ? MAX_TEARDOWN_ITER : MAX_BIDI_ITER);
+-	     i++) {
++	for (int i = 0; i < MAX_BIDI_ITER; i++) {
+ 		pkt_counter = 0;
+ 		prev_pkt = -1;
+ 		sigvar = 0;
+ 		print_verbose("Creating socket\n");
+ 		testapp_validate();
+-		test_type == TEST_TYPE_BIDI ? bidi_pass++ : bidi_pass;
++		if (!bidi_pass) {
++			print_verbose("Switching Tx/Rx vectors\n");
++			swap_vectors(ifdict[1], ifdict[0]);
++		}
++		bidi_pass++;
  	}
--	atomic_store(spinningptr, 0);
-+	if (ifobject->fv.vector == rx)
-+		atomic_store(&spinning_rx, 0);
- 	pthread_mutex_unlock(mutexptr);
  
- 	if (ctr >= SOCK_RECONF_CTR)
-@@ -808,7 +807,7 @@ static void *worker_testapp_validate_tx(void *arg)
- 	void *bufs = NULL;
++	swap_vectors(ifdict[0], ifdict[1]);
++
+ 	print_ksft_result();
+ }
  
- 	if (!bidi_pass)
--		thread_common_ops(ifobject, bufs, &sync_mutex_tx, &spinning_tx);
-+		thread_common_ops(ifobject, bufs, &sync_mutex_tx);
+@@ -997,7 +1008,7 @@ static void testapp_stats(void)
+ static void init_iface(struct ifobject *ifobj, const char *dst_mac,
+ 		       const char *src_mac, const char *dst_ip,
+ 		       const char *src_ip, const u16 dst_port,
+-		       const u16 src_port)
++		       const u16 src_port, enum fvector vector)
+ {
+ 	struct in_addr ip;
  
- 	while (atomic_load(&spinning_rx) && spinningrxctr < SOCK_RECONF_CTR) {
- 		spinningrxctr++;
-@@ -846,7 +845,7 @@ static void *worker_testapp_validate_rx(void *arg)
- 	void *bufs = NULL;
+@@ -1012,6 +1023,16 @@ static void init_iface(struct ifobject *ifobj, const char *dst_mac,
  
- 	if (!bidi_pass)
--		thread_common_ops(ifobject, bufs, &sync_mutex_tx, &spinning_rx);
-+		thread_common_ops(ifobject, bufs, &sync_mutex_tx);
+ 	ifobj->dst_port = dst_port;
+ 	ifobj->src_port = src_port;
++
++	if (vector == tx) {
++		ifobj->fv.vector = tx;
++		ifobj->func_ptr = worker_testapp_validate_tx;
++		ifdict_tx = ifobj;
++	} else {
++		ifobj->fv.vector = rx;
++		ifobj->func_ptr = worker_testapp_validate_rx;
++		ifdict_rx = ifobj;
++	}
+ }
  
- 	if (stat_test_type != STAT_TEST_RX_FILL_EMPTY)
- 		xsk_populate_fill_ring(ifobject->umem);
+ static void run_pkt_test(int mode, int type)
+@@ -1021,11 +1042,8 @@ static void run_pkt_test(int mode, int type)
+ 	/* reset defaults after potential previous test */
+ 	xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 	pkt_counter = 0;
+-	switching_notify = 0;
+ 	bidi_pass = 0;
+ 	prev_pkt = -1;
+-	ifdict[0]->fv.vector = tx;
+-	ifdict[1]->fv.vector = rx;
+ 	sigvar = 0;
+ 	stat_test_type = -1;
+ 	rxqsize = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+@@ -1042,16 +1060,20 @@ static void run_pkt_test(int mode, int type)
+ 		break;
+ 	}
+ 
+-	pthread_init_mutex();
+-
+-	if (test_type == TEST_TYPE_STATS)
++	switch (test_type) {
++	case TEST_TYPE_STATS:
+ 		testapp_stats();
+-	else if ((test_type != TEST_TYPE_TEARDOWN) && (test_type != TEST_TYPE_BIDI))
++		break;
++	case TEST_TYPE_TEARDOWN:
++		testapp_teardown();
++		break;
++	case TEST_TYPE_BIDI:
++		testapp_bidi();
++		break;
++	default:
+ 		testapp_validate();
+-	else
+-		testapp_sockets();
+-
+-	pthread_destroy_mutex();
++		break;
++	}
+ }
+ 
+ int main(int argc, char **argv)
+@@ -1076,14 +1098,13 @@ int main(int argc, char **argv)
+ 
+ 	num_frames = ++opt_pkt_count;
+ 
+-	ifdict[0]->fv.vector = tx;
+-	init_iface(ifdict[0], MAC1, MAC2, IP1, IP2, UDP_PORT1, UDP_PORT2);
+-
+-	ifdict[1]->fv.vector = rx;
+-	init_iface(ifdict[1], MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1);
++	init_iface(ifdict[0], MAC1, MAC2, IP1, IP2, UDP_PORT1, UDP_PORT2, tx);
++	init_iface(ifdict[1], MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1, rx);
+ 
+ 	ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
+ 
++	pthread_init_mutex();
++
+ 	for (i = 0; i < TEST_MODE_MAX; i++) {
+ 		for (j = 0; j < TEST_TYPE_MAX; j++)
+ 			run_pkt_test(i, j);
+@@ -1095,6 +1116,8 @@ int main(int argc, char **argv)
+ 		free(ifdict[i]);
+ 	}
+ 
++	pthread_destroy_mutex();
++
+ 	ksft_exit_pass();
+ 
+ 	return 0;
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 493f7498d40e..483be41229c6 100644
+index 483be41229c6..3945746900af 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -144,12 +144,10 @@ struct ifobject {
+@@ -77,7 +77,6 @@ enum STAT_TEST_TYPES {
+ static int configured_mode = TEST_MODE_UNCONFIGURED;
+ static u8 debug_pkt_dump;
+ static u32 num_frames;
+-static u8 switching_notify;
+ static u8 bidi_pass;
+ static int test_type;
+ 
+@@ -126,22 +125,25 @@ struct generic_data {
+ };
+ 
+ struct ifobject {
+-	int ns_fd;
+-	int ifdict_index;
+ 	char ifname[MAX_INTERFACE_NAME_CHARS];
+ 	char nsname[MAX_INTERFACES_NAMESPACE_CHARS];
+-	struct flow_vector fv;
+ 	struct xsk_socket_info *xsk;
+ 	struct xsk_umem_info *umem;
+-	u8 dst_mac[ETH_ALEN];
+-	u8 src_mac[ETH_ALEN];
++	void *(*func_ptr)(void *arg);
++	struct flow_vector fv;
++	int ns_fd;
++	int ifdict_index;
+ 	u32 dst_ip;
+ 	u32 src_ip;
+ 	u16 src_port;
+ 	u16 dst_port;
++	u8 dst_mac[ETH_ALEN];
++	u8 src_mac[ETH_ALEN];
+ };
+ 
  static struct ifobject *ifdict[MAX_INTERFACES];
++static struct ifobject *ifdict_rx;
++static struct ifobject *ifdict_tx;
  
  /*threads*/
--atomic_int spinning_tx;
  atomic_int spinning_rx;
- pthread_mutex_t sync_mutex;
- pthread_mutex_t sync_mutex_tx;
- pthread_cond_t signal_rx_condition;
--pthread_cond_t signal_tx_condition;
- pthread_t t0, t1;
- pthread_attr_t attr;
- 
 -- 
 2.20.1
 
