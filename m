@@ -2,130 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31EAC34A35A
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 09:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8311E34A35C
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 09:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbhCZIpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 04:45:03 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:44542 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229779AbhCZIou (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Mar 2021 04:44:50 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 9124C20547;
-        Fri, 26 Mar 2021 09:44:49 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id TjQ740ohZN35; Fri, 26 Mar 2021 09:44:49 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 11889200AA;
-        Fri, 26 Mar 2021 09:44:49 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 26 Mar 2021 09:44:48 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 26 Mar
- 2021 09:44:48 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 19F063180307; Fri, 26 Mar 2021 09:44:48 +0100 (CET)
-Date:   Fri, 26 Mar 2021 09:44:48 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     <netdev@vger.kernel.org>
-CC:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec v2] xfrm: Provide private skb extensions for segmented
- and hw offloaded ESP packets
-Message-ID: <20210326084448.GA62598@gauss3.secunet.de>
+        id S229871AbhCZIpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 04:45:40 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:36513 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229671AbhCZIpT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 04:45:19 -0400
+Received: from mail-oi1-f180.google.com ([209.85.167.180]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N4vFE-1loyFd2PIq-010px0 for <netdev@vger.kernel.org>; Fri, 26 Mar 2021
+ 09:45:17 +0100
+Received: by mail-oi1-f180.google.com with SMTP id x2so5026898oiv.2
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 01:45:17 -0700 (PDT)
+X-Gm-Message-State: AOAM532q59TCuXzjJHC12C9AYgvDQNuWHNFd8C1cUNb9bADFDb209F6H
+        U2hJWtUdEUhrsQUAa+6MkWbn9iHPkuft1xSD0uo=
+X-Google-Smtp-Source: ABdhPJxSlHUfTfAG6ImGqpKyfPjCxMkh4aNoBR2w5cs5eH6sZYpvapOuPLKS0zwt+f+fAswKs9kVV0d3ZoZvgYU9xAA=
+X-Received: by 2002:aca:5945:: with SMTP id n66mr8764771oib.11.1616748316427;
+ Fri, 26 Mar 2021 01:45:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <20210326025345.456475-1-saeed@kernel.org> <20210326025345.456475-2-saeed@kernel.org>
+In-Reply-To: <20210326025345.456475-2-saeed@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 26 Mar 2021 09:45:01 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0JPEUg7y7Jq-t7tDyMVWr+wqa8Hzf16K89sY-=eyHYvQ@mail.gmail.com>
+Message-ID: <CAK8P3a0JPEUg7y7Jq-t7tDyMVWr+wqa8Hzf16K89sY-=eyHYvQ@mail.gmail.com>
+Subject: Re: [net-next V2 01/13] net/mlx5e: alloc the correct size for indirection_rqt
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:IpF1hC/12HBbvYHfviBb4FHn+yGfS5qTXwUU4Mk4VRlLPQAppTk
+ B5Xfct0uFAc4ApHzH1vQXOKzVV7n7aWQhbnnnCSA1D145cGSsXt3m2rchSc2A8lE1tKpYMf
+ ZSgF62hNDdd23kIkFyZmJILGP6lz7c4eYByzLDj08tm4MSnYIZng4wNpiKDOAHh3vfhMc3l
+ Xp7m6CesbyooTVGyLCniQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:h/oXGB9T/sE=:xyCZeTlytsIcuXyYQINE0/
+ sI9Cvp8b8G4nNWqRGdwJQAkr8649Tsj/rRgIiSOYnFPjVgiDi8IkgVdEv9BZvduJaOuk2bsTh
+ oWin2GTLjJ26+jH4fjfpgiHd2itbckeiy+sJK5v5l28jg5ZWTx7Qz1UmF0K+NP0EEIuJ1xFov
+ fLi05niFl9GHA+GCeUiXrur1VXYOYaeIC+Q1RsIFtGWfWEACL6PA/mVRF08AtjsTz/YBiuZqR
+ vqLrekQmtPdulRrc0tcUahbpjNBtCo687w8KP/Lkp5fbfnuwWoIaCiUxdONMCJltOUmZUwLwy
+ Kv9U8jHHo3PF/rAmbrX7anUKLEnqfBU4jOMcOggOJSrGLuXYnOqrQ4Yn4g0Hfl+e0ZE3ThFqa
+ 1oyssNPKQu4+S36G0FdpQykOS3EGpxBV6DV9oUkDtJ7NP9bC4OXuoLysilZ4M7OQGrI1TWYoJ
+ IOtlyIQZcyPRSumiDlzFH1kLph0mOJ6viBHTiO5Q4Gf/bFZ4XYA84SUOL+IYnke8UXXVKrqV8
+ CNra28v1sc6LowvBwCjoOeeEE/UZpqXcbS33RHzUJH/IOMdNZcV608zIepFkcL8NeFzbuykXk
+ f8tCHYkxShvnu7p1ZV/rDJhwFl6b2B6Pln
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 94579ac3f6d0 ("xfrm: Fix double ESP trailer insertion in IPsec
-crypto offload.") added a XFRM_XMIT flag to avoid duplicate ESP trailer
-insertion on HW offload. This flag is set on the secpath that is shared
-amongst segments. This lead to a situation where some segments are
-not transformed correctly when segmentation happens at layer 3.
+On Fri, Mar 26, 2021 at 3:53 AM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> From: Saeed Mahameed <saeedm@nvidia.com>
+>
+> The cited patch allocated the wrong size for the indirection_rqt table,
+> fix that.
+>
+> Fixes: 2119bda642c4 ("net/mlx5e: allocate 'indirection_rqt' buffer dynamically")
+> CC: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-Fix this by using private skb extensions for segmented and hw offloaded
-ESP packets.
+Thanks for fixing my mistake
 
-Fixes: 94579ac3f6d0 ("xfrm: Fix double ESP trailer insertion in IPsec crypto offload.")
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/ipv4/esp4_offload.c | 11 ++++++++++-
- net/ipv6/esp6_offload.c | 11 ++++++++++-
- net/xfrm/xfrm_device.c  |  2 --
- 3 files changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index 601f5fbfc63f..7d0dff64939e 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -312,8 +312,17 @@ static int esp_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features_
- 	ip_hdr(skb)->tot_len = htons(skb->len);
- 	ip_send_check(ip_hdr(skb));
- 
--	if (hw_offload)
-+	if (hw_offload) {
-+		if (!skb_ext_add(skb, SKB_EXT_SEC_PATH))
-+			return -ENOMEM;
-+
-+		xo = xfrm_offload(skb);
-+		if (!xo)
-+			return -EINVAL;
-+
-+		xo->flags |= XFRM_XMIT;
- 		return 0;
-+	}
- 
- 	err = esp_output_tail(x, skb, &esp);
- 	if (err)
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index 1ca516fb30e1..dde9c9149ac5 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -346,8 +346,17 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
- 
- 	ipv6_hdr(skb)->payload_len = htons(len);
- 
--	if (hw_offload)
-+	if (hw_offload) {
-+		if (!skb_ext_add(skb, SKB_EXT_SEC_PATH))
-+			return -ENOMEM;
-+
-+		xo = xfrm_offload(skb);
-+		if (!xo)
-+			return -EINVAL;
-+
-+		xo->flags |= XFRM_XMIT;
- 		return 0;
-+	}
- 
- 	err = esp6_output_tail(x, skb, &esp);
- 	if (err)
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index edf11893dbe8..6d6917b68856 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -134,8 +134,6 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
- 		return skb;
- 	}
- 
--	xo->flags |= XFRM_XMIT;
--
- 	if (skb_is_gso(skb) && unlikely(x->xso.dev != dev)) {
- 		struct sk_buff *segs;
- 
--- 
-2.25.1
-
+Acked-by: Arnd Bergmann <arnd@arndb.dew>
