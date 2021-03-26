@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 199DF349D92
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:21:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2736349D96
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbhCZAUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 20:20:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34608 "EHLO mail.kernel.org"
+        id S230007AbhCZAUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 20:20:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34690 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229622AbhCZAUI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 20:20:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5E5F0619F3;
-        Fri, 26 Mar 2021 00:20:08 +0000 (UTC)
+        id S229764AbhCZAUK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 20:20:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4C34E61A46;
+        Fri, 26 Mar 2021 00:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616718008;
-        bh=6MAG7pNC47FMD7KpUYm4iyUttVEOej8BPuwc0o5OXdc=;
+        s=k20201202; t=1616718010;
+        bh=fR9yNOxhfJQyzwsifgnAXRByZGkJvYXplItZraflr2g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uvUc+3wcHpRjgr+hH/rDSku5/ggqrZs4K+4qYfRhqkFfz4kvl1gDaH2gDu5T9ITxF
-         bAwd+E3qObBWgQKOCNEwbntK4c92g6RgjdtgFc4wdt71oSysuZbHMaNh4sxld0cu9Y
-         onj95YwQkMhw8PiZM03FhiR0VWgHZcsXWLfoAtlyno4UH/haDDG0pWFZzM0QUhXY1S
-         m9rGfTwZMy4mSbCqTl8JRhArAVZP2bryHYDw2pkOCj+qAc3OvhjZVS4adjkl2A3cvg
-         wJTg4wDeFmij4zGEa51xhGDsA6QeACsKHLW/gTWtLih8FYEGedUIa36wPpp6EyaUkD
-         5NTJ3SEZMnDDw==
+        b=fTLaM0AxrhccrWk9X//oXxaE6goKTEP/l/TfWymF4mmrdTzbTVgGuR7e7Uo93ciW3
+         MP5kFwgCn4EKii+Ny5kOvZmLElZ0v7NkH227+2GzaviVVId2kB39mzXv2XvRqrfhuJ
+         eUcXQalIrjGTiJqr9d2hJAvq4tCnvxVPDnEABKyx778aVnCqVI2Tg1l5NsPSd1LViC
+         hFbbitmWA4YI3PC8i83BXlbv79guk3JazG8dXoDpheYfbchrdhnRvE+AHePdpDvl0h
+         /T4Jn5RRdXjQvT0hejqpxd88PkEJN++VAqlyBR03Y4BtIYKN26/j4m+1BprDNNiIBb
+         ROH/sCqY1+hLQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4D1F96008E;
-        Fri, 26 Mar 2021 00:20:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 42686609E8;
+        Fri, 26 Mar 2021 00:20:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] libbpf: constify few bpf_program getters
+Subject: Re: [PATCH net-next] r8169: remove rtl_hw_start_8168c_3
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161671800831.29431.6318209091580946935.git-patchwork-notify@kernel.org>
-Date:   Fri, 26 Mar 2021 00:20:08 +0000
-References: <20210324172941.2609884-1-andrii@kernel.org>
-In-Reply-To: <20210324172941.2609884-1-andrii@kernel.org>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
+Message-Id: <161671801026.29431.1449841196554853054.git-patchwork-notify@kernel.org>
+Date:   Fri, 26 Mar 2021 00:20:10 +0000
+References: <a09162c7-8e7f-da1f-ea28-f3a425568020@gmail.com>
+In-Reply-To: <a09162c7-8e7f-da1f-ea28-f3a425568020@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Wed, 24 Mar 2021 10:29:41 -0700 you wrote:
-> bpf_program__get_type() and bpf_program__get_expected_attach_type() shouldn't
-> modify given bpf_program, so mark input parameter as const struct bpf_program.
-> This eliminates unnecessary compilation warnings or explicit casts in user
-> programs.
+On Thu, 25 Mar 2021 10:31:39 +0100 you wrote:
+> We can simply use rtl_hw_start_8168c_2() also for chip version 21.
 > 
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> 
-> [...]
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
 
 Here is the summary with links:
-  - [bpf-next] libbpf: constify few bpf_program getters
-    https://git.kernel.org/bpf/bpf-next/c/a46410d5e497
+  - [net-next] r8169: remove rtl_hw_start_8168c_3
+    https://git.kernel.org/netdev/net-next/c/96ef692841e0
 
 You are awesome, thank you!
 --
