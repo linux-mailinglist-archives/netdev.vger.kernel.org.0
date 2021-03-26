@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10FB034A7D3
+	by mail.lfdr.de (Postfix) with ESMTP id 5E64934A7D4
 	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 14:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbhCZNKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 09:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
+        id S229957AbhCZNKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 09:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbhCZNKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 09:10:02 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1246C0613AA
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:10:01 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id kt15so8287884ejb.12
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:10:01 -0700 (PDT)
+        with ESMTP id S229913AbhCZNKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 09:10:05 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615D7C0613AA
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:10:03 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id w18so6314981edc.0
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 06:10:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SXhqDQPCZEypry+Er08AOdGmNyz0WU0E2n3uSGKFTIU=;
-        b=cYn2pqPiTxNodsnqmKjMTejdLi/ItVDR1qdjlUgVOwqCyOjbBODcaknjoLOIkGuIAO
-         qRAptjqnbBXe64pu/CSyMXxT9IkQjBqADPXAOi1gW3OrvCPhMRhOjwhGqzON4ls13hxA
-         SUaxZGx2GThmLeLq9KJU7rViApLHuc/nj/KjbOJOZtOCm8JULwRgyfhyjHvr0wi+OLkL
-         M/1/yDpJjHoOep6gL0EKgexWqxbrHt8TAn96ioLqON6/L99k75AmO8tiTrHcpmWecVIM
-         2lasw0o5+pbWpnUzGF/Uv0Wsgotpd4OUDUehXPfFpkd762Ex59kKBRJj5PmEls90JTSS
-         fiwA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cqXIl3nwtcXjCwONbLFI8a44o/exKSenAY5upZa6Mis=;
+        b=L7QKC6rpbss6E/VmgvGb+h8f37syWflsXOcaBGGdqAvjviyJJknjurnRGw1bqzFhFx
+         NMGBo7a+E+x2KJvqUWT4Nxkpsh5GPIKN2l1Atp4ltYH6152OQbdXZ1srmeHC0kbD7d5U
+         NINNgll8lTGxtvgtsuEiEh23p6/SQL5rQAZ/s5jYW3ZUwZbPuK8FfM5neVTjLjFou+ID
+         clzpbMoeyOCNzuoVhjZ8ZoVZtFL4ofmXu77SJmdMobpX953czONiSL64jOGCE2HP5XFj
+         /Y7jH53Ta2TYz44o3/xrB+QD91UJ7tE7TUO3mjrNIwGay0m63LCtJxWDA+KAhvItB12+
+         Hrfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SXhqDQPCZEypry+Er08AOdGmNyz0WU0E2n3uSGKFTIU=;
-        b=U/zd9Ajx9iJgpU5hhrH5unijy30fiwq1bDuXzHyJcbThdHJv9gXEQ0/XBoy5dOSqhQ
-         SXEgWreHLPNd1Q7BoSmAYmOkYl4b/CbSfzLHBeaf7oCFZN14FhILuhcV7AIR8TIYY1Ro
-         sAVr3Dqf9ib+3bTNusHn85g9+pMYGcg0+9pBk/C9qxL6hOfHFxgEGTQCtfdQVrxoDSQC
-         MtCVuuPD/qQI5dYW+Jp0I/g1G6j+1M7r5K7xOYuRwHJwn7Qia9ScLcpRnAWGZPE55n67
-         BYJnSeUhib44JpfjXyFNvq+ZqerZYJ2BsYaXA+ku5lI2eO1IuF+oChft4/R6o/UilBKX
-         Ugeg==
-X-Gm-Message-State: AOAM533Zch6XLMwI62fo120dyYSVImb1r9czqYFvwkdEBZuKs6pCDxtO
-        g8Y8BgZpkjcVjCS3GVd9LgeKFg==
-X-Google-Smtp-Source: ABdhPJxD5p+NE6uPd2symi2R8mbP5HxpbJW6DECQ8NHlflLqsm2b5RpiXCtoy2mIpfXX49jF0rcImQ==
-X-Received: by 2002:a17:906:3385:: with SMTP id v5mr15337485eja.539.1616764200621;
-        Fri, 26 Mar 2021 06:10:00 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cqXIl3nwtcXjCwONbLFI8a44o/exKSenAY5upZa6Mis=;
+        b=U5SXLNivX0IXdeVyVyGMi2uOeqZ3AHL/1ramF9m0tOQMpHgSLww/K0mUD+HAYe04YJ
+         nZbuTwIWqEL+4wm1drdOpezv/dGxY7Xwj8KqMlRKFEzW9lYjJO4cd0yzDS2cxNoIPCo/
+         kzbuiZsqpZ8jISYuF6cd6bIUcxp5EFuD5uxdyChtX7+B+weMJ6CxDqfDwzD5kpbtnudB
+         IxZom2psPGUG2W1chmv6WMgz5n2HJ+O+3c4GB15hcNpESqQ4eNrEnVdK2o7c2dnaHqYj
+         lAHGPP++WxkNvqrf8QBdqXsutOrSgWohAhSxreSuOGUqBKioZ5CsMN8JhdcZaMPTXe+S
+         kjNQ==
+X-Gm-Message-State: AOAM530daXouDemLl4LUWIDTpB41ul0Ba3g2Fr9agW2UUTobXo2yI0wo
+        GxhYwLBz8pPHKMWhSK1NHne0tQ==
+X-Google-Smtp-Source: ABdhPJwkp0DOilUwvwPGWoiKsEEblhE1NcqzRA0XV/S8opzUTIFU7PjE8PV9kki02FMf8vE65nS3SA==
+X-Received: by 2002:a05:6402:278d:: with SMTP id b13mr2391878ede.34.1616764202178;
+        Fri, 26 Mar 2021 06:10:02 -0700 (PDT)
 Received: from madeliefje.horms.nl ([2001:982:7ed1:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id 90sm4202624edf.31.2021.03.26.06.09.59
+        by smtp.gmail.com with ESMTPSA id 90sm4202624edf.31.2021.03.26.06.10.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 26 Mar 2021 06:10:00 -0700 (PDT)
 From:   Simon Horman <simon.horman@netronome.com>
@@ -56,38 +56,90 @@ Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
         oss-drivers@netronome.com, Ido Schimmel <idosch@idosch.org>,
         Baowen Zheng <baowen.zheng@corigine.com>,
         Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net-next 0/2] selftest: add tests for packet per second
-Date:   Fri, 26 Mar 2021 14:09:36 +0100
-Message-Id: <20210326130938.15814-1-simon.horman@netronome.com>
+Subject: [PATCH net-next 1/2] selftests: tc-testing: add action police selftest for packets per second
+Date:   Fri, 26 Mar 2021 14:09:37 +0100
+Message-Id: <20210326130938.15814-2-simon.horman@netronome.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210326130938.15814-1-simon.horman@netronome.com>
+References: <20210326130938.15814-1-simon.horman@netronome.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add self tests for the recently added packet per second rate limiting
-feature of the TC policer action[1].
+From: Baowen Zheng <baowen.zheng@corigine.com>
 
-The forwarding selftest (patch 2/2) depends on iproute2 support
-for packet per second rate limiting, which has been posted separately[2]
+Add selftest cases in action police for packets per second.
+These tests depend on corresponding iproute2 command support.
 
-[1] [PATCH v3 net-next 0/3] net/sched: act_police: add support for packet-per-second policing
-    https://lore.kernel.org/netdev/20210312140831.23346-1-simon.horman@netronome.com/
+Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@netronome.com>
+---
+It is also planned, as a follow-up, to provide packet per second rate
+limiting tests in tools/testing/selftests/net/forwarding/tc_police.sh
+---
+ .../tc-testing/tc-tests/actions/police.json   | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-[2] [PATCH iproute2-next] police: add support for packet-per-second rate limiting
-    https://lore.kernel.org/netdev/20210326125018.32091-1-simon.horman@netronome.com/
-
-Baowen Zheng (2):
-  selftests: tc-testing: add action police selftest for packets per
-    second
-  selftests: forwarding: Add tc-police tests for packets per second
-
- tools/testing/selftests/net/forwarding/lib.sh |  9 +++
- .../selftests/net/forwarding/tc_police.sh     | 56 +++++++++++++++++++
- .../tc-testing/tc-tests/actions/police.json   | 48 ++++++++++++++++
- 3 files changed, 113 insertions(+)
-
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/police.json b/tools/testing/selftests/tc-testing/tc-tests/actions/police.json
+index b8268da5adaa..8e45792703ed 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/police.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/police.json
+@@ -764,5 +764,53 @@
+         "teardown": [
+             "$TC actions flush action police"
+         ]
++    },
++    {
++        "id": "cdd7",
++        "name": "Add valid police action with packets per second rate limit",
++        "category": [
++            "actions",
++            "police"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action police",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action police pkts_rate 1000 pkts_burst 200 index 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions ls action police",
++        "matchPattern": "action order [0-9]*:  police 0x1 rate 0bit burst 0b mtu 4096Mb pkts_rate 1000 pkts_burst 200",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action police"
++        ]
++    },
++    {
++        "id": "f5bc",
++        "name": "Add invalid police action with both bps and pps",
++        "category": [
++            "actions",
++            "police"
++        ],
++        "setup": [
++            [
++                "$TC actions flush action police",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action police rate 1kbit burst 10k pkts_rate 1000 pkts_burst 200 index 1",
++        "expExitCode": "255",
++        "verifyCmd": "$TC actions ls action police",
++        "matchPattern": "action order [0-9]*:  police 0x1 ",
++        "matchCount": "0",
++        "teardown": [
++            "$TC actions flush action police"
++        ]
+     }
+ ]
 -- 
 2.20.1
 
