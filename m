@@ -2,97 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C5AF34B2DD
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DEA34B310
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbhCZXU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 19:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52750 "EHLO
+        id S230026AbhCZX0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 19:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbhCZXTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 19:19:02 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7710AC0613B8;
-        Fri, 26 Mar 2021 16:18:30 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id 7so6971383qka.7;
-        Fri, 26 Mar 2021 16:18:30 -0700 (PDT)
+        with ESMTP id S231136AbhCZX0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 19:26:03 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB6AC0613AA;
+        Fri, 26 Mar 2021 16:26:02 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id x189so7473033ybg.5;
+        Fri, 26 Mar 2021 16:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oYkFKFWuW44yCKvQyPU/6giEb6xhcpVvFGK6kNxzbVE=;
-        b=K3iFhodvOUpUNMFRs+s14Md4gFuhvH2X4CmzGXr6b/nt7vcf3ziWlckF5g8Y92MLLe
-         eMMhayg9eVMJtBGwPE2i3Ca0WZXeKJkHHQOSfVj57GEy64jm2VB0jW7sixHLp0DjBub5
-         hu/Yt/c7nFV1qcC5l5y7h0hBijKtcGc7DPWEQg4ctByZkFRLT59MKJOasvHuf1O4BhMG
-         Z9BT60w5oMRRFk6ku/TZrY8c7Bo84aLef2ruKRLVqCDHEdIQj39omHV24CR7KSgvHDPk
-         oAE/aAy/4wiF6M7bgm74WR8xH58A0YVSgOLyjWB2/ErhhVOYaDNztPbXOOoik9s6a20E
-         4Raw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=JwoWSd3I6DQh4plH9Ches26MIkmP+U0Q2+NtTvu4upE=;
+        b=DZ7+VZzY15/Vqg7Pww2/gm1LAXEZ7S8BxcmAHsSxckMxGo5YuO9qXNb8m2Gpxzpcqo
+         gH1LLYMaDlLg0ubxTCqCX8b/1Bkl8EJSXuDx+p7cNmPikMpQUYUqJnVsD6t+HcSeT5Wt
+         AsvY9vnc/l85wWMWAYngYVWY9a0d6RIAFhBlW1kSa2E2x+d+zroyAdeiQq5Oz/dglB2B
+         B45RSeVpDOkPMxIksl73RWEe26tMh8xPnJrP+pBnxFyrdjQLOGay9nrMdsUg4rmh6Yls
+         eS825d8mSnwcXi+2aCZMQiQ3nYOZvJTNOafQ5EbPhgltXX/CTWni7rCIBgMevUckSf56
+         Inog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oYkFKFWuW44yCKvQyPU/6giEb6xhcpVvFGK6kNxzbVE=;
-        b=VzPLNnKg268zrAInK1HCdaq3LkvM6i/kD0f90W5jckSmcf53Q0iN2hGqXdVHRmVKbP
-         BPDsAFO0AYNZOvlqve8Gabl4pgBkgLUwVJ8E6OpNC0Jtb4ccQXbdjF6xtvBh3ys1i1ph
-         2wG4MRQ9GP0FLh9lFKsU+fd6Ir4+9Yo2l6SyAlqRIB3/tb6Y1M+ZFBQaLeklhF1kv0Lz
-         TL9pdjGorUlMypg0P5vmUOEBMr0EhLGQ+sWNqjvmjYdqiggdxqOzl39Bu2Q66Xx5Ahrs
-         OUJRF9DPn4M3p7bUmoKdSEKyaBJvyLM/lqCw2+qbAJQr9+l5TL9p5jQxJa8j4wX8nvJL
-         134A==
-X-Gm-Message-State: AOAM532LHoT8Srfv5E+Whz6Riye8ziSPmMkr7chGQYw/JnHRZtpChoVg
-        PbeBWarB20Lj22VF5f9mlZE=
-X-Google-Smtp-Source: ABdhPJzyfatRZeQuBJmASeUxDeoyxWQa9kBpvlQFehbvG+ek77DirSkctruuWL8ExT/qbBt00PMI4w==
-X-Received: by 2002:a05:620a:553:: with SMTP id o19mr15574784qko.491.1616800709824;
-        Fri, 26 Mar 2021 16:18:29 -0700 (PDT)
-Received: from localhost.localdomain ([156.146.58.30])
-        by smtp.gmail.com with ESMTPSA id w78sm7960414qkb.11.2021.03.26.16.18.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 16:18:29 -0700 (PDT)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, rdunlap@infradead.org
-Subject: [PATCH 19/19] ipv4: tcp_lp.c: Couple of typo fixes
-Date:   Sat, 27 Mar 2021 04:43:12 +0530
-Message-Id: <e14726284b419e249106e84203e43ce18da21d5b.1616797633.git.unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <cover.1616797633.git.unixbhaskar@gmail.com>
-References: <cover.1616797633.git.unixbhaskar@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JwoWSd3I6DQh4plH9Ches26MIkmP+U0Q2+NtTvu4upE=;
+        b=Fbjd4RxAt9LpUaw9Y0jJ4EmBLpTfEy/F7dAslNPP8dukui0/IUkK72/0iNlFCoGxpn
+         xCS10A8M39i/GjSLdbhPg1j9db43p78ZZGTdx3e5y4/mb/vx7VGbvwb9lNhmqldqhJdJ
+         bB0Q05uZ6pON1nHN3SiUru8QR6is+Tg316tINIwKJRi845bzD48wX1T4i2lDguo6Llj3
+         FmnH6wQITkSIQY9bnlOvP7lz+3SYXl4blFrYXuOaOBGkUzgLOWNYdNIGgnxBmovcjt3l
+         kqQIKs281RbkNduxQL78EQmO9f4Vm5Gw+bcIQTJ19gDN7U/FqKG7qwUe64ZvqdXTFkRA
+         lHdQ==
+X-Gm-Message-State: AOAM530cSRfkZ1vy9ae2Pjkv5Mi8/yT3Jvuk9Ebp0bYvKnrlhIE8rJcl
+        ydBTnlrUObzZTlUvaWcQXxm2wbEPMfeUXMS4Blg=
+X-Google-Smtp-Source: ABdhPJxEe22PD0WE6yFXdPyPzqRnjEOu5TA9aVZw5QyYMBtLwiJF06tiulZFymWsQ9iqjR8eHmmcZhv/BzQEN0YHWNQ=
+X-Received: by 2002:a25:874c:: with SMTP id e12mr21769586ybn.403.1616801161889;
+ Fri, 26 Mar 2021 16:26:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210325120020.236504-1-memxor@gmail.com> <20210325120020.236504-2-memxor@gmail.com>
+In-Reply-To: <20210325120020.236504-2-memxor@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 26 Mar 2021 16:25:51 -0700
+Message-ID: <CAEf4BzaVK4=vB6xaMc-VwhQagg6ghx8JAnuLsf43qZa_w_nyyw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] tools pkt_cls.h: sync with kernel sources
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-s/resrved/reserved/
-s/whithin/within/
+On Thu, Mar 25, 2021 at 5:01 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> Update the header file so we can use the new defines in subsequent
+> patches.
+>
+> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
+>  tools/include/uapi/linux/pkt_cls.h | 174 ++++++++++++++++++++++++++++-
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- net/ipv4/tcp_lp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+If libbpf is going to rely on this UAPI header, we probably need to
+add this header to the list of headers that are checked for being up
+to date. See Makefile, roughly at line 140.
 
-diff --git a/net/ipv4/tcp_lp.c b/net/ipv4/tcp_lp.c
-index e6459537d4d2..82b36ec3f2f8 100644
---- a/net/ipv4/tcp_lp.c
-+++ b/net/ipv4/tcp_lp.c
-@@ -63,7 +63,7 @@ enum tcp_lp_state {
-  * @sowd: smoothed OWD << 3
-  * @owd_min: min OWD
-  * @owd_max: max OWD
-- * @owd_max_rsv: resrved max owd
-+ * @owd_max_rsv: reserved max owd
-  * @remote_hz: estimated remote HZ
-  * @remote_ref_time: remote reference time
-  * @local_ref_time: local reference time
-@@ -305,7 +305,7 @@ static void tcp_lp_pkts_acked(struct sock *sk, const struct ack_sample *sample)
+>  1 file changed, 170 insertions(+), 4 deletions(-)
+>
 
- 	/* FIXME: try to reset owd_min and owd_max here
- 	 * so decrease the chance the min/max is no longer suitable
--	 * and will usually within threshold when whithin inference */
-+	 * and will usually within threshold when within inference */
- 	lp->owd_min = lp->sowd >> 3;
- 	lp->owd_max = lp->sowd >> 2;
- 	lp->owd_max_rsv = lp->sowd >> 2;
---
-2.26.2
-
+[...]
