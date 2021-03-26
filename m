@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 025A9349E3C
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:50:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DDCA349E49
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 01:58:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbhCZAuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 20:50:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39434 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229664AbhCZAuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 20:50:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3916A61A0D;
-        Fri, 26 Mar 2021 00:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616719810;
-        bh=p+edR8BhaOsFtoCTytaf6Y3/npVY1ug57weWTdMGE+s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UDcUkm0B9HY3vJc6dPQsSbEc1IvdXylxntmzJX8DpRkqBIOzefdegrkOMZM/5zYlM
-         ekYuhALyPWzWRI9f7jG3V1diXYhGkE9oI/CjZ3jU4qr8Ekl/LemTXcMH8wJCtdOze5
-         fMiYI9joGaSVPUjLYgDfiImSK7sZOonkoce7Q5/e8kjGNLw9+9w4lQmq9t2+J/BJOP
-         4bFhhmCFJo7F4esKz5ZwGoT4XBRQABe0Zm/CMd5QONUr9k0wWqv4YPP48NALGT19/N
-         afYWwyBbcTTAn8ioINc6I76Nx56iZh6NCywAkNQ7h+EmfBLCzvqcFy6T/Xv1aajXGW
-         b/I660xzgfSQQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 28D346008E;
-        Fri, 26 Mar 2021 00:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] sch_red: fix off-by-one checks in red_check_params()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161671981016.9054.3223205777802322875.git-patchwork-notify@kernel.org>
-Date:   Fri, 26 Mar 2021 00:50:10 +0000
-References: <20210325181453.993235-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210325181453.993235-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, syzkaller@googlegroups.com
+        id S229919AbhCZA6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 20:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229854AbhCZA5c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 20:57:32 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD361C06174A;
+        Thu, 25 Mar 2021 17:57:31 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id c17so3728299ilj.7;
+        Thu, 25 Mar 2021 17:57:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=pZNtOJMqbtIMmId2/BNBtP0ZSDMbESecmLNGXdPCQ3E=;
+        b=G+MCt2wpe57aauecOht2eHEWOBdbdQKIAh8aI5FbpxclHeJgvyyii2aaF3xXxFaimn
+         F8N7/dfeoAYz0+ZBJIQ7NhI5M72KMUVYSkpMUqOji0mlYRaTIIrAaevDm1iHGSF3AKMI
+         bDdVccKEXwsAEm3LzyqzJ//JBwlq8VbwlSnPMX2H8ePXN/YJlQIIJm2GEDJoi5BylUgh
+         xpY4z79Faknfh37/uQ+d0ClEcyUF0qeyNrbtfkWac6vPXEVE5sG3GWuTmZHRw/qmwi+B
+         Q3pTcUQF9WjOOigq9jHWAo03EVm5uwJxuTTBeu6/eXgQuxsMooN6IiH+5PQ0aRuE/Wg7
+         /hXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=pZNtOJMqbtIMmId2/BNBtP0ZSDMbESecmLNGXdPCQ3E=;
+        b=kphN82fKNLTmgsr8vF7p2eeDotdLtYh5C+vpnuw/lxNfAEJ2vJg95lg7RFHm9KrW6k
+         akgqg7LgpgpU1qznsRKcm3x4I8C2RltGROYOWnzj8KsiSELJ04Pl/fokozoDKh37sF8g
+         7DCfLHxnWM8X4g+f5a7Qom+unv3yICCt7VnI8ZI+Hzd4mVoQbXw+Qm8OWaP8uwVsWFcZ
+         jpXwbBkuB4LtziSbRijQMbvWgj1lYtwpKbOtmzIV0r6Yox+/HhpSZD978en6F+KAgCuI
+         qeSJVKtQFbrRioPb8BLs7l7pkzqszw2YzANarhIP4zyFGbo0Q+fQ6eZslNLC4tOhQvqm
+         /CSg==
+X-Gm-Message-State: AOAM532H9cbt6NDvIl3COe4q9h1o0K6DJJMtlC66oSj+oG2kc1GZ/Gv/
+        m5ZawUMWjcKU7vg58bVzbQ4=
+X-Google-Smtp-Source: ABdhPJwIpUHtzgCPceD75li33pskL4U1jdHtWKGH770vRbPMUuCOy1/D8UwUgE+DGHpno37zlfmxwQ==
+X-Received: by 2002:a05:6e02:104f:: with SMTP id p15mr8662523ilj.20.1616720251327;
+        Thu, 25 Mar 2021 17:57:31 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id v12sm774302ilm.42.2021.03.25.17.57.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 17:57:30 -0700 (PDT)
+Date:   Thu, 25 Mar 2021 17:57:22 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <605d3172bc50d_938e520870@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpUdOkbs5MPcfTqNcPV3f0EXU7CQhuV9y2UDrOZ4SawvvA@mail.gmail.com>
+References: <161661943080.28508.5809575518293376322.stgit@john-Precision-5820-Tower>
+ <161661956953.28508.2297266338306692603.stgit@john-Precision-5820-Tower>
+ <CAM_iQpUNUE8cmyNaALG1dZtCfJGah2pggDNk-eVbyxexnA4o_g@mail.gmail.com>
+ <605bf553d16f_64fde2081@john-XPS-13-9370.notmuch>
+ <CAM_iQpUdOkbs5MPcfTqNcPV3f0EXU7CQhuV9y2UDrOZ4SawvvA@mail.gmail.com>
+Subject: Re: [bpf PATCH 1/2] bpf, sockmap: fix sk->prot unhash op reset
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 25 Mar 2021 11:14:53 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+Cong Wang wrote:
+> On Wed, Mar 24, 2021 at 7:28 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> >
+> > Cong Wang wrote:
+> > > On Wed, Mar 24, 2021 at 1:59 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> > > > index 47b7c5334c34..ecb5634b4c4a 100644
+> > > > --- a/net/tls/tls_main.c
+> > > > +++ b/net/tls/tls_main.c
+> > > > @@ -754,6 +754,12 @@ static void tls_update(struct sock *sk, struct proto *p,
+> > > >
+> > > >         ctx = tls_get_ctx(sk);
+> > > >         if (likely(ctx)) {
+> > > > +               /* TLS does not have an unhash proto in SW cases, but we need
+> > > > +                * to ensure we stop using the sock_map unhash routine because
+> > > > +                * the associated psock is being removed. So use the original
+> > > > +                * unhash handler.
+> > > > +                */
+> > > > +               WRITE_ONCE(sk->sk_prot->unhash, p->unhash);
+> > > >                 ctx->sk_write_space = write_space;
+> > > >                 ctx->sk_proto = p;
+> > >
+> > > It looks awkward to update sk->sk_proto inside tls_update(),
+> > > at least when ctx!=NULL.
+> >
+> > hmm. It doesn't strike me as paticularly awkward but OK.
 > 
-> This fixes following syzbot report:
+> I read tls_update() as "updating ctx when it is initialized", with your
+> patch, we are updating sk->sk_prot->unhash too when updating ctx,
+> pretty much like a piggyback, hence it reads odd to me.
 > 
-> UBSAN: shift-out-of-bounds in ./include/net/red.h:237:23
-> shift exponent 32 is too large for 32-bit type 'unsigned int'
-> CPU: 1 PID: 8418 Comm: syz-executor170 Not tainted 5.12.0-rc4-next-20210324-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
->  ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
->  __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:327
->  red_set_parms include/net/red.h:237 [inline]
->  choke_change.cold+0x3c/0xc8 net/sched/sch_choke.c:414
->  qdisc_create+0x475/0x12f0 net/sched/sch_api.c:1247
->  tc_modify_qdisc+0x4c8/0x1a50 net/sched/sch_api.c:1663
->  rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5553
->  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2502
->  netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
->  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
->  sock_sendmsg_nosec net/socket.c:654 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:674
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x43f039
-> Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffdfa725168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f039
-> RDX: 0000000000000000 RSI: 0000000020000040 RDI: 0000000000000004
-> RBP: 0000000000403020 R08: 0000000000400488 R09: 0000000000400488
-> R10: 0000000000400488 R11: 0000000000000246 R12: 00000000004030b0
-> R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] sch_red: fix off-by-one checks in red_check_params()
-    https://git.kernel.org/netdev/net/c/3a87571f0ffc
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Thanks.
 
 
+OK convinced.
