@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E3834B25E
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:01:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A9CB34B25F
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:01:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbhCZXAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 19:00:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35304 "EHLO mail.kernel.org"
+        id S230444AbhCZXAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 19:00:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229986AbhCZXAN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230114AbhCZXAN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 26 Mar 2021 19:00:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9449461A21;
+Received: by mail.kernel.org (Postfix) with ESMTPS id A2A2A61A33;
         Fri, 26 Mar 2021 23:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1616799612;
-        bh=6WtEF5UlVkpKu1h/9A8YKlArvdpJ5cgCBFw+HVMUQFE=;
+        bh=mOODSIec5PmYGkS4VV9SQ0gQ5mORs4fhmeIVnDXcN5E=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=G4bH1F5506Eyg8ElIAcFrP2cylwjH+/EVw8bE3A90S8XCAFkieq71zGxslWUzvhd0
-         sqLMiouDHizpwmw3f8V4UGxoUDVPFzuMwrcPYxikMGPAYDfhACOvqS3EJ8YE9faCDS
-         Oc+YzhJhhaSvlWCAFSb0O14mqJRppiwloVsOzPAQHp69XHOkJxZkuPY4qPiuDsG/4g
-         thgpQRflFFWwoUQhmjyaBvG7DR5AIUYP2hjxtt/piu8sRnSViTBFrM2pRRDtztZwiN
-         5/4cSoEWwho+PDz7/3EfFIcsQ24vCvcC89ikC4BeNEv4fjshmR6VTuug3w0uPUxdle
-         cDZVo6l+muzww==
+        b=YZnP929c7qssyYKgCUO4/c3em3x3odfuSpOiWYR2PYdY/wLGXJ7qs7RQGxCY/hH0P
+         lIBB5zsMLk9asoyPxDBmzrmlh6+loc1tCl+MH/tUx+DT9NMJkpKtrDtaV2nmOyPosl
+         MPItGACVCMxIGnopRsLRrOtYqAA4S8dZUsFHJfX1ZSWXyebQtIr23jXTxUxZJJw6VD
+         aOfcQxYhlMGfP4TsJLXUHfMWJBwMOmUylS4pwbuYiv8D6gh6vSyy/0hseV0wbXEyoB
+         2N1QnPlfQJ/HHeepJLFEpbsso17BQkLZeEjSF1Z5H0/28Md8AaQjfLWetMU3Ia0RKo
+         EbnGFTPFl9CAA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 77BFB60971;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 89162609E6;
         Fri, 26 Mar 2021 23:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ethernet: remove duplicated include
+Subject: Re: [PATCH -next 0/3] net: llc: Correct some function names in header
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161679961248.14639.5462729926726566402.git-patchwork-notify@kernel.org>
+Message-Id: <161679961255.14639.10605106394738089122.git-patchwork-notify@kernel.org>
 Date:   Fri, 26 Mar 2021 23:00:12 +0000
-References: <20210326024046.2800216-1-xujia39@huawei.com>
-In-Reply-To: <20210326024046.2800216-1-xujia39@huawei.com>
-To:     Xu Jia <xujia39@huawei.com>
-Cc:     nbd@nbd.name, sean.wang@mediatek.com, kuba@kernel.org,
-        matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, hulkcommits@huawei.com
+References: <20210326101350.2519614-1-yangyingliang@huawei.com>
+In-Reply-To: <20210326101350.2519614-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 26 Mar 2021 10:40:46 +0800 you wrote:
-> Remove duplicated include from mtk_ppe_offload.c.
+On Fri, 26 Mar 2021 18:13:47 +0800 you wrote:
+> Fix some make W=1 kernel build warnings in net/llc/
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Xu Jia <xujia39@huawei.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_ppe_offload.c | 1 -
->  1 file changed, 1 deletion(-)
+> Yang Yingliang (3):
+>   net: llc: Correct some function names in header
+>   net: llc: Correct function name llc_sap_action_unitdata_ind() in
+>     header
+>   net: llc: Correct function name llc_pdu_set_pf_bit() in header
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next] net: ethernet: remove duplicated include
-    https://git.kernel.org/netdev/net-next/c/aeab5cfbc8c7
+  - [-next,1/3] net: llc: Correct some function names in header
+    https://git.kernel.org/netdev/net-next/c/26440a63a1ac
+  - [-next,2/3] net: llc: Correct function name llc_sap_action_unitdata_ind() in header
+    https://git.kernel.org/netdev/net-next/c/8114f099d937
+  - [-next,3/3] net: llc: Correct function name llc_pdu_set_pf_bit() in header
+    https://git.kernel.org/netdev/net-next/c/72e6afe6b4b3
 
 You are awesome, thank you!
 --
