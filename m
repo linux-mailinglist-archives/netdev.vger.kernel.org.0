@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F2C34A5FA
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 11:58:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4AC34A5FF
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 11:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbhCZK5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 06:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
+        id S230153AbhCZK5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 06:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbhCZK5d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 06:57:33 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42620C0613AA
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 03:57:33 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id u20so6809152lja.13
+        with ESMTP id S230097AbhCZK5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 06:57:34 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1588FC0613AA
+        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 03:57:34 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id z25so6887828lja.3
         for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 03:57:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=Jf8FZdbyjNU6eaBlE9QftKSE9jOzdF0f4sdvULOmE+w=;
-        b=e0KfUMb4WXOAtiV7DVd8eRGTQ0gz8uyRIe24jwbIjFWaEOPUb6v+wPlUiUZPsbofR6
-         U3+Ybi/+8uavks8P5zjM62FhBXZbu0OjLCRIHq+jdsmfoEuc1CRdyFo0tuNLncfZERlu
-         uwICO8FdtmHHfm5lJ2A9GiRcHZL2d0VoGPHo1W/OBNSjWiYPMYtgXUh7TF0KrsJ4cews
-         89lYxUv0OWygJr+48mvyb8yq3zixhHTig1kg7D5QGIFmKoHFByZ26GsZxoo5gUG2/X0T
-         Z2LyNc+cfe9VxCDhqI86pknSTLwyAm54ULAMTVq+zXSSl3xLr8UOTQFT4PudgDnSeDwr
-         VpWQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=eSlgjT7JFI4Q2bXZn5wbGG87Awrs5ECaXb6x1VVorfo=;
+        b=Df7ojB5kGqg4fEyyEOf9HgFecumUYUsxvhzS588a7D/H7VeuxzOWDgvzO50qgjGf/F
+         G4eyPmfp5WZsXQN2ImksxswRhO2McJfmMwNptXHpvO82PT7GNQTtzHAJGn6aUOaRruYN
+         Cu3b8xaAIf+DwoJwXQNqUhyNPcAfH/GfV17elkm0qguGaiCUCVII+OSDsG2oVo+rhNz3
+         3g7WVpSF+unQqnQ/GyRxcCvA/m2NUNYu0IAwgj3CEV9bWNVEiDONIdIDa3dvEVTBhF6y
+         ahcg28ujM/tTk4s8pYaYDY7k+mcRO/61Taw9WWDnOpce/GAg6CiKfzTtSq6vX/Q9QxhE
+         0fOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=Jf8FZdbyjNU6eaBlE9QftKSE9jOzdF0f4sdvULOmE+w=;
-        b=V2/kCkGcB+km859Z4qGzxwMYSALQVakNeXpGH1b2O6lWjsotk1Saz0l+zJFc7tWRJi
-         MbjX5HIrT2x4/D0WhS0PuQTDwMo2Qvm3q828xoAijipwCPnk6zDk8+v9ssJWaiZJ5FMd
-         lqlpBWXp7/37mbAaoxNomgtrbgMTznErm8Af9+MRd4PVd1olX6xx5FTkRdnpCQIpGIQE
-         WY+QgUV69b6uVsHRrz+J2tzpqlc/KpuLUAGD6KNn/23k6LaFXPHItPcpq5ebVru4PwC7
-         r+f8b9RJ/rcXYDC5fR7Zkk5CO/VD7cHGNQx01uAzaoatsKmOTimBR/0ywfPm9VWwJV5W
-         9CoA==
-X-Gm-Message-State: AOAM530n2qIEP4kIELCbdMYgMRJHPw8nsSCdWFYLekKM95D0/LXZHa8n
-        qE8QbAHHcVBHgIIxDIUECa14Sw==
-X-Google-Smtp-Source: ABdhPJxcm6ZT6IJ3F4EkFhG30WnEG4heMfwZ4A6m7KgipfMXp6M4XuZBnNIbQokEVJyYSwpwELCvNQ==
-X-Received: by 2002:a2e:6e1a:: with SMTP id j26mr8656206ljc.171.1616756251748;
-        Fri, 26 Mar 2021 03:57:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=eSlgjT7JFI4Q2bXZn5wbGG87Awrs5ECaXb6x1VVorfo=;
+        b=Rr2ZW8r7gwEaVHRW4r83bHDPogzJI5qIYJvP3gDpXlZqLXgtlxU/DUoohgnRzChFGm
+         vEhvMWXkSfe4dZCSQpIELFjO5IJwWNW4Kl7ifYx6P7SEUO2Jr4DopraaV5BFhWaHjuUv
+         Ajv6jq3hUEuKaqICPolvKMP5F/SMUfCaEmZmXBWfI8fkU4R4kZ57vaC9kgdY3rKjAceV
+         zqHgwonJJoKt6KOg/QIPa5KvHWmLajMwnS0e4yzoEKPmbgiijDlzWcuRFucDMlCO7j+J
+         DgskoHbhDB3RkfPs3U1IYqfoVZR4LzAcefVN4cUD8wzuicU/pRH6su9wisDEgDjXARd0
+         Fp7A==
+X-Gm-Message-State: AOAM533WXAecHBGiZBLbfP7hLoFHTtnRSOGC9nYG4EktDxqOqTxZiZUU
+        QoxT91/YZzU/oU99ORTZNFv1Tw==
+X-Google-Smtp-Source: ABdhPJxVbgxhSJJMaaRRllqvBNNADgm3kXe62UMYMyZJxKfmc1uLOo48M5ml8BdDaeUvclX/F65KmQ==
+X-Received: by 2002:a2e:9bd0:: with SMTP id w16mr8601431ljj.465.1616756252484;
+        Fri, 26 Mar 2021 03:57:32 -0700 (PDT)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
         by smtp.gmail.com with ESMTPSA id n23sm832629lfq.121.2021.03.26.03.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 03:57:31 -0700 (PDT)
+        Fri, 26 Mar 2021 03:57:32 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         olteanv@gmail.com, netdev@vger.kernel.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH net-next 0/3] net: dsa: Allow default tag protocol to be overridden from DT
-Date:   Fri, 26 Mar 2021 11:56:45 +0100
-Message-Id: <20210326105648.2492411-1-tobias@waldekranz.com>
+Subject: [PATCH net-next 1/3] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
+Date:   Fri, 26 Mar 2021 11:56:46 +0100
+Message-Id: <20210326105648.2492411-2-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210326105648.2492411-1-tobias@waldekranz.com>
+References: <20210326105648.2492411-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Organization: Westermo
 Content-Transfer-Encoding: 8bit
@@ -63,52 +65,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is logically the v2 of this patch:
-https://lore.kernel.org/netdev/20210323102326.3677940-1-tobias@waldekranz.com/
+All devices are capable of using regular DSA tags. Support for
+Ethertyped DSA tags sort into three categories:
 
-In addition to the mv88e6xxx support to dynamically change the
-protocol, it is now possible to override the protocol from the device
-tree. This means that when a board vendor finds an incompatibility,
-they can specify a working protocol in the DT, and users will not have
-to worry about it.
+1. No support. Older chips fall into this category.
 
-Some background information:
+2. Full support. Datasheet explicitly supports configuring the CPU
+   port to receive FORWARDs with a DSA tag.
 
-In a system using an NXP T1023 SoC connected to a 6390X switch, we
-noticed that TO_CPU frames where not reaching the CPU. This only
-happened on hardware port 8. Looking at the DSA master interface
-(dpaa-ethernet) we could see that an Rx error counter was bumped at
-the same rate. The logs indicated a parser error.
+3. Undocumented support. Datasheet lists the configuration from
+   category 2 as "reserved for future use", but does empirically
+   behave like a category 2 device.
 
-It just so happens that a TO_CPU coming in on device 0, port 8, will
-result in the first two bytes of the DSA tag being one of:
+Because there are ethernet controllers that do not handle regular DSA
+tags in all cases, it is sometimes preferable to rely on the
+undocumented behavior, as the alternative is a very crippled
+system. But, in those cases, make sure to log the fact that an
+undocumented feature has been enabled.
 
-00 40
-00 44
-00 46
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 41 +++++++++++++++++++++++++++++---
+ drivers/net/dsa/mv88e6xxx/chip.h |  3 +++
+ 2 files changed, 41 insertions(+), 3 deletions(-)
 
-My guess was that since these values looked like 802.3 length fields,
-the controller's parser would signal an error if the frame length did
-not match what was in the header.
-
-This was later confirmed using two different workarounds provided by
-Vladimir. Unfortunately these either bypass or ignore the hardware
-parser and thus robs working combinations of the ability to do RSS and
-other nifty things. It was therefore decided to go with the option of
-a DT override.
-
-Tobias Waldekranz (3):
-  net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
-  net: dsa: Allow default tag protocol to be overridden from DT
-  dt-bindings: net: dsa: Document dsa,tag-protocol property
-
- .../devicetree/bindings/net/dsa/dsa.yaml      |  7 ++
- drivers/net/dsa/mv88e6xxx/chip.c              | 41 +++++++-
- drivers/net/dsa/mv88e6xxx/chip.h              |  3 +
- include/net/dsa.h                             |  5 +
- net/dsa/dsa2.c                                | 95 +++++++++++++++----
- 5 files changed, 132 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 95f07fcd4f85..e7ec883d5f6b 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2531,10 +2531,10 @@ static int mv88e6xxx_setup_port_mode(struct mv88e6xxx_chip *chip, int port)
+ 		return mv88e6xxx_set_port_mode_normal(chip, port);
+ 
+ 	/* Setup CPU port mode depending on its supported tag format */
+-	if (chip->info->tag_protocol == DSA_TAG_PROTO_DSA)
++	if (chip->tag_protocol == DSA_TAG_PROTO_DSA)
+ 		return mv88e6xxx_set_port_mode_dsa(chip, port);
+ 
+-	if (chip->info->tag_protocol == DSA_TAG_PROTO_EDSA)
++	if (chip->tag_protocol == DSA_TAG_PROTO_EDSA)
+ 		return mv88e6xxx_set_port_mode_edsa(chip, port);
+ 
+ 	return -EINVAL;
+@@ -5564,7 +5564,39 @@ static enum dsa_tag_protocol mv88e6xxx_get_tag_protocol(struct dsa_switch *ds,
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 
+-	return chip->info->tag_protocol;
++	return chip->tag_protocol;
++}
++
++static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
++					 enum dsa_tag_protocol proto)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	enum dsa_tag_protocol old_protocol;
++	int err;
++
++	switch (proto) {
++	case DSA_TAG_PROTO_EDSA:
++		if (chip->info->tag_protocol != DSA_TAG_PROTO_EDSA)
++			dev_warn(chip->dev, "Relying on undocumented EDSA tagging behavior\n");
++
++		break;
++	case DSA_TAG_PROTO_DSA:
++		break;
++	default:
++		return -EPROTONOSUPPORT;
++	}
++
++	old_protocol = chip->tag_protocol;
++	chip->tag_protocol = proto;
++
++	mv88e6xxx_reg_lock(chip);
++	err = mv88e6xxx_setup_port_mode(chip, port);
++	mv88e6xxx_reg_unlock(chip);
++
++	if (err)
++		chip->tag_protocol = old_protocol;
++
++	return err;
+ }
+ 
+ static int mv88e6xxx_port_mdb_add(struct dsa_switch *ds, int port,
+@@ -6029,6 +6061,7 @@ static int mv88e6xxx_crosschip_lag_leave(struct dsa_switch *ds, int sw_index,
+ 
+ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.get_tag_protocol	= mv88e6xxx_get_tag_protocol,
++	.change_tag_protocol	= mv88e6xxx_change_tag_protocol,
+ 	.setup			= mv88e6xxx_setup,
+ 	.teardown		= mv88e6xxx_teardown,
+ 	.phylink_validate	= mv88e6xxx_validate,
+@@ -6209,6 +6242,8 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
+ 	if (err)
+ 		goto out;
+ 
++	chip->tag_protocol = chip->info->tag_protocol;
++
+ 	mv88e6xxx_phy_init(chip);
+ 
+ 	if (chip->info->ops->get_eeprom) {
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index bce6e0dc8535..96b775f3fda2 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -261,6 +261,9 @@ struct mv88e6xxx_region_priv {
+ struct mv88e6xxx_chip {
+ 	const struct mv88e6xxx_info *info;
+ 
++	/* Currently configured tagging protocol */
++	enum dsa_tag_protocol tag_protocol;
++
+ 	/* The dsa_switch this private structure is related to */
+ 	struct dsa_switch *ds;
+ 
 -- 
 2.25.1
 
