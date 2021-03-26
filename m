@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDFEE349F52
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B25349F55
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:08:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbhCZCHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 22:07:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50684 "EHLO mail.kernel.org"
+        id S230317AbhCZCHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 22:07:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50714 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230045AbhCZCHe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 22:07:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AE22C61A42;
-        Fri, 26 Mar 2021 02:07:33 +0000 (UTC)
+        id S230120AbhCZCHf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 25 Mar 2021 22:07:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FB3261A44;
+        Fri, 26 Mar 2021 02:07:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616724454;
-        bh=G4GzRaGULdPY6SQAzChSDbeQZP9ITOBq/B1QcSkovEY=;
+        s=k20201202; t=1616724455;
+        bh=JJAkBBDo6ZEeuQoSDnk7EmWw7Wc0gimGKu6u4LmNqOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OnLmvoC5bwJHv7qZWVPdNbBINgFyLh+gMAvfGO7GiyEFvGiAW5VkZnLcOqGn/3EK7
-         DT+1Z1Nh/2lZMpHVjrxSVLFrUGez+X+CkBiC+okRE9427m4PrPPnDbKhynfiHyH2sG
-         buy4ODECSWlfA+ILjxh7QevlWurQlZwVR20NGACNk2vKrEBlmiNQUbmI9muHfiil2n
-         uUWa+E4SPFDhQypucMeHi/OQoQu5KU1u4Zl/juhLNWC6fon6ThXqAVVGkFFiHmwkze
-         yoMH2yVfz6HgwyrTRGz+XNsFGuiECVCwhBazdK/dXRmq6Fha5yf2pU2N9Y324Inv8h
-         RPgkcN+S6AA0w==
+        b=tcmPM7tP2uK89qf4hX9WXUAVpWRnynqJpSbQhT6mrtje5f0+Vs06PaZ9e3aoLYOdw
+         5WpYrBbhHMWmj4FRyz5aw/aJ/nBo5sYvxP1vcIKNluUHNE5Oyp8iRfC1ggIffl8ZXj
+         E3KbNc9SSD9+gjLsZDjyECdteu3cHh8+0By6io1in+NtTcLzK7ce9DHhH0nMbaDrr/
+         MUyT1QgHnU5j60krlZhKW6rjvCnWxle5OL4/0MYkdvhO+9v3TfJ4uChT8dSQ0ayqnD
+         Ol517aLKdlGJ1KcGsJbczOHrOBoCvB8F4P2TXRjbGc6rbkl3HAW1EMNAwwc7l7zbdn
+         eZRFgxDzFBqEw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
@@ -32,9 +32,9 @@ Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
         ayal@nvidia.com, shenjian15@huawei.com, saeedm@nvidia.com,
         mkubecek@suse.cz, andrew@lunn.ch, roopa@nvidia.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 1/6] ethtool: fec: fix typo in kdoc
-Date:   Thu, 25 Mar 2021 19:07:22 -0700
-Message-Id: <20210326020727.246828-2-kuba@kernel.org>
+Subject: [PATCH net-next v2 2/6] ethtool: fec: remove long structure description
+Date:   Thu, 25 Mar 2021 19:07:23 -0700
+Message-Id: <20210326020727.246828-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210326020727.246828-1-kuba@kernel.org>
 References: <20210326020727.246828-1-kuba@kernel.org>
@@ -44,35 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-s/porte/the port/
+Digging through the mailing list archive @autoneg was part
+of the first version of the RFC, this left over comment was
+pointed out twice in review but wasn't removed.
+
+The sentence is an exact copy-paste from pauseparam.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- include/uapi/linux/ethtool.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/uapi/linux/ethtool.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index cde753bb2093..1433d6278018 100644
+index 1433d6278018..36bf435d232c 100644
 --- a/include/uapi/linux/ethtool.h
 +++ b/include/uapi/linux/ethtool.h
-@@ -1374,15 +1374,15 @@ struct ethtool_per_queue_op {
- 	__u32	queue_mask[__KERNEL_DIV_ROUND_UP(MAX_NUM_QUEUE, 32)];
- 	char	data[];
- };
+@@ -1377,18 +1377,14 @@ struct ethtool_per_queue_op {
  
  /**
   * struct ethtool_fecparam - Ethernet forward error correction(fec) parameters
   * @cmd: Command number = %ETHTOOL_GFECPARAM or %ETHTOOL_SFECPARAM
-- * @active_fec: FEC mode which is active on porte
-+ * @active_fec: FEC mode which is active on the port
+  * @active_fec: FEC mode which is active on the port
   * @fec: Bitmask of supported/configured FEC modes
   * @rsvd: Reserved for future extensions. i.e FEC bypass feature.
-  *
-  * Drivers should reject a non-zero setting of @autoneg when
-  * autoneogotiation is disabled (or not supported) for the link.
-  *
+- *
+- * Drivers should reject a non-zero setting of @autoneg when
+- * autoneogotiation is disabled (or not supported) for the link.
+- *
   */
+ struct ethtool_fecparam {
+ 	__u32   cmd;
+ 	/* bitmask of FEC modes */
+ 	__u32   active_fec;
+ 	__u32   fec;
+ 	__u32   reserved;
 -- 
 2.30.2
 
