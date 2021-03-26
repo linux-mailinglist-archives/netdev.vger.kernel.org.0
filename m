@@ -2,62 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACC234A723
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 13:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED4234A74D
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 13:31:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhCZM2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 08:28:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49144 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229930AbhCZM2A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 26 Mar 2021 08:28:00 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lPlZF-00D80L-U0; Fri, 26 Mar 2021 13:27:57 +0100
-Date:   Fri, 26 Mar 2021 13:27:57 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: FEC unbind/bind feature
-Message-ID: <YF3TTZtJ1SLFkSpS@lunn.ch>
-References: <DB8PR04MB6795E5896375A9A9FED55A84E6629@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <YFyF0dEgjN562aT8@lunn.ch>
- <DB8PR04MB679514359C626505E956981BE6619@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S229993AbhCZMak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 08:30:40 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:15321 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230289AbhCZMaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 08:30:25 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4F6Lq80fCBz9vHR;
+        Fri, 26 Mar 2021 20:28:20 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.498.0; Fri, 26 Mar 2021
+ 20:30:14 +0800
+From:   'Liu Jian <liujian56@huawei.com>
+To:     <liujian56@huawei.com>, Kevin Curtis <kevin.curtis@farsite.co.uk>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net-next] farsync: use DEFINE_SPINLOCK() for spinlock
+Date:   Fri, 26 Mar 2021 20:31:38 +0800
+Message-ID: <20210326123138.159616-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB679514359C626505E956981BE6619@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Please wrap your lines at around 75 characters. Standard netiquette rules for
-> > emails apply to all Linux lists.
-> 
-> Ok, thanks.
+From: Liu Jian <liujian56@huawei.com>
 
-Please keep fighting with your email client, 
+spinlock can be initialized automatically with DEFINE_SPINLOCK()
+rather than explicitly calling spin_lock_init().
 
-> Yes, you are right. It should be always fine for single FEC controller, and unbind/bind one by one should also be fine for dual FEC controllers which share one MDIO bus. I test on i.MX6UL, i.MX8MM/MP.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+ drivers/net/wan/farsync.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
+index 686a25d3b512..5de71e44fc5a 100644
+--- a/drivers/net/wan/farsync.c
++++ b/drivers/net/wan/farsync.c
+@@ -573,7 +573,7 @@ static DECLARE_TASKLET(fst_tx_task, fst_process_tx_work_q);
+ static DECLARE_TASKLET(fst_int_task, fst_process_int_work_q);
  
-> > > It seems to abstract an independent MDIO bus for dual FEC instances. I
-> > > look at the MDIO dt bindings, it seems support such case as it has
-> > > "reg"
-> > > property. (Documentation/devicetree/bindings/net/mdio.yaml)
-> > 
-> > You can have fully standalone MDIO bus drivers. You generally do this when the
-> > MDIO bus registers are in their own address space, which you can ioremap()
-> > separately from the MAC registers. Take a look in drivers/net/mdio/.
-> > 
-> > > From your opinions, do you think it is necessary to improve it?
-> > 
-> > What is you use case for unbinding/binding the FEC?
-> 
-> Users may want to unbind FEC driver, and then bind to FEC UIO driver, such as for DPDK use case to improve the throughput.
+ static struct fst_card_info *fst_card_array[FST_MAX_CARDS];
+-static spinlock_t fst_work_q_lock;
++static DEFINE_SPINLOCK(fst_work_q_lock);
+ static u64 fst_work_txq;
+ static u64 fst_work_intq;
+ 
+@@ -2648,7 +2648,6 @@ fst_init(void)
+ 
+ 	for (i = 0; i < FST_MAX_CARDS; i++)
+ 		fst_card_array[i] = NULL;
+-	spin_lock_init(&fst_work_q_lock);
+ 	return pci_register_driver(&fst_driver);
+ }
+ 
 
-You could blacklist the FEC driver so it never loads. Or change the
-compatible string so it only matches the DPDK driver. Or use XDP :-)
-
-	   Andrew
