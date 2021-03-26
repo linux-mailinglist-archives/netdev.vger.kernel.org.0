@@ -2,67 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC1034A002
-	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 03:54:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B38834A00B
+	for <lists+netdev@lfdr.de>; Fri, 26 Mar 2021 04:04:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbhCZCy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Mar 2021 22:54:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37694 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231179AbhCZCxz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 25 Mar 2021 22:53:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1015461A43;
-        Fri, 26 Mar 2021 02:53:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616727235;
-        bh=HE/QZFdqS671tqHl5nlwxCKvdp++TU0y/bfIoDjsvEc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=trr0TvGlOzyNxlhG8KvjcnUb5dr2lsou5ljmCfp/YUEDww8ErYJoW0kP/+5C7avdN
-         nLuQ6aoIx2EdqVYEqIWdrt/RQeTZPq0FOp2bxFdZbibOEaz+XuO4EldpkitfQ1d4eq
-         446XnQyqK9u5b4olqFf8i52jFdCUnqIV8hragGeUaIjfKX39NyqQAUznvCyk8b5SZr
-         PvvqzN/JNC4rIL6MwzmZq5u5S4TdZyrqmwQY3CPAZ6uCmzEQPB1DKnbORmoD7Fgsyb
-         7AaTbwY9ixboW+p9xxmG5WKBL8D7hhx/uWIzd2kB314DYkLJNH2qw5NHGGENM7vGue
-         BFU3Vwi2l+29g==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 13/13] net/mlx5: Fix spelling mistakes in mlx5_core_info message
-Date:   Thu, 25 Mar 2021 19:53:45 -0700
-Message-Id: <20210326025345.456475-14-saeed@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210326025345.456475-1-saeed@kernel.org>
-References: <20210326025345.456475-1-saeed@kernel.org>
+        id S230378AbhCZDD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Mar 2021 23:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230324AbhCZDDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Mar 2021 23:03:40 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E1BC061761;
+        Thu, 25 Mar 2021 20:03:40 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id g38so4398770ybi.12;
+        Thu, 25 Mar 2021 20:03:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sNlIQphRGrr6cRggbPFiNOSnzY2c84dt0y88urvI0JE=;
+        b=X27GRIeUb3eSwS/MgD66l3z/ET/AgZH7wejdMPUAvZmWUbiYrv8rbgWDg3GGikSj/o
+         c7yPx7BwQK0zyD7yuBVpO/SQl7UMmHRB46m3aSN7Z9gajo0md4RnPXn7LMpNuKu1OMmk
+         JFeK2HUqSvEJl0INSCBGmBCLG/Gfu0PEBIjC1pSRaPVUCfKnPiArB+rTl5DmPHpBGMHy
+         VmbZS1LZoHaz2mvyC6QTpTd+bA3tQw+TnXr4M6WaKwgGbMF/kq/ONOPvhTmfEG0T8fqM
+         qfvQ3LLaGsuXZe3HR4iE7oHbTUp14te2EPxi2JWJ7RFiwOqjWj1YvV8uY6eE/KFesm/a
+         CTOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sNlIQphRGrr6cRggbPFiNOSnzY2c84dt0y88urvI0JE=;
+        b=t7Eycc0LgY3owpWU+RUj3U/O2jXpQpESTUAZ/ZJ0zk7EX0lh1gQwNCjgHPTezBKUpJ
+         fVWbLXVKSo332/2dz0NBwe12Z+fz9JK8a21vGkrwbgWsgTYzGehtlTNCTcWay60xiYRW
+         f7k1dVkcJ/ugTPsbKPuEX9oLvJP5/+KtZ0Fwh6JA8FmUuZa7Z7d30xrh4r7kgGht7JKI
+         mwXa3OwJtptTjwYBaU1zX1Y8oqbIx3G2D0TIwuILto5G1dZIuZHPAu4HBhs1db/5jfr+
+         uevdWarbOEjwAcr7JUbgj0bdlk5QqKMHGWjo3HeWBblBo5s4/iwb2VavGQVjE5fhV2+q
+         OhYQ==
+X-Gm-Message-State: AOAM531L6y+c1voHO9yKC/RHPKpDZaloQEhRrWC61qx+YPsho4gcZBzB
+        Bo/l0JTGC37Cvq9QMxapxD9uMw4MPuEGWBfad6s=
+X-Google-Smtp-Source: ABdhPJx4pAUFdUbbs24Up2QCj3ScMj+P/MgNi9g87WGKSQv6AnT1WbeM/0LJhudgHL9YM7PuXzB36FXOwxnw5iAJJWY=
+X-Received: by 2002:a25:ab03:: with SMTP id u3mr10324206ybi.347.1616727819875;
+ Thu, 25 Mar 2021 20:03:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <161661993201.29133.10763175125024005438.stgit@john-Precision-5820-Tower>
+ <161662006586.29133.187705917710998342.stgit@john-Precision-5820-Tower>
+In-Reply-To: <161662006586.29133.187705917710998342.stgit@john-Precision-5820-Tower>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 25 Mar 2021 20:03:28 -0700
+Message-ID: <CAEf4BzZr8fZjxyki4CauU3qZ-Xac_B7jJ4STaJPwTZhYSqN1AQ@mail.gmail.com>
+Subject: Re: [bpf PATCH] bpf, selftests: test_maps generating unrecognized
+ data section
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Wed, Mar 24, 2021 at 2:07 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> With a relatively recent clang master branch test_map skips a section,
+>
+>  libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
+>
 
-There are two spelling mistakes in a mlx5_core_info message. Fix them.
+So it was on my TODO list for a while to get rid of this by combining
+all .rodata* sections into one at load time. I even outline that in
+"libbpf v1.0" doc ([0]). I just haven't gotten to implementing this
+yet. You can safely ignore this for now. But I also have nothing
+against cleaning up tests, of course.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/health.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an11_iaRuec6U-ZESZ54nNTY
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-index a0a851640804..9ff163c5bcde 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-@@ -340,7 +340,7 @@ static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
- 		return -EIO;
- 	}
- 
--	mlx5_core_info(dev, "health revovery succeded\n");
-+	mlx5_core_info(dev, "health recovery succeeded\n");
- 	return 0;
- }
- 
--- 
-2.30.2
 
+> the cause is some pointless strings from bpf_printks in the BPF program
+> loaded during testing. Remove them so we stop tripping our test bots.
+>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  .../selftests/bpf/progs/sockmap_tcp_msg_prog.c     |    3 ---
+>  1 file changed, 3 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c b/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c
+> index fdb4bf4408fa..0f603253f4ed 100644
+> --- a/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c
+> +++ b/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c
+> @@ -16,10 +16,7 @@ int bpf_prog1(struct sk_msg_md *msg)
+>         if (data + 8 > data_end)
+>                 return SK_DROP;
+>
+> -       bpf_printk("data length %i\n", (__u64)msg->data_end - (__u64)msg->data);
+>         d = (char *)data;
+> -       bpf_printk("hello sendmsg hook %i %i\n", d[0], d[1]);
+> -
+>         return SK_PASS;
+>  }
+>
+>
