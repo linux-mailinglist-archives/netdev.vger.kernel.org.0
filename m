@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C32EE34B2BF
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:19:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C30F34B2B1
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 00:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbhCZXSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 19:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
+        id S231522AbhCZXRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 19:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbhCZXRL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 19:17:11 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF24C0613B1;
-        Fri, 26 Mar 2021 16:17:10 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id v70so6970505qkb.8;
-        Fri, 26 Mar 2021 16:17:10 -0700 (PDT)
+        with ESMTP id S231420AbhCZXRR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 19:17:17 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDD8C0613AA;
+        Fri, 26 Mar 2021 16:17:14 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id q3so6937818qkq.12;
+        Fri, 26 Mar 2021 16:17:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XBYGTUK8GYavuLf/iCHVhrCnO9daOXoNPQjuEkTzcq0=;
-        b=QYr8bXwQlBsDkgreDPZCy4z8pbbVjLDzNjBhd36uop2xbAvo/I8K/lnYzmvP0KYfZR
-         OfeGpsti5UTS3FBeWZMb+S+uwhwuBxtO/gcau5thPnV3GwFz4wFCQrxGXk/+gqMn+DTI
-         /ymtjki1SPUDAjBxSbkMHZUIYMRkg6VEuRQM/UJDiKH7H8oB6KR81DqcuWQlz4vG9Gls
-         LiCORk7CgQeIKf7x0Tw2kO0GpB5Rf8kn5Ub89VtCqtBNUFcSXGPusSRanc4nP28+tDae
-         F8yq9G/xkAgSCIPFx4URf0CBjKyR8ngZ96RzzFxQdepcGcx/MhFV839SutxzrbHjL7jr
-         iyQw==
+        bh=BXMr6QKv1x/w9vef6A424NJEEK5cW+MFw53/3UbGokU=;
+        b=IDwfm5M7H14p/NvE3G79wtza7IrNeMxF7LSqitB7V/nDccGlM+3PE+bimxV1qE4wXV
+         TdyUVWzDhHa8G06m1Qo+yW9OeSrpIY6WY6azm2alvZmG+WcTyn4pro3g4V48CykKTJAf
+         33k2VBShDrVFwnOWvL1kpO9Vi4N6XXvJ2so9QKYw4N2VIlXWFu4hxlw3Ib21edSheggM
+         qQch0faaxvA13T0BQeVrCud3+LrxiZ5+m3JzbKjLobW+emqWvYUsLXSe6Uo9V8SrVSyf
+         4GKE8rpVAW1rSvfRtSuzpD0DsacAhB9ENuOTpuxAiWbUlBx49oPynAOvTRK+Zas1fWCX
+         u80A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XBYGTUK8GYavuLf/iCHVhrCnO9daOXoNPQjuEkTzcq0=;
-        b=gMKwNr0LhHtzelnsYxyiKJqk1ZiQfksue6B+QrfZse+mAtYO/nZcw177kkAsrpNdf8
-         BRhrYXkoq1nmibJY2gzt477aOqE5+I3ppMAyFn+LdfhW6A/EiuERZpZ/vCDmchQPVsai
-         tNmn7qeQxlrmjWAokMUEXr69j3tsBLl4COvEOpASCvdh14jqKO26/a13u8Du0iOOM5MA
-         ER5vRUPC3hc9ohdN4C6lG87WZyki/m4bu8DA2Mjz21/0DkFKavnl9N+OY93jtuigah5v
-         PekN2HJI+bB7n9GX993RDGt6ehNfvVvBeDBYN+1rbPjOdsXCpYVNpyNnXbm2aSL0bzrZ
-         va9A==
-X-Gm-Message-State: AOAM5324/VNzkgm2MlJqfcqFoQaQYclAbtKgWp6SpIAA5QVUflf72O7U
-        cB9l1Vv8wyb7UFDDixw3cHs=
-X-Google-Smtp-Source: ABdhPJzKxmzeLHn8OhEOe/1oy7MBBEnAReoeckBj3SaC0F2Gk3Kt2H994nLkjehto6zykLSOkt07YA==
-X-Received: by 2002:a37:b206:: with SMTP id b6mr15537098qkf.275.1616800630086;
-        Fri, 26 Mar 2021 16:17:10 -0700 (PDT)
+        bh=BXMr6QKv1x/w9vef6A424NJEEK5cW+MFw53/3UbGokU=;
+        b=g5q9swKBlCyUplBsBuCaAXhHM5kZ9McY0DdOLl/Apa/RBIjFxn5wY3DyZmpSkQtzQD
+         sENuVFqMIn5WcrUdAMD2FpCEXIe+8AEteGQxAU+UvL3BwHAvBiUkVZ8QICrrwRHJKmox
+         X/1vwAe/MuCtcTiA9rs7Gxw4QiA8zu9Otxpqoa2lDOzRTeahGZrdRr1MgReu8VuFOxG8
+         YZ8Ow9M6+3y99c/dmVdkZPRnXp2Yyce9e1tvyyWBR3JyCHXs/7gihxKLdT9vQXrAARma
+         LIuxJh0tzLSWe6BfAQaQvPIAAgoAW1zOEbq0AGFlmH/kV7sGQ/6ZOuS4mmflFmQvAxBL
+         UcBQ==
+X-Gm-Message-State: AOAM531y95APvATA13RIGsXnl97wUZtfZcEur7NJVKIY211nBXSc+XOQ
+        5Gj4v6LwO9CWxx5j8Z471h0=
+X-Google-Smtp-Source: ABdhPJxZR52VQtsceAP9awiKo9mT6VODi5xw9/bccEudTXZuwvvEzRj19KRWW10RGfXAwqO/GAXqUQ==
+X-Received: by 2002:a37:6888:: with SMTP id d130mr15155990qkc.368.1616800634046;
+        Fri, 26 Mar 2021 16:17:14 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.58.30])
-        by smtp.gmail.com with ESMTPSA id w78sm7960414qkb.11.2021.03.26.16.17.06
+        by smtp.gmail.com with ESMTPSA id w78sm7960414qkb.11.2021.03.26.16.17.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 16:17:09 -0700 (PDT)
+        Fri, 26 Mar 2021 16:17:13 -0700 (PDT)
 From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, rdunlap@infradead.org
-Subject: [PATCH] reg.c: Fix a spello
-Date:   Sat, 27 Mar 2021 04:42:51 +0530
-Message-Id: <20210326231608.24407-16-unixbhaskar@gmail.com>
+Subject: [PATCH] sm_statefuns.c: Mundane spello fixes
+Date:   Sat, 27 Mar 2021 04:42:52 +0530
+Message-Id: <20210326231608.24407-17-unixbhaskar@gmail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1616797633.git.unixbhaskar@gmail.com>
 References: <cover.1616797633.git.unixbhaskar@gmail.com>
@@ -63,26 +63,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-s/ingoring/ignoring/
+
+s/simulataneous/simultaneous/    ....in three dirrent places.
+s/tempory/temporary/
+s/interpeter/interpreter/
 
 Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
- net/wireless/reg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sctp/sm_statefuns.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 21536c48deec..68db914df642 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -3404,7 +3404,7 @@ static void restore_custom_reg_settings(struct wiphy *wiphy)
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index af2b7041fa4e..7632714c1e5b 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -1452,7 +1452,7 @@ static char sctp_tietags_compare(struct sctp_association *new_asoc,
+ 	return 'E';
  }
 
- /*
-- * Restoring regulatory settings involves ingoring any
-+ * Restoring regulatory settings involves ignoring any
-  * possibly stale country IE information and user regulatory
-  * settings if so desired, this includes any beacon hints
-  * learned as we could have traveled outside to another country
+-/* Common helper routine for both duplicate and simulataneous INIT
++/* Common helper routine for both duplicate and simultaneous INIT
+  * chunk handling.
+  */
+ static enum sctp_disposition sctp_sf_do_unexpected_init(
+@@ -1685,7 +1685,7 @@ enum sctp_disposition sctp_sf_do_5_2_1_siminit(
+ 					void *arg,
+ 					struct sctp_cmd_seq *commands)
+ {
+-	/* Call helper to do the real work for both simulataneous and
++	/* Call helper to do the real work for both simultaneous and
+ 	 * duplicate INIT chunk handling.
+ 	 */
+ 	return sctp_sf_do_unexpected_init(net, ep, asoc, type, arg, commands);
+@@ -1740,7 +1740,7 @@ enum sctp_disposition sctp_sf_do_5_2_2_dupinit(
+ 					void *arg,
+ 					struct sctp_cmd_seq *commands)
+ {
+-	/* Call helper to do the real work for both simulataneous and
++	/* Call helper to do the real work for both simultaneous and
+ 	 * duplicate INIT chunk handling.
+ 	 */
+ 	return sctp_sf_do_unexpected_init(net, ep, asoc, type, arg, commands);
+@@ -2221,11 +2221,11 @@ enum sctp_disposition sctp_sf_do_5_2_4_dupcook(
+ 		break;
+ 	}
+
+-	/* Delete the tempory new association. */
++	/* Delete the temporary new association. */
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_SET_ASOC, SCTP_ASOC(new_asoc));
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_DELETE_TCB, SCTP_NULL());
+
+-	/* Restore association pointer to provide SCTP command interpeter
++	/* Restore association pointer to provide SCTP command interpreter
+ 	 * with a valid context in case it needs to manipulate
+ 	 * the queues */
+ 	sctp_add_cmd_sf(commands, SCTP_CMD_SET_ASOC,
 --
 2.26.2
 
