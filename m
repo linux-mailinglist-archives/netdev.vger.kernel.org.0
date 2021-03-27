@@ -2,87 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CC134B3FE
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 04:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBD4E34B41F
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 04:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbhC0DUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 23:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbhC0DTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 23:19:46 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1104C0613AA;
-        Fri, 26 Mar 2021 20:19:46 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id w10so1525152pgh.5;
-        Fri, 26 Mar 2021 20:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=phYyD2kbNy4Z00klgX9xZbzhEqyMK+s+XM5+auF5Y0o=;
-        b=T0IDrPHXwj0MW5ePgzYIZymJW8Yi3gr3oCH/kjVpdNyTzShNcXW/Vh1jUDNUpD6z2a
-         YoCrg2WrRwI2u8FTPiAeixdhjLGEzY597p6eq6Ahg90ZWYMWXbmOrMjsKf3HtXu3CoS4
-         Hg+dG+oLKJor/HndCZ8vfAioFrJvXsWPs7s2A3ncCJdXd6Vw/DckI1+xPf/CAFcFA9zc
-         sXPPqtfHVbO1V1sUwUcnj4tobUjbfG++4edpnCfvwriavR/vViEJPVLafzJ4rRziXXQZ
-         ZlzLil8kHrrGOBGlMI1uBlaSGmFx2g4yc9Ka52LdNwmI4gMgYe6VEg7BR+ZTFYQD3YHX
-         EoLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=phYyD2kbNy4Z00klgX9xZbzhEqyMK+s+XM5+auF5Y0o=;
-        b=MV2GYjkKKnGzv9feqTpiA4ZTz1J30gQ0V9cuFG37rvzqxq7g3svHjQvx8/uCpXlAxM
-         8dKr01I8w9aTg42iSIDSN80o1zWkPmWFM1XeAvnoDVl1if3vpzNTb5JLaYzhFYFIEy74
-         9OxYT6BloYaBySjag4LtL4SCxJzPUTICz9c6PQDrI3JXCnF18PVSwpGe+4CZNRSfeU9N
-         /kQrPraLPAU+DNUG3eplQfCc8uqjsAckLryndX4Qszr2xCZtD6XJIVAhWr985f+iU9lP
-         J20EXXdf3w9SEO+vDlpjKbvp3HorVwqefbpTEvPKVeEAyjG6SLySd9hYxpXPYCAVCPNV
-         y+/Q==
-X-Gm-Message-State: AOAM5306/BgZ8vxM63lfdXkqq25oFpVJW9r8wfWbdk60s+WjnQUjyXOm
-        o7y/PvLIy8ZLyl/YpvFGSPc=
-X-Google-Smtp-Source: ABdhPJy2kLXUaSiYuOJy5WTLzIGc2ZFeONo1QjwiC8Mk6drTpulFJS0P1ioqx0wHlbGLrXugQoa31g==
-X-Received: by 2002:aa7:9096:0:b029:1f7:c442:fe37 with SMTP id i22-20020aa790960000b02901f7c442fe37mr15868133pfa.11.1616815185262;
-        Fri, 26 Mar 2021 20:19:45 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:15b8])
-        by smtp.gmail.com with ESMTPSA id s76sm10674036pfc.110.2021.03.26.20.19.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 20:19:44 -0700 (PDT)
-Date:   Fri, 26 Mar 2021 20:19:42 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCHv3 bpf] bpf: Take module reference for trampoline in module
-Message-ID: <20210327031942.nieqezfod6p2fcfl@ast-mbp>
-References: <20210326105900.151466-1-jolsa@kernel.org>
+        id S231187AbhC0DuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 23:50:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230344AbhC0DuL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 26 Mar 2021 23:50:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F3C5B61A26;
+        Sat, 27 Mar 2021 03:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1616817011;
+        bh=939MZF6WJuj0opMIvm5oRDd4yeiTZFrMGvJydVLk2ns=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AXf6g+Iks+UMJyiLOnGfAXu6urFg+c6BrvCZ5D4a7rP8TUSPPk9urUu+G69goJW/d
+         RFGBahUVnRrBPvKPzu80GNY6Q7CsGk9dCbDoPIc5Aa6XB/FtEP6uQ+iqrQ5RiMvb0O
+         DQeesn4pyx2hXRVfzB0KzJn6FUE24c0I1uZ/DoVpM224rn72lS315Lgs6N63R+UpCI
+         WFjtniFXmvqADdSTwPPcJdI16ytSL9hUwda7boecu5CNkSxXqI1He6qz/RlPYShgWi
+         /PhBjqo/tfFBwK7qDSZGWTKfhXQbPRtT7Ug3gw81h7isxo2ZXwsx/Ij66UDIPjnKw2
+         67/h0GpYSgHVQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E6A05609EA;
+        Sat, 27 Mar 2021 03:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210326105900.151466-1-jolsa@kernel.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161681701093.23684.14270712158208793167.git-patchwork-notify@kernel.org>
+Date:   Sat, 27 Mar 2021 03:50:10 +0000
+References: <20210325015124.1543397-1-kafai@fb.com>
+In-Reply-To: <20210325015124.1543397-1-kafai@fb.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 26, 2021 at 11:59:00AM +0100, Jiri Olsa wrote:
-> Currently module can be unloaded even if there's a trampoline
-> register in it. It's easily reproduced by running in parallel:
-> 
->   # while :; do ./test_progs -t module_attach; done
->   # while :; do rmmod bpf_testmod; sleep 0.5; done
-> 
-> Taking the module reference in case the trampoline's ip is
-> within the module code. Releasing it when the trampoline's
-> ip is unregistered.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  v3 changes:
->    - store module pointer under bpf_trampoline struct
+Hello:
 
-Applied.
+This series was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Wed, 24 Mar 2021 18:51:24 -0700 you wrote:
+> This series adds support to allow bpf program calling kernel function.
+> 
+> The use case included in this set is to allow bpf-tcp-cc to directly
+> call some tcp-cc helper functions (e.g. "tcp_cong_avoid_ai()").  Those
+> functions have already been used by some kernel tcp-cc implementations.
+> 
+> This set will also allow the bpf-tcp-cc program to directly call the
+> kernel tcp-cc implementation,  For example, a bpf_dctcp may only want to
+> implement its own dctcp_cwnd_event() and reuse other dctcp_*() directly
+> from the kernel tcp_dctcp.c instead of reimplementing (or
+> copy-and-pasting) them.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,bpf-next,01/14] bpf: Simplify freeing logic in linfo and jited_linfo
+    https://git.kernel.org/bpf/bpf-next/c/e16301fbe183
+  - [v2,bpf-next,02/14] bpf: Refactor btf_check_func_arg_match
+    https://git.kernel.org/bpf/bpf-next/c/34747c412041
+  - [v2,bpf-next,03/14] bpf: Support bpf program calling kernel function
+    https://git.kernel.org/bpf/bpf-next/c/e6ac2450d6de
+  - [v2,bpf-next,04/14] bpf: Support kernel function call in x86-32
+    https://git.kernel.org/bpf/bpf-next/c/797b84f727bc
+  - [v2,bpf-next,05/14] tcp: Rename bictcp function prefix to cubictcp
+    https://git.kernel.org/bpf/bpf-next/c/d22f6ad18709
+  - [v2,bpf-next,06/14] bpf: tcp: Put some tcp cong functions in allowlist for bpf-tcp-cc
+    https://git.kernel.org/bpf/bpf-next/c/e78aea8b2170
+  - [v2,bpf-next,07/14] libbpf: Refactor bpf_object__resolve_ksyms_btf_id
+    https://git.kernel.org/bpf/bpf-next/c/933d1aa32409
+  - [v2,bpf-next,08/14] libbpf: Refactor codes for finding btf id of a kernel symbol
+    https://git.kernel.org/bpf/bpf-next/c/774e132e83d0
+  - [v2,bpf-next,09/14] libbpf: Rename RELO_EXTERN to RELO_EXTERN_VAR
+    https://git.kernel.org/bpf/bpf-next/c/0c091e5c2d37
+  - [v2,bpf-next,10/14] libbpf: Record extern sym relocation first
+    https://git.kernel.org/bpf/bpf-next/c/aa0b8d43e953
+  - [v2,bpf-next,11/14] libbpf: Support extern kernel function
+    https://git.kernel.org/bpf/bpf-next/c/5bd022ec01f0
+  - [v2,bpf-next,12/14] bpf: selftests: Rename bictcp to bpf_cubic
+    https://git.kernel.org/bpf/bpf-next/c/39cd9e0f6783
+  - [v2,bpf-next,13/14] bpf: selftests: bpf_cubic and bpf_dctcp calling kernel functions
+    https://git.kernel.org/bpf/bpf-next/c/78e60bbbe8e8
+  - [v2,bpf-next,14/14] bpf: selftests: Add kfunc_call test
+    https://git.kernel.org/bpf/bpf-next/c/7bd1590d4eba
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
