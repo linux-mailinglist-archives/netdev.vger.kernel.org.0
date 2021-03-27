@@ -2,130 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCABA34B3D6
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 03:28:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2CC134B3FE
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 04:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbhC0C1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Mar 2021 22:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
+        id S230230AbhC0DUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Mar 2021 23:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbhC0C1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 22:27:32 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D028C0613AA;
-        Fri, 26 Mar 2021 19:27:32 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id v186so5804169pgv.7;
-        Fri, 26 Mar 2021 19:27:32 -0700 (PDT)
+        with ESMTP id S229880AbhC0DTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Mar 2021 23:19:46 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1104C0613AA;
+        Fri, 26 Mar 2021 20:19:46 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id w10so1525152pgh.5;
+        Fri, 26 Mar 2021 20:19:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=r2OJKDkIYvUvVxY/33WQ/juxWSmStOBn1IcK9dzFtG0=;
-        b=JLcjAGpV5DbktOyhhRjHw2CcVnV0Cc7k0Eik42NB8HZwMkNH/4ViUSvJ9q5vx7DwBI
-         odPZLj2XDGVxWTV6PwhYZxcwUo0hA4E8nH31Clgt/uXUKEI2rrCyMXeVNa8LsBMgjknF
-         +KOJB2FzObqmAIREgJMFI6tWZQEl/mopSxoMtfs8EphI8cTpNwkHdRDhfPBB/UP9NXln
-         S0S4T1JsheR74cFZxdngy/CkWxy0HYyLEXO3SicuqDF2Lx0iYzIPswrnGXwSVFwDtXFE
-         9LB3+EixEUdi4uEf6tJNdUBl2GGW2VLi+lyGqISEuIZO2p24WSp3vHWEUPDuA8dFYFrx
-         6eUw==
+        bh=phYyD2kbNy4Z00klgX9xZbzhEqyMK+s+XM5+auF5Y0o=;
+        b=T0IDrPHXwj0MW5ePgzYIZymJW8Yi3gr3oCH/kjVpdNyTzShNcXW/Vh1jUDNUpD6z2a
+         YoCrg2WrRwI2u8FTPiAeixdhjLGEzY597p6eq6Ahg90ZWYMWXbmOrMjsKf3HtXu3CoS4
+         Hg+dG+oLKJor/HndCZ8vfAioFrJvXsWPs7s2A3ncCJdXd6Vw/DckI1+xPf/CAFcFA9zc
+         sXPPqtfHVbO1V1sUwUcnj4tobUjbfG++4edpnCfvwriavR/vViEJPVLafzJ4rRziXXQZ
+         ZlzLil8kHrrGOBGlMI1uBlaSGmFx2g4yc9Ka52LdNwmI4gMgYe6VEg7BR+ZTFYQD3YHX
+         EoLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=r2OJKDkIYvUvVxY/33WQ/juxWSmStOBn1IcK9dzFtG0=;
-        b=EddtfEFhS+EKj8+m26Qhhcc2aldPlJWck3feZD/IGxyYA0k43vq1sgzPYn4legzld3
-         GmwCvgisjyYh9kCbGuV8er9qvo/yHFTtZMoQyCYmyp6tHXPnZnZnuLl0uUmQcUk/9jz7
-         nGoXjzFji1pveNgu+QDI8gU+vkXWKFwe7mJEIgJVj4YFHgnT6p9BVfz8mQqIF1mDf9l0
-         0fZ9afpeHJNbVsmRxtQc1h5azAwgUZisXnw8guBKPcbqNAv+5VYXvk9uK8OFoOMrJRm8
-         m6o3VsEynyDSyo6RdGa9a/DoRgQIgG9tM7T1NY8LA5p8JCvf7M82ylbK3BOMyb0rqaFB
-         vcDw==
-X-Gm-Message-State: AOAM533YRGsViMBsDDNXUoQBG0Z4BIN3KhSZ+fPf25+a1TS4pskCtI+7
-        ovW96l8tQMS/oi96k0FUlOs=
-X-Google-Smtp-Source: ABdhPJzzWjVLwEKa5hFZvrXiO+DrXEv6LJmUHT3QmLMFqNWO3QvfhpemdFmfumpXNwzCjKY3KFBMTw==
-X-Received: by 2002:a05:6a00:13a3:b029:203:5c4d:7a22 with SMTP id t35-20020a056a0013a3b02902035c4d7a22mr15287473pfg.22.1616812051531;
-        Fri, 26 Mar 2021 19:27:31 -0700 (PDT)
+        bh=phYyD2kbNy4Z00klgX9xZbzhEqyMK+s+XM5+auF5Y0o=;
+        b=MV2GYjkKKnGzv9feqTpiA4ZTz1J30gQ0V9cuFG37rvzqxq7g3svHjQvx8/uCpXlAxM
+         8dKr01I8w9aTg42iSIDSN80o1zWkPmWFM1XeAvnoDVl1if3vpzNTb5JLaYzhFYFIEy74
+         9OxYT6BloYaBySjag4LtL4SCxJzPUTICz9c6PQDrI3JXCnF18PVSwpGe+4CZNRSfeU9N
+         /kQrPraLPAU+DNUG3eplQfCc8uqjsAckLryndX4Qszr2xCZtD6XJIVAhWr985f+iU9lP
+         J20EXXdf3w9SEO+vDlpjKbvp3HorVwqefbpTEvPKVeEAyjG6SLySd9hYxpXPYCAVCPNV
+         y+/Q==
+X-Gm-Message-State: AOAM5306/BgZ8vxM63lfdXkqq25oFpVJW9r8wfWbdk60s+WjnQUjyXOm
+        o7y/PvLIy8ZLyl/YpvFGSPc=
+X-Google-Smtp-Source: ABdhPJy2kLXUaSiYuOJy5WTLzIGc2ZFeONo1QjwiC8Mk6drTpulFJS0P1ioqx0wHlbGLrXugQoa31g==
+X-Received: by 2002:aa7:9096:0:b029:1f7:c442:fe37 with SMTP id i22-20020aa790960000b02901f7c442fe37mr15868133pfa.11.1616815185262;
+        Fri, 26 Mar 2021 20:19:45 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:400::5:15b8])
-        by smtp.gmail.com with ESMTPSA id j3sm9144915pjf.36.2021.03.26.19.27.30
+        by smtp.gmail.com with ESMTPSA id s76sm10674036pfc.110.2021.03.26.20.19.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Mar 2021 19:27:30 -0700 (PDT)
-Date:   Fri, 26 Mar 2021 19:27:29 -0700
+        Fri, 26 Mar 2021 20:19:44 -0700 (PDT)
+Date:   Fri, 26 Mar 2021 20:19:42 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Ciara Loftus <ciara.loftus@intel.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        magnus.karlsson@gmail.com
-Subject: Re: [PATCH v2 bpf 3/3] libbpf: ignore return values of setsockopt
- for XDP rings.
-Message-ID: <20210327022729.cgizt5xnhkerbrmy@ast-mbp>
-References: <20210326142946.5263-1-ciara.loftus@intel.com>
- <20210326142946.5263-4-ciara.loftus@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCHv3 bpf] bpf: Take module reference for trampoline in module
+Message-ID: <20210327031942.nieqezfod6p2fcfl@ast-mbp>
+References: <20210326105900.151466-1-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210326142946.5263-4-ciara.loftus@intel.com>
+In-Reply-To: <20210326105900.151466-1-jolsa@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 26, 2021 at 02:29:46PM +0000, Ciara Loftus wrote:
-> During xsk_socket__create the XDP_RX_RING and XDP_TX_RING setsockopts
-> are called to create the rx and tx rings for the AF_XDP socket. If the ring
-> has already been set up, the setsockopt will return an error. However,
-> in the event of a failure during xsk_socket__create(_shared) after the
-> rings have been set up, the user may wish to retry the socket creation
-> using these pre-existing rings. In this case we can ignore the error
-> returned by the setsockopts. If there is a true error, the subsequent
-> call to mmap() will catch it.
+On Fri, Mar 26, 2021 at 11:59:00AM +0100, Jiri Olsa wrote:
+> Currently module can be unloaded even if there's a trampoline
+> register in it. It's easily reproduced by running in parallel:
 > 
-> Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
+>   # while :; do ./test_progs -t module_attach; done
+>   # while :; do rmmod bpf_testmod; sleep 0.5; done
 > 
-> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+> Taking the module reference in case the trampoline's ip is
+> within the module code. Releasing it when the trampoline's
+> ip is unregistered.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  tools/lib/bpf/xsk.c | 34 ++++++++++++++++------------------
->  1 file changed, 16 insertions(+), 18 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index d4991ddff05a..cfc4abf505c3 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -900,24 +900,22 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
->  	}
->  	xsk->ctx = ctx;
->  
-> -	if (rx) {
-> -		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> -				 &xsk->config.rx_size,
-> -				 sizeof(xsk->config.rx_size));
-> -		if (err) {
-> -			err = -errno;
-> -			goto out_put_ctx;
-> -		}
-> -	}
-> -	if (tx) {
-> -		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-> -				 &xsk->config.tx_size,
-> -				 sizeof(xsk->config.tx_size));
-> -		if (err) {
-> -			err = -errno;
-> -			goto out_put_ctx;
-> -		}
-> -	}
-> +	/* The return values of these setsockopt calls are intentionally not checked.
-> +	 * If the ring has already been set up setsockopt will return an error. However,
-> +	 * this scenario is acceptable as the user may be retrying the socket creation
-> +	 * with rings which were set up in a previous but ultimately unsuccessful call
-> +	 * to xsk_socket__create(_shared). The call later to mmap() will fail if there
-> +	 * is a real issue and we handle that return value appropriately there.
-> +	 */
-> +	if (rx)
-> +		setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> +			   &xsk->config.rx_size,
-> +			   sizeof(xsk->config.rx_size));
-> +
-> +	if (tx)
-> +		setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-> +			   &xsk->config.tx_size,
-> +			   sizeof(xsk->config.tx_size));
+>  v3 changes:
+>    - store module pointer under bpf_trampoline struct
 
-Instead of ignoring the error can you remember that setsockopt was done
-in struct xsk_socket and don't do it the second time?
+Applied.
