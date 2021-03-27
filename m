@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92D134B609
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 11:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21ECD34B61C
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 11:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231468AbhC0KS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Mar 2021 06:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230471AbhC0KSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 06:18:35 -0400
-Received: from smtp.gentoo.org (mail.gentoo.org [IPv6:2001:470:ea4a:1:5054:ff:fec7:86e4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6E7C0613B1;
-        Sat, 27 Mar 2021 03:18:30 -0700 (PDT)
-Received: by sf.home (Postfix, from userid 1000)
-        id 536595A22061; Sat, 27 Mar 2021 10:18:18 +0000 (GMT)
-Date:   Sat, 27 Mar 2021 10:18:18 +0000
-From:   Sergei Trofimovich <slyfox@gentoo.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] ia64: tools: add generic errno.h definition
-Message-ID: <YF8GapSa+3zU3fqM@sf>
-References: <20210312075136.2037915-1-slyfox@gentoo.org>
+        id S231308AbhC0K3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 06:29:06 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:15359 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230350AbhC0K3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 06:29:05 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4F6w4h5tlmz90S3;
+        Sat, 27 Mar 2021 18:27:00 +0800 (CST)
+Received: from mdc.localdomain (10.175.104.57) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.498.0; Sat, 27 Mar 2021 18:28:52 +0800
+From:   Huang Guobin <huangguobin4@huawei.com>
+To:     <huangguobin4@huawei.com>, Wingman Kwok <w-kwok2@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v2] net: netcp: fix PM reference leak in netcp_probe()
+Date:   Sat, 27 Mar 2021 18:28:42 +0800
+Message-ID: <1616840922-8512-1-git-send-email-huangguobin4@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210312075136.2037915-1-slyfox@gentoo.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.175.104.57]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 12, 2021 at 07:51:35AM +0000, Sergei Trofimovich wrote:
-> Noticed missing header when build bpfilter helper:
-> 
->     CC [U]  net/bpfilter/main.o
->   In file included from /usr/include/linux/errno.h:1,
->                    from /usr/include/bits/errno.h:26,
->                    from /usr/include/errno.h:28,
->                    from net/bpfilter/main.c:4:
->   tools/include/uapi/asm/errno.h:13:10: fatal error:
->     ../../../arch/ia64/include/uapi/asm/errno.h: No such file or directory
->      13 | #include "../../../arch/ia64/include/uapi/asm/errno.h"
->         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> CC: linux-kernel@vger.kernel.org
-> CC: netdev@vger.kernel.org
-> CC: bpf@vger.kernel.org
-> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+From: Guobin Huang <huangguobin4@huawei.com>
 
-Any chance to pick it up?
+pm_runtime_get_sync will increment pm usage counter even it failed.
+Forgetting to putting operation will result in reference leak here.
+Fix it by replacing it with pm_runtime_resume_and_get to keep usage
+counter balanced.
 
-Thanks!
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Guobin Huang <huangguobin4@huawei.com>
+---
+ drivers/net/ethernet/ti/netcp_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  tools/arch/ia64/include/uapi/asm/errno.h | 1 +
->  1 file changed, 1 insertion(+)
->  create mode 100644 tools/arch/ia64/include/uapi/asm/errno.h
-> 
-> diff --git a/tools/arch/ia64/include/uapi/asm/errno.h b/tools/arch/ia64/include/uapi/asm/errno.h
-> new file mode 100644
-> index 000000000000..4c82b503d92f
-> --- /dev/null
-> +++ b/tools/arch/ia64/include/uapi/asm/errno.h
-> @@ -0,0 +1 @@
-> +#include <asm-generic/errno.h>
-> -- 
-> 2.30.2
-> 
+diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
+index d7a144b4a09f..0675f259033e 100644
+--- a/drivers/net/ethernet/ti/netcp_core.c
++++ b/drivers/net/ethernet/ti/netcp_core.c
+@@ -2171,7 +2171,7 @@ static int netcp_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	pm_runtime_enable(&pdev->dev);
+-	ret = pm_runtime_get_sync(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to enable NETCP power-domain\n");
+ 		pm_runtime_disable(&pdev->dev);
 
--- 
-
-  Sergei
