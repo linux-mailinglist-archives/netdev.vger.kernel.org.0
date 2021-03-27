@@ -2,120 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE2FB34B7AC
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 15:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8C234B7CC
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 15:46:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbhC0Obk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Mar 2021 10:31:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46560 "EHLO mail.kernel.org"
+        id S230127AbhC0OqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 10:46:19 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51084 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229980AbhC0ObU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Mar 2021 10:31:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 23E7F61971;
-        Sat, 27 Mar 2021 14:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1616855480;
-        bh=K3B3wn5O49X7pYMRnz2Miw/eCiO8vGc9WeAkqSPq/e8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ODwi2je5W88UiTQEcBFH3/2TXBGigWnPnrRryFnbOeDzWtVCrw7dAkTCDiRoOPK+4
-         3WKdLTAA92zPQph2k+QrmD3W32XEEV85osrr2d/kyiYVdJpDlfF61xWV7EYuCUf5fw
-         A9+E6Xylphx2YALJUmRzk0/nn9hhI3cvcTbm+h9Y=
-Date:   Sat, 27 Mar 2021 15:31:18 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Du Cheng <ducheng2@gmail.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
+        id S229582AbhC0OqI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Mar 2021 10:46:08 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lQAC8-00DLHu-FL; Sat, 27 Mar 2021 15:45:44 +0100
+Date:   Sat, 27 Mar 2021 15:45:44 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2] net:qrtr: fix atomic idr allocation in
- qrtr_port_assign()
-Message-ID: <YF9BthXs2ha7hnrF@kroah.com>
-References: <20210327140702.4916-1-ducheng2@gmail.com>
- <YF89PtWrs2N5XSgb@kroah.com>
- <20210327142520.GA5271@ThinkCentre-M83>
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next,v2] net: dsa: mt7530: clean up core and TRGMII
+ clock setup
+Message-ID: <YF9FGJmH/b5BMHQC@lunn.ch>
+References: <20210327055543.473099-1-ilya.lipnitskiy@gmail.com>
+ <20210327060752.474627-1-ilya.lipnitskiy@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210327142520.GA5271@ThinkCentre-M83>
+In-Reply-To: <20210327060752.474627-1-ilya.lipnitskiy@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 27, 2021 at 10:25:20PM +0800, Du Cheng wrote:
-> On Sat, Mar 27, 2021 at 03:12:14PM +0100, Greg Kroah-Hartman wrote:
-> > Adding the xarray maintainer...
-> > 
-> > On Sat, Mar 27, 2021 at 10:07:02PM +0800, Du Cheng wrote:
-> > > add idr_preload() and idr_preload_end() around idr_alloc_u32(GFP_ATOMIC)
-> > > due to internal use of per_cpu variables, which requires preemption
-> > > disabling/enabling.
-> > > 
-> > > reported as "BUG: "using smp_processor_id() in preemptible" by syzkaller
-> > > 
-> > > Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-> > > Signed-off-by: Du Cheng <ducheng2@gmail.com>
-> > > ---
-> > > changelog
-> > > v1: change to GFP_KERNEL for idr_alloc_u32() but might sleep
-> > > v2: revert to GFP_ATOMIC but add preemption disable/enable protection
-> > > 
-> > >  net/qrtr/qrtr.c | 6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > > 
-> > > diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> > > index edb6ac17ceca..6361f169490e 100644
-> > > --- a/net/qrtr/qrtr.c
-> > > +++ b/net/qrtr/qrtr.c
-> > > @@ -722,17 +722,23 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
-> > >  	mutex_lock(&qrtr_port_lock);
-> > >  	if (!*port) {
-> > >  		min_port = QRTR_MIN_EPH_SOCKET;
-> > > +		idr_preload(GFP_ATOMIC);
-> > >  		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
-> > > +		idr_preload_end();
-> > 
-> > This seems "odd" to me.  We are asking idr_alloc_u32() to abide by
-> > GFP_ATOMIC, so why do we need to "preload" it with the same type of
-> > allocation?
-> > 
-> > Is there something in the idr/radix/xarray code that can't really handle
-> > GFP_ATOMIC during a "normal" idr allocation that is causing this warning
-> > to be hit?  Why is this change the "correct" one?
-> > 
-> > thanks,
-> > 
-> > greg k-h
+On Fri, Mar 26, 2021 at 11:07:52PM -0700, Ilya Lipnitskiy wrote:
+> Three minor changes:
 > 
+> - When disabling PLL, there is no need to call core_write_mmd_indirect
+>   directly, use the core_write wrapper instead like the rest of the code
+>   in the function does. This change helps with consistency and
+>   readability. Move the comment to the definition of
+>   core_read_mmd_indirect where it belongs.
 > 
-> >From the comment above idr_preload() in lib/radix-tree.c:1460
-> /**
->  * idr_preload - preload for idr_alloc()
->  * @gfp_mask: allocation mask to use for preloading
->  *
->  * Preallocate memory to use for the next call to idr_alloc().  This function
->  * returns with preemption disabled.  It will be enabled by idr_preload_end().
->  */
+> - Disable both core and TRGMII Tx clocks prior to reconfiguring.
+>   Previously, only the core clock was disabled, but not TRGMII Tx clock.
+>   So disable both, then configure them, then re-enable both, for
+>   consistency.
 > 
-> idr_alloc is a very simple wrapper around idr_alloc_u32().
+> - The core clock enable bit (REG_GSWCK_EN) is written redundantly three
+>   times. Simplify the code and only write the register only once at the
+>   end of clock reconfiguration to enable both core and TRGMII Tx clocks.
 > 
-> On top of radix_tree_node_alloc() which is called by idr_alloc_u32(), there is
-> this comment at line 244 in the same radix-tree.c
-> /*
->  * This assumes that the caller has performed appropriate preallocation, and
->  * that the caller has pinned this thread of control to the current CPU.
->  */
+> Tested on Ubiquiti ER-X running the GMAC0 and MT7530 in TRGMII mode.
 > 
-> Therefore the preload/preload_end are necessary, or at least should have
-> preemption disabled
+> Signed-off-by: Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>
 
-Ah, so it's disabling preemption that is the key here.  Still odd, why
-is GFP_ATOMIC not sufficient in a normal idr_alloc() call to keep things
-from doing stuff like this?  Feels like a lot of "internal knowledge" is
-needed here to use this api properly...
+Thanks for moving the comment.
 
-Matthew, is the above change really correct?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-thanks,
-
-greg k-h
+    Andrew
