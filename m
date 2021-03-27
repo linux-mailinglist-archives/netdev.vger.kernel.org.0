@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F63134B5F4
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 11:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E92D134B609
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 11:19:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231390AbhC0KHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Mar 2021 06:07:41 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:14169 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbhC0KHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 06:07:40 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F6vbM5kgQzndhH;
-        Sat, 27 Mar 2021 18:05:03 +0800 (CST)
-Received: from mdc.localdomain (10.175.104.57) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.498.0; Sat, 27 Mar 2021 18:07:27 +0800
-From:   Huang Guobin <huangguobin4@huawei.com>
-To:     <huangguobin4@huawei.com>, Kurt Kanzenbach <kurt@linutronix.de>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v2] net: dsa: hellcreek: Remove redundant dev_err call in hellcreek_probe()
-Date:   Sat, 27 Mar 2021 18:07:18 +0800
-Message-ID: <1616839638-7111-1-git-send-email-huangguobin4@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S231468AbhC0KS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 06:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230471AbhC0KSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 06:18:35 -0400
+Received: from smtp.gentoo.org (mail.gentoo.org [IPv6:2001:470:ea4a:1:5054:ff:fec7:86e4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6E7C0613B1;
+        Sat, 27 Mar 2021 03:18:30 -0700 (PDT)
+Received: by sf.home (Postfix, from userid 1000)
+        id 536595A22061; Sat, 27 Mar 2021 10:18:18 +0000 (GMT)
+Date:   Sat, 27 Mar 2021 10:18:18 +0000
+From:   Sergei Trofimovich <slyfox@gentoo.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] ia64: tools: add generic errno.h definition
+Message-ID: <YF8GapSa+3zU3fqM@sf>
+References: <20210312075136.2037915-1-slyfox@gentoo.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.175.104.57]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210312075136.2037915-1-slyfox@gentoo.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guobin Huang <huangguobin4@huawei.com>
+On Fri, Mar 12, 2021 at 07:51:35AM +0000, Sergei Trofimovich wrote:
+> Noticed missing header when build bpfilter helper:
+> 
+>     CC [U]  net/bpfilter/main.o
+>   In file included from /usr/include/linux/errno.h:1,
+>                    from /usr/include/bits/errno.h:26,
+>                    from /usr/include/errno.h:28,
+>                    from net/bpfilter/main.c:4:
+>   tools/include/uapi/asm/errno.h:13:10: fatal error:
+>     ../../../arch/ia64/include/uapi/asm/errno.h: No such file or directory
+>      13 | #include "../../../arch/ia64/include/uapi/asm/errno.h"
+>         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> CC: linux-kernel@vger.kernel.org
+> CC: netdev@vger.kernel.org
+> CC: bpf@vger.kernel.org
+> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
 
-There is a error message within devm_ioremap_resource
-already, so remove the dev_err call to avoid redundant
-error message.
+Any chance to pick it up?
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Guobin Huang <huangguobin4@huawei.com>
----
- drivers/net/dsa/hirschmann/hellcreek.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Thanks!
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 918be7eb626f..4d78219da253 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -1842,10 +1842,8 @@ static int hellcreek_probe(struct platform_device *pdev)
- 	}
- 
- 	hellcreek->base = devm_ioremap_resource(dev, res);
--	if (IS_ERR(hellcreek->base)) {
--		dev_err(dev, "No memory available!\n");
-+	if (IS_ERR(hellcreek->base))
- 		return PTR_ERR(hellcreek->base);
--	}
- 
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "ptp");
- 	if (!res) {
-@@ -1854,10 +1852,8 @@ static int hellcreek_probe(struct platform_device *pdev)
- 	}
- 
- 	hellcreek->ptp_base = devm_ioremap_resource(dev, res);
--	if (IS_ERR(hellcreek->ptp_base)) {
--		dev_err(dev, "No memory available!\n");
-+	if (IS_ERR(hellcreek->ptp_base))
- 		return PTR_ERR(hellcreek->ptp_base);
--	}
- 
- 	ret = hellcreek_detect(hellcreek);
- 	if (ret) {
+> ---
+>  tools/arch/ia64/include/uapi/asm/errno.h | 1 +
+>  1 file changed, 1 insertion(+)
+>  create mode 100644 tools/arch/ia64/include/uapi/asm/errno.h
+> 
+> diff --git a/tools/arch/ia64/include/uapi/asm/errno.h b/tools/arch/ia64/include/uapi/asm/errno.h
+> new file mode 100644
+> index 000000000000..4c82b503d92f
+> --- /dev/null
+> +++ b/tools/arch/ia64/include/uapi/asm/errno.h
+> @@ -0,0 +1 @@
+> +#include <asm-generic/errno.h>
+> -- 
+> 2.30.2
+> 
 
+-- 
+
+  Sergei
