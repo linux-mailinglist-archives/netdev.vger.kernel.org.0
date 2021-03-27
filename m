@@ -2,121 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5706234B5CD
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 10:54:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C51134B5EB
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 11:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231560AbhC0Jxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Mar 2021 05:53:41 -0400
-Received: from mail-vk1-f177.google.com ([209.85.221.177]:38596 "EHLO
-        mail-vk1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231403AbhC0Jxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 05:53:36 -0400
-Received: by mail-vk1-f177.google.com with SMTP id d2so1738484vke.5;
-        Sat, 27 Mar 2021 02:53:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ei4Zq2qQr5wPT1q7tW3R31IHQU2GQmJWy+Z1ULLx9Gg=;
-        b=OkLeY0cPw8mDKwazvUX0w6b+iWhu1urtVNqJZOVYXwdr2dPj72hOz3d37xbfRIozVt
-         rVEleMCPDw9hZTI/5kC/e8H4pprbTEJBu2gMUcVVf0ejC2un5Ob5LHrkESxsQ41KWzXl
-         7HHoIq9z27U7X3jex9IjFmvAqq99BT81C0o1ze2iOklX/DFh4SDBVCL5eKne+csWYU4s
-         gI4b9sFssbFuCT4f9kZ/PuFFTzWCPNmN0Gj6D8CNfvHhrVq3w6OQ91UtGenJlbVw79Kj
-         cdjTrx48MKpi9HlIsBHPS/jAcPOZMLrHlnYK85EKt2dKtIS72Pbh0654B9eV5BPaBtLK
-         uIxg==
-X-Gm-Message-State: AOAM532pxuYKGaHXH8mBTRWGddo/600+9xjxIzn51Nji8cN4kp+xqL3Z
-        l4ledvo6+LB7yhBuS9xR60M3f4cmBUlKee3gCEA=
-X-Google-Smtp-Source: ABdhPJxMfRB9EQgbKTONIXI//NI1LJ+DDWdqsdomH9lWt8UmO3P7zTUYXoBpzwInwF0XUfc2xwK13k0b6GJnIk8K9qY=
-X-Received: by 2002:a1f:b689:: with SMTP id g131mr10365672vkf.6.1616838815501;
- Sat, 27 Mar 2021 02:53:35 -0700 (PDT)
+        id S231443AbhC0KBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 06:01:14 -0400
+Received: from m12-12.163.com ([220.181.12.12]:54957 "EHLO m12-12.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231468AbhC0KBE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 27 Mar 2021 06:01:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=/BhxQ
+        Uwk2txft5OcNY5/+TGgju86XAdEU+w3D9UUn18=; b=Tb5KMjFkEX9ortqdiNHNb
+        b+atZuiYgbU184k3bQ3N58oP9f5jI5ymermN9LK1b4nAlW0JMPGoC5Ri1bO6tfv3
+        dQZC0uC8USyKxFVR8LCvkFGjNHBrfME0QOKXJ19G37yd28uLSA6PzBZtDlhJp80y
+        gHMWr5txVmF2O8wd2JCCNc=
+Received: from yangjunlin.ccdomain.com (unknown [218.17.89.92])
+        by smtp8 (Coremail) with SMTP id DMCowABnb48EAl9gqMu5Wg--.45769S2;
+        Sat, 27 Mar 2021 17:59:34 +0800 (CST)
+From:   angkery <angkery@163.com>
+To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        matthias.bgg@gmail.com, shayne.chen@mediatek.com,
+        yiwei.chung@mediatek.com, ap420073@gmail.com,
+        sean.wang@mediatek.com, Soul.Huang@mediatek.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Junlin Yang <yangjunlin@yulong.com>
+Subject: [PATCH] mt76: Convert to DEFINE_SHOW_ATTRIBUTE
+Date:   Sat, 27 Mar 2021 17:56:17 +0800
+Message-Id: <20210327095617.1222-1-angkery@163.com>
+X-Mailer: git-send-email 2.24.0.windows.2
 MIME-Version: 1.0
-References: <20210325223119.3991796-1-anthony.l.nguyen@intel.com>
- <20210325223119.3991796-2-anthony.l.nguyen@intel.com> <CAMuHMdXo_UOf_QLKSxtgm5ByvSAo_Uy_h2RTpy8B=xqdUGaBNQ@mail.gmail.com>
- <ce03118c-d368-def0-8a1f-8c3a770901d6@intel.com>
-In-Reply-To: <ce03118c-d368-def0-8a1f-8c3a770901d6@intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sat, 27 Mar 2021 10:53:23 +0100
-Message-ID: <CAMuHMdW3BSkJXjSL5R4xuYv6Yb765U5zwBCLcsSW+zr_K7898g@mail.gmail.com>
-Subject: Re: [PATCH net 1/4] virtchnl: Fix layout of RSS structures
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     anthony.l.nguyen@intel.com,
-        Norbert Ciosek <norbertx.ciosek@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, sassmann@redhat.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMCowABnb48EAl9gqMu5Wg--.45769S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAr43tr17ury8Zr18Cr1UGFg_yoWrKw1xpa
+        95uayUAr48Jr1kKFWkAFWUZa4Skanaq347Zr92934ruF1ktrnYyF4UKFWSvrW0k3y8Cw1U
+        Xa1Yyry7GrWYvr7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jLWrXUUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: 5dqjyvlu16il2tof0z/xtbBRgZiI13l-C9qnQAAsd
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Samudrala,
+From: Junlin Yang <yangjunlin@yulong.com>
 
-On Fri, Mar 26, 2021 at 11:45 PM Samudrala, Sridhar
-<sridhar.samudrala@intel.com> wrote:
-> On 3/26/2021 1:06 AM, Geert Uytterhoeven wrote:
-> > On Thu, Mar 25, 2021 at 11:29 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
-> > From: Norbert Ciosek <norbertx.ciosek@intel.com>
-> >
-> > Remove padding from RSS structures. Previous layout
-> > could lead to unwanted compiler optimizations
-> > in loops when iterating over key and lut arrays.
-> >
-> > From an earlier private conversation with Mateusz, I understand the real
-> > explanation is that key[] and lut[] must be at the end of the
-> > structures, because they are used as flexible array members?
-> >
-> > Fixes: 65ece6de0114 ("virtchnl: Add missing explicit padding to structures")
-> > Signed-off-by: Norbert Ciosek <norbertx.ciosek@intel.com>
-> > Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-> > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> >
-> > --- a/include/linux/avf/virtchnl.h
-> > +++ b/include/linux/avf/virtchnl.h
-> > @@ -476,7 +476,6 @@ struct virtchnl_rss_key {
-> >         u16 vsi_id;
-> >         u16 key_len;
-> >         u8 key[1];         /* RSS hash key, packed bytes */
-> > -       u8 pad[1];
-> >  };
-> >
-> >  VIRTCHNL_CHECK_STRUCT_LEN(6, virtchnl_rss_key);
-> > @@ -485,7 +484,6 @@ struct virtchnl_rss_lut {
-> >         u16 vsi_id;
-> >         u16 lut_entries;
-> >         u8 lut[1];        /* RSS lookup table */
-> > -       u8 pad[1];
-> >  };
-> >
-> > If you use a flexible array member, it should be declared without a size,
-> > i.e.
-> >
-> >     u8 key[];
-> >
-> > Everything else is (trying to) fool the compiler, and leading to undefined
-> > behavior, and people (re)adding explicit padding.
->
-> This header file is shared across other OSes that use C++ that doesn't support
-> flexible arrays. So the structures in this file use an array of size 1 as a last
-> element to enable variable sized arrays.
+Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
 
-I don't think it is accepted practice to have non-Linux-isms in
-include/*linux*/avf/virtchnl.h header files.  Moreover, using a size
-of 1 is counter-intuitive for people used to Linux kernel development,
-and may lead to off-by-one errors in calculation of sizes.
+Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
+---
+ .../net/wireless/mediatek/mt76/mt7915/debugfs.c    | 36 ++++------------------
+ .../net/wireless/mediatek/mt76/mt7921/debugfs.c    | 18 ++---------
+ 2 files changed, 9 insertions(+), 45 deletions(-)
 
-If you insist on ignoring the above, this definitely deserves a
-comment next to the member's declaration.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+index 77dcd71..7bef36f 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+@@ -192,7 +192,7 @@ static int mt7915_ser_trigger_set(void *data, u64 val)
+ }
+ 
+ static int
+-mt7915_tx_stats_read(struct seq_file *file, void *data)
++mt7915_tx_stats_show(struct seq_file *file, void *data)
+ {
+ 	struct mt7915_dev *dev = file->private;
+ 	int stat[8], i, n;
+@@ -222,19 +222,7 @@ static int mt7915_ser_trigger_set(void *data, u64 val)
+ 	return 0;
+ }
+ 
+-static int
+-mt7915_tx_stats_open(struct inode *inode, struct file *f)
+-{
+-	return single_open(f, mt7915_tx_stats_read, inode->i_private);
+-}
+-
+-static const struct file_operations fops_tx_stats = {
+-	.open = mt7915_tx_stats_open,
+-	.read = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-	.owner = THIS_MODULE,
+-};
++DEFINE_SHOW_ATTRIBUTE(mt7915_tx_stats);
+ 
+ static int mt7915_read_temperature(struct seq_file *s, void *data)
+ {
+@@ -379,7 +367,7 @@ int mt7915_init_debugfs(struct mt7915_dev *dev)
+ 				    mt7915_queues_read);
+ 	debugfs_create_devm_seqfile(dev->mt76.dev, "acq", dir,
+ 				    mt7915_queues_acq);
+-	debugfs_create_file("tx_stats", 0400, dir, dev, &fops_tx_stats);
++	debugfs_create_file("tx_stats", 0400, dir, dev, &mt7915_tx_stats_fops);
+ 	debugfs_create_file("fw_debug", 0600, dir, dev, &fops_fw_debug);
+ 	debugfs_create_file("implicit_txbf", 0600, dir, dev,
+ 			    &fops_implicit_txbf);
+@@ -412,7 +400,7 @@ static int mt7915_sta_fixed_rate_set(void *data, u64 rate)
+ 			 mt7915_sta_fixed_rate_set, "%llx\n");
+ 
+ static int
+-mt7915_sta_stats_read(struct seq_file *s, void *data)
++mt7915_sta_stats_show(struct seq_file *s, void *data)
+ {
+ 	struct ieee80211_sta *sta = s->private;
+ 	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
+@@ -455,24 +443,12 @@ static int mt7915_sta_fixed_rate_set(void *data, u64 rate)
+ 	return 0;
+ }
+ 
+-static int
+-mt7915_sta_stats_open(struct inode *inode, struct file *f)
+-{
+-	return single_open(f, mt7915_sta_stats_read, inode->i_private);
+-}
+-
+-static const struct file_operations fops_sta_stats = {
+-	.open = mt7915_sta_stats_open,
+-	.read = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-	.owner = THIS_MODULE,
+-};
++DEFINE_SHOW_ATTRIBUTE(mt7915_sta_stats);
+ 
+ void mt7915_sta_add_debugfs(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 			    struct ieee80211_sta *sta, struct dentry *dir)
+ {
+ 	debugfs_create_file("fixed_rate", 0600, dir, sta, &fops_fixed_rate);
+-	debugfs_create_file("stats", 0400, dir, sta, &fops_sta_stats);
++	debugfs_create_file("stats", 0400, dir, sta, &mt7915_sta_stats_fops);
+ }
+ #endif
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+index 0dc8e25..c1a64ff 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
+@@ -62,7 +62,7 @@
+ }
+ 
+ static int
+-mt7921_tx_stats_read(struct seq_file *file, void *data)
++mt7921_tx_stats_show(struct seq_file *file, void *data)
+ {
+ 	struct mt7921_dev *dev = file->private;
+ 	int stat[8], i, n;
+@@ -88,19 +88,7 @@
+ 	return 0;
+ }
+ 
+-static int
+-mt7921_tx_stats_open(struct inode *inode, struct file *f)
+-{
+-	return single_open(f, mt7921_tx_stats_read, inode->i_private);
+-}
+-
+-static const struct file_operations fops_tx_stats = {
+-	.open = mt7921_tx_stats_open,
+-	.read = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-	.owner = THIS_MODULE,
+-};
++DEFINE_SHOW_ATTRIBUTE(mt7921_tx_stats);
+ 
+ static int
+ mt7921_queues_acq(struct seq_file *s, void *data)
+@@ -239,7 +227,7 @@ int mt7921_init_debugfs(struct mt7921_dev *dev)
+ 				    mt7921_queues_read);
+ 	debugfs_create_devm_seqfile(dev->mt76.dev, "acq", dir,
+ 				    mt7921_queues_acq);
+-	debugfs_create_file("tx_stats", 0400, dir, dev, &fops_tx_stats);
++	debugfs_create_file("tx_stats", 0400, dir, dev, &mt7921_tx_stats_fops);
+ 	debugfs_create_file("fw_debug", 0600, dir, dev, &fops_fw_debug);
+ 	debugfs_create_file("runtime-pm", 0600, dir, dev, &fops_pm);
+ 	debugfs_create_file("idle-timeout", 0600, dir, dev,
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+1.9.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
