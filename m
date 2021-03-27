@@ -2,119 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4010534B43C
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 05:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A894D34B440
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 05:33:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbhC0EZl convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 27 Mar 2021 00:25:41 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63652 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229582AbhC0EZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 00:25:33 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12R4OsMR014060
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 21:25:11 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 37hj0kbg15-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 26 Mar 2021 21:25:11 -0700
-Received: from intmgw001.06.ash9.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 26 Mar 2021 21:25:09 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 53B432ED2F0C; Fri, 26 Mar 2021 21:25:03 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next] libbpf: fix memory leak when emitting final btf_ext
-Date:   Fri, 26 Mar 2021 21:25:02 -0700
-Message-ID: <20210327042502.969745-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        id S229726AbhC0EdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 00:33:08 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:14154 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229650AbhC0Eca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 00:32:30 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F6m8b0LRDznc6C;
+        Sat, 27 Mar 2021 12:29:51 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.498.0; Sat, 27 Mar 2021
+ 12:32:17 +0800
+From:   'Liu Jian <liujian56@huawei.com>
+To:     <liujian56@huawei.com>, Yisen Zhuang <yisen.zhuang@huawei.com>,
+        "Salil Mehta" <salil.mehta@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Huazhong Tan" <tanhuazhong@huawei.com>,
+        Jian Shen <shenjian15@huawei.com>,
+        "Guangbin Huang" <huangguangbin2@huawei.com>,
+        GuoJia Liao <liaoguojia@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>
+CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net-next] net: hns3: no return statement in hclge_clear_arfs_rules
+Date:   Sat, 27 Mar 2021 12:33:39 +0800
+Message-ID: <20210327043339.148050-1-liujian56@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: fa_X3Zq6O7PymZFxAbeDTenLi4ZOeKql
-X-Proofpoint-ORIG-GUID: fa_X3Zq6O7PymZFxAbeDTenLi4ZOeKql
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-27_01:2021-03-26,2021-03-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- mlxlogscore=846 suspectscore=0 clxscore=1015 mlxscore=0 bulkscore=0
- malwarescore=0 priorityscore=1501 adultscore=0 spamscore=0 impostorscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2103250000 definitions=main-2103270032
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Free temporary allocated memory used to construct finalized .BTF.ext data.
-Found by Coverity static analysis on libbpf's Github repo.
+From: Liu Jian <liujian56@huawei.com>
 
-Fixes: 8fd27bf69b86 ("libbpf: Add BPF static linker BTF and BTF.ext support")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c: In function 'hclge_clear_arfs_rules':
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c:7173:1: error: no return statement in function returning non-void [-Werror=return-type]
+ 7173 | }
+      | ^
+cc1: some warnings being treated as errors
+make[6]: *** [scripts/Makefile.build:273: drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.o] Error 1
+make[5]: *** [scripts/Makefile.build:534: drivers/net/ethernet/hisilicon/hns3/hns3pf] Error 2
+make[4]: *** [scripts/Makefile.build:534: drivers/net/ethernet/hisilicon/hns3] Error 2
+make[4]: *** Waiting for unfinished jobs....
+make[3]: *** [scripts/Makefile.build:534: drivers/net/ethernet/hisilicon] Error 2
+make[2]: *** [scripts/Makefile.build:534: drivers/net/ethernet] Error 2
+make[1]: *** [scripts/Makefile.build:534: drivers/net] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1980: drivers] Error 2
+
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Liu Jian <liujian56@huawei.com>
 ---
- tools/lib/bpf/linker.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-index a29d62ff8041..46b16cbdcda3 100644
---- a/tools/lib/bpf/linker.c
-+++ b/tools/lib/bpf/linker.c
-@@ -1906,8 +1906,10 @@ static int finalize_btf_ext(struct bpf_linker *linker)
- 			struct dst_sec *sec = &linker->secs[i];
- 
- 			sz = emit_btf_ext_data(linker, cur, sec->sec_name, &sec->func_info);
--			if (sz < 0)
--				return sz;
-+			if (sz < 0) {
-+				err = sz;
-+				goto out;
-+			}
- 
- 			cur += sz;
- 		}
-@@ -1921,8 +1923,10 @@ static int finalize_btf_ext(struct bpf_linker *linker)
- 			struct dst_sec *sec = &linker->secs[i];
- 
- 			sz = emit_btf_ext_data(linker, cur, sec->sec_name, &sec->line_info);
--			if (sz < 0)
--				return sz;
-+			if (sz < 0) {
-+				err = sz;
-+				goto out;
-+			}
- 
- 			cur += sz;
- 		}
-@@ -1936,8 +1940,10 @@ static int finalize_btf_ext(struct bpf_linker *linker)
- 			struct dst_sec *sec = &linker->secs[i];
- 
- 			sz = emit_btf_ext_data(linker, cur, sec->sec_name, &sec->core_relo_info);
--			if (sz < 0)
--				return sz;
-+			if (sz < 0) {
-+				err = sz;
-+				goto out;
-+			}
- 
- 			cur += sz;
- 		}
-@@ -1948,8 +1954,10 @@ static int finalize_btf_ext(struct bpf_linker *linker)
- 	if (err) {
- 		linker->btf_ext = NULL;
- 		pr_warn("failed to parse final .BTF.ext data: %d\n", err);
--		return err;
-+		goto out;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 058317ce579c..84c70974c80b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -7168,8 +7168,8 @@ static int hclge_clear_arfs_rules(struct hclge_dev *hdev)
  	}
+ 	hclge_sync_fd_state(hdev);
  
 -	return 0;
-+out:
-+	free(data);
-+	return err;
+ #endif
++	return 0;
  }
--- 
-2.30.2
+ 
+ static void hclge_get_cls_key_basic(const struct flow_rule *flow,
 
