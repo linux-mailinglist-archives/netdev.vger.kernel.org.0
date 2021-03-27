@@ -2,96 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C2034B985
-	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 22:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 285EF34B988
+	for <lists+netdev@lfdr.de>; Sat, 27 Mar 2021 22:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbhC0V1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Mar 2021 17:27:07 -0400
-Received: from ozlabs.org ([203.11.71.1]:48485 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230372AbhC0V0t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 27 Mar 2021 17:26:49 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4F7Bjt4xsNz9sVt;
-        Sun, 28 Mar 2021 08:26:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1616880407;
-        bh=acqgKxCeO7hqTrXVeIMMyhTANXyE6FspskuhoHoabeI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VTK1Wur+ztX/rjZhjerfEtw5jDfJg1L0kSK7tpi5PoQvX0CakzIYjrlBH+JW+T8oq
-         ax8PWaa+rluZstWR1suGQ1y85Akrt75Jt+a6MpZLuLKz8WKX89JXSSfr30ZP1UT79Y
-         K0xvO0x4qTC9sMnflkqfxVARvXF9dCgJcmG5ywUW5xt3reyYfwrSqCThdphVetFJ/D
-         OLKBdPUg7tkvJdjoLZduZapFFjXtX6KZSjzqE2zvXL5rwe7WOV6y9EWCMbif6Rm8D0
-         PSOzVxniWak9g84aT//smz5o8TrSytJrVSc1/K8TK2hspnJTimAFxLaFV0VXYRzN8x
-         V2RYBuRlvp6fw==
-Date:   Sun, 28 Mar 2021 08:26:41 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Borislav Petkov <bp@suse.de>, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@elte.hu>, "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the tip tree
-Message-ID: <20210328082641.7afcb938@canb.auug.org.au>
-In-Reply-To: <CA+icZUVGvo7jVxMHoCYdU6Y1x=q3n6hVW4EoU_AsGvzozQLG5w@mail.gmail.com>
-References: <20210322143714.494603ed@canb.auug.org.au>
-        <20210322090036.GB10031@zn.tnic>
-        <CA+icZUVkE73_31m0UCo-2mHOHY5i1E54_zMb7yp18UQmgN5x+A@mail.gmail.com>
-        <20210326131101.GA27507@zn.tnic>
-        <CA+icZUVGvo7jVxMHoCYdU6Y1x=q3n6hVW4EoU_AsGvzozQLG5w@mail.gmail.com>
+        id S230450AbhC0V2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 17:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230372AbhC0V2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 17:28:18 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FB9C0613B1;
+        Sat, 27 Mar 2021 14:28:18 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id 15so11531618ljj.0;
+        Sat, 27 Mar 2021 14:28:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VbwjNu2FkrJEP3d0O7KcMEasRB5V0VGOjN0+MS4lkVg=;
+        b=ZlTRsxbP2YvzUM6TeTgSHLx/joOHuY6AaS9S0RfdOOTrasgAateAF38el0/LvQDpcB
+         77d78UbKUZztlg3rQmjngpTh6WjzTvTW0p3e4hMKraxm3fo+9wYVP1x8MZ/ezSJYs8WK
+         yHwlTh3N64eAJc1qGlVR9pJ1LXhOHnJahZ0XK3QlpjpPTKRMjcliVqYCzpXHaX1D/ECk
+         KfhKNxi7EGfyAJkcp8KQhj3u4slrNskgr1dT370ExVq+ygK8jNYNfu8AutIKjYk2JW80
+         eYXBRbmVcs5AAnQJkOJPAAd/kOPvlbR3CzO/MuM3l7ehSyLw12+ceRcHbehHytw+C5FO
+         gCfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VbwjNu2FkrJEP3d0O7KcMEasRB5V0VGOjN0+MS4lkVg=;
+        b=f+qRBsTzb/knsy0KI5/dp/qz5hpc/snjI67gdS3+HlE11stgtdEIRhqXc/Ptg44aDK
+         wK8EWiDXc/y4ZPhKCmCvnC8RM062hW1yTGaRxZ3bv8MgQctHAkNHsQbVFDAsyWX9J9Fv
+         TcydYcsMv96Y1WrQo9+xGgLUM8Y1cJRPyzuKB2JJ1uXKc4i6u6WJDHaI8aSxQPH5V2JC
+         I28SJIQ4q4n79dhemCMtJIdCETIx2p90AT4HIFe9Rro6BZ2d6ihOOK0WS0rCPoHi9oOa
+         UGKOQUfeQEaKc2s5cfp6MWIJDk7fs9FJ1yucCz4caxn7xvu1dTPzL5GgXIR2tbTBs39P
+         Ip9A==
+X-Gm-Message-State: AOAM532Mth8YGGO+/jCpgnfz5Groueav7wgWkRGCfr4eouFP+RfZcKjb
+        rhTZ7Nj/OXGjYKC9cLHnSRCiDhiHnbWvSPmFfVCliowQ
+X-Google-Smtp-Source: ABdhPJwjRZ1Dn5/1HEfq3g7v7vEtCIxW31I40BtdlGYOKkDB/2oOXWMehXV1Xrd6ZbJiGOOXKz2lw0WrE7mmP7lT+TI=
+X-Received: by 2002:a2e:9198:: with SMTP id f24mr12647337ljg.32.1616880497030;
+ Sat, 27 Mar 2021 14:28:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nk1dXU/2q6Bom9V335gGlVC";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20210325015124.1543397-1-kafai@fb.com> <CAM_iQpWGn000YOmF2x6Cm0FqCOSq0yUjc_+Up+Ek3r6NrBW3mw@mail.gmail.com>
+In-Reply-To: <CAM_iQpWGn000YOmF2x6Cm0FqCOSq0yUjc_+Up+Ek3r6NrBW3mw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 27 Mar 2021 14:28:05 -0700
+Message-ID: <CAADnVQKAXsEzsEkxhUG=79V+gAJbv=-Wuh_oJngjs54g1xGW7Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/nk1dXU/2q6Bom9V335gGlVC
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Sedat,
-
-On Sat, 27 Mar 2021 12:50:55 +0100 Sedat Dilek <sedat.dilek@gmail.com> wrot=
-e:
+On Sat, Mar 27, 2021 at 2:25 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> I wonder why Stephen's fixup-patch was not carried in recent
-> Linux-next releases.
+> Hi,
+>
+> On Wed, Mar 24, 2021 at 8:40 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > Martin KaFai Lau (14):
+> >   bpf: Simplify freeing logic in linfo and jited_linfo
+> >   bpf: Refactor btf_check_func_arg_match
+> >   bpf: Support bpf program calling kernel function
+> >   bpf: Support kernel function call in x86-32
+> >   tcp: Rename bictcp function prefix to cubictcp
+> >   bpf: tcp: Put some tcp cong functions in allowlist for bpf-tcp-cc
+>
+> I got the following link error which is likely caused by one of your
+> patches in this series.
+>
+> FAILED unresolved symbol cubictcp_state
+> make: *** [Makefile:1199: vmlinux] Error 255
 
-It is part of the tip tree merge commit.  So it is not an explicit
-commit on its own, but the needed change is there.
-
-> Wild speculation - no random-config with x86(-64) plus CONFIG_BPF_JIT=3Dy?
-
-I detected it with an X86_64 allmodconfig build (which I do all day).
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/nk1dXU/2q6Bom9V335gGlVC
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBfoxEACgkQAVBC80lX
-0GzmwQf/evaG3lEgE8Y63F70vODeFxpDYZeNvb+TMW8giGd04pBDi3JHjhYb0T1N
-DiaCiO+g4uiUwkahozzptlu2Ms5vDOYj2T88nh+S51TCHiBS9Jt7/JoSI8JVbUUp
-HEp3zJ+8DYEUJcUQFIU+N91pwWrteHrpYM+xznrMiWnjP42bMLxehD9ccOa2tu8b
-6mJLcB1CqAWUP6eZorOfhmk7NBiyyLtSmIgXbMgV/r0F4UQqZh4YaNAwln8Mc+FK
-Qn8+gPpooqVA4wZeW7baqJc6ppg60X7tf2mMgW8huCNUtpbc9Am9Jq1jz69SsMql
-6W5tKtqG8IJtKCTmn8WNwa1rgEvEGw==
-=g84u
------END PGP SIGNATURE-----
-
---Sig_/nk1dXU/2q6Bom9V335gGlVC--
+I don't see it and bpf CI doesn't see it either.
+Without steps to reproduce your observation isn't helpful.
