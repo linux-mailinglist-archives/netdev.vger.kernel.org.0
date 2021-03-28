@@ -2,89 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C75D34BDC7
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 19:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C4034BE49
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 20:38:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbhC1Rro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 13:47:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51966 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229593AbhC1Rrc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Mar 2021 13:47:32 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lQZVY-00DUY2-U4; Sun, 28 Mar 2021 19:47:28 +0200
-Date:   Sun, 28 Mar 2021 19:47:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Hariprasad Kelam <hkelam@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 0/8] configuration support for switch headers &
- phy
-Message-ID: <YGDBMIICAHylrIyL@lunn.ch>
-References: <MWHPR18MB14217B983EFC521DAA2EEAD2DE649@MWHPR18MB1421.namprd18.prod.outlook.com>
- <YFpO7n9uDt167ANk@lunn.ch>
- <CA+sq2CeT2m2QcrzSn6g5rxUfmJDVQqjYFayW+bcuopCCoYuQ6Q@mail.gmail.com>
- <YFyHKqUpG9th+F62@lunn.ch>
- <CA+sq2CfvscPPNTq4PR-6hjYhQuj=u2nmLa0Jq2cKRNCA-PypGQ@mail.gmail.com>
- <YFyOW5X0Nrjz8w/v@lunn.ch>
- <CA+sq2CeRjJNaNbZhs17LDrBtyvR_fb3uN=Wd=j9sLHJapVB50A@mail.gmail.com>
+        id S231143AbhC1Shl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 14:37:41 -0400
+Received: from mail.hanoi.gov.vn ([113.160.32.33]:27140 "EHLO
+        mx01.hanoi.gov.vn" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229593AbhC1Shh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 14:37:37 -0400
+X-Greylist: delayed 1388 seconds by postgrey-1.27 at vger.kernel.org; Sun, 28 Mar 2021 14:37:36 EDT
+Received: from mx01.hanoi.gov.vn (localhost [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 69B1EEC3EC;
+        Mon, 29 Mar 2021 01:11:40 +0700 (+07)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hanoi.gov.vn;
+        s=default; t=1616955101;
+        bh=ane1edRy/RH6FD3OmgbICUSxI1fRkhA2HpHNylVfJo4=; h=Date:From:To;
+        b=rB/1zzoQPbEHIlu1B71+pZvEoDoUdsqOZWvKmDQJEzYKp3RZRC6BBJzGu1tCvRfDg
+         5Frv6HF9kq9rCzK56gdRsK2Ocgc8yN6G19CIJsEd+W1O3YSHWEuxbudkg1oegl0GWA
+         ZeMTO/0r8FlDOYZEdjQgs+C+mNUkQg2m4GFqHD3g=
+X-IMSS-DKIM-Authentication-Result: mx01.hanoi.gov.vn; sigcount=0
+Received: from mx01.hanoi.gov.vn (localhost [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8AABDEC3EE;
+        Mon, 29 Mar 2021 01:11:38 +0700 (+07)
+Received: from mail.hanoi.gov.vn (mail.hanoi.gov.vn [10.1.1.25])
+        by mx01.hanoi.gov.vn (Postfix) with ESMTPS;
+        Mon, 29 Mar 2021 01:11:38 +0700 (+07)
+Received: from mail.hanoi.gov.vn (localhost [127.0.0.1])
+        by mail.hanoi.gov.vn (Postfix) with ESMTPS id 698147F41B8C;
+        Mon, 29 Mar 2021 01:11:33 +0700 (+07)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.hanoi.gov.vn (Postfix) with ESMTP id 9E9407F41B5D;
+        Mon, 29 Mar 2021 01:11:30 +0700 (+07)
+Received: from mail.hanoi.gov.vn ([127.0.0.1])
+        by localhost (mail.hanoi.gov.vn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id qCMX4uhEC0OX; Mon, 29 Mar 2021 01:11:26 +0700 (+07)
+Received: from mail.hanoi.gov.vn (mail.hanoi.gov.vn [10.1.1.25])
+        by mail.hanoi.gov.vn (Postfix) with ESMTP id 5004F7F41B59;
+        Mon, 29 Mar 2021 01:11:23 +0700 (+07)
+Date:   Mon, 29 Mar 2021 01:11:23 +0700 (ICT)
+From:   Mackenzie Scott <ttptqd_thanhoai@hanoi.gov.vn>
+Reply-To: Mackenzie Scott <propack@propck.net>
+Message-ID: <636549412.25924665.1616955083257.JavaMail.zimbra@hanoi.gov.vn>
+Subject: Congratulations ($ 100,800,000.00)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+sq2CeRjJNaNbZhs17LDrBtyvR_fb3uN=Wd=j9sLHJapVB50A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [185.107.80.217]
+X-Mailer: Zimbra 8.8.15_GA_3894 (zclient/8.8.15_GA_3894)
+Thread-Index: PMP1YxuL3nCz/VviIoVHezcTuG9o0w==
+Thread-Topic: Congratulations ($ 100,800,000.00)
+To:     undisclosed-recipients:;
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The usecase is simple, unlike DSA tag, this 4byte FDSA tag doesn't
-> have a ethertype,
-> so HW cannot recognize this header. If such packers arise, then HW parsing will
-> fail and RSS will not work.
-> 
-> Hypothetically if we introduce some communication between MAC driver
-> and DSA driver,
-> wouldn't that also become specific to the device, what generic usecase
-> that communication
-> will have ?
 
-Hi Sunil
-
-We need to be careful with wording. Due to history, the Linux kernel
-uses dsa to mean any driver to control an Ethernet switch. It does not
-imply the {E}DSA protocol used by Marvell switches, or even that the
-switch is a Marvell switch.
-
-netdev_uses_dsa(ndev) will tell you if the MAC is being used to
-connect to a switch. It is set by the Linux DSA core when the switch
-cluster is setup. That could be before or after the MAC is configured
-up, which makes it a bit hard to use, since you don't have a clear
-indicator when to evaluate to determine if you need to change your
-packet parsing.
-
-netdev_uses_dsa() looks at ndev->dsa_ptr. This is a pointer to the
-structure which represents the port on the switch the MAC is connected
-to. In Linux DSA terms, this is the CPU port. You can follow
-dsa_ptr->tag_ops which gives you the tagger operations, i.e. those
-used to add and remove the header/trailer. One member of that is
-proto. This contains the tagging protocol, so EDSA, DSA, or
-potentially FDSA, if that is ever supported. And this is all within
-the core DSA code, so is generic. It should work for any tagging
-protocol used by any switch which Linux DSA supports.
-
-So actually, everything you need is already present, you don't need a
-private flag. But adding a notifier that the MAC has been connected to
-a switch and ndev->dsa_ptr is set would be useful. We could maybe use
-NETDEV_CHANGE for that, or NETDEV_CHANGELOWERSTATE, since the MAC is
-below the switch slave interfaces.
-
-      Andrew
-
+Hello,i&#39;m Mackenzie Scott,Ex-wife of Amazon founder i&#39;m donating $4 billion to charities,individuals,universities across the Globe from my divorce funds,i&#39;m donating part of it to provide immediate support to people suffering economically during the COVID-19 pandemic,i have a donation worth $100,800,000.00 Dollars for you,you can contact me for more information if you&#39;re interested.
