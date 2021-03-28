@@ -2,119 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D033934BC42
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 14:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093CC34BC45
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 14:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbhC1MEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 08:04:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57971 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229503AbhC1MDs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 08:03:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1616933027;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=akFbGFrCz0YDjTwrx18zH9cQEdy+ux2yWLInd1vvevw=;
-        b=RcO/CSXl/j5nRGO9vJaLsHIl0GuB2VGU3jZo+GI+CtLPMAShDKWzggnDRbAmMNKM9yyuJ/
-        8rkbC1QWh+MbxcEzKk/IeVzbed4PBWuE3/q/0UZSYpES0Dr3NaaMT7JPdZ9tdtIpWvoG84
-        KFSps39ombzoa4cG+y+CfNF0YreqB60=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-321-f-iKKB0YPCub_VLgpfHhKA-1; Sun, 28 Mar 2021 08:03:43 -0400
-X-MC-Unique: f-iKKB0YPCub_VLgpfHhKA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4FA011009455;
-        Sun, 28 Mar 2021 12:03:41 +0000 (UTC)
-Received: from krava (unknown [10.40.192.12])
-        by smtp.corp.redhat.com (Postfix) with SMTP id B7ED15DDAD;
-        Sun, 28 Mar 2021 12:03:39 +0000 (UTC)
-Date:   Sun, 28 Mar 2021 14:03:38 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v4 bpf-next 07/12] libbpf: add BPF static linker BTF and
- BTF.ext support
-Message-ID: <YGBwmlQTDUodxM0J@krava>
-References: <20210318194036.3521577-1-andrii@kernel.org>
- <20210318194036.3521577-8-andrii@kernel.org>
- <YFTQExmhNhMcmNOb@krava>
- <CAEf4BzYKassG0AP372Q=Qsd+qqy7=YGe2XTXR4zG0c5oQ7Nkeg@mail.gmail.com>
- <YFT0Q+mVbTEI1rem@krava>
+        id S231199AbhC1MG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 08:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229503AbhC1MF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 08:05:57 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DA2C061762;
+        Sun, 28 Mar 2021 05:05:57 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 33so1776146pgy.4;
+        Sun, 28 Mar 2021 05:05:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bh7FpP7ll2rb0ew3xIuqAoIB0GKlnqepEv7+KeRSy+0=;
+        b=aDxFeDSRpHfeC0QquDjRtHbg47SsLq1G3W9Egd6ch/sBvaDCQzTSxBMdTxJfmoDFjn
+         YFfMGJL6f+noevkRJAsTXyjCFNcS0LSXF1DPLqVB6cXVrbRvSzz6+a7hZnlOgdkMZ8iJ
+         uyJigQGqY+pMvbiULBOpJ9KWJSeYnrR48mUsxoMoQ7R18AhfcuScFIojUKHofITBu/XW
+         PYcsN0xCt4iabu/p/EBsAxf2Bp4LQgexzD6cJ0qVqthnR28nOKMWrenZ7oO7aE10Y8BA
+         lOJKk5LX8CrhxMgbw7qDSpJD/hc/Z+zr1JEjUyBCKw9KUTVl0Yy2qMVgULV1h5bACHJn
+         khbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bh7FpP7ll2rb0ew3xIuqAoIB0GKlnqepEv7+KeRSy+0=;
+        b=RsBxQCWshrk+bNmwMGNWboVe3/KmhkVPp2TaJTZ9tNqQxRfzWnk9B2qrFSK3vX/8SA
+         2AE6db2PmJTlAXVdK8fl50pIuwK5D/FQ66XXA2ug4Uo+4Mhgn2pD6Ig73FSu5ENowN6K
+         CrbEKUfBefNw5QU2ddCPOG8MxxxUT7nvhdgipgOM52ZFisxR1zqA1pH6b5RBIbckd+jY
+         oLNubvR4srSVvBgBhPU2mKaoxVD4hPtIWd1yCGUjpv20kngXqPpvX+ny93E/P107wJZu
+         sAA1GuNZrnxuRNUG5bMd6KIWF4zkroirPOs3ae7TbDsDhcfvuroRasOYAkh5q/Jo07/J
+         75zw==
+X-Gm-Message-State: AOAM533/02AnD+KIer4cTPGtQWUmz/tFovjMkqQBWaFQhWJVCNzVRXTF
+        woY/jM5lnybw0HyVa2GQyppk8STaZJq7tFsL
+X-Google-Smtp-Source: ABdhPJw75mA8YVf01PjO5ZIpfSaDgVtNIzdzcXlrnhwXj/Anvfw/E318D2ivs7Os+0erTAXcgD90Mg==
+X-Received: by 2002:a65:538f:: with SMTP id x15mr20180856pgq.429.1616933156973;
+        Sun, 28 Mar 2021 05:05:56 -0700 (PDT)
+Received: from localhost.localdomain ([136.185.95.200])
+        by smtp.gmail.com with ESMTPSA id y12sm14483328pfq.118.2021.03.28.05.05.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Mar 2021 05:05:56 -0700 (PDT)
+From:   Atul Gopinathan <atulgopinathan@gmail.com>
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Atul Gopinathan <atulgopinathan@gmail.com>,
+        syzbot+0b74d8ec3bf0cc4e4209@syzkaller.appspotmail.com
+Subject: [PATCH bpf-next] bpf: tcp: Remove comma which is causing build error
+Date:   Sun, 28 Mar 2021 17:35:15 +0530
+Message-Id: <20210328120515.113895-1-atulgopinathan@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YFT0Q+mVbTEI1rem@krava>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 19, 2021 at 07:58:13PM +0100, Jiri Olsa wrote:
-> On Fri, Mar 19, 2021 at 11:39:01AM -0700, Andrii Nakryiko wrote:
-> > On Fri, Mar 19, 2021 at 9:23 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > On Thu, Mar 18, 2021 at 12:40:31PM -0700, Andrii Nakryiko wrote:
-> > >
-> > > SNIP
-> > >
-> > > > +
-> > > > +     return NULL;
-> > > > +}
-> > > > +
-> > > > +static int linker_fixup_btf(struct src_obj *obj)
-> > > > +{
-> > > > +     const char *sec_name;
-> > > > +     struct src_sec *sec;
-> > > > +     int i, j, n, m;
-> > > > +
-> > > > +     n = btf__get_nr_types(obj->btf);
-> > >
-> > > hi,
-> > > I'm getting bpftool crash when building tests,
-> > >
-> > > looks like above obj->btf can be NULL:
-> > 
-> > I lost if (!obj->btf) return 0; somewhere along the rebases. I'll send
-> > a fix shortly. But how did you end up with selftests BPF objects built
-> > without BTF?
-> 
-> no idea.. I haven't even updated llvm for almost 3 days now ;-)
+Currently, building the bpf-next source with the CONFIG_BPF_SYSCALL
+enabled is causing a compilation error:
 
-sorry for late follow up on this, and it's actually forgotten empty
-object in progs directory that was causing this
+"net/ipv4/bpf_tcp_ca.c:209:28: error: expected identifier or '(' before
+',' token"
 
-I wonder we should add empty object like below to catch these cases,
-because there's another place that bpftool is crashing on with it
+Fix this by removing an unnecessary comma.
 
-I can send full patch for that if you think it's worth having
-
-jirka
-
-
+Reported-by: syzbot+0b74d8ec3bf0cc4e4209@syzkaller.appspotmail.com
+Fixes: e78aea8b2170 ("bpf: tcp: Put some tcp cong functions in allowlist for bpf-tcp-cc")
+Signed-off-by: Atul Gopinathan <atulgopinathan@gmail.com>
 ---
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7aad78dbb4b4..aecb6ca52bce 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3165,6 +3165,9 @@ static int add_dummy_ksym_var(struct btf *btf)
- 	const struct btf_var_secinfo *vs;
- 	const struct btf_type *sec;
+ net/ipv4/bpf_tcp_ca.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index 40520b77a307..12777d444d0f 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -202,15 +202,15 @@ BTF_ID(func, dctcp_cwnd_undo)
+ BTF_ID(func, dctcp_state)
+ #endif
+ #if IS_BUILTIN(CONFIG_TCP_CONG_BBR)
+ BTF_ID(func, bbr_init)
+ BTF_ID(func, bbr_main)
+ BTF_ID(func, bbr_sndbuf_expand)
+ BTF_ID(func, bbr_undo_cwnd)
+-BTF_ID(func, bbr_cwnd_even),
++BTF_ID(func, bbr_cwnd_even)
+ BTF_ID(func, bbr_ssthresh)
+ BTF_ID(func, bbr_min_tso_segs)
+ BTF_ID(func, bbr_set_state)
+ #endif
+ BTF_SET_END(bpf_tcp_ca_kfunc_ids)
  
-+	if (!btf)
-+		return 0;
-+
- 	sec_btf_id = btf__find_by_name_kind(btf, KSYMS_SEC,
- 					    BTF_KIND_DATASEC);
- 	if (sec_btf_id < 0)
-diff --git a/tools/testing/selftests/bpf/progs/empty.c b/tools/testing/selftests/bpf/progs/empty.c
-new file mode 100644
-index 000000000000..e69de29bb2d1
+ static bool bpf_tcp_ca_check_kfunc_call(u32 kfunc_btf_id)
+-- 
+2.25.1
 
