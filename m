@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 360D634BB83
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 09:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6507A34BB85
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 09:25:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbhC1HYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 03:24:05 -0400
-Received: from outpost1.zedat.fu-berlin.de ([130.133.4.66]:37779 "EHLO
+        id S230395AbhC1HYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 03:24:39 -0400
+Received: from outpost1.zedat.fu-berlin.de ([130.133.4.66]:49711 "EHLO
         outpost1.zedat.fu-berlin.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230184AbhC1HXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 03:23:52 -0400
+        by vger.kernel.org with ESMTP id S230184AbhC1HYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 03:24:10 -0400
 Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
           by outpost.zedat.fu-berlin.de (Exim 4.94)
           with esmtps (TLS1.2)
           tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
           (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1lQPlz-001GNn-2X; Sun, 28 Mar 2021 09:23:47 +0200
+          id 1lQPmL-001GUe-Cn; Sun, 28 Mar 2021 09:24:09 +0200
 Received: from dynamic-078-054-150-182.78.54.pool.telefonica.de ([78.54.150.182] helo=[192.168.1.10])
           by inpost2.zedat.fu-berlin.de (Exim 4.94)
           with esmtpsa (TLS1.2)
           tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
           (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1lQPly-00416X-RZ; Sun, 28 Mar 2021 09:23:47 +0200
-Subject: Re: [PATCH, v2] tools: Remove inclusion of ia64-specific version of
- errno.h header
+          id 1lQPmL-0041C0-5c; Sun, 28 Mar 2021 09:24:09 +0200
+Subject: Re: [PATCH] tools: Remove duplicate definition of ia64_mf() on ia64
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20210323180428.855488-1-glaubitz@physik.fu-berlin.de>
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20210323182520.858611-1-glaubitz@physik.fu-berlin.de>
 From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Message-ID: <23d37c94-b1ab-803e-a397-b62e846e03cd@physik.fu-berlin.de>
-Date:   Sun, 28 Mar 2021 09:23:45 +0200
+Message-ID: <568b0f11-de1b-e76d-db4f-c84e7e03d41e@physik.fu-berlin.de>
+Date:   Sun, 28 Mar 2021 09:24:08 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210323180428.855488-1-glaubitz@physik.fu-berlin.de>
+In-Reply-To: <20210323182520.858611-1-glaubitz@physik.fu-berlin.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -54,46 +51,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello!
 
-On 3/23/21 7:04 PM, John Paul Adrian Glaubitz wrote:
-> There is no longer an ia64-specific version of the errno.h header
-> below arch/ia64/include/uapi/asm/, so trying to build tools/bpf
-> fails with:
+On 3/23/21 7:25 PM, John Paul Adrian Glaubitz wrote:
+> The ia64_mf() macro defined in tools/arch/ia64/include/asm/barrier.h
+> is already defined in <asm/gcc_intrin.h> on ia64 which causes libbpf
+> failing to build:
 > 
->   CC       /usr/src/linux/tools/bpf/bpftool/btf_dumper.o
-> In file included from /usr/src/linux/tools/include/linux/err.h:8,
->                  from btf_dumper.c:11:
-> /usr/src/linux/tools/include/uapi/asm/errno.h:13:10: fatal error: ../../../arch/ia64/include/uapi/asm/errno.h: No such file or directory
->    13 | #include "../../../arch/ia64/include/uapi/asm/errno.h"
->       |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
+>   CC       /usr/src/linux/tools/bpf/bpftool//libbpf/staticobjs/libbpf.o
+> In file included from /usr/src/linux/tools/include/asm/barrier.h:24,
+>                  from /usr/src/linux/tools/include/linux/ring_buffer.h:4,
+>                  from libbpf.c:37:
+> /usr/src/linux/tools/include/asm/../../arch/ia64/include/asm/barrier.h:43: error: "ia64_mf" redefined [-Werror]
+>    43 | #define ia64_mf()       asm volatile ("mf" ::: "memory")
+>       |
+> In file included from /usr/include/ia64-linux-gnu/asm/intrinsics.h:20,
+>                  from /usr/include/ia64-linux-gnu/asm/swab.h:11,
+>                  from /usr/include/linux/swab.h:8,
+>                  from /usr/include/linux/byteorder/little_endian.h:13,
+>                  from /usr/include/ia64-linux-gnu/asm/byteorder.h:5,
+>                  from /usr/src/linux/tools/include/uapi/linux/perf_event.h:20,
+>                  from libbpf.c:36:
+> /usr/include/ia64-linux-gnu/asm/gcc_intrin.h:382: note: this is the location of the previous definition
+>   382 | #define ia64_mf() __asm__ volatile ("mf" ::: "memory")
+>       |
+> cc1: all warnings being treated as errors
 > 
-> Thus, just remove the inclusion of the ia64-specific errno.h so that
-> the build will use the generic errno.h header on this target which was
-> used there anyway as the ia64-specific errno.h was just a wrapper for
-> the generic header.
+> Thus, remove the definition from tools/arch/ia64/include/asm/barrier.h.
 > 
-> Fixes: c25f867ddd00 ("ia64: remove unneeded uapi asm-generic wrappers")
 > Signed-off-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 > ---
->  tools/include/uapi/asm/errno.h | 2 --
->  1 file changed, 2 deletions(-)
+>  tools/arch/ia64/include/asm/barrier.h | 3 ---
+>  1 file changed, 3 deletions(-)
 > 
->  v2:
->  - Rephrase summary
-> 
-> diff --git a/tools/include/uapi/asm/errno.h b/tools/include/uapi/asm/errno.h
-> index 637189ec1ab9..d30439b4b8ab 100644
-> --- a/tools/include/uapi/asm/errno.h
-> +++ b/tools/include/uapi/asm/errno.h
-> @@ -9,8 +9,6 @@
->  #include "../../../arch/alpha/include/uapi/asm/errno.h"
->  #elif defined(__mips__)
->  #include "../../../arch/mips/include/uapi/asm/errno.h"
-> -#elif defined(__ia64__)
-> -#include "../../../arch/ia64/include/uapi/asm/errno.h"
->  #elif defined(__xtensa__)
->  #include "../../../arch/xtensa/include/uapi/asm/errno.h"
->  #else
+> diff --git a/tools/arch/ia64/include/asm/barrier.h b/tools/arch/ia64/include/asm/barrier.h
+> index 4d471d9511a5..6fffe5682713 100644
+> --- a/tools/arch/ia64/include/asm/barrier.h
+> +++ b/tools/arch/ia64/include/asm/barrier.h
+> @@ -39,9 +39,6 @@
+>   * sequential memory pages only.
+>   */
+>  
+> -/* XXX From arch/ia64/include/uapi/asm/gcc_intrin.h */
+> -#define ia64_mf()       asm volatile ("mf" ::: "memory")
+> -
+>  #define mb()		ia64_mf()
+>  #define rmb()		mb()
+>  #define wmb()		mb()
 > 
 
 Shall I ask Andrew Morton to pick up this patch? It's needed to fix the Debian
