@@ -2,77 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3496934BCE9
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 17:25:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107DC34BD13
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 17:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbhC1PZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 11:25:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51852 "EHLO vps0.lunn.ch"
+        id S229499AbhC1Pws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 11:52:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51872 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231149AbhC1PYx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Mar 2021 11:24:53 -0400
+        id S229593AbhC1Pwr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Mar 2021 11:52:47 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lQXHQ-00DTKW-JA; Sun, 28 Mar 2021 17:24:44 +0200
-Date:   Sun, 28 Mar 2021 17:24:44 +0200
+        id 1lQXiV-00DTZ9-6o; Sun, 28 Mar 2021 17:52:43 +0200
+Date:   Sun, 28 Mar 2021 17:52:43 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Tobias Waldekranz <tobias@waldekranz.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org,
         robh+dt@kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: dsa: mv88e6xxx: Allow dynamic
- reconfiguration of tag protocol
-Message-ID: <YGCfvDhRFcfESYKx@lunn.ch>
+Subject: Re: [PATCH net-next 2/3] net: dsa: Allow default tag protocol to be
+ overridden from DT
+Message-ID: <YGCmS2rcypegGmYa@lunn.ch>
 References: <20210326105648.2492411-1-tobias@waldekranz.com>
- <20210326105648.2492411-2-tobias@waldekranz.com>
+ <20210326105648.2492411-3-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210326105648.2492411-2-tobias@waldekranz.com>
+In-Reply-To: <20210326105648.2492411-3-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 26, 2021 at 11:56:46AM +0100, Tobias Waldekranz wrote:
-> All devices are capable of using regular DSA tags. Support for
-> Ethertyped DSA tags sort into three categories:
-> 
-> 1. No support. Older chips fall into this category.
-> 
-> 2. Full support. Datasheet explicitly supports configuring the CPU
->    port to receive FORWARDs with a DSA tag.
-> 
-> 3. Undocumented support. Datasheet lists the configuration from
->    category 2 as "reserved for future use", but does empirically
->    behave like a category 2 device.
-
-> +static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
-> +					 enum dsa_tag_protocol proto)
+> +static int dsa_switch_setup_tag_protocol(struct dsa_switch *ds)
 > +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	enum dsa_tag_protocol old_protocol;
-> +	int err;
+> +	const struct dsa_device_ops *tag_ops = ds->dst->tag_ops;
+> +	struct dsa_switch_tree *dst = ds->dst;
+> +	int port, err;
 > +
-> +	switch (proto) {
-> +	case DSA_TAG_PROTO_EDSA:
-> +		if (chip->info->tag_protocol != DSA_TAG_PROTO_EDSA)
-> +			dev_warn(chip->dev, "Relying on undocumented EDSA tagging behavior\n");
+> +	if (tag_ops->proto == dst->default_proto)
+> +		return 0;
 > +
-> +		break;
-> +	case DSA_TAG_PROTO_DSA:
-> +		break;
-> +	default:
-> +		return -EPROTONOSUPPORT;
+> +	if (!ds->ops->change_tag_protocol) {
+> +		dev_err(ds->dev, "Tag protocol cannot be modified\n");
+> +		return -EINVAL;
 > +	}
+> +
+> +	for (port = 0; port < ds->num_ports; port++) {
+> +		if (!(dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port)))
+> +			continue;
 
-You are handling cases 2 and 3 here, but not 1. Which makes it a bit
-of a foot cannon for older devices.
+dsa_is_dsa_port() is interesting. Do we care about the tagging
+protocol on DSA ports? We never see that traffic?
 
-Now that we have chip->tag_protocol, maybe we should change
-chip->info->tag_protocol to mean supported protocols?
+> +
+> +		err = ds->ops->change_tag_protocol(ds, port, tag_ops->proto);
+> +		if (err) {
+> +			dev_err(ds->dev, "Tag protocol \"%s\" is not supported\n",
+> +				tag_ops->name);
+> +			return err;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
 
-BIT(0) DSA
-BIT(1) EDSA
-BIT(2) Undocumented EDSA
+> -static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
+> +static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master,
+> +			      const char *user_protocol)
+>  {
+>  	struct dsa_switch *ds = dp->ds;
+>  	struct dsa_switch_tree *dst = ds->dst;
+> -	enum dsa_tag_protocol tag_protocol;
+> +	const struct dsa_device_ops *tag_ops;
+> +	enum dsa_tag_protocol default_proto;
+> +
+> +	/* Find out which protocol the switch would prefer. */
+> +	default_proto = dsa_get_tag_protocol(dp, master);
+> +	if (dst->default_proto) {
+> +		if (dst->default_proto != default_proto) {
+> +			dev_err(ds->dev,
+> +				"A DSA switch tree can have only one tagging protovol\n");
+> +			return -EINVAL;
+> +		}
+> +	} else {
+> +		dst->default_proto = default_proto;
+> +	}
+> +
+> +	/* See if the user wants to override that preference. */
+> +	if (user_protocol && ds->ops->change_tag_protocol) {
+> +		tag_ops = dsa_find_tagger_by_name(user_protocol);
+> +	} else {
+> +		if (user_protocol)
+> +			dev_warn(ds->dev,
+> +				 "Tag protocol cannot be modified, using default\n");
 
-Andrew
+I would probably error out here. I don't think it is a good idea to
+ignore what DT says. We also potentially have forward compatibility
+problems. Somebody cut/pastes a DT fragment including an invalid
+override. But the driver does not support it, so it just gives this
+warning and keeps going. Sometime in the future, change support is
+added, it then becomes a real error, and the driver stops probing.
+
+       Andrew
