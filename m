@@ -2,108 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 093CC34BC45
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 14:07:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10F9434BC50
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 14:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbhC1MG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 08:06:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbhC1MF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 08:05:57 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DA2C061762;
-        Sun, 28 Mar 2021 05:05:57 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 33so1776146pgy.4;
-        Sun, 28 Mar 2021 05:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bh7FpP7ll2rb0ew3xIuqAoIB0GKlnqepEv7+KeRSy+0=;
-        b=aDxFeDSRpHfeC0QquDjRtHbg47SsLq1G3W9Egd6ch/sBvaDCQzTSxBMdTxJfmoDFjn
-         YFfMGJL6f+noevkRJAsTXyjCFNcS0LSXF1DPLqVB6cXVrbRvSzz6+a7hZnlOgdkMZ8iJ
-         uyJigQGqY+pMvbiULBOpJ9KWJSeYnrR48mUsxoMoQ7R18AhfcuScFIojUKHofITBu/XW
-         PYcsN0xCt4iabu/p/EBsAxf2Bp4LQgexzD6cJ0qVqthnR28nOKMWrenZ7oO7aE10Y8BA
-         lOJKk5LX8CrhxMgbw7qDSpJD/hc/Z+zr1JEjUyBCKw9KUTVl0Yy2qMVgULV1h5bACHJn
-         khbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bh7FpP7ll2rb0ew3xIuqAoIB0GKlnqepEv7+KeRSy+0=;
-        b=RsBxQCWshrk+bNmwMGNWboVe3/KmhkVPp2TaJTZ9tNqQxRfzWnk9B2qrFSK3vX/8SA
-         2AE6db2PmJTlAXVdK8fl50pIuwK5D/FQ66XXA2ug4Uo+4Mhgn2pD6Ig73FSu5ENowN6K
-         CrbEKUfBefNw5QU2ddCPOG8MxxxUT7nvhdgipgOM52ZFisxR1zqA1pH6b5RBIbckd+jY
-         oLNubvR4srSVvBgBhPU2mKaoxVD4hPtIWd1yCGUjpv20kngXqPpvX+ny93E/P107wJZu
-         sAA1GuNZrnxuRNUG5bMd6KIWF4zkroirPOs3ae7TbDsDhcfvuroRasOYAkh5q/Jo07/J
-         75zw==
-X-Gm-Message-State: AOAM533/02AnD+KIer4cTPGtQWUmz/tFovjMkqQBWaFQhWJVCNzVRXTF
-        woY/jM5lnybw0HyVa2GQyppk8STaZJq7tFsL
-X-Google-Smtp-Source: ABdhPJw75mA8YVf01PjO5ZIpfSaDgVtNIzdzcXlrnhwXj/Anvfw/E318D2ivs7Os+0erTAXcgD90Mg==
-X-Received: by 2002:a65:538f:: with SMTP id x15mr20180856pgq.429.1616933156973;
-        Sun, 28 Mar 2021 05:05:56 -0700 (PDT)
-Received: from localhost.localdomain ([136.185.95.200])
-        by smtp.gmail.com with ESMTPSA id y12sm14483328pfq.118.2021.03.28.05.05.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Mar 2021 05:05:56 -0700 (PDT)
-From:   Atul Gopinathan <atulgopinathan@gmail.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Atul Gopinathan <atulgopinathan@gmail.com>,
-        syzbot+0b74d8ec3bf0cc4e4209@syzkaller.appspotmail.com
-Subject: [PATCH bpf-next] bpf: tcp: Remove comma which is causing build error
-Date:   Sun, 28 Mar 2021 17:35:15 +0530
-Message-Id: <20210328120515.113895-1-atulgopinathan@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S229647AbhC1M0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 08:26:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229503AbhC1M02 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Mar 2021 08:26:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 46235617ED;
+        Sun, 28 Mar 2021 12:26:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1616934387;
+        bh=B4r0dpa2i8p6ISiGwWzzhwikdXgNkehWJF7jPj0W90Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OOFOnPIoQWobg+K0sYTP3wvgRF/jfiHdnf4or0Or7s6KfFTDqrZ+0ZvRdX41lp1Db
+         eaXU4FC6X0EXCi4h3o9w8YgCAfR+O50tYpPUituolkdguRTTs8NN5/XFm21DZxGfmE
+         O0M5Y07sV6EtlyfiGLVTE8uMfpi4pKI1L2MKZx74=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     netdev@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Du Cheng <ducheng2@gmail.com>
+Subject: [PATCH net-next] qrtr: move to staging
+Date:   Sun, 28 Mar 2021 14:26:21 +0200
+Message-Id: <20210328122621.2614283-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, building the bpf-next source with the CONFIG_BPF_SYSCALL
-enabled is causing a compilation error:
+There does not seem to be any developers willing to maintain the
+net/qrtr/ code, so move it to drivers/staging/ so that it can be removed
+from the kernel tree entirely in a few kernel releases if no one steps
+up to maintain it.
 
-"net/ipv4/bpf_tcp_ca.c:209:28: error: expected identifier or '(' before
-',' token"
-
-Fix this by removing an unnecessary comma.
-
-Reported-by: syzbot+0b74d8ec3bf0cc4e4209@syzkaller.appspotmail.com
-Fixes: e78aea8b2170 ("bpf: tcp: Put some tcp cong functions in allowlist for bpf-tcp-cc")
-Signed-off-by: Atul Gopinathan <atulgopinathan@gmail.com>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Cc: Du Cheng <ducheng2@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/bpf_tcp_ca.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/Kconfig                | 2 ++
+ drivers/staging/Makefile               | 1 +
+ {net => drivers/staging}/qrtr/Kconfig  | 1 +
+ {net => drivers/staging}/qrtr/Makefile | 0
+ {net => drivers/staging}/qrtr/mhi.c    | 0
+ {net => drivers/staging}/qrtr/ns.c     | 0
+ {net => drivers/staging}/qrtr/qrtr.c   | 0
+ {net => drivers/staging}/qrtr/qrtr.h   | 0
+ {net => drivers/staging}/qrtr/smd.c    | 0
+ {net => drivers/staging}/qrtr/tun.c    | 0
+ net/Kconfig                            | 1 -
+ net/Makefile                           | 1 -
+ 12 files changed, 4 insertions(+), 2 deletions(-)
+ rename {net => drivers/staging}/qrtr/Kconfig (98%)
+ rename {net => drivers/staging}/qrtr/Makefile (100%)
+ rename {net => drivers/staging}/qrtr/mhi.c (100%)
+ rename {net => drivers/staging}/qrtr/ns.c (100%)
+ rename {net => drivers/staging}/qrtr/qrtr.c (100%)
+ rename {net => drivers/staging}/qrtr/qrtr.h (100%)
+ rename {net => drivers/staging}/qrtr/smd.c (100%)
+ rename {net => drivers/staging}/qrtr/tun.c (100%)
 
-diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
-index 40520b77a307..12777d444d0f 100644
---- a/net/ipv4/bpf_tcp_ca.c
-+++ b/net/ipv4/bpf_tcp_ca.c
-@@ -202,15 +202,15 @@ BTF_ID(func, dctcp_cwnd_undo)
- BTF_ID(func, dctcp_state)
- #endif
- #if IS_BUILTIN(CONFIG_TCP_CONG_BBR)
- BTF_ID(func, bbr_init)
- BTF_ID(func, bbr_main)
- BTF_ID(func, bbr_sndbuf_expand)
- BTF_ID(func, bbr_undo_cwnd)
--BTF_ID(func, bbr_cwnd_even),
-+BTF_ID(func, bbr_cwnd_even)
- BTF_ID(func, bbr_ssthresh)
- BTF_ID(func, bbr_min_tso_segs)
- BTF_ID(func, bbr_set_state)
- #endif
- BTF_SET_END(bpf_tcp_ca_kfunc_ids)
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 6e798229fe25..43ab47e7861c 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -112,4 +112,6 @@ source "drivers/staging/wfx/Kconfig"
  
- static bool bpf_tcp_ca_check_kfunc_call(u32 kfunc_btf_id)
+ source "drivers/staging/hikey9xx/Kconfig"
+ 
++source "drivers/staging/qrtr/Kconfig"
++
+ endif # STAGING
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index 8d4d9812ecdf..0b7ae2a72954 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -45,4 +45,5 @@ obj-$(CONFIG_KPC2000)		+= kpc2000/
+ obj-$(CONFIG_QLGE)		+= qlge/
+ obj-$(CONFIG_WIMAX)		+= wimax/
+ obj-$(CONFIG_WFX)		+= wfx/
++obj-$(CONFIG_QRTR)		+= qrtr/
+ obj-y				+= hikey9xx/
+diff --git a/net/qrtr/Kconfig b/drivers/staging/qrtr/Kconfig
+similarity index 98%
+rename from net/qrtr/Kconfig
+rename to drivers/staging/qrtr/Kconfig
+index b4020b84760f..e91825f01307 100644
+--- a/net/qrtr/Kconfig
++++ b/drivers/staging/qrtr/Kconfig
+@@ -4,6 +4,7 @@
+ 
+ config QRTR
+ 	tristate "Qualcomm IPC Router support"
++	depends on NET
+ 	help
+ 	  Say Y if you intend to use Qualcomm IPC router protocol.  The
+ 	  protocol is used to communicate with services provided by other
+diff --git a/net/qrtr/Makefile b/drivers/staging/qrtr/Makefile
+similarity index 100%
+rename from net/qrtr/Makefile
+rename to drivers/staging/qrtr/Makefile
+diff --git a/net/qrtr/mhi.c b/drivers/staging/qrtr/mhi.c
+similarity index 100%
+rename from net/qrtr/mhi.c
+rename to drivers/staging/qrtr/mhi.c
+diff --git a/net/qrtr/ns.c b/drivers/staging/qrtr/ns.c
+similarity index 100%
+rename from net/qrtr/ns.c
+rename to drivers/staging/qrtr/ns.c
+diff --git a/net/qrtr/qrtr.c b/drivers/staging/qrtr/qrtr.c
+similarity index 100%
+rename from net/qrtr/qrtr.c
+rename to drivers/staging/qrtr/qrtr.c
+diff --git a/net/qrtr/qrtr.h b/drivers/staging/qrtr/qrtr.h
+similarity index 100%
+rename from net/qrtr/qrtr.h
+rename to drivers/staging/qrtr/qrtr.h
+diff --git a/net/qrtr/smd.c b/drivers/staging/qrtr/smd.c
+similarity index 100%
+rename from net/qrtr/smd.c
+rename to drivers/staging/qrtr/smd.c
+diff --git a/net/qrtr/tun.c b/drivers/staging/qrtr/tun.c
+similarity index 100%
+rename from net/qrtr/tun.c
+rename to drivers/staging/qrtr/tun.c
+diff --git a/net/Kconfig b/net/Kconfig
+index 9c456acc379e..09f14caf3f45 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -242,7 +242,6 @@ source "net/nsh/Kconfig"
+ source "net/hsr/Kconfig"
+ source "net/switchdev/Kconfig"
+ source "net/l3mdev/Kconfig"
+-source "net/qrtr/Kconfig"
+ source "net/ncsi/Kconfig"
+ 
+ config PCPU_DEV_REFCNT
+diff --git a/net/Makefile b/net/Makefile
+index 9ca9572188fe..5d57e972a33b 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -74,7 +74,6 @@ obj-$(CONFIG_NET_NSH)		+= nsh/
+ obj-$(CONFIG_HSR)		+= hsr/
+ obj-$(CONFIG_NET_SWITCHDEV)	+= switchdev/
+ obj-$(CONFIG_NET_L3_MASTER_DEV)	+= l3mdev/
+-obj-$(CONFIG_QRTR)		+= qrtr/
+ obj-$(CONFIG_NET_NCSI)		+= ncsi/
+ obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
+ obj-$(CONFIG_MPTCP)		+= mptcp/
 -- 
-2.25.1
+2.31.1
 
