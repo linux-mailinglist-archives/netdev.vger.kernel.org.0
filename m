@@ -2,200 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99DB634BEB7
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 22:09:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 994B534BEB9
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 22:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231213AbhC1UIc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 28 Mar 2021 16:08:32 -0400
-Received: from unicorn.mansr.com ([81.2.72.234]:34924 "EHLO unicorn.mansr.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229656AbhC1UI2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Mar 2021 16:08:28 -0400
-X-Greylist: delayed 533 seconds by postgrey-1.27 at vger.kernel.org; Sun, 28 Mar 2021 16:08:27 EDT
-Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:8d8e::3])
-        by unicorn.mansr.com (Postfix) with ESMTPS id 37D8915360;
-        Sun, 28 Mar 2021 20:59:27 +0100 (BST)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id 2995E21A6CA; Sun, 28 Mar 2021 20:59:27 +0100 (BST)
-From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-To:     Andre Edich <andre.edich@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <steve.glendinning@shawell.net>,
-        <Parthiban.Veerasooran@microchip.com>
-Subject: Re: [PATCH net-next v5 3/3] smsc95xx: add phylib support
-References: <20200826111717.405305-1-andre.edich@microchip.com>
-        <20200826111717.405305-4-andre.edich@microchip.com>
-Date:   Sun, 28 Mar 2021 20:59:27 +0100
-In-Reply-To: <20200826111717.405305-4-andre.edich@microchip.com> (Andre
-        Edich's message of "Wed, 26 Aug 2020 13:17:17 +0200")
-Message-ID: <yw1xk0prf3s0.fsf@mansr.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S231176AbhC1UN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 16:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229595AbhC1UNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 16:13:48 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3081BC061756;
+        Sun, 28 Mar 2021 13:13:47 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id y2so3396161plg.5;
+        Sun, 28 Mar 2021 13:13:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9CgTLBy83XAQ5YGxolLtMAOYutMwr/tnArHMqUuCN68=;
+        b=qWT6BfyiVn82t3R06mstmgq5KU2HDaNOtQ8muPU7tmLPzRqD1wcalGfGUpwgg/K6C6
+         L1TpC5l23ztXacaNZxYFqgAh3Zw2imSJEjxZ/Yt/EckJM061SSnosy9I96bfj18gktq5
+         AeVAkg+3mCbhlDCh7b1xER0ZzgxrqOE3iril1g1FxAxN//vSdq0+5lJolfQogGyJeUGX
+         SjWYY0YBG5NJtiTHkCwJ04RWgVHiZNqZSf/WdeD/z9UrUcC6FNnqhXwnYAm72MV1hSJl
+         bgfcJQZPHDKcOafgPR7RopnuuIYq3ipbIdnyvQlHUZthyzN9JkqyUcNIzjlSoCo9ntAS
+         9uFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9CgTLBy83XAQ5YGxolLtMAOYutMwr/tnArHMqUuCN68=;
+        b=VpfJ0cBLH40V1ea2ktGRGsoBXa3NbxJwOVCWd4ZHSfQWxKQGroAZBbOYWg+Kos0XmJ
+         e9lWaHO3ojMxVFlPQ4ZFvHFmfp79X/zWtfagiDxQRi/Cs0QH3JQlXSetd1XQX8LbsA6X
+         qdQMUFvk05JG8ASB9UNg3BQ1U4gB49gosLSNnX69G//1xLevEN1rS3x6rhVDT8v4kZMU
+         qQPRRTwzVDlztZCbM8YzN7eXkSMTFMfjhbXO2dbRgzqfoK2zVRcWtgJbmaU2IpXJNEIC
+         2N+NayClVwOLHS8v5w2TTfRiEz6zDLDHfADZ5gl5vhrZ8pSxplSLId6YQLVz9R/8qlmi
+         5oVA==
+X-Gm-Message-State: AOAM532gPeh+lkg5wIWCdV16VcD70vsw/YRfm7YWrI0zy4jw/XCVUGkz
+        peSW7FA05pZ1gqQ9fDG0WCRjA/oIt4MvB8SRtIZ7MXrkw3A=
+X-Google-Smtp-Source: ABdhPJwLgAPgQuLyNK7LLBX1uRS/TTCYG2e6+21C7FmyQ3KbY2wLphTVmoRC6YD3OK50n9cc90i0mrDdLRfNSXgRhRw=
+X-Received: by 2002:a17:90b:514:: with SMTP id r20mr23525928pjz.145.1616962426810;
+ Sun, 28 Mar 2021 13:13:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+References: <20210325015124.1543397-1-kafai@fb.com> <CAM_iQpWGn000YOmF2x6Cm0FqCOSq0yUjc_+Up+Ek3r6NrBW3mw@mail.gmail.com>
+ <CAADnVQKAXsEzsEkxhUG=79V+gAJbv=-Wuh_oJngjs54g1xGW7Q@mail.gmail.com>
+ <CAM_iQpU7y+YE9wbqFZK30o4A+Gmm9jMLgqPqOw6SCDP8mHibTQ@mail.gmail.com> <CAADnVQJoeEqZK8eWfCi-BkHY4rSzaPuXYVEFvR75Ecdbt+oGgA@mail.gmail.com>
+In-Reply-To: <CAADnVQJoeEqZK8eWfCi-BkHY4rSzaPuXYVEFvR75Ecdbt+oGgA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sun, 28 Mar 2021 13:13:35 -0700
+Message-ID: <CAM_iQpUTFs_60vkS6LTRr5VBt8yTHiSgaHoKrtt4GGDe4tCcew@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andre Edich <andre.edich@microchip.com> writes:
+On Sat, Mar 27, 2021 at 3:54 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Sat, Mar 27, 2021 at 3:08 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >   BTFIDS  vmlinux
+> > FAILED unresolved symbol cubictcp_state
+> > make: *** [Makefile:1199: vmlinux] Error 255
+> >
+> > I suspect it is related to the kernel config or linker version.
+> >
+> > # grep TCP_CONG .config
+> > CONFIG_TCP_CONG_ADVANCED=y
+> > CONFIG_TCP_CONG_BIC=m
+> > CONFIG_TCP_CONG_CUBIC=y
+> ..
+> >
+> > # pahole --version
+> > v1.17
+>
+> That is the most likely reason.
+> In lib/Kconfig.debug
+> we have pahole >= 1.19 requirement for BTF in modules.
+> Though your config has CUBIC=y I suspect something odd goes on.
+> Could you please try the latest pahole 1.20 ?
 
-> Generally, each PHY has their own configuration and it can be done
-> through an external PHY driver.  The smsc95xx driver uses only the
-> hard-coded internal PHY configuration.
->
-> This patch adds phylib support to probe external PHY drivers for
-> configuring external PHYs.
->
-> The MDI-X configuration for the internal PHYs moves from
-> drivers/net/usb/smsc95xx.c to drivers/net/phy/smsc.c.
->
-> Signed-off-by: Andre Edich <andre.edich@microchip.com>
-> ---
->  drivers/net/phy/smsc.c     |  67 +++++++
->  drivers/net/usb/Kconfig    |   2 +
->  drivers/net/usb/smsc95xx.c | 399 +++++++++++++------------------------
->  3 files changed, 203 insertions(+), 265 deletions(-)
->
-> diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-> index 74568ae16125..638e8c3d1f4a 100644
-> --- a/drivers/net/phy/smsc.c
-> +++ b/drivers/net/phy/smsc.c
-> @@ -21,6 +21,17 @@
->  #include <linux/netdevice.h>
->  #include <linux/smscphy.h>
->
-> +/* Vendor-specific PHY Definitions */
-> +/* EDPD NLP / crossover time configuration */
-> +#define PHY_EDPD_CONFIG			16
-> +#define PHY_EDPD_CONFIG_EXT_CROSSOVER_	0x0001
-> +
-> +/* Control/Status Indication Register */
-> +#define SPECIAL_CTRL_STS		27
-> +#define SPECIAL_CTRL_STS_OVRRD_AMDIX_	0x8000
-> +#define SPECIAL_CTRL_STS_AMDIX_ENABLE_	0x4000
-> +#define SPECIAL_CTRL_STS_AMDIX_STATE_	0x2000
-> +
->  struct smsc_hw_stat {
->  	const char *string;
->  	u8 reg;
-> @@ -96,6 +107,54 @@ static int lan911x_config_init(struct phy_device *phydev)
->  	return smsc_phy_ack_interrupt(phydev);
->  }
->
-> +static int lan87xx_config_aneg(struct phy_device *phydev)
-> +{
-> +	int rc;
-> +	int val;
-> +
-> +	switch (phydev->mdix_ctrl) {
-> +	case ETH_TP_MDI:
-> +		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_;
-> +		break;
-> +	case ETH_TP_MDI_X:
-> +		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
-> +			SPECIAL_CTRL_STS_AMDIX_STATE_;
-> +		break;
-> +	case ETH_TP_MDI_AUTO:
-> +		val = SPECIAL_CTRL_STS_AMDIX_ENABLE_;
-> +		break;
-> +	default:
-> +		return genphy_config_aneg(phydev);
-> +	}
-> +
-> +	rc = phy_read(phydev, SPECIAL_CTRL_STS);
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	rc &= ~(SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
-> +		SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
-> +		SPECIAL_CTRL_STS_AMDIX_STATE_);
-> +	rc |= val;
-> +	phy_write(phydev, SPECIAL_CTRL_STS, rc);
-> +
-> +	phydev->mdix = phydev->mdix_ctrl;
-> +	return genphy_config_aneg(phydev);
-> +}
-> +
-> +static int lan87xx_config_aneg_ext(struct phy_device *phydev)
-> +{
-> +	int rc;
-> +
-> +	/* Extend Manual AutoMDIX timer */
-> +	rc = phy_read(phydev, PHY_EDPD_CONFIG);
-> +	if (rc < 0)
-> +		return rc;
-> +
-> +	rc |= PHY_EDPD_CONFIG_EXT_CROSSOVER_;
-> +	phy_write(phydev, PHY_EDPD_CONFIG, rc);
-> +	return lan87xx_config_aneg(phydev);
-> +}
-> +
->  /*
->   * The LAN87xx suffers from rare absence of the ENERGYON-bit when Ethernet cable
->   * plugs in while LAN87xx is in Energy Detect Power-Down mode. This leads to
-> @@ -250,6 +309,9 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.suspend	= genphy_suspend,
->  	.resume		= genphy_resume,
->  }, {
-> +	/* This covers internal PHY (phy_id: 0x0007C0C3) for
-> +	 * LAN9500 (PID: 0x9500), LAN9514 (PID: 0xec00), LAN9505 (PID: 0x9505)
-> +	 */
->  	.phy_id		= 0x0007c0c0, /* OUI=0x00800f, Model#=0x0c */
->  	.phy_id_mask	= 0xfffffff0,
->  	.name		= "SMSC LAN8700",
-> @@ -262,6 +324,7 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.read_status	= lan87xx_read_status,
->  	.config_init	= smsc_phy_config_init,
->  	.soft_reset	= smsc_phy_reset,
-> +	.config_aneg	= lan87xx_config_aneg,
->
->  	/* IRQ related */
->  	.ack_interrupt	= smsc_phy_ack_interrupt,
-> @@ -293,6 +356,9 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.suspend	= genphy_suspend,
->  	.resume		= genphy_resume,
->  }, {
-> +	/* This covers internal PHY (phy_id: 0x0007C0F0) for
-> +	 * LAN9500A (PID: 0x9E00), LAN9505A (PID: 0x9E01)
-> +	 */
->  	.phy_id		= 0x0007c0f0, /* OUI=0x00800f, Model#=0x0f */
->  	.phy_id_mask	= 0xfffffff0,
->  	.name		= "SMSC LAN8710/LAN8720",
-> @@ -306,6 +372,7 @@ static struct phy_driver smsc_phy_driver[] = {
->  	.read_status	= lan87xx_read_status,
->  	.config_init	= smsc_phy_config_init,
->  	.soft_reset	= smsc_phy_reset,
-> +	.config_aneg	= lan87xx_config_aneg_ext,
->
->  	/* IRQ related */
->  	.ack_interrupt	= smsc_phy_ack_interrupt,
+Sure, I will give it a try tomorrow, I am not in control of the CI I ran.
 
-This change seems to be causing some trouble I'm seeing with a LAN8710A.
-Specifically lan87xx_config_aneg_ext() writes to register 16 which is
-not documented for LAN8710A (nor for LAN8720A).  The effect is somewhat
-random.  Sometimes, the device drops to 10 Mbps while the kernel still
-reports the link speed as 100 Mbps.  Other times, it doesn't work at
-all.  Everything works if I change config_aneg to lan87xx_config_aneg,
-like this:
-
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 10722fed666d..07c0a7e4a350 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -408,7 +408,7 @@ static struct phy_driver smsc_phy_driver[] = {
-        .read_status    = lan87xx_read_status,
-        .config_init    = smsc_phy_config_init,
-        .soft_reset     = smsc_phy_reset,
--       .config_aneg    = lan87xx_config_aneg_ext,
-+       .config_aneg    = lan87xx_config_aneg,
- 
-        /* IRQ related */
-        .ack_interrupt  = smsc_phy_ack_interrupt,
-
-The internal phy of the LAN9500A does have a register 16 with
-documentation matching the usage in this patch.  Unfortunately, there
-doesn't seem to be any way of distinguishing this from the LAN8710A
-based on register values.  Anyone got any clever ideas?
-
--- 
-Måns Rullgård
+Thanks.
