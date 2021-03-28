@@ -2,90 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B6C34BA39
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 01:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1596334BA4A
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 01:56:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbhC0X74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Mar 2021 19:59:56 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:58623 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbhC0X74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 19:59:56 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4F7G6c6YR1z1qsZw;
-        Sun, 28 Mar 2021 00:59:52 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4F7G6c3r1Dz1qsXM;
-        Sun, 28 Mar 2021 00:59:52 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id YQEiKXlhb9gp; Sun, 28 Mar 2021 00:59:51 +0100 (CET)
-X-Auth-Info: 159iZLDHm8HXxgK/BQMih+LkW2l4iB+we4VHKoXqeIE=
-Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sun, 28 Mar 2021 00:59:51 +0100 (CET)
-From:   Marek Vasut <marex@denx.de>
-To:     linux-wireless@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH] rsi: Use resume_noirq for SDIO
-Date:   Sun, 28 Mar 2021 00:59:32 +0100
-Message-Id: <20210327235932.175896-1-marex@denx.de>
-X-Mailer: git-send-email 2.30.2
+        id S231214AbhC1A4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Mar 2021 20:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230490AbhC1Az4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Mar 2021 20:55:56 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3521C0613B1
+        for <netdev@vger.kernel.org>; Sat, 27 Mar 2021 17:55:55 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id t16so4812629qvr.12
+        for <netdev@vger.kernel.org>; Sat, 27 Mar 2021 17:55:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hHMbTWgTgI+fMsb5YeenlXfQ2mARrtDf2ZGncxZDz3Y=;
+        b=vzwVpKVbrIXpuZVmw9RVofcnv0InV6Kn0JfS/9cJfeI6mE0KYawinEg2BltnIJZ7dA
+         q/TUqXaGW5Gy1HZ2iU0G5KSDVImjVcEX7uiEFh9T+rNs74cR4yxnsfIgbEt4e8iEghre
+         NUAUNa95+NgmqDq6hKltk6ArSkZJvXOEWFyK+OFUBapdS8AxjPYkso2pu6kASAnyzscX
+         PaYYQMX9afhYRUHAQA6xiG+q3nrFS36D+6fOVqxLmK2kqTX/XHwOI06CQErQoaLzt1gL
+         SdV3bHsqnj6B9bbN5au8eGuYCAMa9cqAQ0E4GUOTVb2S1yecUROlF+9sUQQlnHkdDhHA
+         WCnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hHMbTWgTgI+fMsb5YeenlXfQ2mARrtDf2ZGncxZDz3Y=;
+        b=t20CWY4A7gEAFr8U+o4lOLNEQ0bCZs1MaSP1Be5JZXjMXOQqxmprVLZgacHKDBYaK1
+         mc68MSCssqD6Xe3wHVgGrKx/NbBgFUp0DNHOo24jbDOBVeL5+yvEL10lTXv4HBUlDCi8
+         i7cxY/Rr/VCcYWTxVg4x2C8mYj2Z9tTo+0cz+iJMw/vu6HoLJX7/XwIdjT/Oy1eKk6P8
+         dbJMmxhDZCecLodFWSZTxru34j/Se6HXBN4Y6vqPYiBOGFOwA4tH9GI1qWnkI9yhnug7
+         boEA7HiUKCuXhBjFM9WD0TDFhMgoYowtUrXc3b86zGAxiaNdhln2g+5UWpcRzt5boUJO
+         AKhg==
+X-Gm-Message-State: AOAM532dXPZCbAlJRCdaQqCHnQP12RyBseEQ86hhpeoAqgFAsCYA8WOv
+        DANrx35SD8D4qM4dyVBFHLfGPw==
+X-Google-Smtp-Source: ABdhPJwZJgg7I4hQBpNOAAOh4Kyx653zmqC68CtUbPVH4CkL5nJTQxkx0RfzUN60yD7wBHvadXAzjA==
+X-Received: by 2002:a05:6214:2ea:: with SMTP id h10mr10596773qvu.55.1616892955263;
+        Sat, 27 Mar 2021 17:55:55 -0700 (PDT)
+Received: from [192.168.2.61] (bras-base-kntaon1617w-grc-23-174-92-112-157.dsl.bell.ca. [174.92.112.157])
+        by smtp.googlemail.com with ESMTPSA id g11sm9994764qkk.5.2021.03.27.17.55.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Mar 2021 17:55:54 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] selftests: tc-testing: add action police
+ selftest for packets per second
+To:     Simon Horman <simon.horman@netronome.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Ido Schimmel <idosch@idosch.org>,
+        Baowen Zheng <baowen.zheng@corigine.com>
+References: <20210326130938.15814-1-simon.horman@netronome.com>
+ <20210326130938.15814-2-simon.horman@netronome.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <0cd65f9e-1cc0-630b-89eb-9065c30d0259@mojatatu.com>
+Date:   Sat, 27 Mar 2021 20:55:53 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210326130938.15814-2-simon.horman@netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rsi_resume() does access the bus to enable interrupts on the RSI
-SDIO WiFi card, however when calling sdio_claim_host() in the resume
-path, it is possible the bus is already claimed and sdio_claim_host()
-spins indefinitelly. Enable the SDIO card interrupts in resume_noirq
-instead to prevent anything else from claiming the SDIO bus first.
+On 2021-03-26 9:09 a.m., Simon Horman wrote:
+> From: Baowen Zheng <baowen.zheng@corigine.com>
+> 
+> Add selftest cases in action police for packets per second.
+> These tests depend on corresponding iproute2 command support.
+> 
+> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@netronome.com>
 
-Fixes: 20db07332736 ("rsi: sdio suspend and resume support")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
----
- drivers/net/wireless/rsi/rsi_91x_sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Gracias.
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_sdio.c b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-index 122174fca672..8465a4ee9b61 100644
---- a/drivers/net/wireless/rsi/rsi_91x_sdio.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_sdio.c
-@@ -1513,7 +1513,7 @@ static int rsi_restore(struct device *dev)
- }
- static const struct dev_pm_ops rsi_pm_ops = {
- 	.suspend = rsi_suspend,
--	.resume = rsi_resume,
-+	.resume_noirq = rsi_resume,
- 	.freeze = rsi_freeze,
- 	.thaw = rsi_thaw,
- 	.restore = rsi_restore,
--- 
-2.30.2
+Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+
+cheers,
+jamal
 
