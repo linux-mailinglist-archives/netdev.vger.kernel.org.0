@@ -2,148 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B1C34BEA6
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 21:59:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99DB634BEB7
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 22:09:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbhC1T7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 15:59:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55570 "EHLO mail.kernel.org"
+        id S231213AbhC1UIc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 28 Mar 2021 16:08:32 -0400
+Received: from unicorn.mansr.com ([81.2.72.234]:34924 "EHLO unicorn.mansr.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229595AbhC1T6y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 28 Mar 2021 15:58:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 459A261477;
-        Sun, 28 Mar 2021 19:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1616961533;
-        bh=4NUAVBaMypj7d1A+DL+VHh2KO4VM/TobWc73V8gAcSg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=pEjHvaLYV61mFlV5diapBBYlnnZ1YxWskcYw2tYybAhxDeeCATqyeZfCURSvAd+gy
-         UY0gAwrh/ceGYWYOd4NzBVAiHVGkFcfrNaih0xurxpMchH1AkM4QR+vr1tdB8gb/xq
-         6z0r6oLNxL9PjNXRXnJH8TjdrGsNy7bXlmm0N/tzpK2dLxPpz229SBOwfku8oox1kZ
-         C+gMpNFdbb8+XpW6MkeiwNOTisDHaHjARTLiF3+OCugesT/JETxukfUxbM7uXNTFX5
-         wkpSBIb4EqOsjSZ7Km0SCkUg9ZtLuFr4N16AEXxczc7vUY2qazphpTOc9iX1Kl5ndH
-         CDnEfywdSJR0A==
-Date:   Sun, 28 Mar 2021 14:58:52 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ion Badulescu <ionut@badula.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Adam Radford <aradford@gmail.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        James Smart <james.smart@broadcom.com>,
-        Dick Kennedy <dick.kennedy@broadcom.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Peter Chen <Peter.Chen@nxp.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        linux-doc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-ide@vger.kernel.org, dmaengine@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-parisc@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        SCSI development list <linux-scsi@vger.kernel.org>,
-        linux-serial@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] PCI: Remove pci_try_set_mwi
-Message-ID: <20210328195852.GA1088869@bjorn-Precision-5520>
+        id S229656AbhC1UI2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 28 Mar 2021 16:08:28 -0400
+X-Greylist: delayed 533 seconds by postgrey-1.27 at vger.kernel.org; Sun, 28 Mar 2021 16:08:27 EDT
+Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:8d8e::3])
+        by unicorn.mansr.com (Postfix) with ESMTPS id 37D8915360;
+        Sun, 28 Mar 2021 20:59:27 +0100 (BST)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+        id 2995E21A6CA; Sun, 28 Mar 2021 20:59:27 +0100 (BST)
+From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+To:     Andre Edich <andre.edich@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <steve.glendinning@shawell.net>,
+        <Parthiban.Veerasooran@microchip.com>
+Subject: Re: [PATCH net-next v5 3/3] smsc95xx: add phylib support
+References: <20200826111717.405305-1-andre.edich@microchip.com>
+        <20200826111717.405305-4-andre.edich@microchip.com>
+Date:   Sun, 28 Mar 2021 20:59:27 +0100
+In-Reply-To: <20200826111717.405305-4-andre.edich@microchip.com> (Andre
+        Edich's message of "Wed, 26 Aug 2020 13:17:17 +0200")
+Message-ID: <yw1xk0prf3s0.fsf@mansr.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5b59c7b3-6e41-b7cf-b77d-274a88f2c5e1@gmail.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 28, 2021 at 12:04:35AM +0100, Heiner Kallweit wrote:
-> On 26.03.2021 22:26, Bjorn Helgaas wrote:
-> > [+cc Randy, Andrew (though I'm sure you have zero interest in this
-> > ancient question :))]
-> > 
-> > On Wed, Dec 09, 2020 at 09:31:21AM +0100, Heiner Kallweit wrote:
-> >> pci_set_mwi() and pci_try_set_mwi() do exactly the same, just that the
-> >> former one is declared as __must_check. However also some callers of
-> >> pci_set_mwi() have a comment that it's an optional feature. I don't
-> >> think there's much sense in this separation and the use of
-> >> __must_check. Therefore remove pci_try_set_mwi() and remove the
-> >> __must_check attribute from pci_set_mwi().
-> >> I don't expect either function to be used in new code anyway.
-> > 
-> > There's not much I like better than removing things.  But some
-> > significant thought went into adding pci_try_set_mwi() in the first
-> > place, so I need a little more convincing about why it's safe to
-> > remove it.
-> > 
-> 
-> Thanks for the link to the 13 yrs old discussion. Unfortunately it
-> doesn't mention any real argument for the __must_check, just:
-> 
-> "And one of the reasons for adding the __must_check annotation is to
-> weed out design errors."
-> And the very next response in the discussion calls this a "non-argument".
-> Plus not mentioning what the other reasons could be.
+Andre Edich <andre.edich@microchip.com> writes:
 
-I think you're referring to Alan's response [1]:
+> Generally, each PHY has their own configuration and it can be done
+> through an external PHY driver.  The smsc95xx driver uses only the
+> hard-coded internal PHY configuration.
+>
+> This patch adds phylib support to probe external PHY drivers for
+> configuring external PHYs.
+>
+> The MDI-X configuration for the internal PHYs moves from
+> drivers/net/usb/smsc95xx.c to drivers/net/phy/smsc.c.
+>
+> Signed-off-by: Andre Edich <andre.edich@microchip.com>
+> ---
+>  drivers/net/phy/smsc.c     |  67 +++++++
+>  drivers/net/usb/Kconfig    |   2 +
+>  drivers/net/usb/smsc95xx.c | 399 +++++++++++++------------------------
+>  3 files changed, 203 insertions(+), 265 deletions(-)
+>
+> diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+> index 74568ae16125..638e8c3d1f4a 100644
+> --- a/drivers/net/phy/smsc.c
+> +++ b/drivers/net/phy/smsc.c
+> @@ -21,6 +21,17 @@
+>  #include <linux/netdevice.h>
+>  #include <linux/smscphy.h>
+>
+> +/* Vendor-specific PHY Definitions */
+> +/* EDPD NLP / crossover time configuration */
+> +#define PHY_EDPD_CONFIG			16
+> +#define PHY_EDPD_CONFIG_EXT_CROSSOVER_	0x0001
+> +
+> +/* Control/Status Indication Register */
+> +#define SPECIAL_CTRL_STS		27
+> +#define SPECIAL_CTRL_STS_OVRRD_AMDIX_	0x8000
+> +#define SPECIAL_CTRL_STS_AMDIX_ENABLE_	0x4000
+> +#define SPECIAL_CTRL_STS_AMDIX_STATE_	0x2000
+> +
+>  struct smsc_hw_stat {
+>  	const char *string;
+>  	u8 reg;
+> @@ -96,6 +107,54 @@ static int lan911x_config_init(struct phy_device *phydev)
+>  	return smsc_phy_ack_interrupt(phydev);
+>  }
+>
+> +static int lan87xx_config_aneg(struct phy_device *phydev)
+> +{
+> +	int rc;
+> +	int val;
+> +
+> +	switch (phydev->mdix_ctrl) {
+> +	case ETH_TP_MDI:
+> +		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_;
+> +		break;
+> +	case ETH_TP_MDI_X:
+> +		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
+> +			SPECIAL_CTRL_STS_AMDIX_STATE_;
+> +		break;
+> +	case ETH_TP_MDI_AUTO:
+> +		val = SPECIAL_CTRL_STS_AMDIX_ENABLE_;
+> +		break;
+> +	default:
+> +		return genphy_config_aneg(phydev);
+> +	}
+> +
+> +	rc = phy_read(phydev, SPECIAL_CTRL_STS);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc &= ~(SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
+> +		SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
+> +		SPECIAL_CTRL_STS_AMDIX_STATE_);
+> +	rc |= val;
+> +	phy_write(phydev, SPECIAL_CTRL_STS, rc);
+> +
+> +	phydev->mdix = phydev->mdix_ctrl;
+> +	return genphy_config_aneg(phydev);
+> +}
+> +
+> +static int lan87xx_config_aneg_ext(struct phy_device *phydev)
+> +{
+> +	int rc;
+> +
+> +	/* Extend Manual AutoMDIX timer */
+> +	rc = phy_read(phydev, PHY_EDPD_CONFIG);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc |= PHY_EDPD_CONFIG_EXT_CROSSOVER_;
+> +	phy_write(phydev, PHY_EDPD_CONFIG, rc);
+> +	return lan87xx_config_aneg(phydev);
+> +}
+> +
+>  /*
+>   * The LAN87xx suffers from rare absence of the ENERGYON-bit when Ethernet cable
+>   * plugs in while LAN87xx is in Energy Detect Power-Down mode. This leads to
+> @@ -250,6 +309,9 @@ static struct phy_driver smsc_phy_driver[] = {
+>  	.suspend	= genphy_suspend,
+>  	.resume		= genphy_resume,
+>  }, {
+> +	/* This covers internal PHY (phy_id: 0x0007C0C3) for
+> +	 * LAN9500 (PID: 0x9500), LAN9514 (PID: 0xec00), LAN9505 (PID: 0x9505)
+> +	 */
+>  	.phy_id		= 0x0007c0c0, /* OUI=0x00800f, Model#=0x0c */
+>  	.phy_id_mask	= 0xfffffff0,
+>  	.name		= "SMSC LAN8700",
+> @@ -262,6 +324,7 @@ static struct phy_driver smsc_phy_driver[] = {
+>  	.read_status	= lan87xx_read_status,
+>  	.config_init	= smsc_phy_config_init,
+>  	.soft_reset	= smsc_phy_reset,
+> +	.config_aneg	= lan87xx_config_aneg,
+>
+>  	/* IRQ related */
+>  	.ack_interrupt	= smsc_phy_ack_interrupt,
+> @@ -293,6 +356,9 @@ static struct phy_driver smsc_phy_driver[] = {
+>  	.suspend	= genphy_suspend,
+>  	.resume		= genphy_resume,
+>  }, {
+> +	/* This covers internal PHY (phy_id: 0x0007C0F0) for
+> +	 * LAN9500A (PID: 0x9E00), LAN9505A (PID: 0x9E01)
+> +	 */
+>  	.phy_id		= 0x0007c0f0, /* OUI=0x00800f, Model#=0x0f */
+>  	.phy_id_mask	= 0xfffffff0,
+>  	.name		= "SMSC LAN8710/LAN8720",
+> @@ -306,6 +372,7 @@ static struct phy_driver smsc_phy_driver[] = {
+>  	.read_status	= lan87xx_read_status,
+>  	.config_init	= smsc_phy_config_init,
+>  	.soft_reset	= smsc_phy_reset,
+> +	.config_aneg	= lan87xx_config_aneg_ext,
+>
+>  	/* IRQ related */
+>  	.ack_interrupt	= smsc_phy_ack_interrupt,
 
-  akpm> And we *need* to be excessively anal in the PCI setup code.
-  akpm> We have metric shitloads of bugs due to problems in that area,
-  akpm> and the more formality and error handling and error reporting
-  akpm> we can get in there the better off we will be.
+This change seems to be causing some trouble I'm seeing with a LAN8710A.
+Specifically lan87xx_config_aneg_ext() writes to register 16 which is
+not documented for LAN8710A (nor for LAN8720A).  The effect is somewhat
+random.  Sometimes, the device drops to 10 Mbps while the kernel still
+reports the link speed as 100 Mbps.  Other times, it doesn't work at
+all.  Everything works if I change config_aneg to lan87xx_config_aneg,
+like this:
 
-  ac> No argument there
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 10722fed666d..07c0a7e4a350 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -408,7 +408,7 @@ static struct phy_driver smsc_phy_driver[] = {
+        .read_status    = lan87xx_read_status,
+        .config_init    = smsc_phy_config_init,
+        .soft_reset     = smsc_phy_reset,
+-       .config_aneg    = lan87xx_config_aneg_ext,
++       .config_aneg    = lan87xx_config_aneg,
+ 
+        /* IRQ related */
+        .ack_interrupt  = smsc_phy_ack_interrupt,
 
-So Alan is actually *agreeing* that "we need to be excessively anal in
-the PCI setup code,"  not saying that "weeding out design errors is
-not an argument for __must_check."
+The internal phy of the LAN9500A does have a register 16 with
+documentation matching the usage in this patch.  Unfortunately, there
+doesn't seem to be any way of distinguishing this from the LAN8710A
+based on register values.  Anyone got any clever ideas?
 
-> Currently we have three ancient drivers that bail out if the call fails.
-> Most callers of pci_set_mwi() use the return code only to emit an
-> error message, but they proceed normally. Majority of users calls
-> pci_try_set_mwi(). And as stated in the commit message I don't expect
-> any new usage of pci_set_mwi().
-
-I would love to merge this patch.  We just need to clarify the commit
-log.  Right now the only justification is "I don't think there's much
-sense in the __must_check annotation," which may well be true but
-could use some support.
-
-If MWI is purely an optimization and there's never a functional
-problem if pci_set_mwi() fails, we should say that (and maybe
-update any drivers that bail out on failure).
-
-Andrew and Alan both seem to agree that MSI *is* purely advisory:
-
-  akpm> pci_set_mwi() is an advisory thing, and on certain platforms
-  akpm> it might fail to set the cacheline size to the desired number.
-  akpm> This is not a fatal error and the driver can successfully run
-  akpm> at a lesser performance level.
-
-  ac> Correct.
-
-But even after that, Andrew proposed adding pci_try_set_mwi().  So it
-makes sense to really understand what was going on there so we don't
-break something in the name of cleaning it up.
-
-[1] https://lore.kernel.org/linux-ide/20070405211609.5263d627@the-village.bc.nu/
-
-> > The argument should cite the discussion about adding it.  I think one
-> > of the earliest conversations is here:
-> > https://lore.kernel.org/linux-ide/20070404213704.224128ec.randy.dunlap@oracle.com/
+-- 
+Måns Rullgård
