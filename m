@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D59434BB8A
-	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 09:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 464E334BB99
+	for <lists+netdev@lfdr.de>; Sun, 28 Mar 2021 09:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbhC1HbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 03:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
+        id S231174AbhC1Hun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 03:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbhC1HbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 03:31:02 -0400
+        with ESMTP id S229724AbhC1HuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 03:50:19 -0400
 Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2775DC061762;
-        Sun, 28 Mar 2021 00:30:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0FD8C061762;
+        Sun, 28 Mar 2021 00:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=ySo3LejcKx
-        hpiNYrTW7rYd2XKHLRzJ0Dm1JJ/H0CViE=; b=Y0JTSslWLJr2ilr4o55nMybfXO
-        JhLkgthVElLkm+N1ME4thTBB6koj5fCp4xS/lWSaTpJWZXOgXdjAEm3r6U2Cgp/J
-        JX+6g0F70jHxM5ZbDR2EQ69ETOIFhSptPQQlRLBBpvJ1WZfx8QxtejsMESsRuXJM
-        UIa06KPaqxrVabyVQ=
+        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=opXlKr1Le0
+        DyEohzhyA9nRDoPFWP03/6sChBMUspOCQ=; b=Cnktk34WDWZx02DAJFasm1L6o9
+        kq0SgmYsQ6TeMVIknJTB3E/1adOwCGpgEffVPEFf3okR8kqkMC7KmZHS6WIESNEL
+        KDX5iDpaU5UL4xCZhdTxc59ei05VLrUUx/UieWnElpcpnP+WyoKpDZw8FsZGdYez
+        03W5DGvF7dAotsShY=
 Received: from ubuntu.localdomain (unknown [202.38.69.14])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBHT0uaMGBgV45cAA--.3225S4;
-        Sun, 28 Mar 2021 15:30:34 +0800 (CST)
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBHT0syNWBgtaxcAA--.3415S4;
+        Sun, 28 Mar 2021 15:50:10 +0800 (CST)
 From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-To:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Subject: [PATCH] net:tipc: Fix a double free in tipc_sk_mcast_rcv
-Date:   Sun, 28 Mar 2021 00:30:29 -0700
-Message-Id: <20210328073029.4325-1-lyl2019@mail.ustc.edu.cn>
+To:     khc@pm.waw.pl, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Subject: [PATCH] drivers/net/wan/hdlc_fr: Fix a double free in pvc_xmit
+Date:   Sun, 28 Mar 2021 00:50:08 -0700
+Message-Id: <20210328075008.4770-1-lyl2019@mail.ustc.edu.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: LkAmygBHT0uaMGBgV45cAA--.3225S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxJrWxXFWDWrWrCr43JFyftFb_yoW8JFWxpF
-        45Gr15GrZ7Jws09FyIqw40gr43C3yqkrsI9rW7Jr4kZrs0gw1Sqr409F4YgF45JrZ8CF4S
-        qr1IqFs0qrWrZ37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvm14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
-        rcIFxwCY02Avz4vE14v_GF4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
-        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
-        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
-        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvE
-        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
+X-CM-TRANSID: LkAmygBHT0syNWBgtaxcAA--.3415S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7JrW5Ar4kWr1kAr13uw4kWFg_yoWkKFbEkr
+        ZYv3WxC3y8Kw1qqr4kWF13Aryaka1kXFWkZFWfKr9xJ347ur97CwsavF97GryUG3ySkFW7
+        JrWkZFykCrWrWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbsAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMc
+        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v
+        4I1lc2xSY4AK67AK6r4xMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI
+        8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AK
+        xVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI
+        8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2
+        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
         UI43ZEXa7VUbVHq5UUUUU==
 X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the if(skb_peek(arrvq) == skb) branch, it calls __skb_dequeue(arrvq) to get
-the skb by skb = skb_peek(arrvq). Then __skb_dequeue() unlinks the skb from arrvq
-and returns the skb which equals to skb_peek(arrvq). After __skb_dequeue(arrvq)
-finished, the skb is freed by kfree_skb(__skb_dequeue(arrvq)) in the first time.
+In pvc_xmit, if __skb_pad(skb, pad, false) failed, it will free
+the skb in the first time and goto drop. But the same skb is freed
+by kfree_skb(skb) in the second time in drop.
 
-Unfortunately, the same skb is freed in the second time by kfree_skb(skb) after
-the branch completed.
+Maintaining the original function unchanged, my patch adds a new
+label out to avoid the double free if __skb_pad() failed.
 
-My patch removes kfree_skb() in the if(skb_peek(arrvq) == skb) branch, because
-this skb will be freed by kfree_skb(skb) finally.
-
-Fixes: cb1b728096f54 ("tipc: eliminate race condition at multicast reception")
+Fixes: f5083d0cee08a ("drivers/net/wan/hdlc_fr: Improvements to the code of pvc_xmit")
 Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
 ---
- net/tipc/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wan/hdlc_fr.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index cebcc104dc70..022999e0202d 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1265,7 +1265,7 @@ void tipc_sk_mcast_rcv(struct net *net, struct sk_buff_head *arrvq,
- 		spin_lock_bh(&inputq->lock);
- 		if (skb_peek(arrvq) == skb) {
- 			skb_queue_splice_tail_init(&tmpq, inputq);
--			kfree_skb(__skb_dequeue(arrvq));
-+			__skb_dequeue(arrvq);
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index 0720f5f92caa..4d9dc7d15908 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -415,7 +415,7 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 		if (pad > 0) { /* Pad the frame with zeros */
+ 			if (__skb_pad(skb, pad, false))
+-				goto drop;
++				goto out;
+ 			skb_put(skb, pad);
  		}
- 		spin_unlock_bh(&inputq->lock);
- 		__skb_queue_purge(&tmpq);
+ 	}
+@@ -448,8 +448,9 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ 
+ drop:
+-	dev->stats.tx_dropped++;
+ 	kfree_skb(skb);
++out:
++	dev->stats.tx_dropped++;
+ 	return NETDEV_TX_OK;
+ }
+ 
 -- 
 2.25.1
 
