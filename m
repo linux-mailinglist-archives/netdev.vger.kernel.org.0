@@ -2,125 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE9334D3C1
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9CC34D3EF
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbhC2PZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 11:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
+        id S231341AbhC2P3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 11:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbhC2PZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:25:10 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBFDC061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:25:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a7so20110765ejs.3
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:25:09 -0700 (PDT)
+        with ESMTP id S231332AbhC2P3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:29:13 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D23C061574;
+        Mon, 29 Mar 2021 08:29:10 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id i26so19004342lfl.1;
+        Mon, 29 Mar 2021 08:29:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U3BUYKVSWXeI1TOcoAookS/QZXm6eUJdVbtEkboNTYo=;
-        b=PzG/xhjb+U5nF5hYrhPGYIKbHlg0T9/PJlk+PLLlco909qAId1KWQrXD4+xXoXbsxp
-         eUclP0/BMczGtrqwJ6ulJePA4PkAzqmKaeEyp27nbCBnGPo4kICfuAg8QD5fJ2TMIr4h
-         bd96ojhrLIqve0rpUoFOq2ZDZSZacZmR92vo2pIJrVNnSwADX3Y1hyZMjKqaFoDP91ZJ
-         dz5/uXY+dcgSN/BgIIOlDV03elyVtZ2lkC6UjxtVFfCAUTN81lVKePtSOdnIe9ggUAC+
-         E3H4KZ1DdSmvm+uvRTQwW0f/6Eq2Zxn6HS2lwhi2F1IEUqssMkhFg2upq/S71oACr1TN
-         IuWA==
+        bh=YNSI6utIdzEkVaZ1ObCL91nCSNDK1rRdMbCcqeZDoUw=;
+        b=eBwN6Y938TNH+phkVteIoYlBZa8P9+bKNWWvxBIQr6+5DFLf22PpWLsOfDLqW1ag+K
+         g5jGAKZD4jLZ0x+93Xo0MuQl9Qb/qQa9wKk/Ytxj0ASrHBUc4b+qIWI/zJxEGEFs5YtE
+         Qia7SWWbMWeYzgenrbf8Um7onj5EfCIZH5IWtaDWw33YRdy3WyZNcrzodv/TJ6I5kA41
+         rbPiqdZroTnGGHvKsDheYAUnjE8bLk1P+hLlYvLmHPHqIVXBzsmTWM1uwBq1JkkG7z0s
+         urX4bZ7U4e+uqaFiL3Mp0aA71xv/yLzL1VFjQm9abMCYG8zwh3uhf5y+RdecF8HDiQ73
+         I3zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U3BUYKVSWXeI1TOcoAookS/QZXm6eUJdVbtEkboNTYo=;
-        b=Ei1vDiPzYhE6opyAhX0n7nNIp6GCxN57I6ymOdDAIxJIiEdOgfPnOLib2awGWx2b77
-         ZNlsSNOPrWxUoUIeyzKWMi4SjVPrrSEE09qkO+dsRfzErOwof5oFEPD22Jz3KoWFIyHj
-         7fBCRnvlau5uWt8kvnS50OPFwVNtD7R/m9r0ENFCXYTrFxbgHKBJvQ7gMXOWke3eDbfy
-         k4DI17ZQa/DH2mLD3wFQXhRdxpbw3ppiTXeLzJFs2Cgrvbpo65vxuH/3mbFjc+Yt1hpN
-         5eNJJjmikUMbkwG5dB/SPW2tS9QqSbDV/Ixch460NdGdz5rwgXczEKvbDAQ9ljCOWttJ
-         rr2Q==
-X-Gm-Message-State: AOAM531K038Qk6qaTyZfBo5W54PMHJ07HgZdGzyE7k3lv4MZcahhUxdG
-        F6QngABtqlqHKZqmXq50BOboO8VDUBY=
-X-Google-Smtp-Source: ABdhPJxykXOnaiqbdU5ha0Ue+mjxrzOjLvSbuCsLXTc0sgawCOadkfv9Qrh9cHCaeSZjYVSroKfDvA==
-X-Received: by 2002:a17:906:f1c8:: with SMTP id gx8mr29832822ejb.385.1617031508355;
-        Mon, 29 Mar 2021 08:25:08 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id f19sm9155230edu.12.2021.03.29.08.25.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Mar 2021 08:25:07 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id b2-20020a7bc2420000b029010be1081172so6886806wmj.1
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:25:07 -0700 (PDT)
-X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr25329789wmm.120.1617031507132;
- Mon, 29 Mar 2021 08:25:07 -0700 (PDT)
+        bh=YNSI6utIdzEkVaZ1ObCL91nCSNDK1rRdMbCcqeZDoUw=;
+        b=cGFeyCg7p+qhP8TrJ4fg9ZssQTsyFZeQDMR7NQVRETvMNiV9gBO8cqOq9rISSBLUPI
+         128ggxpAt4PF92QOp/McgIXO4UOKQFLttenCQEQSgCfqkNtnPysmZ5tWD8ip2r4i/CoF
+         i+6s2go/Un++Jaruwdny3KN4u62tFLMQVRKSd+TGEKbvZMBw0Hh4qtutULcOWoD2t8u1
+         qwc86FprYV0r96+UiYrFGVLfuqpMnjurmtcEdAk8QX3EkPHVyUEPzSYH/CbUlhwRbtSK
+         tpBzhqm89nbTIEKYrDjlGp1wiCoyWzJfyyDQGEVmyqZbBdM2qIXvss4ECIMPuYhNPXIR
+         naFQ==
+X-Gm-Message-State: AOAM531uePsl2JfXXyqAU0M7rGSa8wS/H1D+0d20Nq3QjY9AF0pX2pZA
+        +MeYelxQKY3R6H2VYj6V81pJKVwvDgUS7Cx/FfFI0oDo
+X-Google-Smtp-Source: ABdhPJzYVnTFrHNHuc5lV4/F6PFEGFHVERsQO8gxiDIDEmGYZ2V8sM++InCjT7bB3aRiLy56zUDjhjAoxzznuY+O85I=
+X-Received: by 2002:ac2:5ec2:: with SMTP id d2mr17368504lfq.214.1617031748535;
+ Mon, 29 Mar 2021 08:29:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1616692794.git.pabeni@redhat.com> <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
- <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
- <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
- <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
- <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
- <CA+FuTSduw1eK+CuEgzzwA+6QS=QhMhFQpgyVGH2F8aNH5gwv5A@mail.gmail.com> <c296fa344bacdcd23049516e8404931abc70b793.camel@redhat.com>
-In-Reply-To: <c296fa344bacdcd23049516e8404931abc70b793.camel@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 29 Mar 2021 11:24:30 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com>
-Message-ID: <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
+References: <20210326142946.5263-1-ciara.loftus@intel.com> <20210326142946.5263-4-ciara.loftus@intel.com>
+ <20210327022729.cgizt5xnhkerbrmy@ast-mbp> <bc1d9e861d27499da5f5a84bc6d22177@intel.com>
+In-Reply-To: <bc1d9e861d27499da5f5a84bc6d22177@intel.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 29 Mar 2021 08:28:57 -0700
+Message-ID: <CAADnVQLt9Wa-Ue85HRzRe0HO_Cyqo9Cd4MyvXRgqSC_dmVe=DQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf 3/3] libbpf: ignore return values of setsockopt for
+ XDP rings.
+To:     "Loftus, Ciara" <ciara.loftus@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "bjorn@kernel.org" <bjorn@kernel.org>,
+        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 11:01 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Mon, Mar 29, 2021 at 1:41 AM Loftus, Ciara <ciara.loftus@intel.com> wrote:
 >
-> On Mon, 2021-03-29 at 09:52 -0400, Willem de Bruijn wrote:
-> > > > That breaks the checksum-and-copy optimization when delivering to
-> > > > local sockets. I wonder if that is a regression.
-> > >
-> > > The conversion to CHECKSUM_UNNECESSARY happens since
-> > > commit 573e8fca255a27e3573b51f9b183d62641c47a3d.
-> > >
-> > > Even the conversion to CHECKSUM_PARTIAL happens independently from this
-> > > series, since commit 6f1c0ea133a6e4a193a7b285efe209664caeea43.
-> > >
-> > > I don't see a regression here ?!?
 > >
-> > I mean that UDP packets with local destination socket and no tunnels
-> > that arrive with CHECKSUM_NONE normally benefit from the
-> > checksum-and-copy optimization in recvmsg() when copying to user.
+> > On Fri, Mar 26, 2021 at 02:29:46PM +0000, Ciara Loftus wrote:
+> > > During xsk_socket__create the XDP_RX_RING and XDP_TX_RING
+> > setsockopts
+> > > are called to create the rx and tx rings for the AF_XDP socket. If the ring
+> > > has already been set up, the setsockopt will return an error. However,
+> > > in the event of a failure during xsk_socket__create(_shared) after the
+> > > rings have been set up, the user may wish to retry the socket creation
+> > > using these pre-existing rings. In this case we can ignore the error
+> > > returned by the setsockopts. If there is a true error, the subsequent
+> > > call to mmap() will catch it.
+> > >
+> > > Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
+> > >
+> > > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+> > > ---
+> > >  tools/lib/bpf/xsk.c | 34 ++++++++++++++++------------------
+> > >  1 file changed, 16 insertions(+), 18 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > > index d4991ddff05a..cfc4abf505c3 100644
+> > > --- a/tools/lib/bpf/xsk.c
+> > > +++ b/tools/lib/bpf/xsk.c
+> > > @@ -900,24 +900,22 @@ int xsk_socket__create_shared(struct xsk_socket
+> > **xsk_ptr,
+> > >     }
+> > >     xsk->ctx = ctx;
+> > >
+> > > -   if (rx) {
+> > > -           err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
+> > > -                            &xsk->config.rx_size,
+> > > -                            sizeof(xsk->config.rx_size));
+> > > -           if (err) {
+> > > -                   err = -errno;
+> > > -                   goto out_put_ctx;
+> > > -           }
+> > > -   }
+> > > -   if (tx) {
+> > > -           err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
+> > > -                            &xsk->config.tx_size,
+> > > -                            sizeof(xsk->config.tx_size));
+> > > -           if (err) {
+> > > -                   err = -errno;
+> > > -                   goto out_put_ctx;
+> > > -           }
+> > > -   }
+> > > +   /* The return values of these setsockopt calls are intentionally not
+> > checked.
+> > > +    * If the ring has already been set up setsockopt will return an error.
+> > However,
+> > > +    * this scenario is acceptable as the user may be retrying the socket
+> > creation
+> > > +    * with rings which were set up in a previous but ultimately
+> > unsuccessful call
+> > > +    * to xsk_socket__create(_shared). The call later to mmap() will fail if
+> > there
+> > > +    * is a real issue and we handle that return value appropriately there.
+> > > +    */
+> > > +   if (rx)
+> > > +           setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
+> > > +                      &xsk->config.rx_size,
+> > > +                      sizeof(xsk->config.rx_size));
+> > > +
+> > > +   if (tx)
+> > > +           setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
+> > > +                      &xsk->config.tx_size,
+> > > +                      sizeof(xsk->config.tx_size));
 > >
-> > If those packets are now checksummed during GRO, that voids that
-> > optimization, and the packet payload is now touched twice.
+> > Instead of ignoring the error can you remember that setsockopt was done
+> > in struct xsk_socket and don't do it the second time?
 >
-> The 'now' part confuses me. Nothing in this patch or this series
-> changes the processing of CHECKSUM_NONE UDP packets with no tunnel.
+> Ideally we don't have to ignore the error. However in the event of failure struct xsk_socket is freed at the end of xsk_socket__create so we can't use it to remember state between subsequent calls to __create().
 
-Agreed. I did not mean to imply that this patch changes that. I was
-responding to
-
-> > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
-> > > +               skb->csum_valid = 1;
-> >
-> > Not entirely obvious is that UDP packets arriving on a device with rx
-> > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
-> > this test.
-> >
-> > I assume that such packets are not coalesced by the GRO layer in the
-> > first place. But I can't immediately spot the reason for it..
-
-As you point out, such packets will already have had their checksum
-verified at this point, so this branch only matches tunneled packets.
-That point is just not immediately obvious from the code.
-
-> I do see checksum validation in the GRO engine for CHECKSUM_NONE UDP
-> packet prior to this series.
->
-> I *think* the checksum-and-copy optimization is lost
-> since 573e8fca255a27e3573b51f9b183d62641c47a3d.
-
-Wouldn't this have been introduced with UDP_GRO?
+but umem is not, right? and fd is taken from there.
