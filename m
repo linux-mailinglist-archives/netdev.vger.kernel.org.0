@@ -2,94 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C857F34CEDB
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADCC034CEF0
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232710AbhC2L0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 07:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232820AbhC2LZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:25:46 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B616BC061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:25:45 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id ay2so4239915plb.3
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hUS6XWlxd1Q+CLzsY1/tXz0C+ZIPBegHTsG3xd92fpE=;
-        b=Y7CX6WL9SN/y3euXN46ybiNVuzMrLqXXNKzinTQAnkVgPan3AEVQFtHeTNPZ+P9Y7E
-         rM9pPYhLJAm2/aAJ/oghaUkrlELsvUObO5glZbv04VfvB3NQ6lIRq/Zkxs8e47pdoE0y
-         md8W1aPaOdFsomyEl7IjpxIh+i/bX5VdEq2Y4PWaIMMJL1lsE9DMTDbPjAjSDPHK0BFr
-         Ue0i8Tyaz9nrJpx+p0W8dURX3ehhK427oqIeb9chqEY4xPAdKiWvY4TloPEOnG5cvN2Q
-         ZKtu6jsZVq2SAED1EeyPsABdAwQi9GlCLJHDT2p9A5jRzJVNuUHMl+kWTypIKHzTENlh
-         jt4w==
+        id S231672AbhC2L2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 07:28:11 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:44315 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231694AbhC2L2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:28:06 -0400
+Received: by mail-il1-f200.google.com with SMTP id j18so11563852ila.11
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:28:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hUS6XWlxd1Q+CLzsY1/tXz0C+ZIPBegHTsG3xd92fpE=;
-        b=WnjRuk4HpbfHSsIt4fjLGh+tuL4MTN0QyOYESBpZ6UlNboWVN8frJrnb4vI+j+j6/g
-         5P1XgGpOLQqF9o1fptbSSJEfOHoeVTMANh/IQJTSOwdLeuSi5Zoj48BDrx1jF6PhW/Me
-         vzxJja3x6f9V0z2vywSXv2H/nvATwKkVuQBtpqN8bXV7ECZw96aNjTW26zCTtrtGmcXS
-         tLZWvZY5AykrEK3rUwG4wPIa/iGKmuciGhzfA3Y15mgj5z8KQma8FqnYT7yIJ5IjPJmm
-         t63u2YITKmlbqi9AfCNNXhyTHVQrERuuIGOjr8GVawJIyPMWU6uoxtMy1oNQhcU7KF5U
-         hLlQ==
-X-Gm-Message-State: AOAM533LUZ6+DgZa8NHyBK7s7fE/jE7xRG9ll7N+BbFzHq6im8LKVKp9
-        0HUWiVGG+iiwKuaVTHAE0AHbJtlVskQ4
-X-Google-Smtp-Source: ABdhPJzsuDPA0Iwb2cwfhsru/pWHb+lO6Y8pmy6JAB7qYIu1DRHmuxc1AkYn7QVhLblfK2wphvjQ1g==
-X-Received: by 2002:a17:90a:1696:: with SMTP id o22mr25301990pja.0.1617017145238;
-        Mon, 29 Mar 2021 04:25:45 -0700 (PDT)
-Received: from localhost.localdomain ([103.77.37.146])
-        by smtp.gmail.com with ESMTPSA id w26sm17364452pfj.58.2021.03.29.04.25.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Mar 2021 04:25:44 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-arm-msm@vger.kernel.org,
-        bjorn.andersson@linaro.org, loic.poulain@linaro.org,
-        ducheng2@gmail.com,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH] MAINTAINERS: Add entry for Qualcomm IPC Router (QRTR) driver
-Date:   Mon, 29 Mar 2021 16:55:37 +0530
-Message-Id: <20210329112537.2587-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=rQvHuQoW7fvtp2Ftp9kpJnXrU1a0vQLohh1FTEc0jDU=;
+        b=jXhQaUh7X5yl/j9jAQvaHki6wwoQJuKO71rPz4k47xIa+KVPFRHnz/LrFsWX/c5tQb
+         gqr8bGLJw4dG3mQ/6zWx5fhfms12NFQFBIQS/LTWYv/VHKfDEbvp/8op3752Y9PwVvrA
+         Uilpl5LAWWqtBiODnECEzjUgj4ukxFOwN4HonnwsReSBSPBippxuMwZ8hzXRZor1h/Mm
+         IVWUpTSfg2O+RE6MeGOxaVUd+Fm8rOsx+TgfqC56pSG2mQWnlKtJOdy8Xfdmd4IeTpOK
+         SQXW0T+tGrkSejjSBLQ4g9mJrOBc37U2RWYZGcm5YQrbzk9HlLCc+IG87iYLYJYQG/lb
+         CVxQ==
+X-Gm-Message-State: AOAM532QM0VwKHjy1hY8wlxTSwMpQ4BAWEknF9IXM8t1W0TY3x/mK+/V
+        uRGnGwLmKzTNI1Qlrduh0cUcMpayEwTyBbYaKSGBZ8nsdNE0
+X-Google-Smtp-Source: ABdhPJyVGPg1iqr/7NbcMuFQoOzNXIrVaBElCoeGpE0yyT3Q1rRFN8O0BxysKrgcUI8F0NUDr3gsxqYBJV5vkbJE8UoNcZEn92PU
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:381c:: with SMTP id i28mr22892618jav.60.1617017285612;
+ Mon, 29 Mar 2021 04:28:05 -0700 (PDT)
+Date:   Mon, 29 Mar 2021 04:28:05 -0700
+In-Reply-To: <000000000000cefea605bea7e8c3@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e7989c05beab2c46@google.com>
+Subject: Re: [syzbot] general protection fault in io_commit_cqring (2)
+From:   syzbot <syzbot+0e905eb8228070c457a0@syzkaller.appspotmail.com>
+To:     alobakin@pm.me, asml.silence@gmail.com, axboe@kernel.dk,
+        davem@davemloft.net, gnault@redhat.com, gregkh@linuxfoundation.org,
+        io-uring@vger.kernel.org, kuba@kernel.org, linmiaohe@huawei.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        rafael@kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add MAINTAINERS entry for Qualcomm IPC Router (QRTR) driver.
+syzbot has bisected this issue to:
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+commit f9d6725bf44a5b9412b5da07e3467100fe2af236
+Author: Alexander Lobakin <alobakin@pm.me>
+Date:   Sat Feb 13 14:11:50 2021 +0000
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d92f85ca831d..441e1607db53 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14856,6 +14856,14 @@ L:	linux-arm-msm@vger.kernel.org
- S:	Maintained
- F:	drivers/iommu/arm/arm-smmu/qcom_iommu.c
- 
-+QUALCOMM IPC ROUTER (QRTR) DRIVER
-+M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-+L:	linux-arm-msm@vger.kernel.org
-+S:	Maintained
-+F:	include/trace/events/qrtr.h
-+F:	include/uapi/linux/qrtr.h
-+F:	net/qrtr/
-+
- QUALCOMM IPCC MAILBOX DRIVER
- M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- L:	linux-arm-msm@vger.kernel.org
--- 
-2.25.1
+    skbuff: use __build_skb_around() in __alloc_skb()
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11934b3ad00000
+start commit:   81b1d39f Merge tag '5.12-rc4-smb3' of git://git.samba.org/..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13934b3ad00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15934b3ad00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=daeff30c2474a60f
+dashboard link: https://syzkaller.appspot.com/bug?extid=0e905eb8228070c457a0
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e0ed06d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1144754ed00000
+
+Reported-by: syzbot+0e905eb8228070c457a0@syzkaller.appspotmail.com
+Fixes: f9d6725bf44a ("skbuff: use __build_skb_around() in __alloc_skb()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
