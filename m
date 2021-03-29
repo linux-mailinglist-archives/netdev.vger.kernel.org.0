@@ -2,70 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADCC034CEF0
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:28:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A154F34CF1D
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbhC2L2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 07:28:11 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:44315 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231694AbhC2L2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:28:06 -0400
-Received: by mail-il1-f200.google.com with SMTP id j18so11563852ila.11
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:28:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=rQvHuQoW7fvtp2Ftp9kpJnXrU1a0vQLohh1FTEc0jDU=;
-        b=jXhQaUh7X5yl/j9jAQvaHki6wwoQJuKO71rPz4k47xIa+KVPFRHnz/LrFsWX/c5tQb
-         gqr8bGLJw4dG3mQ/6zWx5fhfms12NFQFBIQS/LTWYv/VHKfDEbvp/8op3752Y9PwVvrA
-         Uilpl5LAWWqtBiODnECEzjUgj4ukxFOwN4HonnwsReSBSPBippxuMwZ8hzXRZor1h/Mm
-         IVWUpTSfg2O+RE6MeGOxaVUd+Fm8rOsx+TgfqC56pSG2mQWnlKtJOdy8Xfdmd4IeTpOK
-         SQXW0T+tGrkSejjSBLQ4g9mJrOBc37U2RWYZGcm5YQrbzk9HlLCc+IG87iYLYJYQG/lb
-         CVxQ==
-X-Gm-Message-State: AOAM532QM0VwKHjy1hY8wlxTSwMpQ4BAWEknF9IXM8t1W0TY3x/mK+/V
-        uRGnGwLmKzTNI1Qlrduh0cUcMpayEwTyBbYaKSGBZ8nsdNE0
-X-Google-Smtp-Source: ABdhPJyVGPg1iqr/7NbcMuFQoOzNXIrVaBElCoeGpE0yyT3Q1rRFN8O0BxysKrgcUI8F0NUDr3gsxqYBJV5vkbJE8UoNcZEn92PU
+        id S231233AbhC2Lb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 07:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230089AbhC2Lbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:31:33 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDBEC061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:31:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4lRvppfbCatue0pUQcAch4gdEffQ4JoiW/ML1NPhUDw=; b=foH0fTFgYRfbb/cVQVR8Ovrqam
+        /KZjqF3lUagVIdHtQgKb90YbR4X56ol0iZWSYYR+vsIvmC+Hwvbu6VOMknNFebFxvYLyHgmDo53vW
+        hNW03V2TPtlToYogvyy2gdIJKscSvyktW6mluGql+kP0xmP7GWILRthHvmFYtVFZt9BEkOM0H7iDp
+        HG4SHBS3vdC5Xv4VplTPZUp9DuQT9SLPtxKjWeKliMAMed4ULJjgieEItn0AoYt8ejzgAHQW4nIsZ
+        gaTNiKHzQK2C62jJC9PB5BQ4Z9QZEp3RcBE3iFq4VJ3UzR72wjuBg/zR1Q0boX6WMxKPoMRsOSUkE
+        LgEkGy2A==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lQq6L-001TcA-Ai; Mon, 29 Mar 2021 11:30:49 +0000
+Date:   Mon, 29 Mar 2021 12:30:33 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Du Cheng <ducheng2@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH net-next] qrtr: move to staging
+Message-ID: <20210329113033.GA351017@casper.infradead.org>
+References: <20210328122621.2614283-1-gregkh@linuxfoundation.org>
+ <CAMZdPi_3B9Bxg=7MudFq+RnhD10Mm5QbX_pBb5vyPsZAC_bNOQ@mail.gmail.com>
+ <20210329105236.GB2763@work>
+ <YGGz/BaibxykzxOW@kroah.com>
+ <20210329110741.GC2763@work>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:381c:: with SMTP id i28mr22892618jav.60.1617017285612;
- Mon, 29 Mar 2021 04:28:05 -0700 (PDT)
-Date:   Mon, 29 Mar 2021 04:28:05 -0700
-In-Reply-To: <000000000000cefea605bea7e8c3@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e7989c05beab2c46@google.com>
-Subject: Re: [syzbot] general protection fault in io_commit_cqring (2)
-From:   syzbot <syzbot+0e905eb8228070c457a0@syzkaller.appspotmail.com>
-To:     alobakin@pm.me, asml.silence@gmail.com, axboe@kernel.dk,
-        davem@davemloft.net, gnault@redhat.com, gregkh@linuxfoundation.org,
-        io-uring@vger.kernel.org, kuba@kernel.org, linmiaohe@huawei.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210329110741.GC2763@work>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+On Mon, Mar 29, 2021 at 04:37:41PM +0530, Manivannan Sadhasivam wrote:
+> On Mon, Mar 29, 2021 at 01:03:24PM +0200, Greg Kroah-Hartman wrote:
+> > On Mon, Mar 29, 2021 at 04:22:36PM +0530, Manivannan Sadhasivam wrote:
+> > > Hi Greg,
+> > > 
+> > > On Mon, Mar 29, 2021 at 11:47:12AM +0200, Loic Poulain wrote:
+> > > > Hi Greg,
+> > > > 
+> > > > On Sun, 28 Mar 2021 at 14:28, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > wrote:
+> > > > 
+> > > > > There does not seem to be any developers willing to maintain the
+> > > > > net/qrtr/ code, so move it to drivers/staging/ so that it can be removed
+> > > > > from the kernel tree entirely in a few kernel releases if no one steps
+> > > > > up to maintain it.
+> > > > >
+> > > > > Reported-by: Matthew Wilcox <willy@infradead.org>
+> > > > > Cc: Du Cheng <ducheng2@gmail.com>
+> > > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > >
+> > > > 
+> > > > As far as I know, QRTR/IPCR is still commonly used with Qualcomm-based
+> > > > platforms for accessing various components of the SoC.
+> > > > CCing Bjorn and Mani, In case they are interested in taking maintenance of
+> > > > that.
+> > > > 
+> > > 
+> > > As Loic said, QRTR is an integral component used in various Qualcomm based
+> > > upstream supported products like ChromeOS, newer WLAN chipsets (QCA6390) etc...
+> > > 
+> > > It is unfortunate that no one stepped up so far to maintain it. After
+> > > having an internal discussion, I decided to pitch in as a maintainer. I'll
+> > > send the MAINTAINERS change to netdev list now.
+> > 
+> > Great, can you also fix up the reported problems with the codebase that
+> > resulted in this "ask for removal"?
+> > 
+> 
+> Yes, ofc. I do see couple of Syzbot bug reports now... I will look into them.
+> It turned out I fixed one of them earlier but should've handled all :)
 
-commit f9d6725bf44a5b9412b5da07e3467100fe2af236
-Author: Alexander Lobakin <alobakin@pm.me>
-Date:   Sat Feb 13 14:11:50 2021 +0000
+From my point of view, the important patch to get applied is this one:
 
-    skbuff: use __build_skb_around() in __alloc_skb()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11934b3ad00000
-start commit:   81b1d39f Merge tag '5.12-rc4-smb3' of git://git.samba.org/..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13934b3ad00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15934b3ad00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=daeff30c2474a60f
-dashboard link: https://syzkaller.appspot.com/bug?extid=0e905eb8228070c457a0
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e0ed06d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1144754ed00000
-
-Reported-by: syzbot+0e905eb8228070c457a0@syzkaller.appspotmail.com
-Fixes: f9d6725bf44a ("skbuff: use __build_skb_around() in __alloc_skb()")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
