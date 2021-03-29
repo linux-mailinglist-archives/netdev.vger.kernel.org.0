@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 690F434D72D
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 20:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A160734D736
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 20:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbhC2Saq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 14:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41266 "EHLO
+        id S231740AbhC2SbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 14:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231485AbhC2Sai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 14:30:38 -0400
+        with ESMTP id S231751AbhC2SbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 14:31:06 -0400
 Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE294C061574;
-        Mon, 29 Mar 2021 11:30:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF1D3C061574;
+        Mon, 29 Mar 2021 11:31:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
         Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=Najrrc9y+/48DUXx4/endqtIY6BJkPiOWT
-        uivmMc0is=; b=NaS9q8tOGiaDE2giyGJj/HhBdOzcB3LYDRI0hBV+yDVkKtANcj
-        gpL2dYG897SXSmoXz60Ynj8BqdTBDNVRaJ5cuRGyjkamPcEJ7VRdY7NopN+oSKZU
-        uSxF6gIhzhr9GWBYvd+h8POlcBCn7aOsxRc7Ky7u9/1EIJ8tcoSzUwgNI=
+        Content-Transfer-Encoding; bh=ik1VNJyYjBgUbqJ51FNWR51hX8kbricRWl
+        nztP2ATL4=; b=gZBtfH2uE3I3HFKUYWX6Eo6T+aZXHQWYoo1v5a4TA7E8tFYVdK
+        vOJZ7UeU0ipuRGA959Foxy1Vr2xnCO5k/3H36LRqmxMzs4MkLsiHDzStqOlSTO5I
+        ao/rfWoCN73FpdtnmnRb5mee6rNHc3WhYNGxqaxBNRAsOK/3erwNCZTCM=
 Received: from xhacker (unknown [101.86.19.180])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDn7Ei5HGJgEfdpAA--.51311S2;
-        Tue, 30 Mar 2021 02:30:18 +0800 (CST)
-Date:   Tue, 30 Mar 2021 02:25:21 +0800
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygB3fkrXHGJgyvdpAA--.50159S2;
+        Tue, 30 Mar 2021 02:30:48 +0800 (CST)
+Date:   Tue, 30 Mar 2021 02:25:51 +0800
 From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
 To:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -46,17 +46,18 @@ To:     Paul Walmsley <paul.walmsley@sifive.com>,
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         kasan-dev@googlegroups.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH 7/9] riscv: bpf: Avoid breaking W^X
-Message-ID: <20210330022521.2a904a8c@xhacker>
+Subject: [PATCH 8/9] riscv: module: Create module allocations without exec
+ permissions
+Message-ID: <20210330022551.58ce4ff4@xhacker>
 In-Reply-To: <20210330022144.150edc6e@xhacker>
 References: <20210330022144.150edc6e@xhacker>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygDn7Ei5HGJgEfdpAA--.51311S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFyxtF45CF1ruF48Kr4UArb_yoWkKrg_Z3
-        Wxta4xW3s5Jr4xCr4Durn5Zr1Ikw1FkFs5ur1xurW2y390vr1ftasaq3yrur9xZr4j9rW7
-        WF9rXrWxZw42vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+X-CM-TRANSID: LkAmygB3fkrXHGJgyvdpAA--.50159S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7GFyfWF4rGrWktry5Wr1xXwb_yoWfWrc_W3
+        WxJry3WryrKa1I9FZ3AanYvr4Iya4rGFZY9FyxZFy7Ga4DWrW7t3s8ta9xuFn8ZryfKrWf
+        GFy3Jr9xuw42qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
         9fnUUIcSsGvfJTRUUUb4kYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
         6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
         8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
@@ -77,36 +78,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jisheng Zhang <jszhang@kernel.org>
 
-We allocate Non-executable pages, then call bpf_jit_binary_lock_ro()
-to enable executable permission after mapping them read-only. This is
-to prepare for STRICT_MODULE_RWX in following patch.
+The core code manages the executable permissions of code regions of
+modules explicitly, it is not necessary to create the module vmalloc
+regions with RWX permissions. Create them with RW- permissions instead.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- arch/riscv/net/bpf_jit_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/riscv/kernel/module.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
-index d8da819290b7..0d5099f0dac8 100644
---- a/arch/riscv/net/bpf_jit_core.c
-+++ b/arch/riscv/net/bpf_jit_core.c
-@@ -152,6 +152,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	bpf_flush_icache(jit_data->header, ctx->insns + ctx->ninsns);
- 
- 	if (!prog->is_func || extra_pass) {
-+		bpf_jit_binary_lock_ro(header);
- out_offset:
- 		kfree(ctx->offset);
- 		kfree(jit_data);
-@@ -169,7 +170,7 @@ void *bpf_jit_alloc_exec(unsigned long size)
+diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
+index 104fba889cf7..8997b9dbcb3d 100644
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -414,7 +414,7 @@ void *module_alloc(unsigned long size)
  {
- 	return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
- 				    BPF_JIT_REGION_END, GFP_KERNEL,
+ 	return __vmalloc_node_range(size, 1, VMALLOC_MODULE_START,
+ 				    VMALLOC_END, GFP_KERNEL,
 -				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
 +				    PAGE_KERNEL, 0, NUMA_NO_NODE,
  				    __builtin_return_address(0));
  }
- 
+ #endif
 -- 
 2.31.0
 
