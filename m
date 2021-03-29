@@ -2,139 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBED234D3AB
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE9334D3C1
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbhC2PVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 11:21:21 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:32350 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229628AbhC2PUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:20:54 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12TF3aVY047260;
-        Mon, 29 Mar 2021 11:20:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=TtToMWPYlyyGKFmt9lcXEYBKQ3nvsnYebkyKrx3OjBw=;
- b=COXX9l6kGqWVDKKIcAYiVUUzju7eeBG33nEQ/I5nAtW838OwWWNjixQ2xF5YCXgrA/iw
- oG460QTK9au0MTBODefBSZy2YV3rtFompJlsovTkFH4gSu5AF2Kgf2LfzJMVR5cYvlui
- GjjNbWYgJTZOMFridW7ksnykrgmLWcz0zLhbeVj2GweKcxxl0sDYesWdH3xCe2VtRciC
- 7dag2yGyQt1aiMeko/E/PrDtfmsSAaVEPibqh1gRzjPOxE0WGLirDAJcOE9qdGNkTy85
- IPDg1vOCPc95UBFO69CrV2GJtwhvrl2NZsAPNMsFp4b71DC05VfqoOGfEH+KAvd2Ip8z pQ== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 37jhsrurtb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Mar 2021 11:20:49 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 12TFBgTc029969;
-        Mon, 29 Mar 2021 15:20:48 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma03wdc.us.ibm.com with ESMTP id 37jqmmyawp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Mar 2021 15:20:48 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 12TFKmqB8651454
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 29 Mar 2021 15:20:48 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DCE98124053;
-        Mon, 29 Mar 2021 15:20:47 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DE869124054;
-        Mon, 29 Mar 2021 15:20:46 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.163.3.96])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 29 Mar 2021 15:20:46 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     sam@mendozajonas.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Milton Miller <miltonm@us.ibm.com>,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [PATCH] net/ncsi: Avoid channel_monitor hrtimer deadlock
-Date:   Mon, 29 Mar 2021 10:20:39 -0500
-Message-Id: <20210329152039.15189-1-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+        id S229655AbhC2PZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 11:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229955AbhC2PZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:25:10 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBFDC061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:25:09 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a7so20110765ejs.3
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:25:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U3BUYKVSWXeI1TOcoAookS/QZXm6eUJdVbtEkboNTYo=;
+        b=PzG/xhjb+U5nF5hYrhPGYIKbHlg0T9/PJlk+PLLlco909qAId1KWQrXD4+xXoXbsxp
+         eUclP0/BMczGtrqwJ6ulJePA4PkAzqmKaeEyp27nbCBnGPo4kICfuAg8QD5fJ2TMIr4h
+         bd96ojhrLIqve0rpUoFOq2ZDZSZacZmR92vo2pIJrVNnSwADX3Y1hyZMjKqaFoDP91ZJ
+         dz5/uXY+dcgSN/BgIIOlDV03elyVtZ2lkC6UjxtVFfCAUTN81lVKePtSOdnIe9ggUAC+
+         E3H4KZ1DdSmvm+uvRTQwW0f/6Eq2Zxn6HS2lwhi2F1IEUqssMkhFg2upq/S71oACr1TN
+         IuWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U3BUYKVSWXeI1TOcoAookS/QZXm6eUJdVbtEkboNTYo=;
+        b=Ei1vDiPzYhE6opyAhX0n7nNIp6GCxN57I6ymOdDAIxJIiEdOgfPnOLib2awGWx2b77
+         ZNlsSNOPrWxUoUIeyzKWMi4SjVPrrSEE09qkO+dsRfzErOwof5oFEPD22Jz3KoWFIyHj
+         7fBCRnvlau5uWt8kvnS50OPFwVNtD7R/m9r0ENFCXYTrFxbgHKBJvQ7gMXOWke3eDbfy
+         k4DI17ZQa/DH2mLD3wFQXhRdxpbw3ppiTXeLzJFs2Cgrvbpo65vxuH/3mbFjc+Yt1hpN
+         5eNJJjmikUMbkwG5dB/SPW2tS9QqSbDV/Ixch460NdGdz5rwgXczEKvbDAQ9ljCOWttJ
+         rr2Q==
+X-Gm-Message-State: AOAM531K038Qk6qaTyZfBo5W54PMHJ07HgZdGzyE7k3lv4MZcahhUxdG
+        F6QngABtqlqHKZqmXq50BOboO8VDUBY=
+X-Google-Smtp-Source: ABdhPJxykXOnaiqbdU5ha0Ue+mjxrzOjLvSbuCsLXTc0sgawCOadkfv9Qrh9cHCaeSZjYVSroKfDvA==
+X-Received: by 2002:a17:906:f1c8:: with SMTP id gx8mr29832822ejb.385.1617031508355;
+        Mon, 29 Mar 2021 08:25:08 -0700 (PDT)
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
+        by smtp.gmail.com with ESMTPSA id f19sm9155230edu.12.2021.03.29.08.25.07
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Mar 2021 08:25:07 -0700 (PDT)
+Received: by mail-wm1-f50.google.com with SMTP id b2-20020a7bc2420000b029010be1081172so6886806wmj.1
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:25:07 -0700 (PDT)
+X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr25329789wmm.120.1617031507132;
+ Mon, 29 Mar 2021 08:25:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: EhYCi-mAd2mOfMYoZv6WjQEfnxileLQa
-X-Proofpoint-ORIG-GUID: EhYCi-mAd2mOfMYoZv6WjQEfnxileLQa
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-29_10:2021-03-26,2021-03-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- phishscore=0 impostorscore=0 bulkscore=0 suspectscore=0 clxscore=1011
- priorityscore=1501 mlxscore=0 mlxlogscore=999 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2103250000 definitions=main-2103290114
+References: <cover.1616692794.git.pabeni@redhat.com> <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+ <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+ <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
+ <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
+ <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
+ <CA+FuTSduw1eK+CuEgzzwA+6QS=QhMhFQpgyVGH2F8aNH5gwv5A@mail.gmail.com> <c296fa344bacdcd23049516e8404931abc70b793.camel@redhat.com>
+In-Reply-To: <c296fa344bacdcd23049516e8404931abc70b793.camel@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Mar 2021 11:24:30 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com>
+Message-ID: <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Milton Miller <miltonm@us.ibm.com>
+On Mon, Mar 29, 2021 at 11:01 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Mon, 2021-03-29 at 09:52 -0400, Willem de Bruijn wrote:
+> > > > That breaks the checksum-and-copy optimization when delivering to
+> > > > local sockets. I wonder if that is a regression.
+> > >
+> > > The conversion to CHECKSUM_UNNECESSARY happens since
+> > > commit 573e8fca255a27e3573b51f9b183d62641c47a3d.
+> > >
+> > > Even the conversion to CHECKSUM_PARTIAL happens independently from this
+> > > series, since commit 6f1c0ea133a6e4a193a7b285efe209664caeea43.
+> > >
+> > > I don't see a regression here ?!?
+> >
+> > I mean that UDP packets with local destination socket and no tunnels
+> > that arrive with CHECKSUM_NONE normally benefit from the
+> > checksum-and-copy optimization in recvmsg() when copying to user.
+> >
+> > If those packets are now checksummed during GRO, that voids that
+> > optimization, and the packet payload is now touched twice.
+>
+> The 'now' part confuses me. Nothing in this patch or this series
+> changes the processing of CHECKSUM_NONE UDP packets with no tunnel.
 
-Calling ncsi_stop_channel_monitor from channel_monitor is a guaranteed
-deadlock on SMP because stop calls del_timer_sync on the timer that
-inoked channel_monitor as its timer function.
+Agreed. I did not mean to imply that this patch changes that. I was
+responding to
 
-Recognise the inherent race of marking the monitor disabled before
-deleting the timer by just returning if enable was cleared.  After
-a timeout (the default case -- reset to START when response received)
-just mark the monitor.enabled false.
+> > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> > > +               skb->csum_valid = 1;
+> >
+> > Not entirely obvious is that UDP packets arriving on a device with rx
+> > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
+> > this test.
+> >
+> > I assume that such packets are not coalesced by the GRO layer in the
+> > first place. But I can't immediately spot the reason for it..
 
-If the channel has an entrie on the channel_queue list, or if the
-state is not ACTIVE or INACTIVE, then warn and mark the timer stopped
-and don't restart, as the locking is broken somehow.
+As you point out, such packets will already have had their checksum
+verified at this point, so this branch only matches tunneled packets.
+That point is just not immediately obvious from the code.
 
-Fixes: 0795fb2021f0 ("net/ncsi: Stop monitor if channel times out or is inactive")
-Signed-off-by: Milton Miller <miltonm@us.ibm.com>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
----
- net/ncsi/ncsi-manage.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+> I do see checksum validation in the GRO engine for CHECKSUM_NONE UDP
+> packet prior to this series.
+>
+> I *think* the checksum-and-copy optimization is lost
+> since 573e8fca255a27e3573b51f9b183d62641c47a3d.
 
-diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-index a9cb355324d1..ffff8da707b8 100644
---- a/net/ncsi/ncsi-manage.c
-+++ b/net/ncsi/ncsi-manage.c
-@@ -105,13 +105,20 @@ static void ncsi_channel_monitor(struct timer_list *t)
- 	monitor_state = nc->monitor.state;
- 	spin_unlock_irqrestore(&nc->lock, flags);
- 
--	if (!enabled || chained) {
--		ncsi_stop_channel_monitor(nc);
--		return;
--	}
-+	if (!enabled)
-+		return;		/* expected race disabling timer */
-+	if (WARN_ON_ONCE(chained))
-+		goto bad_state;
-+
- 	if (state != NCSI_CHANNEL_INACTIVE &&
- 	    state != NCSI_CHANNEL_ACTIVE) {
--		ncsi_stop_channel_monitor(nc);
-+bad_state:
-+		netdev_warn(ndp->ndev.dev,
-+			    "Bad NCSI monitor state channel %d 0x%x %s queue\n",
-+			    nc->id, state, chained ? "on" : "off");
-+		spin_lock_irqsave(&nc->lock, flags);
-+		nc->monitor.enabled = false;
-+		spin_unlock_irqrestore(&nc->lock, flags);
- 		return;
- 	}
- 
-@@ -136,10 +143,9 @@ static void ncsi_channel_monitor(struct timer_list *t)
- 		ncsi_report_link(ndp, true);
- 		ndp->flags |= NCSI_DEV_RESHUFFLE;
- 
--		ncsi_stop_channel_monitor(nc);
--
- 		ncm = &nc->modes[NCSI_MODE_LINK];
- 		spin_lock_irqsave(&nc->lock, flags);
-+		nc->monitor.enabled = false;
- 		nc->state = NCSI_CHANNEL_INVISIBLE;
- 		ncm->data[2] &= ~0x1;
- 		spin_unlock_irqrestore(&nc->lock, flags);
--- 
-2.27.0
-
+Wouldn't this have been introduced with UDP_GRO?
