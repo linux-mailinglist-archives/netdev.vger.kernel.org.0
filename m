@@ -2,161 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3380D34D953
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E2A34D957
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbhC2Uw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 16:52:26 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:42015 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231158AbhC2UwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 16:52:16 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 463D85C00DE;
-        Mon, 29 Mar 2021 16:52:10 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 29 Mar 2021 16:52:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=BXZ5ke
-        /0VNYbAih92ufZTePIlDugQM4dNpIXwsRqSDA=; b=TbXOGsRDG+neqGGL1Eq6up
-        2aruH5dQeMLvns4naqMrnpadJX2+Y5sBW9Qiv7orKGzZhIo42dOI7koA8e/If+By
-        g4gJJPhKrWx07kvcXf5JXkeFCz+KO6BYWbPRIQCMAVqffGJfLHpRC3F2k6t/CFsN
-        beoBQAYxsYSo//wzug1aIfCWkP/7rnOc0EYVSRlU3vit2jUlM7NCQUc7PdflMBCt
-        BW0lEhamO/zzl8A/jqgRjwSkOzOIHytwnHgKSbXzIvpf1bbQPKwU5yDJm7qCMl9C
-        XuRgM7IYP07/Y5Awj0dZoRporHxGesVnxHa9vqO6pgeYruqh1D7jaVCM7naGtkNA
-        ==
-X-ME-Sender: <xms:-T1iYINIl4Lqmiwr9qHhgeBYeyqf8pKEOyzfYOf_A5x3N8SeftZCdA>
-    <xme:-T1iYO-tSUCvQdVkdeylyiTiINvstHW5ulW2ISGQbkT5M8d0WhjqXJn8z8wbm79UO
-    pShBtSEX7F7lYk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgudehiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:-T1iYPQgWCNs_DRmZcZrIcr6eQaxvMnbfV5YYyJx79UGxWRG0pUPbA>
-    <xmx:-T1iYAus9Hd7M0sA9VRzwtzPpsrq_tdktrfoi5xgbkOLtsFcg-fd9g>
-    <xmx:-T1iYAfnJkZ_kojPx2Qb7Cv9qKd8IWJOEIyLyyzN3q4oWeoWa032KA>
-    <xmx:-j1iYKoP1hBnDrPk1nORpjzZ4McmDuGyWe_SbTQ830PcH2hj6o1Bsw>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 451A5240057;
-        Mon, 29 Mar 2021 16:52:09 -0400 (EDT)
-Date:   Mon, 29 Mar 2021 23:52:05 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Michal Soltys <msoltyspl@yandex.pl>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [BUG / question] in routing rules, some options (e.g. ipproto,
- sport) cause rules to be ignored in presence of packet marks
-Message-ID: <YGI99fyA6MYKixuB@shredder.lan>
-References: <babb2ebf-862a-d05f-305a-e894e88f601e@yandex.pl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <babb2ebf-862a-d05f-305a-e894e88f601e@yandex.pl>
+        id S231268AbhC2Uyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 16:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231272AbhC2UyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 16:54:17 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA50C061574;
+        Mon, 29 Mar 2021 13:54:17 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id f19so14188300ion.3;
+        Mon, 29 Mar 2021 13:54:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Vf66eL15U8njDI0wUbJwhopv7ffMWFCFjk1XaltSbtY=;
+        b=m2zcF2/pc7LqNVitm4jzgxiWhPeMWbIAh1GgKn1wlziE+WqhReX5IuZNTNnmNgZPOo
+         m4NxR7Q7o+MkVZvd9DORmcyNzU3e9bJ75yLLJNrfsaxOh3QV9BQxrZIU7Dhskyj535tu
+         0D6M/NQSxSHlEOVirEH9A8WsZDqMnme6beZVCjGhWV48GLQaSC+NVnVqRWp40JZY/iC4
+         rFpF2eJQOJadn83UTuwcHLMmKIHqzqX4+2sIxgV5/fzAFIcFqZlQwTxAwaA3Lp95Wlrk
+         9hFw0bBvUXU453LLSnCXAk9joTsbprkd0Xr0epfrY16XNcja6NtJGe3LJN4YdjOYMBfA
+         /UDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Vf66eL15U8njDI0wUbJwhopv7ffMWFCFjk1XaltSbtY=;
+        b=Y6Xp2DsD+cgWjvr0+KI3BwgXabEFNFHrjgCbkJCfvwZ6RH03IUh0mab3WmJLgjL7lF
+         33LPhXBEbqcL9DQ+GuV/c13y1EXaH7nNglqlvOmK40iR2Wyy64wAyrQRjegXLHnNVNVM
+         cDbfsYkOEWBP2qKO4NFNtHdDmAlVMbf3yDy5Fi71CZQ6aZzJYVjxTd9IoUkjyOtBKa/g
+         X0qse4aGz1JtbJk3o97fMUJjCKZIUdDZxyM5SGf4plibcadxvZmCUeYlfQa8XtEtvtaj
+         UXvo0Mm5Ok5kXnihZktEHiVcBITGdh4cysvEhyj90fId8XUON2v03Axs3g2WkgoQF0Qr
+         Bl1w==
+X-Gm-Message-State: AOAM530ubHP1Bortdxf1XPIpfkV+xM6oTYuJ0HvRFZK4oAkibg0OZYAt
+        Sy/3tL3w798e6Uh5ii2aqCM=
+X-Google-Smtp-Source: ABdhPJwQMH5lghuDTbTORLJjfXZvLn0N8U56iu2fOChIIcXb2ASnF1Yia7Gf6MJ2eu4c2vCDn521KA==
+X-Received: by 2002:a05:6602:1da:: with SMTP id w26mr1930846iot.170.1617051256978;
+        Mon, 29 Mar 2021 13:54:16 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id b9sm10203942iof.54.2021.03.29.13.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Mar 2021 13:54:16 -0700 (PDT)
+Date:   Mon, 29 Mar 2021 13:54:07 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <60623e6fdd870_401fb20818@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210328202013.29223-10-xiyou.wangcong@gmail.com>
+References: <20210328202013.29223-1-xiyou.wangcong@gmail.com>
+ <20210328202013.29223-10-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v7 09/13] udp: implement ->read_sock() for
+ sockmap
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 28, 2021 at 04:05:29PM +0200, Michal Soltys wrote:
-> Hi,
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> I'm not sure how it behaved in earlier kernels (can check later), but it is
-> / looks bugged in at least recent 5.x+ ones (tests were done with 5.11.8 and
-> 5.10.25).
+> This is similar to tcp_read_sock(), except we do not need
+> to worry about connections, we just need to retrieve skb
+> from UDP receive queue.
 > 
-> Consider following setup:
+> Note, the return value of ->read_sock() is unused in
+> sk_psock_verdict_data_ready().
 > 
-> # ip -o ad sh
-> 1: lo    inet 127.0.0.1/8 scope host lo
-> 2: right1    inet 10.0.10.2/24 scope global
-> 3: right2    inet 10.0.20.2/24 scope global
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  include/net/udp.h   |  2 ++
+>  net/ipv4/af_inet.c  |  1 +
+>  net/ipv4/udp.c      | 35 +++++++++++++++++++++++++++++++++++
+>  net/ipv6/af_inet6.c |  1 +
+>  4 files changed, 39 insertions(+)
 > 
-> # ip ro sh tab main
-> default via 10.0.10.1 dev right1
-> 10.0.10.0/24 dev right1 proto kernel scope link src 10.0.10.2
-> 10.0.20.0/24 dev right2 proto kernel scope link src 10.0.20.2
-> 
-> # ip ro sh tab 123
-> default via 10.0.20.1 dev right2 src 10.0.20.2
-> 
-> And routing rules:
-> 
-> 0:      from all lookup local
-> 9:      from all fwmark 0x1 ipproto udp sport 1194 lookup 123
-> 10:     from all ipproto udp sport 1194 lookup 123
-> 32766:  from all lookup main
-> 32767:  from all lookup default
-> 
-> This - without any mangling via ipt/nft or by other means - works correctly,
-> for example:
-> 
-> nc -u -p 1194 1.2.3.4 12345
-> 
-> will be routed out correctly via 'right2' using 10.0.20.2
-> 
-> But if we add mark to locally outgoing packets:
-> 
-> iptables -t mangle -A OUTPUT -j MARK --set-mark 1
-> 
-> Then *both* rule 9 and rule 10 will be ignored during reroute check. tcpdump
-> on interface 'right1' will show:
-> 
-> # tcpdump -nvi right1 udp
-> tcpdump: listening on right1, link-type EN10MB (Ethernet), snapshot length
-> 262144 bytes
-> 13:21:59.684928 IP (tos 0x0, ttl 64, id 8801, offset 0, flags [DF], proto
-> UDP (17), length 33)
->     10.0.20.2.1194 > 1.2.3.4.12345: UDP, length 5
-> 
-> Initial routing decision in rule 10 will set the address correctly, but the
-> packet goes out via interface right1, ignoring both 9 and 10.
-> 
-> If I add another routing roule:
-> 
-> 8:      from all fwmark 0x1 lookup 123
-> 
-> Then the packects will flow correctly - but I *cannot* use (from the ones I
-> tested): sport, dport, ipproto, uidrange - as they will cause the rule to be
-> ignored. For example, this setup of routing rules will fail, if there is any
-> mark set on a packet (nc had uid 1120):
-> 
-> # ip ru sh
-> 0:      from all lookup local
-> 10:     from all ipproto udp lookup 123
-> 10:     from all sport 1194 lookup 123
-> 10:     from all dport 12345 lookup 123
-> 10:     from all uidrange 1120-1120 lookup 123
-> 32766:  from all lookup main
-> 32767:  from all lookup default
-> 
-> Adding correct fwmark to the above rules will have *no* effect either. Only
-> fwmark *alone* will work (or in combination with: iif, from, to - from the
-> ones I tested).
-> 
-> I peeked at fib_rule_match() in net/core/fib_rules.c - but it doesn't look
-> like there is anything wrong there. I initially suspected lack of
-> 'rule->mark &&' in mark related line - but considering that rules such as
-> 'from all fwmark 1 sport 1194 lookup main' also fail, it doesn't look like
-> it's the culprit (and mark_mask covers that test either way).
-> 
-> OTOH, perhaps nf_ip_reroute() / ip_route_me_harder() are somehow the culprit
-> here - but I haven't analyzed them yet. Perhaps it's just an issue of
-> changing output interface incorrectly after ip_route_me_harder() ?
+> diff --git a/include/net/udp.h b/include/net/udp.h
+> index df7cc1edc200..347b62a753c3 100644
+> --- a/include/net/udp.h
+> +++ b/include/net/udp.h
+> @@ -329,6 +329,8 @@ struct sock *__udp6_lib_lookup(struct net *net,
+>  			       struct sk_buff *skb);
+>  struct sock *udp6_lib_lookup_skb(const struct sk_buff *skb,
+>  				 __be16 sport, __be16 dport);
+> +int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+> +		  sk_read_actor_t recv_actor);
+>  
+>  /* UDP uses skb->dev_scratch to cache as much information as possible and avoid
+>   * possibly multiple cache miss on dequeue()
+> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> index 1355e6c0d567..f17870ee558b 100644
+> --- a/net/ipv4/af_inet.c
+> +++ b/net/ipv4/af_inet.c
+> @@ -1070,6 +1070,7 @@ const struct proto_ops inet_dgram_ops = {
+>  	.setsockopt	   = sock_common_setsockopt,
+>  	.getsockopt	   = sock_common_getsockopt,
+>  	.sendmsg	   = inet_sendmsg,
+> +	.read_sock	   = udp_read_sock,
+>  	.recvmsg	   = inet_recvmsg,
+>  	.mmap		   = sock_no_mmap,
+>  	.sendpage	   = inet_sendpage,
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 38952aaee3a1..04620e4d64ab 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -1782,6 +1782,41 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
+>  }
+>  EXPORT_SYMBOL(__skb_recv_udp);
+>  
+> +int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+> +		  sk_read_actor_t recv_actor)
+> +{
+> +	int copied = 0;
+> +
+> +	while (1) {
+> +		int offset = 0, err;
 
-ip_route_me_harder() does not set source / destination port in the
-flow key, so it explains why fib rules that use them are not hit after
-mangling the packet. These keys were added in 4.17, but I
-don't think this use case every worked. You have a different experience?
+Should this be
 
+ int offset = sk_peek_offset()?
+
+MSG_PEEK should work from recv side, at least it does on TCP side. If
+its handled in some following patch a comment would be nice. I was
+just reading udp_recvmsg() so maybe its not needed.
+
+> +		struct sk_buff *skb;
+> +
+> +		skb = __skb_recv_udp(sk, 0, 1, &offset, &err);
+> +		if (!skb)
+> +			return err;
+> +		if (offset < skb->len) {
+> +			size_t len;
+> +			int used;
+> +
+> +			len = skb->len - offset;
+> +			used = recv_actor(desc, skb, offset, len);
+> +			if (used <= 0) {
+> +				if (!copied)
+> +					copied = used;
+> +				break;
+> +			} else if (used <= len) {
+> +				copied += used;
+> +				offset += used;
+
+The while loop is going to zero this? What are we trying to do
+here with offset?
+
+> +			}
+> +		}
+> +		if (!desc->count)
+> +			break;
+> +	}
+> +
+> +	return copied;
+> +}
+> +EXPORT_SYMBOL(udp_read_sock);
+> +
+>  /*
+>   * 	This should be easy, if there is something there we
+>   * 	return it, otherwise we block.
+> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+> index 802f5111805a..71de739b4a9e 100644
+> --- a/net/ipv6/af_inet6.c
+> +++ b/net/ipv6/af_inet6.c
+> @@ -714,6 +714,7 @@ const struct proto_ops inet6_dgram_ops = {
+>  	.getsockopt	   = sock_common_getsockopt,	/* ok		*/
+>  	.sendmsg	   = inet6_sendmsg,		/* retpoline's sake */
+>  	.recvmsg	   = inet6_recvmsg,		/* retpoline's sake */
+> +	.read_sock	   = udp_read_sock,
+>  	.mmap		   = sock_no_mmap,
+>  	.sendpage	   = sock_no_sendpage,
+>  	.set_peek_off	   = sk_set_peek_off,
+> -- 
+> 2.25.1
 > 
-> Is this a bug ? Or am I misinterpreting how 'reroute check' works after
-> initial routing decision ? One would expect routing rules during post-mangle
-> check to not be ignored out of the blue, only because packet mark changed on
-> the packet. Not mentioning both marks and routing rules can be used for
-> separate purposes (e.g. marks for shaping).
-> 
+
+
