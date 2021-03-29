@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BDB534DA86
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B464B34DAB0
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231730AbhC2WWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 18:22:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46164 "EHLO mail.kernel.org"
+        id S232490AbhC2WXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 18:23:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231624AbhC2WWK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 18:22:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F7176198A;
-        Mon, 29 Mar 2021 22:22:09 +0000 (UTC)
+        id S232087AbhC2WW1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 18:22:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 848656198A;
+        Mon, 29 Mar 2021 22:22:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617056530;
-        bh=vWRBsgeifkSEGdDN43XjQ99C3pOTI2n8xztY6JaE9is=;
+        s=k20201202; t=1617056547;
+        bh=ALZntVy1v1vL5fjHnSHVJHDyzRcy059K9dkGBMFzF44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aHOn0h8nAqsFtWd4MfmFciZ0RdhmoYErE040DKmF79i9jznoiTFUzYCImmmI77b2R
-         5iH+EO7RbiFBsf0TefFlczDNPb1PodAdtLTqxnldUNdXzUlYlWMGzo0PB04ednW7Vh
-         ojRsvq1s8xi763P5Dx7czxpegkZ3+eowcQmL0La6j4zd+6rsb+Gaf1xOUOOXefEhQA
-         gKSrIXaVqK+4Bd/pOkMvqU0bv4BkxMU0+v0znXl+l+zArw0bHVK9CkSteGav5iW0NB
-         V14D/qs8EJMw+5ySk8mSIFR6IoDMrtnEuFlMNlJVnmb8tHnS3D8s2hkQrQpvXYCQyv
-         Mmra5gLPGgbqQ==
+        b=l6ZIgKuMGe2CUovWA03+Xx5MWtP958L/gwgG3BX6d9hwKOlNfJSwPJUi5Zf/GrdQ9
+         7JuBeO4MkxTeoys+GC6rJtXN+oL1gM/wHx+xqNizQl4Y7BL+q+axHxPtrwA9VgOxYe
+         wvkU/jMUnwipp+hhMbEoXmP4gpuBcQ/w7/tL/9XA5wphApIw8O6fpcniafDdn0r5gu
+         zSM64r1W6imJZ0azd70kT6GY0PyMWAGDm5VIlEvOoDVEDAuIodrk6gOUiaZfRwlDrd
+         9O29FLC27ajIElafpcqjL2tP2C4dyGKIxv5wJcgWkOqoU4tXNMQ8eVq/Qv7c1OOgpn
+         nIRDZdNKE6NyA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.11 29/38] ptp_qoriq: fix overflow in ptp_qoriq_adjfine() u64 calcalation
-Date:   Mon, 29 Mar 2021 18:21:24 -0400
-Message-Id: <20210329222133.2382393-29-sashal@kernel.org>
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 04/33] bpf, x86: Use kvmalloc_array instead kmalloc_array in bpf_jit_comp
+Date:   Mon, 29 Mar 2021 18:21:52 -0400
+Message-Id: <20210329222222.2382987-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210329222133.2382393-1-sashal@kernel.org>
-References: <20210329222133.2382393-1-sashal@kernel.org>
+In-Reply-To: <20210329222222.2382987-1-sashal@kernel.org>
+References: <20210329222222.2382987-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,52 +43,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yangbo Lu <yangbo.lu@nxp.com>
+From: Yonghong Song <yhs@fb.com>
 
-[ Upstream commit f51d7bf1dbe5522c51c93fe8faa5f4abbdf339cd ]
+[ Upstream commit de920fc64cbaa031f947e9be964bda05fd090380 ]
 
-Current calculation for diff of TMR_ADD register value may have
-64-bit overflow in this code line, when long type scaled_ppm is
-large.
+x86 bpf_jit_comp.c used kmalloc_array to store jited addresses
+for each bpf insn. With a large bpf program, we have see the
+following allocation failures in our production server:
 
-adj *= scaled_ppm;
+    page allocation failure: order:5, mode:0x40cc0(GFP_KERNEL|__GFP_COMP),
+                             nodemask=(null),cpuset=/,mems_allowed=0"
+    Call Trace:
+    dump_stack+0x50/0x70
+    warn_alloc.cold.120+0x72/0xd2
+    ? __alloc_pages_direct_compact+0x157/0x160
+    __alloc_pages_slowpath+0xcdb/0xd00
+    ? get_page_from_freelist+0xe44/0x1600
+    ? vunmap_page_range+0x1ba/0x340
+    __alloc_pages_nodemask+0x2c9/0x320
+    kmalloc_order+0x18/0x80
+    kmalloc_order_trace+0x1d/0xa0
+    bpf_int_jit_compile+0x1e2/0x484
+    ? kmalloc_order_trace+0x1d/0xa0
+    bpf_prog_select_runtime+0xc3/0x150
+    bpf_prog_load+0x480/0x720
+    ? __mod_memcg_lruvec_state+0x21/0x100
+    __do_sys_bpf+0xc31/0x2040
+    ? close_pdeo+0x86/0xe0
+    do_syscall_64+0x42/0x110
+    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    RIP: 0033:0x7f2f300f7fa9
+    Code: Bad RIP value.
 
-This patch is to resolve it by using mul_u64_u64_div_u64().
+Dumped assembly:
 
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+    ffffffff810b6d70 <bpf_int_jit_compile>:
+    ; {
+    ffffffff810b6d70: e8 eb a5 b4 00        callq   0xffffffff81c01360 <__fentry__>
+    ffffffff810b6d75: 41 57                 pushq   %r15
+    ...
+    ffffffff810b6f39: e9 72 fe ff ff        jmp     0xffffffff810b6db0 <bpf_int_jit_compile+0x40>
+    ;       addrs = kmalloc_array(prog->len + 1, sizeof(*addrs), GFP_KERNEL);
+    ffffffff810b6f3e: 8b 45 0c              movl    12(%rbp), %eax
+    ;       return __kmalloc(bytes, flags);
+    ffffffff810b6f41: be c0 0c 00 00        movl    $3264, %esi
+    ;       addrs = kmalloc_array(prog->len + 1, sizeof(*addrs), GFP_KERNEL);
+    ffffffff810b6f46: 8d 78 01              leal    1(%rax), %edi
+    ;       if (unlikely(check_mul_overflow(n, size, &bytes)))
+    ffffffff810b6f49: 48 c1 e7 02           shlq    $2, %rdi
+    ;       return __kmalloc(bytes, flags);
+    ffffffff810b6f4d: e8 8e 0c 1d 00        callq   0xffffffff81287be0 <__kmalloc>
+    ;       if (!addrs) {
+    ffffffff810b6f52: 48 85 c0              testq   %rax, %rax
+
+Change kmalloc_array() to kvmalloc_array() to avoid potential
+allocation error for big bpf programs.
+
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20210309015647.3657852-1-yhs@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_qoriq.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ arch/x86/net/bpf_jit_comp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-index beb5f74944cd..08f4cf0ad9e3 100644
---- a/drivers/ptp/ptp_qoriq.c
-+++ b/drivers/ptp/ptp_qoriq.c
-@@ -189,15 +189,16 @@ int ptp_qoriq_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 	tmr_add = ptp_qoriq->tmr_add;
- 	adj = tmr_add;
- 
--	/* calculate diff as adj*(scaled_ppm/65536)/1000000
--	 * and round() to the nearest integer
-+	/*
-+	 * Calculate diff and round() to the nearest integer
-+	 *
-+	 * diff = adj * (ppb / 1000000000)
-+	 *      = adj * scaled_ppm / 65536000000
- 	 */
--	adj *= scaled_ppm;
--	diff = div_u64(adj, 8000000);
--	diff = (diff >> 13) + ((diff >> 12) & 1);
-+	diff = mul_u64_u64_div_u64(adj, scaled_ppm, 32768000000);
-+	diff = DIV64_U64_ROUND_UP(diff, 2);
- 
- 	tmr_add = neg_adj ? tmr_add - diff : tmr_add + diff;
--
- 	ptp_qoriq->write(&regs->ctrl_regs->tmr_add, tmr_add);
- 
- 	return 0;
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 796506dcfc42..49a506583e0c 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -2019,7 +2019,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 		extra_pass = true;
+ 		goto skip_init_addrs;
+ 	}
+-	addrs = kmalloc_array(prog->len + 1, sizeof(*addrs), GFP_KERNEL);
++	addrs = kvmalloc_array(prog->len + 1, sizeof(*addrs), GFP_KERNEL);
+ 	if (!addrs) {
+ 		prog = orig_prog;
+ 		goto out_addrs;
+@@ -2109,7 +2109,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 		if (image)
+ 			bpf_prog_fill_jited_linfo(prog, addrs + 1);
+ out_addrs:
+-		kfree(addrs);
++		kvfree(addrs);
+ 		kfree(jit_data);
+ 		prog->aux->jit_data = NULL;
+ 	}
 -- 
 2.30.1
 
