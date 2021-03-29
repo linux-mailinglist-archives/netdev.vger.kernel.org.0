@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8350B34D5EA
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 19:18:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C516834D5F7
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 19:24:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbhC2RSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 13:18:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50746 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230286AbhC2RRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 13:17:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617038261;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=T52l3QomMlvCDZRMfaPA/DOdY/y/D9tW3asOlNnh8Jg=;
-        b=eOZ2GvPkOvoZuheeYdvRTMsTVrKqjgv6CEsNUZaiP5JTkCg2VWRKg2sBzUCFzP7hti3xW0
-        ji4iYeSrWtfiwOjJ9mIpJK2fq0/5GfSniDPY9unvPnf+gMsb4cSI3RV8uUBa2WPDirTfIy
-        GuP3mbJLo1Q/k+WvLD5CR3TatuNMATY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-389-E-Zdqc6PNvqOgaKLdHN0zw-1; Mon, 29 Mar 2021 13:17:36 -0400
-X-MC-Unique: E-Zdqc6PNvqOgaKLdHN0zw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACB5581744F;
-        Mon, 29 Mar 2021 17:17:34 +0000 (UTC)
-Received: from fenrir.redhat.com (ovpn-114-63.rdu2.redhat.com [10.10.114.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7707519726;
-        Mon, 29 Mar 2021 17:17:32 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     kuba@kernel.org, tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: tipc: fix htmldoc and smatch warnings
-Date:   Mon, 29 Mar 2021 13:17:31 -0400
-Message-Id: <20210329171731.2332713-1-jmaloy@redhat.com>
+        id S230449AbhC2RXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 13:23:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50958 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229557AbhC2RXa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 13:23:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CE91C61927;
+        Mon, 29 Mar 2021 17:23:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617038610;
+        bh=GXaysGhfaLdk/KpFUAKNubm7EQUrHb2S6afCoqSazSw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Skgh61+mHWHO55giZyDkgHMzqEqM0GXUZBH8KvU+R8NHm2IAmBG5teosB3xXn2lDk
+         WxQMxNCkDkk8mnQMX5d8Dp0xQBcngpATGgrrW9adYLG66P9KxikqRXtUNS7kqGuIo0
+         6qss/CM97qOZ84sTMxWbl2hB0q4oNkWPrJuJbxpwljVOb+7AWMv40Pv7ymJ6CffSsc
+         ZdtHb1nK265lqBe6lqYnvTrgQQW38ZkEF4dGBwmGlZISS4DYTlmBfOkuKw4K2i3i+m
+         jAB90knUczn6HXWJH4a5Q+ma61hIf+qrG1GZIMjRs7yF+lOwho97O/i0BCdkGFySDt
+         qDMbCSfKUlApw==
+Received: by mail-lj1-f181.google.com with SMTP id u4so16828369ljo.6;
+        Mon, 29 Mar 2021 10:23:29 -0700 (PDT)
+X-Gm-Message-State: AOAM531c4W/t0mjDTMMPoJcNqVzo9gj+RLciQ/Jfhe3hZo+Nhzb34fuJ
+        l262Tcd8E0es1aIT7cVTydOBaNvLrzahB5zwlrE=
+X-Google-Smtp-Source: ABdhPJxD/JFAObN7DzQhGxIGns37u8u4wv7Yq1Gq6EwnhFp8nSdArd7f4I0WljwF2qqyvnH5wyr4KU7SGu9XTbDQS0I=
+X-Received: by 2002:a2e:7a08:: with SMTP id v8mr18848615ljc.344.1617038608105;
+ Mon, 29 Mar 2021 10:23:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20210329164541.3240579-1-sdf@google.com>
+In-Reply-To: <20210329164541.3240579-1-sdf@google.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 29 Mar 2021 10:23:17 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6fw8Zsh=jvUbwxfRrtKSCR9wwF6KXyWLb=z_xPHGVMAw@mail.gmail.com>
+Message-ID: <CAPhsuW6fw8Zsh=jvUbwxfRrtKSCR9wwF6KXyWLb=z_xPHGVMAw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] tools/resolve_btfids: Fix warnings
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+On Mon, Mar 29, 2021 at 9:46 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> * make eprintf static, used only in main.c
+> * initialize ret in eprintf
+> * remove unused *tmp
+> * remove unused 'int err = -1'
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/bpf/resolve_btfids/main.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+> index 80d966cfcaa1..be74406626b7 100644
+> --- a/tools/bpf/resolve_btfids/main.c
+> +++ b/tools/bpf/resolve_btfids/main.c
+> @@ -115,10 +115,10 @@ struct object {
+>
+>  static int verbose;
+>
+> -int eprintf(int level, int var, const char *fmt, ...)
+> +static int eprintf(int level, int var, const char *fmt, ...)
+>  {
+>         va_list args;
+> -       int ret;
+> +       int ret = 0;
+>
+>         if (var >= level) {
+>                 va_start(args, fmt);
+> @@ -403,10 +403,9 @@ static int symbols_collect(struct object *obj)
+>          * __BTF_ID__* over .BTF_ids section.
+>          */
+>         for (i = 0; !err && i < n; i++) {
+                    ^^^^ This err is also not used.
 
-We fix a warning from the htmldoc tool and an indentation error reported
-by smatch. There are no functional changes in this commit.
-
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/socket.c | 2 +-
- net/tipc/subscr.h | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 117a472a8e61..f21162aa0cf7 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1450,7 +1450,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 		ua = (struct tipc_uaddr *)&tsk->peer;
- 		if (!syn && ua->family != AF_TIPC)
- 			return -EDESTADDRREQ;
--		 atype = ua->addrtype;
-+		atype = ua->addrtype;
- 	}
- 
- 	if (unlikely(syn)) {
-diff --git a/net/tipc/subscr.h b/net/tipc/subscr.h
-index ddea6554ec46..60b877531b66 100644
---- a/net/tipc/subscr.h
-+++ b/net/tipc/subscr.h
-@@ -49,12 +49,13 @@ struct tipc_conn;
- 
- /**
-  * struct tipc_subscription - TIPC network topology subscription object
-+ * @s: host-endian copy of the user subscription
-+ * @evt: template for events generated by subscription
-  * @kref: reference count for this subscription
-  * @net: network namespace associated with subscription
-  * @timer: timer governing subscription duration (optional)
-  * @service_list: adjacent subscriptions in name sequence's subscription list
-  * @sub_list: adjacent subscriptions in subscriber's subscription list
-- * @evt: template for events generated by subscription
-  * @conid: connection identifier of topology server
-  * @inactive: true if this subscription is inactive
-  * @lock: serialize up/down and timer events
--- 
-2.29.2
-
+> -               char *tmp, *prefix;
+> +               char *prefix;
+>                 struct btf_id *id;
+>                 GElf_Sym sym;
+> -               int err = -1;
+>
+>                 if (!gelf_getsym(obj->efile.symbols, i, &sym))
+>                         return -1;
+> --
+> 2.31.0.291.g576ba9dcdaf-goog
+>
