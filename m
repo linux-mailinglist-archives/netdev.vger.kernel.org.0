@@ -2,226 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC2E834D879
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 21:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D746434D854
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 21:35:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231591AbhC2Tog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 15:44:36 -0400
-Received: from mga06.intel.com ([134.134.136.31]:42803 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231810AbhC2ToI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 15:44:08 -0400
-IronPort-SDR: t2dh6v64E/Rt9sRRGLamUPJmm7bOCxGBpIRLhPAwUqsQTMbjAD9A10pMKBxv15ASxfAj64rJpi
- E7c3Hp5RQWYQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="252959738"
-X-IronPort-AV: E=Sophos;i="5.81,288,1610438400"; 
-   d="scan'208";a="252959738"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 12:44:07 -0700
-IronPort-SDR: fYp04vE2IxFojGiZfxNbXNM9s9BhIdJtIOtEtXGJoa7NgsarmGyLF2E+c/HMM8A5Mv1Iuln6ap
- jF5/hUwZ/5Gw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,288,1610438400"; 
-   d="scan'208";a="393309865"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga002.jf.intel.com with ESMTP; 29 Mar 2021 12:44:05 -0700
-Date:   Mon, 29 Mar 2021 21:32:34 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, andrii@kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, ciara.loftus@intel.com,
-        john.fastabend@gmail.com
-Subject: Re: [PATCH v4 bpf-next 06/17] libbpf: xsk: use bpf_link
-Message-ID: <20210329193234.GA9506@ranger.igk.intel.com>
-References: <20210326230938.49998-1-maciej.fijalkowski@intel.com>
- <20210326230938.49998-7-maciej.fijalkowski@intel.com>
- <87o8f2te2f.fsf@toke.dk>
- <20210329131401.GA9069@ranger.igk.intel.com>
- <87zgymrqzm.fsf@toke.dk>
+        id S231753AbhC2Tey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 15:34:54 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:35670 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231772AbhC2TeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 15:34:23 -0400
+Received: by mail-io1-f70.google.com with SMTP id v24so11669301ion.2
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 12:34:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=OrPDaz0uXlDAGavWdBModoSbr4og33NB13Z6NEmvLrk=;
+        b=XAtOSvDmN7IAOi4gGtAX0UBkdfwea5clTciw0js0x2kOJDWFecI/OFztA8fZMxD60o
+         NiA+SBQNBrAx6Weqame9l3C4rpR/7BanUrzuDu0pnmx2dBb4kNhf62M6HBLXKfBTdbtC
+         78gPopq2nBxXhJQ9TAGwdG+H0OHj1PdAzH3A7KNtFbBctp0dOIN5I76UX5SLoCXXS4mQ
+         Vkdmo1VlkyY+Ytg7rmfuiBViHFRj/wa46SnT2bpWExKGpw62S0Cg7DfjLcrKMGDMwZAD
+         Xy+tvnEaNKV/eSJOoPQNNx98iOCGEXEhCuM2OhX80NAs/cSM6VE9/AF5dn+wtOLGNWXP
+         E+PQ==
+X-Gm-Message-State: AOAM533RX9265DwmMLdXamD1/oHyErYDbaaVUwzzXFxjZ3F1Pic1LzY6
+        tZiGi72lTL1jMJoOvNlPk7YdE6KuY38xpO4ilHMHfFuSdN8d
+X-Google-Smtp-Source: ABdhPJz2YO830nGl4M6ePvLGaPzfj1rTapAn96ODgiHyJNjckK5R93z+domwZR0jK4zlRmMBByoYdUBVo5zAEZjMaqEKJvYy0zK3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87zgymrqzm.fsf@toke.dk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Received: by 2002:a02:5184:: with SMTP id s126mr5484831jaa.107.1617046462357;
+ Mon, 29 Mar 2021 12:34:22 -0700 (PDT)
+Date:   Mon, 29 Mar 2021 12:34:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f964fd05beb1f7d3@google.com>
+Subject: [syzbot] possible deadlock in ip_setsockopt
+From:   syzbot <syzbot+81bff613876f26c198d8@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 04:09:33PM +0200, Toke Høiland-Jørgensen wrote:
-> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> 
-> > On Mon, Mar 29, 2021 at 01:05:44PM +0200, Toke Høiland-Jørgensen wrote:
-> >> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> >> 
-> >> > Currently, if there are multiple xdpsock instances running on a single
-> >> > interface and in case one of the instances is terminated, the rest of
-> >> > them are left in an inoperable state due to the fact of unloaded XDP
-> >> > prog from interface.
-> >> >
-> >> > Consider the scenario below:
-> >> >
-> >> > // load xdp prog and xskmap and add entry to xskmap at idx 10
-> >> > $ sudo ./xdpsock -i ens801f0 -t -q 10
-> >> >
-> >> > // add entry to xskmap at idx 11
-> >> > $ sudo ./xdpsock -i ens801f0 -t -q 11
-> >> >
-> >> > terminate one of the processes and another one is unable to work due to
-> >> > the fact that the XDP prog was unloaded from interface.
-> >> >
-> >> > To address that, step away from setting bpf prog in favour of bpf_link.
-> >> > This means that refcounting of BPF resources will be done automatically
-> >> > by bpf_link itself.
-> >> >
-> >> > Provide backward compatibility by checking if underlying system is
-> >> > bpf_link capable. Do this by looking up/creating bpf_link on loopback
-> >> > device. If it failed in any way, stick with netlink-based XDP prog.
-> >> > therwise, use bpf_link-based logic.
-> >> >
-> >> > When setting up BPF resources during xsk socket creation, check whether
-> >> > bpf_link for a given ifindex already exists via set of calls to
-> >> > bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
-> >> > and comparing the ifindexes from bpf_link and xsk socket.
-> >> >
-> >> > For case where resources exist but they are not AF_XDP related, bail out
-> >> > and ask user to remove existing prog and then retry.
-> >> >
-> >> > Lastly, do a bit of refactoring within __xsk_setup_xdp_prog and pull out
-> >> > existing code branches based on prog_id value onto separate functions
-> >> > that are responsible for resource initialization if prog_id was 0 and
-> >> > for lookup existing resources for non-zero prog_id as that implies that
-> >> > XDP program is present on the underlying net device. This in turn makes
-> >> > it easier to follow, especially the teardown part of both branches.
-> >> >
-> >> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> >> 
-> >> The logic is much improved in this version! A few smallish issues below:
-> >
-> > Glad to hear that!
-> >
-> >> 
-> >> > ---
-> >> >  tools/lib/bpf/xsk.c | 259 ++++++++++++++++++++++++++++++++++++--------
-> >> >  1 file changed, 214 insertions(+), 45 deletions(-)
-> >> >
-> >> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> >> > index 526fc35c0b23..c75067f0035f 100644
-> >> > --- a/tools/lib/bpf/xsk.c
-> >> > +++ b/tools/lib/bpf/xsk.c
-> >> > @@ -28,6 +28,7 @@
-> >> >  #include <sys/mman.h>
-> >> >  #include <sys/socket.h>
-> >> >  #include <sys/types.h>
-> >> > +#include <linux/if_link.h>
-> >> >  
-> >> >  #include "bpf.h"
-> >> >  #include "libbpf.h"
-> >> > @@ -70,8 +71,10 @@ struct xsk_ctx {
-> >> >  	int ifindex;
-> >> >  	struct list_head list;
-> >> >  	int prog_fd;
-> >> > +	int link_fd;
-> >> >  	int xsks_map_fd;
-> >> >  	char ifname[IFNAMSIZ];
-> >> > +	bool has_bpf_link;
-> >> >  };
-> >> >  
-> >> >  struct xsk_socket {
-> >> > @@ -409,7 +412,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
-> >> >  	static const int log_buf_size = 16 * 1024;
-> >> >  	struct xsk_ctx *ctx = xsk->ctx;
-> >> >  	char log_buf[log_buf_size];
-> >> > -	int err, prog_fd;
-> >> > +	int prog_fd;
-> >> >  
-> >> >  	/* This is the fallback C-program:
-> >> >  	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-> >> > @@ -499,14 +502,43 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
-> >> >  		return prog_fd;
-> >> >  	}
-> >> >  
-> >> > -	err = bpf_set_link_xdp_fd(xsk->ctx->ifindex, prog_fd,
-> >> > -				  xsk->config.xdp_flags);
-> >> > +	ctx->prog_fd = prog_fd;
-> >> > +	return 0;
-> >> > +}
-> >> > +
-> >> > +static int xsk_create_bpf_link(struct xsk_socket *xsk)
-> >> > +{
-> >> > +	/* bpf_link only accepts XDP_FLAGS_MODES, but xsk->config.xdp_flags
-> >> > +	 * might have set XDP_FLAGS_UPDATE_IF_NOEXIST
-> >> > +	 */
-> >> > +	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
-> >> > +			    .flags = (xsk->config.xdp_flags & XDP_FLAGS_MODES));
-> >> 
-> >> This will silently suppress any new flags as well; that's not a good
-> >> idea. Rather mask out the particular flag (UPDATE_IF_NOEXIST) and pass
-> >> everything else through so the kernel can reject invalid ones.
-> >
-> > I'd say it's fine as it matches the check:
-> >
-> > 	/* link supports only XDP mode flags */
-> > 	if (link && (flags & ~XDP_FLAGS_MODES)) {
-> > 		NL_SET_ERR_MSG(extack, "Invalid XDP flags for BPF link attachment");
-> > 		return -EINVAL;
-> > 	}
-> >
-> > from dev_xdp_attach() in net/core/dev.c ?
-> 
-> Yeah, it does today. But what happens when the kernel learns to accept a
-> new flag?
-> 
-> Also, you're masking the error on an invalid flag. If, in the future,
-> the kernel learns to handle a new flag, that check in the kernel will
-> change to accept that new flag. But if userspace tries to pass that to
-> and old kernel, they'll get back an EINVAL. This can be used to detect
-> whether the kernel doesn't support the flag, and can if not, userspace
-> can fall back and do something different.
-> 
-> Whereas with your code, you're just silently zeroing out the invalid
-> flag, so the caller will have no way to detect whether the flag works
-> or not...
+Hello,
 
-I'd rather worry about such feature detection once a new flag is in place
-and this code would actually care about :) but that's me.
+syzbot found the following issue on:
 
-I feel like stick has two ends in this case - if we introduce a new flag
-that would be out of the bpf_link's interest (the kernel part), then we
-will have to come back here and explicitly mask it out, just like you
-propose to do so with UPDATE_IF_NOEXIST right now.
+HEAD commit:    1b479fb8 drivers/net/wan/hdlc_fr: Fix a double free in pvc..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1072d3d6d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=daeff30c2474a60f
+dashboard link: https://syzkaller.appspot.com/bug?extid=81bff613876f26c198d8
 
-What I'm saying is that we need to mask out the FLAGS_REPLACE as well.
-Current code took care of that. So, to move this forward, I can do:
+Unfortunately, I don't have any reproducer for this issue yet.
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index c75067f0035f..95da0e19f4a5 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -508,11 +508,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 
- static int xsk_create_bpf_link(struct xsk_socket *xsk)
- {
--	/* bpf_link only accepts XDP_FLAGS_MODES, but xsk->config.xdp_flags
--	 * might have set XDP_FLAGS_UPDATE_IF_NOEXIST
--	 */
--	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
--			    .flags = (xsk->config.xdp_flags & XDP_FLAGS_MODES));
-+	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
- 	struct xsk_ctx *ctx = xsk->ctx;
- 	__u32 prog_id = 0;
- 	int link_fd;
-@@ -532,6 +528,8 @@ static int xsk_create_bpf_link(struct xsk_socket *xsk)
- 		return -EINVAL;
- 	}
- 
-+	opts.flags = xsk->config.xdp_flags & ~(XDP_FLAGS_UPDATE_IF_NOEXIST | XDP_FLAGS_REPLACE);
-+
- 	link_fd = bpf_link_create(ctx->prog_fd, ctx->ifindex, BPF_XDP, &opts);
- 	if (link_fd < 0) {
- 		pr_warn("bpf_link_create failed: %s\n", strerror(errno));
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+81bff613876f26c198d8@syzkaller.appspotmail.com
 
-> 
-> -Toke
-> 
+======================================================
+WARNING: possible circular locking dependency detected
+5.12.0-rc4-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.3/14381 is trying to acquire lock:
+ffff888018aa2420 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
+ffff888018aa2420 (sk_lock-AF_INET){+.+.}-{0:0}, at: do_ip_setsockopt net/ipv4/ip_sockglue.c:945 [inline]
+ffff888018aa2420 (sk_lock-AF_INET){+.+.}-{0:0}, at: ip_setsockopt+0x1d2/0x3a00 net/ipv4/ip_sockglue.c:1423
+
+but task is already holding lock:
+ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: do_ip_setsockopt net/ipv4/ip_sockglue.c:944 [inline]
+ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: ip_setsockopt+0x1c8/0x3a00 net/ipv4/ip_sockglue.c:1423
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (rtnl_mutex){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:949 [inline]
+       __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
+       ip_mc_drop_socket+0x89/0x260 net/ipv4/igmp.c:2671
+       mptcp_release+0xab/0x120 net/mptcp/protocol.c:3438
+       __sock_release+0xcd/0x280 net/socket.c:599
+       sock_close+0x18/0x20 net/socket.c:1258
+       __fput+0x288/0x920 fs/file_table.c:280
+       task_work_run+0xdd/0x1a0 kernel/task_work.c:140
+       tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+       exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
+       exit_to_user_mode_prepare+0x249/0x250 kernel/entry/common.c:208
+       __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
+       syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+-> #0 (sk_lock-AF_INET){+.+.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:2936 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3059 [inline]
+       validate_chain kernel/locking/lockdep.c:3674 [inline]
+       __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
+       lock_acquire kernel/locking/lockdep.c:5510 [inline]
+       lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
+       lock_sock_nested+0xca/0x120 net/core/sock.c:3071
+       lock_sock include/net/sock.h:1600 [inline]
+       do_ip_setsockopt net/ipv4/ip_sockglue.c:945 [inline]
+       ip_setsockopt+0x1d2/0x3a00 net/ipv4/ip_sockglue.c:1423
+       udp_setsockopt+0x76/0xc0 net/ipv4/udp.c:2719
+       __sys_setsockopt+0x2db/0x610 net/socket.c:2117
+       __do_sys_setsockopt net/socket.c:2128 [inline]
+       __se_sys_setsockopt net/socket.c:2125 [inline]
+       __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
+       do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(rtnl_mutex);
+                               lock(sk_lock-AF_INET);
+                               lock(rtnl_mutex);
+  lock(sk_lock-AF_INET);
+
+ *** DEADLOCK ***
+
+1 lock held by syz-executor.3/14381:
+ #0: ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: do_ip_setsockopt net/ipv4/ip_sockglue.c:944 [inline]
+ #0: ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: ip_setsockopt+0x1c8/0x3a00 net/ipv4/ip_sockglue.c:1423
+
+stack backtrace:
+CPU: 0 PID: 14381 Comm: syz-executor.3 Not tainted 5.12.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2127
+ check_prev_add kernel/locking/lockdep.c:2936 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3059 [inline]
+ validate_chain kernel/locking/lockdep.c:3674 [inline]
+ __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
+ lock_acquire kernel/locking/lockdep.c:5510 [inline]
+ lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
+ lock_sock_nested+0xca/0x120 net/core/sock.c:3071
+ lock_sock include/net/sock.h:1600 [inline]
+ do_ip_setsockopt net/ipv4/ip_sockglue.c:945 [inline]
+ ip_setsockopt+0x1d2/0x3a00 net/ipv4/ip_sockglue.c:1423
+ udp_setsockopt+0x76/0xc0 net/ipv4/udp.c:2719
+ __sys_setsockopt+0x2db/0x610 net/socket.c:2117
+ __do_sys_setsockopt net/socket.c:2128 [inline]
+ __se_sys_setsockopt net/socket.c:2125 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x466459
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fd7716d0188 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000466459
+RDX: 0000000000000029 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00000000004bf9fb R08: 0000000000000010 R09: 0000000000000000
+R10: 0000000020000000 R11: 0000000000000246 R12: 000000000056bf60
+R13: 00007ffec9848caf R14: 00007fd7716d0300 R15: 0000000000022000
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
