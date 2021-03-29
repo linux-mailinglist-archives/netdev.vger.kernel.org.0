@@ -2,167 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A879B34D8A2
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 21:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5D8934D8AA
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 21:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbhC2Tyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 15:54:47 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:37941 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231838AbhC2TyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 15:54:15 -0400
-Received: by mail-io1-f71.google.com with SMTP id x9so11694848iob.5
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 12:54:15 -0700 (PDT)
+        id S231137AbhC2T4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 15:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231512AbhC2T4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 15:56:37 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E73C061574;
+        Mon, 29 Mar 2021 12:56:36 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id m20-20020a7bcb940000b029010cab7e5a9fso9096670wmi.3;
+        Mon, 29 Mar 2021 12:56:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MQBrb4YVkXVVUdNQVIYjRBD1ELh8gLe+l+iTh/6ZeHE=;
+        b=apoBR01O0o2kiwhvAkciBfD7GZFv1B/yax9UQcmq8NLg7THJXp9CqywQmRY0GATMB8
+         2pN66eybFsOGXRE5+Au+grXwApxl8fjIJSMtONFCmGjAf1Nv2+ki6LLABqPWZzgiSET6
+         bTllyR8Zc81quWkKoo2E4zphFgY1NWZfD/IERlV6jNEbWU7yKf6LLxkzYYRKWM+oRmGw
+         vaalZARYxt85174gBzFKUBe0gvnQcoN+roAFMsPVbON0q6eoAie9Q//Zgr+xjLXNHadu
+         DVH7vezu4UgnyXOUQhwaJQ3r6M5xMFPrvkzIc7WTnSdpx6IshSgwMZBTmfzg24F2pwot
+         Zk9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=9OCu5sQ+8X7Q7NTe9/T+gXBubybQ8Z+U2yosy/x1k7o=;
-        b=bAfYIRbcTOEZzVk9gTa6XbO6ACrT937HsusHskqLhDFPOWAlCB5mVEBVwQzEVDiKe5
-         2kEVK/7t7LLpsMS4lQYkFuKhIfirvK07T5c8gKE6hCKKgXcIkCxPv188sOLplkTWlgMq
-         UzVsbsiP9otTZVyuBv5nzDR0kxDRRUfruj4mpoaSFNH7MVAKmD2eyBmuKA3qUP9WOtyz
-         UpCgFen2+U662qD9w47yx6H/ssfxJiofFURB3LALO59pFln49akO9qd43dX0OMkmrMaJ
-         MzOASKkbb6n0tFOXUWpeJF2oMJBl9E0PzhlQc/2H8mM7ZCJgue9W6q7DEBn0GJwhQnTL
-         Tb3w==
-X-Gm-Message-State: AOAM532rwZ/1/zXPPLSuRCyhUNBFIg3knQSKEO2Y+YBPe7uz0hl76Il7
-        Mn4YvcUK8mbHfZI3mysSlgz6IJZ4DhfcsxWxz+uOCVTro9Sg
-X-Google-Smtp-Source: ABdhPJw6OTTQgLO+YTl8vtcI6YsQ685Og28Cp0wEBhDVnUP55Z4DdG1TxWttnlHkrIR2p+QVGfIGi+C0d/Hctq0QVcm9Nu8KeYGg
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MQBrb4YVkXVVUdNQVIYjRBD1ELh8gLe+l+iTh/6ZeHE=;
+        b=qOSlKQMvfiMbv5mOvc9N+W0r+mSMdqYzXAQy+mTJ6c+kSUl8HVn3zN1j1dDUAunGnN
+         PHNSUp12/W60O7vhW9g1d7Q/VyJqvkg7RQZVhcrkqnploycmj9oA5qD1Nkgv/KEYQhRf
+         NU4pICGUHXLBV9HJP/Q4TdgWao2y4Id4wDx6cPOswcBM0LPDYW7CTR8IKniW2QqhpZWB
+         ZkTKzSk36FNBE0UwVw5jUDDUMfQQF2URi1cLc5PSnqc2hNzr7Iq5aGYc/0hcBv3VMuIP
+         tSiFXfxLbJ8iYPZEsxcOQzCws5zGLbBXj31oXghRunJbUYPYUKOq0s9IbGsJjj5Xa4/j
+         8bDg==
+X-Gm-Message-State: AOAM533Utk9u/8EQpYjoUPR8KFGlOTgpG+M0oMg1lls1MStT9Rcked2s
+        sDaiHVZOYw7VY2WwAOe/9Xw=
+X-Google-Smtp-Source: ABdhPJzaPyymGOXg3cichgFoBPMx6tnYRHhCJYXcLD4ZgPv84qLD+ONtlhrSVvSSIa0vQXYxzmbxjw==
+X-Received: by 2002:a1c:3d8a:: with SMTP id k132mr590836wma.71.1617047795554;
+        Mon, 29 Mar 2021 12:56:35 -0700 (PDT)
+Received: from [192.168.1.101] ([37.173.175.207])
+        by smtp.gmail.com with ESMTPSA id f2sm457550wmp.20.2021.03.29.12.56.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Mar 2021 12:56:35 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 5/7] mld: convert ifmcaddr6 to RCU
+To:     Taehee Yoo <ap420073@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-s390@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
+References: <20210325161657.10517-1-ap420073@gmail.com>
+ <20210325161657.10517-6-ap420073@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <6262890a-7789-e3dd-aa04-58e5e06499dc@gmail.com>
+Date:   Mon, 29 Mar 2021 21:56:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:371f:: with SMTP id k31mr25949222jav.143.1617047655080;
- Mon, 29 Mar 2021 12:54:15 -0700 (PDT)
-Date:   Mon, 29 Mar 2021 12:54:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000010eb3b05beb23f7a@google.com>
-Subject: [syzbot] possible deadlock in do_ipv6_setsockopt (3)
-From:   syzbot <syzbot+0eedf083894a053f17a5@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210325161657.10517-6-ap420073@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    75887e88 Merge branch '40GbE' of git://git.kernel.org/pub/..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1133dd06d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=daeff30c2474a60f
-dashboard link: https://syzkaller.appspot.com/bug?extid=0eedf083894a053f17a5
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0eedf083894a053f17a5@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.12.0-rc4-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.0/11001 is trying to acquire lock:
-ffff88805c53ef60 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
-ffff88805c53ef60 (sk_lock-AF_INET6){+.+.}-{0:0}, at: do_ipv6_setsockopt.constprop.0+0x31f/0x41f0 net/ipv6/ipv6_sockglue.c:418
-
-but task is already holding lock:
-ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: do_ipv6_setsockopt.constprop.0+0x315/0x41f0 net/ipv6/ipv6_sockglue.c:417
-
-which lock already depends on the new lock.
 
 
-the existing dependency chain (in reverse order) is:
+On 3/25/21 5:16 PM, Taehee Yoo wrote:
+> The ifmcaddr6 has been protected by inet6_dev->lock(rwlock) so that
+> the critical section is atomic context. In order to switch this context,
+> changing locking is needed. The ifmcaddr6 actually already protected by
+> RTNL So if it's converted to use RCU, its control path context can be
+> switched to sleepable.
+>
 
--> #1 (rtnl_mutex){+.+.}-{3:3}:
-       __mutex_lock_common kernel/locking/mutex.c:949 [inline]
-       __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
-       ipv6_sock_mc_close+0xd7/0x110 net/ipv6/mcast.c:323
-       mptcp6_release+0xb9/0x130 net/mptcp/protocol.c:3558
-       __sock_release+0xcd/0x280 net/socket.c:599
-       sock_close+0x18/0x20 net/socket.c:1258
-       __fput+0x288/0x920 fs/file_table.c:280
-       task_work_run+0xdd/0x1a0 kernel/task_work.c:140
-       tracehook_notify_resume include/linux/tracehook.h:189 [inline]
-       exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
-       exit_to_user_mode_prepare+0x249/0x250 kernel/entry/common.c:208
-       __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
-       syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
+I do not really understand the changelog.
 
--> #0 (sk_lock-AF_INET6){+.+.}-{0:0}:
-       check_prev_add kernel/locking/lockdep.c:2936 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3059 [inline]
-       validate_chain kernel/locking/lockdep.c:3674 [inline]
-       __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
-       lock_acquire kernel/locking/lockdep.c:5510 [inline]
-       lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
-       lock_sock_nested+0xca/0x120 net/core/sock.c:3071
-       lock_sock include/net/sock.h:1600 [inline]
-       do_ipv6_setsockopt.constprop.0+0x31f/0x41f0 net/ipv6/ipv6_sockglue.c:418
-       ipv6_setsockopt+0xd6/0x180 net/ipv6/ipv6_sockglue.c:1003
-       tcp_setsockopt+0x136/0x24a0 net/ipv4/tcp.c:3643
-       __sys_setsockopt+0x2db/0x610 net/socket.c:2117
-       __do_sys_setsockopt net/socket.c:2128 [inline]
-       __se_sys_setsockopt net/socket.c:2125 [inline]
-       __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
-       do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
+You wanted to convert from RCU to RTNL, right ?
 
-other info that might help us debug this:
+Also :
 
- Possible unsafe locking scenario:
+> @@ -571,13 +573,9 @@ int ip6_mc_msfget(struct sock *sk, struct group_filter *gsf,
+>  	if (!ipv6_addr_is_multicast(group))
+>  		return -EINVAL;
+>  
+> -	rcu_read_lock();
+> -	idev = ip6_mc_find_dev_rcu(net, group, gsf->gf_interface);
+> -
+> -	if (!idev) {
+> -		rcu_read_unlock();
+> +	idev = ip6_mc_find_dev_rtnl(net, group, gsf->gf_interface);
+> +	if (!idev)
+>  		return -ENODEV;
+> -	}
+>  
 
-       CPU0                    CPU1
-       ----                    ----
-  lock(rtnl_mutex);
-                               lock(sk_lock-AF_INET6);
-                               lock(rtnl_mutex);
-  lock(sk_lock-AF_INET6);
-
- *** DEADLOCK ***
-
-1 lock held by syz-executor.0/11001:
- #0: ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: do_ipv6_setsockopt.constprop.0+0x315/0x41f0 net/ipv6/ipv6_sockglue.c:417
-
-stack backtrace:
-CPU: 0 PID: 11001 Comm: syz-executor.0 Not tainted 5.12.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2127
- check_prev_add kernel/locking/lockdep.c:2936 [inline]
- check_prevs_add kernel/locking/lockdep.c:3059 [inline]
- validate_chain kernel/locking/lockdep.c:3674 [inline]
- __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
- lock_acquire kernel/locking/lockdep.c:5510 [inline]
- lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
- lock_sock_nested+0xca/0x120 net/core/sock.c:3071
- lock_sock include/net/sock.h:1600 [inline]
- do_ipv6_setsockopt.constprop.0+0x31f/0x41f0 net/ipv6/ipv6_sockglue.c:418
- ipv6_setsockopt+0xd6/0x180 net/ipv6/ipv6_sockglue.c:1003
- tcp_setsockopt+0x136/0x24a0 net/ipv4/tcp.c:3643
- __sys_setsockopt+0x2db/0x610 net/socket.c:2117
- __do_sys_setsockopt net/socket.c:2128 [inline]
- __se_sys_setsockopt net/socket.c:2125 [inline]
- __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x466459
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f67f5e8f188 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 000000000056c200 RCX: 0000000000466459
-RDX: 000000000000002d RSI: 0000000000000029 RDI: 0000000000000006
-RBP: 00000000004bf9fb R08: 0000000000000088 R09: 0000000000000000
-R10: 0000000020000100 R11: 0000000000000246 R12: 000000000056c200
-R13: 00007fff467656ef R14: 00007f67f5e8f300 R15: 0000000000022000
+I do not see RTNL being acquired before entering ip6_mc_msfget()
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
