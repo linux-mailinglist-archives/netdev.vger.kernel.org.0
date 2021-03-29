@@ -2,195 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E2A34D957
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F0D234D958
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbhC2Uyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 16:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbhC2UyR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 16:54:17 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA50C061574;
-        Mon, 29 Mar 2021 13:54:17 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id f19so14188300ion.3;
-        Mon, 29 Mar 2021 13:54:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Vf66eL15U8njDI0wUbJwhopv7ffMWFCFjk1XaltSbtY=;
-        b=m2zcF2/pc7LqNVitm4jzgxiWhPeMWbIAh1GgKn1wlziE+WqhReX5IuZNTNnmNgZPOo
-         m4NxR7Q7o+MkVZvd9DORmcyNzU3e9bJ75yLLJNrfsaxOh3QV9BQxrZIU7Dhskyj535tu
-         0D6M/NQSxSHlEOVirEH9A8WsZDqMnme6beZVCjGhWV48GLQaSC+NVnVqRWp40JZY/iC4
-         rFpF2eJQOJadn83UTuwcHLMmKIHqzqX4+2sIxgV5/fzAFIcFqZlQwTxAwaA3Lp95Wlrk
-         9hFw0bBvUXU453LLSnCXAk9joTsbprkd0Xr0epfrY16XNcja6NtJGe3LJN4YdjOYMBfA
-         /UDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Vf66eL15U8njDI0wUbJwhopv7ffMWFCFjk1XaltSbtY=;
-        b=Y6Xp2DsD+cgWjvr0+KI3BwgXabEFNFHrjgCbkJCfvwZ6RH03IUh0mab3WmJLgjL7lF
-         33LPhXBEbqcL9DQ+GuV/c13y1EXaH7nNglqlvOmK40iR2Wyy64wAyrQRjegXLHnNVNVM
-         cDbfsYkOEWBP2qKO4NFNtHdDmAlVMbf3yDy5Fi71CZQ6aZzJYVjxTd9IoUkjyOtBKa/g
-         X0qse4aGz1JtbJk3o97fMUJjCKZIUdDZxyM5SGf4plibcadxvZmCUeYlfQa8XtEtvtaj
-         UXvo0Mm5Ok5kXnihZktEHiVcBITGdh4cysvEhyj90fId8XUON2v03Axs3g2WkgoQF0Qr
-         Bl1w==
-X-Gm-Message-State: AOAM530ubHP1Bortdxf1XPIpfkV+xM6oTYuJ0HvRFZK4oAkibg0OZYAt
-        Sy/3tL3w798e6Uh5ii2aqCM=
-X-Google-Smtp-Source: ABdhPJwQMH5lghuDTbTORLJjfXZvLn0N8U56iu2fOChIIcXb2ASnF1Yia7Gf6MJ2eu4c2vCDn521KA==
-X-Received: by 2002:a05:6602:1da:: with SMTP id w26mr1930846iot.170.1617051256978;
-        Mon, 29 Mar 2021 13:54:16 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id b9sm10203942iof.54.2021.03.29.13.54.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Mar 2021 13:54:16 -0700 (PDT)
-Date:   Mon, 29 Mar 2021 13:54:07 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <60623e6fdd870_401fb20818@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210328202013.29223-10-xiyou.wangcong@gmail.com>
-References: <20210328202013.29223-1-xiyou.wangcong@gmail.com>
- <20210328202013.29223-10-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v7 09/13] udp: implement ->read_sock() for
- sockmap
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S230394AbhC2U4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 16:56:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230406AbhC2U4L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 16:56:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6D79061883;
+        Mon, 29 Mar 2021 20:56:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617051370;
+        bh=qHo/yGQIIZlrZzV8Nq0BOuyZ1B4eQ5Plw35hWvbnclo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=S7i7gQ0vlN7OoZVMV1Y8K6yGx59tgyzYf8xIiqwu3vxKZl+LccwlRS1F8YEs/00NO
+         kKjZD7UQhHc3w0LGKkv0lgvqwlrCf1+0LuF2IFD6uZfA3DerTg1PA4eirSI8C2qmVB
+         QCL7cH8xPVXNzErC1hqQomv3HfibWt7WqttqdRIgHmhAJ6LMgGl9XJT46kKh5RR5lE
+         euWCVeMRT/gj8ZZTEBPPF8V5SeZBUZddvcbRs2CY7IcLUNk1tQ9t+Z3a6w6Xg5kIxB
+         FMvlk8X+XnlJLWKBIw9zdgvs27bPT+LM4rMN9sXlV6DGSIp8VSniWF1S2gQl0wKoXE
+         1AamXIY/+YiOw==
+Message-ID: <0a6894be727b1bb2124bff19a419972f589b4d7e.camel@kernel.org>
+Subject: Re: ESP RSS support for NVIDIA Mellanox ConnectX-6 Ethernet Adapter
+ Cards
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     =?UTF-8?Q?=E9=AB=98=E9=92=A7=E6=B5=A9?= <gaojunhao0504@gmail.com>,
+        borisp@nvidia.com
+Cc:     netdev@vger.kernel.org, seven.wen@ucloud.cn, junhao.gao@ucloud.cn
+Date:   Mon, 29 Mar 2021 13:56:09 -0700
+In-Reply-To: <CAOJPZgnLjr6VHvtv9NnemxFagvL-k1wrRsB1f1Pq+9qbtPWw0g@mail.gmail.com>
+References: <CAOJPZgnLjr6VHvtv9NnemxFagvL-k1wrRsB1f1Pq+9qbtPWw0g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On Mon, 2021-03-29 at 12:33 +0800, 高钧浩 wrote:
+> Hi borisp, saeedm
 > 
-> This is similar to tcp_read_sock(), except we do not need
-> to worry about connections, we just need to retrieve skb
-> from UDP receive queue.
+>      I have seen mlx5 driver in 5.12.0-rc4 kernel, then find that
+> mlx5e_set_rss_hash_opt only support tcp4/udp4/tcp6/udp6. So mlx5
+> kernel driver doesn't support esp4 rss? Then do you have any plan to
+> support esp4 or other latest mlx5 driver have supported esp4? Then
+> does NVIDIA Mellanox ConnectX-6 Ethernet Adapter Cards support esp4
+> rss in hardware?
 > 
-> Note, the return value of ->read_sock() is unused in
-> sk_psock_verdict_data_ready().
+
+Hi Juhano
+
+we do support RSS ESP out of the box on the SPI, src and dst IP fields
+
+#define MLX5_HASH_IP_IPSEC_SPI	(MLX5_HASH_FIELD_SEL_SRC_IP   |\
+				 MLX5_HASH_FIELD_SEL_DST_IP   |\
+				 MLX5_HASH_FIELD_SEL_IPSEC_SPI)
+
+[MLX5E_TT_IPV4_IPSEC_ESP] = { .l3_prot_type = MLX5_L3_PROT_TYPE_IPV4,
+			      .l4_prot_type = 0,
+			      .rx_hash_fields =
+MLX5_HASH_IP_IPSEC_SPI,
+},
+
+[MLX5E_TT_IPV6_IPSEC_ESP] = { .l3_prot_type = MLX5_L3_PROT_TYPE_IPV6,
+			      .l4_prot_type = 0,
+			      .rx_hash_fields =
+MLX5_HASH_IP_IPSEC_SPI,
+},
+
+But we don't allow rss_hash_opt at the moment. 
+
+what exactly are you looking for ?
+
+> static int mlx5e_set_rss_hash_opt(struct mlx5e_priv *priv,
+>                  struct ethtool_rxnfc *nfc)
+> {
+>     int inlen = MLX5_ST_SZ_BYTES(modify_tir_in);
+>     enum mlx5e_traffic_types tt;
+>     u8 rx_hash_field = 0;
+>     void *in;
+>     tt = flow_type_to_traffic_type(nfc->flow_type);
+>     if (tt == MLX5E_NUM_INDIR_TIRS)
+>         return -EINVAL;
+>     /* RSS does not support anything other than hashing to queues
+>      * on src IP, dest IP, TCP/UDP src port and TCP/UDP dest
+>      * port.
+>      */
+>     if (nfc->flow_type != TCP_V4_FLOW &&
+>       nfc->flow_type != TCP_V6_FLOW &&
+>       nfc->flow_type != UDP_V4_FLOW &&
+>       nfc->flow_type != UDP_V6_FLOW)
+>         return -EOPNOTSUPP;
 > 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  include/net/udp.h   |  2 ++
->  net/ipv4/af_inet.c  |  1 +
->  net/ipv4/udp.c      | 35 +++++++++++++++++++++++++++++++++++
->  net/ipv6/af_inet6.c |  1 +
->  4 files changed, 39 insertions(+)
-> 
-> diff --git a/include/net/udp.h b/include/net/udp.h
-> index df7cc1edc200..347b62a753c3 100644
-> --- a/include/net/udp.h
-> +++ b/include/net/udp.h
-> @@ -329,6 +329,8 @@ struct sock *__udp6_lib_lookup(struct net *net,
->  			       struct sk_buff *skb);
->  struct sock *udp6_lib_lookup_skb(const struct sk_buff *skb,
->  				 __be16 sport, __be16 dport);
-> +int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
-> +		  sk_read_actor_t recv_actor);
->  
->  /* UDP uses skb->dev_scratch to cache as much information as possible and avoid
->   * possibly multiple cache miss on dequeue()
-> diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> index 1355e6c0d567..f17870ee558b 100644
-> --- a/net/ipv4/af_inet.c
-> +++ b/net/ipv4/af_inet.c
-> @@ -1070,6 +1070,7 @@ const struct proto_ops inet_dgram_ops = {
->  	.setsockopt	   = sock_common_setsockopt,
->  	.getsockopt	   = sock_common_getsockopt,
->  	.sendmsg	   = inet_sendmsg,
-> +	.read_sock	   = udp_read_sock,
->  	.recvmsg	   = inet_recvmsg,
->  	.mmap		   = sock_no_mmap,
->  	.sendpage	   = inet_sendpage,
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 38952aaee3a1..04620e4d64ab 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -1782,6 +1782,41 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
->  }
->  EXPORT_SYMBOL(__skb_recv_udp);
->  
-> +int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
-> +		  sk_read_actor_t recv_actor)
-> +{
-> +	int copied = 0;
-> +
-> +	while (1) {
-> +		int offset = 0, err;
-
-Should this be
-
- int offset = sk_peek_offset()?
-
-MSG_PEEK should work from recv side, at least it does on TCP side. If
-its handled in some following patch a comment would be nice. I was
-just reading udp_recvmsg() so maybe its not needed.
-
-> +		struct sk_buff *skb;
-> +
-> +		skb = __skb_recv_udp(sk, 0, 1, &offset, &err);
-> +		if (!skb)
-> +			return err;
-> +		if (offset < skb->len) {
-> +			size_t len;
-> +			int used;
-> +
-> +			len = skb->len - offset;
-> +			used = recv_actor(desc, skb, offset, len);
-> +			if (used <= 0) {
-> +				if (!copied)
-> +					copied = used;
-> +				break;
-> +			} else if (used <= len) {
-> +				copied += used;
-> +				offset += used;
-
-The while loop is going to zero this? What are we trying to do
-here with offset?
-
-> +			}
-> +		}
-> +		if (!desc->count)
-> +			break;
-> +	}
-> +
-> +	return copied;
-> +}
-> +EXPORT_SYMBOL(udp_read_sock);
-> +
->  /*
->   * 	This should be easy, if there is something there we
->   * 	return it, otherwise we block.
-> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-> index 802f5111805a..71de739b4a9e 100644
-> --- a/net/ipv6/af_inet6.c
-> +++ b/net/ipv6/af_inet6.c
-> @@ -714,6 +714,7 @@ const struct proto_ops inet6_dgram_ops = {
->  	.getsockopt	   = sock_common_getsockopt,	/* ok		*/
->  	.sendmsg	   = inet6_sendmsg,		/* retpoline's sake */
->  	.recvmsg	   = inet6_recvmsg,		/* retpoline's sake */
-> +	.read_sock	   = udp_read_sock,
->  	.mmap		   = sock_no_mmap,
->  	.sendpage	   = sock_no_sendpage,
->  	.set_peek_off	   = sk_set_peek_off,
-> -- 
-> 2.25.1
-> 
+> Best Regards,
+> Junhao
 
 
