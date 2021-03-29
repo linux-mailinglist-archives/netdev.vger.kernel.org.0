@@ -2,135 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B306634D035
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 14:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 595F434D032
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 14:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbhC2Mhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 08:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
+        id S231318AbhC2MhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 08:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbhC2Mh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 08:37:29 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF35C061574;
-        Mon, 29 Mar 2021 05:37:29 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id w21-20020a9d63950000b02901ce7b8c45b4so12102472otk.5;
-        Mon, 29 Mar 2021 05:37:29 -0700 (PDT)
+        with ESMTP id S231366AbhC2MhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 08:37:03 -0400
+Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E0BFC061574;
+        Mon, 29 Mar 2021 05:37:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pK8UIcnRx4QQ3Btv2WqHIXhdKMyfXlhaYgEAW2yfd5Y=;
-        b=EILcPnz2y67mky+A2k5ohkqCxvA12zKUAfHFYSN9F23/xIF70lVOxNXy8VrC6vluLv
-         hEQdTOS7lP3BOlqYtocboPHrfKit+9GQnCtWDULfzb31fRxaMDcqNj6UbKViP6rVaCB9
-         JCulP+QNoRoVEj4bPWUc+abLCvTd+LUt828YNqtNFeq6zFa/Tx+pVf/FbcMSh6lzkZEX
-         Eo/GDuk1BwoAIPGjruFAMMFlYpgAlrnEbN3NiJLrjArEqdJoZy7+ISdxJFZcPy0WBxvE
-         d9cTfLKu4LYpmEKuGjk85QSq5TnMaILJIan9V6OcKaPgMvbY+4M6mxZFUEKdQNt7D629
-         toYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pK8UIcnRx4QQ3Btv2WqHIXhdKMyfXlhaYgEAW2yfd5Y=;
-        b=pTKTRx2HrzXoAwvAZQ1cCMeP1oc74ufUuN5AhVactvKN5SuLUW+B8op0dUXx3MYzaw
-         YI29RQ7ww9ZNvj+2zXyzrV0RgsM0E44cqzQM+X9rylUyzOPSyHuCYlsMiC7f4FLtbv3I
-         KWG2tUU6MrtyetX4OHPd72pJqoNRPVicAtVdJf19Pbks/dskC25WOmnGIrU62x/4Z5V9
-         SrihpcZ69T88YnKn3vrVM14yaZXUWr0pAg02Y4n2Iy41qTvc1I5s3jfuEX2vYNMVoIMt
-         n3T2TqSIK3ULfoRkehPOz6ib3Q3HkPVNhx6ubV8+iXSSWCk42TYedK9vckLkY4iaY97S
-         3pKw==
-X-Gm-Message-State: AOAM533jtgG2jtI/39jjV7N3tAfxa6sdNTDUkh1xvrer0INOM8TE9UdH
-        385xmxDoEebzu5ZFgXCMhIs=
-X-Google-Smtp-Source: ABdhPJw3VCk/VUkSPd0TAHStpy7RM1JJZli+Jte7UorebVkvs0o5+yeuVP2OfpBPyDYsqZb/i6e53w==
-X-Received: by 2002:a9d:6a9:: with SMTP id 38mr23032292otx.365.1617021449067;
-        Mon, 29 Mar 2021 05:37:29 -0700 (PDT)
-Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id m14sm4452271otn.69.2021.03.29.05.37.22
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Mar 2021 05:37:28 -0700 (PDT)
-From:   qianjun.kernel@gmail.com
-To:     akpm@linux-foundation.org, ast@kernel.org, daniel@iogearbox.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, jun qian <qianjun.kernel@gmail.com>
-Subject: [PATCH V2 1/1] mm:improve the performance during fork
-Date:   Mon, 29 Mar 2021 20:36:35 +0800
-Message-Id: <20210329123635.56915-1-qianjun.kernel@gmail.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+        d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=r3ftkNVKou
+        Clz+5vYE829wdX1OpZPqS5NNTe9okZl04=; b=fLxC7n7upYVRhR65q2gOayKjiR
+        qwHBPgL9zw4Mz+Nygog5jjRzxnXD1O14RvNlH1qVoXKEO9zwr3jLdty5lNcQWeop
+        vt8bPlrxZ2EYRD1wB1B+KXHxoGJZrN5KBsRb6f/CqJHZyXsA+rMyD4hCKNVVnSiM
+        V/FlINfsR5AAmif/U=
+Received: from ubuntu.localdomain (unknown [202.38.69.14])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygAXHkLjyWFgzqVnAA--.619S4;
+        Mon, 29 Mar 2021 20:36:51 +0800 (CST)
+From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+To:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Subject: [PATCH] ethernet: myri10ge: Fix a use after free in myri10ge_sw_tso
+Date:   Mon, 29 Mar 2021 05:36:48 -0700
+Message-Id: <20210329123648.9474-1-lyl2019@mail.ustc.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: LkAmygAXHkLjyWFgzqVnAA--.619S4
+X-Coremail-Antispam: 1UD129KBjvdXoWrtw4xKr4UKry7CrWUZF1kZrb_yoWkArX_GF
+        nYqa1ftw4UGF45Ary5tr15Jr9Y9Fs8Z34furWxKas3JrZrXa13Jrn8JrZxu347Gr4DGFy7
+        Arsrtr9xC3s0qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbVxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
+        rcIFxwCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjfUepB-DUUUU
+X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: jun qian <qianjun.kernel@gmail.com>
+In myri10ge_sw_tso, the skb_list_walk_safe macro will set
+(curr) = (segs) and (next) = (curr)->next. If status!=0 is true,
+the memory pointed by curr and segs will be free by dev_kfree_skb_any(curr).
+But later, the segs is used by segs = segs->next and causes a uaf.
 
-In our project, Many business delays come from fork, so
-we started looking for the reason why fork is time-consuming.
-I used the ftrace with function_graph to trace the fork, found
-that the vm_normal_page will be called tens of thousands and
-the execution time of this vm_normal_page function is only a
-few nanoseconds. And the vm_normal_page is not a inline function.
-So I think if the function is inline style, it maybe reduce the
-call time overhead.
+As (next) = (curr)->next, my patch replaces seg->next to next.
 
-I did the following experiment:
-
-use the bpftrace tool to trace the fork time :
-
-bpftrace -e 'kprobe:_do_fork/comm=="redis-server"/ {@st=nsecs;} \
-kretprobe:_do_fork /comm=="redis-server"/{printf("the fork time \
-is %d us\n", (nsecs-@st)/1000)}'
-
-no inline vm_normal_page:
-result:
-the fork time is 40743 us
-the fork time is 41746 us
-the fork time is 41336 us
-the fork time is 42417 us
-the fork time is 40612 us
-the fork time is 40930 us
-the fork time is 41910 us
-
-inline vm_normal_page:
-result:
-the fork time is 39276 us
-the fork time is 38974 us
-the fork time is 39436 us
-the fork time is 38815 us
-the fork time is 39878 us
-the fork time is 39176 us
-
-In the same test environment, we can get 3% to 4% of
-performance improvement.
-
-note:the test data is from the 4.18.0-193.6.3.el8_2.v1.1.x86_64,
-because my product use this version kernel to test the redis
-server, If you need to compare the latest version of the kernel
-test data, you can refer to the version 1 Patch.
-
-We need to compare the changes in the size of vmlinux:
-                  inline           non-inline       diff
-vmlinux size      9709248 bytes    9709824 bytes    -576 bytes
-
-Signed-off-by: jun qian <qianjun.kernel@gmail.com>
+Fixes: 536577f36ff7a ("net: myri10ge: use skb_list_walk_safe helper for gso segments")
+Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
 ---
- mm/memory.c | 2 +-
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/memory.c b/mm/memory.c
-index eeae590e526a..6ade9748d425 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -592,7 +592,7 @@ static void print_bad_pte(struct vm_area_struct *vma, unsigned long addr,
-  * PFNMAP mappings in order to support COWable mappings.
-  *
-  */
--struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
-+inline struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
- 			    pte_t pte)
- {
- 	unsigned long pfn = pte_pfn(pte);
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 1634ca6d4a8f..c84c8bf2bc20 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2897,7 +2897,7 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 			dev_kfree_skb_any(curr);
+ 			if (segs != NULL) {
+ 				curr = segs;
+-				segs = segs->next;
++				segs = next;
+ 				curr->next = NULL;
+ 				dev_kfree_skb_any(segs);
+ 			}
 -- 
-2.18.2
+2.25.1
+
 
