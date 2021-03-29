@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7623E34CDAE
+	by mail.lfdr.de (Postfix) with ESMTP id E7DD134CDAF
 	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 12:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232529AbhC2KKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 06:10:43 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53035 "EHLO
+        id S232571AbhC2KKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 06:10:46 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:54289 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231784AbhC2KKZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 06:10:25 -0400
+        by vger.kernel.org with ESMTP id S232579AbhC2KK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 06:10:27 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 14E9F5C00D5;
-        Mon, 29 Mar 2021 06:10:25 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 922335C00C4;
+        Mon, 29 Mar 2021 06:10:26 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 29 Mar 2021 06:10:25 -0400
+  by compute3.internal (MEProxy); Mon, 29 Mar 2021 06:10:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=AlTV5o5Iq/ndcjIU9F/bHZlVlJZ3RW+thjk3/mVft1o=; b=oZM4XEtX
-        d0LNBPRU2rzlezjUj4Mg2w5mArxamQECjtwSbC7THMWUH0vsVOAhnjdjELVrM2+f
-        m2ADntF3OWxzGy0EqyiQDyJ/vU7XXwEYhg/aL+dDBLH59eIdHMed1KMG69UWL5g0
-        GHaw2XNqrr0flTaRnGpNh0wmenrvpuFoR7KlKX2+gzqGSIf9e8njZ3OErNHnCGZB
-        VqawkDwITLQXCyckCCSajJa7XTxshCMLWeoDvfG4GPKt4EPKXxrqpmZaWR5ZXHIf
-        x+guEXSeKPnQZUwOfGDFliY3bL0zp40biznj5P/OTQz1uCxARUBpz7kCoOJdQvc3
-        Bmy55QGQBWDc2g==
-X-ME-Sender: <xms:kKdhYK-vhSkOaz7iTgllKvHnusSvc7RS00SFd_lmGTW2FyX7Xpr-4w>
-    <xme:kKdhYKsjDcnVYsGsf2LAVWpdomDeft6qkzTbMniYLIDNgznJBmJZN3DqiE5RJpy8f
-    r6U8VUWoT6XbTA>
+        fm2; bh=Cp8bMS1dY43XmrjlJFyspTFjkHPWxv/dPAfn7kOhLGE=; b=fNnBhPP1
+        30Pa9bVA3203WIjgPYLF74FvDyQSIqOi6TXRvGW3z1Opu0qY9cjm1Cykj+K+VcDm
+        bQQArFKSaaUMd+C1pDj8FxRRwaZ6stTPHcWkA9iLtEgDBMcgVBEY77c3qw+kyWXF
+        /wFD8E/oC2tDbZC9y0JfOGZOMX6PDu0kqoxQwAtkyI/HswL+SWxEHAu1xPfYBzkG
+        o9JispAH4q5uSrtW3ASBdNwwzICZZG4ue/ygnFSOkAP1/rNe5zGZu8wSFW5kkQ8W
+        lh32kF5mbaAzpb4SrHRUeZeoHlbjXXGCN4t89u/kljS9iCRbGEzW5DuKEuvc0QiN
+        +fn2v9LmD4Vg1w==
+X-ME-Sender: <xms:kqdhYBkfekDd-OBWz7swH4CNVKstma9S7LOuBGYHl1djgPIxRmcaNQ>
+    <xme:kqdhYM3P8cwC-PqxWERxTdwY97y5aK2bLFacpqDoKTGIv_dVC76zz4nJEtzd0-Acr
+    PJx0y9MZ6zmpUg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgvdehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:kKdhYAAqqIuJVU_vjyIppdrflBbfkkbwt2M1sU9KoKrMLvhVIecxjw>
-    <xmx:kKdhYCdOOYlXICKrzksQ10n8nGkgdN7LPJof2u6yPllfPGk1RUxIVg>
-    <xmx:kKdhYPMU1QO3tG-gEa-UPrRqt41yRAnSdwyvPOhmvCKBJnhVUnSR0A>
-    <xmx:kadhYIatZIeMkEeyP4CAZERQzseHQ_isEgh0609avVThftMQGRM4Rg>
+X-ME-Proxy: <xmx:kqdhYHoABNL5jK9t0WK_cizQwv7PQtUvtyt0EqQZyxCJKDP5BHQVxA>
+    <xmx:kqdhYBk8fYWjD0Qf71Bb6zG4Kg6s8c4c5ABdMROtGYnpbedlNbMJhg>
+    <xmx:kqdhYP3QoKukFRym_Nt4nszpi8BSH5IIURfQ-vn4wzNW5ZOgGKFYrw>
+    <xmx:kqdhYNAg5BVXtITIeyYtVlg-ukhzf0FlwNgutAMwaKmWsmLJD8QVbA>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6149A24005B;
-        Mon, 29 Mar 2021 06:10:23 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 53FCA240054;
+        Mon, 29 Mar 2021 06:10:25 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/6] mlxsw: spectrum_matchall: Perform protocol check earlier
-Date:   Mon, 29 Mar 2021 13:09:43 +0300
-Message-Id: <20210329100948.355486-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/6] mlxsw: spectrum_matchall: Convert if statements to a switch statement
+Date:   Mon, 29 Mar 2021 13:09:44 +0300
+Message-Id: <20210329100948.355486-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210329100948.355486-1-idosch@idosch.org>
 References: <20210329100948.355486-1-idosch@idosch.org>
@@ -63,54 +63,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Perform the protocol check earlier in the function instead of repeating
-it for every action. Example:
-
- # tc filter add dev swp1 ingress proto ip matchall skip_sw action sample group 1 rate 100
- Error: matchall rules only supported with 'all' protocol.
- We have an error talking to the kernel
+Previous patch moved the protocol check out of the action check, so
+these if statements can now be converted to a switch statement. Perform
+the conversion.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum_matchall.c    | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-index ce58a795c6fc..9252e23fd082 100644
+index 9252e23fd082..af0a20581a37 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-@@ -238,6 +238,11 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
- 		flower_prio_valid = true;
- 	}
- 
-+	if (protocol != htons(ETH_P_ALL)) {
-+		NL_SET_ERR_MSG(f->common.extack, "matchall rules only supported with 'all' protocol");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	mall_entry = kzalloc(sizeof(*mall_entry), GFP_KERNEL);
- 	if (!mall_entry)
- 		return -ENOMEM;
-@@ -247,7 +252,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
+@@ -252,7 +252,8 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
  
  	act = &f->rule->action.entries[0];
  
--	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
-+	if (act->id == FLOW_ACTION_MIRRED) {
+-	if (act->id == FLOW_ACTION_MIRRED) {
++	switch (act->id) {
++	case FLOW_ACTION_MIRRED:
  		if (flower_prio_valid && mall_entry->ingress &&
  		    mall_entry->priority >= flower_min_prio) {
  			NL_SET_ERR_MSG(f->common.extack, "Failed to add behind existing flower rules");
-@@ -262,8 +267,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
+@@ -267,7 +268,8 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
  		}
  		mall_entry->type = MLXSW_SP_MALL_ACTION_TYPE_MIRROR;
  		mall_entry->mirror.to_dev = act->dev;
--	} else if (act->id == FLOW_ACTION_SAMPLE &&
--		   protocol == htons(ETH_P_ALL)) {
-+	} else if (act->id == FLOW_ACTION_SAMPLE) {
+-	} else if (act->id == FLOW_ACTION_SAMPLE) {
++		break;
++	case FLOW_ACTION_SAMPLE:
  		if (flower_prio_valid &&
  		    mall_entry->priority >= flower_min_prio) {
  			NL_SET_ERR_MSG(f->common.extack, "Failed to add behind existing flower rules");
+@@ -279,7 +281,8 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
+ 		mall_entry->sample.params.truncate = act->sample.truncate;
+ 		mall_entry->sample.params.trunc_size = act->sample.trunc_size;
+ 		mall_entry->sample.params.rate = act->sample.rate;
+-	} else {
++		break;
++	default:
+ 		err = -EOPNOTSUPP;
+ 		goto errout;
+ 	}
 -- 
 2.30.2
 
