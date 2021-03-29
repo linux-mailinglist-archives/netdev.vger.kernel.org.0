@@ -2,112 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37AA134D10A
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:18:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21ED334D10F
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230328AbhC2NSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 09:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbhC2NSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 09:18:12 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11328C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 06:18:12 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id a143so13720506ybg.7
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 06:18:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pwnsPSQnNfe9VUdIWeOJJ6LREk/z71gTZrwDHJ2vz1I=;
-        b=WJrEdToM303IX1TW3ruhjvTLERSw441vheM9knRbmckb49NpgCE6f2kS0v57t7TrsR
-         D6sTMm8BJLHHJB5nBPWowt4LQgajFd8IuwCBlvpyqo1/38UFI1cGhq0sED9N6g51dx2w
-         pnDJv8f4pdnlHZayf79tle63l1xCnN51iLahv/6flsnYwhhwBnOR+casljztH+YEp5yu
-         jljnEodKBDGmDtXMQNtXG3iHOeDIappAjJ2459bkEE6wWLFEp1l9V2FIGpV4Ugd4es2U
-         GjxId0f01rGqrxaIlVVSnc5/+4z3fQScGFwqsgS/BqBipxqUhzAWRnQPn0tLd9Mwh0la
-         +n3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pwnsPSQnNfe9VUdIWeOJJ6LREk/z71gTZrwDHJ2vz1I=;
-        b=DKaG7izvaIEc6Q66rjBH/t+Zzv9qi6RFWumD4c/GLhcTe/8q9rg0knJecFOSV+JBcz
-         vWlOictemwheg7ZT1bem24zZvOh7I+dTtIDT5kqQmG8UQXc11ZX1WoJWgW798poiOmob
-         xNqHskz8SwjsB0MMlSdRZQ0vtpON4YrIPrYB3Q08xLEFvTnXMiMUAx5ioRS3eEvj6aVH
-         xGoDBNI1G/u60aWXv5C/nAPlZRA0ylPJWf5FG5OqGw6BO6is9Wl4gjdbrzmsaCE9jmAS
-         XpcDiDileoMXNfRMMbSbg2/skzLpEr48bHweIhCeDCGwi9MfAO8deSP2eD/qXMNkyA9S
-         W4tg==
-X-Gm-Message-State: AOAM530k7F2PD3L3IGM3PVU2nUN6oI8zpJyVdn4iQDl5wDalX2n9WVo2
-        ZiTxH9CgyaFk4Hl4XMxkr2S4re5Tc6W1MRSBwRwN+g==
-X-Google-Smtp-Source: ABdhPJwcRPvI0mHZjQinZPk/tknVjziDJ5geZ0jbSsYU818EJ5qWJATnMSvc0DnmHWgGv0x9vpGP9iCWOC5C06FzFSY=
-X-Received: by 2002:a25:3614:: with SMTP id d20mr21588374yba.452.1617023890923;
- Mon, 29 Mar 2021 06:18:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210329071716.12235-1-kurt@linutronix.de> <CANn89iJfLQwADLMw6A9J103qM=1y3O6ki1hQMb3cDuJVrwAkrg@mail.gmail.com>
- <878s661cc2.fsf@kurt> <CANn89iL6rQ_KqxyTBDDKtU-um_w=OhBywNwMrr+fki3UWdKVLg@mail.gmail.com>
- <d949388f-6027-23be-2e2a-2f37d84e9f27@linux.ibm.com>
-In-Reply-To: <d949388f-6027-23be-2e2a-2f37d84e9f27@linux.ibm.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 29 Mar 2021 15:17:59 +0200
-Message-ID: <CANn89iK_f3sV+GR00+9z-FsB-9TcdoPovRrxeDZnWKSmdUZpHA@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: Reset MAC header for direct packet transmission
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        id S230413AbhC2NZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 09:25:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55597 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229479AbhC2NYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 09:24:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617024284;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gSe9kjLk6MVajmRYE3K2ERfETj0lAR+bKrJd8FwDSv4=;
+        b=cVcWStuBplnSzfUb+zeMWLiebsyD5Ep7IExWpHNLF0/e6BTmpJYtDGL9urJyufm1Oyy87J
+        //4nGF33C3xhpthg3GKuSKa8KgKAeWWf8V9A5KW6H9uQHU80Q4TnxuV0iRAUUkkWYqCWTJ
+        GRGWOnTwBRJ8TgoVV3Niib0ZsyRsnAc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-563-Kj0jptLUNHmT0Ojz7DgmRg-1; Mon, 29 Mar 2021 09:24:40 -0400
+X-MC-Unique: Kj0jptLUNHmT0Ojz7DgmRg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 77E418018AD;
+        Mon, 29 Mar 2021 13:24:38 +0000 (UTC)
+Received: from ovpn-114-151.ams2.redhat.com (ovpn-114-151.ams2.redhat.com [10.36.114.151])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5FFACBA6F;
+        Mon, 29 Mar 2021 13:24:36 +0000 (UTC)
+Message-ID: <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow
+ path
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev <netdev@vger.kernel.org>
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Date:   Mon, 29 Mar 2021 15:24:35 +0200
+In-Reply-To: <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
+References: <cover.1616692794.git.pabeni@redhat.com>
+         <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+         <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+         <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
+         <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 2:42 PM Julian Wiedmann <jwi@linux.ibm.com> wrote:
->
-> On 29.03.21 14:13, Eric Dumazet wrote:
-> > On Mon, Mar 29, 2021 at 12:30 PM Kurt Kanzenbach <kurt@linutronix.de> wrote:
-> >>
-> >> On Mon Mar 29 2021, Eric Dumazet wrote:
-> >>> Note that last year, I addressed the issue differently in commit
-> >>> 96cc4b69581db68efc9749ef32e9cf8e0160c509
-> >>> ("macvlan: do not assume mac_header is set in macvlan_broadcast()")
-> >>> (amended with commit 1712b2fff8c682d145c7889d2290696647d82dab
-> >>> "macvlan: use skb_reset_mac_header() in macvlan_queue_xmit()")
-> >>>
-> >>> My reasoning was that in TX path, when ndo_start_xmit() is called, MAC
-> >>> header is essentially skb->data,
-> >>> so I was hoping to _remove_ skb_reset_mac_header(skb) eventually from
-> >>> the fast path (aka __dev_queue_xmit),
-> >>> because most drivers do not care about MAC header, they just use skb->data.
-> >>>
-> >>> I understand it is more difficult to review drivers instead of just
-> >>> adding more code in  __dev_direct_xmit()
-> >>>
-> >>> In hsr case, I do not really see why the existing check can not be
-> >>> simply reworked ?
-> >>
-> >> It can be reworked, no problem. I just thought it might be better to add
-> >> it to the generic code just in case there are more drivers suffering
-> >> from the issue.
-> >
-> > Note that I have a similar issue pending in ipvlan.
-> >
-> > Still, I think I prefer the non easy way to not add more stuff in fast path.
-> >
->
-> Can we apply this fix (and propagate it to stable), and then remove the
-> skb_reset_mac_header() from _both_ xmit paths through net-next?
+On Mon, 2021-03-29 at 08:28 -0400, Willem de Bruijn wrote:
+> On Mon, Mar 29, 2021 at 7:26 AM Paolo Abeni <pabeni@redhat.com> wrote:
+> > On Fri, 2021-03-26 at 14:30 -0400, Willem de Bruijn wrote:
+> > > On Thu, Mar 25, 2021 at 1:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > > When UDP packets generated locally by a socket with UDP_SEGMENT
+> > > > traverse the following path:
+> > > > 
+> > > > UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
+> > > >         UDP tunnel (rx) -> UDP socket (no UDP_GRO)
+> > > > 
+> > > > they are segmented as part of the rx socket receive operation, and
+> > > > present a CHECKSUM_NONE after segmentation.
+> > > 
+> > > would be good to capture how this happens, as it was not immediately obvious.
+> > 
+> > The CHECKSUM_PARTIAL is propagated up to the UDP tunnel processing,
+> > where we have:
+> > 
+> >         __iptunnel_pull_header() -> skb_pull_rcsum() ->
+> > skb_postpull_rcsum() -> __skb_postpull_rcsum() and the latter do the
+> > conversion.
+> 
+> Please capture this in the commit message.
 
-This is the plan, but as I said a full audit is needed.
+I will do.
 
-Currently ipvlan still needs a fix.
+> > > > Additionally the segmented packets UDP CB still refers to the original
+> > > > GSO packet len. Overall that causes unexpected/wrong csum validation
+> > > > errors later in the UDP receive path.
+> > > > 
+> > > > We could possibly address the issue with some additional checks and
+> > > > csum mangling in the UDP tunnel code. Since the issue affects only
+> > > > this UDP receive slow path, let's set a suitable csum status there.
+> > > > 
+> > > > v1 -> v2:
+> > > >  - restrict the csum update to the packets strictly needing them
+> > > >  - hopefully clarify the commit message and code comments
+> > > > 
+> > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> > > > +               skb->csum_valid = 1;
+> > > 
+> > > Not entirely obvious is that UDP packets arriving on a device with rx
+> > > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
+> > > this test.
+> > > 
+> > > I assume that such packets are not coalesced by the GRO layer in the
+> > > first place. But I can't immediately spot the reason for it..
+> > 
+> > Packets with CHECKSUM_NONE are actually aggregated by the GRO engine.
+> > 
+> > Their checksum is validated by:
+> > 
+> > udp4_gro_receive -> skb_gro_checksum_validate_zero_check()
+> >         -> __skb_gro_checksum_validate -> __skb_gro_checksum_validate_complete()
+> > 
+> > and skb->ip_summed is changed to CHECKSUM_UNNECESSARY by:
+> > 
+> > __skb_gro_checksum_validate -> skb_gro_incr_csum_unnecessary
+> >         -> __skb_incr_checksum_unnecessary()
+> > 
+> > and finally to CHECKSUM_PARTIAL by:
+> > 
+> > udp4_gro_complete() -> udp_gro_complete() -> udp_gro_complete_segment()
+> > 
+> > Do you prefer I resubmit with some more comments, either in the commit
+> > message or in the code?
+> 
+> That breaks the checksum-and-copy optimization when delivering to
+> local sockets. I wonder if that is a regression.
+
+The conversion to CHECKSUM_UNNECESSARY happens since
+commit 573e8fca255a27e3573b51f9b183d62641c47a3d.
+
+Even the conversion to CHECKSUM_PARTIAL happens independently from this
+series, since commit 6f1c0ea133a6e4a193a7b285efe209664caeea43.
+
+I don't see a regression here ?!?
+
+Thanks!
+
+Paolo
+
