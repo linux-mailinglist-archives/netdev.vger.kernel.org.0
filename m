@@ -2,78 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B881834CC16
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 11:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4716E34CC19
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 11:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234941AbhC2Iza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 04:55:30 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:19808 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236382AbhC2Ix3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 04:53:29 -0400
-Received: from localhost.localdomain (unknown [10.192.140.4])
-        by mail-app3 (Coremail) with SMTP id cC_KCgA3P5dmlWFgxK5pAA--.51681S4;
-        Mon, 29 Mar 2021 16:53:00 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Jouni Malinen <j@w1.fi>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] hostap: Fix memleak in prism2_config
-Date:   Mon, 29 Mar 2021 16:52:43 +0800
-Message-Id: <20210329085246.24586-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgA3P5dmlWFgxK5pAA--.51681S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jw1kCw4rZrW5AF15Cr18Grg_yoWfAFX_Cr
-        W2vFn5XrykA3409r1UCFsxZFyIyF1DZa48ZF1ktF95JryUXrZ7t34fZr1ay3s3Cw4q9ry3
-        Cr4qqF1Ikas0gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbskFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26rxl6s0DM28EF7xvwVC2z280
-        aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07
-        x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18
-        McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr4
-        1lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI
-        7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8Jw
-        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
-        wI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjx
-        v20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2
-        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73Uj
-        IFyTuYvjfUoOJ5UUUUU
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAg4HBlZdtSzMkgBNsM
+        id S236042AbhC2Izc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 04:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236654AbhC2IyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:54:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91274C061756
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 01:54:01 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lQneq-0003VC-5q
+        for netdev@vger.kernel.org; Mon, 29 Mar 2021 10:54:00 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id A7109602993
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:53:58 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 70FE4602988;
+        Mon, 29 Mar 2021 08:53:57 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id aa04ce39;
+        Mon, 29 Mar 2021 08:53:56 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2021-03-29
+Date:   Mon, 29 Mar 2021 10:53:52 +0200
+Message-Id: <20210329085355.921447-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When prism2_hw_config() fails, we just return an error code
-without any resource release, which may lead to memleak.
+Hello Jakub, hello David,
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+this is a pull request of 3 patches for net/master.
+
+The two patch are by Oliver Hartkopp. He fixes length check in the
+proto_ops::getname callback for the CAN RAW, BCM and ISOTP protocols,
+which were broken by the introduction of the J1939 protocol.
+
+The last patch is by me and fixes the a BUILD_BUG_ON() check which
+triggers on ARCH=arm with CONFIG_AEABI unset.
+
+regards,
+Marc
+
 ---
- drivers/net/wireless/intersil/hostap/hostap_cs.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intersil/hostap/hostap_cs.c b/drivers/net/wireless/intersil/hostap/hostap_cs.c
-index ec7db2badc40..7dc16ab50ad6 100644
---- a/drivers/net/wireless/intersil/hostap/hostap_cs.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_cs.c
-@@ -536,10 +536,10 @@ static int prism2_config(struct pcmcia_device *link)
- 	sandisk_enable_wireless(dev);
- 
- 	ret = prism2_hw_config(dev, 1);
--	if (!ret)
--		ret = hostap_hw_ready(dev);
-+	if (ret)
-+		goto failed;
- 
--	return ret;
-+	return hostap_hw_ready(dev);;
- 
-  failed:
- 	kfree(hw_priv);
--- 
-2.17.1
+The following changes since commit 1b479fb801602b22512f53c19b1f93a4fc5d5d9d:
+
+  drivers/net/wan/hdlc_fr: Fix a double free in pvc_xmit (2021-03-28 18:08:43 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.12-20210329
+
+for you to fetch changes up to f5076c6ba02e8e24c61c40bbf48078929bc0fc79:
+
+  can: uapi: can.h: mark union inside struct can_frame packed (2021-03-29 09:51:49 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.12-20210329
+
+----------------------------------------------------------------
+Marc Kleine-Budde (1):
+      can: uapi: can.h: mark union inside struct can_frame packed
+
+Oliver Hartkopp (2):
+      can: bcm/raw: fix msg_namelen values depending on CAN_REQUIRED_SIZE
+      can: isotp: fix msg_namelen values depending on CAN_REQUIRED_SIZE
+
+ include/uapi/linux/can.h |  2 +-
+ net/can/bcm.c            | 10 ++++++----
+ net/can/isotp.c          | 11 +++++++----
+ net/can/raw.c            | 14 ++++++++------
+ 4 files changed, 22 insertions(+), 15 deletions(-)
+
+
 
