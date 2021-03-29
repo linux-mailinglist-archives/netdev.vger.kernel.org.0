@@ -2,109 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9734B34D603
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 19:27:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9878E34D629
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 19:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbhC2R0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 13:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbhC2R0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 13:26:19 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFE2C061756
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 10:26:18 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id 1so9221689qtb.0
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 10:26:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R49uBtXh1BrDjgQWvlXc+89X6sjp8WeXTTBbCRqic1Q=;
-        b=MT3R1Kl5pfHrMGcpGvbUjqBp/Fmk6/gyaeYwxL/4+bVySoY9TgSMAfiZo6cRiJd/sE
-         SlQXYflHYdJFNq5YlG2bvosDsV9w71BTpP64L9OQK6Dg8VOt7mCrbKA33YzJIPEBi3x7
-         pYwlwte5+VKyi7ZcUZLB1BPzfdsNBzv1o3urZSo3g9eLefhS57QlKeD3KZTMAgEbWUZo
-         4R4WzYJSQXjwXE3y0ZydesCNc2/P9o/8DR0wQ6Ns3uDgiagC2/IP0jpmgu5c8++8eRd1
-         +uDE/eA0G505aJcjBkwKyUWM+GfSL69p+5Zu+EP2Xl57RaGELXKEbThPh2w8LlwKVZFx
-         0+IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R49uBtXh1BrDjgQWvlXc+89X6sjp8WeXTTBbCRqic1Q=;
-        b=Mo+Fc+43aULP2Q294qLlk1JHnFz/1gf27EmUE8lpjAENHtxWqfUAlW+tR82KjalFfp
-         5AoMq3aXN1axm1JLvWSoHe6lyzJpVZlJlLrw0LOE8bw0Krcz5uJR9Vn1c8+aGyG7SSOy
-         vI4q563LjAMfn5bTOfJlSF09OSJxXG7d/ns4ezY7+rhhFFrb0JdfOkRtVUXE+vfRraeg
-         hHeHiJxnBB46atbwnLigP8an2h3vdyunymGbor2NzbcwfNsY6Djoyx4IMw8MXse2NGQd
-         3964+/VDKMTf0wEUb3oYC2l80C6z84AYpPK6rlWnGYxsyj802yE7HzAozCs6qKoPXW1g
-         yLZg==
-X-Gm-Message-State: AOAM532/uCVkOgmrnmPFAMGkW/o+hQiX1gdoaTUGTnYVYL5O+Kr/ttan
-        IFtZt9rxg1xwNj/9hvWS/Agl4wnPjQFKPMvlWKiPuA==
-X-Google-Smtp-Source: ABdhPJwNUJ67Y/7R+RGiQuZC/vvzmhuHcAN+US6Bdien4Pm0v9JKze8ECQKwpDyD782FfkOxAUtaAZI4fR1D5Ugw8zg=
-X-Received: by 2002:a05:622a:13cb:: with SMTP id p11mr23265907qtk.349.1617038777066;
- Mon, 29 Mar 2021 10:26:17 -0700 (PDT)
+        id S230366AbhC2Rjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 13:39:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55862 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229468AbhC2Rj2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 13:39:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 545AE61879;
+        Mon, 29 Mar 2021 17:39:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617039568;
+        bh=vPyEn/U16uCo1O6mO22oiChJn58ryFuGP88hEbW0UXo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SYiJhKlVqki94RoGpMjHgY4QpHVgwsR/uelLwCBSpAXO5X43PcJ9pumz2yGL2aDOB
+         wp/w/nn19oJG4u7cixj2bSkLB+4FUdMAdgTtld0/eNGSS40aiUnazSWqwfQcWdrHdP
+         XZs0JnM4iSFxi8PbfG0q+JCCjFuWtvaFZFo9hIQd/zrVoJJCDQfVn4L0TuK0nykM8W
+         q38qRJPqN5HPHl9HI38LS9S2X1IXn38Tdo1Qe3unT9s9gdFV3a3sVG9HL+ae4aR+Jc
+         B7U4RIRQ5IXRldhxPjOqBd7q8OX3oprdqpW+HxJtkXRqQc7D83kjMU1qIsg3FXqudn
+         iKkPQDCVHXUOQ==
+Date:   Mon, 29 Mar 2021 10:39:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        michael.chan@broadcom.com, damian.dybek@intel.com,
+        paul.greenwalt@intel.com, rajur@chelsio.com,
+        jaroslawx.gawin@intel.com, vkochan@marvell.com, alobakin@pm.me,
+        snelson@pensando.io, shayagr@amazon.com, ayal@nvidia.com,
+        shenjian15@huawei.com, saeedm@nvidia.com, mkubecek@suse.cz,
+        andrew@lunn.ch, roopa@nvidia.com
+Subject: Re: [PATCH net-next 6/6] ethtool: clarify the ethtool FEC interface
+Message-ID: <20210329103925.04db7c9b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <435d5a68-95bf-81b6-2d29-75d2888e62cd@gmail.com>
+References: <20210325011200.145818-1-kuba@kernel.org>
+        <20210325011200.145818-7-kuba@kernel.org>
+        <435d5a68-95bf-81b6-2d29-75d2888e62cd@gmail.com>
 MIME-Version: 1.0
-References: <20210329164541.3240579-1-sdf@google.com> <CAPhsuW6fw8Zsh=jvUbwxfRrtKSCR9wwF6KXyWLb=z_xPHGVMAw@mail.gmail.com>
-In-Reply-To: <CAPhsuW6fw8Zsh=jvUbwxfRrtKSCR9wwF6KXyWLb=z_xPHGVMAw@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 29 Mar 2021 10:26:06 -0700
-Message-ID: <CAKH8qBvTX4Q6QdjktZbA1QJ=y4R2zMrsoqx3yTh2dHwhbg1P3w@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next] tools/resolve_btfids: Fix warnings
-To:     Song Liu <song@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 10:23 AM Song Liu <song@kernel.org> wrote:
->
-> On Mon, Mar 29, 2021 at 9:46 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > * make eprintf static, used only in main.c
-> > * initialize ret in eprintf
-> > * remove unused *tmp
-> > * remove unused 'int err = -1'
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  tools/bpf/resolve_btfids/main.c | 7 +++----
-> >  1 file changed, 3 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
-> > index 80d966cfcaa1..be74406626b7 100644
-> > --- a/tools/bpf/resolve_btfids/main.c
-> > +++ b/tools/bpf/resolve_btfids/main.c
-> > @@ -115,10 +115,10 @@ struct object {
-> >
-> >  static int verbose;
-> >
-> > -int eprintf(int level, int var, const char *fmt, ...)
-> > +static int eprintf(int level, int var, const char *fmt, ...)
-> >  {
-> >         va_list args;
-> > -       int ret;
-> > +       int ret = 0;
-> >
-> >         if (var >= level) {
-> >                 va_start(args, fmt);
-> > @@ -403,10 +403,9 @@ static int symbols_collect(struct object *obj)
-> >          * __BTF_ID__* over .BTF_ids section.
-> >          */
-> >         for (i = 0; !err && i < n; i++) {
->                     ^^^^ This err is also not used.
-Yeah, good point, let's remove that one as well. Thanks!
+On Mon, 29 Mar 2021 12:56:30 +0100 Edward Cree wrote:
+> On 25/03/2021 01:12, Jakub Kicinski wrote:
+> > Drivers should reject mixing %ETHTOOL_FEC_AUTO_BIT with other
+> > + * FEC modes, because it's unclear whether in this case other modes constrain
+> > + * AUTO or are independent choices.  
+> 
+> Does this mean you want me to spin a patch to sfc to reject this?
+> Currently for us e.g. AUTO|RS means use RS if the cable and link partner
+>  both support it, otherwise let firmware choose (presumably between BASER
+>  and OFF) based on cable/module & link partner caps and/or parallel detect.
+> We took this approach because our requirements writers believed that
+>  customers would have a need for this setting; they called it "prefer FEC",
+>  and I think the idea was to use FEC if possible (even on cables where the
+>  IEEE-recommended default is no FEC, such as CA-25G-N 3m DAC) but allow
+>  fallback to no FEC if e.g. link partner doesn't advertise FEC in AN.
+> Similarly, AUTO|BASER ("prefer BASE-R FEC") might be desired by a user who
+>  wants to use BASE-R if possible to minimise latency, but fall back to RS
+>  FEC if the cable or link partner insists on it (eg CA-25G-L 5m DAC).
+> Whether we were right and all this is actually useful, I couldn't say.
 
-> > -               char *tmp, *prefix;
-> > +               char *prefix;
-> >                 struct btf_id *id;
-> >                 GElf_Sym sym;
-> > -               int err = -1;
-> >
-> >                 if (!gelf_getsym(obj->efile.symbols, i, &sym))
-> >                         return -1;
-> > --
-> > 2.31.0.291.g576ba9dcdaf-goog
-> >
+Interesting combo. Up to you, the API is quite unclear, I think users
+shouldn't expect anything beyond single bit set to work across
+implementations. IMHO supporting anything beyond that is just code
+complexity for little to no gain. But then again, as long as you don't
+confuse AUTO with autoneg there's no burning need to change :)
