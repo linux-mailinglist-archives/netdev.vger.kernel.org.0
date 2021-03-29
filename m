@@ -2,117 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7DB34CE7E
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 298C734CE80
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:09:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231924AbhC2LHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 07:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
+        id S231653AbhC2LJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 07:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231481AbhC2LHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:07:46 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23138C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:07:46 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id s21so5832179pjq.1
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:07:46 -0700 (PDT)
+        with ESMTP id S231660AbhC2LJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:09:14 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15619C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:09:14 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id il9-20020a17090b1649b0290114bcb0d6c2so7552008pjb.0
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:09:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=BV5SCzlqlhZmgVnGU+pslrgQPwkiNjT8cD66WrSSQNE=;
-        b=a6awiX5lrAYxSeLc0i0BlgG1v8Wek+tSjO0nNebSZ1tzlA7qFxKdwZ6M1LqVgij7ni
-         1kHBs/s+MN1CnZxjeagshJgaLqiw247yVxs45X65XzjlSfWk8wlSAoxW41W283VCEX2g
-         XhAunZMWCWvIrFTTvVJYg0o7ah0KZcCgzhI/uovq6RvRTilxyGO+4x98b1CqWpXLLhwx
-         LtA0MVkHkA2ZL7Hauh+g49Det4je0HFMipc/ESqLXqNrY6mLcjzspJYLsog/8qZxyy9K
-         cK3mtKHDagTl5ho6/2Rx6HGF0PfZogeqTU/3HB/46s3LQsD4s/29IX/XrJlNdeH/4Pt1
-         WNVg==
+        bh=0Qrd6iLxD+REdwDh7ecFRdGdRpfeEJpYQUhfIWlShGY=;
+        b=ccdnX+4SXaehMQOTroKSCBMmnB2VpVBXA8I1YLVlhvv2FmMlr3RMWwhwqpK46Q+MA7
+         wsg25WXxf16o5lYqkini61nQlEl/AZXceLwKTTs+n2zBoHkYa8ARfR3g1plo3vQwVAf8
+         wd4ZU56FdQOKFHcgNiwrQVL2QJTISYML8Lie0L73t4pZtNx3DAZ746f1W0CuJz6lI+wX
+         T/cqRIPmEEIOEOmXqvA5FqYRVt5U7GTt0ZFzAtl0fcu7Dba9fHvWdbkcDpH+RNueNsWn
+         D1NvIpPGSoGnC/ip6YE5ImRR9bTVP0Y9QjqzoOQYC2BGqvXKzagBs1Ofl2PNWap8mXaq
+         WMCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BV5SCzlqlhZmgVnGU+pslrgQPwkiNjT8cD66WrSSQNE=;
-        b=I70TmCAGyhNIXsK+blVkZ0OLetu1+8EyaD+UkywxSIc/i3buH7NXryYasAzIwU/5o3
-         zYKJk+jeF5urWf1z7kv2+V3QKaPe/sPCJbowMoFyBl8wo8a8Rd1xXqpclFJB/DG4ORzm
-         JGqIY/BYzkfz1y82nvxCXccvC2RTKEtxZ/OJHQd7W2jR81qarPy7ejZZRuxfi0qXKxU3
-         SEVg1+p3ljo5Ww6J4BVT55Nqnr7Hhl3fmqsWjcdd97tbXQhHRaGgmDAAbqF+kpTZWSWl
-         dexWyBmquEUA81HHpf4rs+75KVXBzSDa1pCPqWu4lN7iAn+JU9h8Ih2Acdw+QDz+ibk8
-         iGhA==
-X-Gm-Message-State: AOAM533bzp2IIrqypMbG43vE5J3WbgHq0JUErzfZ/WTVttgkUL4UOvGB
-        qsn8H/OD1zGrV1P84Y5E5LSR
-X-Google-Smtp-Source: ABdhPJzBpn6BzK9KN9ilpYNiGpyLrHi6NXGW4ilcKV1+w393KwX54OMtenBhXfgg5RN/ue3ypw9VXw==
-X-Received: by 2002:a17:90a:1696:: with SMTP id o22mr25238896pja.0.1617016065639;
-        Mon, 29 Mar 2021 04:07:45 -0700 (PDT)
+        bh=0Qrd6iLxD+REdwDh7ecFRdGdRpfeEJpYQUhfIWlShGY=;
+        b=LOyA9zt/6il6YQySVXS7ZmE2/2EQnUCySKmwjuhCXJjSkqg+kTJADR+dlvITOoDy5r
+         micssgK6hitCFVvG6sy7q/QW0Tpjn0H8u1JHz3Escs/uvogt0G5ZVxs/NSMv91yKz1fU
+         8PgQwHV71dMYCoJUPN1OVVrw+0QbVYXB77214eW2mv8ofyhQ+loQazrbGEVjP5yzdEI5
+         JROJa7sCI7D2dcZvzKaQYxZWcEEwGJjcuXupXAsUyNf6d3DJEBBFX+4tDGIHkjvBvYQA
+         U1zy0RHRvk+eHijo0xYIQODs0YQ1SEUB3QoJL2CUNf18dcE9jWEGjIYuZ/3G0XLYNG+7
+         GIvA==
+X-Gm-Message-State: AOAM530kJUtnXBCFfqpnMjqrDew/ootBcQRjBT0ihj+tMSu2hG3fUgd0
+        9LYlcpXNLALSth/pe5vGxKhcJjbm0g1Z
+X-Google-Smtp-Source: ABdhPJwcgJPrHB6bL35GoPQ71jmYjHaCFpmByZp1QXNOAmw3/TuazShNcybd1en5HEpDWNAMfz62iA==
+X-Received: by 2002:a17:90a:5284:: with SMTP id w4mr25613736pjh.29.1617016153641;
+        Mon, 29 Mar 2021 04:09:13 -0700 (PDT)
 Received: from work ([103.77.37.146])
-        by smtp.gmail.com with ESMTPSA id q10sm16353763pfc.190.2021.03.29.04.07.42
+        by smtp.gmail.com with ESMTPSA id i10sm19000561pgo.75.2021.03.29.04.09.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Mar 2021 04:07:45 -0700 (PDT)
-Date:   Mon, 29 Mar 2021 16:37:41 +0530
+        Mon, 29 Mar 2021 04:09:13 -0700 (PDT)
+Date:   Mon, 29 Mar 2021 16:39:09 +0530
 From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Du Cheng <ducheng2@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH net-next] qrtr: move to staging
-Message-ID: <20210329110741.GC2763@work>
-References: <20210328122621.2614283-1-gregkh@linuxfoundation.org>
- <CAMZdPi_3B9Bxg=7MudFq+RnhD10Mm5QbX_pBb5vyPsZAC_bNOQ@mail.gmail.com>
- <20210329105236.GB2763@work>
- <YGGz/BaibxykzxOW@kroah.com>
+To:     Du Cheng <ducheng2@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v2] net:qrtr: fix atomic idr allocation in
+ qrtr_port_assign()
+Message-ID: <20210329110909.GD2763@work>
+References: <20210327140702.4916-1-ducheng2@gmail.com>
+ <YF89PtWrs2N5XSgb@kroah.com>
+ <20210327142520.GA5271@ThinkCentre-M83>
+ <YF9BthXs2ha7hnrF@kroah.com>
+ <20210327155110.GI1719932@casper.infradead.org>
+ <YGAokfl9xvl3CnQR@kroah.com>
+ <20210328100417.GA14132@casper.infradead.org>
+ <20210329105556.GA334561@ThinkCentre-M83>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YGGz/BaibxykzxOW@kroah.com>
+In-Reply-To: <20210329105556.GA334561@ThinkCentre-M83>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 01:03:24PM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Mar 29, 2021 at 04:22:36PM +0530, Manivannan Sadhasivam wrote:
-> > Hi Greg,
+On Mon, Mar 29, 2021 at 06:55:56PM +0800, Du Cheng wrote:
+> On Sun, Mar 28, 2021 at 11:04:17AM +0100, Matthew Wilcox wrote:
+> > On Sun, Mar 28, 2021 at 08:56:17AM +0200, Greg Kroah-Hartman wrote:
+> > > On Sat, Mar 27, 2021 at 03:51:10PM +0000, Matthew Wilcox wrote:
+> > > > On Sat, Mar 27, 2021 at 03:31:18PM +0100, Greg Kroah-Hartman wrote:
+> > > > > On Sat, Mar 27, 2021 at 10:25:20PM +0800, Du Cheng wrote:
+> > > > > > On Sat, Mar 27, 2021 at 03:12:14PM +0100, Greg Kroah-Hartman wrote:
+> > > > > > > Adding the xarray maintainer...
+> > > > > > > 
+> > > > > > > On Sat, Mar 27, 2021 at 10:07:02PM +0800, Du Cheng wrote:
+> > > > > > > > add idr_preload() and idr_preload_end() around idr_alloc_u32(GFP_ATOMIC)
+> > > > > > > > due to internal use of per_cpu variables, which requires preemption
+> > > > > > > > disabling/enabling.
+> > > > > > > > 
+> > > > > > > > reported as "BUG: "using smp_processor_id() in preemptible" by syzkaller
+> > > > > > > > 
+> > > > > > > > Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
+> > > > > > > > Signed-off-by: Du Cheng <ducheng2@gmail.com>
+> > > > > > > > ---
+> > > > > > > > changelog
+> > > > > > > > v1: change to GFP_KERNEL for idr_alloc_u32() but might sleep
+> > > > > > > > v2: revert to GFP_ATOMIC but add preemption disable/enable protection
+> > > > > > > > 
+> > > > > > > >  net/qrtr/qrtr.c | 6 ++++++
+> > > > > > > >  1 file changed, 6 insertions(+)
+> > > > > > > > 
+> > > > > > > > diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> > > > > > > > index edb6ac17ceca..6361f169490e 100644
+> > > > > > > > --- a/net/qrtr/qrtr.c
+> > > > > > > > +++ b/net/qrtr/qrtr.c
+> > > > > > > > @@ -722,17 +722,23 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+> > > > > > > >  	mutex_lock(&qrtr_port_lock);
+> > > > > > > >  	if (!*port) {
+> > > > > > > >  		min_port = QRTR_MIN_EPH_SOCKET;
+> > > > > > > > +		idr_preload(GFP_ATOMIC);
+> > > > > > > >  		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
+> > > > > > > > +		idr_preload_end();
+> > > > > > > 
+
+[...]
+
+> > > Ok, it looks like this code is just abandonded, should we remove it
+> > > entirely as no one wants to maintain it?
 > > 
-> > On Mon, Mar 29, 2021 at 11:47:12AM +0200, Loic Poulain wrote:
-> > > Hi Greg,
-> > > 
-> > > On Sun, 28 Mar 2021 at 14:28, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > wrote:
-> > > 
-> > > > There does not seem to be any developers willing to maintain the
-> > > > net/qrtr/ code, so move it to drivers/staging/ so that it can be removed
-> > > > from the kernel tree entirely in a few kernel releases if no one steps
-> > > > up to maintain it.
-> > > >
-> > > > Reported-by: Matthew Wilcox <willy@infradead.org>
-> > > > Cc: Du Cheng <ducheng2@gmail.com>
-> > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > >
-> > > 
-> > > As far as I know, QRTR/IPCR is still commonly used with Qualcomm-based
-> > > platforms for accessing various components of the SoC.
-> > > CCing Bjorn and Mani, In case they are interested in taking maintenance of
-> > > that.
-> > > 
-> > 
-> > As Loic said, QRTR is an integral component used in various Qualcomm based
-> > upstream supported products like ChromeOS, newer WLAN chipsets (QCA6390) etc...
-> > 
-> > It is unfortunate that no one stepped up so far to maintain it. After
-> > having an internal discussion, I decided to pitch in as a maintainer. I'll
-> > send the MAINTAINERS change to netdev list now.
+> > Fine by me.  I don't use it.  Better to get rid of abandonware than keep
+> > a potential source of security holes.
 > 
-> Great, can you also fix up the reported problems with the codebase that
-> resulted in this "ask for removal"?
+> Hi Manivannan,
+> 
+> For your information.
 > 
 
-Yes, ofc. I do see couple of Syzbot bug reports now... I will look into them.
-It turned out I fixed one of them earlier but should've handled all :)
+Thanks for letting me know. I'll look into it once back to work.
 
 Thanks,
 Mani
 
-> thanks,
-> 
-> greg k-h
+> Regards,
+> Du Cheng
