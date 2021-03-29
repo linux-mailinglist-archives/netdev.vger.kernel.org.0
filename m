@@ -2,108 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D47B34C820
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71ED234C965
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233228AbhC2IUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 04:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233089AbhC2ITc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:19:32 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E11F3C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 01:19:25 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id n138so17169929lfa.3
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 01:19:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T17UPyB49fQi81p3RjN5h9re4h1c9rcNiJmp3cH67jg=;
-        b=q1LkIVeN1CSY5hosJXtoBv+Ux0JhJ27lW+Gm+sBS9dvD4Sw2R4apI4P5/0lR/NLEQR
-         VIZ+gt088HzjytzKLP0IMIDXvGVjshPrKXBV/YdRScfYB9kBop09xAfYf0Mc/qm5RqMG
-         ovmY11JV78D5bCh5lGmZc69wxuCOT1iyewBBI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T17UPyB49fQi81p3RjN5h9re4h1c9rcNiJmp3cH67jg=;
-        b=lInUJJX7cowDSa4NKuOX29dOHhYIeI0qTvUwNLisoPqWfBLD02s++Ut1UoKxe6X9M+
-         znnjmwuo5CcQ9haGX1qc5jjWqFYJKZwMP1RADjGdAH2pM+CsRP+61gpIDs5DTfsO9OE/
-         92lvNDEkhIaDzG83qQEYbFMP1ZHM6aX17G9qKuAdI1C43wODvL6kI1Nva75lvSOTUdyA
-         Kzdww/s5bHrx1uvY1lFqNgJOqeNMlB9KEIOZmHY3eBv27D2CL/Y8c26meTASbYCr5pOF
-         XGH/hWzRAPaO0hAt8m0j4jkDRggtgCkrjVmgFDiyVlmlFVNPF2QiE88RhLeijDig0Nau
-         686w==
-X-Gm-Message-State: AOAM5312vb7HKy+x2thItmlk94lALTCfDvhIa5G07gCpps1Ii4GbO5NR
-        sH9WQQJP+H17/uH9/z1i826FMidzpAqA3DWjnbH9tQ==
-X-Google-Smtp-Source: ABdhPJxFOiDf3HdUzgGwB1o9orQWHoh/OXEAOPDSOIowsXvtXJ80dRVlkz8qGZfuEAA4/DB8oCyHi6o9BNhhc5MaJTY=
-X-Received: by 2002:a19:521a:: with SMTP id m26mr16066250lfb.56.1617005964467;
- Mon, 29 Mar 2021 01:19:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210326160501.46234-1-lmb@cloudflare.com> <20210326160501.46234-2-lmb@cloudflare.com>
- <CAPhsuW7E4bhEGcboKQ5O=1o0iVNPLpJB1nrAgxweiZqGhZm-JQ@mail.gmail.com>
-In-Reply-To: <CAPhsuW7E4bhEGcboKQ5O=1o0iVNPLpJB1nrAgxweiZqGhZm-JQ@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 29 Mar 2021 09:19:13 +0100
-Message-ID: <CACAyw99NVbu0q-wh=r7ifoVUnny6gxXwf6LPGf0HUhg1CCQkUQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v2 2/2] bpf: program: refuse non-O_RDWR flags in BPF_OBJ_GET
-To:     Song Liu <song@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S233581AbhC2I3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 04:29:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46393 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234608AbhC2I2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:28:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617006527;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zk0Gbd3YvZUDEfTpNPL5QSpZw7gTVP3YO60kykKGUEc=;
+        b=Pr59ehd5nuIy/kBDHYNcVIKsl9csEYz9Mt58SMakUFOo5yXMesY5wCJJmEWFelHZK1dINT
+        w2yj6PGoVblGsJCViVJUH4ahG3rDb64WUo7ma1TELcwLqaUcWTlldmYpby2VjbLOqR0Qyb
+        2iEleEnmO5Gw69pEIofi3/7t0O8TA8A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-351-g7o-8gjtOxCnDdrWtD2WDA-1; Mon, 29 Mar 2021 04:28:42 -0400
+X-MC-Unique: g7o-8gjtOxCnDdrWtD2WDA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 822B887A83B;
+        Mon, 29 Mar 2021 08:28:40 +0000 (UTC)
+Received: from krava (unknown [10.40.195.107])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 5401062954;
+        Mon, 29 Mar 2021 08:28:37 +0000 (UTC)
+Date:   Mon, 29 Mar 2021 10:28:37 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the bpf tree
+Message-ID: <YGGPtUcstloL8sC2@krava>
+References: <20210329122916.5921aad9@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210329122916.5921aad9@canb.auug.org.au>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Mar 2021 at 20:14, Song Liu <song@kernel.org> wrote:
->
-> On Fri, Mar 26, 2021 at 9:07 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> >
-> > As for bpf_link, refuse creating a non-O_RDWR fd. Since program fds
-> > currently don't allow modifications this is a precaution, not a
-> > straight up bug fix.
-> >
-> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> > ---
-> >  kernel/bpf/inode.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-> > index dc56237d6960..d2de2abec35b 100644
-> > --- a/kernel/bpf/inode.c
-> > +++ b/kernel/bpf/inode.c
-> > @@ -543,7 +543,7 @@ int bpf_obj_get_user(const char __user *pathname, int flags)
-> >                 return PTR_ERR(raw);
->
-> For both patches, shall we do the check before bpf_obj_do_get(), which is a few
-> lines above?
+On Mon, Mar 29, 2021 at 12:29:16PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the net-next tree got a conflict in:
+> 
+>   include/linux/bpf.h
+> 
+> between commit:
+> 
+>   861de02e5f3f ("bpf: Take module reference for trampoline in module")
+> 
+> from the bpf tree and commit:
+> 
+>   69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+> 
+> from the net-next tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc include/linux/bpf.h
+> index fdac0534ce79,39dce9d3c3a5..000000000000
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@@ -40,7 -40,7 +40,8 @@@ struct bpf_local_storage
+>   struct bpf_local_storage_map;
+>   struct kobject;
+>   struct mem_cgroup;
+>  +struct module;
+> + struct bpf_func_state;
+>   
+>   extern struct idr btf_idr;
+>   extern spinlock_t btf_idr_lock;
 
-type is filled in by bpf_obj_do_get, so we can't avoid calling it. As
-Andrii mentions we need to allow flags for map.
+ack, thanks
+jirka
 
->
-> Thanks,
-> Song
->
-> >
-> >         if (type == BPF_TYPE_PROG)
-> > -               ret = bpf_prog_new_fd(raw);
-> > +               ret = (f_flags != O_RDWR) ? -EINVAL : bpf_prog_new_fd(raw);
-> >         else if (type == BPF_TYPE_MAP)
-> >                 ret = bpf_map_new_fd(raw, f_flags);
-> >         else if (type == BPF_TYPE_LINK)
-> > --
-> > 2.27.0
-> >
-
-
-
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
