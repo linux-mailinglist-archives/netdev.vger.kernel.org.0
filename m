@@ -2,158 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F25234CFDA
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 14:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E229634D00B
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 14:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbhC2MOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 08:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43882 "EHLO
+        id S230378AbhC2M3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 08:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbhC2MNi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 08:13:38 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A15DC061756
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 05:13:38 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id w8so13552525ybt.3
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 05:13:38 -0700 (PDT)
+        with ESMTP id S229910AbhC2M2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 08:28:50 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A501C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 05:28:50 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a7so19160614ejs.3
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 05:28:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UUtD4RgUbRkK8S2FxN6TlSeE5uhr0uSay3hRfX/XupY=;
-        b=YEwMTWE8abNDS69qomfMHyj4Fcok43ur7EppH9PY/2WkztQYDpfGeFIo8/pD3zgxAV
-         XJA3/+A5aiaz4OGs7GIDPIPBIKlKcLRIoCt1D7eGyhyZ4Ml/XpsFqgUehOXqm8ohXK2I
-         vIINKSdWCe0ROChEvBSS7HmqzjQf210K0+xOieaujfGxMsj8gW7WU++cd2qijzJHXaCc
-         hjjaXtTEUwLgk9l6kXEG3z5s9YxoSyl6GXyRp38TFrRTzwLNUF+NrNIsimue0R5nfzNr
-         4vcEpScqk+8ubCIs2myRum3VAQs8vx1oRogibxLienJRctN3+myX+O5k2Ti0Ls2ss+Jc
-         kGPg==
+        bh=xv1xpTelAYLRneZ2dLqVtumG89ZK33ftRc7cDDkhnJ4=;
+        b=E9Cx25sRaFHvc2+yHACxm4yKNs88hmcauNAU4HBqcOVNZhyYwaRYdtjB8M9YB5ZwX6
+         fwc7NJhX5dMkTYS9UFo+feNuA9eJR/zmSVP/iXI8HAuJtJn8SgpKhVLZoEQEeKaCsv5D
+         eoS6S4hbzuaPqilUWsRXwnCAS7ykB+0CAFXqVxfuxV6nhWpndJEJHsuQJ4YrKwO2pU0G
+         N/hnHZzjATx7HcODyGfbuqhmY4B2lxV/3ZCEwcm2/FlMgSPpQo0SUPNYtfNbKywxO/A5
+         jDaNbtld403yuDNo4bwIcfHUplD1747l6nkGxP6wyN6KN+hEx714zky0W289Q0Oww2h9
+         P1dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UUtD4RgUbRkK8S2FxN6TlSeE5uhr0uSay3hRfX/XupY=;
-        b=OxYF7RdqWxu6KVenZKKMjPET7FZu5iikLT/006N3ATZJpFQ7/5qhw8syM/LOu8t8yS
-         x2Q6BsOi3uVwWHYy87cjO4H3j1s0cc7hrRnyW0jTw9ePpkfTTZYJ/sP5DOpgR0UEwD5r
-         Ob57nf/5z87nGmjOW+IF05aIbJMY8njFLK7//RAyhScKv5qB3g53EJJOFwuZ6cFCVFQI
-         ffYpZo5elABhBPMcaXUjE+9lSzE+ju0rPlraH2y1P6sDCOonsij8Tgo1p2n/zwQ7Jv26
-         2rM5hYeBBuw6aIO7Ov3JuKcdONOd3X7vczPtcgv+yjK9799KKf4gGbfU5v0MaHClH1Nl
-         fCkA==
-X-Gm-Message-State: AOAM5314NXBn5B5A/AQoEb/PiAhAxFZRKQA821KMsHbuTS9qABMiqO2u
-        VbquNeIqR1fSKIzJmCrU0V/uSCBV5TwWirA44dnrDg==
-X-Google-Smtp-Source: ABdhPJxsdwdM8QuH5t+VXO+P4LZ/YSwbF+249fjynzg2mPonBu4LjiPSp/YNJue/zN/d1CAaElpLTKU828eJg8LtGkg=
-X-Received: by 2002:a25:6a88:: with SMTP id f130mr12706217ybc.234.1617020016870;
- Mon, 29 Mar 2021 05:13:36 -0700 (PDT)
+        bh=xv1xpTelAYLRneZ2dLqVtumG89ZK33ftRc7cDDkhnJ4=;
+        b=PjOqIbze+6opVZb10EFWFRArG4U4PtrUKw6NMS7ychTOPt3Z9VZPWRWNXKbt4XmFO2
+         GE3PFGHXCS3ua4OlUjRNSAEKThB6yALfiE7l6UVBCc5AwtHk3SWl65P/Nv28IuZKJtuE
+         qs8VBdmItYLciNF3HBXjawt5txZ0JNps/FhGEpNuNFNBhUyozkbkK0ylxcJFnyMHI/Xj
+         3N67PK2dsIao/shE4n3rAU42HioQb1HtoGLf2sdOahYQ+nI3uuEjDn6waqJsQLJX777+
+         Uv1GDAkhCafqmGnnMpWHm24aybafyesGn0uxGcyElSnNvxt5jdBgcEibruOXymaH065J
+         dJpQ==
+X-Gm-Message-State: AOAM532z3aMvHDNs5IVaPc/7ZTPnHCAkbn3mV5gtnLU79Ohx0IuIKqSA
+        tDMIzEVFqfjEo2ntcbzlZ8L+8vEerjc=
+X-Google-Smtp-Source: ABdhPJwmzgimvJiv4qJru9u6XgDokz0s1lG67hzda2k2IEKQGzPZfSApStM5WpohCQCkQ/0yYSMNCg==
+X-Received: by 2002:a17:906:14d0:: with SMTP id y16mr28478505ejc.242.1617020928732;
+        Mon, 29 Mar 2021 05:28:48 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id da17sm9087683edb.83.2021.03.29.05.28.47
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Mar 2021 05:28:47 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id v4so12635146wrp.13
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 05:28:47 -0700 (PDT)
+X-Received: by 2002:a5d:640b:: with SMTP id z11mr27607539wru.327.1617020927111;
+ Mon, 29 Mar 2021 05:28:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210329071716.12235-1-kurt@linutronix.de> <CANn89iJfLQwADLMw6A9J103qM=1y3O6ki1hQMb3cDuJVrwAkrg@mail.gmail.com>
- <878s661cc2.fsf@kurt>
-In-Reply-To: <878s661cc2.fsf@kurt>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 29 Mar 2021 14:13:25 +0200
-Message-ID: <CANn89iL6rQ_KqxyTBDDKtU-um_w=OhBywNwMrr+fki3UWdKVLg@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: Reset MAC header for direct packet transmission
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+References: <cover.1616692794.git.pabeni@redhat.com> <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+ <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com> <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
+In-Reply-To: <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Mar 2021 08:28:10 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
+Message-ID: <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev <netdev@vger.kernel.org>
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 12:30 PM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+On Mon, Mar 29, 2021 at 7:26 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
-> On Mon Mar 29 2021, Eric Dumazet wrote:
-> > Note that last year, I addressed the issue differently in commit
-> > 96cc4b69581db68efc9749ef32e9cf8e0160c509
-> > ("macvlan: do not assume mac_header is set in macvlan_broadcast()")
-> > (amended with commit 1712b2fff8c682d145c7889d2290696647d82dab
-> > "macvlan: use skb_reset_mac_header() in macvlan_queue_xmit()")
+> On Fri, 2021-03-26 at 14:30 -0400, Willem de Bruijn wrote:
+> > On Thu, Mar 25, 2021 at 1:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > When UDP packets generated locally by a socket with UDP_SEGMENT
+> > > traverse the following path:
+> > >
+> > > UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
+> > >         UDP tunnel (rx) -> UDP socket (no UDP_GRO)
+> > >
+> > > they are segmented as part of the rx socket receive operation, and
+> > > present a CHECKSUM_NONE after segmentation.
 > >
-> > My reasoning was that in TX path, when ndo_start_xmit() is called, MAC
-> > header is essentially skb->data,
-> > so I was hoping to _remove_ skb_reset_mac_header(skb) eventually from
-> > the fast path (aka __dev_queue_xmit),
-> > because most drivers do not care about MAC header, they just use skb->data.
-> >
-> > I understand it is more difficult to review drivers instead of just
-> > adding more code in  __dev_direct_xmit()
-> >
-> > In hsr case, I do not really see why the existing check can not be
-> > simply reworked ?
+> > would be good to capture how this happens, as it was not immediately obvious.
 >
-> It can be reworked, no problem. I just thought it might be better to add
-> it to the generic code just in case there are more drivers suffering
-> from the issue.
+> The CHECKSUM_PARTIAL is propagated up to the UDP tunnel processing,
+> where we have:
+>
+>         __iptunnel_pull_header() -> skb_pull_rcsum() ->
+> skb_postpull_rcsum() -> __skb_postpull_rcsum() and the latter do the
+> conversion.
 
-Note that I have a similar issue pending in ipvlan.
+Please capture this in the commit message.
 
-Still, I think I prefer the non easy way to not add more stuff in fast path.
-
->
+> > > Additionally the segmented packets UDP CB still refers to the original
+> > > GSO packet len. Overall that causes unexpected/wrong csum validation
+> > > errors later in the UDP receive path.
+> > >
+> > > We could possibly address the issue with some additional checks and
+> > > csum mangling in the UDP tunnel code. Since the issue affects only
+> > > this UDP receive slow path, let's set a suitable csum status there.
+> > >
+> > > v1 -> v2:
+> > >  - restrict the csum update to the packets strictly needing them
+> > >  - hopefully clarify the commit message and code comments
+> > >
+> > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> > > +               skb->csum_valid = 1;
 > >
-> > mac_header really makes sense in input path, when some layer wants to
-> > get it after it has been pulled.
+> > Not entirely obvious is that UDP packets arriving on a device with rx
+> > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
+> > this test.
 > >
-> > diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-> > index ed82a470b6e154be28d7e53be57019bccd4a964d..cda495cb1471e23e6666c1f2e9d27a01694f997f
-> > 100644
-> > --- a/net/hsr/hsr_forward.c
-> > +++ b/net/hsr/hsr_forward.c
-> > @@ -555,11 +555,7 @@ void hsr_forward_skb(struct sk_buff *skb, struct
-> > hsr_port *port)
-> >  {
-> >         struct hsr_frame_info frame;
-> >
-> > -       if (skb_mac_header(skb) != skb->data) {
-> > -               WARN_ONCE(1, "%s:%d: Malformed frame (port_src %s)\n",
-> > -                         __FILE__, __LINE__, port->dev->name);
-> > -               goto out_drop;
-> > -       }
-> > +       skb_reset_mac_header(skb);
+> > I assume that such packets are not coalesced by the GRO layer in the
+> > first place. But I can't immediately spot the reason for it..
 >
-> hsr_forward_skb() has four call sites. Three of them make sure that the
-> header is properly set. The Tx path does not. So, maybe something like
-> below?
+> Packets with CHECKSUM_NONE are actually aggregated by the GRO engine.
+>
+> Their checksum is validated by:
+>
+> udp4_gro_receive -> skb_gro_checksum_validate_zero_check()
+>         -> __skb_gro_checksum_validate -> __skb_gro_checksum_validate_complete()
+>
+> and skb->ip_summed is changed to CHECKSUM_UNNECESSARY by:
+>
+> __skb_gro_checksum_validate -> skb_gro_incr_csum_unnecessary
+>         -> __skb_incr_checksum_unnecessary()
+>
+> and finally to CHECKSUM_PARTIAL by:
+>
+> udp4_gro_complete() -> udp_gro_complete() -> udp_gro_complete_segment()
+>
+> Do you prefer I resubmit with some more comments, either in the commit
+> message or in the code?
 
-Yes, this should be fine.
-
->
-> Thanks,
-> Kurt
->
-> diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-> index 7444ec6e298e..bfcdc75fc01e 100644
-> --- a/net/hsr/hsr_device.c
-> +++ b/net/hsr/hsr_device.c
-> @@ -217,6 +217,7 @@ static netdev_tx_t hsr_dev_xmit(struct sk_buff *skb, struct net_device *dev)
->         master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
->         if (master) {
->                 skb->dev = master->dev;
-> +               skb_reset_mac_header(skb);
->                 hsr_forward_skb(skb, master);
->         } else {
->                 atomic_long_inc(&dev->tx_dropped);
-> diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-> index ed82a470b6e1..b218e4594009 100644
-> --- a/net/hsr/hsr_forward.c
-> +++ b/net/hsr/hsr_forward.c
-> @@ -555,12 +555,6 @@ void hsr_forward_skb(struct sk_buff *skb, struct hsr_port *port)
->  {
->         struct hsr_frame_info frame;
->
-> -       if (skb_mac_header(skb) != skb->data) {
-> -               WARN_ONCE(1, "%s:%d: Malformed frame (port_src %s)\n",
-> -                         __FILE__, __LINE__, port->dev->name);
-> -               goto out_drop;
-> -       }
-> -
+That breaks the checksum-and-copy optimization when delivering to
+local sockets. I wonder if that is a regression.
