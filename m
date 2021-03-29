@@ -2,76 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1786034D923
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DF534D92A
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbhC2Ukg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 16:40:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48300 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229950AbhC2UkK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 16:40:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0877261990;
-        Mon, 29 Mar 2021 20:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617050410;
-        bh=bjTMgR6IJ+pke6CYMseFAobc/TlJiwTIpg3Yafh9SKM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=A+CHRog8eB2nM1U0XUzoA6Xi2FSqrtju80VEVkOZU/Fw3rINd++tUb1eeagwQPifP
-         29+gNfwfCnmiVyXYIp8e3IGnAOdwmTJ0h0oYwrtxR8xYokg5Ws3A/pN9RK1fMgyZy7
-         Qr6NxQ5LRMBITEq9CpSrl0HOLAhjDa5DglpV+e2jo1BDDP+fdjw4kq2thTPE14BEIZ
-         xovZDoMkCB5/7Zi7jNqXEkmXk+rEzFPnczPpS2N7uQXSX30z/s4KggY1IlohYDltUs
-         KCUC11WK7Nr2WCkoEyWaHUqSHfh/fNCV1UmYx91KBme3w/htqc9I8n4UkEbM64pRZs
-         eIw31hiB3QTeA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 032C460A48;
-        Mon, 29 Mar 2021 20:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231220AbhC2Ulk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 16:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231310AbhC2Ul0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 16:41:26 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386A9C061574;
+        Mon, 29 Mar 2021 13:41:26 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id kt15so21450671ejb.12;
+        Mon, 29 Mar 2021 13:41:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IOY00wZMw7iQ/C8A6RUq3HCwcrBzQhlsaRdSeoRLwXs=;
+        b=oWb6o1aHOSF0DXx/yX1KkO7igNt5jO2+W5TfD710HCbj6l6risPCncqXOwLHFW7VO8
+         n2WqBzfjhpbiAq9xr5ewQLs6CPp7Q8JD5j46qyEd0ryBtEmnUxAZ4pz+1sCID0ewC8ux
+         c+kDA6hixWaNdB3u91M8vSO/Rm6ab7D5cg6vvwEqrFt6JQRCTqRZ9lKp+iyrXKg1lOzD
+         EUimB0/jrdsRXR3RobVvOwNQtAEB3wOBlRKbEWGe1h4MUnTVdVYcpmrl64UXSU/F4xU7
+         2UQ47VDwAE3NgXqOvtbgiNZ6wJdOIC5qg0CPJ/OAWvtEQ51hikQWiK0OlgG0pn+IzHNH
+         OpbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IOY00wZMw7iQ/C8A6RUq3HCwcrBzQhlsaRdSeoRLwXs=;
+        b=cwrst70ex3yiyLbL6fuAQy2BkTaVKrv9ZBh3pBpIhrW3TLNravKg5huzSvIGNCMSyw
+         At+iHLVM9uVPnbWvAGVvoZLhINpZebTjd2PpRmQQXgSzJiunR9yTs/6drqMwjnFUwZp1
+         xllOChxDF690hL361oKPNpjwz7mHgtG5CJR79KPIe7SoFFq4lCh/6eoFYaKy/WHQ/YqR
+         J1wIixpU3eFPSSdb61ghpz0Li9pBXdGLNyfpCKnaj3zX+OLoWmHjN+jMmQzpUlylXEWJ
+         440/LS3amD7FIraAPNwcpuf/dD1GTr7ccarlCgIExp5MSjv8Xe39Ud13UlHy9ByjQt24
+         2M8w==
+X-Gm-Message-State: AOAM531VE8hLMYVGqoqvDC1yDXgkZT6Fu0jw8igG+K1iIGBQCki30aYE
+        +PhivCD5KGcf/e69T33WJHeqfAOuUVOniCRmQB4=
+X-Google-Smtp-Source: ABdhPJxcjn88m4H97qxfK72HhcS5ov53I7up+0loT8VWTFlglQcHijm0szjlpAvoCk9P+6FVl226+HzoXj3NFKnjmh8=
+X-Received: by 2002:a17:906:73cd:: with SMTP id n13mr29275638ejl.535.1617050484980;
+ Mon, 29 Mar 2021 13:41:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] net: marvell: fix some coding style
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161705041000.15223.7724570525686809883.git-patchwork-notify@kernel.org>
-Date:   Mon, 29 Mar 2021 20:40:10 +0000
-References: <1617004872-38974-1-git-send-email-liweihang@huawei.com>
-In-Reply-To: <1617004872-38974-1-git-send-email-liweihang@huawei.com>
-To:     Weihang Li <liweihang@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        sebastian.hesselbarth@gmail.com, thomas.petazzoni@bootlin.com,
-        mlindner@marvell.com, stephen@networkplumber.org,
-        netdev@vger.kernel.org, linuxarm@huawei.com
+References: <20210330022144.150edc6e@xhacker> <20210330022454.3d0feda2@xhacker>
+In-Reply-To: <20210330022454.3d0feda2@xhacker>
+From:   Luke Nelson <luke.r.nels@gmail.com>
+Date:   Mon, 29 Mar 2021 13:41:13 -0700
+Message-ID: <CAB-e3NQ11Gnoa716nnZ2tTgjb02_eZOf1gWn3YMmueEAp92c1g@mail.gmail.com>
+Subject: Re: [PATCH 6/9] riscv: bpf: Move bpf_jit_alloc_exec() and
+ bpf_jit_free_exec() to core
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Xi Wang <xi.wang@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> We will drop the executable permissions of the code pages from the
+> mapping at allocation time soon. Move bpf_jit_alloc_exec() and
+> bpf_jit_free_exec() to bpf_jit_core.c so that they can be shared by
+> both RV64I and RV32I.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Looks good to me.
 
-On Mon, 29 Mar 2021 16:01:08 +0800 you wrote:
-> Do some cleanups according to the coding style of kernel.
-> 
-> Yangyang Li (4):
->   net: marvell: Delete duplicate word in comments
->   net: marvell: Fix the trailing format of some block comments
->   net: marvell: Delete extra spaces
->   net: marvell: Fix an alignment problem
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/4] net: marvell: Delete duplicate word in comments
-    https://git.kernel.org/netdev/net-next/c/b52f6425481c
-  - [net-next,2/4] net: marvell: Fix the trailing format of some block comments
-    https://git.kernel.org/netdev/net-next/c/df4a17a98d7f
-  - [net-next,3/4] net: marvell: Delete extra spaces
-    https://git.kernel.org/netdev/net-next/c/9abcaa96ce6d
-  - [net-next,4/4] net: marvell: Fix an alignment problem
-    https://git.kernel.org/netdev/net-next/c/9568387c9f51
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Luke Nelson <luke.r.nels@gmail.com>
