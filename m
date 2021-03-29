@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0244734C758
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C43934C79E
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232882AbhC2IOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 04:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232511AbhC2INj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:13:39 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2B0C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 01:13:37 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lQn1h-0006Fj-Et; Mon, 29 Mar 2021 10:13:33 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lQn1g-0007I3-8u; Mon, 29 Mar 2021 10:13:32 +0200
-Date:   Mon, 29 Mar 2021 10:13:32 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH v2 0/7] remove different PHY fixups
-Message-ID: <20210329081332.oa7a7o7uhywawqqj@pengutronix.de>
-References: <20210309112615.625-1-o.rempel@pengutronix.de>
- <20210324055424.u4mbdewg4stndzgh@pengutronix.de>
- <20210329004458.GD22955@dragon>
+        id S232744AbhC2IQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 04:16:46 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:64571 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231664AbhC2IO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:14:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1617005696; x=1648541696;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=e2WFHxZxnSPuPoi26ReVTCejhaJhc4RfFUNwNTOn8HU=;
+  b=Ubh8ywl1G32dxv+smYnVfnFUw9tSpB32Heo6eDopKah176G4kNstX9Oy
+   2iOqTPTBcl+5QrQrP05VH73ciWfkzP0Ybq9uADlB2RPlOgSkCiC84Jj0t
+   NaClgRj25Z99gdAvKA6fYZP5oUpgnjFNWULxGG1qa/48wD3cAFtdnHViu
+   T3W2lIPKmbXfHjcIgOzNEsQ2GHXBvDp4OoNVbt2ya6SSjVSq953mta9Jd
+   vCI69zjEP94Ft4IJl6zW/6N4985AdFPT68kPgGx3mqanTPNg/kym/buLc
+   DgGXf8b5poMO8VzH8Q59siwsj28cj/jEocikmpSRiBAat6nHDq7IphFZc
+   g==;
+IronPort-SDR: iWQSdqQUypGYzato6mSpTdIG49u3cbQ1IoleuLXcu5qQcArvp1rVIPm4Jf1fWRckp6fzlTy/qS
+ TxStjsobq9DR2ENeI2XEatMYPPzdkdxdKvYZ+VoIvyEVTw4OuprSc9oCVu7FTpkRDVil0roXE0
+ 9u1AbJ6nAsLv9dyG5m6/q+kPDMaHZWq2GFtWXnPvvk+bjEgA4qKlQhYDPbGfNn9Uq3xYYDLBnU
+ 7lcCbnsL2i7eQ3hQd6TG5D7le0BQXIDkdBavxayG0hUN+Ljt7tIt5Bt3PXepotGTLQfEr1f/+U
+ 3Hg=
+X-IronPort-AV: E=Sophos;i="5.81,287,1610434800"; 
+   d="scan'208";a="49206192"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Mar 2021 01:14:55 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 29 Mar 2021 01:14:54 -0700
+Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Mon, 29 Mar 2021 01:14:52 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH linux-next 0/1] Sparx5 SerDes: Fixed stack frame size warning
+Date:   Mon, 29 Mar 2021 10:14:37 +0200
+Message-ID: <20210329081438.558885-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210329004458.GD22955@dragon>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 10:11:18 up 116 days, 22:17, 43 users,  load average: 0.26, 0.11,
- 0.03
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 08:44:59AM +0800, Shawn Guo wrote:
-> On Wed, Mar 24, 2021 at 06:54:24AM +0100, Oleksij Rempel wrote:
-> > Hi Shawn,
-> > 
-> > ping, do this patches need some ACK from some one?
-> 
-> As this will break existing DTBs, I need more ACKs from people to see
-> the consensus that this is the right thing to do.
+- The SerDes driver changes its table based register operations into direct
+  register operations to avoid the large stack footprint reported by a
+  kernel robot.
+- The 25g reset operation was changed slightly to make it equivalent to the
+  20g reset operation.
 
-Do you need ACKs from some concrete people?
+Steen Hegelund (1):
+  phy: Sparx5 Eth SerDes: Use direct register operations
 
-Regards,
-Oleksij
+ drivers/phy/microchip/sparx5_serdes.c | 1869 +++++++++++++------------
+ 1 file changed, 951 insertions(+), 918 deletions(-)
+
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.31.1
+
