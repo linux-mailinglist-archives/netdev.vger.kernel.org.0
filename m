@@ -2,136 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298C734CE80
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F0734CE99
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:18:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbhC2LJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 07:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231660AbhC2LJO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:09:14 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15619C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:09:14 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id il9-20020a17090b1649b0290114bcb0d6c2so7552008pjb.0
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:09:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=0Qrd6iLxD+REdwDh7ecFRdGdRpfeEJpYQUhfIWlShGY=;
-        b=ccdnX+4SXaehMQOTroKSCBMmnB2VpVBXA8I1YLVlhvv2FmMlr3RMWwhwqpK46Q+MA7
-         wsg25WXxf16o5lYqkini61nQlEl/AZXceLwKTTs+n2zBoHkYa8ARfR3g1plo3vQwVAf8
-         wd4ZU56FdQOKFHcgNiwrQVL2QJTISYML8Lie0L73t4pZtNx3DAZ746f1W0CuJz6lI+wX
-         T/cqRIPmEEIOEOmXqvA5FqYRVt5U7GTt0ZFzAtl0fcu7Dba9fHvWdbkcDpH+RNueNsWn
-         D1NvIpPGSoGnC/ip6YE5ImRR9bTVP0Y9QjqzoOQYC2BGqvXKzagBs1Ofl2PNWap8mXaq
-         WMCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0Qrd6iLxD+REdwDh7ecFRdGdRpfeEJpYQUhfIWlShGY=;
-        b=LOyA9zt/6il6YQySVXS7ZmE2/2EQnUCySKmwjuhCXJjSkqg+kTJADR+dlvITOoDy5r
-         micssgK6hitCFVvG6sy7q/QW0Tpjn0H8u1JHz3Escs/uvogt0G5ZVxs/NSMv91yKz1fU
-         8PgQwHV71dMYCoJUPN1OVVrw+0QbVYXB77214eW2mv8ofyhQ+loQazrbGEVjP5yzdEI5
-         JROJa7sCI7D2dcZvzKaQYxZWcEEwGJjcuXupXAsUyNf6d3DJEBBFX+4tDGIHkjvBvYQA
-         U1zy0RHRvk+eHijo0xYIQODs0YQ1SEUB3QoJL2CUNf18dcE9jWEGjIYuZ/3G0XLYNG+7
-         GIvA==
-X-Gm-Message-State: AOAM530kJUtnXBCFfqpnMjqrDew/ootBcQRjBT0ihj+tMSu2hG3fUgd0
-        9LYlcpXNLALSth/pe5vGxKhcJjbm0g1Z
-X-Google-Smtp-Source: ABdhPJwcgJPrHB6bL35GoPQ71jmYjHaCFpmByZp1QXNOAmw3/TuazShNcybd1en5HEpDWNAMfz62iA==
-X-Received: by 2002:a17:90a:5284:: with SMTP id w4mr25613736pjh.29.1617016153641;
-        Mon, 29 Mar 2021 04:09:13 -0700 (PDT)
-Received: from work ([103.77.37.146])
-        by smtp.gmail.com with ESMTPSA id i10sm19000561pgo.75.2021.03.29.04.09.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 29 Mar 2021 04:09:13 -0700 (PDT)
-Date:   Mon, 29 Mar 2021 16:39:09 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Du Cheng <ducheng2@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com,
-        Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v2] net:qrtr: fix atomic idr allocation in
- qrtr_port_assign()
-Message-ID: <20210329110909.GD2763@work>
-References: <20210327140702.4916-1-ducheng2@gmail.com>
- <YF89PtWrs2N5XSgb@kroah.com>
- <20210327142520.GA5271@ThinkCentre-M83>
- <YF9BthXs2ha7hnrF@kroah.com>
- <20210327155110.GI1719932@casper.infradead.org>
- <YGAokfl9xvl3CnQR@kroah.com>
- <20210328100417.GA14132@casper.infradead.org>
- <20210329105556.GA334561@ThinkCentre-M83>
+        id S232126AbhC2LRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 07:17:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27094 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230432AbhC2LQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:16:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617016616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cz/cjJRBylKhD4ItdpjXqR/ijI/EJe3f4X9M4EbEIzM=;
+        b=Arjo/RkwtILsw/7eFh6soWodJ4ojIKEjagFYCcYkB9quw5FA1VeEpLPvHVUFGf9btGkSSH
+        28RGa+2an7yGyeDiFJhACTD4MYqnMy0nrM5AMeAqn0S0Vqr5owyAfgap/UlFjpRuQ5Hpkc
+        QpteAEwXqljp+cGlk1Qe000nlbF+Bbw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-240-Hc_yTmx8OoefdXTb_hlLJA-1; Mon, 29 Mar 2021 07:16:51 -0400
+X-MC-Unique: Hc_yTmx8OoefdXTb_hlLJA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AA26B501FB;
+        Mon, 29 Mar 2021 11:16:50 +0000 (UTC)
+Received: from krava (unknown [10.40.195.107])
+        by smtp.corp.redhat.com (Postfix) with SMTP id E4A0E5D9F0;
+        Mon, 29 Mar 2021 11:16:48 +0000 (UTC)
+Date:   Mon, 29 Mar 2021 13:16:47 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v4 bpf-next 07/12] libbpf: add BPF static linker BTF and
+ BTF.ext support
+Message-ID: <YGG3H7Df5PA6UGk+@krava>
+References: <20210318194036.3521577-1-andrii@kernel.org>
+ <20210318194036.3521577-8-andrii@kernel.org>
+ <YFTQExmhNhMcmNOb@krava>
+ <CAEf4BzYKassG0AP372Q=Qsd+qqy7=YGe2XTXR4zG0c5oQ7Nkeg@mail.gmail.com>
+ <YFT0Q+mVbTEI1rem@krava>
+ <YGBwmlQTDUodxM0J@krava>
+ <CAEf4BzbeCOU+ScbycxUGwbmKhqjU5EWBj=dry-GXVOwOXe86ag@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210329105556.GA334561@ThinkCentre-M83>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <CAEf4BzbeCOU+ScbycxUGwbmKhqjU5EWBj=dry-GXVOwOXe86ag@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 06:55:56PM +0800, Du Cheng wrote:
-> On Sun, Mar 28, 2021 at 11:04:17AM +0100, Matthew Wilcox wrote:
-> > On Sun, Mar 28, 2021 at 08:56:17AM +0200, Greg Kroah-Hartman wrote:
-> > > On Sat, Mar 27, 2021 at 03:51:10PM +0000, Matthew Wilcox wrote:
-> > > > On Sat, Mar 27, 2021 at 03:31:18PM +0100, Greg Kroah-Hartman wrote:
-> > > > > On Sat, Mar 27, 2021 at 10:25:20PM +0800, Du Cheng wrote:
-> > > > > > On Sat, Mar 27, 2021 at 03:12:14PM +0100, Greg Kroah-Hartman wrote:
-> > > > > > > Adding the xarray maintainer...
-> > > > > > > 
-> > > > > > > On Sat, Mar 27, 2021 at 10:07:02PM +0800, Du Cheng wrote:
-> > > > > > > > add idr_preload() and idr_preload_end() around idr_alloc_u32(GFP_ATOMIC)
-> > > > > > > > due to internal use of per_cpu variables, which requires preemption
-> > > > > > > > disabling/enabling.
-> > > > > > > > 
-> > > > > > > > reported as "BUG: "using smp_processor_id() in preemptible" by syzkaller
-> > > > > > > > 
-> > > > > > > > Reported-by: syzbot+3eec59e770685e3dc879@syzkaller.appspotmail.com
-> > > > > > > > Signed-off-by: Du Cheng <ducheng2@gmail.com>
-> > > > > > > > ---
-> > > > > > > > changelog
-> > > > > > > > v1: change to GFP_KERNEL for idr_alloc_u32() but might sleep
-> > > > > > > > v2: revert to GFP_ATOMIC but add preemption disable/enable protection
-> > > > > > > > 
-> > > > > > > >  net/qrtr/qrtr.c | 6 ++++++
-> > > > > > > >  1 file changed, 6 insertions(+)
-> > > > > > > > 
-> > > > > > > > diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> > > > > > > > index edb6ac17ceca..6361f169490e 100644
-> > > > > > > > --- a/net/qrtr/qrtr.c
-> > > > > > > > +++ b/net/qrtr/qrtr.c
-> > > > > > > > @@ -722,17 +722,23 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
-> > > > > > > >  	mutex_lock(&qrtr_port_lock);
-> > > > > > > >  	if (!*port) {
-> > > > > > > >  		min_port = QRTR_MIN_EPH_SOCKET;
-> > > > > > > > +		idr_preload(GFP_ATOMIC);
-> > > > > > > >  		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
-> > > > > > > > +		idr_preload_end();
-> > > > > > > 
-
-[...]
-
-> > > Ok, it looks like this code is just abandonded, should we remove it
-> > > entirely as no one wants to maintain it?
-> > 
-> > Fine by me.  I don't use it.  Better to get rid of abandonware than keep
-> > a potential source of security holes.
+On Sun, Mar 28, 2021 at 11:29:27AM -0700, Andrii Nakryiko wrote:
+> On Sun, Mar 28, 2021 at 5:03 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Fri, Mar 19, 2021 at 07:58:13PM +0100, Jiri Olsa wrote:
+> > > On Fri, Mar 19, 2021 at 11:39:01AM -0700, Andrii Nakryiko wrote:
+> > > > On Fri, Mar 19, 2021 at 9:23 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > >
+> > > > > On Thu, Mar 18, 2021 at 12:40:31PM -0700, Andrii Nakryiko wrote:
+> > > > >
+> > > > > SNIP
+> > > > >
+> > > > > > +
+> > > > > > +     return NULL;
+> > > > > > +}
+> > > > > > +
+> > > > > > +static int linker_fixup_btf(struct src_obj *obj)
+> > > > > > +{
+> > > > > > +     const char *sec_name;
+> > > > > > +     struct src_sec *sec;
+> > > > > > +     int i, j, n, m;
+> > > > > > +
+> > > > > > +     n = btf__get_nr_types(obj->btf);
+> > > > >
+> > > > > hi,
+> > > > > I'm getting bpftool crash when building tests,
+> > > > >
+> > > > > looks like above obj->btf can be NULL:
+> > > >
+> > > > I lost if (!obj->btf) return 0; somewhere along the rebases. I'll send
+> > > > a fix shortly. But how did you end up with selftests BPF objects built
+> > > > without BTF?
+> > >
+> > > no idea.. I haven't even updated llvm for almost 3 days now ;-)
+> >
+> > sorry for late follow up on this, and it's actually forgotten empty
+> > object in progs directory that was causing this
+> >
+> > I wonder we should add empty object like below to catch these cases,
 > 
-> Hi Manivannan,
+> well, feel free to chime in on [0] then
 > 
-> For your information.
+>   [0] https://patchwork.kernel.org/project/netdevbpf/patch/20210319205909.1748642-4-andrii@kernel.org/
+
+right, well this would be added to catch similar crashes,
+which I think you both agree on
+
+> 
+> > because there's another place that bpftool is crashing on with it
+> >
+> > I can send full patch for that if you think it's worth having
+> 
+> sure, but see my comment below
+
+ok, thanks
+jirka
+
+> 
+> >
+> > jirka
+> >
+> >
+> > ---
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 7aad78dbb4b4..aecb6ca52bce 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -3165,6 +3165,9 @@ static int add_dummy_ksym_var(struct btf *btf)
+> >         const struct btf_var_secinfo *vs;
+> >         const struct btf_type *sec;
+> >
+> > +       if (!btf)
+> > +               return 0;
+> > +
+> 
+> add_dummy_ksym_var() shouldn't be called, if there is no btf, so the
+> fix should be outside of this fix.
+> 
+> >         sec_btf_id = btf__find_by_name_kind(btf, KSYMS_SEC,
+> >                                             BTF_KIND_DATASEC);
+> >         if (sec_btf_id < 0)
+> > diff --git a/tools/testing/selftests/bpf/progs/empty.c b/tools/testing/selftests/bpf/progs/empty.c
+> > new file mode 100644
+> > index 000000000000..e69de29bb2d1
+> >
 > 
 
-Thanks for letting me know. I'll look into it once back to work.
-
-Thanks,
-Mani
-
-> Regards,
-> Du Cheng
