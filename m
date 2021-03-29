@@ -2,76 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B991C34D8F7
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:19:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB7B34D8EC
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231961AbhC2UTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 16:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbhC2USc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 16:18:32 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E201CC061574;
-        Mon, 29 Mar 2021 13:18:31 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id j25so10622884pfe.2;
-        Mon, 29 Mar 2021 13:18:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wWbAtqchcbLb5oDUoEL+XwBoKafnvSXklPKlf/DyzV0=;
-        b=MCJ2tQF+Q7xaPMi3yGBMb53Mz+Uk4YvobS6WbLycmk5x8wwhodKC9mQi/fNoXjg5SJ
-         fTY51z5Rbv6DYK24kYMPNQeRprw8SqoxPqUQIS6mQo2D55PfRd48aOwvKWu4G4l1nFCT
-         QLWgBXk6utF1oOqylx6JnifLQu0uVIrNhShe6gyLBbMJF2EXDlBFjeOOurPTlKAHQTJP
-         3ekE/i/3Ih8ZEP+JBSAAkUcwliTikgymRfQrGRrRBqUDlEETJUaH+gQAXTo/AYwqhEJF
-         GkLTt0NiOVz7PrR+8J+O9Ua/GcFe/faIN/zxF+XnyBI4AGbGM0TlgnhV4ztzJdL8mYA3
-         ww9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wWbAtqchcbLb5oDUoEL+XwBoKafnvSXklPKlf/DyzV0=;
-        b=ueLXKZGjjN5thcygq1GpC9BHajnhNHut/LpgT3+hLqLddZNpN3hy29MGlLCPybN8V2
-         SEF7qbqGtdbpyhwCY5zhp/DXDew4YWO1NUnaZJMqyLTacqf0268KmuwVmy5yF5I3KZbv
-         G3M+X58FpAAc+x4ldawgQy9TbxvN7+vJy/xx7RZN+1mQ4wR0QhYvxQxx7rLzzMhz33f4
-         rNSVFParvStBjJpJ6Os5cDyqi7EI7PvqagQpTUXciVlie7KNvwRv+bwGVUUZ7Fmg72Y/
-         xEOK8m9IS7fnEXq8/YhTk83GZpA9y72eMuZPfzcRfmbD9I3T7pEcyFPgglqgshX15OXk
-         szPQ==
-X-Gm-Message-State: AOAM5302Q33xuFJYTZ/R3bv9Ao2wVrGae5pBh/vdHdF1oxiVrUTMTDAg
-        8BZRAgU3mncDQv3kh1DUNa9q18FJ76wDYU9hKXMSnA9+OLm+DQ==
-X-Google-Smtp-Source: ABdhPJx6FsEr7dHz8sVsJ+GO+sqdgq0Rc3aDSKYuDQ9mwcECzzpHmJIN1r9PzU2LEOiCtDwxr+lqGxr39VilLdQwcS8=
-X-Received: by 2002:aa7:99c6:0:b029:1f5:c49d:dce7 with SMTP id
- v6-20020aa799c60000b02901f5c49ddce7mr26182634pfi.78.1617049111326; Mon, 29
- Mar 2021 13:18:31 -0700 (PDT)
+        id S231802AbhC2USA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 16:18:00 -0400
+Received: from mga18.intel.com ([134.134.136.126]:19968 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230294AbhC2UR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 16:17:27 -0400
+IronPort-SDR: Vn1gAVQrwMkNvv1GR+deomriktqhhMa/JndthNfHMnYq81Lh+e9SAxSUtXAR80PxMdsXrQsJbn
+ wAIMoGZVVZ8A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="179160814"
+X-IronPort-AV: E=Sophos;i="5.81,288,1610438400"; 
+   d="scan'208";a="179160814"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 13:17:26 -0700
+IronPort-SDR: VHQ+C5Kj/iyudzLhfGGMCMaFKtmy54vtqasx0ZID1mSkRl+8gGxsZOAy3A88s+1ULzWYZHi7cc
+ O/8k4cfUMKOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,288,1610438400"; 
+   d="scan'208";a="454700531"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga001.jf.intel.com with ESMTP; 29 Mar 2021 13:17:26 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/9][pull request] Intel Wired LAN Driver Updates 2021-03-29
+Date:   Mon, 29 Mar 2021 13:18:48 -0700
+Message-Id: <20210329201857.3509461-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210325015124.1543397-1-kafai@fb.com> <CAM_iQpWGn000YOmF2x6Cm0FqCOSq0yUjc_+Up+Ek3r6NrBW3mw@mail.gmail.com>
- <CAADnVQKAXsEzsEkxhUG=79V+gAJbv=-Wuh_oJngjs54g1xGW7Q@mail.gmail.com>
- <CAM_iQpU7y+YE9wbqFZK30o4A+Gmm9jMLgqPqOw6SCDP8mHibTQ@mail.gmail.com>
- <CAADnVQJoeEqZK8eWfCi-BkHY4rSzaPuXYVEFvR75Ecdbt+oGgA@mail.gmail.com>
- <CAM_iQpUTFs_60vkS6LTRr5VBt8yTHiSgaHoKrtt4GGDe4tCcew@mail.gmail.com> <20210329012437.somtubekt2dqzz3x@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210329012437.somtubekt2dqzz3x@kafai-mbp.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 29 Mar 2021 13:18:20 -0700
-Message-ID: <CAM_iQpUmkb9cbyWKcerQcJJAyGLzgtDus643FL1cyQL3FzTrfg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 28, 2021 at 6:24 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> Could you also check the CONFIG_DYNAMIC_FTRACE and also try 'y' if it
-> is not set?
+This series contains updates to ice driver only.
 
-On my side, with pahole==1.17, changing CONFIG_DYNAMIC_FTRACE
-makes no difference. With pahole==1.20, CONFIG_DYNAMIC_FTRACE=y
-makes it gone, but CONFIG_DYNAMIC_FTRACE=n not.
+Ani does not fail on link/PHY errors during probe as this is not a fatal
+error to prevent the user from remedying the problem. He also corrects
+checking Wake on LAN support to be port number, not PF ID.
 
-Thanks.
+Fabio increases the AdminQ timeout as some commands can take longer than
+the current value.
+
+Chinh fixes iSCSI to use be able to use port 860 by using information
+from DCBx and other QoS configuration info.
+
+Krzysztof fixes a possible race between ice_open() and ice_stop().
+
+Bruce corrects the ordering of arguments in a memory allocation call.
+
+Dave removes DCBNL device reset bit which is blocking changes coming
+from DCBNL interface.
+
+Jacek adds error handling for filter allocation failure.
+
+Robert ensures memory is freed if VSI filter list issues are
+encountered.
+
+The following are changes since commit 1b479fb801602b22512f53c19b1f93a4fc5d5d9d:
+  drivers/net/wan/hdlc_fr: Fix a double free in pvc_xmit
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Anirudh Venkataramanan (2):
+  ice: Continue probe on link/PHY errors
+  ice: Use port number instead of PF ID for WoL
+
+Bruce Allan (1):
+  ice: fix memory allocation call
+
+Chinh T Cao (1):
+  ice: Recognize 860 as iSCSI port in CEE mode
+
+Dave Ertman (1):
+  ice: remove DCBNL_DEVRESET bit from PF state
+
+Fabio Pricoco (1):
+  ice: Increase control queue timeout
+
+Jacek Bułatek (1):
+  ice: Fix for dereference of NULL pointer
+
+Krzysztof Goreczny (1):
+  ice: prevent ice_open and ice_stop during reset
+
+Robert Malz (1):
+  ice: Cleanup fltr list in case of allocation issues
+
+ drivers/net/ethernet/intel/ice/ice.h          |  4 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  2 +-
+ drivers/net/ethernet/intel/ice/ice_controlq.h |  4 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      | 38 ++++++++++----
+ drivers/net/ethernet/intel/ice/ice_dcb_nl.c   |  2 -
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  4 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  5 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     | 52 ++++++++++++++-----
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 15 +++---
+ drivers/net/ethernet/intel/ice/ice_type.h     |  1 +
+ 10 files changed, 86 insertions(+), 41 deletions(-)
+
+-- 
+2.26.2
+
