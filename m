@@ -2,87 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 733D134D522
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 18:31:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3E534D529
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 18:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhC2Qa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 12:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43600 "EHLO
+        id S231173AbhC2Qb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 12:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbhC2Qam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 12:30:42 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE44C061574;
-        Mon, 29 Mar 2021 09:30:42 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id x13so13477034wrs.9;
-        Mon, 29 Mar 2021 09:30:42 -0700 (PDT)
+        with ESMTP id S231165AbhC2Qa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 12:30:57 -0400
+Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3601BC061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 09:30:57 -0700 (PDT)
+Received: by mail-ua1-x933.google.com with SMTP id j4so4135800uan.1
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 09:30:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JfodvBmL1giHTDOb6VQdTtKC1BE+voaSb1GB+u3DriA=;
-        b=G8KKJkNvlEgT3kTgPZPrDx2mm5Z5xCX7koJQGp/Wl6zrE3poywWgVBXiRD24kDn/Hl
-         91h9DtK1qmcu7dn9tMPzJ8YWiwhIzKDNlkNj2QYK8Xh8C2lpgcOqTmoR5LvmTiiDi4r9
-         tOCAz7jp8JQie8SFChG8HvvamGgnYQJEKv3U0yzl9pb4v1egNNlyAK2sppRcKPtUxxWM
-         XYCTFv+uSqOZsqusMv54sjm/ISqStgsa0ex4RwwUea6aKb3SGS0MdpT/44ztliDhWIWs
-         Qag46vn/EaIr6RxXZrE9iuyeFbnVRQrtx+/XXCB9UleLcCYt5K2Fn1EekKXrty2yfzhk
-         MVHg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dfxPhxpg4b8lCmkp3iLn4etcQuwvO0zGBVZNc4LN+EM=;
+        b=gGkbggNe33AgSvMTwHgphedlU4KM7rQ3ggd9E8II2NNggKS66Q55uB0eks7MAOA6Ra
+         JchEKjyYvkYk5XoMa6hTF057Vg910pGr5sWUcTxWOs2ctsLTjJwbwf1dOjwN/LbSANn1
+         LrMKhn5ToIUabP4pdthySmMhdqRhSH7LQcW/9TrhI5bYe0Iv8PWl7+ARzjvK2zns2D4a
+         QjaaTOPghpJ6uCrS9J/DpCn/puPFePcWITvG6jnP0IGS28VLByxCoe99gKbwpxHXRkcj
+         O8JUlYSYhPgawjY8U6AwiKbeShLzRy5QsAaT80F6xtnwoUl0578fhc1yd9Y18Uo73uCv
+         vsRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JfodvBmL1giHTDOb6VQdTtKC1BE+voaSb1GB+u3DriA=;
-        b=A+ulrtHBXCPG8S0HyKm5iwxs6YkEYWRzeOFoFrAXXovMCeyX2R+y7bVCSuyrR4oqPN
-         +CKEbKEgszJmxNPrfwXxPSf+jvSGjwDeI8kIib+RB+YDiYam5/8tpGcmow9LQYhTEFYT
-         tVnI2WovD5GLGmGsjmCIuGa5YRShI2CMVDfVj+QnEDD3HF8HRDbC4oWod9s5+RsYZn3B
-         HGU0JBlYoM0oW2e+UKGklcLMyF7Iat8AttjA+fbSvENHjd0xJwtdyWtlqyXs/E2LJB43
-         /mboYLSBz3Qxzz7bo02bMFMrQ1vT3a+2BeUsezMBJybi+sK+RNX/18dQElBaHh4+cgNK
-         pZkA==
-X-Gm-Message-State: AOAM533mUpfMvpetNxbxv2lx3wW7VEupCEyXBQFB9z9xxcTYkzKAxFMs
-        mvtrLTx1jnyHCJp4b3UnV6U=
-X-Google-Smtp-Source: ABdhPJz98MmiuzWGvEVbP2nuC3fZae7F7DDYVWiYWJROZKzZAVq4FEUVE4dKQECoxZcgHkcNnU3rbA==
-X-Received: by 2002:a5d:4307:: with SMTP id h7mr29153237wrq.227.1617035441156;
-        Mon, 29 Mar 2021 09:30:41 -0700 (PDT)
-Received: from alaa ([197.57.128.221])
-        by smtp.gmail.com with ESMTPSA id z82sm24614118wmg.19.2021.03.29.09.30.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Mar 2021 09:30:40 -0700 (PDT)
-From:   Alaa Emad <alaaemadhossney.ae@gmail.com>
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller@googlegroups.com,
-        Alaa Emad <alaaemadhossney.ae@gmail.com>,
-        syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
-Subject: [PATCH] wireless/nl80211.c: fix uninitialized variable
-Date:   Mon, 29 Mar 2021 18:30:36 +0200
-Message-Id: <20210329163036.135761-1-alaaemadhossney.ae@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dfxPhxpg4b8lCmkp3iLn4etcQuwvO0zGBVZNc4LN+EM=;
+        b=hVsylUpP60FtoanMO9AFTtPTB7MMtGurSEnsIATqLZ4lmP48tkQg7oI/m2Na2wK+Hk
+         u1baVRhPMFkCEnL19zzmQNwqb8ixYUa6PRkdrJcdVOCdsjHLesk/xp8MZAVXjBfFQGLD
+         C/DTtOsIqYGRMbKJEqRXCuF+TaMPztzxsYkpzwQzWQ+M7OLE4A0am5q50bSZfoFuUaRD
+         I8DYDXaNIg7dArefqvo0/dG2FRMDTkwoSZF721EbdC1xUX8640Awyi7ejqd6AUx3mN+g
+         I/OAcxOuANc0aqvS3Z1h4Adm0ymMXU/2+dr4xbNoL5PTfD7z2mtJmKKQ9I7dHt5N1pAT
+         EkoQ==
+X-Gm-Message-State: AOAM533Pd6f7sfyixKxzFomDxU9IbPe7LGpPKiww3B/+tHfpMRLifw8f
+        g/JBsBJOq++cjwGZvrqSha7OX1sgFvcvZnE4n94PRA==
+X-Google-Smtp-Source: ABdhPJyfsLMtYu1J2WIv7eCWt4CHlZHwc2c18Ln62Y++833SXnpe9EsELMR/mM8tQ7FUbt+LXcSwx7ZIcM2VcKZDE9s=
+X-Received: by 2002:ab0:45e1:: with SMTP id u88mr14475627uau.25.1617035456045;
+ Mon, 29 Mar 2021 09:30:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210324114645.v2.1.I53e6be1f7df0be198b7e55ae9fc45c7f5760132d@changeid>
+ <CAP2xMbvooqbwpVUWzLOTBt55ob1R-kZ80OPd8r4K0mQVrQP7kA@mail.gmail.com>
+In-Reply-To: <CAP2xMbvooqbwpVUWzLOTBt55ob1R-kZ80OPd8r4K0mQVrQP7kA@mail.gmail.com>
+From:   Daniel Winkler <danielwinkler@google.com>
+Date:   Mon, 29 Mar 2021 09:30:44 -0700
+Message-ID: <CAP2xMbsObjrHoV_nzQPA4bj9wSbQCfjhxhPvb_BS99fL23ynMg@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Always call advertising disable before
+ setting params
+To:     BlueZ <linux-bluetooth@vger.kernel.org>
+Cc:     chromeos-bluetooth-upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reported-by: syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
-Signed-off-by: Alaa Emad <alaaemadhossney.ae@gmail.com>
----
- net/wireless/nl80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi maintainers,
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 775d0c4d86c3..b87ab67ad33d 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -210,7 +210,7 @@ static int validate_beacon_head(const struct nlattr *attr,
- 	const struct element *elem;
- 	const struct ieee80211_mgmt *mgmt = (void *)data;
- 	bool s1g_bcn = ieee80211_is_s1g_beacon(mgmt->frame_control);
--	unsigned int fixedlen, hdrlen;
-+	unsigned int fixedlen = 0, hdrlen;
- 
- 	if (s1g_bcn) {
- 		fixedlen = offsetof(struct ieee80211_ext,
--- 
-2.25.1
+Please disregard this patch. While most chipsets honor the "Disabling
+advertising when it is already disabled has no effect" clause in the
+spec, I discovered over the weekend that some (WP2, ThP2, for
+instance) controllers will return an error status if there is no
+advertising active when the disable request is submitted. This patch
+regresses advertising on these platforms, so I will look into a
+different approach to solve this race condition.
 
+Best,
+Daniel Winkler
+
+
+On Thu, Mar 25, 2021 at 10:27 AM Daniel Winkler
+<danielwinkler@google.com> wrote:
+>
+> Hi all,
+>
+> It looks like my change breaks the expectations of one mgmt-tester
+> test, which uses an Adv Enable (True) as a test condition. It is
+> surprised to first see an Adv Enable (False) in the HCI traffic, and
+> fails. I think my suggested approach here is the simplest and most
+> robust to solve this race condition, so if the maintainers are happy
+> with it, I can look into changing the test expectations to suit the
+> new scenario. Please advise.
+>
+> Thanks in advance,
+> Daniel
+>
+> On Wed, Mar 24, 2021 at 11:47 AM Daniel Winkler
+> <danielwinkler@google.com> wrote:
+> >
+> > In __hci_req_enable_advertising, the HCI_LE_ADV hdev flag is temporarily
+> > cleared to allow the random address to be set, which exposes a race
+> > condition when an advertisement is configured immediately (<10ms) after
+> > software rotation starts to refresh an advertisement.
+> >
+> > In normal operation, the HCI_LE_ADV flag is updated as follows:
+> >
+> > 1. adv_timeout_expire is called, HCI_LE_ADV gets cleared in
+> >    __hci_req_enable_advertising, but hci_req configures an enable
+> >    request
+> > 2. hci_req is run, enable callback re-sets HCI_LE_ADV flag
+> >
+> > However, in this race condition, the following occurs:
+> >
+> > 1. adv_timeout_expire is called, HCI_LE_ADV gets cleared in
+> >    __hci_req_enable_advertising, but hci_req configures an enable
+> >    request
+> > 2. add_advertising is called, which also calls
+> >    __hci_req_enable_advertising. Because HCI_LE_ADV was cleared in Step
+> >    1, no "disable" command is queued.
+> > 3. hci_req for adv_timeout_expire is run, which enables advertising and
+> >    re-sets HCI_LE_ADV
+> > 4. hci_req for add_advertising is run, but because no "disable" command
+> >    was queued, we try to set advertising parameters while advertising is
+> >    active, causing a Command Disallowed error, failing the registration.
+> >
+> > To resolve the issue, this patch removes the check for the HCI_LE_ADV
+> > flag, and always queues the "disable" request, since HCI_LE_ADV could be
+> > very temporarily out-of-sync. According to the spec, there is no harm in
+> > calling "disable" when advertising is not active.
+> >
+> > An example trace showing the HCI error in setting advertising parameters
+> > is included below, with some notes annotating the states I mentioned
+> > above:
+> >
+> > @ MGMT Command: Add Ext Adv.. (0x0055) plen 35  {0x0001} [hci0]04:05.884
+> >         Instance: 3
+> >         Advertising data length: 24
+> >         16-bit Service UUIDs (complete): 2 entries
+> >           Location and Navigation (0x1819)
+> >           Phone Alert Status Service (0x180e)
+> >         Company: not assigned (65283)
+> >           Data: 3a3b3c3d3e
+> >         Service Data (UUID 0x9993): 3132333435
+> >         Scan response length: 0
+> > @ MGMT Event: Advertising Ad.. (0x0023) plen 1  {0x0005} [hci0]04:05.885
+> >         Instance: 3
+> >
+> > === adv_timeout_expire request starts running. This request was created
+> > before our add advertising request
+> > > HCI Event: Command Complete (0x0e) plen 4         #220 [hci0]04:05.993
+> >       LE Set Advertising Data (0x08|0x0008) ncmd 1
+> >         Status: Success (0x00)
+> > < HCI Command: LE Set Scan.. (0x08|0x0009) plen 32  #221 [hci0]04:05.993
+> >         Length: 24
+> >         Service Data (UUID 0xabcd): 161718191a1b1c1d1e1f2021222324252627
+> > > HCI Event: Command Complete (0x0e) plen 4         #222 [hci0]04:05.995
+> >       LE Set Scan Response Data (0x08|0x0009) ncmd 1
+> >         Status: Success (0x00)
+> > < HCI Command: LE Set Adver.. (0x08|0x000a) plen 1  #223 [hci0]04:05.995
+> >         Advertising: Disabled (0x00)
+> > > HCI Event: Command Complete (0x0e) plen 4         #224 [hci0]04:05.997
+> >       LE Set Advertise Enable (0x08|0x000a) ncmd 1
+> >         Status: Success (0x00)
+> > < HCI Command: LE Set Adve.. (0x08|0x0006) plen 15  #225 [hci0]04:05.997
+> >         Min advertising interval: 200.000 msec (0x0140)
+> >         Max advertising interval: 200.000 msec (0x0140)
+> >         Type: Connectable undirected - ADV_IND (0x00)
+> >         Own address type: Public (0x00)
+> >         Direct address type: Public (0x00)
+> >         Direct address: 00:00:00:00:00:00 (OUI 00-00-00)
+> >         Channel map: 37, 38, 39 (0x07)
+> >         Filter policy: Allow Scan Request, Connect from Any (0x00)
+> > > HCI Event: Command Complete (0x0e) plen 4         #226 [hci0]04:05.998
+> >       LE Set Advertising Parameters (0x08|0x0006) ncmd 1
+> >         Status: Success (0x00)
+> > < HCI Command: LE Set Adver.. (0x08|0x000a) plen 1  #227 [hci0]04:05.999
+> >         Advertising: Enabled (0x01)
+> > > HCI Event: Command Complete (0x0e) plen 4         #228 [hci0]04:06.000
+> >       LE Set Advertise Enable (0x08|0x000a) ncmd 1
+> >         Status: Success (0x00)
+> >
+> > === Our new add_advertising request starts running
+> > < HCI Command: Read Local N.. (0x03|0x0014) plen 0  #229 [hci0]04:06.001
+> > > HCI Event: Command Complete (0x0e) plen 252       #230 [hci0]04:06.005
+> >       Read Local Name (0x03|0x0014) ncmd 1
+> >         Status: Success (0x00)
+> >         Name: Chromebook_FB3D
+> >
+> > === Although the controller is advertising, no disable command is sent
+> > < HCI Command: LE Set Adve.. (0x08|0x0006) plen 15  #231 [hci0]04:06.005
+> >         Min advertising interval: 200.000 msec (0x0140)
+> >         Max advertising interval: 200.000 msec (0x0140)
+> >         Type: Connectable undirected - ADV_IND (0x00)
+> >         Own address type: Public (0x00)
+> >         Direct address type: Public (0x00)
+> >         Direct address: 00:00:00:00:00:00 (OUI 00-00-00)
+> >         Channel map: 37, 38, 39 (0x07)
+> >         Filter policy: Allow Scan Request, Connect from Any (0x00)
+> > > HCI Event: Command Complete (0x0e) plen 4         #232 [hci0]04:06.005
+> >       LE Set Advertising Parameters (0x08|0x0006) ncmd 1
+> >         Status: Command Disallowed (0x0c)
+> >
+> > Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> > Signed-off-by: Daniel Winkler <danielwinkler@google.com>
+> > ---
+> >
+> > Changes in v2:
+> > - Added btmon snippet showing HCI command failure
+> >
+> >  net/bluetooth/hci_request.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+> > index 8ace5d34b01efe..2b4b99f4cedf21 100644
+> > --- a/net/bluetooth/hci_request.c
+> > +++ b/net/bluetooth/hci_request.c
+> > @@ -1547,8 +1547,10 @@ void __hci_req_enable_advertising(struct hci_request *req)
+> >         if (!is_advertising_allowed(hdev, connectable))
+> >                 return;
+> >
+> > -       if (hci_dev_test_flag(hdev, HCI_LE_ADV))
+> > -               __hci_req_disable_advertising(req);
+> > +       /* Request that the controller stop advertising. This can be called
+> > +        * whether or not there is an active advertisement.
+> > +        */
+> > +       __hci_req_disable_advertising(req);
+> >
+> >         /* Clear the HCI_LE_ADV bit temporarily so that the
+> >          * hci_update_random_address knows that it's safe to go ahead
+> > --
+> > 2.31.0.291.g576ba9dcdaf-goog
+> >
