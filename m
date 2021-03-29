@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A866634D14E
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CF1834D159
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231646AbhC2Ng6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 09:36:58 -0400
+        id S231726AbhC2Ng7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 09:36:59 -0400
 Received: from mga03.intel.com ([134.134.136.65]:45673 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231466AbhC2NgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 09:36:25 -0400
-IronPort-SDR: 3qr+AHR2STm+4L9s4wfAuQmjn20OfezGjpLG+TssnGKTQon2Cm7GWzPW09VdZy1WN6WOWjd/9M
- 4EUvWp44z9ng==
-X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="191578677"
+        id S231571AbhC2Ng1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 09:36:27 -0400
+IronPort-SDR: 9u1ZPvYnGTYfOj67oW/8BHx6bFs0SUZqqFlqQtcri3Twpu8s4WYhkI9jzNbGD9uI3XjGegIvIq
+ Of4VFa3H37hA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="191578695"
 X-IronPort-AV: E=Sophos;i="5.81,287,1610438400"; 
-   d="scan'208";a="191578677"
+   d="scan'208";a="191578695"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 06:36:23 -0700
-IronPort-SDR: cN5tioQONFrg55k3SNDRwqRRxSngeQ+QAZ1KTc6kchcFbWs7jTWrznMzuJFR1iAO55eHh2Lgz/
- XuR/xoPpAUIA==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 06:36:27 -0700
+IronPort-SDR: +l9e/G6tHjwa1KuU/ooNwJpc6WXAW1rN2dalrWNZudQesddftnUyZxNu4rbH9wawqVDBTu4sbQ
+ ugaEgoWhgP0Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,287,1610438400"; 
-   d="scan'208";a="411079302"
+   d="scan'208";a="411079330"
 Received: from glass.png.intel.com ([10.158.65.59])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Mar 2021 06:36:16 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 29 Mar 2021 06:36:22 -0700
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -43,211 +43,58 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next 0/6] stmmac: Add XDP support
-Date:   Mon, 29 Mar 2021 21:40:07 +0800
-Message-Id: <20210329134013.9516-1-boon.leong.ong@intel.com>
+Subject: [PATCH net-next 1/6] stmmac: intel: set IRQ affinity hint for multi MSI vectors
+Date:   Mon, 29 Mar 2021 21:40:08 +0800
+Message-Id: <20210329134013.9516-2-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210329134013.9516-1-boon.leong.ong@intel.com>
+References: <20210329134013.9516-1-boon.leong.ong@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Intel mGBE has independent hardware IRQ resources for TX and RX DMA
+operation. In preparation to support XDP TX, we add IRQ affinity hint
+to group both RX and TX queue of the same queue ID to the same CPU.
 
-This is the patch series to adds XDP support to stmmac driver.
-Summary of the changes as follow:-
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-1/6: Add IRQ affinity hint to make RXQ and TXQ to be by default serviced
-     by the same CPU. This is required for Intel mGbE controller which
-     has independent per DMA channel RX & and TX IRQ resources.
-
-2/6: To add capability to enable/disable Split Header (SPH) dynamically.
-     Disable SPH for XDP and revert back to the SPH capability of the IP
-     when XDP exits.
-
-3/6: To rearrange TX tail pointer update into common function for reuse
-     across driver.
-
-4/6: Add basic XDP framework into stmmac driver. This patch only support
-     XDP_DROP only.
-
-5/6: Add support for XDP_TX.
-
-6/6: Add support for XDP_REDIRECT and ndo_xdp_xmit() implementation.
-
-To send burst traffics to DUT, we use samples/pktgen script called
-pktgen_sample03_burst_single_flow.sh. Following shows the test steps
-and results that are obtained using Intel mGbE controller under
-preempt-rt environment. In such environment, I also have sent a patch
-that fixes an issue found in xdp_return_frame() earlier:
-
-  https://patchwork.kernel.org/project/netdevbpf/list/?series=457139
-
- ########################################################################
-
-root@intel-corei7-64:~# ./xdp1 eth0
-libbpf: elf: skipping unrecognized data section(16) .eh_frame
-libbpf: elf: skipping relo section(17) .rel.eh_frame for section(16) .eh_frame
-proto 17:     421844 pkt/s
-proto 17:     684396 pkt/s
-proto 17:     684332 pkt/s
-proto 17:     684074 pkt/s
-proto 17:     683837 pkt/s
-proto 17:     684357 pkt/s
-proto 17:     684371 pkt/s
-proto 17:     684419 pkt/s
-proto 17:     683996 pkt/s
-
-root@intel-corei7-64:~# ./xdp1 -S eth0
-libbpf: elf: skipping unrecognized data section(16) .eh_frame
-libbpf: elf: skipping relo section(17) .rel.eh_frame for section(16) .eh_frame
-proto 0:          1 pkt/s
-proto 17:          1 pkt/s
-proto 17:          1 pkt/s
-proto 17:      65564 pkt/s
-proto 17:     117450 pkt/s
-proto 17:     117600 pkt/s
-proto 17:     118108 pkt/s
-proto 17:     118032 pkt/s
-proto 17:     118092 pkt/s
-
-root@intel-corei7-64:~# ./xdp2 eth0
-libbpf: elf: skipping unrecognized data section(16) .eh_frame
-libbpf: elf: skipping relo section(17) .rel.eh_frame for section(16) .eh_frame
-proto 17:          0 pkt/s
-proto 17:      49338 pkt/s
-proto 17:     714255 pkt/s
-proto 17:     714495 pkt/s
-proto 17:     710120 pkt/s
-proto 17:     712892 pkt/s
-proto 17:     712585 pkt/s
-proto 17:     713883 pkt/s
-
-root@intel-corei7-64:~# ./xdp2 -S eth0
-libbpf: elf: skipping unrecognized data section(16) .eh_frame
-libbpf: elf: skipping relo section(17) .rel.eh_frame for section(16) .eh_frame
-proto 0:          0 pkt/s
-proto 17:      89483 pkt/s
-proto 17:      89540 pkt/s
-proto 17:      89358 pkt/s
-proto 17:      89797 pkt/s
-proto 0:          1 pkt/s
-proto 17:      89672 pkt/s
-
-root@intel-corei7-64:~# ./xdp_redirect eth0 eth1
-input: 7 output: 8
-libbpf: elf: skipping unrecognized data section(20) .eh_frame
-libbpf: elf: skipping relo section(21) .rel.eh_frame for section(20) .eh_frame
-ifindex 8:     143805 pkt/s
-ifindex 8:     676900 pkt/s
-ifindex 8:     676801 pkt/s
-ifindex 8:     677657 pkt/s
-ifindex 8:     677916 pkt/s
-
-root@intel-corei7-64:~# ./xdp_redirect -S eth0 eth1
-input: 7 output: 8
-libbpf: elf: skipping unrecognized data section(20) .eh_frame
-libbpf: elf: skipping relo section(21) .rel.eh_frame for section(20) .eh_frame
-ifindex 8:          2 pkt/s
-ifindex 8:          0 pkt/s
-ifindex 8:      33505 pkt/s
-ifindex 8:      73536 pkt/s
-ifindex 8:      52512 pkt/s
-ifindex 8:      97600 pkt/s
-ifindex 8:      96928 pkt/s
-ifindex 8:      96480 pkt/s
-ifindex 8:      96760 pkt/s
-ifindex 8:      96949 pkt/s
-ifindex 8:      96591 pkt/s
-
-root@intel-corei7-64:~# ./xdp_redirect_cpu --dev eth0 --cpu 0
-libbpf: elf: skipping unrecognized data section(39) .eh_frame
-libbpf: elf: skipping relo section(40) .rel.eh_frame for section(39) .eh_frame
-libbpf: elf: skipping unrecognized data section(20) .eh_frame
-libbpf: elf: skipping relo section(21) .rel.eh_frame for section(20) .eh_frame
-Add-new CPU:0 as idx:0 qsize:192 prog_fd: 33 (cpus_count:1)
-
-Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
-XDP-cpumap      CPU:to  pps            drop-pps    extra-info
-XDP-RX          0       667,952        0           0
-XDP-RX          total   667,952        0
-cpumap-enqueue    0:0   667,952        550,150     7.82       bulk-average
-cpumap-enqueue  sum:0   667,952        550,150     7.82       bulk-average
-cpumap_kthread  0       117,821        0           0
-cpumap_kthread  total   117,821        0           0
-redirect_err    total   0              0
-xdp_exception   total   0              0
-
-2nd remote XDP/eBPF prog_name: xdp_redirect_dummy
-XDP-cpumap      CPU:to  xdp-pass       xdp-drop    xdp-redir
-xdp-in-kthread  0       117,822        0           0
-xdp-in-kthread  total   117,822        0           0
-
-Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
-XDP-cpumap      CPU:to  pps            drop-pps    extra-info
-XDP-RX          0       667,871        0           0
-XDP-RX          total   667,871        0
-cpumap-enqueue    0:0   667,877        550,820     7.82       bulk-average
-cpumap-enqueue  sum:0   667,877        550,820     7.82       bulk-average
-cpumap_kthread  0       117,041        0           0
-cpumap_kthread  total   117,041        0           0
-redirect_err    total   0              0
-xdp_exception   total   0              0
-
-2nd remote XDP/eBPF prog_name: xdp_redirect_dummy
-XDP-cpumap      CPU:to  xdp-pass       xdp-drop    xdp-redir
-xdp-in-kthread  0       117,041        0           0
-xdp-in-kthread  total   117,041        0           0
-
-Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
-XDP-cpumap      CPU:to  pps            drop-pps    extra-info
-XDP-RX          0       667,856        0           0
-XDP-RX          total   667,856        0
-cpumap-enqueue    0:0   667,849        549,672     7.82       bulk-average
-cpumap-enqueue  sum:0   667,849        549,672     7.82       bulk-average
-cpumap_kthread  0       118,177        0           0
-cpumap_kthread  total   118,177        0           0
-redirect_err    total   0              0
-xdp_exception   total   0              0
-
-2nd remote XDP/eBPF prog_name: xdp_redirect_dummy
-XDP-cpumap      CPU:to  xdp-pass       xdp-drop    xdp-redir
-xdp-in-kthread  0       118,177        0           0
-xdp-in-kthread  total   118,177        0           0
-
- ########################################################################
-
-As stmmac driver is using page_pool mechanism, I waited > 1min after
-each of above apps is terminated to make sure there is no stalled
-pool warning prints on the terminal, and I found none which looks good
-on Intel mGbE platform.
-
-It will be great if community help tes out these patch series on your
-platform and provide me feedback.
-
-Thank you very much,
-Boon Leong
-
-Ong Boon Leong (6):
-  stmmac: intel: set IRQ affinity hint for multi MSI vectors
-  net: stmmac: make SPH enable/disable to be configurable
-  net: stmmac: arrange Tx tail pointer update to
-    stmmac_flush_tx_descriptors
-  net: stmmac: Add initial XDP support
-  net: stmmac: Add support for XDP_TX action
-  net: stmmac: Add support for XDP_REDIRECT action
-
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c |   7 +
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  35 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 502 +++++++++++++++---
- .../net/ethernet/stmicro/stmmac/stmmac_xdp.c  |  40 ++
- .../net/ethernet/stmicro/stmmac/stmmac_xdp.h  |  12 +
- 6 files changed, 523 insertions(+), 74 deletions(-)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 08b4852eed4c..53a24932a192 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -810,6 +810,7 @@ static int stmmac_config_multi_msi(struct pci_dev *pdev,
+ 				   struct plat_stmmacenet_data *plat,
+ 				   struct stmmac_resources *res)
+ {
++	cpumask_t cpu_mask;
+ 	int ret;
+ 	int i;
+ 
+@@ -832,12 +833,18 @@ static int stmmac_config_multi_msi(struct pci_dev *pdev,
+ 	for (i = 0; i < plat->rx_queues_to_use; i++) {
+ 		res->rx_irq[i] = pci_irq_vector(pdev,
+ 						plat->msi_rx_base_vec + i * 2);
++		cpumask_clear(&cpu_mask);
++		cpumask_set_cpu(i % num_online_cpus(), &cpu_mask);
++		irq_set_affinity_hint(res->rx_irq[i], &cpu_mask);
+ 	}
+ 
+ 	/* For TX MSI */
+ 	for (i = 0; i < plat->tx_queues_to_use; i++) {
+ 		res->tx_irq[i] = pci_irq_vector(pdev,
+ 						plat->msi_tx_base_vec + i * 2);
++		cpumask_clear(&cpu_mask);
++		cpumask_set_cpu(i % num_online_cpus(), &cpu_mask);
++		irq_set_affinity_hint(res->tx_irq[i], &cpu_mask);
+ 	}
+ 
+ 	if (plat->msi_mac_vec < STMMAC_MSI_VEC_MAX)
 -- 
 2.25.1
 
