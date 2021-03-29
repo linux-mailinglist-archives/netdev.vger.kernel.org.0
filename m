@@ -2,80 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0738134CE6C
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B0E934CE77
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:06:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231683AbhC2LDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 07:03:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50986 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231570AbhC2LD1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 07:03:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 90C4060190;
-        Mon, 29 Mar 2021 11:03:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1617015807;
-        bh=dcnQW234dKs4Ot/XFvSdFE8GfnqOmIe4OCj0zgGBaPA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=arqdeqC/2MB8LNRjAih/Rji4HFoE6csZYM75iIH3+9qSuUS/BbCGeCuKBlpXTHmut
-         SF0phHEsC04zXB94Hl006vvhA+5UmF3ReE0WeEJZjHLijhC5gUMvRRxlXHO0eXlPPR
-         jUENprb5hOQBXpfOd/V9ykp9xSaFH13l+Pk1QVfY=
-Date:   Mon, 29 Mar 2021 13:03:24 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Du Cheng <ducheng2@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH net-next] qrtr: move to staging
-Message-ID: <YGGz/BaibxykzxOW@kroah.com>
-References: <20210328122621.2614283-1-gregkh@linuxfoundation.org>
- <CAMZdPi_3B9Bxg=7MudFq+RnhD10Mm5QbX_pBb5vyPsZAC_bNOQ@mail.gmail.com>
- <20210329105236.GB2763@work>
+        id S231610AbhC2LFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 07:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231509AbhC2LFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:05:09 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50ABAC061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:05:09 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id ay2so4217360plb.3
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 04:05:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=5/8kk4ox/5Tuoi5bHBW9bZqDcQioEYzA8lrAMJq3ltE=;
+        b=r3RPCSUxVlqJ5rgC6a/tvsVfMLLHwK8vLHOr1X99Vj/hlsll4LwgRg4fYrBZ7nAkAB
+         ZB/m0DkAUJAMB/cgkvtwi8w18mx7TRarka2CP5geAnLZUNiCq5ruV++u69mQFnjT2h19
+         Uz2F/vh0G16H2bWfbRK9CpFm3z4TdO+p9LR/zWZk/nu7TaxRt4XiZjrzIRMTJM6r+21K
+         ePzlrgmm2sipwFOW7zyeyPR6a432RBiCrUhICTTapXanyIudRUJkB1yxqJ++oEb7pu+F
+         YamX5ymygQAB2r+4oAaBlBOhM/YnGD+qgZSeGf6Ja+q8XaCtjKya1+AmFv+37adiD+4b
+         QDsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=5/8kk4ox/5Tuoi5bHBW9bZqDcQioEYzA8lrAMJq3ltE=;
+        b=eYAyWHZX4egUJh/XxhPCeyD2aa0st35HLO7jhAEP+PnngDFgkK43LT28NY9FdmR162
+         fHrO4lk8o4lz4O/SZT20sEEaIisYdKSlnCJiKxxRsqlOvkBVC6VvJHdQFVvyjFvtuWKS
+         LgZYG6I/i6ftLn0auxw9tXad7SdlKBV0QQLVEzYYiFc+IY85zd4tW+gDUa8ABfmVDYsM
+         hhjgSGicIb8I7FF/fVUhlsJoD8kXJwEN9tjfNreco6Yrm6H8ykZdkXjkHqQyPuYvmzII
+         hIx75jgzZArr8bUSLWt/IPOsd4U8Z5E3kh3TerlaVZpe6wwHi8E0cZuqCa8CBghsaORV
+         IW9g==
+X-Gm-Message-State: AOAM532hM9Hgbcw0BWomVm/ZCO4cj45itSqZfwyEwTu78tQ95jxBg4kx
+        LrPSU9D3lwpR3XheEamtR24e4cmHwy89+B0DLFo=
+X-Google-Smtp-Source: ABdhPJxfpGPrVTeIYMwgVI0ifCOpFglpHMvu/hEn5IYrMhrvCbNYtnFHjnJszsMvC8YEUfSewnG6hMGVsG0uGQycrTM=
+X-Received: by 2002:a17:90a:f68a:: with SMTP id cl10mr25869927pjb.87.1617015908975;
+ Mon, 29 Mar 2021 04:05:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210329105236.GB2763@work>
+Sender: mohamedissaka85@gmail.com
+Received: by 2002:a17:90a:fb8d:0:0:0:0 with HTTP; Mon, 29 Mar 2021 04:05:08
+ -0700 (PDT)
+From:   kayla manthey <katiehiggins030@gmail.com>
+Date:   Mon, 29 Mar 2021 11:05:08 +0000
+X-Google-Sender-Auth: 0la4i4F4-oIf4KThukY6m2Q8Qmc
+Message-ID: <CA+WYczNdsJ-g2aeRx+GBvE1bpAcv49AsoTyWQDnrziWDG8VRZA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 04:22:36PM +0530, Manivannan Sadhasivam wrote:
-> Hi Greg,
-> 
-> On Mon, Mar 29, 2021 at 11:47:12AM +0200, Loic Poulain wrote:
-> > Hi Greg,
-> > 
-> > On Sun, 28 Mar 2021 at 14:28, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > wrote:
-> > 
-> > > There does not seem to be any developers willing to maintain the
-> > > net/qrtr/ code, so move it to drivers/staging/ so that it can be removed
-> > > from the kernel tree entirely in a few kernel releases if no one steps
-> > > up to maintain it.
-> > >
-> > > Reported-by: Matthew Wilcox <willy@infradead.org>
-> > > Cc: Du Cheng <ducheng2@gmail.com>
-> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > >
-> > 
-> > As far as I know, QRTR/IPCR is still commonly used with Qualcomm-based
-> > platforms for accessing various components of the SoC.
-> > CCing Bjorn and Mani, In case they are interested in taking maintenance of
-> > that.
-> > 
-> 
-> As Loic said, QRTR is an integral component used in various Qualcomm based
-> upstream supported products like ChromeOS, newer WLAN chipsets (QCA6390) etc...
-> 
-> It is unfortunate that no one stepped up so far to maintain it. After
-> having an internal discussion, I decided to pitch in as a maintainer. I'll
-> send the MAINTAINERS change to netdev list now.
-
-Great, can you also fix up the reported problems with the codebase that
-resulted in this "ask for removal"?
-
-thanks,
-
-greg k-h
+Vennligst jeg vil vite om du har mine tidligere meldinger.
