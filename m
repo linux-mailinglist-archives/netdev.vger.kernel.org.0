@@ -2,149 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F135234D129
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7271734D135
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:36:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbhC2Nah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 09:30:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37445 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231219AbhC2NaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 09:30:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617024602;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8x2UubjN/SS+D1frWCVTn9hXRqqpt2VSD8hRfNxsSrc=;
-        b=RMm7zzYT13yPqu84TLeH1hSwZ5ivoGMNorjpd2pJTZCzk+0FKj8mykXyGAYQyZTamUR6UR
-        m1O1u4Ue7EU0xJwKaqtWuXa/QBh64nksERaSHs6mNkCCG2f1t/x3D3r+Ts1J0uZgDv0yj8
-        39h12y6vOOQk+xzR32XoJSjhtpDDwEU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-FS7P2Qp6O22-S2zEshQmYw-1; Mon, 29 Mar 2021 09:29:58 -0400
-X-MC-Unique: FS7P2Qp6O22-S2zEshQmYw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E88931922967;
-        Mon, 29 Mar 2021 13:29:56 +0000 (UTC)
-Received: from ovpn-114-151.ams2.redhat.com (ovpn-114-151.ams2.redhat.com [10.36.114.151])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C1F4B101E249;
-        Mon, 29 Mar 2021 13:29:54 +0000 (UTC)
-Message-ID: <3004a1540d80bd8f45a12b35c0d5ee9bfc8d15cb.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 4/8] udp: never accept GSO_FRAGLIST packets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Date:   Mon, 29 Mar 2021 15:29:53 +0200
-In-Reply-To: <CA+FuTSdxf=UM9EtKwnY3ycmv8y2mKND4reP5b74BaBxLPm-J0A@mail.gmail.com>
-References: <cover.1616692794.git.pabeni@redhat.com>
-         <7fa75957409a3f5d14198261a7eddb2bf1bff8e1.1616692794.git.pabeni@redhat.com>
-         <CA+FuTScNjt0dTEHM8WprhDZ5G3H0Y4af4fg2Xqs+eCCrNtHwVA@mail.gmail.com>
-         <846f001b9f4b3d377318ddbe4907f79ff4256019.camel@redhat.com>
-         <CA+FuTSdxf=UM9EtKwnY3ycmv8y2mKND4reP5b74BaBxLPm-J0A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S231400AbhC2Nfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 09:35:54 -0400
+Received: from mail-db8eur05on2084.outbound.protection.outlook.com ([40.107.20.84]:20449
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231183AbhC2Nfp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 09:35:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=My3ORfmPIulsQhhKtfrkipBPyQkhrdVKABhJNKeOn8+/iwbw+L1oqjvZecr1WN0MYtaDr9SX34LidHtJ9Ve/rsnDT5nmnaPduHd+XklrHV9aR8zYNBDClGiXsQAm1QbeGgMm9XBfeKsHDmxYV9dovCe9uCIGnQA/aeEu60Nnji6jJuAIUFs03osIzHoa79G4I5I7i2T4hJVngcVviMQeW3Nf71hghf0NnIbLmqiIDPMfrwLg0HF1LG1HebjmlXUEG5NwGBfvYNwkOandRRKbJ0q6FNEYM+ZuQEKK6caJXjVjZTE+1a7YxBari7l5XuQl3a0pYpMYG3IhaSgGn4GXKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PQIWTKHPPV+dsvh2PEBe+tOKRSYXejX1sLhFrZWln/M=;
+ b=eOCPB2EkQety9g4cGVT4JqUxZGS9GhN/PatYXKq3eTAHHcAcxn6mukhTYmwjK1h2kuw08m/0tiNlq0FRQ9DG6zflgT2lIQ7+HOZRic+Y5S1QE4SK2vCqwe6NlHbK8trLK/AFYlxCCxCCO35AAYc9CLVXlwJD/5kvVGclNASw8Lsm9EaGuebXM0bu6enTyU5/9PqZR/LZH7A3ud5MV8YKN7lhXRCo+yq+M/wgbbjdtYJWuHciu/GSrgzSs3BOS+I8bskj+M2h1tJAMLpYnTYAPXHvsjW5UpZ0xJG1PleOczn/F8PC8en++DyvUOGbMi6QjlPiPsg4XkHHa2B6Gy1wmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PQIWTKHPPV+dsvh2PEBe+tOKRSYXejX1sLhFrZWln/M=;
+ b=iouQ5lZIa+aVhI7lQ+PtNvEo6nU2v3FiZfeDObhu/awq34PrSYDe03DAwR/y3a7gQoIuOL7t5XZLa4Q4tQiNYN+Bx+6gMxqWbhXoYDbi35cJOK1b858d5ofxnFNfPeS5m6b5tXm+S8gB6hdalgTFfbnjCUPk/KsKDcnWKEM2AII=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM8PR04MB7473.eurprd04.prod.outlook.com (2603:10a6:20b:1d0::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.24; Mon, 29 Mar
+ 2021 13:35:44 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::542d:8872:ad99:8cae]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::542d:8872:ad99:8cae%6]) with mapi id 15.20.3977.033; Mon, 29 Mar 2021
+ 13:35:44 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net] enetc: Avoid implicit sign extension
+Date:   Mon, 29 Mar 2021 16:35:28 +0300
+Message-Id: <20210329133528.22884-1-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [83.217.231.2]
+X-ClientProxiedBy: AM0PR04CA0027.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::40) To AM0PR04MB6754.eurprd04.prod.outlook.com
+ (2603:10a6:208:170::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv15141.swis.ro-buh01.nxp.com (83.217.231.2) by AM0PR04CA0027.eurprd04.prod.outlook.com (2603:10a6:208:122::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25 via Frontend Transport; Mon, 29 Mar 2021 13:35:43 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ab841056-a5ad-4e3e-b13a-08d8f2b78d45
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7473:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM8PR04MB74733D26DFB44F72518352FF967E9@AM8PR04MB7473.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kZWgO4gwnJVDeJdQSvaAVVmbQ5kV4nJpMP9bJO/5CeOT30fFqQjd2ItncG6VPe+oaLx5DGNLn2wCHKT+nFBkttWt2hsEZSaLn5ybUxPLEbb5CrjjB4ldxVrlqWsVIK9xqbS5l8M2uZ6Q1qJrXUm/guhZOq/3hv4d95zm4H5ZhskZVJ+Z6RuCFysDxzUuBANDJ7qNS8MUs9+ZZ7Xk5eSXiqge1VSxV1lYEoAZ/cuyK89XLs3QkgGj4/2nSS7PcyePzi9iGrucNI5CXuSwzCt1pP2H0vZtz1F8N/uPajj2Gw/1bZ1agOPiGRog22//r46IcSKxKoD1g6YtYZh/3GOrnz4rR9/CyFh3QTF38sSwifCmwGohqCihMdOH9CuHwo2zjMnEhhaF5dUX/7+7LB45DC+grY0zOxKwEjwTP1NUO1i4208XRhMM8hBzrKNg5MeLdlUo3WmyKhqgBNoc8a+/31ibTLXDL2AuCfrXl59wNMnCJMepRUbu5YE/+fB70M5vqS/q8dCNdOPGV3lmKHcjD4ZS7FFaG2YqoTBMo4MYggdOKgfZPPe0k9LNWiGq0JdAXEK4cr9zkeJ9OJ9sby58VCioUpkl9f2tCpe8FmoRdPW28FKzvgfmIA9QkwcAnJ9oh+F5Z/eaIBkbHZWYV2DWxa4D7rlsye+McMXR8YwQXFo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(396003)(366004)(39840400004)(376002)(1076003)(8936002)(2906002)(83380400001)(478600001)(8676002)(26005)(186003)(6666004)(2616005)(44832011)(5660300002)(16526019)(38100700001)(66476007)(956004)(66556008)(54906003)(36756003)(52116002)(7696005)(86362001)(6486002)(6916009)(66946007)(4326008)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?3ttuudZ6i+gLHoS7F7ICwinqqverXrqck2gSDpasQrL6lIVqHsAr4W7TMyI+?=
+ =?us-ascii?Q?GGtSKSb5eLFF587d4sTKMFA9L/xUwAFgdF4c98UM1/jewcEvFK+Y9GAl0k5R?=
+ =?us-ascii?Q?dVqCCMjgyipewBuSLlwK+nrgMOw9Jsvr0ofM5O3xed/IkjzeqFvowWj27Shs?=
+ =?us-ascii?Q?NZ5fAbtiYV6KIhtideCtjGmHkH2wNQFUKGgYokEcrKkuZ5lsb/ceHaqdyKQW?=
+ =?us-ascii?Q?LtZ3QjtX06QNSujMRFFqA9cnO9dQ+J2YdzszOQ5wJTq2L555xCC/rqopBuXr?=
+ =?us-ascii?Q?BlBuckSMpY05svUwDYt5+/p0kviifpQ6GYXDnT4MgdKHfrfXHb2xWXztnQLP?=
+ =?us-ascii?Q?zjgEVPtV3szhHQamC1bUBbKX8sHDtd3LzPc97prt+2WWLPixCMo4rodlG2UC?=
+ =?us-ascii?Q?b8FvGFFRz2Av32OVgHSUYaDlWuQZhypL2yBTycEL3fHq4O0qDmwkzFhTqRrM?=
+ =?us-ascii?Q?OdMvk9KZsLPxDP16I7qoFiW0IHTOknbI4DN/j21boqS9UnnSWyxiKFK9arUd?=
+ =?us-ascii?Q?vWFywhocN3pfpwYMIMtXBipdjE1B1RBCY8JJo4yor7t6xL+3gmY5wv/R226p?=
+ =?us-ascii?Q?SZCeHtQ3jmgV0B6qZIHYWYvwns3sGfA1X9Z6vasb4wEctrhEwpXFlMR4MWuN?=
+ =?us-ascii?Q?Ss1Bd1PQ/S15ZLr1qIVYbBG2UXsVoNqmN/FR3du2dr0wick5FTacMH3yI+2K?=
+ =?us-ascii?Q?pDHpok7PuzEbwQ62TNPMlrb8xRgazibh+gOVoFdaCeitsFV6iR13cWD3feL5?=
+ =?us-ascii?Q?1r42Nfr+F0SqtT7q5FhcYYckbxGOYjLPl2rewiCQGweato+rlbSpNmlXYGN1?=
+ =?us-ascii?Q?Y+UeWTSe1ZlQstioUSKrLEDmedv2MyRcESzw2N4269FiL1Tqzvh5x0v6KWtL?=
+ =?us-ascii?Q?8pyP2QHBDtLMvBRY7UCtaJzN12NqFpmp5CnzxlFf7yve8s6bAV0cBb6nli0J?=
+ =?us-ascii?Q?1pB3kEunoP6IynokVhpom1rH9JTjLHDZv7jYcFRRcGJA8r1dnh0m5YglBPD1?=
+ =?us-ascii?Q?b0orQFROJKfWV8hGPdWA1ylmX4Z102ulNR/y3o6bP/Cz5pHcD0lTz0wqh+ZQ?=
+ =?us-ascii?Q?SX0W4IIgKmnUiXzWPZGGyNdLJWQWGN/cgvG7Xop+GYFEaMkmCcg1bQisRMyM?=
+ =?us-ascii?Q?wuufvg9l9+on6Ox7dmL7jG1rmmCNw6pmHMZgWNNkdJGoh8M6+iNcp434ya0z?=
+ =?us-ascii?Q?z9DSJBsenixW4je6oDRwNRbpF7O9s4o0wvyy9FeJjW557UVkj2rJtiJS5OLi?=
+ =?us-ascii?Q?iqFli3q+S8xaFphiutrrZJ5I/sHNs1e61B5J1So4vRfj5+fxlUC31hBT7vAO?=
+ =?us-ascii?Q?kqX+UhfCmIC8durFEFpH3J1W?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab841056-a5ad-4e3e-b13a-08d8f2b78d45
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2021 13:35:43.8985
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z47BhtMbtqlY3gaPeu3ss6T1wrd1jNqcIKyzOI6k946Y6Zp2Ro3dBHdrpjqyHxPmZQz7SjZntRTiEDVU5Atvmw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7473
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-03-29 at 08:31 -0400, Willem de Bruijn wrote:
-> On Mon, Mar 29, 2021 at 4:14 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > On Fri, 2021-03-26 at 14:15 -0400, Willem de Bruijn wrote:
-> > > On Thu, Mar 25, 2021 at 1:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > > Currently the UDP protocol delivers GSO_FRAGLIST packets to
-> > > > the sockets without the expected segmentation.
-> > > > 
-> > > > This change addresses the issue introducing and maintaining
-> > > > a couple of new fields to explicitly accept SKB_GSO_UDP_L4
-> > > > or GSO_FRAGLIST packets. Additionally updates  udp_unexpected_gso()
-> > > > accordingly.
-> > > > 
-> > > > UDP sockets enabling UDP_GRO stil keep accept_udp_fraglist
-> > > > zeroed.
-> > > > 
-> > > > v1 -> v2:
-> > > >  - use 2 bits instead of a whole GSO bitmask (Willem)
-> > > > 
-> > > > Fixes: 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.")
-> > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > 
-> > > This looks good to me in principle, thanks for the revision.
-> > > 
-> > > I hadn't fully appreciated that gro_enabled implies accept_udp_l4, but
-> > > not necessarily vice versa.
-> > > 
-> > > It is equivalent to (accept_udp_l4 && !up->gro_receive), right?
-> > 
-> > In this series, yes.
-> > 
-> > > Could the extra bit be avoided with
-> > > 
-> > > "
-> > > +      /* Prefer fraglist GRO unless target is a socket with UDP_GRO,
-> > > +       * which requires all but last segments to be of same gso_size,
-> > > passed in cmsg */
-> > >         if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
-> > > -                NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
-> > > +               NAPI_GRO_CB(skb)->is_flist = sk ?
-> > > (!udp_sk(sk)->gro_enabled || udp_sk(sk)->accept_udp_fraglist) : 1;
-> > 
-> > This is not ovious at all to me.
-> > 
-> > > +     /* Apply transport layer GRO if forwarding is enabled or the
-> > > flow lands at a local socket */
-> > >        if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
-> > >             (sk && udp_sk(sk)->gro_enabled && !up->encap_rcv) ||
-> > > NAPI_GRO_CB(skb)->is_flist) {
-> > >                 pp = call_gro_receive(udp_gro_receive_segment, head, skb);
-> > >                 return pp;
-> > >         }
-> > > 
-> > > +      /* Continue with tunnel GRO */
-> > > "
-> > > 
-> > > .. not that the extra bit matters a lot. And these two conditions with
-> > > gro_enabled are not very obvious.
-> > > 
-> > > Just a thought.
-> > 
-> > Overall looks more complex to me. I would keep the extra bit, unless
-> > you have strong opinion.
-> 
-> Sounds good.
-> 
-> > Side note: I was wondering about a follow-up to simplify the condition:
-> > 
-> >         if ((!sk && (skb->dev->features & NETIF_F_GRO_UDP_FWD)) ||
-> >              (sk && udp_sk(sk)->gro_enabled && !up->encap_rcv) || NAPI_GRO_CB(skb)->is_flist) {
-> > 
-> > Since UDP sockets could process (segmenting as needed) unexpected GSO
-> > packets, we could always do 'NETIF_F_GRO_UDP_FWD', when enabled on the
-> > device level. The above becomes:
-> > 
-> >         if (skb->dev->features & NETIF_F_GRO_UDP_FWD) ||
-> >             (sk && udp_sk(sk)->gro_enabled && !up->encap_rcv) ||
-> >             NAPI_GRO_CB(skb)->is_flist) {
-> > 
-> > which is hopefully more clear (and simpler). As said, non for this
-> > series anyhow.
-> 
-> UDP sockets can segment, but it is expensive. In this case I think the
-> simplification is not worth the possible regression.
+Static analysis tool reports:
+"Suspicious implicit sign extension - 'flags' with type u8 (8 bit,
+unsigned) is promoted in 'flags' << 24 to type int (32 bits, signed),
+then sign-extended to type unsigned long long (64 bits, unsigned).
+If flags << 24 is greater than 0x7FFFFFFF, the upper bits of the result
+will all be 1."
 
-No strong opinion here, I will not do the thing mentioned above.
+Use lower_32_bits() to avoid this scenario.
 
-Thanks!
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_hw.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Paolo
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+index 00938f7960a4..07e03df8af94 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+@@ -535,8 +535,8 @@ static inline __le32 enetc_txbd_set_tx_start(u64 tx_start, u8 flags)
+ {
+ 	u32 temp;
+ 
+-	temp = (tx_start >> 5 & ENETC_TXBD_TXSTART_MASK) |
+-	       (flags << ENETC_TXBD_FLAGS_OFFSET);
++	temp = lower_32_bits(tx_start >> 5 & ENETC_TXBD_TXSTART_MASK) |
++	       (u32)(flags << ENETC_TXBD_FLAGS_OFFSET);
+ 
+ 	return cpu_to_le32(temp);
+ }
+-- 
+2.25.1
 
