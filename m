@@ -2,68 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 708FC34D921
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1786034D923
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 22:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230329AbhC2Uke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 16:40:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48264 "EHLO mail.kernel.org"
+        id S230520AbhC2Ukg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 16:40:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229468AbhC2UkJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 16:40:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2D59A6196C;
-        Mon, 29 Mar 2021 20:40:09 +0000 (UTC)
+        id S229950AbhC2UkK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 16:40:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0877261990;
+        Mon, 29 Mar 2021 20:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617050409;
-        bh=xJ75zZfeeHGiAuPkUV8xBNfuHwhl/VPN2DU8RIAwFuA=;
+        s=k20201202; t=1617050410;
+        bh=bjTMgR6IJ+pke6CYMseFAobc/TlJiwTIpg3Yafh9SKM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gqG9EgVBq+ifysEXw1bjw1dsIvGeZ3t0YaQvQBbDT8nShSEIEd1w1GFhFY4eMLILr
-         2pPQZSAEDTrrYGWp7anGwEyQVx/tMJg3J53668+wXXFn8NZxUQWwM42eLMKPvF5txD
-         pgBBk1DkvKaEcC4rnnbSmghapJReL/zftcO8D2rRjSwFjoIMVZF4gu86j3p4UdIMED
-         d2Cl4T5o09rNY1prf3DuwYDmAsr7LQK9mLQaZalXJnhCdOXSqw1tMmdP9Mnq4OcwyI
-         EUEKopEzM1wuA/4FeGnBJnh6V3mSdz8gjgHl6CuxhLfnJxsS/SfhfxRP5Rc2upczjt
-         POVg2GjPSfeWg==
+        b=A+CHRog8eB2nM1U0XUzoA6Xi2FSqrtju80VEVkOZU/Fw3rINd++tUb1eeagwQPifP
+         29+gNfwfCnmiVyXYIp8e3IGnAOdwmTJ0h0oYwrtxR8xYokg5Ws3A/pN9RK1fMgyZy7
+         Qr6NxQ5LRMBITEq9CpSrl0HOLAhjDa5DglpV+e2jo1BDDP+fdjw4kq2thTPE14BEIZ
+         xovZDoMkCB5/7Zi7jNqXEkmXk+rEzFPnczPpS2N7uQXSX30z/s4KggY1IlohYDltUs
+         KCUC11WK7Nr2WCkoEyWaHUqSHfh/fNCV1UmYx91KBme3w/htqc9I8n4UkEbM64pRZs
+         eIw31hiB3QTeA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 21BA160A3B;
-        Mon, 29 Mar 2021 20:40:09 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 032C460A48;
+        Mon, 29 Mar 2021 20:40:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: can 2021-03-29
+Subject: Re: [PATCH net-next 0/4] net: marvell: fix some coding style
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161705040913.15223.11767373062136414770.git-patchwork-notify@kernel.org>
-Date:   Mon, 29 Mar 2021 20:40:09 +0000
-References: <20210329085355.921447-1-mkl@pengutronix.de>
-In-Reply-To: <20210329085355.921447-1-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de
+Message-Id: <161705041000.15223.7724570525686809883.git-patchwork-notify@kernel.org>
+Date:   Mon, 29 Mar 2021 20:40:10 +0000
+References: <1617004872-38974-1-git-send-email-liweihang@huawei.com>
+In-Reply-To: <1617004872-38974-1-git-send-email-liweihang@huawei.com>
+To:     Weihang Li <liweihang@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        sebastian.hesselbarth@gmail.com, thomas.petazzoni@bootlin.com,
+        mlindner@marvell.com, stephen@networkplumber.org,
+        netdev@vger.kernel.org, linuxarm@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 29 Mar 2021 10:53:52 +0200 you wrote:
-> Hello Jakub, hello David,
+On Mon, 29 Mar 2021 16:01:08 +0800 you wrote:
+> Do some cleanups according to the coding style of kernel.
 > 
-> this is a pull request of 3 patches for net/master.
-> 
-> The two patch are by Oliver Hartkopp. He fixes length check in the
-> proto_ops::getname callback for the CAN RAW, BCM and ISOTP protocols,
-> which were broken by the introduction of the J1939 protocol.
+> Yangyang Li (4):
+>   net: marvell: Delete duplicate word in comments
+>   net: marvell: Fix the trailing format of some block comments
+>   net: marvell: Delete extra spaces
+>   net: marvell: Fix an alignment problem
 > 
 > [...]
 
 Here is the summary with links:
-  - pull-request: can 2021-03-29
-    https://git.kernel.org/netdev/net/c/f4c848db16be
-  - [net,2/3] can: isotp: fix msg_namelen values depending on CAN_REQUIRED_SIZE
-    https://git.kernel.org/netdev/net/c/f522d9559b07
-  - [net,3/3] can: uapi: can.h: mark union inside struct can_frame packed
-    https://git.kernel.org/netdev/net/c/f5076c6ba02e
+  - [net-next,1/4] net: marvell: Delete duplicate word in comments
+    https://git.kernel.org/netdev/net-next/c/b52f6425481c
+  - [net-next,2/4] net: marvell: Fix the trailing format of some block comments
+    https://git.kernel.org/netdev/net-next/c/df4a17a98d7f
+  - [net-next,3/4] net: marvell: Delete extra spaces
+    https://git.kernel.org/netdev/net-next/c/9abcaa96ce6d
+  - [net-next,4/4] net: marvell: Fix an alignment problem
+    https://git.kernel.org/netdev/net-next/c/9568387c9f51
 
 You are awesome, thank you!
 --
