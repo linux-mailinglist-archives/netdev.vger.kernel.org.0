@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09B3134CDB2
+	by mail.lfdr.de (Postfix) with ESMTP id 5671534CDB3
 	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 12:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbhC2KKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 06:10:52 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:42213 "EHLO
+        id S232643AbhC2KKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 06:10:53 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:59675 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231458AbhC2KKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 06:10:32 -0400
+        by vger.kernel.org with ESMTP id S231687AbhC2KKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 06:10:34 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 116D55C00E4;
-        Mon, 29 Mar 2021 06:10:32 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 0FCCB5C0078;
+        Mon, 29 Mar 2021 06:10:34 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 29 Mar 2021 06:10:32 -0400
+  by compute3.internal (MEProxy); Mon, 29 Mar 2021 06:10:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=EaPacVoh3hPlgbKrRlCUm3njb1vtkHSZBb0UgoLIRM0=; b=Hvy1DYQg
-        N11u40ytGbgSFa1xiPgEg6qZvAKtQP3+evUMntZGd7qu+qdcALh33h02mK9A1lB1
-        +an6Xe+wFJtLqVacYtlO7DsnKNDiBZk/5VMUJPHp+BjF1RCvc5AtcdkUXit3xDGG
-        i64zpX4NiDWZ/8KQIeZaNhxBTkH2DAn9l7tMNpDUUoTyS2vx3kxN0ygf7etqF1Kg
-        tKrzibCyZB4xwFeTRqp7bUHEK3GQoQ8LeeSQeJ4LO/Pe4WXBN+1XVQ76+AvUsluw
-        AEtEZwg84bArDTrWcdFOuiwZmKPN4s1CDl/chXgkImjrttABXt+Q1zXc9+jYEoPN
-        QCbetrfv9L+42Q==
-X-ME-Sender: <xms:l6dhYIyHI1_p4Idz1hg2MFIjVKQuqS1lfTvkiucQgm1eE01G9xWysg>
-    <xme:l6dhYMSa7hIjXF25aOS_15F1A1C0-RvaIWge1NFaS62T7IJjExnBrFflPerv1WCV5
-    WKFVd_0uEaUWnc>
+        fm2; bh=V8GiiPRto8cFaPsD/oWwdpe/afofgMZJeftVo1w4l8c=; b=wkOwKPNd
+        prOWg63x3C5S4KtB2WY2/zXbTPNqlyZAlq5UyQY1vY031Wd9XoU7rl+jcMnfRFc0
+        aPEpiHvdUYnSQd8bzZA8Xe6qae74H95E/guMeWdUDteRxVqJmvkdtvWt/AbJdJax
+        phh6GsGQFvZonUM62tOL+OaAlK8NExXYPr9UxWM01nnwdF54/JKh2GaWL+HFzRJD
+        0ZwYwe+x3D0DTUheDoeVdRT8VeLK1VAjUNr5Fopnt3oEG7C/9DR7zCkEsbZgm2i0
+        IPXthzMxawdZ8XGs3xk4A4nz+vhP+zxiG4O0oHEZxQrR2GVLnZ0KQQci8Q48Z0m9
+        DCx++a4vOSKM1w==
+X-ME-Sender: <xms:madhYOt78rUdtEiRXntHR6eVQ17wBRTQfwu0w6gvvj7ZkAPkp7NIlg>
+    <xme:madhYDcBLqJd5oHka-jMSkCbDzCmkzybLW6JE5B1V8mdDOgTcw0rZQHMnxAmeQ5Bm
+    Xu4RvdmbDhrVMk>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgvdehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:l6dhYKVVtApfRHRNxKdjxyDnUWTnpMLjBQdJAJKh6pZ-h17-vvaQwQ>
-    <xmx:l6dhYGghuuKniib4ULbv9nK3sup1SDVoKYrdr2dskYIwrY_5O7JcKA>
-    <xmx:l6dhYKBtZ_sU8DVx6vETlLRuEqt4CVMkuCswG2tSLGF_kkgG1JJZKg>
-    <xmx:mKdhYNOOVpqvUzeWvNPj6lfXErZYj0yiNOIywJNFZHL2F6xlFle4BA>
+X-ME-Proxy: <xmx:madhYJxGwiqVsJ6V6bCJFn6zy2nJErG5wbSJGCcLcpcTZsc_KwHHVg>
+    <xmx:madhYJOk22Ro_3xSriFlvhz28ngSnsgbxpz6yvJE8zQ3ubh5Y8Ijwg>
+    <xmx:madhYO_oKLU9votet-E0n9AfrMPKBEpUZOPNnqMJuiVIIJBGDsSBFw>
+    <xmx:mqdhYAKFSJuEzFKdZaoKrMFlY6hIB4Ql_Fb3X03FMIOqIDtaRh8tXw>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A3478240054;
-        Mon, 29 Mar 2021 06:10:30 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4B17B240054;
+        Mon, 29 Mar 2021 06:10:32 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/6] mlxsw: spectrum: Veto sampling if already enabled on port
-Date:   Mon, 29 Mar 2021 13:09:47 +0300
-Message-Id: <20210329100948.355486-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/6] selftests: mlxsw: Test vetoing of double sampling
+Date:   Mon, 29 Mar 2021 13:09:48 +0300
+Message-Id: <20210329100948.355486-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210329100948.355486-1-idosch@idosch.org>
 References: <20210329100948.355486-1-idosch@idosch.org>
@@ -63,38 +63,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The per-port sampling triggers (i.e., ingress / egress) cannot be
-enabled twice. Meaning, the below configuration will not result in
-packets being sampled twice:
+Test that two sampling rules cannot be configured on the same port with
+the same trigger.
 
- # tc filter add dev swp1 ingress matchall skip_sw action sample rate 100 group 1
- # tc filter add dev swp1 ingress matchall skip_sw action sample rate 100 group 1
-
-Therefore, reject such configurations.
-
-Fixes: 90f53c53ec4a ("mlxsw: spectrum: Start using sampling triggers hash table")
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../selftests/drivers/net/mlxsw/tc_sample.sh  | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index efc7acb4842c..bca0354482cb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -2668,6 +2668,11 @@ mlxsw_sp_sample_trigger_params_set(struct mlxsw_sp *mlxsw_sp,
- 		return mlxsw_sp_sample_trigger_node_init(mlxsw_sp, &key,
- 							 params);
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+index 57b05f042787..093bed088ad0 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_sample.sh
+@@ -34,6 +34,7 @@ lib_dir=$(dirname $0)/../../../net/forwarding
+ ALL_TESTS="
+ 	tc_sample_rate_test
+ 	tc_sample_max_rate_test
++	tc_sample_conflict_test
+ 	tc_sample_group_conflict_test
+ 	tc_sample_md_iif_test
+ 	tc_sample_md_lag_iif_test
+@@ -272,6 +273,35 @@ tc_sample_max_rate_test()
+ 	log_test "tc sample maximum rate"
+ }
  
-+	if (trigger_node->trigger.local_port) {
-+		NL_SET_ERR_MSG_MOD(extack, "Sampling already enabled on port");
-+		return -EINVAL;
-+	}
++tc_sample_conflict_test()
++{
++	RET=0
 +
- 	if (trigger_node->params.psample_group != params->psample_group ||
- 	    trigger_node->params.truncate != params->truncate ||
- 	    trigger_node->params.rate != params->rate ||
++	# Test that two sampling rules cannot be configured on the same port,
++	# even when they share the same parameters.
++
++	tc filter add dev $rp1 ingress protocol all pref 1 handle 101 matchall \
++		skip_sw action sample rate 1024 group 1
++	check_err $? "Failed to configure sampling rule"
++
++	tc filter add dev $rp1 ingress protocol all pref 2 handle 102 matchall \
++		skip_sw action sample rate 1024 group 1 &> /dev/null
++	check_fail $? "Managed to configure second sampling rule"
++
++	# Delete the first rule and make sure the second rule can now be
++	# configured.
++
++	tc filter del dev $rp1 ingress protocol all pref 1 handle 101 matchall
++
++	tc filter add dev $rp1 ingress protocol all pref 2 handle 102 matchall \
++		skip_sw action sample rate 1024 group 1
++	check_err $? "Failed to configure sampling rule after deletion"
++
++	log_test "tc sample conflict test"
++
++	tc filter del dev $rp1 ingress protocol all pref 2 handle 102 matchall
++}
++
+ tc_sample_group_conflict_test()
+ {
+ 	RET=0
 -- 
 2.30.2
 
