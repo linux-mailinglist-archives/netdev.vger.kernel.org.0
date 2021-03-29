@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E23A334DB4B
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27DA534DB41
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbhC2W1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 18:27:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49550 "EHLO mail.kernel.org"
+        id S231944AbhC2W04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 18:26:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232744AbhC2WYK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232743AbhC2WYK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 29 Mar 2021 18:24:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 718CF619B5;
-        Mon, 29 Mar 2021 22:23:33 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A80B9619BB;
+        Mon, 29 Mar 2021 22:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617056614;
-        bh=wr1kZ79QxsRd59D8OKxICgc9aTlAjvNLpPyNm7bddsk=;
+        s=k20201202; t=1617056615;
+        bh=ESaG5xY99YlSyH/jJMtYspYTLm0ub+JFq0HjG/Ioor0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aw4EN1DfJQFuUiGmtVgEFAL1RVNsvznaDryWAN/CgNYWXXghwIYjp9FFZcUl2OYjj
-         40T796oeYZlhEhrHWsMtEGPeH2HzmbFUKCmlBzu9e5AD4VBoXKyWJuRtCeksvwoapK
-         tAiNFNp1En+j/nPdzkCoKzDfno6AAr2C4ws7sbUvUxDjz/aRWpI37X7plwuhsL/jBr
-         OuvNQ8wCqtbmktmePxsRTp0F5Fkl5rq3HUDfAvOcu4tkCjul+vNQ89Z91bZ0jxjgCC
-         0zfh+pfMauYU/S2KBpGMupq+W23OKD0Fy2n8ywGYov3JvuCBrnHRP4Xe+wdz74Oc8Y
-         2H7PiKjPjxM/Q==
+        b=XQLfA5spiUC/2dkDDenxHKQLIweZk8RKNx56h1UsdynKyjy1giBI46fJkKa6C4b1e
+         OfB7w+9g1zQq1uG7AmXb0JzS0L54rQVF/JSY1zjrTLV9HbrssuKSfXKNhB2S7quTcc
+         tcuTZvukERNigWcs9qcPlyif15iVU8OkpJ1KlFJ+4WfC/SC/NKoFHB0Jf2u1G24gfX
+         tF/Jz11BS6AR/9EMdWLFmGUbCMIUsOejR4jdh2Pkl5m2crTxusq3i1zwYe0/+b3J9P
+         1nyZwDeHKrIkKdBxYySjW2XeTTslekr1taAz49Xudg6LLeur9P/Tz2CgWWLwkMIJwY
+         K9VC9Hh8IqT+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Markus Theil <markus.theil@tu-ilmenau.de>,
-        syzbot+93976391bf299d425f44@syzkaller.appspotmail.com,
+Cc:     Karthikeyan Kathirvel <kathirve@codeaurora.org>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/15] mac80211: fix double free in ibss_leave
-Date:   Mon, 29 Mar 2021 18:23:17 -0400
-Message-Id: <20210329222327.2383533-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 07/15] mac80211: choose first enabled channel for monitor
+Date:   Mon, 29 Mar 2021 18:23:18 -0400
+Message-Id: <20210329222327.2383533-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210329222327.2383533-1-sashal@kernel.org>
 References: <20210329222327.2383533-1-sashal@kernel.org>
@@ -44,74 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Markus Theil <markus.theil@tu-ilmenau.de>
+From: Karthikeyan Kathirvel <kathirve@codeaurora.org>
 
-[ Upstream commit 3bd801b14e0c5d29eeddc7336558beb3344efaa3 ]
+[ Upstream commit 041c881a0ba8a75f71118bd9766b78f04beed469 ]
 
-Clear beacon ie pointer and ie length after free
-in order to prevent double free.
+Even if the first channel from sband channel list is invalid
+or disabled mac80211 ends up choosing it as the default channel
+for monitor interfaces, making them not usable.
 
-==================================================================
-BUG: KASAN: double-free or invalid-free \
-in ieee80211_ibss_leave+0x83/0xe0 net/mac80211/ibss.c:1876
+Fix this by assigning the first available valid or enabled
+channel instead.
 
-CPU: 0 PID: 8472 Comm: syz-executor100 Not tainted 5.11.0-rc6-syzkaller #0
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0x5b/0x2c6 mm/kasan/report.c:230
- kasan_report_invalid_free+0x51/0x80 mm/kasan/report.c:355
- ____kasan_slab_free+0xcc/0xe0 mm/kasan/common.c:341
- kasan_slab_free include/linux/kasan.h:192 [inline]
- __cache_free mm/slab.c:3424 [inline]
- kfree+0xed/0x270 mm/slab.c:3760
- ieee80211_ibss_leave+0x83/0xe0 net/mac80211/ibss.c:1876
- rdev_leave_ibss net/wireless/rdev-ops.h:545 [inline]
- __cfg80211_leave_ibss+0x19a/0x4c0 net/wireless/ibss.c:212
- __cfg80211_leave+0x327/0x430 net/wireless/core.c:1172
- cfg80211_leave net/wireless/core.c:1221 [inline]
- cfg80211_netdev_notifier_call+0x9e8/0x12c0 net/wireless/core.c:1335
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2040
- call_netdevice_notifiers_extack net/core/dev.c:2052 [inline]
- call_netdevice_notifiers net/core/dev.c:2066 [inline]
- __dev_close_many+0xee/0x2e0 net/core/dev.c:1586
- __dev_close net/core/dev.c:1624 [inline]
- __dev_change_flags+0x2cb/0x730 net/core/dev.c:8476
- dev_change_flags+0x8a/0x160 net/core/dev.c:8549
- dev_ifsioc+0x210/0xa70 net/core/dev_ioctl.c:265
- dev_ioctl+0x1b1/0xc40 net/core/dev_ioctl.c:511
- sock_do_ioctl+0x148/0x2d0 net/socket.c:1060
- sock_ioctl+0x477/0x6a0 net/socket.c:1177
- vfs_ioctl fs/ioctl.c:48 [inline]
- __do_sys_ioctl fs/ioctl.c:753 [inline]
- __se_sys_ioctl fs/ioctl.c:739 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:739
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Reported-by: syzbot+93976391bf299d425f44@syzkaller.appspotmail.com
-Signed-off-by: Markus Theil <markus.theil@tu-ilmenau.de>
-Link: https://lore.kernel.org/r/20210213133653.367130-1-markus.theil@tu-ilmenau.de
+Signed-off-by: Karthikeyan Kathirvel <kathirve@codeaurora.org>
+Link: https://lore.kernel.org/r/1615440547-7661-1-git-send-email-kathirve@codeaurora.org
+[reword commit message, comment, code cleanups]
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/ibss.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/mac80211/main.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/ibss.c b/net/mac80211/ibss.c
-index f0f5fedb8caa..fa13eef25f2c 100644
---- a/net/mac80211/ibss.c
-+++ b/net/mac80211/ibss.c
-@@ -1861,6 +1861,8 @@ int ieee80211_ibss_leave(struct ieee80211_sub_if_data *sdata)
+diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+index 68db2a356443..f44d00f35fe7 100644
+--- a/net/mac80211/main.c
++++ b/net/mac80211/main.c
+@@ -931,8 +931,19 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 			continue;
  
- 	/* remove beacon */
- 	kfree(sdata->u.ibss.ie);
-+	sdata->u.ibss.ie = NULL;
-+	sdata->u.ibss.ie_len = 0;
- 
- 	/* on the next join, re-program HT parameters */
- 	memset(&ifibss->ht_capa, 0, sizeof(ifibss->ht_capa));
+ 		if (!dflt_chandef.chan) {
++			/*
++			 * Assign the first enabled channel to dflt_chandef
++			 * from the list of channels
++			 */
++			for (i = 0; i < sband->n_channels; i++)
++				if (!(sband->channels[i].flags &
++						IEEE80211_CHAN_DISABLED))
++					break;
++			/* if none found then use the first anyway */
++			if (i == sband->n_channels)
++				i = 0;
+ 			cfg80211_chandef_create(&dflt_chandef,
+-						&sband->channels[0],
++						&sband->channels[i],
+ 						NL80211_CHAN_NO_HT);
+ 			/* init channel we're on */
+ 			if (!local->use_chanctx && !local->_oper_chandef.chan) {
 -- 
 2.30.1
 
