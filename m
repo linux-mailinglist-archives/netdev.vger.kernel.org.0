@@ -2,96 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56B2434D4E8
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 18:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B40E34D4F2
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 18:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231303AbhC2QYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 12:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231367AbhC2QYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 12:24:19 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B90EC061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 09:24:19 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id a19so14223352ybg.10
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 09:24:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=eHOx3PCFf++2TSEv++5lGe2LoVcdpp0PLZ4xmLu3+uk=;
-        b=FQSBKm1Jb+H2p/xGU3x0uOjxbJi9p3gjYaU1keQmNPQdFOQIEIUoAAUnUlBgEkpPt3
-         pR7Sk6mlltIVgv0Dp+x6TwJYLhM3bfnnYcT3edZ6MKRZRJhdgMgLQkWzmtbBbh8PcG5g
-         wcdE4sBqy5kin2zKtwGfbBZl4mNxtg/pp9WDuo3L/97Znuw9jy9k+02MczY2SOqfOzFA
-         IfVon68tMH0CXT55RzUL8vce1lroIcvsMpIaCacpTsADPam86y3qj8hRIRo4h0QgA3ho
-         35GMgNXUMt/itrtjn6RERbRCCalxpMkwDZgtzMW2wT3fzAUcmPRhSGHzj2J+n46rI0r8
-         AHAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=eHOx3PCFf++2TSEv++5lGe2LoVcdpp0PLZ4xmLu3+uk=;
-        b=FDTheeJmSeKsuN8X7EXDTaX8ter7iWjzSsvGmL/T8RqTdmG+ACpgdIL11+c8ZZDtHh
-         hnczsJ7uXSaR2bgbA1AUGEAC8CVPgX+wc3cI/I9iZXGuHVn3IsarTsZu28s7WwOV82qG
-         PJ84UCXypO+uMw7LT8rmzYCDdbQBj3tJwIIujeHo9VUqrQZPlK1OMT3jxZaoWXzbH+IK
-         OHbJFWLeGDh4SH/Qrp4Db+kQ7eSqu8u68VrtN5199xQIfBSE3s2ZAoC/0qqRfZBC9Dz1
-         FuElgPzGqYIenykqu9+iU7tVjYvv6picZyThfAP44eQ1RUln0F850567EutJfzlkiefB
-         clFQ==
-X-Gm-Message-State: AOAM533f2rQojdMbQUBkzUGxLhYX7qhLzOFPornC3Pyh9wwYUFQkOhIP
-        UZZjNoJikl7qJet2m/Fok3nw8F3Iii51gZN7E8+a9XlUskhy6QKgC2V90PEudh3fksnRhfq3Q5m
-        GvkhI1LHdHCGtNZxJsmKkB3H+HW68gHUH5liIpytboiOG8YvKy8Jsbw==
-X-Google-Smtp-Source: ABdhPJzI8CwSR+idKXKEWu0e2tOX9ZohLD4wRBk/vochX9KSQcieruWh7BkCECh2AJ65kO3FZI2x1Ck=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:ede7:5698:2814:57c])
- (user=sdf job=sendgmr) by 2002:a25:188b:: with SMTP id 133mr38770810yby.65.1617035058589;
- Mon, 29 Mar 2021 09:24:18 -0700 (PDT)
-Date:   Mon, 29 Mar 2021 09:24:16 -0700
-Message-Id: <20210329162416.2712509-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-Subject: [PATCH bpf-next] tools/resolve_btfids: Fix warnings
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S231453AbhC2QYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 12:24:36 -0400
+Received: from mail-eopbgr80041.outbound.protection.outlook.com ([40.107.8.41]:4536
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231384AbhC2QYY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 12:24:24 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vft9IGAIpkOWGLN94e3FUqjr5h/2diDiciz4TFx3inef54cUaUm0bFHIx+ulWjaQDlzMv8WoeXRIqOtVtnAkiV6H1JEpIAc9ncCjrrZ1ps3AwxCFijKu+2YweHAzNNen++QMxeVAuAGLfjuZA4+vcSVncOESrE3qFJpH/nQI/j3Qjxk7e+UWrN8NTHCQ0HTlfELEv+X4wFYPsrcTgZJy7yE+Mx6zqMYcFl2PKIi69Dv8/bIdEm6e7c7CRBioMW1RQCIS1e5c2Kvsvwmb7N7c6g6/Qr64Vpz4uNZicJwaiyda0rS+FwZidrMxoFEcCe1c4C30bsiuPssV5m+XOYxqCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JkMr2/4M2jT0VxpNbBoKxAqwEC7nAxLTcWmQl5mMs6A=;
+ b=hnxObEhwGUzM8WUrw/J7Ng3YPEuZgOBnqoL2UEXTzdJUSwCl7xX8AGNC8sJp3G/NI2qOl5xAko0FRaT3CBj4unCkb5r7sM7YylQ75jfEDELlp0dnnrE+SsU6ga+Mm3knjRKQPHc/FIbmZbb4JvK0drg5IAFxX8jaUWn1dedn0rhvIsn+HOErAWw/XBtDh+6N6Tqmb/aDK/ovUoETFiHfMWDvrKyD1UbH0dMjHaZc2dV7LSzAG2jfCOB25mbSmvILbTYnS4WB5EZqHAu5rSFOZWDO5R2nK9ei72lrxjNuAm5hfT5dtRuQ9wD9bviK5TnL5bwCPDInNoeaUNGZYicUwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JkMr2/4M2jT0VxpNbBoKxAqwEC7nAxLTcWmQl5mMs6A=;
+ b=TBjLHsCqr0iNWXXbtrGulkP18oWM6f6fFwiXvcyEXqRw3I4iZ2WCjsQjfC7PGECsX01cizwXEaapBLT1TThw0ES6TP9W6dg6wrPxvKuNcc2kw4BkHLd+uPjrFVJOLUqkA3RYXEzeiHGXEfDzvrYUi4SNDMUsVXzTxkAzH3j0UVU=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6942.eurprd04.prod.outlook.com (2603:10a6:803:136::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.33; Mon, 29 Mar
+ 2021 16:24:22 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f0c0:cb99:d153:e39b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::f0c0:cb99:d153:e39b%7]) with mapi id 15.20.3977.033; Mon, 29 Mar 2021
+ 16:24:22 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net v2] enetc: Avoid implicit sign extension
+Thread-Topic: [PATCH net v2] enetc: Avoid implicit sign extension
+Thread-Index: AQHXJKXlZqB1plpeA0OcVM38+bWT0qqbJqaA
+Date:   Mon, 29 Mar 2021 16:24:22 +0000
+Message-ID: <20210329162421.k5ltz2tkufsueyds@skbuf>
+References: <20210329141443.23245-1-claudiu.manoil@nxp.com>
+In-Reply-To: <20210329141443.23245-1-claudiu.manoil@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.16.165]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 8c2e520f-f3d9-4524-194f-08d8f2cf1ca9
+x-ms-traffictypediagnostic: VI1PR04MB6942:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB69423BCCF41BDEDDA74B31A7E07E9@VI1PR04MB6942.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tzh6d5ln+G2XpLxsEEBIcvaEJUTtR4b6sGmKTvSChGFhFKWxQnpLTTTLm1gj1VdnMLbxSBmNpUj0MeqrOMts1LGva5hhCK6Wo4T96+F45n9Al8mo7rZiiDuwqJ1rPN2vkGsz/ipHllS262YaJdIM8rwewilR4e/HLAoxf960EyccAKWRjsk53RwUYczU0BNum1oYVmhLG+F0kA7X5EkpXSfkau84xPqCRAc8xaZHUp/MoCIJVH6PIvzkHAt/zhxH9qG/ckt32FqMPHTjM7BSndMDQDACB9IJK7KLZLw2tZPJRsyeWyhrXNPWhmsZnIZK2IwHxWIdljuXMYPdBi3R3p/aYXq1SWyLOCLK8E1FcfSTE18tdG3QavxHiwwJHMR7CAxaPZF/Ert9LwzUHh8gCgCvSml0AZhpuKGFhK/EU2QwuIWFcpKHcAWlbCvIreYXY1nJGVPxY6xgf4sjrJVs/q51dpoSlO0bbJBthB27eEB+peqO3MmgUFgRRz2fBofzpDShSplQRIFQF/ooMjoBmjWPHDIzwaa3UxRNKQAY2A9h763CQYCXDda5AYSUMgiqs2bOihndLuT1I4KxWMow3oqr8vDqsrGs4de9knmFVlJqNh5sSlRcAs5m4I9gsb0nguiVUlHglEuvh739nDET8GbQnzFllHlYWsTTL8Z3pxc=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(366004)(136003)(376002)(396003)(346002)(66946007)(66476007)(66556008)(1076003)(6486002)(66446008)(83380400001)(64756008)(316002)(6862004)(38100700001)(44832011)(54906003)(6512007)(8676002)(9686003)(76116006)(86362001)(33716001)(8936002)(71200400001)(4326008)(6636002)(91956017)(26005)(2906002)(186003)(478600001)(6506007)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?XfX6qJ8XQPntNA+pi1g5XgcVshJtti6AUDKCf0vX2Kvzpj2PqBUjDHjmklmc?=
+ =?us-ascii?Q?ex7zTIusO/pDKLcCgQWnoZuP/DwSYJAhGH+XWb2lrdOttG1AFqQ1iE4gsos1?=
+ =?us-ascii?Q?5FLgjeOMvO/OhsuJkAenYg9pEa1GU2Wwfea0kWrlu+bOTlKUFVBzQpXzGCbo?=
+ =?us-ascii?Q?S698R1Axgbswzflpr1aRrbrTicC4g1a0JCGZHt1MBr0XRbTU3p9Psket7CPM?=
+ =?us-ascii?Q?abpAYBA5o5pzekGjubxlQgDiSwx9OWhylrqZq59N6qYhf7OB4enLBG7aEbp+?=
+ =?us-ascii?Q?oVePMa5p4r4zf0Q81eH4kgEWUCwXkuvt0yMUmppoZcIbuxDhTLvwIVZtI5Ie?=
+ =?us-ascii?Q?NT3g4uTaBO//KAsXYiJuyrVBcjmwIFeS1xUvapkZMWnOy24YOtaRehC7aOwI?=
+ =?us-ascii?Q?26j4mrReaIKbpkQASPJdHn0LgBU9sZNJcYRITF3hW35d0tMV4fBalZyjM20U?=
+ =?us-ascii?Q?U3hi/Vf/dWiyNR4rqI/MHifEDmd4vAPrl9xr7ihvTioAlh6Z0+DAcVJaiGc9?=
+ =?us-ascii?Q?VI/8S0AHOlPVQTw18nBtS4Cfvo03m+XqSwuTQpgvxuUoKXb8Q82SNBo+dfgJ?=
+ =?us-ascii?Q?j2l2MYuv6d0YwR7Mrq9KQEJQ5K1o4RzNbVBclCWASK9U+7eAb3Lb5l6dMqsu?=
+ =?us-ascii?Q?WdVLai0/y8qjNy2N3RYmJEvaOLN545q6Du/pPuP1cAIjW/20HjmkU+PAV4lK?=
+ =?us-ascii?Q?SU02o9mgbM1tKeD349RigSxYWiGDhB4QNgHNnx+SodWQ32n0cRQl7VlEr+6z?=
+ =?us-ascii?Q?RHfs/20wJYebVJ5UzLTJrBcpo5Ggo2CE7Qsl06QgpkFb+hvUIK5VW5HKXLW4?=
+ =?us-ascii?Q?dBdjME5aumN6+voot+XSdSCx8k+ceeZ+k/0BGxOdKXXmK79SvoNcBOrcMTwc?=
+ =?us-ascii?Q?bndfG4etbbmLsvzb/NBEDRkmY7nyrU0W3Muec+auwq32QQsp+dFtnvaFDkdx?=
+ =?us-ascii?Q?uBA6X4osi0/iJKEysqKeyoPljMSCe5haElMy9Bcr7D0mD7FxR2ZTsgItZMaL?=
+ =?us-ascii?Q?onuQokJFae0hXD0tz9lS9E7KQ3cDYN2fFPuAjYPyqOoyVOQVNHRoy5qJDjZr?=
+ =?us-ascii?Q?ZsICGWz+Ail+2g/GJuyvfyoMT7jpXFjRy/iTBjZkPDoATwcmTTSjHWKlrvQn?=
+ =?us-ascii?Q?Ptz0Y/Uexo//iFEDAJKtPGsuhA4VbAYdj9jAdEPN75r/y+r2DGGlP66bf4vW?=
+ =?us-ascii?Q?kG/nwAOLGalIlCK1y7hgXBS6JCUmH9NUl8uVIgkQunmD7Yr+Q+61MQmIT+xQ?=
+ =?us-ascii?Q?T0OAObiooo/VxI2QcwizrFYLoRKg5kgUgMAI+M7awkJ8gp99Ber8EAJ0KO/k?=
+ =?us-ascii?Q?QhZV1rVO99U+pDq+qFfJz+I8?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <F911B4F29FE0F14DBBB6E052B3FB8E8E@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c2e520f-f3d9-4524-194f-08d8f2cf1ca9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2021 16:24:22.4941
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sbbQ0HPIOySOJ4nKuhM+rEgJ6H1/15BsJar6bfPLKm9nWuPTQjwLbKBBfVyv7DiOCVE/XOnD5ea6RjEOHZXfGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6942
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-* make eprintf static, used only in main.c
-* initialize ret in eprintf
-* remove unused *tmp
+On Mon, Mar 29, 2021 at 05:14:43PM +0300, Claudiu Manoil wrote:
+> Static analysis tool reports:
+> "Suspicious implicit sign extension - 'flags' with type u8 (8 bit,
+> unsigned) is promoted in 'flags' << 24 to type int (32 bits, signed),
+> then sign-extended to type unsigned long long (64 bits, unsigned).
+> If flags << 24 is greater than 0x7FFFFFFF, the upper bits of the result
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/bpf/resolve_btfids/main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+This is a backwards way of saying 'if flags & BIT(7) is set', no? But
+BIT(7) is ENETC_TXBD_FLAGS_F (the 'final BD' bit), and I've been testing
+SO_TXTIME with single BD frames, and haven't seen this problem.
 
-diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
-index 80d966cfcaa1..a650422f7430 100644
---- a/tools/bpf/resolve_btfids/main.c
-+++ b/tools/bpf/resolve_btfids/main.c
-@@ -115,10 +115,10 @@ struct object {
- 
- static int verbose;
- 
--int eprintf(int level, int var, const char *fmt, ...)
-+static int eprintf(int level, int var, const char *fmt, ...)
- {
- 	va_list args;
--	int ret;
-+	int ret = 0;
- 
- 	if (var >= level) {
- 		va_start(args, fmt);
-@@ -403,7 +403,7 @@ static int symbols_collect(struct object *obj)
- 	 * __BTF_ID__* over .BTF_ids section.
- 	 */
- 	for (i = 0; !err && i < n; i++) {
--		char *tmp, *prefix;
-+		char *prefix;
- 		struct btf_id *id;
- 		GElf_Sym sym;
- 		int err = -1;
--- 
-2.31.0.291.g576ba9dcdaf-goog
+> will all be 1."
+>=20
+> Use lower_32_bits() to avoid this scenario.
+>=20
+> Fixes: 82728b91f124 ("enetc: Remove Tx checksumming offload code")
+>=20
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> ---
+> v2 - added 'fixes' tag
+>=20
+>  drivers/net/ethernet/freescale/enetc/enetc_hw.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/ne=
+t/ethernet/freescale/enetc/enetc_hw.h
+> index 00938f7960a4..07e03df8af94 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> @@ -535,8 +535,8 @@ static inline __le32 enetc_txbd_set_tx_start(u64 tx_s=
+tart, u8 flags)
+>  {
+>  	u32 temp;
+> =20
+> -	temp =3D (tx_start >> 5 & ENETC_TXBD_TXSTART_MASK) |
+> -	       (flags << ENETC_TXBD_FLAGS_OFFSET);
+> +	temp =3D lower_32_bits(tx_start >> 5 & ENETC_TXBD_TXSTART_MASK) |
+> +	       (u32)(flags << ENETC_TXBD_FLAGS_OFFSET);
 
+I don't actually understand why lower_32_bits called on the TX time
+helps, considering that the value is masked already. The static analysis
+tool says that the right hand side of the "|" operator is what is
+sign-extended:
+
+	       (flags << ENETC_TXBD_FLAGS_OFFSET);
+
+Isn't it sufficient that you replace "u8 flags" in the function
+prototype with "u32 flags"?
+
+> =20
+>  	return cpu_to_le32(temp);
+>  }
+> --=20
+> 2.25.1
+> =
