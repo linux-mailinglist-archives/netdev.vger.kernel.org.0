@@ -2,94 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8ED34D3EE
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8837B34D400
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231321AbhC2P3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 11:29:22 -0400
-Received: from fallback11.mail.ru ([94.100.179.26]:52386 "EHLO
-        fallback11.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231395AbhC2P2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:28:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=/xIT9HpKLIGYbAS0bb4hbH269wsJqnJhq94KZB27eFw=;
-        b=qimunc9EB+mukkmBU9D1quAbvFqGXxZ2WA4Q1uAOmGroZdgZlKDvHozZwWFHSDF7eEmXil7Xysvi97b7xrXhjlBkrCu/qH8HMnaiBHi8rKvWmG7b72/UilO6TJJnBEqmGMd20oEJMR0HOSXtXu2qe+oj23CqKOeUiBo2DcNwErE=;
-Received: from [10.161.64.50] (port=58080 helo=smtp42.i.mail.ru)
-        by fallback11.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1lQtoy-0005Vn-Il; Mon, 29 Mar 2021 18:28:52 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=/xIT9HpKLIGYbAS0bb4hbH269wsJqnJhq94KZB27eFw=;
-        b=tlETbyoiVlIc62cL+twHLohTIZEGLwhCspEPu85bFs6UuMOvwfY/DOtCKiT19MrnXtKgBV/54LNUe5qQELQTkLClShQJMg3VPlI65HvoQzK+C5gcE2GYgd7+13gAtVMskFOJ/t5rg60hZwBqD10HQdqAw7kj8Rgg3yzpcA2ECK8=;
-Received: by smtp42.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1lQtot-0004iQ-T1; Mon, 29 Mar 2021 18:28:48 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH 1/1] net: dsa: Fix type was not set for devlink port
-Date:   Mon, 29 Mar 2021 18:30:16 +0300
-Message-Id: <20210329153016.1940552-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.30.2
+        id S230266AbhC2PeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 11:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230329AbhC2Pdj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:33:39 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B67EC061574;
+        Mon, 29 Mar 2021 08:33:39 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id y1so16385063ljm.10;
+        Mon, 29 Mar 2021 08:33:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ktl91u+6i2FDi36gd93XSP7u6zX63G4S8FcsPppuBok=;
+        b=E1EG6YLTQO+IqCI8yF3MTXrIJZdBuCBudX2yspne0z/Bdt2dsObL+Hp9r7w9z8qj+3
+         nG9EtW2JeSx2RQMA0aPidmSMnizGNujUrF/N6zSOz2CLBnJ76llY8+NIjUoUYXJXkeLn
+         AP+qRK7HWZyeAZNEQpVq0g/O4ZjqXvA83zTOfVnF3yJmJbfyNH/HPt78A0JebI2PJuHB
+         ym1ob8pHMwk/5p1q/NrHAmkf294n3KsvAPdINEc47IuCu/nKmC7PvaBl3mtNUzahUebl
+         4MxoDyAkU8nSZ3jW6FmkINngohcKYXchjIgwPyx+B0hSA6jgGSLtCsYilVn4k82ZPg5B
+         dNvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ktl91u+6i2FDi36gd93XSP7u6zX63G4S8FcsPppuBok=;
+        b=YB//52PhAAV7kig4oTL4WgwwTk//LNXlxIpIeTyq4uS8SRyf76iJ/GvToCES27PudN
+         Ej2Mhn50mnhjr9JpPig5xRS8omBtFLw6hMYykdxhnh+oMXJfIjvAV15ke6Ro9RyMpyhD
+         5H4Ychd2355vWjkXbYlSUdVTwGsKgnVFRUiADPkc1cf8drK+07Rqkp9IVEk3XdFHYkoc
+         DiOg6ufsCuXt3iHlhh7qCZnijdNECULjg0uTFl07DtdpQREQzrpj5OsZzk1kRmLSZY7o
+         6ytMTF6l8bE49/4uoJ7S3cUJXds4RQnnskcmfxonHc8egJIhxgkG0xYHOizfnTgrljGX
+         /T0A==
+X-Gm-Message-State: AOAM531bwx9HG3SscOYFOYgcj1la8snCrMozubQsCAL/I+g5AY4eYWIV
+        IKpsN8UIAu79WFUx4JJSp2U=
+X-Google-Smtp-Source: ABdhPJzIaDmWQh93tZglZ8hQeDfOUoOxtCTkFaimpYMGp2SLDDP+2uPglT4qug8m9WlF1WRF0ctB7A==
+X-Received: by 2002:a2e:8616:: with SMTP id a22mr18140346lji.509.1617032017798;
+        Mon, 29 Mar 2021 08:33:37 -0700 (PDT)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id c9sm1112144lfv.10.2021.03.29.08.33.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Mar 2021 08:33:37 -0700 (PDT)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH net] dt-bindings: net: bcm4908-enet: fix Ethernet generic properties
+Date:   Mon, 29 Mar 2021 17:33:28 +0200
+Message-Id: <20210329153328.28493-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-7564579A: 78E4E2B564C1792B
-X-77F55803: 4F1203BC0FB41BD9ED7173E37F4E32947427BE79D20CABD4F844F00D7AFD5C3C182A05F538085040AC4EAA646DAE3B49FF1D9C9788695F406813516843C5937CC9ADD231A8C9152C
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE75C385DEB91CEC222EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637D24CDE3D695BBBC6EA1F7E6F0F101C67CDEEF6D7F21E0D1D174C73DBBBFC76645DAD22F477C80C2F3ACD9317F2C8A338BD8AA90267E6F862389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C07734D68A6916D8318941B15DA834481FCF19DD082D7633A0EF3E4896CB9E6436389733CBF5DBD5E9D5E8D9A59859A8B69EAAB76869E07C3ECC7F00164DA146DA6F5DAA56C3B73B237318B6A418E8EAB8D32BA5DBAC0009BE9E8FC8737B5C2249537E5CF43EE7B3DE76E601842F6C81A12EF20D2F80756B5F7E9C4E3C761E06A776E601842F6C81A127C277FBC8AE2E8B17F3684465E605A63AA81AA40904B5D9DBF02ECDB25306B2201CA6A4E26CD07C3BBE47FD9DD3FB595F5C1EE8F4F765FCA83251EDC214901ED5E8D9A59859A8B67393CE827C55B5F775ECD9A6C639B01B4E70A05D1297E1BBCB5012B2E24CD356
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C7428A34725AB662D4EDC4033EE8FB696E799A0BBBB5503979C2B6934AE262D3EE7EAB7254005DCED255AF2367009C7419510FB958DCE06DB6ED91DBE5ABE359ADBCB5631A0A9D21F2272C4C079A4C8AD93EDB24507CE13387DFF0A840B692CF8
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D347130F804358653A62E4537182400D9EC3F5BE044BD714044924FE4974360A3B5FE04110460677B681D7E09C32AA3244C7F0E72A542479A9970956B5DC9390E9633C9DC155518937FAD832FF50B3043B1
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojljIiQOC84rSQKDMqDjPnTQ==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24891246D36E359CE8F6EC920FEF05E9882F70CE752AFB32DAEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 646B95376F6C166E
-X-77F55803: 6242723A09DB00B4DF7173A40FF1347DA6106AACE9855D4976ED1A9D65780DFF049FFFDB7839CE9EC3B644EC1D8457E65F3166CECA326113949A5DFC52F45BC66C8BC9C8BA9DB797
-X-7FA49CB5: 0D63561A33F958A5F4A05907E556809DEF37BCA86B400785466B57CF848B71848941B15DA834481FA18204E546F3947CE30BDB15EF888393F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637E2A97CBC972F7482389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F7900637350F88CE55B4E102D81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636AAAE862A0553A39223F8577A6DFFEA7CB1724D34C644744043847C11F186F3C59DAA53EE0834AAEE
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C7428A34725AB662D9E4C1C5D58065D53A4DED07957E90F6A9C2B6934AE262D3EE7EAB7254005DCED255AF2367009C741DC48ACC2A39D04F89CDFB48F4795C241BDAD6C7F3747799A
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojljIiQOC84rQDYD27SmAGTQ==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C9005CC619DDFF34CA75F5777CBFF51A9047F77204C9B7C67C77AB2B917E718C14AA9C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If PHY is not available on DSA port (described at devicetree but absent or
-failed to detect) then kernel prints warning after 3700 secs:
+From: Rafał Miłecki <rafal@milecki.pl>
 
-[ 3707.948771] ------------[ cut here ]------------
-[ 3707.948784] Type was not set for devlink port.
-[ 3707.948894] WARNING: CPU: 1 PID: 17 at net/core/devlink.c:8097 0xc083f9d8
+This binding file uses $ref: ethernet-controller.yaml# so it's required
+to use "unevaluatedProperties" (instead of "additionalProperties") to
+make Ethernet properties validate.
 
-We should unregister the devlink port as a user port and
-re-register it as an unused port before executing "continue" in case of
-dsa_port_setup error.
-
-Fixes: 86f8b1c01a0a ("net: dsa: Do not make user port errors fatal")
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+Fixes: f08b5cf1eb1f ("dt-bindings: net: bcm4908-enet: include ethernet-controller.yaml")
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- net/dsa/dsa2.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index d142eb2b288b..3c3e56a1f34d 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -795,8 +795,14 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+index 79c38ea14237..13c26f23a820 100644
+--- a/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
++++ b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+@@ -32,7 +32,7 @@ required:
+   - interrupts
+   - interrupt-names
  
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		err = dsa_port_setup(dp);
--		if (err)
-+		if (err) {
-+			dsa_port_devlink_teardown(dp);
-+			dp->type = DSA_PORT_TYPE_UNUSED;
-+			err = dsa_port_devlink_setup(dp);
-+			if (err)
-+				goto teardown;
- 			continue;
-+		}
- 	}
+-additionalProperties: false
++unevaluatedProperties: false
  
- 	return 0;
+ examples:
+   - |
 -- 
-2.30.2
+2.26.2
 
