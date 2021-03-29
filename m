@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8D8934DA94
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5723734DA8E
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:25:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232299AbhC2WW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 18:22:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46638 "EHLO mail.kernel.org"
+        id S232276AbhC2WW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 18:22:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46640 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232127AbhC2WWd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232126AbhC2WWd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 29 Mar 2021 18:22:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CDF8A61990;
-        Mon, 29 Mar 2021 22:22:27 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E36761976;
+        Mon, 29 Mar 2021 22:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617056548;
-        bh=sIoJHMKoV6HLaDmjvZLyzIfA7RozjDKtiz/GTl7s1vg=;
+        s=k20201202; t=1617056549;
+        bh=izmVQE2q3oDBL9Q6aBDQ5xvG32ynTHTbr234NfHzkp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ViB88pWEiNQVM0KiH5ah5ezobCoJrmMds8XUfbrquzJk+XLw16+tglxjV6qnOr6g+
-         yvYhdKHj/8f4QLGVqGVFrBvv5kVO3xf/vuPPSrJRSoRFGv62+4t5YlFiv2BQ9aLIgL
-         k1Ebvy1v1tJcXe/8yc/F4qXfoT3/G9OX9+YGmFrO3WiPkXBLBFwvWsxh2PQCWCOKa3
-         zFYqhzqAAik8HKZTk+AxjyKZIk+/Ove3AThkW/VWR9M4i0qFpU9BtLlXGx20YvDYnS
-         S8GmTvxUBxCIhRiMYC77nXP4jsoYDBIdg0Edy9b/Guz8P5zKrHbRfE9gJcbhEDnLc7
-         W4Jk38KwOlSew==
+        b=iw4xBIQVNjcKV7zlpKa4koWQ+eRt8rphiXMIKs3MjiGIzSVABJ+5ZcwNoXNuQG5JV
+         ToiG1CniT772LKvjZZzS9T2gaqEhXDbJziFCWomT/dXGYL3v3ZGpESIM9oyVPnzd75
+         +jmfS7yqHgzxDL7M0MA58xhm1ev3W04/jaGPWz4pn7w2BU11xxHAKTbiGPwycge5+Y
+         P++cYRe+syB0paz6YrY2j0ganmbN/Ax/CWR3uJ6XnwkSXNRcVhc3D/OZmDbO1uXA0e
+         e9r7afc4PpntAPhPOFSaAM1TSenKKw/I8IQG3NU3dPaZq6m+PPHSWp2q3YSVKTSUz6
+         qawhcawgqghCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 05/33] net/mlx5e: Enforce minimum value check for ICOSQ size
-Date:   Mon, 29 Mar 2021 18:21:53 -0400
-Message-Id: <20210329222222.2382987-5-sashal@kernel.org>
+Cc:     Pavel Andrianov <andrianov@ispras.ru>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/33] net: pxa168_eth: Fix a potential data race in pxa168_eth_remove
+Date:   Mon, 29 Mar 2021 18:21:54 -0400
+Message-Id: <20210329222222.2382987-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210329222222.2382987-1-sashal@kernel.org>
 References: <20210329222222.2382987-1-sashal@kernel.org>
@@ -44,38 +42,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Pavel Andrianov <andrianov@ispras.ru>
 
-[ Upstream commit 5115daa675ccf70497fe56e8916cf738d8212c10 ]
+[ Upstream commit 0571a753cb07982cc82f4a5115e0b321da89e1f3 ]
 
-The ICOSQ size should not go below MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE.
-Enforce this where it's missing.
+pxa168_eth_remove() firstly calls unregister_netdev(),
+then cancels a timeout work. unregister_netdev() shuts down a device
+interface and removes it from the kernel tables. If the timeout occurs
+in parallel, the timeout work (pxa168_eth_tx_timeout_task) performs stop
+and open of the device. It may lead to an inconsistent state and memory
+leaks.
 
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Pavel Andrianov <andrianov@ispras.ru>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/pxa168_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 6394f9d8c685..508999fa0f65 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2326,8 +2326,9 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5e_params *params,
- {
- 	switch (params->rq_wq_type) {
- 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
--		return order_base_2(MLX5E_UMR_WQEBBS) +
--			mlx5e_get_rq_log_wq_sz(rqp->rqc);
-+		return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE,
-+			     order_base_2(MLX5E_UMR_WQEBBS) +
-+			     mlx5e_get_rq_log_wq_sz(rqp->rqc));
- 	default: /* MLX5_WQ_TYPE_CYCLIC */
- 		return MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE;
- 	}
+diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+index d1e4d42e497d..3712e1786091 100644
+--- a/drivers/net/ethernet/marvell/pxa168_eth.c
++++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+@@ -1544,8 +1544,8 @@ static int pxa168_eth_remove(struct platform_device *pdev)
+ 	clk_disable_unprepare(pep->clk);
+ 	mdiobus_unregister(pep->smi_bus);
+ 	mdiobus_free(pep->smi_bus);
+-	unregister_netdev(dev);
+ 	cancel_work_sync(&pep->tx_timeout_task);
++	unregister_netdev(dev);
+ 	free_netdev(dev);
+ 	return 0;
+ }
 -- 
 2.30.1
 
