@@ -2,141 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9CC34D3EF
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8ED34D3EE
 	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231341AbhC2P3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 11:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231332AbhC2P3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:29:13 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D23C061574;
-        Mon, 29 Mar 2021 08:29:10 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id i26so19004342lfl.1;
-        Mon, 29 Mar 2021 08:29:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YNSI6utIdzEkVaZ1ObCL91nCSNDK1rRdMbCcqeZDoUw=;
-        b=eBwN6Y938TNH+phkVteIoYlBZa8P9+bKNWWvxBIQr6+5DFLf22PpWLsOfDLqW1ag+K
-         g5jGAKZD4jLZ0x+93Xo0MuQl9Qb/qQa9wKk/Ytxj0ASrHBUc4b+qIWI/zJxEGEFs5YtE
-         Qia7SWWbMWeYzgenrbf8Um7onj5EfCIZH5IWtaDWw33YRdy3WyZNcrzodv/TJ6I5kA41
-         rbPiqdZroTnGGHvKsDheYAUnjE8bLk1P+hLlYvLmHPHqIVXBzsmTWM1uwBq1JkkG7z0s
-         urX4bZ7U4e+uqaFiL3Mp0aA71xv/yLzL1VFjQm9abMCYG8zwh3uhf5y+RdecF8HDiQ73
-         I3zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YNSI6utIdzEkVaZ1ObCL91nCSNDK1rRdMbCcqeZDoUw=;
-        b=cGFeyCg7p+qhP8TrJ4fg9ZssQTsyFZeQDMR7NQVRETvMNiV9gBO8cqOq9rISSBLUPI
-         128ggxpAt4PF92QOp/McgIXO4UOKQFLttenCQEQSgCfqkNtnPysmZ5tWD8ip2r4i/CoF
-         i+6s2go/Un++Jaruwdny3KN4u62tFLMQVRKSd+TGEKbvZMBw0Hh4qtutULcOWoD2t8u1
-         qwc86FprYV0r96+UiYrFGVLfuqpMnjurmtcEdAk8QX3EkPHVyUEPzSYH/CbUlhwRbtSK
-         tpBzhqm89nbTIEKYrDjlGp1wiCoyWzJfyyDQGEVmyqZbBdM2qIXvss4ECIMPuYhNPXIR
-         naFQ==
-X-Gm-Message-State: AOAM531uePsl2JfXXyqAU0M7rGSa8wS/H1D+0d20Nq3QjY9AF0pX2pZA
-        +MeYelxQKY3R6H2VYj6V81pJKVwvDgUS7Cx/FfFI0oDo
-X-Google-Smtp-Source: ABdhPJzYVnTFrHNHuc5lV4/F6PFEGFHVERsQO8gxiDIDEmGYZ2V8sM++InCjT7bB3aRiLy56zUDjhjAoxzznuY+O85I=
-X-Received: by 2002:ac2:5ec2:: with SMTP id d2mr17368504lfq.214.1617031748535;
- Mon, 29 Mar 2021 08:29:08 -0700 (PDT)
+        id S231321AbhC2P3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 11:29:22 -0400
+Received: from fallback11.mail.ru ([94.100.179.26]:52386 "EHLO
+        fallback11.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231395AbhC2P2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:28:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=/xIT9HpKLIGYbAS0bb4hbH269wsJqnJhq94KZB27eFw=;
+        b=qimunc9EB+mukkmBU9D1quAbvFqGXxZ2WA4Q1uAOmGroZdgZlKDvHozZwWFHSDF7eEmXil7Xysvi97b7xrXhjlBkrCu/qH8HMnaiBHi8rKvWmG7b72/UilO6TJJnBEqmGMd20oEJMR0HOSXtXu2qe+oj23CqKOeUiBo2DcNwErE=;
+Received: from [10.161.64.50] (port=58080 helo=smtp42.i.mail.ru)
+        by fallback11.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1lQtoy-0005Vn-Il; Mon, 29 Mar 2021 18:28:52 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=/xIT9HpKLIGYbAS0bb4hbH269wsJqnJhq94KZB27eFw=;
+        b=tlETbyoiVlIc62cL+twHLohTIZEGLwhCspEPu85bFs6UuMOvwfY/DOtCKiT19MrnXtKgBV/54LNUe5qQELQTkLClShQJMg3VPlI65HvoQzK+C5gcE2GYgd7+13gAtVMskFOJ/t5rg60hZwBqD10HQdqAw7kj8Rgg3yzpcA2ECK8=;
+Received: by smtp42.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1lQtot-0004iQ-T1; Mon, 29 Mar 2021 18:28:48 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>
+Subject: [PATCH 1/1] net: dsa: Fix type was not set for devlink port
+Date:   Mon, 29 Mar 2021 18:30:16 +0300
+Message-Id: <20210329153016.1940552-1-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20210326142946.5263-1-ciara.loftus@intel.com> <20210326142946.5263-4-ciara.loftus@intel.com>
- <20210327022729.cgizt5xnhkerbrmy@ast-mbp> <bc1d9e861d27499da5f5a84bc6d22177@intel.com>
-In-Reply-To: <bc1d9e861d27499da5f5a84bc6d22177@intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 29 Mar 2021 08:28:57 -0700
-Message-ID: <CAADnVQLt9Wa-Ue85HRzRe0HO_Cyqo9Cd4MyvXRgqSC_dmVe=DQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf 3/3] libbpf: ignore return values of setsockopt for
- XDP rings.
-To:     "Loftus, Ciara" <ciara.loftus@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-7564579A: 78E4E2B564C1792B
+X-77F55803: 4F1203BC0FB41BD9ED7173E37F4E32947427BE79D20CABD4F844F00D7AFD5C3C182A05F538085040AC4EAA646DAE3B49FF1D9C9788695F406813516843C5937CC9ADD231A8C9152C
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE75C385DEB91CEC222EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637D24CDE3D695BBBC6EA1F7E6F0F101C67CDEEF6D7F21E0D1D174C73DBBBFC76645DAD22F477C80C2F3ACD9317F2C8A338BD8AA90267E6F862389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C07734D68A6916D8318941B15DA834481FCF19DD082D7633A0EF3E4896CB9E6436389733CBF5DBD5E9D5E8D9A59859A8B69EAAB76869E07C3ECC7F00164DA146DA6F5DAA56C3B73B237318B6A418E8EAB8D32BA5DBAC0009BE9E8FC8737B5C2249537E5CF43EE7B3DE76E601842F6C81A12EF20D2F80756B5F7E9C4E3C761E06A776E601842F6C81A127C277FBC8AE2E8B17F3684465E605A63AA81AA40904B5D9DBF02ECDB25306B2201CA6A4E26CD07C3BBE47FD9DD3FB595F5C1EE8F4F765FCA83251EDC214901ED5E8D9A59859A8B67393CE827C55B5F775ECD9A6C639B01B4E70A05D1297E1BBCB5012B2E24CD356
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C7428A34725AB662D4EDC4033EE8FB696E799A0BBBB5503979C2B6934AE262D3EE7EAB7254005DCED255AF2367009C7419510FB958DCE06DB6ED91DBE5ABE359ADBCB5631A0A9D21F2272C4C079A4C8AD93EDB24507CE13387DFF0A840B692CF8
+X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D347130F804358653A62E4537182400D9EC3F5BE044BD714044924FE4974360A3B5FE04110460677B681D7E09C32AA3244C7F0E72A542479A9970956B5DC9390E9633C9DC155518937FAD832FF50B3043B1
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojljIiQOC84rSQKDMqDjPnTQ==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24891246D36E359CE8F6EC920FEF05E9882F70CE752AFB32DAEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: 646B95376F6C166E
+X-77F55803: 6242723A09DB00B4DF7173A40FF1347DA6106AACE9855D4976ED1A9D65780DFF049FFFDB7839CE9EC3B644EC1D8457E65F3166CECA326113949A5DFC52F45BC66C8BC9C8BA9DB797
+X-7FA49CB5: 0D63561A33F958A5F4A05907E556809DEF37BCA86B400785466B57CF848B71848941B15DA834481FA18204E546F3947CE30BDB15EF888393F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637E2A97CBC972F7482389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F7900637350F88CE55B4E102D81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636AAAE862A0553A39223F8577A6DFFEA7CB1724D34C644744043847C11F186F3C59DAA53EE0834AAEE
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975C7428A34725AB662D9E4C1C5D58065D53A4DED07957E90F6A9C2B6934AE262D3EE7EAB7254005DCED255AF2367009C741DC48ACC2A39D04F89CDFB48F4795C241BDAD6C7F3747799A
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojljIiQOC84rQDYD27SmAGTQ==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C9005CC619DDFF34CA75F5777CBFF51A9047F77204C9B7C67C77AB2B917E718C14AA9C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
+X-Mras: Ok
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 1:41 AM Loftus, Ciara <ciara.loftus@intel.com> wrote:
->
-> >
-> > On Fri, Mar 26, 2021 at 02:29:46PM +0000, Ciara Loftus wrote:
-> > > During xsk_socket__create the XDP_RX_RING and XDP_TX_RING
-> > setsockopts
-> > > are called to create the rx and tx rings for the AF_XDP socket. If the ring
-> > > has already been set up, the setsockopt will return an error. However,
-> > > in the event of a failure during xsk_socket__create(_shared) after the
-> > > rings have been set up, the user may wish to retry the socket creation
-> > > using these pre-existing rings. In this case we can ignore the error
-> > > returned by the setsockopts. If there is a true error, the subsequent
-> > > call to mmap() will catch it.
-> > >
-> > > Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
-> > >
-> > > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > > Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-> > > ---
-> > >  tools/lib/bpf/xsk.c | 34 ++++++++++++++++------------------
-> > >  1 file changed, 16 insertions(+), 18 deletions(-)
-> > >
-> > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> > > index d4991ddff05a..cfc4abf505c3 100644
-> > > --- a/tools/lib/bpf/xsk.c
-> > > +++ b/tools/lib/bpf/xsk.c
-> > > @@ -900,24 +900,22 @@ int xsk_socket__create_shared(struct xsk_socket
-> > **xsk_ptr,
-> > >     }
-> > >     xsk->ctx = ctx;
-> > >
-> > > -   if (rx) {
-> > > -           err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> > > -                            &xsk->config.rx_size,
-> > > -                            sizeof(xsk->config.rx_size));
-> > > -           if (err) {
-> > > -                   err = -errno;
-> > > -                   goto out_put_ctx;
-> > > -           }
-> > > -   }
-> > > -   if (tx) {
-> > > -           err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-> > > -                            &xsk->config.tx_size,
-> > > -                            sizeof(xsk->config.tx_size));
-> > > -           if (err) {
-> > > -                   err = -errno;
-> > > -                   goto out_put_ctx;
-> > > -           }
-> > > -   }
-> > > +   /* The return values of these setsockopt calls are intentionally not
-> > checked.
-> > > +    * If the ring has already been set up setsockopt will return an error.
-> > However,
-> > > +    * this scenario is acceptable as the user may be retrying the socket
-> > creation
-> > > +    * with rings which were set up in a previous but ultimately
-> > unsuccessful call
-> > > +    * to xsk_socket__create(_shared). The call later to mmap() will fail if
-> > there
-> > > +    * is a real issue and we handle that return value appropriately there.
-> > > +    */
-> > > +   if (rx)
-> > > +           setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> > > +                      &xsk->config.rx_size,
-> > > +                      sizeof(xsk->config.rx_size));
-> > > +
-> > > +   if (tx)
-> > > +           setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-> > > +                      &xsk->config.tx_size,
-> > > +                      sizeof(xsk->config.tx_size));
-> >
-> > Instead of ignoring the error can you remember that setsockopt was done
-> > in struct xsk_socket and don't do it the second time?
->
-> Ideally we don't have to ignore the error. However in the event of failure struct xsk_socket is freed at the end of xsk_socket__create so we can't use it to remember state between subsequent calls to __create().
+If PHY is not available on DSA port (described at devicetree but absent or
+failed to detect) then kernel prints warning after 3700 secs:
 
-but umem is not, right? and fd is taken from there.
+[ 3707.948771] ------------[ cut here ]------------
+[ 3707.948784] Type was not set for devlink port.
+[ 3707.948894] WARNING: CPU: 1 PID: 17 at net/core/devlink.c:8097 0xc083f9d8
+
+We should unregister the devlink port as a user port and
+re-register it as an unused port before executing "continue" in case of
+dsa_port_setup error.
+
+Fixes: 86f8b1c01a0a ("net: dsa: Do not make user port errors fatal")
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+---
+ net/dsa/dsa2.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index d142eb2b288b..3c3e56a1f34d 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -795,8 +795,14 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+ 
+ 	list_for_each_entry(dp, &dst->ports, list) {
+ 		err = dsa_port_setup(dp);
+-		if (err)
++		if (err) {
++			dsa_port_devlink_teardown(dp);
++			dp->type = DSA_PORT_TYPE_UNUSED;
++			err = dsa_port_devlink_setup(dp);
++			if (err)
++				goto teardown;
+ 			continue;
++		}
+ 	}
+ 
+ 	return 0;
+-- 
+2.30.2
+
