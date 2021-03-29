@@ -2,196 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0C3F34D3F2
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D77A34D3F3
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbhC2Pa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 11:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
+        id S231352AbhC2PbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 11:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbhC2Pax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:30:53 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A9FC061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:30:52 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id u5-20020a7bcb050000b029010e9316b9d5so6888240wmj.2
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:30:52 -0700 (PDT)
+        with ESMTP id S231237AbhC2Paz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:30:55 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896E6C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:30:54 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id g25so6862754wmh.0
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:30:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=DlMqjVJIl/mRJdDN04cE1xnw0hfFQzcOVg0gqetXyS0=;
-        b=WSlGZcjTBqTRbQzV0nWM7i/VA5V9D4KvIOCESVMPWAUMlO5fYMIOwJW6mEvdGJ++yA
-         JdW9N5cgODBttlNOyZdm7DkTllvZBJEcEt8LU1PdVSUPipwwRddJKeEh9kd0iedaX5XU
-         9FPYHxgOIV9X5qQJ4mHKtLK4F3sleISuU/EAaVTF6wYeZaEHyu7ihA7oQAGcyZOvgZoI
-         0ORGTax+s7eqy9l6po+UJ/LAd/X4NfrA81iy91XW97Hb2dgAtfhBDk/ff418NNJo3pgO
-         55tK7qOTT11TDgXEvgh+/nPBMuUyvuMlX54oBXctVYGjXXaxx8n+89Lyc4mAgdEo8rb7
-         OjBA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=MSgFlM9sjDK43XxiaOvHTG7XVjCdNq2hxwfF6EGuwyc=;
+        b=bDUTA8Zk4fT3Adk/5U6WLojLR2dBd6HlGFzEXvjLzyerEa+YL03zTnuj6t4aL4Ylp7
+         tDEHEMDJq//KjgQos/NjVPGblMbRLsa9cmIKDOE8kpbKUk+LT/u8VRbUjfHdn0kcbwQK
+         yjOd2gDs627lJjXQx2oyW70O5x0jXfrOdvg6gZC+WOI+s6I12xtE0FJeKf269ssponcP
+         wLBGfo4TqZy7sayUM0/7C4H7xHB0XBGwhdWGB4aDF8FpOCjd4+2AhZhmTIKtc6+RzWAO
+         FxK4afHy/pUXvKUOCMk6oQpvWxBNfk1W5lEot9M7nxSxuSh3gA+I1r02L7SpqLCw9wIz
+         EHYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DlMqjVJIl/mRJdDN04cE1xnw0hfFQzcOVg0gqetXyS0=;
-        b=qO66BkZB8nT2hrUVPe1to7I8QLeTno2l/lX+tyfhDu3ytCirHi+NSDUa8TI/oPL9xW
-         DJ5a6OOdxIk5Fgw85G68r5gkix5nvjf2MZDVTFxJ3lFdoECUJ0XfCD1Va8LhwovPpr8b
-         wM2q0XZ+bNlc3PpGVhuozMP0HXdagnQc7dgxFv7iEvJ+VNUsQ06vtAaLy6+Bee2PLVUf
-         v9QIOBr5RAt2g82B0wFPu6eaO/7IiBv6b2niWjCoa6tIGv0N6Y76CkGMf24YpdXXk/Nb
-         z3ilYOZZOvx2mBxOMajT+8J2UqnTgMb1C/hRkWvF4LYk9nnJmj4RcgwR4Um05/H2sVlJ
-         4GDQ==
-X-Gm-Message-State: AOAM532KZcpIWOxpg5905FGJZ3ltKjceeoBPb8DFgbF0DBZ5eRbsbxpi
-        xUXThHTpQdzzeGvolAZI0cKPrQ==
-X-Google-Smtp-Source: ABdhPJwBSKzEOzugVBEOkbx8DIyLgaQ5gw3jxv8QaJsGST45yBNLaJj7jwzt760FTPB30q5k1Kg4og==
-X-Received: by 2002:a1c:9a09:: with SMTP id c9mr24665753wme.172.1617031851410;
-        Mon, 29 Mar 2021 08:30:51 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=MSgFlM9sjDK43XxiaOvHTG7XVjCdNq2hxwfF6EGuwyc=;
+        b=q+nwH3I6xEkx4TNSrF/RbSUJoc9iPEHwHznogDTka9zG92v/up4xhuDeJwdshDSzca
+         wACsVDZiqFoN+9aelh2tc9v7q8bPl4Uh6CbY9ElN8A/IKvDF2VwFca3rk/GK4OEb7ODs
+         0MYkigpPhPw2V8uTQLdWoEjdKrKma7TJxiHnl1Q026tPdADSGn8NACT66O7d/paF9QBE
+         cLf/1mhT2KCb3ER67x89CuDGUgCX39AOqi7kXJX7yPWPlbbZUhFZYHIv3vEtCdTxnTBo
+         RQZtSSBR3lmbOFtbPPIslKAlJYsL8r4/xjPc1zc+KiLBbD/D6/KgPESYekF4wQw0/T4r
+         9zLA==
+X-Gm-Message-State: AOAM5302NnzebI14KOtnne6yhkvGDj9jGHZeEaO/RdadJS2o/pWk7AXV
+        SdXkxvlCVi9j9Qa8Ak/rzvXduQ==
+X-Google-Smtp-Source: ABdhPJz48OXG2JmjM6I5d/rC7muwxowXCHXbMRsYmavTSezWgJPOKK8NTbuwINdpuCVgBz+AeFWt1w==
+X-Received: by 2002:a1c:3d46:: with SMTP id k67mr25164888wma.188.1617031853058;
+        Mon, 29 Mar 2021 08:30:53 -0700 (PDT)
 Received: from localhost.localdomain ([2a01:e0a:82c:5f0:e89:f257:8111:afb6])
-        by smtp.gmail.com with ESMTPSA id p12sm29200976wrx.28.2021.03.29.08.30.50
+        by smtp.gmail.com with ESMTPSA id p12sm29200976wrx.28.2021.03.29.08.30.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 29 Mar 2021 08:30:50 -0700 (PDT)
+        Mon, 29 Mar 2021 08:30:52 -0700 (PDT)
 From:   Loic Poulain <loic.poulain@linaro.org>
 To:     kuba@kernel.org, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH net-next v3 1/2] net: mhi: Add support for non-linear MBIM skb processing
-Date:   Mon, 29 Mar 2021 17:39:31 +0200
-Message-Id: <1617032372-2387-1-git-send-email-loic.poulain@linaro.org>
+Subject: [PATCH net-next v3 2/2] net: mhi: Allow decoupled MTU/MRU
+Date:   Mon, 29 Mar 2021 17:39:32 +0200
+Message-Id: <1617032372-2387-2-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1617032372-2387-1-git-send-email-loic.poulain@linaro.org>
+References: <1617032372-2387-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, if skb is non-linear, due to MHI skb chaining, it is
-linearized in MBIM RX handler prior MBIM decoding, causing extra
-allocation and copy that can be as large as the maximum MBIM frame
-size (32K).
+MBIM protocol makes the mhi network interface asymmetric, ingress data
+received from MHI is MBIM protocol, possibly containing multiple
+aggregated IP packets, while egress data received from network stack is
+IP protocol.
 
-This change introduces MBIM decoding for non-linear skb, allowing to
-process 'large' non-linear MBIM packets without skb linearization.
-The IP packets are simply extracted from the MBIM frame using the
-skb_copy_bits helper.
+This changes allows a 'protocol' to specify its own MRU, that when
+specified is used to allocate MHI RX buffers (skb).
+
+For MBIM, Set the default MTU to 1500, which is the usual network MTU
+for WWAN IP packets, and MRU to 3.5K (for allocation efficiency),
+allowing skb to fit in an usual 4K page (including padding,
+skb_shared_info, ...).
 
 Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- v2: added to the series for reducing chained skb processing overhead 
- v3: Fix missing net_err_ratelimited print param (ndev->name).
+  v2: squashed 1/2 and 1/2 (decoupled mtu/mru + mbim mru)
+     Reduced MRU from 32k to 3.5K
+  v3: no change
 
- drivers/net/mhi/proto_mbim.c | 51 ++++++++++++++++++++++----------------------
- 1 file changed, 25 insertions(+), 26 deletions(-)
+ drivers/net/mhi/mhi.h        |  1 +
+ drivers/net/mhi/net.c        |  4 +++-
+ drivers/net/mhi/proto_mbim.c | 11 +++++++++++
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/mhi/mhi.h b/drivers/net/mhi/mhi.h
+index 12e7407..1d0c499 100644
+--- a/drivers/net/mhi/mhi.h
++++ b/drivers/net/mhi/mhi.h
+@@ -29,6 +29,7 @@ struct mhi_net_dev {
+ 	struct mhi_net_stats stats;
+ 	u32 rx_queue_sz;
+ 	int msg_enable;
++	unsigned int mru;
+ };
+ 
+ struct mhi_net_proto {
+diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
+index b1769fb..4bef7fe 100644
+--- a/drivers/net/mhi/net.c
++++ b/drivers/net/mhi/net.c
+@@ -270,10 +270,12 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
+ 						      rx_refill.work);
+ 	struct net_device *ndev = mhi_netdev->ndev;
+ 	struct mhi_device *mdev = mhi_netdev->mdev;
+-	int size = READ_ONCE(ndev->mtu);
+ 	struct sk_buff *skb;
++	unsigned int size;
+ 	int err;
+ 
++	size = mhi_netdev->mru ? mhi_netdev->mru : READ_ONCE(ndev->mtu);
++
+ 	while (!mhi_queue_is_full(mdev, DMA_FROM_DEVICE)) {
+ 		skb = netdev_alloc_skb(ndev, size);
+ 		if (unlikely(!skb))
 diff --git a/drivers/net/mhi/proto_mbim.c b/drivers/net/mhi/proto_mbim.c
-index 75b5484..5a176c3 100644
+index 5a176c3..fc72b3f 100644
 --- a/drivers/net/mhi/proto_mbim.c
 +++ b/drivers/net/mhi/proto_mbim.c
-@@ -91,20 +91,11 @@ static int mbim_rx_verify_nth16(struct sk_buff *skb)
- 	return le16_to_cpu(nth16->wNdpIndex);
+@@ -26,6 +26,15 @@
+ 
+ #define MBIM_NDP16_SIGN_MASK 0x00ffffff
+ 
++/* Usual WWAN MTU */
++#define MHI_MBIM_DEFAULT_MTU 1500
++
++/* 3500 allows to optimize skb allocation, the skbs will basically fit in
++ * one 4K page. Large MBIM packets will simply be split over several MHI
++ * transfers and chained by the MHI net layer (zerocopy).
++ */
++#define MHI_MBIM_DEFAULT_MRU 3500
++
+ struct mbim_context {
+ 	u16 rx_seq;
+ 	u16 tx_seq;
+@@ -281,6 +290,8 @@ static int mbim_init(struct mhi_net_dev *mhi_netdev)
+ 		return -ENOMEM;
+ 
+ 	ndev->needed_headroom = sizeof(struct mbim_tx_hdr);
++	ndev->mtu = MHI_MBIM_DEFAULT_MTU;
++	mhi_netdev->mru = MHI_MBIM_DEFAULT_MRU;
+ 
+ 	return 0;
  }
- 
--static int mbim_rx_verify_ndp16(struct sk_buff *skb, int ndpoffset)
-+static int mbim_rx_verify_ndp16(struct sk_buff *skb, struct usb_cdc_ncm_ndp16 *ndp16)
- {
- 	struct mhi_net_dev *dev = netdev_priv(skb->dev);
--	struct usb_cdc_ncm_ndp16 *ndp16;
- 	int ret;
- 
--	if (ndpoffset + sizeof(struct usb_cdc_ncm_ndp16) > skb->len) {
--		netif_dbg(dev, rx_err, dev->ndev, "invalid NDP offset  <%u>\n",
--			  ndpoffset);
--		return -EINVAL;
--	}
--
--	ndp16 = (struct usb_cdc_ncm_ndp16 *)(skb->data + ndpoffset);
--
- 	if (le16_to_cpu(ndp16->wLength) < USB_CDC_NCM_NDP16_LENGTH_MIN) {
- 		netif_dbg(dev, rx_err, dev->ndev, "invalid DPT16 length <%u>\n",
- 			  le16_to_cpu(ndp16->wLength));
-@@ -130,9 +121,6 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
- 	struct net_device *ndev = mhi_netdev->ndev;
- 	int ndpoffset;
- 
--	if (skb_linearize(skb))
--		goto error;
--
- 	/* Check NTB header and retrieve first NDP offset */
- 	ndpoffset = mbim_rx_verify_nth16(skb);
- 	if (ndpoffset < 0) {
-@@ -142,12 +130,19 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
- 
- 	/* Process each NDP */
- 	while (1) {
--		struct usb_cdc_ncm_ndp16 *ndp16;
--		struct usb_cdc_ncm_dpe16 *dpe16;
--		int nframes, n;
-+		struct usb_cdc_ncm_ndp16 ndp16;
-+		struct usb_cdc_ncm_dpe16 dpe16;
-+		int nframes, n, dpeoffset;
-+
-+		if (skb_copy_bits(skb, ndpoffset, &ndp16, sizeof(ndp16))) {
-+			net_err_ratelimited("%s: Incorrect NDP offset (%u)\n",
-+					    ndev->name, ndpoffset);
-+			__mbim_length_errors_inc(mhi_netdev);
-+			goto error;
-+		}
- 
- 		/* Check NDP header and retrieve number of datagrams */
--		nframes = mbim_rx_verify_ndp16(skb, ndpoffset);
-+		nframes = mbim_rx_verify_ndp16(skb, &ndp16);
- 		if (nframes < 0) {
- 			net_err_ratelimited("%s: Incorrect NDP16\n", ndev->name);
- 			__mbim_length_errors_inc(mhi_netdev);
-@@ -155,8 +150,7 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
- 		}
- 
- 		 /* Only IP data type supported, no DSS in MHI context */
--		ndp16 = (struct usb_cdc_ncm_ndp16 *)(skb->data + ndpoffset);
--		if ((ndp16->dwSignature & cpu_to_le32(MBIM_NDP16_SIGN_MASK))
-+		if ((ndp16.dwSignature & cpu_to_le32(MBIM_NDP16_SIGN_MASK))
- 				!= cpu_to_le32(USB_CDC_MBIM_NDP16_IPS_SIGN)) {
- 			net_err_ratelimited("%s: Unsupported NDP type\n", ndev->name);
- 			__mbim_errors_inc(mhi_netdev);
-@@ -164,19 +158,24 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
- 		}
- 
- 		/* Only primary IP session 0 (0x00) supported for now */
--		if (ndp16->dwSignature & ~cpu_to_le32(MBIM_NDP16_SIGN_MASK)) {
-+		if (ndp16.dwSignature & ~cpu_to_le32(MBIM_NDP16_SIGN_MASK)) {
- 			net_err_ratelimited("%s: bad packet session\n", ndev->name);
- 			__mbim_errors_inc(mhi_netdev);
- 			goto next_ndp;
- 		}
- 
- 		/* de-aggregate and deliver IP packets */
--		dpe16 = ndp16->dpe16;
--		for (n = 0; n < nframes; n++, dpe16++) {
--			u16 dgram_offset = le16_to_cpu(dpe16->wDatagramIndex);
--			u16 dgram_len = le16_to_cpu(dpe16->wDatagramLength);
-+		dpeoffset = ndpoffset + sizeof(struct usb_cdc_ncm_ndp16);
-+		for (n = 0; n < nframes; n++, dpeoffset += sizeof(dpe16)) {
-+			u16 dgram_offset, dgram_len;
- 			struct sk_buff *skbn;
- 
-+			if (skb_copy_bits(skb, dpeoffset, &dpe16, sizeof(dpe16)))
-+				break;
-+
-+			dgram_offset = le16_to_cpu(dpe16.wDatagramIndex);
-+			dgram_len = le16_to_cpu(dpe16.wDatagramLength);
-+
- 			if (!dgram_offset || !dgram_len)
- 				break; /* null terminator */
- 
-@@ -185,7 +184,7 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
- 				continue;
- 
- 			skb_put(skbn, dgram_len);
--			memcpy(skbn->data, skb->data + dgram_offset, dgram_len);
-+			skb_copy_bits(skb, dgram_offset, skbn->data, dgram_len);
- 
- 			switch (skbn->data[0] & 0xf0) {
- 			case 0x40:
-@@ -206,7 +205,7 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
- 		}
- next_ndp:
- 		/* Other NDP to process? */
--		ndpoffset = (int)le16_to_cpu(ndp16->wNextNdpIndex);
-+		ndpoffset = (int)le16_to_cpu(ndp16.wNextNdpIndex);
- 		if (!ndpoffset)
- 			break;
- 	}
 -- 
 2.7.4
 
