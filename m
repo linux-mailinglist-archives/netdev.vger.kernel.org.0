@@ -2,282 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CED3A34D155
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:37:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E4C34D1DF
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 15:54:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231877AbhC2NhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 09:37:04 -0400
-Received: from mga03.intel.com ([134.134.136.65]:45673 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231649AbhC2Ngv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 09:36:51 -0400
-IronPort-SDR: ZDRAr8rmtH2AH+4EkdHCeOf+aWwru0CD2cym6R+Wra+Pc3q+G2zhUSQ0KdyOtugODfSVDy13fB
- 7z88yRogBDIg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="191578744"
-X-IronPort-AV: E=Sophos;i="5.81,287,1610438400"; 
-   d="scan'208";a="191578744"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 06:36:51 -0700
-IronPort-SDR: UUoUqMYDBG9Q9REinDzFe3AkwJnqEogrxjyTZUqrW33w15qJq7LsGfuKabhTtAUIZyxYXJV3Di
- ICldNfIxmb7g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,287,1610438400"; 
-   d="scan'208";a="411079495"
-Received: from glass.png.intel.com ([10.158.65.59])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Mar 2021 06:36:46 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next 6/6] net: stmmac: Add support for XDP_REDIRECT action
-Date:   Mon, 29 Mar 2021 21:40:13 +0800
-Message-Id: <20210329134013.9516-7-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210329134013.9516-1-boon.leong.ong@intel.com>
-References: <20210329134013.9516-1-boon.leong.ong@intel.com>
+        id S231887AbhC2Nxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 09:53:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231695AbhC2NxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 09:53:07 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4B7C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 06:53:06 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id e14so19544441ejz.11
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 06:53:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2etcq4q+I3dhTcVOMIR7xoB21FDeBCUqt9WXc+6J3xQ=;
+        b=TK0uymtu7JC8C9tlYya5bR7UOq34Xd4XeOVwWg73P9xF9+h+SfjM63rhDbIHZclbtH
+         hlcgm90C7+t+34rNwpriNWWKP2o/GsdjLbvBOk4UFNhH4fkQVJOrDRl0UN5OXpuXqg5B
+         zAwF7UXeHn0brzcywtHb6B06aMggWHZWP5GzB8Fjvi+iKtxCITgmkCaTkIopQE7Gdvhj
+         yW8+8kw1jQfdjtrN6ErJeJ6ZFVL95zsIZdnR73ZRE3O88wkHJU8NhZvwmAkrL4HpEceu
+         fNDUrlU4vZwj21VCFEhgcoSnB9DPgNPHDRY1YrOdTg+cB7IzzYWXgng4Nv8Ctnikxrnl
+         ZL3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2etcq4q+I3dhTcVOMIR7xoB21FDeBCUqt9WXc+6J3xQ=;
+        b=NfBtFByonwQMO+abyte6yJLjVrhNTQ68VrNTprPIciqbXMJ41pr8ZxLQST65mQ9jsP
+         Fvatofad+xFzCXSaTDWpLKEOxHydtCQi/7+V1LUbzm6TkPJyBd9hCDsSuBZWmJuZt9qL
+         7kIeoASqUVsOgfDRw6PT7xXBEPACw4aWxs2tBgqThasbOmxXFmNMuQwXs6/pi29OQLM4
+         yE0HsX6HvOgY75lTOCn1AJABw0/fSxze9OAIAeUQLoBGw4eI/kh3RxjE/PGEdJd9OmRJ
+         49TXdB91tqoER1rD5Cmug9p5OgOW3aGqytGYwJ6p9wUvFMq8bCBpOVkSo+pfCVlO0jQO
+         QRIg==
+X-Gm-Message-State: AOAM533GBJk8TBAlZmuxrn5wEdlsq7tI+sGmAJakIItNFSpci8ribtyB
+        AXAQc8AVG6Tk2JdxbTOuyApskjCh0vw=
+X-Google-Smtp-Source: ABdhPJzHzRZrsNQMTfC62JKQ3kED/DmzmoiHL4uLEk+BVP1eRf3cErZjoS7KPJcTNLBjFiZ3lJuodQ==
+X-Received: by 2002:a17:906:7842:: with SMTP id p2mr29795343ejm.87.1617025984961;
+        Mon, 29 Mar 2021 06:53:04 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id j7sm9033186edv.40.2021.03.29.06.53.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Mar 2021 06:53:04 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id j9so11231923wrx.12
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 06:53:03 -0700 (PDT)
+X-Received: by 2002:a5d:6cab:: with SMTP id a11mr29049928wra.419.1617025983400;
+ Mon, 29 Mar 2021 06:53:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1616692794.git.pabeni@redhat.com> <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+ <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+ <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
+ <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com> <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
+In-Reply-To: <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 29 Mar 2021 09:52:25 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSduw1eK+CuEgzzwA+6QS=QhMhFQpgyVGH2F8aNH5gwv5A@mail.gmail.com>
+Message-ID: <CA+FuTSduw1eK+CuEgzzwA+6QS=QhMhFQpgyVGH2F8aNH5gwv5A@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the support of XDP_REDIRECT to another remote cpu for
-further action. It also implements ndo_xdp_xmit ops, enabling the driver
-to transmit packets forwarded to it by XDP program running on another
-interface.
+> > > > > Additionally the segmented packets UDP CB still refers to the original
+> > > > > GSO packet len. Overall that causes unexpected/wrong csum validation
+> > > > > errors later in the UDP receive path.
+> > > > >
+> > > > > We could possibly address the issue with some additional checks and
+> > > > > csum mangling in the UDP tunnel code. Since the issue affects only
+> > > > > this UDP receive slow path, let's set a suitable csum status there.
+> > > > >
+> > > > > v1 -> v2:
+> > > > >  - restrict the csum update to the packets strictly needing them
+> > > > >  - hopefully clarify the commit message and code comments
+> > > > >
+> > > > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> > > > > +               skb->csum_valid = 1;
+> > > >
+> > > > Not entirely obvious is that UDP packets arriving on a device with rx
+> > > > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
+> > > > this test.
+> > > >
+> > > > I assume that such packets are not coalesced by the GRO layer in the
+> > > > first place. But I can't immediately spot the reason for it..
+> > >
+> > > Packets with CHECKSUM_NONE are actually aggregated by the GRO engine.
+> > >
+> > > Their checksum is validated by:
+> > >
+> > > udp4_gro_receive -> skb_gro_checksum_validate_zero_check()
+> > >         -> __skb_gro_checksum_validate -> __skb_gro_checksum_validate_complete()
+> > >
+> > > and skb->ip_summed is changed to CHECKSUM_UNNECESSARY by:
+> > >
+> > > __skb_gro_checksum_validate -> skb_gro_incr_csum_unnecessary
+> > >         -> __skb_incr_checksum_unnecessary()
+> > >
+> > > and finally to CHECKSUM_PARTIAL by:
+> > >
+> > > udp4_gro_complete() -> udp_gro_complete() -> udp_gro_complete_segment()
+> > >
+> > > Do you prefer I resubmit with some more comments, either in the commit
+> > > message or in the code?
+> >
+> > That breaks the checksum-and-copy optimization when delivering to
+> > local sockets. I wonder if that is a regression.
+>
+> The conversion to CHECKSUM_UNNECESSARY happens since
+> commit 573e8fca255a27e3573b51f9b183d62641c47a3d.
+>
+> Even the conversion to CHECKSUM_PARTIAL happens independently from this
+> series, since commit 6f1c0ea133a6e4a193a7b285efe209664caeea43.
+>
+> I don't see a regression here ?!?
 
-This patch has been tested using "xdp_redirect_cpu" for XDP_REDIRECT
-+ drop testing. It also been tested with "xdp_redirect" sample app
-which can be used to exercise ndo_xdp_xmit ops. The burst traffics are
-generated using pktgen_sample03_burst_single_flow.sh in samples/pktgen
-directory.
+I mean that UDP packets with local destination socket and no tunnels
+that arrive with CHECKSUM_NONE normally benefit from the
+checksum-and-copy optimization in recvmsg() when copying to user.
 
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 96 +++++++++++++++++--
- 2 files changed, 87 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index a93e22a6be59..c49debb62b05 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -39,6 +39,7 @@ struct stmmac_resources {
- enum stmmac_txbuf_type {
- 	STMMAC_TXBUF_T_SKB,
- 	STMMAC_TXBUF_T_XDP_TX,
-+	STMMAC_TXBUF_T_XDP_NDO,
- };
- 
- struct stmmac_tx_info {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index b92355561609..3af783b7a0a9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -72,6 +72,7 @@ MODULE_PARM_DESC(phyaddr, "Physical device address");
- #define STMMAC_XDP_PASS		0
- #define STMMAC_XDP_CONSUMED	BIT(0)
- #define STMMAC_XDP_TX		BIT(1)
-+#define STMMAC_XDP_REDIRECT	BIT(2)
- 
- static int flow_ctrl = FLOW_AUTO;
- module_param(flow_ctrl, int, 0644);
-@@ -1458,7 +1459,8 @@ static void stmmac_free_tx_buffer(struct stmmac_priv *priv, u32 queue, int i)
- 	}
- 
- 	if (tx_q->xdpf[i] &&
--	    tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_TX) {
-+	    (tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_TX ||
-+	     tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_NDO)) {
- 		xdp_return_frame(tx_q->xdpf[i]);
- 		tx_q->xdpf[i] = NULL;
- 	}
-@@ -2220,7 +2222,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 		struct dma_desc *p;
- 		int status;
- 
--		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_TX) {
-+		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_TX ||
-+		    tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_NDO) {
- 			xdpf = tx_q->xdpf[entry];
- 			skb = NULL;
- 		} else if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_SKB) {
-@@ -2292,6 +2295,12 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 			tx_q->xdpf[entry] = NULL;
- 		}
- 
-+		if (xdpf &&
-+		    tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_NDO) {
-+			xdp_return_frame(xdpf);
-+			tx_q->xdpf[entry] = NULL;
-+		}
-+
- 		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_SKB) {
- 			if (likely(skb)) {
- 				pkts_compl++;
-@@ -4237,10 +4246,9 @@ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
- }
- 
- static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
--				struct xdp_frame *xdpf)
-+				struct xdp_frame *xdpf, bool dma_map)
- {
- 	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
--	struct page *page = virt_to_page(xdpf->data);
- 	unsigned int entry = tx_q->cur_tx;
- 	struct dma_desc *tx_desc;
- 	dma_addr_t dma_addr;
-@@ -4256,12 +4264,23 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
- 	else
- 		tx_desc = tx_q->dma_tx + entry;
- 
--	dma_addr = page_pool_get_dma_addr(page) + sizeof(*xdpf) +
--		   xdpf->headroom;
--	dma_sync_single_for_device(priv->device, dma_addr,
--				   xdpf->len, DMA_BIDIRECTIONAL);
-+	if (dma_map) {
-+		dma_addr = dma_map_single(priv->device, xdpf->data,
-+					  xdpf->len, DMA_TO_DEVICE);
-+		if (dma_mapping_error(priv->device, dma_addr))
-+			return STMMAC_XDP_CONSUMED;
-+
-+		tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_NDO;
-+	} else {
-+		struct page *page = virt_to_page(xdpf->data);
- 
--	tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_TX;
-+		dma_addr = page_pool_get_dma_addr(page) + sizeof(*xdpf) +
-+			   xdpf->headroom;
-+		dma_sync_single_for_device(priv->device, dma_addr,
-+					   xdpf->len, DMA_BIDIRECTIONAL);
-+
-+		tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_TX;
-+	}
- 
- 	tx_q->tx_skbuff_dma[entry].buf = dma_addr;
- 	tx_q->tx_skbuff_dma[entry].map_as_page = false;
-@@ -4328,7 +4347,7 @@ static int stmmac_xdp_xmit_back(struct stmmac_priv *priv,
- 	nq = netdev_get_tx_queue(priv->dev, queue);
- 
- 	__netif_tx_lock(nq, cpu);
--	res = stmmac_xdp_xmit_xdpf(priv, queue, xdpf);
-+	res = stmmac_xdp_xmit_xdpf(priv, queue, xdpf, false);
- 	if (res == STMMAC_XDP_TX) {
- 		stmmac_flush_tx_descriptors(priv, queue);
- 		stmmac_tx_timer_arm(priv, queue);
-@@ -4361,6 +4380,12 @@ static struct sk_buff *stmmac_xdp_run_prog(struct stmmac_priv *priv,
- 	case XDP_TX:
- 		res = stmmac_xdp_xmit_back(priv, xdp);
- 		break;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(priv->dev, xdp, prog) < 0)
-+			res = STMMAC_XDP_CONSUMED;
-+		else
-+			res = STMMAC_XDP_REDIRECT;
-+		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
- 		fallthrough;
-@@ -4396,6 +4421,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 	unsigned int desc_size;
- 	struct sk_buff *skb = NULL;
- 	struct xdp_buff xdp;
-+	int xdp_status = 0;
- 	int buf_sz;
- 
- 	dma_dir = page_pool_get_dma_dir(rx_q->page_pool);
-@@ -4565,6 +4591,12 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 					skb = NULL;
- 					count++;
- 					continue;
-+				} else if (xdp_res & STMMAC_XDP_REDIRECT) {
-+					xdp_status |= xdp_res;
-+					buf->page = NULL;
-+					skb = NULL;
-+					count++;
-+					continue;
- 				}
- 			}
- 		}
-@@ -4645,6 +4677,9 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 		rx_q->state.len = len;
- 	}
- 
-+	if (xdp_status & STMMAC_XDP_REDIRECT)
-+		xdp_do_flush();
-+
- 	stmmac_rx_refill(priv, queue);
- 
- 	priv->xstats.rx_pkt_n += count;
-@@ -5571,6 +5606,46 @@ static int stmmac_bpf(struct net_device *dev, struct netdev_bpf *bpf)
- 	}
- }
- 
-+static int stmmac_xdp_xmit(struct net_device *dev, int num_frames,
-+			   struct xdp_frame **frames, u32 flags)
-+{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	int i, nxmit = 0;
-+	int queue;
-+
-+	if (unlikely(test_bit(STMMAC_DOWN, &priv->state)))
-+		return -ENETDOWN;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	queue = stmmac_xdp_get_tx_queue(priv, cpu);
-+	nq = netdev_get_tx_queue(priv->dev, queue);
-+
-+	__netif_tx_lock(nq, cpu);
-+
-+	for (i = 0; i < num_frames; i++) {
-+		int res;
-+
-+		res = stmmac_xdp_xmit_xdpf(priv, queue, frames[i], true);
-+		if (res == STMMAC_XDP_CONSUMED)
-+			break;
-+
-+		nxmit++;
-+	}
-+
-+	if (flags & XDP_XMIT_FLUSH) {
-+		stmmac_flush_tx_descriptors(priv, queue);
-+		stmmac_tx_timer_arm(priv, queue);
-+	}
-+
-+	__netif_tx_unlock(nq);
-+
-+	return nxmit;
-+}
-+
- static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_open = stmmac_open,
- 	.ndo_start_xmit = stmmac_xmit,
-@@ -5590,6 +5665,7 @@ static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_vlan_rx_add_vid = stmmac_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid = stmmac_vlan_rx_kill_vid,
- 	.ndo_bpf = stmmac_bpf,
-+	.ndo_xdp_xmit = stmmac_xdp_xmit,
- };
- 
- static void stmmac_reset_subtask(struct stmmac_priv *priv)
--- 
-2.25.1
-
+If those packets are now checksummed during GRO, that voids that
+optimization, and the packet payload is now touched twice.
