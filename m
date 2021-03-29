@@ -2,66 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FEE634C308
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 07:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CBE134C36C
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 07:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbhC2FaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 01:30:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59524 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230334AbhC2FaL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 01:30:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CC10B6195C;
-        Mon, 29 Mar 2021 05:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1616995811;
-        bh=0RjrkcyILjCKOXyihRFwyZwl1A04NBjpC5Y8mVQdLIM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DCKz7ODZ6kVElyqeBpqDmFPOxKFpzCg9kxGZJijWsn02oUzI9yiZ3rEOxcax9V1uY
-         lKhXK4tgi0ukqcByu3fgWjZVs+6wz3fSCVt1euhf57CCzY/NG+JESw7PyvsH5dlDbB
-         Sw5yk48ZC3MzZQ1owKGhJPRaA1OYutx15wl6BbrM=
-Date:   Mon, 29 Mar 2021 07:30:08 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Du Cheng <ducheng2@gmail.com>
-Subject: Re: [PATCH net-next] qrtr: move to staging
-Message-ID: <YGFl4IcdLfbsyO51@kroah.com>
-References: <20210328122621.2614283-1-gregkh@linuxfoundation.org>
- <YGFi0uIfavNsXhfs@unreal>
+        id S230339AbhC2F4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 01:56:38 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:59584 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230280AbhC2F4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 01:56:19 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12T5s3gM107989;
+        Mon, 29 Mar 2021 05:55:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=3edm75IWAc+zuu0G5xQYVx5YuLw3zNP6q0YuJG4uQug=;
+ b=Ofu9Z1Gr3IsReMY6uL5trKOQoo9stje/0+IYwfyji+xPndR3dTk410vMDc25rQyiSXhA
+ W8Iu5lE2bIFTiIxdLwTUtPMLhwfmF2eWmwvYVY0cyWko+gDxR41SOok/1otqKPng/I3t
+ JJpZaJDOEOxVqdvJAJVbDHwe5G3PZdyblkHgviqzTeMdAxV2yCvZ/odxwZ0Zw8cCmD+G
+ XkHA6bHUJGdVoqVC8Xcssn1qyFUoEfAc2Gie/mXiaUI8/hDIFZUHRRK5xtkjY7FlbkFb
+ R3++D3CzsK+73FIcKt3nvbxvbU847z6LW7B0SzRHZWLvFpJ2DKu/5Ti3VVbwyFUEfAtT HQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 37hvnm2avg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Mar 2021 05:55:47 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12T5shs3037071;
+        Mon, 29 Mar 2021 05:55:46 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 37jekwqejg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 29 Mar 2021 05:55:46 +0000
+Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 12T5thHZ024472;
+        Mon, 29 Mar 2021 05:55:43 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 28 Mar 2021 22:55:42 -0700
+Date:   Mon, 29 Mar 2021 08:55:33 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Song Liu <song@kernel.org>
+Cc:     Colin King <colin.king@canonical.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bpf: remove redundant assignment of variable id
+Message-ID: <20210329055532.GH1717@kadam>
+References: <20210326194348.623782-1-colin.king@canonical.com>
+ <CAPhsuW4K1RB-kz-Wu32eOFYE=ZwQr7Wr20zuEhhtzK_hr9YGUw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YGFi0uIfavNsXhfs@unreal>
+In-Reply-To: <CAPhsuW4K1RB-kz-Wu32eOFYE=ZwQr7Wr20zuEhhtzK_hr9YGUw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9937 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 mlxscore=0
+ phishscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103250000
+ definitions=main-2103290047
+X-Proofpoint-GUID: TmF5Z4G1P92__m9qvJwvO_Itb1MrUHLQ
+X-Proofpoint-ORIG-GUID: TmF5Z4G1P92__m9qvJwvO_Itb1MrUHLQ
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9937 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 mlxlogscore=999
+ clxscore=1011 priorityscore=1501 phishscore=0 spamscore=0 bulkscore=0
+ lowpriorityscore=0 suspectscore=0 mlxscore=0 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103250000
+ definitions=main-2103290047
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 08:17:06AM +0300, Leon Romanovsky wrote:
-> On Sun, Mar 28, 2021 at 02:26:21PM +0200, Greg Kroah-Hartman wrote:
-> > There does not seem to be any developers willing to maintain the
-> > net/qrtr/ code, so move it to drivers/staging/ so that it can be removed
-> > from the kernel tree entirely in a few kernel releases if no one steps
-> > up to maintain it.
-> > 
-> > Reported-by: Matthew Wilcox <willy@infradead.org>
-> > Cc: Du Cheng <ducheng2@gmail.com>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
+On Fri, Mar 26, 2021 at 01:18:36PM -0700, Song Liu wrote:
+> On Fri, Mar 26, 2021 at 12:45 PM Colin King <colin.king@canonical.com> wrote:
+> >
+> > From: Colin Ian King <colin.king@canonical.com>
+> >
+> > The variable id is being assigned a value that is never
+> > read, the assignment is redundant and can be removed.
+> >
+> > Addresses-Coverity: ("Unused value")
+> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > 
-> Greg,
+> Acked-by: Song Liu <songliubraving@fb.com>
 > 
-> Why don't you simply delete it like other code that is not maintained?
+> For future patches, please prefix it as [PATCH bpf-next] for
+> [PATCH bpf], based on which tree the patch should apply to.
+> 
 
-"normally" we have been giving code a chance by having it live in
-drivers/staging/ for a bit before removing it to allow anyone that
-actually cares about the codebase to notice it before removing it.
+You can keep asking us to do that but it's never going to happen... :P
+I do this for networking but it's a massive pain in the butt and I get
+it wrong 20% of the time.
 
-We've done this for many drivers and code-chunks over the years, wimax
-was one recent example.
+regards,
+dan carpenter
 
-Just trying to be nice :)
-
-thanks,
-
-greg k-h
