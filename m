@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A160734D736
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 20:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B2634D73E
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 20:32:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbhC2SbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 14:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41370 "EHLO
+        id S231749AbhC2Sbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 14:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbhC2SbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 14:31:06 -0400
+        with ESMTP id S231524AbhC2Sba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 14:31:30 -0400
 Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF1D3C061574;
-        Mon, 29 Mar 2021 11:31:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6327C061574;
+        Mon, 29 Mar 2021 11:31:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
         Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=ik1VNJyYjBgUbqJ51FNWR51hX8kbricRWl
-        nztP2ATL4=; b=gZBtfH2uE3I3HFKUYWX6Eo6T+aZXHQWYoo1v5a4TA7E8tFYVdK
-        vOJZ7UeU0ipuRGA959Foxy1Vr2xnCO5k/3H36LRqmxMzs4MkLsiHDzStqOlSTO5I
-        ao/rfWoCN73FpdtnmnRb5mee6rNHc3WhYNGxqaxBNRAsOK/3erwNCZTCM=
+        Content-Transfer-Encoding; bh=9CYVVSdbdIN1CqoSzahmxkYgo2mgL2GjKI
+        5zP4cVXEs=; b=KJWdSb/TJcKR5yNesAvzq5MBEond1rkkI7McqDa7koDle4b1SC
+        akS/DCnzY9OQ6K7j58zz8D+PrTcm56+GgQGVtpJwwDBH/9DjFLl/crGebyHlwXFO
+        ACxxwNl+/TSZa7C6DPttQ2jeas3KWDgYxcJrQ6EHjpxWpxGK28Id9Bwl8=
 Received: from xhacker (unknown [101.86.19.180])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygB3fkrXHGJgyvdpAA--.50159S2;
-        Tue, 30 Mar 2021 02:30:48 +0800 (CST)
-Date:   Tue, 30 Mar 2021 02:25:51 +0800
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBnuJrxHGJgRPhpAA--.5621S2;
+        Tue, 30 Mar 2021 02:31:14 +0800 (CST)
+Date:   Tue, 30 Mar 2021 02:26:17 +0800
 From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
 To:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -46,19 +46,18 @@ To:     Paul Walmsley <paul.walmsley@sifive.com>,
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         kasan-dev@googlegroups.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH 8/9] riscv: module: Create module allocations without exec
- permissions
-Message-ID: <20210330022551.58ce4ff4@xhacker>
+Subject: [PATCH 9/9] riscv: Set ARCH_HAS_STRICT_MODULE_RWX if MMU
+Message-ID: <20210330022617.525104ce@xhacker>
 In-Reply-To: <20210330022144.150edc6e@xhacker>
 References: <20210330022144.150edc6e@xhacker>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygB3fkrXHGJgyvdpAA--.50159S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFyfWF4rGrWktry5Wr1xXwb_yoWfWrc_W3
-        WxJry3WryrKa1I9FZ3AanYvr4Iya4rGFZY9FyxZFy7Ga4DWrW7t3s8ta9xuFn8ZryfKrWf
-        GFy3Jr9xuw42qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4kYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
+X-CM-TRANSID: LkAmygBnuJrxHGJgRPhpAA--.5621S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7GFy3Cw48Cr4DZw4DKF13CFg_yoW3ZrX_Ja
+        yxJF9xur1rJaykCFZ2gr4fZr1jv3y8WF18uF1Y9ryUZa42gw13X3Zxt3Z5ZF15Zw13WF4x
+        Z3yIqF4UGr1UWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb4kYjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
         6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
         8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
         cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
@@ -69,7 +68,7 @@ X-Coremail-Antispam: 1UD129KBjvdXoW7GFyfWF4rGrWktry5Wr1xXwb_yoWfWrc_W3
         WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI
         7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Gr0_Xr1lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
         4UJVWxJr1lIxAIcVCF04k26cxKx2IYs7xG6r4j6FyUMIIF0xvEx4A2jsIE14v26r4j6F4U
-        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxUciihUU
+        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjxUcyCGUU
         UUU
 X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Precedence: bulk
@@ -78,28 +77,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jisheng Zhang <jszhang@kernel.org>
 
-The core code manages the executable permissions of code regions of
-modules explicitly, it is not necessary to create the module vmalloc
-regions with RWX permissions. Create them with RW- permissions instead.
+Now we can set ARCH_HAS_STRICT_MODULE_RWX for MMU riscv platforms, this
+is good from security perspective.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- arch/riscv/kernel/module.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
-index 104fba889cf7..8997b9dbcb3d 100644
---- a/arch/riscv/kernel/module.c
-+++ b/arch/riscv/kernel/module.c
-@@ -414,7 +414,7 @@ void *module_alloc(unsigned long size)
- {
- 	return __vmalloc_node_range(size, 1, VMALLOC_MODULE_START,
- 				    VMALLOC_END, GFP_KERNEL,
--				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
-+				    PAGE_KERNEL, 0, NUMA_NO_NODE,
- 				    __builtin_return_address(0));
- }
- #endif
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 87d7b52f278f..9716be3674a2 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -28,6 +28,7 @@ config RISCV
+ 	select ARCH_HAS_SET_DIRECT_MAP
+ 	select ARCH_HAS_SET_MEMORY
+ 	select ARCH_HAS_STRICT_KERNEL_RWX if MMU
++	select ARCH_HAS_STRICT_MODULE_RWX if MMU
+ 	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
+ 	select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
+ 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT if MMU
 -- 
 2.31.0
 
