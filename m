@@ -2,219 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04D734CCC1
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 11:14:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D40CE34CCC8
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 11:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbhC2JIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 05:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235961AbhC2JGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 05:06:23 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1447C061574
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 02:06:22 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id o66so12993255ybg.10
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 02:06:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I6oMX1mQZc6yQ+h3mnYUiH3O8qG26OGaidv177nsiKY=;
-        b=CQNH2uVk03RsLj7ii5+GSYM9f9W9qRNswpYeFOhwxU/57reRnDZZ+AubUsA3JzbZ6W
-         K+BvUQpGwlPhMWUe1gO2PdZrTWMCp9B459iXrZAZDcN1WIk2PErefHSyD54QmzzyDXWR
-         xfkqFdAKnb3Ij2/bwq6qCXAYNrlv4hx7/RaSRZTIk4wVbPv5ynCNA9S7QVK1Dp2F9r+9
-         8jgLQWUgixJWUiuuTLKxsOX6Nm2cj39bYhTrIOTrxvUQCcxwETmnWvwX0Srl84dGOLP8
-         gKJLBDVVlE149d9siPdqaCkxiaPUlCAd9XXISQqWoIZKb5p49ApyNfDfWf48/Ble0pMe
-         6wEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I6oMX1mQZc6yQ+h3mnYUiH3O8qG26OGaidv177nsiKY=;
-        b=QPW8pJWQ2UtwKkBrBQ3tZqQVysM2qLYbSlkvp6yO9NuUrnfr10KNeSGKQQxjLTe93s
-         nBNjP8PdbKgpiefmul7X0gnTx7ykPWC3/HPYW/qOnCxEnrBRF1szCwHzcOzq9nXPXmnI
-         Xba/lk2/DnLL8dXw6zneIjclJ6sZYHgdNEJPxjpHH3kj2Q2gKbNF8Y1P4BqqK8MIsqMv
-         lbBNHJMe0o/oElIUr3Qy5qVDpR7s2b4HRxYXmZgzeXII+DpeQg+o4PtsTEqFMpJVNgp/
-         W+o6fTnKobt/qEk6vXBHEbiSQHYF3MWwDGbS+YjcqDeoP6G000yRbqKp4nlHn2FdMVcs
-         QTLA==
-X-Gm-Message-State: AOAM531pjUEJvXKhycWltXGgXKjoxmm8x4eG4kzvLupRcria4B5pKNYS
-        kZ07uCJ97ght7L+LblNqw8iqs/PLi9C+Il/d7YTwag==
-X-Google-Smtp-Source: ABdhPJwqmIH8vD0M00UBDYin/OVv7MQDvtZmErZW6WNP6UkJTrquDNS44hpNlGABs5wUXta36Ea4NAsPHTuLZ3hRdGo=
-X-Received: by 2002:a25:780a:: with SMTP id t10mr26812095ybc.446.1617008781475;
- Mon, 29 Mar 2021 02:06:21 -0700 (PDT)
+        id S232806AbhC2JOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 05:14:43 -0400
+Received: from mail-vi1eur05on2073.outbound.protection.outlook.com ([40.107.21.73]:19937
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235241AbhC2JMU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 05:12:20 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YZrFls8GIempGudjrdkgT0SnSPeq7AmUAmEUb77qnpQDk9QVfc1FGBYpVecfn3cZp9kSZ7SLXYPU1+6DU5Gq1tJ90m2LN6dWWSSYwwncczHy5SfIHok+QnluqBjgK7axcnphniV1ooLzH27vdZMP009r1qzLbsEFkcrUL1dJhOS4UXvisXPx3JsPWXoLVUTY+sLte14zlgtFV2qQEOELGJLxQJ2nn6cjwmnqjTFIcW+5WBn94llsTLjdI6W0Wn99XbTQK7TLHF0rYTDfhOVwPbH40t0neFcxNZjw7dJ3IONySc4uDNB+vqxGRs7HHJXZIahij68P3MFtZegeiimtbg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nsn0ZeLbeaC10k19QHu5GFGoVzcttxRiUgobYsMuugE=;
+ b=T0zz0dEZHnGZZCuD3xsStuA3465xsokGdUHszUiMFBeaSjKoNgxZHxEAHTsXFrDUHYqJ0YNZxY1BqNAxDy4NebF2mHRYL72Ggxz27Lb+nM0W3eZjRKvzVQZlSWdrWtvYdZDPDzrRBooVtQJdrS2rFU4ztA1g/rP6aByqz+w7k98bQKj5u9k0QV9efzg4/gLszyFZ4G7YLeQfUJBzb0AhUGnbQ6PYrrVfR9gICHZHwCzZq10bB8Min/EF65aEcMb/mMfSRH0fLTouk3DhQNc7wCDO933q4I7+WLFU1p1DAg4SrZL9teXna9plUYHfqNDi7yFDyxfR7HPZJTLlGJH0Xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nsn0ZeLbeaC10k19QHu5GFGoVzcttxRiUgobYsMuugE=;
+ b=l40K1l6mZlJkECK/0nKVO4HxPiGY12kLq0Bg1D9IcyeiYCem8RzWDmk6BXCqLcGqv+EgHjigXPGdC3A8tcjp/rWpxv+ErnCbhop+Q/fkF/1sZ6kKaljZWNqxZUn4wFikRm5qa21GblILobzm6f5HFTkPhjryptm6tZwtQlTdmgo=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR04MB3208.eurprd04.prod.outlook.com (2603:10a6:6:3::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3977.30; Mon, 29 Mar 2021 09:12:19 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5%6]) with mapi id 15.20.3977.033; Mon, 29 Mar 2021
+ 09:12:19 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: FEC unbind/bind feature
+Thread-Topic: FEC unbind/bind feature
+Thread-Index: AdchTA4mhHE+X6FhQBmQJxJLMagesAAKJ/aAACgNBSAAAM4PMAAJDS6AAI9NeiA=
+Date:   Mon, 29 Mar 2021 09:12:18 +0000
+Message-ID: <DB8PR04MB67958AEAE20C973F9C2B7985E67E9@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <DB8PR04MB6795E5896375A9A9FED55A84E6629@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <YFyF0dEgjN562aT8@lunn.ch>
+ <DB8PR04MB679514359C626505E956981BE6619@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <DB8PR04MB67952CC10ADC4A656963D871E6619@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <YF3UvaMpaXcFxU5y@lunn.ch>
+In-Reply-To: <YF3UvaMpaXcFxU5y@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 740798f9-aed0-4766-6d5d-08d8f292c104
+x-ms-traffictypediagnostic: DB6PR04MB3208:
+x-microsoft-antispam-prvs: <DB6PR04MB3208FB67D3BD44C2D169E1EFE67E9@DB6PR04MB3208.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RmAmR+XpoZV1UVpP6N2ucGsM76J+NYoo2ya+6ZbTK5LUAiS1XXlG6oRpkXuyhcUr/XDJQCMxvhB8Pe97g/AGJ/w2xiIihbMBiV9tLEiTw/R7LgOukuxSNSwXn277J/zJhWjZAWmXuMlS4B16x+UK9osPQihmSPzQ2mhA01lQx38MygYcjNdcxODhmD5qw8pARe/0FzerTQIT86TcZlLPMmV61NMxsLnjN/eG+V4OA/wwECmsV70yoxmKnDgyO28IQgvau5ZGvbfGFOjaxURyi+c3C4Hc6Mer8OSKuub86YvGDgr8ux6Dk6q499c0XOO21jdFCX8uLtGYo8U/Mmmw6DAOiNPgjcOM1nrgd7/jNf2PtY2Oj7s7kiyeNOoOuU/Bg6E+UBKlDEZloC1H8BWqWYgs1I2iNhECMdLWwVOY8JdWNnbN10ZymS+W8Px3Ji1KAvnO1TGLEO+y1QLFHsOE4pWXAGKn5jdypsR0dPaOnVtVJLl2u1KCEuwxUvkDu5X1PB5X8v8Pp+oETEUQbytzeAqxi4hQknfotOX3dLEafkX86kC4PlH69JAK75WxZnfb5toAWrFpGeBFultuUjpPSsdcZN6r00SnY2HU8U1gGdHt0m5nyIuLsbxELh0jWyxMD/fU/z1a79uUTtlorjBsZVhAaHBrUIwJ6Hbi+B8Pmck=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(39860400002)(136003)(376002)(346002)(3480700007)(38100700001)(7696005)(316002)(2906002)(66946007)(71200400001)(53546011)(6506007)(86362001)(54906003)(478600001)(76116006)(52536014)(66446008)(64756008)(5660300002)(66556008)(66476007)(6916009)(186003)(8676002)(9686003)(4326008)(26005)(83380400001)(8936002)(33656002)(55016002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?UndHcEtnWWdiRG01T3h5SVFVNGJOeDl3cVVaY2JwZnFnU3BsZFdQZjVJYVhq?=
+ =?utf-8?B?QzFZOGRxemJjWFZGbVdJUkpXN005YmpsejVqS3pHMW9JcE9QTm80NVdoSGhv?=
+ =?utf-8?B?UE1OazVYc2hVaVh1Q1pnRTFHZUR4ZGwwUnlFd3h4VGt1WXJ6YUlab3k0V29Y?=
+ =?utf-8?B?a1BTMjhDZkV2SzVzZ1lNeWZuQmlRd0VsK3d6UHlwblQ2R0dWYmhYMnV1RG1N?=
+ =?utf-8?B?NG11TjNBOUc3WkhwcnRaalBjUEx5dHo2RTRlUnFhUG1renRTM0tjZUlQNHdu?=
+ =?utf-8?B?REZRMkZMdUx2QXV6S1E5SGJxT0tLcytKQ2I4SlBpVDdERlFrWTVnNnVEUGMr?=
+ =?utf-8?B?emtISWdmME5pY0FPbFc2WGdLVzRMZDh1czBnR2NZRDNtcXBkSUJDOSt1ZU1y?=
+ =?utf-8?B?REwyank0V0U3TkNQTk1lc3NhRU5sb1NvUWY1bHNuelNLQ24xMElGTkJ6MDBE?=
+ =?utf-8?B?WE1pOTNyTTk5UDg2b0JRZGExS3djMFhjYXRETGNadmhHYzlPNVE3ZzczVGVD?=
+ =?utf-8?B?TDkrK1h2dVpSajkvcUFjUWhpMk92aWV6UUluWWVISENlSURIaEdSYlhheFNX?=
+ =?utf-8?B?OVprYUgwcEt4T0hQZXBoVC9WQmd1RUxtUGxOTDRSSGhtZjNFTU5HWWIrdFVN?=
+ =?utf-8?B?WWRuZTljS1p5ajFKL1VVa1ZjVmZWS05TQjRUdDJvRU5hNVlTZ1BtMVlLdjVK?=
+ =?utf-8?B?N2NFUFJiYk9ZWitrMmFnSE81OWZxQ3RsNXFreTA2Z1lZdHJadS9ZVXZnWjhz?=
+ =?utf-8?B?emExSDRobllNUUg4TWRDa0NSV3JjQXFRUXhpQUhUalNiN0FPeGszcWl4TUJI?=
+ =?utf-8?B?WGZkbDlQQ2tLNlQrTkhzamVtZ1RwZk9mdmF3SFh5VU92SmhXVnc1NUNxOEZh?=
+ =?utf-8?B?bTNSQTROQmVvMlVxaEhOenpaU20zeFI3NVNGbGRESzBicnhMeFNYSmwzRU9a?=
+ =?utf-8?B?MXBvemcxSjhXK2t2V3FQVitpV3o1ODVnSG5PVEgyMGdCRk8vemlTUitYVjV2?=
+ =?utf-8?B?MFdnT0tCQ1lJNFE5UUN5VUZkdUpXbW96TFMrODBlUWFpQ3RGY2xsR0ZtL1cv?=
+ =?utf-8?B?cDZhYWcrTTFJY0R0a0JhRFFaVW5aM0xJM2dwWkRPQ2h5MkJOZmRBNjUzbjNy?=
+ =?utf-8?B?QmVHNUtzVWM2TVFQdmdyUytiM1I3WWRpYkdLSkp2aUcvbk52UERPNkNaaGZW?=
+ =?utf-8?B?eFBjOEUxOGtpQ2ZabnNpYXFXZTVnUVNrZ0dXTkZDc1gzYkZ4UzFXbFJnNmJV?=
+ =?utf-8?B?VmszQzZ3R3AvYjdDVUV1UTFva2s3R1BFZkNMQjNPUlVsc0gvMkx3TDBnRk5l?=
+ =?utf-8?B?RFJSNCtvZFRzM1RDZzRHWkZXQ1FWd0FWYjFQSytYTTBlNkdRQUNhV29LdWtQ?=
+ =?utf-8?B?SWtiYUNKdkxYUnFZek5GdDA5dExOak9jVEprSklTWHFPOXdSRW9DRXRCRHRa?=
+ =?utf-8?B?WUd1d1ZPNHV2NkZJRVhHOVFaNmlyN2orRmNwbks3S2JIQkE5V3J2QzJjeXBz?=
+ =?utf-8?B?aDhOMWVsUjVpYld5UVRjOE9VbWJYZSs5Yk95eXBKSHJKK2tsRG1VWUh2aHdC?=
+ =?utf-8?B?NWVTa29sRnNNTjdpWDE3WFVNTEFlTXlpbFRDNDNGWjlHOG1Pb3BndDFMTlJs?=
+ =?utf-8?B?cjQzM3BwbnZDZFZzbG5nK2oweXBlbkNNbXNOQnMzRmRDWC82V0lpbDNzcEZS?=
+ =?utf-8?B?ZjdUeDBFbDhIeVltcXc2SGVIQ29PaWp6T0F1ZlZ6NWFjemdvOE9rRlFVQ0gw?=
+ =?utf-8?Q?HWoCgy25Nook5CWTPJ+rYDqtvEnrHamzI/xjr5H?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com> <1617007696.5731978-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1617007696.5731978-1-xuanzhuo@linux.alibaba.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 29 Mar 2021 11:06:09 +0200
-Message-ID: <CANn89iLXfu7mdk+cxqVYxtJhfBQtpho6i2kyOEUbEGPXBQj+jg@mail.gmail.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny skbs
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Thelen <gthelen@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, su-lifan@linux.alibaba.com,
-        "dust.li" <dust.li@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 740798f9-aed0-4766-6d5d-08d8f292c104
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2021 09:12:18.9727
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cdIQaitg74Y10ZZy9MJqzMOcxrLWAbzM8mcow3vcroSlroikePtJ2YWNVMBnPxY5rG0rfszH6wBnT1yJcBYxjg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3208
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 10:52 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> On Wed, 13 Jan 2021 08:18:19 -0800, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > Both virtio net and napi_get_frags() allocate skbs
-> > with a very small skb->head
-> >
-> > While using page fragments instead of a kmalloc backed skb->head might give
-> > a small performance improvement in some cases, there is a huge risk of
-> > under estimating memory usage.
-> >
-> > For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
-> > per page (order-3 page in x86), or even 64 on PowerPC
-> >
-> > We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
-> > but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
-> >
-> > Even if we force napi_alloc_skb() to only use order-0 pages, the issue
-> > would still be there on arches with PAGE_SIZE >= 32768
-> >
-> > This patch makes sure that small skb head are kmalloc backed, so that
-> > other objects in the slab page can be reused instead of being held as long
-> > as skbs are sitting in socket queues.
-> >
-> > Note that we might in the future use the sk_buff napi cache,
-> > instead of going through a more expensive __alloc_skb()
-> >
-> > Another idea would be to use separate page sizes depending
-> > on the allocated length (to never have more than 4 frags per page)
-> >
-> > I would like to thank Greg Thelen for his precious help on this matter,
-> > analysing crash dumps is always a time consuming task.
->
->
-> This patch causes a performance degradation of about 10% in the scenario of
-> virtio-net + GRO.
->
-> For GRO, there is no way to merge skbs based on frags with this patch, only
-> frag_list can be used to link skbs. The problem that this cause are that compared
-> to the GRO package merged into the frags way, the current skb needs to call
-> kfree_skb_list to release each skb, resulting in performance degradation.
->
-> virtio-net will store some data onto the linear space after receiving it. In
-> addition to the header, there are also some payloads, so "headlen <= offset"
-> fails. And skb->head_frag is failing when use kmalloc() for skb->head allocation.
->
-
-Thanks for the report.
-
-There is no way we can make things both fast for existing strategies
-used by _insert_your_driver
-and malicious usages of data that can sit for seconds/minutes in socket queues.
-
-I think that if you want to gain this 10% back, you have to change
-virtio_net to meet optimal behavior.
-
-Normal drivers make sure to not pull payload in skb->head, only headers.
-
-Optimal GRO packets are when payload is in page fragments.
-
-(I am speaking not only for raw performance, but ability for systems
-to cope with network outages and sudden increase of memory usage in
-out of order queues)
-
-This has been quite clearly stated in my changelog.
-
-Thanks.
-
-
-> int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
-> {
->         struct skb_shared_info *pinfo, *skbinfo = skb_shinfo(skb);
->         unsigned int offset = skb_gro_offset(skb);
->         unsigned int headlen = skb_headlen(skb);
->
->     .......
->
->         if (headlen <= offset) {         // virtio-net will fail
->         ........ // merge by frags
->                 goto done;
->         } else if (skb->head_frag) {     // skb->head_frag is fail when use kmalloc() for skb->head allocation
->         ........ // merge by frags
->                 goto done;
->         }
->
-> merge:
->     ......
->
->         if (NAPI_GRO_CB(p)->last == p)
->                 skb_shinfo(p)->frag_list = skb;
->         else
->                 NAPI_GRO_CB(p)->last->next = skb;
->
->     ......
->         return 0;
-> }
->
->
-> test cmd:
->  for i in $(seq 1 4)
->  do
->     redis-benchmark -r 10000000 -n 10000000 -t set -d 1024 -c 8 -P 32 -h  <ip> -p 6379 2>&1 | grep 'per second'  &
->  done
->
-> Reported-by: su-lifan@linux.alibaba.com
->
-> >
-> > Fixes: fd11a83dd363 ("net: Pull out core bits of __netdev_alloc_skb and add __napi_alloc_skb")
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: Alexander Duyck <alexanderduyck@fb.com>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > Cc: Greg Thelen <gthelen@google.com>
-> > ---
-> >  net/core/skbuff.c | 9 +++++++--
-> >  1 file changed, 7 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 7626a33cce590e530f36167bd096026916131897..3a8f55a43e6964344df464a27b9b1faa0eb804f3 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -501,13 +501,17 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
-> >  struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> >                                gfp_t gfp_mask)
-> >  {
-> > -     struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> > +     struct napi_alloc_cache *nc;
-> >       struct sk_buff *skb;
-> >       void *data;
-> >
-> >       len += NET_SKB_PAD + NET_IP_ALIGN;
-> >
-> > -     if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
-> > +     /* If requested length is either too small or too big,
-> > +      * we use kmalloc() for skb->head allocation.
-> > +      */
-> > +     if (len <= SKB_WITH_OVERHEAD(1024) ||
-> > +         len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
-> >           (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-> >               skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
-> >               if (!skb)
-> > @@ -515,6 +519,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> >               goto skb_success;
-> >       }
-> >
-> > +     nc = this_cpu_ptr(&napi_alloc_cache);
-> >       len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> >       len = SKB_DATA_ALIGN(len);
-> >
-> > --
-> > 2.30.0.284.gd98b1dd5eaa7-goog
-> >
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEFuZHJldyBMdW5uIDxhbmRy
+ZXdAbHVubi5jaD4NCj4gU2VudDogMjAyMeW5tDPmnIgyNuaXpSAyMDozNA0KPiBUbzogSm9ha2lt
+IFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT4NCj4gQ2M6IEZsb3JpYW4gRmFpbmVsbGkg
+PGYuZmFpbmVsbGlAZ21haWwuY29tPjsgaGthbGx3ZWl0MUBnbWFpbC5jb207DQo+IG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IEZFQyB1bmJpbmQvYmluZCBmZWF0dXJlDQo+
+IA0KPiA+IE9uZSBtb3JlIGFkZCwgeWVzLCBJIGFtIGxvb2tpbmcgdGhlIGRyaXZlcnMvbmV0L21k
+aW8sIGl0IGlzIGJldHRlciB0bw0KPiBpbXBsZW1lbnQgc3RhbmRhbG9uZSBNRElPIGRyaXZlciB3
+aGVuIHdyaXRpbmcgdGhlIE1BQyBkcml2ZXIgYXQgdGhlDQo+IGJlZ2lubmluZy4NCj4gPiBOb3cg
+aWYgSSBhYnN0cmFjdCBNRElPIGRyaXZlciBmcm9tIEZFQyBkcml2ZXIsIGR0IGJpbmRpbmdzIHdv
+dWxkIGNoYW5nZSwgaXQNCj4gd2lsbCBicmVhayBhbGwgZXhpc3RpbmcgaW1wbGVtZW50YXRpb25z
+IGluIHRoZSBrZXJuZWwgYmFzZWQgb24gRkVDIGRyaXZlciwgbGV0DQo+IHRoZW0gY2FuJ3Qgd29y
+ay4NCj4gPiBIb3cgdG8gY29tcGF0aWJsZSB0aGUgbGVnYWN5IGR0IGJpbmRpbmdzPyBJIGhhdmUg
+bm8gaWRlYSBub3cuIEF0IHRoZSBzYW1lDQo+IHRpbWUsIEkgYWxzbyBmZWVsIHRoYXQgaXQgc2Vl
+bXMgbm90IG5lY2Vzc2FyeSB0byByZXdyaXRlIGl0Lg0KPiANCj4gSSBoYXZlIGEgcmVhc29uYWJs
+ZSB1bmRlcnN0YW5kaW5nIG9mIHRoZSBGRUMgTURJTyBkcml2ZXIuIEkgaGF2ZSBicm9rZW4gaXQg
+YQ0KPiBmZXcgdGltZXMgOi0pDQo+IA0KPiBJdCBpcyBnb2luZyB0byBiZSBoYXJkIHRvIG1ha2Ug
+aXQgYW4gaW5kZXBlbmRlbnQgZHJpdmVyLCBiZWNhdXNlIGl0IG5lZWRzIGFjY2Vzcw0KPiB0byB0
+aGUgaW50ZXJydXB0IGZsYWdzIGFuZCB0aGUgY2xvY2tzIGZvciBwb3dlciBzYXZpbmcuIEZyb20g
+YSBoYXJkd2FyZQ0KPiBwZXJzcGVjdGl2ZSwgaXQgaXMgbm90IGFuIGluZGVwZW5kZW50IGhhcmR3
+YXJlIGJsb2NrLCBpdCBpcyBpbnRlZ3JhdGVkIGludG8gdGhlDQo+IE1BQy4NCg0KQWdyZWUg8J+Y
+ig0KDQpGb3IgYW5vdGhlciBjdXJpb3NpdHksIGR1YWwgRkVDIGluc3RhbmNlcyBzaGFyZSBvbmUg
+TURJTyBidXMsIHdlIGNhbiBzdWNjZXNzZnVsbHkgdW5iaW5kIHRoZW0gb25lIGJ5IG9uZS4gQnV0
+IGlmIHVzZXJzIGZpcnN0IHVuYmluZCBGRUMgd2hpY2ggYXR0YWNoZWQgTURJTyBidXMsIGtlcm5l
+bCB3b3VsZCBoYXZlIGEgZHVtcCBvciBjcmFzaCwgaXQgc2VlbXMgbm90IGdvb2QuDQpTbyBJIGxv
+b2sgYXQgdGhlIGNvZGUsIHdhbnQgdG8gZmluZCBhIHdheSB0byByZWplY3QgdW5iaW5kIHRoaXMg
+RkVDIGZpcnN0LCB0aGVuIHByaW50IGEgbG9nLCBzb21ldGhpbmcgbGlrZSAib3RoZXIgRkVDIGlu
+c3RhbmNlcyBkZXBlbmQgb24gTURJTyBidXMgb2YgdGhpcyBGRUMsIHNvIGNhbid0IHVuYmluZCBp
+dCBub3ciLiBJdCBzZWVtcyBubyB3YXkgdG8gZG8gdGhpcyBhdCBGRUMgZHJpdmVyIHJlbW92ZSBw
+YXRoIChmZWNfZHJ2X3JlbW92ZSkuIElmIHlvdSBoYXZlIHNvbWUgaWRlYSwgaGFwcHkgc2hhcmUg
+d2l0aCBtZS4gVGhhbmtzLg0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCj4gWERQIHBy
+b2JhYmx5IGlzIHlvdXIgZWFzaWVyIHBhdGguDQo+IA0KPiAgICAgQW5kcmV3DQo=
