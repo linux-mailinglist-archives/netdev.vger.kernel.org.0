@@ -2,139 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17CED34CB61
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F01F334CB1E
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234983AbhC2Iqh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Mar 2021 04:46:37 -0400
-Received: from mga03.intel.com ([134.134.136.65]:35073 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235248AbhC2Ime (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 04:42:34 -0400
-IronPort-SDR: vk5IvlhRwNLCqsurIeioaZOJkI/hyBjFg1XUaqo/zECSfpRNUIT4ViLDVOd0OflJ1sMVMoOwi3
- 2ZxpXcyCvufA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9937"; a="191534952"
-X-IronPort-AV: E=Sophos;i="5.81,287,1610438400"; 
-   d="scan'208";a="191534952"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 01:41:32 -0700
-IronPort-SDR: qCpEOheK42IdvbwkINi1ISulfr7bopDHfnNL1fBKxsUq6onFujJu9h0pWsr/+KlD6KxLbgGEW5
- Ka5BUxiKysfA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,287,1610438400"; 
-   d="scan'208";a="415338588"
-Received: from irsmsx602.ger.corp.intel.com ([163.33.146.8])
-  by orsmga007.jf.intel.com with ESMTP; 29 Mar 2021 01:41:30 -0700
-Received: from irsmsx604.ger.corp.intel.com (163.33.146.137) by
- irsmsx602.ger.corp.intel.com (163.33.146.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 29 Mar 2021 09:41:29 +0100
-Received: from irsmsx604.ger.corp.intel.com ([163.33.146.137]) by
- IRSMSX604.ger.corp.intel.com ([163.33.146.137]) with mapi id 15.01.2106.013;
- Mon, 29 Mar 2021 09:41:29 +0100
-From:   "Loftus, Ciara" <ciara.loftus@intel.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>
-Subject: RE: [PATCH v2 bpf 3/3] libbpf: ignore return values of setsockopt for
- XDP rings.
-Thread-Topic: [PATCH v2 bpf 3/3] libbpf: ignore return values of setsockopt
- for XDP rings.
-Thread-Index: AQHXIlDjJrZQMtFJm0i7O3jDxgJtSaqXHNWAgAOK00A=
-Date:   Mon, 29 Mar 2021 08:41:29 +0000
-Message-ID: <bc1d9e861d27499da5f5a84bc6d22177@intel.com>
-References: <20210326142946.5263-1-ciara.loftus@intel.com>
- <20210326142946.5263-4-ciara.loftus@intel.com>
- <20210327022729.cgizt5xnhkerbrmy@ast-mbp>
-In-Reply-To: <20210327022729.cgizt5xnhkerbrmy@ast-mbp>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [163.33.253.164]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S233970AbhC2InX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 04:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235323AbhC2Iml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:42:41 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0E1C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 01:42:40 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id e7so13257469edu.10
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 01:42:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=mB59Sn+mDYRXkhWpiVMqAk9pbJgYvIBEJ4blPOXzWrg=;
+        b=NAYyBsoLaptD7W+O0F1DPgMK27P5HZYxl3zV04tvj2hSA9hXGidkoI8Gt58qq5a6U3
+         pZn0vVnSHjj54PYOLmLuSQ8rDCKpDXgyzv3Ifk9V4zb9UhYCZN2EAeebfKVkI4ZP0f15
+         gxgvtz/cBqJyhfh1Oe0VM7PVdpNFWnMtq8+dpqyl2/JlznvxYeETOeTs++tJqPXAH84U
+         oU6VhJJ2j+oek4sReP4T5Tmv0YAkqyOaig3RNTs+jw/pz3P7FiZ+BQp1sepx+JsnZ8Ke
+         xa48t8wOuz0Jgh4vj4PvY8eZt6pnYkvUCgxSkm3ZAF8MP8/ferlRgEZV2m+nqjBjOnLT
+         NDUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=mB59Sn+mDYRXkhWpiVMqAk9pbJgYvIBEJ4blPOXzWrg=;
+        b=RVyxaTgLxbtiBWf44KUNQMhNwYLNn8QsWylnA4D18DTMvQ/leA1xjtzKsV5i0lNc8d
+         H0IZ5j7xyThFF13OXs+4toUVvsE+bkw9qjn1rS7R46wOaHkIdBE1WTmzZsdbVZshPVvS
+         c0L6ctpLS/8fvrdwLsNik46l+dhOotjbzmlNr2ZeONOVj1C0ZwCYULMjv4/20zLIJuZf
+         sYJ3mAf6xQqo4Eej7Nd6grlotV0/cIxXWzzDf3DVCRa2dJQHS4qU7G17KNAI72rJG89f
+         73vChhEkVcl7CPQcxGJGHRH/cnzkcru+PNOnKgigIi7jEkcFwHPDwC3pvnwJ4A5JWMRc
+         EBGw==
+X-Gm-Message-State: AOAM530QHS0DWto7wDDMSXIoVwyzAw6tF2/EqliKpdD/xL5nIC5mBH2F
+        OzvCjD39rxMt5AptERs4xKfTg7Ntdje1L8E8YCjKT8G9TruJ6Q==
+X-Google-Smtp-Source: ABdhPJyIvkYr+ryqimL3OEJOO2dLLTOwsbXYdWdpwIPYPsw99ppnQnxOZYBmclQg4ywbnnLE9dEBwpPjifN6UEQuBLE=
+X-Received: by 2002:a50:eb97:: with SMTP id y23mr27706337edr.170.1617007359448;
+ Mon, 29 Mar 2021 01:42:39 -0700 (PDT)
 MIME-Version: 1.0
+From:   =?UTF-8?B?6auY6ZKn5rWp?= <gaojunhao0504@gmail.com>
+Date:   Mon, 29 Mar 2021 16:42:27 +0800
+Message-ID: <CAOJPZgkLvkhN4+_OCLPyWBiXPRc=qLYa3b5jyz63dkn7GQA2Uw@mail.gmail.com>
+Subject: esp-hw-offload support for VF of NVIDIA Mellanox ConnectX-6 Ethernet
+ Adapter Cards
+To:     borisp@nvidia.com, saeedm@nvidia.com
+Cc:     netdev@vger.kernel.org, seven.wen@ucloud.cn, junhao.gao@ucloud.cn
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> On Fri, Mar 26, 2021 at 02:29:46PM +0000, Ciara Loftus wrote:
-> > During xsk_socket__create the XDP_RX_RING and XDP_TX_RING
-> setsockopts
-> > are called to create the rx and tx rings for the AF_XDP socket. If the ring
-> > has already been set up, the setsockopt will return an error. However,
-> > in the event of a failure during xsk_socket__create(_shared) after the
-> > rings have been set up, the user may wish to retry the socket creation
-> > using these pre-existing rings. In this case we can ignore the error
-> > returned by the setsockopts. If there is a true error, the subsequent
-> > call to mmap() will catch it.
-> >
-> > Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
-> >
-> > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-> > ---
-> >  tools/lib/bpf/xsk.c | 34 ++++++++++++++++------------------
-> >  1 file changed, 16 insertions(+), 18 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> > index d4991ddff05a..cfc4abf505c3 100644
-> > --- a/tools/lib/bpf/xsk.c
-> > +++ b/tools/lib/bpf/xsk.c
-> > @@ -900,24 +900,22 @@ int xsk_socket__create_shared(struct xsk_socket
-> **xsk_ptr,
-> >  	}
-> >  	xsk->ctx = ctx;
-> >
-> > -	if (rx) {
-> > -		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> > -				 &xsk->config.rx_size,
-> > -				 sizeof(xsk->config.rx_size));
-> > -		if (err) {
-> > -			err = -errno;
-> > -			goto out_put_ctx;
-> > -		}
-> > -	}
-> > -	if (tx) {
-> > -		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-> > -				 &xsk->config.tx_size,
-> > -				 sizeof(xsk->config.tx_size));
-> > -		if (err) {
-> > -			err = -errno;
-> > -			goto out_put_ctx;
-> > -		}
-> > -	}
-> > +	/* The return values of these setsockopt calls are intentionally not
-> checked.
-> > +	 * If the ring has already been set up setsockopt will return an error.
-> However,
-> > +	 * this scenario is acceptable as the user may be retrying the socket
-> creation
-> > +	 * with rings which were set up in a previous but ultimately
-> unsuccessful call
-> > +	 * to xsk_socket__create(_shared). The call later to mmap() will fail if
-> there
-> > +	 * is a real issue and we handle that return value appropriately there.
-> > +	 */
-> > +	if (rx)
-> > +		setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> > +			   &xsk->config.rx_size,
-> > +			   sizeof(xsk->config.rx_size));
-> > +
-> > +	if (tx)
-> > +		setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
-> > +			   &xsk->config.tx_size,
-> > +			   sizeof(xsk->config.tx_size));
-> 
-> Instead of ignoring the error can you remember that setsockopt was done
-> in struct xsk_socket and don't do it the second time?
+Hi Boris,Saeed
 
-Ideally we don't have to ignore the error. However in the event of failure struct xsk_socket is freed at the end of xsk_socket__create so we can't use it to remember state between subsequent calls to __create(). 
+     I'm enabling esp-hw-offload for VF of NVIDIA Mellanox ConnectX-6
+Ethernet Adapter Cards, but it doesn't work.
+     Before I created VF, the esp-hw-offload function of CX-6 is on,
+after I created VF, the esp-hw-offload function of VF doesn't inherit
+the esp-hw-offload function of CX-6.
+     Enable esp-hw-offload could refer to
+https://docs.mellanox.com/display/OFEDv522200/IPsec+Crypto+Offload.
+
+     Create VF steps as follows:
+     modprobe mlx5_core
+     echo 2 > /sys/class/net/net2/device/sriov_numvfs
+     # lspci to get pci bdf number(example:0000:07:00.0)
+     lspci -nn | grep Mellanox
+     echo 0000:07:00.2 > /sys/bus/pci/drivers/mlx5_core/unbind
+     echo 0000:07:00.3 > /sys/bus/pci/drivers/mlx5_core/unbind
+     /etc/init.d/mst start
+     mcra /dev/mst/mt4119_pciconf0  0x31500.17  0
+     devlink dev eswitch set pci/0000:07:00.0  mode switchdev encap enable
+     echo 0000:07:00.2 > /sys/bus/pci/drivers/mlx5_core/bind
+     echo 0000:07:00.3 > /sys/bus/pci/drivers/mlx5_core/bind
+
+     Then query the esp-hw-offload of VF:
+     #firstly need to find the created VF(has the properties:
+     bus-info: 0000:07:00.2, driver: mlx5_core)
+     ethtool -i eth0 | grep esp-hw-offload
+     esp-hw-offload: off [fixed]
+
+Best Regards,
+Junhao
