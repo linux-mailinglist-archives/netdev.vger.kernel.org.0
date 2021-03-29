@@ -2,83 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B728234C4B8
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 09:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C60E434C4BA
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 09:18:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbhC2HQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 03:16:52 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:52401 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231163AbhC2HQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 03:16:24 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id A96875C0004;
-        Mon, 29 Mar 2021 03:16:23 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 29 Mar 2021 03:16:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CyyF/r
-        2NLDa6WBNVAwayptZdU9XoxfGXylJPadw9FQo=; b=ojHJB/N7pQZm8hOFuzzMcv
-        rJCPaBoDi4f3/8/OjhSBiYMA00QdS118R29Q4urdxOLkmoTuW7ydqRy8UrE4fM0W
-        XSo8DUkuq6x5e4bF4VmDqrWcoIiuLdsXEO3QRBhgP5tc1wukQVe4wUhsCA7VcgNJ
-        wA9pMNlRrr9KnwlmKshI/2l7+v4PX3bnBQiVHDPXDXvOvVNJGRnCSCw+qsBh9hdh
-        WZE+oIMVLH1r1tVzRtQ1KBASIZsh+wJWfDFdMaOTsDnejDG3PS87QPpgLJkUfs3d
-        1RaCB5AXhkWTnGh/+nMEx7DQSuMsKhQ8++A+Bsuhtl9QG8Mbz4heADOKdxsKYYow
-        ==
-X-ME-Sender: <xms:x35hYGxpd4TGD-lcEtgZm0zB11NxBfen_ROmvQCtWJCLVXc702ETBg>
-    <xme:x35hYCQHFc-6nNuQj9EzaCkgjCkiUVF1fRFz3Fq5G7qOrXsSBvUS2ZwMV4alUvPDm
-    fYCBlMtlYlmT9Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehjedguddujecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:x35hYIW67tTOQ_lwSGTMi2EidvW6GByJwuT3YaX52Orp9mqeAqxlsA>
-    <xmx:x35hYMhUuLIruN_Qrer3DL3EfwdpXAIyszbwCOTzkwjrO6IDMSxkVw>
-    <xmx:x35hYICNS4mxneVubxiE7zA-ACO98Ar52yuqL1oTaUVLG35RUZwFoA>
-    <xmx:x35hYH4rgj_QDvjNKbpoyowctDWwRExu8DFKYfum2r0Q7se9gjZnCQ>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D42CE1080064;
-        Mon, 29 Mar 2021 03:16:22 -0400 (EDT)
-Date:   Mon, 29 Mar 2021 10:16:19 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
-Subject: Re: [PATCH net-next 2/2] selftests: forwarding: Add tc-police tests
- for packets per second
-Message-ID: <YGF+w91qOhR05lyb@shredder.lan>
-References: <20210326130938.15814-1-simon.horman@netronome.com>
- <20210326130938.15814-3-simon.horman@netronome.com>
+        id S230322AbhC2HR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 03:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229630AbhC2HRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 03:17:39 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70124C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 00:17:39 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1617002257;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=L5HIuVkKF0vPezJj4rSN8aS2kKQ7urzwesU2/hUKJmg=;
+        b=zDxAoQ0mh/FuJhnof5/pW9bE66a1vbugq1AYRbc8wHjTvfVeMFUrHKCNlPekHQvu+/u3j2
+        42h9ST4yWauVj4AjgYm1ZjGMfcblZSzgqgT0vvLqDdmk2N3lIJagZKe+73NzgCLP20ckLb
+        LcJNpdy1hHIrD7a3N6UGQevtQj1ZycXvcxjU2XPmth5FyQf+8PrEX8zcFX7mRTtogqVIHZ
+        x7wyl6QuHpmfMiiU+8BPie1nDv5A8xy3hK5F5TQDv7+QnDZYhPBrWKToHVSq+UGhAubQDe
+        q12+jpi+cSd0FvtO0lG9wMk7gIQPwni1BPi77Wvkm5Z9FhpH7SC3S3Zh2gOfIA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1617002257;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=L5HIuVkKF0vPezJj4rSN8aS2kKQ7urzwesU2/hUKJmg=;
+        b=7N02Vozi9VBf+1biWa1UnHzDuyS+hN3bLrRhhNt7CVUATLeh/Ku2Jobhmaz3wZJRGRT4ME
+        3BAXvDxxamU+YADw==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH net v2] net: Reset MAC header for direct packet transmission
+Date:   Mon, 29 Mar 2021 09:17:16 +0200
+Message-Id: <20210329071716.12235-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210326130938.15814-3-simon.horman@netronome.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 26, 2021 at 02:09:38PM +0100, Simon Horman wrote:
-> From: Baowen Zheng <baowen.zheng@corigine.com>
-> 
-> Test tc-police action for packets per second.
-> The test is mainly in scenarios Rx policing and Tx policing.
-> The test passes with veth pairs ports.
-> 
-> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@netronome.com>
+Reset MAC header in case of using dev_direct_xmit(), e.g. by specifying
+PACKET_QDISC_BYPASS. This is needed, because other code such as the HSR layer
+expects the MAC header to be correctly set.
 
-FWIW (I see it was already merged):
+This has been observed using the following setup:
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+|$ ip link add name hsr0 type hsr slave1 lan0 slave2 lan1 supervision 45 version 1
+|$ ifconfig hsr0 up
+|$ ./test hsr0
 
-Thanks!
+The test binary is using mmap'ed sockets and is specifying the
+PACKET_QDISC_BYPASS socket option.
+
+This patch resolves the following warning on a non-patched kernel:
+
+|[  112.725394] ------------[ cut here ]------------
+|[  112.731418] WARNING: CPU: 1 PID: 257 at net/hsr/hsr_forward.c:560 hsr_forward_skb+0x484/0x568
+|[  112.739962] net/hsr/hsr_forward.c:560: Malformed frame (port_src hsr0)
+
+The MAC header is also reset unconditionally in case of PACKET_QDISC_BYPASS is
+not used at the top of __dev_queue_xmit().
+
+Fixes: d346a3fae3ff ("packet: introduce PACKET_QDISC_BYPASS socket option")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+---
+
+Changes since v1:
+
+ * Move skb_reset_mac_header() to __dev_direct_xmit()
+ * Add Fixes tag
+ * Target net tree
+
+Previous versions:
+
+ * https://lkml.kernel.org/netdev/20210326154835.21296-1-kurt@linutronix.de/
+
+net/core/dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b4c67a5be606..b5088223dc57 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4297,6 +4297,8 @@ int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
+ 		     !netif_carrier_ok(dev)))
+ 		goto drop;
+ 
++	skb_reset_mac_header(skb);
++
+ 	skb = validate_xmit_skb_list(skb, dev, &again);
+ 	if (skb != orig_skb)
+ 		goto drop;
+-- 
+2.20.1
+
