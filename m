@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17DAF34C9A4
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 555ED34C9A7
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 10:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbhC2Iak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 04:30:40 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:50433 "EHLO
+        id S233314AbhC2Iaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 04:30:46 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55241 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233823AbhC2IaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:30:01 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B45165C0062;
-        Mon, 29 Mar 2021 04:30:00 -0400 (EDT)
+        by vger.kernel.org with ESMTP id S233870AbhC2IaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 04:30:08 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 446F95C00C1;
+        Mon, 29 Mar 2021 04:30:03 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 29 Mar 2021 04:30:00 -0400
+  by compute4.internal (MEProxy); Mon, 29 Mar 2021 04:30:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=39bOTHCsHkTsjTjF/
-        4cbZvZiqE+P5oDGG4AXfZOyWxM=; b=T24UeO+sbvVrAjfvp0dbs5kqQcm87mvpd
-        VcOCcMTcM/ZsWfPFrMYJXY95orvGie62ARaD4A61/rf0RZOnrgWsR6LskcJSD8HV
-        4xqCusOde3ukmMjbZoP5A7nUzMulTfA87oGi2NJ0+BPMFi2vM9b9XYWpWuKpi85C
-        1UuyqKoLplhuUb+T0nRqb29FMQpcwkSmLsOcyl9Lwe3cfiHRSa8yH8Cn6+5ZKDdg
-        a9UX2ZNMH8O7faF+ojZJLRKBn+Up184hkmCj2lGc3VcBaU7e/s0clUQl+HbCi1r4
-        H3z8DGKpNqiysRJbZBt0qiFeOoeVRpzA5PWudVwzpEwNKBIHto6vg==
-X-ME-Sender: <xms:CJBhYIV6W_L_EF3FW1_rbrcTsZiiNTKAbmEZQuO6xp3jtjT_0Dr0JQ>
-    <xme:CJBhYMnEmPG_r3eENQTX8mxcGZbwua0Syl1m8VKqDIah7pSdgS6_7GFXGlTbToNrA
-    t3yhLmrfHeUnK0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgtdegucetufdoteggodetrfdotf
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=SZyvuT8P9aHh+tYq6ic8twaVcn9HcSq/dclEvNOPgDA=; b=ZTLZetW6
+        /3+CwhwoMNn997/MOMwMWLBVxa/cB1HEgWaMDPYpxG7eyWUWLCfA6/Lbb1axvPly
+        yuymWrSt6KeKNAHLoGhfx0fdboWEdChGoiflYGulLkliZcnDoq+m3WC4aKCAsBFd
+        YHPoCUkSUidklWqd7CNpZxxc5k9ihBHCKIFrHxRP9yhNGYEBGTUEAqiz8RR2JnYj
+        YkaB0UJfHYh6mjl0iBj0wvpfPm8egQ8cNbwbwJgNG0O+pTbgihHbuChtnQkcuRhn
+        xbzkSJ8LNULtbVn6kuvSL+M3NSI0+Vm0MCpAcU7DjfRwBFeAgdrG0bIn6rbjnwIW
+        il5DbZRr+Ix48g==
+X-ME-Sender: <xms:CpBhYGMYzNEteRIotM7cLN2XZKWFQ3-wXsxuLbcNVcnT4GLUQ9hoHA>
+    <xme:CpBhYOkGqOJjqF7TGq2basvycj6aDcpp2PUh-a6vEtMNHBE-cyvsIfL6qO6iRxH9k
+    51VkzQoH2yp3o4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgtdehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:CJBhYMa3hM3CtOhJ85t75BhueP42jum1wBoazxszap5nRle2J5widg>
-    <xmx:CJBhYHWPCSKh0oZYzVO8qVZyV2oV0TOXWs1DQuMIvtfccfy4jyBWjg>
-    <xmx:CJBhYCn3FAfhi0jSYzU1RN0Ur1EF4lBiJ6ekrsc_is1Uu_ubd2WhiA>
-    <xmx:CJBhYJv2kju3hmPZxZHPamdqAs-08BT8mtAe5RCZSnLRugGhlitN1g>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:CpBhYNQ-Xpb9A8rTlxLFuVTgk52urykcEiZbXei-a0BohBZ9FA4wrA>
+    <xmx:CpBhYKBAgarso8YTJefhupvQ84RAOwrmirxcYwI06lGy4axmzgdrlA>
+    <xmx:CpBhYMTHYvUHALdSa4BowPpQ6vYqYYhzTc27HQaIcz9IgByxlzUB2A>
+    <xmx:C5BhYEo9iCDHdJH9hh12McuiXq-pI4pJL5-OOrs6hWVrG3vAfL06vQ>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1A69924005D;
-        Mon, 29 Mar 2021 04:29:57 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id A420D24005B;
+        Mon, 29 Mar 2021 04:30:00 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, liuhangbin@gmail.com, toke@redhat.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 0/2] mlxsw: spectrum: Fix ECN marking in tunnel decapsulation
-Date:   Mon, 29 Mar 2021 11:29:22 +0300
-Message-Id: <20210329082927.347631-1-idosch@idosch.org>
+Subject: [PATCH net 1/2] mlxsw: spectrum: Fix ECN marking in tunnel decapsulation
+Date:   Mon, 29 Mar 2021 11:29:23 +0300
+Message-Id: <20210329082927.347631-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210329082927.347631-1-idosch@idosch.org>
+References: <20210329082927.347631-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,23 +64,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Patch #1 fixes a discrepancy between the software and hardware data
-paths with regards to ECN marking after decapsulation. See the changelog
-for a detailed description.
+Cited commit changed the behavior of the software data path with regards
+to the ECN marking of decapsulated packets. However, the commit did not
+change other callers of __INET_ECN_decapsulate(), namely mlxsw. The
+driver is using the function in order to ensure that the hardware and
+software data paths act the same with regards to the ECN marking of
+decapsulated packets.
 
-Patch #2 extends the ECN decap test to cover all possible combinations
-of inner and outer ECN markings. The test passes over both data paths.
+The discrepancy was uncovered by commit 5aa3c334a449 ("selftests:
+forwarding: vxlan_bridge_1d: Fix vxlan ecn decapsulate value") that
+aligned the selftest to the new behavior. Without this patch the
+selftest passes when used with veth pairs, but fails when used with
+mlxsw netdevs.
 
-Ido Schimmel (2):
-  mlxsw: spectrum: Fix ECN marking in tunnel decapsulation
-  selftests: forwarding: vxlan_bridge_1d: Add more ECN decap test cases
+Fix this by instructing the device to propagate the ECT(1) mark from the
+outer header to the inner header when the inner header is ECT(0), for
+both NVE and IP-in-IP tunnels.
 
+A helper is added in order not to duplicate the code between both tunnel
+types.
+
+Fixes: b723748750ec ("tunnel: Propagate ECT(1) when decapsulating as recommended by RFC6040")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+---
  drivers/net/ethernet/mellanox/mlxsw/spectrum.h    | 15 +++++++++++++++
  .../net/ethernet/mellanox/mlxsw/spectrum_ipip.c   |  7 +++----
  .../net/ethernet/mellanox/mlxsw/spectrum_nve.c    |  7 +++----
- .../selftests/net/forwarding/vxlan_bridge_1d.sh   | 13 ++++++++++++-
- 4 files changed, 33 insertions(+), 9 deletions(-)
+ 3 files changed, 21 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index d9d9e1f488f9..ba28ac7e79bc 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -21,6 +21,7 @@
+ #include <net/red.h>
+ #include <net/vxlan.h>
+ #include <net/flow_offload.h>
++#include <net/inet_ecn.h>
+ 
+ #include "port.h"
+ #include "core.h"
+@@ -347,6 +348,20 @@ struct mlxsw_sp_port_type_speed_ops {
+ 	u32 (*ptys_proto_cap_masked_get)(u32 eth_proto_cap);
+ };
+ 
++static inline u8 mlxsw_sp_tunnel_ecn_decap(u8 outer_ecn, u8 inner_ecn,
++					   bool *trap_en)
++{
++	bool set_ce = false;
++
++	*trap_en = !!__INET_ECN_decapsulate(outer_ecn, inner_ecn, &set_ce);
++	if (set_ce)
++		return INET_ECN_CE;
++	else if (outer_ecn == INET_ECN_ECT_1 && inner_ecn == INET_ECN_ECT_0)
++		return INET_ECN_ECT_1;
++	else
++		return inner_ecn;
++}
++
+ static inline struct net_device *
+ mlxsw_sp_bridge_vxlan_dev_find(struct net_device *br_dev)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+index 6ccca39bae84..64a8f838eb53 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ipip.c
+@@ -335,12 +335,11 @@ static int mlxsw_sp_ipip_ecn_decap_init_one(struct mlxsw_sp *mlxsw_sp,
+ 					    u8 inner_ecn, u8 outer_ecn)
+ {
+ 	char tidem_pl[MLXSW_REG_TIDEM_LEN];
+-	bool trap_en, set_ce = false;
+ 	u8 new_inner_ecn;
++	bool trap_en;
+ 
+-	trap_en = __INET_ECN_decapsulate(outer_ecn, inner_ecn, &set_ce);
+-	new_inner_ecn = set_ce ? INET_ECN_CE : inner_ecn;
+-
++	new_inner_ecn = mlxsw_sp_tunnel_ecn_decap(outer_ecn, inner_ecn,
++						  &trap_en);
+ 	mlxsw_reg_tidem_pack(tidem_pl, outer_ecn, inner_ecn, new_inner_ecn,
+ 			     trap_en, trap_en ? MLXSW_TRAP_ID_DECAP_ECN0 : 0);
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(tidem), tidem_pl);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
+index e5ec595593f4..9eba8fa684ae 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_nve.c
+@@ -909,12 +909,11 @@ static int __mlxsw_sp_nve_ecn_decap_init(struct mlxsw_sp *mlxsw_sp,
+ 					 u8 inner_ecn, u8 outer_ecn)
+ {
+ 	char tndem_pl[MLXSW_REG_TNDEM_LEN];
+-	bool trap_en, set_ce = false;
+ 	u8 new_inner_ecn;
++	bool trap_en;
+ 
+-	trap_en = !!__INET_ECN_decapsulate(outer_ecn, inner_ecn, &set_ce);
+-	new_inner_ecn = set_ce ? INET_ECN_CE : inner_ecn;
+-
++	new_inner_ecn = mlxsw_sp_tunnel_ecn_decap(outer_ecn, inner_ecn,
++						  &trap_en);
+ 	mlxsw_reg_tndem_pack(tndem_pl, outer_ecn, inner_ecn, new_inner_ecn,
+ 			     trap_en, trap_en ? MLXSW_TRAP_ID_DECAP_ECN0 : 0);
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(tndem), tndem_pl);
 -- 
 2.30.2
 
