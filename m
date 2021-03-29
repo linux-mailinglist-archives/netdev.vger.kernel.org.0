@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B96F234DB96
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:29:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0202A34DBAD
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233111AbhC2W3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 18:29:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48398 "EHLO mail.kernel.org"
+        id S232329AbhC2W3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 18:29:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232619AbhC2W0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 18:26:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 504C3619CE;
-        Mon, 29 Mar 2021 22:24:06 +0000 (UTC)
+        id S232629AbhC2W1y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 18:27:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2920B619D6;
+        Mon, 29 Mar 2021 22:24:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617056647;
-        bh=a1uXK/+GlABlmfBCQvKMA0C/8sWssEIwuCem40Wi1hI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0pMPI0wU46czHtlPTQPNOhRrT9NRUgpvl6sa+8LBNuPryGqj1v9g8OL7ELzAeQ92
-         bypLzDJ28saKhaZ2vRN+oFJFCFge1yodyJgfCHnZb7w+rdRKMEu1QUDj4iA0zHNAuL
-         PE8GWsHLhircQClKRC9xXjWHrQp0hPWIbAMtqSl5j+ErM05nn12h1iuYRJSJxr6zNf
-         odd3tEQDdJuUbFUghJE4EsHpL/QxxpwRePVtmiN6CcH2fESnL/tVQ09hZWMTJWjM3J
-         KAUP9Fegg3ejXOgYiu6grG2xyGE5vVdFHnZGCGnXAFvOUwqoSJEEGdzchw38b6D7al
-         Y/WMz6ndL2aMA==
+        s=k20201202; t=1617056656;
+        bh=HFYKuxpYHtQOqawdfm9OLszkbzF9HJNXJCRqgjZgVMM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XDq4y6ao3TTQZOI3A4bg/3PjxrcFbnUnoL4BzFR/eRzAM000SzxH/CqnUKRsCVqd/
+         5V+guYpsdkSV+9riCKjowM2orwuZsbEN36Uk5qeuMi85S0cInTa4s9RjAd8MaZPXMA
+         +FvAIyC6f7K96dFC5GwlMz2JhhSG8ifasGLCPGPQRvpPgQhrl9BBY7WBsHNFKZAvjK
+         hoLM3TkRS3ttKLznayrJ1s1EBjf1eliMgGstXjQvaANXLf0HxPQJm2QY4dVEX4ZEUr
+         cAQVPUUZpz1y7M5fISTsw5IkT4Q/AZ+JGod1DmSZABB7voezLB6V1wW4M1BS8EkobK
+         G2VNrSv2TwsSA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Karthikeyan Kathirvel <kathirve@codeaurora.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 04/10] mac80211: choose first enabled channel for monitor
-Date:   Mon, 29 Mar 2021 18:23:55 -0400
-Message-Id: <20210329222401.2383930-4-sashal@kernel.org>
+Cc:     Pavel Andrianov <andrianov@ispras.ru>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 1/8] net: pxa168_eth: Fix a potential data race in pxa168_eth_remove
+Date:   Mon, 29 Mar 2021 18:24:07 -0400
+Message-Id: <20210329222415.2384075-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210329222401.2383930-1-sashal@kernel.org>
-References: <20210329222401.2383930-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,51 +40,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karthikeyan Kathirvel <kathirve@codeaurora.org>
+From: Pavel Andrianov <andrianov@ispras.ru>
 
-[ Upstream commit 041c881a0ba8a75f71118bd9766b78f04beed469 ]
+[ Upstream commit 0571a753cb07982cc82f4a5115e0b321da89e1f3 ]
 
-Even if the first channel from sband channel list is invalid
-or disabled mac80211 ends up choosing it as the default channel
-for monitor interfaces, making them not usable.
+pxa168_eth_remove() firstly calls unregister_netdev(),
+then cancels a timeout work. unregister_netdev() shuts down a device
+interface and removes it from the kernel tables. If the timeout occurs
+in parallel, the timeout work (pxa168_eth_tx_timeout_task) performs stop
+and open of the device. It may lead to an inconsistent state and memory
+leaks.
 
-Fix this by assigning the first available valid or enabled
-channel instead.
+Found by Linux Driver Verification project (linuxtesting.org).
 
-Signed-off-by: Karthikeyan Kathirvel <kathirve@codeaurora.org>
-Link: https://lore.kernel.org/r/1615440547-7661-1-git-send-email-kathirve@codeaurora.org
-[reword commit message, comment, code cleanups]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Pavel Andrianov <andrianov@ispras.ru>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/main.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/pxa168_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index e3bbfb20ae82..f31fd21d59ba 100644
---- a/net/mac80211/main.c
-+++ b/net/mac80211/main.c
-@@ -906,8 +906,19 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
- 			continue;
+diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+index 7ace07dad6a3..9986f88618bd 100644
+--- a/drivers/net/ethernet/marvell/pxa168_eth.c
++++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+@@ -1577,8 +1577,8 @@ static int pxa168_eth_remove(struct platform_device *pdev)
  
- 		if (!dflt_chandef.chan) {
-+			/*
-+			 * Assign the first enabled channel to dflt_chandef
-+			 * from the list of channels
-+			 */
-+			for (i = 0; i < sband->n_channels; i++)
-+				if (!(sband->channels[i].flags &
-+						IEEE80211_CHAN_DISABLED))
-+					break;
-+			/* if none found then use the first anyway */
-+			if (i == sband->n_channels)
-+				i = 0;
- 			cfg80211_chandef_create(&dflt_chandef,
--						&sband->channels[0],
-+						&sband->channels[i],
- 						NL80211_CHAN_NO_HT);
- 			/* init channel we're on */
- 			if (!local->use_chanctx && !local->_oper_chandef.chan) {
+ 	mdiobus_unregister(pep->smi_bus);
+ 	mdiobus_free(pep->smi_bus);
+-	unregister_netdev(dev);
+ 	cancel_work_sync(&pep->tx_timeout_task);
++	unregister_netdev(dev);
+ 	free_netdev(dev);
+ 	return 0;
+ }
 -- 
 2.30.1
 
