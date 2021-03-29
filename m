@@ -2,89 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A61F34CED6
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 403CB34CEDC
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 13:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232743AbhC2LZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 07:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbhC2LYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:24:51 -0400
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9548CC061574;
-        Mon, 29 Mar 2021 04:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=qxbP5+Kk9h
-        wkXbfb+CGZvxYCqM6EZhUj+fs9Awbi1jE=; b=DzdtN7Zo4pRvyQz9R3psxX4ID9
-        1LJvAQyZk0ZC7OgcaTGYj3YI8unBCsR+jKCoSrs4PxL1uU12/d9m1AcS/YshW/wc
-        tGUw72i6K9wq4RVchudFotPjlmxpAGnz2p6cwQ6ft9L3zSzM3VXRN6RFNITH6rIE
-        olI7NoGF6Y1JIhe7U=
-Received: from ubuntu.localdomain (unknown [202.38.69.14])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygAnLkL1uGFg_SFnAA--.609S4;
-        Mon, 29 Mar 2021 19:24:38 +0800 (CST)
-From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-To:     amitkarwar@gmail.com, ganapathi.bhat@nxp.com,
-        huxinming820@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Subject: [PATCH] wireless/marvell/mwifiex: Fix a double free in mwifiex_send_tdls_action_frame
-Date:   Mon, 29 Mar 2021 04:24:35 -0700
-Message-Id: <20210329112435.7960-1-lyl2019@mail.ustc.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        id S232387AbhC2L0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 07:26:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48047 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232817AbhC2LZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 07:25:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617017143;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iIxb/iNDI5zbjBNS0Yniaj8jlgpWtPmm+zDOrS4XPwg=;
+        b=alsEOcmctvnajBG2Odn9Zz2y3IoDLQnr5AiyL3UrNVkxTUm86YnPj18XmNwPwk8BmJAaG1
+        R3gBYjYjEl1B3wNKf1Ucgt/pRD678AR73DuycAHZv0kV6aFJkJs2fsVAr8GOKljIEm1QHI
+        yOlOfBEyulapjsqKUzelATOXA3N/QyU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-346-ufn4WtBHODiOhlGKRJny5Q-1; Mon, 29 Mar 2021 07:25:41 -0400
+X-MC-Unique: ufn4WtBHODiOhlGKRJny5Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 085641922020;
+        Mon, 29 Mar 2021 11:25:40 +0000 (UTC)
+Received: from ovpn-114-151.ams2.redhat.com (ovpn-114-151.ams2.redhat.com [10.36.114.151])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2ED50437F;
+        Mon, 29 Mar 2021 11:25:37 +0000 (UTC)
+Message-ID: <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow
+ path
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Date:   Mon, 29 Mar 2021 13:25:37 +0200
+In-Reply-To: <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+References: <cover.1616692794.git.pabeni@redhat.com>
+         <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
+         <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: LkAmygAnLkL1uGFg_SFnAA--.609S4
-X-Coremail-Antispam: 1UD129KBjvJXoWrKw4kZryfGrWxur47AF1fWFg_yoW8Jr13pw
-        sxC3s3urW8Ar1UCr1DCFWkGFWFgasxK34akrsrAw15WrZ3G34ftF12ga40kr15Xrs5Zr17
-        ZF4jqF15AFs3CrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAac4AC62xK8xCEY4vEwIxC4wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IE
-        rcIFxwACI402YVCY1x02628vn2kIc2xKxwCY02Avz4vE14v_Gw4l42xK82IYc2Ij64vIr4
-        1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK
-        67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI
-        8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAv
-        wI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5UDJDUUUU
-X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In mwifiex_send_tdls_action_frame, it calls mwifiex_construct_tdls_action_frame
-(..,skb). The skb will be freed in mwifiex_construct_tdls_action_frame() when
-it is failed. But when mwifiex_construct_tdls_action_frame() returns error,
-the skb will be freed in the second time by dev_kfree_skb_any(skb).
+On Fri, 2021-03-26 at 14:30 -0400, Willem de Bruijn wrote:
+> On Thu, Mar 25, 2021 at 1:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > When UDP packets generated locally by a socket with UDP_SEGMENT
+> > traverse the following path:
+> > 
+> > UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
+> >         UDP tunnel (rx) -> UDP socket (no UDP_GRO)
+> > 
+> > they are segmented as part of the rx socket receive operation, and
+> > present a CHECKSUM_NONE after segmentation.
+> 
+> would be good to capture how this happens, as it was not immediately obvious.
 
-My patch removes the redundant dev_kfree_skb_any(skb) when
-mwifiex_construct_tdls_action_frame() failed.
+The CHECKSUM_PARTIAL is propagated up to the UDP tunnel processing,
+where we have:
 
-Fixes: b23bce2965680 ("mwifiex: add tdls_mgmt handler support")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
----
- drivers/net/wireless/marvell/mwifiex/tdls.c | 1 -
- 1 file changed, 1 deletion(-)
+	__iptunnel_pull_header() -> skb_pull_rcsum() ->
+skb_postpull_rcsum() -> __skb_postpull_rcsum() and the latter do the
+conversion.
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/tdls.c b/drivers/net/wireless/marvell/mwifiex/tdls.c
-index 97bb87c3676b..8d4d0a9cf6ac 100644
---- a/drivers/net/wireless/marvell/mwifiex/tdls.c
-+++ b/drivers/net/wireless/marvell/mwifiex/tdls.c
-@@ -856,7 +856,6 @@ int mwifiex_send_tdls_action_frame(struct mwifiex_private *priv, const u8 *peer,
- 	if (mwifiex_construct_tdls_action_frame(priv, peer, action_code,
- 						dialog_token, status_code,
- 						skb)) {
--		dev_kfree_skb_any(skb);
- 		return -EINVAL;
- 	}
- 
--- 
-2.25.1
+> > Additionally the segmented packets UDP CB still refers to the original
+> > GSO packet len. Overall that causes unexpected/wrong csum validation
+> > errors later in the UDP receive path.
+> > 
+> > We could possibly address the issue with some additional checks and
+> > csum mangling in the UDP tunnel code. Since the issue affects only
+> > this UDP receive slow path, let's set a suitable csum status there.
+> > 
+> > v1 -> v2:
+> >  - restrict the csum update to the packets strictly needing them
+> >  - hopefully clarify the commit message and code comments
+> > 
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
+> > +               skb->csum_valid = 1;
+> 
+> Not entirely obvious is that UDP packets arriving on a device with rx
+> checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
+> this test.
+> 
+> I assume that such packets are not coalesced by the GRO layer in the
+> first place. But I can't immediately spot the reason for it..
 
+Packets with CHECKSUM_NONE are actually aggregated by the GRO engine. 
+
+Their checksum is validated by:
+
+udp4_gro_receive -> skb_gro_checksum_validate_zero_check()
+	-> __skb_gro_checksum_validate -> __skb_gro_checksum_validate_complete() 
+
+and skb->ip_summed is changed to CHECKSUM_UNNECESSARY by:
+
+__skb_gro_checksum_validate -> skb_gro_incr_csum_unnecessary
+	-> __skb_incr_checksum_unnecessary()
+
+and finally to CHECKSUM_PARTIAL by:
+
+udp4_gro_complete() -> udp_gro_complete() -> udp_gro_complete_segment()
+
+Do you prefer I resubmit with some more comments, either in the commit
+message or in the code?
+
+Thanks
+
+Paolo
+
+side note: perf probe here is fooled by skb->ip_summed being a bitfield
+and does not dump the real value. I had to look at skb-
+>__pkt_type_offset[0] instead.
 
