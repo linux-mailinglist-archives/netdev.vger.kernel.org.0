@@ -2,78 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC91834D968
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 23:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CDC434D97E
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 23:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231473AbhC2VGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 17:06:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54006 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231157AbhC2VF4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 17:05:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 77EFC61976;
-        Mon, 29 Mar 2021 21:05:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617051955;
-        bh=OtcCjjLZbaur2B7OExtX0LSlInIrcR+m6q3EDw1d8VY=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=qX6AVYYpRom0Cgd1fHjn6VNR6OkX9Z+WOXyPDEBOZe4fpoTulKBbBu3MZSL4hE2vm
-         pXAA3owv19RyorkgxSQcE7ckgeOgiTh1FGOPeUXPNwhZq1qY91q49IoyxFOM7ws9nu
-         gW4s3ldybwk2WCfrD6X4DC53HrcMq/I9mxSoL/lJ6C1QVccVJOBEWMeyk/sh1X2rH2
-         5tchL8tmksW7Nr99FD55avl/RULERolmC9DJmUzPA2hzejU/Ea9H3upqBWCmhzF9IW
-         gv7u+zQ4aavJzE0jZYNdCPVX0jTrulicJLq9HCX4YKVcpSpWLIVlR7f3C+YrCQPzt3
-         OQZpHlPFlBXaA==
-Message-ID: <026c789b7d3b6f81698803cc9ef86c3467d878d5.camel@kernel.org>
-Subject: Re: esp-hw-offload support for VF of NVIDIA Mellanox ConnectX-6
- Ethernet Adapter Cards
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     =?UTF-8?Q?=E9=AB=98=E9=92=A7=E6=B5=A9?= <gaojunhao0504@gmail.com>,
-        borisp@nvidia.com, Huy Nguyen <huyn@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>
-Cc:     netdev@vger.kernel.org, seven.wen@ucloud.cn, junhao.gao@ucloud.cn
-Date:   Mon, 29 Mar 2021 14:05:54 -0700
-In-Reply-To: <CAOJPZgkLvkhN4+_OCLPyWBiXPRc=qLYa3b5jyz63dkn7GQA2Uw@mail.gmail.com>
-References: <CAOJPZgkLvkhN4+_OCLPyWBiXPRc=qLYa3b5jyz63dkn7GQA2Uw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S231300AbhC2VSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 17:18:14 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:59549 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230495AbhC2VSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 17:18:04 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 450195C014D;
+        Mon, 29 Mar 2021 17:18:04 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 29 Mar 2021 17:18:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=GgZylg
+        dVwFMJyLIIMfWzhiu+fQe6n7QAQnmSlBFTjZQ=; b=uHcKHuPnUF6gw5KFotoNgQ
+        Jrg6sFfUzth9r5BekeZf3m+Ud0OnawOw+tWWZ8ivemyrw/rvO1y8WLgfhGaaOxVP
+        OPT9GOCir7RGM6ceRWeRb2NcZ0SDd7UCSQhfhTXNqrYT70DddnFS0Iuy642zciGT
+        q2oeXrWAPX9LZEeB2Pb/lS62HQ99HhJClj4svYfl/pMbKzNIoL5rjGvmLZpuX513
+        ggDBRfNyfEadp+GHdmGs9AxR4yQjgUNBqRQXxGY8qT1/oElgfuftomA+jmVAxV+L
+        TMksps5kSO4Fy8OBeq8Im5URpfdFlWIq4j1UmqJ1iemF2S+XO0TqIytzjNv6dcMA
+        ==
+X-ME-Sender: <xms:C0RiYHDcxKRIhsTV29guUNYLamQez9bkLAik-3DigNRy7Xh4i-kr8A>
+    <xme:C0RiYFT_6EXkcpt3wC2enE8NgozvhIA5eGl6rKFbOD6QM8otNwcp3jdERfajF4Vzu
+    U6qCqJBkurBWhY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgudeiudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:C0RiYFqqa71Eh7ttd0hH_3QCyRkf4wV8ZPzeLLzWZjTbVlz6mDAusA>
+    <xmx:C0RiYHzlbYPKRyLa87Ytq5sOctmos0YtixRNvgeBNK7SQDHe0zw1-w>
+    <xmx:C0RiYKInGzZi50np57uR3p2-B9UnllUQmbuYXzPzXW67SjuVYdHDAA>
+    <xmx:DERiYLao-qT6QHXrlYmsZ1QKz6zsaMFEwApNpavyIymg6SfvSGTSBg>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5150224005C;
+        Mon, 29 Mar 2021 17:18:03 -0400 (EDT)
+Date:   Tue, 30 Mar 2021 00:18:00 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Michal Soltys <msoltyspl@yandex.pl>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [BUG / question] in routing rules, some options (e.g. ipproto,
+ sport) cause rules to be ignored in presence of packet marks
+Message-ID: <YGJECLKHhOR+m3zB@shredder.lan>
+References: <babb2ebf-862a-d05f-305a-e894e88f601e@yandex.pl>
+ <YGI99fyA6MYKixuB@shredder.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YGI99fyA6MYKixuB@shredder.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-03-29 at 16:42 +0800, 高钧浩 wrote:
-> Hi Boris,Saeed
+On Mon, Mar 29, 2021 at 11:52:10PM +0300, Ido Schimmel wrote:
+> On Sun, Mar 28, 2021 at 04:05:29PM +0200, Michal Soltys wrote:
+> > Hi,
+> > 
+> > I'm not sure how it behaved in earlier kernels (can check later), but it is
+> > / looks bugged in at least recent 5.x+ ones (tests were done with 5.11.8 and
+> > 5.10.25).
+> > 
+> > Consider following setup:
+> > 
+> > # ip -o ad sh
+> > 1: lo    inet 127.0.0.1/8 scope host lo
+> > 2: right1    inet 10.0.10.2/24 scope global
+> > 3: right2    inet 10.0.20.2/24 scope global
+> > 
+> > # ip ro sh tab main
+> > default via 10.0.10.1 dev right1
+> > 10.0.10.0/24 dev right1 proto kernel scope link src 10.0.10.2
+> > 10.0.20.0/24 dev right2 proto kernel scope link src 10.0.20.2
+> > 
+> > # ip ro sh tab 123
+> > default via 10.0.20.1 dev right2 src 10.0.20.2
+> > 
+> > And routing rules:
+> > 
+> > 0:      from all lookup local
+> > 9:      from all fwmark 0x1 ipproto udp sport 1194 lookup 123
+> > 10:     from all ipproto udp sport 1194 lookup 123
+> > 32766:  from all lookup main
+> > 32767:  from all lookup default
+> > 
+> > This - without any mangling via ipt/nft or by other means - works correctly,
+> > for example:
+> > 
+> > nc -u -p 1194 1.2.3.4 12345
+> > 
+> > will be routed out correctly via 'right2' using 10.0.20.2
+> > 
+> > But if we add mark to locally outgoing packets:
+> > 
+> > iptables -t mangle -A OUTPUT -j MARK --set-mark 1
+> > 
+> > Then *both* rule 9 and rule 10 will be ignored during reroute check. tcpdump
+> > on interface 'right1' will show:
+> > 
+> > # tcpdump -nvi right1 udp
+> > tcpdump: listening on right1, link-type EN10MB (Ethernet), snapshot length
+> > 262144 bytes
+> > 13:21:59.684928 IP (tos 0x0, ttl 64, id 8801, offset 0, flags [DF], proto
+> > UDP (17), length 33)
+> >     10.0.20.2.1194 > 1.2.3.4.12345: UDP, length 5
+> > 
+> > Initial routing decision in rule 10 will set the address correctly, but the
+> > packet goes out via interface right1, ignoring both 9 and 10.
+> > 
+> > If I add another routing roule:
+> > 
+> > 8:      from all fwmark 0x1 lookup 123
+> > 
+> > Then the packects will flow correctly - but I *cannot* use (from the ones I
+> > tested): sport, dport, ipproto, uidrange - as they will cause the rule to be
+> > ignored. For example, this setup of routing rules will fail, if there is any
+> > mark set on a packet (nc had uid 1120):
+> > 
+> > # ip ru sh
+> > 0:      from all lookup local
+> > 10:     from all ipproto udp lookup 123
+> > 10:     from all sport 1194 lookup 123
+> > 10:     from all dport 12345 lookup 123
+> > 10:     from all uidrange 1120-1120 lookup 123
+> > 32766:  from all lookup main
+> > 32767:  from all lookup default
+> > 
+> > Adding correct fwmark to the above rules will have *no* effect either. Only
+> > fwmark *alone* will work (or in combination with: iif, from, to - from the
+> > ones I tested).
+> > 
+> > I peeked at fib_rule_match() in net/core/fib_rules.c - but it doesn't look
+> > like there is anything wrong there. I initially suspected lack of
+> > 'rule->mark &&' in mark related line - but considering that rules such as
+> > 'from all fwmark 1 sport 1194 lookup main' also fail, it doesn't look like
+> > it's the culprit (and mark_mask covers that test either way).
+> > 
+> > OTOH, perhaps nf_ip_reroute() / ip_route_me_harder() are somehow the culprit
+> > here - but I haven't analyzed them yet. Perhaps it's just an issue of
+> > changing output interface incorrectly after ip_route_me_harder() ?
 > 
->      I'm enabling esp-hw-offload for VF of NVIDIA Mellanox ConnectX-6
-> Ethernet Adapter Cards, but it doesn't work.
->      Before I created VF, the esp-hw-offload function of CX-6 is on,
-> after I created VF, the esp-hw-offload function of VF doesn't inherit
-> the esp-hw-offload function of CX-6.
->      Enable esp-hw-offload could refer to
-> https://docs.mellanox.com/display/OFEDv522200/IPsec+Crypto+Offload.
-> 
->      Create VF steps as follows:
->      modprobe mlx5_core
->      echo 2 > /sys/class/net/net2/device/sriov_numvfs
->      # lspci to get pci bdf number(example:0000:07:00.0)
->      lspci -nn | grep Mellanox
->      echo 0000:07:00.2 > /sys/bus/pci/drivers/mlx5_core/unbind
->      echo 0000:07:00.3 > /sys/bus/pci/drivers/mlx5_core/unbind
->      /etc/init.d/mst start
->      mcra /dev/mst/mt4119_pciconf0  0x31500.17  0
->      devlink dev eswitch set pci/0000:07:00.0  mode switchdev encap
-> enable
->      echo 0000:07:00.2 > /sys/bus/pci/drivers/mlx5_core/bind
->      echo 0000:07:00.3 > /sys/bus/pci/drivers/mlx5_core/bind
-> 
->      Then query the esp-hw-offload of VF:
->      #firstly need to find the created VF(has the properties:
->      bus-info: 0000:07:00.2, driver: mlx5_core)
->      ethtool -i eth0 | grep esp-hw-offload
->      esp-hw-offload: off [fixed]
-> 
+> ip_route_me_harder() does not set source / destination port in the
+> flow key, so it explains why fib rules that use them are not hit after
+> mangling the packet. These keys were added in 4.17, but I
+> don't think this use case every worked. You have a different experience?
 
-Huy, Raed, Do you know if we support IPsec inline offload on VFs ?
+It's already tomorrow here, but I think that if you record the
+'fib:fib_table_lookup' tracepoint before and after adding the mangling
+rules you will see that there is a second lookup for the packet with
+zero source / destination port. Something like:
 
+# perf record -a -e fib:fib_table_lookup -- sleep 5
+# perf script --stdio
 
+> 
+> > 
+> > Is this a bug ? Or am I misinterpreting how 'reroute check' works after
+> > initial routing decision ? One would expect routing rules during post-mangle
+> > check to not be ignored out of the blue, only because packet mark changed on
+> > the packet. Not mentioning both marks and routing rules can be used for
+> > separate purposes (e.g. marks for shaping).
+> > 
