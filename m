@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0366034CDAD
+	by mail.lfdr.de (Postfix) with ESMTP id 7623E34CDAE
 	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 12:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbhC2KKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 06:10:38 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:38349 "EHLO
+        id S232529AbhC2KKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 06:10:43 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:53035 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232573AbhC2KKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 06:10:23 -0400
+        by vger.kernel.org with ESMTP id S231784AbhC2KKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 06:10:25 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 747F05C0093;
-        Mon, 29 Mar 2021 06:10:23 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 14E9F5C00D5;
+        Mon, 29 Mar 2021 06:10:25 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 29 Mar 2021 06:10:23 -0400
+  by compute3.internal (MEProxy); Mon, 29 Mar 2021 06:10:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=QMdcON+77YuNwW32B
-        1jQJlsQfIwGub5hN+3xLcX7rfw=; b=bldbcj51zVDj9i44vIubJUd8dvh2jQj71
-        qWSS26BtjDd8sepEOv4W5k0cKctp1wkyu2qEyYbAoJ3WzD98kOht76BQVYYJ69N5
-        zAdLeKTsuCF8YW2nBT0JYPv6aeIRklDDnpyMlJjJ7zMr/H6tfoIXYDHWGxdXzY90
-        9muVk79x9bTbzPsc5i2wyFYSmQ9NJ3566vTjvZOW+0Q0G+NO/K47IjyqUKDBQRqz
-        xwpqN0tPbdikRLmrY3v4KhM3sya0jmnLmceDG1yzzTfEaZdVV42ByUKs1xZ+03b5
-        6YMnGFn5PljQv6vsU7jcVgYfSiVdcllq/WuwHeeH6hq/jXXt1SB7A==
-X-ME-Sender: <xms:j6dhYLtSaYjo1sa2FXbHW37ZvyM0fpn6RKR48TZkHwuFB2eEXT6_7A>
-    <xme:j6dhYMdXhmvN1__ou44q-zOHtRgL3M8JxfWmHx33frEqbzdOuBIagnunZskCL3N-y
-    on-c0qrI32Znw8>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=AlTV5o5Iq/ndcjIU9F/bHZlVlJZ3RW+thjk3/mVft1o=; b=oZM4XEtX
+        d0LNBPRU2rzlezjUj4Mg2w5mArxamQECjtwSbC7THMWUH0vsVOAhnjdjELVrM2+f
+        m2ADntF3OWxzGy0EqyiQDyJ/vU7XXwEYhg/aL+dDBLH59eIdHMed1KMG69UWL5g0
+        GHaw2XNqrr0flTaRnGpNh0wmenrvpuFoR7KlKX2+gzqGSIf9e8njZ3OErNHnCGZB
+        VqawkDwITLQXCyckCCSajJa7XTxshCMLWeoDvfG4GPKt4EPKXxrqpmZaWR5ZXHIf
+        x+guEXSeKPnQZUwOfGDFliY3bL0zp40biznj5P/OTQz1uCxARUBpz7kCoOJdQvc3
+        Bmy55QGQBWDc2g==
+X-ME-Sender: <xms:kKdhYK-vhSkOaz7iTgllKvHnusSvc7RS00SFd_lmGTW2FyX7Xpr-4w>
+    <xme:kKdhYKsjDcnVYsGsf2LAVWpdomDeft6qkzTbMniYLIDNgznJBmJZN3DqiE5RJpy8f
+    r6U8VUWoT6XbTA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehkedgvdehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:j6dhYOyB5O-ep2oHORSI6pKFDVJsiCCV8ijWn35nHkMZe3LEyc7Yiw>
-    <xmx:j6dhYKPFeCO_wnY8Kr94arIMUWuNjGvXZaXUVbh-4D4P9azmaifFHQ>
-    <xmx:j6dhYL9chGRF3dt0lh7jWGRAVKYv0U55lv-hr-gPf4oCBeodWdf06w>
-    <xmx:j6dhYNKiEPAFWRe3ihNi4Sc0uQlOtAo58JoA-6I4v05trlqQgf49ow>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:kKdhYAAqqIuJVU_vjyIppdrflBbfkkbwt2M1sU9KoKrMLvhVIecxjw>
+    <xmx:kKdhYCdOOYlXICKrzksQ10n8nGkgdN7LPJof2u6yPllfPGk1RUxIVg>
+    <xmx:kKdhYPMU1QO3tG-gEa-UPrRqt41yRAnSdwyvPOhmvCKBJnhVUnSR0A>
+    <xmx:kadhYIatZIeMkEeyP4CAZERQzseHQ_isEgh0609avVThftMQGRM4Rg>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6E4A5240054;
-        Mon, 29 Mar 2021 06:10:21 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 6149A24005B;
+        Mon, 29 Mar 2021 06:10:23 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 0/6] mlxsw: Two sampling fixes
-Date:   Mon, 29 Mar 2021 13:09:42 +0300
-Message-Id: <20210329100948.355486-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/6] mlxsw: spectrum_matchall: Perform protocol check earlier
+Date:   Mon, 29 Mar 2021 13:09:43 +0300
+Message-Id: <20210329100948.355486-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210329100948.355486-1-idosch@idosch.org>
+References: <20210329100948.355486-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -60,30 +63,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This patchset fixes two bugs in recent sampling submissions.
+Perform the protocol check earlier in the function instead of repeating
+it for every action. Example:
 
-The first fix, in patch #3, prevents matchall rules with sample action
-to be added in front of flower rules on egress. Patches #1-#2 are
-preparations meant at avoiding similar bugs in the future. Patch #4 is a
-selftest.
+ # tc filter add dev swp1 ingress proto ip matchall skip_sw action sample group 1 rate 100
+ Error: matchall rules only supported with 'all' protocol.
+ We have an error talking to the kernel
 
-The second fix, in patch #5, prevents sampling from being enabled on a
-port if already enabled. Patch #6 is a selftest.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ .../net/ethernet/mellanox/mlxsw/spectrum_matchall.c    | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-Ido Schimmel (6):
-  mlxsw: spectrum_matchall: Perform protocol check earlier
-  mlxsw: spectrum_matchall: Convert if statements to a switch statement
-  mlxsw: spectrum_matchall: Perform priority checks earlier
-  selftests: mlxsw: Test matchall failure with protocol match
-  mlxsw: spectrum: Veto sampling if already enabled on port
-  selftests: mlxsw: Test vetoing of double sampling
-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  5 ++
- .../mellanox/mlxsw/spectrum_matchall.c        | 46 ++++++++++---------
- .../drivers/net/mlxsw/tc_restrictions.sh      | 17 +++++++
- .../selftests/drivers/net/mlxsw/tc_sample.sh  | 30 ++++++++++++
- 4 files changed, 76 insertions(+), 22 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
+index ce58a795c6fc..9252e23fd082 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
+@@ -238,6 +238,11 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
+ 		flower_prio_valid = true;
+ 	}
+ 
++	if (protocol != htons(ETH_P_ALL)) {
++		NL_SET_ERR_MSG(f->common.extack, "matchall rules only supported with 'all' protocol");
++		return -EOPNOTSUPP;
++	}
++
+ 	mall_entry = kzalloc(sizeof(*mall_entry), GFP_KERNEL);
+ 	if (!mall_entry)
+ 		return -ENOMEM;
+@@ -247,7 +252,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
+ 
+ 	act = &f->rule->action.entries[0];
+ 
+-	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
++	if (act->id == FLOW_ACTION_MIRRED) {
+ 		if (flower_prio_valid && mall_entry->ingress &&
+ 		    mall_entry->priority >= flower_min_prio) {
+ 			NL_SET_ERR_MSG(f->common.extack, "Failed to add behind existing flower rules");
+@@ -262,8 +267,7 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp *mlxsw_sp,
+ 		}
+ 		mall_entry->type = MLXSW_SP_MALL_ACTION_TYPE_MIRROR;
+ 		mall_entry->mirror.to_dev = act->dev;
+-	} else if (act->id == FLOW_ACTION_SAMPLE &&
+-		   protocol == htons(ETH_P_ALL)) {
++	} else if (act->id == FLOW_ACTION_SAMPLE) {
+ 		if (flower_prio_valid &&
+ 		    mall_entry->priority >= flower_min_prio) {
+ 			NL_SET_ERR_MSG(f->common.extack, "Failed to add behind existing flower rules");
 -- 
 2.30.2
 
