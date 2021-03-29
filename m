@@ -2,131 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FFA134D227
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 16:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5AE34D225
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 16:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbhC2OKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 10:10:41 -0400
-Received: from mail-vi1eur05on2085.outbound.protection.outlook.com ([40.107.21.85]:61377
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230167AbhC2OKO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 10:10:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q+kTP6nbbndTuet/Q4AkvF0JUkSIRSm+WvS8vERBQg5/Am1Wy14MKWvzMEuhDOLS7oHdEd7aTmylaT5pEYqzLlnvhnVy+TaD1249in0cAPSoXbScRhlS+GIbkqFgUPDHTYbCrIAINC/SpccLJi3JC44G4053DJxYvsLfUUkCTBweHUEJ8mjDvyId0izb0nZ2067qla+pkVSHjow6CmmOEwmasPKx3n048QIswVs3cjxq2rb3h1B7z7s/UYlUResggtIdHPZ2dSA81F7qC/CEyQP7kSBywOXuCwvdvDPyijcFJ4n6ETCa8frJjasvgMubWeqNLeB7LAv5WNkZGlFZlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U2oSelr2zldtJvn3o26gAimtgLCmnMqhou8jW9XCWPg=;
- b=g+vU5inPnLGNBFD3Qq8RLcl7GLNRr22d1YOelDapbTN0PAtw34emfF03Ibr5Q0abgducmNlcXApsSIjlkOH+9XJhcTpr18n9QCTsw2mT2QsU4I0s4xmA2f5IEquzZBm0RUX0BUvhcNHzWp9vkq6eoISLzk0O8DPLZShN9/E2FVbsXP2bfrp/5ZzPLP0zyW7re3cvgeGi8hc6QV7TgEiXK40p8jX6PvF4RARp02Sf5wFZjbZPcM7YS7o/DD0OLb6oo2bwlNEjJIk7Go5zg/3KIsHy4IIYDXuV4BNEyP8aKemX20x/Utac12DJfStk0fSF9mWUbMUAOpzjd3RVZKMU7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U2oSelr2zldtJvn3o26gAimtgLCmnMqhou8jW9XCWPg=;
- b=k3Gs/IeumBTQSm4deDbSgEALE9IaTj2m2IMX0J8yQ895eeWK9QyEjldZGkebLIyURMdhd0IJ+eJCdzHd9KPZ65W6+C2jJpUe5ggAby/ukKgp0TQwGWqPIbvl5WKo/RXpI3ezPjHMqHMFUqWMMXPY/ZK0R05L7ocVYXY5dvtGLrE=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
- by AM0PR0402MB3666.eurprd04.prod.outlook.com (2603:10a6:208:12::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26; Mon, 29 Mar
- 2021 14:10:12 +0000
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::542d:8872:ad99:8cae]) by AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::542d:8872:ad99:8cae%6]) with mapi id 15.20.3977.033; Mon, 29 Mar 2021
- 14:10:12 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH net] gianfar: Handle error code at MAC address change
-Date:   Mon, 29 Mar 2021 17:08:47 +0300
-Message-Id: <20210329140847.23110-1-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-Originating-IP: [83.217.231.2]
-X-ClientProxiedBy: AM0PR04CA0134.eurprd04.prod.outlook.com
- (2603:10a6:208:55::39) To AM0PR04MB6754.eurprd04.prod.outlook.com
- (2603:10a6:208:170::28)
+        id S230282AbhC2OKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 10:10:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23333 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229441AbhC2OKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 10:10:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617027004;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NXWEzN5hel6qKFRe0kyPUjyPQvN9/cHzcmTWECvhL/g=;
+        b=KIFPswGGp/IVlWMp1LW8/SiPFi4FkRE5Nc0z4rQKM9t8DL6mGZmFBOEG67bjcTU8qvqSe9
+        azSIpS2CAYoDpWOXE41qjIKmZMh9sKR+4npaTGMaHkYeNPCP14fieJ0AgXkHo/uvx82rOz
+        9hMXJU/kESM5IpDN2KMH2uU+Jvt2Lws=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-309-0KQWgXOkOxGCMbhpdOWucw-1; Mon, 29 Mar 2021 10:09:36 -0400
+X-MC-Unique: 0KQWgXOkOxGCMbhpdOWucw-1
+Received: by mail-ej1-f71.google.com with SMTP id e7so5837753ejx.5
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 07:09:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=NXWEzN5hel6qKFRe0kyPUjyPQvN9/cHzcmTWECvhL/g=;
+        b=tUU649O78yVwDGhqNmrgbH3lHdvrUBd8MqkQlEd4r0StCElB6OTHBEoY1pL9x390mh
+         osrq23ko90vxrxX/OV8B6KXACfh8XWuMM7i7VqksSjAGGcV9tkL9NICe3v7ftSKnMwn3
+         wa0ts0ciRR9wHi2uYvRyR0blmRU+12vPllMgrNjlkmcjb+Ho47HBc+tnj9wel1RoZ02f
+         fGkMZ4H14dyL2uWj4iw3WfGBnqFs0Li+JDtq/Z4UpDS7X4NqZEIwHRU3v6dlppBVXRbH
+         2OkvGNOynE98xLPLSNjr3m7rPWjcmhZyv0rJGQjg5vNSyckj1PXAu8zCOovcGDZVnHPo
+         xOiw==
+X-Gm-Message-State: AOAM5323OVBIvmD1Os9LDNwEEJcjPteENcrHPaOjIycobtBujFxBSJHs
+        bHagyAEHl62u703twdV/IzHCJNug2P87HnrlE6+0JKzTJdgUzJv24ifydRyYRG+eRV/Dj/1SF6r
+        yZ/c/WUI1Hpr0ItTp
+X-Received: by 2002:a05:6402:1c1b:: with SMTP id ck27mr29111510edb.223.1617026975374;
+        Mon, 29 Mar 2021 07:09:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyQ53PH4Lg/sbUhnD4A8n69SQtos7TzyMbhJjOD9LqIGJHjztzNmf9I+BQIc3EjD3JkMaxgrQ==
+X-Received: by 2002:a05:6402:1c1b:: with SMTP id ck27mr29111487edb.223.1617026975166;
+        Mon, 29 Mar 2021 07:09:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id p3sm8450262ejd.7.2021.03.29.07.09.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Mar 2021 07:09:33 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 172DB180293; Mon, 29 Mar 2021 16:09:33 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, andrii@kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, ciara.loftus@intel.com,
+        john.fastabend@gmail.com
+Subject: Re: [PATCH v4 bpf-next 06/17] libbpf: xsk: use bpf_link
+In-Reply-To: <20210329131401.GA9069@ranger.igk.intel.com>
+References: <20210326230938.49998-1-maciej.fijalkowski@intel.com>
+ <20210326230938.49998-7-maciej.fijalkowski@intel.com>
+ <87o8f2te2f.fsf@toke.dk> <20210329131401.GA9069@ranger.igk.intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 29 Mar 2021 16:09:33 +0200
+Message-ID: <87zgymrqzm.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv15141.swis.ro-buh01.nxp.com (83.217.231.2) by AM0PR04CA0134.eurprd04.prod.outlook.com (2603:10a6:208:55::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25 via Frontend Transport; Mon, 29 Mar 2021 14:10:11 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c6d8fdfc-6b63-4fc3-41d3-08d8f2bc5e1b
-X-MS-TrafficTypeDiagnostic: AM0PR0402MB3666:
-X-Microsoft-Antispam-PRVS: <AM0PR0402MB3666981CA820060873CBD8D6967E9@AM0PR0402MB3666.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1443;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iN5bm+QK6Y1cTT986KVaN45yxSln0O4wbMHUZZ3yDnjwzqP4x8wAEvQpvrTmYGDhWGzdfcNlCXNJxJG4C4ShUYqphXlfJi7F1CLFcNBPsa1r3IVHdWmwFDkPaJkE8ow7pekeOHrI9IwFeIqqKj9ZMcl+S0hh6NLyjBMD3KmdgWD3ZBGyb4RXiTyWxB80Hirnf3314groc5Gvw3yHXtgLPBWxx+XSaDc2J6KPDvMdPwC8S3jtmwN24SqX0Pdi7CnCzAuPKxbVluMsU+EP8c/cRMHiUA2nQrtKd86WrWMOi9b0DmuyZaETr0TrnIi6m5IeEW30aAcRoqiPYMhLIR1t0N/y+fODu/+FAU0PWykVAZEsq3+iipz9y8P5Tyzmi1wfOme+0wCm1p/8wROP7NE/xtCYmpCc4dHEw8304rtQdYOL7/mHmmne4KBGa8eAW0Q/+x6Jvtd0eWFyDIZpzNH4kU2dEnuVfSHebUsFnAhMJJV+yqoe+PeB5jne0aTIStiDr8GuTwuvZ+DFHZxhSWQSaGAXq12xKHLlAeqkhckOuXy59mXD2++Poj99+WmIpDqCSGn4Jh0XCqjTbSS8v+AiKdd7fMByv8nttH+f8gzT13NMvK2ZLUOq1wOqbHIUplUVU/6Yj7q1QJaEHGJq35ZzjA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(39850400004)(396003)(366004)(346002)(66946007)(66556008)(66476007)(8676002)(38100700001)(1076003)(5660300002)(86362001)(6916009)(478600001)(44832011)(6666004)(6486002)(83380400001)(4326008)(186003)(2906002)(54906003)(36756003)(7696005)(52116002)(316002)(26005)(4744005)(2616005)(16526019)(8936002)(956004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?dS3okr0t0Q0jrpifQQhfi2RECgBRijuEvnUiATq03DPMfnoqpauvBCFM+6To?=
- =?us-ascii?Q?9KfDQPgrwmcrThzyZNTvj4++beXoTTLpcP4U8mbqtM/Fl3qjpzs+TARr87R7?=
- =?us-ascii?Q?ovm+ZnXmi341bXITwo1CrtHNjFOt02oTv2IX0FL8wZVuKt3N4143xghLRzR1?=
- =?us-ascii?Q?xWMTB597CRxoi+2HToIA3RWSJk6Sq++EMnOyRd5jV4qbenpEBPIhxty7e+P5?=
- =?us-ascii?Q?ZUeNnKeX+ReKiQAcUBx8J3EdxcfxakbnXz63Hv6ye3yZ1lPK4WINdHMcp8NM?=
- =?us-ascii?Q?afm5uIGvZfXllaVDv8NaHntngzaHzeTMeM/ODD9wDFbFe1tDO9IUxv0h8Pp2?=
- =?us-ascii?Q?XbG6eKC5t1pEPBV3VBWSc+9qSOutXwPANXZ7avGy9Q9dMZXPbfqZbZ53+3ha?=
- =?us-ascii?Q?jDV9Gmt9Q7F1LyGwaiTz1nsHu29nmU3NxPh7yy2RPJovUV9dGXxexsuC5/bA?=
- =?us-ascii?Q?OsEI+2QrEKDbnSVK7KZqcVUs/ovIj6vh29OCvyB1RGNKxLXh/09ha0H18du9?=
- =?us-ascii?Q?vk3A0PcpTV+OlvT5QslHrJDeMwhKHG+W7ISypXCMY4AA9mhTi+yu/cB1upAO?=
- =?us-ascii?Q?jUv2qY4EaT2xdI0C2VEGT7tZfS9OBjhoBDMBXIvfSvHyEVj0e2wYNiwT2GiH?=
- =?us-ascii?Q?Ye3jRruCzLcMo7nRMiuarBaCfmznPlI5csYRsvbuNTIpyKicpDm9oyxglFTG?=
- =?us-ascii?Q?4nrnGULAd/5DagVOqQBiWaVWPre5Zd0Q+6ZvVpMJNv9OKxJDdMXPUmnjrWL6?=
- =?us-ascii?Q?olgQXxDPdxHPDk+D3AYS0KfvuDPXHPkJsoAGsSGbRBpnHOENH3GLSQuZ7a3A?=
- =?us-ascii?Q?bjoBBBaijCYdwQ5cpcQMGD+R44Ji+HZUPgBwK/oEhydpGB6FnT+MHoIf7RCj?=
- =?us-ascii?Q?t9hgpckZCtx8lmnHAuD2OIy7GX5NexQFw1uQBokuPmRdLHRS4zI9qkfEmswj?=
- =?us-ascii?Q?MYVff4b7sU+F6CxOnSrHGtNqfZExFFZTNM59roSaFzcbYJH8k0BxD6AcKt/y?=
- =?us-ascii?Q?gN/3FEcGXW/+RvMS25U5Gs+vYhbtaUWcKv5PLIUaT/wBaDik8G7t432Cg5ig?=
- =?us-ascii?Q?MPEJNJrZzWr0PK50XjG4CwlJk07/tX99V9hV3u6DoKYc625XPTgwOKTdkUsT?=
- =?us-ascii?Q?mWtPv/RHo0JMGX15ov6ZW9W3LCQsJRkI81rgvxw+lkGcc0fMNc7FkjN9iMnN?=
- =?us-ascii?Q?P05pQJjgwPGhfAZ2NMZKhSJK4hz5VwtJq2M4PgXEC3aKSs4ZKEQjtp6ycjoP?=
- =?us-ascii?Q?hbavqt/8L+lFzy00SN6Vfjt35gLQQ0vnB7H6alSZbDjT468f45xHh++DHPqh?=
- =?us-ascii?Q?e4JTEtFqtRNzQ13LSYzVH+pR?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6d8fdfc-6b63-4fc3-41d3-08d8f2bc5e1b
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2021 14:10:12.0872
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zAZvIUkz3SFjdRhDmSBh5NZbOhTZtViy1LiTzncmU17gfX9CanLT3tia3+nOccmSb6sKs14yPi7R7uEmxM+Phw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0402MB3666
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle return error code of eth_mac_addr();
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
 
-Fixes: 3d23a05c75c7 ("gianfar: Enable changing mac addr when if up")
+> On Mon, Mar 29, 2021 at 01:05:44PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
+>>=20
+>> > Currently, if there are multiple xdpsock instances running on a single
+>> > interface and in case one of the instances is terminated, the rest of
+>> > them are left in an inoperable state due to the fact of unloaded XDP
+>> > prog from interface.
+>> >
+>> > Consider the scenario below:
+>> >
+>> > // load xdp prog and xskmap and add entry to xskmap at idx 10
+>> > $ sudo ./xdpsock -i ens801f0 -t -q 10
+>> >
+>> > // add entry to xskmap at idx 11
+>> > $ sudo ./xdpsock -i ens801f0 -t -q 11
+>> >
+>> > terminate one of the processes and another one is unable to work due to
+>> > the fact that the XDP prog was unloaded from interface.
+>> >
+>> > To address that, step away from setting bpf prog in favour of bpf_link.
+>> > This means that refcounting of BPF resources will be done automatically
+>> > by bpf_link itself.
+>> >
+>> > Provide backward compatibility by checking if underlying system is
+>> > bpf_link capable. Do this by looking up/creating bpf_link on loopback
+>> > device. If it failed in any way, stick with netlink-based XDP prog.
+>> > therwise, use bpf_link-based logic.
+>> >
+>> > When setting up BPF resources during xsk socket creation, check whether
+>> > bpf_link for a given ifindex already exists via set of calls to
+>> > bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
+>> > and comparing the ifindexes from bpf_link and xsk socket.
+>> >
+>> > For case where resources exist but they are not AF_XDP related, bail o=
+ut
+>> > and ask user to remove existing prog and then retry.
+>> >
+>> > Lastly, do a bit of refactoring within __xsk_setup_xdp_prog and pull o=
+ut
+>> > existing code branches based on prog_id value onto separate functions
+>> > that are responsible for resource initialization if prog_id was 0 and
+>> > for lookup existing resources for non-zero prog_id as that implies that
+>> > XDP program is present on the underlying net device. This in turn makes
+>> > it easier to follow, especially the teardown part of both branches.
+>> >
+>> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+>>=20
+>> The logic is much improved in this version! A few smallish issues below:
+>
+> Glad to hear that!
+>
+>>=20
+>> > ---
+>> >  tools/lib/bpf/xsk.c | 259 ++++++++++++++++++++++++++++++++++++--------
+>> >  1 file changed, 214 insertions(+), 45 deletions(-)
+>> >
+>> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+>> > index 526fc35c0b23..c75067f0035f 100644
+>> > --- a/tools/lib/bpf/xsk.c
+>> > +++ b/tools/lib/bpf/xsk.c
+>> > @@ -28,6 +28,7 @@
+>> >  #include <sys/mman.h>
+>> >  #include <sys/socket.h>
+>> >  #include <sys/types.h>
+>> > +#include <linux/if_link.h>
+>> >=20=20
+>> >  #include "bpf.h"
+>> >  #include "libbpf.h"
+>> > @@ -70,8 +71,10 @@ struct xsk_ctx {
+>> >  	int ifindex;
+>> >  	struct list_head list;
+>> >  	int prog_fd;
+>> > +	int link_fd;
+>> >  	int xsks_map_fd;
+>> >  	char ifname[IFNAMSIZ];
+>> > +	bool has_bpf_link;
+>> >  };
+>> >=20=20
+>> >  struct xsk_socket {
+>> > @@ -409,7 +412,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xs=
+k)
+>> >  	static const int log_buf_size =3D 16 * 1024;
+>> >  	struct xsk_ctx *ctx =3D xsk->ctx;
+>> >  	char log_buf[log_buf_size];
+>> > -	int err, prog_fd;
+>> > +	int prog_fd;
+>> >=20=20
+>> >  	/* This is the fallback C-program:
+>> >  	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+>> > @@ -499,14 +502,43 @@ static int xsk_load_xdp_prog(struct xsk_socket *=
+xsk)
+>> >  		return prog_fd;
+>> >  	}
+>> >=20=20
+>> > -	err =3D bpf_set_link_xdp_fd(xsk->ctx->ifindex, prog_fd,
+>> > -				  xsk->config.xdp_flags);
+>> > +	ctx->prog_fd =3D prog_fd;
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static int xsk_create_bpf_link(struct xsk_socket *xsk)
+>> > +{
+>> > +	/* bpf_link only accepts XDP_FLAGS_MODES, but xsk->config.xdp_flags
+>> > +	 * might have set XDP_FLAGS_UPDATE_IF_NOEXIST
+>> > +	 */
+>> > +	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
+>> > +			    .flags =3D (xsk->config.xdp_flags & XDP_FLAGS_MODES));
+>>=20
+>> This will silently suppress any new flags as well; that's not a good
+>> idea. Rather mask out the particular flag (UPDATE_IF_NOEXIST) and pass
+>> everything else through so the kernel can reject invalid ones.
+>
+> I'd say it's fine as it matches the check:
+>
+> 	/* link supports only XDP mode flags */
+> 	if (link && (flags & ~XDP_FLAGS_MODES)) {
+> 		NL_SET_ERR_MSG(extack, "Invalid XDP flags for BPF link attachment");
+> 		return -EINVAL;
+> 	}
+>
+> from dev_xdp_attach() in net/core/dev.c ?
 
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
----
- drivers/net/ethernet/freescale/gianfar.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Yeah, it does today. But what happens when the kernel learns to accept a
+new flag?
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 1cf8ef717453..3ec4d9fddd52 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -363,7 +363,11 @@ static void gfar_set_mac_for_addr(struct net_device *dev, int num,
- 
- static int gfar_set_mac_addr(struct net_device *dev, void *p)
- {
--	eth_mac_addr(dev, p);
-+	int ret;
-+
-+	ret = eth_mac_addr(dev, p);
-+	if (ret)
-+		return ret;
- 
- 	gfar_set_mac_for_addr(dev, 0, dev->dev_addr);
- 
--- 
-2.17.1
+Also, you're masking the error on an invalid flag. If, in the future,
+the kernel learns to handle a new flag, that check in the kernel will
+change to accept that new flag. But if userspace tries to pass that to
+and old kernel, they'll get back an EINVAL. This can be used to detect
+whether the kernel doesn't support the flag, and can if not, userspace
+can fall back and do something different.
+
+Whereas with your code, you're just silently zeroing out the invalid
+flag, so the caller will have no way to detect whether the flag works
+or not...
+
+-Toke
 
