@@ -2,44 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E153D34D430
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:44:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FFB334D434
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 17:44:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231244AbhC2Pns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 11:43:48 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:56046 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231346AbhC2PnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:43:25 -0400
-Received: by mail-il1-f197.google.com with SMTP id x15so9229355ilg.22
+        id S231458AbhC2Pnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 11:43:50 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:42486 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231237AbhC2PnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 11:43:24 -0400
+Received: by mail-io1-f71.google.com with SMTP id q7so11157766ioh.9
         for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 08:43:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=11Jgk0Ybij/b9+77MLmHBIB7rsbHzrsqppF6FNx4xwI=;
-        b=eQq6eDX13dBgU24tM4VknO4IHYHtM1GJdYkoQ5O7YZaqVgQuiMXBW86nPphW71ZDY7
-         +AjVuimeBrYi9Q+ZIFGRLxrZYuppT5Gl4kBcG++tDRti1axm2MNjJia/UIi70W+mIaW0
-         tVwmk08DGnszEbkf9B5bJu0cwoqqm/19ooFivBZa6Glu33mohcVDu46PwPnMSFC+8fG/
-         5YREZu7HZ29/ZKAcwVDFTpT9Zuyw51i9r7R4AHXCKrRTjPXlfbsu6wO45yJxLFqfJU8C
-         M6FUwi61cDdKykJRoo/6pRFI9p2RzvqDo74WWGIC95bmneQVdAQ4bD+xD0nXziQI3auu
-         4FGw==
-X-Gm-Message-State: AOAM531fimFKHPH4Rfz5dmkPZuGwYWHIlFP4aoJXUZhfLsjiq9DcSNit
-        vct7Ng4ryD8KKuqcppsPBN/pUkrDd6EKOFRQrqpJKl+h3xni
-X-Google-Smtp-Source: ABdhPJz8zeIyEqRKfcoVrDZIzYWt5r9ri8oz55kzE/0T7CMpBE5VvW4ZdeGzCcdB8X02mTUzYaeYS73vQtlPhu15IFu1k7Lms3jB
+        bh=zbz1GWPzsXMIz7magB8ds2w+jskTr7FfTGCtCmyR9Uo=;
+        b=F5KQZcTss7uynZ8LZ9fqgQ19cfkMrPlqGMToxGDlzrxJrife133ErnFWSKaxBPgl26
+         kKKHiz68AAG4RJJsmB5jHhEtLlPA/J33w7eyJJzv+lxeAC8oPlto1/44LqNk2B98gd6+
+         V39826jQN9Zk3qE9vlJGHOgFD+PiBdzeSsgjXDRBxAuQHCDNdMbPg/ypOyBDLm24tvSG
+         +IOsKxYZTsLu+4tdWumZ8/QndBIlClBQkioBZQIXTEcqmgemaBVmAvpy/UAGmaFVdD83
+         tAmRaCDgeInR1lbgYl5/AUMoImIReLTIexxCGej8JAQR/Nx0OLPLOPBbPJ8C4u6l635A
+         xiQw==
+X-Gm-Message-State: AOAM532ArJAAPo9JIYwVlxPGB2wUAgQN4Lxl/ziLU8Wff+cUSLMXQ4W8
+        LbrTYUbEIdOY8kPE3nBwVEVrT2zS+eUC6sL9qeRzdvbIKU3/
+X-Google-Smtp-Source: ABdhPJxJv1gPFF8L+OfOolx14HI5NvWMOlhIQYhaFsRkhHYIMnjHKx5A6pE1QP0g1dE52ANAhs1kzqw/IGTzt26Qlduf83Ms+gVi
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1348:: with SMTP id k8mr22482210ilr.277.1617032604540;
+X-Received: by 2002:a92:c549:: with SMTP id a9mr21524884ilj.300.1617032604343;
  Mon, 29 Mar 2021 08:43:24 -0700 (PDT)
 Date:   Mon, 29 Mar 2021 08:43:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fbe1cf05beaebdd4@google.com>
-Subject: [syzbot] KMSAN: uninit-value in hci_event_packet (3)
-From:   syzbot <syzbot+b12240a286aa7cd4f3fb@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <000000000000f8e51405beaebdde@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in nfc_llcp_sock_unlink
+From:   syzbot <syzbot+8b7c5fc0cfb74afee8d1@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, bp@alien8.de, davem@davemloft.net,
+        hpa@zytor.com, jmattson@google.com, joro@8bytes.org,
+        kuba@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, masahiroy@kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, pbonzini@redhat.com, peterz@infradead.org,
+        rafael.j.wysocki@intel.com, rostedt@goodmis.org, seanjc@google.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vkuznets@redhat.com, wanpengli@tencent.com, will@kernel.org,
+        x86@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -49,1264 +53,148 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    29ad81a1 arch/x86: add missing include to sparsemem.h
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=100da362d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9c7da2160236454
-dashboard link: https://syzkaller.appspot.com/bug?extid=b12240a286aa7cd4f3fb
-compiler:       Debian clang version 11.0.1-2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e08faed00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147a978ad00000
+HEAD commit:    75887e88 Merge branch '40GbE' of git://git.kernel.org/pub/..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=12d6bb06d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5adab0bdee099d7a
+dashboard link: https://syzkaller.appspot.com/bug?extid=8b7c5fc0cfb74afee8d1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15c2db21d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1091d4bed00000
+
+The issue was bisected to:
+
+commit 997acaf6b4b59c6a9c259740312a69ea549cc684
+Author: Mark Rutland <mark.rutland@arm.com>
+Date:   Mon Jan 11 15:37:07 2021 +0000
+
+    lockdep: report broken irq restoration
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12636d06d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11636d06d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16636d06d00000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b12240a286aa7cd4f3fb@syzkaller.appspotmail.com
+Reported-by: syzbot+8b7c5fc0cfb74afee8d1@syzkaller.appspotmail.com
+Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
 
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Not tainted 5.11.0-rc7-syzkaller #0
+==================================================================
+BUG: KASAN: use-after-free in __lock_acquire+0x3e6f/0x54c0 kernel/locking/lockdep.c:4770
+Read of size 8 at addr ffff888144614468 by task syz-executor242/8422
+
+CPU: 0 PID: 8422 Comm: syz-executor242 Not tainted 5.12.0-rc4-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
 Call Trace:
  __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:232
+ __kasan_report mm/kasan/report.c:399 [inline]
+ kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:416
+ __lock_acquire+0x3e6f/0x54c0 kernel/locking/lockdep.c:4770
+ lock_acquire kernel/locking/lockdep.c:5510 [inline]
+ lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
+ __raw_write_lock include/linux/rwlock_api_smp.h:210 [inline]
+ _raw_write_lock+0x2a/0x40 kernel/locking/spinlock.c:295
+ nfc_llcp_sock_unlink+0x1d/0x1c0 net/nfc/llcp_core.c:32
+ llcp_sock_release+0x286/0x580 net/nfc/llcp_sock.c:640
+ __sock_release+0xcd/0x280 net/socket.c:599
+ sock_close+0x18/0x20 net/socket.c:1258
+ __fput+0x288/0x920 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:140
+ exit_task_work include/linux/task_work.h:30 [inline]
+ do_exit+0xbfc/0x2a60 kernel/exit.c:825
+ do_group_exit+0x125/0x310 kernel/exit.c:922
+ __do_sys_exit_group kernel/exit.c:933 [inline]
+ __se_sys_exit_group kernel/exit.c:931 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43db99
+Code: Unable to access opcode bytes at RIP 0x43db6f.
+RSP: 002b:00007ffdd4d753e8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00000000004ae230 RCX: 000000000043db99
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000400488
+R10: 0000000000400488 R11: 0000000000000246 R12: 00000000004ae230
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Allocated by task 1:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:427 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:506 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:465 [inline]
+ __kasan_kmalloc+0x99/0xc0 mm/kasan/common.c:515
+ kmalloc include/linux/slab.h:554 [inline]
+ kzalloc include/linux/slab.h:684 [inline]
+ nfc_llcp_register_device+0x45/0x9d0 net/nfc/llcp_core.c:1572
+ nfc_register_device+0x6d/0x360 net/nfc/core.c:1124
+ nfcsim_device_new+0x345/0x5c1 drivers/nfc/nfcsim.c:408
+ nfcsim_init+0x71/0x14d drivers/nfc/nfcsim.c:455
+ do_one_initcall+0x103/0x650 init/main.c:1226
+ do_initcall_level init/main.c:1299 [inline]
+ do_initcalls init/main.c:1315 [inline]
+ do_basic_setup init/main.c:1335 [inline]
+ kernel_init_freeable+0x63e/0x6c2 init/main.c:1537
+ kernel_init+0xd/0x1b8 init/main.c:1424
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Freed by task 8422:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:357
+ ____kasan_slab_free mm/kasan/common.c:360 [inline]
+ ____kasan_slab_free mm/kasan/common.c:325 [inline]
+ __kasan_slab_free+0xf5/0x130 mm/kasan/common.c:367
+ kasan_slab_free include/linux/kasan.h:199 [inline]
+ slab_free_hook mm/slub.c:1562 [inline]
+ slab_free_freelist_hook+0x92/0x210 mm/slub.c:1600
+ slab_free mm/slub.c:3161 [inline]
+ kfree+0xe5/0x7f0 mm/slub.c:4213
+ local_release net/nfc/llcp_core.c:175 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ nfc_llcp_local_put net/nfc/llcp_core.c:183 [inline]
+ nfc_llcp_local_put+0x194/0x200 net/nfc/llcp_core.c:178
+ llcp_sock_destruct+0x81/0x150 net/nfc/llcp_sock.c:950
+ __sk_destruct+0x4b/0x900 net/core/sock.c:1795
+ sk_destruct+0xbd/0xe0 net/core/sock.c:1839
+ __sk_free+0xef/0x3d0 net/core/sock.c:1850
+ sk_free+0x78/0xa0 net/core/sock.c:1861
+ sock_put include/net/sock.h:1803 [inline]
+ llcp_sock_release+0x3c9/0x580 net/nfc/llcp_sock.c:644
+ __sock_release+0xcd/0x280 net/socket.c:599
+ sock_close+0x18/0x20 net/socket.c:1258
+ __fput+0x288/0x920 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:140
+ exit_task_work include/linux/task_work.h:30 [inline]
+ do_exit+0xbfc/0x2a60 kernel/exit.c:825
+ do_group_exit+0x125/0x310 kernel/exit.c:922
+ __do_sys_exit_group kernel/exit.c:933 [inline]
+ __se_sys_exit_group kernel/exit.c:931 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:931
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_add+0x718/0x1890 net/bluetooth/hci_conn.c:553
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_add+0x718/0x1890 net/bluetooth/hci_conn.c:553
- hci_conn_request_evt net/bluetooth/hci_event.c:2756 [inline]
- hci_event_packet+0x18851/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+The buggy address belongs to the object at ffff888144614000
+ which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 1128 bytes inside of
+ 2048-byte region [ffff888144614000, ffff888144614800)
+The buggy address belongs to the page:
+page:ffffea0005118400 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888144616000 pfn:0x144610
+head:ffffea0005118400 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0x57ff00000010200(slab|head)
+raw: 057ff00000010200 ffffea00050f2008 ffffea00050f1e08 ffff888010842000
+raw: ffff888144616000 0000000000080006 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_add include/net/bluetooth/hci_core.h:862 [inline]
-BUG: KMSAN: uninit-value in hci_conn_add+0x1467/0x1890 net/bluetooth/hci_conn.c:587
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_add include/net/bluetooth/hci_core.h:862 [inline]
- hci_conn_add+0x1467/0x1890 net/bluetooth/hci_conn.c:587
- hci_conn_request_evt net/bluetooth/hci_event.c:2756 [inline]
- hci_event_packet+0x18851/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Memory state around the buggy address:
+ ffff888144614300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888144614380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff888144614400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                          ^
+ ffff888144614480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888144614500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:289
- __msan_chain_origin+0x57/0xa0 mm/kmsan/kmsan_instr.c:147
- hci_conn_add+0x601/0x1890 net/bluetooth/hci_conn.c:532
- hci_conn_request_evt net/bluetooth/hci_event.c:2756 [inline]
- hci_event_packet+0x18851/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_add+0x17a3/0x1890 net/bluetooth/hci_conn.c:593
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_add+0x17a3/0x1890 net/bluetooth/hci_conn.c:593
- hci_conn_request_evt net/bluetooth/hci_event.c:2756 [inline]
- hci_event_packet+0x18851/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:289
- __msan_chain_origin+0x57/0xa0 mm/kmsan/kmsan_instr.c:147
- hci_conn_add+0x601/0x1890 net/bluetooth/hci_conn.c:532
- hci_conn_request_evt net/bluetooth/hci_event.c:2756 [inline]
- hci_event_packet+0x18851/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_hash_lookup_ba include/net/bluetooth/hci_core.h:980 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2753 [inline]
- hci_event_packet+0x18669/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_conn_request_evt net/bluetooth/hci_event.c:2769 [inline]
- hci_event_packet+0x18a27/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.c:605
- ksys_write+0x275/0x500 fs/read_write.c:658
- __do_sys_write fs/read_write.c:670 [inline]
- __se_sys_write+0x92/0xb0 fs/read_write.c:667
- __x64_sys_write+0x4a/0x70 fs/read_write.c:667
- do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-=====================================================
-=====================================================
-BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
-BUG: KMSAN: uninit-value in hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
-BUG: KMSAN: uninit-value in hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
-CPU: 1 PID: 8218 Comm: kworker/u5:2 Tainted: G    B             5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: hci0 hci_rx_work
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:120
- kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- hci_proto_connect_ind include/net/bluetooth/hci_core.h:1404 [inline]
- hci_conn_request_evt net/bluetooth/hci_event.c:2719 [inline]
- hci_event_packet+0xf7bb/0x39e50 net/bluetooth/hci_event.c:6157
- hci_rx_work+0x744/0xcf0 net/bluetooth/hci_core.c:4971
- process_one_work+0x1219/0x1fe0 kernel/workqueue.c:2275
- worker_thread+0x10ec/0x2340 kernel/workqueue.c:2421
- kthread+0x521/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
- kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
- slab_alloc_node mm/slub.c:2907 [inline]
- __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1099 [inline]
- bt_skb_alloc include/net/bluetooth/bluetooth.h:389 [inline]
- vhci_get_user drivers/bluetooth/hci_vhci.c:165 [inline]
- vhci_write+0x18a/0x880 drivers/bluetooth/hci_vhci.c:285
- call_write_iter include/linux/fs.h:1901 [inline]
- new_sync_write fs/read_write.c:518 [inline]
- vfs_write+0x1083/0x1b00 fs/read_write.
 
 ---
 This report is generated by a bot. It may contain errors.
@@ -1315,5 +203,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this issue, for details see:
 https://goo.gl/tpsmEJ#testing-patches
