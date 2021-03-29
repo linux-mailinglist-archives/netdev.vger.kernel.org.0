@@ -2,119 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9B334D62E
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 19:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B79934D632
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 19:42:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbhC2Rky convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Mar 2021 13:40:54 -0400
-Received: from unicorn.mansr.com ([81.2.72.234]:36058 "EHLO unicorn.mansr.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230509AbhC2Rkh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 13:40:37 -0400
-Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:8d8e::3])
-        by unicorn.mansr.com (Postfix) with ESMTPS id 5083115360;
-        Mon, 29 Mar 2021 18:40:35 +0100 (BST)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id 42E1121A6CA; Mon, 29 Mar 2021 18:40:35 +0100 (BST)
-From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-To:     <Andre.Edich@microchip.com>
-Cc:     <Parthiban.Veerasooran@microchip.com>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next] net: phy: lan87xx: fix access to wrong
- register of LAN87xx
-References: <20210329094536.3118619-1-andre.edich@microchip.com>
-        <yw1xblb2fbrg.fsf@mansr.com>
-        <53b244ad343f4fa9533ff5fa1e2b0b25ba92a984.camel@microchip.com>
-Date:   Mon, 29 Mar 2021 18:40:35 +0100
-In-Reply-To: <53b244ad343f4fa9533ff5fa1e2b0b25ba92a984.camel@microchip.com>
-        (Andre Edich's message of "Mon, 29 Mar 2021 12:07:28 +0000")
-Message-ID: <yw1x7dlpg8oc.fsf@mansr.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S230052AbhC2RlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 13:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230475AbhC2Rky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 13:40:54 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C293C061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 10:40:54 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id h3so10315554pfr.12
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 10:40:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B3J09YicP+rllSqz6vRUYD/u7JbB9ohoPmhpxpekykg=;
+        b=fr4/i6q4YCwhamcnMuLP58ohzEY/MoUfiWxmH1BlajFOtfCWxOHdSZXhbQnAhQ3hQY
+         nhDayNy2vROzSxkC+dCQMkN4aDf1lLdzzQylSIbj4NfwujWlliA5Tm6/AlLEp1JfOCX+
+         023pxJYcsT9M4VDh6pcc56O/CgGcOnbLhS84iYFKymrWfaKP310L4n7PPWM6lFurd69e
+         e+bTSSVUuyjJJFz3h7pmpYmnrmOGFWV8yRVCfydSn8SpeLmnQ0U9j2P33G+pvn8ci9dr
+         AVjRp0NxHkbpOBjbVzDF+uaUTmeUC8gU6S0Rlxas1ryBoK/5pg6kQOsoHS6fDO8V5VWz
+         FRbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B3J09YicP+rllSqz6vRUYD/u7JbB9ohoPmhpxpekykg=;
+        b=hB1ehXhQKOtPRI5M+fPXssE1piIf+MH54ltRlmZAovmA/OMEKA9Aq9/s//6pSBnL7f
+         Kfw2YBQ/sD/OwB9AyYuINCGJhnb5JUvGHWhYg77ixhuyj8dFneDWMKtHPg+sjMoUf2HX
+         /oj7FhRQlYYv9at3f2IGnN2Yf+mKyIMA2M+6/R8hoGs1JaYzrEaVtEqFMDa2FcI9BJcs
+         z1IJ9T3Vl18jKdKfKoEsgo4jLh2zNHi2lpyAfqjPWICxZDBfWqL5mVji/6Zpv74AXDLL
+         VMYeKUPb2hAI6ypNRKT0GmNBVvyxdTos76LJAnTmIq7qGIi4Pd2psiuCNHCfphhvyBDZ
+         dONw==
+X-Gm-Message-State: AOAM532gP7h3Mxw7eOtG3LhQVZDpeoO1WucmCfZC1oa1DxzWRMrbUiTa
+        EtyYCYeHpfJyV8zRTU7RkUM=
+X-Google-Smtp-Source: ABdhPJyRZsKpKAnjwd+Jy0s4EglDmaG5XLZ0t6o0awf7mS8mW1REdSswOXPXleu2YODu1HmztLDqog==
+X-Received: by 2002:a62:fc90:0:b029:213:be9a:7048 with SMTP id e138-20020a62fc900000b0290213be9a7048mr26463812pfh.4.1617039654034;
+        Mon, 29 Mar 2021 10:40:54 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:78a0:7565:129d:828c])
+        by smtp.gmail.com with ESMTPSA id c16sm17114304pfc.112.2021.03.29.10.40.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Mar 2021 10:40:53 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] tcp: fix tcp_min_tso_segs sysctl
+Date:   Mon, 29 Mar 2021 10:40:49 -0700
+Message-Id: <20210329174049.4085756-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-<Andre.Edich@microchip.com> writes:
+From: Eric Dumazet <edumazet@google.com>
 
-> On Mon, 2021-03-29 at 12:19 +0100, Måns Rullgård wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know
->> the content is safe
->> 
->> Andre Edich <andre.edich@microchip.com> writes:
->> 
->> > The function lan87xx_config_aneg_ext was introduced to configure
->> > LAN95xxA but as well writes to undocumented register of LAN87xx.
->> > This fix prevents that access.
->> > 
->> > The function lan87xx_config_aneg_ext gets more suitable for the new
->> > behavior name.
->> > 
->> > Reported-by: Måns Rullgård <mans@mansr.com>
->> > Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
->> > Signed-off-by: Andre Edich <andre.edich@microchip.com>
->> > ---
->> >  drivers/net/phy/smsc.c | 7 +++++--
->> >  1 file changed, 5 insertions(+), 2 deletions(-)
->> > 
->> > diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
->> > index ddb78fb4d6dc..d8cac02a79b9 100644
->> > --- a/drivers/net/phy/smsc.c
->> > +++ b/drivers/net/phy/smsc.c
->> > @@ -185,10 +185,13 @@ static int lan87xx_config_aneg(struct
->> > phy_device *phydev)
->> >       return genphy_config_aneg(phydev);
->> >  }
->> > 
->> > -static int lan87xx_config_aneg_ext(struct phy_device *phydev)
->> > +static int lan95xx_config_aneg_ext(struct phy_device *phydev)
->> >  {
->> >       int rc;
->> > 
->> > +     if (phydev->phy_id != 0x0007c0f0) /* not (LAN9500A or LAN9505A)
->> > */
->> > +             return lan87xx_config_aneg(phydev);
->> > +
->> >       /* Extend Manual AutoMDIX timer */
->> >       rc = phy_read(phydev, PHY_EDPD_CONFIG);
->> >       if (rc < 0)
->> > @@ -441,7 +444,7 @@ static struct phy_driver smsc_phy_driver[] = {
->> >       .read_status    = lan87xx_read_status,
->> >       .config_init    = smsc_phy_config_init,
->> >       .soft_reset     = smsc_phy_reset,
->> > -     .config_aneg    = lan87xx_config_aneg_ext,
->> > +     .config_aneg    = lan95xx_config_aneg_ext,
->> > 
->> >       /* IRQ related */
->> >       .config_intr    = smsc_phy_config_intr,
->> > --
->> 
->> This seems to differentiate based on the "revision" field of the ID
->> register.  Can we be certain that a future update of chip won't break
->> this assumption?
->
-> The way to fail would be to "fix" and release any of LAN95xxA in the
-> way that the register map will is changed or feature is disabled but
-> the Phy ID  remains the same.  This is very unlikely and obviously
-> wrong.  I don't believe this may happen.
->
-> If a new chip with the different Phy ID but the same feature will be
-> released, then it must be explicitly added into the table.
->
-> Is there a third case I don't see?
+tcp_min_tso_segs is now stored in u8, so max value is 255.
 
-I was thinking that an updated LAN9500A might get the revision field set
-to 1, making it indistinguishable from a LAN8710A.  That wouldn't break
-anything as such, but that bit wouldn't get set either.  It seems
-unlikely that this will ever happen, though, and it if it does, it can
-be dealt with then.
+255 limit is enforced by proc_dou8vec_minmax().
 
-Some rummaging in my boxes of old boards turned up both A and B
-revisions of the LAN8720A, and they both have the same ID register value
-(0xc0f1).  I had wondered if the A version might have had the revision
-field set to 0, but apparently not.
+We can therefore remove the gso_max_segs variable.
 
+Fixes: 47996b489bdc ("tcp: convert elligible sysctls to u8")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/ipv4/sysctl_net_ipv4.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 442ff4be1bde236563b6cfea67179de4f30856bf..3a7e5cf5d6cc7e0ca911decac1b4bcf9d71b36c8 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -31,7 +31,6 @@
+ static int two = 2;
+ static int four = 4;
+ static int thousand = 1000;
+-static int gso_max_segs = GSO_MAX_SEGS;
+ static int tcp_retr1_max = 255;
+ static int ip_local_port_range_min[] = { 1, 1 };
+ static int ip_local_port_range_max[] = { 65535, 65535 };
+@@ -1245,7 +1244,6 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ONE,
+-		.extra2		= &gso_max_segs,
+ 	},
+ 	{
+ 		.procname	= "tcp_min_rtt_wlen",
 -- 
-Måns Rullgård
+2.31.0.291.g576ba9dcdaf-goog
+
