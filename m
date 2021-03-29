@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DC8934D4DA
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 18:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B2434D4E8
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 18:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbhC2QX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 12:23:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52763 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231192AbhC2QXZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 12:23:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617035004;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x/aYAUvWB711QPexKZbhR4TR0UH2bQY9H3I5ishpIwA=;
-        b=TUTg+wj+yOjnIDRxbuR0Yd+Rj4UAezHXOt2kOSik8Hmu6HhwsNhSuE6F3UNlXyhINIuTb3
-        JOwWTlNkXwR5zV2sim0ABueFm+8iu9Q43EusOp9/upgeIaGolMQ2QNaaglTlGyesbTRxvk
-        eJ4PCxb3xmGGkSWgHJp45TE7ymFSW1E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-317-qjHnTjKPNzqtnsQh-32TYg-1; Mon, 29 Mar 2021 12:23:20 -0400
-X-MC-Unique: qjHnTjKPNzqtnsQh-32TYg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81A81802B7E;
-        Mon, 29 Mar 2021 16:23:18 +0000 (UTC)
-Received: from ovpn-114-151.ams2.redhat.com (ovpn-114-151.ams2.redhat.com [10.36.114.151])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 95C8C5D9F0;
-        Mon, 29 Mar 2021 16:23:16 +0000 (UTC)
-Message-ID: <dc7a2ef8286516e805df7cae21f2b193d8da9761.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow
- path
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Date:   Mon, 29 Mar 2021 18:23:15 +0200
-In-Reply-To: <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com>
-References: <cover.1616692794.git.pabeni@redhat.com>
-         <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
-         <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
-         <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
-         <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
-         <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
-         <CA+FuTSduw1eK+CuEgzzwA+6QS=QhMhFQpgyVGH2F8aNH5gwv5A@mail.gmail.com>
-         <c296fa344bacdcd23049516e8404931abc70b793.camel@redhat.com>
-         <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com>
+        id S231303AbhC2QYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 12:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231367AbhC2QYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 12:24:19 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B90EC061574
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 09:24:19 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a19so14223352ybg.10
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 09:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=eHOx3PCFf++2TSEv++5lGe2LoVcdpp0PLZ4xmLu3+uk=;
+        b=FQSBKm1Jb+H2p/xGU3x0uOjxbJi9p3gjYaU1keQmNPQdFOQIEIUoAAUnUlBgEkpPt3
+         pR7Sk6mlltIVgv0Dp+x6TwJYLhM3bfnnYcT3edZ6MKRZRJhdgMgLQkWzmtbBbh8PcG5g
+         wcdE4sBqy5kin2zKtwGfbBZl4mNxtg/pp9WDuo3L/97Znuw9jy9k+02MczY2SOqfOzFA
+         IfVon68tMH0CXT55RzUL8vce1lroIcvsMpIaCacpTsADPam86y3qj8hRIRo4h0QgA3ho
+         35GMgNXUMt/itrtjn6RERbRCCalxpMkwDZgtzMW2wT3fzAUcmPRhSGHzj2J+n46rI0r8
+         AHAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=eHOx3PCFf++2TSEv++5lGe2LoVcdpp0PLZ4xmLu3+uk=;
+        b=FDTheeJmSeKsuN8X7EXDTaX8ter7iWjzSsvGmL/T8RqTdmG+ACpgdIL11+c8ZZDtHh
+         hnczsJ7uXSaR2bgbA1AUGEAC8CVPgX+wc3cI/I9iZXGuHVn3IsarTsZu28s7WwOV82qG
+         PJ84UCXypO+uMw7LT8rmzYCDdbQBj3tJwIIujeHo9VUqrQZPlK1OMT3jxZaoWXzbH+IK
+         OHbJFWLeGDh4SH/Qrp4Db+kQ7eSqu8u68VrtN5199xQIfBSE3s2ZAoC/0qqRfZBC9Dz1
+         FuElgPzGqYIenykqu9+iU7tVjYvv6picZyThfAP44eQ1RUln0F850567EutJfzlkiefB
+         clFQ==
+X-Gm-Message-State: AOAM533f2rQojdMbQUBkzUGxLhYX7qhLzOFPornC3Pyh9wwYUFQkOhIP
+        UZZjNoJikl7qJet2m/Fok3nw8F3Iii51gZN7E8+a9XlUskhy6QKgC2V90PEudh3fksnRhfq3Q5m
+        GvkhI1LHdHCGtNZxJsmKkB3H+HW68gHUH5liIpytboiOG8YvKy8Jsbw==
+X-Google-Smtp-Source: ABdhPJzI8CwSR+idKXKEWu0e2tOX9ZohLD4wRBk/vochX9KSQcieruWh7BkCECh2AJ65kO3FZI2x1Ck=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:ede7:5698:2814:57c])
+ (user=sdf job=sendgmr) by 2002:a25:188b:: with SMTP id 133mr38770810yby.65.1617035058589;
+ Mon, 29 Mar 2021 09:24:18 -0700 (PDT)
+Date:   Mon, 29 Mar 2021 09:24:16 -0700
+Message-Id: <20210329162416.2712509-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
+Subject: [PATCH bpf-next] tools/resolve_btfids: Fix warnings
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-03-29 at 11:24 -0400, Willem de Bruijn wrote:
-> On Mon, Mar 29, 2021 at 11:01 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > On Mon, 2021-03-29 at 09:52 -0400, Willem de Bruijn wrote:
-> > > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
-> > > > +               skb->csum_valid = 1;
-> > > 
-> > > Not entirely obvious is that UDP packets arriving on a device with rx
-> > > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
-> > > this test.
-> > > 
-> > > I assume that such packets are not coalesced by the GRO layer in the
-> > > first place. But I can't immediately spot the reason for it..
-> 
-> As you point out, such packets will already have had their checksum
-> verified at this point, so this branch only matches tunneled packets.
-> That point is just not immediately obvious from the code.
+* make eprintf static, used only in main.c
+* initialize ret in eprintf
+* remove unused *tmp
 
-I understand is a matter of comment clarity ?!?
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/bpf/resolve_btfids/main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I'll rewrite the related code comment - in udp_post_segment_fix_csum()
-- as:
-
-	/* UDP packets generated with UDP_SEGMENT and traversing:
-	 *
-         * UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) -> UDP tunnel (rx)
-	 * 
-         * land here with CHECKSUM_NONE, because __iptunnel_pull_header() converts
-         * CHECKSUM_PARTIAL into NONE.
-	 * SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST packets with no UDP tunnel will land
-	 * here with valid checksum, as the GRO engine validates the UDP csum
-	 * before the aggregation and nobody strips such info in between.
-	 * Instead of adding another check in the tunnel fastpath, we can force
-	 * a valid csum here.
-         * Additionally fixup the UDP CB.
-         */
-
-Would that be clear enough?
-
-> > I do see checksum validation in the GRO engine for CHECKSUM_NONE UDP
-> > packet prior to this series.
-> > 
-> > I *think* the checksum-and-copy optimization is lost
-> > since 573e8fca255a27e3573b51f9b183d62641c47a3d.
-> 
-> Wouldn't this have been introduced with UDP_GRO?
-
-Uhmm.... looks like the checksum-and-copy optimization has been lost
-and recovered a few times. I think the last one
-with 9fd1ff5d2ac7181844735806b0a703c942365291, which move the csum
-validation before the static branch on udp_encap_needed_key.
-
-Can we agree re-introducing the optimization is independent from this
-series?
-
-Thanks!
-
-Paolo
-
+diff --git a/tools/bpf/resolve_btfids/main.c b/tools/bpf/resolve_btfids/main.c
+index 80d966cfcaa1..a650422f7430 100644
+--- a/tools/bpf/resolve_btfids/main.c
++++ b/tools/bpf/resolve_btfids/main.c
+@@ -115,10 +115,10 @@ struct object {
+ 
+ static int verbose;
+ 
+-int eprintf(int level, int var, const char *fmt, ...)
++static int eprintf(int level, int var, const char *fmt, ...)
+ {
+ 	va_list args;
+-	int ret;
++	int ret = 0;
+ 
+ 	if (var >= level) {
+ 		va_start(args, fmt);
+@@ -403,7 +403,7 @@ static int symbols_collect(struct object *obj)
+ 	 * __BTF_ID__* over .BTF_ids section.
+ 	 */
+ 	for (i = 0; !err && i < n; i++) {
+-		char *tmp, *prefix;
++		char *prefix;
+ 		struct btf_id *id;
+ 		GElf_Sym sym;
+ 		int err = -1;
+-- 
+2.31.0.291.g576ba9dcdaf-goog
 
