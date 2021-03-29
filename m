@@ -2,96 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C4034CD34
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 11:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C922934CD48
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 11:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232199AbhC2Jkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 05:40:55 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:14183 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbhC2Jkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 05:40:39 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F86vD4W4hzmbDH;
-        Mon, 29 Mar 2021 17:38:00 +0800 (CST)
-Received: from huawei.com (10.175.113.32) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.498.0; Mon, 29 Mar 2021
- 17:40:29 +0800
-From:   Shixin Liu <liushixin2@huawei.com>
-To:     Karsten Keil <isdn@linux-pingi.de>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Shixin Liu <liushixin2@huawei.com>
-Subject: [PATCH -next 2/2] mISDN: Use LIST_HEAD() for list_head
-Date:   Mon, 29 Mar 2021 17:40:18 +0800
-Message-ID: <20210329094018.66993-2-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210329094018.66993-1-liushixin2@huawei.com>
-References: <20210329094018.66993-1-liushixin2@huawei.com>
+        id S231739AbhC2JqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 05:46:12 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:37891 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231666AbhC2Jpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 05:45:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1617011150; x=1648547150;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7mQ2O8uMGGM8M7A4/bHP3Kwzqmc4SB5p43XoI6YVrdg=;
+  b=grrIwnqsjHUAwWfWsD5DriZ8U4e19tCM0XPT7wBTGUDmQCloLnkogdQJ
+   gLEbban7KxegHZVRqESiHEbvFkqIdaD3exMXMW9JmRHfhNt94RNvaTLhf
+   8tv8v6+suqRDgTupZsoAK3rLaB1YNJjNc5mpbHbY6qMAkNZuetpGaxwE0
+   TjLyCshNdbXwpoh10UZN9OYakZM4iRgqgiq+2rxC6lf70jONhq8n/MBPx
+   K3aBBhRjl6yKbVOFLbf40TFXjggz32ZWgF0cjRFoIvGjY2zZLD1UzgA/u
+   TcUPNGZBTjznyy8UAy73KWsP7pw71Km6oOe/doTIO1ouGEl7XyufQM9ZW
+   A==;
+IronPort-SDR: 3H9Qy591LYNLaroSO/YDaECvEsI/wnEnD5F9Y2UOGKX/0EdxxIZ9zkcho85F7Ggb1IqzgRvURv
+ FN8k86k+rUTU7bSuxuz1T3XXwU0xrun3BZ6dQ3IGbQVYM2Mno32o6GSSAb0y5mbHgCPNaPy6PL
+ P0Bvok7ouNSVvZWr45dvky8wEFkCpfS2gIldrL4hqbPL3YAszVchP4X7v8+Mw/t6S9YnQ3Y5VP
+ fFbGK4e/o+MXvcZV1VXh9108LmXRXJnBJuW3CrQJ3uIqi+2mui+HnZGdGu79Ac9sksvRLMTJAd
+ kx4=
+X-IronPort-AV: E=Sophos;i="5.81,287,1610434800"; 
+   d="scan'208";a="111694250"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Mar 2021 02:45:48 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 29 Mar 2021 02:45:47 -0700
+Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Mon, 29 Mar 2021 02:45:46 -0700
+From:   Andre Edich <andre.edich@microchip.com>
+To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
+CC:     <Parthiban.Veerasooran@microchip.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        =?UTF-8?q?M=C3=A5ns=20Rullg=C3=A5rd?= <mans@mansr.com>
+Subject: [PATCH net-next] net: phy: lan87xx: fix access to wrong register of LAN87xx
+Date:   Mon, 29 Mar 2021 11:45:36 +0200
+Message-ID: <20210329094536.3118619-1-andre.edich@microchip.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no need to declare a list and then init it manually,
-just use the LIST_HEAD() macro.
+The function lan87xx_config_aneg_ext was introduced to configure
+LAN95xxA but as well writes to undocumented register of LAN87xx.
+This fix prevents that access.
 
-Signed-off-by: Shixin Liu <liushixin2@huawei.com>
+The function lan87xx_config_aneg_ext gets more suitable for the new
+behavior name.
+
+Reported-by: Måns Rullgård <mans@mansr.com>
+Fixes: 05b35e7eb9a1 ("smsc95xx: add phylib support")
+Signed-off-by: Andre Edich <andre.edich@microchip.com>
 ---
- drivers/isdn/mISDN/dsp_core.c   | 7 ++-----
- drivers/isdn/mISDN/l1oip_core.c | 4 +---
- 2 files changed, 3 insertions(+), 8 deletions(-)
+ drivers/net/phy/smsc.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/isdn/mISDN/dsp_core.c b/drivers/isdn/mISDN/dsp_core.c
-index 8766095cd6e7..d541b487176a 100644
---- a/drivers/isdn/mISDN/dsp_core.c
-+++ b/drivers/isdn/mISDN/dsp_core.c
-@@ -177,8 +177,8 @@ MODULE_LICENSE("GPL");
- /*int spinnest = 0;*/
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index ddb78fb4d6dc..d8cac02a79b9 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -185,10 +185,13 @@ static int lan87xx_config_aneg(struct phy_device *phydev)
+ 	return genphy_config_aneg(phydev);
+ }
  
- DEFINE_SPINLOCK(dsp_lock); /* global dsp lock */
--struct list_head dsp_ilist;
--struct list_head conf_ilist;
-+struct LIST_HEAD(dsp_ilist);
-+struct LIST_HEAD(conf_ilist);
- int dsp_debug;
- int dsp_options;
- int dsp_poll, dsp_tics;
-@@ -1169,9 +1169,6 @@ static int __init dsp_init(void)
- 	printk(KERN_INFO "mISDN_dsp: DSP clocks every %d samples. This equals "
- 	       "%d jiffies.\n", dsp_poll, dsp_tics);
+-static int lan87xx_config_aneg_ext(struct phy_device *phydev)
++static int lan95xx_config_aneg_ext(struct phy_device *phydev)
+ {
+ 	int rc;
  
--	INIT_LIST_HEAD(&dsp_ilist);
--	INIT_LIST_HEAD(&conf_ilist);
--
- 	/* init conversion tables */
- 	dsp_audio_generate_law_tables();
- 	dsp_silence = (dsp_options & DSP_OPT_ULAW) ? 0xff : 0x2a;
-diff --git a/drivers/isdn/mISDN/l1oip_core.c b/drivers/isdn/mISDN/l1oip_core.c
-index 62fad8f1fc42..2c40412466e6 100644
---- a/drivers/isdn/mISDN/l1oip_core.c
-+++ b/drivers/isdn/mISDN/l1oip_core.c
-@@ -230,7 +230,7 @@ static const char *l1oip_revision = "2.00";
++	if (phydev->phy_id != 0x0007c0f0) /* not (LAN9500A or LAN9505A) */
++		return lan87xx_config_aneg(phydev);
++
+ 	/* Extend Manual AutoMDIX timer */
+ 	rc = phy_read(phydev, PHY_EDPD_CONFIG);
+ 	if (rc < 0)
+@@ -441,7 +444,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.read_status	= lan87xx_read_status,
+ 	.config_init	= smsc_phy_config_init,
+ 	.soft_reset	= smsc_phy_reset,
+-	.config_aneg	= lan87xx_config_aneg_ext,
++	.config_aneg	= lan95xx_config_aneg_ext,
  
- static int l1oip_cnt;
- static DEFINE_SPINLOCK(l1oip_lock);
--static struct list_head l1oip_ilist;
-+static LIST_HEAD(l1oip_ilist);
- 
- #define MAX_CARDS	16
- static u_int type[MAX_CARDS];
-@@ -1440,8 +1440,6 @@ l1oip_init(void)
- 	printk(KERN_INFO "mISDN: Layer-1-over-IP driver Rev. %s\n",
- 	       l1oip_revision);
- 
--	INIT_LIST_HEAD(&l1oip_ilist);
--
- 	if (l1oip_4bit_alloc(ulaw))
- 		return -ENOMEM;
- 
+ 	/* IRQ related */
+ 	.config_intr	= smsc_phy_config_intr,
 -- 
-2.25.1
+2.28.0
 
