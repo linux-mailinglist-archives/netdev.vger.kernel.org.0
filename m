@@ -2,143 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9084C34DBF5
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D923E34DC25
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 00:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbhC2WiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 18:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230161AbhC2Whu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 18:37:50 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625ACC061762
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 15:37:50 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id r12so21845493ejr.5
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 15:37:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8AH+FL7lbZXMekf59ITKcfLv2/Ezn2xR0hqjMW58zyk=;
-        b=mywdgHOociJAjCEAqpThyLf50MFYbFNzkV91E6jfhARJbwRjD+7VfLOFrPmFOzDfu9
-         CjH117iv9o5rhOlD+/4uaGdoEE0Gjyf5QPcRb0DRBCJ7/QD2CpUl74RIz4XlbSB+1Img
-         JrA7HHyEoOoeiWAtURApZbkAB6qMyK0UVwma5ecJoKNQfG1uneZ1jVlXSTuEZJ50ahT2
-         gKSq2OE+Cp57rPo+gJBzHu7/jlyNP37T4iM2bpx2y7DXx+wGrFHIkvG03Ee46r8fbmXM
-         biV8WWxsO9hUz9BCiFd9ARNIkk2K2rRUJOAyB3Qezo/q1EnOtSSGtwKz+0NRr8X+EPhP
-         d+ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8AH+FL7lbZXMekf59ITKcfLv2/Ezn2xR0hqjMW58zyk=;
-        b=eZL5sIR7mEt126KCKDyXf4ZSiKha8Di23QFXlMe9k9oIjRsJJAlp6rDLPiXqWglr2I
-         P+XcEo2iPeCi8vsUhJgZ9K6+98zK+p7lFbnaPQbxGgUsxhx6oyTtsjHyls6+bkcyVHgc
-         r363CePxFxZ4H17H1Um1z1XZBxJcgjLjfmTKkNsWLALWsRsjNwZNNOZcAIIzNWNzIH5t
-         jHl0EBIIJeOUo0JxexoGwnnJi63jf+u1Xjri3zwh9KM5kCMTHItc3VNEdM12b/WCf24j
-         hDcxRTcGEYxH45nzsBUzfo3J8Yr34ZYCu33KTqN65Y4Kt1UmIglTopt9r1AM8zvAMUEM
-         I/ng==
-X-Gm-Message-State: AOAM530akxgLqILCayzmHfFoerDklnTf3Wl1HTSSxoc1lwm34vWxBgvd
-        OFIGy2hk1FmdmHwnTx7i6ngnIa9uhNs=
-X-Google-Smtp-Source: ABdhPJzCw8ug4ncHhSVSQ+V7S/V6KoHvY99iMB1ac8UVb5ibvadEPD82yKQcSHB1Kmxl6ZLae2ULXQ==
-X-Received: by 2002:a17:906:3643:: with SMTP id r3mr29798670ejb.527.1617057468638;
-        Mon, 29 Mar 2021 15:37:48 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id g12sm9059822eje.120.2021.03.29.15.37.47
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Mar 2021 15:37:48 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id p19so7364420wmq.1
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 15:37:47 -0700 (PDT)
-X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr1032676wmm.120.1617057467503;
- Mon, 29 Mar 2021 15:37:47 -0700 (PDT)
+        id S231691AbhC2WzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 18:55:16 -0400
+Received: from mga04.intel.com ([192.55.52.120]:2470 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230237AbhC2Wy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 18:54:57 -0400
+IronPort-SDR: VpTnR7AqzhD6uqmVsokQC1iy+FiGu2j+PMspbsWeK2SPdHrarxenJPM0r4FXXaIK3O8FREHj1o
+ toMGdsBgjWJw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="189392975"
+X-IronPort-AV: E=Sophos;i="5.81,289,1610438400"; 
+   d="scan'208";a="189392975"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 15:54:57 -0700
+IronPort-SDR: MQrOtb8+/K8j/oW/POmOiUNONXwx7rrCgDNM4PhjG0p5iEbSdQu8nXJmfXbgyd8dpmNG4QUyUU
+ YcEJWqr7TBDg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,289,1610438400"; 
+   d="scan'208";a="417884012"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga008.jf.intel.com with ESMTP; 29 Mar 2021 15:54:54 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, andrii@kernel.org
+Cc:     bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        ciara.loftus@intel.com, john.fastabend@gmail.com, toke@redhat.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v5 bpf-next 00/17] AF_XDP selftests improvements & bpf_link
+Date:   Tue, 30 Mar 2021 00:42:59 +0200
+Message-Id: <20210329224316.17793-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <cover.1616692794.git.pabeni@redhat.com> <28d04433c648ea8143c199459bfe60650b1a0d28.1616692794.git.pabeni@redhat.com>
- <CA+FuTSed_T6+QbdgEUCo2Qy39mH1AVRoPqFYvt_vkRiFxfW7ZA@mail.gmail.com>
- <c7ee2326473578aa1600bf7c062f37c01e95550a.camel@redhat.com>
- <CA+FuTSfMgXog6AMhNg8H5mBTKTXYMhUG8_KvcKNYF5VS+hiroQ@mail.gmail.com>
- <1a33dd110b4b43a7d65ce55e13bff4a69b89996c.camel@redhat.com>
- <CA+FuTSduw1eK+CuEgzzwA+6QS=QhMhFQpgyVGH2F8aNH5gwv5A@mail.gmail.com>
- <c296fa344bacdcd23049516e8404931abc70b793.camel@redhat.com>
- <CA+FuTScQW-jYCHksXk=85Ssa=HWWce7103A=Y69uduNzpfd6cA@mail.gmail.com> <dc7a2ef8286516e805df7cae21f2b193d8da9761.camel@redhat.com>
-In-Reply-To: <dc7a2ef8286516e805df7cae21f2b193d8da9761.camel@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 29 Mar 2021 18:37:10 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdjtTmtuETr9g+EAmdjpiDwWMFs7w6V8519or0-8QFasg@mail.gmail.com>
-Message-ID: <CA+FuTSdjtTmtuETr9g+EAmdjpiDwWMFs7w6V8519or0-8QFasg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/8] udp: fixup csum for GSO receive slow path
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 12:24 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Mon, 2021-03-29 at 11:24 -0400, Willem de Bruijn wrote:
-> > On Mon, Mar 29, 2021 at 11:01 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > > On Mon, 2021-03-29 at 09:52 -0400, Willem de Bruijn wrote:
-> > > > > +       if (skb->ip_summed == CHECKSUM_NONE && !skb->csum_valid)
-> > > > > +               skb->csum_valid = 1;
-> > > >
-> > > > Not entirely obvious is that UDP packets arriving on a device with rx
-> > > > checksum offload off, i.e., with CHECKSUM_NONE, are not matched by
-> > > > this test.
-> > > >
-> > > > I assume that such packets are not coalesced by the GRO layer in the
-> > > > first place. But I can't immediately spot the reason for it..
-> >
-> > As you point out, such packets will already have had their checksum
-> > verified at this point, so this branch only matches tunneled packets.
-> > That point is just not immediately obvious from the code.
->
-> I understand is a matter of comment clarity ?!?
->
-> I'll rewrite the related code comment - in udp_post_segment_fix_csum()
-> - as:
->
->         /* UDP packets generated with UDP_SEGMENT and traversing:
->          *
->          * UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) -> UDP tunnel (rx)
->          *
->          * land here with CHECKSUM_NONE, because __iptunnel_pull_header() converts
->          * CHECKSUM_PARTIAL into NONE.
->          * SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST packets with no UDP tunnel will land
->          * here with valid checksum, as the GRO engine validates the UDP csum
->          * before the aggregation and nobody strips such info in between.
->          * Instead of adding another check in the tunnel fastpath, we can force
->          * a valid csum here.
->          * Additionally fixup the UDP CB.
->          */
->
-> Would that be clear enough?
+Changes since v4 (all in patch 6):
+- do not close potentially invalid bpf_link fd (Toke)
+- fix misspelling in label (Toke)
+- mask out XDP_FLAGS_UPDATE_IF_NOEXIST and XDP_FLAGS_REPLACE explicitly when
+  creating bpf_link (Toke)
 
-Definitely. Thanks!
+Changes since v3:
+- do not unload netlink-based XDP prog when updating map elem failed and
+  current socket was not the creator of XDP resources (Toke)
+- pull out code paths based on prog_id value within __xsk_setup_xdp_prog
+  so that teardown in case of error at any point is more clear
 
-> > > I do see checksum validation in the GRO engine for CHECKSUM_NONE UDP
-> > > packet prior to this series.
-> > >
-> > > I *think* the checksum-and-copy optimization is lost
-> > > since 573e8fca255a27e3573b51f9b183d62641c47a3d.
-> >
-> > Wouldn't this have been introduced with UDP_GRO?
->
-> Uhmm.... looks like the checksum-and-copy optimization has been lost
-> and recovered a few times. I think the last one
-> with 9fd1ff5d2ac7181844735806b0a703c942365291, which move the csum
-> validation before the static branch on udp_encap_needed_key.
->
-> Can we agree re-introducing the optimization is independent from this
-> series?
+Changes since v2:
+- fix c&p failure in veth's get_channels implementation (Magnus)
+- provide a backward compatibilty if bpf_link is not supported (Andrii)
+- check for a link type while looking up existing bpf_links (Andrii)
 
-Yep :)
-> Thanks!
->
-> Paolo
->
->
+Changes since v1:
+- selftests improvements and test case for bpf_link persistence itself
+- do not unload netlink-based prog when --force flag is set (John)
+- simplify return semantics in xsk_link_lookup (John)
+
+v4: https://lore.kernel.org/bpf/20210326230938.49998-1-maciej.fijalkowski@intel.com/
+v3: https://lore.kernel.org/bpf/20210322205816.65159-1-maciej.fijalkowski@intel.com/
+v2: https://lore.kernel.org/bpf/20210311152910.56760-1-maciej.fijalkowski@intel.com/
+v1: https://lore.kernel.org/bpf/20210215154638.4627-1-maciej.fijalkowski@intel.com/
+
+--------------------------------------------------
+
+This set is another approach towards addressing the below issue:
+
+// load xdp prog and xskmap and add entry to xskmap at idx 10
+$ sudo ./xdpsock -i ens801f0 -t -q 10
+
+// add entry to xskmap at idx 11
+$ sudo ./xdpsock -i ens801f0 -t -q 11
+
+terminate one of the processes and another one is unable to work due to
+the fact that the XDP prog was unloaded from interface.
+
+Previous attempt was, to put it mildly, a bit broken, as there was no
+synchronization between updates to additional map, as Bjorn pointed out.
+See https://lore.kernel.org/netdev/20190603131907.13395-5-maciej.fijalkowski@intel.com/
+
+In the meantime bpf_link was introduced and it seems that it can address
+the issue of refcounting the XDP prog on interface.
+
+Although the bpf_link is the meat of the set, selftests improvements are a
+bigger part of it. Overall, we've been able to reduce the complexity of xsk
+selftests by removing a bunch of synchronization resources and
+simplifying logic and structs.
+
+Last but not least, for multiqueue veth working with AF-XDP, ethtool's
+get_channels API needs to be implemented, so it's also included in that
+set.
+
+Note also that in order to make it work, a commit from bpf tree:
+veth: store queue_mapping independently of XDP prog presence
+https://lore.kernel.org/bpf/20210303152903.11172-1-maciej.fijalkowski@intel.com/
+
+is needed.
+
+Thanks,
+Maciej
+
+Björn Töpel (3):
+  selftests: xsk: remove thread attribute
+  selftests: xsk: Remove mutex and condition variable
+  selftests: xsk: Remove unused defines
+
+Maciej Fijalkowski (14):
+  selftests: xsk: don't call worker_pkt_dump() for stats test
+  selftests: xsk: remove struct ifaceconfigobj
+  selftests: xsk: remove unused function
+  selftests: xsk: remove inline keyword from source file
+  selftests: xsk: simplify frame traversal in dumping thread
+  libbpf: xsk: use bpf_link
+  samples: bpf: do not unload prog within xdpsock
+  selftests: xsk: remove thread for netns switch
+  selftests: xsk: split worker thread
+  selftests: xsk: remove Tx synchronization resources
+  selftests: xsk: refactor teardown/bidi test cases and testapp_validate
+  selftests: xsk: remove sync_mutex_tx and atomic var
+  veth: implement ethtool's get_channels() callback
+  selftests: xsk: implement bpf_link test
+
+ drivers/net/veth.c                       |  12 +
+ samples/bpf/xdpsock_user.c               |  55 +-
+ tools/lib/bpf/xsk.c                      | 258 +++++++--
+ tools/testing/selftests/bpf/test_xsk.sh  |   3 +-
+ tools/testing/selftests/bpf/xdpxceiver.c | 700 ++++++++++-------------
+ tools/testing/selftests/bpf/xdpxceiver.h |  49 +-
+ 6 files changed, 573 insertions(+), 504 deletions(-)
+
+-- 
+2.20.1
+
