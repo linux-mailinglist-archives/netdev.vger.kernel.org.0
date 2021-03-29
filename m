@@ -2,163 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A3634C114
-	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 03:25:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 696D534C119
+	for <lists+netdev@lfdr.de>; Mon, 29 Mar 2021 03:26:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbhC2BZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Mar 2021 21:25:08 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16392 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230525AbhC2BY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 21:24:57 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12T1LH1O021916;
-        Sun, 28 Mar 2021 18:24:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=YzCtrrFbEvzSXRdke3PxYi0NkUm9LER9F5xpa4lQ6pg=;
- b=mE/jecB/ukthxiYo/6Yoy5W5TFCaGgHTKa8cpcpU71tmsk3j/KNx2P6WMDDj0XdmGWYT
- zajMQA87eNaDrxBYZxyby4Rbjihq1E4hemnGD8Py59x3JWc/+DWBuX/sjIL+DkBlACAj
- 0aRemMNxT8rBvTpgeHISgg16KXT6ZXqngv8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 37jmsqtgeq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sun, 28 Mar 2021 18:24:43 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sun, 28 Mar 2021 18:24:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dtxj5rTFZg/NMPu0eWk3VfHmHAzEXsFAKsb1MqeAIZRTczt27rNTFqmOED/5FM+o1id58LL9L3yXUe6FWJxt5kHlY2j1jdjzIg1zr+UWZz8pjkmyEgQzBRQtQpnv3K/eZlFUjf03DyphkGIglDEu9oJVlUpeELNt2DQMHcSIsr1nDTrLD3Y6Sd430GecNUA8pn0xvdXEX2WZKqRuuL42rAtf7abAdTMJG7hP8fXT1Ete0UhyHJrj/LzZvVs5KifxpzawLCD4zQoh64SRfaIsx4pM26QsVY/EUoaeDH93vfkPvdXYq0QUu2fGRomCcCjTl6FpCSdbvZs4Pn6NbMyqpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YzCtrrFbEvzSXRdke3PxYi0NkUm9LER9F5xpa4lQ6pg=;
- b=kHtVxBdPKMfga0c/BMGaEUVfA3YiZeMhAV5CQzShkK4FOqvsQu79JBk7rdX5qsKI0SPiFxP0gpUKVbrUwTCJdcvlX6xvgKGWGhASbNFOi350oQjTnp16hndjTvkN37LoIDqany3CDRQBI97ANWmcYOvYyHQlA7Y2eGj1+jb1Xslel5dPPTb1hPqeobEcB0NVSusxaR1+2f2wa33ABvsS95M8s8m/rNUS0x68Cv/0vIUtmvN68uvVtz6r5eKMaV7DZ+leqe0ZkYx3FmCsVWz1Il0NYQPJx/4Yu0iEfLRODXdG/gFLZao0HJb9fOjtrRr1glz2mzIg8b+yYL++8xUwig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2823.namprd15.prod.outlook.com (2603:10b6:a03:15a::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.32; Mon, 29 Mar
- 2021 01:24:41 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2975:c9d8:3f7f:dbd0]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2975:c9d8:3f7f:dbd0%5]) with mapi id 15.20.3977.033; Mon, 29 Mar 2021
- 01:24:41 +0000
-Date:   Sun, 28 Mar 2021 18:24:37 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        id S230458AbhC2B0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Mar 2021 21:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230413AbhC2B0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Mar 2021 21:26:06 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135FFC061574;
+        Sun, 28 Mar 2021 18:26:06 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id kr3-20020a17090b4903b02900c096fc01deso5145987pjb.4;
+        Sun, 28 Mar 2021 18:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=D2qDTN7silotp2//OnN3/0i2DnrKYAYRXZS1eDoRb7Q=;
+        b=XobvU2uNpiHXgiqr20IGZVGwVnLsirMFL+2eoeCGHVygqUKiA8jdIzKWn8ZjGiJOnH
+         SkwzmKUiFguztt2b8nX3+//w8eSgQD6MAFC56xs+zHws0Xt/iscQfl7BxIsVS7049qYW
+         98SDzALrFGk1dHUS2Uz5AQul1daKjZl1S0WK/i7UsLJ5M9qugVCPisgizndFt82/lzX4
+         Ty1aBWMIVw2Gqgr3OGCpjvFKCwomm5zLlZk4HKz0q9NafFDh5onokMsXhoaaQd4JEKvz
+         maC/l8QAEN4VrJvAfc6dn12zdwro4ql332/Twzg0PlcgHw+bSH75eG8CWb8r1d045TZi
+         IeTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=D2qDTN7silotp2//OnN3/0i2DnrKYAYRXZS1eDoRb7Q=;
+        b=pymkGGTlnBfG+ma+/Rnb90PdOP1ROiQxl12KvBPTjovTrsh8JnzKU0aVjCeAkd+OcD
+         S9+2APGdNaIWSdnpUwj0lyaa+U1tZFvqLmNBhyUcH1Zj5n8cdyWAU6llpES28O1YSDzW
+         ASP9YMXNxZ6vMJRBZZY0jzdwOaauOOnP6FtM5bgIE5MhsusoElunu/gAAWlUpexN0wE+
+         w+C71N4mQYn4vtf47XdD1O+dxoKoXGUaZbMfOiFQXSMBkz1dYJZDXlDARuQciZZo/hCw
+         C/J9qQh6Z4BC5fuiUpfXraQPfsaKc9mfvhTVdaBgDob2Dqfww8Vpd0A7T9iF6z83aRrQ
+         j5fQ==
+X-Gm-Message-State: AOAM531wYJOUWkby9uivKCQjwZb/RiAsHw4nSvtaJ02E92uVW6zaHNdV
+        G2fYpuM+X2b5EdCXJfuit3s=
+X-Google-Smtp-Source: ABdhPJxjxzFXOqkBT6dy5DhXM8Uzx3EwHv1iP1Tibnt6sgZd+CfXJJggAP+Ef0IC0A65OPpzuSG5DQ==
+X-Received: by 2002:a17:90a:cb8c:: with SMTP id a12mr24654662pju.35.1616981165633;
+        Sun, 28 Mar 2021 18:26:05 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:1b8f])
+        by smtp.gmail.com with ESMTPSA id w79sm15674455pfc.87.2021.03.28.18.26.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Mar 2021 18:26:05 -0700 (PDT)
+Date:   Sun, 28 Mar 2021 18:26:02 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org,
+        brouer@redhat.com, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
-Message-ID: <20210329012437.somtubekt2dqzz3x@kafai-mbp.dhcp.thefacebook.com>
-References: <20210325015124.1543397-1-kafai@fb.com>
- <CAM_iQpWGn000YOmF2x6Cm0FqCOSq0yUjc_+Up+Ek3r6NrBW3mw@mail.gmail.com>
- <CAADnVQKAXsEzsEkxhUG=79V+gAJbv=-Wuh_oJngjs54g1xGW7Q@mail.gmail.com>
- <CAM_iQpU7y+YE9wbqFZK30o4A+Gmm9jMLgqPqOw6SCDP8mHibTQ@mail.gmail.com>
- <CAADnVQJoeEqZK8eWfCi-BkHY4rSzaPuXYVEFvR75Ecdbt+oGgA@mail.gmail.com>
- <CAM_iQpUTFs_60vkS6LTRr5VBt8yTHiSgaHoKrtt4GGDe4tCcew@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpUTFs_60vkS6LTRr5VBt8yTHiSgaHoKrtt4GGDe4tCcew@mail.gmail.com>
-X-Originating-IP: [2620:10d:c090:400::5:c3ea]
-X-ClientProxiedBy: CO2PR04CA0156.namprd04.prod.outlook.com (2603:10b6:104::34)
- To BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next 5/5] libbpf: add selftests for TC-BPF API
+Message-ID: <20210329012602.4zzysn2ewbarbn3d@ast-mbp>
+References: <20210325120020.236504-1-memxor@gmail.com>
+ <20210325120020.236504-6-memxor@gmail.com>
+ <20210327021534.pjfjctcdczj7facs@ast-mbp>
+ <87h7kwaao3.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:c3ea) by CO2PR04CA0156.namprd04.prod.outlook.com (2603:10b6:104::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25 via Frontend Transport; Mon, 29 Mar 2021 01:24:40 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b480e45-bcbb-4536-4905-08d8f2516cf4
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2823:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB28235FE9CD8F838174451363D57E9@BYAPR15MB2823.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /JphC4D9UeQ8NsqNXtzL0SfD2UFqT7aLRCDYAkWn3d/MhjmbYsPXXxgoHAIudHtFz/6IjoV+9JpWhMrIv4kz8V/d/bQhq67f3+6v5BnJpoTPTaoAihZkrjV1Q6mDznq6Gp9RbBHCk/0ut26F7tQsBcEPYd8TrtoiSLPVvIONC0A4Ia0q4YJGtgYEJmEslb0SnT709jYxrWsk2p0I9G1V4+SC6XJ4Cc1+VD4mybghC3REzKkhJukuZ2BR8li7J1cO7wWQE2FCdMrQ+wGC2nrbdzU4FwkgkJ0XgwTEFUHwPNEMTh0AmyNKwPlaSGxKcWO+KVdpqiIpl9YgDTWar4nyatw7eQzPlRxBK+hduh/GjoQnHlBwuettjbutaPSYqaiqWKjgr3Gjv4hLNRhAd/OrnsWjFsJGdHqlCivHhK0l0yNcesnyeWbS8wu4/E3ij/RiVaN4+kdjqYOYX5Ti1nJ0VepqDifZnqWoJaN6X5Kr5roY1QLq1lJE50nZxs0CoV6AQ7RhKbywbD7LaZnyMcePr7wUI0Og4VhkBFUr0Z4dNRM4uIvpBaqSutnpSPpbvZjfjRJCf61+U8sx0ZzNagBBdlBiDIbY4uSDOGxdBpzyetawMperh3FrOVLhFsC/at3lkw41+9uPZg7v7nFhjDAI4w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(396003)(346002)(376002)(366004)(8676002)(8936002)(2906002)(6506007)(316002)(66946007)(54906003)(52116002)(9686003)(66556008)(55016002)(7696005)(38100700001)(66476007)(53546011)(4326008)(1076003)(478600001)(6916009)(6666004)(5660300002)(186003)(16526019)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?6fLRkcon62f/ealKeOzPfhXCLhfswfLmBo90S3p52jAQzkdCYpzBmMR3Y/xH?=
- =?us-ascii?Q?XOywsz4rfjoDCNCqUwnCghBaqro3taEePRe3aYn9BtmubalB1hNQfs5oNvRY?=
- =?us-ascii?Q?cbT6HbiahF0XskBGZ+3szo+H4BqJx1gNwhhf3rbMuYfg0R7LCjH86/Vf724B?=
- =?us-ascii?Q?gi59utuwjcdXPqKtzsxlGqShp9O719vWhaK6Sp2MLhjjT5otYoYimzhN2OIe?=
- =?us-ascii?Q?Qf+iZJyMqDPvpZhWp0reyDJEel9SSew6X6X0kA1bcr52h+czbzKmJx3/Y2hQ?=
- =?us-ascii?Q?WBysx55rjjF6ssInrrwvTu3mNBlmEFTQqRJRcxaMGQXa+C70qh9dg2FL439M?=
- =?us-ascii?Q?LBHxbuiPsE5AF+zfWrmdGJ15TYKSck6eSgJIVf5s1pypa8cCfJafm120PKqE?=
- =?us-ascii?Q?aV4Jzz2YAGzaS4aMWxl2c9ZUsuh9FNktoIFdIbz31KV7tnZF259VBSQD/k7t?=
- =?us-ascii?Q?pLWlouJt2namcsLf5UkyYWV9t0aF3ZMUypsSv3BW7GxVRNmVyqmYkZIj+q+n?=
- =?us-ascii?Q?mUCvDJfjQykXNQVsYBgBHU+HggJEEzo3Z0246etEERqXwMrjzAHYLyi76i4M?=
- =?us-ascii?Q?SU0u3+9dMouZ3YyAhAlDOoGa2JlA6LkvUBwoVFafDYgZWbauLR7+EvBkWK+5?=
- =?us-ascii?Q?XZzCm0INXbHdsY1eyJqZea9pSIhQ6B19uMR76L8LxGk6P2E606R7wyBVUi/C?=
- =?us-ascii?Q?dKuIFK65q44awRPTF80AqMv8eAzBu1JdH6XajRxTIkcfhgl/oZaRLChIdkpO?=
- =?us-ascii?Q?9Q4TG17zLcXZ3qb0givmdNBuAu13XyBkhf3eQQWVsJhCk2m1GGdLDaw34JHA?=
- =?us-ascii?Q?j7n4r8NWWbB9pE6osS2YwE/8i1fCoikHWJPSKIyTBfTAn+6xIeN7JlfFv+24?=
- =?us-ascii?Q?ObSLUuLxizRLasNk6YXdOXc+cBf9U+7Ji0ZR6+B59C4RxxS4aR1qGXWqfWIC?=
- =?us-ascii?Q?Ox6eN2ynOmIGgfr3g8uSD+iqHpJRSBEYWVheVckSJcfYL1CO+ULxhBbMwULK?=
- =?us-ascii?Q?POQ8lRXC6XtXjOWxB8++9/aMh7Q4+Fbru5VmEmB0nxKQU+MAseHpBeJwwfbh?=
- =?us-ascii?Q?tUk07xyATJQh31sjktGC6EwqXwjoa0RYFRP6ZkKZDwWnQpWD45pFF5H7AWlh?=
- =?us-ascii?Q?hJvEIr1r3B0qbj5Qtk59CjPBylUGjAS49WrD1xbkZ+bC+Rk8n6Nl9vFxsNn7?=
- =?us-ascii?Q?9UoB8rUDFN9pE83HTtRAFHN88ROFQV0+Lv6UadNUGiN08TReX9noksqZDIpc?=
- =?us-ascii?Q?9Tp8lhBFxtyG2MPz1CDTZ2diBardvIOtUGA9W1clPCnDnJ2ZpSwkpngDRpp3?=
- =?us-ascii?Q?zP3OjE9o1fgJIvJZlErTlDlBjtQ3E20hUbemxy3OIOB/lw=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b480e45-bcbb-4536-4905-08d8f2516cf4
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2021 01:24:40.9355
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +fBszAToKrO8pDRPYeelzTo6gjZ2YOgUYBwnVFESFqgLKrjApSfgja/JY2n8cTb2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2823
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: Awl6KXZ6yF26KPdn6U4LciMngwgjSuJL
-X-Proofpoint-GUID: Awl6KXZ6yF26KPdn6U4LciMngwgjSuJL
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-28_14:2021-03-26,2021-03-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1011
- phishscore=0 malwarescore=0 spamscore=0 impostorscore=0 mlxlogscore=999
- priorityscore=1501 adultscore=0 mlxscore=0 bulkscore=0 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2103250000 definitions=main-2103290007
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87h7kwaao3.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 28, 2021 at 01:13:35PM -0700, Cong Wang wrote:
-> On Sat, Mar 27, 2021 at 3:54 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Sat, Mar 27, 2021 at 3:08 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >   BTFIDS  vmlinux
-> > > FAILED unresolved symbol cubictcp_state
-> > > make: *** [Makefile:1199: vmlinux] Error 255
-> > >
-> > > I suspect it is related to the kernel config or linker version.
-> > >
-> > > # grep TCP_CONG .config
-> > > CONFIG_TCP_CONG_ADVANCED=y
-> > > CONFIG_TCP_CONG_BIC=m
-> > > CONFIG_TCP_CONG_CUBIC=y
-> > ..
-> > >
-> > > # pahole --version
-> > > v1.17
-> >
-> > That is the most likely reason.
-> > In lib/Kconfig.debug
-> > we have pahole >= 1.19 requirement for BTF in modules.
-> > Though your config has CUBIC=y I suspect something odd goes on.
-> > Could you please try the latest pahole 1.20 ?
+On Sat, Mar 27, 2021 at 04:17:16PM +0100, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 > 
-> Sure, I will give it a try tomorrow, I am not in control of the CI I ran.
-Could you also check the CONFIG_DYNAMIC_FTRACE and also try 'y' if it
-is not set?
+> > On Thu, Mar 25, 2021 at 05:30:03PM +0530, Kumar Kartikeya Dwivedi wrote:
+> >> This adds some basic tests for the low level bpf_tc_* API and its
+> >> bpf_program__attach_tc_* wrapper on top.
+> >
+> > *_block() apis from patch 3 and 4 are not covered by this selftest.
+> > Why were they added ? And how were they tested?
+> >
+> > Pls trim your cc. bpf@vger and netdev@vger would have been enough.
+> >
+> > My main concern with this set is that it adds netlink apis to libbpf while
+> > we already agreed to split xdp manipulation pieces out of libbpf.
+> > It would be odd to add tc apis now only to split them later.
+> 
+> We're not removing the ability to attach an XDP program via netlink from
+> libxdp, though. This is the equivalent for TC: the minimum support to
+> attach a program, and if you want to do more, you pull in another
+> library or roll your own.
+> 
+> I'm fine with cutting out more stuff and making this even more minimal
+> (e.g., remove the block stuff and only support attach/detach on ifaces),
+> but we figured we'd err on the side of including too much and getting
+> some feedback from others on which bits are the essential ones to keep,
+> and which can be dropped.
+
+This is up to you. I'm trying to understand the motivation for *_block() apis.
+I'm not taking a stance for/against them.
+
+> > I think it's better to start with new library for tc/xdp and have
+> > libbpf as a dependency on that new lib.
+> > For example we can add it as subdir in tools/lib/bpf/.
+> 
+> I agree for the higher-level stuff (though I'm not sure what that would
+> be for TC), but right now TC programs are the only ones that cannot be
+> attached by libbpf, which is annoying; that's what we're trying to fix.
+
+Sure. I wasn't saying that there is no place for these APIs in libbpf+.
+Just that existing libbpf is already became a kitchen sink of features
+that users are not going to use like static linking.
+tc-api was a straw that broke the camel's back.
+I think we must move static linking and skeleton out of libbpf before
+the next release.
