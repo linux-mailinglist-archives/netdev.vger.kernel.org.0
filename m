@@ -2,90 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7236A34E4A7
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB94B34E4C7
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231635AbhC3Jnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 05:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbhC3JnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 05:43:14 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CB8C061762
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 02:43:13 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id n138so22848941lfa.3
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 02:43:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JMP8eDgEhkYe8HifK8hiZaQ+dPjG3XHyor02oL/kDAI=;
-        b=MlwnLNsqgBxL8YUSWjm+MIxEqUOZf3gHDWgUjVZixnVpKX0TjBh6rwSeXh4NiWe3Ba
-         2YfWjzuxp+xcUPiO7SF/G6WvOxIgDZ/uMVye3/HgZF8+Pk0AVP2Q+M8WacMfy0PT8dfA
-         kykhZvNML3Xx94Xu9sHbrftYuRGr24ZUwsNF4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JMP8eDgEhkYe8HifK8hiZaQ+dPjG3XHyor02oL/kDAI=;
-        b=nQoe4qSeGUXCC1XZ71YqqcdvDTU3UeqsZgeZhBAIuhYATztaAhCXVeqptAgnm6EJLD
-         GKpnPp+W3E4IdEQE2ZljS9GhMws3Dt1kyZt1/LRo96D/kZS8FYA30dZki0AgTLI+eMvQ
-         RiwTeHCir1oNxSYeq9TuW1AZdmBW14BT02XDbrm/6EWPrsNgngd2iIyD7isjiQA5Rqhe
-         4Y6yG25CwdJglworf01muTpW8yqToBA1ZTdkDiQ7cYeYW/a1xBDhfvVbh2BOBEQLa2Yi
-         Pr0nLdOWDAF5mtc855niWvlqovTnVcEtMqBcvbNA1ugjWKSZGWuMYlVLCUDg0JTYausb
-         MZ1A==
-X-Gm-Message-State: AOAM5303EW7/jU0UPhUH9csglEJrO5+G110wgezXChNQNSNg2mxDZ+Kq
-        iMb/RAliz3Fe7iTCYL0DLZNPPkrnm5wfaxxbPt2ehQ==
-X-Google-Smtp-Source: ABdhPJzEQTFUznIaG0ADYbGDgvJk50ou2vGmKxTVWu6BgICvmUZ2b7dDC8Vm09470UJMQxH0V/sMwUEQbIsQkaUPstM=
-X-Received: by 2002:ac2:5f5b:: with SMTP id 27mr1466084lfz.325.1617097392308;
- Tue, 30 Mar 2021 02:43:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210325015124.1543397-1-kafai@fb.com>
-In-Reply-To: <20210325015124.1543397-1-kafai@fb.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 30 Mar 2021 10:43:01 +0100
-Message-ID: <CACAyw9-N6FO67JVJsO=XTohf=4-uMwsSi+Ym2Nxj0+GpofJJHQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S231426AbhC3Jvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 05:51:53 -0400
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:50148 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231220AbhC3Jvw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 05:51:52 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UTqqc7w_1617097892;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UTqqc7w_1617097892)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 30 Mar 2021 17:51:50 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     paulus@samba.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-ppp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] ppp: deflate: Remove useless call "zlib_inflateEnd"
+Date:   Tue, 30 Mar 2021 17:51:30 +0800
+Message-Id: <1617097890-27020-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Mar 2021 at 01:52, Martin KaFai Lau <kafai@fb.com> wrote:
->
-> This series adds support to allow bpf program calling kernel function.
+Fix the following whitescan warning:
 
-I think there are more build problems with this. Has anyone hit this before?
+Calling "zlib_inflateEnd(&state->strm)" is only useful for its return
+value, which is ignored.
 
-$ CLANG=clang-12 O=../kbuild/vm ./tools/testing/selftests/bpf/vmtest.sh -j 7
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/ppp/ppp_deflate.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-  GEN-SKEL [test_progs-no_alu32] bind6_prog.skel.h
-libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
-  GEN-SKEL [test_progs-no_alu32] bind_perm.skel.h
-libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
-  GEN-SKEL [test_progs-no_alu32] bpf_cubic.skel.h
-  GEN-SKEL [test_progs-no_alu32] bpf_dctcp.skel.h
-  GEN-SKEL [test_progs-no_alu32] bpf_flow.skel.h
-libbpf: failed to find BTF for extern 'tcp_cong_avoid_ai' [27] section: -2
-Error: failed to open BPF object file: No such file or directory
-make: *** [Makefile:453:
-/home/lorenz/dev/kbuild/vm//no_alu32/bpf_cubic.skel.h] Error 255
-make: *** Deleting file '/home/lorenz/dev/kbuild/vm//no_alu32/bpf_cubic.skel.h'
-make: *** Waiting for unfinished jobs....
-libbpf: failed to find BTF for extern 'tcp_reno_cong_avoid' [38] section: -2
-Error: failed to open BPF object file: No such file or directory
-make: *** [Makefile:451:
-/home/lorenz/dev/kbuild/vm//no_alu32/bpf_dctcp.skel.h] Error 255
-make: *** Deleting file '/home/lorenz/dev/kbuild/vm//no_alu32/bpf_dctcp.skel.h'
-
+diff --git a/drivers/net/ppp/ppp_deflate.c b/drivers/net/ppp/ppp_deflate.c
+index c457f84..e6d48e5 100644
+--- a/drivers/net/ppp/ppp_deflate.c
++++ b/drivers/net/ppp/ppp_deflate.c
+@@ -279,7 +279,6 @@ static void z_decomp_free(void *arg)
+ 	struct ppp_deflate_state *state = (struct ppp_deflate_state *) arg;
+ 
+ 	if (state) {
+-		zlib_inflateEnd(&state->strm);
+ 		vfree(state->strm.workspace);
+ 		kfree(state);
+ 	}
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+1.8.3.1
 
-www.cloudflare.com
