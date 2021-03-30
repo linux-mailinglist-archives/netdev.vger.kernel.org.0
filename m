@@ -2,135 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC36F34E7C9
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 14:47:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D85F34E7D1
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 14:49:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232066AbhC3MrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 08:47:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46278 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231853AbhC3Mq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 08:46:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C3199619B1;
-        Tue, 30 Mar 2021 12:46:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617108417;
-        bh=Gp7K5d/9JkaqMV3qnVlhi8uY18tBiGcqTqq9JQwzkk4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bpwoXfzSTI3OVxxT2qtuhI8DBVsGK1w2yo1XJO96Mcl6Cf7j98u0D7WhigRHOVp76
-         jDVKAszVft1N//apcCn6FfTFty159qo7bzFF1FayYDictlQn2pRCLv717rqFyesXh6
-         g/qwrAId2++/WokGRt8nGZEDGbvdPTeM6c+yqRQokfC3Qr+akdDdbTY7EJdRxABvTD
-         356fURN2pLtcawXNYFkMj/4iVtdUrMed1IC/yAYXh7FliEQtMGcEDxYEIh/YHATK5l
-         0cbhI80eGEGy6vBu0Pz0nymgiC2g+OQuCq7/dYQEV4VJ4nIDFcytvB+5jrYD5CldVL
-         VUbbcLl88d4eQ==
-Date:   Tue, 30 Mar 2021 13:46:51 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Joerg Roedel <joro@8bytes.org>, Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 08/18] iommu/fsl_pamu: merge pamu_set_liodn and map_liodn
-Message-ID: <20210330124651.GH5908@willie-the-truck>
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-9-hch@lst.de>
+        id S231819AbhC3Msh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 08:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231919AbhC3Msa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 08:48:30 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A84C061574;
+        Tue, 30 Mar 2021 05:48:29 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id s17so19735738ljc.5;
+        Tue, 30 Mar 2021 05:48:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=C/SEHAMdttQjA7hTIweXyWliIsCysW2EFbhutxpfmc8=;
+        b=TWscK29HM7I/ddYkmtOgngIPWJTO1qpM0RVwB79bRr9h/HZtVMEDWtNB7g+t5nHJnw
+         1eKHgE05+y4tqg4uEM/JQ6/Lf2LOR1F7EfqPbDjp2oOgAEDRdg0SBZ0AhYLWCv8DyUZK
+         0vs1q9JCtsw2D+2yQkYayxcofjRTmOtraV86dndLMm86Hl5v45xIuuD6EKVEDcBwREPr
+         UL8fwSaDMOlk4sytfubMIV5iStzNgJ3YA4MqDWZQau0mcgayOizgl6TYEWiFXl+FsY8x
+         uUOjNo4TrrNov1jnPfF2RfVnwhOjTCs4vrYsXbKUSWWOv4hbmA2xKaxWZcbBL1GXMhCm
+         gXfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=C/SEHAMdttQjA7hTIweXyWliIsCysW2EFbhutxpfmc8=;
+        b=eLjYofkWaUcjp3KdLZemqWEf3A42aevrHYVWKoN6yvVjYhoi4bxbAYx3schhmfbKJy
+         aFpkwoE8sHsbozGc9/7pmlo8PHkhL7mXobUXgrCVYb3LP14+hzen20ClADBMT5qrk2Hu
+         zYf7Une1YBWLRNI9DRuNaer9Kp2RK2FnsC/a6PF8wny/39CIvVuMRuoSdT5Ti5gmm0qF
+         9HieYaZE5Or8cg4E8rXtXg1RDbiTjc1KYX2BUZBfScW1BX/o/Ine93nvRBoKUXjmxEg/
+         ta+IHhWYMDINbyJkoSoOVxkN2JiLrVYykXFcPd38IC93K3eDPJfujJiqDYZ3WfQ1qoKa
+         qFHw==
+X-Gm-Message-State: AOAM5317NSV+5LU6YCEPAbb+s3TYR9fOWL1fhu8NV0IJaB7lZLI+KZaV
+        EBFfKrKnaRz0RarqqjuY7EA=
+X-Google-Smtp-Source: ABdhPJyX9Npm/QMJKR4GWGM6FPXPKELHcT0PzZlOHr7Xeb4lumVtKBsLPYD35g2ae2eWqtXumI9xSw==
+X-Received: by 2002:a2e:b5cd:: with SMTP id g13mr20825946ljn.372.1617108508345;
+        Tue, 30 Mar 2021 05:48:28 -0700 (PDT)
+Received: from [192.168.1.11] ([94.103.229.149])
+        by smtp.gmail.com with ESMTPSA id x29sm2267266lfn.60.2021.03.30.05.48.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 05:48:27 -0700 (PDT)
+Message-ID: <302c485c2209d54b88b54daa189589c76b4a66d0.camel@gmail.com>
+Subject: Re: [PATCH] wireless/nl80211.c: fix uninitialized variable
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     Alaa Emad <alaaemadhossney.ae@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
+Date:   Tue, 30 Mar 2021 15:48:24 +0300
+In-Reply-To: <CAM1DhOjWgN_0GVBeX+pf+9mk_ysaN9pF4agAFUNEkzhxpFR4=w@mail.gmail.com>
+References: <20210329163036.135761-1-alaaemadhossney.ae@gmail.com>
+         <YGIaaezqxNmhVcmn@kroah.com>
+         <CAM1DhOgA9DDaGSGFxKgXBONopoo4rLJZheK2jzW_BK-mJrNZKQ@mail.gmail.com>
+         <YGIjOZauy9kPwINV@kroah.com>
+         <CAM1DhOjWgN_0GVBeX+pf+9mk_ysaN9pF4agAFUNEkzhxpFR4=w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210316153825.135976-9-hch@lst.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 04:38:14PM +0100, Christoph Hellwig wrote:
-> Merge the two fuctions that configure the ppaace into a single coherent
-> function.  I somehow doubt we need the two pamu_config_ppaace calls,
-> but keep the existing behavior just to be on the safe side.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Acked-by: Li Yang <leoyang.li@nxp.com>
-> ---
->  drivers/iommu/fsl_pamu_domain.c | 65 +++++++++------------------------
->  1 file changed, 17 insertions(+), 48 deletions(-)
-> 
-> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-> index 40eff4b7bc5d42..4a4944332674f7 100644
-> --- a/drivers/iommu/fsl_pamu_domain.c
-> +++ b/drivers/iommu/fsl_pamu_domain.c
-> @@ -54,25 +54,6 @@ static int __init iommu_init_mempool(void)
->  	return 0;
->  }
->  
-> -/* Map the DMA window corresponding to the LIODN */
-> -static int map_liodn(int liodn, struct fsl_dma_domain *dma_domain)
-> -{
-> -	int ret;
-> -	struct iommu_domain_geometry *geom = &dma_domain->iommu_domain.geometry;
-> -	unsigned long flags;
-> -
-> -	spin_lock_irqsave(&iommu_lock, flags);
-> -	ret = pamu_config_ppaace(liodn, geom->aperture_start,
-> -				 geom->aperture_end - 1, ~(u32)0,
-> -				 0, dma_domain->snoop_id, dma_domain->stash_id,
-> -				 PAACE_AP_PERMS_QUERY | PAACE_AP_PERMS_UPDATE);
-> -	spin_unlock_irqrestore(&iommu_lock, flags);
-> -	if (ret)
-> -		pr_debug("PAACE configuration failed for liodn %d\n", liodn);
-> -
-> -	return ret;
-> -}
-> -
->  static int update_liodn_stash(int liodn, struct fsl_dma_domain *dma_domain,
->  			      u32 val)
->  {
-> @@ -94,11 +75,11 @@ static int update_liodn_stash(int liodn, struct fsl_dma_domain *dma_domain,
->  }
->  
->  /* Set the geometry parameters for a LIODN */
-> -static int pamu_set_liodn(int liodn, struct device *dev,
-> -			  struct fsl_dma_domain *dma_domain,
-> -			  struct iommu_domain_geometry *geom_attr)
-> +static int pamu_set_liodn(struct fsl_dma_domain *dma_domain, struct device *dev,
-> +			  int liodn)
->  {
-> -	phys_addr_t window_addr, window_size;
-> +	struct iommu_domain *domain = &dma_domain->iommu_domain;
-> +	struct iommu_domain_geometry *geom = &domain->geometry;
->  	u32 omi_index = ~(u32)0;
->  	unsigned long flags;
->  	int ret;
-> @@ -110,22 +91,25 @@ static int pamu_set_liodn(int liodn, struct device *dev,
->  	 */
->  	get_ome_index(&omi_index, dev);
->  
-> -	window_addr = geom_attr->aperture_start;
-> -	window_size = geom_attr->aperture_end + 1;
-> -
->  	spin_lock_irqsave(&iommu_lock, flags);
->  	ret = pamu_disable_liodn(liodn);
-> -	if (!ret)
-> -		ret = pamu_config_ppaace(liodn, window_addr, window_size, omi_index,
-> -					 0, dma_domain->snoop_id,
-> -					 dma_domain->stash_id, 0);
-> +	if (ret)
-> +		goto out_unlock;
-> +	ret = pamu_config_ppaace(liodn, geom->aperture_start,
-> +				 geom->aperture_end - 1, omi_index, 0,
-> +				 dma_domain->snoop_id, dma_domain->stash_id, 0);
-> +	if (ret)
-> +		goto out_unlock;
-> +	ret = pamu_config_ppaace(liodn, geom->aperture_start,
-> +				 geom->aperture_end - 1, ~(u32)0,
-> +				 0, dma_domain->snoop_id, dma_domain->stash_id,
-> +				 PAACE_AP_PERMS_QUERY | PAACE_AP_PERMS_UPDATE);
+Hi!
 
-There's more '+1' / '-1' confusion here with aperture_end which I'm not
-managing to follow. What am I missing?
+On Tue, 2021-03-30 at 14:42 +0200, Alaa Emad wrote:
+> 
+> 
+> On Mon, 29 Mar 2021 at 20:58, Greg KH <gregkh@linuxfoundation.org>
+> wrote:
+> > On Mon, Mar 29, 2021 at 08:41:38PM +0200, Alaa Emad wrote:
+> > > On Mon, 29 Mar 2021 at 20:20, Greg KH <gregkh@linuxfoundation.org>
+> > wrote:
+> > > 
+> > > > On Mon, Mar 29, 2021 at 06:30:36PM +0200, Alaa Emad wrote:
+> > > > > Reported-by:
+> > syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
+> > > > > Signed-off-by: Alaa Emad <alaaemadhossney.ae@gmail.com>
+> > > > 
+> > > > You need to provide some changelog text here, I know I can not
+> > take
+> > > > patches without that, maybe the wireless maintainer is more
+> > flexible :)
+> > > > 
+> > >   you mean explain what i did , right?
+> > 
+> > Yes, explain why this change is needed.
+> > 
+> 
+> 
+>   
+>   This change fix  KMSAN uninit-value in net/wireless/nl80211.c:225 ,
+> That because of `fixedlen` variable uninitialized. 
+>    So I initialized it by zero because the code assigned value to it
+> after that and doesn't depend on any stored value in it . 
 
-Will
+You should add this message to the patch, not just write it to
+maintainer.
+
+I think, this link might be
+useful https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html
+
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> > 
+> 
+> 
+> 
+> Thanks ,
+> Alaa
+> -- 
+> You received this message because you are subscribed to the Google
+> Groups "syzkaller" group.
+> To unsubscribe from this group and stop receiving emails from it, send
+> an email to syzkaller+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit
+> https://groups.google.com/d/msgid/syzkaller/CAM1DhOjWgN_0GVBeX%2Bpf%2B9mk_ysaN9pF4agAFUNEkzhxpFR4%3Dw%40mail.gmail.com
+> .
+
+With regards,
+Pavel Skripkin
+
+
