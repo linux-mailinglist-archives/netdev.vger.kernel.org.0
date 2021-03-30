@@ -2,133 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7DA534EC81
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:32:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7190734EC88
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231812AbhC3Pbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 11:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S232422AbhC3Pcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 11:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232362AbhC3PbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:31:17 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5530AC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:31:16 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id e14so6353501plj.2
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:31:16 -0700 (PDT)
+        with ESMTP id S232469AbhC3PcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:32:23 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13F8C061574
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:32:22 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id g38so17806060ybi.12
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:32:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=d7FHqejKIb0N3x9a9aU5vlUB5wV6nVuZngMuH8um7w8=;
-        b=UCJ2fnjeziBguMUD+rHwETW7NnRyFnv9rzoWrc64+iEGU6AyTDUxBZix+Bnc/7OUGc
-         D/7x+OlMbjjd8K/F/x8uRStRjL83pJtPxP7W038PwjlQAzXvCXqbzhnZVn7mZb7B26aU
-         r56+prTT9XGyRR3yZBMP3+dyqMm4bFCeeRUh5wTEmv/VicR8XrhVScdiCLE4BRw2zgYT
-         6rhD++viRiKn/oHfs/WS8tkvrhXNZFypGJ9CCY7+ySNnOKwEQ41erwyjJFK5pf0ex3GA
-         cRRd3Y2HIrGDbF5a4rTkN7y4El9BH/XA/+IrfWImK3zUqW04Pwh1GrMyWJAi4vU1j7zE
-         wolg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gFGHPRq5WIszYADyPLK/k2ezLagDSbDZ7MvpYZXDKbM=;
+        b=o7QVOLiUj68J7KxLS8uRw09cZVEqjTytixGMpPwjIpUBIaxu9su7kK8f9++ICjqosm
+         s/1LyfVBJjuwBhXbl85PyRgsruYd5YL2MjDVVgC6ww+MawKwGnDaFWKgvNwzkjtwEAQp
+         bWicDfc/Leejqd2AFrJeDwDrrdP/NrK5+lQ/gT1cxuS8KAqYHM/k1yk1x7+6/nHvpwIM
+         2wbWMMk7f7sznFSh5X361xmX7R+nWAMH+T8rQvTdjMMFjEy1EgNb9VwNXzpU5bMuvOqC
+         i2aNGXO00mg8UnmNPSCL4VkEY3djQV1AsAQx9BORlCXqq+FEbuzvx52R4X7Y0tOZfzDp
+         ywQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=d7FHqejKIb0N3x9a9aU5vlUB5wV6nVuZngMuH8um7w8=;
-        b=P+OIPVsdngqGroYKnz990MzdPORAxUKoRQ5vhjR51XOWE6dwX67+FKuwDipYxcvELw
-         ILILg7aXDbZY+TarZUBZ6VBnlQAcujb2eZg3DP2kwu+jrqEI+GtmtxvDEH/K+hQDNOOc
-         wh5hsNSYS5A04dhgdb5CuDLTrRdfBOIFE127ufILBXeYJYWQSCRNRdmfO4k8jukyD6BV
-         zr1dVn1UeEcKKo8NSXXqfKlyc/HdF7EpQ/hkfgFGxiwr7DedtbpgqfqqThYmhf3IcSVa
-         IHJldgcJm5H77Kihr7/dKujuZDm3FzV7haOwAHOUgJNKIGjsU9XCxjcl2BAcKTFxoTT3
-         qJfw==
-X-Gm-Message-State: AOAM533P6ha2HEkGn69i+MDC0HGVUrvZHkahD1cNbjj3mRD1GIMKL77Q
-        edzCMmlhpPeN3U8MyDOmCfyP1JpPtFHiYw==
-X-Google-Smtp-Source: ABdhPJzNgTv1OjfspXYuTEbMxG0iJlQcODT3zOsNOcQ/T+CuKGNKMe0uRYU/nutq2JQEh0XvdcEMbA==
-X-Received: by 2002:a17:90a:c201:: with SMTP id e1mr4838103pjt.30.1617118275473;
-        Tue, 30 Mar 2021 08:31:15 -0700 (PDT)
-Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id 138sm21486554pfv.192.2021.03.30.08.31.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Mar 2021 08:31:14 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        edumazet@google.com
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next] mld: add missing rtnl_lock() in do_ipv6_getsockopt()
-Date:   Tue, 30 Mar 2021 15:31:06 +0000
-Message-Id: <20210330153106.31614-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gFGHPRq5WIszYADyPLK/k2ezLagDSbDZ7MvpYZXDKbM=;
+        b=ATjieoYcWGcXRRAAJ5PAUhbAFM7k1qQk0n6o++rJDpvqpvQfBxPcH9MLpuw6uEps4w
+         XnIRUt/qSz7j/8jpLZduK3+iIgGeVxxWfnwLwFJ9XXJofH+ZDbHIrlX22ggnrX23XROX
+         us6wEsqXh3dzit5agqfKFaX+C6V5K+D7arZEKZAO6UmKPEUqLnQWyCS0qsgfUw1UWBfS
+         ca2yYadryi5smQR6Tj5q0oSrO4J2AHDnOIW94hL3BYW9OnXk1cd/Z5myd6l4O9Y2nLHB
+         RWH4gqKMLNGFfsy8FJ5M0dH4Nqf6W/2Bd5nr9T9EBEbO+8K353xv4tyY0VqupYp/Ey3u
+         D55A==
+X-Gm-Message-State: AOAM530gvRTHyOG0RfnFoIcu8gDG628VIARgrdVGQoDT2chexrGDnITW
+        iwyuAIYacC/2YxtKfq6GCjtvegqY7nbd6gT/w8+oVA==
+X-Google-Smtp-Source: ABdhPJyjt6FfD2X0zZot3Lxgm+eTCQSXqMR//Kc5PFuVAwqEt+QZZFbD5qsIeEH1BJorZUIxnSts2aWDWAEfELHlims=
+X-Received: by 2002:a25:3614:: with SMTP id d20mr29494853yba.452.1617118341069;
+ Tue, 30 Mar 2021 08:32:21 -0700 (PDT)
+MIME-Version: 1.0
+References: <880d627b79b24c0f92a47203193ed11f48c3031e.1617113947.git.pabeni@redhat.com>
+ <CANn89iJQRf5GVhiUp3PA5y9p3_Nqrm8J2CcfxA=0yd9_aB=17w@mail.gmail.com>
+ <CANn89iJkXuhMdU0==ZV3s8z75p1hrhjY3reR_MWUh1i-gJVeCg@mail.gmail.com> <99736955c48b19366a2a06f43ea4a0d507454dbc.camel@redhat.com>
+In-Reply-To: <99736955c48b19366a2a06f43ea4a0d507454dbc.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 30 Mar 2021 17:32:09 +0200
+Message-ID: <CANn89iLE-zxdieT2UePGyFYm+w9pdgd-AtmJ7HchFJnzmg0gWQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: let skb_orphan_partial wake-up waiters.
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ip6_mc_msfget() should be called under RTNL because it accesses RTNL
-protected data. but the caller doesn't acquire rtnl_lock().
-So, data couldn't be protected.
-Therefore, it adds rtnl_lock() in do_ipv6_getsockopt(),
-which is the caller of ip6_mc_msfget().
+On Tue, Mar 30, 2021 at 5:18 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Tue, 2021-03-30 at 16:40 +0200, Eric Dumazet wrote:
 
-Splat looks like:
-=============================
-WARNING: suspicious RCU usage
-5.12.0-rc4+ #480 Tainted: G        W
------------------------------
-include/net/addrconf.h:314 suspicious rcu_dereference_check() usage!
+> > >
+> > > Why TCP is not a problem here ?
+>
+> AFAICS, tcp_wfree() does not call sk->sk_write_space(). Processes
+> waiting for wmem are woken by ack processing.
 
-other info that might help us debug this:
-
-rcu_scheduler_active = 2, debug_locks = 1
-1 lock held by sockopt_msfilte/4955:
- #0: ffff88800aa21370 (sk_lock-AF_INET6){+.+.}-{0:0}, at: \
-	ipv6_get_msfilter+0xaf/0x190
-
-stack backtrace:
-Call Trace:
- dump_stack+0xa4/0xe5
- ip6_mc_find_dev_rtnl+0x117/0x150
- ip6_mc_msfget+0x17d/0x700
- ? lock_acquire+0x191/0x720
- ? ipv6_sock_mc_join_ssm+0x10/0x10
- ? lockdep_hardirqs_on_prepare+0x3e0/0x3e0
- ? mark_held_locks+0xb7/0x120
- ? lockdep_hardirqs_on_prepare+0x27c/0x3e0
- ? __local_bh_enable_ip+0xa5/0xf0
- ? lock_sock_nested+0x82/0xf0
- ipv6_get_msfilter+0xc3/0x190
- ? compat_ipv6_get_msfilter+0x300/0x300
- ? lock_downgrade+0x690/0x690
- do_ipv6_getsockopt.isra.6.constprop.13+0x1706/0x29f0
- ? do_ipv6_mcast_group_source+0x150/0x150
- ? __wake_up_common+0x620/0x620
- ? mutex_trylock+0x23f/0x2a0
-[ ... ]
-
-Fixes: 88e2ca308094 ("mld: convert ifmcaddr6 to RCU")
-Reported-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
-
-commit 88e2ca308094 ("mld: convert ifmcaddr6 to RCU") is not yet merged
-to "net" branch. So, target branch is "net-next"
-
- net/ipv6/ipv6_sockglue.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index a6804a7e34c1..55dc35e09c68 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -1137,9 +1137,12 @@ static int do_ipv6_getsockopt(struct sock *sk, int level, int optname,
- 		val = sk->sk_family;
- 		break;
- 	case MCAST_MSFILTER:
-+		rtnl_lock();
- 		if (in_compat_syscall())
--			return compat_ipv6_get_msfilter(sk, optval, optlen);
--		return ipv6_get_msfilter(sk, optval, optlen, len);
-+			val = compat_ipv6_get_msfilter(sk, optval, optlen);
-+		val = ipv6_get_msfilter(sk, optval, optlen, len);
-+		rtnl_unlock();
-+		return val;
- 	case IPV6_2292PKTOPTIONS:
- 	{
- 		struct msghdr msg;
--- 
-2.17.1
-
+My concern was TCP Small Queue. If we do not call tcp_wfree() we might miss
+an opportunity to queue more packets (and thus fallback to RTO or
+incoming ACK is we are lucky)
