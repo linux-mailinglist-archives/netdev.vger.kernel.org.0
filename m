@@ -2,81 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0BA434E1AA
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 09:01:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D0A334E1D8
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 09:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbhC3HAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 03:00:37 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:14193 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbhC3HAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 03:00:30 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F8gHx72DDzmc9b;
-        Tue, 30 Mar 2021 14:57:49 +0800 (CST)
-Received: from [10.67.110.73] (10.67.110.73) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.498.0; Tue, 30 Mar 2021
- 15:00:18 +0800
-Subject: Re: [PATCH -next] drivers: net: CONFIG_ATH9K select LEDS_CLASS
-To:     Pavel Machek <pavel@ucw.cz>
-CC:     "ath9k-devel@qca.qualcomm.com" <ath9k-devel@qca.qualcomm.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Chenyi (Johnny)" <johnny.chenyi@huawei.com>
-References: <20210326081351.172048-1-zhangjianhua18@huawei.com>
- <20210327223811.GB2875@duo.ucw.cz>
-From:   "zhangjianhua (E)" <zhangjianhua18@huawei.com>
-Message-ID: <9c6989a1-614e-23af-dc90-58663aa7d9a1@huawei.com>
-Date:   Tue, 30 Mar 2021 15:00:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20210327223811.GB2875@duo.ucw.cz>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.73]
-X-CFilter-Loop: Reflected
+        id S231310AbhC3HNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 03:13:37 -0400
+Received: from mail-m118208.qiye.163.com ([115.236.118.208]:37808 "EHLO
+        mail-m118208.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230248AbhC3HNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 03:13:00 -0400
+Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.232])
+        by mail-m118208.qiye.163.com (Hmail) with ESMTPA id 1D894E0131;
+        Tue, 30 Mar 2021 15:03:36 +0800 (CST)
+From:   Wang Qing <wangqing@vivo.com>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Salah Triki <salah.triki@gmail.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wang Qing <wangqing@vivo.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, linux-decnet-user@lists.sourceforge.net
+Cc:     gregkh@linuxfoundation.org
+Subject: [PATCH 0/6] Clean up obsolete TODO files
+Date:   Tue, 30 Mar 2021 15:02:43 +0800
+Message-Id: <1617087773-7183-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
+        oVCBIfWUFZH0sYSUJISR1PS0gYVkpNSkxLQ0xDSkxISk5VEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKQ1VLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NAg6FTo5ST8SNDcJPjwVHT8f
+        MhRPCi1VSlVKTUpMS0NMQ0pMTUtMVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
+        SU5KVUxPVUlISVlXWQgBWUFISkNONwY+
+X-HM-Tid: 0a7881f1e60a2c17kusn1d894e0131
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello Pavel，thanks for your reply.
+It is mentioned in the official documents of the Linux Foundation and WIKI 
+that you can participate in its development according to the TODO files of 
+each module.
 
-for  the a point, I don't know the led lists and cannot find it.
+But the TODO files here has not been updated for 15 years, and the function 
+development described in the file have been implemented or abandoned.
 
-for the b point, I look other configs who select LEDS_CLASS, almost all 
-of them select NEW_LEDS，maybe you are right, CONFIG_ATH9K also need 
-select NEW_LEDS too.
+Its existence will mislead developers seeking to view outdated information.
 
+Wang Qing (6):
+  mips/sgi-ip27: Delete obsolete TODO file
+  scsi/aacraid: Delete obsolete TODO file
+  fs/befs: Delete obsolete TODO file
+  fs/jffs2: Delete obsolete TODO file
+  net/ax25: Delete obsolete TODO file
+  net/decnet: Delete obsolete TODO file
 
-Best regards,
+ arch/mips/sgi-ip27/TODO   | 19 -------------------
+ drivers/scsi/aacraid/TODO |  3 ---
+ fs/befs/TODO              | 14 --------------
+ fs/jffs2/TODO             | 37 -------------------------------------
+ net/ax25/TODO             | 20 --------------------
+ net/decnet/TODO           | 40 ----------------------------------------
+ 6 files changed, 133 deletions(-)
+ delete mode 100644 arch/mips/sgi-ip27/TODO
+ delete mode 100644 drivers/scsi/aacraid/TODO
+ delete mode 100644 fs/befs/TODO
+ delete mode 100644 fs/jffs2/TODO
+ delete mode 100644 net/ax25/TODO
+ delete mode 100644 net/decnet/TODO
 
-Zhang Jianhua
+-- 
+2.7.4
 
-在 2021/3/28 6:38, Pavel Machek 写道:
-> On Fri 2021-03-26 16:13:51, Zhang Jianhua wrote:
->> If CONFIG_ATH9K=y, the following errors will be seen while compiling
->> gpio.c
->>
->> drivers/net/wireless/ath/ath9k/gpio.o: In function `ath_deinit_leds':
->> gpio.c:(.text+0x604): undefined reference to `led_classdev_unregister'
->> gpio.c:(.text+0x604): relocation truncated to fit: R_AARCH64_CALL26
->> against undefined symbol `led_classdev_unregister'
->> drivers/net/wireless/ath/ath9k/gpio.o: In function `ath_init_leds':
->> gpio.c:(.text+0x708): undefined reference to `led_classdev_register_ext'
->> gpio.c:(.text+0x708): relocation truncated to fit: R_AARCH64_CALL26
->> against undefined symbol `led_classdev_register_ext'
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Zhang Jianhua <zhangjianhua18@huawei.com>
-> a) please cc led lists with led issue.
->
-> b) probably does not work as LED_CLASS depends on NEW_LEDS...?
->
-> Best regards,
-> 									Pavel
-> 									
