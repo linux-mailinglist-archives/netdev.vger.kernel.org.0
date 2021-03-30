@@ -2,173 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8B634E2F1
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 10:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A2F634E2FC
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 10:19:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231460AbhC3IPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 04:15:41 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:48292 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231371AbhC3IPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 04:15:18 -0400
-Received: by mail-io1-f70.google.com with SMTP id g12so2271921ion.15
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:15:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zYXf/slRk7VawuClIizAYDwXZvagn572A8aIc7ReDl4=;
-        b=CPhzEfm+DUpHIU80oh+G39Iiw4nzV42IxRQRs1Gme8TpSn9Ji05P7ed4TUgobmWynr
-         25S/Esawg6WNiCr4QH5F6QkO+xD4CZbbdfihEH8m5A0dT7Lcs+Tww5lCVQbu/YhZqZa3
-         g/1FG0sKNHqSojv0fbPR+B7hGQEX6NGnehpYkffadU+KDkdEWLZaqDfDdOoj/TJn9r66
-         gfg+EVKy+CJpmQeY1EoUcYipYlYGb5VplM8eiglHR+n5+oJvha1/wodvDOF9log7CCnw
-         5sPUtdpPD4XHQHnYH06KVMVHaVV9ywwd08YJ+xTznRF3uvOqBqSxS6RgJXeVP15Z9rnu
-         c4kg==
-X-Gm-Message-State: AOAM532L4U4t/m47Mx2NXpa8cwF/87KIFbXdQeN1O/mGGbKo83RJZHva
-        mpqC0AocVGQp4IELApmwKbrgn+OHpTapf+VrAfhYZAZOuaAz
-X-Google-Smtp-Source: ABdhPJwKJk0QKq5P4gjbg6O26k6KLl6vZZ+uQRlwsxirGFxfu7T2rZ5tmW0ogaRjzVH4A8+WcLGN1ORfqi4nybJIw7rDuYLZ6Q/8
-MIME-Version: 1.0
-X-Received: by 2002:a02:9042:: with SMTP id y2mr28513880jaf.94.1617092117553;
- Tue, 30 Mar 2021 01:15:17 -0700 (PDT)
-Date:   Tue, 30 Mar 2021 01:15:17 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003c668005bebc9969@google.com>
-Subject: [syzbot] possible deadlock in ip_mc_drop_socket
-From:   syzbot <syzbot+35ace9909754e04618b9@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+        id S231481AbhC3ISy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 04:18:54 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:23463 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231430AbhC3ISs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 04:18:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1617092328; x=1648628328;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+gyuP2o8c81Fb8w4sK4HiD0tTwx8CqW4Of6BFZ8CVpc=;
+  b=t3lD7ORaiAP00DXQRqkPI9L3sr63eH5EQ+Yu7fmR630sinq7Kko4AD3Z
+   4SXj8YwQ6fKqCEVjeGWHHntWeyEWTdWQ5mnX8u8jL3gaO65cUvHUrM9df
+   I8asi7FUnDiMZjNuUBZxqxkkHMFQ2JyXPIEe4Xw0AGiWojFPnch5Ar6KV
+   uFQoeTqQrwSr7n1hZprU2otAe0WUKVDEXFZVQviGpu6KL+8vPn8kog7vt
+   NOFsYtQk/QFJVYMhQqanohFrS8d/wQivERMod6FOdWqtrfVUoNQsdiT22
+   h1TZv1RxQYxC7PY4PrMZL17D+p07UKPlyQtRS0gp2CagNb5rtvLrwfojj
+   A==;
+IronPort-SDR: QOiXiy9v2yvWnu8splEZ7FCYjwOfZM9vsj+WkXS+Ez26JD7zAOsNo4nzyLB2nsJ/WVcL2p3uTd
+ O0uYjcYzeP/WhLEfyD/Lbmvc+voqrTSDy0qTo7Om24f2skespBOB74BjMZpChKCSacFt0W++Pk
+ jE+7GPbFvPCEFnbrIdeAb/v6OVaDpieiKwP3T+WBV6TwzB1t7uS2DRu6//8HbtBXpSBt2uWOz2
+ E4aytVlV2W/oowrvLX+GN+pxdmYRPj6Zams5vQCQ/342xeshie3Ug3HEZZ8oklUiV8JxboZuC2
+ H3U=
+X-IronPort-AV: E=Sophos;i="5.81,290,1610434800"; 
+   d="scan'208";a="49364921"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Mar 2021 01:18:47 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 30 Mar 2021 01:18:47 -0700
+Received: from den-her-m31857h.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Tue, 30 Mar 2021 01:18:45 -0700
+Message-ID: <2356027828f1fa424751e91e478ff4bc188e7f6d.camel@microchip.com>
+Subject: Re: [PATCH linux-next 1/1] phy: Sparx5 Eth SerDes: Use direct
+ register operations
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+Date:   Tue, 30 Mar 2021 10:18:44 +0200
+In-Reply-To: <YGIimz9UnVYWfcXH@lunn.ch>
+References: <20210329081438.558885-1-steen.hegelund@microchip.com>
+         <20210329081438.558885-2-steen.hegelund@microchip.com>
+         <YGIimz9UnVYWfcXH@lunn.ch>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.4-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Andrew,
 
-syzbot found the following issue on:
+On Mon, 2021-03-29 at 20:55 +0200, Andrew Lunn wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Mon, Mar 29, 2021 at 10:14:38AM +0200, Steen Hegelund wrote:
+> > Use direct register operations instead of a table of register
+> > information to lower the stack usage.
+> > 
+> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > ---
+> >  drivers/phy/microchip/sparx5_serdes.c | 1869 +++++++++++++------------
+> >  1 file changed, 951 insertions(+), 918 deletions(-)
+> > 
+> > diff --git a/drivers/phy/microchip/sparx5_serdes.c b/drivers/phy/microchip/sparx5_serdes.c
+> > index 06bcf0c166cf..43de68a62c2f 100644
+> > --- a/drivers/phy/microchip/sparx5_serdes.c
+> > +++ b/drivers/phy/microchip/sparx5_serdes.c
+> > @@ -343,12 +343,6 @@ struct sparx5_sd10g28_params {
+> >       u8 fx_100;
+> >  };
+> > 
+> > -struct sparx5_serdes_regval {
+> > -     u32 value;
+> > -     u32 mask;
+> > -     void __iomem *addr;
+> > -};
+> > -
+> >  static struct sparx5_sd25g28_media_preset media_presets_25g[] = {
+> >       { /* ETH_MEDIA_DEFAULT */
+> >               .cfg_en_adv               = 0,
+> > @@ -945,431 +939,411 @@ static void sparx5_sd25g28_reset(void __iomem *regs[],
+> >       }
+> >  }
+> > 
+> > -static int sparx5_sd25g28_apply_params(struct device *dev,
+> > -                                    void __iomem *regs[],
+> > -                                    struct sparx5_sd25g28_params *params,
+> > -                                    u32 sd_index)
+> > +static int sparx5_sd25g28_apply_params(struct sparx5_serdes_macro *macro,
+> > +                                    struct sparx5_sd25g28_params *params)
+> >  {
+> > -     struct sparx5_serdes_regval item[] = {
+> 
+> Could you just add const here, and then it is no longer on the stack?
+> 
+>    Andrew
 
-HEAD commit:    fb6ec87f net: dsa: Fix type was not set for devlink port
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=12dd978ad00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=daeff30c2474a60f
-dashboard link: https://syzkaller.appspot.com/bug?extid=35ace9909754e04618b9
+No it still counts against the stack even as a const structure.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+35ace9909754e04618b9@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.12.0-rc4-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.4/31420 is trying to acquire lock:
-ffffffff8d66b1a8 (rtnl_mutex){+.+.}-{3:3}, at: ip_mc_drop_socket+0x89/0x260 net/ipv4/igmp.c:2671
-
-but task is already holding lock:
-ffff888059d6c4a0 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
-ffff888059d6c4a0 (sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_release+0x55/0x120 net/mptcp/protocol.c:3431
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (sk_lock-AF_INET){+.+.}-{0:0}:
-       lock_sock_nested+0xca/0x120 net/core/sock.c:3071
-       lock_sock include/net/sock.h:1600 [inline]
-       do_ip_setsockopt net/ipv4/ip_sockglue.c:945 [inline]
-       ip_setsockopt+0x1d2/0x3a00 net/ipv4/ip_sockglue.c:1423
-       udp_setsockopt+0x76/0xc0 net/ipv4/udp.c:2719
-       __sys_setsockopt+0x2db/0x610 net/socket.c:2117
-       __do_sys_setsockopt net/socket.c:2128 [inline]
-       __se_sys_setsockopt net/socket.c:2125 [inline]
-       __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
-       do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
--> #0 (rtnl_mutex){+.+.}-{3:3}:
-       check_prev_add kernel/locking/lockdep.c:2936 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3059 [inline]
-       validate_chain kernel/locking/lockdep.c:3674 [inline]
-       __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
-       lock_acquire kernel/locking/lockdep.c:5510 [inline]
-       lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
-       __mutex_lock_common kernel/locking/mutex.c:949 [inline]
-       __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
-       ip_mc_drop_socket+0x89/0x260 net/ipv4/igmp.c:2671
-       mptcp_release+0xab/0x120 net/mptcp/protocol.c:3438
-       __sock_release+0xcd/0x280 net/socket.c:599
-       sock_close+0x18/0x20 net/socket.c:1258
-       __fput+0x288/0x920 fs/file_table.c:280
-       task_work_run+0xdd/0x1a0 kernel/task_work.c:140
-       tracehook_notify_resume include/linux/tracehook.h:189 [inline]
-       exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
-       exit_to_user_mode_prepare+0x249/0x250 kernel/entry/common.c:208
-       __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
-       syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
-       entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(sk_lock-AF_INET);
-                               lock(rtnl_mutex);
-                               lock(sk_lock-AF_INET);
-  lock(rtnl_mutex);
-
- *** DEADLOCK ***
-
-2 locks held by syz-executor.4/31420:
- #0: ffff88802ee8e190 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:775 [inline]
- #0: ffff88802ee8e190 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:598
- #1: ffff888059d6c4a0 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
- #1: ffff888059d6c4a0 (sk_lock-AF_INET){+.+.}-{0:0}, at: mptcp_release+0x55/0x120 net/mptcp/protocol.c:3431
-
-stack backtrace:
-CPU: 0 PID: 31420 Comm: syz-executor.4 Not tainted 5.12.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2127
- check_prev_add kernel/locking/lockdep.c:2936 [inline]
- check_prevs_add kernel/locking/lockdep.c:3059 [inline]
- validate_chain kernel/locking/lockdep.c:3674 [inline]
- __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
- lock_acquire kernel/locking/lockdep.c:5510 [inline]
- lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
- __mutex_lock_common kernel/locking/mutex.c:949 [inline]
- __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
- ip_mc_drop_socket+0x89/0x260 net/ipv4/igmp.c:2671
- mptcp_release+0xab/0x120 net/mptcp/protocol.c:3438
- __sock_release+0xcd/0x280 net/socket.c:599
- sock_close+0x18/0x20 net/socket.c:1258
- __fput+0x288/0x920 fs/file_table.c:280
- task_work_run+0xdd/0x1a0 kernel/task_work.c:140
- tracehook_notify_resume include/linux/tracehook.h:189 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
- exit_to_user_mode_prepare+0x249/0x250 kernel/entry/common.c:208
- __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x41926b
-Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
-RSP: 002b:00007ffc0696dff0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 000000000041926b
-RDX: 0000000000570b58 RSI: 000000000d1147dc RDI: 0000000000000003
-RBP: 0000000000000001 R08: 0000000000000000 R09: 0000001b31a25db8
-R10: 00007ffc0696e0e0 R11: 0000000000000293 R12: 0000000000094f5f
-R13: 00000000000003e8 R14: 000000000056bf60 R15: 0000000000094f24
+BR
+Steen
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
