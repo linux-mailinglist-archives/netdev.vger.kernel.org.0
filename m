@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE4D34E1E6
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 09:14:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9727334E1E9
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 09:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbhC3HNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 03:13:41 -0400
-Received: from mail-m118208.qiye.163.com ([115.236.118.208]:37836 "EHLO
+        id S231401AbhC3HNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 03:13:42 -0400
+Received: from mail-m118208.qiye.163.com ([115.236.118.208]:37818 "EHLO
         mail-m118208.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230344AbhC3HNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 03:13:01 -0400
+        with ESMTP id S229633AbhC3HNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 03:13:02 -0400
 Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.232])
-        by mail-m118208.qiye.163.com (Hmail) with ESMTPA id B2F54E02FC;
-        Tue, 30 Mar 2021 15:05:19 +0800 (CST)
+        by mail-m118208.qiye.163.com (Hmail) with ESMTPA id F3B90E022C;
+        Tue, 30 Mar 2021 15:05:27 +0800 (CST)
 From:   Wang Qing <wangqing@vivo.com>
 To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
@@ -31,77 +31,60 @@ To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         linux-mtd@lists.infradead.org, linux-hams@vger.kernel.org,
         netdev@vger.kernel.org, linux-decnet-user@lists.sourceforge.net
 Cc:     gregkh@linuxfoundation.org
-Subject: [PATCH 4/6] fs/jffs2: Delete obsolete TODO file
-Date:   Tue, 30 Mar 2021 15:02:47 +0800
-Message-Id: <1617087773-7183-5-git-send-email-wangqing@vivo.com>
+Subject: [PATCH 5/6] net/ax25: Delete obsolete TODO file
+Date:   Tue, 30 Mar 2021 15:02:48 +0800
+Message-Id: <1617087773-7183-6-git-send-email-wangqing@vivo.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1617087773-7183-1-git-send-email-wangqing@vivo.com>
 References: <1617087773-7183-1-git-send-email-wangqing@vivo.com>
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZTBkfQ0wZQ0lCSUNNVkpNSkxLQ0xCSUtNSk9VEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        oVCBIfWUFZHUhMTU9DT0pLGkseVkpNSkxLQ0xCSUNDSExVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
         FZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NhQ6CSo*AT8cQzcyEB5KTiEu
-        IwsaCk5VSlVKTUpMS0NMQklLQkhNVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
-        SU5KVUxPVUlISVlXWQgBWUFPTEhLNwY+
-X-HM-Tid: 0a7881f3797d2c17kusnb2f54e02fc
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NCo6Axw5ND8SEjdNLh1WTikW
+        NB4aCklVSlVKTUpMS0NMQklCSkxNVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
+        SU5KVUxPVUlISVlXWQgBWUFITkpONwY+
+X-HM-Tid: 0a7881f399782c17kusnf3b90e022c
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TODO file here has not been updated for 14 years, and the function 
+The TODO file here has not been updated for 13 years, and the function 
 development described in the file have been implemented or abandoned.
 
 Its existence will mislead developers seeking to view outdated information.
 
 Signed-off-by: Wang Qing <wangqing@vivo.com>
 ---
- fs/jffs2/TODO | 37 -------------------------------------
- 1 file changed, 37 deletions(-)
- delete mode 100644 fs/jffs2/TODO
+ net/ax25/TODO | 20 --------------------
+ 1 file changed, 20 deletions(-)
+ delete mode 100644 net/ax25/TODO
 
-diff --git a/fs/jffs2/TODO b/fs/jffs2/TODO
+diff --git a/net/ax25/TODO b/net/ax25/TODO
 deleted file mode 100644
-index ca28964..0000000
---- a/fs/jffs2/TODO
+index 69fb4e3..0000000
+--- a/net/ax25/TODO
 +++ /dev/null
-@@ -1,37 +0,0 @@
+@@ -1,20 +0,0 @@
+-Do the ax25_list_lock, ax25_dev_lock, linkfail_lockreally, ax25_frag_lock and
+-listen_lock have to be bh-safe?
 -
-- - support asynchronous operation -- add a per-fs 'reserved_space' count,
--   let each outstanding write reserve the _maximum_ amount of physical
--   space it could take. Let GC flush the outstanding writes because the
--   reservations will necessarily be pessimistic. With this we could even
--   do shared writable mmap, if we can have a fs hook for do_wp_page() to
--   make the reservation.
-- - disable compression in commit_write()?
-- - fine-tune the allocation / GC thresholds
-- - chattr support - turning on/off and tuning compression per-inode
-- - checkpointing (do we need this? scan is quite fast)
-- - make the scan code populate real inodes so read_inode just after 
--	mount doesn't have to read the flash twice for large files.
--	Make this a per-inode option, changeable with chattr, so you can
--	decide which inodes should be in-core immediately after mount.
-- - test, test, test
+-Do the netrom and rose locks have to be bh-safe?
 -
-- - NAND flash support:
--	- almost done :)
--	- use bad block check instead of the hardwired byte check
+-A device might be deleted after lookup in the SIOCADDRT ioctl but before it's
+-being used.
 -
-- - Optimisations:
--   - Split writes so they go to two separate blocks rather than just c->nextblock.
--	By writing _new_ nodes to one block, and garbage-collected REF_PRISTINE
--	nodes to a different one, we can separate clean nodes from those which
--	are likely to become dirty, and end up with blocks which are each far
--	closer to 100% or 0% clean, hence speeding up later GC progress dramatically.
--   - Stop keeping name in-core with struct jffs2_full_dirent. If we keep the hash in 
--     the full dirent, we only need to go to the flash in lookup() when we think we've
--     got a match, and in readdir(). 
--   - Doubly-linked next_in_ino list to allow us to free obsoleted raw_node_refs immediately?
--   - Remove size from jffs2_raw_node_frag. 
+-Routes to a device being taken down might be deleted by ax25_rt_device_down
+-but added by somebody else before the device has been deleted fully.
 -
--dedekind:
--1. __jffs2_flush_wbuf() has a strange 'pad' parameter. Eliminate.
--2. get_sb()->build_fs()->scan() path... Why get_sb() removes scan()'s crap in
--   case of failure? scan() does not clean everything. Fix.
+-The ax25_rt_find_route synopsys is pervert but I somehow had to deal with
+-the race caused by the static variable in it's previous implementation.
+-
+-Implement proper socket locking in netrom and rose.
+-
+-Check socket locking when ax25_rcv is sending to raw sockets.  In particular
+-ax25_send_to_raw() seems fishy.  Heck - ax25_rcv is fishy.
+-
+-Handle XID and TEST frames properly.
 -- 
 2.7.4
 
