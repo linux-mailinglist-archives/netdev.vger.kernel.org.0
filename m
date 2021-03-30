@@ -2,112 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5E834F1EE
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 22:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C26C534F1FA
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 22:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233317AbhC3UDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 16:03:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49129 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233332AbhC3UCr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 16:02:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617134565;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XXbvDbH/Mrp7xxaK/1Pr1j9vGAejLeqioS3do8lG9EI=;
-        b=GwsJrWtf6/3ZWrf6A/pVdILQXrIZavN3e+Td0FK6ZQ66LlKRMXV3kihE+GJM8gKW3hMj3E
-        yfHr2V27Cy5zIsSSpTlsiM8dDxjwpa1D+KDK2zcP+MjpFWSWV2PfDg/uW6VnYhp2JxcYHO
-        kYns0Oc1jF+bFFbDDzB7fmr0XymP1nE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-334-Z-wD3WdVMwirSGLrg6bYbw-1; Tue, 30 Mar 2021 16:02:43 -0400
-X-MC-Unique: Z-wD3WdVMwirSGLrg6bYbw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5D71C501FE;
-        Tue, 30 Mar 2021 20:02:42 +0000 (UTC)
-Received: from krava (unknown [10.40.192.25])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 560A560871;
-        Tue, 30 Mar 2021 20:02:36 +0000 (UTC)
-Date:   Tue, 30 Mar 2021 22:02:35 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [RFC PATCH bpf-next 2/4] selftests/bpf: Add re-attach test to
- fentry_test
-Message-ID: <YGOD2xtqR+zMw0o8@krava>
-References: <20210328112629.339266-1-jolsa@kernel.org>
- <20210328112629.339266-3-jolsa@kernel.org>
- <A0B730F5-758F-4F28-9543-4ED08F0BDECB@fb.com>
+        id S233025AbhC3UKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 16:10:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45886 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232490AbhC3UKS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 16:10:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E3C43619CF;
+        Tue, 30 Mar 2021 20:10:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617135017;
+        bh=ES1zYMUoM0elRzZLXT3U58kwYaHThsITrHYDeAX7fG0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uTkpPCpyX+jxhfv2JAiyBRZF0uSHmXQNyU/yHPfZcxdrXCEab3/IUWX+hNdxNHfNX
+         SYz6iTO0/vY0RqjrPwqBTHjif1f08w3jlf3uF9bKcQ3Hc1R+2wFpIQoke4NuUYsJRP
+         RxBBjAzixNrv6y91cUN11tuOKiIdzy4jTYGTCBhcajTkrAOSY7w4qtAGCLhArpTFyI
+         1cJcBkaU9PlQfirQaKyz/An0+PaZvkbZqaBpEhmWUkRibJ/j853p3h3NVb1YtJwzgK
+         okrRr3NYN14WCUnyVCmutrrW9+CrHNrbK21RTudeP9KFRGKfefuCXIf1kU7SspX5ni
+         ZBaf9dF+Qj12g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D616660A72;
+        Tue, 30 Mar 2021 20:10:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <A0B730F5-758F-4F28-9543-4ED08F0BDECB@fb.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: can-next 2021-03-30
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161713501787.31227.6004047342956439209.git-patchwork-notify@kernel.org>
+Date:   Tue, 30 Mar 2021 20:10:17 +0000
+References: <20210330114559.1114855-1-mkl@pengutronix.de>
+In-Reply-To: <20210330114559.1114855-1-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 01:23:15AM +0000, Song Liu wrote:
+Hello:
+
+This pull request was applied to netdev/net-next.git (refs/heads/master):
+
+On Tue, 30 Mar 2021 13:45:20 +0200 you wrote:
+> Hello Jakub, hello David,
 > 
+> this is a pull request of 39 patches for net-next/master.
 > 
-> > On Mar 28, 2021, at 4:26 AM, Jiri Olsa <jolsa@kernel.org> wrote:
-> > 
-> > Adding the test to re-attach (detach/attach again) tracing
-> > fentry programs, plus check that already linked program can't
-> > be attached again.
-> > 
-> > Fixing the number of check-ed results, which should be 8.
-> > 
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > 
+> The first two patches update the MAINTAINERS file. One is by me and
+> removes Dan Murphy from the from m_can and tcan4x5x. The other one is
+> by Pankaj Sharma and updates the maintainership of the m-can mmio
+> driver.
+> 
 > [...]
-> > +
-> > +void test_fentry_test(void)
-> > +{
-> > +	struct fentry_test *fentry_skel = NULL;
-> > +	struct bpf_link *link;
-> > +	int err;
-> > +
-> > +	fentry_skel = fentry_test__open_and_load();
-> > +	if (CHECK(!fentry_skel, "fentry_skel_load", "fentry skeleton failed\n"))
-> > +		goto cleanup;
-> > +
-> > +	err = fentry_test__attach(fentry_skel);
-> > +	if (CHECK(err, "fentry_attach", "fentry attach failed: %d\n", err))
-> > +		goto cleanup;
-> > +
-> > +	err = fentry_test(fentry_skel);
-> > +	if (CHECK(err, "fentry_test", "fentry test failed: %d\n", err))
-> > +		goto cleanup;
-> > +
-> > +	fentry_test__detach(fentry_skel);
-> > +
-> > +	/* Re-attach and test again */
-> > +	err = fentry_test__attach(fentry_skel);
-> > +	if (CHECK(err, "fentry_attach", "fentry re-attach failed: %d\n", err))
-> > +		goto cleanup;
-> > +
-> > +	link = bpf_program__attach(fentry_skel->progs.test1);
-> > +	if (CHECK(!IS_ERR(link), "attach_fentry re-attach without detach",
-> > +		  "err: %ld\n", PTR_ERR(link)))
-> 
-> nit: I guess we shouldn't print PTR_ERR(link) when link is not an error code?
-> This shouldn't break though. 
 
-true, makes no sense.. I'll remove it
+Here is the summary with links:
+  - pull-request: can-next 2021-03-30
+    https://git.kernel.org/netdev/net-next/c/9c0ee085c49c
 
-thanks,
-jirka
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
