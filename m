@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1ED134E3CC
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:00:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9ED34E3D3
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbhC3JAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 05:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231614AbhC3I7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 04:59:53 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756CBC061762
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:59:53 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id w3so23686893ejc.4
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:59:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=cthzB+PK6lUgctUa4gYAlMsHLCsT4Ifk6ykP0EohgUM=;
-        b=T4f3uyskXvKZ68W9afDGzcQBG34nmj5oJeTCDurAJV8ykRP9zkgHkwkGRT+pkJcEx6
-         Dy1rFT8w8j4Kg2RAaAlTz30mJKe2ayZ4L++vOAbcMWoHT+JVJnQdZJwt5mCdQCK1/M7N
-         6qinIx+oz5Cq/RG7Z7VXuwknqRp7T5HheiOhylVg0S9FKt+UBDqBoyaBErOiSWAkUAiT
-         /NOa3EIFs3/UfCS3lmvxovPiYgCVQ5CDBP9q2Nxzlvb/rkG+nPMispbKO+9ED/RvM2iZ
-         WUt02KojGdqu4MwuQMhtyonSUDBH+FNDI7QmBosPZpOZfjCB2O9ZrAc4Mt1ZkjAYIvJs
-         9jWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=cthzB+PK6lUgctUa4gYAlMsHLCsT4Ifk6ykP0EohgUM=;
-        b=dTObfdpbpZSChbMaVVpSciZb0cKWWT/ifHfPGtL3MnF6tSIyloZ/tkHqlgin6hrlEI
-         uAW8Iqtf/sxvF9CPbA7+bUbHI5rlr5QC6Yy/AubalLWU3tyMmmF5snqlFhhAGgWEjaIw
-         C33EwVEK0R1tys/RZmvYxWbJw2ozFcYhnU3ouWY1jCHq14fxI6hC1L38jRp7yFwgfJY/
-         aLaC2YXJQ8UD8nw+37Y5fTcDUZqNE4ycRyAzKcfyRsRLshY8vJbMdRblweRdNpjgC2bc
-         rx1+jyGQN0+nPV+nhnO/PW2V28W3M3IdfQsKuk70Fqpp1KmlRtidoRzSnGAjx1ONME/F
-         HO1w==
-X-Gm-Message-State: AOAM533+NUVPrwIEgOtcRdgJbIpL2J6JfMuMBerlMeSCf47cTaNaR6oi
-        ZGdXcrptE/DFkurJoRm3IOc7wMrjmkxn8zmlOA2WDNnKyLE=
-X-Google-Smtp-Source: ABdhPJwf51TG5+x2pGgBUtUf3Cznx84rKg5jrW7vQpAp2qx/m/361fIpyZWqRP5BnpKmxKtwNCpVqTDf34O94eD/C2Q=
-X-Received: by 2002:a17:906:8a61:: with SMTP id hy1mr19048186ejc.59.1617094792112;
- Tue, 30 Mar 2021 01:59:52 -0700 (PDT)
+        id S231628AbhC3JBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 05:01:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48496 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231626AbhC3JAw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 05:00:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 69DB5619AD;
+        Tue, 30 Mar 2021 09:00:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617094851;
+        bh=7BKJpJRJJea7jWMl80W5EN9UAj8omc2Cs2r3GAQepzo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Wsuslf1aShoCKyVO6hEvzEdZFMLQDIu2sbrH3x69Zj3fzv+Ssz4//dpuMEbWngOUq
+         Zjq5v+sm416E8eDL5lOizTzEa7Erwc/f8fCuW75qsYfDXgJ3oE6b4i2kQYeYtPZd4I
+         FK+fITjA3iXC63XWANkkhj4NvYlqDfeUjJbbuVDoJnM3Z/9egQRLEp8Koxo3BlExlm
+         KJf0GkZPfII5XV5fPTrpbDnwtlOxinHOG65Ikgkmm49iP6nf4qHit/q0d/LnVY5qb5
+         qa+2M5n3XKCJv1Wm+mrJgHL5nAHA2YFzyo0MHv0A+yCW12hqtwqifDnY1PrNFQltR4
+         2Y+g7lZslykhg==
+Received: by mail-oo1-f53.google.com with SMTP id j10-20020a4ad18a0000b02901b677a0ba98so3616658oor.1;
+        Tue, 30 Mar 2021 02:00:51 -0700 (PDT)
+X-Gm-Message-State: AOAM531q1tUjYttWC1Plkfc9XuItgOGcA+fFv0WHfXrMBQvc7MswRNus
+        E9i6o0x2QMgnTmzWwbDN6fRjkSuusGeFcFzGuws=
+X-Google-Smtp-Source: ABdhPJzpNNBXFi0zlX+fSlV+iQuwxA7n7pfSwfoGiIinCD5YA1YpFSD4jDETbIF3gyjCIllkPcG9Qx+cRKe7U+THggk=
+X-Received: by 2002:a4a:304a:: with SMTP id z10mr25148861ooz.26.1617094850520;
+ Tue, 30 Mar 2021 02:00:50 -0700 (PDT)
 MIME-Version: 1.0
-From:   Navin P <navinp0304@gmail.com>
-Date:   Tue, 30 Mar 2021 14:29:41 +0530
-Message-ID: <CALO2TqLB04BGHH9XwXc+TBo1bf3rshCCp61U=FWu76ujNhffMQ@mail.gmail.com>
-Subject: Mismatch between tcp_output.c and tcp_fastopen.c in net/ipv4
-To:     netdev@vger.kernel.org
+References: <20210322160253.4032422-1-arnd@kernel.org> <20210322160253.4032422-7-arnd@kernel.org>
+ <YGLkPjSBdgpriC0E@blackbook>
+In-Reply-To: <YGLkPjSBdgpriC0E@blackbook>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Tue, 30 Mar 2021 11:00:36 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3nUCGwPpE+E820DniY8Haz1Xx72pA38P6s5MWsbi0iAQ@mail.gmail.com>
+Message-ID: <CAK8P3a3nUCGwPpE+E820DniY8Haz1Xx72pA38P6s5MWsbi0iAQ@mail.gmail.com>
+Subject: Re: [PATCH 06/11] cgroup: fix -Wzero-length-bounds warnings
+To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Martin Sebor <msebor@gcc.gnu.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Ning Sun <ning.sun@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Simon Kelley <simon@thekelleys.org.uk>,
+        James Smart <james.smart@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Anders Larsen <al@alarsen.net>,
+        Serge Hallyn <serge@hallyn.com>,
+        Imre Deak <imre.deak@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        tboot-devel@lists.sourceforge.net,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        ath11k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Roman Gushchin <guro@fb.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Odin Ugedal <odin@uged.al>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Mar 30, 2021 at 10:41 AM Michal Koutn=C3=BD <mkoutny@suse.com> wrot=
+e:
+>
+> On Mon, Mar 22, 2021 at 05:02:44PM +0100, Arnd Bergmann <arnd@kernel.org>=
+ wrote:
+> > I'm not sure what is expected to happen for such a configuration,
+> > presumably these functions are never calls in that case.
+> Yes, the functions you patched would only be called from subsystems or
+> there should be no way to obtain a struct cgroup_subsys reference
+> anyway (hence it's ok to always branch as if ss=3D=3DNULL).
+>
+> I'd prefer a variant that wouldn't compile the affected codepaths when
+> there are no subsystems registered, however, I couldn't come up with a
+> way how to do it without some preprocessor ugliness.
 
- I've a question regarding bytes_received and bytes_sent.
+Would it be possible to enclose most or all of kernel/cgroup/cgroup.c
+in an #ifdef CGROUP_SUBSYS_COUNT block? I didn't try that
+myself, but this might be a way to guarantee that there cannot
+be any callers (it would cause a link error).
 
- https://elixir.bootlin.com/linux/latest/source/net/ipv4/tcp_output.c#L1385
+> Reviewed-by: Michal Koutn=C3=BD <mkoutny@suse.com>
 
- In net/ipv4/tcp_output.c
- if (skb->len != tcp_header_size) {
-tcp_event_data_sent(tp, sk);
-tp->data_segs_out += tcp_skb_pcount(skb);
-tp->bytes_sent += skb->len - tcp_header_size;
-}
+Thanks
 
-
-https://elixir.bootlin.com/linux/latest/source/net/ipv4/tcp_fastopen.c#L220
-
-In net/ipv4/tcp_fastopen.c
-
-/* u64_stats_update_begin(&tp->syncp) not needed here,
- * as we certainly are not changing upper 32bit value (0)
- */
-tp->bytes_received = skb->len;
-
-Above we miss tcp_header_size.
-
-1. Shouldn't bytes_received be skb->len - tcp_header_size for
-consistency ? I'm not sure if skb->len - tcp_header_size is correct .
-
-2. Should it not be skb->len - tcp_header_size - ip_header_size -
-skb->mac_len  ?
-
-
-Regards,
-Navin
+        Arnd
