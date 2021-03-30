@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4668234DEA2
+	by mail.lfdr.de (Postfix) with ESMTP id DED0C34DEA4
 	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 04:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231238AbhC3CqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 22:46:12 -0400
-Received: from mga18.intel.com ([134.134.136.126]:37058 "EHLO mga18.intel.com"
+        id S231293AbhC3CqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 22:46:14 -0400
+Received: from mga11.intel.com ([192.55.52.93]:15240 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231144AbhC3Cpv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 22:45:51 -0400
-IronPort-SDR: jjX9tyj0WzMRNlpPbn9BRWYFBcN/0SIo+Lst8Qmnwb7qO31S3CfqZBT3i9YIgtBVqkKgvFcR5w
- +WJTB+PmAoCQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="179213530"
+        id S231145AbhC3Cp4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 29 Mar 2021 22:45:56 -0400
+IronPort-SDR: Q+Yp+aSSLUUfyXkc4IyTqACO5IgDBCM+IowgeO+updCkx1+bOiggmcwvpdXDW1SCAe1m58YtxY
+ vBMpBpRxGC3A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9938"; a="188404918"
 X-IronPort-AV: E=Sophos;i="5.81,289,1610438400"; 
-   d="scan'208";a="179213530"
+   d="scan'208";a="188404918"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 19:45:50 -0700
-IronPort-SDR: WwtgGCGjHhhxsLy+blmwUzPGTu8DQcCYTgJ6SoIxHddvSmAqBG3G0z/NyLOEIRDgcjgDWMlpCP
- wZ2UsbzG534g==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2021 19:45:55 -0700
+IronPort-SDR: KkUir5p9v11QRZWRcNkjJ0q607/fMFfsrO8swFGYb/s7nRmVcegPukLyf6xyMIZmk6Cf++nMmn
+ nH4fVhacExqw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,289,1610438400"; 
-   d="scan'208";a="606598458"
+   d="scan'208";a="606598472"
 Received: from glass.png.intel.com ([10.158.65.59])
-  by fmsmga006.fm.intel.com with ESMTP; 29 Mar 2021 19:45:46 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 29 Mar 2021 19:45:50 -0700
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -43,9 +43,9 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v2 1/6] net: stmmac: set IRQ affinity hint for multi MSI vectors
-Date:   Tue, 30 Mar 2021 10:49:44 +0800
-Message-Id: <20210330024949.14010-2-boon.leong.ong@intel.com>
+Subject: [PATCH net-next v2 2/6] net: stmmac: make SPH enable/disable to be configurable
+Date:   Tue, 30 Mar 2021 10:49:45 +0800
+Message-Id: <20210330024949.14010-3-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210330024949.14010-1-boon.leong.ong@intel.com>
 References: <20210330024949.14010-1-boon.leong.ong@intel.com>
@@ -55,75 +55,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Certain platform likes Intel mGBE has independent hardware IRQ resources
-for TX and RX DMA operation. In preparation to support XDP TX, we add IRQ
-affinity hint to group both RX and TX queue of the same queue ID to the
-same CPU.
+SPH functionality splits header and payload according to split mode and
+offsef fields (SPLM and SPLOFST). It is beneficials for Linux network
+stack RX processing however it adds a lot of complexity in XDP
+processing.
 
-Changes in v2:
- - IRQ affinity hint need to set to null before IRQ is released.
-   Thanks to issue reported by Song, Yoong Siang.
+So, this patch makes the split-header (SPH) capability of the controller
+is stored in "priv->sph_cap" and the enabling/disabling of SPH is decided
+by "priv->sph".
 
-Reported-by: Song, Yoong Siang <yoong.siang.song@intel.com>
+This is to prepare initial XDP enabling for stmmac to disable the use of
+SPH whenever XDP is enabled.
+
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h      |  1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++-----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index 9966f6f10905..e293423f98c3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -160,6 +160,7 @@ struct stmmac_priv {
+ 	bool tx_path_in_lpi_mode;
+ 	bool tso;
+ 	int sph;
++	int sph_cap;
+ 	u32 sarc_type;
+ 
+ 	unsigned int dma_buf_sz;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d34388b1ffcc..9d63e8c365ae 100644
+index 9d63e8c365ae..18e34a1e2367 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3005,15 +3005,19 @@ static void stmmac_free_irq(struct net_device *dev,
- 		fallthrough;
- 	case REQ_IRQ_ERR_TX:
- 		for (j = irq_idx - 1; j >= 0; j--) {
--			if (priv->tx_irq[j] > 0)
-+			if (priv->tx_irq[j] > 0) {
-+				irq_set_affinity_hint(priv->tx_irq[j], NULL);
- 				free_irq(priv->tx_irq[j], &priv->tx_queue[j]);
-+			}
- 		}
- 		irq_idx = priv->plat->rx_queues_to_use;
- 		fallthrough;
- 	case REQ_IRQ_ERR_RX:
- 		for (j = irq_idx - 1; j >= 0; j--) {
--			if (priv->rx_irq[j] > 0)
-+			if (priv->rx_irq[j] > 0) {
-+				irq_set_affinity_hint(priv->rx_irq[j], NULL);
- 				free_irq(priv->rx_irq[j], &priv->rx_queue[j]);
-+			}
- 		}
- 
- 		if (priv->sfty_ue_irq > 0 && priv->sfty_ue_irq != dev->irq)
-@@ -3045,6 +3049,7 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- {
- 	enum request_irq_err irq_err = REQ_IRQ_ERR_NO;
+@@ -2858,6 +2858,7 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
  	struct stmmac_priv *priv = netdev_priv(dev);
-+	cpumask_t cpu_mask;
- 	int irq_idx = 0;
- 	char *int_name;
+ 	u32 rx_cnt = priv->plat->rx_queues_to_use;
+ 	u32 tx_cnt = priv->plat->tx_queues_to_use;
++	bool sph_en;
+ 	u32 chan;
  	int ret;
-@@ -3153,6 +3158,9 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 			irq_idx = i;
- 			goto irq_error;
- 		}
-+		cpumask_clear(&cpu_mask);
-+		cpumask_set_cpu(i % num_online_cpus(), &cpu_mask);
-+		irq_set_affinity_hint(priv->rx_irq[i], &cpu_mask);
+ 
+@@ -2952,10 +2953,10 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
  	}
  
- 	/* Request Tx MSI irq */
-@@ -3173,6 +3181,9 @@ static int stmmac_request_irq_multi_msi(struct net_device *dev)
- 			irq_idx = i;
- 			goto irq_error;
- 		}
-+		cpumask_clear(&cpu_mask);
-+		cpumask_set_cpu(i % num_online_cpus(), &cpu_mask);
-+		irq_set_affinity_hint(priv->tx_irq[i], &cpu_mask);
+ 	/* Enable Split Header */
+-	if (priv->sph && priv->hw->rx_csum) {
+-		for (chan = 0; chan < rx_cnt; chan++)
+-			stmmac_enable_sph(priv, priv->ioaddr, 1, chan);
+-	}
++	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
++	for (chan = 0; chan < rx_cnt; chan++)
++		stmmac_enable_sph(priv, priv->ioaddr, sph_en, chan);
++
+ 
+ 	/* VLAN Tag Insertion */
+ 	if (priv->dma_cap.vlins)
+@@ -5708,7 +5709,8 @@ int stmmac_dvr_probe(struct device *device,
+ 
+ 	if (priv->dma_cap.sphen) {
+ 		ndev->hw_features |= NETIF_F_GRO;
+-		priv->sph = true;
++		priv->sph_cap = true;
++		priv->sph = priv->sph_cap;
+ 		dev_info(priv->device, "SPH feature enabled\n");
  	}
  
- 	return 0;
 -- 
 2.25.1
 
