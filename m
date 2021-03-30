@@ -2,98 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E399834E0C5
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 07:43:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B8534E0D6
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 07:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbhC3Fmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 01:42:36 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31588 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230244AbhC3FmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 01:42:07 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 12U5dtUP025715
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 22:42:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=CJav6Pp0P5FSyGphlsXNYzRLZlckHY3wdCi3broulig=;
- b=TwIBtBUo4v3fogY/LauSQGVSKH+zi0p2ATGB3QwKlqQVG3fM8QCdMvr17EIz+v5F9atl
- eFA04d77gq0y9tTskthIQFuHIdBZcFtk8VYuuCJCT6CZFvlrPHNO+dAjwYtVxrxW189j
- NP6TdAaxyPbonKBs636qjRbTKC541MBP2y4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 37kuvm0h2m-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 22:42:06 -0700
-Received: from intmgw001.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 29 Mar 2021 22:42:05 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 57D2E2942D2F; Mon, 29 Mar 2021 22:41:56 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH bpf-next 2/2] bpf: selftests: Update clang requirement in README.rst for testing kfunc call
-Date:   Mon, 29 Mar 2021 22:41:56 -0700
-Message-ID: <20210330054156.2933804-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210330054143.2932947-1-kafai@fb.com>
-References: <20210330054143.2932947-1-kafai@fb.com>
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: -vfc8UYt7WD-k0vxBtvP7eKCAG9zZRYL
-X-Proofpoint-ORIG-GUID: -vfc8UYt7WD-k0vxBtvP7eKCAG9zZRYL
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S230346AbhC3Frm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 01:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229667AbhC3FrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 01:47:17 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11879C061762;
+        Mon, 29 Mar 2021 22:47:17 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id y2so5566155plg.5;
+        Mon, 29 Mar 2021 22:47:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1C3VfLzjCTXkC2qKsS67QGxadJ4WA9at0RKzJ4iXaE4=;
+        b=WvU6GjTLX7+fvneGZVbEgag6P4mmzVef/M+J+5ln3rXUlWd/kHpfAwlRlDbAEcp43Y
+         KUePzrDtGoD9XptqvaZmhb9lQh1h2G5BKPIgoSpD1bYxOwHFRKX9uUn401sdJ4pICoWE
+         n1jO4Sor4ya9Iqr7pyDR5OwMDw7bzIo0TZrsWtNqfM7cgDQFwRTHpazZOrkztAj3XfMG
+         kWR6umtT54RJmo5I8MzZvjuoZNmwzh1EXFPpL5JuP1WlOqIgPQWSYAUP6T7SZ8sqkeEd
+         bqkm4nituwX8WuflE69OyfL2jqKusO2ncieW/f3YkRLk8Juogbg4ouy+p+J/OO/n9y8E
+         /prQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1C3VfLzjCTXkC2qKsS67QGxadJ4WA9at0RKzJ4iXaE4=;
+        b=aozE0WPYaGoypcDPSzd4+LYuGdNiddq/ZLsH9Manjsshlxdr5baFDSoUKtlX/Bs49y
+         n6AP1SmSIi+bvaOKPi7YS05vn7/FhOyxFtQQKhd0sj6xWL3bHP9Ssfrvj+mZYBDKt02z
+         GK2K9thYKTWag+D/GZGXT+k9/SwUytIx1TFcQvPGPOfnt92qtnkoQesviB1JNxiFtcs0
+         tpD6bzcHJXhpDiLRoSlOvGRgnFp4mkfcvwlfQwEJFAPj8WH/pPFQa4jcX3w9B9eZo0iS
+         RGTcrDpDfVuAPHzhJpIFxS7e4jV/5yyOD8bk5xGXCq2CNgpBHMCjT+IX0kbE7bwthxVj
+         pz3A==
+X-Gm-Message-State: AOAM531B7nqsq++qgphg7PtGrjgnQ5j/cqYxPIXi8IcEKNQgqli1703a
+        ornt51MfM7d2YkxNt4AUv/EYLBELvNtEW59OuVs=
+X-Google-Smtp-Source: ABdhPJyUGhIKdIh//vs6DVvXSTEmWSY6DzNNfqlX9XlO86oth/9jAlf7bVs3VgEGRx4Agm0w7FGCWOTh3aPLawYPIuk=
+X-Received: by 2002:a17:90a:68cf:: with SMTP id q15mr2690124pjj.231.1617083236531;
+ Mon, 29 Mar 2021 22:47:16 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-03-30_01:2021-03-26,2021-03-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999
- bulkscore=0 adultscore=0 spamscore=0 suspectscore=0 malwarescore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2103250000 definitions=main-2103300040
-X-FB-Internal: deliver
+References: <20210328202013.29223-1-xiyou.wangcong@gmail.com>
+ <20210328202013.29223-13-xiyou.wangcong@gmail.com> <60625e778b72_401fb2084b@john-XPS-13-9370.notmuch>
+In-Reply-To: <60625e778b72_401fb2084b@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 29 Mar 2021 22:47:05 -0700
+Message-ID: <CAM_iQpUZSJ-8sW6vOrYDXThYiGOkfrqC6ho2T2_1XP0LE4UuBQ@mail.gmail.com>
+Subject: Re: [Patch bpf-next v7 12/13] sock_map: update sock type checks for UDP
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch updates the README.rst to specify the clang requirement
-to compile the bpf selftests that call kernel function.
+On Mon, Mar 29, 2021 at 4:10 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> I think its a bit odd for TCP_ESTABLISHED to work with !tcp, but
+> thats not your invention so LGTM.
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- tools/testing/selftests/bpf/README.rst | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+It has been there for many years, so why it is suddenly a problem with
+my patchset? More importantly, why don't you change it by yourself
+as it looks odd to you? Please go ahead to do whatever you want,
+your patches are always welcome.
 
-diff --git a/tools/testing/selftests/bpf/README.rst b/tools/testing/selftes=
-ts/bpf/README.rst
-index 3464161c8eea..65fe318d1e71 100644
---- a/tools/testing/selftests/bpf/README.rst
-+++ b/tools/testing/selftests/bpf/README.rst
-@@ -179,3 +179,17 @@ types, which was introduced in `Clang 13`__. The older=
- Clang versions will
- either crash when compiling these tests, or generate an incorrect BTF.
-=20
- __  https://reviews.llvm.org/D83289
-+
-+Kernel function call test and Clang version
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+
-+Some selftests (e.g. kfunc_call and bpf_tcp_ca) require a LLVM support
-+to generate extern function in BTF.  It was introduced in `Clang 13`__.
-+
-+Without it, the error from compiling bpf selftests looks like:
-+
-+.. code-block:: console
-+
-+  libbpf: failed to find BTF for extern 'tcp_slow_start' [25] section: -2
-+
-+__ https://reviews.llvm.org/D93563
---=20
-2.30.2
-
+Thanks.
