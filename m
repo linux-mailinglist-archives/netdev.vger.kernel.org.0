@@ -2,133 +2,318 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9568134E01D
+	by mail.lfdr.de (Postfix) with ESMTP id 2468A34E01C
 	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 06:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbhC3E2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 00:28:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49644 "EHLO mail.kernel.org"
+        id S229822AbhC3E17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 00:27:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230202AbhC3E1p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229465AbhC3E1p (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 30 Mar 2021 00:27:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EB9D6044F;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D2F4361985;
         Tue, 30 Mar 2021 04:27:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617078464;
-        bh=e4nM6kOX8Y9ZvnxdisT3+XF786JAWbgaHbAolewK3OM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Yh7nH/drfKiRuWRSQhoRxUellqHaxOB2tSik9iyJUbjUM/xHpnPuSfNHPeh4BTfDa
-         4Q3U86QWNNSCf+tHxXy+5qMjcONb1DvMYGnWZMBZy4moBZ//1ZItMbDyQ8IqC1CACw
-         8ycofTIgQazTFqjFjBqHqkQK6HOpa/murxizf2Sic83Q2h8F+F62pyAaMhnRjvl/l9
-         V+wgbIf/11nMKIq5lvpZ8CxzE/4LeF6u6oSbLg3RkyL+FrouYQJCOP/FzP0ENlwXWr
-         VGgm0dCrfIhTGGDZSONNL0O5QJNYhptRDd6658Gc+cqH1NfGqs7tmOKtE+ITBbINEA
-         hSgYkI5L8/OCw==
+        s=k20201202; t=1617078465;
+        bh=9rkHlw/CLnHqIcTxtQGxTnmiXhKUKqzRLA9Ozgl8oTQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CyQe0yPaU7/Hoka5st8lYTPMSFsc3b7eVVM110fvlWo4gn9Ipd8rQoj0wGj81BZWs
+         y44TKVKqDL0FNZII0uYM3PUAd95TcZQ9/+A46XD2yjFfIKIfEVVS2z9+htaZevFU/f
+         ojCo4vZMp7mdl0MLPu7KfgYPGKCSbl0xPGPLpXzwbFInnxT3kHy/90v7jdKOSEQHxh
+         9JCCgy+jz4MuNzOK0iOxK6Kd2qx+7b5Zdf4NnWKUxGtZvTtIccoIZLrXl8n/5Z9Lga
+         z58zqadv6ioGQjrIp6F9CIyJ5FzuwYo8TVpNB5sh7gqP7BSWO8Gu7uSs4yR/fyix3i
+         e/BaY9TNkCLtw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/12] mlx5 updates 2021-03-29
-Date:   Mon, 29 Mar 2021 21:27:29 -0700
-Message-Id: <20210330042741.198601-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 01/12] net/mlx5e: Add states to PTP channel
+Date:   Mon, 29 Mar 2021 21:27:30 -0700
+Message-Id: <20210330042741.198601-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210330042741.198601-1-saeed@kernel.org>
+References: <20210330042741.198601-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-Hi Dave, Jakub,
+Add PTP TX state to PTP channel, which indicates the corresponding SQ is
+available. Further patches in the set extend PTP channel to include RQ.
+The PTP channel state will be used for separation and coexistence of RX
+and TX PTP. Enhance conditions to verify the TX PTP state is set.
 
-This series removes the mlx5 netdev restriction of enabling both 
-PTP time-stamping and CQE-Compression features.
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit d0922bf7981799fd86e248de330fb4152399d6c2:
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 73 +++++++++++++------
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.h  |  6 ++
+ .../mellanox/mlx5/core/en/reporter_tx.c       | 12 +--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  3 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 11 ++-
+ 5 files changed, 71 insertions(+), 34 deletions(-)
 
-  hv_netvsc: Add error handling while switching data path (2021-03-29 16:35:59 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+index 92a41b1bcdb0..286bd2345da1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+@@ -134,9 +134,11 @@ static int mlx5e_ptp_napi_poll(struct napi_struct *napi, int budget)
+ 
+ 	ch_stats->poll++;
+ 
+-	for (i = 0; i < c->num_tc; i++) {
+-		busy |= mlx5e_poll_tx_cq(&c->ptpsq[i].txqsq.cq, budget);
+-		busy |= mlx5e_ptp_poll_ts_cq(&c->ptpsq[i].ts_cq, budget);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		for (i = 0; i < c->num_tc; i++) {
++			busy |= mlx5e_poll_tx_cq(&c->ptpsq[i].txqsq.cq, budget);
++			busy |= mlx5e_ptp_poll_ts_cq(&c->ptpsq[i].ts_cq, budget);
++		}
+ 	}
+ 
+ 	if (busy) {
+@@ -149,9 +151,11 @@ static int mlx5e_ptp_napi_poll(struct napi_struct *napi, int budget)
+ 
+ 	ch_stats->arm++;
+ 
+-	for (i = 0; i < c->num_tc; i++) {
+-		mlx5e_cq_arm(&c->ptpsq[i].txqsq.cq);
+-		mlx5e_cq_arm(&c->ptpsq[i].ts_cq);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		for (i = 0; i < c->num_tc; i++) {
++			mlx5e_cq_arm(&c->ptpsq[i].txqsq.cq);
++			mlx5e_cq_arm(&c->ptpsq[i].ts_cq);
++		}
+ 	}
+ 
+ out:
+@@ -422,9 +426,10 @@ static void mlx5e_ptp_build_params(struct mlx5e_ptp *c,
+ 	params->num_tc = orig->num_tc;
+ 
+ 	/* SQ */
+-	params->log_sq_size = orig->log_sq_size;
+-
+-	mlx5e_ptp_build_sq_param(c->mdev, params, &cparams->txq_sq_param);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		params->log_sq_size = orig->log_sq_size;
++		mlx5e_ptp_build_sq_param(c->mdev, params, &cparams->txq_sq_param);
++	}
+ }
+ 
+ static int mlx5e_ptp_open_queues(struct mlx5e_ptp *c,
+@@ -432,26 +437,38 @@ static int mlx5e_ptp_open_queues(struct mlx5e_ptp *c,
+ {
+ 	int err;
+ 
+-	err = mlx5e_ptp_open_cqs(c, cparams);
+-	if (err)
+-		return err;
+-
+-	err = mlx5e_ptp_open_txqsqs(c, cparams);
+-	if (err)
+-		goto close_cqs;
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		err = mlx5e_ptp_open_cqs(c, cparams);
++		if (err)
++			return err;
+ 
++		err = mlx5e_ptp_open_txqsqs(c, cparams);
++		if (err)
++			goto close_cqs;
++	}
+ 	return 0;
+ 
+ close_cqs:
+-	mlx5e_ptp_close_cqs(c);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state))
++		mlx5e_ptp_close_cqs(c);
+ 
+ 	return err;
+ }
+ 
+ static void mlx5e_ptp_close_queues(struct mlx5e_ptp *c)
+ {
+-	mlx5e_ptp_close_txqsqs(c);
+-	mlx5e_ptp_close_cqs(c);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		mlx5e_ptp_close_txqsqs(c);
++		mlx5e_ptp_close_cqs(c);
++	}
++}
++
++static int mlx5e_ptp_set_state(struct mlx5e_ptp *c, struct mlx5e_params *params)
++{
++	if (MLX5E_GET_PFLAG(params, MLX5E_PFLAG_TX_PORT_TS))
++		__set_bit(MLX5E_PTP_STATE_TX, c->state);
++
++	return bitmap_empty(c->state, MLX5E_PTP_STATE_NUM_STATES) ? -EINVAL : 0;
+ }
+ 
+ int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+@@ -479,6 +496,10 @@ int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 	c->stats    = &priv->ptp_stats.ch;
+ 	c->lag_port = lag_port;
+ 
++	err = mlx5e_ptp_set_state(c, params);
++	if (err)
++		goto err_free;
++
+ 	netif_napi_add(netdev, &c->napi, mlx5e_ptp_napi_poll, 64);
+ 
+ 	mlx5e_ptp_build_params(c, cparams, params);
+@@ -495,7 +516,7 @@ int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+ 
+ err_napi_del:
+ 	netif_napi_del(&c->napi);
+-
++err_free:
+ 	kvfree(cparams);
+ 	kvfree(c);
+ 	return err;
+@@ -515,16 +536,20 @@ void mlx5e_ptp_activate_channel(struct mlx5e_ptp *c)
+ 
+ 	napi_enable(&c->napi);
+ 
+-	for (tc = 0; tc < c->num_tc; tc++)
+-		mlx5e_activate_txqsq(&c->ptpsq[tc].txqsq);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		for (tc = 0; tc < c->num_tc; tc++)
++			mlx5e_activate_txqsq(&c->ptpsq[tc].txqsq);
++	}
+ }
+ 
+ void mlx5e_ptp_deactivate_channel(struct mlx5e_ptp *c)
+ {
+ 	int tc;
+ 
+-	for (tc = 0; tc < c->num_tc; tc++)
+-		mlx5e_deactivate_txqsq(&c->ptpsq[tc].txqsq);
++	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
++		for (tc = 0; tc < c->num_tc; tc++)
++			mlx5e_deactivate_txqsq(&c->ptpsq[tc].txqsq);
++	}
+ 
+ 	napi_disable(&c->napi);
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+index 937530afaf14..36c46274a46a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+@@ -16,6 +16,11 @@ struct mlx5e_ptpsq {
+ 	struct mlx5e_ptp_cq_stats *cq_stats;
+ };
+ 
++enum {
++	MLX5E_PTP_STATE_TX,
++	MLX5E_PTP_STATE_NUM_STATES,
++};
++
+ struct mlx5e_ptp {
+ 	/* data path */
+ 	struct mlx5e_ptpsq         ptpsq[MLX5E_MAX_NUM_TC];
+@@ -33,6 +38,7 @@ struct mlx5e_ptp {
+ 	struct mlx5e_priv         *priv;
+ 	struct mlx5_core_dev      *mdev;
+ 	struct hwtstamp_config    *tstamp;
++	DECLARE_BITMAP(state, MLX5E_PTP_STATE_NUM_STATES);
+ };
+ 
+ int mlx5e_ptp_open(struct mlx5e_priv *priv, struct mlx5e_params *params,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index e107801adf48..1a0505bd1e9a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -304,6 +304,7 @@ mlx5e_tx_reporter_diagnose_common_config(struct devlink_health_reporter *reporte
+ {
+ 	struct mlx5e_priv *priv = devlink_health_reporter_priv(reporter);
+ 	struct mlx5e_txqsq *generic_sq = priv->txq2sq[0];
++	struct mlx5e_ptp *ptp_ch = priv->channels.ptp;
+ 	struct mlx5e_ptpsq *generic_ptpsq;
+ 	int err;
+ 
+@@ -315,12 +316,11 @@ mlx5e_tx_reporter_diagnose_common_config(struct devlink_health_reporter *reporte
+ 	if (err)
+ 		return err;
+ 
+-	generic_ptpsq = priv->channels.ptp ?
+-			&priv->channels.ptp->ptpsq[0] :
+-			NULL;
+-	if (!generic_ptpsq)
++	if (!ptp_ch || !test_bit(MLX5E_PTP_STATE_TX, ptp_ch->state))
+ 		goto out;
+ 
++	generic_ptpsq = &ptp_ch->ptpsq[0];
++
+ 	err = mlx5e_health_fmsg_named_obj_nest_start(fmsg, "PTP");
+ 	if (err)
+ 		return err;
+@@ -375,7 +375,7 @@ static int mlx5e_tx_reporter_diagnose(struct devlink_health_reporter *reporter,
+ 		}
+ 	}
+ 
+-	if (!ptp_ch)
++	if (!ptp_ch || !test_bit(MLX5E_PTP_STATE_TX, ptp_ch->state))
+ 		goto close_sqs_nest;
+ 
+ 	for (tc = 0; tc < priv->channels.params.num_tc; tc++) {
+@@ -497,7 +497,7 @@ static int mlx5e_tx_reporter_dump_all_sqs(struct mlx5e_priv *priv,
+ 		}
+ 	}
+ 
+-	if (ptp_ch) {
++	if (ptp_ch && test_bit(MLX5E_PTP_STATE_TX, ptp_ch->state)) {
+ 		for (tc = 0; tc < priv->channels.params.num_tc; tc++) {
+ 			struct mlx5e_txqsq *sq = &ptp_ch->ptpsq[tc].txqsq;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 40a62d2e9558..458dd079ca89 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -2759,6 +2759,9 @@ static void mlx5e_build_txq_maps(struct mlx5e_priv *priv)
+ 	if (!priv->channels.ptp)
+ 		return;
+ 
++	if (!test_bit(MLX5E_PTP_STATE_TX, priv->channels.ptp->state))
++		return;
++
+ 	for (tc = 0; tc < num_tc; tc++) {
+ 		struct mlx5e_ptp *c = priv->channels.ptp;
+ 		struct mlx5e_txqsq *sq = &c->ptpsq[tc].txqsq;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+index cfb6ffd7df54..8ba62671f5f1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+@@ -133,6 +133,8 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 	/* Sync with mlx5e_update_num_tc_x_num_ch - avoid refetching. */
+ 	num_tc_x_num_ch = READ_ONCE(priv->num_tc_x_num_ch);
+ 	if (unlikely(dev->real_num_tx_queues > num_tc_x_num_ch)) {
++		struct mlx5e_ptp *ptp_channel;
++
+ 		/* Order maj_id before defcls - pairs with mlx5e_htb_root_add. */
+ 		u16 htb_maj_id = smp_load_acquire(&priv->htb.maj_id);
+ 
+@@ -142,10 +144,11 @@ u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 				return txq_ix;
+ 		}
+ 
+-		if (unlikely(priv->channels.ptp))
+-			if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+-			    mlx5e_use_ptpsq(skb))
+-				return mlx5e_select_ptpsq(dev, skb);
++		ptp_channel = READ_ONCE(priv->channels.ptp);
++		if (unlikely(ptp_channel) &&
++		    test_bit(MLX5E_PTP_STATE_TX, ptp_channel->state) &&
++		    mlx5e_use_ptpsq(skb))
++			return mlx5e_select_ptpsq(dev, skb);
+ 
+ 		txq_ix = netdev_pick_tx(dev, skb, NULL);
+ 		/* Fix netdev_pick_tx() not to choose ptp_channel and HTB txqs.
+-- 
+2.30.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-03-29
-
-for you to fetch changes up to 885b8cfb161ed3d8f41e7b37e14d35bd8d3aaf6b:
-
-  net/mlx5e: Update ethtool setting of CQE compression (2021-03-29 21:21:54 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2021-03-29
-
-Coexistence of CQE compression and HW PTP time-stamp:
-
-From Aya this series improves mlx5 netdev driver to allow
-both mlx5 CQE compression (RX descriptor compression, that saves on PCI
-transactions) and HW time-stamp PTP to co-exist.
-
-Prior to this series both features were mutually exclusive due to the
-nature of CQE compression which reduces the size of RX descriptor for
-the price of trimming some data, such as the time-stamp.
-
-In order to allow CQE compression when PTP time stamping is enabled,
-We enable it on the regular performance critical RX queues which will
-service all the data path traffic that is not PTP.
-
-PTP traffic will be re-directed to dedicated RX queues on which we will
-not enable CQE compression and thus keep the time-stamp intact.
-
-Having both features is critical for systems with low PCI BW, e.g.
-Multi-Host.
-
-The series will be adding:
-1) Infrastructure to create a dedicated RX queue to service the PTP traffic
-2) Flow steering plumbing to capture PTP traffic both UDP packets with
- destination port 319 and L2 packets with ethertype 0x88F7
-3) Steer PTP traffic to the dedicated RX queue.
-4) The feature will be enabled when PTP is being configured via the
-   already existing PTP IOCTL when CQE compression is active, otherwise
-   no change to the driver flow.
-
-----------------------------------------------------------------
-Aya Levin (12):
-      net/mlx5e: Add states to PTP channel
-      net/mlx5e: Add RQ to PTP channel
-      net/mlx5e: Add PTP-RX statistics
-      net:mlx5e: Add PTP-TIR and PTP-RQT
-      net/mlx5e: Refactor RX reporter diagnostics
-      net/mlx5e: Add PTP RQ to RX reporter
-      net/mlx5e: Cleanup Flow Steering level
-      net/mlx5e: Introduce Flow Steering UDP API
-      net/mlx5e: Introduce Flow Steering ANY API
-      net/mlx5e: Add PTP Flow Steering support
-      net/mlx5e: Allow coexistence of CQE compression and HW TS PTP
-      net/mlx5e: Update ethtool setting of CQE compression
-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |   6 +
- drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |  13 +-
- .../mellanox/mlx5/core/en/fs_tt_redirect.c         | 605 +++++++++++++++++++++
- .../mellanox/mlx5/core/en/fs_tt_redirect.h         |  26 +
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   | 331 ++++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h   |  12 +
- .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   | 172 ++++--
- .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |  12 +-
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  14 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |   8 +
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  93 +++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 114 +++-
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  11 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |   1 +
- .../ethernet/mellanox/mlx5/core/ipoib/ipoib_vlan.c |   1 +
- 19 files changed, 1298 insertions(+), 128 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/fs_tt_redirect.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/fs_tt_redirect.h
