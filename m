@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1794B34E9DF
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 16:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71D6C34E9E2
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 16:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231622AbhC3OHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 10:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
+        id S231730AbhC3OI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 10:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230369AbhC3OHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 10:07:34 -0400
+        with ESMTP id S231764AbhC3OIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 10:08:42 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F27C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 07:07:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9C1C061574
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 07:08:41 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lRF11-0000F5-Fe; Tue, 30 Mar 2021 16:06:43 +0200
+        id 1lRF2U-0000Kj-3e; Tue, 30 Mar 2021 16:08:14 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:4ac3:d52e:3d04:f96e] (unknown [IPv6:2a03:f580:87bc:d400:4ac3:d52e:3d04:f96e])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9AEFC604221;
-        Tue, 30 Mar 2021 14:06:40 +0000 (UTC)
-Subject: Re: [PATCH net-next v1 1/3] net: phy: micrel: KSZ8081: add loopback
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 7055A604226;
+        Tue, 30 Mar 2021 14:08:12 +0000 (UTC)
+Subject: Re: [PATCH net-next v1 2/3] net: phy: at803x: AR8085: add loopback
  support
 To:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
@@ -43,7 +43,7 @@ Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
         Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org
 References: <20210330135407.17010-1-o.rempel@pengutronix.de>
- <20210330135407.17010-2-o.rempel@pengutronix.de>
+ <20210330135407.17010-3-o.rempel@pengutronix.de>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -105,15 +105,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <dfdb33b2-d8dd-8328-482d-15fa26ae6279@pengutronix.de>
-Date:   Tue, 30 Mar 2021 16:06:28 +0200
+Message-ID: <de73886f-7264-2246-1c63-15e15ea1b17d@pengutronix.de>
+Date:   Tue, 30 Mar 2021 16:08:09 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210330135407.17010-2-o.rempel@pengutronix.de>
+In-Reply-To: <20210330135407.17010-3-o.rempel@pengutronix.de>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="dXpNktSYNBtWnvlBD6AeLTwbO6d2VtCK5"
+ boundary="9qnRxUEeQBGTfnIgj8hKgM8uPdrShHIE1"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -123,8 +123,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dXpNktSYNBtWnvlBD6AeLTwbO6d2VtCK5
-Content-Type: multipart/mixed; boundary="zkdCtrtBWSNgb7J9FTNAHeo7fBQ5AleV7";
+--9qnRxUEeQBGTfnIgj8hKgM8uPdrShHIE1
+Content-Type: multipart/mixed; boundary="ShqVL8TRdSmvaTCy9DzVvtglFq4r7MoPz";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Oleksij Rempel <o.rempel@pengutronix.de>, Shawn Guo
@@ -136,24 +136,61 @@ Cc: Philippe Schenker <philippe.schenker@toradex.com>,
  Russell King <linux@armlinux.org.uk>, linux-imx@nxp.com,
  kernel@pengutronix.de, David Jander <david@protonic.nl>,
  Fabio Estevam <festevam@gmail.com>, linux-arm-kernel@lists.infradead.org
-Message-ID: <dfdb33b2-d8dd-8328-482d-15fa26ae6279@pengutronix.de>
-Subject: Re: [PATCH net-next v1 1/3] net: phy: micrel: KSZ8081: add loopback
+Message-ID: <de73886f-7264-2246-1c63-15e15ea1b17d@pengutronix.de>
+Subject: Re: [PATCH net-next v1 2/3] net: phy: at803x: AR8085: add loopback
  support
 References: <20210330135407.17010-1-o.rempel@pengutronix.de>
- <20210330135407.17010-2-o.rempel@pengutronix.de>
-In-Reply-To: <20210330135407.17010-2-o.rempel@pengutronix.de>
+ <20210330135407.17010-3-o.rempel@pengutronix.de>
+In-Reply-To: <20210330135407.17010-3-o.rempel@pengutronix.de>
 
---zkdCtrtBWSNgb7J9FTNAHeo7fBQ5AleV7
+--ShqVL8TRdSmvaTCy9DzVvtglFq4r7MoPz
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
 On 3/30/21 3:54 PM, Oleksij Rempel wrote:
 > PHY loopback is needed for the ethernet controller self test support.
 > This PHY was tested with the FEC sefltest.
-                                   selftest
+>=20
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/at803x.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+>=20
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index d7799beb811c..8679738cf2ab 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -326,6 +326,30 @@ static int at803x_resume(struct phy_device *phydev=
+)
+>  	return phy_modify(phydev, MII_BMCR, BMCR_PDOWN | BMCR_ISOLATE, 0);
+>  }
+> =20
+> +static int at803x_loopback(struct phy_device *phydev, bool enable)
+> +{
+> +	int ret;
+> +
+> +	if (enable)
+> +		ret =3D phy_clear_bits(phydev, MII_BMCR, BMCR_ANENABLE);
+> +	else
+> +		ret =3D phy_set_bits(phydev, MII_BMCR, BMCR_ANENABLE);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D genphy_loopback(phydev, enable);
+> +
+> +	/*
+> +	 * Loop back needs some time to start transmitting packets in the loo=
+p.
+> +	 * Documentation says nothing about it, so I take time which seems to=
 
-Same typo is in the other patches, too.
+> +	 * work on AR8085.
+> +	 */
+
+/* Keep in mind the net multi line comment
+ * style.
+ */
 
 Marc
 
@@ -164,23 +201,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---zkdCtrtBWSNgb7J9FTNAHeo7fBQ5AleV7--
+--ShqVL8TRdSmvaTCy9DzVvtglFq4r7MoPz--
 
---dXpNktSYNBtWnvlBD6AeLTwbO6d2VtCK5
+--9qnRxUEeQBGTfnIgj8hKgM8uPdrShHIE1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBjMGcACgkQqclaivrt
-76k/ZQf/fItE3BAqfFZ8YxuDABdD9jfUk53PynFhL5+pQzinaO0Lrcp5yjSJO8aw
-+bMesFil1uTl7k9SMKxUWH9srh3FMIMIvA3/Tj2gcLkzzsEyxYJ1nyrCONl0Rhd2
-Wye/Gx1/04FCTv134WMzdtZiiT2FHg9ftt1HZEFGexJU07QuLYCwhY5DUPmwWyYE
-Z32T0HmwXMMIWTDh76P3sJyO7zCaJxfXCYoy7aEcNW7scJ0wx6cT+mbYeSPa6U2Y
-03lLcSrBv3WLSdZuUAaohuVbPgKOmXbYd6i5PpD7iQ4T98S/2+lG9mXtNL+A7ONp
-dilca61tswCOkvT5uJe6V1pKAWSlIA==
-=WL4Z
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBjMMkACgkQqclaivrt
+76kBigf/XXcPIOCb2UxASYnCZYYUU167hb/hzHYCXM3vC5m6/ZR0Y1pnVGo5Qq3m
+4Qit+og1nzN/K8Ki2TzAYGrGlbOV2KiMtH8mtPTom9IXTYhFxBwyrSBJeejHjJXT
+KYdGVyweOia3aXLN+gIL4fJty6PxjcIoCNmjRDo3trm2iStTylepJXL9zp9BKrDH
+jjVMfAlFpdga9w6E18arIgzn8ATUodlPTQoGNYZm1A0xIhAK6AtFc2QBbChVqgBt
+EQMJ+WPwcXH3wZ4TON3/sh2WTOOKhIpr1dikp39dCqTuUQXYEoJlliXjZ3LNRJPR
+ybfeyf58InU5SQZDHu/t3GfgUrQC5g==
+=laKh
 -----END PGP SIGNATURE-----
 
---dXpNktSYNBtWnvlBD6AeLTwbO6d2VtCK5--
+--9qnRxUEeQBGTfnIgj8hKgM8uPdrShHIE1--
