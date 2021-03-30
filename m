@@ -2,100 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B04734F2C9
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 23:10:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 288BB34F2CD
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 23:11:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232450AbhC3VJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 17:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232636AbhC3VJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 17:09:34 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1EEC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 14:09:33 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id x189so18859904ybg.5
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 14:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jsfc1l9CRSt2B4r43OH2iL+osQGjIBeGGz0LSSA/qT0=;
-        b=em8WfTN1YraQjM7AMcrGIiuZJq1BUMhlY1SL3kFz79P7Io1N4rzxw0UWLNMw1ltopN
-         oIBKfLDr+Wvp6QjjjGhP2UagnQC5TaxEYntVg1nk67OmwCk6gnnPvEdURYzvZ+XSQd0q
-         UpgjrkAX51FEH1I6F2StqMoGAqC8MyFXMAWhWQrK5RdQd1VDCrD/t6FiFRdsnIRwR/ZU
-         kA6DhdcMXUZ7P1SVCLfY7D9VVyTBaCPTbn5H9GhurHHNeioswzkQq+mRbh8OZGdQ36cv
-         lY26wpU8FqB9g2fAPp66bqgFieShvNrWWtBOXtJ5IQoXQC77dyk/6aIu9JAg0O8ZJ0M8
-         bgPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jsfc1l9CRSt2B4r43OH2iL+osQGjIBeGGz0LSSA/qT0=;
-        b=oH4+k5CwFhuW0o5mobMnkUJgQUjF+sc0GkPRTaXFX6rabz8ZkVXzOG4rYSz5FS64zd
-         zeoDZSM7kUmtChGAh/RYNlPxUJ3sbIOv9xMwMnPl094wDPFbB0ZsLDd6bQIKL/WKV2IA
-         XloKACkB0T7Tf8I1ESR5DP7+l1rG9WfY/C7w9vzyKJ3fI19m9vWz1dCn9zLJOMQP84nu
-         aA1gi3c5nkEovmkM2o7gn2yimMW3V1YzeV0zo45VUeT+eqfh45CNtxiCxxjH6rqTAuRK
-         RNtEWcNQwjb+xiLYFpmUEYw6zJ2VVcFx4a/rpSNcNO0qSgMZ0xq0a95QjfAaNisQ3inV
-         3aeQ==
-X-Gm-Message-State: AOAM533SRaNpMWS7n8ozgp07qLETrYrVAQTf/zTIclS8ncPWAbZNRw2K
-        9pE85a0MYs/UK2vCZ3Hc0eRIw9yvk29Eq2rSTCzspNTLmjvbyg==
-X-Google-Smtp-Source: ABdhPJxY7mV7vGE7cvxCQnFqYMJH0t+vpJB+YWJP/NhQ4k41JoxOmm0GhKrQ2/ibA7ucQv2/gOW81H6xDqw7rsmZLe8=
-X-Received: by 2002:a25:ab81:: with SMTP id v1mr174554ybi.303.1617138572366;
- Tue, 30 Mar 2021 14:09:32 -0700 (PDT)
+        id S232659AbhC3VK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 17:10:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34702 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232589AbhC3VKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 17:10:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7812F619CA;
+        Tue, 30 Mar 2021 21:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617138609;
+        bh=ofX2F6Yie2lWLeng2lkUxg6P511GpTQdjoE0D9zx0K0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=dmL54/tCmFDoIONYyUxyuaJBU7S6C4XykNV5c2TcHBcnTnQrwW/djE+68xkzHWS2L
+         KRaia3CoV/0unH1qMkS1bfJnnuxySoy9XuXQcjJo/ZhJ19/ce2ao7izifKVZcc4BaU
+         klwOBsRICKNTuVBYMmxtPp42m5PSSg0bW/1QS3ZAjx52F3xABo3NLggxpDCT5Sw026
+         FB3GtM7yIO76Mqz06DabZ/ITiTj1KLiYEr490viQUvVVlzks2OQZ/YOChsn5xlblTj
+         xj+0FMl/fstqBUAfTX3ryABbrNjXhJEWnu+OayRDO3E8TMMCP8R+LgZowPrTcPzrDb
+         06ZKJFI43EVYQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6D6A560A5B;
+        Tue, 30 Mar 2021 21:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210330210613.2765853-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210330210613.2765853-1-eric.dumazet@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 30 Mar 2021 23:09:21 +0200
-Message-ID: <CANn89iL=LDk4c1YX2MzmauvsRo_XYsO72wRwjX_swDS0N7c7pg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: fix icmp_echo_enable_probe sysctl
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bpf: remove redundant assignment of variable id
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161713860944.23555.1260625590576994737.git-patchwork-notify@kernel.org>
+Date:   Tue, 30 Mar 2021 21:10:09 +0000
+References: <20210326194348.623782-1-colin.king@canonical.com>
+In-Reply-To: <20210326194348.623782-1-colin.king@canonical.com>
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 11:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> sysctl_icmp_echo_enable_probe is an u8.
->
-> ipv4_net_table entry should use
->  .maxlen       = sizeof(u8).
->  .proc_handler = proc_dou8vec_minmax,
->
-I should have added the following tag :
+Hello:
 
-Fixes: f1b8fa9fa586 ("net: add sysctl for enabling RFC 8335 PROBE messages")
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Andreas Roeseler <andreas.a.roeseler@gmail.com>
-> ---
->  net/ipv4/sysctl_net_ipv4.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index e3cb2d96b55e99f4322a99abb6a6da866dffcf4d..9199f507a005efc3f57ca0225d3898bfa5d01c53 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -601,9 +601,9 @@ static struct ctl_table ipv4_net_table[] = {
->         {
->                 .procname       = "icmp_echo_enable_probe",
->                 .data           = &init_net.ipv4.sysctl_icmp_echo_enable_probe,
-> -               .maxlen         = sizeof(int),
-> +               .maxlen         = sizeof(u8),
->                 .mode           = 0644,
-> -               .proc_handler   = proc_dointvec_minmax,
-> +               .proc_handler   = proc_dou8vec_minmax,
->                 .extra1         = SYSCTL_ZERO,
->                 .extra2         = SYSCTL_ONE
->         },
-> --
-> 2.31.0.291.g576ba9dcdaf-goog
->
+On Fri, 26 Mar 2021 19:43:48 +0000 you wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> The variable id is being assigned a value that is never
+> read, the assignment is redundant and can be removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - bpf: remove redundant assignment of variable id
+    https://git.kernel.org/bpf/bpf-next/c/235fc0e36d35
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
