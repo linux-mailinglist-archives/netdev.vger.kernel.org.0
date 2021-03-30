@@ -2,132 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E9C34DF83
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 05:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 545CE34DFD3
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 06:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230303AbhC3DmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 23:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230334AbhC3Dlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 23:41:55 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D1EC061762;
-        Mon, 29 Mar 2021 20:41:48 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id nh23-20020a17090b3657b02900c0d5e235a8so6984925pjb.0;
-        Mon, 29 Mar 2021 20:41:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=H20z6a01zOabARj7KiXuuTGakHQ2bTsJGwnuUxgVOds=;
-        b=izfuPkuLj7M5nKqR3ojCclqJI8bk2PZG2t0mHF6Ov0y+4gfr24SqeZMjftG+PhUpKr
-         7D4ltGvR//clSXRIuVNP2kFu7YlhXfvgO23XwNXlHOkzlh998MZHSeU9DJu99+/BQGGz
-         BUf0LIxuit++v/yr4ch+VLR3jyvmeaCF4OH/63qABaquPLQyxiTR2duXINObW9fUjTSl
-         aNkvj2vYKFiXE+QrQCrhTsFiX6x937/pm+5A8/T1Ns6RDK4cFBpw6xR4HJVo1pi7NSic
-         K8mem/nGVfVN3vODpJncgxXLDpKrStuDBoSYnCrl5DrxbPWggqEjyqB/YjMm5BG0vpMI
-         3sGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=H20z6a01zOabARj7KiXuuTGakHQ2bTsJGwnuUxgVOds=;
-        b=NJSYopr8AGhVkl9BH97yPcbxpva1haQVRSA3BYFDLra44Q0Ajb4q5lOSf4XwM8wqug
-         I5+5m2QEWlIBbAT+bU64iAtEwJdyNNhYMvwQoATiYpZjI+KPK4IAnKqcO03CqWVG56pH
-         s7htfmVaY2Pz+03atnAcLZmIGRi3TXr9qWUxdTH1fWoXQx/QB1Q37/15bnOMEL+3t1Rz
-         FpqUJZWLrlYI22quJ+ZFPE+7HtIrl8+BuxOcQp/3AOiUl6TgeSEvZFk6qK5biEZKZ0Qa
-         sLhFRLxolOdnwK3ucYcWIoXxiGejCe4rclAnsPI90N2Xmw80UTQtNDZm0g0oeeKuFyz4
-         rf7g==
-X-Gm-Message-State: AOAM531lYsSfJC4FhUpdgqo7YCfbmRL9NK57pQjWTQYFqnIuGxeQlEYc
-        CpJlNI+Gg3ZxEMqwCuVAwwk=
-X-Google-Smtp-Source: ABdhPJzpOZewSVE8JN8OFoK2cyL25/7ric2zwhIPaplUwu3jxy1vp2OKyzRVvuPGKeiaEmfQ+s1sLQ==
-X-Received: by 2002:a17:90a:9b18:: with SMTP id f24mr2195723pjp.96.1617075707803;
-        Mon, 29 Mar 2021 20:41:47 -0700 (PDT)
-Received: from kakao-entui-MacBookPro.local ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id s12sm17812830pgj.70.2021.03.29.20.41.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Mar 2021 20:41:47 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 5/7] mld: convert ifmcaddr6 to RCU
-To:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-s390@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        xiyou.wangcong@gmail.com
-References: <20210325161657.10517-1-ap420073@gmail.com>
- <20210325161657.10517-6-ap420073@gmail.com>
- <6262890a-7789-e3dd-aa04-58e5e06499dc@gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <f054971d-8be0-92ba-009b-9681e08f841c@gmail.com>
-Date:   Tue, 30 Mar 2021 12:41:40 +0900
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S231224AbhC3EAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 00:00:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46384 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229465AbhC3EAC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 00:00:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 772F561929;
+        Tue, 30 Mar 2021 04:00:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617076801;
+        bh=30e8V1HNC4VYP5RBgYzUqvxdxk7kPAN26Z3IjXa5li0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ekcl4HoIRxRAHQNe7h3Bqr746vl2kIHA1LXXNuaiD5DLIIZhujleCT1y0rQctTkDo
+         Jb02WKi7ZOJunYTqJfoirCf08K+UtFCUITud4t36vIPTFlbRD7OWy7zPeOc2+sxeyr
+         aDZlYUFQr337AVNx19ODEVqV3Mon2XPbJt4XsKAjaHRBF82RpawP3/ZWev5uN5qxsy
+         uWXE7f0fPUEcLjQTVV3JL7gbnvlDTywxJQlj23XNONfV85VwFizjGFqhChD2ANwp3+
+         1COnwQmds0IZvD/xPa07+ZfUGki8zOCmqACIkxj1GChwVHe7lRQl6C3HQ1wjF5Hn0K
+         YsMinB0lcSlQQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net, mkubecek@suse.cz, andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/3] ethtool: support FEC configuration over netlink
+Date:   Mon, 29 Mar 2021 20:59:51 -0700
+Message-Id: <20210330035954.1206441-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <6262890a-7789-e3dd-aa04-58e5e06499dc@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: ko
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021. 3. 30. 오전 4:56, Eric Dumazet wrote:
- >
- >
+This series adds support for the equivalents of ETHTOOL_GFECPARAM
+and ETHTOOL_SFECPARAM over netlink.
 
-Hi Eric,
-Thank you for the review!
+As a reminder - this is an API which allows user to query current
+FEC mode, as well as set FEC manually if autoneg is disabled.
+It does not configure anything if autoneg is enabled (that said
+few/no drivers currently reject .set_fecparam calls while autoneg
+is disabled, hopefully FW will just ignore the settings).
 
- > On 3/25/21 5:16 PM, Taehee Yoo wrote:
- >> The ifmcaddr6 has been protected by inet6_dev->lock(rwlock) so that
- >> the critical section is atomic context. In order to switch this context,
- >> changing locking is needed. The ifmcaddr6 actually already protected by
- >> RTNL So if it's converted to use RCU, its control path context can be
- >> switched to sleepable.
- >>
- >
- > I do not really understand the changelog.
- >
- > You wanted to convert from RCU to RTNL, right ?
+The existing functionality is mostly preserved in the new API.
+The ioctl interface uses a set of flags, and link modes to tell
+user which modes are supported. Here is how the flags translate
+to the new interface (skipping descriptions for actual FEC modes):
 
-The purpose of this is to use both RCU and RTNL.
-In the control path, ifmcaddr6 is protected by RTNL
-(setsockopt_needs_rtnl() in the do_ipv6_setsockopt())
-And in the data path, ifmcaddr6 will be protected by RCU.
+  ioctl flag      |   description         |  new API
+================================================================
+ETHTOOL_FEC_OFF   | disabled (supported)  | \
+ETHTOOL_FEC_RS    |                       |  ` link mode bitset
+ETHTOOL_FEC_BASER |                       |  / .._A_FEC_MODES
+ETHTOOL_FEC_LLRS  |                       | /  
+ETHTOOL_FEC_AUTO  | pick based on cable   | bool .._A_FEC_AUTO
+ETHTOOL_FEC_NONE  | not supported         | no bit, no AUTO reported
 
-But ifmcaddr6 is already protected by RTNL in the control path.
-So, this patch is to convert ifmcaddr6 to RCU only for datapath.
-Therefore, by this patch, ifmcaddr6 will be protected by both RTNL and RCU.
+Since link modes are already depended on (although somewhat implicitly)
+for expressing supported modes - the new interface uses them for
+the manual configuration, as well as uses link mode bit number
+to communicate the active mode.
 
-I'm so sorry for this strange changelog.
+Use of link modes allows us to define any number of FEC modes we want,
+and reuse the strset we already have defined.
 
- >
- > Also :
- >
- >> @@ -571,13 +573,9 @@ int ip6_mc_msfget(struct sock *sk, struct 
-group_filter *gsf,
- >>   	if (!ipv6_addr_is_multicast(group))
- >>   		return -EINVAL;
- >>
- >> -	rcu_read_lock();
- >> -	idev = ip6_mc_find_dev_rcu(net, group, gsf->gf_interface);
- >> -
- >> -	if (!idev) {
- >> -		rcu_read_unlock();
- >> +	idev = ip6_mc_find_dev_rtnl(net, group, gsf->gf_interface);
- >> +	if (!idev)
- >>   		return -ENODEV;
- >> -	}
- >>
- >
- > I do not see RTNL being acquired before entering ip6_mc_msfget()
- >
+Separating AUTO as its own attribute is the biggest changed compared
+to the ioctl. It means drivers can no longer report AUTO as the
+active FEC mode because there is no link mode for AUTO.
+active_fec == AUTO makes little sense in the first place IMHO,
+active_fec should be the actual mode, so hopefully this is fine.
 
-Thank you so much for catching this.
-I will send a patch to fix this problem!
+The other minor departure is that None is no longer explicitly
+expressed in the API. But drivers are reasonable in handling of
+this somewhat pointless bit, so I'm not expecting any issues there.
 
-Thanks a lot!
-Taehee Yoo
+
+One extension which could be considered would be moving active FEC
+to ETHTOOL_MSG_LINKMODE_*, but then why not move all of FEC into
+link modes? I don't know where to draw the line.
+
+netdevsim support and a simple self test are included.
+
+Next step is adding stats similar to the ones added for pause.
+
+Jakub Kicinski (3):
+  ethtool: support FEC settings over netlink
+  netdevsim: add FEC settings support
+  selftests: ethtool: add a netdevsim FEC test
+
+ Documentation/networking/ethtool-netlink.rst  |  62 ++++-
+ drivers/net/netdevsim/ethtool.c               |  36 +++
+ drivers/net/netdevsim/netdevsim.h             |   3 +
+ include/uapi/linux/ethtool_netlink.h          |  17 ++
+ net/ethtool/Makefile                          |   2 +-
+ net/ethtool/fec.c                             | 238 ++++++++++++++++++
+ net/ethtool/netlink.c                         |  19 ++
+ net/ethtool/netlink.h                         |   4 +
+ .../drivers/net/netdevsim/ethtool-common.sh   |   5 +-
+ .../drivers/net/netdevsim/ethtool-fec.sh      | 110 ++++++++
+ 10 files changed, 492 insertions(+), 4 deletions(-)
+ create mode 100644 net/ethtool/fec.c
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/ethtool-fec.sh
+
+-- 
+2.30.2
+
