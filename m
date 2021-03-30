@@ -2,141 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8DB34F18E
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 21:27:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB9A34F1C4
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 21:48:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233139AbhC3T0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 15:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
+        id S233238AbhC3Trv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 15:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233092AbhC3T0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 15:26:37 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF31DC061574;
-        Tue, 30 Mar 2021 12:26:36 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id b2-20020a7bc2420000b029010be1081172so9000694wmj.1;
-        Tue, 30 Mar 2021 12:26:36 -0700 (PDT)
+        with ESMTP id S233256AbhC3TrT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 15:47:19 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1AAC061764
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 12:47:19 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id 30so8768978qva.9
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 12:47:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yd9mIYSfyYtaQ80AUfAIBHd3tWlCfBll0IGCKZB64Oc=;
-        b=YCdl8xJEp0RU9QNsOSE26OgGlCt+i8taJwzEYkC1y5oSsGOXeZN2atlsRwCHe0ytff
-         hKk6pyRicoL7mCRuxyTQXBScfU26IGwmsL9EnkUx0HRLMKHtDEeD2D0821qHHULS07BL
-         kv6GjdyF7qy1FmH37PmOIy9JcwVyE+5uCfgjCk3R2Z/pqZX6NJpmLTzo5lIxz9bNrJri
-         eRSnS3qB0FqkWnB6hvxTDfnflE16RSTt1MIAlpdB0CZHEek+gsF1vXCUe+2Tzcu0BoDE
-         +Ooa31Lolc6nwzdQcOkjRdmgcGj8fT6kUcGrNhlM8WymKr0QUd/zi7LgDs1amoqytzVY
-         e7Pw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=us5cFBs72fe7SxXP8VCtXnt+ziiJs90xPUDYqlGlda4=;
+        b=iqhThtSYPMBCa11dL2go1wgMGuMF9Cb8zrDp2y8EqfH0DocwMxdiYWbuZ5EyM8+ovU
+         PS+mFuOD7RB5cihJKf2U9JCBf49uYgZgwrmJRJpDJtPYZH9hW+w5b5EjrcHi2wfyisPe
+         /gcc2z6d5ecWarZqgUm9Tg43+vtsCRnbPCGuhGkUaTjTZgISUwAekG+u2HOHkKuvNVpx
+         MHY0bz4qOM/hsMiSNAHh2lVVbPe6LK7mBAGJu2bY4UmyhsAY6MSdfSvlx6WVyHp1yJ9d
+         CaXxQ4hHeCoKGOlX5W/wz99szvI0EkMH7XrvIXhbHWHicrkOKfaQNA6v0/L63TYCXkC5
+         ge8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yd9mIYSfyYtaQ80AUfAIBHd3tWlCfBll0IGCKZB64Oc=;
-        b=BL1bIxw0BY00qxb+c/ONLnsN3gxuWpRR1O9RNrwdfRsp86sIQ4629tI6bCwOWVKD+t
-         LqMnyI7XkLnJx+Qe4jOkbNR9HI/qZ9lLx0wqNJcguw2J4pE4WBrebLtsn7D5RIB0bhAL
-         C6UCpiKKtSLGX59Chmr+9BfXw+/eQI7CGQXIICXiAMkS8pFzbzyS4wBg5aM3fB2UJRIT
-         Ff0GWW629rFbwSmvX9LPqk95WvFIH4ezPxrcZG1qJGUgOIjk4vBxb6oNH/fHsDeHC4gT
-         RFraYL8ACITP04pximwnMYbrgytNr+wmPIVanWd1AP0ZBWmfjw/xqlayrqorFnuFUEqv
-         3fNA==
-X-Gm-Message-State: AOAM532ixLyywmxTmHWXs+iY3PSnfPZv4gmozQ3G50svo0EQuSzWoA74
-        zglW1Ub+FLp9TKgZdhh+nVE=
-X-Google-Smtp-Source: ABdhPJxNg7obrbrHiuPSlKBwL1YEzcuLxfZuWmxhPzkaN2kGHrfZwcuFF69iqkAFdbWkYFoL9+KHAA==
-X-Received: by 2002:a05:600c:4fcb:: with SMTP id o11mr5548754wmq.117.1617132395546;
-        Tue, 30 Mar 2021 12:26:35 -0700 (PDT)
-Received: from [192.168.1.101] ([37.167.251.74])
-        by smtp.gmail.com with ESMTPSA id j16sm7944070wmi.2.2021.03.30.12.26.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Mar 2021 12:26:34 -0700 (PDT)
-Subject: Re: [PATCH v2] wireless/nl80211.c: fix uninitialized variable
-To:     Alaa Emad <alaaemadhossney.ae@gmail.com>,
-        johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller@googlegroups.com,
-        syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
-References: <20210330172253.10076-1-alaaemadhossney.ae@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b287e62c-c72e-c12a-c48a-8dad4a48dd49@gmail.com>
-Date:   Tue, 30 Mar 2021 21:26:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=us5cFBs72fe7SxXP8VCtXnt+ziiJs90xPUDYqlGlda4=;
+        b=WaCR1Et6xe2yPFEj6jzWH2NGptcrEW3DwPfcgl8CFgIvfo2bDKZfbgBjkG4GkV6qL1
+         MijIan5t0ztxvZ6Mx6Dtih1TucBbLulfgAbZXjrhD7ct+8orIQJmsIV/rBDWdobfOknX
+         +BgOjcFWCyC0JDq/TUu/00xnkRPS5Rm80XFC2H0i6f1VtRFzcMprmV4vLg1x1TkWDIQH
+         +hqFroXoRqHXX1b/oercPhLSO9JIwAtFjzHcD/2nAbn27PMFssrCY18l8C9RfTXPPAxx
+         63x6xL+Dx56r0eQd2iKGJ5cAaePJVi5CPRV7evrqBYFlBgdhO9bMxRSZDH/0wEjVUrzt
+         8P/A==
+X-Gm-Message-State: AOAM531k9i+lT7CLeb6t4MuEDuzymu4wRrZMiSSfa+iJRP8vyQ+HBW3P
+        Eh0abo6lBXposryEM9YG8EAjAg==
+X-Google-Smtp-Source: ABdhPJzYBgqOhBM9uIp+LsyGQ6hRK3i1Fqr6p9bBLXmKnWaF92FK8jhlFNPXveU0gWN9z2KKTeasLg==
+X-Received: by 2002:ad4:50c7:: with SMTP id e7mr31714410qvq.58.1617133638583;
+        Tue, 30 Mar 2021 12:47:18 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.115.133])
+        by smtp.gmail.com with ESMTPSA id z124sm16993978qke.36.2021.03.30.12.47.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 12:47:17 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1lRKKa-0061A8-Oa; Tue, 30 Mar 2021 16:47:16 -0300
+Date:   Tue, 30 Mar 2021 16:47:16 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210330194716.GV2710221@ziepe.ca>
+References: <20210330135738.GU2710221@ziepe.ca>
+ <20210330150019.GA1270419@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <20210330172253.10076-1-alaaemadhossney.ae@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210330150019.GA1270419@bjorn-Precision-5520>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/30/21 7:22 PM, Alaa Emad wrote:
-> This change fix  KMSAN uninit-value in net/wireless/nl80211.c:225 , That
-> because of `fixedlen` variable uninitialized,So I initialized it by zero.
+On Tue, Mar 30, 2021 at 10:00:19AM -0500, Bjorn Helgaas wrote:
+> On Tue, Mar 30, 2021 at 10:57:38AM -0300, Jason Gunthorpe wrote:
+> > On Mon, Mar 29, 2021 at 08:29:49PM -0500, Bjorn Helgaas wrote:
+> > 
+> > > I think I misunderstood Greg's subdirectory comment.  We already have
+> > > directories like this:
+> > 
+> > Yes, IIRC, Greg's remark applies if you have to start creating
+> > directories with manual kobjects.
+> > 
+> > > and aspm_ctrl_attr_group (for "link") is nicely done with static
+> > > attributes.  So I think we could do something like this:
+> > > 
+> > >   /sys/bus/pci/devices/0000:01:00.0/   # PF directory
+> > >     sriov/                             # SR-IOV related stuff
+> > >       vf_total_msix
+> > >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of first VF
+> > >       ...
+> > >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of last VF
+> > 
+> > It looks a bit odd that it isn't a subdirectory, but this seems
+> > reasonable.
 > 
-> Reported-by: syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
-> Signed-off-by: Alaa Emad <alaaemadhossney.ae@gmail.com>
-> ---
-> Changes in v2:
->   - Make the commit message more clearer.
-> ---
->  net/wireless/nl80211.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-> index 775d0c4d86c3..b87ab67ad33d 100644
-> --- a/net/wireless/nl80211.c
-> +++ b/net/wireless/nl80211.c
-> @@ -210,7 +210,7 @@ static int validate_beacon_head(const struct nlattr *attr,
->  	const struct element *elem;
->  	const struct ieee80211_mgmt *mgmt = (void *)data;
->  	bool s1g_bcn = ieee80211_is_s1g_beacon(mgmt->frame_control);
-> -	unsigned int fixedlen, hdrlen;
-> +	unsigned int fixedlen = 0, hdrlen;
->  
->  	if (s1g_bcn) {
->  		fixedlen = offsetof(struct ieee80211_ext,
-> 
+> Sorry, I missed your point; you'll have to lay it out more explicitly.
+> I did intend that "sriov" *is* a subdirectory of the 0000:01:00.0
+> directory.  The full paths would be:
+>
+>   /sys/bus/pci/devices/0000:01:00.0/sriov/vf_total_msix
+>   /sys/bus/pci/devices/0000:01:00.0/sriov/vf_msix_count_BB:DD.F
+>   ...
 
-What was the report exactly ?
+Sorry, I was meaning what you first proposed:
 
-Current code does :
+   /sys/bus/pci/devices/0000:01:00.0/sriov/BB:DD.F/vf_msix_count
 
-unsigned int fixedlen;
+Which has the extra sub directory to organize the child VFs.
 
-if (s1g_bcn) {
-    fixedlen = something1;
-    ...
-else {
-    fixedlen = something2;
-    ...
-}
+Keep in mind there is going to be alot of VFs here, > 1k - so this
+will be a huge directory.
 
-So your patch does nothing.
-
-Initial value of @fixedlen is not relevant.
-
-Reading this code (without access to KMSAN report) I suspect the issue
-is more like the following :
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 775d0c4d86c3..d815261917ff 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -209,9 +209,12 @@ static int validate_beacon_head(const struct nlattr *attr,
-        unsigned int len = nla_len(attr);
-        const struct element *elem;
-        const struct ieee80211_mgmt *mgmt = (void *)data;
--       bool s1g_bcn = ieee80211_is_s1g_beacon(mgmt->frame_control);
-        unsigned int fixedlen, hdrlen;
-+       bool s1g_bcn;
- 
-+       if (len < offsetofend(typeof(*mgmt), frame_control))
-+               goto err;
-+       s1g_bcn = ieee80211_is_s1g_beacon(mgmt->frame_control);
-        if (s1g_bcn) {
-                fixedlen = offsetof(struct ieee80211_ext,
-                                    u.s1g_beacon.variable);
-
+Jason
