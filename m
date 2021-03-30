@@ -2,117 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5CA534EAD0
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 16:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3187234EB04
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 16:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232250AbhC3OpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 10:45:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:36728 "EHLO mx2.suse.de"
+        id S231652AbhC3OuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 10:50:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54972 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231803AbhC3Oo5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 10:44:57 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1617115495; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=llTp9KMmNhLgpFrt/A/4gk0SgpNaUf1ZpYpNvho6oEk=;
-        b=iKbol1UC2cYC03I2rvUtoSu92j1pz2tv1L6/9iiw7cxLhRzh90EQvV5vkd5t59I4w79b5z
-        //6Ea77uYBp+fXZGWtXmCr26hrFxJVsTlICwAL4byi52zB9FKuPbHVzN1zqRgW2z3Slp3o
-        4tg7hayC693qItZd+Jni902Xu3F2GZQ=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id EC1C6B315;
-        Tue, 30 Mar 2021 14:44:54 +0000 (UTC)
-Date:   Tue, 30 Mar 2021 16:44:52 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Martin Sebor <msebor@gcc.gnu.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Ning Sun <ning.sun@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        tboot-devel@lists.sourceforge.net,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        ath11k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Roman Gushchin <guro@fb.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Odin Ugedal <odin@uged.al>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: Re: [PATCH 06/11] cgroup: fix -Wzero-length-bounds warnings
-Message-ID: <YGM5ZJlK1V7ex9xR@blackbook>
-References: <20210322160253.4032422-1-arnd@kernel.org>
- <20210322160253.4032422-7-arnd@kernel.org>
- <YGLkPjSBdgpriC0E@blackbook>
- <CAK8P3a3nUCGwPpE+E820DniY8Haz1Xx72pA38P6s5MWsbi0iAQ@mail.gmail.com>
+        id S232285AbhC3Otc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 10:49:32 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lRFgO-00E2Bg-LN; Tue, 30 Mar 2021 16:49:28 +0200
+Date:   Tue, 30 Mar 2021 16:49:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: Re: [PATCH net-next v1 2/3] net: phy: at803x: AR8085: add loopback
+ support
+Message-ID: <YGM6eIopy5VBHu+T@lunn.ch>
+References: <20210330135407.17010-1-o.rempel@pengutronix.de>
+ <20210330135407.17010-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="9pRQkLwCQMovNrXD"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a3nUCGwPpE+E820DniY8Haz1Xx72pA38P6s5MWsbi0iAQ@mail.gmail.com>
+In-Reply-To: <20210330135407.17010-3-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 30, 2021 at 03:54:06PM +0200, Oleksij Rempel wrote:
+> PHY loopback is needed for the ethernet controller self test support.
+> This PHY was tested with the FEC sefltest.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/at803x.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index d7799beb811c..8679738cf2ab 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -326,6 +326,30 @@ static int at803x_resume(struct phy_device *phydev)
+>  	return phy_modify(phydev, MII_BMCR, BMCR_PDOWN | BMCR_ISOLATE, 0);
+>  }
+>  
+> +static int at803x_loopback(struct phy_device *phydev, bool enable)
+> +{
+> +	int ret;
+> +
+> +	if (enable)
+> +		ret = phy_clear_bits(phydev, MII_BMCR, BMCR_ANENABLE);
+> +	else
+> +		ret = phy_set_bits(phydev, MII_BMCR, BMCR_ANENABLE);
 
---9pRQkLwCQMovNrXD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Auto-neg might of been turned off when entering self test. So you
+should leave it off when existing self test.
 
-On Tue, Mar 30, 2021 at 11:00:36AM +0200, Arnd Bergmann <arnd@kernel.org> wrote:
-> Would it be possible to enclose most or all of kernel/cgroup/cgroup.c
-> in an #ifdef CGROUP_SUBSYS_COUNT block?
-Even without any controllers, there can still be named hierarchies (v1)
-or the default hierarchy (v2) (for instance) for process tracking
-purposes. So only parts of kernel/cgroup/cgroup.c could be ifdef'd.
+Or maybe call phy_config_aneg() which should reconfigure the PHY back
+how it was.
 
-Beware that CGROUP_SUBSYS_COUNT is not known at preprocessing stage (you
-could have a macro alternative though).
-
-> I didn't try that myself, but this might be a way to guarantee that
-> there cannot be any callers (it would cause a link error).
-Such a guarantee would be nicer, I agree. I tried a bit but anandoned it
-when I saw macros proliferate (which I found less readable than your
-current variant). But YMMV.
-
-Michal
-
---9pRQkLwCQMovNrXD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEEoQaUCWq8F2Id1tNia1+riC5qSgFAmBjOV4ACgkQia1+riC5
-qSgZNQ/9FFBZs5QQqEUHmbWyF9O2R2bGF8WCBz56zh+F2OZf+/GK7z4OGhkKUlEa
-1lPOUoibt4aZZhWD30RcfB3i3qJ8VqY3wqwnS6W9uN9+sU22sgsx/elCqiua3EnM
-4tGDRcLBfSuktgPo1T0oNvGGbFnFJ0kUenLZ6mVkWlSTzx8kp/B8h4S5LkYmRIov
-fVmHURht22FPiA8wwlUb9LAp8ONF+68t6BtMWNmZbqmJ17qHSnLyQQUiHIHytASt
-xgaQCJU8/nrtv2xPfp66aCQLO12b6OxpjPoRxo1hj9IP5HZPukzNDat/VaWyh0iE
-t9GO85K0PVqcuvJpymes0yRT6RvEwlqEna0T+qbh+qih4S3+xRm/Js5IV5m8KfIc
-wWUve4llNT1jq6zzgn28FkXe9coH7ybpwBaWeAdwEM3Wl9GvXimKwIQqg+3ZDnm4
-CbDVh6scYVu3kFYHVy6ld5+fG2GWEKvNL+9AVH+wsXUb6OXtyOtxD3FWyiVVYBkl
-Q4N0KWETd67BNb2NklxTkeC4hYusuHeFvxa9Ki6K6zbdxDxVwdcTWpWFVkTDs45S
-sEVkmsPU9pLu5vm5o9kBCmr6q1lW6yzudcxBvcvcHXGQnkfcmDCo+C3OEwKzKUeh
-8+BhDV9zMpKBpJfuPiI8UNIt8sI7YeTpjdk14YjWYQTgZCHc7WU=
-=iFNx
------END PGP SIGNATURE-----
-
---9pRQkLwCQMovNrXD--
+       Andrew
