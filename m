@@ -2,134 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1BF134EB31
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 16:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87D934EB3F
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 16:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232064AbhC3OzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 10:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231794AbhC3Oyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 10:54:35 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCD8C061764
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 07:54:35 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id dm8so18570206edb.2
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 07:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BdsP1ZW4mSaGfjx1+f6l0OI23FJr15hztFckhKv01eA=;
-        b=W4dBDgWTdB1HIMPVlao1P6yedSJ3NMZ/CI4THsemLchAoPa3OYI0+988OBooId5/ik
-         bHadgHPvFB7jS60ItaEMRLQht+nlTFER6HewLApGf8I+OCK/svcD71VI58BzUNABsfc8
-         a8kpzL7oST00EjyI8iPM07ezAzOAXQXjApVZdyT4YDYcn/K4h0A8shl9pkkOeWoyAb5K
-         kE2/NaeDDkvSrPIowWWNeII2XKbg9keuPAKTzs3MdcpHrE/uCtKWqI+PWXD2vtWXdJgn
-         bM2pNLmlY06x8X8lRLhsAgRFHLPr97t1Rg2gyf6VxERBOJoOH0kP92KAwoQCI2EQzOPf
-         4m4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BdsP1ZW4mSaGfjx1+f6l0OI23FJr15hztFckhKv01eA=;
-        b=rJLsf7p4SzJYJckaVtagX12050gGDa7O2RulbhGCZN8aY7c8ok/KT+AZtEd7g56Nen
-         cM31g6xXNFlGwJG/rWCdD/MeWFIT79/KmUGVMLUXdR+n6c0pgn5+5eLtRdAjisCFrAyi
-         uyPBJmmVMi8jv6Y2y8SeDm9JZwqSPbtbYn4/z5vnS6CtM4cz9W5inVlkC6AJ5aWgDLzy
-         JWSYBqII6j9X5F1PT+6MVMhy6X4g84xicjdBPeR2jW+OVKoYgSdt39eMoNh93yYWtSLY
-         ile44osT7b1FGaSUDirm0k0Z8tyCazSqaY/WpnncAiak2UN1N80agqqzzCLPBQxgz6rU
-         H67A==
-X-Gm-Message-State: AOAM532e4jqa7VKy/cnQmLrgclhbRDdc0/mlB7M4V/SLssYyjgtsY4rG
-        EYCo/MnrE1OSh1QCVBovBFQ=
-X-Google-Smtp-Source: ABdhPJwr1x/m/fBqAWZ303OKAHU+AVichc7x2dacdsx3sm56hqqBt1q78yplvD73k0IERHV6h2BJVg==
-X-Received: by 2002:a05:6402:3592:: with SMTP id y18mr28745064edc.360.1617116073813;
-        Tue, 30 Mar 2021 07:54:33 -0700 (PDT)
-Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id la15sm10284625ejb.46.2021.03.30.07.54.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Mar 2021 07:54:33 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 5/5] dpaa2-switch: setup learning state on STP state change
-Date:   Tue, 30 Mar 2021 17:54:19 +0300
-Message-Id: <20210330145419.381355-6-ciorneiioana@gmail.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210330145419.381355-1-ciorneiioana@gmail.com>
-References: <20210330145419.381355-1-ciorneiioana@gmail.com>
+        id S232192AbhC3OzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 10:55:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55388 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231812AbhC3Oyq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 10:54:46 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A5B6961921;
+        Tue, 30 Mar 2021 14:54:45 +0000 (UTC)
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94)
+        (envelope-from <maz@kernel.org>)
+        id 1lRFlT-004hoo-ML; Tue, 30 Mar 2021 15:54:43 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com, seanjc@google.com,
+        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
+        suzuki.poulose@arm.com, Andre.Przywara@arm.com,
+        steven.price@arm.com, lorenzo.pieralisi@arm.com,
+        sudeep.holla@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, justin.he@arm.com, jianyong.wu@arm.com,
+        kernel-team@android.com
+Subject: [PATCH v19 0/7] KVM: arm64: Add host/guest KVM-PTP support
+Date:   Tue, 30 Mar 2021 15:54:23 +0100
+Message-Id: <20210330145430.996981-1-maz@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, seanjc@google.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com, Andre.Przywara@arm.com, steven.price@arm.com, lorenzo.pieralisi@arm.com, sudeep.holla@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com, jianyong.wu@arm.com, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
+Given that this series[0] has languished in my Inbox for the best of the
+past two years, and in an effort to eventually get it merged, I've
+taken the liberty to pick it up and do the changes I wanted to see
+instead of waiting to go through yet another round.
 
-Depending on what STP state a port is in, the learning on that port
-should be enabled or disabled.
+All the patches have a link to their original counterpart (though I
+have squashed a couple of them where it made sense). Tested both 64
+and 32bit guests for a good measure. Of course, I claim full
+responsibility for any bug introduced here.
 
-When the STP state is DISABLED, BLOCKING or LISTENING no learning should
-be happening irrespective of what the bridge previously requested. The
-learning state is changed to be the one setup by the bridge when the STP
-state is LEARNING or FORWARDING.
+Unless someone screams now, this is going in 5.13, because I'm frankly
+fed up with it! ;-)
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 34 ++++++++++++++-----
- 1 file changed, 26 insertions(+), 8 deletions(-)
+* From v18 [2]
+  - Fix kvm_hypercall2() return type
+  - Rebased on top of 5.12-rc3
+  - Added RBs
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index 72b7ba003538..80efc8116963 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -1250,14 +1250,6 @@ static void dpaa2_switch_teardown_irqs(struct fsl_mc_device *sw_dev)
- 	fsl_mc_free_irqs(sw_dev);
- }
- 
--static int dpaa2_switch_port_attr_stp_state_set(struct net_device *netdev,
--						u8 state)
--{
--	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
--
--	return dpaa2_switch_port_set_stp_state(port_priv, state);
--}
--
- static int dpaa2_switch_port_set_learning(struct ethsw_port_priv *port_priv, bool enable)
- {
- 	struct ethsw_core *ethsw = port_priv->ethsw_data;
-@@ -1280,6 +1272,32 @@ static int dpaa2_switch_port_set_learning(struct ethsw_port_priv *port_priv, boo
- 	return err;
- }
- 
-+static int dpaa2_switch_port_attr_stp_state_set(struct net_device *netdev,
-+						u8 state)
-+{
-+	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
-+	int err;
-+
-+	err = dpaa2_switch_port_set_stp_state(port_priv, state);
-+	if (err)
-+		return err;
-+
-+	switch (state) {
-+	case BR_STATE_DISABLED:
-+	case BR_STATE_BLOCKING:
-+	case BR_STATE_LISTENING:
-+		err = dpaa2_switch_port_set_learning(port_priv, false);
-+		break;
-+	case BR_STATE_LEARNING:
-+	case BR_STATE_FORWARDING:
-+		err = dpaa2_switch_port_set_learning(port_priv,
-+						     port_priv->learn_ena);
-+		break;
-+	}
-+
-+	return err;
-+}
-+
- static int dpaa2_switch_port_flood(struct ethsw_port_priv *port_priv,
- 				   struct switchdev_brport_flags flags)
- {
+* From v17 [1]:
+  - Fixed compilation issue on 32bit systems not selecting
+    CONFIG_HAVE_ARM_SMCCC_DISCOVERY
+  - Fixed KVM service discovery not properly parsing the reply
+    from the hypervisor
+
+* From v16 [0]:
+  - Moved the KVM service discovery to its own file, plugged it into
+    PSCI instead of the arch code, dropped the inlining, made use of
+    asm/hypervisor.h.
+  - Tidied-up the namespacing
+  - Cleanup the hypercall handler
+  - De-duplicate the guest code
+  - Tidied-up arm64-specific documentation
+  - Dropped the generic PTP documentation as it needs a new location,
+    and some cleanup
+  - Squashed hypercall documentation and capability into the
+    main KVM patch
+  - Rebased on top of 5.11-rc4
+
+[0] https://lore.kernel.org/r/20201209060932.212364-1-jianyong.wu@arm.com
+[1] https://lore.kernel.org/r/20210202141204.3134855-1-maz@kernel.org
+[2] https://lore.kernel.org/r/20210208134029.3269384-1-maz@kernel.org
+
+Jianyong Wu (4):
+  ptp: Reorganize ptp_kvm.c to make it arch-independent
+  clocksource: Add clocksource id for arm arch counter
+  KVM: arm64: Add support for the KVM PTP service
+  ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+
+Thomas Gleixner (1):
+  time: Add mechanism to recognize clocksource in time_get_snapshot
+
+Will Deacon (2):
+  arm/arm64: Probe for the presence of KVM hypervisor
+  KVM: arm64: Advertise KVM UID to guests via SMCCC
+
+ Documentation/virt/kvm/api.rst              | 10 +++
+ Documentation/virt/kvm/arm/index.rst        |  1 +
+ Documentation/virt/kvm/arm/ptp_kvm.rst      | 25 ++++++
+ arch/arm/include/asm/hypervisor.h           |  3 +
+ arch/arm64/include/asm/hypervisor.h         |  3 +
+ arch/arm64/kvm/arm.c                        |  1 +
+ arch/arm64/kvm/hypercalls.c                 | 80 +++++++++++++++--
+ drivers/clocksource/arm_arch_timer.c        | 36 ++++++++
+ drivers/firmware/psci/psci.c                |  2 +
+ drivers/firmware/smccc/Makefile             |  2 +-
+ drivers/firmware/smccc/kvm_guest.c          | 50 +++++++++++
+ drivers/firmware/smccc/smccc.c              |  1 +
+ drivers/ptp/Kconfig                         |  2 +-
+ drivers/ptp/Makefile                        |  2 +
+ drivers/ptp/ptp_kvm_arm.c                   | 28 ++++++
+ drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} | 84 +++++-------------
+ drivers/ptp/ptp_kvm_x86.c                   | 97 +++++++++++++++++++++
+ include/linux/arm-smccc.h                   | 41 +++++++++
+ include/linux/clocksource.h                 |  6 ++
+ include/linux/clocksource_ids.h             | 12 +++
+ include/linux/ptp_kvm.h                     | 19 ++++
+ include/linux/timekeeping.h                 | 12 +--
+ include/uapi/linux/kvm.h                    |  1 +
+ kernel/time/clocksource.c                   |  2 +
+ kernel/time/timekeeping.c                   |  1 +
+ 25 files changed, 443 insertions(+), 78 deletions(-)
+ create mode 100644 Documentation/virt/kvm/arm/ptp_kvm.rst
+ create mode 100644 drivers/firmware/smccc/kvm_guest.c
+ create mode 100644 drivers/ptp/ptp_kvm_arm.c
+ rename drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} (60%)
+ create mode 100644 drivers/ptp/ptp_kvm_x86.c
+ create mode 100644 include/linux/clocksource_ids.h
+ create mode 100644 include/linux/ptp_kvm.h
+
 -- 
-2.30.0
+2.29.2
 
