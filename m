@@ -2,55 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F13934DCA9
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 01:55:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A666534DCCE
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 02:07:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbhC2XyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 19:54:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229441AbhC2Xxv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 19:53:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C063E6191F;
-        Mon, 29 Mar 2021 23:53:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617062031;
-        bh=O7CZUUst1KTUXea/ImcMyTTrMtLZde4Lis24HYpx6Sk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E5lJZqBTYgDkDNrBmZV2N596JOK7b6csKY7cw486lsvRqDDlcioGJLOIcsjt+mnqJ
-         +USRTsn/5fUz5CcQk6Q0tZRaP4S72V2ucI3MaYkI9YbmiUugCg2yDoxO2LdjsQE1va
-         IONLcMyEV2H+HJUQK2qLfERFCwyCdDRw3LqmTvGsQCnzhVDloY9Zjum2/1aH03c4sU
-         WwuhubQfFIzp/n0zRfgGUFzCKniKk7elmyRnR3tPRFKWAOB9OYnbqq8gNWgIBG9q/Q
-         8ko7I+7wjL5wa9Gl7VZnW04NzMOfqa4Q8IHUl/S8wEIDdUq0z9JPVv/997iP8jo4iT
-         Rl5nj3U2ynBag==
-Date:   Mon, 29 Mar 2021 16:53:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Cc:     simon.horman@netronome.com, davem@davemloft.net, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ethernet/netronome/nfp: Fix a use after free in
- nfp_bpf_ctrl_msg_rx
-Message-ID: <20210329165349.7b2e942f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210329115002.8557-1-lyl2019@mail.ustc.edu.cn>
-References: <20210329115002.8557-1-lyl2019@mail.ustc.edu.cn>
+        id S229555AbhC3AGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 20:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229502AbhC3AGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 20:06:43 -0400
+X-Greylist: delayed 138 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Mar 2021 17:06:42 PDT
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 9B3C8C061762
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 17:06:42 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 5F0A7504FD9
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 00:04:04 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1617061265; t=1617062644;
+        bh=Ws7F9ezUXmX13raOPmi4BGQ/B5OSES+6rD76onNt+OA=;
+        h=Date:To:From:Subject:From;
+        b=EcnAN2WPMMxsAWZ2A1o3UBMn6BfD3fbG7Yx8BlAMdyMXQKISrT2o6ARdal+fHTedd
+         vR6xddiQw8/iHgJFq6dDDAcbuafrCmCb3U2BMvivqQ7xG0lfABlUGOgE8M4K6oNciE
+         PCaEL2mRLnRD5mAG18Y7JImWooqea4xXzTEYWPSmmnSYVF3CXmf+4HV4RDXwZ4IL1c
+         9IgVNRbsxRa3Od1jVFzmsQqyxzVovkZ3UWReMQyC6BUIkkpYuRXC5B6OctY62/j0ra
+         49WLMsgQSwEfeipAz5gRgJ9/nqVsnVpx68gMrwye4BVEKt3lDyeLHoK96rhzhoTrky
+         9DdN01I4jIiTg==
+Message-ID: <b024bedb-d9e8-ee04-2443-2804760f51e4@mattcorallo.com>
+Date:   Mon, 29 Mar 2021 20:04:04 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Language: en-US
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Matt Corallo <linux-net@mattcorallo.com>
+Subject: IP_FRAG_TIME Default Too Large
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 29 Mar 2021 04:50:02 -0700 Lv Yunlong wrote:
-> In nfp_bpf_ctrl_msg_rx, if
-> nfp_ccm_get_type(skb) == NFP_CCM_TYPE_BPF_BPF_EVENT is true, the skb
-> will be freed. But the skb is still used by nfp_ccm_rx(&bpf->ccm, skb).
-> 
-> My patch adds a return when the skb was freed.
-> 
-> Fixes: bcf0cafab44fd ("nfp: split out common control message handling code")
-> Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+IP_FRAG_TIME defaults to 30 full long seconds to wait for reassembly of fragments. In practice, with the default values, 
+if I send enough fragments over a line that there is material loss, its not strange to see fragments be completely 
+dropped for the remainder of a 30 second time period before returning to normal.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+This issue largely goes away when setting net.ipv4.ipfrag_time to 0/1. Is there a reason IP_FRAG_TIME defaults to 
+something so high? If its been 30 seconds the packet you receive next is almost certainly not the one you wanted.
+
+That said, if I'm reading ip_fragment.c (and I'm almost certainly not), the behavior seems different than as documented 
+- q.fqdir->timeout is only used in ip_frag_reinit which is only called when ip_frag_too_far hits indicating the packet 
+is out of the net.ipv4.ipfrag_max_dist bound.
+
+Reading the docs, I expected something more like "if the packet is out of the net.ipv4.ipfrag_max_dist bound, drop the 
+queue, also if the packet is older than net.ipv4.ipfrag_time, drop the packet", not "if the packet is out of the 
+net.ipv4.ipfrag_max_dist bound *and* the packet is older than net.ipv4.ipfrag_time, drop the queue". If I'm reading it 
+right, this doesn't seem like what you generally want to happen - eg in my case if you get some loss on a flow that 
+contains fragments its very easy to end up with all fragments lost until you meet the above criteria and drop the queue 
+after 30 seconds, instead of making a best effort to reassemble new packets as they come in, dropping old ones.
+
+Thanks,
+Matt
+
+(Note: not subscribed, please keep me on CC when responding)
