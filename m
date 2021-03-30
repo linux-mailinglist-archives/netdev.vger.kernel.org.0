@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3394B34F001
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CF8D34F003
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232388AbhC3Rn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 13:43:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32950 "EHLO mail.kernel.org"
+        id S232444AbhC3Rn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 13:43:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231951AbhC3RnX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 13:43:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B02461864;
-        Tue, 30 Mar 2021 17:43:22 +0000 (UTC)
+        id S232001AbhC3RnY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 13:43:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E0B9619D3;
+        Tue, 30 Mar 2021 17:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617126202;
-        bh=uYaW/QH+iAL6DZPnWmQKFiyh6Yn3jj88Y9rk5M4PDI8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KY4NiuirAgvvcw9rU/I4HctuKyILN0nc84NHEluvNhqgbaJdqtC8zmqpUdBHOSEW0
-         0Zvxpr5oFYZJNlqLJB9IkCEoTfRLKnd4LPFFvM1GyD3eRCMrbZunZyPkMx9xr+uG/u
-         FN+it0rz/R6PKJOch/GPzIOrF322E/MjpSy9T3sd+XN6kn8i5TVSyN5MupoTnEsmos
-         oGKG5TgemCns8Y0bcJAGNmt7aO/JFCJT7vPBUIkoOhRDpndlwL4N2KvzgEjrAOHBMp
-         jrcCb/o/5sXqMGJ5XpB8tXWQDbE3Ioc+byun+ZzuvxRDrNEFsHVPp5EjNKEfUKjFaL
-         CxuREO80YaIGw==
+        s=k20201202; t=1617126204;
+        bh=cHgRyNPea/tk/h7ppogF/FAqeVM0OOIbYOAsae8a4D0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=s1TPDcvpdDQl2zz/6dTzoGc2yPvj9XebTivOzAM94u9CqcWuIn58HEE5DIrWgn30q
+         sQzyt0FN+NxgG9CLTd9gzAZDeCc+5eZjIBsWOtzDDUs0CfcI/LzBQi8H3rVL5GqX60
+         ktbThATq2tyDS++YxOeSJX4FDM07vD03T89DtlPOFzuGQJKAMU7uUKl7CY/hcsX1cF
+         zXDttl8kS85SMWyLpdFL0K1Nv4tIq17S8+7wYNuQTBwGzeLInm5157UjnHV2ZP8H7f
+         nSKZkIleTCQD1Xa4gGQCVp9FCsX4ntHqX+8fTMpp8fU1jvFWhQ3pb4Mei/VENjtpzc
+         SxQsu2nRgwFpA==
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -31,10 +31,12 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>, nic_swsd@realtek.com,
         linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v4 0/3] PCI: Disable parity checking
-Date:   Tue, 30 Mar 2021 12:43:15 -0500
-Message-Id: <20210330174318.1289680-1-helgaas@kernel.org>
+Subject: [PATCH v4 1/3] PCI: Add pci_disable_parity()
+Date:   Tue, 30 Mar 2021 12:43:16 -0500
+Message-Id: <20210330174318.1289680-2-helgaas@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210330174318.1289680-1-helgaas@kernel.org>
+References: <20210330174318.1289680-1-helgaas@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -43,47 +45,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bjorn Helgaas <bhelgaas@google.com>
 
-I think this is essentially the same as Heiner's v3 posting, with these
-changes:
+Add pci_disable_parity() to disable reporting of parity errors for a
+device by clearing PCI_COMMAND_PARITY.
 
-  - Added a pci_disable_parity() interface in pci.c instead of making a
-    public pci_quirk_broken_parity() because quirks.c is only compiled when
-    CONFIG_PCI_QUIRKS=y.
+The device will still set PCI_STATUS_DETECTED_PARITY when it detects
+a parity error or receives a Poisoned TLP, but it will not set
+PCI_STATUS_PARITY, which means it will not assert PERR#
+(conventional PCI) or report Poisoned TLPs (PCIe).
 
-  - Removed the setting of dev->broken_parity_status because it's really
-    only used by EDAC error reporting, and if we disable parity error
-    reporting, we shouldn't get there.  This change will be visible in the
-    sysfs "broken_parity_status" file, but I doubt that's important.
+Based-on: https://lore.kernel.org/linux-arm-kernel/d375987c-ea4f-dd98-4ef8-99b2fbfe7c33@gmail.com/
+Based-on-patch-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+---
+ drivers/pci/pci.c   | 17 +++++++++++++++++
+ include/linux/pci.h |  1 +
+ 2 files changed, 18 insertions(+)
 
-I dropped Leon's reviewed-by because I fiddled with the code.  Similarly I
-haven't added your signed-off-by, Heiner, because I don't want you blamed
-for my errors.  But if this looks OK to you I'll add it.
-
-v1: https://lore.kernel.org/r/a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com
-v2: https://lore.kernel.org/r/bbc33d9b-af7c-8910-cdb3-fa3e3b2e3266@gmail.com
-- reduce scope of N2100 change to using the new PCI core quirk
-v3: https://lore.kernel.org/r/992c800e-2e12-16b0-4845-6311b295d932@gmail.com/
-- improve commit message of patch 2
-
-v4:
-- add pci_disable_parity() (not conditional on CONFIG_PCI_QUIRKS)
-- remove setting of dev->broken_parity_status
-
-
-Bjorn Helgaas (1):
-  PCI: Add pci_disable_parity()
-
-Heiner Kallweit (2):
-  IB/mthca: Disable parity reporting
-  ARM: iop32x: disable N2100 PCI parity reporting
-
- arch/arm/mach-iop32x/n2100.c              |  8 ++++----
- drivers/net/ethernet/realtek/r8169_main.c | 14 --------------
- drivers/pci/pci.c                         | 17 +++++++++++++++++
- drivers/pci/quirks.c                      | 13 ++++---------
- include/linux/pci.h                       |  1 +
- 5 files changed, 26 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 16a17215f633..b1845e5e5c8f 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4453,6 +4453,23 @@ void pci_clear_mwi(struct pci_dev *dev)
+ }
+ EXPORT_SYMBOL(pci_clear_mwi);
+ 
++/**
++ * pci_disable_parity - disable parity checking for device
++ * @dev: the PCI device to operate on
++ *
++ * Disable parity checking for device @dev
++ */
++void pci_disable_parity(struct pci_dev *dev)
++{
++	u16 cmd;
++
++	pci_read_config_word(dev, PCI_COMMAND, &cmd);
++	if (cmd & PCI_COMMAND_PARITY) {
++		cmd &= ~PCI_COMMAND_PARITY;
++		pci_write_config_word(dev, PCI_COMMAND, cmd);
++	}
++}
++
+ /**
+  * pci_intx - enables/disables PCI INTx for device dev
+  * @pdev: the PCI device to operate on
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 86c799c97b77..4eaa773115da 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1201,6 +1201,7 @@ int __must_check pci_set_mwi(struct pci_dev *dev);
+ int __must_check pcim_set_mwi(struct pci_dev *dev);
+ int pci_try_set_mwi(struct pci_dev *dev);
+ void pci_clear_mwi(struct pci_dev *dev);
++void pci_disable_parity(struct pci_dev *dev);
+ void pci_intx(struct pci_dev *dev, int enable);
+ bool pci_check_and_mask_intx(struct pci_dev *dev);
+ bool pci_check_and_unmask_intx(struct pci_dev *dev);
 -- 
 2.25.1
 
