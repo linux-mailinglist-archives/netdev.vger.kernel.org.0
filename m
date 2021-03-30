@@ -2,95 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AFAA34DF06
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 05:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30E3434DF1E
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 05:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbhC3DKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 23:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
+        id S231270AbhC3DSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 23:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbhC3DJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 23:09:31 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22BD6C061762
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 20:09:31 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id w21-20020a9d63950000b02901ce7b8c45b4so14285984otk.5
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 20:09:31 -0700 (PDT)
+        with ESMTP id S231241AbhC3DRd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 23:17:33 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CD0C061762
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 20:17:33 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id i19so10956765qtv.7
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 20:17:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TZqA77AM+q62H/ZZ/x45fUdNHyG6I6UZu8QNcaQFuWQ=;
-        b=T5lYyuqisuJuHyoX38orx6Bo5zbLcDiJ+aG7oPLuu45EaK26S5RIbrHV4Q201s7Gzn
-         QaQFVjSuZk4QGl+WJc+CkrX6AFhb6cgxDgGPiFVV3CjN+VWndq4yVzdj+jsO4HZpvGNJ
-         7p+V/fosuWXV23dQwp7l+t+nrGEZAtyfJET74YYWJHx8gYbsXs5tD/ayLCOBkqhmuEdo
-         lxdEhwNtQ0S+XegxgZz5qpZkJHlY4SkzBGmef74wy7FUUghZc4JIq5XObjFMBkNz0KXQ
-         nZ48QtV8aFBJj1VGkKPWDOirv5nyR/aLgsOQ5y4Q2IZS1N09T8Mx6An/SsuZyZtbwtxu
-         X8ig==
+        d=schmorgal.com; s=google;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=rjPExMtYs1kqjt/CTaWBz7aoN1AIX0rSeL0R8pOiRiw=;
+        b=TItwIoirGK+SHdG+Qx6NohvyLbkhBnPOZpneXQ08I2OL3Vfr1u9Iy2ZXnZZrAQbNVg
+         yWQ+l9p3k+Y2i2rC+h6Y7EigVKUZAt4erNo9SEInYGrVhS9wYik7zxvT+wI7XKUupSoG
+         DIjkdM/MSfKTZiZwJiodZjIVXCUTUAH9Q+ffE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TZqA77AM+q62H/ZZ/x45fUdNHyG6I6UZu8QNcaQFuWQ=;
-        b=O2bxeNGovisDcZOnOODK7LVd6W82s/uWfzn5k10EDmJneGopVlqp1j8brqZqgKFpU6
-         IfqBPA7LtYkf4uQ2D/xuw2PLE7YvwlK8YYkHYB4Nksqd/AjlZDwTR322OCaD+Zb2Jcas
-         m9wdjBq646+TboxJOmAJ8Vhpe62WLVFHzRe7hOUtGEFvNJfqoR5fq1pMKsCVE1GZRmhP
-         Vqhk65tCBoy8zC7TIpA+MkXNS+O1jgXJ43IljWXGsShP9H5yG47mJBQF071oy+2M8jOo
-         v7Xzd2l1fAiisXDZXqNWNWYRJzGQDMkAIB9wjXq9gVpnzF41OHmz4cy2U2P9FVGnhOnx
-         LMLA==
-X-Gm-Message-State: AOAM531rAE/dccRGO3+8hC7bSWXd+5D4x3mdFohXU45hYcVX1T7oS6yj
-        Vg3Oe06ZV79Pxy6PRXvd68BxpAVyXgA=
-X-Google-Smtp-Source: ABdhPJw8hfvgCmkeAWQFZfc3L8StOjBDgB4XKJmBwCdBTPJdEcu4C/F8SSuOQK+QBDO9KFvaFluRrQ==
-X-Received: by 2002:a9d:20c6:: with SMTP id x64mr24775531ota.262.1617073770606;
-        Mon, 29 Mar 2021 20:09:30 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id u11sm3945352oif.10.2021.03.29.20.09.29
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=rjPExMtYs1kqjt/CTaWBz7aoN1AIX0rSeL0R8pOiRiw=;
+        b=h0dYu6hXE6IDpbbZ114y9AcYe190/heLbJD1HVSppITGcChK+RNvl3xaSd/JUlvcEa
+         BKLsGwQ8pYpSUFfH0xFZIyv8pZcivEsyUELXugIuIu4kBBvutAQQlZxmC1yrizCb4BN4
+         wfLkY3a1fUcN5w6TYF5iZctwTVfO1hdnbdi0mjGH/YglAS7EEngxKVNyEC0dHdyBRBM8
+         f2lv+PpkLonM5Nu9oKboAWF//fQT3JhaZa4Ews39R0Tim2rhIfGZhhUqyD3IsKTQ7YZg
+         jkZE32DruH24VKK4T24Q3LPlJenSkHZizOU7wzEL+HiE+UJcUzSg6sbz96vhCC3E0Kwb
+         UcVA==
+X-Gm-Message-State: AOAM532XSk1NwkJ1C7+Fe4pCcvJL2wYooFIpLlLvwEFTHNSJ9Tho+nOF
+        ubVCNY9r2G6M+qmTTB1M5kbn3Q==
+X-Google-Smtp-Source: ABdhPJxxs7X6dCxb/vDWXMkOiyCanb6zOud7chyYZv+Kv+2yb3yktKcWguLLi8/qPM7uKa7eoG7yDA==
+X-Received: by 2002:ac8:6f25:: with SMTP id i5mr26221392qtv.202.1617074252368;
+        Mon, 29 Mar 2021 20:17:32 -0700 (PDT)
+Received: from [192.168.1.33] (047-028-046-055.res.spectrum.com. [47.28.46.55])
+        by smtp.googlemail.com with ESMTPSA id y1sm15015318qki.9.2021.03.29.20.17.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Mar 2021 20:09:29 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] police: add support for packet-per-second
- rate limiting
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@netronome.com>
-References: <20210326125018.32091-1-simon.horman@netronome.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7ac9bca6-9680-b586-8d63-4c34e596ff10@gmail.com>
-Date:   Mon, 29 Mar 2021 21:09:28 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.0
+        Mon, 29 Mar 2021 20:17:32 -0700 (PDT)
+From:   Doug Brown <doug@schmorgal.com>
+To:     linux-firmware@kernel.org, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [RFC] (re)moving drivers/net/appletalk/cops_*.h firmware blobs
+Message-ID: <6c62d7d5-5171-98a3-5287-ecb1df20f574@schmorgal.com>
+Date:   Mon, 29 Mar 2021 20:17:30 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210326125018.32091-1-simon.horman@netronome.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/26/21 6:50 AM, Simon Horman wrote:
-> From: Baowen Zheng <baowen.zheng@corigine.com>
-> 
-> Allow a policer action to enforce a rate-limit based on packets-per-second,
-> configurable using a packet-per-second rate and burst parameters.
-> 
-> e.g.
->  # $TC actions add action police pkts_rate 1000 pkts_burst 200 index 1
->  # $TC actions ls action police
->  total acts 1
-> 
-> 	action order 0:  police 0x1 rate 0bit burst 0b mtu 4096Mb pkts_rate 1000 pkts_burst 200
-> 	ref 1 bind 0
-> 
-> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@netronome.com>
-> Signed-off-by: Louis Peens <louis.peens@netronome.com>
-> ---
->  man/man8/tc-police.8 | 35 ++++++++++++++++++++++++-------
->  tc/m_police.c        | 50 +++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 75 insertions(+), 10 deletions(-)
-> 
+Hi there,
 
-applied to iproute2-next.
+I've been recently looking at the (ancient) AppleTalk/LocalTalk drivers=20
+because I've been working on a modern LocalTalk network adapter for=20
+crazy vintage computer enthusiasts like myself. ;-) In the process, I=20
+discovered the existence of cops_ffdrv.h and cops_ltdrv.h in the kernel=20
+source tree (drivers/net/appletalk), which contain proprietary binary=20
+blobs for old COPS LocalTalk ISA cards with pretty vague licensing in=20
+terms of ability to redistribute:
+
+> This material is licensed to you strictly for use in conjunction with
+> the use of COPS LocalTalk adapters.
+> There is no charge for this SDK. And no waranty express or implied
+> about its fitness for any purpose. However, we will cheerefully
+> refund every penny you paid for this SDK...
+> Regards,
+>
+> Thomas F. Divine
+> Chief Scientist
+
+I was surprised that these blobs were still in the kernel source. I=20
+think it would be nice to remove another set of nonfree blobs from the=20
+kernel source tree. Sadly, Mr. Divine passed away in 2015, so we can't=20
+get any further input from him. Is this license acceptable enough to=20
+migrate these two firmware binaries to linux-firmware and change the=20
+driver to use request_firmware? Following the process in the=20
+linux-firmware README to a T is likely not 100% possible because there's =
+
+nothing about permission to redistribute, and I won't be able to get a=20
+Signed-off-by line. I've been experimenting in QEMU to convert the=20
+driver to use request_firmware and have something working, but I wanted=20
+to check before submitting a firmware pull request to start going=20
+forward with this. Alternatively, if that's not acceptable, would it=20
+make more sense to follow the route of other drivers like the iSight=20
+camera driver (drivers/usb/misc/isight_firmware.c), and use=20
+request_firmware, but supply instructions for extracting the firmware=20
+binaries from the original source instead of including them in=20
+linux-firmware? They are still available through archive.org's old=20
+capture of the (now defunct) company's website, so instructions could be =
+
+provided for downloading and extracting it yourself.
+
+To be honest though -- the whole thing is probably a moot point given=20
+that the driver in question is for an ISA card. Is there really someone=20
+out there still using this driver? With that in mind, I suppose another=20
+option would be to remove the driver altogether. I was hoping somebody=20
+could provide some input on the correct way to handle this situation. I=20
+would be happy to take care of it, but I'm unsure of the correct=20
+approach. Any direction would be much appreciated!
+
+Thanks,
+Doug
 
