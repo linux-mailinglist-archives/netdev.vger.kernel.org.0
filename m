@@ -2,61 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C442634E868
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 15:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 212DD34E89D
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 15:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232005AbhC3NGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 09:06:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50962 "EHLO mail.kernel.org"
+        id S232240AbhC3NLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 09:11:43 -0400
+Received: from elvis.franken.de ([193.175.24.41]:37693 "EHLO elvis.franken.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232169AbhC3NFx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 09:05:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9376C619C7;
-        Tue, 30 Mar 2021 13:05:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617109553;
-        bh=9DMOAy0WF/TXjALvJ8cxeKA4ftJYf/NNqPLbi+DnD68=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ASq3k8Nq/tvCuQ2EmFyEMaSv7t7NeIApY9eI7x9ee+vSZV/QpfSPyj4afiU/w/YeA
-         V6T+ShFu6z2IUCDRNQ5m2kI8xpNcjbpAZt7wh1Hoef8T0oxlu6hh9L/d/mfulZ1C25
-         aJP3lB5UTHltpSOc3b20Y5nFKnkgQr6MzMzUL42CpuN89rPVZfrbrXFVd/iN0moIwb
-         4Yh8HJjmloXXxeWDqJdJoIHBvugrH2WjPBifz2Y5tDyWWy+l5Cv1lueJ8YoDy4u18r
-         eKOzHPNwfXiotj2ibhvmC+6DxLpk2ngR797aZOhmV45MM2MizHt0h9oBwa887iRPan
-         0tJ7tm6PImUDw==
-Date:   Tue, 30 Mar 2021 14:05:47 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Joerg Roedel <joro@8bytes.org>, Li Yang <leoyang.li@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        id S231971AbhC3NLi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 09:11:38 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1lRE9U-000488-00; Tue, 30 Mar 2021 15:11:24 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 405B2C1DF5; Tue, 30 Mar 2021 15:07:40 +0200 (CEST)
+Date:   Tue, 30 Mar 2021 15:07:40 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Wang Qing <wangqing@vivo.com>
+Cc:     Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Salah Triki <salah.triki@gmail.com>,
         David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 15/18] iommu: remove iommu_set_cmd_line_dma_api and
- iommu_cmd_line_dma_api
-Message-ID: <20210330130546.GO5908@willie-the-truck>
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-16-hch@lst.de>
+        Richard Weinberger <richard@nod.at>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, linux-decnet-user@lists.sourceforge.net,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH 1/6] mips/sgi-ip27: Delete obsolete TODO file
+Message-ID: <20210330130740.GA11217@alpha.franken.de>
+References: <1617087773-7183-1-git-send-email-wangqing@vivo.com>
+ <1617087773-7183-2-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210316153825.135976-16-hch@lst.de>
+In-Reply-To: <1617087773-7183-2-git-send-email-wangqing@vivo.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 16, 2021 at 04:38:21PM +0100, Christoph Hellwig wrote:
-> Don't obsfucate the trivial bit flag check.
+On Tue, Mar 30, 2021 at 03:02:44PM +0800, Wang Qing wrote:
+> The TODO file here has not been updated for 15 years, and the function 
+> development described in the file have been implemented or abandoned.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Its existence will mislead developers seeking to view outdated information.
+> 
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
 > ---
->  drivers/iommu/iommu.c | 23 +++++------------------
->  1 file changed, 5 insertions(+), 18 deletions(-)
+>  arch/mips/sgi-ip27/TODO | 19 -------------------
+>  1 file changed, 19 deletions(-)
+>  delete mode 100644 arch/mips/sgi-ip27/TODO
 
-Acked-by: Will Deacon <will@kernel.org>
+applied to mips-next.
 
-Will
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
