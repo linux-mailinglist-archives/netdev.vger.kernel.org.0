@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FFDA34E35F
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 10:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1ED134E3CC
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbhC3Ilu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 04:41:50 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55554 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230224AbhC3Ilj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 04:41:39 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1617093697; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jiLzz+FDg8IDgOr7Ru1IW7IRXYaqlH8yrJkDxBSOd+M=;
-        b=SwyQOSqvaO5avOz2XsxkAeyYpWcAxuEpeTup5y2W/3hjoJIa9VL+ySLWFEDXOGMXYYzaNj
-        yfuPCkvCrHUDqDn4OiHjX+VW5qEwgFf/bjJtmVzQs0eem+tKxgSvbAVrRlz0EIt6ankmR8
-        9g4gU0a0vUOWreF+dSJDr1Ih1BW0A9I=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id F0DDEB1C1;
-        Tue, 30 Mar 2021 08:41:36 +0000 (UTC)
-Date:   Tue, 30 Mar 2021 10:41:34 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Martin Sebor <msebor@gcc.gnu.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Arnd Bergmann <arnd@arndb.de>, x86@kernel.org,
-        Ning Sun <ning.sun@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        James Smart <james.smart@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Anders Larsen <al@alarsen.net>,
-        Serge Hallyn <serge@hallyn.com>,
-        Imre Deak <imre.deak@intel.com>,
-        linux-arm-kernel@lists.infradead.org,
-        tboot-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Roman Gushchin <guro@fb.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Odin Ugedal <odin@uged.al>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: Re: [PATCH 06/11] cgroup: fix -Wzero-length-bounds warnings
-Message-ID: <YGLkPjSBdgpriC0E@blackbook>
-References: <20210322160253.4032422-1-arnd@kernel.org>
- <20210322160253.4032422-7-arnd@kernel.org>
+        id S231310AbhC3JAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 05:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231614AbhC3I7x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 04:59:53 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756CBC061762
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:59:53 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id w3so23686893ejc.4
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:59:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=cthzB+PK6lUgctUa4gYAlMsHLCsT4Ifk6ykP0EohgUM=;
+        b=T4f3uyskXvKZ68W9afDGzcQBG34nmj5oJeTCDurAJV8ykRP9zkgHkwkGRT+pkJcEx6
+         Dy1rFT8w8j4Kg2RAaAlTz30mJKe2ayZ4L++vOAbcMWoHT+JVJnQdZJwt5mCdQCK1/M7N
+         6qinIx+oz5Cq/RG7Z7VXuwknqRp7T5HheiOhylVg0S9FKt+UBDqBoyaBErOiSWAkUAiT
+         /NOa3EIFs3/UfCS3lmvxovPiYgCVQ5CDBP9q2Nxzlvb/rkG+nPMispbKO+9ED/RvM2iZ
+         WUt02KojGdqu4MwuQMhtyonSUDBH+FNDI7QmBosPZpOZfjCB2O9ZrAc4Mt1ZkjAYIvJs
+         9jWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=cthzB+PK6lUgctUa4gYAlMsHLCsT4Ifk6ykP0EohgUM=;
+        b=dTObfdpbpZSChbMaVVpSciZb0cKWWT/ifHfPGtL3MnF6tSIyloZ/tkHqlgin6hrlEI
+         uAW8Iqtf/sxvF9CPbA7+bUbHI5rlr5QC6Yy/AubalLWU3tyMmmF5snqlFhhAGgWEjaIw
+         C33EwVEK0R1tys/RZmvYxWbJw2ozFcYhnU3ouWY1jCHq14fxI6hC1L38jRp7yFwgfJY/
+         aLaC2YXJQ8UD8nw+37Y5fTcDUZqNE4ycRyAzKcfyRsRLshY8vJbMdRblweRdNpjgC2bc
+         rx1+jyGQN0+nPV+nhnO/PW2V28W3M3IdfQsKuk70Fqpp1KmlRtidoRzSnGAjx1ONME/F
+         HO1w==
+X-Gm-Message-State: AOAM533+NUVPrwIEgOtcRdgJbIpL2J6JfMuMBerlMeSCf47cTaNaR6oi
+        ZGdXcrptE/DFkurJoRm3IOc7wMrjmkxn8zmlOA2WDNnKyLE=
+X-Google-Smtp-Source: ABdhPJwf51TG5+x2pGgBUtUf3Cznx84rKg5jrW7vQpAp2qx/m/361fIpyZWqRP5BnpKmxKtwNCpVqTDf34O94eD/C2Q=
+X-Received: by 2002:a17:906:8a61:: with SMTP id hy1mr19048186ejc.59.1617094792112;
+ Tue, 30 Mar 2021 01:59:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Gbn4BprmVLVWv2rO"
-Content-Disposition: inline
-In-Reply-To: <20210322160253.4032422-7-arnd@kernel.org>
+From:   Navin P <navinp0304@gmail.com>
+Date:   Tue, 30 Mar 2021 14:29:41 +0530
+Message-ID: <CALO2TqLB04BGHH9XwXc+TBo1bf3rshCCp61U=FWu76ujNhffMQ@mail.gmail.com>
+Subject: Mismatch between tcp_output.c and tcp_fastopen.c in net/ipv4
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---Gbn4BprmVLVWv2rO
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ I've a question regarding bytes_received and bytes_sent.
 
-On Mon, Mar 22, 2021 at 05:02:44PM +0100, Arnd Bergmann <arnd@kernel.org> w=
-rote:
-> I'm not sure what is expected to happen for such a configuration,
-> presumably these functions are never calls in that case.
-Yes, the functions you patched would only be called from subsystems or
-there should be no way to obtain a struct cgroup_subsys reference
-anyway (hence it's ok to always branch as if ss=3D=3DNULL).
+ https://elixir.bootlin.com/linux/latest/source/net/ipv4/tcp_output.c#L1385
 
-I'd prefer a variant that wouldn't compile the affected codepaths when
-there are no subsystems registered, however, I couldn't come up with a
-way how to do it without some preprocessor ugliness.
+ In net/ipv4/tcp_output.c
+ if (skb->len != tcp_header_size) {
+tcp_event_data_sent(tp, sk);
+tp->data_segs_out += tcp_skb_pcount(skb);
+tp->bytes_sent += skb->len - tcp_header_size;
+}
 
-Reviewed-by: Michal Koutn=FD <mkoutny@suse.com>
 
---Gbn4BprmVLVWv2rO
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+https://elixir.bootlin.com/linux/latest/source/net/ipv4/tcp_fastopen.c#L220
 
------BEGIN PGP SIGNATURE-----
+In net/ipv4/tcp_fastopen.c
 
-iQIzBAEBCAAdFiEEEoQaUCWq8F2Id1tNia1+riC5qSgFAmBi5DcACgkQia1+riC5
-qSjuqxAAkm/zoS+xvdcQUERzkcuVxIruGtTqOse/NCPQQR9aGuJl6iybyjQw7D+r
-63+BYz7+BdP8zDg+NSTO354Yt0vsWFtCvuZBBabO91wCheLRPaZhHnGByJa0fXyM
-SKC2VSvFHKKiFuCG7mG7/WfDQxTGSaUL2jiFXlA5HAV5dKfkia/Jpuf+KtIy5nBR
-g8g4f44M2wW/TCoBzd5Elt5Cpx6fU2aKuJRCRCE04ts4CQy06/lLcc9H0N7bvgHj
-0oxkHbAjXeEnylnni4pfpmJpInUT2kOZuCjSF/WPw2XeLs00AnBnNB3lDP9Pe2qo
-ippcDc3AFqYMqewKnnxDWoTI3lyMTm8r0yzrDdwpb9Zv28bOCAYiwyoIsFV7+kdN
-C7DnhiL6d+UgKIzCqRuTPXnluthvSmHGzeblqF1vOAaWOFif4CcRmUtsR7v3EyZN
-5aiUTGqVtoKr/pcBNnRU1e2w7ulYpq5sbL/8f9HtnKsZ8MZlLdhdcDoSLjOkuohK
-OlQgS6p+2otxwk3xft0CdFPPHAFb5/WM6IyKdewFGuY0fohxczWJCRI92x94cfe9
-p0JSNLl19JjdM8loYpmBRcmlkoBH+MtkdZiR68b5yX5wcXypubmZPZ9o8ZzQqx1j
-ZX1/nhuyDl6KHuGW7gJXx8FhCLd6nPyKYVu4wbay23oLzdL/1sk=
-=nVTO
------END PGP SIGNATURE-----
+/* u64_stats_update_begin(&tp->syncp) not needed here,
+ * as we certainly are not changing upper 32bit value (0)
+ */
+tp->bytes_received = skb->len;
 
---Gbn4BprmVLVWv2rO--
+Above we miss tcp_header_size.
+
+1. Shouldn't bytes_received be skb->len - tcp_header_size for
+consistency ? I'm not sure if skb->len - tcp_header_size is correct .
+
+2. Should it not be skb->len - tcp_header_size - ip_header_size -
+skb->mac_len  ?
+
+
+Regards,
+Navin
