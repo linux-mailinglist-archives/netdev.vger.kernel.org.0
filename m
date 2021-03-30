@@ -2,353 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9903534F1D9
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 21:53:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3D934F1E7
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 21:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233310AbhC3Two (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 15:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59328 "EHLO
+        id S233308AbhC3T7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 15:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233285AbhC3Twa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 15:52:30 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B281DC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 12:52:30 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id t18so8307241pjs.3
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 12:52:30 -0700 (PDT)
+        with ESMTP id S233285AbhC3T6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 15:58:34 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18EEC061574;
+        Tue, 30 Mar 2021 12:58:33 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id i6so5329052pgs.1;
+        Tue, 30 Mar 2021 12:58:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=igb8AFJOz2HY+uDgvmiXGk65QJUZspiuoDl3hWYoChk=;
-        b=LM4Hq/lhNsc7MSnviK1MpvEvEaq7pufgwVUvk6zqy+YYnmFsmuwViBajON2FzFF0pB
-         PMjZuYSXLDVuKJ1UyNsb3t/uUbppg4pDEHMvVX6dkOhVYE3tXFZDNv9LsOGWp/1+4EAk
-         x+LPnSzVKApFCB+14j9Ydq8WYwhc8lhBeT6WB83YzawzyarAK55L6nZo2qmmoiYvBTsV
-         cyRvWRzKxipAX+L+e6ybd0muy3nG9bzkELZ7C3w2I+mFXVfIYLN/ujf5cvaVExZSfeck
-         sjS5aHr0eyCzJAfF8sWB7Q6TEGjZs2GRaD8Iv9KnATP+7jMgRkfeUx37CeSc7zzMQySq
-         XgFw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ENHjPLdJcCbOVQbW/wX5HbF4ez/ctOf9xHc2bsUfuzo=;
+        b=lfCCKkYKD6wVgNXH1X0uRfc6O+hm86EXu0lLXpsIm8N+Rt3y02ceCGYkbP0eEzADxO
+         +40AxAkx4iucorkq5KYdqbU7jNGSrtoOSnsX775E+IDbou6rdeSxipo1/ekGMCEXCi2C
+         xgBK+ygnz2KSa0uvr/emeTl6sBuPY/QrcWFrcUC9RfTCo6gNjiDEx85f5TuJHnfuOOyg
+         giDEbf9ZE07+hkOeQbWYKLbIVaCrcxIJxgXzqilyIxYzImfnTaJkFGaYn//EejTfDhL4
+         RprNGlVmj62RCrFlGKXhYYazkqSVIgOoRiyRcbqbmzgljQWH8/x94JUf54/M2UmBX2nk
+         R0GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=igb8AFJOz2HY+uDgvmiXGk65QJUZspiuoDl3hWYoChk=;
-        b=jXRMy5MxykhStqnE9VtoDcl/N8VBGVXw69jJl2/GdihlOCws4PFL+bLgNcuq7Z6+AC
-         b+TfWeoE8YTMnOIbO+QVtK1RyurQncLPZJZQ4wPHqZEto/iyHWZU7T/3UyiQl4qWgCKK
-         FrbaF3RTMIKhCE3zuTlp1zVIJcQ7cZr/Q0HhY/HP/AjARofAFGZeuQPChyCMmar6Y8CN
-         jClJGqQP+OG55GgzrM+dtNAMece2haAslJgveeCexpsn0KKrgPNcrgTNN8hZDJ44ve/a
-         X3HAfoXWbK6Bf1xJzKNPjb1L0wkrG+gxoLfH2931L3Mt1gnnIE7E/rz8Bl4vekJQPQYM
-         oRZw==
-X-Gm-Message-State: AOAM533gYUEm2diGctwf3ov7sBYT9bt1jqVXI2kCh9wsOXBtAhHRFxbF
-        jXW9N4QAsJVFdhmrA3GFLbj3FxIBM66VEA==
-X-Google-Smtp-Source: ABdhPJyPVMVVFRzu7d/uPJu35xQKfsjkY5rc2JnfoOd/3P1YHGULXZKPh4r0DAOJfe5eSbUGZm2cKA==
-X-Received: by 2002:a17:90a:bb95:: with SMTP id v21mr6472pjr.30.1617133949890;
-        Tue, 30 Mar 2021 12:52:29 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id y8sm20433pge.56.2021.03.30.12.52.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Mar 2021 12:52:29 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 4/4] ionic: pull per-q stats work out of queue loops
-Date:   Tue, 30 Mar 2021 12:52:10 -0700
-Message-Id: <20210330195210.49069-5-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210330195210.49069-1-snelson@pensando.io>
-References: <20210330195210.49069-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ENHjPLdJcCbOVQbW/wX5HbF4ez/ctOf9xHc2bsUfuzo=;
+        b=SNyYBHrg1Q20uOqOcMtpGn1FfvigpG0mwx/YYSBZ3y06qDXsOL+2pcQ4J7YEJmZ8x3
+         DiyDhf9n6IGqxVcNtGJMzGWA48t4cBIqv3LgcpDgXoCGLtap4e3p3NR5Ar64GCjVd1WW
+         wdZUZnwA4AFum1UIdge+XCya8SxW3vr7CLbWEQOSxJNDKD6SdYP3MuHEn3wlBp04BKYE
+         H2qQQtmErGhKmiyMGxNaOEVQpFVoxL/edoseaP46veuarBis3t2Iywd1b+I448vKWpI+
+         I3u1SAvGo5x/dTcO3c6MAFzLIcXd4wTjmZsx+khoBUwyNkmuhK7n1UUQh51kNicYhbDs
+         k0WQ==
+X-Gm-Message-State: AOAM530PdyaTOkcrtozV6xAIwm8ju46eNkpossMoEXhQfGjSyXPX7Vec
+        ICMSyRS29TosXknwvdUIrLC5cMf4eiWhMee5azY=
+X-Google-Smtp-Source: ABdhPJz3F15mx7HW3TFVZTXjzkq0/nzRiU5DtR//0EEz8pTh0Kz7bVnltV6QUgH98sQ3pPuXPpw6lde7Gr2sVBPL3GU=
+X-Received: by 2002:aa7:99c6:0:b029:1f5:c49d:dce7 with SMTP id
+ v6-20020aa799c60000b02901f5c49ddce7mr30679033pfi.78.1617134313278; Tue, 30
+ Mar 2021 12:58:33 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210325015124.1543397-1-kafai@fb.com> <CACAyw9-N6FO67JVJsO=XTohf=4-uMwsSi+Ym2Nxj0+GpofJJHQ@mail.gmail.com>
+ <CAADnVQ+H1bHMeUtxNbes_-fUQTBP5Pdaqq7F5aVfW5QY+gi1bw@mail.gmail.com>
+In-Reply-To: <CAADnVQ+H1bHMeUtxNbes_-fUQTBP5Pdaqq7F5aVfW5QY+gi1bw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 30 Mar 2021 12:58:22 -0700
+Message-ID: <CAM_iQpXKQ6WDgoExX=9D2gXcuYtUD4xLsPOSKX=BnQ-0KpBZpg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>, Martin KaFai Lau <kafai@fb.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Jiang Wang <jiang.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abstract out the per-queue data collection work into separate
-functions from the per-queue loops in the stats reporting,
-similar to what Alex did for the data label strings in
-commit acebe5b6107c ("ionic: Update driver to use ethtool_sprintf")
+On Tue, Mar 30, 2021 at 7:36 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Mar 30, 2021 at 2:43 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> >
+> > On Thu, 25 Mar 2021 at 01:52, Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > This series adds support to allow bpf program calling kernel function.
+> >
+> > I think there are more build problems with this. Has anyone hit this before?
+> >
+> > $ CLANG=clang-12 O=../kbuild/vm ./tools/testing/selftests/bpf/vmtest.sh -j 7
+> >
+> >   GEN-SKEL [test_progs-no_alu32] bind6_prog.skel.h
+> > libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
+> >   GEN-SKEL [test_progs-no_alu32] bind_perm.skel.h
+> > libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
+> >   GEN-SKEL [test_progs-no_alu32] bpf_cubic.skel.h
+> >   GEN-SKEL [test_progs-no_alu32] bpf_dctcp.skel.h
+> >   GEN-SKEL [test_progs-no_alu32] bpf_flow.skel.h
+> > libbpf: failed to find BTF for extern 'tcp_cong_avoid_ai' [27] section: -2
+> > Error: failed to open BPF object file: No such file or directory
+>
+> The doc update is on its way:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210330054156.2933804-1-kafai@fb.com/
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_stats.c | 219 ++++++++++--------
- 1 file changed, 125 insertions(+), 94 deletions(-)
+We just updated our clang to 13, and I still get the same error above.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.c b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-index 308b4ac6c57b..ed9cf93d9acd 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-@@ -177,31 +177,42 @@ static const struct ionic_stat_desc ionic_dbg_napi_stats_desc[] = {
- 
- #define MAX_Q(lif)   ((lif)->netdev->real_num_tx_queues)
- 
-+static void ionic_add_lif_txq_stats(struct ionic_lif *lif, int q_num,
-+				    struct ionic_lif_sw_stats *stats)
-+{
-+	struct ionic_tx_stats *txstats = &lif->txqstats[q_num];
-+
-+	stats->tx_packets += txstats->pkts;
-+	stats->tx_bytes += txstats->bytes;
-+	stats->tx_tso += txstats->tso;
-+	stats->tx_tso_bytes += txstats->tso_bytes;
-+	stats->tx_csum_none += txstats->csum_none;
-+	stats->tx_csum += txstats->csum;
-+}
-+
-+static void ionic_add_lif_rxq_stats(struct ionic_lif *lif, int q_num,
-+				    struct ionic_lif_sw_stats *stats)
-+{
-+	struct ionic_rx_stats *rxstats = &lif->rxqstats[q_num];
-+
-+	stats->rx_packets += rxstats->pkts;
-+	stats->rx_bytes += rxstats->bytes;
-+	stats->rx_csum_none += rxstats->csum_none;
-+	stats->rx_csum_complete += rxstats->csum_complete;
-+	stats->rx_csum_error += rxstats->csum_error;
-+}
-+
- static void ionic_get_lif_stats(struct ionic_lif *lif,
- 				struct ionic_lif_sw_stats *stats)
- {
--	struct ionic_tx_stats *txstats;
--	struct ionic_rx_stats *rxstats;
- 	struct rtnl_link_stats64 ns;
- 	int q_num;
- 
- 	memset(stats, 0, sizeof(*stats));
- 
- 	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
--		txstats = &lif->txqstats[q_num];
--		stats->tx_packets += txstats->pkts;
--		stats->tx_bytes += txstats->bytes;
--		stats->tx_tso += txstats->tso;
--		stats->tx_tso_bytes += txstats->tso_bytes;
--		stats->tx_csum_none += txstats->csum_none;
--		stats->tx_csum += txstats->csum;
--
--		rxstats = &lif->rxqstats[q_num];
--		stats->rx_packets += rxstats->pkts;
--		stats->rx_bytes += rxstats->bytes;
--		stats->rx_csum_none += rxstats->csum_none;
--		stats->rx_csum_complete += rxstats->csum_complete;
--		stats->rx_csum_error += rxstats->csum_error;
-+		ionic_add_lif_txq_stats(lif, q_num, stats);
-+		ionic_add_lif_rxq_stats(lif, q_num, stats);
- 	}
- 
- 	ionic_get_stats64(lif->netdev, &ns);
-@@ -214,16 +225,12 @@ static void ionic_get_lif_stats(struct ionic_lif *lif,
- 
- static u64 ionic_sw_stats_get_count(struct ionic_lif *lif)
- {
--	u64 total = 0;
-+	u64 total = 0, tx_queues = MAX_Q(lif), rx_queues = MAX_Q(lif);
- 
- 	/* lif stats */
- 	total += IONIC_NUM_LIF_STATS;
--
--	/* tx stats */
--	total += MAX_Q(lif) * IONIC_NUM_TX_STATS;
--
--	/* rx stats */
--	total += MAX_Q(lif) * IONIC_NUM_RX_STATS;
-+	total += tx_queues * IONIC_NUM_TX_STATS;
-+	total += rx_queues * IONIC_NUM_RX_STATS;
- 
- 	/* port stats */
- 	total += IONIC_NUM_PORT_STATS;
-@@ -231,13 +238,13 @@ static u64 ionic_sw_stats_get_count(struct ionic_lif *lif)
- 	if (test_bit(IONIC_LIF_F_UP, lif->state) &&
- 	    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
- 		/* tx debug stats */
--		total += MAX_Q(lif) * (IONIC_NUM_DBG_CQ_STATS +
-+		total += tx_queues * (IONIC_NUM_DBG_CQ_STATS +
- 				      IONIC_NUM_TX_Q_STATS +
- 				      IONIC_NUM_DBG_INTR_STATS +
- 				      IONIC_MAX_NUM_SG_CNTR);
- 
- 		/* rx debug stats */
--		total += MAX_Q(lif) * (IONIC_NUM_DBG_CQ_STATS +
-+		total += rx_queues * (IONIC_NUM_DBG_CQ_STATS +
- 				      IONIC_NUM_DBG_INTR_STATS +
- 				      IONIC_NUM_DBG_NAPI_STATS +
- 				      IONIC_MAX_NUM_NAPI_CNTR);
-@@ -315,13 +322,99 @@ static void ionic_sw_stats_get_strings(struct ionic_lif *lif, u8 **buf)
- 		ionic_sw_stats_get_rx_strings(lif, buf, q_num);
- }
- 
-+static void ionic_sw_stats_get_txq_values(struct ionic_lif *lif, u64 **buf,
-+					  int q_num)
-+{
-+	struct ionic_tx_stats *txstats;
-+	struct ionic_qcq *txqcq;
-+	int i;
-+
-+	txstats = &lif->txqstats[q_num];
-+
-+	for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(txstats, &ionic_tx_stats_desc[i]);
-+		(*buf)++;
-+	}
-+
-+	if (!test_bit(IONIC_LIF_F_UP, lif->state) ||
-+	    !test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state))
-+		return;
-+
-+	txqcq = lif->txqcqs[q_num];
-+	for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&txqcq->q,
-+					  &ionic_txq_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&txqcq->cq,
-+					  &ionic_dbg_cq_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&txqcq->intr,
-+					  &ionic_dbg_intr_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&txqcq->napi_stats,
-+					  &ionic_dbg_napi_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++) {
-+		**buf = txqcq->napi_stats.work_done_cntr[i];
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_MAX_NUM_SG_CNTR; i++) {
-+		**buf = txstats->sg_cntr[i];
-+		(*buf)++;
-+	}
-+}
-+
-+static void ionic_sw_stats_get_rxq_values(struct ionic_lif *lif, u64 **buf,
-+					  int q_num)
-+{
-+	struct ionic_rx_stats *rxstats;
-+	struct ionic_qcq *rxqcq;
-+	int i;
-+
-+	rxstats = &lif->rxqstats[q_num];
-+
-+	for (i = 0; i < IONIC_NUM_RX_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(rxstats, &ionic_rx_stats_desc[i]);
-+		(*buf)++;
-+	}
-+
-+	if (!test_bit(IONIC_LIF_F_UP, lif->state) ||
-+	    !test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state))
-+		return;
-+
-+	rxqcq = lif->rxqcqs[q_num];
-+	for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&rxqcq->cq,
-+					  &ionic_dbg_cq_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&rxqcq->intr,
-+					  &ionic_dbg_intr_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&rxqcq->napi_stats,
-+					  &ionic_dbg_napi_stats_desc[i]);
-+		(*buf)++;
-+	}
-+	for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++) {
-+		**buf = rxqcq->napi_stats.work_done_cntr[i];
-+		(*buf)++;
-+	}
-+}
-+
- static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
- {
- 	struct ionic_port_stats *port_stats;
- 	struct ionic_lif_sw_stats lif_stats;
--	struct ionic_qcq *txqcq, *rxqcq;
--	struct ionic_tx_stats *txstats;
--	struct ionic_rx_stats *rxstats;
- 	int i, q_num;
- 
- 	ionic_get_lif_stats(lif, &lif_stats);
-@@ -338,73 +431,11 @@ static void ionic_sw_stats_get_values(struct ionic_lif *lif, u64 **buf)
- 		(*buf)++;
- 	}
- 
--	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
--		txstats = &lif->txqstats[q_num];
--
--		for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
--			**buf = IONIC_READ_STAT64(txstats,
--						  &ionic_tx_stats_desc[i]);
--			(*buf)++;
--		}
--
--		if (test_bit(IONIC_LIF_F_UP, lif->state) &&
--		    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
--			txqcq = lif->txqcqs[q_num];
--			for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++) {
--				**buf = IONIC_READ_STAT64(&txqcq->q,
--						      &ionic_txq_stats_desc[i]);
--				(*buf)++;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
--				**buf = IONIC_READ_STAT64(&txqcq->cq,
--						   &ionic_dbg_cq_stats_desc[i]);
--				(*buf)++;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
--				**buf = IONIC_READ_STAT64(&txqcq->intr,
--						 &ionic_dbg_intr_stats_desc[i]);
--				(*buf)++;
--			}
--			for (i = 0; i < IONIC_MAX_NUM_SG_CNTR; i++) {
--				**buf = txstats->sg_cntr[i];
--				(*buf)++;
--			}
--		}
--	}
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++)
-+		ionic_sw_stats_get_txq_values(lif, buf, q_num);
- 
--	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
--		rxstats = &lif->rxqstats[q_num];
--
--		for (i = 0; i < IONIC_NUM_RX_STATS; i++) {
--			**buf = IONIC_READ_STAT64(rxstats,
--						  &ionic_rx_stats_desc[i]);
--			(*buf)++;
--		}
--
--		if (test_bit(IONIC_LIF_F_UP, lif->state) &&
--		    test_bit(IONIC_LIF_F_SW_DEBUG_STATS, lif->state)) {
--			rxqcq = lif->rxqcqs[q_num];
--			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
--				**buf = IONIC_READ_STAT64(&rxqcq->cq,
--						   &ionic_dbg_cq_stats_desc[i]);
--				(*buf)++;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
--				**buf = IONIC_READ_STAT64(&rxqcq->intr,
--						 &ionic_dbg_intr_stats_desc[i]);
--				(*buf)++;
--			}
--			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
--				**buf = IONIC_READ_STAT64(&rxqcq->napi_stats,
--						 &ionic_dbg_napi_stats_desc[i]);
--				(*buf)++;
--			}
--			for (i = 0; i < IONIC_MAX_NUM_NAPI_CNTR; i++) {
--				**buf = rxqcq->napi_stats.work_done_cntr[i];
--				(*buf)++;
--			}
--		}
--	}
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++)
-+		ionic_sw_stats_get_rxq_values(lif, buf, q_num);
- }
- 
- const struct ionic_stats_group_intf ionic_stats_groups[] = {
--- 
-2.17.1
-
+Thanks.
