@@ -2,87 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 827EE34E537
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 12:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46B6734E570
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 12:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbhC3KQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 06:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbhC3KQ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 06:16:26 -0400
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0E51C061574;
-        Tue, 30 Mar 2021 03:16:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=JQBxnmUDmt
-        k5ywlnAxjrHC7Iq8Hzm8YvT88z/1P/DpI=; b=n+UXrA0YXLyaXFLwHoVOYU195l
-        llgP8AH2gF2lor487Dr6/RzBdgI9Z6EuTJc1aif4w/+mfyFO9bD13AoRrNADjYr+
-        ysx1/gj+KS9BGMOnvSv16R7Rw2nAorpqdCq+jPZeqcqax0k49p59v8XUsoWYu+19
-        WhgwV28FoHPweIrKc=
-Received: from ubuntu.localdomain (unknown [202.38.69.14])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDHzU1k+mJgvL5vAA--.283S4;
-        Tue, 30 Mar 2021 18:16:04 +0800 (CST)
-From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-To:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Subject: [PATCH] net/rds: Fix a use after free in rds_message_map_pages
-Date:   Tue, 30 Mar 2021 03:16:02 -0700
-Message-Id: <20210330101602.22505-1-lyl2019@mail.ustc.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        id S231622AbhC3KaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 06:30:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54072 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231434AbhC3K3t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 06:29:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617100189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/g5746S7cQ6XMelVy0eNDh93PHETmdX+BHxHG7UfUHg=;
+        b=CpJsIYqi4QBU7m4T1QEnpwNZbWVDRtYsjAPkoK6W33/XLak4EfRJDC+rrZ/UiVCj94/2km
+        2SXQZGClNPhOm0ORCtmlYHjZ5QhDLYiALv+7W6FMRASFsqKvB2Fs+U3Jzfq5WI1DKG+pL0
+        UNEH4+4zGnZbKKFCuT2Z0ROorqwUq5s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-244-1-_0f2jLM76eF9L6VroGXg-1; Tue, 30 Mar 2021 06:29:47 -0400
+X-MC-Unique: 1-_0f2jLM76eF9L6VroGXg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D2D9801814;
+        Tue, 30 Mar 2021 10:29:45 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-115-56.ams2.redhat.com [10.36.115.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ABB8C19C45;
+        Tue, 30 Mar 2021 10:29:43 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next v3 0/8] udp: GRO L4 improvements
+Date:   Tue, 30 Mar 2021 12:28:48 +0200
+Message-Id: <cover.1617099959.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: LkAmygDHzU1k+mJgvL5vAA--.283S4
-X-Coremail-Antispam: 1UD129KBjvdXoWrtrWrGF1kZFW3Cw13AF1kKrg_yoWfZFg_Zr
-        W7JFn7W347XF1Iyws7Gws3Jr4Sqr1kJw18ua42gFyFyayDCF1kXw4rtrnxuwnxCFW2qr1x
-        Ww4DXr9xC34vvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbsAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
-        YxC7MxkIecxEwVAFwVW8twCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8Jw
-        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
-        wI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjx
-        v20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2
-        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
-        UI43ZEXa7VUbQVy7UUUUU==
-X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rds_message_map_pages, the rm is freed by rds_message_put(rm).
-But rm is still used by rm->data.op_sg in return value.
+This series improves the UDP L4 - either 'forward' or 'frag_list' -
+co-existence with UDP tunnel GRO, allowing the first to take place
+correctly even for encapsulated UDP traffic.
 
-My patch replaces ERR_CAST(rm->data.op_sg) to ERR_PTR(-ENOMEM) to avoid
-the uaf.
+The first for patches are mostly bugfixes, addressing some GRO 
+edge-cases when both tunnels and L4 are present, enabled and in use.
 
-Fixes: 7dba92037baf3 ("net/rds: Use ERR_PTR for rds_message_alloc_sgs()")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
----
- net/rds/message.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The next 3 patches avoid unneeded segmentation when UDP GRO
+traffic traverses in the receive path UDP tunnels.
 
-diff --git a/net/rds/message.c b/net/rds/message.c
-index 071a261fdaab..cecd968c9b25 100644
---- a/net/rds/message.c
-+++ b/net/rds/message.c
-@@ -348,7 +348,7 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
- 	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
- 	if (IS_ERR(rm->data.op_sg)) {
- 		rds_message_put(rm);
--		return ERR_CAST(rm->data.op_sg);
-+		return ERR_PTR(-ENOMEM);
- 	}
- 
- 	for (i = 0; i < rm->data.op_nents; ++i) {
+Finally, some self-tests are included, covering the relevant
+GRO scenarios.
+
+Even if most patches are actually bugfixes, this series is
+targeting net-next, as overall it makes available a new feature.
+
+v2 -> v3:
+ - no code changes, more verbose commit messages and comment in
+   patch 1/8
+
+v1 -> v2:
+ - restrict post segmentation csum fixup to the only the relevant pkts
+ - use individual 'accept_gso_type' fields instead of whole gso bitmask
+   (Willem)
+ - use only ipv6 addesses from test range in self-tests (Willem)
+ - hopefully clarified most individual patches commit messages
+
+Paolo Abeni (8):
+  udp: fixup csum for GSO receive slow path
+  udp: skip L4 aggregation for UDP tunnel packets
+  udp: properly complete L4 GRO over UDP tunnel packet
+  udp: never accept GSO_FRAGLIST packets
+  vxlan: allow L4 GRO passthrough
+  geneve: allow UDP L4 GRO passthrou
+  bareudp: allow UDP L4 GRO passthrou
+  selftests: net: add UDP GRO forwarding self-tests
+
+ drivers/net/bareudp.c                     |   1 +
+ drivers/net/geneve.c                      |   1 +
+ drivers/net/vxlan.c                       |   1 +
+ include/linux/udp.h                       |  22 +-
+ include/net/udp.h                         |  23 ++
+ net/ipv4/udp.c                            |   5 +
+ net/ipv4/udp_offload.c                    |  27 ++-
+ net/ipv6/udp.c                            |   1 +
+ net/ipv6/udp_offload.c                    |   3 +-
+ tools/testing/selftests/net/Makefile      |   1 +
+ tools/testing/selftests/net/udpgro_fwd.sh | 251 ++++++++++++++++++++++
+ 11 files changed, 323 insertions(+), 13 deletions(-)
+ create mode 100755 tools/testing/selftests/net/udpgro_fwd.sh
+
 -- 
-2.25.1
-
+2.26.2
 
