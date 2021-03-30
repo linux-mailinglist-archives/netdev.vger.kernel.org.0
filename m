@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C84E34E71C
+	by mail.lfdr.de (Postfix) with ESMTP id A47EA34E71E
 	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 14:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbhC3MGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 08:06:20 -0400
+        id S232117AbhC3MGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 08:06:22 -0400
 Received: from mga12.intel.com ([192.55.52.136]:33814 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232079AbhC3MF5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 08:05:57 -0400
-IronPort-SDR: azjuDTBTJnhpieVsYPP0nylJZ3DlYz8pVGOFLvVvS1h7pFF3hPyA2MqzZWvkJRs/u+F0N5OB0f
- b7kSWawD/80w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="171158236"
+        id S231924AbhC3MF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 08:05:59 -0400
+IronPort-SDR: JJjQFt6vf5go/RXfTcaBT2l1hR4RRpuAMBOsMMUqHYnsR5k/obI5UJ4WE9RdqOgs5DBo4EmqIu
+ awJ9RWjgXreA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="171158243"
 X-IronPort-AV: E=Sophos;i="5.81,290,1610438400"; 
-   d="scan'208";a="171158236"
+   d="scan'208";a="171158243"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 05:05:57 -0700
-IronPort-SDR: bQsUHzDGDLCDSUSHCWL++pPKdC0PCD8jzRAiKSvgN/05EJKLQtDQCCbr4WD/6KREWW9trv/qxa
- DjoL986L8fLw==
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 05:05:59 -0700
+IronPort-SDR: MIUsMmASUIfa9P1GnO/m3uu0jK9dWgqgPNwC+OMdh6l0706oCM6YSNdk+2Ce5FfwmbO75LpAj2
+ 8qQ7DDRptjSw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,290,1610438400"; 
-   d="scan'208";a="418145849"
+   d="scan'208";a="418145859"
 Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2021 05:05:55 -0700
+  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2021 05:05:57 -0700
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, bjorn@kernel.org,
         alexei.starovoitov@gmail.com
 Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH v3 bpf 2/3] libbpf: restore umem state after socket create failure
-Date:   Tue, 30 Mar 2021 11:34:18 +0000
-Message-Id: <20210330113419.4616-3-ciara.loftus@intel.com>
+Subject: [PATCH v3 bpf 3/3] libbpf: only create rx and tx XDP rings when necessary
+Date:   Tue, 30 Mar 2021 11:34:19 +0000
+Message-Id: <20210330113419.4616-4-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210330113419.4616-1-ciara.loftus@intel.com>
 References: <20210330113419.4616-1-ciara.loftus@intel.com>
@@ -43,103 +43,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the call to xsk_socket__create fails, the user may want to retry the
-socket creation using the same umem. Ensure that the umem is in the
-same state on exit if the call fails by:
-1. ensuring the umem _save pointers are unmodified.
-2. not unmapping the set of umem rings that were set up with the umem
-during xsk_umem__create, since those maps existed before the call to
-xsk_socket__create and should remain in tact even in the event of
-failure.
+Prior to this commit xsk_socket__create(_shared) always attempted to create
+the rx and tx rings for the socket. However this causes an issue when the
+socket being setup is that which shares the fd with the UMEM. If a
+previous call to this function failed with this socket after the rings were
+set up, a subsequent call would always fail because the rings are not torn
+down after the first call and when we try to set them up again we encounter
+an error because they already exist. Solve this by remembering whether the
+rings were set up by introducing a new flag to struct xsk_umem, and
+checking it before setting up the rings for sockets which share the fd
+with the UMEM.
 
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
+Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
 
 Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 ---
- tools/lib/bpf/xsk.c | 29 ++++++++++++++++-------------
- 1 file changed, 16 insertions(+), 13 deletions(-)
+ tools/lib/bpf/xsk.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 443b0cfb45e8..d4991ddff05a 100644
+index d4991ddff05a..12110bba4cc0 100644
 --- a/tools/lib/bpf/xsk.c
 +++ b/tools/lib/bpf/xsk.c
-@@ -743,21 +743,23 @@ static struct xsk_ctx *xsk_get_ctx(struct xsk_umem *umem, int ifindex,
- 	return NULL;
- }
+@@ -14,6 +14,7 @@
+ #include <unistd.h>
+ #include <arpa/inet.h>
+ #include <asm/barrier.h>
++#include <linux/bitops.h>
+ #include <linux/compiler.h>
+ #include <linux/ethtool.h>
+ #include <linux/filter.h>
+@@ -46,6 +47,9 @@
+  #define PF_XDP AF_XDP
+ #endif
  
--static void xsk_put_ctx(struct xsk_ctx *ctx)
-+static void xsk_put_ctx(struct xsk_ctx *ctx, bool unmap)
- {
- 	struct xsk_umem *umem = ctx->umem;
- 	struct xdp_mmap_offsets off;
- 	int err;
++#define XDP_RX_RING_SETUP_DONE BIT(0)
++#define XDP_TX_RING_SETUP_DONE BIT(1)
++
+ enum xsk_prog {
+ 	XSK_PROG_FALLBACK,
+ 	XSK_PROG_REDIRECT_FLAGS,
+@@ -59,6 +63,7 @@ struct xsk_umem {
+ 	int fd;
+ 	int refcount;
+ 	struct list_head ctx_list;
++	__u8 ring_setup_status;
+ };
  
- 	if (--ctx->refcount == 0) {
--		err = xsk_get_mmap_offsets(umem->fd, &off);
--		if (!err) {
--			munmap(ctx->fill->ring - off.fr.desc,
--			       off.fr.desc + umem->config.fill_size *
--			       sizeof(__u64));
--			munmap(ctx->comp->ring - off.cr.desc,
--			       off.cr.desc + umem->config.comp_size *
--			       sizeof(__u64));
-+		if (unmap) {
-+			err = xsk_get_mmap_offsets(umem->fd, &off);
-+			if (!err) {
-+				munmap(ctx->fill->ring - off.fr.desc,
-+				       off.fr.desc + umem->config.fill_size *
-+				sizeof(__u64));
-+				munmap(ctx->comp->ring - off.cr.desc,
-+				       off.cr.desc + umem->config.comp_size *
-+				sizeof(__u64));
-+			}
- 		}
- 
- 		list_del(&ctx->list);
-@@ -797,8 +799,6 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
- 	memcpy(ctx->ifname, ifname, IFNAMSIZ - 1);
- 	ctx->ifname[IFNAMSIZ - 1] = '\0';
- 
--	umem->fill_save = NULL;
--	umem->comp_save = NULL;
- 	ctx->fill = fill;
- 	ctx->comp = comp;
- 	list_add(&ctx->list, &umem->ctx_list);
-@@ -854,6 +854,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	struct xsk_socket *xsk;
+ struct xsk_ctx {
+@@ -855,6 +860,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
  	struct xsk_ctx *ctx;
  	int err, ifindex;
-+	bool unmap = umem->fill_save != fill;
+ 	bool unmap = umem->fill_save != fill;
++	bool rx_setup_done = false, tx_setup_done = false;
  
  	if (!umem || !xsk_ptr || !(rx || tx))
  		return -EFAULT;
-@@ -994,6 +995,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	}
- 
- 	*xsk_ptr = xsk;
-+	umem->fill_save = NULL;
-+	umem->comp_save = NULL;
- 	return 0;
- 
- out_mmap_tx:
-@@ -1005,7 +1008,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 		munmap(rx_map, off.rx.desc +
- 		       xsk->config.rx_size * sizeof(struct xdp_desc));
- out_put_ctx:
--	xsk_put_ctx(ctx);
-+	xsk_put_ctx(ctx, unmap);
- out_socket:
- 	if (--umem->refcount)
- 		close(xsk->fd);
-@@ -1071,7 +1074,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
+@@ -882,6 +888,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
  		}
+ 	} else {
+ 		xsk->fd = umem->fd;
++		rx_setup_done = umem->ring_setup_status & XDP_RX_RING_SETUP_DONE;
++		tx_setup_done = umem->ring_setup_status & XDP_TX_RING_SETUP_DONE;
  	}
  
--	xsk_put_ctx(ctx);
-+	xsk_put_ctx(ctx, true);
+ 	ctx = xsk_get_ctx(umem, ifindex, queue_id);
+@@ -900,7 +908,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+ 	}
+ 	xsk->ctx = ctx;
  
- 	umem->refcount--;
- 	/* Do not close an fd that also has an associated umem connected
+-	if (rx) {
++	if (rx && !rx_setup_done) {
+ 		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
+ 				 &xsk->config.rx_size,
+ 				 sizeof(xsk->config.rx_size));
+@@ -908,8 +916,10 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+ 			err = -errno;
+ 			goto out_put_ctx;
+ 		}
++		if (xsk->fd == umem->fd)
++			umem->ring_setup_status |= XDP_RX_RING_SETUP_DONE;
+ 	}
+-	if (tx) {
++	if (tx && !tx_setup_done) {
+ 		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
+ 				 &xsk->config.tx_size,
+ 				 sizeof(xsk->config.tx_size));
+@@ -917,6 +927,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+ 			err = -errno;
+ 			goto out_put_ctx;
+ 		}
++		if (xsk->fd == umem->fd)
++			umem->ring_setup_status |= XDP_TX_RING_SETUP_DONE;
+ 	}
+ 
+ 	err = xsk_get_mmap_offsets(xsk->fd, &off);
 -- 
 2.17.1
 
