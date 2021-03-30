@@ -2,205 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4DC034F064
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 20:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A9634F076
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 20:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbhC3SBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 14:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        id S229626AbhC3SFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 14:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232439AbhC3SAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 14:00:55 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8A4C061574;
-        Tue, 30 Mar 2021 11:00:54 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id x189so18330166ybg.5;
-        Tue, 30 Mar 2021 11:00:54 -0700 (PDT)
+        with ESMTP id S232502AbhC3SEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 14:04:49 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8CBC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 11:04:49 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id w10so7963030pgh.5
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 11:04:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JPCVgHC06KGxZ8d0B9PzGmGGDLqoKdjmyAG5QpX9hX0=;
-        b=odLcWm6v025rOqkb028ZTg4+B+I2Pxvq55kLnNkRKyEEV5ILbbA3X0ZTpMCtZVfImM
-         psrNtF1Wj+EXZeiKHM4+XsELHtdSxbrofYuSd7vSp6nHZECKq2a+GnUKH4tBlCEmq3ms
-         hZyw8aAI1RFOYySioWthKwMtW+I6f7Yo46/OK3BcwX+Yi5Q8ruCdTuxNsHqmreEMel9c
-         U5jCZyJ1cNw1ZxtijJ+wfsxJFIy/j9PYdzOdm+GdmEoQH8FRsWhGLWf5FdLPLr83ft25
-         Gxbbnql3pilkPLRlr9US4flryCSlV5dGv7CSndCTMa3uSU12VBzwknnk+eMfb0mO2pcC
-         +SLA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5rdl5YwsTYTcXRqQ8Z6Dcr76jZBgzlcUh5V2aYDOzwQ=;
+        b=RivjAW2X7oz2Vdd2sAugXQ2EfYIkbRCjmygk39Z9gegduphgEMUrrayyzu9aWnGlAz
+         CTe7Y5nTSzF6H6hQPq2+LjUzscFqZ+IQO9r0CSy+RVF/HoaJ0esHdpjZPcKKOHfVzxwD
+         JmR0J+XHNmdOOb8ZVHUMkAhNgJ4xzKOVPEaaX7gDlwA4FeCovc00ZSnnuH5rZ/lhE1E0
+         4phnRh2t/OAZiPXRxmKPBVhyUaB7x9Y2AP1CE7DxxuMOX42cIWKEyyu17U+dbvgV++xf
+         l60rqicgNT9BLLlza8hJup4TBd5V/B9KXlaIA3zeT3V+wtqjILXBfGxnadQdLt42G8Ne
+         rtxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JPCVgHC06KGxZ8d0B9PzGmGGDLqoKdjmyAG5QpX9hX0=;
-        b=YdFdTNIhwY+Y2FXb+8/GNLBMIRO28v2GpibD6TlYRSFvxs2I+9GJwYMtajwRMD56st
-         5DITVYKisrb62FR3n8Sb0GeTLhfGBbH0FyGNUHWkxK4VoDeK+tbEjeiDSPlWJb9/2QV3
-         V+7hG6+4GEb7x3akLyDcTlhlG0J2NWqvQdqOyv9UmPBgn43QlBcBpUjp1nmzvZQpUmpD
-         rcEHIuFzl/oF6rYrF6Pary7pm1G9Gev4zPLGcdfUNQkfw/R3DZ5Chd6JzzH8dd82kPhI
-         h8KBKW2vZYcDSgneUFy7nniLpel6BfkbzIrOd3T0sRapAQNZoC9x2GmY5sFdhHilUPok
-         pkvg==
-X-Gm-Message-State: AOAM5316l/r7ceHb9LrJR0Tza/BmxpxeoG2L9VBS8f6AWPfOI5SzaPsz
-        8od0zhNSVM3Fmj4J0s8A6Wy42BO5HVQwHGWvhIU=
-X-Google-Smtp-Source: ABdhPJy97zq99yz43eQFJwipVPHazYHtngdKQuW20Aka0q5rhEKf8eSQf1KhtTwcYzF41kPrK01Sm0rROFPrGJR+jXw=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr45449290ybo.230.1617127254136;
- Tue, 30 Mar 2021 11:00:54 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5rdl5YwsTYTcXRqQ8Z6Dcr76jZBgzlcUh5V2aYDOzwQ=;
+        b=gL4X2opFTgdKeq4/2/UarKYWgDx/iLHigpqBv2JuQl+dUvdIL7NKo+Du/6tbCDGXnT
+         92YOq2yWlUtGeCRq5RGWD3TCFqZBCtiz+M0PKixqDvEBPZf/B2aZ8rVS40LfWGEl77rQ
+         hosNBcOQpxOJDOL+AO+873M/sR0i8oUq5lSuO0ZHvdWyJjVjRjxH2YAXzuNRqc1jqZ5e
+         6B23FHViJQv9sJ9h0wOsSZUhS5RvlxpRiWXHv+HaBn0mMANBsdtJV1n/SyZZOWBIVLS0
+         Ew41Ipup/+/bQ8At+FSJnCG6/NDZFkLKXQjVik1525AMb3LH7DmILO0dl6/0l2FOycW6
+         A7pw==
+X-Gm-Message-State: AOAM531UoDPvlz1IeJwjOcijDsJAe7PLsoyDEBMyYCu+K9DbI0zFlUK3
+        A/W+gzzuHCYXmtlLSvG9+hBY
+X-Google-Smtp-Source: ABdhPJynjbespSF1hHd1Ir4/6xEoe9K5/dwd6bUgzXfzk0wJeLbr12RxQ2jG131hP9DnqYes8TbBJg==
+X-Received: by 2002:a63:d40b:: with SMTP id a11mr29144794pgh.192.1617127488931;
+        Tue, 30 Mar 2021 11:04:48 -0700 (PDT)
+Received: from work ([103.77.37.178])
+        by smtp.gmail.com with ESMTPSA id z4sm20814804pgv.73.2021.03.30.11.04.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 30 Mar 2021 11:04:48 -0700 (PDT)
+Date:   Tue, 30 Mar 2021 23:34:45 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Subject: Re: [PATCH] qrtr: Convert qrtr_ports from IDR to XArray
+Message-ID: <20210330180445.GB27256@work>
+References: <20200605120037.17427-1-willy@infradead.org>
 MIME-Version: 1.0
-References: <20210319205909.1748642-1-andrii@kernel.org> <20210319205909.1748642-4-andrii@kernel.org>
- <20210320022156.eqtmldxpzxkh45a7@ast-mbp> <CAEf4Bzarx33ENLBRyqxDz7k9t0YmTRNs5wf_xCqL2jNXvs+0Sg@mail.gmail.com>
- <20210322010734.tw2rigbr3dyk3iot@ast-mbp> <CAEf4BzbdgPnw81+diwcvAokv+S6osqvAAzSQYt_BoYbga9t-qQ@mail.gmail.com>
- <20210322175443.zflwaf7dstpg4y2b@ast-mbp> <CAEf4BzYHP00_iav1Y_vhMXBmAO3AnqqBz+uK-Yu=NGYUMEUyxw@mail.gmail.com>
- <CAADnVQKDOWz7fW0kxGEeLtMJLf7J5v9Un=uDXKmwhkweoVQ3Lw@mail.gmail.com>
- <CAEf4Bza-uieOvR6AQkC-suD=_mjs5KC_1Ra3xo9kvdSxAMmeRg@mail.gmail.com> <20210329185558.mjoikgfdp53lq2it@ast-mbp>
-In-Reply-To: <20210329185558.mjoikgfdp53lq2it@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Mar 2021 11:00:43 -0700
-Message-ID: <CAEf4BzYQFbngzELvyySd_f-otYOe74rH4ESNMDCEo5+PJw=umQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: allow compiling BPF objects
- without BTF
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200605120037.17427-1-willy@infradead.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 11:56 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Sun, Mar 28, 2021 at 11:09:23PM -0700, Andrii Nakryiko wrote:
-> >
-> > BPF skeleton works just fine without BTF, if BPF programs don't use
-> > global data. I have no way of knowing how BPF skeleton is used in the
-> > wild, and specifically whether it is used without BTF and
-> > .data/.rodata.
->
-> No way of knowing?
+On Fri, Jun 05, 2020 at 05:00:37AM -0700, Matthew Wilcox wrote:
+> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> 
+> The XArray interface is easier for this driver to use.  Also fixes a
+> bug reported by the improper use of GFP_ATOMIC.
+> 
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-Yes, of course I don't know all the ways that people use bpftool and
-how they write applications. We can speculate about probability of
-breaking someone's flow and how low chances are, but ultimately we are
-guessing and hoping.
+Patch looks good to me. Can you please rebase it on top of netdev or
+v5.12-rc2 and resend?
 
-> The skel gen even for the most basic progs fails when there is no BTF in .o
->
-> $ bpftool gen skeleton prog_compiled_without_dash_g.o
-> libbpf: BTF is required, but is missing or corrupted.
->
-> libbpf_needs_btf() check is preventing all but the most primitive progs.
+Thanks,
+Mani
 
-Up until less than two years ago those were the only programs you
-could write with libbpf. It's up to everyone's opinion to qualify them
-as primitive or not. We even still have few selftests (which we should
-convert, of course) that use bpf_map_def.
-
-> Any prog with new style of map definition:
-> struct {
->         __uint(type, BPF_MAP_TYPE_ARRAY);
->         __uint(max_entries, 1);
->         __type(key, __u32);
->         __type(value, __u64);
-> } array SEC(".maps");
-> would fail skel gen.
->
-> bpftool is capable of skel gen for progs with old style maps only:
-> struct bpf_map_def SEC("maps")
->
-
-Yes, that's why my test is using a legacy-style map definition (which
-for better or worse is still supported by libbpf). One can still write
-full-fledged BPF applications without any BTF whatsoever.
-
-> I think it's a safe bet that if folks didn't adopt new map definition
-> they didn't use skeleton either.
-
-I'm not going to argue, because I don't know. If I knew about BPF
-skeleton but couldn't upgrade Clang, for instance, I'd still use BPF
-skeleton to get nice access to maps/progs and get BPF object file
-embedding in user-space without the hassle of distributing additional
-.o.
-
->
-> I think making skel gen reject such case is a good thing for the users,
-> since it prevents them from creating maps that look like blob of bytes.
-> It's good for admins too that more progs will get BTF described map key/value
-> and systems are easier to debug.
-
-I agree it's good, I added BTF-defined maps myself for that very reason.
-
->
-> Ideally the kernel should reject loading progs and maps without BTF
-> to guarantee introspection.
-> Unfortunately the kernel backward compatibility prevents doing such
-> drastic things.
-> We might add a sysctl knob though.
->
-> The bpftool can certainly add a message and reject .o-s without BTF.
-> The chance of upsetting anyone is tiny.
-
-Ok.
-
-> Keep supporting old style 'bpf_map_def' is a maintenance burden.
-> Sooner or later it needs to be removed not only from skel gen,
-> but from libbpf as well.
-
-I've already proposed to remove that in libbpf v1.0. See [0] for
-discussion in the doc around that.
-
-   [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an11_iaRuec6U-ZESZ54nNTY?disco=AAAALj68dg8
-
->
-> > No one is asking for that, but they might be already using BTF-less
-> > skeleton. So I'm fixing a bug in bpftool. In a way that doesn't cause
-> > long term maintenance burden. And see above about my stance on tools'
-> > assumptions.
->
-> The patch and long term direction I'm arguing against is this one:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210319205909.1748642-2-andrii@kernel.org/
-> How is this a bug fix?
-> From commit log:
-> "If BPF object file is using global variables, but is compiled without BTF or
-> ends up having only some of DATASEC types due to static linking"
->
-> global vars without BTF were always rejected by bpftool
-
-That's exactly what I consider a bug, because it wasn't intentional on my part.
-
-> and should continue being rejected.
-> I see no reason for adding such feature.
->
-> > we both know this very well. But just as a fun exercise, I just
-> > double-checked by compiling fentry demo from libbpf-bootstrap ([0]).
-> > It works just fine without `-g` and BTF.
-> >
-> >   [0] https://github.com/libbpf/libbpf-bootstrap/blob/master/src/fentry.bpf.c
->
-> yes. the skel gen will work for such demo prog, but the user should
-> be making them introspectable.
->
-> Try llvm-strip prog.o
-> Old and new bpftool-s will simply crash, because there are no symbols.
-> Should skel gen support such .o as well?
-
-No, because libbpf doesn't support loading such BPF object files.
-While my proposed patch was fixing the case in which libbpf would load
-BPF object file.
-
-> I don't think so. imo it's the same category of non-introspectable progs
-> that shouldn't be allowed.
->
-
-I understand. I just hope there was an opportunity to not always agree
-100% with your opinions and have discussion without exaggerated
-claims, like BPF skeleton not usable without BTF and others I tried to
-address in this thread.
-
-So, in summary, let's drop the patch.
-
-> > Yeah, that's fine and we do require BTF for new features (where it
-> > makes sense, of course, not just arbitrarily).
->
-> I'm saying the kernel should enforce introspection.
-> sysctl btf_enforced=1 might be the answer.
+> ---
+>  net/qrtr/qrtr.c | 39 +++++++++++++--------------------------
+>  1 file changed, 13 insertions(+), 26 deletions(-)
+> 
+> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> index 2d8d6131bc5f..488f8f326ee5 100644
+> --- a/net/qrtr/qrtr.c
+> +++ b/net/qrtr/qrtr.c
+> @@ -20,6 +20,7 @@
+>  /* auto-bind range */
+>  #define QRTR_MIN_EPH_SOCKET 0x4000
+>  #define QRTR_MAX_EPH_SOCKET 0x7fff
+> +#define QRTR_PORT_RANGE	XA_LIMIT(QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET)
+>  
+>  /**
+>   * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
+> @@ -106,8 +107,7 @@ static LIST_HEAD(qrtr_all_nodes);
+>  static DEFINE_MUTEX(qrtr_node_lock);
+>  
+>  /* local port allocation management */
+> -static DEFINE_IDR(qrtr_ports);
+> -static DEFINE_MUTEX(qrtr_port_lock);
+> +static DEFINE_XARRAY_ALLOC(qrtr_ports);
+>  
+>  /**
+>   * struct qrtr_node - endpoint node
+> @@ -623,7 +623,7 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
+>  		port = 0;
+>  
+>  	rcu_read_lock();
+> -	ipc = idr_find(&qrtr_ports, port);
+> +	ipc = xa_load(&qrtr_ports, port);
+>  	if (ipc)
+>  		sock_hold(&ipc->sk);
+>  	rcu_read_unlock();
+> @@ -665,9 +665,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+>  
+>  	__sock_put(&ipc->sk);
+>  
+> -	mutex_lock(&qrtr_port_lock);
+> -	idr_remove(&qrtr_ports, port);
+> -	mutex_unlock(&qrtr_port_lock);
+> +	xa_erase(&qrtr_ports, port);
+>  
+>  	/* Ensure that if qrtr_port_lookup() did enter the RCU read section we
+>  	 * wait for it to up increment the refcount */
+> @@ -688,25 +686,18 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+>  {
+>  	int rc;
+>  
+> -	mutex_lock(&qrtr_port_lock);
+>  	if (!*port) {
+> -		rc = idr_alloc(&qrtr_ports, ipc,
+> -			       QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
+> -			       GFP_ATOMIC);
+> -		if (rc >= 0)
+> -			*port = rc;
+> +		rc = xa_alloc(&qrtr_ports, port, ipc, QRTR_PORT_RANGE,
+> +				GFP_KERNEL);
+>  	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
+>  		rc = -EACCES;
+>  	} else if (*port == QRTR_PORT_CTRL) {
+> -		rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_ATOMIC);
+> +		rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
+>  	} else {
+> -		rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_ATOMIC);
+> -		if (rc >= 0)
+> -			*port = rc;
+> +		rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
+>  	}
+> -	mutex_unlock(&qrtr_port_lock);
+>  
+> -	if (rc == -ENOSPC)
+> +	if (rc == -EBUSY)
+>  		return -EADDRINUSE;
+>  	else if (rc < 0)
+>  		return rc;
+> @@ -720,20 +711,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+>  static void qrtr_reset_ports(void)
+>  {
+>  	struct qrtr_sock *ipc;
+> -	int id;
+> -
+> -	mutex_lock(&qrtr_port_lock);
+> -	idr_for_each_entry(&qrtr_ports, ipc, id) {
+> -		/* Don't reset control port */
+> -		if (id == 0)
+> -			continue;
+> +	unsigned long index;
+>  
+> +	rcu_read_lock();
+> +	xa_for_each_start(&qrtr_ports, index, ipc, 1) {
+>  		sock_hold(&ipc->sk);
+>  		ipc->sk.sk_err = ENETRESET;
+>  		ipc->sk.sk_error_report(&ipc->sk);
+>  		sock_put(&ipc->sk);
+>  	}
+> -	mutex_unlock(&qrtr_port_lock);
+> +	rcu_read_unlock();
+>  }
+>  
+>  /* Bind socket to address.
+> -- 
+> 2.26.2
+> 
