@@ -2,74 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CF8034DCFB
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 02:31:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3311834DD5B
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 03:14:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbhC3Aah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Mar 2021 20:30:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53428 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229483AbhC3AaL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 29 Mar 2021 20:30:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0612161987;
-        Tue, 30 Mar 2021 00:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617064209;
-        bh=qPsUwsxkHrWhgxeyPJd4F3z2LHyi86XM2kE6x0RHwjo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oZs8PZRuZ7/U+zqMS0GqUQXoWjuMrPdHCcEaEfIYI7rKJ04C9+700ZJq1yOwJLVtz
-         HlyaGMoQuYWrUkAlNAUqnknNpT2O6a8zgMFAIG7adrAi9WmkZMwMXs7l3LGpL3Ao7t
-         WW8AoSQsQyMeiTNnxQwEhekzqrppFFioyZTF43xbW9RTIBrWnnrfFRKuOo/0L0f7iL
-         MNl06ppTQIUuH+86Vs8ErWD+SitH7zfdl+GQCcESTEPA0hBX1hBQqE4hjZLJcY9xcq
-         +yPPuoFrbvePzHHdMs+bxGIrWbvLdzD9W2TKrGz/wMxhROce+HANtV3BJdKpyeub88
-         7As8BmhtqWaTQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E7E3160A48;
-        Tue, 30 Mar 2021 00:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229557AbhC3BNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Mar 2021 21:13:50 -0400
+Received: from mail2.directv.syn-alias.com ([69.168.106.50]:43456 "EHLO
+        mail.directv.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229655AbhC3BNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Mar 2021 21:13:35 -0400
+DKIM-Signature: v=1; a=rsa-sha1; d=wildblue.net; s=20170921; c=relaxed/simple;
+        q=dns/txt; i=@wildblue.net; t=1617066814;
+        h=From:Subject:Date:To:MIME-Version:Content-Type;
+        bh=SYoRc8S8SDUVyZKqYCiGq8J4MxI=;
+        b=uiQaQ5JxOToAmI3+OYUdOsDo8YWaj/alon9KtKt5kW1Rad5nDeAO5RcYJ1q5Hzc+
+        T298BBGp5L0DwAlku124qB3TXZ6Nfzss58HIxpG1aqiZDPJ9nyTkAi25n72nPUks
+        WECWmA1TtGgIUskhGJ8ilYiQGTLqWvejR2+s8sFMN2qmjvJ0xSVQq6pIBpvaUe3P
+        KcX2k6ckD9GSI/VT7Ge5EOHOkd7R9j7RGfPhunIWD+UpOdbglW/6gdJAXHzdnu7t
+        EuQ9paxMcODkvO8a+O2Y8SmvGQPmAvMxz4o/uuBX85YylqHqCowl8CP49z/4VQP2
+        tXd1XYpY8Agx9lCw9prpuw==;
+X-Authed-Username: aGVpbmVyY29uc3RydWN0aW9uQHdpbGRibHVlLm5ldA==
+Received: from [10.80.118.2] ([10.80.118.2:37532] helo=md02.jasper.bos.sync.lan)
+        by mail2.directv.syn-alias.com (envelope-from <heinerconstruction@wildblue.net>)
+        (ecelerity 3.6.25.56547 r(Core:3.6.25.0)) with ESMTP
+        id 5E/C9-06922-D3B72606; Mon, 29 Mar 2021 21:13:34 -0400
+Date:   Mon, 29 Mar 2021 21:13:33 -0400 (EDT)
+From:   Rowell Hambrick <heinerconstruction@wildblue.net>
+Reply-To: rowellhamb@outlook.com
+To:     lzhaonf@126.com
+Message-ID: <295730056.44360564.1617066813766.JavaMail.zimbra@wildblue.net>
+Subject: 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ethernet/netronome/nfp: Fix a use after free in
- nfp_bpf_ctrl_msg_rx
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161706420894.10022.11354117385100184224.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Mar 2021 00:30:08 +0000
-References: <20210329115002.8557-1-lyl2019@mail.ustc.edu.cn>
-In-Reply-To: <20210329115002.8557-1-lyl2019@mail.ustc.edu.cn>
-To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Cc:     kuba@kernel.org, simon.horman@netronome.com, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [165.0.5.76]
+X-Mailer: Zimbra 8.7.6_GA_1776 (zclient/8.7.6_GA_1776)
+Thread-Index: WsdGahJ0QPuZ6ZcDRqcLkMcQpqxfLg==
+Thread-Topic: 
+X-Vade-Verditct: clean
+X-Vade-Analysis: gggruggvucftvghtrhhoucdtuddrgeduledrudehledggeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuufgjpfetvefqtfdpggfktefutefvpdfqfgfvnecuuegrihhlohhuthemuceftddunecugfhmphhthicushhusghjvggtthculddutddmnecujfgurhepfffhrhfvkffugggtgfhiofhtsehtjegttdertdejnecuhfhrohhmpeftohifvghllhcujfgrmhgsrhhitghkuceohhgvihhnvghrtghonhhsthhruhgtthhiohhnseifihhluggslhhuvgdrnhgvtheqnecuggftrfgrthhtvghrnhepgfffudelvdeuteejheehjeeltedvjedvudfhieevjeefveeigefftdelleegfeevnecukfhppedutddrkedtrdduudekrddvpdduieehrddtrdehrdejieenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepihhnvghtpedutddrkedtrdduudekrddvnedpmhgrihhlfhhrohhmpehhvghinhgvrhgtohhnshhtrhhutghtihhonhesfihilhgusghluhgvrdhnvghtnedprhgtphhtthhopehnvgifjhhinhhhrghisehvihhprdduieefrdgtohhmne
+X-Vade-Client: VIASAT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Mon, 29 Mar 2021 04:50:02 -0700 you wrote:
-> In nfp_bpf_ctrl_msg_rx, if
-> nfp_ccm_get_type(skb) == NFP_CCM_TYPE_BPF_BPF_EVENT is true, the skb
-> will be freed. But the skb is still used by nfp_ccm_rx(&bpf->ccm, skb).
-> 
-> My patch adds a return when the skb was freed.
-> 
-> Fixes: bcf0cafab44fd ("nfp: split out common control message handling code")
-> Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-> 
-> [...]
-
-Here is the summary with links:
-  - ethernet/netronome/nfp: Fix a use after free in nfp_bpf_ctrl_msg_rx
-    https://git.kernel.org/netdev/net/c/6e5a03bcba44
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Did you get my last mail
