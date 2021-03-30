@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 841B134EF66
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3394B34F001
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:44:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232001AbhC3R0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 13:26:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54690 "EHLO mail.kernel.org"
+        id S232388AbhC3Rn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 13:43:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231636AbhC3RZm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 13:25:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0B78E619C0;
-        Tue, 30 Mar 2021 17:25:42 +0000 (UTC)
+        id S231951AbhC3RnX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 13:43:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B02461864;
+        Tue, 30 Mar 2021 17:43:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617125142;
-        bh=3m3n1CisZOWSF8y2dPFzwvPHYbC9T7DjCEhT4Mq0874=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YR4/jn/ivVjx8xP+VSHCIB3rXaFVmY9Co8KWU/Mpje5KnAEoFXqJaVw+Y+SPRpJQ5
-         0sotTwKAsCUEblVH6MBk7TxHM6Ft/H2fJ+BeOr6x5VKE6NOMRW4lrvtdNheuNpa3wv
-         5P6W4WtDF+CnQJVfGG/DDoaUfXDzHCSHEs6pDWKsVsjQDp/vDrUZ3dyp8SSWnhIm1z
-         3eZP5egc2IQpwhXVbcAr1OYuBF09wzn7DtncIXJjIRxwbNSb6JDuHtPovS0pBvLWA5
-         oVU+KpUFZd6GJi8pzFzIrgY6TGzToW4KMzqrTS+ANBL1X9n04lNup1bd4OVB8PFUEx
-         887BMlLBuzWTQ==
-Received: by mail-wr1-f46.google.com with SMTP id v11so16974439wro.7;
-        Tue, 30 Mar 2021 10:25:41 -0700 (PDT)
-X-Gm-Message-State: AOAM5335o1HBcWqYbg40AgfOJN5KMbZT68l+5icMuOVRGJT9Ddt1N1hN
-        gRiRztQ6HiluoUHdX1ndwPQ3iM9jHsVJJhApeUk=
-X-Google-Smtp-Source: ABdhPJxcgd+w6lzaIHyrXLbKihocSpP1qPfgqfzCmQjn8ea4TdoS660U6qmDW7VOWW9/69JdtoB+uhzrPenZkBdC3Mk=
-X-Received: by 2002:adf:8b58:: with SMTP id v24mr34306606wra.160.1617125140703;
- Tue, 30 Mar 2021 10:25:40 -0700 (PDT)
+        s=k20201202; t=1617126202;
+        bh=uYaW/QH+iAL6DZPnWmQKFiyh6Yn3jj88Y9rk5M4PDI8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KY4NiuirAgvvcw9rU/I4HctuKyILN0nc84NHEluvNhqgbaJdqtC8zmqpUdBHOSEW0
+         0Zvxpr5oFYZJNlqLJB9IkCEoTfRLKnd4LPFFvM1GyD3eRCMrbZunZyPkMx9xr+uG/u
+         FN+it0rz/R6PKJOch/GPzIOrF322E/MjpSy9T3sd+XN6kn8i5TVSyN5MupoTnEsmos
+         oGKG5TgemCns8Y0bcJAGNmt7aO/JFCJT7vPBUIkoOhRDpndlwL4N2KvzgEjrAOHBMp
+         jrcCb/o/5sXqMGJ5XpB8tXWQDbE3Ioc+byun+ZzuvxRDrNEFsHVPp5EjNKEfUKjFaL
+         CxuREO80YaIGw==
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, nic_swsd@realtek.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v4 0/3] PCI: Disable parity checking
+Date:   Tue, 30 Mar 2021 12:43:15 -0500
+Message-Id: <20210330174318.1289680-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210330113419.4616-1-ciara.loftus@intel.com> <20210330113419.4616-4-ciara.loftus@intel.com>
-In-Reply-To: <20210330113419.4616-4-ciara.loftus@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Date:   Tue, 30 Mar 2021 19:25:29 +0200
-X-Gmail-Original-Message-ID: <CAJ+HfNicARR3ZoH38_ANx9t5cqFn9DEfvegjUSN019un5xcgnA@mail.gmail.com>
-Message-ID: <CAJ+HfNicARR3ZoH38_ANx9t5cqFn9DEfvegjUSN019un5xcgnA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf 3/3] libbpf: only create rx and tx XDP rings when necessary
-To:     Ciara Loftus <ciara.loftus@intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Mar 2021 at 14:05, Ciara Loftus <ciara.loftus@intel.com> wrote:
->
-> Prior to this commit xsk_socket__create(_shared) always attempted to crea=
-te
-> the rx and tx rings for the socket. However this causes an issue when the
-> socket being setup is that which shares the fd with the UMEM. If a
-> previous call to this function failed with this socket after the rings we=
-re
-> set up, a subsequent call would always fail because the rings are not tor=
-n
-> down after the first call and when we try to set them up again we encount=
-er
-> an error because they already exist. Solve this by remembering whether th=
-e
-> rings were set up by introducing a new flag to struct xsk_umem, and
-> checking it before setting up the rings for sockets which share the fd
-> with the UMEM.
->
-> Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
->
-> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
-> ---
->  tools/lib/bpf/xsk.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index d4991ddff05a..12110bba4cc0 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -14,6 +14,7 @@
->  #include <unistd.h>
->  #include <arpa/inet.h>
->  #include <asm/barrier.h>
-> +#include <linux/bitops.h>
->  #include <linux/compiler.h>
->  #include <linux/ethtool.h>
->  #include <linux/filter.h>
-> @@ -46,6 +47,9 @@
->   #define PF_XDP AF_XDP
->  #endif
->
-> +#define XDP_RX_RING_SETUP_DONE BIT(0)
-> +#define XDP_TX_RING_SETUP_DONE BIT(1)
-> +
->  enum xsk_prog {
->         XSK_PROG_FALLBACK,
->         XSK_PROG_REDIRECT_FLAGS,
-> @@ -59,6 +63,7 @@ struct xsk_umem {
->         int fd;
->         int refcount;
->         struct list_head ctx_list;
-> +       __u8 ring_setup_status;
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Are we envisioning any more flags here? Otherwise, just a simple
-bool/__u8 stating ring_setup_complete or ring_is_setup and just use
-true/false and a simple check w/o bitwise and.
+I think this is essentially the same as Heiner's v3 posting, with these
+changes:
+
+  - Added a pci_disable_parity() interface in pci.c instead of making a
+    public pci_quirk_broken_parity() because quirks.c is only compiled when
+    CONFIG_PCI_QUIRKS=y.
+
+  - Removed the setting of dev->broken_parity_status because it's really
+    only used by EDAC error reporting, and if we disable parity error
+    reporting, we shouldn't get there.  This change will be visible in the
+    sysfs "broken_parity_status" file, but I doubt that's important.
+
+I dropped Leon's reviewed-by because I fiddled with the code.  Similarly I
+haven't added your signed-off-by, Heiner, because I don't want you blamed
+for my errors.  But if this looks OK to you I'll add it.
+
+v1: https://lore.kernel.org/r/a6f09e1b-4076-59d1-a4e3-05c5955bfff2@gmail.com
+v2: https://lore.kernel.org/r/bbc33d9b-af7c-8910-cdb3-fa3e3b2e3266@gmail.com
+- reduce scope of N2100 change to using the new PCI core quirk
+v3: https://lore.kernel.org/r/992c800e-2e12-16b0-4845-6311b295d932@gmail.com/
+- improve commit message of patch 2
+
+v4:
+- add pci_disable_parity() (not conditional on CONFIG_PCI_QUIRKS)
+- remove setting of dev->broken_parity_status
 
 
-Bj=C3=B6rn
+Bjorn Helgaas (1):
+  PCI: Add pci_disable_parity()
+
+Heiner Kallweit (2):
+  IB/mthca: Disable parity reporting
+  ARM: iop32x: disable N2100 PCI parity reporting
+
+ arch/arm/mach-iop32x/n2100.c              |  8 ++++----
+ drivers/net/ethernet/realtek/r8169_main.c | 14 --------------
+ drivers/pci/pci.c                         | 17 +++++++++++++++++
+ drivers/pci/quirks.c                      | 13 ++++---------
+ include/linux/pci.h                       |  1 +
+ 5 files changed, 26 insertions(+), 27 deletions(-)
+
+-- 
+2.25.1
+
