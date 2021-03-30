@@ -2,60 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD7634E477
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7236A34E4A7
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 11:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbhC3JcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 05:32:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57212 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231708AbhC3Jb4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 05:31:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 190F86195D;
-        Tue, 30 Mar 2021 09:31:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617096715;
-        bh=BpKzBVeqnwaVwGkM7DZHfqbqAkT3YLrMqWKYlAvZR1M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gvBRyFV/PWB+wQSDwH8nwqBlxgOVa8DUFhq3UF3TVrddNOKU0Wi1QbmuCoA2FI7Q8
-         i36qG8lZzYsO7Vx4SsRYdOTSm7Jv6RpaKCSDG1OOvjF+E0tbznAltY7VpbA0BfRRuj
-         xV2C6ArN+oJ7+wWyx6RK+6roOUUHmRFc2elS1K6ZAKbCxPwS5XHJRtDOfD1WdaBwMh
-         0TDZZxLxDDt3lt+YSRzUy/RWr4Rp0V7C4+SJl5ebjCHr2omWfvKTQGb8AGXmP7sq0V
-         l7DVDcThU2qlny0HChdZtRA7RC7kqzHZNHmwwSivcOVD5NiPftTI+NoZ1jt0lw2Axi
-         9R7NIlxYjKMag==
-Date:   Tue, 30 Mar 2021 10:31:49 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Jianlin Lv <Jianlin.Lv@arm.com>
-Cc:     bpf@vger.kernel.org, zlim.lnx@gmail.com, catalin.marinas@arm.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, iecedge@gmail.com
-Subject: Re: [PATCH bpf-next] bpf: arm64: Redefine MOV consistent with arch
- insn
-Message-ID: <20210330093149.GA5281@willie-the-truck>
-References: <20210330074235.525747-1-Jianlin.Lv@arm.com>
+        id S231635AbhC3Jnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 05:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231532AbhC3JnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 05:43:14 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CB8C061762
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 02:43:13 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id n138so22848941lfa.3
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 02:43:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JMP8eDgEhkYe8HifK8hiZaQ+dPjG3XHyor02oL/kDAI=;
+        b=MlwnLNsqgBxL8YUSWjm+MIxEqUOZf3gHDWgUjVZixnVpKX0TjBh6rwSeXh4NiWe3Ba
+         2YfWjzuxp+xcUPiO7SF/G6WvOxIgDZ/uMVye3/HgZF8+Pk0AVP2Q+M8WacMfy0PT8dfA
+         kykhZvNML3Xx94Xu9sHbrftYuRGr24ZUwsNF4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JMP8eDgEhkYe8HifK8hiZaQ+dPjG3XHyor02oL/kDAI=;
+        b=nQoe4qSeGUXCC1XZ71YqqcdvDTU3UeqsZgeZhBAIuhYATztaAhCXVeqptAgnm6EJLD
+         GKpnPp+W3E4IdEQE2ZljS9GhMws3Dt1kyZt1/LRo96D/kZS8FYA30dZki0AgTLI+eMvQ
+         RiwTeHCir1oNxSYeq9TuW1AZdmBW14BT02XDbrm/6EWPrsNgngd2iIyD7isjiQA5Rqhe
+         4Y6yG25CwdJglworf01muTpW8yqToBA1ZTdkDiQ7cYeYW/a1xBDhfvVbh2BOBEQLa2Yi
+         Pr0nLdOWDAF5mtc855niWvlqovTnVcEtMqBcvbNA1ugjWKSZGWuMYlVLCUDg0JTYausb
+         MZ1A==
+X-Gm-Message-State: AOAM5303EW7/jU0UPhUH9csglEJrO5+G110wgezXChNQNSNg2mxDZ+Kq
+        iMb/RAliz3Fe7iTCYL0DLZNPPkrnm5wfaxxbPt2ehQ==
+X-Google-Smtp-Source: ABdhPJzEQTFUznIaG0ADYbGDgvJk50ou2vGmKxTVWu6BgICvmUZ2b7dDC8Vm09470UJMQxH0V/sMwUEQbIsQkaUPstM=
+X-Received: by 2002:ac2:5f5b:: with SMTP id 27mr1466084lfz.325.1617097392308;
+ Tue, 30 Mar 2021 02:43:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210330074235.525747-1-Jianlin.Lv@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20210325015124.1543397-1-kafai@fb.com>
+In-Reply-To: <20210325015124.1543397-1-kafai@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Tue, 30 Mar 2021 10:43:01 +0100
+Message-ID: <CACAyw9-N6FO67JVJsO=XTohf=4-uMwsSi+Ym2Nxj0+GpofJJHQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 03:42:35PM +0800, Jianlin Lv wrote:
-> A64_MOV is currently mapped to Add Instruction. Architecturally MOV
-> (register) is an alias of ORR (shifted register) and MOV (to or from SP)
-> is an alias of ADD (immediate).
-> This patch redefines A64_MOV and uses existing functionality
-> aarch64_insn_gen_move_reg() in insn.c to encode MOV (register) instruction.
-> For moving between register and stack pointer, rename macro to A64_MOV_SP.
+On Thu, 25 Mar 2021 at 01:52, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This series adds support to allow bpf program calling kernel function.
 
-What does this gain us? There's no requirement for a BPF "MOV" to match an
-arm64 architectural "MOV", so what's the up-side of aligning them like this?
+I think there are more build problems with this. Has anyone hit this before?
 
-Cheers,
+$ CLANG=clang-12 O=../kbuild/vm ./tools/testing/selftests/bpf/vmtest.sh -j 7
 
-Will
+  GEN-SKEL [test_progs-no_alu32] bind6_prog.skel.h
+libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
+  GEN-SKEL [test_progs-no_alu32] bind_perm.skel.h
+libbpf: elf: skipping unrecognized data section(5) .rodata.str1.1
+  GEN-SKEL [test_progs-no_alu32] bpf_cubic.skel.h
+  GEN-SKEL [test_progs-no_alu32] bpf_dctcp.skel.h
+  GEN-SKEL [test_progs-no_alu32] bpf_flow.skel.h
+libbpf: failed to find BTF for extern 'tcp_cong_avoid_ai' [27] section: -2
+Error: failed to open BPF object file: No such file or directory
+make: *** [Makefile:453:
+/home/lorenz/dev/kbuild/vm//no_alu32/bpf_cubic.skel.h] Error 255
+make: *** Deleting file '/home/lorenz/dev/kbuild/vm//no_alu32/bpf_cubic.skel.h'
+make: *** Waiting for unfinished jobs....
+libbpf: failed to find BTF for extern 'tcp_reno_cong_avoid' [38] section: -2
+Error: failed to open BPF object file: No such file or directory
+make: *** [Makefile:451:
+/home/lorenz/dev/kbuild/vm//no_alu32/bpf_dctcp.skel.h] Error 255
+make: *** Deleting file '/home/lorenz/dev/kbuild/vm//no_alu32/bpf_dctcp.skel.h'
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
