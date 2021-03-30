@@ -2,101 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D5AB34EB66
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F0534EB69
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232023AbhC3PA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 11:00:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56962 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231933AbhC3PAX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 11:00:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 59B0E6192B;
-        Tue, 30 Mar 2021 15:00:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617116420;
-        bh=aRtQQ/CWsci/gTHui7huLorPZeb20hNQIruCW4doWMg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=MpR1Evi6HUZB2xwbP3/lpFyXQ7IK7Oga4oxh7vMBpj5US48MA2+nwEBrCWJDd6uH0
-         ahhz1fachKuJ4vyna33bLVqxW9auUhiT23l9y/tkbnlEnUBoeIywEC1E7wymxK0Syx
-         p3X00eoGP5Jq2Fo1kHfiooJWc9rQ13C+1GJgRQQmnwE/fqZWodnPW0m6oDwDAzk6Fc
-         vrqZNzjh6GcDgz4qv5HRBIz4ya9VuEOhxqEZ4un+87b0jUYH2yPm2lLNBtA56d81pX
-         j+QMfLlksazs0ZjoXbxDYVHZb1eJZZAZKqGUap7OHazulzUvaXlm0ARvQ4kckNApiA
-         YIpXXvrn3j6tg==
-Date:   Tue, 30 Mar 2021 10:00:19 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <20210330150019.GA1270419@bjorn-Precision-5520>
+        id S232085AbhC3PBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 11:01:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232108AbhC3PBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:01:19 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC447C061574;
+        Tue, 30 Mar 2021 08:01:18 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id x26so12380967pfn.0;
+        Tue, 30 Mar 2021 08:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aIIhZH7MEe4emdWSnxRXrt2i6gVhMrPoGfFDilIz73w=;
+        b=desaCWlpymXZF2C2RzEsDfZ2b7i0/DZxG1Xg8u0WwaQ7wG19wt/J3/tljLcHcFkpuC
+         Q+kh6ErgCJYsAtD+7RM9+daiMxg56uSvybIonRhORb5A37aw47qxIaacMab44wrgG5h/
+         c7mVRuMWgT46WSToNiizqAg1z9+umIqFopcZh+NUnaEJerpi7OCYU3Uc5zxZBPZFiG+A
+         GbJTTcfjOwuRY11sZkmSdczUMG9tiVBK9Lg8BE/sbBCM+WsI7lFf4fBGGCqk9BupEglw
+         wCThkRzqR3e22mIqkZUwFKKs1vtNRt+NwT08Be2FFuze3nzs6MnxYw/1GolhC1AZOYW1
+         G+vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aIIhZH7MEe4emdWSnxRXrt2i6gVhMrPoGfFDilIz73w=;
+        b=fZGjcfc92cQRVjEaZClQblV8v+v0A+Ml7McKF/KRmmv3LfaWcQmBfhvYxaSN3PVrtf
+         eXMIKVJgFjuitt4IiGzrNscKSaXur7HRPIGkKjmSFarH2tREjlahwtkMZMV7ZxB9RKgV
+         lrR/7fVUk8DYxi6BgQZ7ovih31dmulP3RWrffv2umKl8oy2YF9aIuUIg/JXGl0rGmW6E
+         bZlEFkjUEW5olmqjRU4Kn47l3/JbObmTTIE+y19/V6aGDdkzkj/5ZJSN/eFNV7jGZwxB
+         P8auMH1C8eLLXwnVD3HHkPb941q2pc8g87WHaJSets0YnebSYYsJukUfcnpAAQG22Jw5
+         NY3Q==
+X-Gm-Message-State: AOAM533GXqvbsL8Yn3VfgxSRoZeUQ6QvtEDBw1rYkD5jf3mGC6devUPf
+        JxsK/2rl9MijQD2I9JNzia8=
+X-Google-Smtp-Source: ABdhPJwV3sCo5WWG4iadqwdExPE23HtvV5WWaQLhxi1uqK2e1hLcxg/G93jwGe37N0QaxEy0ryL//w==
+X-Received: by 2002:a62:687:0:b029:1fb:2382:57b0 with SMTP id 129-20020a6206870000b02901fb238257b0mr1243247pfg.10.1617116478374;
+        Tue, 30 Mar 2021 08:01:18 -0700 (PDT)
+Received: from [192.168.0.4] ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id 22sm3116399pjl.31.2021.03.30.08.01.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Mar 2021 08:01:17 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 7/7] mld: add mc_lock for protecting
+ per-interface mld data
+To:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-s390@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
+References: <20210325161657.10517-1-ap420073@gmail.com>
+ <20210325161657.10517-8-ap420073@gmail.com>
+ <fd460c2b-b974-db00-5097-4af08f12c670@gmail.com>
+ <d3e101bb-14d2-4d91-6bc1-fbb766d69422@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Message-ID: <08f0a57c-8cad-2f62-0ba2-1bc6c6caad58@gmail.com>
+Date:   Wed, 31 Mar 2021 00:01:12 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210330135738.GU2710221@ziepe.ca>
+In-Reply-To: <d3e101bb-14d2-4d91-6bc1-fbb766d69422@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 10:57:38AM -0300, Jason Gunthorpe wrote:
-> On Mon, Mar 29, 2021 at 08:29:49PM -0500, Bjorn Helgaas wrote:
-> 
-> > I think I misunderstood Greg's subdirectory comment.  We already have
-> > directories like this:
-> 
-> Yes, IIRC, Greg's remark applies if you have to start creating
-> directories with manual kobjects.
-> 
-> > and aspm_ctrl_attr_group (for "link") is nicely done with static
-> > attributes.  So I think we could do something like this:
-> > 
-> >   /sys/bus/pci/devices/0000:01:00.0/   # PF directory
-> >     sriov/                             # SR-IOV related stuff
-> >       vf_total_msix
-> >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of first VF
-> >       ...
-> >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of last VF
-> 
-> It looks a bit odd that it isn't a subdirectory, but this seems
-> reasonable.
+On 3/30/21 9:24 PM, Eric Dumazet wrote:
+ >
+ >
+ > On 3/30/21 1:59 PM, Eric Dumazet wrote:
+ >>
+ >>
+ >> On 3/25/21 5:16 PM, Taehee Yoo wrote:
+ >>> The purpose of this lock is to avoid a bottleneck in the query/report
+ >>> event handler logic.
+ >>>
+ >>> By previous patches, almost all mld data is protected by RTNL.
+ >>> So, the query and report event handler, which is data path logic
+ >>> acquires RTNL too. Therefore if a lot of query and report events
+ >>> are received, it uses RTNL for a long time.
+ >>> So it makes the control-plane bottleneck because of using RTNL.
+ >>> In order to avoid this bottleneck, mc_lock is added.
+ >>>
+ >>> mc_lock protect only per-interface mld data and per-interface mld
+ >>> data is used in the query/report event handler logic.
+ >>> So, no longer rtnl_lock is needed in the query/report event handler 
+logic.
+ >>> Therefore bottleneck will be disappeared by mc_lock.
+ >>>
+ >>
+ >> What testsuite have you run exactly to validate this monster patch ?
+ >>
 
-Sorry, I missed your point; you'll have to lay it out more explicitly.
-I did intend that "sriov" *is* a subdirectory of the 0000:01:00.0
-directory.  The full paths would be:
+I've been using an application, which calls setsockopt() with the below 
+options.
+IPV6_ADD_MEMBERSHIP
+IPV6_DROP_MEMBERSHIP
+MCAST_JOIN_SOURCE_GROUP
+MCAST_LEAVE_SOURCE_GROUP
+MCAST_BLOCK_SOURCE
+MCAST_UNBLOCK_SOURCE
+MCAST_MSFILTER
+And checks out  /proc/net/mcfilter6 and /proc/net/igmp6.
 
-  /sys/bus/pci/devices/0000:01:00.0/sriov/vf_total_msix
-  /sys/bus/pci/devices/0000:01:00.0/sriov/vf_msix_count_BB:DD.F
-  ...
+ >> Have you used CONFIG_LOCKDEP=y / CONFIG_DEBUG_ATOMIC_SLEEP=y ?
+ >>
 
-> > For NVMe, a write to vf_msix_count_* would have to auto-offline the VF
-> > before asking the PF to assign the vectors, as Jason suggests above.
-> 
-> It is also not awful if it returns EBUSY if the admin hasn't done
-> some device-specific offline sequence.
+Yes, I'm using both configs.
 
-Agreed.  The concept of "offline" is not visible in this interface.
+ >>> Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
+ >>> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+ >>
+ >> [...]
+ >>
+ >>>   /*
+ >>> - *	device multicast group del
+ >>> + * device multicast group del
+ >>>    */
+ >>>   int __ipv6_dev_mc_dec(struct inet6_dev *idev, const struct 
+in6_addr *addr)
+ >>>   {
+ >>> @@ -943,8 +967,9 @@ int __ipv6_dev_mc_dec(struct inet6_dev *idev, 
+const struct in6_addr *addr)
+ >>>
+ >>>   	ASSERT_RTNL();
+ >>>
+ >>> +	mutex_lock(&idev->mc_lock);
+ >>>   	for (map = &idev->mc_list;
+ >>> -	     (ma = rtnl_dereference(*map));
+ >>> +	     (ma = mc_dereference(*map, idev));
+ >>>   	     map = &ma->next) {
+ >>>   		if (ipv6_addr_equal(&ma->mca_addr, addr)) {
+ >>>   			if (--ma->mca_users == 0) {
+ >>
+ >> This can be called with rcu_bh held, thus :
+ >>
+ >> BUG: sleeping function called from invalid context at 
+kernel/locking/mutex.c:928
+ >> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 4624, name: 
+kworker/1:2
+ >> 4 locks held by kworker/1:2/4624:
+ >>   #0: ffff88802135d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, 
+at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ >>   #0: ffff88802135d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, 
+at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ >>   #0: ffff88802135d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, 
+at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ >>   #0: ffff88802135d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, 
+at: set_work_data kernel/workqueue.c:616 [inline]
+ >>   #0: ffff88802135d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, 
+at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ >>   #0: ffff88802135d138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, 
+at: process_one_work+0x871/0x1600 kernel/workqueue.c:2246
+ >>   #1: ffffc90009adfda8 ((addr_chk_work).work){+.+.}-{0:0}, at: 
+process_one_work+0x8a5/0x1600 kernel/workqueue.c:2250
+ >>   #2: ffffffff8d66d328 (rtnl_mutex){+.+.}-{3:3}, at: 
+addrconf_verify_work+0xa/0x20 net/ipv6/addrconf.c:4572
+ >>   #3: ffffffff8bf74300 (rcu_read_lock_bh){....}-{1:2}, at: 
+addrconf_verify_rtnl+0x2b/0x1150 net/ipv6/addrconf.c:4459
+ >> Preemption disabled at:
+ >> [<ffffffff87b39f41>] local_bh_disable include/linux/bottom_half.h:19 
+[inline]
+ >> [<ffffffff87b39f41>] rcu_read_lock_bh include/linux/rcupdate.h:727 
+[inline]
+ >> [<ffffffff87b39f41>] addrconf_verify_rtnl+0x41/0x1150 
+net/ipv6/addrconf.c:4461
+ >> CPU: 1 PID: 4624 Comm: kworker/1:2 Not tainted 5.12.0-rc4-syzkaller #0
+ >> Hardware name: Google Google Compute Engine/Google Compute Engine, 
+BIOS Google 01/01/2011
+ >> Workqueue: ipv6_addrconf addrconf_verify_work
+ >> Call Trace:
+ >>   __dump_stack lib/dump_stack.c:79 [inline]
+ >>   dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ >>   ___might_sleep.cold+0x1f1/0x237 kernel/sched/core.c:8328
+ >>   __mutex_lock_common kernel/locking/mutex.c:928 [inline]
+ >>   __mutex_lock+0xa9/0x1120 kernel/locking/mutex.c:1096
+ >>   __ipv6_dev_mc_dec+0x5f/0x340 net/ipv6/mcast.c:970
+ >>   addrconf_leave_solict net/ipv6/addrconf.c:2182 [inline]
+ >>   addrconf_leave_solict net/ipv6/addrconf.c:2174 [inline]
+ >>   __ipv6_ifa_notify+0x5b6/0xa90 net/ipv6/addrconf.c:6077
+ >>   ipv6_ifa_notify net/ipv6/addrconf.c:6100 [inline]
+ >>   ipv6_del_addr+0x463/0xae0 net/ipv6/addrconf.c:1294
+ >>   addrconf_verify_rtnl+0xd59/0x1150 net/ipv6/addrconf.c:4488
+ >>   addrconf_verify_work+0xf/0x20 net/ipv6/addrconf.c:4573
+ >>   process_one_work+0x98d/0x1600 kernel/workqueue.c:2275
+ >>   worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ >>   kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ >>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+ >>
+ >
+ > I will test this fix:
 
-> I'm just worried adding the idea of offline here is going to open a
-> huge can of worms in terms of defining what it means, and the very
-> next ask will be to start all VFs in offline mode. This would be some
-> weird overlap with the no-driver-autoprobing sysfs. We've been
-> thinking about this alot here and there are not easy answers.
+Thanks a lot!
 
-We haven't added any idea of offline in the sysfs interface.  I'm
-only trying to figure out whether it would be possible to use this
-interface on top of devices with an offline concept, e.g., NVMe.
-
-> mlx5 sort of has an offline concept too, but we have been modeling it
-> in devlink, which is kind of like nvme-cli for networking.
-> 
-> Jason
+ >
+ > diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+ > index 
+120073ffb666b18678e3145d91dac59fa865a592..8f3883f4cb4a15a0749b8f0fe00061e483ea26ca 
+100644
+ > --- a/net/ipv6/addrconf.c
+ > +++ b/net/ipv6/addrconf.c
+ > @@ -4485,7 +4485,9 @@ static void addrconf_verify_rtnl(void)
+ >                              age >= ifp->valid_lft) {
+ >                                  spin_unlock(&ifp->lock);
+ >                                  in6_ifa_hold(ifp);
+ > +                               rcu_read_unlock_bh();
+ >                                  ipv6_del_addr(ifp);
+ > +                               rcu_read_lock_bh();
+ >                                  goto restart;
+ >                          } else if (ifp->prefered_lft == 
+INFINITY_LIFE_TIME) {
+ >                                  spin_unlock(&ifp->lock);
+ >
