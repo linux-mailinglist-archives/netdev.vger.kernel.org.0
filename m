@@ -2,114 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0286234EBF1
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0E7C34EBFC
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbhC3PQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 11:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbhC3PQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:16:19 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F39C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:16:19 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id dm8so18660227edb.2
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JBeWOzpgkgAmreLHtMmdVr3HcLHRKehe5YCWkZ52w64=;
-        b=Bf74gY6pnKNp8ygNox3PZ64Ir+ww/1cuOel8mb2kSDJqYeMtzVIZAckkc4XWFWn+Hq
-         PKRSqeODad+m1oxf0TN04cuMKDZKMpb6qZkQ8aM57PGnD3LExaan0JH996TsICVRnLuj
-         yGMpxnyrpIg+zGtDohWOWoFA4jup0/U10wSGKuRhAIDQfaLrDru790Vo0YoaxaRbRXBg
-         x7RLWRPVUMcnBpIpDC/pkf49EFu/7N17pG49HdJeCP/Wa6IvZLgmFcJcfJp6JQbe4ibX
-         Ap2TUM5GbKkTzDC17a3/T76F/ADcGQu3GuQHM/mhKyqUCth20XC5KG37wvPASDiObAux
-         5VlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JBeWOzpgkgAmreLHtMmdVr3HcLHRKehe5YCWkZ52w64=;
-        b=kilJe/rBrOJpAu6+W52OTwrRlQrXD+yfd4QrYD5IR3NcWsKnW7wUM/9ZV+zz073HP6
-         gCf1uccPAuXGdNwcvZeYQDcHVYnuBsuqORMvsasrFkxU49IxkSCeclx7RcYEV/9jhjCh
-         v0A0/aDA/GfXdzsQYWyk/aqMzCNG7BMaVldNbgsp8wiA+EWOAJNhHDFkmdYMUoaIegTE
-         h1D74sRX6mT/xsYZ0pa7ELBpIVcLdGM5bpIMPmc0KlA7wHAIFt2XmwqkC8yqYg1KiqSh
-         SAZ0LHjowMnwSCzYo7mOFwKgR590IfW03PuN/zKuPx65Yq0IqpTG867kMdXXpw8YImpd
-         IGyw==
-X-Gm-Message-State: AOAM530ZQxTPJsFIuT6+jIlaLYtnDKlPdu1LHfKHvislwFwLX3LqJ6Ee
-        mPAJ0uU39EdfzHKTymfEWf+fTavtLRA=
-X-Google-Smtp-Source: ABdhPJwOqnb2DrAu6KFDC4qLMx+BEXDJj5sm0pyZpZx5vwHBHdcpVt0PsxTCGqxfxr0Zkkdw1hhiow==
-X-Received: by 2002:aa7:c684:: with SMTP id n4mr20268160edq.141.1617117377666;
-        Tue, 30 Mar 2021 08:16:17 -0700 (PDT)
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
-        by smtp.gmail.com with ESMTPSA id gb4sm10164663ejc.122.2021.03.30.08.16.16
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Mar 2021 08:16:17 -0700 (PDT)
-Received: by mail-wm1-f43.google.com with SMTP id w203-20020a1c49d40000b029010c706d0642so1185457wma.0
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:16:16 -0700 (PDT)
-X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr4624428wmm.120.1617117376437;
- Tue, 30 Mar 2021 08:16:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1617099959.git.pabeni@redhat.com> <6430002178b54a389ea50413c7074ba9b48d6212.1617099959.git.pabeni@redhat.com>
-In-Reply-To: <6430002178b54a389ea50413c7074ba9b48d6212.1617099959.git.pabeni@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 30 Mar 2021 11:15:39 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdgNT8LfySseSB2Yaw8xm5woB8cM_BFrr=LH01L-98T0g@mail.gmail.com>
-Message-ID: <CA+FuTSdgNT8LfySseSB2Yaw8xm5woB8cM_BFrr=LH01L-98T0g@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/8] udp: fixup csum for GSO receive slow path
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
+        id S232014AbhC3PSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 11:18:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52448 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232001AbhC3PS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:18:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617117506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pr4bChSWJM7AYql5fyoyzsCTRbjbB2bLsmB/N87criU=;
+        b=JaF/nIsC3V4xEF4b5Ekb2ht7ByggwGpvN6Q2EJDAF+vrZPcQyr2QfsXwrWJ8a7J7Rtk/5t
+        RyrpoCpy+nHslMsWZNZxM2J1SeO0v5/cr+dNX021ldWILEhUfBmMyrcNev24Y4woAqEn9B
+        tledlh/ARTlih2nrYElaFXyD2MJXpNY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-248-NabwYdECNXuLyZor4lHL-w-1; Tue, 30 Mar 2021 11:18:24 -0400
+X-MC-Unique: NabwYdECNXuLyZor4lHL-w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A6E8C7449;
+        Tue, 30 Mar 2021 15:18:23 +0000 (UTC)
+Received: from ovpn-115-56.ams2.redhat.com (ovpn-115-56.ams2.redhat.com [10.36.115.56])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6B52360CE7;
+        Tue, 30 Mar 2021 15:18:22 +0000 (UTC)
+Message-ID: <99736955c48b19366a2a06f43ea4a0d507454dbc.camel@redhat.com>
+Subject: Re: [PATCH net] net: let skb_orphan_partial wake-up waiters.
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Date:   Tue, 30 Mar 2021 17:18:21 +0200
+In-Reply-To: <CANn89iJkXuhMdU0==ZV3s8z75p1hrhjY3reR_MWUh1i-gJVeCg@mail.gmail.com>
+References: <880d627b79b24c0f92a47203193ed11f48c3031e.1617113947.git.pabeni@redhat.com>
+         <CANn89iJQRf5GVhiUp3PA5y9p3_Nqrm8J2CcfxA=0yd9_aB=17w@mail.gmail.com>
+         <CANn89iJkXuhMdU0==ZV3s8z75p1hrhjY3reR_MWUh1i-gJVeCg@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 6:29 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> When UDP packets generated locally by a socket with UDP_SEGMENT
-> traverse the following path:
->
-> UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
->         UDP tunnel (rx) -> UDP socket (no UDP_GRO)
->
-> ip_summed will be set to CHECKSUM_PARTIAL at creation time and
-> such checksum mode will be preserved in the above path up to the
-> UDP tunnel receive code where we have:
->
->  __iptunnel_pull_header() -> skb_pull_rcsum() ->
-> skb_postpull_rcsum() -> __skb_postpull_rcsum()
->
-> The latter will convert the skb to CHECKSUM_NONE.
->
-> The UDP GSO packet will be later segmented as part of the rx socket
-> receive operation, and will present a CHECKSUM_NONE after segmentation.
->
-> Additionally the segmented packets UDP CB still refers to the original
-> GSO packet len. Overall that causes unexpected/wrong csum validation
-> errors later in the UDP receive path.
->
-> We could possibly address the issue with some additional checks and
-> csum mangling in the UDP tunnel code. Since the issue affects only
-> this UDP receive slow path, let's set a suitable csum status there.
->
-> Note that SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST packets lacking an UDP
-> encapsulation present a valid checksum when landing to udp_queue_rcv_skb(),
-> as the UDP checksum has been validated by the GRO engine.
->
-> v2 -> v3:
->  - even more verbose commit message and comments
->
-> v1 -> v2:
->  - restrict the csum update to the packets strictly needing them
->  - hopefully clarify the commit message and code comments
->
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+On Tue, 2021-03-30 at 16:40 +0200, Eric Dumazet wrote:
+> On Tue, Mar 30, 2021 at 4:39 PM Eric Dumazet <edumazet@google.com> wrote:
+> > On Tue, Mar 30, 2021 at 4:25 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > Currently the mentioned helper can end-up freeing the socket wmem
+> > > without waking-up any processes waiting for more write memory.
+> > > 
+> > > If the partially orphaned skb is attached to an UDP (or raw) socket,
+> > > the lack of wake-up can hang the user-space.
+> > > 
+> > > Address the issue invoking the write_space callback after
+> > > releasing the memory, if the old skb destructor requires that.
+> > > 
+> > > Fixes: f6ba8d33cfbb ("netem: fix skb_orphan_partial()")
+> > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > > ---
+> > >  net/core/sock.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > > 
+> > > diff --git a/net/core/sock.c b/net/core/sock.c
+> > > index 0ed98f20448a2..7a38332d748e7 100644
+> > > --- a/net/core/sock.c
+> > > +++ b/net/core/sock.c
+> > > @@ -2137,6 +2137,8 @@ void skb_orphan_partial(struct sk_buff *skb)
+> > > 
+> > >                 if (refcount_inc_not_zero(&sk->sk_refcnt)) {
+> > >                         WARN_ON(refcount_sub_and_test(skb->truesize, &sk->sk_wmem_alloc));
+> > > +                       if (skb->destructor == sock_wfree)
+> > > +                               sk->sk_write_space(sk);
+> > 
+> > Interesting.
+> > 
+> > Why TCP is not a problem here ?
 
-Reviewed-by: Willem de Bruijn <willemb@google.com>
+AFAICS, tcp_wfree() does not call sk->sk_write_space(). Processes
+waiting for wmem are woken by ack processing.
+
+> > I would rather replace WARN_ON(refcount_sub_and_test(skb->truesize,
+> > &sk->sk_wmem_alloc)) by :
+> >                         skb_orphan(skb);
+> 
+> And of course re-add
+>                         skb->sk = sk;
+
+Double checking to be sure. The patched slice of skb_orphan_partial()
+will then look like:
+
+	if (can_skb_orphan_partial(skb)) {
+		struct sock *sk = skb->sk;
+		
+		if (refcount_inc_not_zero(&sk->sk_refcnt)) {
+			skb_orphan(skb);
+			skb->sk = sk;
+			skb->destructor = sock_efree;
+		}
+	} // ...
+
+Am I correct?
+
+Thanks!
+
+Paolo
+
