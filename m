@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58AA334F268
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 22:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1573634F26F
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 22:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbhC3Uu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 16:50:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56310 "EHLO mail.kernel.org"
+        id S232286AbhC3Uub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 16:50:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229940AbhC3UuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 16:50:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E313D619BC;
-        Tue, 30 Mar 2021 20:50:08 +0000 (UTC)
+        id S231874AbhC3UuL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 16:50:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1DFC8619CA;
+        Tue, 30 Mar 2021 20:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617137408;
-        bh=98kqGMBRnwrEtsNDWdxLgCVzrH/pvfmwINwRdQiHSiI=;
+        s=k20201202; t=1617137411;
+        bh=4LQ2hLfYRpKz80Teewy7dce/czx0Fwd38bFfT9v5nQ4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gd8T06n2wPuNTK+eVcBvpYWKDMkl3VqoZnE/JwFOyG3+Dx1SR8OFdOZdARmKcj8uO
-         S/H9J9+b07N4voL6tg1THqgg+uUWpEvJzHnDERR43bVpbLQyir3M8+GJNrtbMvFRVI
-         4Ii4L2MVyjfC512BcSoBZqLwrLi/OA1xBk2jMGxxtoZLx8QEWHMsWglNjoP4CgOJGc
-         L+k3zj2WXByYsYeEGSYjWHMj54p7e+xJeUCdXnhvIkz4yVC8itUvo7TrSleWbNs3xs
-         mA2zkUKcD+uGUVSe1q4u65p5uhdfKu70FQH1XhmF9sKyXJsRerhojH8oWrZrA66fH1
-         Xp1EARNvW+zxQ==
+        b=WIzwSOEo1eqq4Yki2yaHb+CUOyZ81SGcbgJhWF7JgOQgMXfacVol6wxp8ncomVadK
+         CSgKZ9BUtNgaWcu+bkkf3RLr2NJ3GYEQiVduiCi0iiK5audzZJ5cSlEIPz+T5O71ty
+         159iOrQnwWFuk9W2suCiMrOSropCNWMJZbvh3NMnHatwJHljyHDX2Yf9rSAyLXE42S
+         VOAkenTsJe0iIt2f20a0bd+cVyBDLhYEm+yOVW1qum+xVvvkQkH2X4jrBX5VEJmZZE
+         5bhWfEEUk83JrorqbdMM/8hhHhVYWuBFi5Oc0exaEO7t8gjWVzzaGrh3ATQpyn+CwG
+         PK3T4KRBLMYxQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DA68660A5B;
-        Tue, 30 Mar 2021 20:50:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 14D9260A3B;
+        Tue, 30 Mar 2021 20:50:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: qrtr: Fix memory leak on qrtr_tx_wait failure
+Subject: Re: [PATCH -next v2 1/2] mISDN: Use DEFINE_SPINLOCK() for spinlock
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161713740888.14455.11125778543288777755.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Mar 2021 20:50:08 +0000
-References: <1617113468-19222-1-git-send-email-loic.poulain@linaro.org>
-In-Reply-To: <1617113468-19222-1-git-send-email-loic.poulain@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
-        bjorn.andersson@linaro.org, kuba@kernel.org, davem@davemloft.net
+Message-Id: <161713741108.14455.9996520147767264569.git-patchwork-notify@kernel.org>
+Date:   Tue, 30 Mar 2021 20:50:11 +0000
+References: <20210330022416.528300-1-liushixin2@huawei.com>
+In-Reply-To: <20210330022416.528300-1-liushixin2@huawei.com>
+To:     Shixin Liu <liushixin2@huawei.com>
+Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 30 Mar 2021 16:11:08 +0200 you wrote:
-> qrtr_tx_wait does not check for radix_tree_insert failure, causing
-> the 'flow' object to be unreferenced after qrtr_tx_wait return. Fix
-> that by releasing flow on radix_tree_insert failure.
+On Tue, 30 Mar 2021 10:24:14 +0800 you wrote:
+> spinlock can be initialized automatically with DEFINE_SPINLOCK()
+> rather than explicitly calling spin_lock_init().
 > 
-> Fixes: 5fdeb0d372ab ("net: qrtr: Implement outgoing flow control")
-> Reported-by: syzbot+739016799a89c530b32a@syzkaller.appspotmail.com
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> Changelog:
+> From v1:
+> 1. fix the mistake reported by kernel test robot.
 > 
 > [...]
 
 Here is the summary with links:
-  - net: qrtr: Fix memory leak on qrtr_tx_wait failure
-    https://git.kernel.org/netdev/net/c/8a03dd925786
+  - [-next,v2,1/2] mISDN: Use DEFINE_SPINLOCK() for spinlock
+    https://git.kernel.org/netdev/net-next/c/77053fb7b428
+  - [-next,v2,2/2] mISDN: Use LIST_HEAD() for list_head
+    https://git.kernel.org/netdev/net-next/c/5979415d00d4
 
 You are awesome, thank you!
 --
