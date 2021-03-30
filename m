@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7CB34E6B5
+	by mail.lfdr.de (Postfix) with ESMTP id 76F9D34E6B6
 	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 13:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbhC3LrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 07:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
+        id S232129AbhC3LrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 07:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231992AbhC3Lqi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 07:46:38 -0400
+        with ESMTP id S231993AbhC3Lqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 07:46:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC251C0613D8
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 04:46:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB16C061762
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 04:46:38 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lRCpQ-0006GC-G8
+        id 1lRCpQ-0006GE-QN
         for netdev@vger.kernel.org; Tue, 30 Mar 2021 13:46:36 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id E7274603E85
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 11:46:20 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 1CC56603E87
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 11:46:21 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 10BCC603E12;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 10EF0603E13;
         Tue, 30 Mar 2021 11:46:09 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a153314c;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9abfcafd;
         Tue, 30 Mar 2021 11:46:01 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -38,9 +38,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
         Torin Cooper-Bennun <torin@maxiluxsystems.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 18/39] can: m_can: add infrastructure for internal timestamps
-Date:   Tue, 30 Mar 2021 13:45:38 +0200
-Message-Id: <20210330114559.1114855-19-mkl@pengutronix.de>
+Subject: [net-next 19/39] can: m_can: m_can_chip_config(): enable and configure internal timestamps
+Date:   Tue, 30 Mar 2021 13:45:39 +0200
+Message-Id: <20210330114559.1114855-20-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210330114559.1114855-1-mkl@pengutronix.de>
 References: <20210330114559.1114855-1-mkl@pengutronix.de>
@@ -56,82 +56,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Torin Cooper-Bennun <torin@maxiluxsystems.com>
 
-Add infrastucture to allow internal timestamps from the M_CAN to be
-configured and retrieved.
+This is a prerequisite for transitioning the m_can driver to rx-offload,
+which works best with TX and RX timestamps.
 
-Link: https://lore.kernel.org/r/20210308102427.63916-2-torin@maxiluxsystems.com
+The timestamps provided by M_CAN are 16-bit, timed according to the
+nominal bit timing, and may be prescaled by a multiplier up to 16. We
+choose the highest prescalar so that the timestamp wraps every 2^20 bit
+times, or 209 ms at a bus speed of 5 Mbit/s. Timestamps will have a
+precision of 16 bit times.
+
+Link: https://lore.kernel.org/r/20210308102427.63916-3-torin@maxiluxsystems.com
 Signed-off-by: Torin Cooper-Bennun <torin@maxiluxsystems.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/m_can.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/net/can/m_can/m_can.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 12a75ebe9ce1..9f7cfe91f7ff 100644
+index 9f7cfe91f7ff..7df81e38b043 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -8,6 +8,7 @@
-  * https://github.com/linux-can/can-doc/tree/master/m_can
+@@ -1135,6 +1135,7 @@ static int m_can_set_bittiming(struct net_device *dev)
+  *		- >= v3.1.x: TX FIFO is used
+  * - configure mode
+  * - setup bittiming
++ * - configure timestamp generation
   */
- 
-+#include <linux/bitfield.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-@@ -148,6 +149,16 @@ enum m_can_reg {
- #define NBTP_NTSEG2_SHIFT	0
- #define NBTP_NTSEG2_MASK	(0x7f << NBTP_NTSEG2_SHIFT)
- 
-+/* Timestamp Counter Configuration Register (TSCC) */
-+#define TSCC_TCP_MASK		GENMASK(19, 16)
-+#define TSCC_TSS_MASK		GENMASK(1, 0)
-+#define TSCC_TSS_DISABLE	0x0
-+#define TSCC_TSS_INTERNAL	0x1
-+#define TSCC_TSS_EXTERNAL	0x2
-+
-+/* Timestamp Counter Value Register (TSCV) */
-+#define TSCV_TSC_MASK		GENMASK(15, 0)
-+
- /* Error Counter Register(ECR) */
- #define ECR_RP			BIT(15)
- #define ECR_REC_SHIFT		8
-@@ -302,6 +313,7 @@ enum m_can_reg {
- #define RX_BUF_ANMF		BIT(31)
- #define RX_BUF_FDF		BIT(21)
- #define RX_BUF_BRS		BIT(20)
-+#define RX_BUF_RXTS_MASK	GENMASK(15, 0)
- 
- /* Tx Buffer Element */
- /* T0 */
-@@ -319,6 +331,7 @@ enum m_can_reg {
- /* E1 */
- #define TX_EVENT_MM_SHIFT	TX_BUF_MM_SHIFT
- #define TX_EVENT_MM_MASK	(0xff << TX_EVENT_MM_SHIFT)
-+#define TX_EVENT_TXTS_MASK	GENMASK(15, 0)
- 
- static inline u32 m_can_read(struct m_can_classdev *cdev, enum m_can_reg reg)
+ static void m_can_chip_config(struct net_device *dev)
  {
-@@ -413,6 +426,20 @@ static inline void m_can_disable_all_interrupts(struct m_can_classdev *cdev)
- 	m_can_write(cdev, M_CAN_ILE, 0x0);
- }
+@@ -1246,6 +1247,10 @@ static void m_can_chip_config(struct net_device *dev)
+ 	/* set bittiming params */
+ 	m_can_set_bittiming(dev);
  
-+/* Retrieve internal timestamp counter from TSCV.TSC, and shift it to 32-bit
-+ * width.
-+ */
-+static u32 m_can_get_timestamp(struct m_can_classdev *cdev)
-+{
-+	u32 tscv;
-+	u32 tsc;
++	/* enable internal timestamp generation, with a prescalar of 16. The
++	 * prescalar is applied to the nominal bit timing */
++	m_can_write(cdev, M_CAN_TSCC, FIELD_PREP(TSCC_TCP_MASK, 0xf));
 +
-+	tscv = m_can_read(cdev, M_CAN_TSCV);
-+	tsc = FIELD_GET(TSCV_TSC_MASK, tscv);
-+
-+	return (tsc << 16);
-+}
-+
- static void m_can_clean(struct net_device *net)
- {
- 	struct m_can_classdev *cdev = netdev_priv(net);
+ 	m_can_config_endisable(cdev, false);
+ 
+ 	if (cdev->ops->init)
 -- 
 2.30.2
 
