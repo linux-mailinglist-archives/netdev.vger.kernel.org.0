@@ -2,80 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1573E34EB7A
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2726A34EB7D
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbhC3PEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 11:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53108 "EHLO
+        id S232311AbhC3PFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 11:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231928AbhC3PE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:04:28 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6E6C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:04:28 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id x207so16802442oif.1
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:04:28 -0700 (PDT)
+        with ESMTP id S232001AbhC3PFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:05:03 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4BCC0613D8;
+        Tue, 30 Mar 2021 08:05:02 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id b14so24273323lfv.8;
+        Tue, 30 Mar 2021 08:05:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sW54dg7OXZ/TqY1hoQIQLh2ZGkIueUz2Xp7xo4X/Zr8=;
-        b=RB7YZZoHN/kOdYZPNK0Vdkgf50AnUf30u4iXSMi+yE4qw+yBC+ofaGeL3dDJE7Vdsi
-         wm6Qx2iHgR+cRvbcdnjeU8QMcjbeTUjxwYm3wajCiTdYdvKPIUv5X5axc4iq18DW7P57
-         HnRtaYLeWAvvvSC6DPcT+NIFOWrCqK6zTJgbJJeYqjtc4FFq+7S5OMr46LaI18elnZ9X
-         T4EXyETP8LkUWbxMXeSUPVhCt1s58qP8Xb5zehmNAcZrcuGK6kGV+AkrJwhKl4m70Y//
-         RhvgoBYUoLVnDBkLDqhI4Wtoj2wJ9HP5SlsF0YNfVGnl3RfPeC2piaT7WUOi4PxGjJZc
-         HSgw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NDU6A12u+rXHnnt7HiYDLSDihuLFvN8sM+MRBrDc1yo=;
+        b=lJIsJ8oGCQKJ7cHmaQdct5bgnRwxC3WIZMAv6EBTMgb40XepxaVahCS76qmRBzv9Xg
+         1OoWSMYiP0FwJlOOzIn8y7XNIGZ9/4mSVrRcfOS2nxo0E78Z8b5PQOXR0U6b4Q075bP6
+         nxCsOIeLZ2pv29B9iIHDi0qdMh5aXUXQ8rg9gWpLmEWsU6+GQCuWqLHLb+8apVhnSKpL
+         UyxxGLiZg9G34XIHRiKWJVAFxFNEDtb5bQadjvEKOqxQBhGfvwAVRC+Mso1rY45B1lSs
+         6VDmTtiGmfTHlmycwtixXzuVFK3q09P8/4oGFQRxq3fXY+2ZXgqkV8T4mNcusFM8YcCf
+         aOuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sW54dg7OXZ/TqY1hoQIQLh2ZGkIueUz2Xp7xo4X/Zr8=;
-        b=e5c4lmsJmIHH+dTdvzBMaXLf+t0ONrIbuEdYCFp1Xe+D2HbYHu2d36WAyFpmpNAIwt
-         GFlu3Kc3WHjbPbD6QkCaWW/7TrmAeMvM6bLFcVac646w9SPIlxR2bcPM1iy3FH4+RfAU
-         22n0za63JFrQTv1h1tKtKAYqxh9icUA7p+xIaBMmOO8A5G9bYjhBTjtyQNbQUsCfyFPy
-         hYxvJZ5WyfkKZB/zLJ0hrL8kh34HaeWpzn7yVubau04fzd8no636uu8hr2hVLBO3IfHM
-         epc0RDT41FsUKEDw+KXpbnbw8niaFiB3KS7CASE5N21/PqwT5gUtxdJiAqQW0c/cCLB5
-         G5YA==
-X-Gm-Message-State: AOAM531pDIpuQu1hFHFeY+vXx6r+I2TKmV9xQZ08BGXXoQ4cYTWdz/rs
-        v+1hFWHGPcORAZvYKil8p5y/kKB5X1Y=
-X-Google-Smtp-Source: ABdhPJyCoWii4vD0ryp85NKHkZ+G5em7k1mv2jPhXsdrmVoAD1VmTXwYG9FLfDmYA+iSy0dCk9NIKg==
-X-Received: by 2002:aca:1e16:: with SMTP id m22mr3492845oic.153.1617116667223;
-        Tue, 30 Mar 2021 08:04:27 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id w7sm5095822ote.52.2021.03.30.08.04.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Mar 2021 08:04:26 -0700 (PDT)
-Subject: Re: ip-nexthop does not support flush by id
-To:     Ido Schimmel <idosch@idosch.org>,
-        xuchunmei <xuchunmei@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org
-References: <C2B7C7DB-B613-41BB-9D5F-EF162181988C@linux.alibaba.com>
- <YGMiBowCKbVHJrfh@shredder.lan>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8b1bbce6-7ad9-0446-143b-4b1d3f202066@gmail.com>
-Date:   Tue, 30 Mar 2021 09:04:25 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NDU6A12u+rXHnnt7HiYDLSDihuLFvN8sM+MRBrDc1yo=;
+        b=X1i1g2GqayI6rDZi6u8QX2y5vc6NTTAmjTTymWOK+2UIFSTvDo9i3RzIxHjtJG79fb
+         FZDp52eO2I3V4CqR4QvXX9PGAJIZ3vba1psuL2yARAdQrRNeuweGAcob3Sbvqc31+uX3
+         /5O6/aek+YqXpGjqsS4L81WZTdz2kPqF6sBNjxiVidpsc2u/Zhixa0Ri10Vk/+Vaf4nY
+         SSseVN3mNHXwBLLiWGDkaHECo9o/TOOeI5wgaYJAa5XWGDvlbA5gyDTpkaRQVMnVK4nE
+         cOGyUnHODOZwfIaVvl0EKs63BYYnKuC9nix1+whCumNVChkFHqYzMMGfrxP5jJlGR8vv
+         vwyw==
+X-Gm-Message-State: AOAM533loBHiLHA+snDfJyPFu4hblLiPUiplt3nunVWs0/7QuHY3jllE
+        YtWyBVAlxauLXuOD+JGGEw2sOUXbgQnwD7V2Rcc=
+X-Google-Smtp-Source: ABdhPJyr6zuKHLNxnmbk4GFqVBqzCFlj5dBZXx+4vfI5QhMUtKkNSrerXfwuJWK7f+3e+HSAU5t31WOmhtLMFkfryoE=
+X-Received: by 2002:ac2:5974:: with SMTP id h20mr16611591lfp.500.1617116701026;
+ Tue, 30 Mar 2021 08:05:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YGMiBowCKbVHJrfh@shredder.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210309112615.625-1-o.rempel@pengutronix.de> <CAOMZO5CYquzd4BBZBUM6ufWkPqfidctruWmaDROwHKVmi3NX2A@mail.gmail.com>
+ <YGM2AGfawEFTKOtE@lunn.ch>
+In-Reply-To: <YGM2AGfawEFTKOtE@lunn.ch>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Tue, 30 Mar 2021 12:04:50 -0300
+Message-ID: <CAOMZO5CRFHh5vv3vQqaatDnq55ZMmO5DfJH1VtZ1n0DBgf5Whg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/7] remove different PHY fixups
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/30/21 7:05 AM, Ido Schimmel wrote:
-> Looks like a bug. 'flush' does not really make sense with 'id', but
-> 'list id' works, so I think 'flush id' should also work.
+Hi Andrew,
 
-right, neither were intended. If you know the id, you don't need the
-generic list / flush option.
+On Tue, Mar 30, 2021 at 11:30 AM Andrew Lunn <andrew@lunn.ch> wrote:
 
-> 
-> Can you send a patch?
+> Hi Fabio
+>
+> I think it should be merged, and we fixup anything which does break.
+> We are probably at the point where more is broken by not merging it
+> than merging it.
 
-Agreed. At this point consistency is best.
+Thanks for your feedback. I agree.
+
+Shawn wants to collect some Acked-by for this series.
+
+Could you please give your Acked-by for this series?
+
+Thanks
