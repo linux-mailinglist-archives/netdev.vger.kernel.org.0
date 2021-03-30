@@ -2,104 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A794634EF4A
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF5B34EF50
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232298AbhC3RWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 13:22:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51694 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232118AbhC3RVy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 13:21:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EAF92619D1;
-        Tue, 30 Mar 2021 17:21:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617124914;
-        bh=nSaGH7C9DUjUEnfkusf81FHqtFMRbAkQ/UgYZAa6Ppo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=j0a38Q2k1qEt78uJy13CZJDOL0woTB+7TTJqOJ6soPlTMPruKK/fojdsqAvfGc0vA
-         nfKhsQ7EKtE+WU+eBxG9qu/zi2ZGOGeOKXF8xISl1QJQnJ2a/z44dnPSeAWYMdGU/8
-         PSAoJKK5+VrShSPMwJsLOS3IpC8OsGx/wdSqev1gjVvNM3Qf5eM0Zar0Ck/2CeIRyF
-         tRQPb2NkZZ8Fk9kSJjJrJSqHY98+EazrEnATpIt/WwJl1iesHdAsCJ4PmyT39ynONC
-         rmSkyKrADZbZNi2m2ZfZnQtLD9qcjoRDeY7bXKtWvyxDsXROFfnu11Mt62J0WyXR61
-         35uYb0atbVw/Q==
-Received: by mail-wr1-f52.google.com with SMTP id j7so17028096wrd.1;
-        Tue, 30 Mar 2021 10:21:53 -0700 (PDT)
-X-Gm-Message-State: AOAM533ufFS91Go2iHboFrtdwmOlFg7CWol345WjnddNP6wvUEQORpxB
-        XIzYQtZIeOthfPAcssVT1uvzlqeUjN+N74zhBSQ=
-X-Google-Smtp-Source: ABdhPJwn4UhqepnyMOcLeTKmfHMiYbPExjGA1cUOw+nU37Rv5ms4Cueb/m7qtnZJAE4aNKmjKbFqK+bD6XPdrbqlX60=
-X-Received: by 2002:a5d:6b86:: with SMTP id n6mr7671314wrx.52.1617124912552;
- Tue, 30 Mar 2021 10:21:52 -0700 (PDT)
+        id S232236AbhC3RX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 13:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232048AbhC3RW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 13:22:59 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B07C061574;
+        Tue, 30 Mar 2021 10:22:59 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id n11-20020a05600c4f8bb029010e5cf86347so1347619wmq.1;
+        Tue, 30 Mar 2021 10:22:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=etdLuWb8OudHnTGScju4iFuelQF1D5YN0QKx+VliIUg=;
+        b=Xd/xg1PUdNrHQgAV0iG1BsXmo6MHEfKOtyM/zrAeSrqnvNFH3Amirs5v5Qy/X+wcq6
+         QMmpmZyTR/J9eHkK9A6hsHjHW8HrDD6VGgCWog+rJ+MDhxV+kiDfj6LuY7smoCboQEUt
+         gk7EEpQtKNYMBQHhZpsderUpMNtImTzRzjupUj92xxWYPRpr2TKqKxaUoccXC97/fXrH
+         cAOQcS43mO6yKvAGFWgUWTyM5e+dPSafoziDhTZgpfjDLBfpe9tH+/pEE2gwJHKMS6IK
+         Z6IK1bvm7+rf1vcpOAzCxgq0ab2gVKRz4Kq6IwwG+THY33tu4lVTmqs0T8H3mHa3eLHP
+         8dcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=etdLuWb8OudHnTGScju4iFuelQF1D5YN0QKx+VliIUg=;
+        b=TP3guc2QQ50LKBBkuAgjq4+1YmYw9oK0yuY5FTHxPMKjIzSjKwfFVg+dcB89dBBA+9
+         myngFRkdxUeGGtsENKqMUy86ZntO3iHVDMXzxxK5NrV/HE+40RAPW05Owjxm0J1QYzvM
+         5iqt4pEvvUEZAtOeoQwtI7BA63VSJAFoq5MtGSQrBiJKJnidfNenkjJda4wP0wSV9Pv+
+         tHLMlH9ZDkp6ltYtwjECXllhKrz0Aq2knvhVWGG8hjs35xkpzi9BV0/TbNHh/0GkpXU/
+         YrWn9+Nagd9QDFK5dIKn7Dvq3EV/AkNPdzJPyXK1t3ciPyASkh3LpX6s4kHrfRsaIqJ6
+         3Brg==
+X-Gm-Message-State: AOAM530RCNths2tycjXbrLNmz65ZHn/84L60zOrKbJw59db3kNEjmufW
+        XyRCvNI2D7zObxb0JxuoggpXslDQs+m0ivtK
+X-Google-Smtp-Source: ABdhPJyu62dTbhj0ksMQOMovJWP1dMVyEA74m15yTC1Qeu8adpzxfy9VYpKVwkm8mvWpniEkULD67A==
+X-Received: by 2002:a1c:3b43:: with SMTP id i64mr5076868wma.43.1617124977945;
+        Tue, 30 Mar 2021 10:22:57 -0700 (PDT)
+Received: from alaa ([197.57.128.221])
+        by smtp.gmail.com with ESMTPSA id 1sm6772095wmj.0.2021.03.30.10.22.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 10:22:57 -0700 (PDT)
+From:   Alaa Emad <alaaemadhossney.ae@gmail.com>
+To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
+Cc:     gregkh@linuxfoundation.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller@googlegroups.com,
+        Alaa Emad <alaaemadhossney.ae@gmail.com>,
+        syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
+Subject: [PATCH v2] wireless/nl80211.c: fix uninitialized variable
+Date:   Tue, 30 Mar 2021 19:22:53 +0200
+Message-Id: <20210330172253.10076-1-alaaemadhossney.ae@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210330113419.4616-1-ciara.loftus@intel.com> <20210330113419.4616-3-ciara.loftus@intel.com>
- <CAADnVQ+jr2WG4FF3GoPt==tOkOb72bd7Zhkk5iy4omCJ3=qLJQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+jr2WG4FF3GoPt==tOkOb72bd7Zhkk5iy4omCJ3=qLJQ@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Date:   Tue, 30 Mar 2021 19:21:41 +0200
-X-Gmail-Original-Message-ID: <CAJ+HfNh_brhM5C1jModyUPibps2ouPcfGfYscavoqBFCLmWj7Q@mail.gmail.com>
-Message-ID: <CAJ+HfNh_brhM5C1jModyUPibps2ouPcfGfYscavoqBFCLmWj7Q@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf 2/3] libbpf: restore umem state after socket create failure
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Ciara Loftus <ciara.loftus@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Mar 2021 at 17:08, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Mar 30, 2021 at 5:06 AM Ciara Loftus <ciara.loftus@intel.com> wro=
-te:
-> >
+This change fix  KMSAN uninit-value in net/wireless/nl80211.c:225 , That
+because of `fixedlen` variable uninitialized,So I initialized it by zero.
 
-[...]
+Reported-by: syzbot+72b99dcf4607e8c770f3@syzkaller.appspotmail.com
+Signed-off-by: Alaa Emad <alaaemadhossney.ae@gmail.com>
+---
+Changes in v2:
+  - Make the commit message more clearer.
+---
+ net/wireless/nl80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> >         if (--ctx->refcount =3D=3D 0) {
-> > -               err =3D xsk_get_mmap_offsets(umem->fd, &off);
-> > -               if (!err) {
-> > -                       munmap(ctx->fill->ring - off.fr.desc,
-> > -                              off.fr.desc + umem->config.fill_size *
-> > -                              sizeof(__u64));
-> > -                       munmap(ctx->comp->ring - off.cr.desc,
-> > -                              off.cr.desc + umem->config.comp_size *
-> > -                              sizeof(__u64));
-> > +               if (unmap) {
-> > +                       err =3D xsk_get_mmap_offsets(umem->fd, &off);
-> > +                       if (!err) {
-> > +                               munmap(ctx->fill->ring - off.fr.desc,
-> > +                                      off.fr.desc + umem->config.fill_=
-size *
-> > +                               sizeof(__u64));
-> > +                               munmap(ctx->comp->ring - off.cr.desc,
-> > +                                      off.cr.desc + umem->config.comp_=
-size *
-> > +                               sizeof(__u64));
-> > +                       }
->
-> The whole function increases indent, since it changes anyway
-> could you write it as:
-> {
-> if (--ctx->refcount)
->   return;
-> if (!unmap)
->   goto out_free;
-> err =3D xsk_get
-> if (err)
->  goto out_free;
-> munmap();
-> out_free:
-> list_del
-> free
-> }
->
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 775d0c4d86c3..b87ab67ad33d 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -210,7 +210,7 @@ static int validate_beacon_head(const struct nlattr *attr,
+ 	const struct element *elem;
+ 	const struct ieee80211_mgmt *mgmt = (void *)data;
+ 	bool s1g_bcn = ieee80211_is_s1g_beacon(mgmt->frame_control);
+-	unsigned int fixedlen, hdrlen;
++	unsigned int fixedlen = 0, hdrlen;
+ 
+ 	if (s1g_bcn) {
+ 		fixedlen = offsetof(struct ieee80211_ext,
+-- 
+2.25.1
 
-Yes, please try to reduce the nesting, and while at it try to expand
-the as much as possible of the munmap arguments to the full 100 chars.
-
-
-Bj=C3=B6rn
