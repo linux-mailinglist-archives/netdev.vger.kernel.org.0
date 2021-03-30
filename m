@@ -2,68 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF27F34F20C
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 22:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D92E834F20A
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 22:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbhC3UU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 16:20:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47984 "EHLO mail.kernel.org"
+        id S232126AbhC3UU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 16:20:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48006 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229940AbhC3UUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231627AbhC3UUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 30 Mar 2021 16:20:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E689461883;
-        Tue, 30 Mar 2021 20:20:08 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 346C661968;
+        Tue, 30 Mar 2021 20:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617135608;
-        bh=8Rr5rht8BU1NXR5spILZKqkILrtTO6kantTYozrDWpM=;
+        s=k20201202; t=1617135609;
+        bh=Qtxx+uGCJgvXWDNpRjRgAZLSW86E1DEykiXDnFc8fhc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z5GrzaelxYfTd8XrUty7GXZmLFuF0fKjPQHtsebXLfmDt0ovOMi8jY51a+8Xe5SXG
-         esmPI1mqKA8bC5Ad0YNAoeeSgnEh8VMZPmUqqlvd1AwtUaPffwCYDUVw4ZsoGwwUM5
-         U2UN8KoHet8LwUIiXO1+NS7FkRzdj0msp6snqghtltnNQpk4xe80j8vjadumSU/SiI
-         a1ySUFMChD3IBCE0HGNVKuXEPTUdJRDLyyIJoZ4oSuT9fFLPBXSNjvVSu10A6CuGAj
-         wdvA3qME5bH0Pg5v/JwuVQVGOJuvQj1KKGqM+bzzfjT0PyMdXAitO3/KjHPcBoN7E4
-         c54uAPwHAnXmg==
+        b=Ix6zkoVr1ORZFCI2gBouUUmvMLO//4YpW678ZqlaAPmVOUre7DlElYI7lkRxk39PS
+         hBufRF2uIGFRWeBSLWYas6ydgqjSQpSCvT5GieWNBhjQWXdj0Nmq7WUWnsUdpQK1M/
+         CPiaNmqQ1LD62re6BQ8VVqX5f3vq91GNZmYoF2zR/mtzL7O/PYBwNjpD2rzRaoF4xI
+         ex3NoLw5e2QdQuJyQyx0REvrbiUVsVF7ULfcsU+L+eSLXeuvvJ0NFtxsL6TKqATr9e
+         yzALlE/xTn03fJu+6IbnsAw9ZxonfuPVwdxAoHfzNlm75buVW/n7S3kQKeyYaMhI2T
+         Yy5pzY606M2ew==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D767460A5B;
-        Tue, 30 Mar 2021 20:20:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2E7DB60A5B;
+        Tue, 30 Mar 2021 20:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/ncsi: Avoid channel_monitor hrtimer deadlock
+Subject: Re: [PATCH net-next] net: phy: lan87xx: fix access to wrong register of
+ LAN87xx
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161713560887.2790.12767006562896839365.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Mar 2021 20:20:08 +0000
-References: <20210329152039.15189-1-eajames@linux.ibm.com>
-In-Reply-To: <20210329152039.15189-1-eajames@linux.ibm.com>
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     sam@mendozajonas.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        miltonm@us.ibm.com
+Message-Id: <161713560918.2790.13371551221306898976.git-patchwork-notify@kernel.org>
+Date:   Tue, 30 Mar 2021 20:20:09 +0000
+References: <20210329094536.3118619-1-andre.edich@microchip.com>
+In-Reply-To: <20210329094536.3118619-1-andre.edich@microchip.com>
+To:     Andre Edich <andre.edich@microchip.com>
+Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Parthiban.Veerasooran@microchip.com, mans@mansr.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 29 Mar 2021 10:20:39 -0500 you wrote:
-> From: Milton Miller <miltonm@us.ibm.com>
+On Mon, 29 Mar 2021 11:45:36 +0200 you wrote:
+> The function lan87xx_config_aneg_ext was introduced to configure
+> LAN95xxA but as well writes to undocumented register of LAN87xx.
+> This fix prevents that access.
 > 
-> Calling ncsi_stop_channel_monitor from channel_monitor is a guaranteed
-> deadlock on SMP because stop calls del_timer_sync on the timer that
-> inoked channel_monitor as its timer function.
-> 
-> Recognise the inherent race of marking the monitor disabled before
-> deleting the timer by just returning if enable was cleared.  After
-> a timeout (the default case -- reset to START when response received)
-> just mark the monitor.enabled false.
+> The function lan87xx_config_aneg_ext gets more suitable for the new
+> behavior name.
 > 
 > [...]
 
 Here is the summary with links:
-  - net/ncsi: Avoid channel_monitor hrtimer deadlock
-    https://git.kernel.org/netdev/net/c/03cb4d05b4ea
+  - [net-next] net: phy: lan87xx: fix access to wrong register of LAN87xx
+    https://git.kernel.org/netdev/net-next/c/fdb5cc6ab3b6
 
 You are awesome, thank you!
 --
