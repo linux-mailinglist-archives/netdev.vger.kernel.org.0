@@ -2,130 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8B834E13F
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 08:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C5F34E14B
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 08:37:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbhC3G3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 02:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54268 "EHLO
+        id S230077AbhC3Ggr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 02:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231154AbhC3G3W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 02:29:22 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E600CC061762
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 23:29:21 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id bf3so16830769edb.6
-        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 23:29:21 -0700 (PDT)
+        with ESMTP id S229483AbhC3Ggn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 02:36:43 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3E9C061762;
+        Mon, 29 Mar 2021 23:36:43 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id v186so10992140pgv.7;
+        Mon, 29 Mar 2021 23:36:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sQGvvLvGhJryVBI/vkiRB5LM46pTjwaFh+4cVwI4fVI=;
-        b=rZf2mAWnBbaEaI7PkCCkZSINB1Q1L5hwIlCHuf5I2KqktkdL3H8PmWleG2kwl1QpP0
-         BazHGZ8F24uFOhQeyOD8G6AYV4hEyGJowyuKyLYCOrqh1RMg+YNwNu+X2zdpnp5xvshp
-         fFRjrX0+Ub6B2Jxd+DVDtM+TtkgdilntYwJLzd9+p3aUo8zJ64lnPhpMs8pzeXEUerwt
-         p0YvHb99LcmPULzLt89yoVCr6LA59R2mtAtEGxGJhFaTd4GkubyHIDKGINWeXmNKUp+y
-         FIU0D1UIpPnDMGL/yDbVsXatq4ZRt0kccKMvsFx054gqqPAlhpQB80o1+xXe0yyiljqf
-         zqeA==
+         :cc;
+        bh=7pN7MXcXsn1Px8YArmSwJzwIpKjY+5whROnmy5NXENU=;
+        b=EQppdB1h2/GkdhcTPBR6bL+8yiJNtcymQB6iNS/vmVBGZfKrHMMtghVt+B4vgaadUL
+         xkaoGDAGos29eahDd0a+Kim/VgZroW0GhpAenJk3uUje0hLM+M0ph6nYn9Os0A3n5uoK
+         Fk920v5I9QgaH1Bw/mTNTkIp01bkrfvTR3ap7KQUZhxwIHpDxnksQEg8euQG5hY+LHtS
+         CnBIq8Owc4GRkx2195vRMrlmzNorVBse23VkiwKme5I38mvh4cFOTZuYGuawPCrSBFKp
+         daeio2fBFrSDCKGfWQati027zCSRFWr4vrQL52mitZYC+i3brnGBQIGA2L+atdpmgKLb
+         O0wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sQGvvLvGhJryVBI/vkiRB5LM46pTjwaFh+4cVwI4fVI=;
-        b=eAXT7r6tJHeHLBVAigLdovGAaBvbC3Z/HYBBvsrC3RHwZNF6gd4rqUNn3w0pznm21k
-         +OxTBE2jeA60qY9mG+hi7s9J7zyH9NLbhY8TLejug5tNbeBITi/7dUD96ttYOyL1JML9
-         S3Rp9YmWRk92M4DxnloT3XXEqqjKwQ08y2mQ3p0fy76e4Z5V6CnGShiOk5H5aRa0Ze7v
-         I0CmIGma0ZLdO/FNzlwDdt9YpdBQVWycUDLza/vbWTdw5in5+sz+8ZWzcTRIM4T1ua3h
-         EDTa52v0KCJDDgKnaT04bITt8GVQnryxgsY/Yrpek4XMG09P1VmxLzMAeUhNka78/Fvu
-         Sgqg==
-X-Gm-Message-State: AOAM53334UI5w9E7vIuYh7eolRY/ncoX8fWknIAfCJ0jg51HB/HfL8rB
-        PUnVmsKAwAiktZUCwB5I2KkcKhrju7HMlPdXoLk=
-X-Google-Smtp-Source: ABdhPJxz7BCIcTdstF8dzb0Fl9Ic1lWhJDscHjtp0YGa+uKE3VrJgJKT0e80U21i9MC2/EHKgnEmRSxMjuEI8CO7maA=
-X-Received: by 2002:aa7:ce1a:: with SMTP id d26mr31857890edv.206.1617085760755;
- Mon, 29 Mar 2021 23:29:20 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=7pN7MXcXsn1Px8YArmSwJzwIpKjY+5whROnmy5NXENU=;
+        b=VEI95nHhHnYp4cXUduU7g0MaHO8msJh9JR+dWwAIzSJPR6w9y/RGE00+Sd44/10XG0
+         a7XznBmEhxG8AtSlJtC01wu2J2/U8GjzdsnDVYE4oDXOTtTBT2w75TxYbhpAGPqum8jH
+         IViCCz8TwqQ1t4lEpnf5o94vYZkEwOB1tO1TN023EvVum5NHY0seS54qAAMUH3wl9LIl
+         vrvvPfQ3h4+RC9qQrntuI9ptknXIpvh6Q7nQV5F5CYViLLdBmuh/CczIuf3b4wq4Lp2m
+         zBiSQTMnM9eqEtGfe8jRykpmz+LUPSBRPuO8IXFJw4voXFjEgdp+ZciAneH3/rOlqQv2
+         tsGw==
+X-Gm-Message-State: AOAM5333VStcW/jszn0CZfHPIq03pOoIljie9HMV3nlUoYz9ESYz3Tex
+        MM1tMV1V8TVLtIyLmZokdXJsg7cLQT9ttEFpmpwJ/GaJRJLILw==
+X-Google-Smtp-Source: ABdhPJxMl42QnpBwgLfmBVGIVqNv4k6LZ4s+yLT/CKn1NLVFqj8fE+JSFxqcH8DMOIw99FzDmSYNE09x6Hhvn6Fn7lQ=
+X-Received: by 2002:a63:2ec7:: with SMTP id u190mr1876430pgu.18.1617086203101;
+ Mon, 29 Mar 2021 23:36:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAOJPZgnLjr6VHvtv9NnemxFagvL-k1wrRsB1f1Pq+9qbtPWw0g@mail.gmail.com>
- <0a6894be727b1bb2124bff19a419972f589b4d7e.camel@kernel.org>
-In-Reply-To: <0a6894be727b1bb2124bff19a419972f589b4d7e.camel@kernel.org>
-From:   =?UTF-8?B?6auY6ZKn5rWp?= <gaojunhao0504@gmail.com>
-Date:   Tue, 30 Mar 2021 14:29:09 +0800
-Message-ID: <CAOJPZgk8A7cbRA1KGC7Vm9wDrsHm9q5oRQ4UYWdJr5LFY-hmRg@mail.gmail.com>
-Subject: Re: ESP RSS support for NVIDIA Mellanox ConnectX-6 Ethernet Adapter Cards
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     borisp@nvidia.com, netdev@vger.kernel.org, seven.wen@ucloud.cn,
-        junhao.gao@ucloud.cn
+References: <20210328202013.29223-1-xiyou.wangcong@gmail.com>
+ <20210328202013.29223-10-xiyou.wangcong@gmail.com> <60623e6fdd870_401fb20818@john-XPS-13-9370.notmuch>
+ <CAM_iQpVgdP1w73skJ3W-MHkO-pPVKT7WM06Fqc35XkXjDcWf_Q@mail.gmail.com> <6062c3d37db9e_600ea20898@john-XPS-13-9370.notmuch>
+In-Reply-To: <6062c3d37db9e_600ea20898@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 29 Mar 2021 23:36:31 -0700
+Message-ID: <CAM_iQpXVYcrhZ083uFdNqMSuAqq-qPQgp+Hx1KUYaquZmSz1Zw@mail.gmail.com>
+Subject: Re: [Patch bpf-next v7 09/13] udp: implement ->read_sock() for sockmap
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Saeed Mahameed <saeed@kernel.org> =E4=BA=8E2021=E5=B9=B43=E6=9C=8830=E6=97=
-=A5=E5=91=A8=E4=BA=8C =E4=B8=8A=E5=8D=884:56=E5=86=99=E9=81=93=EF=BC=9A
+On Mon, Mar 29, 2021 at 11:23 PM John Fastabend
+<john.fastabend@gmail.com> wrote:
 >
-> On Mon, 2021-03-29 at 12:33 +0800, =E9=AB=98=E9=92=A7=E6=B5=A9 wrote:
-> > Hi borisp, saeedm
+> Cong Wang wrote:
+> > On Mon, Mar 29, 2021 at 1:54 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > Cong Wang wrote:
+> > > > From: Cong Wang <cong.wang@bytedance.com>
+> > > >
+> > > > This is similar to tcp_read_sock(), except we do not need
+> > > > to worry about connections, we just need to retrieve skb
+> > > > from UDP receive queue.
+> > > >
+> > > > Note, the return value of ->read_sock() is unused in
+> > > > sk_psock_verdict_data_ready().
+> > > >
+> > > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > > > Cc: Lorenz Bauer <lmb@cloudflare.com>
+> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > > > ---
+>
+> [...]
+>
+> > > >  }
+> > > >  EXPORT_SYMBOL(__skb_recv_udp);
+> > > >
+> > > > +int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+> > > > +               sk_read_actor_t recv_actor)
+> > > > +{
+> > > > +     int copied = 0;
+> > > > +
+> > > > +     while (1) {
+> > > > +             int offset = 0, err;
+> > >
+> > > Should this be
+> > >
+> > >  int offset = sk_peek_offset()?
 > >
-> >      I have seen mlx5 driver in 5.12.0-rc4 kernel, then find that
-> > mlx5e_set_rss_hash_opt only support tcp4/udp4/tcp6/udp6. So mlx5
-> > kernel driver doesn't support esp4 rss? Then do you have any plan to
-> > support esp4 or other latest mlx5 driver have supported esp4? Then
-> > does NVIDIA Mellanox ConnectX-6 Ethernet Adapter Cards support esp4
-> > rss in hardware?
+> > What are you really suggesting? sk_peek_offset() is just 0 unless
+> > we have MSG_PEEK here and we don't, because we really want to
+> > dequeue the skb rather than peeking it.
 > >
+> > Are you suggesting we should do peeking? I am afraid we can't.
+> > Please be specific, guessing your mind is not an effective way to
+> > address your reviews.
 >
-> Hi Juhano
+> I was only asking for further details because the offset addition
+> below struck me as odd.
 >
-> we do support RSS ESP out of the box on the SPI, src and dst IP fields
+> >
+> > >
+> > > MSG_PEEK should work from recv side, at least it does on TCP side. If
+> > > its handled in some following patch a comment would be nice. I was
+> > > just reading udp_recvmsg() so maybe its not needed.
+> >
+> > Please explain why do we need peeking in sockmap? At very least
+> > it has nothing to do with my patchset.
 >
-Hi Saeed
+> We need MSG_PEEK to work from application side. From sockmap
+> side I agree its not needed.
 
-we verified RSS ESP and it is hashed by the SPI, src and dst IP field.
-Then in our test, we run ipsec offload in tunnel mode using ESP
-protocol, when packets arrive CX-6, the content in packets is
-plaintext, and there exist many TCP/UDP flows in one tunnel, so could
-we do RSS based on inner src/dst IP field and port etc?
-> #define MLX5_HASH_IP_IPSEC_SPI  (MLX5_HASH_FIELD_SEL_SRC_IP   |\
->                                  MLX5_HASH_FIELD_SEL_DST_IP   |\
->                                  MLX5_HASH_FIELD_SEL_IPSEC_SPI)
+How does the application reach udp_read_sock()? UDP does not support
+splice() as I already mentioned, as ->splice_read() is still missing.
+
 >
-> [MLX5E_TT_IPV4_IPSEC_ESP] =3D { .l3_prot_type =3D MLX5_L3_PROT_TYPE_IPV4,
->                               .l4_prot_type =3D 0,
->                               .rx_hash_fields =3D
-> MLX5_HASH_IP_IPSEC_SPI,
-> },
->
-> [MLX5E_TT_IPV6_IPSEC_ESP] =3D { .l3_prot_type =3D MLX5_L3_PROT_TYPE_IPV6,
->                               .l4_prot_type =3D 0,
->                               .rx_hash_fields =3D
-> MLX5_HASH_IP_IPSEC_SPI,
-> },
->
-> But we don't allow rss_hash_opt at the moment.
->
-> what exactly are you looking for ?
->
-> > static int mlx5e_set_rss_hash_opt(struct mlx5e_priv *priv,
-> >                  struct ethtool_rxnfc *nfc)
-> > {
-> >     int inlen =3D MLX5_ST_SZ_BYTES(modify_tir_in);
-> >     enum mlx5e_traffic_types tt;
-> >     u8 rx_hash_field =3D 0;
-> >     void *in;
-> >     tt =3D flow_type_to_traffic_type(nfc->flow_type);
-> >     if (tt =3D=3D MLX5E_NUM_INDIR_TIRS)
-> >         return -EINVAL;
-> >     /* RSS does not support anything other than hashing to queues
-> >      * on src IP, dest IP, TCP/UDP src port and TCP/UDP dest
-> >      * port.
-> >      */
-> >     if (nfc->flow_type !=3D TCP_V4_FLOW &&
-> >       nfc->flow_type !=3D TCP_V6_FLOW &&
-> >       nfc->flow_type !=3D UDP_V4_FLOW &&
-> >       nfc->flow_type !=3D UDP_V6_FLOW)
-> >         return -EOPNOTSUPP;
 > >
-> > Best Regards,
-> > Junhao
+> > I do not know why you want to use TCP as a "standard" here, TCP
+> > also supports splice(), UDP still doesn't even with ->read_sock().
+> > Of course they are very different.
 >
+> Not claiming any "standard" here only that user application needs
+> to work correctly if it passes MSG_PEEK.
+
+I do not see how an application could pass any msg flag to
+udp_read_sock().
+
 >
+> >
+> > >
+> > > > +             struct sk_buff *skb;
+> > > > +
+> > > > +             skb = __skb_recv_udp(sk, 0, 1, &offset, &err);
+> > > > +             if (!skb)
+> > > > +                     return err;
+> > > > +             if (offset < skb->len) {
+> > > > +                     size_t len;
+> > > > +                     int used;
+> > > > +
+> > > > +                     len = skb->len - offset;
+> > > > +                     used = recv_actor(desc, skb, offset, len);
+> > > > +                     if (used <= 0) {
+> > > > +                             if (!copied)
+> > > > +                                     copied = used;
+> > > > +                             break;
+> > > > +                     } else if (used <= len) {
+> > > > +                             copied += used;
+> > > > +                             offset += used;
+> > >
+> > > The while loop is going to zero this? What are we trying to do
+> > > here with offset?
+> >
+> > offset only matters for MSG_PEEK and we do not support peeking
+> > in sockmap case, hence it is unnecessary here. I "use" it here just
+> > to make the code as complete as possible.
+>
+> huh? If its not used the addition is just confusing. Can we drop it?
+
+If you mean dropping this single line of code, yes. If you mean
+dropping 'offset' completely, no, as both __skb_recv_udp() and
+recv_actor() still need it. If you mean I should re-write
+__skb_recv_udp() and recv_actor() just to drop 'offset', I am afraid
+that is too much with too little gain.
+
+>
+> >
+> > To further answer your question, it is set to 0 when we return a
+> > valid skb on line 201 inside __skb_try_recv_from_queue(), as
+> > "_off" is set to 0 and won't change unless we have MSG_PEEK.
+> >
+> > 173         bool peek_at_off = false;
+> > 174         struct sk_buff *skb;
+> > 175         int _off = 0;
+> > 176
+> > 177         if (unlikely(flags & MSG_PEEK && *off >= 0)) {
+> > 178                 peek_at_off = true;
+> > 179                 _off = *off;
+> > 180         }
+> > 181
+> > 182         *last = queue->prev;
+> > 183         skb_queue_walk(queue, skb) {
+> > 184                 if (flags & MSG_PEEK) {
+> > 185                         if (peek_at_off && _off >= skb->len &&
+> > 186                             (_off || skb->peeked)) {
+> > 187                                 _off -= skb->len;
+> > 188                                 continue;
+> > 189                         }
+> > 190                         if (!skb->len) {
+> > 191                                 skb = skb_set_peeked(skb);
+> > 192                                 if (IS_ERR(skb)) {
+> > 193                                         *err = PTR_ERR(skb);
+> > 194                                         return NULL;
+> > 195                                 }
+> > 196                         }
+> > 197                         refcount_inc(&skb->users);
+> > 198                 } else {
+> > 199                         __skb_unlink(skb, queue);
+> > 200                 }
+> > 201                 *off = _off;
+> > 202                 return skb;
+> >
+> > Of course, when we return NULL, we return immediately without
+> > using offset:
+> >
+> > 1794                 skb = __skb_recv_udp(sk, 0, 1, &offset, &err);
+> > 1795                 if (!skb)
+> > 1796                         return err;
+> >
+> > This should not be hard to figure out. Hope it is clear now.
+> >
+>
+> Yes, but tracking offset only to clear it a couple lines later
+> is confusing.
+
+Yeah, but that's __skb_recv_udp()'s fault, not mine. We can refactor
+__skb_recv_udp() a bit for !MSG_PEEK case, but I do not see
+much gain here.
+
+Thanks.
