@@ -2,84 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC2734F4F3
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 01:17:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5400F34F508
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 01:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233295AbhC3XRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 19:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        id S232981AbhC3X15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 19:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbhC3XQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 19:16:57 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C47AC061574;
-        Tue, 30 Mar 2021 16:16:57 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id r20so21700998ljk.4;
-        Tue, 30 Mar 2021 16:16:57 -0700 (PDT)
+        with ESMTP id S232667AbhC3X1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 19:27:34 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AE1C061574;
+        Tue, 30 Mar 2021 16:27:33 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id b14so26316732lfv.8;
+        Tue, 30 Mar 2021 16:27:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EWsgIY/KITNt+W2mkHu5D1R/oQVu42eT5oqQDwOADXc=;
-        b=tBSG5Wgi9/tBMW9beWfY+aRlBjJplJr7iUTD5jTJMnfJEj7kGyHp9amEnNyujCAbRr
-         vLmvAVyt23FvuHZvZbtv8O+ND0wE1MT4EDZrRHg+bOjAToRFkX9pQRjmotQUCm8wmpB7
-         wtUiJIS542ias7HYx38wHPJ7cgp7rP40SD3rpAKN4Hle6IgykMHf0OKU9RqdqwLQHbyJ
-         wBW1dDoQ/qpbUe6YV/lY7fv+5ANQ2FrH824WzSoOn1MyxnNvEBVtYPgCTKsJzOkdDNKb
-         8Z+wz9QeGwrKR145Fs2H0eANh+uFERMXydsGg4n0rP19AuvXWci3QgE+K43ByiukVri2
-         w1sQ==
+        bh=7P9evhC2fefpJxi9njQ79qnjbEyr4RKoQ+V/DRcy07E=;
+        b=gRjJO0F4OMhIooibcLON9pujbXZ59O41HRnUtt0/UijBRPCbr4+6oJ29xjGXXAdUj9
+         L2f7Xsd8LRe47nEdTnNPDyigfE7dlaHQSSAmNySQLb1hM2kSZETM18mtX+Hp86o2/AfP
+         QaNYPvg4VS6ySLEH5mGsvB3ljo+yoVdxMFSCaAJ8jNMxhO80vY0J0IsAhgoe2nzDVyvt
+         v6Hk3bfXZwU3G/g+bflxpRrAvFUq51dRvDq1HmzrTNgmO1k8QXpQz7Blwkv7f86fjQFY
+         bTLqkOz8KupSCvqdGHkpb/ELoZCbHrkgazfEmo9WC51hmOksLS5clZ1JYnwPgRT67QTc
+         IwvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EWsgIY/KITNt+W2mkHu5D1R/oQVu42eT5oqQDwOADXc=;
-        b=eh0Lknn/FfSGRbGaRmooMOXwIAZVb6khEdDoXHwX/FsnKOT5OrayzhquG1tsZy2uot
-         o8nKYd9hHFLWbsZrVecWBDJRy3Zn4BapY4LYqtY2ob5ONfWTxDo8T1NlBHO953u3/Zx8
-         Rd4Ysa5kkCyUt3IBLpPFGyF9YmxpdZsZMsIphxwn7+uS0fd2a60PdwIU3t//tQPOn/nn
-         2mDdQPTlCndWT1MD90gLuHKBuISqDJSoqIqFmPWFSEAl3tVDgEmwNlHo7VP9+ozSjOtF
-         5HMvAvOpZtJboy5gvoJbEVnR5k03CPv+Na9S8xzhIF0kO7AzV1ry751JEw0wdjFoToMV
-         IjHA==
-X-Gm-Message-State: AOAM5339mBCp6Dqjkh3jHV5ku2VTsfvaIroKovxhSXO4tNuMYK3duo6E
-        6KDFrwBTMyKYmMAB5eh7Q4h4bQG35mbuYdBxWrk=
-X-Google-Smtp-Source: ABdhPJwR/ZiW/Ib8se1El1ywPeNU/uY0j6KlzbDaUWk8s1HXzKWJg38nH35PepRkwR6tApzoIOlUOKH5CD9Zp4fTyls=
-X-Received: by 2002:a2e:900b:: with SMTP id h11mr259742ljg.258.1617146215959;
- Tue, 30 Mar 2021 16:16:55 -0700 (PDT)
+        bh=7P9evhC2fefpJxi9njQ79qnjbEyr4RKoQ+V/DRcy07E=;
+        b=LZQ6zEDHRpaLAR498ZdIvd0rhPEqwxoEwd1Mqws6//vMkl+TmL05eTDFobszPBpOug
+         48E9p5cr2q4JJDwlBpbd5JIr2GWpHQy6Rwqp+B9uhk7E+FHCaKEnbNvTCWL95i/zyPRW
+         WjZKJ5BPBjRkxgkDLuQLoU0DvdmznkXey3Npc225rH6BXlA0Vu6JsQzFFj2GRV28QrPH
+         Xvz3ZyzjaXjSWeuEcn43T6pWFW+Hs9yzwsYOhM8xZ5mGZ08bBo36cxEyxiX3+bijEZf+
+         9ttUWdlY0joIAIDvubcak9FqUXGmvaofaDJz+XsxlY6aLLStQs3NnQzzSMVlqSH3S3Sz
+         pB4Q==
+X-Gm-Message-State: AOAM533bz+4qoBGlvsG1QpwgQnxbokVW+skZaQ3zslOpWYAGCy0/Pp6I
+        2MZ9qW/EQRqB+BaUqIaAZgUB2ggzgmI0R81AbDw=
+X-Google-Smtp-Source: ABdhPJy7WI6mOofSguzFXSqwA0HRRFR73oG+oJjIPMxPOjrVtnCfKqIVxMO+NYABkepI1iaQ7u6kJncWSGGwnFwpfbk=
+X-Received: by 2002:ac2:5ec2:: with SMTP id d2mr375043lfq.214.1617146852070;
+ Tue, 30 Mar 2021 16:27:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210330223748.399563-1-pctammela@mojatatu.com>
-In-Reply-To: <20210330223748.399563-1-pctammela@mojatatu.com>
+References: <20210325120020.236504-1-memxor@gmail.com> <20210325120020.236504-6-memxor@gmail.com>
+ <20210327021534.pjfjctcdczj7facs@ast-mbp> <CAEf4Bzba_gdTvak_UHqi96-w6GLF5JQcpQRcG7zxnx=kY8Sd5w@mail.gmail.com>
+ <20210329014044.fkmusoeaqs2hjiek@ast-mbp> <CAEf4BzZaWjVhfkr7vizir7PfbcsaN99yEwOoqKi32V4X17f0Ng@mail.gmail.com>
+ <20210330032846.rg455fe2danojuus@ast-mbp> <CAEf4Bzb-YjQq=P2w3S1Np_jfqepUH2_t4MmomLg8PhA0=P6zZg@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb-YjQq=P2w3S1Np_jfqepUH2_t4MmomLg8PhA0=P6zZg@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 30 Mar 2021 16:16:44 -0700
-Message-ID: <CAADnVQK+n69_uUm6Ac1WgvqM4X0_74nXHwkYxbkWFc1F5hU98Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] bpf: check flags in 'bpf_ringbuf_discard()'
- and 'bpf_ringbuf_submit()'
-To:     Pedro Tammela <pctammela@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+Date:   Tue, 30 Mar 2021 16:27:20 -0700
+Message-ID: <CAADnVQKMBgFV7rYHWYQZW=i5fYkDYspgVOvhSWyNjAzY9CLD9A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/5] libbpf: add selftests for TC-BPF API
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 3:54 PM Pedro Tammela <pctammela@gmail.com> wrote:
+On Tue, Mar 30, 2021 at 1:28 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+> >
+> > In the other thread you've proposed to copy paste hash implemenation
+> > into pahole. That's not ideal. If we had libbpfutil other projects
+> > could have used that without copy-paste.
 >
->  BPF_CALL_2(bpf_ringbuf_submit, void *, sample, u64, flags)
->  {
-> +       if (unlikely(flags & ~(BPF_RB_NO_WAKEUP | BPF_RB_FORCE_WAKEUP)))
-> +               return -EINVAL;
-> +
->         bpf_ringbuf_commit(sample, flags, false /* discard */);
-> +
->         return 0;
+> I know it's not ideal. But I don't think libbpf should be in the
+> business of providing generic data structures with stable APIs either.
 
-I think ringbuf design was meant for bpf_ringbuf_submit to never fail.
-If we do flag validation it probably should be done at the verifier time.
+There is a need for hash in pahole and it's already using libbpf.
+Would be good to reuse the code.
+
+> > that's today. Plus mandatory libelf and libz.
+> > I would like to have libsysbpf that doesn't depend on libelf/libz
+> > for folks that don't need it.
+>
+> TBH, bpf.c is such a minimal shim on top of bpf() syscall, that
+> providing all of its implementation as a single .h wouldn't be too
+> horrible. Then whatever applications want those syscall wrappers would
+> just include bpf/bpf.h and have no need for the library at all.
+
+1k line bpf.h. hmm. That's not going to be a conventional C header,
+but it could work I guess.
+
+> > Also I'd like to see symbolizer to be included in "libbpf package".
+> > Currently it's the main component that libbcc offers, but libbpf doesn't.
+> > Say we don't split libbpf. Then symbolizer will bring some dwarf library
+> > (say libdwarves ~ 1Mbyte) and libiberty ~ 500k (for c++ demangle).
+> > Now we're looking at multi megabyte libbpf package.
+>
+> Right, which is one of the reasons why it probably doesn't belong in
+> libbpf at all. Another is that it's not BPF-specific functionality at
+> all.
+
+symbolizer, usdt, python and lua bindings is what made libbcc successful.
+I think "libbpf package" should include everything that bpf tracing folks
+might need.
+Getting -l flags correct from a single package isn't a big deal
+compared with the need to deal with different packages that
+depend on each other.
+
+> I'm against pro-active splitting just in case. I'd rather discuss
+> specific problems when we get to them. I think it's premature right
+> now to split libbpf.
+
+Fine.
+I'm mainly advocating to change the mental model to see
+libbpf as a collection of tools and libraries and not just single libbpf.a
