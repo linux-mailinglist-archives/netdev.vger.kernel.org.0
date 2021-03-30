@@ -2,76 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85B8534E0D6
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 07:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B85F34E0EB
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 07:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230346AbhC3Frm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 01:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
+        id S229530AbhC3F51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 01:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbhC3FrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 01:47:17 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11879C061762;
-        Mon, 29 Mar 2021 22:47:17 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id y2so5566155plg.5;
-        Mon, 29 Mar 2021 22:47:17 -0700 (PDT)
+        with ESMTP id S230077AbhC3F5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 01:57:08 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAC0C061762
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 22:57:07 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id v3so10952441pgq.2
+        for <netdev@vger.kernel.org>; Mon, 29 Mar 2021 22:57:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1C3VfLzjCTXkC2qKsS67QGxadJ4WA9at0RKzJ4iXaE4=;
-        b=WvU6GjTLX7+fvneGZVbEgag6P4mmzVef/M+J+5ln3rXUlWd/kHpfAwlRlDbAEcp43Y
-         KUePzrDtGoD9XptqvaZmhb9lQh1h2G5BKPIgoSpD1bYxOwHFRKX9uUn401sdJ4pICoWE
-         n1jO4Sor4ya9Iqr7pyDR5OwMDw7bzIo0TZrsWtNqfM7cgDQFwRTHpazZOrkztAj3XfMG
-         kWR6umtT54RJmo5I8MzZvjuoZNmwzh1EXFPpL5JuP1WlOqIgPQWSYAUP6T7SZ8sqkeEd
-         bqkm4nituwX8WuflE69OyfL2jqKusO2ncieW/f3YkRLk8Juogbg4ouy+p+J/OO/n9y8E
-         /prQ==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QkKS8aZxjoxGnHwxCZI9GftddQKE4mm0bz9A7vdNuio=;
+        b=QztJZnn+3Y4UJDYMc34IlXE0iJLgHgVlD8Vvvz2hRz68kDJUIooryLoXNQ1fe3w4Em
+         lDcpe0XKQFkIDp2RQRVWEiXuQgUu3yZSRyOhxjOm7Ij9EDV3j9FJCR8Bag0kNvKEELaN
+         PdPt5t94zmPuC9n55gRo2+rozgJo8UYa5FD7T+mU9GCJ3s8BgwKcnQIBJ+nQcYnGnMJA
+         Gb4m6bRMhi1k7NKz22JjGQeKlmnXDA+lq6/2xx/sL4ACxwq8isT2gBipNVMx5wz6CvyG
+         x8nwAgCBlFCITR1qY1+92Q3RyUXcSG0kKgqn+vDN4Z9gdHWbu9+W7K/a7fqydCzG+IQ/
+         xVrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1C3VfLzjCTXkC2qKsS67QGxadJ4WA9at0RKzJ4iXaE4=;
-        b=aozE0WPYaGoypcDPSzd4+LYuGdNiddq/ZLsH9Manjsshlxdr5baFDSoUKtlX/Bs49y
-         n6AP1SmSIi+bvaOKPi7YS05vn7/FhOyxFtQQKhd0sj6xWL3bHP9Ssfrvj+mZYBDKt02z
-         GK2K9thYKTWag+D/GZGXT+k9/SwUytIx1TFcQvPGPOfnt92qtnkoQesviB1JNxiFtcs0
-         tpD6bzcHJXhpDiLRoSlOvGRgnFp4mkfcvwlfQwEJFAPj8WH/pPFQa4jcX3w9B9eZo0iS
-         RGTcrDpDfVuAPHzhJpIFxS7e4jV/5yyOD8bk5xGXCq2CNgpBHMCjT+IX0kbE7bwthxVj
-         pz3A==
-X-Gm-Message-State: AOAM531B7nqsq++qgphg7PtGrjgnQ5j/cqYxPIXi8IcEKNQgqli1703a
-        ornt51MfM7d2YkxNt4AUv/EYLBELvNtEW59OuVs=
-X-Google-Smtp-Source: ABdhPJyUGhIKdIh//vs6DVvXSTEmWSY6DzNNfqlX9XlO86oth/9jAlf7bVs3VgEGRx4Agm0w7FGCWOTh3aPLawYPIuk=
-X-Received: by 2002:a17:90a:68cf:: with SMTP id q15mr2690124pjj.231.1617083236531;
- Mon, 29 Mar 2021 22:47:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QkKS8aZxjoxGnHwxCZI9GftddQKE4mm0bz9A7vdNuio=;
+        b=l+QHbJL6KIrslwe+rK+H0DoRAVrtCAwtNtaPmvJnKJEknnUPEe0i+xe4P9WCknNC1c
+         hFKJM2dry2WHkms6w7clUuyPvfA1xLBbOs8rxl7zDC6TIYxB1PJ0NttR/ZTbeNSi0jNG
+         2xYmAYgtfCoSklvo9wlJDflkGI0Cx9gOncfORm3URONamOdnOdeSxPzVENaL6Mp9tAsX
+         uN325BUhbfT2RgHgrpyrHPvVG6UyBmhuqsqaeqa15BjLY4W7p2juZi8cNRkSWofYwdd+
+         qQkHOLahcXRnsefF9AlG7BnsFaAR8T3+hR3QuVtreSOG4MhnNKOtmMyL1Z1CrkFYKffc
+         5tLg==
+X-Gm-Message-State: AOAM532n5tPJAphmVKvBLrW5kmyWgrIBcISMlw5PKP6aXbi6rQP8vyCQ
+        98zrUFeNTixb16VuFPnPh7d2Ew==
+X-Google-Smtp-Source: ABdhPJyLBrduyyHAog2v1d9KM4hOKfibLyBUvOCfzD+4Fw37UFKeK2GPJ/FoQi7uLikzNnyiIMaadg==
+X-Received: by 2002:a63:1144:: with SMTP id 4mr26640237pgr.333.1617083827368;
+        Mon, 29 Mar 2021 22:57:07 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id g15sm4889075pfk.36.2021.03.29.22.57.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Mar 2021 22:57:07 -0700 (PDT)
+Date:   Mon, 29 Mar 2021 22:56:59 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: tc f_u32 bug detected
+Message-ID: <20210329225659.568c8700@hermes.local>
 MIME-Version: 1.0
-References: <20210328202013.29223-1-xiyou.wangcong@gmail.com>
- <20210328202013.29223-13-xiyou.wangcong@gmail.com> <60625e778b72_401fb2084b@john-XPS-13-9370.notmuch>
-In-Reply-To: <60625e778b72_401fb2084b@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 29 Mar 2021 22:47:05 -0700
-Message-ID: <CAM_iQpUZSJ-8sW6vOrYDXThYiGOkfrqC6ho2T2_1XP0LE4UuBQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v7 12/13] sock_map: update sock type checks for UDP
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 4:10 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> I think its a bit odd for TCP_ESTABLISHED to work with !tcp, but
-> thats not your invention so LGTM.
+After seeing a user report of trying to use JSON with tc, started to fix some of it.
 
-It has been there for many years, so why it is suddenly a problem with
-my patchset? More importantly, why don't you change it by yourself
-as it looks odd to you? Please go ahead to do whatever you want,
-your patches are always welcome.
+Found a surprise. The display of U32 filters confuses IPv6 and IPv4.  The code in
+tc/f_u32.c is obviously wront in print_ipv6(). It is just a copy/past of IPv4.
 
-Thanks.
+Almost want to just remove the bad code and let it dump the raw filter.
+
+There is still lots of code missing JSON in the Tc filters. Volunteers and patches needed.
