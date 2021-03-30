@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4011D34F4EA
+	by mail.lfdr.de (Postfix) with ESMTP id B137A34F4EB
 	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 01:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233128AbhC3XQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 19:16:24 -0400
-Received: from mail-40133.protonmail.ch ([185.70.40.133]:29526 "EHLO
-        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232967AbhC3XPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 19:15:54 -0400
-Date:   Tue, 30 Mar 2021 23:15:45 +0000
+        id S233049AbhC3XQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 19:16:25 -0400
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:64859 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233096AbhC3XPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 19:15:55 -0400
+Date:   Tue, 30 Mar 2021 23:15:52 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1617146152; bh=zG9SSUw4/Ao2wQS3FMFRGbEb1lFQgDiESXkJ9lxuSsU=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=fUFFSwYfp9SbO1ukq4EIU6vyXzV7ofNWUGi1ivJdCvgJaN8MTAKk9MMt6Kbm24WR2
-         BrL50oqRFGoJ4SI2YgefkLgrkrjVIebu1GJ/zmbIUa+YyOgkAQmb1qJbeBeAxt6PBM
-         vA7O3zDYWDKIjukMWmELfDWna4c32uffjNIzGFkGiL0cBnRqExcMQrbXxDxeg1Pi2h
-         VF0FF6FbFXrFdVnBsx7gKzvo3hDiQFYP5NeqEJ8G2IHhPr4JSUAjxF0cd+WZiak5B9
-         i5GBs3zu1vkLUB2uQF8RvTi3VVKo1WOPKUCZsMD5ZLiwv8sOYCj6u2lSVfe4U7DAyl
-         HXuRCocOfxmLw==
+        t=1617146154; bh=zI3QaYD0UyhErTHzJ9xtVjlAtErv7jv4T3mrzGJ1yG8=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=hEEInPeZfS46I+eb+l/P+YSFbDIzaO/vmhqGZlKOcsx8ZXI59qVkIwcLof96mmSEE
+         Pi/OjqUIiEyOOoaVLP/qObbLVQvol/hYXquNhPoAWC0gE13BHJx/aSjzHcxy3sF5+o
+         guQh8oCRq799d3V4msfSNjPxeNO2as4vvzS/Klfl7vT74QcmUEJKSLJutw4BTLFYKo
+         0XQFvm54I970bpX3IAdhVlMJJ94xvNlFjLUtnPI938QbjO3wiJ59v+NBrxRUkDhuon
+         Nldxte0uOVBTO6WOv53ZQvOIzOHEjN2A7+6gfxwKOCaOV3zjnbNLc267XDih9j9XLu
+         LeekmPefi9jmA==
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -39,8 +39,10 @@ Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH bpf-next 0/2] xsk: introduce generic almost-zerocopy xmit
-Message-ID: <20210330231528.546284-1-alobakin@pm.me>
+Subject: [PATCH bpf-next 1/2] xsk: speed-up generic full-copy xmit
+Message-ID: <20210330231528.546284-2-alobakin@pm.me>
+In-Reply-To: <20210330231528.546284-1-alobakin@pm.me>
+References: <20210330231528.546284-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -53,37 +55,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series is based on the exceptional generic zerocopy xmit logics
-initially introduced by Xuan Zhuo. It extends it the way that it
-could cover all the sane drivers, not only the ones that are capable
-of xmitting skbs with no linear space.
+There are a few moments that are known for sure at the moment of
+copying:
+ - allocated skb is fully linear;
+ - its linear space is long enough to hold the full buffer data.
 
-The first patch is a random while-we-are-here improvement over
-full-copy path, and the second is the main course. See the individual
-commit messages for the details.
+So, the out-of-line skb_put(), skb_store_bits() and the check for
+a retcode can be replaced with plain memcpy(__skb_put()) with
+no loss.
+Also align memcpy()'s len to sizeof(long) to improve its performance.
 
-The original (full-zerocopy) path is still here and still generally
-faster, but for now it seems like virtio_net will remain the only
-user of it, at least for a considerable period of time.
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+---
+ net/xdp/xsk.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-Alexander Lobakin (2):
-  xsk: speed-up generic full-copy xmit
-  xsk: introduce generic almost-zerocopy xmit
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index a71ed664da0a..41f8f21b3348 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -517,14 +517,9 @@ static struct sk_buff *xsk_build_skb(struct xdp_sock *=
+xs,
+ =09=09=09return ERR_PTR(err);
 
- net/xdp/xsk.c | 33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ =09=09skb_reserve(skb, hr);
+-=09=09skb_put(skb, len);
 
---
-Well, this is untested. I currently don't have an access to my setup
-and is bound by moving to another country, but as I don't know for
-sure at the moment when I'll get back to work on the kernel next time,
-I found it worthy to publish this now -- if any further changes will
-be required when I already will be out-of-sight, maybe someone could
-carry on to make a another revision and so on (I'm still here for any
-questions, comments, reviews and improvements till the end of this
-week).
-But this *should* work with all the sane drivers. If a particular
-one won't handle this, it's likely ill.
+ =09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
+-=09=09err =3D skb_store_bits(skb, 0, buffer, len);
+-=09=09if (unlikely(err)) {
+-=09=09=09kfree_skb(skb);
+-=09=09=09return ERR_PTR(err);
+-=09=09}
++=09=09memcpy(__skb_put(skb, len), buffer, ALIGN(len, sizeof(long)));
+ =09}
+
+ =09skb->dev =3D dev;
 --
 2.31.1
 
