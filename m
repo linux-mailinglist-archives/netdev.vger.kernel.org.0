@@ -2,102 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8914534EBEB
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0286234EBF1
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 17:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231584AbhC3PPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 11:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        id S232319AbhC3PQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 11:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbhC3PPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:15:14 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52F2C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:15:14 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id m13so16782842oiw.13
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:15:14 -0700 (PDT)
+        with ESMTP id S232011AbhC3PQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 11:16:19 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F39C061574
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:16:19 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id dm8so18660227edb.2
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:16:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YuXWsrFcRL57FSUxA2I+pdf2CWfWtObERgbIXPS3YmA=;
-        b=Rumfx9uDKaP+3q+gCT6yKP4KUK/Q19TUgDFAedG7g9JU3xhb/s9OfFc3VfPiaIs7yq
-         N9zgO4PM928M7wwkyAzJ0dYX4T07TU++l9O63PS1+qp4jKmNP3hp/bfu7vxx8uBJWC6o
-         eKGXYA0lgnHEBGo+XCZelgFvxRXGFVnmjqLJSxrOcJyOxiJX9VEYPGdNU5oGpqsktlAY
-         sobOEXhBjjHjP101JXwsJW6bsno5vqQgNEHx2pGmrD0VEmZJuc+5FVHFdGdPDuJIY0jX
-         UsyC9wOfkZBhPRviBv3Retdwx/IuieUjZgnsH534ekgndOhCQsJudmPCAi2qKQcgFFjK
-         yP4A==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JBeWOzpgkgAmreLHtMmdVr3HcLHRKehe5YCWkZ52w64=;
+        b=Bf74gY6pnKNp8ygNox3PZ64Ir+ww/1cuOel8mb2kSDJqYeMtzVIZAckkc4XWFWn+Hq
+         PKRSqeODad+m1oxf0TN04cuMKDZKMpb6qZkQ8aM57PGnD3LExaan0JH996TsICVRnLuj
+         yGMpxnyrpIg+zGtDohWOWoFA4jup0/U10wSGKuRhAIDQfaLrDru790Vo0YoaxaRbRXBg
+         x7RLWRPVUMcnBpIpDC/pkf49EFu/7N17pG49HdJeCP/Wa6IvZLgmFcJcfJp6JQbe4ibX
+         Ap2TUM5GbKkTzDC17a3/T76F/ADcGQu3GuQHM/mhKyqUCth20XC5KG37wvPASDiObAux
+         5VlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YuXWsrFcRL57FSUxA2I+pdf2CWfWtObERgbIXPS3YmA=;
-        b=R6l3/lZhvsPDZ11t5k1gth9tkyQYZyGtprw/HfSIKy1AILw2fN5LJQpBnS9pJLfPHo
-         iQH5ZPvhXchtuhdsmnwyHNiYxhi80B4uHNYN+maopslzzZQPB3DVKKsxiJrGH5mfO48L
-         /USU7BSfWMfxcaY6eKGOwE+w4/Zu+B69xTV7HIC2vIbO/APxYsIDHs114rFnOp0h9KfI
-         0gtcBzFq4m9La+4IivfnlPoCEDlAPQpEmEF2dyWWXnA0v5Fk4+xSmGOcqlALKNHDSLJ1
-         hHeyn0rtZL9SZKz6qTA9hKy2odzeNYrVwUnZv6K5PWAaJ+GXnVu5KbZ8IfhtnTQo1S+p
-         FmNw==
-X-Gm-Message-State: AOAM533YFiKs/d1pKjIAfssd0bBAf4X8a/q07Xe4cJcbT3rvYTu6Tumb
-        FXEYEP9YUDgEIdm9Re35DrOn48d7KWWNPA==
-X-Google-Smtp-Source: ABdhPJyAhq5ZPfCqTJToYQlfNEv48v8C+0uAFsUnoAQQOZgKWoW7FGnwaZ+LkDtOUVuyKZX/iWk8pA==
-X-Received: by 2002:a05:6808:57a:: with SMTP id j26mr3641508oig.122.1617117314166;
-        Tue, 30 Mar 2021 08:15:14 -0700 (PDT)
-Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id r16sm3960084oij.13.2021.03.30.08.15.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Mar 2021 08:15:13 -0700 (PDT)
-Date:   Tue, 30 Mar 2021 10:15:11 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH] net: qrtr: Fix memory leak on qrtr_tx_wait failure
-Message-ID: <20210330151511.GE904837@yoga>
-References: <1617113468-19222-1-git-send-email-loic.poulain@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JBeWOzpgkgAmreLHtMmdVr3HcLHRKehe5YCWkZ52w64=;
+        b=kilJe/rBrOJpAu6+W52OTwrRlQrXD+yfd4QrYD5IR3NcWsKnW7wUM/9ZV+zz073HP6
+         gCf1uccPAuXGdNwcvZeYQDcHVYnuBsuqORMvsasrFkxU49IxkSCeclx7RcYEV/9jhjCh
+         v0A0/aDA/GfXdzsQYWyk/aqMzCNG7BMaVldNbgsp8wiA+EWOAJNhHDFkmdYMUoaIegTE
+         h1D74sRX6mT/xsYZ0pa7ELBpIVcLdGM5bpIMPmc0KlA7wHAIFt2XmwqkC8yqYg1KiqSh
+         SAZ0LHjowMnwSCzYo7mOFwKgR590IfW03PuN/zKuPx65Yq0IqpTG867kMdXXpw8YImpd
+         IGyw==
+X-Gm-Message-State: AOAM530ZQxTPJsFIuT6+jIlaLYtnDKlPdu1LHfKHvislwFwLX3LqJ6Ee
+        mPAJ0uU39EdfzHKTymfEWf+fTavtLRA=
+X-Google-Smtp-Source: ABdhPJwOqnb2DrAu6KFDC4qLMx+BEXDJj5sm0pyZpZx5vwHBHdcpVt0PsxTCGqxfxr0Zkkdw1hhiow==
+X-Received: by 2002:aa7:c684:: with SMTP id n4mr20268160edq.141.1617117377666;
+        Tue, 30 Mar 2021 08:16:17 -0700 (PDT)
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com. [209.85.128.43])
+        by smtp.gmail.com with ESMTPSA id gb4sm10164663ejc.122.2021.03.30.08.16.16
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Mar 2021 08:16:17 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id w203-20020a1c49d40000b029010c706d0642so1185457wma.0
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 08:16:16 -0700 (PDT)
+X-Received: by 2002:a05:600c:4150:: with SMTP id h16mr4624428wmm.120.1617117376437;
+ Tue, 30 Mar 2021 08:16:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1617113468-19222-1-git-send-email-loic.poulain@linaro.org>
+References: <cover.1617099959.git.pabeni@redhat.com> <6430002178b54a389ea50413c7074ba9b48d6212.1617099959.git.pabeni@redhat.com>
+In-Reply-To: <6430002178b54a389ea50413c7074ba9b48d6212.1617099959.git.pabeni@redhat.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 30 Mar 2021 11:15:39 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdgNT8LfySseSB2Yaw8xm5woB8cM_BFrr=LH01L-98T0g@mail.gmail.com>
+Message-ID: <CA+FuTSdgNT8LfySseSB2Yaw8xm5woB8cM_BFrr=LH01L-98T0g@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 1/8] udp: fixup csum for GSO receive slow path
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 30 Mar 09:11 CDT 2021, Loic Poulain wrote:
+On Tue, Mar 30, 2021 at 6:29 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> When UDP packets generated locally by a socket with UDP_SEGMENT
+> traverse the following path:
+>
+> UDP tunnel(xmit) -> veth (segmentation) -> veth (gro) ->
+>         UDP tunnel (rx) -> UDP socket (no UDP_GRO)
+>
+> ip_summed will be set to CHECKSUM_PARTIAL at creation time and
+> such checksum mode will be preserved in the above path up to the
+> UDP tunnel receive code where we have:
+>
+>  __iptunnel_pull_header() -> skb_pull_rcsum() ->
+> skb_postpull_rcsum() -> __skb_postpull_rcsum()
+>
+> The latter will convert the skb to CHECKSUM_NONE.
+>
+> The UDP GSO packet will be later segmented as part of the rx socket
+> receive operation, and will present a CHECKSUM_NONE after segmentation.
+>
+> Additionally the segmented packets UDP CB still refers to the original
+> GSO packet len. Overall that causes unexpected/wrong csum validation
+> errors later in the UDP receive path.
+>
+> We could possibly address the issue with some additional checks and
+> csum mangling in the UDP tunnel code. Since the issue affects only
+> this UDP receive slow path, let's set a suitable csum status there.
+>
+> Note that SKB_GSO_UDP_L4 or SKB_GSO_FRAGLIST packets lacking an UDP
+> encapsulation present a valid checksum when landing to udp_queue_rcv_skb(),
+> as the UDP checksum has been validated by the GRO engine.
+>
+> v2 -> v3:
+>  - even more verbose commit message and comments
+>
+> v1 -> v2:
+>  - restrict the csum update to the packets strictly needing them
+>  - hopefully clarify the commit message and code comments
+>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-> qrtr_tx_wait does not check for radix_tree_insert failure, causing
-> the 'flow' object to be unreferenced after qrtr_tx_wait return. Fix
-> that by releasing flow on radix_tree_insert failure.
-> 
-> Fixes: 5fdeb0d372ab ("net: qrtr: Implement outgoing flow control")
-> Reported-by: syzbot+739016799a89c530b32a@syzkaller.appspotmail.com
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-Regards,
-Bjorn
-
-> ---
->  net/qrtr/qrtr.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index f4ab3ca6..a01b50c7 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -271,7 +271,10 @@ static int qrtr_tx_wait(struct qrtr_node *node, int dest_node, int dest_port,
->  		flow = kzalloc(sizeof(*flow), GFP_KERNEL);
->  		if (flow) {
->  			init_waitqueue_head(&flow->resume_tx);
-> -			radix_tree_insert(&node->qrtr_tx_flow, key, flow);
-> +			if (radix_tree_insert(&node->qrtr_tx_flow, key, flow)) {
-> +				kfree(flow);
-> +				flow = NULL;
-> +			}
->  		}
->  	}
->  	mutex_unlock(&node->qrtr_tx_lock);
-> -- 
-> 2.7.4
-> 
+Reviewed-by: Willem de Bruijn <willemb@google.com>
