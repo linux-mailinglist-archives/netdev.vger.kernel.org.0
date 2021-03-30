@@ -2,121 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A2F634E2FC
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 10:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C1B934E327
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 10:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231481AbhC3ISy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 04:18:54 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:23463 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231430AbhC3ISs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 04:18:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1617092328; x=1648628328;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+gyuP2o8c81Fb8w4sK4HiD0tTwx8CqW4Of6BFZ8CVpc=;
-  b=t3lD7ORaiAP00DXQRqkPI9L3sr63eH5EQ+Yu7fmR630sinq7Kko4AD3Z
-   4SXj8YwQ6fKqCEVjeGWHHntWeyEWTdWQ5mnX8u8jL3gaO65cUvHUrM9df
-   I8asi7FUnDiMZjNuUBZxqxkkHMFQ2JyXPIEe4Xw0AGiWojFPnch5Ar6KV
-   uFQoeTqQrwSr7n1hZprU2otAe0WUKVDEXFZVQviGpu6KL+8vPn8kog7vt
-   NOFsYtQk/QFJVYMhQqanohFrS8d/wQivERMod6FOdWqtrfVUoNQsdiT22
-   h1TZv1RxQYxC7PY4PrMZL17D+p07UKPlyQtRS0gp2CagNb5rtvLrwfojj
-   A==;
-IronPort-SDR: QOiXiy9v2yvWnu8splEZ7FCYjwOfZM9vsj+WkXS+Ez26JD7zAOsNo4nzyLB2nsJ/WVcL2p3uTd
- O0uYjcYzeP/WhLEfyD/Lbmvc+voqrTSDy0qTo7Om24f2skespBOB74BjMZpChKCSacFt0W++Pk
- jE+7GPbFvPCEFnbrIdeAb/v6OVaDpieiKwP3T+WBV6TwzB1t7uS2DRu6//8HbtBXpSBt2uWOz2
- E4aytVlV2W/oowrvLX+GN+pxdmYRPj6Zams5vQCQ/342xeshie3Ug3HEZZ8oklUiV8JxboZuC2
- H3U=
-X-IronPort-AV: E=Sophos;i="5.81,290,1610434800"; 
-   d="scan'208";a="49364921"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Mar 2021 01:18:47 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 30 Mar 2021 01:18:47 -0700
-Received: from den-her-m31857h.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Tue, 30 Mar 2021 01:18:45 -0700
-Message-ID: <2356027828f1fa424751e91e478ff4bc188e7f6d.camel@microchip.com>
-Subject: Re: [PATCH linux-next 1/1] phy: Sparx5 Eth SerDes: Use direct
- register operations
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Date:   Tue, 30 Mar 2021 10:18:44 +0200
-In-Reply-To: <YGIimz9UnVYWfcXH@lunn.ch>
-References: <20210329081438.558885-1-steen.hegelund@microchip.com>
-         <20210329081438.558885-2-steen.hegelund@microchip.com>
-         <YGIimz9UnVYWfcXH@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S231269AbhC3IbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 04:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhC3Ia5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 04:30:57 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD52EC061762
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:30:56 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id s2so11299860qtx.10
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 01:30:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LsWaZUfJ4RjwBcPSKE+qaZf7I62pJkEkWeWZxNa11nU=;
+        b=iyCL601Nw4wlzx0ZDvcF9C5X1bn773NwDZsctt7skNNKr3ijpr3y9UCHcxiYSt7/qJ
+         YNJ0uBxVHeGQU8X5ex52OLo6dbINGPeYrqe1wZP/wluqYHfeChMr9lwqq+P3um+RcKhg
+         72mthqeOaUOVRJu5SODPN3qfulLjwEd+WsyA0orOo3F0w8sEN9XGvDiGM4NCyfTvRDyy
+         SRZqiD+VyOmPl1UoGLfV4DAllEnv7+/cK+lVW/a8K2ZIKQKdYwi7UFXsrWGLwidmoHHP
+         KZH3A6/eBH2cG2WO54UpTCLkmqSKCPtAhfY5+tTnsXhZmdXnEAD65XHURmrAHRCyZYBo
+         yVqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LsWaZUfJ4RjwBcPSKE+qaZf7I62pJkEkWeWZxNa11nU=;
+        b=WlJd5UvGs3ru/LdPW26nJU7KTxKgyxuMZ6i1N4MiC+uIeiNMQ5K4YExI33Ui4zWSHe
+         60ljCbdGIdZ7hZoLkhUOakas05m0+WFN6JXIMUjr0IWkoInexmZ+/8Fxfd+6C625bjii
+         fG83D+vcs5hOv0uSWCd4u6+Fop+1r1F0gTtzf4ynYmnIbdshVqrnMajo9GpG1Jqw2F0y
+         gTrygwEmhrpznCC1fHOLetgEvVijHSPKfiE06m32saqmZ8Pcad3I4Kublp7H3PflPhnE
+         RPCqZIGPeOsr0NcCMUhxZPtSsUjhAdkY8ydOkJr/xUq7qKoLIDfq315flFnhWZk78/ET
+         77xA==
+X-Gm-Message-State: AOAM5309vzeVItN+jt4mbq04xO6C8uJ6fmBw3sI6BuWye64aMXX5nOzU
+        SIM7tSl5C+WuOIzfi2WiHR/4fg==
+X-Google-Smtp-Source: ABdhPJzfKnKz4+34hkKg8pgo8PWVuR6OYKd0UjJoaGhH9no0yNz829A6OjnyT76H/7+ttDK8QOyTsg==
+X-Received: by 2002:aed:2943:: with SMTP id s61mr26251159qtd.5.1617093055913;
+        Tue, 30 Mar 2021 01:30:55 -0700 (PDT)
+Received: from madeliefje.horms.nl.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id s28sm15203750qkj.73.2021.03.30.01.30.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 01:30:55 -0700 (PDT)
+From:   Simon Horman <simon.horman@netronome.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net] nfp: flower: ignore duplicate merge hints from FW
+Date:   Tue, 30 Mar 2021 10:30:23 +0200
+Message-Id: <20210330083023.32495-1-simon.horman@netronome.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+From: Yinjun Zhang <yinjun.zhang@corigine.com>
 
-On Mon, 2021-03-29 at 20:55 +0200, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Mon, Mar 29, 2021 at 10:14:38AM +0200, Steen Hegelund wrote:
-> > Use direct register operations instead of a table of register
-> > information to lower the stack usage.
-> > 
-> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > ---
-> >  drivers/phy/microchip/sparx5_serdes.c | 1869 +++++++++++++------------
-> >  1 file changed, 951 insertions(+), 918 deletions(-)
-> > 
-> > diff --git a/drivers/phy/microchip/sparx5_serdes.c b/drivers/phy/microchip/sparx5_serdes.c
-> > index 06bcf0c166cf..43de68a62c2f 100644
-> > --- a/drivers/phy/microchip/sparx5_serdes.c
-> > +++ b/drivers/phy/microchip/sparx5_serdes.c
-> > @@ -343,12 +343,6 @@ struct sparx5_sd10g28_params {
-> >       u8 fx_100;
-> >  };
-> > 
-> > -struct sparx5_serdes_regval {
-> > -     u32 value;
-> > -     u32 mask;
-> > -     void __iomem *addr;
-> > -};
-> > -
-> >  static struct sparx5_sd25g28_media_preset media_presets_25g[] = {
-> >       { /* ETH_MEDIA_DEFAULT */
-> >               .cfg_en_adv               = 0,
-> > @@ -945,431 +939,411 @@ static void sparx5_sd25g28_reset(void __iomem *regs[],
-> >       }
-> >  }
-> > 
-> > -static int sparx5_sd25g28_apply_params(struct device *dev,
-> > -                                    void __iomem *regs[],
-> > -                                    struct sparx5_sd25g28_params *params,
-> > -                                    u32 sd_index)
-> > +static int sparx5_sd25g28_apply_params(struct sparx5_serdes_macro *macro,
-> > +                                    struct sparx5_sd25g28_params *params)
-> >  {
-> > -     struct sparx5_serdes_regval item[] = {
-> 
-> Could you just add const here, and then it is no longer on the stack?
-> 
->    Andrew
+A merge hint message needs some time to process before the merged
+flow actually reaches the firmware, during which we may get duplicate
+merge hints if there're more than one packet that hit the pre-merged
+flow. And processing duplicate merge hints will cost extra host_ctx's
+which are a limited resource.
 
-No it still counts against the stack even as a const structure.
+Avoid the duplicate merge by using hash table to store the sub_flows
+to be merged.
 
-BR
-Steen
+Fixes: 8af56f40e53b ("nfp: flower: offload merge flows")
+Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@netronome.com>
+---
+ .../net/ethernet/netronome/nfp/flower/main.h  |  8 ++++
+ .../ethernet/netronome/nfp/flower/metadata.c  | 16 ++++++-
+ .../ethernet/netronome/nfp/flower/offload.c   | 48 ++++++++++++++++++-
+ 3 files changed, 69 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index caf12eec9945..56833a41f3d2 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -190,6 +190,7 @@ struct nfp_fl_internal_ports {
+  * @qos_rate_limiters:	Current active qos rate limiters
+  * @qos_stats_lock:	Lock on qos stats updates
+  * @pre_tun_rule_cnt:	Number of pre-tunnel rules offloaded
++ * @merge_table:	Hash table to store merged flows
+  */
+ struct nfp_flower_priv {
+ 	struct nfp_app *app;
+@@ -223,6 +224,7 @@ struct nfp_flower_priv {
+ 	unsigned int qos_rate_limiters;
+ 	spinlock_t qos_stats_lock; /* Protect the qos stats */
+ 	int pre_tun_rule_cnt;
++	struct rhashtable merge_table;
+ };
+ 
+ /**
+@@ -350,6 +352,12 @@ struct nfp_fl_payload_link {
+ };
+ 
+ extern const struct rhashtable_params nfp_flower_table_params;
++extern const struct rhashtable_params merge_table_params;
++
++struct nfp_merge_info {
++	u64 parent_ctx;
++	struct rhash_head ht_node;
++};
+ 
+ struct nfp_fl_stats_frame {
+ 	__be32 stats_con_id;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+index aa06fcb38f8b..327bb56b3ef5 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+@@ -490,6 +490,12 @@ const struct rhashtable_params nfp_flower_table_params = {
+ 	.automatic_shrinking	= true,
+ };
+ 
++const struct rhashtable_params merge_table_params = {
++	.key_offset	= offsetof(struct nfp_merge_info, parent_ctx),
++	.head_offset	= offsetof(struct nfp_merge_info, ht_node),
++	.key_len	= sizeof(u64),
++};
++
+ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 			     unsigned int host_num_mems)
+ {
+@@ -506,6 +512,10 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	if (err)
+ 		goto err_free_flow_table;
+ 
++	err = rhashtable_init(&priv->merge_table, &merge_table_params);
++	if (err)
++		goto err_free_stats_ctx_table;
++
+ 	get_random_bytes(&priv->mask_id_seed, sizeof(priv->mask_id_seed));
+ 
+ 	/* Init ring buffer and unallocated mask_ids. */
+@@ -513,7 +523,7 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 		kmalloc_array(NFP_FLOWER_MASK_ENTRY_RS,
+ 			      NFP_FLOWER_MASK_ELEMENT_RS, GFP_KERNEL);
+ 	if (!priv->mask_ids.mask_id_free_list.buf)
+-		goto err_free_stats_ctx_table;
++		goto err_free_merge_table;
+ 
+ 	priv->mask_ids.init_unallocated = NFP_FLOWER_MASK_ENTRY_RS - 1;
+ 
+@@ -550,6 +560,8 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	kfree(priv->mask_ids.last_used);
+ err_free_mask_id:
+ 	kfree(priv->mask_ids.mask_id_free_list.buf);
++err_free_merge_table:
++	rhashtable_destroy(&priv->merge_table);
+ err_free_stats_ctx_table:
+ 	rhashtable_destroy(&priv->stats_ctx_table);
+ err_free_flow_table:
+@@ -568,6 +580,8 @@ void nfp_flower_metadata_cleanup(struct nfp_app *app)
+ 				    nfp_check_rhashtable_empty, NULL);
+ 	rhashtable_free_and_destroy(&priv->stats_ctx_table,
+ 				    nfp_check_rhashtable_empty, NULL);
++	rhashtable_free_and_destroy(&priv->merge_table,
++				    nfp_check_rhashtable_empty, NULL);
+ 	kvfree(priv->stats);
+ 	kfree(priv->mask_ids.mask_id_free_list.buf);
+ 	kfree(priv->mask_ids.last_used);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index d72225d64a75..e95969c462e4 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1009,6 +1009,8 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
+ 	struct netlink_ext_ack *extack = NULL;
+ 	struct nfp_fl_payload *merge_flow;
+ 	struct nfp_fl_key_ls merge_key_ls;
++	struct nfp_merge_info *merge_info;
++	u64 parent_ctx = 0;
+ 	int err;
+ 
+ 	ASSERT_RTNL();
+@@ -1019,6 +1021,15 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
+ 	    nfp_flower_is_merge_flow(sub_flow2))
+ 		return -EINVAL;
+ 
++	/* check if the two flows are already merged */
++	parent_ctx = (u64)(be32_to_cpu(sub_flow1->meta.host_ctx_id)) << 32;
++	parent_ctx |= (u64)(be32_to_cpu(sub_flow2->meta.host_ctx_id));
++	if (rhashtable_lookup_fast(&priv->merge_table,
++				   &parent_ctx, merge_table_params)) {
++		nfp_flower_cmsg_warn(app, "The two flows are already merged.\n");
++		return 0;
++	}
++
+ 	err = nfp_flower_can_merge(sub_flow1, sub_flow2);
+ 	if (err)
+ 		return err;
+@@ -1060,16 +1071,33 @@ int nfp_flower_merge_offloaded_flows(struct nfp_app *app,
+ 	if (err)
+ 		goto err_release_metadata;
+ 
++	merge_info = kmalloc(sizeof(*merge_info), GFP_KERNEL);
++	if (!merge_info) {
++		err = -ENOMEM;
++		goto err_remove_rhash;
++	}
++	merge_info->parent_ctx = parent_ctx;
++	err = rhashtable_insert_fast(&priv->merge_table, &merge_info->ht_node,
++				     merge_table_params);
++	if (err)
++		goto err_destroy_merge_info;
++
+ 	err = nfp_flower_xmit_flow(app, merge_flow,
+ 				   NFP_FLOWER_CMSG_TYPE_FLOW_MOD);
+ 	if (err)
+-		goto err_remove_rhash;
++		goto err_remove_merge_info;
+ 
+ 	merge_flow->in_hw = true;
+ 	sub_flow1->in_hw = false;
+ 
+ 	return 0;
+ 
++err_remove_merge_info:
++	WARN_ON_ONCE(rhashtable_remove_fast(&priv->merge_table,
++					    &merge_info->ht_node,
++					    merge_table_params));
++err_destroy_merge_info:
++	kfree(merge_info);
+ err_remove_rhash:
+ 	WARN_ON_ONCE(rhashtable_remove_fast(&priv->flow_table,
+ 					    &merge_flow->fl_node,
+@@ -1359,7 +1387,9 @@ nfp_flower_remove_merge_flow(struct nfp_app *app,
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+ 	struct nfp_fl_payload_link *link, *temp;
++	struct nfp_merge_info *merge_info;
+ 	struct nfp_fl_payload *origin;
++	u64 parent_ctx = 0;
+ 	bool mod = false;
+ 	int err;
+ 
+@@ -1396,8 +1426,22 @@ nfp_flower_remove_merge_flow(struct nfp_app *app,
+ err_free_links:
+ 	/* Clean any links connected with the merged flow. */
+ 	list_for_each_entry_safe(link, temp, &merge_flow->linked_flows,
+-				 merge_flow.list)
++				 merge_flow.list) {
++		u32 ctx_id = be32_to_cpu(link->sub_flow.flow->meta.host_ctx_id);
++
++		parent_ctx = (parent_ctx << 32) | (u64)(ctx_id);
+ 		nfp_flower_unlink_flow(link);
++	}
++
++	merge_info = rhashtable_lookup_fast(&priv->merge_table,
++					    &parent_ctx,
++					    merge_table_params);
++	if (merge_info) {
++		WARN_ON_ONCE(rhashtable_remove_fast(&priv->merge_table,
++						    &merge_info->ht_node,
++						    merge_table_params));
++		kfree(merge_info);
++	}
+ 
+ 	kfree(merge_flow->action_data);
+ 	kfree(merge_flow->mask_data);
+-- 
+2.20.1
 
