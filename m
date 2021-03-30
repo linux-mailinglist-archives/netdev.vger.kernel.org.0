@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB7134EEB3
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:01:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EFDC34EEB6
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 19:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232537AbhC3RA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 13:00:29 -0400
-Received: from mga04.intel.com ([192.55.52.120]:6373 "EHLO mga04.intel.com"
+        id S232546AbhC3RAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 13:00:33 -0400
+Received: from mga04.intel.com ([192.55.52.120]:6378 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232236AbhC3RAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 13:00:09 -0400
-IronPort-SDR: +k/pvjY4EqJ07VhYWqDWF3VE7uAI7lgixkElG/AylwVhrr7STvfmBE31Mx8JIRoal4HX4Q6otV
- 8eePnumUx+ag==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="189569202"
+        id S232246AbhC3RAK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 13:00:10 -0400
+IronPort-SDR: O6s80OI8IuGP05p29mRbqPznGA+3s/hm4WiRb6bkfbOZDK6JULHOhV0GYEaLy95qaCBLVraxpF
+ 9aJ/bleJOXeA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="189569208"
 X-IronPort-AV: E=Sophos;i="5.81,291,1610438400"; 
-   d="scan'208";a="189569202"
+   d="scan'208";a="189569208"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 10:00:09 -0700
-IronPort-SDR: FsWe9//JwjRTS7tpRb3xNlFi8m1YvQgE9z3kfXcn9JXVC60Lm2jKCLFkCCzMjYjWpG+7EK0p8q
- K1uUPJ3DiZWA==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 10:00:10 -0700
+IronPort-SDR: 9LNk5POMM8cAwowL9hubFwCgF8JBx8E5SqCFiiK2NpNC81rKR+IPl6ohPPZcIpnYHLSxzwl8zs
+ JUDFUdJFx6jA==
 X-IronPort-AV: E=Sophos;i="5.81,291,1610438400"; 
-   d="scan'208";a="610174669"
+   d="scan'208";a="610174690"
 Received: from ssaleem-mobl.amr.corp.intel.com ([10.209.112.111])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 10:00:07 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 10:00:08 -0700
 From:   Shiraz Saleem <shiraz.saleem@intel.com>
 To:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
         davem@davemloft.net
 Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         david.m.ertman@intel.com, anthony.l.nguyen@intel.com,
         Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH v3 05/23] ice: Add devlink params support
-Date:   Tue, 30 Mar 2021 11:59:04 -0500
-Message-Id: <20210330165922.2006-6-shiraz.saleem@intel.com>
+Subject: [PATCH v3 06/23] i40e: Prep i40e header for aux bus conversion
+Date:   Tue, 30 Mar 2021 11:59:05 -0500
+Message-Id: <20210330165922.2006-7-shiraz.saleem@intel.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20210330165922.2006-1-shiraz.saleem@intel.com>
 References: <20210330165922.2006-1-shiraz.saleem@intel.com>
@@ -42,257 +42,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new generic runtime devlink parameter 'rdma_protocol'
-and use it in ice PCI driver. Configuration changes
-result in unplugging the auxiliary RDMA device and re-plugging
-it with updated values for irdma auxiiary driver to consume at
-drv.probe()
+Add the definitions and private ops to the i40e client
+header file in preparation to convert i40e to use
+the new auxiliary bus infrastructure. This header
+is shared between the 'i40e' Intel networking driver
+providing RDMA support and the 'irdma' driver.
 
 Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
 ---
- .../networking/devlink/devlink-params.rst          |  6 ++
- Documentation/networking/devlink/ice.rst           | 13 +++
- drivers/net/ethernet/intel/ice/ice_devlink.c       | 92 +++++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_devlink.h       |  5 ++
- drivers/net/ethernet/intel/ice/ice_main.c          |  2 +
- include/net/devlink.h                              |  4 +
- net/core/devlink.c                                 |  5 ++
- 7 files changed, 125 insertions(+), 2 deletions(-)
+ include/linux/net/intel/i40e_client.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index 54c9f10..0b454c3 100644
---- a/Documentation/networking/devlink/devlink-params.rst
-+++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -114,3 +114,9 @@ own name.
-        will NACK any attempt of other host to reset the device. This parameter
-        is useful for setups where a device is shared by different hosts, such
-        as multi-host setup.
-+   * - ``rdma_protocol``
-+     - string
-+     - Selects the RDMA protocol selected for multi-protocol devices.
-+        - ``iwarp`` iWARP
-+	- ``roce`` RoCE
-+	- ``ib`` Infiniband
-diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-index a432dc4..2e04c99 100644
---- a/Documentation/networking/devlink/ice.rst
-+++ b/Documentation/networking/devlink/ice.rst
-@@ -193,3 +193,16 @@ Users can request an immediate capture of a snapshot via the
-     0000000000000210 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+diff --git a/include/linux/net/intel/i40e_client.h b/include/linux/net/intel/i40e_client.h
+index f41387a..f4302f6 100644
+--- a/include/linux/net/intel/i40e_client.h
++++ b/include/linux/net/intel/i40e_client.h
+@@ -4,6 +4,8 @@
+ #ifndef _I40E_CLIENT_H_
+ #define _I40E_CLIENT_H_
  
-     $ devlink region delete pci/0000:01:00.0/device-caps snapshot 1
++#include <linux/auxiliary_bus.h>
 +
-+Parameters
-+==========
-+
-+The ``ice`` driver implements the following generic and driver-specific
-+parameters.
-+
-+.. list-table:: Generic parameters implemented
-+
-+   * - Name
-+     - Mode
-+   * - ``rdma_protocol``
-+     - runtime
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index cf685ee..de03eb8 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -449,6 +449,64 @@ static int ice_devlink_info_get(struct devlink *devlink,
- 	.flash_update = ice_devlink_flash_update,
+ #define I40E_CLIENT_STR_LENGTH 10
+ 
+ /* Client interface version should be updated anytime there is a change in the
+@@ -78,6 +80,7 @@ struct i40e_info {
+ 	u8 lanmac[6];
+ 	struct net_device *netdev;
+ 	struct pci_dev *pcidev;
++	struct auxiliary_device *aux_dev;
+ 	u8 __iomem *hw_addr;
+ 	u8 fid;	/* function id, PF id or VF id */
+ #define I40E_CLIENT_FTYPE_PF 0
+@@ -90,6 +93,7 @@ struct i40e_info {
+ 	struct i40e_qvlist_info *qvlist_info;
+ 	struct i40e_params params;
+ 	struct i40e_ops *ops;
++	struct i40e_client *client;
+ 
+ 	u16 msix_count;	 /* number of msix vectors*/
+ 	/* Array down below will be dynamically allocated based on msix_count */
+@@ -100,6 +104,11 @@ struct i40e_info {
+ 	u32 fw_build;                   /* firmware build number */
  };
  
-+static int
-+ice_devlink_rdma_prot_get(struct devlink *devlink, u32 id,
-+			  struct devlink_param_gset_ctx *ctx)
-+{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+	struct iidc_core_dev_info *cdev_info =
-+		ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
-+
-+	if (cdev_info->rdma_protocol == IIDC_RDMA_PROTOCOL_IWARP)
-+		strcpy(ctx->val.vstr, "iwarp");
-+	else
-+		strcpy(ctx->val.vstr, "roce");
-+
-+	return 0;
-+}
-+
-+static int
-+ice_devlink_rdma_prot_set(struct devlink *devlink, u32 id,
-+			  struct devlink_param_gset_ctx *ctx)
-+{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+	struct iidc_core_dev_info *cdev_info =
-+		ice_find_cdev_info_by_id(pf, IIDC_RDMA_ID);
-+	enum iidc_rdma_protocol prot = !strcmp(ctx->val.vstr, "iwarp") ?
-+					IIDC_RDMA_PROTOCOL_IWARP :
-+					IIDC_RDMA_PROTOCOL_ROCEV2;
-+
-+	if (cdev_info->rdma_protocol != prot) {
-+		ice_unplug_aux_devs(pf);
-+		cdev_info->rdma_protocol = prot;
-+		ice_plug_aux_devs(pf);
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+ice_devlink_rdma_prot_validate(struct devlink *devlink, u32 id,
-+			       union devlink_param_value val,
-+			       struct netlink_ext_ack *extack)
-+{
-+	char *value = val.vstr;
-+
-+	if (!strcmp(value, "iwarp") || !strcmp(value, "roce"))
-+		return 0;
-+
-+	NL_SET_ERR_MSG_MOD(extack, "\"iwarp\" and \"roce\" are the only supported values");
-+
-+	return -EINVAL;
-+}
-+
-+static const struct devlink_param ice_devlink_params[] = {
-+	DEVLINK_PARAM_GENERIC(RDMA_PROTOCOL, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			      ice_devlink_rdma_prot_get,
-+			      ice_devlink_rdma_prot_set,
-+			      ice_devlink_rdma_prot_validate),
++struct i40e_auxiliary_device {
++	struct auxiliary_device aux_dev;
++	struct i40e_info *ldev;
 +};
 +
- static void ice_devlink_free(void *devlink_ptr)
- {
- 	devlink_free((struct devlink *)devlink_ptr);
-@@ -491,15 +549,31 @@ int ice_devlink_register(struct ice_pf *pf)
- {
- 	struct devlink *devlink = priv_to_devlink(pf);
- 	struct device *dev = ice_pf_to_dev(pf);
-+	union devlink_param_value value;
- 	int err;
- 
- 	err = devlink_register(devlink, dev);
-+	if (err)
-+		goto err;
+ #define I40E_CLIENT_RESET_LEVEL_PF   1
+ #define I40E_CLIENT_RESET_LEVEL_CORE 2
+ #define I40E_CLIENT_VSI_FLAG_TCP_ENABLE  BIT(1)
+@@ -125,6 +134,11 @@ struct i40e_ops {
+ 			       struct i40e_client *client,
+ 			       bool is_vf, u32 vf_id,
+ 			       u32 flag, u32 valid_flag);
 +
-+	err = devlink_params_register(devlink, ice_devlink_params,
-+				      ARRAY_SIZE(ice_devlink_params));
- 	if (err) {
--		dev_err(dev, "devlink registration failed: %d\n", err);
--		return err;
-+		devlink_unregister(devlink);
-+		goto err;
- 	}
- 
-+	strcpy(value.vstr, "iwarp");
-+	devlink_param_driverinit_value_set(devlink,
-+					   DEVLINK_PARAM_GENERIC_ID_RDMA_PROTOCOL,
-+					   value);
++	int (*client_device_register)(struct i40e_info *ldev);
 +
- 	return 0;
++	void (*client_device_unregister)(struct i40e_info *ldev);
 +
-+err:
-+	dev_err(dev, "devlink registration failed: %d\n", err);
-+
-+	return err;
- }
- 
- /**
-@@ -510,10 +584,24 @@ int ice_devlink_register(struct ice_pf *pf)
-  */
- void ice_devlink_unregister(struct ice_pf *pf)
- {
-+	devlink_params_unregister(priv_to_devlink(pf), ice_devlink_params,
-+				  ARRAY_SIZE(ice_devlink_params));
- 	devlink_unregister(priv_to_devlink(pf));
- }
- 
- /**
-+ * ice_devlink_params_publish - Publish devlink param
-+ * @pf: the PF structure to cleanup
-+ *
-+ * Publish previously registered devlink parameters after driver
-+ * is initialized
-+ */
-+void ice_devlink_params_publish(struct ice_pf *pf)
-+{
-+	devlink_params_publish(priv_to_devlink(pf));
-+}
-+
-+/**
-  * ice_devlink_create_port - Create a devlink port for this VSI
-  * @vsi: the VSI to create a port for
-  *
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
-index e07e744..e7239fa 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
-@@ -4,10 +4,15 @@
- #ifndef _ICE_DEVLINK_H_
- #define _ICE_DEVLINK_H_
- 
-+enum ice_devlink_param_id {
-+	ICE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-+};
-+
- struct ice_pf *ice_allocate_pf(struct device *dev);
- 
- int ice_devlink_register(struct ice_pf *pf);
- void ice_devlink_unregister(struct ice_pf *pf);
-+void ice_devlink_params_publish(struct ice_pf *pf);
- int ice_devlink_create_port(struct ice_vsi *vsi);
- void ice_devlink_destroy_port(struct ice_vsi *vsi);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 3d750ba..3e3a9cf 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4346,6 +4346,8 @@ static void ice_print_wake_reason(struct ice_pf *pf)
- 		dev_warn(dev, "RDMA is not supported on this device\n");
- 	}
- 
-+	ice_devlink_params_publish(pf);
-+
- 	return 0;
- 
- err_init_aux_unroll:
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 853420d..09e4d76 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -498,6 +498,7 @@ enum devlink_param_generic_id {
- 	DEVLINK_PARAM_GENERIC_ID_RESET_DEV_ON_DRV_PROBE,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_ROCE,
- 	DEVLINK_PARAM_GENERIC_ID_ENABLE_REMOTE_DEV_RESET,
-+	DEVLINK_PARAM_GENERIC_ID_RDMA_PROTOCOL,
- 
- 	/* add new param generic ids above here*/
- 	__DEVLINK_PARAM_GENERIC_ID_MAX,
-@@ -538,6 +539,9 @@ enum devlink_param_generic_id {
- #define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME "enable_remote_dev_reset"
- #define DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE DEVLINK_PARAM_TYPE_BOOL
- 
-+#define DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_NAME "rdma_protocol"
-+#define DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_TYPE DEVLINK_PARAM_TYPE_STRING
-+
- #define DEVLINK_PARAM_GENERIC(_id, _cmodes, _get, _set, _validate)	\
- {									\
- 	.id = DEVLINK_PARAM_GENERIC_ID_##_id,				\
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 737b61c..1bb3865 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3766,6 +3766,11 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 		.name = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_NAME,
- 		.type = DEVLINK_PARAM_GENERIC_ENABLE_REMOTE_DEV_RESET_TYPE,
- 	},
-+	{
-+		.id = DEVLINK_PARAM_GENERIC_ID_RDMA_PROTOCOL,
-+		.name = DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_NAME,
-+		.type = DEVLINK_PARAM_GENERIC_RDMA_PROTOCOL_TYPE,
-+	},
  };
  
- static int devlink_param_generic_verify(const struct devlink_param *param)
+ struct i40e_client_ops {
 -- 
 1.8.3.1
 
