@@ -2,142 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A47EA34E71E
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 14:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3F2F34E674
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 13:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbhC3MGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 08:06:22 -0400
-Received: from mga12.intel.com ([192.55.52.136]:33814 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231924AbhC3MF7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 08:05:59 -0400
-IronPort-SDR: JJjQFt6vf5go/RXfTcaBT2l1hR4RRpuAMBOsMMUqHYnsR5k/obI5UJ4WE9RdqOgs5DBo4EmqIu
- awJ9RWjgXreA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="171158243"
-X-IronPort-AV: E=Sophos;i="5.81,290,1610438400"; 
-   d="scan'208";a="171158243"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 05:05:59 -0700
-IronPort-SDR: MIUsMmASUIfa9P1GnO/m3uu0jK9dWgqgPNwC+OMdh6l0706oCM6YSNdk+2Ce5FfwmbO75LpAj2
- 8qQ7DDRptjSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,290,1610438400"; 
-   d="scan'208";a="418145859"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2021 05:05:57 -0700
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        alexei.starovoitov@gmail.com
-Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH v3 bpf 3/3] libbpf: only create rx and tx XDP rings when necessary
-Date:   Tue, 30 Mar 2021 11:34:19 +0000
-Message-Id: <20210330113419.4616-4-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210330113419.4616-1-ciara.loftus@intel.com>
-References: <20210330113419.4616-1-ciara.loftus@intel.com>
+        id S229801AbhC3Lnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 07:43:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54785 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231803AbhC3LnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 07:43:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617104593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YdResl2kuic95sH6TzZMvcjnCw/gcVH4dBotfJe6QDs=;
+        b=axQeyysP4ZKx/HnkXdarWK80op1e+VfcIX/4I2Go0XjYfLRjEA4WJjdzW8X7E5sDezIz1+
+        sTU5vDqtp445iOCMq2mjtZWJq7TJS4A4kC4jAZFaa+6pIsOkTOKu7aXYxMm40HRs6zxk3O
+        fb/NNxFlymUEkhBkROIoayFUH+/6zi8=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-449-z7FIQ2RkPsuY5iP0gW5-EQ-1; Tue, 30 Mar 2021 07:43:12 -0400
+X-MC-Unique: z7FIQ2RkPsuY5iP0gW5-EQ-1
+Received: by mail-ej1-f70.google.com with SMTP id gn30so7040228ejc.3
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 04:43:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=YdResl2kuic95sH6TzZMvcjnCw/gcVH4dBotfJe6QDs=;
+        b=dnVm9Nv37JMSTxIFJ2dvRf61HrKBRLlBqjGBASkB8IqAqrsRucgu402wGrY48h4h1c
+         K9K1MzYT2Pii9ryCKcnj6b/NF8xqJ0UmFPOaq+Lb524Z/Vf19Xa2wuF5mlZn192xyVtc
+         ufdxUbiho63FlCNoltPO0t/vHux65q1/ZyYDxl3ZM7UDmfQrHI7P7JY0if5A9fEFpPZm
+         VOE3tHlNfDihMmVogYLQsWP9PYDdKm8P3kssL4+YyQhxjLVMd87F8xr1i9xN5HL+wxut
+         1r3JxWPia43HUJ8Zf1IDlgjkVIc1XUK6vH5wS9vYsImXEfPLfHe0YaHkps4jGIfs8ckC
+         ZsUg==
+X-Gm-Message-State: AOAM530bBf6DAneevOoB+t9cEyuNYYopvF23+TsWyvieRx2Wg+kBt8FS
+        iQt+lRUSxygg3fL3F3+uezqPCK5fnCj+uuVU6kIEvBxltU63HUlkiTdp6sV44LMuF35WrxIvxMF
+        qmOCGBWPytVU16WZ1
+X-Received: by 2002:aa7:cd0e:: with SMTP id b14mr33934056edw.354.1617104590825;
+        Tue, 30 Mar 2021 04:43:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwDoAlTwzQHxlgfI0onMmuRddii3uOQW4heyvgibFcoZfZlHeKAUghgXQPcpnC/JNOsO8VMNA==
+X-Received: by 2002:aa7:cd0e:: with SMTP id b14mr33934042edw.354.1617104590647;
+        Tue, 30 Mar 2021 04:43:10 -0700 (PDT)
+Received: from vitty.brq.redhat.com (g-server-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id o6sm10888718edw.24.2021.03.30.04.43.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 04:43:10 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, kys@microsoft.com, sthemmin@microsoft.com,
+        olaf@aepfle.de, davem@davemloft.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] hv_netvsc: Add error handling while switching
+ data path
+In-Reply-To: <1617060095-31582-1-git-send-email-haiyangz@microsoft.com>
+References: <1617060095-31582-1-git-send-email-haiyangz@microsoft.com>
+Date:   Tue, 30 Mar 2021 13:43:09 +0200
+Message-ID: <87lfa4uasy.fsf@vitty.brq.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior to this commit xsk_socket__create(_shared) always attempted to create
-the rx and tx rings for the socket. However this causes an issue when the
-socket being setup is that which shares the fd with the UMEM. If a
-previous call to this function failed with this socket after the rings were
-set up, a subsequent call would always fail because the rings are not torn
-down after the first call and when we try to set them up again we encounter
-an error because they already exist. Solve this by remembering whether the
-rings were set up by introducing a new flag to struct xsk_umem, and
-checking it before setting up the rings for sockets which share the fd
-with the UMEM.
+Haiyang Zhang <haiyangz@microsoft.com> writes:
 
-Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
+> Add error handling in case of failure to send switching data path message
+> to the host.
+>
+> Reported-by: Shachar Raindel <shacharr@microsoft.com>
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+>
+> ---
+>  drivers/net/hyperv/hyperv_net.h |  6 +++++-
+>  drivers/net/hyperv/netvsc.c     | 35 +++++++++++++++++++++++++++++----
+>  drivers/net/hyperv/netvsc_drv.c | 18 +++++++++++------
+>  3 files changed, 48 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+> index 59ac04a610ad..442c520ab8f3 100644
+> --- a/drivers/net/hyperv/hyperv_net.h
+> +++ b/drivers/net/hyperv/hyperv_net.h
+> @@ -269,7 +269,7 @@ int rndis_filter_receive(struct net_device *ndev,
+>  int rndis_filter_set_device_mac(struct netvsc_device *ndev,
+>  				const char *mac);
+>  
+> -void netvsc_switch_datapath(struct net_device *nv_dev, bool vf);
+> +int netvsc_switch_datapath(struct net_device *nv_dev, bool vf);
+>  
+>  #define NVSP_INVALID_PROTOCOL_VERSION	((u32)0xFFFFFFFF)
+>  
+> @@ -1718,4 +1718,8 @@ struct rndis_message {
+>  #define TRANSPORT_INFO_IPV6_TCP 0x10
+>  #define TRANSPORT_INFO_IPV6_UDP 0x20
+>  
+> +#define RETRY_US_LO	5000
+> +#define RETRY_US_HI	10000
+> +#define RETRY_MAX	2000	/* >10 sec */
+> +
+>  #endif /* _HYPERV_NET_H */
+> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+> index 5bce24731502..9d07c9ce4be2 100644
+> --- a/drivers/net/hyperv/netvsc.c
+> +++ b/drivers/net/hyperv/netvsc.c
+> @@ -31,12 +31,13 @@
+>   * Switch the data path from the synthetic interface to the VF
+>   * interface.
+>   */
+> -void netvsc_switch_datapath(struct net_device *ndev, bool vf)
+> +int netvsc_switch_datapath(struct net_device *ndev, bool vf)
+>  {
+>  	struct net_device_context *net_device_ctx = netdev_priv(ndev);
+>  	struct hv_device *dev = net_device_ctx->device_ctx;
+>  	struct netvsc_device *nv_dev = rtnl_dereference(net_device_ctx->nvdev);
+>  	struct nvsp_message *init_pkt = &nv_dev->channel_init_pkt;
+> +	int ret, retry = 0;
+>  
+>  	/* Block sending traffic to VF if it's about to be gone */
+>  	if (!vf)
+> @@ -51,15 +52,41 @@ void netvsc_switch_datapath(struct net_device *ndev, bool vf)
+>  		init_pkt->msg.v4_msg.active_dp.active_datapath =
+>  			NVSP_DATAPATH_SYNTHETIC;
+>  
+> +again:
+>  	trace_nvsp_send(ndev, init_pkt);
+>  
+> -	vmbus_sendpacket(dev->channel, init_pkt,
+> +	ret = vmbus_sendpacket(dev->channel, init_pkt,
+>  			       sizeof(struct nvsp_message),
+> -			       (unsigned long)init_pkt,
+> -			       VM_PKT_DATA_INBAND,
+> +			       (unsigned long)init_pkt, VM_PKT_DATA_INBAND,
+>  			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+> +
+> +	/* If failed to switch to/from VF, let data_path_is_vf stay false,
+> +	 * so we use synthetic path to send data.
+> +	 */
+> +	if (ret) {
+> +		if (ret != -EAGAIN) {
+> +			netdev_err(ndev,
+> +				   "Unable to send sw datapath msg, err: %d\n",
+> +				   ret);
+> +			return ret;
+> +		}
+> +
+> +		if (retry++ < RETRY_MAX) {
+> +			usleep_range(RETRY_US_LO, RETRY_US_HI);
+> +			goto again;
+> +		} else {
+> +			netdev_err(
+> +				ndev,
+> +				"Retry failed to send sw datapath msg, err: %d\n",
+> +				ret);
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- tools/lib/bpf/xsk.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+err is always -EAGAIN here, right?
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index d4991ddff05a..12110bba4cc0 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -14,6 +14,7 @@
- #include <unistd.h>
- #include <arpa/inet.h>
- #include <asm/barrier.h>
-+#include <linux/bitops.h>
- #include <linux/compiler.h>
- #include <linux/ethtool.h>
- #include <linux/filter.h>
-@@ -46,6 +47,9 @@
-  #define PF_XDP AF_XDP
- #endif
- 
-+#define XDP_RX_RING_SETUP_DONE BIT(0)
-+#define XDP_TX_RING_SETUP_DONE BIT(1)
-+
- enum xsk_prog {
- 	XSK_PROG_FALLBACK,
- 	XSK_PROG_REDIRECT_FLAGS,
-@@ -59,6 +63,7 @@ struct xsk_umem {
- 	int fd;
- 	int refcount;
- 	struct list_head ctx_list;
-+	__u8 ring_setup_status;
- };
- 
- struct xsk_ctx {
-@@ -855,6 +860,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	struct xsk_ctx *ctx;
- 	int err, ifindex;
- 	bool unmap = umem->fill_save != fill;
-+	bool rx_setup_done = false, tx_setup_done = false;
- 
- 	if (!umem || !xsk_ptr || !(rx || tx))
- 		return -EFAULT;
-@@ -882,6 +888,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 		}
- 	} else {
- 		xsk->fd = umem->fd;
-+		rx_setup_done = umem->ring_setup_status & XDP_RX_RING_SETUP_DONE;
-+		tx_setup_done = umem->ring_setup_status & XDP_TX_RING_SETUP_DONE;
- 	}
- 
- 	ctx = xsk_get_ctx(umem, ifindex, queue_id);
-@@ -900,7 +908,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	}
- 	xsk->ctx = ctx;
- 
--	if (rx) {
-+	if (rx && !rx_setup_done) {
- 		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
- 				 &xsk->config.rx_size,
- 				 sizeof(xsk->config.rx_size));
-@@ -908,8 +916,10 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 			err = -errno;
- 			goto out_put_ctx;
- 		}
-+		if (xsk->fd == umem->fd)
-+			umem->ring_setup_status |= XDP_RX_RING_SETUP_DONE;
- 	}
--	if (tx) {
-+	if (tx && !tx_setup_done) {
- 		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
- 				 &xsk->config.tx_size,
- 				 sizeof(xsk->config.tx_size));
-@@ -917,6 +927,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 			err = -errno;
- 			goto out_put_ctx;
- 		}
-+		if (xsk->fd == umem->fd)
-+			umem->ring_setup_status |= XDP_TX_RING_SETUP_DONE;
- 	}
- 
- 	err = xsk_get_mmap_offsets(xsk->fd, &off);
+> +			return ret;
+> +		}
+
+Nitpicking: I think we can simplify the above a bit:
+
+	if (ret) {
+		if (ret == -EAGAIN && retry++ < RETRY_MAX) {
+			usleep_range(RETRY_US_LO, RETRY_US_HI);
+			goto again;
+		}
+		netdev_err(ndev, "Unable to send sw datapath msg, err: %d\n", ret);
+		return ret;
+	}
+
+> +	}
+> +
+>  	wait_for_completion(&nv_dev->channel_init_wait);
+>  	net_device_ctx->data_path_is_vf = vf;
+> +
+> +	return 0;
+>  }
+>  
+>  /* Worker to setup sub channels on initial setup
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index 97b5c9b60503..7349a70af083 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -38,9 +38,6 @@
+>  #include "hyperv_net.h"
+>  
+>  #define RING_SIZE_MIN	64
+> -#define RETRY_US_LO	5000
+> -#define RETRY_US_HI	10000
+> -#define RETRY_MAX	2000	/* >10 sec */
+>  
+>  #define LINKCHANGE_INT (2 * HZ)
+>  #define VF_TAKEOVER_INT (HZ / 10)
+> @@ -2402,6 +2399,7 @@ static int netvsc_vf_changed(struct net_device *vf_netdev, unsigned long event)
+>  	struct netvsc_device *netvsc_dev;
+>  	struct net_device *ndev;
+>  	bool vf_is_up = false;
+> +	int ret;
+>  
+>  	if (event != NETDEV_GOING_DOWN)
+>  		vf_is_up = netif_running(vf_netdev);
+> @@ -2418,9 +2416,17 @@ static int netvsc_vf_changed(struct net_device *vf_netdev, unsigned long event)
+>  	if (net_device_ctx->data_path_is_vf == vf_is_up)
+>  		return NOTIFY_OK;
+>  
+> -	netvsc_switch_datapath(ndev, vf_is_up);
+> -	netdev_info(ndev, "Data path switched %s VF: %s\n",
+> -		    vf_is_up ? "to" : "from", vf_netdev->name);
+> +	ret = netvsc_switch_datapath(ndev, vf_is_up);
+> +
+> +	if (ret) {
+> +		netdev_err(ndev,
+> +			   "Data path failed to switch %s VF: %s, err: %d\n",
+> +			   vf_is_up ? "to" : "from", vf_netdev->name, ret);
+> +		return NOTIFY_DONE;
+> +	} else {
+> +		netdev_info(ndev, "Data path switched %s VF: %s\n",
+> +			    vf_is_up ? "to" : "from", vf_netdev->name);
+> +	}
+>  
+>  	return NOTIFY_OK;
+>  }
+
 -- 
-2.17.1
+Vitaly
 
