@@ -2,60 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E85434E7B7
-	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 14:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC36F34E7C9
+	for <lists+netdev@lfdr.de>; Tue, 30 Mar 2021 14:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbhC3Moy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Mar 2021 08:44:54 -0400
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:51259 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231794AbhC3Moc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 08:44:32 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuchunmei@linux.alibaba.com;NM=1;PH=DS;RN=1;SR=0;TI=SMTPD_---0UTrf.W9_1617108270;
-Received: from 30.225.32.40(mailfrom:xuchunmei@linux.alibaba.com fp:SMTPD_---0UTrf.W9_1617108270)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 30 Mar 2021 20:44:30 +0800
-From:   xuchunmei <xuchunmei@linux.alibaba.com>
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.40.0.2.32\))
-Subject: ip-nexthop does not support flush by id
-Message-Id: <C2B7C7DB-B613-41BB-9D5F-EF162181988C@linux.alibaba.com>
-Date:   Tue, 30 Mar 2021 20:44:30 +0800
-To:     netdev@vger.kernel.org
-X-Mailer: Apple Mail (2.3654.40.0.2.32)
+        id S232066AbhC3MrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 08:47:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46278 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231853AbhC3Mq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 08:46:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C3199619B1;
+        Tue, 30 Mar 2021 12:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617108417;
+        bh=Gp7K5d/9JkaqMV3qnVlhi8uY18tBiGcqTqq9JQwzkk4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bpwoXfzSTI3OVxxT2qtuhI8DBVsGK1w2yo1XJO96Mcl6Cf7j98u0D7WhigRHOVp76
+         jDVKAszVft1N//apcCn6FfTFty159qo7bzFF1FayYDictlQn2pRCLv717rqFyesXh6
+         g/qwrAId2++/WokGRt8nGZEDGbvdPTeM6c+yqRQokfC3Qr+akdDdbTY7EJdRxABvTD
+         356fURN2pLtcawXNYFkMj/4iVtdUrMed1IC/yAYXh7FliEQtMGcEDxYEIh/YHATK5l
+         0cbhI80eGEGy6vBu0Pz0nymgiC2g+OQuCq7/dYQEV4VJ4nIDFcytvB+5jrYD5CldVL
+         VUbbcLl88d4eQ==
+Date:   Tue, 30 Mar 2021 13:46:51 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Joerg Roedel <joro@8bytes.org>, Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 08/18] iommu/fsl_pamu: merge pamu_set_liodn and map_liodn
+Message-ID: <20210330124651.GH5908@willie-the-truck>
+References: <20210316153825.135976-1-hch@lst.de>
+ <20210316153825.135976-9-hch@lst.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210316153825.135976-9-hch@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Mar 16, 2021 at 04:38:14PM +0100, Christoph Hellwig wrote:
+> Merge the two fuctions that configure the ppaace into a single coherent
+> function.  I somehow doubt we need the two pamu_config_ppaace calls,
+> but keep the existing behavior just to be on the safe side.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Acked-by: Li Yang <leoyang.li@nxp.com>
+> ---
+>  drivers/iommu/fsl_pamu_domain.c | 65 +++++++++------------------------
+>  1 file changed, 17 insertions(+), 48 deletions(-)
+> 
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index 40eff4b7bc5d42..4a4944332674f7 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -54,25 +54,6 @@ static int __init iommu_init_mempool(void)
+>  	return 0;
+>  }
+>  
+> -/* Map the DMA window corresponding to the LIODN */
+> -static int map_liodn(int liodn, struct fsl_dma_domain *dma_domain)
+> -{
+> -	int ret;
+> -	struct iommu_domain_geometry *geom = &dma_domain->iommu_domain.geometry;
+> -	unsigned long flags;
+> -
+> -	spin_lock_irqsave(&iommu_lock, flags);
+> -	ret = pamu_config_ppaace(liodn, geom->aperture_start,
+> -				 geom->aperture_end - 1, ~(u32)0,
+> -				 0, dma_domain->snoop_id, dma_domain->stash_id,
+> -				 PAACE_AP_PERMS_QUERY | PAACE_AP_PERMS_UPDATE);
+> -	spin_unlock_irqrestore(&iommu_lock, flags);
+> -	if (ret)
+> -		pr_debug("PAACE configuration failed for liodn %d\n", liodn);
+> -
+> -	return ret;
+> -}
+> -
+>  static int update_liodn_stash(int liodn, struct fsl_dma_domain *dma_domain,
+>  			      u32 val)
+>  {
+> @@ -94,11 +75,11 @@ static int update_liodn_stash(int liodn, struct fsl_dma_domain *dma_domain,
+>  }
+>  
+>  /* Set the geometry parameters for a LIODN */
+> -static int pamu_set_liodn(int liodn, struct device *dev,
+> -			  struct fsl_dma_domain *dma_domain,
+> -			  struct iommu_domain_geometry *geom_attr)
+> +static int pamu_set_liodn(struct fsl_dma_domain *dma_domain, struct device *dev,
+> +			  int liodn)
+>  {
+> -	phys_addr_t window_addr, window_size;
+> +	struct iommu_domain *domain = &dma_domain->iommu_domain;
+> +	struct iommu_domain_geometry *geom = &domain->geometry;
+>  	u32 omi_index = ~(u32)0;
+>  	unsigned long flags;
+>  	int ret;
+> @@ -110,22 +91,25 @@ static int pamu_set_liodn(int liodn, struct device *dev,
+>  	 */
+>  	get_ome_index(&omi_index, dev);
+>  
+> -	window_addr = geom_attr->aperture_start;
+> -	window_size = geom_attr->aperture_end + 1;
+> -
+>  	spin_lock_irqsave(&iommu_lock, flags);
+>  	ret = pamu_disable_liodn(liodn);
+> -	if (!ret)
+> -		ret = pamu_config_ppaace(liodn, window_addr, window_size, omi_index,
+> -					 0, dma_domain->snoop_id,
+> -					 dma_domain->stash_id, 0);
+> +	if (ret)
+> +		goto out_unlock;
+> +	ret = pamu_config_ppaace(liodn, geom->aperture_start,
+> +				 geom->aperture_end - 1, omi_index, 0,
+> +				 dma_domain->snoop_id, dma_domain->stash_id, 0);
+> +	if (ret)
+> +		goto out_unlock;
+> +	ret = pamu_config_ppaace(liodn, geom->aperture_start,
+> +				 geom->aperture_end - 1, ~(u32)0,
+> +				 0, dma_domain->snoop_id, dma_domain->stash_id,
+> +				 PAACE_AP_PERMS_QUERY | PAACE_AP_PERMS_UPDATE);
 
-I use iproute-5.10 with kernel-5.10.6, I found that ip-nexthop does not support flush by id, is it by design?
+There's more '+1' / '-1' confusion here with aperture_end which I'm not
+managing to follow. What am I missing?
 
-Reproduce steps:
-# ip netns add me
-# ip -netns me addr add 127.0.0.1/8 dev lo
-# ip -netns me link set lo up
-# ip -netns me nexthop add id 105 blackhole proto 99
-# ip -netns me nexthop flush id 105
-id 105 blackhole proto 99
-# ip -netns me nexthop ls
-id 105 blackhole proto 99
-
-while use flush without any args, flush will success.
-# ip -netns me nexthop flush
-Flushed 1 nexthops
-
-I find the function ipnh_list_flush implemented in ipnexthop.c:
-
-else if (!strcmp(*argv, "id")) {
-			__u32 id;
-
-			NEXT_ARG();
-			if (get_unsigned(&id, *argv, 0))
-				invarg("invalid id value", *argv);
-			return ipnh_get_id(id);
-		} 
-
-When args is “id”, just return the related info of “id”, so I want to known is it by design ?
+Will
