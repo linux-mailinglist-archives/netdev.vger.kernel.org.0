@@ -2,84 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F5F34F555
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 02:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74FAD34F552
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 02:10:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232696AbhCaAJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 20:09:39 -0400
-Received: from mga05.intel.com ([192.55.52.43]:14824 "EHLO mga05.intel.com"
+        id S232659AbhCaAJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 20:09:37 -0400
+Received: from mga05.intel.com ([192.55.52.43]:14825 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232126AbhCaAJD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232490AbhCaAJD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 30 Mar 2021 20:09:03 -0400
-IronPort-SDR: rG+uykrdJWvTlSZM8AMLvcli4jjcKNLcQQz02RT0m3Vy7ciV6veTJhLfangJDJ0D/acVK4AlcH
- HfQgdMQTt6KQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="277058936"
+IronPort-SDR: 90Oqf3U8f2dCkDqkmfm7G/Yfz0a8UYLjPPE2hsOjCdlhb4+ENKXIR1JiKQNzzZ4GGniyy0IHVy
+ oBaBUA8WAXJA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="277058938"
 X-IronPort-AV: E=Sophos;i="5.81,291,1610438400"; 
-   d="scan'208";a="277058936"
+   d="scan'208";a="277058938"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 17:09:02 -0700
-IronPort-SDR: apdnE05499dGXG109FX7WOBxbbi50nRzgByR9gZNyzzFxz1nlt6Lu4nRdq27Z3JWb2MtQZRs3p
- s8qvrysos7Rg==
+IronPort-SDR: /yTy4aUtwoG44/qamjaqFlr7xezLgfxHstXD8rvNqN6YGKZYviasz+3Ljb/Rq368Hq2qgQ0p3j
+ Aqs/1YyG6v5A==
 X-IronPort-AV: E=Sophos;i="5.81,291,1610438400"; 
-   d="scan'208";a="378682555"
+   d="scan'208";a="378682556"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.25.43])
   by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 17:09:01 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/6] MPTCP: Allow initial subflow to be disconnected
-Date:   Tue, 30 Mar 2021 17:08:50 -0700
-Message-Id: <20210331000856.117636-1-mathew.j.martineau@linux.intel.com>
+Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/6] mptcp: remove all subflows involving id 0 address
+Date:   Tue, 30 Mar 2021 17:08:51 -0700
+Message-Id: <20210331000856.117636-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210331000856.117636-1-mathew.j.martineau@linux.intel.com>
+References: <20210331000856.117636-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An MPTCP connection is aggregated from multiple TCP subflows, and can
-involve multiple IP addresses on either peer. The addresses used in the
-initial subflow connection are assigned address id 0 on each side of the
-link. More addresses can be added and shared with the peer using address
-IDs of 1 or larger. MPTCP in Linux shares non-zero address IDs across
-all MPTCP connections in a net namespace, which allows userspace to
-manage subflow connections across a number of sockets. However, this
-makes the address with id 0 a special case, since the IP address
-associated with id 0 is potentially different for each socket.
+From: Geliang Tang <geliangtang@gmail.com>
 
-This patch set allows the initial subflow to be disconnected when
-userspace specifies an address to remove using both id 0 and an IP
-address, or when the peer sends an RM_ADDR for id 0.
+There's only one subflow involving the non-zero id address, but there
+may be multi subflows involving the id 0 address.
 
-Patches 1 and 3 implement the change for requests from the peer and
-userspace, respectively.
+Here's an example:
 
-Patch 2 consolidates some code for disconnecting subflows.
+ local_id=0, remote_id=0
+ local_id=1, remote_id=0
+ local_id=0, remote_id=1
 
-Patches 4-6 update the self tests to cover removal of subflows using
-address id 0.
+If the removing address id is 0, all the subflows involving the id 0
+address need to be removed.
 
+In mptcp_pm_nl_rm_addr_received/mptcp_pm_nl_rm_subflow_received, the
+"break" prevents the iteration to the next subflow, so this patch
+dropped them.
 
-Geliang Tang (5):
-  mptcp: remove all subflows involving id 0 address
-  mptcp: unify RM_ADDR and RM_SUBFLOW receiving
-  mptcp: remove id 0 address
-  selftests: mptcp: add addr argument for del_addr
-  selftests: mptcp: remove id 0 address testcases
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+---
+ net/mptcp/pm_netlink.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-Matthieu Baerts (1):
-  selftests: mptcp: avoid calling pm_nl_ctl with bad IDs
-
- net/mptcp/pm_netlink.c                        | 129 +++++++++++-------
- .../testing/selftests/net/mptcp/mptcp_join.sh |  35 ++++-
- .../testing/selftests/net/mptcp/pm_netlink.sh |   6 +-
- tools/testing/selftests/net/mptcp/pm_nl_ctl.c |  34 ++++-
- 4 files changed, 143 insertions(+), 61 deletions(-)
-
-
-base-commit: cda1893e9f7c1d78e391dbb6ef1798cd32354113
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 73b9245c87b2..87a6133fd778 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -621,8 +621,6 @@ static void mptcp_pm_nl_rm_addr_received(struct mptcp_sock *msk)
+ 			WRITE_ONCE(msk->pm.accept_addr, true);
+ 
+ 			__MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_RMADDR);
+-
+-			break;
+ 		}
+ 	}
+ }
+@@ -695,8 +693,6 @@ void mptcp_pm_nl_rm_subflow_received(struct mptcp_sock *msk,
+ 			msk->pm.subflows--;
+ 
+ 			__MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_RMSUBFLOW);
+-
+-			break;
+ 		}
+ 	}
+ }
 -- 
 2.31.1
 
