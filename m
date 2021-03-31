@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1AFC34F8F3
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEC5534F8DE
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233854AbhCaGoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 02:44:38 -0400
-Received: from mga05.intel.com ([192.55.52.43]:14630 "EHLO mga05.intel.com"
+        id S233786AbhCaGjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 02:39:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59686 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233817AbhCaGoE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 02:44:04 -0400
-IronPort-SDR: 0eZOBCSH/whwK/1qOqbWsdPsbKRA+ZmzBMudKeoeYz8WAicVBcLRRSvWTT45jvBOS0ezY6DjKv
- /ww/oxqwODSQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="277111342"
-X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="277111342"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 23:44:04 -0700
-IronPort-SDR: u4pZQBhQWR4I0uUz9+bQAnRJCZgwG1/U0GqD4iOKFkeF33i+cbik/XqY+j/TIcpIQ4BoHvuK6G
- KtflLnCv+NEg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="445523209"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Mar 2021 23:44:02 -0700
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        alexei.starovoitov@gmail.com
-Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH v4 bpf 3/3] libbpf: only create rx and tx XDP rings when necessary
-Date:   Wed, 31 Mar 2021 06:12:18 +0000
-Message-Id: <20210331061218.1647-4-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210331061218.1647-1-ciara.loftus@intel.com>
-References: <20210331061218.1647-1-ciara.loftus@intel.com>
+        id S233686AbhCaGim (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 02:38:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AEBFB61994;
+        Wed, 31 Mar 2021 06:38:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1617172722;
+        bh=zQksZIaYo6ADILLxi+ozvpGeg9YmwSasUmij4Kbo66o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xP1VRycqtrE4Qgs/YtN/kTOX1Su8JNvi4H3bB6Se6ITEA8fHsSHmWK4vP3zmRJugb
+         59jgHJErRIAY9NH3Pz1xU4Pi4iyVbaL3ekmSm0E4LWEqBbC1Y/Jl3rO6MDSgYHRC/O
+         GnIzKiqiy83vYbb969Kis/Hglgehtq79QkDhr1O0=
+Date:   Wed, 31 Mar 2021 08:38:39 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <YGQY72LnGB6bfIsI@kroah.com>
+References: <20210330194716.GV2710221@ziepe.ca>
+ <20210330204141.GA1305530@bjorn-Precision-5520>
+ <20210330224341.GW2710221@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210330224341.GW2710221@ziepe.ca>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior to this commit xsk_socket__create(_shared) always attempted to create
-the rx and tx rings for the socket. However this causes an issue when the
-socket being setup is that which shares the fd with the UMEM. If a
-previous call to this function failed with this socket after the rings were
-set up, a subsequent call would always fail because the rings are not torn
-down after the first call and when we try to set them up again we encounter
-an error because they already exist. Solve this by remembering whether the
-rings were set up by introducing new bools to struct xsk_umem which
-represent the ring setup status and using them to determine whether or
-not to set up the rings.
+On Tue, Mar 30, 2021 at 07:43:41PM -0300, Jason Gunthorpe wrote:
+> > With 0000:01:00.0/sriov/BB:DD.F/vf_msix_count, sriov/ will contain
+> > 1 file and 1K subdirectories.
+> 
+> The smallest directory sizes is with the current patch since it
+> re-uses the existing VF directory. Do we care about directory size at
+> the sysfs level?
 
-Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
+No, that should not matter.
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- tools/lib/bpf/xsk.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+The "issue" here is that you "broke" the device chain here by adding a
+random kobject to the directory tree: "BB:DD.F"
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 5098d9e3b55a..d24b5cc720ec 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -59,6 +59,8 @@ struct xsk_umem {
- 	int fd;
- 	int refcount;
- 	struct list_head ctx_list;
-+	bool rx_ring_setup_done;
-+	bool tx_ring_setup_done;
- };
- 
- struct xsk_ctx {
-@@ -857,6 +859,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	struct xsk_ctx *ctx;
- 	int err, ifindex;
- 	bool unmap = umem->fill_save != fill;
-+	bool rx_setup_done = false, tx_setup_done = false;
- 
- 	if (!umem || !xsk_ptr || !(rx || tx))
- 		return -EFAULT;
-@@ -884,6 +887,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 		}
- 	} else {
- 		xsk->fd = umem->fd;
-+		rx_setup_done = umem->rx_ring_setup_done;
-+		tx_setup_done = umem->tx_ring_setup_done;
- 	}
- 
- 	ctx = xsk_get_ctx(umem, ifindex, queue_id);
-@@ -902,7 +907,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 	}
- 	xsk->ctx = ctx;
- 
--	if (rx) {
-+	if (rx && !rx_setup_done) {
- 		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
- 				 &xsk->config.rx_size,
- 				 sizeof(xsk->config.rx_size));
-@@ -910,8 +915,10 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 			err = -errno;
- 			goto out_put_ctx;
- 		}
-+		if (xsk->fd == umem->fd)
-+			umem->rx_ring_setup_done = true;
- 	}
--	if (tx) {
-+	if (tx && !tx_setup_done) {
- 		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
- 				 &xsk->config.tx_size,
- 				 sizeof(xsk->config.tx_size));
-@@ -919,6 +926,8 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
- 			err = -errno;
- 			goto out_put_ctx;
- 		}
-+		if (xsk->fd == umem->fd)
-+			umem->rx_ring_setup_done = true;
- 	}
- 
- 	err = xsk_get_mmap_offsets(xsk->fd, &off);
--- 
-2.17.1
+Again, devices are allowed to have attributes associated with it to be
+_ONE_ subdirectory level deep.
 
+So, to use your path above, this is allowed:
+	0000:01:00.0/sriov/vf_msix_count
+
+as these are sriov attributes for the 0000:01:00.0 device, but this is
+not:
+	0000:01:00.0/sriov/BB:DD.F/vf_msix_count
+as you "threw" a random kobject called BB:DD.F into the middle.
+
+If you want to have "BB:DD.F" in there, then it needs to be a real
+struct device and _THEN_ it needs to point its parent to "0000:01:00.0",
+another struct device, as "sriov" is NOT ANYTHING in the heirachy here
+at all.
+
+Does that help?  The rules are:
+	- Once you use a 'struct device', all subdirs below that device
+	  are either an attribute group for that device or a child
+	  device.
+	- A struct device can NOT have an attribute group as a parent,
+	  it can ONLY have another struct device as a parent.
+
+If you break those rules, the kernel has the ability to get really
+confused unless you are very careful, and userspace will be totally lost
+as you can not do anything special there.
+
+> > I'm dense and don't fully understand Greg's subdirectory comment.
+> 
+> I also don't know udev well enough. I've certainly seen drivers
+> creating extra subdirectories using kobjects.
+
+And those drivers are broken.  Please point them out to me and I will be
+glad to go fix them.  Or tell their authors why they are broken :)
+
+> > But it doesn't seem like that level of control would be in a udev rule
+> > anyway.  A PF udev rule might *start* a program to manage MSI-X
+> > vectors, but such a program should be able to deal with whatever
+> > directory structure we want.
+> 
+> Yes, I can't really see this being used from udev either. 
+
+It doesn't matter if you think it could be used, it _will_ be used as
+you are exposing this stuff to userspace.
+
+> I assume there is also the usual race about triggering the uevent
+> before the subdirectories are created, but we have the
+> dev_set_uevent_suppress() thing now for that..
+
+Unless you are "pci bus code" you shouldn't be using that :)
+
+thanks,
+
+greg k-h
