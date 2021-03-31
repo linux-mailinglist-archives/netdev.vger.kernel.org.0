@@ -2,138 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD6603500FB
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCFE3500FD
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235600AbhCaNJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 09:09:56 -0400
-Received: from foss.arm.com ([217.140.110.172]:41848 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235733AbhCaNJp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 09:09:45 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55658D6E;
-        Wed, 31 Mar 2021 06:09:44 -0700 (PDT)
-Received: from [10.57.24.208] (unknown [10.57.24.208])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3D9523F694;
-        Wed, 31 Mar 2021 06:09:42 -0700 (PDT)
-Subject: Re: [PATCH 16/18] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-To:     Will Deacon <will@kernel.org>
-Cc:     freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
-        Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arm-kernel@lists.infradead.org
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-17-hch@lst.de>
- <20210330131149.GP5908@willie-the-truck>
- <a6952aa7-4d7e-54f0-339e-e15f88596dcc@arm.com>
- <20210330135801.GA6187@willie-the-truck>
- <578d6aa5-4239-f5d7-2e9f-686b18e52bba@arm.com>
- <20210331114947.GA7626@willie-the-truck>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ef895942-e115-7878-ab86-37e8a1614df5@arm.com>
-Date:   Wed, 31 Mar 2021 14:09:37 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
-MIME-Version: 1.0
-In-Reply-To: <20210331114947.GA7626@willie-the-truck>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+        id S235454AbhCaNK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 09:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235219AbhCaNKG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:10:06 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF02C061574;
+        Wed, 31 Mar 2021 06:10:05 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id w3so30020598ejc.4;
+        Wed, 31 Mar 2021 06:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:content-transfer-encoding:mime-version:subject:date:references
+         :to:in-reply-to:message-id;
+        bh=NK4vUHta/woqJAuJAeHWHekKytBeMpGPEWYPmmzlnLM=;
+        b=MKxrilH2QI84hoQaekvmb/yVWVOy4ktRSVpOfhG9jllSIWd/5Xed45+KHUI9vaNff0
+         Zf5yDjPLg+XZ9bY0r73RV5DYPBadM3UeVTkKjQSXJ5RhPE2b7qjF4e4En6pTUNeEKidF
+         ojOiVs6JyB8YjMlcUl+DqoIHgW+FDFrnzWn2BkGEAxXhrkOG3Ru9kgzAwkyNkJTPqfJj
+         iGjLR9d38sK4OJnqwHGKQmzasLqCMJ1AWjvwoKaCtXZda38DbBgoL4EaWRa7nLNbKR0u
+         61uesxeQXhBRjSGj2dILFxQc7yqE7+8e230oubmQzremIHcUJe1WCJyl99y++N68Begf
+         lJug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:date:references:to:in-reply-to:message-id;
+        bh=NK4vUHta/woqJAuJAeHWHekKytBeMpGPEWYPmmzlnLM=;
+        b=qql0uSiuLlG2bkKFkTiCWTLjhDYzE+rzqf8kZlRVtOugc4R5rArff4ap11akpXrrCm
+         5yKl+vQUHYhLx+Tu7wMXVwd+laYeO2M+TUs4OwM3U4wFbqlMGXl100Udgy5+1nr7Bhf3
+         g1XJHh+DpG5tcOAXJrxZSCcs/dpHP/o26SMyDvvJ9q2eQ4/lyLWO3RPmt/jf0nz9j0c6
+         32NkzY1k/W+RXKyT4aQW7i74w1J9NO66beKEdUDtDAuLBo3tMUBnDf9vZBKqcPK5K5rg
+         1lT4VzgxrJjkWT5I+X7+zDMOldp6Y7+Fel8Srj0U9EdjubmWBBUy7Xb/MZYvvLnyS0Zd
+         7asg==
+X-Gm-Message-State: AOAM5331Pigg9MAwhCqi2gjNlna/57ax3yOd0TpdMftUtJaqVX2+8rC2
+        NPVIwrkqKicgMJpxhJjeTSg=
+X-Google-Smtp-Source: ABdhPJzEdySfRZdS8SPzH5NG64YArEhPYkWmMZY0hKz8okszlIVGXInzcsAyIPq7l+zj5tiLp+jS2g==
+X-Received: by 2002:a17:906:c45a:: with SMTP id ck26mr3366433ejb.125.1617196204316;
+        Wed, 31 Mar 2021 06:10:04 -0700 (PDT)
+Received: from ?IPv6:2a02:908:2612:d580:b423:5e79:2bd2:4a95? ([2a02:908:2612:d580:b423:5e79:2bd2:4a95])
+        by smtp.googlemail.com with ESMTPSA id x1sm1200207eji.8.2021.03.31.06.10.03
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 31 Mar 2021 06:10:03 -0700 (PDT)
+From:   Norman Maurer <norman.maurer@googlemail.com>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: Re: [PATCH] udp: Add support for getsockopt(..., ..., UDP_GRO, ...,
+ ...)
+Date:   Wed, 31 Mar 2021 15:10:01 +0200
+References: <20210325195614.800687-1-norman_maurer@apple.com>
+ <8eadc07055ac1c99bbc55ea10c7b98acc36dde55.camel@redhat.com>
+ <CF78DCAD-6F2C-46C4-9FF1-61DF66183C76@apple.com>
+ <2e667826f183fbef101a62f0ad8ccb4ed253cb75.camel@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dsahern@kernel.org,
+        davem@davemloft.net
+In-Reply-To: <2e667826f183fbef101a62f0ad8ccb4ed253cb75.camel@redhat.com>
+Message-Id: <71BBD1B0-FA0A-493D-A1D2-40E7304B0A35@googlemail.com>
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-31 12:49, Will Deacon wrote:
-> On Tue, Mar 30, 2021 at 05:28:19PM +0100, Robin Murphy wrote:
->> On 2021-03-30 14:58, Will Deacon wrote:
->>> On Tue, Mar 30, 2021 at 02:19:38PM +0100, Robin Murphy wrote:
->>>> On 2021-03-30 14:11, Will Deacon wrote:
->>>>> On Tue, Mar 16, 2021 at 04:38:22PM +0100, Christoph Hellwig wrote:
->>>>>> From: Robin Murphy <robin.murphy@arm.com>
->>>>>>
->>>>>> Instead make the global iommu_dma_strict paramete in iommu.c canonical by
->>>>>> exporting helpers to get and set it and use those directly in the drivers.
->>>>>>
->>>>>> This make sure that the iommu.strict parameter also works for the AMD and
->>>>>> Intel IOMMU drivers on x86.  As those default to lazy flushing a new
->>>>>> IOMMU_CMD_LINE_STRICT is used to turn the value into a tristate to
->>>>>> represent the default if not overriden by an explicit parameter.
->>>>>>
->>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>.
->>>>>> [ported on top of the other iommu_attr changes and added a few small
->>>>>>     missing bits]
->>>>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->>>>>> ---
->>>>>>     drivers/iommu/amd/iommu.c                   | 23 +-------
->>>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 +---------------
->>>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 -
->>>>>>     drivers/iommu/arm/arm-smmu/arm-smmu.c       | 27 +--------
->>>>>>     drivers/iommu/dma-iommu.c                   |  9 +--
->>>>>>     drivers/iommu/intel/iommu.c                 | 64 ++++-----------------
->>>>>>     drivers/iommu/iommu.c                       | 27 ++++++---
->>>>>>     include/linux/iommu.h                       |  4 +-
->>>>>>     8 files changed, 40 insertions(+), 165 deletions(-)
->>>>>
->>>>> I really like this cleanup, but I can't help wonder if it's going in the
->>>>> wrong direction. With SoCs often having multiple IOMMU instances and a
->>>>> distinction between "trusted" and "untrusted" devices, then having the
->>>>> flush-queue enabled on a per-IOMMU or per-domain basis doesn't sound
->>>>> unreasonable to me, but this change makes it a global property.
->>>>
->>>> The intent here was just to streamline the existing behaviour of stuffing a
->>>> global property into a domain attribute then pulling it out again in the
->>>> illusion that it was in any way per-domain. We're still checking
->>>> dev_is_untrusted() before making an actual decision, and it's not like we
->>>> can't add more factors at that point if we want to.
->>>
->>> Like I say, the cleanup is great. I'm just wondering whether there's a
->>> better way to express the complicated logic to decide whether or not to use
->>> the flush queue than what we end up with:
->>>
->>> 	if (!cookie->fq_domain && (!dev || !dev_is_untrusted(dev)) &&
->>> 	    domain->ops->flush_iotlb_all && !iommu_get_dma_strict())
->>>
->>> which is mixing up globals, device properties and domain properties. The
->>> result is that the driver code ends up just using the global to determine
->>> whether or not to pass IO_PGTABLE_QUIRK_NON_STRICT to the page-table code,
->>> which is a departure from the current way of doing things.
->>
->> But previously, SMMU only ever saw the global policy piped through the
->> domain attribute by iommu_group_alloc_default_domain(), so there's no
->> functional change there.
-> 
-> For DMA domains sure, but I don't think that's the case for unmanaged
-> domains such as those used by VFIO.
+Friendly ping=E2=80=A6=20
 
-Eh? This is only relevant to DMA domains anyway. Flush queues are part 
-of the IOVA allocator that VFIO doesn't even use. It's always been the 
-case that unmanaged domains only use strict invalidation.
+As this missing change was most likely an oversight in the original =
+commit I do think it should go into 5.12 and subsequently stable as =
+well. That=E2=80=99s also the reason why I didn=E2=80=99t send a v2 and =
+changed the commit message / subject for the patch. For me it clearly is =
+a bug and not a new feature.
 
->> Obviously some of the above checks could be factored out into some kind of
->> iommu_use_flush_queue() helper that IOMMU drivers can also call if they need
->> to keep in sync. Or maybe we just allow iommu-dma to set
->> IO_PGTABLE_QUIRK_NON_STRICT directly via iommu_set_pgtable_quirks() if we're
->> treating that as a generic thing now.
-> 
-> I think a helper that takes a domain would be a good starting point.
 
-You mean device, right? The one condition we currently have is at the 
-device level, and there's really nothing inherent to the domain itself 
-that matters (since the type is implicitly IOMMU_DOMAIN_DMA to even care 
-about this).
+Thanks
+Norman
 
-Another idea that's just come to mind is now that IOMMU_DOMAIN_DMA has a 
-standard meaning, maybe we could split out a separate 
-IOMMU_DOMAIN_DMA_STRICT type such that it can all propagate from 
-iommu_get_def_domain_type()? That feels like it might be quite 
-promising, but I'd still do it as an improvement on top of this patch, 
-since it's beyond just cleaning up the abuse of domain attributes to 
-pass a command-line option around.
 
-Robin.
+> On 26. Mar 2021, at 13:22, Paolo Abeni <pabeni@redhat.com> wrote:
+>=20
+> On Fri, 2021-03-26 at 11:22 +0100, Norman Maurer wrote:
+>> On 26. Mar 2021, at 10:36, Paolo Abeni <pabeni@redhat.com> wrote:
+>>> One thing you can do to simplifies the maintainer's life, would be =
+post
+>>> a v2 with the correct tag (and ev. obsolete this patch in =
+patchwork).
+>>=20
+>> I am quite new to contribute patches to the kernel so I am not sure
+>> how I would =E2=80=9Cobsolete=E2=80=9D this patch and make a v2. If =
+you can give me
+>> some pointers I am happy to do so.
+>=20
+> Well, I actually gave you a bad advice about fiddling with patchwork.
+>=20
+> The autoritative documentation:
+>=20
+> Documentation/networking/netdev-FAQ.rst
+>=20
+> (inside the kernel tree) suggests to avoid it.
+>=20
+> Just posting a v2 will suffice.
+>=20
+> Thanks!
+>=20
+> Paolo
+>=20
+
