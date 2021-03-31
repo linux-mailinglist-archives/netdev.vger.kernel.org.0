@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 252AB34FB67
+	by mail.lfdr.de (Postfix) with ESMTP id 7472B34FB68
 	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234419AbhCaIT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 04:19:29 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:48032 "EHLO a.mx.secunet.com"
+        id S234427AbhCaITa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 04:19:30 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:48056 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234381AbhCaISz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 04:18:55 -0400
+        id S234383AbhCaIS4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 04:18:56 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id AF0CA205AE;
-        Wed, 31 Mar 2021 10:18:54 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 4A5DC205CB;
+        Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id cwWIKmEK4Ekn; Wed, 31 Mar 2021 10:18:53 +0200 (CEST)
+        with ESMTP id OkyaQld7DrPB; Wed, 31 Mar 2021 10:18:54 +0200 (CEST)
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3744C2035C;
+        by a.mx.secunet.com (Postfix) with ESMTPS id D6AD120590;
         Wed, 31 Mar 2021 10:18:53 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
@@ -30,18 +30,18 @@ Received: from mbx-essen-01.secunet.de (10.53.40.197) by
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 31 Mar
- 2021 10:18:52 +0200
+ 2021 10:18:53 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 8F34131805DC; Wed, 31 Mar 2021 10:18:52 +0200 (CEST)
+        id 9479E31805E1; Wed, 31 Mar 2021 10:18:52 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 04/11] xfrm: Use actual socket sk instead of skb socket for xfrm_output_resume
-Date:   Wed, 31 Mar 2021 10:18:40 +0200
-Message-ID: <20210331081847.3547641-5-steffen.klassert@secunet.com>
+Subject: [PATCH 05/11] net: xfrm: Localize sequence counter per network namespace
+Date:   Wed, 31 Mar 2021 10:18:41 +0200
+Message-ID: <20210331081847.3547641-6-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331081847.3547641-1-steffen.klassert@secunet.com>
 References: <20210331081847.3547641-1-steffen.klassert@secunet.com>
@@ -55,146 +55,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
 
-A situation can occur where the interface bound to the sk is different
-to the interface bound to the sk attached to the skb. The interface
-bound to the sk is the correct one however this information is lost inside
-xfrm_output2 and instead the sk on the skb is used in xfrm_output_resume
-instead. This assumes that the sk bound interface and the bound interface
-attached to the sk within the skb are the same which can lead to lookup
-failures inside ip_route_me_harder resulting in the packet being dropped.
+A sequence counter write section must be serialized or its internal
+state can get corrupted. The "xfrm_state_hash_generation" seqcount is
+global, but its write serialization lock (net->xfrm.xfrm_state_lock) is
+instantiated per network namespace. The write protection is thus
+insufficient.
 
-We have an l2tp v3 tunnel with ipsec protection. The tunnel is in the
-global VRF however we have an encapsulated dot1q tunnel interface that
-is within a different VRF. We also have a mangle rule that marks the
-packets causing them to be processed inside ip_route_me_harder.
+To provide full protection, localize the sequence counter per network
+namespace instead. This should be safe as both the seqcount read and
+write sections access data exclusively within the network namespace. It
+also lays the foundation for transforming "xfrm_state_hash_generation"
+data type from seqcount_t to seqcount_LOCKNAME_t in further commits.
 
-Prior to commit 31c70d5956fc ("l2tp: keep original skb ownership") this
-worked fine as the sk attached to the skb was changed from the dot1q
-encapsulated interface to the sk for the tunnel which meant the interface
-bound to the sk and the interface bound to the skb were identical.
-Commit 46d6c5ae953c ("netfilter: use actual socket sk rather than skb sk
-when routing harder") fixed some of these issues however a similar
-problem existed in the xfrm code.
-
-Fixes: 31c70d5956fc ("l2tp: keep original skb ownership")
-Signed-off-by: Evan Nimmo <evan.nimmo@alliedtelesis.co.nz>
+Fixes: b65e3d7be06f ("xfrm: state: add sequence count to detect hash resizes")
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/net/xfrm.h     |  2 +-
- net/ipv4/ah4.c         |  2 +-
- net/ipv4/esp4.c        |  2 +-
- net/ipv6/ah6.c         |  2 +-
- net/ipv6/esp6.c        |  2 +-
- net/xfrm/xfrm_output.c | 10 +++++-----
- 6 files changed, 10 insertions(+), 10 deletions(-)
+ include/net/netns/xfrm.h |  4 +++-
+ net/xfrm/xfrm_state.c    | 10 +++++-----
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index b2a06f10b62c..bfbc7810df94 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1557,7 +1557,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk_buff *skb,
- int xfrm_trans_queue(struct sk_buff *skb,
- 		     int (*finish)(struct net *, struct sock *,
- 				   struct sk_buff *));
--int xfrm_output_resume(struct sk_buff *skb, int err);
-+int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err);
- int xfrm_output(struct sock *sk, struct sk_buff *skb);
+diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+index 59f45b1e9dac..b59d73d529ba 100644
+--- a/include/net/netns/xfrm.h
++++ b/include/net/netns/xfrm.h
+@@ -72,7 +72,9 @@ struct netns_xfrm {
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	struct dst_ops		xfrm6_dst_ops;
+ #endif
+-	spinlock_t xfrm_state_lock;
++	spinlock_t		xfrm_state_lock;
++	seqcount_t		xfrm_state_hash_generation;
++
+ 	spinlock_t xfrm_policy_lock;
+ 	struct mutex xfrm_cfg_mutex;
+ };
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index d01ca1a18418..ffd315cff984 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -44,7 +44,6 @@ static void xfrm_state_gc_task(struct work_struct *work);
+  */
  
- #if IS_ENABLED(CONFIG_NET_PKTGEN)
-diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
-index d99e1be94019..36ed85bf2ad5 100644
---- a/net/ipv4/ah4.c
-+++ b/net/ipv4/ah4.c
-@@ -141,7 +141,7 @@ static void ah_output_done(struct crypto_async_request *base, int err)
+ static unsigned int xfrm_state_hashmax __read_mostly = 1 * 1024 * 1024;
+-static __read_mostly seqcount_t xfrm_state_hash_generation = SEQCNT_ZERO(xfrm_state_hash_generation);
+ static struct kmem_cache *xfrm_state_cache __ro_after_init;
+ 
+ static DECLARE_WORK(xfrm_state_gc_work, xfrm_state_gc_task);
+@@ -140,7 +139,7 @@ static void xfrm_hash_resize(struct work_struct *work)
  	}
  
- 	kfree(AH_SKB_CB(skb)->tmp);
--	xfrm_output_resume(skb, err);
-+	xfrm_output_resume(skb->sk, skb, err);
- }
+ 	spin_lock_bh(&net->xfrm.xfrm_state_lock);
+-	write_seqcount_begin(&xfrm_state_hash_generation);
++	write_seqcount_begin(&net->xfrm.xfrm_state_hash_generation);
  
- static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index a3271ec3e162..4b834bbf95e0 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -279,7 +279,7 @@ static void esp_output_done(struct crypto_async_request *base, int err)
- 		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
- 			esp_output_tail_tcp(x, skb);
- 		else
--			xfrm_output_resume(skb, err);
-+			xfrm_output_resume(skb->sk, skb, err);
- 	}
- }
+ 	nhashmask = (nsize / sizeof(struct hlist_head)) - 1U;
+ 	odst = xfrm_state_deref_prot(net->xfrm.state_bydst, net);
+@@ -156,7 +155,7 @@ static void xfrm_hash_resize(struct work_struct *work)
+ 	rcu_assign_pointer(net->xfrm.state_byspi, nspi);
+ 	net->xfrm.state_hmask = nhashmask;
  
-diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index 440080da805b..080ee7f44c64 100644
---- a/net/ipv6/ah6.c
-+++ b/net/ipv6/ah6.c
-@@ -316,7 +316,7 @@ static void ah6_output_done(struct crypto_async_request *base, int err)
- 	}
+-	write_seqcount_end(&xfrm_state_hash_generation);
++	write_seqcount_end(&net->xfrm.xfrm_state_hash_generation);
+ 	spin_unlock_bh(&net->xfrm.xfrm_state_lock);
  
- 	kfree(AH_SKB_CB(skb)->tmp);
--	xfrm_output_resume(skb, err);
-+	xfrm_output_resume(skb->sk, skb, err);
- }
+ 	osize = (ohashmask + 1) * sizeof(struct hlist_head);
+@@ -1063,7 +1062,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
  
- static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 153ad103ba74..727d791ed5e6 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -314,7 +314,7 @@ static void esp_output_done(struct crypto_async_request *base, int err)
- 		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
- 			esp_output_tail_tcp(x, skb);
- 		else
--			xfrm_output_resume(skb, err);
-+			xfrm_output_resume(skb->sk, skb, err);
- 	}
- }
+ 	to_put = NULL;
  
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index a7ab19353313..b81ca117dac7 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -503,22 +503,22 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
- 	return err;
- }
+-	sequence = read_seqcount_begin(&xfrm_state_hash_generation);
++	sequence = read_seqcount_begin(&net->xfrm.xfrm_state_hash_generation);
  
--int xfrm_output_resume(struct sk_buff *skb, int err)
-+int xfrm_output_resume(struct sock *sk, struct sk_buff *skb, int err)
- {
- 	struct net *net = xs_net(skb_dst(skb)->xfrm);
+ 	rcu_read_lock();
+ 	h = xfrm_dst_hash(net, daddr, saddr, tmpl->reqid, encap_family);
+@@ -1176,7 +1175,7 @@ xfrm_state_find(const xfrm_address_t *daddr, const xfrm_address_t *saddr,
+ 	if (to_put)
+ 		xfrm_state_put(to_put);
  
- 	while (likely((err = xfrm_output_one(skb, err)) == 0)) {
- 		nf_reset_ct(skb);
+-	if (read_seqcount_retry(&xfrm_state_hash_generation, sequence)) {
++	if (read_seqcount_retry(&net->xfrm.xfrm_state_hash_generation, sequence)) {
+ 		*err = -EAGAIN;
+ 		if (x) {
+ 			xfrm_state_put(x);
+@@ -2666,6 +2665,7 @@ int __net_init xfrm_state_init(struct net *net)
+ 	net->xfrm.state_num = 0;
+ 	INIT_WORK(&net->xfrm.state_hash_work, xfrm_hash_resize);
+ 	spin_lock_init(&net->xfrm.xfrm_state_lock);
++	seqcount_init(&net->xfrm.xfrm_state_hash_generation);
+ 	return 0;
  
--		err = skb_dst(skb)->ops->local_out(net, skb->sk, skb);
-+		err = skb_dst(skb)->ops->local_out(net, sk, skb);
- 		if (unlikely(err != 1))
- 			goto out;
- 
- 		if (!skb_dst(skb)->xfrm)
--			return dst_output(net, skb->sk, skb);
-+			return dst_output(net, sk, skb);
- 
- 		err = nf_hook(skb_dst(skb)->ops->family,
--			      NF_INET_POST_ROUTING, net, skb->sk, skb,
-+			      NF_INET_POST_ROUTING, net, sk, skb,
- 			      NULL, skb_dst(skb)->dev, xfrm_output2);
- 		if (unlikely(err != 1))
- 			goto out;
-@@ -534,7 +534,7 @@ EXPORT_SYMBOL_GPL(xfrm_output_resume);
- 
- static int xfrm_output2(struct net *net, struct sock *sk, struct sk_buff *skb)
- {
--	return xfrm_output_resume(skb, 1);
-+	return xfrm_output_resume(sk, skb, 1);
- }
- 
- static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb)
+ out_byspi:
 -- 
 2.25.1
 
