@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4196A3507D6
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEBE93507DF
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236457AbhCaUJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 16:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34636 "EHLO
+        id S236487AbhCaUJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 16:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236426AbhCaUJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 16:09:18 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A067C061574;
-        Wed, 31 Mar 2021 13:09:18 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id j3so23682967edp.11;
-        Wed, 31 Mar 2021 13:09:18 -0700 (PDT)
+        with ESMTP id S236397AbhCaUJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 16:09:20 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5CDC061574;
+        Wed, 31 Mar 2021 13:09:19 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id w3so31958985ejc.4;
+        Wed, 31 Mar 2021 13:09:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PDNfoQw+IpfzvKELX6GQsBs9cKWa/BPLH9uWiBL9lZ8=;
-        b=O8jRz+s7iFHpGmulSLyivZIGYA4FgojdBNqedeyFV2ymTwv7xIcQVIcxch6Ybi91px
-         873dw9JKPoqIYBIcUAY3ttDEzhHih/DoVElMAfTjPcFXX92dqMIyrFA4P3PLpmLvSvBD
-         QeWZK3uUPP7peGY9qgJ9QK1nmetvVX/Reyi8XelLp1VD1ldM50OKW7mBJDWkeVgye8HU
-         jB4fDR8VnODvn8zHwAzX1bpq5iCVAvyg9WZZfIYrItzbkmYY1RMKsUwi+SbgnNYKLDpp
-         WJaKQwcWLeKUYmHwlLz8AYCteYr4hM70d3VJqEv6e1vHtXQr1ZLoUTfBBC7n/TeFAtoI
-         wVig==
+        bh=YDYM5IcD4Re3JLEPXhD3YUxrHnmifCPM/Hta5XlLd2Y=;
+        b=oobSI1gL4nqIQcV9WzqNoGmjuBni/DHXsFTMZ3WI5jnKiMIetHU4X/FV3JtY9x3NDc
+         0Mv4oywvpF6suX6qYNafbMdjzNvonWK/vYA4kv/fW6PRLDiFS8I/oRv65+XSndZRvgVe
+         //pTbFxbT/bwxtfqVtdW3WN2NGWsi7Ss3AK68cGz/fbWR3Q1+rUF597FPhyHEBYOzdL2
+         2uWVlZsqewejEDmFbOamFAEkCksbHUKUtyLTFdSlyPS+/fZXD1H+frqUBQSn1Yc7HZv8
+         z7Y3nCQn9+0T0YN3QJOyzcwi15tIDEaGDtAhUoJQ6wvAQ6Ws7f+CHb997GFMqW6EKK/0
+         BQ0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PDNfoQw+IpfzvKELX6GQsBs9cKWa/BPLH9uWiBL9lZ8=;
-        b=RitdD7e19SMl8pgoy0bvaZUBykIsKjT+i7PVZ5dqnc3Q9EHpia9VZpQGjqwae3t3E4
-         VI+WUNuuxtUU+ZkCpFCbESTGDBQ8B9bzR9C9eFQLIT0G9qw/Cdv6ND8t5kv+OsUHjPk8
-         XhLVn5xUllFx5mzgRUexSQMOfAMN6ivjXC9ljN4pEsXQqbAtCyl5atzVZdPMCsmwed2A
-         8bGbTGINJMwAUqsWifitkx1KTLzHquUrUCJZLo7dhWcqi7/La6VVJW4jLwkMFw4KSeLf
-         dXBA1RS2s7jx2XPjjRQDFjSfhV4THhAperv+6VbjAIWfDad9ISEXVRUVw97wWMH9FGI/
-         ZtrQ==
-X-Gm-Message-State: AOAM530bT7u/n2CT2h1soG4cD9ivyizHMYTeOCzaLHZf7kWLK7wpin6H
-        u5Z6kgfX/Q9tYl4Ao9rryMIJLTE2APw=
-X-Google-Smtp-Source: ABdhPJxwAZQi5bldl57IvYLB71XHOnUFsZQvVDBhYk1gpgSca+bsCXIcFUOd5I2JZNKlrIvf6EKzPA==
-X-Received: by 2002:aa7:dcc7:: with SMTP id w7mr5752368edu.255.1617221357052;
-        Wed, 31 Mar 2021 13:09:17 -0700 (PDT)
+        bh=YDYM5IcD4Re3JLEPXhD3YUxrHnmifCPM/Hta5XlLd2Y=;
+        b=LqLkdqLbfpis65mas7ACdssav1YxoFFVQIJ3lu7egFKCw9heKdWHmUvXOOsGH/u8I7
+         KbNf7zvYVkYkLExl1mKaIYsb3o7hE0Dw+lxSX+oP8MTUTwkoJBI95tSyX7ppH78BSwCC
+         m3CHBmA5tvKwQqfg/04DorS6p+SB0svXbXciV/Bq6I6+0twmVLFj5B8WeTBTGQ5oGoH9
+         66ohCpketAztUwx5FntpWbJ5zt/Ll94NRarifzaHlpWFKjdGbCqZ1iHKJjO/NadgQI2X
+         pHWCHHaQEUoU+rgHANLIi3BzB4yyrPouP2mENS7W3h8KHSIZ5YYAMkj+3kBgw6pLeAFa
+         ssVg==
+X-Gm-Message-State: AOAM533YNXhseNKhmhWKRLPvN6kXineaUJOsMIOZQ3cYje4WrHEfxOxU
+        QAbfR/6l+ayBh1RgcluEu3E=
+X-Google-Smtp-Source: ABdhPJzF49ILummIdYctzGId5AjDp3kRO4kgPpqUTfWMmxuLxsD2nCPY9PENn2T4iMZnlasS7C06LQ==
+X-Received: by 2002:a17:906:4dce:: with SMTP id f14mr5392198ejw.349.1617221358459;
+        Wed, 31 Mar 2021 13:09:18 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id r19sm1691305ejr.55.2021.03.31.13.09.15
+        by smtp.gmail.com with ESMTPSA id r19sm1691305ejr.55.2021.03.31.13.09.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 13:09:16 -0700 (PDT)
+        Wed, 31 Mar 2021 13:09:18 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -65,9 +65,9 @@ Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 3/9] net: enetc: add a dedicated is_eof bit in the TX software BD
-Date:   Wed, 31 Mar 2021 23:08:51 +0300
-Message-Id: <20210331200857.3274425-4-olteanv@gmail.com>
+Subject: [PATCH net-next 4/9] net: enetc: clean the TX software BD on the TX confirmation path
+Date:   Wed, 31 Mar 2021 23:08:52 +0300
+Message-Id: <20210331200857.3274425-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331200857.3274425-1-olteanv@gmail.com>
 References: <20210331200857.3274425-1-olteanv@gmail.com>
@@ -79,75 +79,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In the transmit path, if we have a scatter/gather frame, it is put into
-multiple software buffer descriptors, the last of which has the skb
-pointer populated (which is necessary for rearming the TX MSI vector and
-for collecting the two-step TX timestamp from the TX confirmation path).
+With the future introduction of some new fields into enetc_tx_swbd such
+as is_xdp_tx, is_xdp_redirect etc, we need not only to set these bits
+to true from the XDP_TX/XDP_REDIRECT code path, but also to false from
+the old code paths.
 
-At the moment, this is sufficient, but with XDP_TX, we'll need to
-service TX software buffer descriptors that don't have an skb pointer,
-however they might be final nonetheless. So add a dedicated bit for
-final software BDs that we populate and check explicitly. Also, we keep
-looking just for an skb when doing TX timestamping, because we don't
-want/need that for XDP.
+This is because TX software buffer descriptors are kept in a ring that
+is shadow of the hardware TX ring, so these structures keep getting
+reused, and there is always the possibility that when a software BD is
+reused (after we ran a full circle through the TX ring), the old user of
+the tx_swbd had set is_xdp_tx = true, and now we are sending a regular
+skb, which would need to set is_xdp_tx = false.
+
+To be minimally invasive to the old code paths, let's just scrub the
+software TX BD in the TX confirmation path (enetc_clean_tx_ring), once
+we know that nobody uses this software TX BD (tx_ring->next_to_clean
+hasn't yet been updated, and the TX paths check enetc_bd_unused which
+tells them if there's any more space in the TX ring for a new enqueue).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c | 7 +++----
- drivers/net/ethernet/freescale/enetc/enetc.h | 1 +
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index b2071b8dc316..37d2d142a744 100644
+index 37d2d142a744..ade05518b496 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -157,6 +157,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb,
- 	temp_bd.flags = flags;
- 	*txbd = temp_bd;
- 
-+	tx_ring->tx_swbd[i].is_eof = true;
- 	tx_ring->tx_swbd[i].skb = skb;
- 
- 	enetc_bdr_idx_inc(tx_ring, &i);
-@@ -316,8 +317,6 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 	do_tstamp = false;
- 
- 	while (bds_to_clean && tx_frm_cnt < ENETC_DEFAULT_TX_WORK) {
--		bool is_eof = !!tx_swbd->skb;
--
- 		if (unlikely(tx_swbd->check_wb)) {
- 			struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 			union enetc_tx_bd *txbd;
-@@ -335,7 +334,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 		if (likely(tx_swbd->dma))
- 			enetc_unmap_tx_buff(tx_ring, tx_swbd);
- 
--		if (is_eof) {
-+		if (tx_swbd->skb) {
- 			if (unlikely(do_tstamp)) {
- 				enetc_tstamp_tx(tx_swbd->skb, tstamp);
- 				do_tstamp = false;
-@@ -355,7 +354,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+@@ -344,6 +344,10 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
  		}
  
- 		/* BD iteration loop end */
--		if (is_eof) {
-+		if (tx_swbd->is_eof) {
- 			tx_frm_cnt++;
- 			/* re-arm interrupt source */
- 			enetc_wr_reg_hot(tx_ring->idr, BIT(tx_ring->index) |
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 773e412b9f4e..d9e75644b89c 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -25,6 +25,7 @@ struct enetc_tx_swbd {
- 	u8 is_dma_page:1;
- 	u8 check_wb:1;
- 	u8 do_tstamp:1;
-+	u8 is_eof:1;
- };
+ 		tx_byte_cnt += tx_swbd->len;
++		/* Scrub the swbd here so we don't have to do that
++		 * when we reuse it during xmit
++		 */
++		memset(tx_swbd, 0, sizeof(*tx_swbd));
  
- #define ENETC_RX_MAXFRM_SIZE	ENETC_MAC_MAXFRM_SIZE
+ 		bds_to_clean--;
+ 		tx_swbd++;
 -- 
 2.25.1
 
