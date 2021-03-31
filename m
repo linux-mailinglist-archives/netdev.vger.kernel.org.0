@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1CC34FB6E
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 159B234FB6F
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234462AbhCaITm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 04:19:42 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:48066 "EHLO a.mx.secunet.com"
+        id S234467AbhCaITn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 04:19:43 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:48056 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234386AbhCaIS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234392AbhCaIS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 04:18:57 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id EF16720571;
-        Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 0CBF22057E;
+        Wed, 31 Mar 2021 10:18:57 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id jWNdXvuCLm83; Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
+        with ESMTP id 1Kk-2AxKzxuW; Wed, 31 Mar 2021 10:18:56 +0200 (CEST)
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 8101E205AA;
-        Wed, 31 Mar 2021 10:18:54 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 33905205B5;
+        Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 31 Mar 2021 10:18:54 +0200
+ 15.1.2176.2; Wed, 31 Mar 2021 10:18:55 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 31 Mar
  2021 10:18:53 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id AB4FF3180693; Wed, 31 Mar 2021 10:18:52 +0200 (CEST)
+        id AFDA43180695; Wed, 31 Mar 2021 10:18:52 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 10/11] xfrm: Provide private skb extensions for segmented and hw offloaded ESP packets
-Date:   Wed, 31 Mar 2021 10:18:46 +0200
-Message-ID: <20210331081847.3547641-11-steffen.klassert@secunet.com>
+Subject: [PATCH 11/11] xfrm/compat: Cleanup WARN()s that can be user-triggered
+Date:   Wed, 31 Mar 2021 10:18:47 +0200
+Message-ID: <20210331081847.3547641-12-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331081847.3547641-1-steffen.klassert@secunet.com>
 References: <20210331081847.3547641-1-steffen.klassert@secunet.com>
@@ -55,81 +55,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 94579ac3f6d0 ("xfrm: Fix double ESP trailer insertion in IPsec
-crypto offload.") added a XFRM_XMIT flag to avoid duplicate ESP trailer
-insertion on HW offload. This flag is set on the secpath that is shared
-amongst segments. This lead to a situation where some segments are
-not transformed correctly when segmentation happens at layer 3.
+From: Dmitry Safonov <dima@arista.com>
 
-Fix this by using private skb extensions for segmented and hw offloaded
-ESP packets.
+Replace WARN_ONCE() that can be triggered from userspace with
+pr_warn_once(). Those still give user a hint what's the issue.
 
-Fixes: 94579ac3f6d0 ("xfrm: Fix double ESP trailer insertion in IPsec crypto offload.")
+I've left WARN()s that are not possible to trigger with current
+code-base and that would mean that the code has issues:
+- relying on current compat_msg_min[type] <= xfrm_msg_min[type]
+- expected 4-byte padding size difference between
+  compat_msg_min[type] and xfrm_msg_min[type]
+- compat_policy[type].len <= xfrma_policy[type].len
+(for every type)
+
+Reported-by: syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com
+Fixes: 5f3eea6b7e8f ("xfrm/compat: Attach xfrm dumps to 64=>32 bit translator")
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Safonov <dima@arista.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/ipv4/esp4_offload.c | 11 ++++++++++-
- net/ipv6/esp6_offload.c | 11 ++++++++++-
- net/xfrm/xfrm_device.c  |  2 --
- 3 files changed, 20 insertions(+), 4 deletions(-)
+ net/xfrm/xfrm_compat.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index ed3de486ea34..33687cf58286 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -314,8 +314,17 @@ static int esp_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features_
- 	ip_hdr(skb)->tot_len = htons(skb->len);
- 	ip_send_check(ip_hdr(skb));
- 
--	if (hw_offload)
-+	if (hw_offload) {
-+		if (!skb_ext_add(skb, SKB_EXT_SEC_PATH))
-+			return -ENOMEM;
-+
-+		xo = xfrm_offload(skb);
-+		if (!xo)
-+			return -EINVAL;
-+
-+		xo->flags |= XFRM_XMIT;
- 		return 0;
-+	}
- 
- 	err = esp_output_tail(x, skb, &esp);
- 	if (err)
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index f35203ab39f5..4af56affaafd 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -348,8 +348,17 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
- 
- 	ipv6_hdr(skb)->payload_len = htons(len);
- 
--	if (hw_offload)
-+	if (hw_offload) {
-+		if (!skb_ext_add(skb, SKB_EXT_SEC_PATH))
-+			return -ENOMEM;
-+
-+		xo = xfrm_offload(skb);
-+		if (!xo)
-+			return -EINVAL;
-+
-+		xo->flags |= XFRM_XMIT;
- 		return 0;
-+	}
- 
- 	err = esp6_output_tail(x, skb, &esp);
- 	if (err)
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index edf11893dbe8..6d6917b68856 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -134,8 +134,6 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
- 		return skb;
+diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
+index d8e8a11ca845..a20aec9d7393 100644
+--- a/net/xfrm/xfrm_compat.c
++++ b/net/xfrm/xfrm_compat.c
+@@ -216,7 +216,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
+ 	case XFRM_MSG_GETSADINFO:
+ 	case XFRM_MSG_GETSPDINFO:
+ 	default:
+-		WARN_ONCE(1, "unsupported nlmsg_type %d", nlh_src->nlmsg_type);
++		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
+ 		return ERR_PTR(-EOPNOTSUPP);
  	}
  
--	xo->flags |= XFRM_XMIT;
--
- 	if (skb_is_gso(skb) && unlikely(x->xso.dev != dev)) {
- 		struct sk_buff *segs;
+@@ -277,7 +277,7 @@ static int xfrm_xlate64_attr(struct sk_buff *dst, const struct nlattr *src)
+ 		return xfrm_nla_cpy(dst, src, nla_len(src));
+ 	default:
+ 		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
+-		WARN_ONCE(1, "unsupported nla_type %d", src->nla_type);
++		pr_warn_once("unsupported nla_type %d\n", src->nla_type);
+ 		return -EOPNOTSUPP;
+ 	}
+ }
+@@ -315,8 +315,10 @@ static int xfrm_alloc_compat(struct sk_buff *skb, const struct nlmsghdr *nlh_src
+ 	struct sk_buff *new = NULL;
+ 	int err;
+ 
+-	if (WARN_ON_ONCE(type >= ARRAY_SIZE(xfrm_msg_min)))
++	if (type >= ARRAY_SIZE(xfrm_msg_min)) {
++		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	if (skb_shinfo(skb)->frag_list == NULL) {
+ 		new = alloc_skb(skb->len + skb_tailroom(skb), GFP_ATOMIC);
+@@ -378,6 +380,10 @@ static int xfrm_attr_cpy32(void *dst, size_t *pos, const struct nlattr *src,
+ 	struct nlmsghdr *nlmsg = dst;
+ 	struct nlattr *nla;
+ 
++	/* xfrm_user_rcv_msg_compat() relies on fact that 32-bit messages
++	 * have the same len or shorted than 64-bit ones.
++	 * 32-bit translation that is bigger than 64-bit original is unexpected.
++	 */
+ 	if (WARN_ON_ONCE(copy_len > payload))
+ 		copy_len = payload;
  
 -- 
 2.25.1
