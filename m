@@ -2,157 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D87E034FFFA
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 14:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A3A34FFFC
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 14:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234377AbhCaMJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 08:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235119AbhCaMIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 08:08:47 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFA1C061574
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 05:08:46 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id a143so20921351ybg.7
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 05:08:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C8nug5VsyKNZg83ZSmyv9nPJjmblHCXHSQ1Tit6blzA=;
-        b=c0PHl1HBwqp71CQXgrPYwnVZBpDJLk0XhXXOceFSGxJ3Y9LdvN4yQz+ZlRp+qxMinB
-         SapfV8bwDtZHxz0cAbuQJSH/ROpJ+5sIWMy7YrueAFQ8UsUG65f+TuPNNQKf8LEMsbYZ
-         Rcz4KlQvtm7LMpH9pFHw4J6rtmSqw/JA82zmGbvKJNK9fFRZeShj3VeqXzcFpugLl1HR
-         NEXyq4rt8G35y5f2W1LhertgElFdhzzC8hNgzePaeX+MwZsVC0VcG91GZdJH1qNRMHxS
-         Ia132v5FTZDDXVsBap9c7nL/dvkV8C4DxpoyCY4orfiqk1Tlo1qf03zb6D3C8CPnUZrT
-         JZxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C8nug5VsyKNZg83ZSmyv9nPJjmblHCXHSQ1Tit6blzA=;
-        b=jy6p7EOY0j2UbuGkjmgZplJm/XgnPb8eCZe9KKJ7n9OASudSNpPU4BHaV+oZJiYUve
-         6xQzvv/NkkMnnsifFjii//T17BJ/QKOGyvzM4lilwHtNj+LDvj1g649GY6rgaIJpyvMP
-         R2sMNZP7q2bA7RtP79JFU3DYZYx1J1hZcspO1n8+2TEB304pcQ+L/tsP/nNtVTW7fWy5
-         Io+VNP/NGmMvcUp5HUZv6PkEvnuaeBmNb7nkgUVCi2KQl4pp3IqyTq0YTeF2w3Pc2mGK
-         H7mGSz0rUpp+bq1iUcn0PhErwhWTJReaJU0pHWXwp/yDgbuao1n9MXDB8QLu1Fhhdu2R
-         Cq5Q==
-X-Gm-Message-State: AOAM531E+BARRY9/hSKVouTMapaFGDCM47jrJEY27wdIFKn/vtu5p2ee
-        hruFhXvrDAGTYdvzmA6dTDP4yzdP9LVPNBQB1sEJgw==
-X-Google-Smtp-Source: ABdhPJywHNXj3DxtCtUhs2pVRd0xTIo1bequBVa+Z2pak60AJPjQSVXmj7nnjzlRMPRk5jdhDSEfyiQy1utOl2nssV8=
-X-Received: by 2002:a25:6a88:: with SMTP id f130mr4194043ybc.234.1617192525548;
- Wed, 31 Mar 2021 05:08:45 -0700 (PDT)
+        id S235393AbhCaMLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 08:11:20 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59378 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235019AbhCaMLF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 08:11:05 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id B8E6DB1E5;
+        Wed, 31 Mar 2021 12:11:03 +0000 (UTC)
+Subject: Re: [PATCH V2 1/1] mm:improve the performance during fork
+To:     Andrew Morton <akpm@linux-foundation.org>, qianjun.kernel@gmail.com
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20210329123635.56915-1-qianjun.kernel@gmail.com>
+ <20210330224406.5e195f3b8b971ff2a56c657d@linux-foundation.org>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Message-ID: <9f012469-ccda-2c95-aa5a-7ca4f6fb2891@suse.cz>
+Date:   Wed, 31 Mar 2021 14:11:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20210331040405-mutt-send-email-mst@kernel.org> <1617190239.1035674-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1617190239.1035674-1-xuanzhuo@linux.alibaba.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 31 Mar 2021 14:08:34 +0200
-Message-ID: <CANn89iKHdMWOFtX5om_g6SHW_tC0V_G94rGvOLPdtoLxEVH19w@mail.gmail.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny skbs
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Thelen <gthelen@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, su-lifan@linux.alibaba.com,
-        "dust.li" <dust.li@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210330224406.5e195f3b8b971ff2a56c657d@linux-foundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 1:34 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> On Wed, 31 Mar 2021 04:11:12 -0400, Michael S. Tsirkin <mst@redhat.com> wrote:
-> > On Mon, Mar 29, 2021 at 11:06:09AM +0200, Eric Dumazet wrote:
-> > > On Mon, Mar 29, 2021 at 10:52 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > > >
-> > > > On Wed, 13 Jan 2021 08:18:19 -0800, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > > > > From: Eric Dumazet <edumazet@google.com>
-> > > > >
-> > > > > Both virtio net and napi_get_frags() allocate skbs
-> > > > > with a very small skb->head
-> > > > >
-> > > > > While using page fragments instead of a kmalloc backed skb->head might give
-> > > > > a small performance improvement in some cases, there is a huge risk of
-> > > > > under estimating memory usage.
-> > > > >
-> > > > > For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
-> > > > > per page (order-3 page in x86), or even 64 on PowerPC
-> > > > >
-> > > > > We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
-> > > > > but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
-> > > > >
-> > > > > Even if we force napi_alloc_skb() to only use order-0 pages, the issue
-> > > > > would still be there on arches with PAGE_SIZE >= 32768
-> > > > >
-> > > > > This patch makes sure that small skb head are kmalloc backed, so that
-> > > > > other objects in the slab page can be reused instead of being held as long
-> > > > > as skbs are sitting in socket queues.
-> > > > >
-> > > > > Note that we might in the future use the sk_buff napi cache,
-> > > > > instead of going through a more expensive __alloc_skb()
-> > > > >
-> > > > > Another idea would be to use separate page sizes depending
-> > > > > on the allocated length (to never have more than 4 frags per page)
-> > > > >
-> > > > > I would like to thank Greg Thelen for his precious help on this matter,
-> > > > > analysing crash dumps is always a time consuming task.
-> > > >
-> > > >
-> > > > This patch causes a performance degradation of about 10% in the scenario of
-> > > > virtio-net + GRO.
-> > > >
-> > > > For GRO, there is no way to merge skbs based on frags with this patch, only
-> > > > frag_list can be used to link skbs. The problem that this cause are that compared
-> > > > to the GRO package merged into the frags way, the current skb needs to call
-> > > > kfree_skb_list to release each skb, resulting in performance degradation.
-> > > >
-> > > > virtio-net will store some data onto the linear space after receiving it. In
-> > > > addition to the header, there are also some payloads, so "headlen <= offset"
-> > > > fails. And skb->head_frag is failing when use kmalloc() for skb->head allocation.
-> > > >
-> > >
-> > > Thanks for the report.
-> > >
-> > > There is no way we can make things both fast for existing strategies
-> > > used by _insert_your_driver
-> > > and malicious usages of data that can sit for seconds/minutes in socket queues.
-> > >
-> > > I think that if you want to gain this 10% back, you have to change
-> > > virtio_net to meet optimal behavior.
-> > >
-> > > Normal drivers make sure to not pull payload in skb->head, only headers.
-> >
-> > Hmm we do have hdr_len field, but seem to ignore it on RX.
-> > Jason do you see any issues with using it for the head len?
-> >
->
-> Why not add a struct skb_shared_info space when adding merge/big buffer?
-> So that we can use build_skb to create skb. For skb with little data, we can
-> copy directly to save pages.
->
+On 3/31/21 7:44 AM, Andrew Morton wrote:
+> On Mon, 29 Mar 2021 20:36:35 +0800 qianjun.kernel@gmail.com wrote:
+> 
+>> From: jun qian <qianjun.kernel@gmail.com>
+>> 
+>> In our project, Many business delays come from fork, so
+>> we started looking for the reason why fork is time-consuming.
+>> I used the ftrace with function_graph to trace the fork, found
+>> that the vm_normal_page will be called tens of thousands and
+>> the execution time of this vm_normal_page function is only a
+>> few nanoseconds. And the vm_normal_page is not a inline function.
+>> So I think if the function is inline style, it maybe reduce the
+>> call time overhead.
+>> 
+>> I did the following experiment:
+>> 
+>> use the bpftrace tool to trace the fork time :
+>> 
+>> bpftrace -e 'kprobe:_do_fork/comm=="redis-server"/ {@st=nsecs;} \
+>> kretprobe:_do_fork /comm=="redis-server"/{printf("the fork time \
+>> is %d us\n", (nsecs-@st)/1000)}'
+>> 
+>> no inline vm_normal_page:
+>> result:
+>> the fork time is 40743 us
+>> the fork time is 41746 us
+>> the fork time is 41336 us
+>> the fork time is 42417 us
+>> the fork time is 40612 us
+>> the fork time is 40930 us
+>> the fork time is 41910 us
+>> 
+>> inline vm_normal_page:
+>> result:
+>> the fork time is 39276 us
+>> the fork time is 38974 us
+>> the fork time is 39436 us
+>> the fork time is 38815 us
+>> the fork time is 39878 us
+>> the fork time is 39176 us
+>> 
+>> In the same test environment, we can get 3% to 4% of
+>> performance improvement.
+>> 
+>> note:the test data is from the 4.18.0-193.6.3.el8_2.v1.1.x86_64,
+>> because my product use this version kernel to test the redis
+>> server, If you need to compare the latest version of the kernel
+>> test data, you can refer to the version 1 Patch.
+>> 
+>> We need to compare the changes in the size of vmlinux:
+>>                   inline           non-inline       diff
+>> vmlinux size      9709248 bytes    9709824 bytes    -576 bytes
+>> 
+> 
+> I get very different results with gcc-7.2.0:
+> 
+> q:/usr/src/25> size mm/memory.o
+>    text    data     bss     dec     hex filename
+>   74898    3375      64   78337   13201 mm/memory.o-before
+>   75119    3363      64   78546   132d2 mm/memory.o-after
 
-This does not matter. build_skb() is a distraction here.
+I got this:
 
-Ultimately, you want to receive fat GRO packets with 17 MSS per sk_buff
+./scripts/bloat-o-meter memory.o.before mm/memory.o
+add/remove: 0/0 grow/shrink: 1/3 up/down: 285/-86 (199)
+Function                                     old     new   delta
+copy_pte_range                              2095    2380    +285
+vm_normal_page                               168     163      -5
+do_anonymous_page                           1039    1003     -36
+do_swap_page                                1835    1790     -45
+Total: Before=42411, After=42610, chg +0.47%
 
-The patch I gave earlier will combine :
 
-1) Advantage of having skb->head being backed by slab allocations,
-   to solve the OOM issue my patch already coped with.
+> That's a somewhat significant increase in code size, and larger code
+> size has a worsened cache footprint.
+> 
+> Not that this is necessarily a bad thing for a function which is
+> tightly called many times in succession as is vm__normal_page()
 
-2)  Up to 17 page frags attached to the sk_buff, storing 17 MSS.
+Hm but the inline only affects the users within mm/memory.c, unless the kernel
+is built with link time optimization (LTO), which is not AFAIK not the standard yet.
 
-In the past, virtio_net had to use 2 slots in shared_info per MSS
-  -One slot for the first ~200 bytes of payload
- - One slot for the last part of the MSS.
+>> --- a/mm/memory.c
+>> +++ b/mm/memory.c
+>> @@ -592,7 +592,7 @@ static void print_bad_pte(struct vm_area_struct *vma, unsigned long addr,
+>>   * PFNMAP mappings in order to support COWable mappings.
+>>   *
+>>   */
+>> -struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
+>> +inline struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
+>>  			    pte_t pte)
+>>  {
+>>  	unsigned long pfn = pte_pfn(pte);
+> 
+> I'm a bit surprised this made any difference - rumour has it that
+> modern gcc just ignores `inline' and makes up its own mind.  Which is
+> why we added __always_inline.
 
-Please try my patch, so that we confirm the issue is really in page_to_skb()
-
-Thanks
+AFAIK it doesn't completely ignore it, just takes it as a hint in addition to
+its own heuristics. So adding the keyword might flip the decision to inline in
+some cases, but is not guaranteed to.
