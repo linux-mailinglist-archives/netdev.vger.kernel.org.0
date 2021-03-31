@@ -2,149 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7BCB350375
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:32:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D62FA35038D
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235587AbhCaPcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 11:32:01 -0400
-Received: from mga06.intel.com ([134.134.136.31]:10013 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235420AbhCaPbm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 11:31:42 -0400
-IronPort-SDR: ix/TbFdwhqexlKDLzcSimdpnwqJy5k9ySxCYjUqlJ0+cbqK3u3U3HQbj+V79dN+DR1PyFljj/j
- S3N+iLVHSAFg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="253363775"
-X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="253363775"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 08:31:38 -0700
-IronPort-SDR: t2ElSMhwnt8Hm7hqczZh4uqwTpjrT0CnReQGioO25F9+uRM8nZaJ0EiW3QO6AW0NUOZbkxvh/h
- y9c5DTJJe8Yg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="455537071"
-Received: from glass.png.intel.com ([10.158.65.59])
-  by orsmga001.jf.intel.com with ESMTP; 31 Mar 2021 08:31:32 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v3 0/6] stmmac: Add XDP support
-Date:   Wed, 31 Mar 2021 23:35:41 +0800
-Message-Id: <20210331153541.1892-1-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S235605AbhCaPgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 11:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235616AbhCaPgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 11:36:09 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A82C061574
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:36:09 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id z15so20391046oic.8
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:36:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PKb2Dw3L+9aiLFno0YG9DA0LN177DlC0BI+f8x134yU=;
+        b=pZ4JNxaGjWg46DzsfYCbMxCNoAEIlWOaCvCf21PImzq2RXYgya/wEGB6qSK5dEbT3o
+         3Y7Y4oDosT9exhuhyF9ktHEshD0bCfbnR71TAJ9YU+Z87KJrmbfnzi1feXypXb5cAFb1
+         Q3GDzSPOs2kwqR1CHe6J+9yuX+dUkFrwOe1KYGP5sWXm7cGCGueS6dHG62DL8JhwSu7X
+         wz99algf2Vw8828g3rpVZF2Uo3Swmc/cZiMIVpNz4n9WxIg6+YuWTg9xv2/r7Z23demR
+         IFuMfl5kJOKlLzTzRvADAVfrLDFzMfSbmlDRXi6U/gn7XdWB10g7LJGilzLmEWDuv314
+         rC6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PKb2Dw3L+9aiLFno0YG9DA0LN177DlC0BI+f8x134yU=;
+        b=tpkpkIq9MchA3VRyOKBiaHqK8kM2hsrn4vWFGf8/tYv1wz6lksqmFD0mrd1ZZpO1y8
+         EgMY334FJY1gs814o0qnOJ1EEnt7Lbs3vUsGUGt4VSiq6+aa3RdNBT3yHRSNF9bWNSJF
+         LTAe9iQBJIC1tA3Stelg0FScUuuPreFi/UPMY9oxg50E/syKVnfW62hmDoLvqDYXhKU8
+         QQWUmEaLA/n8xERuWLA2QrSLeLq3ewfkKhQusIvnWHxs6s1+1tLu3a7yRyx4N4cTN/LY
+         5V9ATjyQKce7PPqGDUDBS9zwUH9rQKY6Qnz9E7yJpAyd4hLcB5kH6IZa2gJPS/zIHpKb
+         jDqA==
+X-Gm-Message-State: AOAM5320vRgPEvfn8m0ydobhZXCMYE2geKyY7UCHIRlehjdA8wC0JJQA
+        D0Z6j5jaVk9aFwSV/yzoXayWZTxw6gc=
+X-Google-Smtp-Source: ABdhPJyPsdJfXH9loMlzTfhgAjsqxJcRu882qfdWS/yupI+w0UvMt6ypf6bjm36hhYLiG24ZwW9lMg==
+X-Received: by 2002:aca:ed95:: with SMTP id l143mr2786764oih.110.1617204968252;
+        Wed, 31 Mar 2021 08:36:08 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id k24sm489546oic.51.2021.03.31.08.36.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Mar 2021 08:36:07 -0700 (PDT)
+Subject: Re: [PATCH] ip-nexthop: support flush by id
+To:     Ido Schimmel <idosch@idosch.org>,
+        Chunmei Xu <xuchunmei@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org
+References: <20210331022234.52977-1-xuchunmei@linux.alibaba.com>
+ <YGRi0oimvPC/FSRT@shredder.lan>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d2f565b8-f501-2abb-2067-8971ab683bd6@gmail.com>
+Date:   Wed, 31 Mar 2021 09:36:06 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YGRi0oimvPC/FSRT@shredder.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 3/31/21 5:53 AM, Ido Schimmel wrote:
+>> @@ -124,6 +125,9 @@ static int flush_nexthop(struct nlmsghdr *nlh, void *arg)
+>>  	if (tb[NHA_ID])
+>>  		id = rta_getattr_u32(tb[NHA_ID]);
+>>  
+>> +	if (filter.id && filter.id != id)
+>> +		return 0;
+>> +
+>>  	if (id && !delete_nexthop(id))
+>>  		filter.flushed++;
+>>  
+>> @@ -491,7 +495,10 @@ static int ipnh_list_flush(int argc, char **argv, int action)
+>>  			NEXT_ARG();
+>>  			if (get_unsigned(&id, *argv, 0))
+>>  				invarg("invalid id value", *argv);
+>> -			return ipnh_get_id(id);
+>> +			if (action == IPNH_FLUSH)
+>> +				filter.id = id;
+>> +			else
+>> +				return ipnh_get_id(id);
+> 
+> I think it's quite weird to ask for a dump of all nexthops only to
+> delete a specific one. How about this:
 
-This is the v3 patch series for adding XDP support to stmmac driver.
++1
 
-Summary of the changes in v3 (per feedback from Jakub Kicinski):-
+> 
+> ```
+> diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
+> index 0263307c49df..09a3076231aa 100644
+> --- a/ip/ipnexthop.c
+> +++ b/ip/ipnexthop.c
+> @@ -765,8 +765,16 @@ static int ipnh_list_flush(int argc, char **argv, int action)
+>                         if (!filter.master)
+>                                 invarg("VRF does not exist\n", *argv);
+>                 } else if (!strcmp(*argv, "id")) {
+> -                       NEXT_ARG();
+> -                       return ipnh_get_id(ipnh_parse_id(*argv));
+> +                       /* When 'id' is specified with 'flush' / 'list' we do
+> +                        * not need to perform a dump.
+> +                        */
+> +                       if (action == IPNH_LIST) {
+> +                               NEXT_ARG();
+> +                               return ipnh_get_id(ipnh_parse_id(*argv));
+> +                       } else {
+> +                               return ipnh_modify(RTM_DELNEXTHOP, 0, argc,
+> +                                                  argv);
+> +                       }
 
-4/6: Factor in XDP buffer header and tail adjustment by XDP prog.
-
-5/6: Added 'nq->trans_start = jiffies' to avoid TX time-out for XDP_TX.
-
-6/6: Added 'nq->trans_start = jiffies' to avoid TX time-out for
-     ndo_xdp_xmit.
-
-I retested this patch series on all the test steps listed in v1 and the
-results look good as expected. I also used xdp_adjust_tail test app in
-samples/bpf for checking out XDP head and tail adjustment introduced in
-4/6 and the result below looks correct too.
-
- ########################################################################
-
-DUT > root@intel-corei7-64:~ $ ./xdp_adjust_tail -i eth0 -P 400 -N
-==========================
-icmp "packet too big" sent:          0 pkts
-icmp "packet too big" sent:          0 pkts
-icmp "packet too big" sent:          0 pkts
-icmp "packet too big" sent:          0 pkts
-icmp "packet too big" sent:          1 pkts
-icmp "packet too big" sent:          1 pkts
-icmp "packet too big" sent:          1 pkts
-icmp "packet too big" sent:          2 pkts
-icmp "packet too big" sent:          4 pkts
-icmp "packet too big" sent:          6 pkts
-icmp "packet too big" sent:          8 pkts
-icmp "packet too big" sent:          9 pkts
-icmp "packet too big" sent:         10 pkts
-icmp "packet too big" sent:         10 pkts
-
-LP > root@intel-corei7-64:~# ping 169.254.1.11 -s 300
-PING 169.254.1.11 (169.254.1.11) 300(328) bytes of data.
-308 bytes from 169.254.1.11: icmp_seq=1 ttl=64 time=1.17 ms
-308 bytes from 169.254.1.11: icmp_seq=2 ttl=64 time=0.575 ms
-308 bytes from 169.254.1.11: icmp_seq=3 ttl=64 time=0.582 ms
-308 bytes from 169.254.1.11: icmp_seq=4 ttl=64 time=0.595 ms
-308 bytes from 169.254.1.11: icmp_seq=5 ttl=64 time=0.585 ms
-308 bytes from 169.254.1.11: icmp_seq=6 ttl=64 time=0.591 ms
-308 bytes from 169.254.1.11: icmp_seq=7 ttl=64 time=0.599 ms
-^C
---- 169.254.1.11 ping statistics ---
-7 packets transmitted, 7 received, 0% packet loss, time 6103ms
-rtt min/avg/max/mdev = 0.575/0.670/1.166/0.202 ms
-
-LP >  root@intel-corei7-64:~# ping 169.254.1.11 -s 500
-PING 169.254.1.11 (169.254.1.11) 500(528) bytes of data.
-From 169.254.1.11 icmp_seq=1 Frag needed and DF set (mtu = 436)
-From 169.254.1.11 icmp_seq=2 Frag needed and DF set (mtu = 436)
-From 169.254.1.11 icmp_seq=3 Frag needed and DF set (mtu = 436)
-From 169.254.1.11 icmp_seq=4 Frag needed and DF set (mtu = 436)
-From 169.254.1.11 icmp_seq=5 Frag needed and DF set (mtu = 436)
-From 169.254.1.11 icmp_seq=6 Frag needed and DF set (mtu = 436)
-
- ########################################################################
-
-History of the previous patch series:
-
-v2: https://patchwork.kernel.org/project/netdevbpf/list/?series=457757
-v1: https://patchwork.kernel.org/project/netdevbpf/list/?series=457139
-
-It will be great if community can help to test or review the v3 patch
-series on your platform and provide me any new feedback if any.
-
-Thank you very much.
-Boon Leong
-
-Ong Boon Leong (6):
-  net: stmmac: set IRQ affinity hint for multi MSI vectors
-  net: stmmac: make SPH enable/disable to be configurable
-  net: stmmac: arrange Tx tail pointer update to
-    stmmac_flush_tx_descriptors
-  net: stmmac: Add initial XDP support
-  net: stmmac: Add support for XDP_TX action
-  net: stmmac: Add support for XDP_REDIRECT action
-
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  35 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 529 +++++++++++++++---
- .../net/ethernet/stmicro/stmmac/stmmac_xdp.c  |  40 ++
- .../net/ethernet/stmicro/stmmac/stmmac_xdp.h  |  12 +
- 5 files changed, 537 insertions(+), 80 deletions(-)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h
-
--- 
-2.25.1
-
+since delete just needs the id, you could refactor ipnh_modify and
+create a ipnh_delete_id.
