@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52CB5350A81
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 01:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2299350A80
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 01:08:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232540AbhCaXHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 19:07:44 -0400
-Received: from mga14.intel.com ([192.55.52.115]:62995 "EHLO mga14.intel.com"
+        id S232207AbhCaXHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 19:07:43 -0400
+Received: from mga14.intel.com ([192.55.52.115]:62994 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229959AbhCaXHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230073AbhCaXHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 19:07:25 -0400
-IronPort-SDR: AhK4XWd+W9haMmm73AAVw9ZYulUKvHD3/hZrs61qLKGoKtOjQ5f5zvGvK9S2AqQg2EbQgUYwhE
- sSuWPlVLVpZw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191587971"
+IronPort-SDR: 7DD832vAIitp6NUARaFzmiwSIOU93bizFUn8xWcnibjAEidie/l7DhV4nuVm8TsGUvatRcQNZF
+ Fa0+tzQkF3cA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191587973"
 X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="191587971"
+   d="scan'208";a="191587973"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 16:07:23 -0700
-IronPort-SDR: NNV0TKk19LGXv8ho3Co9rrjh5+YS2HdmGyF5RQOiA9UOkliu3N03/MEY8T6sE4kPn1CpixVLCP
- ihUxm/LVZwSg==
+IronPort-SDR: ZHggBYG+7KgSpNHlzAvrQKDwzrz9OJKzDTg1AeVo/DATvtJEKnGa2gR6PIy9nMJEjpicRM0CFi
+ 6+kTdQKwjGfw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="610680093"
+   d="scan'208";a="610680097"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2021 16:07:22 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2021 16:07:23 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
+Cc:     Dan Nowlin <dan.nowlin@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 02/15] ice: Delay netdev registration
-Date:   Wed, 31 Mar 2021 16:08:45 -0700
-Message-Id: <20210331230858.782492-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 03/15] ice: Update to use package info from ice segment
+Date:   Wed, 31 Mar 2021 16:08:46 -0700
+Message-Id: <20210331230858.782492-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210331230858.782492-1-anthony.l.nguyen@intel.com>
 References: <20210331230858.782492-1-anthony.l.nguyen@intel.com>
@@ -43,211 +42,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+From: Dan Nowlin <dan.nowlin@intel.com>
 
-Once a netdev is registered, the corresponding network interface can
-be immediately used by userspace utilities (like say NetworkManager).
-This can be problematic if the driver technically isn't fully up yet.
+There are two package versions in the package binary. Today, these two
+version numbers are the same. However, in the future that may change.
 
-Move netdev registration to the end of probe, as by this time the
-driver data structures and device will be initialized as expected.
+Update code to use the package info from the ice segment metadata
+section, which is the package information that is actually downloaded to
+the firmware during the download package process.
 
-However, delaying netdev registration causes a failure in the aRFS flow
-where netdev->reg_state == NETREG_REGISTERED condition is checked. It's
-not clear why this check was added to begin with, so remove it.
-Local testing didn't indicate any issues with this change.
-
-The state bit check in ice_open was put in as a stop-gap measure to
-prevent a premature interface up operation. This is no longer needed,
-so remove it.
-
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_arfs.c |  6 +-
- drivers/net/ethernet/intel/ice/ice_main.c | 93 +++++++++++------------
- 2 files changed, 47 insertions(+), 52 deletions(-)
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  1 +
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    | 40 ++++++++++---------
+ .../net/ethernet/intel/ice/ice_flex_type.h    |  9 +++++
+ drivers/net/ethernet/intel/ice/ice_type.h     |  8 ++--
+ 4 files changed, 36 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_arfs.c b/drivers/net/ethernet/intel/ice/ice_arfs.c
-index 6560acd76c94..88d98c9e5f91 100644
---- a/drivers/net/ethernet/intel/ice/ice_arfs.c
-+++ b/drivers/net/ethernet/intel/ice/ice_arfs.c
-@@ -581,8 +581,7 @@ void ice_free_cpu_rx_rmap(struct ice_vsi *vsi)
- 		return;
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 80186589153b..5108046476f1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1790,6 +1790,7 @@ struct ice_pkg_ver {
+ };
  
- 	netdev = vsi->netdev;
--	if (!netdev || !netdev->rx_cpu_rmap ||
--	    netdev->reg_state != NETREG_REGISTERED)
-+	if (!netdev || !netdev->rx_cpu_rmap)
- 		return;
+ #define ICE_PKG_NAME_SIZE	32
++#define ICE_SEG_ID_SIZE		28
+ #define ICE_SEG_NAME_SIZE	28
  
- 	free_irq_cpu_rmap(netdev->rx_cpu_rmap);
-@@ -604,8 +603,7 @@ int ice_set_cpu_rx_rmap(struct ice_vsi *vsi)
+ struct ice_aqc_get_pkg_info {
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index afe77f7a3199..4b83960876f4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -1063,32 +1063,36 @@ ice_download_pkg(struct ice_hw *hw, struct ice_seg *ice_seg)
+ static enum ice_status
+ ice_init_pkg_info(struct ice_hw *hw, struct ice_pkg_hdr *pkg_hdr)
+ {
+-	struct ice_global_metadata_seg *meta_seg;
+ 	struct ice_generic_seg_hdr *seg_hdr;
  
- 	pf = vsi->back;
- 	netdev = vsi->netdev;
--	if (!pf || !netdev || !vsi->num_q_vectors ||
--	    vsi->netdev->reg_state != NETREG_REGISTERED)
-+	if (!pf || !netdev || !vsi->num_q_vectors)
- 		return -EINVAL;
+ 	if (!pkg_hdr)
+ 		return ICE_ERR_PARAM;
  
- 	netdev_dbg(netdev, "Setup CPU RMAP: vsi type 0x%x, ifname %s, q_vectors %d\n",
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index f318d7f607e4..a881b4b6bce5 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -140,21 +140,10 @@ static int ice_init_mac_fltr(struct ice_pf *pf)
+-	meta_seg = (struct ice_global_metadata_seg *)
+-		   ice_find_seg_in_pkg(hw, SEGMENT_TYPE_METADATA, pkg_hdr);
+-	if (meta_seg) {
+-		hw->pkg_ver = meta_seg->pkg_ver;
+-		memcpy(hw->pkg_name, meta_seg->pkg_name, sizeof(hw->pkg_name));
++	seg_hdr = ice_find_seg_in_pkg(hw, SEGMENT_TYPE_ICE, pkg_hdr);
++	if (seg_hdr) {
++		struct ice_meta_sect *meta;
++		struct ice_pkg_enum state;
++
++		memset(&state, 0, sizeof(state));
++
++		/* Get package information from the Metadata Section */
++		meta = ice_pkg_enum_section((struct ice_seg *)seg_hdr, &state,
++					    ICE_SID_METADATA);
++		if (!meta) {
++			ice_debug(hw, ICE_DBG_INIT, "Did not find ice metadata section in package\n");
++			return ICE_ERR_CFG;
++		}
++
++		hw->pkg_ver = meta->ver;
++		memcpy(hw->pkg_name, meta->name, sizeof(meta->name));
  
- 	perm_addr = vsi->port_info->mac.perm_addr;
- 	status = ice_fltr_add_mac_and_broadcast(vsi, perm_addr, ICE_FWD_TO_VSI);
--	if (!status)
--		return 0;
--
--	/* We aren't useful with no MAC filters, so unregister if we
--	 * had an error
--	 */
--	if (vsi->netdev->reg_state == NETREG_REGISTERED) {
--		dev_err(ice_pf_to_dev(pf), "Could not add MAC filters error %s. Unregistering device\n",
--			ice_stat_str(status));
--		unregister_netdev(vsi->netdev);
--		free_netdev(vsi->netdev);
--		vsi->netdev = NULL;
+ 		ice_debug(hw, ICE_DBG_PKG, "Pkg: %d.%d.%d.%d, %s\n",
+-			  meta_seg->pkg_ver.major, meta_seg->pkg_ver.minor,
+-			  meta_seg->pkg_ver.update, meta_seg->pkg_ver.draft,
+-			  meta_seg->pkg_name);
+-	} else {
+-		ice_debug(hw, ICE_DBG_INIT, "Did not find metadata segment in driver package\n");
+-		return ICE_ERR_CFG;
 -	}
-+	if (status)
-+		return -EIO;
++			  meta->ver.major, meta->ver.minor, meta->ver.update,
++			  meta->ver.draft, meta->name);
  
--	return -EIO;
-+	return 0;
- }
+-	seg_hdr = ice_find_seg_in_pkg(hw, SEGMENT_TYPE_ICE, pkg_hdr);
+-	if (seg_hdr) {
+-		hw->ice_pkg_ver = seg_hdr->seg_format_ver;
+-		memcpy(hw->ice_pkg_name, seg_hdr->seg_id,
+-		       sizeof(hw->ice_pkg_name));
++		hw->ice_seg_fmt_ver = seg_hdr->seg_format_ver;
++		memcpy(hw->ice_seg_id, seg_hdr->seg_id,
++		       sizeof(hw->ice_seg_id));
  
- /**
-@@ -2982,18 +2971,11 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
- 	struct ice_netdev_priv *np;
- 	struct net_device *netdev;
- 	u8 mac_addr[ETH_ALEN];
--	int err;
--
--	err = ice_devlink_create_port(vsi);
--	if (err)
--		return err;
+ 		ice_debug(hw, ICE_DBG_PKG, "Ice Seg: %d.%d.%d.%d, %s\n",
+ 			  seg_hdr->seg_format_ver.major,
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
+index abc156ce9d8c..9806183920de 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
+@@ -109,6 +109,7 @@ struct ice_buf_hdr {
+ 	(ent_sz))
  
- 	netdev = alloc_etherdev_mqs(sizeof(*np), vsi->alloc_txq,
- 				    vsi->alloc_rxq);
--	if (!netdev) {
--		err = -ENOMEM;
--		goto err_destroy_devlink_port;
--	}
-+	if (!netdev)
-+		return -ENOMEM;
- 
- 	vsi->netdev = netdev;
- 	np = netdev_priv(netdev);
-@@ -3021,25 +3003,7 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
- 	netdev->min_mtu = ETH_MIN_MTU;
- 	netdev->max_mtu = ICE_MAX_MTU;
- 
--	err = register_netdev(vsi->netdev);
--	if (err)
--		goto err_free_netdev;
--
--	devlink_port_type_eth_set(&vsi->devlink_port, vsi->netdev);
--
--	netif_carrier_off(vsi->netdev);
--
--	/* make sure transmit queues start off as stopped */
--	netif_tx_stop_all_queues(vsi->netdev);
--
- 	return 0;
--
--err_free_netdev:
--	free_netdev(vsi->netdev);
--	vsi->netdev = NULL;
--err_destroy_devlink_port:
--	ice_devlink_destroy_port(vsi);
--	return err;
- }
- 
- /**
-@@ -3237,8 +3201,6 @@ static int ice_setup_pf_sw(struct ice_pf *pf)
- 	if (vsi) {
- 		ice_napi_del(vsi);
- 		if (vsi->netdev) {
--			if (vsi->netdev->reg_state == NETREG_REGISTERED)
--				unregister_netdev(vsi->netdev);
- 			free_netdev(vsi->netdev);
- 			vsi->netdev = NULL;
- 		}
-@@ -3992,6 +3954,40 @@ static void ice_print_wake_reason(struct ice_pf *pf)
- 	dev_info(ice_pf_to_dev(pf), "Wake reason: %s", wake_str);
- }
- 
-+/**
-+ * ice_register_netdev - register netdev and devlink port
-+ * @pf: pointer to the PF struct
-+ */
-+static int ice_register_netdev(struct ice_pf *pf)
-+{
-+	struct ice_vsi *vsi;
-+	int err = 0;
+ /* ice package section IDs */
++#define ICE_SID_METADATA		1
+ #define ICE_SID_XLT0_SW			10
+ #define ICE_SID_XLT_KEY_BUILDER_SW	11
+ #define ICE_SID_XLT1_SW			12
+@@ -117,6 +118,14 @@ struct ice_buf_hdr {
+ #define ICE_SID_PROFID_REDIR_SW		15
+ #define ICE_SID_FLD_VEC_SW		16
+ #define ICE_SID_CDID_KEY_BUILDER_SW	17
 +
-+	vsi = ice_get_main_vsi(pf);
-+	if (!vsi || !vsi->netdev)
-+		return -EIO;
++struct ice_meta_sect {
++	struct ice_pkg_ver ver;
++#define ICE_META_SECT_NAME_SIZE	28
++	char name[ICE_META_SECT_NAME_SIZE];
++	__le32 track_id;
++};
 +
-+	err = register_netdev(vsi->netdev);
-+	if (err)
-+		goto err_register_netdev;
-+
-+	netif_carrier_off(vsi->netdev);
-+	netif_tx_stop_all_queues(vsi->netdev);
-+	err = ice_devlink_create_port(vsi);
-+	if (err)
-+		goto err_devlink_create;
-+
-+	devlink_port_type_eth_set(&vsi->devlink_port, vsi->netdev);
-+
-+	return 0;
-+err_devlink_create:
-+	unregister_netdev(vsi->netdev);
-+err_register_netdev:
-+	free_netdev(vsi->netdev);
-+	vsi->netdev = NULL;
-+	return err;
-+}
-+
- /**
-  * ice_probe - Device initialization routine
-  * @pdev: PCI device information struct
-@@ -4272,10 +4268,16 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	pcie_print_link_status(pf->pdev);
+ #define ICE_SID_CDID_REDIR_SW		18
  
- probe_done:
-+	err = ice_register_netdev(pf);
-+	if (err)
-+		goto err_netdev_reg;
-+
- 	/* ready to go, so clear down state bit */
- 	clear_bit(__ICE_DOWN, pf->state);
-+
- 	return 0;
+ #define ICE_SID_XLT0_ACL		20
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 2893143d9e62..ba157b383127 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -720,13 +720,13 @@ struct ice_hw {
  
-+err_netdev_reg:
- err_send_version_unroll:
- 	ice_vsi_release_all(pf);
- err_alloc_sw_unroll:
-@@ -6654,11 +6656,6 @@ int ice_open(struct net_device *netdev)
- 		return -EIO;
- 	}
+ 	enum ice_aq_err pkg_dwnld_status;
  
--	if (test_bit(__ICE_DOWN, pf->state)) {
--		netdev_err(netdev, "device is not ready yet\n");
--		return -EBUSY;
--	}
--
- 	netif_carrier_off(netdev);
+-	/* Driver's package ver - (from the Metadata seg) */
++	/* Driver's package ver - (from the Ice Metadata section) */
+ 	struct ice_pkg_ver pkg_ver;
+ 	u8 pkg_name[ICE_PKG_NAME_SIZE];
  
- 	pi = vsi->port_info;
+-	/* Driver's Ice package version (from the Ice seg) */
+-	struct ice_pkg_ver ice_pkg_ver;
+-	u8 ice_pkg_name[ICE_PKG_NAME_SIZE];
++	/* Driver's Ice segment format version and ID (from the Ice seg) */
++	struct ice_pkg_ver ice_seg_fmt_ver;
++	u8 ice_seg_id[ICE_SEG_ID_SIZE];
+ 
+ 	/* Pointer to the ice segment */
+ 	struct ice_seg *seg;
 -- 
 2.26.2
 
