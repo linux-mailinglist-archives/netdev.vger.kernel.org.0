@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDB934F962
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 09:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3033D34F96D
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 09:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233788AbhCaHDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 03:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233693AbhCaHC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 03:02:58 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E61C061574;
-        Wed, 31 Mar 2021 00:02:58 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id i144so20120257ybg.1;
-        Wed, 31 Mar 2021 00:02:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D0KyMxRH/MSdDpCqeXLz794JFymGnRXmUM0jutYpMxU=;
-        b=a0wjM8gJkYA4DzT8s8yqg6YWcMYpORL8cJphMk1omNFSFPPv0glmy+ftTJDWyWtfwa
-         6OCHDN6+OoW3yFtX+UtjNvDfZMa42hA08dldh8wr7ZavGva+BvYawRKLZNr4uRNwvEFK
-         h3NZ/As6rJ6lYHnO5o5NPXd5NWXFSrduTnMEBI14HnXiN82Rw/DhG559XDMNO0EdtpDH
-         Tj25siyORWk+sDcTLcD7gyRl1bp8svEVEuHWxrP9AwYXCO/rggRdrukzT9EW6qOKTZO9
-         SuvHM/TVioD64Jb0aIhI3tqkgZGFKWDB7FSUlv3Er+ZAhadFLn0PAnQfwiJjJQ5VAhIb
-         cIzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D0KyMxRH/MSdDpCqeXLz794JFymGnRXmUM0jutYpMxU=;
-        b=cn5ru+Kh8M3p6cKLwivVXuiHG3iQ6SGRzGxYgK8GRe0tw4jSJiQABrS9lh762uXdzr
-         vCdGeENW0Ucj1653zYwwkR6CaNvv8EuASJm1cHNPxfGuDuWMsBxfdyot+SY1GD7OWYjU
-         o6qaykC2SC2g0tgglsuGczhzgqW0mEE/YjUdiK5w8YB6ptPLMQeb6Lcvfror+coQZA3r
-         g1GzjxitzK7tkUSSdk0o4wTwhmhOH0UF1Nsd3nPPRkoo+Xl8MQu06tC/Cza3KDzilOLu
-         q7iLreiO3pr/vW0XlfJuvEWg5MgbquNYDKHGwzwjmy2Ok3ue/GRhjF1mUY1/PTrC4KGT
-         8/Dw==
-X-Gm-Message-State: AOAM5316Vuvpv7GjB4H4XwasoY7BwY4y99537o765nSk+ahKZW0nAV8I
-        XJUuH9F9FSxO1QnQjkOY7OwzdAFz83g3uq1fI3A=
-X-Google-Smtp-Source: ABdhPJyDpa+3z1LUDvQCHnSRFQtrI+vI+s6CU2sMF9n1GsD+jaF9YAfLwJzkOrDUlzc9Sz3rMe1HCFUve6pE5YyV8eg=
-X-Received: by 2002:a25:5b55:: with SMTP id p82mr2513780ybb.510.1617174177319;
- Wed, 31 Mar 2021 00:02:57 -0700 (PDT)
+        id S233936AbhCaHGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 03:06:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233939AbhCaHGL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 03:06:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B81E7619CF;
+        Wed, 31 Mar 2021 07:06:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617174370;
+        bh=GFNu/dhI0J9kZ4WlROA/yJNcmBXvrZW9pxZC4VNia80=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=qUui+xut8hg6f9wsWSBu880h4hFEfvyPAwPVrNpwnDpW/DqkY2pRN4wBRcbRX4X3g
+         M+kO1d+Uv7mL5IxoReSjatf5bphOozwwRkFxNH8o6p6dlRCHOH303WhZGaoKk33vlH
+         suyNfxgtG1wHa2pbxsoptbHKGbQrOnckqcNvwGFZHbvxIiFPeDzurYHz1hQKqvbT8E
+         jk3+1cD5w6VswPfCCXqqSMt7Y7TbgQxj3suzTFiO3zDC2dpR6mhTc4YFhG/Lu78v6I
+         t5jZ6Jq/PibMFJWZtGic816QFMbNvjsml4AJ/vWm+GRAXAvri3fa7IH7C3ajL0O6D+
+         dfWFtrwRwvriw==
+Received: by mail-wr1-f42.google.com with SMTP id j7so18547041wrd.1;
+        Wed, 31 Mar 2021 00:06:09 -0700 (PDT)
+X-Gm-Message-State: AOAM530lDZACSD2JFOeTyGtWrmth3rbuI926yok576g2hi8sS/ksv1v2
+        y8pojzMoDynYHq6aqN7iFj6+iVZTNkSVGLwinfg=
+X-Google-Smtp-Source: ABdhPJxMjRwsTlV9yQLKdib3ebiZrPxtBCuOUuTZnmHXieRvf7BIo9N4IeeP/U55e03M1I5BLMJR9ryipEyfOgo2t3s=
+X-Received: by 2002:a5d:591a:: with SMTP id v26mr1872032wrd.172.1617174368379;
+ Wed, 31 Mar 2021 00:06:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210330223748.399563-1-pctammela@mojatatu.com> <CAADnVQK+n69_uUm6Ac1WgvqM4X0_74nXHwkYxbkWFc1F5hU98Q@mail.gmail.com>
-In-Reply-To: <CAADnVQK+n69_uUm6Ac1WgvqM4X0_74nXHwkYxbkWFc1F5hU98Q@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 31 Mar 2021 00:02:46 -0700
-Message-ID: <CAEf4BzZmBiq_JG5-Y2u9jTZraEtyyuOJYWgKivcKk0WFCzKa8g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] bpf: check flags in 'bpf_ringbuf_discard()'
- and 'bpf_ringbuf_submit()'
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Pedro Tammela <pctammela@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>
+References: <20210331061218.1647-1-ciara.loftus@intel.com>
+In-Reply-To: <20210331061218.1647-1-ciara.loftus@intel.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Date:   Wed, 31 Mar 2021 09:05:56 +0200
+X-Gmail-Original-Message-ID: <CAJ+HfNjsbAA0v48CLOgEw0bj4prsg5ZzP3=iU=QGTFWrAbOAng@mail.gmail.com>
+Message-ID: <CAJ+HfNjsbAA0v48CLOgEw0bj4prsg5ZzP3=iU=QGTFWrAbOAng@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf 0/3] AF_XDP Socket Creation Fixes
+To:     Ciara Loftus <ciara.loftus@intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 4:16 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Wed, 31 Mar 2021 at 08:43, Ciara Loftus <ciara.loftus@intel.com> wrote:
 >
-> On Tue, Mar 30, 2021 at 3:54 PM Pedro Tammela <pctammela@gmail.com> wrote:
-> >
-> >  BPF_CALL_2(bpf_ringbuf_submit, void *, sample, u64, flags)
-> >  {
-> > +       if (unlikely(flags & ~(BPF_RB_NO_WAKEUP | BPF_RB_FORCE_WAKEUP)))
-> > +               return -EINVAL;
-> > +
-> >         bpf_ringbuf_commit(sample, flags, false /* discard */);
-> > +
-> >         return 0;
+> This series fixes some issues around socket creation for AF_XDP.
 >
-> I think ringbuf design was meant for bpf_ringbuf_submit to never fail.
-> If we do flag validation it probably should be done at the verifier time.
+> Patch 1 fixes a potential NULL pointer dereference in
+> xsk_socket__create_shared.
+>
+> Patch 2 ensures that the umem passed to xsk_socket__create(_shared)
+> remains unchanged in event of failure.
+>
+> Patch 3 makes it possible for xsk_socket__create(_shared) to
+> succeed even if the rx and tx XDP rings have already been set up by
+> introducing a new fields to struct xsk_umem which represent the ring
+> setup status for the xsk which shares the fd with the umem.
+>
+> v3->v4:
+> * Reduced nesting in xsk_put_ctx as suggested by Alexei.
+> * Use bools instead of a u8 and flags to represent the
+>   ring setup status as suggested by Bj=C3=B6rn.
+>
 
-Oops, replied on another version already. But yes, BPF verifier relies
-on it succeeding. I don't think we can do flags validation at BPF
-verification time, though, because it is defined as non-const integer
-and we do have valid cases where we dynamically determine whether to
-FORCE_WAKEUP or NO_WAKEUP, based on application-driven criteria (e.g.,
-amount of enqueued data).
+Thanks, Ciara! LGTM!
+
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
+
+
+> v2->v3:
+> * Instead of ignoring the return values of the setsockopt calls, introduc=
+e
+>   a new flag to determine whether or not to call them based on the ring
+>   setup status as suggested by Alexei.
+>
+> v1->v2:
+> * Simplified restoring the _save pointers as suggested by Magnus.
+> * Fixed the condition which determines whether to unmap umem rings
+>  when socket create fails.
+>
+> This series applies on commit 861de02e5f3f2a104eecc5af1d248cb7bf8c5f75
+>
+> Ciara Loftus (3):
+>   libbpf: ensure umem pointer is non-NULL before dereferencing
+>   libbpf: restore umem state after socket create failure
+>   libbpf: only create rx and tx XDP rings when necessary
+>
+>  tools/lib/bpf/xsk.c | 57 +++++++++++++++++++++++++++++----------------
+>  1 file changed, 37 insertions(+), 20 deletions(-)
+>
+> --
+> 2.17.1
+>
