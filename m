@@ -2,108 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D770D350801
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 837B3350804
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:17:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236507AbhCaUQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 16:16:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55128 "EHLO mail.kernel.org"
+        id S236554AbhCaURH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 16:17:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236407AbhCaUQh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236460AbhCaUQh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 16:16:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B0F0D6109E;
-        Wed, 31 Mar 2021 20:16:36 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2C14F610A0;
+        Wed, 31 Mar 2021 20:16:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617221797;
-        bh=1iyHyvtZANCYUZhgCPvwbt2ERLGsnaEHv/GmXGG6nLw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Iwl4j4BnSa6lTtlW5LHZB6JKqdhfeahSMtQ7T6essxGpKb9muUIHXIxwAvs5RtbNg
-         6vx9LgMbCY2IOfwIN94uyMIJYSPHqQflquA/EW8o5EPZsX6vQMUC3ur/gmVrgM2cGg
-         /baO6ggZmD875gzOP0BuPQ73X5/BJ03vhPJ1aVVw1H+RybtayRLvqkISg+yk+Q2W4j
-         Vpbd/jyNvlERbklm01ccMk5V81DLc22xfQJX6tTpRZuCAQp3EWS+m0PsyfLZk+T7V2
-         O09dZvrOp7SiSGFFJnJTLnq0mLsAv3PCFTDKEGO46YHStf1wO5ohnjkW/ZXYP+j7xx
-         5m408sdwE5f9Q==
+        bh=wymT3bUgHQ2B3rPs+Od8GE3omoldf3+OGvS855VdeF0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Dir9AKAHOCKBoBoZUvwZ+mFhgP78zR/AjehN6fKK99ipvQ9nMPHnG3R/ZdT0JY4Xb
+         cQMwslB9cqeLdKXhHyFlK9T/kymDojYIJuyXxjLeFA3OXljqKyiPHeFkIgVUTdTP4k
+         y54AOZZvFZe5fVNXLMsih0siz0T4cNln1mpJS/k30VdmKZMF4crAojNlo3vbQSPHQx
+         nfqkX5g7I0VWAhUH8JC+PJmROEcTpgTck5JHtouAxOgZVAVAGkcdr9xlyvjmaBzdrL
+         Zk558k22tccLDxk2xO2JYe17XoUTvwhKmG9wATZpnuwAcQfMeSjpehboxgUVgbX3gN
+         LDIuaqge5iNnQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net 0/9] mlx5 fixes 2021-03-31
-Date:   Wed, 31 Mar 2021 13:14:15 -0700
-Message-Id: <20210331201424.331095-1-saeed@kernel.org>
+        Ariel Levkovich <lariel@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 1/9] net/mlx5e: Fix mapping of ct_label zero
+Date:   Wed, 31 Mar 2021 13:14:16 -0700
+Message-Id: <20210331201424.331095-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210331201424.331095-1-saeed@kernel.org>
+References: <20210331201424.331095-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Ariel Levkovich <lariel@nvidia.com>
 
-Hi Dave, Jakub,
+ct_label 0 is a default label each flow has and therefore
+there can be rules that match on ct_label=0 without a prior
+rule that set the ct_label to this value.
 
-This series introduces some fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+The ct_label value is not used directly in the HW rules and
+instead it is mapped to some id within a defined range and this
+id is used to set and match the metadata register which carries
+the ct_label.
 
-Thanks,
-Saeed.
+If we have a rule that matches on ct_label=0, the hw rule will
+perform matching on a value that is != 0 because of the mapping
+from label to id. Since the metadata register default value is
+0 and it was never set before to anything else by an action that
+sets the ct_label, there will always be a mismatch between that
+register and the value in the rule.
 
+To support such rule, a forced mapping of ct_label 0 to id=0
+is done so that it will match the metadata register default
+value of 0.
+
+Fixes: 54b154ecfb8c ("net/mlx5e: CT: Map 128 bits labels to 32 bit map ID")
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit 61431a5907fc36d0738e9a547c7e1556349a03e9:
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 36 +++++++++++++++----
+ 1 file changed, 29 insertions(+), 7 deletions(-)
 
-  net: ensure mac header is set in virtio_net_hdr_to_skb() (2021-03-30 17:40:46 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index b2cd29847a37..68e54cc1cd16 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -185,6 +185,28 @@ mlx5_tc_ct_entry_has_nat(struct mlx5_ct_entry *entry)
+ 	return !!(entry->tuple_nat_node.next);
+ }
+ 
++static int
++mlx5_get_label_mapping(struct mlx5_tc_ct_priv *ct_priv,
++		       u32 *labels, u32 *id)
++{
++	if (!memchr_inv(labels, 0, sizeof(u32) * 4)) {
++		*id = 0;
++		return 0;
++	}
++
++	if (mapping_add(ct_priv->labels_mapping, labels, id))
++		return -EOPNOTSUPP;
++
++	return 0;
++}
++
++static void
++mlx5_put_label_mapping(struct mlx5_tc_ct_priv *ct_priv, u32 id)
++{
++	if (id)
++		mapping_remove(ct_priv->labels_mapping, id);
++}
++
+ static int
+ mlx5_tc_ct_rule_to_tuple(struct mlx5_ct_tuple *tuple, struct flow_rule *rule)
+ {
+@@ -436,7 +458,7 @@ mlx5_tc_ct_entry_del_rule(struct mlx5_tc_ct_priv *ct_priv,
+ 	mlx5_tc_rule_delete(netdev_priv(ct_priv->netdev), zone_rule->rule, attr);
+ 	mlx5e_mod_hdr_detach(ct_priv->dev,
+ 			     ct_priv->mod_hdr_tbl, zone_rule->mh);
+-	mapping_remove(ct_priv->labels_mapping, attr->ct_attr.ct_labels_id);
++	mlx5_put_label_mapping(ct_priv, attr->ct_attr.ct_labels_id);
+ 	kfree(attr);
+ }
+ 
+@@ -639,8 +661,8 @@ mlx5_tc_ct_entry_create_mod_hdr(struct mlx5_tc_ct_priv *ct_priv,
+ 	if (!meta)
+ 		return -EOPNOTSUPP;
+ 
+-	err = mapping_add(ct_priv->labels_mapping, meta->ct_metadata.labels,
+-			  &attr->ct_attr.ct_labels_id);
++	err = mlx5_get_label_mapping(ct_priv, meta->ct_metadata.labels,
++				     &attr->ct_attr.ct_labels_id);
+ 	if (err)
+ 		return -EOPNOTSUPP;
+ 	if (nat) {
+@@ -677,7 +699,7 @@ mlx5_tc_ct_entry_create_mod_hdr(struct mlx5_tc_ct_priv *ct_priv,
+ 
+ err_mapping:
+ 	dealloc_mod_hdr_actions(&mod_acts);
+-	mapping_remove(ct_priv->labels_mapping, attr->ct_attr.ct_labels_id);
++	mlx5_put_label_mapping(ct_priv, attr->ct_attr.ct_labels_id);
+ 	return err;
+ }
+ 
+@@ -745,7 +767,7 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ err_rule:
+ 	mlx5e_mod_hdr_detach(ct_priv->dev,
+ 			     ct_priv->mod_hdr_tbl, zone_rule->mh);
+-	mapping_remove(ct_priv->labels_mapping, attr->ct_attr.ct_labels_id);
++	mlx5_put_label_mapping(ct_priv, attr->ct_attr.ct_labels_id);
+ err_mod_hdr:
+ 	kfree(attr);
+ err_attr:
+@@ -1197,7 +1219,7 @@ void mlx5_tc_ct_match_del(struct mlx5_tc_ct_priv *priv, struct mlx5_ct_attr *ct_
+ 	if (!priv || !ct_attr->ct_labels_id)
+ 		return;
+ 
+-	mapping_remove(priv->labels_mapping, ct_attr->ct_labels_id);
++	mlx5_put_label_mapping(priv, ct_attr->ct_labels_id);
+ }
+ 
+ int
+@@ -1280,7 +1302,7 @@ mlx5_tc_ct_match_add(struct mlx5_tc_ct_priv *priv,
+ 		ct_labels[1] = key->ct_labels[1] & mask->ct_labels[1];
+ 		ct_labels[2] = key->ct_labels[2] & mask->ct_labels[2];
+ 		ct_labels[3] = key->ct_labels[3] & mask->ct_labels[3];
+-		if (mapping_add(priv->labels_mapping, ct_labels, &ct_attr->ct_labels_id))
++		if (mlx5_get_label_mapping(priv, ct_labels, &ct_attr->ct_labels_id))
+ 			return -EOPNOTSUPP;
+ 		mlx5e_tc_match_to_reg_match(spec, LABELS_TO_REG, ct_attr->ct_labels_id,
+ 					    MLX5_CT_LABELS_MASK);
+-- 
+2.30.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-03-31
-
-for you to fetch changes up to 3ff3874fa0b261ef74f2bfb008a82ab1601c11eb:
-
-  net/mlx5e: Guarantee room for XSK wakeup NOP on async ICOSQ (2021-03-31 13:12:24 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2021-03-31
-
-----------------------------------------------------------------
-Ariel Levkovich (1):
-      net/mlx5e: Fix mapping of ct_label zero
-
-Aya Levin (1):
-      net/mlx5e: Fix ethtool indication of connector type
-
-Daniel Jurgens (1):
-      net/mlx5: Don't request more than supported EQs
-
-Dima Chumak (1):
-      net/mlx5e: Consider geneve_opts for encap contexts
-
-Maor Dickman (2):
-      net/mlx5: Delete auxiliary bus driver eth-rep first
-      net/mlx5: E-switch, Create vport miss group only if src rewrite is supported
-
-Tariq Toukan (3):
-      net/mlx5e: kTLS, Fix TX counters atomicity
-      net/mlx5e: kTLS, Fix RX counters atomicity
-      net/mlx5e: Guarantee room for XSK wakeup NOP on async ICOSQ
-
- drivers/net/ethernet/mellanox/mlx5/core/dev.c      |  4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 36 +++++++++---
- .../net/ethernet/mellanox/mlx5/core/en/tc_tun.h    | 10 ++++
- .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  | 23 +++-----
- .../ethernet/mellanox/mlx5/core/en/tc_tun_geneve.c | 29 +++++++++
- .../ethernet/mellanox/mlx5/core/en/tc_tun_gre.c    |  1 +
- .../mellanox/mlx5/core/en/tc_tun_mplsoudp.c        |  1 +
- .../ethernet/mellanox/mlx5/core/en/tc_tun_vxlan.c  |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  6 ++
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 40 ++++++-------
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |  5 +-
- .../net/ethernet/mellanox/mlx5/core/en_accel/tls.h |  3 +
- .../mellanox/mlx5/core/en_accel/tls_stats.c        | 49 ++++++++++------
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   | 22 +++----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 21 ++++++-
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 10 ----
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  6 --
- drivers/net/ethernet/mellanox/mlx5/core/eq.c       | 13 ++++-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 68 +++++++++++++---------
- 20 files changed, 227 insertions(+), 122 deletions(-)
