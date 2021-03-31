@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2299350A80
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 01:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7A9350A84
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 01:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbhCaXHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 19:07:43 -0400
-Received: from mga14.intel.com ([192.55.52.115]:62994 "EHLO mga14.intel.com"
+        id S232672AbhCaXHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 19:07:45 -0400
+Received: from mga14.intel.com ([192.55.52.115]:62991 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230073AbhCaXHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230248AbhCaXHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 19:07:25 -0400
-IronPort-SDR: 7DD832vAIitp6NUARaFzmiwSIOU93bizFUn8xWcnibjAEidie/l7DhV4nuVm8TsGUvatRcQNZF
- Fa0+tzQkF3cA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191587973"
+IronPort-SDR: RSGabUZFCU7TTEsryNdcMjD/Xva5sgGe6uKfPmTN18DQuqJB3QQ69I4d4vW+/x8SxKwoL3/Awa
+ SRtSy2QJNFRw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191587975"
 X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="191587973"
+   d="scan'208";a="191587975"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 16:07:23 -0700
-IronPort-SDR: ZHggBYG+7KgSpNHlzAvrQKDwzrz9OJKzDTg1AeVo/DATvtJEKnGa2gR6PIy9nMJEjpicRM0CFi
- 6+kTdQKwjGfw==
+IronPort-SDR: 63JHv5usOHarkt3KSZavAIDjMxGVTBE92NZqXmL9YIZgcnVCNZXaldPXGKitSzS300sPH8brdo
+ 6C1l9Vgo3NkQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="610680097"
+   d="scan'208";a="610680103"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2021 16:07:23 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Dan Nowlin <dan.nowlin@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 03/15] ice: Update to use package info from ice segment
-Date:   Wed, 31 Mar 2021 16:08:46 -0700
-Message-Id: <20210331230858.782492-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 04/15] ice: handle increasing Tx or Rx ring sizes
+Date:   Wed, 31 Mar 2021 16:08:47 -0700
+Message-Id: <20210331230858.782492-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210331230858.782492-1-anthony.l.nguyen@intel.com>
 References: <20210331230858.782492-1-anthony.l.nguyen@intel.com>
@@ -42,145 +43,210 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Nowlin <dan.nowlin@intel.com>
+From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
 
-There are two package versions in the package binary. Today, these two
-version numbers are the same. However, in the future that may change.
+There is an issue when the Tx or Rx ring size increases using
+'ethtool -L ...' where the new rings don't get the correct ITR
+values because when we rebuild the VSI we don't know that some
+of the rings may be new.
 
-Update code to use the package info from the ice segment metadata
-section, which is the package information that is actually downloaded to
-the firmware during the download package process.
+Fix this by looking at the original number of rings and
+determining if the rings in ice_vsi_rebuild_set_coalesce()
+were not present in the original rings received in
+ice_vsi_rebuild_get_coalesce().
 
-Signed-off-by: Dan Nowlin <dan.nowlin@intel.com>
+Also change the code to return an error if we can't allocate
+memory for the coalesce data in ice_vsi_rebuild().
+
+Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  1 +
- .../net/ethernet/intel/ice/ice_flex_pipe.c    | 40 ++++++++++---------
- .../net/ethernet/intel/ice/ice_flex_type.h    |  9 +++++
- drivers/net/ethernet/intel/ice/ice_type.h     |  8 ++--
- 4 files changed, 36 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c  | 123 ++++++++++++++++------
+ drivers/net/ethernet/intel/ice/ice_txrx.h |   2 +
+ 2 files changed, 92 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 80186589153b..5108046476f1 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1790,6 +1790,7 @@ struct ice_pkg_ver {
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index c345432fac72..0763696c3d08 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2866,38 +2866,46 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ }
+ 
+ /**
+- * ice_vsi_rebuild_update_coalesce - set coalesce for a q_vector
++ * ice_vsi_rebuild_update_coalesce_intrl - set interrupt rate limit for a q_vector
+  * @q_vector: pointer to q_vector which is being updated
+- * @coalesce: pointer to array of struct with stored coalesce
++ * @stored_intrl_setting: original INTRL setting
+  *
+  * Set coalesce param in q_vector and update these parameters in HW.
+  */
+ static void
+-ice_vsi_rebuild_update_coalesce(struct ice_q_vector *q_vector,
+-				struct ice_coalesce_stored *coalesce)
++ice_vsi_rebuild_update_coalesce_intrl(struct ice_q_vector *q_vector,
++				      u16 stored_intrl_setting)
+ {
+-	struct ice_ring_container *rx_rc = &q_vector->rx;
+-	struct ice_ring_container *tx_rc = &q_vector->tx;
+ 	struct ice_hw *hw = &q_vector->vsi->back->hw;
+ 
+-	tx_rc->itr_setting = coalesce->itr_tx;
+-	rx_rc->itr_setting = coalesce->itr_rx;
+-
+-	/* dynamic ITR values will be updated during Tx/Rx */
+-	if (!ITR_IS_DYNAMIC(tx_rc->itr_setting))
+-		wr32(hw, GLINT_ITR(tx_rc->itr_idx, q_vector->reg_idx),
+-		     ITR_REG_ALIGN(tx_rc->itr_setting) >>
+-		     ICE_ITR_GRAN_S);
+-	if (!ITR_IS_DYNAMIC(rx_rc->itr_setting))
+-		wr32(hw, GLINT_ITR(rx_rc->itr_idx, q_vector->reg_idx),
+-		     ITR_REG_ALIGN(rx_rc->itr_setting) >>
+-		     ICE_ITR_GRAN_S);
+-
+-	q_vector->intrl = coalesce->intrl;
++	q_vector->intrl = stored_intrl_setting;
+ 	wr32(hw, GLINT_RATE(q_vector->reg_idx),
+ 	     ice_intrl_usec_to_reg(q_vector->intrl, hw->intrl_gran));
+ }
+ 
++/**
++ * ice_vsi_rebuild_update_coalesce_itr - set coalesce for a q_vector
++ * @q_vector: pointer to q_vector which is being updated
++ * @rc: pointer to ring container
++ * @stored_itr_setting: original ITR setting
++ *
++ * Set coalesce param in q_vector and update these parameters in HW.
++ */
++static void
++ice_vsi_rebuild_update_coalesce_itr(struct ice_q_vector *q_vector,
++				    struct ice_ring_container *rc,
++				    u16 stored_itr_setting)
++{
++	struct ice_hw *hw = &q_vector->vsi->back->hw;
++
++	rc->itr_setting = stored_itr_setting;
++
++	/* dynamic ITR values will be updated during Tx/Rx */
++	if (!ITR_IS_DYNAMIC(rc->itr_setting))
++		wr32(hw, GLINT_ITR(rc->itr_idx, q_vector->reg_idx),
++		     ITR_REG_ALIGN(rc->itr_setting) >> ICE_ITR_GRAN_S);
++}
++
+ /**
+  * ice_vsi_rebuild_get_coalesce - get coalesce from all q_vectors
+  * @vsi: VSI connected with q_vectors
+@@ -2917,6 +2925,11 @@ ice_vsi_rebuild_get_coalesce(struct ice_vsi *vsi,
+ 		coalesce[i].itr_tx = q_vector->tx.itr_setting;
+ 		coalesce[i].itr_rx = q_vector->rx.itr_setting;
+ 		coalesce[i].intrl = q_vector->intrl;
++
++		if (i < vsi->num_txq)
++			coalesce[i].tx_valid = true;
++		if (i < vsi->num_rxq)
++			coalesce[i].rx_valid = true;
+ 	}
+ 
+ 	return vsi->num_q_vectors;
+@@ -2941,17 +2954,59 @@ ice_vsi_rebuild_set_coalesce(struct ice_vsi *vsi,
+ 	if ((size && !coalesce) || !vsi)
+ 		return;
+ 
+-	for (i = 0; i < size && i < vsi->num_q_vectors; i++)
+-		ice_vsi_rebuild_update_coalesce(vsi->q_vectors[i],
+-						&coalesce[i]);
+-
+-	/* number of q_vectors increased, so assume coalesce settings were
+-	 * changed globally (i.e. ethtool -C eth0 instead of per-queue) and use
+-	 * the previous settings from q_vector 0 for all of the new q_vectors
++	/* There are a couple of cases that have to be handled here:
++	 *   1. The case where the number of queue vectors stays the same, but
++	 *      the number of Tx or Rx rings changes (the first for loop)
++	 *   2. The case where the number of queue vectors increased (the
++	 *      second for loop)
+ 	 */
+-	for (; i < vsi->num_q_vectors; i++)
+-		ice_vsi_rebuild_update_coalesce(vsi->q_vectors[i],
+-						&coalesce[0]);
++	for (i = 0; i < size && i < vsi->num_q_vectors; i++) {
++		/* There are 2 cases to handle here and they are the same for
++		 * both Tx and Rx:
++		 *   if the entry was valid previously (coalesce[i].[tr]x_valid
++		 *   and the loop variable is less than the number of rings
++		 *   allocated, then write the previous values
++		 *
++		 *   if the entry was not valid previously, but the number of
++		 *   rings is less than are allocated (this means the number of
++		 *   rings increased from previously), then write out the
++		 *   values in the first element
++		 */
++		if (i < vsi->alloc_rxq && coalesce[i].rx_valid)
++			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
++							    &vsi->q_vectors[i]->rx,
++							    coalesce[i].itr_rx);
++		else if (i < vsi->alloc_rxq)
++			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
++							    &vsi->q_vectors[i]->rx,
++							    coalesce[0].itr_rx);
++
++		if (i < vsi->alloc_txq && coalesce[i].tx_valid)
++			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
++							    &vsi->q_vectors[i]->tx,
++							    coalesce[i].itr_tx);
++		else if (i < vsi->alloc_txq)
++			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
++							    &vsi->q_vectors[i]->tx,
++							    coalesce[0].itr_tx);
++
++		ice_vsi_rebuild_update_coalesce_intrl(vsi->q_vectors[i],
++						      coalesce[i].intrl);
++	}
++
++	/* the number of queue vectors increased so write whatever is in
++	 * the first element
++	 */
++	for (; i < vsi->num_q_vectors; i++) {
++		ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
++						    &vsi->q_vectors[i]->tx,
++						    coalesce[0].itr_tx);
++		ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
++						    &vsi->q_vectors[i]->rx,
++						    coalesce[0].itr_rx);
++		ice_vsi_rebuild_update_coalesce_intrl(vsi->q_vectors[i],
++						      coalesce[0].intrl);
++	}
+ }
+ 
+ /**
+@@ -2980,9 +3035,11 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
+ 
+ 	coalesce = kcalloc(vsi->num_q_vectors,
+ 			   sizeof(struct ice_coalesce_stored), GFP_KERNEL);
+-	if (coalesce)
+-		prev_num_q_vectors = ice_vsi_rebuild_get_coalesce(vsi,
+-								  coalesce);
++	if (!coalesce)
++		return -ENOMEM;
++
++	prev_num_q_vectors = ice_vsi_rebuild_get_coalesce(vsi, coalesce);
++
+ 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
+ 	ice_vsi_free_q_vectors(vsi);
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+index 40e34ede6e58..ffe0d271dec7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.h
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+@@ -357,6 +357,8 @@ struct ice_coalesce_stored {
+ 	u16 itr_tx;
+ 	u16 itr_rx;
+ 	u8 intrl;
++	u8 tx_valid;
++	u8 rx_valid;
  };
  
- #define ICE_PKG_NAME_SIZE	32
-+#define ICE_SEG_ID_SIZE		28
- #define ICE_SEG_NAME_SIZE	28
- 
- struct ice_aqc_get_pkg_info {
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-index afe77f7a3199..4b83960876f4 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
-@@ -1063,32 +1063,36 @@ ice_download_pkg(struct ice_hw *hw, struct ice_seg *ice_seg)
- static enum ice_status
- ice_init_pkg_info(struct ice_hw *hw, struct ice_pkg_hdr *pkg_hdr)
- {
--	struct ice_global_metadata_seg *meta_seg;
- 	struct ice_generic_seg_hdr *seg_hdr;
- 
- 	if (!pkg_hdr)
- 		return ICE_ERR_PARAM;
- 
--	meta_seg = (struct ice_global_metadata_seg *)
--		   ice_find_seg_in_pkg(hw, SEGMENT_TYPE_METADATA, pkg_hdr);
--	if (meta_seg) {
--		hw->pkg_ver = meta_seg->pkg_ver;
--		memcpy(hw->pkg_name, meta_seg->pkg_name, sizeof(hw->pkg_name));
-+	seg_hdr = ice_find_seg_in_pkg(hw, SEGMENT_TYPE_ICE, pkg_hdr);
-+	if (seg_hdr) {
-+		struct ice_meta_sect *meta;
-+		struct ice_pkg_enum state;
-+
-+		memset(&state, 0, sizeof(state));
-+
-+		/* Get package information from the Metadata Section */
-+		meta = ice_pkg_enum_section((struct ice_seg *)seg_hdr, &state,
-+					    ICE_SID_METADATA);
-+		if (!meta) {
-+			ice_debug(hw, ICE_DBG_INIT, "Did not find ice metadata section in package\n");
-+			return ICE_ERR_CFG;
-+		}
-+
-+		hw->pkg_ver = meta->ver;
-+		memcpy(hw->pkg_name, meta->name, sizeof(meta->name));
- 
- 		ice_debug(hw, ICE_DBG_PKG, "Pkg: %d.%d.%d.%d, %s\n",
--			  meta_seg->pkg_ver.major, meta_seg->pkg_ver.minor,
--			  meta_seg->pkg_ver.update, meta_seg->pkg_ver.draft,
--			  meta_seg->pkg_name);
--	} else {
--		ice_debug(hw, ICE_DBG_INIT, "Did not find metadata segment in driver package\n");
--		return ICE_ERR_CFG;
--	}
-+			  meta->ver.major, meta->ver.minor, meta->ver.update,
-+			  meta->ver.draft, meta->name);
- 
--	seg_hdr = ice_find_seg_in_pkg(hw, SEGMENT_TYPE_ICE, pkg_hdr);
--	if (seg_hdr) {
--		hw->ice_pkg_ver = seg_hdr->seg_format_ver;
--		memcpy(hw->ice_pkg_name, seg_hdr->seg_id,
--		       sizeof(hw->ice_pkg_name));
-+		hw->ice_seg_fmt_ver = seg_hdr->seg_format_ver;
-+		memcpy(hw->ice_seg_id, seg_hdr->seg_id,
-+		       sizeof(hw->ice_seg_id));
- 
- 		ice_debug(hw, ICE_DBG_PKG, "Ice Seg: %d.%d.%d.%d, %s\n",
- 			  seg_hdr->seg_format_ver.major,
-diff --git a/drivers/net/ethernet/intel/ice/ice_flex_type.h b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-index abc156ce9d8c..9806183920de 100644
---- a/drivers/net/ethernet/intel/ice/ice_flex_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_flex_type.h
-@@ -109,6 +109,7 @@ struct ice_buf_hdr {
- 	(ent_sz))
- 
- /* ice package section IDs */
-+#define ICE_SID_METADATA		1
- #define ICE_SID_XLT0_SW			10
- #define ICE_SID_XLT_KEY_BUILDER_SW	11
- #define ICE_SID_XLT1_SW			12
-@@ -117,6 +118,14 @@ struct ice_buf_hdr {
- #define ICE_SID_PROFID_REDIR_SW		15
- #define ICE_SID_FLD_VEC_SW		16
- #define ICE_SID_CDID_KEY_BUILDER_SW	17
-+
-+struct ice_meta_sect {
-+	struct ice_pkg_ver ver;
-+#define ICE_META_SECT_NAME_SIZE	28
-+	char name[ICE_META_SECT_NAME_SIZE];
-+	__le32 track_id;
-+};
-+
- #define ICE_SID_CDID_REDIR_SW		18
- 
- #define ICE_SID_XLT0_ACL		20
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 2893143d9e62..ba157b383127 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -720,13 +720,13 @@ struct ice_hw {
- 
- 	enum ice_aq_err pkg_dwnld_status;
- 
--	/* Driver's package ver - (from the Metadata seg) */
-+	/* Driver's package ver - (from the Ice Metadata section) */
- 	struct ice_pkg_ver pkg_ver;
- 	u8 pkg_name[ICE_PKG_NAME_SIZE];
- 
--	/* Driver's Ice package version (from the Ice seg) */
--	struct ice_pkg_ver ice_pkg_ver;
--	u8 ice_pkg_name[ICE_PKG_NAME_SIZE];
-+	/* Driver's Ice segment format version and ID (from the Ice seg) */
-+	struct ice_pkg_ver ice_seg_fmt_ver;
-+	u8 ice_seg_id[ICE_SEG_ID_SIZE];
- 
- 	/* Pointer to the ice segment */
- 	struct ice_seg *seg;
+ /* iterator for handling rings in ring container */
 -- 
 2.26.2
 
