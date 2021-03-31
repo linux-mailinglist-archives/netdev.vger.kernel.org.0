@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE6E34F8ED
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4385E34F8F0
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233814AbhCaGoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 02:44:03 -0400
+        id S233748AbhCaGoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 02:44:04 -0400
 Received: from mga05.intel.com ([192.55.52.43]:14630 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233693AbhCaGn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 02:43:58 -0400
-IronPort-SDR: rF0uF3r4GYH9CAKHdpfoUG7aCaReqt+bSXwaGbw8v45wAbxMhEQf0V4zHwHPbDqtrX9Cc5wg9J
- BiBsq4KvO5ww==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="277111325"
+        id S233762AbhCaGoA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 02:44:00 -0400
+IronPort-SDR: hUWBzC0m94HsaCISq2Z3QbiXF4PwJScXUSl+1q4ua9Gzst2YFNhhccoqIn6kKNnJjc0FGqxYOU
+ E6An2xjKdbVg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="277111329"
 X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="277111325"
+   d="scan'208";a="277111329"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 23:43:57 -0700
-IronPort-SDR: jXuYTlROpZ8rTLnlx2ka6f4SNEfUpzvyKQQgI8DhY5W4+dSbaf93PB7CcwDjVscTD1cPeh5bvT
- VQrhhdJyTJkg==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 23:44:00 -0700
+IronPort-SDR: bKOC44s4jhyH2chD84ZfUoIINZurrqBfSnDuwF678HXuBF6UJmdlpUTviVYfngw5UWNNgLuqkL
+ WyK+PAgqrvQg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="445523139"
+   d="scan'208";a="445523153"
 Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Mar 2021 23:43:56 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 30 Mar 2021 23:43:57 -0700
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, bjorn@kernel.org,
         alexei.starovoitov@gmail.com
 Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH v4 bpf 0/3] AF_XDP Socket Creation Fixes
-Date:   Wed, 31 Mar 2021 06:12:15 +0000
-Message-Id: <20210331061218.1647-1-ciara.loftus@intel.com>
+Subject: [PATCH v4 bpf 1/3] libbpf: ensure umem pointer is non-NULL before dereferencing
+Date:   Wed, 31 Mar 2021 06:12:16 +0000
+Message-Id: <20210331061218.1647-2-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210331061218.1647-1-ciara.loftus@intel.com>
+References: <20210331061218.1647-1-ciara.loftus@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -41,44 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series fixes some issues around socket creation for AF_XDP.
+Calls to xsk_socket__create dereference the umem to access the
+fill_save and comp_save pointers. Make sure the umem is non-NULL
+before doing this.
 
-Patch 1 fixes a potential NULL pointer dereference in
-xsk_socket__create_shared.
+Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
 
-Patch 2 ensures that the umem passed to xsk_socket__create(_shared)
-remains unchanged in event of failure.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ tools/lib/bpf/xsk.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Patch 3 makes it possible for xsk_socket__create(_shared) to
-succeed even if the rx and tx XDP rings have already been set up by
-introducing a new fields to struct xsk_umem which represent the ring
-setup status for the xsk which shares the fd with the umem.
-
-v3->v4:
-* Reduced nesting in xsk_put_ctx as suggested by Alexei.
-* Use bools instead of a u8 and flags to represent the
-  ring setup status as suggested by Björn.
-
-v2->v3:
-* Instead of ignoring the return values of the setsockopt calls, introduce
-  a new flag to determine whether or not to call them based on the ring
-  setup status as suggested by Alexei.
-
-v1->v2:
-* Simplified restoring the _save pointers as suggested by Magnus.
-* Fixed the condition which determines whether to unmap umem rings
- when socket create fails.
-
-This series applies on commit 861de02e5f3f2a104eecc5af1d248cb7bf8c5f75
-
-Ciara Loftus (3):
-  libbpf: ensure umem pointer is non-NULL before dereferencing
-  libbpf: restore umem state after socket create failure
-  libbpf: only create rx and tx XDP rings when necessary
-
- tools/lib/bpf/xsk.c | 57 +++++++++++++++++++++++++++++----------------
- 1 file changed, 37 insertions(+), 20 deletions(-)
-
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 526fc35c0b23..443b0cfb45e8 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -1019,6 +1019,9 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 		       struct xsk_ring_cons *rx, struct xsk_ring_prod *tx,
+ 		       const struct xsk_socket_config *usr_config)
+ {
++	if (!umem)
++		return -EFAULT;
++
+ 	return xsk_socket__create_shared(xsk_ptr, ifname, queue_id, umem,
+ 					 rx, tx, umem->fill_save,
+ 					 umem->comp_save, usr_config);
 -- 
 2.17.1
 
