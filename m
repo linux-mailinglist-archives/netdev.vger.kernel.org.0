@@ -2,91 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 768B0350A26
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F809350A2F
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232956AbhCaWU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 18:20:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50190 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230309AbhCaWUS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 18:20:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7E53C60FEF;
-        Wed, 31 Mar 2021 22:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617229218;
-        bh=XR2GhFJDG0uscdht9bNZ0OChS0oMBvs3rgKRpgNmwjI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ldguJ9DKRH0UlysgAzc6tCCzef7qbCNBs/k1+72pIW9T/jdJZUhM5QJPpTkMsC67Y
-         OPL3TsiIzve4vRyD5rIBjmQMhBuFT/RbNxQWOnjnzMxxoocRQLX5qbWLC/8KoHMIt+
-         scIeFQf9ww8IVgeIgEHtb4TXM8y5FOkktOc5CwvJzUNV0vlY8txdRudG0UDOJhN2AR
-         mK/ClLLBhb8mZj+gcGQsbuYn9dQLZVlnGPmlew04VH2yM42kOzQkfrvfEiGuh07dC6
-         dYlyEWnoWpZWxC6x9eYo4bc3o6V5PakTYzz+bQ9x/xXU684Xwc/JauI0pra/924YVW
-         gE7CQ0AD/shiw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7518060727;
-        Wed, 31 Mar 2021 22:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232001AbhCaW0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 18:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230239AbhCaW0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 18:26:18 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A807C061574
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 15:26:17 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id m7so286128pgj.8
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 15:26:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nnNBkMWu/3QbO3vZ8yjEgkaAeNqZ0CA+Kse5f3Dod70=;
+        b=VrO0s2YqBtWHWw8bJik3cg2s+HIG6e7UdCLpSSiHg4+Xa/+T+Bm7WIE9bjMhTfPBxJ
+         ESW+H914tM8qzSZ3WbdiCN2uEdA9xIhXOLMvXEG/p0lB6B/bW/ZI9US0kxhKSAaPX0f7
+         NwS0SF71utPrVxLLCybWgqQp2gP+8rQaCDq37AcLMXTSAvgirffz5QvEwumjNnxHKUyp
+         /uyNi/FL/93p7R1Bi3Th8JL1BC8gz94KJgpOITqOpqalPW2ffRBVNG8ixtHunjEoxOVw
+         wmYJ34yltjUNunCW/McK6M6KIUHs9IpvbVGul2oErf8mbgbEi5bvk9JBs9NlWZeVoqKp
+         zyPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nnNBkMWu/3QbO3vZ8yjEgkaAeNqZ0CA+Kse5f3Dod70=;
+        b=G4fLOi+oQ4VKCXnjOkOItZuLdT3q8mzrfUw+r8IXKuoGhPVpfmZPUGjNHYcF3EQq3X
+         7VB5Liqf1J+QELeP3ttBOwHYoafGTqE86SyQCz7c48UNOWWFc5hc4bMRyQaECfo8hfcb
+         bwJX6iyiadGFKO3DMxAl2Q2pbD+eV0J2aB33vQGyF5lGXMKNRdHrO50sYIGgyzGIvs+6
+         LQAOSLjRBl7CFfMIDx2PDWmDtcXGxsLvJI6yloh2STpAD7FGSbW3hoWLComQj34hmtu9
+         vZ+2UtMff8FXZjVItKXdOmYOkwSMc/F5t0xOy4ItqWSSQk6SbgDMOzSFqawCbUuRYQiz
+         GX4Q==
+X-Gm-Message-State: AOAM530Teoy+R/FmqU/NTlrbHVzEtJ655Ca5OaKnFS8cjvjfR6NpGL/M
+        YLJx60ri+HztFTmuGJcq1QgP/h8wxKWMBg==
+X-Google-Smtp-Source: ABdhPJzdp/Sf3lw/SSuBSjEN1AS4dbOSMFbY8jIHtTosX6p/V1BxW5+QTsCRMjLEJmvXqf/HF5O3Kw==
+X-Received: by 2002:a62:2a07:0:b029:214:fd95:7f7 with SMTP id q7-20020a622a070000b0290214fd9507f7mr4926260pfq.60.1617229576740;
+        Wed, 31 Mar 2021 15:26:16 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id z8sm3209309pjd.0.2021.03.31.15.26.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 15:26:16 -0700 (PDT)
+Date:   Wed, 31 Mar 2021 15:26:02 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Hongren Zheng <i@zenithal.me>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] iptoken: Add doc on the conditions of iptoken
+Message-ID: <20210331152602.50cc4a79@hermes.local>
+In-Reply-To: <YF80x4bBaXpS4s/W@Sun>
+References: <YF80x4bBaXpS4s/W@Sun>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/9] XDP for NXP ENETC
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161722921847.2890.11454275035323776176.git-patchwork-notify@kernel.org>
-Date:   Wed, 31 Mar 2021 22:20:18 +0000
-References: <20210331200857.3274425-1-olteanv@gmail.com>
-In-Reply-To: <20210331200857.3274425-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, alexander.duyck@gmail.com,
-        ioana.ciornei@nxp.com, alexandru.marginean@nxp.com,
-        claudiu.manoil@nxp.com, ilias.apalodimas@linaro.org,
-        vladimir.oltean@nxp.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, 27 Mar 2021 21:36:07 +0800
+Hongren Zheng <i@zenithal.me> wrote:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 31 Mar 2021 23:08:48 +0300 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> `ip token set suffix dev interface' may be unsuccessful
+> with only the error 'RTNETLINK answers: Invalid argument'
+> prompted. For users this is mysterious and hard to debug.
+> Hence a more user-friendly prompt is added.
 > 
-> This series adds support to the enetc driver for the basic XDP primitives.
-> The ENETC is a network controller found inside the NXP LS1028A SoC,
-> which is a dual-core Cortex A72 device for industrial networking,
-> with the CPUs clocked at up to 1.3 GHz. On this platform, there are 4
-> ENETC ports and a 6-port embedded DSA switch, in a topology that looks
-> like this:
+> This commit adds doc for conditions for setting the token and
+> making the token take effect. For the former one, conditions
+> in the function 'inet6_set_iftoken' of 'net/ipv6/addrconf.c'
+> of the Linux kernel code is documented.
 > 
-> [...]
+> For the latter one, conditions in the function 'addrconf_prefix_rcv'
+> of 'net/ipv6/addrconf.c' of the Linux kernel code is docuemnted.
+> 
+> Signed-off-by: Hongren Zheng <i@zenithal.me>
+> ---
+>  ip/iptoken.c        |  4 +++-
+>  man/man8/ip-token.8 | 24 ++++++++++++++++++++++++
+>  2 files changed, 27 insertions(+), 1 deletion(-)
+> 
+> diff --git a/ip/iptoken.c b/ip/iptoken.c
+> index 9f356890..d56fd68d 100644
+> --- a/ip/iptoken.c
+> +++ b/ip/iptoken.c
+> @@ -177,8 +177,10 @@ static int iptoken_set(int argc, char **argv, bool delete)
+>  	addattr_nest_end(&req.n, afs6);
+>  	addattr_nest_end(&req.n, afs);
+>  
+> -	if (rtnl_talk(&rth, &req.n, NULL) < 0)
+> +	if (rtnl_talk(&rth, &req.n, NULL) < 0) {
+> +		fprintf(stderr, "Conditions not met: 'man ip-token' for more info\n");
+>  		return -2;
+> +	}
+>  
+>  	return 0;
+>  }
+> diff --git a/man/man8/ip-token.8 b/man/man8/ip-token.8
+> index 6505b8c5..ac64eb66 100644
+> --- a/man/man8/ip-token.8
+> +++ b/man/man8/ip-token.8
+> @@ -67,6 +67,30 @@ must be left out.
+>  list all tokenized interface identifiers for the networking interfaces from
+>  the kernel.
+>  
+> +.SH "NOTES"
+> +Several conditions should be met before setting the token for an interface.
+> +.RS
+> +.IP A
+> +\- The interface is not a loopback device.
+> +.IP B
+> +\- The interface does not have NOARP flag.
+> +.IP C
+> +\- The interface accepts router advertisement (RA). To be more specific,
+> +net.ipv6.conf.interface.accept_ra=1,
+> +and when net.ipv6.conf.interface.forwarding=1,
+> +net.ipv6.conf.interface.accept_ra=2.
+> +.RE
+> +
+> +For the token to take effect, several conditions should be met.
+> +.RS
+> +.IP A
+> +\- The interface has autoconf flag turned on. To be more specific, net.ipv6.conf.interface.autoconf=1
+> +.IP B
+> +\- The router advertisement (RA) has autonomous address-configuration flag turned on.
+> +.IP C
+> +\- The length of the prefix in the router advertisement (RA) is 64.
+> +.RE
+> +
+>  .SH SEE ALSO
+>  .br
+>  .BR ip (8)
 
-Here is the summary with links:
-  - [net-next,1/9] net: enetc: consume the error RX buffer descriptors in a dedicated function
-    https://git.kernel.org/netdev/net-next/c/2fa423f5f0c6
-  - [net-next,2/9] net: enetc: move skb creation into enetc_build_skb
-    https://git.kernel.org/netdev/net-next/c/a800abd3ecb9
-  - [net-next,3/9] net: enetc: add a dedicated is_eof bit in the TX software BD
-    https://git.kernel.org/netdev/net-next/c/d504498d2eb3
-  - [net-next,4/9] net: enetc: clean the TX software BD on the TX confirmation path
-    https://git.kernel.org/netdev/net-next/c/1ee8d6f3bebb
-  - [net-next,5/9] net: enetc: move up enetc_reuse_page and enetc_page_reusable
-    https://git.kernel.org/netdev/net-next/c/65d0cbb414ce
-  - [net-next,6/9] net: enetc: add support for XDP_DROP and XDP_PASS
-    https://git.kernel.org/netdev/net-next/c/d1b15102dd16
-  - [net-next,7/9] net: enetc: add support for XDP_TX
-    https://git.kernel.org/netdev/net-next/c/7ed2bc80074e
-  - [net-next,8/9] net: enetc: increase RX ring default size
-    https://git.kernel.org/netdev/net-next/c/d6a2829e82cf
-  - [net-next,9/9] net: enetc: add support for XDP_REDIRECT
-    https://git.kernel.org/netdev/net-next/c/9d2b68cc108d
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+It would be better if kernel provided the error messages through external ack
+of the netlink message, rather than providing potentially out of date
+recommendations on the man page.
 
 
