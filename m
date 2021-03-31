@@ -2,69 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E33613502A0
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 16:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D87E13502AA
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 16:48:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236184AbhCaOrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 10:47:03 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:56188 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236166AbhCaOqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 10:46:34 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1lRc72-0001aa-G4; Wed, 31 Mar 2021 14:46:28 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        id S236106AbhCaOsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 10:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236142AbhCaOr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 10:47:56 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B6DC061574;
+        Wed, 31 Mar 2021 07:47:56 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1lRc8E-0003Zy-Ug; Wed, 31 Mar 2021 16:47:42 +0200
+Date:   Wed, 31 Mar 2021 16:47:42 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Chinh T Cao <chinh.t.cao@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ice: Fix potential infinite loop when using u8 loop counter
-Date:   Wed, 31 Mar 2021 15:46:28 +0100
-Message-Id: <20210331144628.1423252-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.30.2
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] netfilter: nf_log_bridge: Fix missing assignment
+ of ret on a call to nf_log_register
+Message-ID: <20210331144742.GA13699@breakpoint.cc>
+References: <20210331142606.1422498-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210331142606.1422498-1-colin.king@canonical.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Colin King <colin.king@canonical.com> wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Currently the call to nf_log_register is returning an error code that
+> is not being assigned to ret and yet ret is being checked. Fix this by
+> adding in the missing assignment.
 
-A for-loop is using a u8 loop counter that is being compared to
-a u32 cmp_dcbcfg->numapp to check for the end of the loop. If
-cmp_dcbcfg->numapp is larger than 255 then the counter j will wrap
-around to zero and hence an infinite loop occurs. Fix this by making
-counter j the same type as cmp_dcbcfg->numapp.
+Thanks for catching this.
 
-Addresses-Coverity: ("Infinite loop")
-Fixes: aeac8ce864d9 ("ice: Recognize 860 as iSCSI port in CEE mode")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/intel/ice/ice_dcb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
-index 43c6af42de8a..ee4f320d4823 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
-@@ -747,8 +747,8 @@ ice_cee_to_dcb_cfg(struct ice_aqc_get_cee_dcb_cfg_resp *cee_cfg,
- 		   struct ice_port_info *pi)
- {
- 	u32 status, tlv_status = le32_to_cpu(cee_cfg->tlv_status);
--	u32 ice_aqc_cee_status_mask, ice_aqc_cee_status_shift;
--	u8 i, j, err, sync, oper, app_index, ice_app_sel_type;
-+	u32 ice_aqc_cee_status_mask, ice_aqc_cee_status_shift, j;
-+	u8 i, err, sync, oper, app_index, ice_app_sel_type;
- 	u16 app_prio = le16_to_cpu(cee_cfg->oper_app_prio);
- 	u16 ice_aqc_cee_app_mask, ice_aqc_cee_app_shift;
- 	struct ice_dcbx_cfg *cmp_dcbcfg, *dcbcfg;
--- 
-2.30.2
-
+Acked-by: Florian Westphal <fw@strlen.de>
