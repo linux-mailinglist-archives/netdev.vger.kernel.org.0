@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF4034FD61
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 11:44:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B24E734FD65
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 11:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234844AbhCaJoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 05:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40626 "EHLO
+        id S234614AbhCaJpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 05:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234614AbhCaJoE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 05:44:04 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5691AC061574;
-        Wed, 31 Mar 2021 02:44:04 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id kr3-20020a17090b4903b02900c096fc01deso927416pjb.4;
-        Wed, 31 Mar 2021 02:44:04 -0700 (PDT)
+        with ESMTP id S234790AbhCaJo4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 05:44:56 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB0AC06175F;
+        Wed, 31 Mar 2021 02:44:56 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id l76so13810919pga.6;
+        Wed, 31 Mar 2021 02:44:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1NaGZElvCoRWL/RIn8TQFlNEAVOA5Cl0KeXtUDOHtaw=;
-        b=Yxl51jwe+G2xZh4UwJgg+DJZfGaCdDWxAcwbTRDVEUi4lTQUfrkjix++jmLmndiABA
-         ZFaXdVp/22JqBjWgC+/24UIrS0LJkpsP4QWmGWZ8JrIxbVLcN+V16cBLl27PqxZIQ6ts
-         EK69F7IHu5/07I2YM9BpsI2ZmVSINBG4KQKX7u9UYYM1LWiOZ99zplpm6ZSAfunsnwa/
-         1RimpyU2S05Qca/3mWYJCOtMC2AR+bMcqH/Tje1IF7HiLRnBcUJyGU/dmP0thSURBuhm
-         4hSL3pvC3QkvNsc7BVhR7FNHvxm98a8cCq43F7+boR1ZMDUCc/J0FaF/rVfvjAsbSoSn
-         c82Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kSJos4Uld54OenplRvSKzdWrdWdUO1hcjvqzsTx68YE=;
+        b=MdP4BRhTqIit2P3ZQtowMxJBDQc24KS+05aG0D6Pocc+N3CZlWJgco7d9Y939a3Mih
+         Vxe+LDXQ4tAigBf1dPYug8FNom5ZDZo15DZkphkhEYmwaGEg+9gfgTs8gpLEvglP4DsI
+         HLHEySd3h9xdQhb0Y8WiCWo2/JyLAEN8XJfu4EOaqESnFlNlDtOSQPPwoVNSwymHndkH
+         jFeFwBkdAanBPKgR+JN7YkhcKNWW7XUvbC9KpoetkBmQldNIV5DhFcAIV2hD1n0+B+CA
+         WGQAyiFX/nseIvOyPazF/OFMPgwGyKZL2A4q14Tn8PcjDOxAggH10MSfaBTPuI/e2GyB
+         zoSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1NaGZElvCoRWL/RIn8TQFlNEAVOA5Cl0KeXtUDOHtaw=;
-        b=LP8l/pu+YB9wmwQkdWVEMaXI4pU/7ouaYQr+H7w1J7T/LqURjh7f15uIYTgFMxptqD
-         882mqH35b+Gi7xWz78CPMRUSX4wxrA3CVQ3SpJkA/kdjx2asHZ+Fh2s0rSOS5HT/QfwX
-         Eh///iK11j+N+71ITSD/gD8aDdzQVimxeor03j+XXOKxZs//J7lrTq2kZxl595krnbPe
-         r0QZ/VI283ONXoPLgPzWWq6i76sIuURLnnVwwsXLoco9FSu2cMGvqQov3Qsj4ZPCokSc
-         U4jZM1Mefo2zFHF8iWeIxzilfUiEZGxwV/o28XAKc3Ov9Bz9i2stsseAJUv/clw+Hz2i
-         eH0g==
-X-Gm-Message-State: AOAM533y0mqJFp5xEPNbu/ACI3e7ksPklDFm9uZHkLpB2OzgfMebTKrZ
-        Raii4De8JmEtGr2qkcAE0Map03FF2TMuMg==
-X-Google-Smtp-Source: ABdhPJxzGzP4jeu2pPtaEkQ6GK5CyfLaNvqI0W3TTAjX1IMytZ8sEISjBgHQVfNT+qws6L1cgd+oCw==
-X-Received: by 2002:a17:902:ed84:b029:e7:1f2b:1eb4 with SMTP id e4-20020a170902ed84b02900e71f2b1eb4mr2460736plj.74.1617183843799;
-        Wed, 31 Mar 2021 02:44:03 -0700 (PDT)
-Received: from localhost ([47.9.181.160])
-        by smtp.gmail.com with ESMTPSA id j26sm1708923pfn.47.2021.03.31.02.44.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 02:44:03 -0700 (PDT)
-Date:   Wed, 31 Mar 2021 15:14:00 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kSJos4Uld54OenplRvSKzdWrdWdUO1hcjvqzsTx68YE=;
+        b=P0Wk4w3aYZ/3e74BE3uDS+9FmDefVwBMxsoDh2j3CglR5drXl1anKesDHvxB4ZSGnW
+         wySASp1K5SFBuCWdWyKXocYah4zUbQFR/Qfzd94FXgAHbD6pktLp1rLuz3tBOpBLgF4U
+         AMhcjBI84FuOGmXbm7ziJW9LgsYim+XrYRROyp8g1+yvCa8hQxmvFmqLn7GrwI4Km/w9
+         LxmUCT3aY8I5JbGVRNxa6OLyfSwxx5vN46ZJpH5uQ4TyevJCahRh4CSpmHVeJiPyZxa1
+         7EIe2i1Kqu7p1kA1DIBHo2Raxp4WCL98UOsFcAa0+3eE27NQ8nqn8B+H0EqrlbBaC91N
+         mL9w==
+X-Gm-Message-State: AOAM532SLTKLPykf3P9BNypjGhsqBfxpGzeNTJO611K1ssuqeGwaWT09
+        ZqLpxBJ4xNmYG47alEkBlCBpM/jLKKl5mCulk+WqLoyyIiGR0vTC
+X-Google-Smtp-Source: ABdhPJzBkNTdUIbhoLTRrIbmYcXaanIoCGFqfAPqOk+7kh55cnuAreoYPr/Lmdq/8WJblbN3WkLDSFRP94wvWjjTqYw=
+X-Received: by 2002:a63:6fc1:: with SMTP id k184mr2550769pgc.292.1617183896059;
+ Wed, 31 Mar 2021 02:44:56 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210330231528.546284-1-alobakin@pm.me>
+In-Reply-To: <20210330231528.546284-1-alobakin@pm.me>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 31 Mar 2021 11:44:45 +0200
+Message-ID: <CAJ8uoz2UNABjfpvHOopzvRfW4RJGSS2P=0MUZRkyg-e+S1OdHA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/2] xsk: introduce generic almost-zerocopy xmit
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
-Message-ID: <20210331094400.ldznoctli6fljz64@apollo>
-References: <20210325120020.236504-1-memxor@gmail.com>
- <20210325120020.236504-4-memxor@gmail.com>
- <CAEf4Bzbz9OQ_vfqyenurPV7XRVpK=zcvktwH2Dvj-9kUGL1e7w@mail.gmail.com>
- <20210328080648.oorx2no2j6zslejk@apollo>
- <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
- <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 02:55:47AM IST, Daniel Borkmann wrote:
-> Do we even need the _block variant? I would rather prefer to take the chance
-> and make it as simple as possible, and only iff really needed extend with
-> other APIs, for example:
-
-The block variant can be dropped, I'll use the TC_BLOCK/TC_DEV alternative which
-sets parent_id/ifindex properly.
-
+On Wed, Mar 31, 2021 at 1:17 AM Alexander Lobakin <alobakin@pm.me> wrote:
 >
->   bpf_tc_attach(prog_fd, ifindex, {INGRESS,EGRESS});
+> This series is based on the exceptional generic zerocopy xmit logics
+> initially introduced by Xuan Zhuo. It extends it the way that it
+> could cover all the sane drivers, not only the ones that are capable
+> of xmitting skbs with no linear space.
 >
-> Internally, this will create the sch_clsact qdisc & cls_bpf filter instance
-> iff not present yet, and attach to a default prio 1 handle 1, and _always_ in
-> direct-action mode. This is /as simple as it gets/ and we don't need to bother
-> users with more complex tc/cls_bpf internals unless desired. For example,
-> extended APIs could add prio/parent so that multi-prog can be attached to a
-> single cls_bpf instance, but even that could be a second step, imho.
+> The first patch is a random while-we-are-here improvement over
+> full-copy path, and the second is the main course. See the individual
+> commit messages for the details.
 >
+> The original (full-zerocopy) path is still here and still generally
+> faster, but for now it seems like virtio_net will remain the only
+> user of it, at least for a considerable period of time.
+>
+> Alexander Lobakin (2):
+>   xsk: speed-up generic full-copy xmit
+>   xsk: introduce generic almost-zerocopy xmit
+>
+>  net/xdp/xsk.c | 33 +++++++++++++++++++++++----------
+>  1 file changed, 23 insertions(+), 10 deletions(-)
+>
+> --
+> Well, this is untested. I currently don't have an access to my setup
+> and is bound by moving to another country, but as I don't know for
+> sure at the moment when I'll get back to work on the kernel next time,
+> I found it worthy to publish this now -- if any further changes will
+> be required when I already will be out-of-sight, maybe someone could
+> carry on to make a another revision and so on (I'm still here for any
+> questions, comments, reviews and improvements till the end of this
+> week).
+> But this *should* work with all the sane drivers. If a particular
+> one won't handle this, it's likely ill.
 
-I am not opposed to clsact qdisc setup if INGRESS/EGRESS is supplied (not sure
-how others feel about it).
+Thanks Alexander. I will take your patches for a spin on a couple of
+NICs and get back to you, though it will be next week due to holidays
+where I am based.
 
-We could make direct_action mode default, and similarly choose prio
-as 1 by default instead of letting the kernel do it. Then you can just pass in
-NULL for bpf_tc_cls_opts and be close to what you're proposing. For protocol we
-can choose ETH_P_ALL by default too if the user doesn't set it.
-
-With these modifications, the equivalent would look like
-	bpf_tc_cls_attach(prog_fd, TC_DEV(ifindex, INGRESS), NULL, &id);
-
-So as long as the user doesn't care about other details, they can just pass opts
-as NULL.
-
-WDYT?
-
-> Thanks,
-> Daniel
-
---
-Kartikeya
+> --
+> 2.31.1
+>
+>
