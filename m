@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C7E34F989
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 09:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FEC234F990
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 09:12:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234024AbhCaHMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 03:12:19 -0400
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:57785 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233912AbhCaHLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 03:11:45 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UTvslU-_1617174702;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UTvslU-_1617174702)
+        id S234080AbhCaHM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 03:12:27 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:33645 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233989AbhCaHLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 03:11:49 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UTwOniS_1617174702;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UTwOniS_1617174702)
           by smtp.aliyun-inc.com(127.0.0.1);
           Wed, 31 Mar 2021 15:11:42 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
@@ -34,9 +34,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         KP Singh <kpsingh@kernel.org>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
         Dust Li <dust.li@linux.alibaba.com>
-Subject: [PATCH net-next v3 6/8] virtio-net: xsk zero copy xmit kick by threshold
-Date:   Wed, 31 Mar 2021 15:11:37 +0800
-Message-Id: <20210331071139.15473-7-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net-next v3 7/8] virtio-net: poll tx call xsk zerocopy xmit
+Date:   Wed, 31 Mar 2021 15:11:38 +0800
+Message-Id: <20210331071139.15473-8-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
 References: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
@@ -46,82 +46,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After testing, the performance of calling kick every time is not stable.
-And if all the packets are sent and kicked again, the performance is not
-good. So add a module parameter to specify how many packets are sent to
-call a kick.
-
-8 is a relatively stable value with the best performance.
+poll tx call virtnet_xsk_run, then the data in the xsk tx queue will be
+continuously consumed by napi.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
 ---
- drivers/net/virtio_net.c | 23 ++++++++++++++++++++---
- 1 file changed, 20 insertions(+), 3 deletions(-)
+ drivers/net/virtio_net.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 259fafcf6028..d7e95f55478d 100644
+index d7e95f55478d..fac7d0020013 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -29,10 +29,12 @@ module_param(napi_weight, int, 0444);
+@@ -264,6 +264,9 @@ struct padded_vnet_hdr {
+ 	char padding[4];
+ };
  
- static bool csum = true, gso = true, napi_tx = true;
- static int xsk_budget = 32;
-+static int xsk_kick_thr = 8;
- module_param(csum, bool, 0444);
- module_param(gso, bool, 0444);
- module_param(napi_tx, bool, 0644);
- module_param(xsk_budget, int, 0644);
-+module_param(xsk_kick_thr, int, 0644);
- 
- /* FIXME: MTU in config. */
- #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
-@@ -2612,6 +2614,8 @@ static int virtnet_xsk_xmit_batch(struct send_queue *sq,
- 	struct xdp_desc desc;
- 	int err, packet = 0;
- 	int ret = -EAGAIN;
-+	int need_kick = 0;
-+	int kicks = 0;
- 
- 	if (sq->xsk.last_desc.addr) {
- 		err = virtnet_xsk_xmit(sq, pool, &sq->xsk.last_desc);
-@@ -2619,6 +2623,7 @@ static int virtnet_xsk_xmit_batch(struct send_queue *sq,
- 			return -EBUSY;
- 
- 		++packet;
-+		++need_kick;
- 		--budget;
- 		sq->xsk.last_desc.addr = 0;
- 	}
-@@ -2642,13 +2647,25 @@ static int virtnet_xsk_xmit_batch(struct send_queue *sq,
- 		}
- 
- 		++packet;
-+		++need_kick;
-+		if (need_kick > xsk_kick_thr) {
-+			if (virtqueue_kick_prepare(sq->vq) &&
-+			    virtqueue_notify(sq->vq))
-+				++kicks;
++static int virtnet_xsk_run(struct send_queue *sq, struct xsk_buff_pool *pool,
++			   int budget, bool in_napi);
 +
-+			need_kick = 0;
-+		}
- 	}
+ static bool is_xdp_frame(void *ptr)
+ {
+ 	return (unsigned long)ptr & VIRTIO_XDP_FLAG;
+@@ -1553,7 +1556,9 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
+ 	struct send_queue *sq = container_of(napi, struct send_queue, napi);
+ 	struct virtnet_info *vi = sq->vq->vdev->priv;
+ 	unsigned int index = vq2txq(sq->vq);
++	struct xsk_buff_pool *pool;
+ 	struct netdev_queue *txq;
++	int work = 0;
  
- 	if (packet) {
--		if (virtqueue_kick_prepare(sq->vq) &&
--		    virtqueue_notify(sq->vq)) {
-+		if (need_kick) {
-+			if (virtqueue_kick_prepare(sq->vq) &&
-+			    virtqueue_notify(sq->vq))
-+				++kicks;
-+		}
-+		if (kicks) {
- 			u64_stats_update_begin(&sq->stats.syncp);
--			sq->stats.kicks += 1;
-+			sq->stats.kicks += kicks;
- 			u64_stats_update_end(&sq->stats.syncp);
- 		}
+ 	if (unlikely(is_xdp_raw_buffer_queue(vi, index))) {
+ 		/* We don't need to enable cb for XDP */
+@@ -1563,15 +1568,24 @@ static int virtnet_poll_tx(struct napi_struct *napi, int budget)
  
+ 	txq = netdev_get_tx_queue(vi->dev, index);
+ 	__netif_tx_lock(txq, raw_smp_processor_id());
+-	free_old_xmit_skbs(sq, true);
++	rcu_read_lock();
++	pool = rcu_dereference(sq->xsk.pool);
++	if (pool) {
++		work = virtnet_xsk_run(sq, pool, budget, true);
++		rcu_read_unlock();
++	} else {
++		rcu_read_unlock();
++		free_old_xmit_skbs(sq, true);
++	}
+ 	__netif_tx_unlock(txq);
+ 
+-	virtqueue_napi_complete(napi, sq->vq, 0);
++	if (work < budget)
++		virtqueue_napi_complete(napi, sq->vq, 0);
+ 
+ 	if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
+ 		netif_tx_wake_queue(txq);
+ 
+-	return 0;
++	return work;
+ }
+ 
+ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
 -- 
 2.31.0
 
