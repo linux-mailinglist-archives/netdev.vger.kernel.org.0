@@ -2,158 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E8A34F80B
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 06:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2E034F811
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 06:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbhCaEht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 00:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
+        id S233306AbhCaElF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 00:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230412AbhCaEhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 00:37:19 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B32BC061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 21:37:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=Uu/REj8xsu7OZC7N2C/I1JBW/vM03sB0JFwoUaNvhTA=; b=s6+3bEwWSO06+HWZ/GKnw6w23x
-        m4gVnzLKyZR2mwq1fc2QVmjtRRdZxUntWdgHFEa5t6LsiccTtHv/VQcz6dV0VdKQfUO28dJQeN5Ck
-        0wg1w1pvJzMq9kYieoVHI/TXlopHOTNvUUsOfkZqnwD0k7ZYwEIGqHx/K1tErl4NeXX6gbXkv9HRN
-        57Npcjo9pEj8+aQBPErKL70Y91DKipq+oLrSq1WIwcdPsWFxWZ/b1q56pIdN1vU0gU23yIpsiFIms
-        LXDvB8590TZdV5a50fR9xS8V9qai1tMQeQb58aeile7nnZd4xRkoxTT514LmtQshCJBaDp32sF9+K
-        zG6hIrLQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lRSaz-0041fP-2c; Wed, 31 Mar 2021 04:36:52 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eric Biggers <ebiggers@google.com>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH] qrtr: Convert qrtr_ports from IDR to XArray
-Date:   Wed, 31 Mar 2021 05:36:42 +0100
-Message-Id: <20210331043643.959675-1-willy@infradead.org>
-X-Mailer: git-send-email 2.29.2
+        with ESMTP id S229852AbhCaEk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 00:40:57 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F949C061574;
+        Tue, 30 Mar 2021 21:40:57 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id v10so8304055pfn.5;
+        Tue, 30 Mar 2021 21:40:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X6eY81cRt6EiGMhoMyYvfGPdOh1xN5EvDeFMwXUiigg=;
+        b=BBqAgqWos6JCoxi8NNnsgva5ECiAX69VIkMl5jiW/l7ozMFZTTfrnqLI6TwSWXp2+N
+         mdm2LZnmmaEoQHB6b4HSWAKIbvJOKNx7zyLReQEb8XA3VCvP0TvIar6/zCu43yjG+oLA
+         S+IDkjkPSZCLzzNOozz7m73F7A3LIq9tSyZtivj/kmd4+rYXlViQUi1edyDeGDIPvGZ0
+         9/Kau/4W64XM5FyAMhwIq9PIP5fdgtLmBtLFUsvhiOtOc744ceINwhYQpHjjPKrKrToP
+         YFcfgdW3hhh/I51eljcBLU/qtxhh+pGCMC41OVz3kpysvc86Qyjm1jbpR/Sf2XvbzGKl
+         WTmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X6eY81cRt6EiGMhoMyYvfGPdOh1xN5EvDeFMwXUiigg=;
+        b=MeM/x/B7E5ucz0D6fyzxtl+zSAoxyPzLwSfjRaWsCwC7WlT7TSuyDGTTAPGTzNTuBV
+         NA9QQS0LLrj8JcooPxlhBsPkNXZqiPwDyQko/XVP8x6ImmhIsG/PEI1/ITq1uw56jysW
+         skDjNLSSD9/+Qx3tTX4q7062NL7U0mLqp9DxhdjLJgdw664OECt5eVHYFnBDR+zWm6PR
+         FT6M1NaEAYlZwM0amWjfvts8QiMzlfud3su0XhQYvVYSRlg2CP/zNRhTO8ecyaBpfbks
+         cBz7Tfw5eqpI0VNSOsrkRjly7DJHvm0llnIDZG1lPRtplVUvzSeO/gsFDLc5Qm8kRXJ6
+         qiQA==
+X-Gm-Message-State: AOAM533zXNE1gud/bd2ZZpwWabgNu9Mmo5wdeR3Jl7mAw3HdWk8R4MXh
+        k6ijtLcni/xMP2EJsPbu4C+lgzClLO/+vcegbec=
+X-Google-Smtp-Source: ABdhPJxjUkJrHAzAD1t1NE7lY5hZwlE74WTvgqCV93EN+fBjD4cmoKfoMryJJKr19UPaJkb0jt03IIbw/iBsCanJEus=
+X-Received: by 2002:a63:6a41:: with SMTP id f62mr1402263pgc.428.1617165656183;
+ Tue, 30 Mar 2021 21:40:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210329225322.143135-1-memxor@gmail.com>
+In-Reply-To: <20210329225322.143135-1-memxor@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 30 Mar 2021 21:40:45 -0700
+Message-ID: <CAM_iQpVAo+Zxus-FC59xzwcmbS7UOi6F8kNMzsrEVrBY2YRtNA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] net: sched: bump refcount for new action in ACT
+ replace mode
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Vlad Buslov <vladbu@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The XArray interface is easier for this driver to use.  Also fixes a
-bug reported by the improper use of GFP_ATOMIC.
+On Mon, Mar 29, 2021 at 3:55 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+> diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+> index b919826939e0..43cceb924976 100644
+> --- a/net/sched/act_api.c
+> +++ b/net/sched/act_api.c
+> @@ -1042,6 +1042,9 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+>         if (err != ACT_P_CREATED)
+>                 module_put(a_o->owner);
+>
+> +       if (!bind && ovr && err == ACT_P_CREATED)
+> +               refcount_set(&a->tcfa_refcnt, 2);
+> +
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
----
- net/qrtr/qrtr.c | 42 ++++++++++++++----------------------------
- 1 file changed, 14 insertions(+), 28 deletions(-)
+Hmm, if we set the refcnt to 2 here, how could tcf_action_destroy()
+destroy them when we rollback from a failure in the middle of the loop
+in tcf_action_init()?
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index dfc820ee553a..4b46c69e14ab 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -20,6 +20,8 @@
- /* auto-bind range */
- #define QRTR_MIN_EPH_SOCKET 0x4000
- #define QRTR_MAX_EPH_SOCKET 0x7fff
-+#define QRTR_EPH_PORT_RANGE \
-+		XA_LIMIT(QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET)
- 
- /**
-  * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
-@@ -106,8 +108,7 @@ static LIST_HEAD(qrtr_all_nodes);
- static DEFINE_MUTEX(qrtr_node_lock);
- 
- /* local port allocation management */
--static DEFINE_IDR(qrtr_ports);
--static DEFINE_MUTEX(qrtr_port_lock);
-+static DEFINE_XARRAY_ALLOC(qrtr_ports);
- 
- /**
-  * struct qrtr_node - endpoint node
-@@ -653,7 +654,7 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
- 		port = 0;
- 
- 	rcu_read_lock();
--	ipc = idr_find(&qrtr_ports, port);
-+	ipc = xa_load(&qrtr_ports, port);
- 	if (ipc)
- 		sock_hold(&ipc->sk);
- 	rcu_read_unlock();
-@@ -695,9 +696,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
- 
- 	__sock_put(&ipc->sk);
- 
--	mutex_lock(&qrtr_port_lock);
--	idr_remove(&qrtr_ports, port);
--	mutex_unlock(&qrtr_port_lock);
-+	xa_erase(&qrtr_ports, port);
- 
- 	/* Ensure that if qrtr_port_lookup() did enter the RCU read section we
- 	 * wait for it to up increment the refcount */
-@@ -716,29 +715,20 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
-  */
- static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
- {
--	u32 min_port;
- 	int rc;
- 
--	mutex_lock(&qrtr_port_lock);
- 	if (!*port) {
--		min_port = QRTR_MIN_EPH_SOCKET;
--		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
--		if (!rc)
--			*port = min_port;
-+		rc = xa_alloc(&qrtr_ports, port, ipc, QRTR_EPH_PORT_RANGE,
-+				GFP_KERNEL);
- 	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
- 		rc = -EACCES;
- 	} else if (*port == QRTR_PORT_CTRL) {
--		min_port = 0;
--		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, 0, GFP_ATOMIC);
-+		rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
- 	} else {
--		min_port = *port;
--		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, *port, GFP_ATOMIC);
--		if (!rc)
--			*port = min_port;
-+		rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
- 	}
--	mutex_unlock(&qrtr_port_lock);
- 
--	if (rc == -ENOSPC)
-+	if (rc == -EBUSY)
- 		return -EADDRINUSE;
- 	else if (rc < 0)
- 		return rc;
-@@ -752,20 +742,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
- static void qrtr_reset_ports(void)
- {
- 	struct qrtr_sock *ipc;
--	int id;
--
--	mutex_lock(&qrtr_port_lock);
--	idr_for_each_entry(&qrtr_ports, ipc, id) {
--		/* Don't reset control port */
--		if (id == 0)
--			continue;
-+	unsigned long index;
- 
-+	rcu_read_lock();
-+	xa_for_each_start(&qrtr_ports, index, ipc, 1) {
- 		sock_hold(&ipc->sk);
- 		ipc->sk.sk_err = ENETRESET;
- 		ipc->sk.sk_error_report(&ipc->sk);
- 		sock_put(&ipc->sk);
- 	}
--	mutex_unlock(&qrtr_port_lock);
-+	rcu_read_unlock();
- }
- 
- /* Bind socket to address.
--- 
-2.30.2
-
+Thanks.
