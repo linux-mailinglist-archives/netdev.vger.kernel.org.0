@@ -2,245 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 458C234FBBF
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B6734FBC6
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234383AbhCaIhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 04:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
+        id S234406AbhCaIiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 04:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232035AbhCaIgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 04:36:48 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFFCC061574
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 01:36:48 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id m132so20358908ybf.2
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 01:36:48 -0700 (PDT)
+        with ESMTP id S234457AbhCaIh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 04:37:59 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB6AC06174A;
+        Wed, 31 Mar 2021 01:37:59 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id f3so4490988pgv.0;
+        Wed, 31 Mar 2021 01:37:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sYhMxtiOLAd1nNM/rNA28aMlHbVnxnTDWPJwfCBWPvU=;
-        b=MB8MJJvQfdhJV9odcBBKEX3+D0wf+11EgpfrpaRR3XqZTsEWYEGsTUrfJjgjSYI9Yd
-         5BCQNZjUOYrpENJDgtkcqjHC2U/a9SmXJU4cD/h3y3m+ZrckZ/UV4LJgjhKJVdCJvLu/
-         F/L08KgBoxcvfu9f54MBw8TZBF5cBy1UUN2yqlQgPBOmsgP4esSG7isBsVxEl9Ew8KRC
-         cX9RC/la+IFbqiT5yDcxgqoU+93NGtWnqv616vXRs4FrM/j0H0H/CjmgZlqx+4DM9XzV
-         V4IT2M4a7jr1Td8YTq3GDhyMf6q1cdbYwXrHVGTXD7c0VhqGi3p5OGkCc0+AKOPYcThM
-         sm8Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ccaqSjNvl3ukMYGkyGN2LDQ+g0PkcsvzVn6FgeWnsB8=;
+        b=Ir1o/yyI84ELGXmN6cJWa04Z2AdEQdo4yGyXFbzdBlfpVR4511nZDnMBRir/l27Ecu
+         fbZriubFEBloqBT4fs6mmut0SwID3bETtyyXsEGYm1/TTJrJUJUvJe4eE5QH1qbCiL39
+         nBlBCLFvayJZH767OjfTN4fDyR9bbCXKenAQF4AGp4OFeS9CEcovCAo437qkZBR/WFVt
+         g+SIjATKBjaTrot+FuLWZiDlGPok9AX2/58XmhOrYrM7YzU3KnJYjeVQ1f4r/U/cVNEa
+         o7t/4r3YNHB/9U3+dEYMriYX0cLkApZ2B7w3QBNUFa/jmeKIpCA/5fg2GpCkYp9YQrwD
+         pqjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sYhMxtiOLAd1nNM/rNA28aMlHbVnxnTDWPJwfCBWPvU=;
-        b=MldUWAE5y/kovQq4wIDhVqZTh/4wZ9G8w1JmtSimHdQ5MdXsVlYd/1sY1Xl3Grj/5w
-         beXYeAoNmakEO9IHLq2PvvcIUM7deDSOCidsygB6sAWoLIWTWsYm7d/8ZZqaAPuKT1ea
-         /zhFnPasA1E9Kvmj0yDqcyGeFvOK8iTiz51ObbCQexp3OceL26bOyZfgRc88S7a0WGHJ
-         hffnWIZ+PEYwhPlYH22r7bP+YpvY5arQZEg50NZujcuKPAuTLK7oVFWjvlsb0XDGnVzc
-         JzH18jiBt6dokkzbhc1U7NNADhWL29H+2SgUcUPh3k9A1ZrMCDON6YvrWeZqKrIBBtzu
-         wZVg==
-X-Gm-Message-State: AOAM531PfL6fX5/zpChaOn+Wd9AdjX7WbxlzIWcCkLTYTUmVrJ9/Nqce
-        2zGj0FDsHwLVZjmoxJ1rpjfrMhv1qPthiokpanrk+A==
-X-Google-Smtp-Source: ABdhPJx1IIhPE33zE0fpweJe6eSdvbM3PWBRn3vUVTPhbVyZoldUWkWbozxrhHQjUhb0HuRFlUH627+Tp7Ifx0J8/i8=
-X-Received: by 2002:a25:d687:: with SMTP id n129mr3223112ybg.132.1617179807179;
- Wed, 31 Mar 2021 01:36:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ccaqSjNvl3ukMYGkyGN2LDQ+g0PkcsvzVn6FgeWnsB8=;
+        b=GJkHLEYYcgu726Qd6JyUncYcdRejvzL2Psb6qdhUrO7jzkVGGiCK779OihnksXFX19
+         NfozrlkiCX07pN9uxRoz/sYhyadz1WRNZmoItNpruNYNIZRlp6I6uMaX6n3HrqlZ9rlb
+         XrFw+7xejxGCMQQmFxnYGOpWj4MpjUGYflKEFgN1lIaEfBb299R8wBYp4xcPttLmFhPv
+         Ok41iIV2F2yujYaZdwL/kUgLlavgsXs3RaqcBeIoeUAjo00tbZg8sg2UZ7xCXaIYmsUm
+         +Su+5V/tuBHOxWzG1/zYBxHbqNl0jBdFHT3GIZ0rzP61Lv2Ubis7TvOAl8n7WkK2U4MW
+         GLqw==
+X-Gm-Message-State: AOAM531tBApTXZfD5yy3zYNscuOkISpmQNtKRHwdmUyyxa3yT5rHxZVM
+        OGvAcPIVIrt0OhxD0ZYPc5U=
+X-Google-Smtp-Source: ABdhPJx0rU9MB8WdE3sOLqZAhyfW+WVNQVbMecQS0EfThM7L8SlkimebnQdO29EcuWsI97x0xISoTA==
+X-Received: by 2002:a62:7f45:0:b029:205:9617:a819 with SMTP id a66-20020a627f450000b02902059617a819mr1914033pfd.17.1617179878714;
+        Wed, 31 Mar 2021 01:37:58 -0700 (PDT)
+Received: from localhost ([47.8.37.177])
+        by smtp.gmail.com with ESMTPSA id x25sm1489541pfn.81.2021.03.31.01.37.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 01:37:58 -0700 (PDT)
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     xiyou.wangcong@gmail.com
+Cc:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, memxor@gmail.com,
+        netdev@vger.kernel.org, toke@redhat.com, vladbu@nvidia.com
+Subject: [PATCH net-next v3] net: sched: bump refcount for new action in ACT replace mode
+Date:   Wed, 31 Mar 2021 14:07:24 +0530
+Message-Id: <20210331083723.171150-1-memxor@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CAM_iQpVAo+Zxus-FC59xzwcmbS7UOi6F8kNMzsrEVrBY2YRtNA@mail.gmail.com>
+References: <CAM_iQpVAo+Zxus-FC59xzwcmbS7UOi6F8kNMzsrEVrBY2YRtNA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
- <1617007696.5731978-1-xuanzhuo@linux.alibaba.com> <CANn89iLXfu7mdk+cxqVYxtJhfBQtpho6i2kyOEUbEGPXBQj+jg@mail.gmail.com>
- <20210331040405-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210331040405-mutt-send-email-mst@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 31 Mar 2021 10:36:35 +0200
-Message-ID: <CANn89iJN3SQDctZxaPdZMSPGRbjLrsYGM7=Y2POv-3Ysw-EZ_w@mail.gmail.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny skbs
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Thelen <gthelen@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, su-lifan@linux.alibaba.com,
-        "dust.li" <dust.li@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 10:11 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Mar 29, 2021 at 11:06:09AM +0200, Eric Dumazet wrote:
-> > On Mon, Mar 29, 2021 at 10:52 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > >
-> > > On Wed, 13 Jan 2021 08:18:19 -0800, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > > > From: Eric Dumazet <edumazet@google.com>
-> > > >
-> > > > Both virtio net and napi_get_frags() allocate skbs
-> > > > with a very small skb->head
-> > > >
-> > > > While using page fragments instead of a kmalloc backed skb->head might give
-> > > > a small performance improvement in some cases, there is a huge risk of
-> > > > under estimating memory usage.
-> > > >
-> > > > For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
-> > > > per page (order-3 page in x86), or even 64 on PowerPC
-> > > >
-> > > > We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
-> > > > but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
-> > > >
-> > > > Even if we force napi_alloc_skb() to only use order-0 pages, the issue
-> > > > would still be there on arches with PAGE_SIZE >= 32768
-> > > >
-> > > > This patch makes sure that small skb head are kmalloc backed, so that
-> > > > other objects in the slab page can be reused instead of being held as long
-> > > > as skbs are sitting in socket queues.
-> > > >
-> > > > Note that we might in the future use the sk_buff napi cache,
-> > > > instead of going through a more expensive __alloc_skb()
-> > > >
-> > > > Another idea would be to use separate page sizes depending
-> > > > on the allocated length (to never have more than 4 frags per page)
-> > > >
-> > > > I would like to thank Greg Thelen for his precious help on this matter,
-> > > > analysing crash dumps is always a time consuming task.
-> > >
-> > >
-> > > This patch causes a performance degradation of about 10% in the scenario of
-> > > virtio-net + GRO.
-> > >
-> > > For GRO, there is no way to merge skbs based on frags with this patch, only
-> > > frag_list can be used to link skbs. The problem that this cause are that compared
-> > > to the GRO package merged into the frags way, the current skb needs to call
-> > > kfree_skb_list to release each skb, resulting in performance degradation.
-> > >
-> > > virtio-net will store some data onto the linear space after receiving it. In
-> > > addition to the header, there are also some payloads, so "headlen <= offset"
-> > > fails. And skb->head_frag is failing when use kmalloc() for skb->head allocation.
-> > >
-> >
-> > Thanks for the report.
-> >
-> > There is no way we can make things both fast for existing strategies
-> > used by _insert_your_driver
-> > and malicious usages of data that can sit for seconds/minutes in socket queues.
-> >
-> > I think that if you want to gain this 10% back, you have to change
-> > virtio_net to meet optimal behavior.
-> >
-> > Normal drivers make sure to not pull payload in skb->head, only headers.
->
-> Hmm we do have hdr_len field, but seem to ignore it on RX.
-> Jason do you see any issues with using it for the head len?
->
+Currently, action creation using ACT API in replace mode is buggy.  When
+invoking for non-existent action index 42,
 
-I was looking at this code (page_to_skb())  a few minutes ago ;)
+	tc action replace action bpf obj foo.o sec <xyz> index 42
 
-pulling payload would make sense only if can pull of of it (to free the page)
-(This is what some drivers implement and call copybreak)
+kernel creates the action, fills up the netlink response, and then just
+deletes the action while notifying userspace of success.
 
-Even if we do not have an accurate knowledge of header sizes,
-it would be better to pull only the Ethernet header and let GRO do the
-rest during its dissection.
+	tc action show action bpf
 
-Once fixed, virtio_net will reduce by 2x number of frags per skb,
-compared to the situation before "net: avoid 32 x truesize
-under-estimation for tiny skbs"
+doesn't list the action.
 
+This happens due to the following sequence when ovr = 1 (replace mode)
+is enabled:
 
->
-> > Optimal GRO packets are when payload is in page fragments.
-> >
-> > (I am speaking not only for raw performance, but ability for systems
-> > to cope with network outages and sudden increase of memory usage in
-> > out of order queues)
-> >
-> > This has been quite clearly stated in my changelog.
-> >
-> > Thanks.
-> >
-> >
-> > > int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
-> > > {
-> > >         struct skb_shared_info *pinfo, *skbinfo = skb_shinfo(skb);
-> > >         unsigned int offset = skb_gro_offset(skb);
-> > >         unsigned int headlen = skb_headlen(skb);
-> > >
-> > >     .......
-> > >
-> > >         if (headlen <= offset) {         // virtio-net will fail
-> > >         ........ // merge by frags
-> > >                 goto done;
-> > >         } else if (skb->head_frag) {     // skb->head_frag is fail when use kmalloc() for skb->head allocation
-> > >         ........ // merge by frags
-> > >                 goto done;
-> > >         }
-> > >
-> > > merge:
-> > >     ......
-> > >
-> > >         if (NAPI_GRO_CB(p)->last == p)
-> > >                 skb_shinfo(p)->frag_list = skb;
-> > >         else
-> > >                 NAPI_GRO_CB(p)->last->next = skb;
-> > >
-> > >     ......
-> > >         return 0;
-> > > }
-> > >
-> > >
-> > > test cmd:
-> > >  for i in $(seq 1 4)
-> > >  do
-> > >     redis-benchmark -r 10000000 -n 10000000 -t set -d 1024 -c 8 -P 32 -h  <ip> -p 6379 2>&1 | grep 'per second'  &
-> > >  done
-> > >
-> > > Reported-by: su-lifan@linux.alibaba.com
-> > >
-> > > >
-> > > > Fixes: fd11a83dd363 ("net: Pull out core bits of __netdev_alloc_skb and add __napi_alloc_skb")
-> > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > > Cc: Alexander Duyck <alexanderduyck@fb.com>
-> > > > Cc: Paolo Abeni <pabeni@redhat.com>
-> > > > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > > > Cc: Greg Thelen <gthelen@google.com>
-> > > > ---
-> > > >  net/core/skbuff.c | 9 +++++++--
-> > > >  1 file changed, 7 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > > index 7626a33cce590e530f36167bd096026916131897..3a8f55a43e6964344df464a27b9b1faa0eb804f3 100644
-> > > > --- a/net/core/skbuff.c
-> > > > +++ b/net/core/skbuff.c
-> > > > @@ -501,13 +501,17 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
-> > > >  struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > > >                                gfp_t gfp_mask)
-> > > >  {
-> > > > -     struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> > > > +     struct napi_alloc_cache *nc;
-> > > >       struct sk_buff *skb;
-> > > >       void *data;
-> > > >
-> > > >       len += NET_SKB_PAD + NET_IP_ALIGN;
-> > > >
-> > > > -     if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
-> > > > +     /* If requested length is either too small or too big,
-> > > > +      * we use kmalloc() for skb->head allocation.
-> > > > +      */
-> > > > +     if (len <= SKB_WITH_OVERHEAD(1024) ||
-> > > > +         len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
-> > > >           (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-> > > >               skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
-> > > >               if (!skb)
-> > > > @@ -515,6 +519,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > > >               goto skb_success;
-> > > >       }
-> > > >
-> > > > +     nc = this_cpu_ptr(&napi_alloc_cache);
-> > > >       len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > >       len = SKB_DATA_ALIGN(len);
-> > > >
-> > > > --
-> > > > 2.30.0.284.gd98b1dd5eaa7-goog
-> > > >
->
+tcf_idr_check_alloc is used to atomically check and either obtain
+reference for existing action at index, or reserve the index slot using
+a dummy entry (ERR_PTR(-EBUSY)).
+
+This is necessary as pointers to these actions will be held after
+dropping the idrinfo lock, so bumping the reference count is necessary
+as we need to insert the actions, and notify userspace by dumping their
+attributes. Finally, we drop the reference we took using the
+tcf_action_put_many call in tcf_action_add. However, for the case where
+a new action is created due to free index, its refcount remains one.
+This when paired with the put_many call leads to the kernel setting up
+the action, notifying userspace of its creation, and then tearing it
+down. For existing actions, the refcount is still held so they remain
+unaffected.
+
+Fortunately due to rtnl_lock serialization requirement, such an action
+with refcount == 1 will not be concurrently deleted by anything else, at
+best CLS API can move its refcount up and down by binding to it after it
+has been published from tcf_idr_insert_many. Since refcount is atleast
+one until put_many call, CLS API cannot delete it. Also __tcf_action_put
+release path already ensures deterministic outcome (either new action
+will be created or existing action will be reused in case CLS API tries
+to bind to action concurrently) due to idr lock serialization.
+
+We fix this by making refcount of newly created actions as 2 in ACT API
+replace mode. A relaxed store will suffice as visibility is ensured only
+after the tcf_idr_insert_many call.
+
+We also remember the new actions that we took an additional reference on,
+and relinquish the temporal reference during rollback on failure.
+
+Note that in case of creation or overwriting using CLS API only (i.e.
+bind = 1), overwriting existing action object is not allowed, and any
+such request is silently ignored (without error).
+
+The refcount bump that occurs in tcf_idr_check_alloc call there for
+existing action will pair with tcf_exts_destroy call made from the owner
+module for the same action. In case of action creation, there is no
+existing action, so no tcf_exts_destroy callback happens.
+
+This means no code changes for CLS API.
+
+Fixes: cae422f379f3 ("net: sched: use reference counting action init")
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+---
+Changelog:
+
+v2 -> v3
+Cleanup new action on rollback after raising refcount (Cong)
+
+v1 -> v2
+Remove erroneous tcf_action_put_many call in tcf_exts_validate (Vlad)
+Isolate refcount bump to ACT API in replace mode
+---
+ include/net/act_api.h |  2 +-
+ net/sched/act_api.c   | 24 ++++++++++++++++++++++--
+ net/sched/cls_api.c   |  2 +-
+ 3 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 2bf3092ae7ec..a01ff5fa641e 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -194,7 +194,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 				    struct nlattr *nla, struct nlattr *est,
+ 				    char *name, int ovr, int bind,
+ 				    struct tc_action_ops *ops, bool rtnl_held,
+-				    struct netlink_ext_ack *extack);
++				    struct netlink_ext_ack *extack, bool *ref);
+ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[], int bind,
+ 		    int ref, bool terse);
+ int tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int, int);
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index b919826939e0..718bc197b9a7 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -993,7 +993,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 				    struct nlattr *nla, struct nlattr *est,
+ 				    char *name, int ovr, int bind,
+ 				    struct tc_action_ops *a_o, bool rtnl_held,
+-				    struct netlink_ext_ack *extack)
++				    struct netlink_ext_ack *extack, bool *ref)
+ {
+ 	struct nla_bitfield32 flags = { 0, 0 };
+ 	u8 hw_stats = TCA_ACT_HW_STATS_ANY;
+@@ -1042,6 +1042,13 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 	if (err != ACT_P_CREATED)
+ 		module_put(a_o->owner);
+
++	if (!bind && ovr && err == ACT_P_CREATED) {
++		if (ref)
++			*ref = true;
++
++		refcount_set(&a->tcfa_refcnt, 2);
++	}
++
+ 	return a;
+
+ err_out:
+@@ -1062,10 +1069,13 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
+ 	struct tc_action_ops *ops[TCA_ACT_MAX_PRIO] = {};
+ 	struct nlattr *tb[TCA_ACT_MAX_PRIO + 1];
+ 	struct tc_action *act;
++	u32 new_actions = 0;
+ 	size_t sz = 0;
+ 	int err;
+ 	int i;
+
++	BUILD_BUG_ON(TCA_ACT_MAX_PRIO > sizeof(new_actions) * 8);
++
+ 	err = nla_parse_nested_deprecated(tb, TCA_ACT_MAX_PRIO, nla, NULL,
+ 					  extack);
+ 	if (err < 0)
+@@ -1083,8 +1093,9 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
+ 	}
+
+ 	for (i = 1; i <= TCA_ACT_MAX_PRIO && tb[i]; i++) {
++		bool ovr_new = false;
+ 		act = tcf_action_init_1(net, tp, tb[i], est, name, ovr, bind,
+-					ops[i - 1], rtnl_held, extack);
++					ops[i - 1], rtnl_held, extack, &ovr_new);
+ 		if (IS_ERR(act)) {
+ 			err = PTR_ERR(act);
+ 			goto err;
+@@ -1092,6 +1103,10 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
+ 		sz += tcf_action_fill_size(act);
+ 		/* Start from index 0 */
+ 		actions[i - 1] = act;
++
++		/* remember new actions that we take a reference on */
++		if (ovr_new)
++			new_actions |= 1UL << (i - 1);
+ 	}
+
+ 	/* We have to commit them all together, because if any error happened in
+@@ -1103,6 +1118,11 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
+ 	return i - 1;
+
+ err:
++	/* reset the reference back to 1 in case of error */
++	for (i = 0; i < TCA_ACT_MAX_PRIO && actions[i]; i++) {
++		if (new_actions & (1UL << i))
++			refcount_set(&actions[i]->tcfa_refcnt, 1);
++	}
+ 	tcf_action_destroy(actions, bind);
+ err_mod:
+ 	for (i = 0; i < TCA_ACT_MAX_PRIO; i++) {
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index d3db70865d66..4f4a7355b1e1 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3052,7 +3052,7 @@ int tcf_exts_validate(struct net *net, struct tcf_proto *tp, struct nlattr **tb,
+ 			act = tcf_action_init_1(net, tp, tb[exts->police],
+ 						rate_tlv, "police", ovr,
+ 						TCA_ACT_BIND, a_o, rtnl_held,
+-						extack);
++						extack, NULL);
+ 			if (IS_ERR(act)) {
+ 				module_put(a_o->owner);
+ 				return PTR_ERR(act);
+--
+2.30.2
+
