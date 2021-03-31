@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7A9350A84
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 01:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A60B350A8A
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 01:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232672AbhCaXHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 19:07:45 -0400
-Received: from mga14.intel.com ([192.55.52.115]:62991 "EHLO mga14.intel.com"
+        id S232874AbhCaXHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 19:07:50 -0400
+Received: from mga14.intel.com ([192.55.52.115]:62995 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230248AbhCaXHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230284AbhCaXHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 19:07:25 -0400
-IronPort-SDR: RSGabUZFCU7TTEsryNdcMjD/Xva5sgGe6uKfPmTN18DQuqJB3QQ69I4d4vW+/x8SxKwoL3/Awa
- SRtSy2QJNFRw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191587975"
+IronPort-SDR: KilY86l94YJnx0b7RrrlNfFli5P/oZ2+dXqb45VerRmT8+6bZsj9hYa+yszb6uI+NRgObzScIK
+ TWKW1xRtP7Yw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191587976"
 X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="191587975"
+   d="scan'208";a="191587976"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 16:07:23 -0700
-IronPort-SDR: 63JHv5usOHarkt3KSZavAIDjMxGVTBE92NZqXmL9YIZgcnVCNZXaldPXGKitSzS300sPH8brdo
- 6C1l9Vgo3NkQ==
+IronPort-SDR: AuxXaIeGK21MTgK3O/zuTIcj0L3Dlt3fhD4TTU8y0FhdgunjPTV8Ay/oxfUSMBznperhqgJ1l4
+ VrakOUXNpxHQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="610680103"
+   d="scan'208";a="610680110"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2021 16:07:23 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
+Cc:     Paul Greenwalt <paul.greenwalt@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 04/15] ice: handle increasing Tx or Rx ring sizes
-Date:   Wed, 31 Mar 2021 16:08:47 -0700
-Message-Id: <20210331230858.782492-5-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 05/15] ice: change link misconfiguration message
+Date:   Wed, 31 Mar 2021 16:08:48 -0700
+Message-Id: <20210331230858.782492-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210331230858.782492-1-anthony.l.nguyen@intel.com>
 References: <20210331230858.782492-1-anthony.l.nguyen@intel.com>
@@ -43,210 +42,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+From: Paul Greenwalt <paul.greenwalt@intel.com>
 
-There is an issue when the Tx or Rx ring size increases using
-'ethtool -L ...' where the new rings don't get the correct ITR
-values because when we rebuild the VSI we don't know that some
-of the rings may be new.
+Change link misconfiguration message since the configuration
+could be intended by the user.
 
-Fix this by looking at the original number of rings and
-determining if the rings in ice_vsi_rebuild_set_coalesce()
-were not present in the original rings received in
-ice_vsi_rebuild_get_coalesce().
-
-Also change the code to return an error if we can't allocate
-memory for the coalesce data in ice_vsi_rebuild().
-
-Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c  | 123 ++++++++++++++++------
- drivers/net/ethernet/intel/ice/ice_txrx.h |   2 +
- 2 files changed, 92 insertions(+), 33 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index c345432fac72..0763696c3d08 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2866,38 +2866,46 @@ int ice_vsi_release(struct ice_vsi *vsi)
- }
- 
- /**
-- * ice_vsi_rebuild_update_coalesce - set coalesce for a q_vector
-+ * ice_vsi_rebuild_update_coalesce_intrl - set interrupt rate limit for a q_vector
-  * @q_vector: pointer to q_vector which is being updated
-- * @coalesce: pointer to array of struct with stored coalesce
-+ * @stored_intrl_setting: original INTRL setting
-  *
-  * Set coalesce param in q_vector and update these parameters in HW.
-  */
- static void
--ice_vsi_rebuild_update_coalesce(struct ice_q_vector *q_vector,
--				struct ice_coalesce_stored *coalesce)
-+ice_vsi_rebuild_update_coalesce_intrl(struct ice_q_vector *q_vector,
-+				      u16 stored_intrl_setting)
- {
--	struct ice_ring_container *rx_rc = &q_vector->rx;
--	struct ice_ring_container *tx_rc = &q_vector->tx;
- 	struct ice_hw *hw = &q_vector->vsi->back->hw;
- 
--	tx_rc->itr_setting = coalesce->itr_tx;
--	rx_rc->itr_setting = coalesce->itr_rx;
--
--	/* dynamic ITR values will be updated during Tx/Rx */
--	if (!ITR_IS_DYNAMIC(tx_rc->itr_setting))
--		wr32(hw, GLINT_ITR(tx_rc->itr_idx, q_vector->reg_idx),
--		     ITR_REG_ALIGN(tx_rc->itr_setting) >>
--		     ICE_ITR_GRAN_S);
--	if (!ITR_IS_DYNAMIC(rx_rc->itr_setting))
--		wr32(hw, GLINT_ITR(rx_rc->itr_idx, q_vector->reg_idx),
--		     ITR_REG_ALIGN(rx_rc->itr_setting) >>
--		     ICE_ITR_GRAN_S);
--
--	q_vector->intrl = coalesce->intrl;
-+	q_vector->intrl = stored_intrl_setting;
- 	wr32(hw, GLINT_RATE(q_vector->reg_idx),
- 	     ice_intrl_usec_to_reg(q_vector->intrl, hw->intrl_gran));
- }
- 
-+/**
-+ * ice_vsi_rebuild_update_coalesce_itr - set coalesce for a q_vector
-+ * @q_vector: pointer to q_vector which is being updated
-+ * @rc: pointer to ring container
-+ * @stored_itr_setting: original ITR setting
-+ *
-+ * Set coalesce param in q_vector and update these parameters in HW.
-+ */
-+static void
-+ice_vsi_rebuild_update_coalesce_itr(struct ice_q_vector *q_vector,
-+				    struct ice_ring_container *rc,
-+				    u16 stored_itr_setting)
-+{
-+	struct ice_hw *hw = &q_vector->vsi->back->hw;
-+
-+	rc->itr_setting = stored_itr_setting;
-+
-+	/* dynamic ITR values will be updated during Tx/Rx */
-+	if (!ITR_IS_DYNAMIC(rc->itr_setting))
-+		wr32(hw, GLINT_ITR(rc->itr_idx, q_vector->reg_idx),
-+		     ITR_REG_ALIGN(rc->itr_setting) >> ICE_ITR_GRAN_S);
-+}
-+
- /**
-  * ice_vsi_rebuild_get_coalesce - get coalesce from all q_vectors
-  * @vsi: VSI connected with q_vectors
-@@ -2917,6 +2925,11 @@ ice_vsi_rebuild_get_coalesce(struct ice_vsi *vsi,
- 		coalesce[i].itr_tx = q_vector->tx.itr_setting;
- 		coalesce[i].itr_rx = q_vector->rx.itr_setting;
- 		coalesce[i].intrl = q_vector->intrl;
-+
-+		if (i < vsi->num_txq)
-+			coalesce[i].tx_valid = true;
-+		if (i < vsi->num_rxq)
-+			coalesce[i].rx_valid = true;
- 	}
- 
- 	return vsi->num_q_vectors;
-@@ -2941,17 +2954,59 @@ ice_vsi_rebuild_set_coalesce(struct ice_vsi *vsi,
- 	if ((size && !coalesce) || !vsi)
- 		return;
- 
--	for (i = 0; i < size && i < vsi->num_q_vectors; i++)
--		ice_vsi_rebuild_update_coalesce(vsi->q_vectors[i],
--						&coalesce[i]);
--
--	/* number of q_vectors increased, so assume coalesce settings were
--	 * changed globally (i.e. ethtool -C eth0 instead of per-queue) and use
--	 * the previous settings from q_vector 0 for all of the new q_vectors
-+	/* There are a couple of cases that have to be handled here:
-+	 *   1. The case where the number of queue vectors stays the same, but
-+	 *      the number of Tx or Rx rings changes (the first for loop)
-+	 *   2. The case where the number of queue vectors increased (the
-+	 *      second for loop)
- 	 */
--	for (; i < vsi->num_q_vectors; i++)
--		ice_vsi_rebuild_update_coalesce(vsi->q_vectors[i],
--						&coalesce[0]);
-+	for (i = 0; i < size && i < vsi->num_q_vectors; i++) {
-+		/* There are 2 cases to handle here and they are the same for
-+		 * both Tx and Rx:
-+		 *   if the entry was valid previously (coalesce[i].[tr]x_valid
-+		 *   and the loop variable is less than the number of rings
-+		 *   allocated, then write the previous values
-+		 *
-+		 *   if the entry was not valid previously, but the number of
-+		 *   rings is less than are allocated (this means the number of
-+		 *   rings increased from previously), then write out the
-+		 *   values in the first element
-+		 */
-+		if (i < vsi->alloc_rxq && coalesce[i].rx_valid)
-+			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
-+							    &vsi->q_vectors[i]->rx,
-+							    coalesce[i].itr_rx);
-+		else if (i < vsi->alloc_rxq)
-+			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
-+							    &vsi->q_vectors[i]->rx,
-+							    coalesce[0].itr_rx);
-+
-+		if (i < vsi->alloc_txq && coalesce[i].tx_valid)
-+			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
-+							    &vsi->q_vectors[i]->tx,
-+							    coalesce[i].itr_tx);
-+		else if (i < vsi->alloc_txq)
-+			ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
-+							    &vsi->q_vectors[i]->tx,
-+							    coalesce[0].itr_tx);
-+
-+		ice_vsi_rebuild_update_coalesce_intrl(vsi->q_vectors[i],
-+						      coalesce[i].intrl);
-+	}
-+
-+	/* the number of queue vectors increased so write whatever is in
-+	 * the first element
-+	 */
-+	for (; i < vsi->num_q_vectors; i++) {
-+		ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
-+						    &vsi->q_vectors[i]->tx,
-+						    coalesce[0].itr_tx);
-+		ice_vsi_rebuild_update_coalesce_itr(vsi->q_vectors[i],
-+						    &vsi->q_vectors[i]->rx,
-+						    coalesce[0].itr_rx);
-+		ice_vsi_rebuild_update_coalesce_intrl(vsi->q_vectors[i],
-+						      coalesce[0].intrl);
-+	}
- }
- 
- /**
-@@ -2980,9 +3035,11 @@ int ice_vsi_rebuild(struct ice_vsi *vsi, bool init_vsi)
- 
- 	coalesce = kcalloc(vsi->num_q_vectors,
- 			   sizeof(struct ice_coalesce_stored), GFP_KERNEL);
--	if (coalesce)
--		prev_num_q_vectors = ice_vsi_rebuild_get_coalesce(vsi,
--								  coalesce);
-+	if (!coalesce)
-+		return -ENOMEM;
-+
-+	prev_num_q_vectors = ice_vsi_rebuild_get_coalesce(vsi, coalesce);
-+
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
- 	ice_vsi_free_q_vectors(vsi);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index 40e34ede6e58..ffe0d271dec7 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -357,6 +357,8 @@ struct ice_coalesce_stored {
- 	u16 itr_tx;
- 	u16 itr_rx;
- 	u8 intrl;
-+	u8 tx_valid;
-+	u8 rx_valid;
- };
- 
- /* iterator for handling rings in ring container */
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a881b4b6bce5..336db16d0e12 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -598,7 +598,7 @@ static void ice_print_topo_conflict(struct ice_vsi *vsi)
+ 	case ICE_AQ_LINK_TOPO_UNREACH_PRT:
+ 	case ICE_AQ_LINK_TOPO_UNDRUTIL_PRT:
+ 	case ICE_AQ_LINK_TOPO_UNDRUTIL_MEDIA:
+-		netdev_info(vsi->netdev, "Possible mis-configuration of the Ethernet port detected, please use the Intel(R) Ethernet Port Configuration Tool application to address the issue.\n");
++		netdev_info(vsi->netdev, "Potential misconfiguration of the Ethernet port detected. If it was not intended, please use the Intel (R) Ethernet Port Configuration Tool to address the issue.\n");
+ 		break;
+ 	case ICE_AQ_LINK_TOPO_UNSUPP_MEDIA:
+ 		netdev_info(vsi->netdev, "Rx/Tx is disabled on this device because an unsupported module type was detected. Refer to the Intel(R) Ethernet Adapters and Devices User Guide for a list of supported modules.\n");
 -- 
 2.26.2
 
