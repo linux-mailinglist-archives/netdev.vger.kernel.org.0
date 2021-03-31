@@ -2,117 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B8934F7B2
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 06:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19E8A34F80B
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 06:38:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbhCaEIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 00:08:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56512 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229852AbhCaEIL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 00:08:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 68F4B619CA;
-        Wed, 31 Mar 2021 04:08:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617163691;
-        bh=UMlsOs6Dbxca83C/3FBS5+AJAtMOOVGiJGMuoOu1ndc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SYYDIOtIi0+N9w8MwEQgQLYHde5HWkZSry+zXS6MTOxYNu1xLn28tauXTw4DjwkZs
-         RgHynOg7nt4m83nPp9iHMDvMrqazLNA2FSzED2PkXlUaIqEKXwT84/hUHRHoB8nRGb
-         ziU4+c5gD5kvQHpfAsQcZFR+ZjAvHrASmqz0JdZ/I5AChKN3LZE5bHCLk9ogosqoGY
-         9K702KBOy4PgLC/EBbKvU+7iAETpj+3AVjygOaAtyf6dTW42R+/66PE2vg9g+m0FgX
-         KXiAenyhx13NsV5L/JiPK1WLGyXSGA5qMALAyh7hO92FjH6o43ZfXVZxJJiRzCvqFb
-         pBVSXB3LD75pg==
-Date:   Wed, 31 Mar 2021 07:08:07 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        id S232627AbhCaEht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 00:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230412AbhCaEhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 00:37:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B32BC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 21:37:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=Uu/REj8xsu7OZC7N2C/I1JBW/vM03sB0JFwoUaNvhTA=; b=s6+3bEwWSO06+HWZ/GKnw6w23x
+        m4gVnzLKyZR2mwq1fc2QVmjtRRdZxUntWdgHFEa5t6LsiccTtHv/VQcz6dV0VdKQfUO28dJQeN5Ck
+        0wg1w1pvJzMq9kYieoVHI/TXlopHOTNvUUsOfkZqnwD0k7ZYwEIGqHx/K1tErl4NeXX6gbXkv9HRN
+        57Npcjo9pEj8+aQBPErKL70Y91DKipq+oLrSq1WIwcdPsWFxWZ/b1q56pIdN1vU0gU23yIpsiFIms
+        LXDvB8590TZdV5a50fR9xS8V9qai1tMQeQb58aeile7nnZd4xRkoxTT514LmtQshCJBaDp32sF9+K
+        zG6hIrLQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lRSaz-0041fP-2c; Wed, 31 Mar 2021 04:36:52 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <YGP1p7KH+/gL4NAU@unreal>
-References: <20210330194716.GV2710221@ziepe.ca>
- <20210330204141.GA1305530@bjorn-Precision-5520>
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH] qrtr: Convert qrtr_ports from IDR to XArray
+Date:   Wed, 31 Mar 2021 05:36:42 +0100
+Message-Id: <20210331043643.959675-1-willy@infradead.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210330204141.GA1305530@bjorn-Precision-5520>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 03:41:41PM -0500, Bjorn Helgaas wrote:
-> On Tue, Mar 30, 2021 at 04:47:16PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Mar 30, 2021 at 10:00:19AM -0500, Bjorn Helgaas wrote:
-> > > On Tue, Mar 30, 2021 at 10:57:38AM -0300, Jason Gunthorpe wrote:
-> > > > On Mon, Mar 29, 2021 at 08:29:49PM -0500, Bjorn Helgaas wrote:
-> > > > 
-> > > > > I think I misunderstood Greg's subdirectory comment.  We already have
-> > > > > directories like this:
-> > > > 
-> > > > Yes, IIRC, Greg's remark applies if you have to start creating
-> > > > directories with manual kobjects.
-> > > > 
-> > > > > and aspm_ctrl_attr_group (for "link") is nicely done with static
-> > > > > attributes.  So I think we could do something like this:
-> > > > > 
-> > > > >   /sys/bus/pci/devices/0000:01:00.0/   # PF directory
-> > > > >     sriov/                             # SR-IOV related stuff
-> > > > >       vf_total_msix
-> > > > >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of first VF
-> > > > >       ...
-> > > > >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of last VF
-> > > > 
-> > > > It looks a bit odd that it isn't a subdirectory, but this seems
-> > > > reasonable.
-> > > 
-> > > Sorry, I missed your point; you'll have to lay it out more explicitly.
-> > > I did intend that "sriov" *is* a subdirectory of the 0000:01:00.0
-> > > directory.  The full paths would be:
-> > >
-> > >   /sys/bus/pci/devices/0000:01:00.0/sriov/vf_total_msix
-> > >   /sys/bus/pci/devices/0000:01:00.0/sriov/vf_msix_count_BB:DD.F
-> > >   ...
-> > 
-> > Sorry, I was meaning what you first proposed:
-> > 
-> >    /sys/bus/pci/devices/0000:01:00.0/sriov/BB:DD.F/vf_msix_count
-> > 
-> > Which has the extra sub directory to organize the child VFs.
-> > 
-> > Keep in mind there is going to be alot of VFs here, > 1k - so this
-> > will be a huge directory.
-> 
-> With 0000:01:00.0/sriov/vf_msix_count_BB:DD.F, sriov/ will contain
-> 1 + 1K files ("vf_total_msix" + 1 per VF).
-> 
-> With 0000:01:00.0/sriov/BB:DD.F/vf_msix_count, sriov/ will contain
-> 1 file and 1K subdirectories.
+The XArray interface is easier for this driver to use.  Also fixes a
+bug reported by the improper use of GFP_ATOMIC.
 
-This is racy by design, in order to add new file and create BB:DD.F
-directory, the VF will need to do it after or during it's creation.
-During PF creation it is unknown to PF those BB:DD.F values.
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+---
+ net/qrtr/qrtr.c | 42 ++++++++++++++----------------------------
+ 1 file changed, 14 insertions(+), 28 deletions(-)
 
-The race here is due to the events of PF,VF directory already sent but
-new directory structure is not ready yet.
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index dfc820ee553a..4b46c69e14ab 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -20,6 +20,8 @@
+ /* auto-bind range */
+ #define QRTR_MIN_EPH_SOCKET 0x4000
+ #define QRTR_MAX_EPH_SOCKET 0x7fff
++#define QRTR_EPH_PORT_RANGE \
++		XA_LIMIT(QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET)
+ 
+ /**
+  * struct qrtr_hdr_v1 - (I|R)PCrouter packet header version 1
+@@ -106,8 +108,7 @@ static LIST_HEAD(qrtr_all_nodes);
+ static DEFINE_MUTEX(qrtr_node_lock);
+ 
+ /* local port allocation management */
+-static DEFINE_IDR(qrtr_ports);
+-static DEFINE_MUTEX(qrtr_port_lock);
++static DEFINE_XARRAY_ALLOC(qrtr_ports);
+ 
+ /**
+  * struct qrtr_node - endpoint node
+@@ -653,7 +654,7 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
+ 		port = 0;
+ 
+ 	rcu_read_lock();
+-	ipc = idr_find(&qrtr_ports, port);
++	ipc = xa_load(&qrtr_ports, port);
+ 	if (ipc)
+ 		sock_hold(&ipc->sk);
+ 	rcu_read_unlock();
+@@ -695,9 +696,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+ 
+ 	__sock_put(&ipc->sk);
+ 
+-	mutex_lock(&qrtr_port_lock);
+-	idr_remove(&qrtr_ports, port);
+-	mutex_unlock(&qrtr_port_lock);
++	xa_erase(&qrtr_ports, port);
+ 
+ 	/* Ensure that if qrtr_port_lookup() did enter the RCU read section we
+ 	 * wait for it to up increment the refcount */
+@@ -716,29 +715,20 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+  */
+ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+ {
+-	u32 min_port;
+ 	int rc;
+ 
+-	mutex_lock(&qrtr_port_lock);
+ 	if (!*port) {
+-		min_port = QRTR_MIN_EPH_SOCKET;
+-		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, QRTR_MAX_EPH_SOCKET, GFP_ATOMIC);
+-		if (!rc)
+-			*port = min_port;
++		rc = xa_alloc(&qrtr_ports, port, ipc, QRTR_EPH_PORT_RANGE,
++				GFP_KERNEL);
+ 	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
+ 		rc = -EACCES;
+ 	} else if (*port == QRTR_PORT_CTRL) {
+-		min_port = 0;
+-		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, 0, GFP_ATOMIC);
++		rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
+ 	} else {
+-		min_port = *port;
+-		rc = idr_alloc_u32(&qrtr_ports, ipc, &min_port, *port, GFP_ATOMIC);
+-		if (!rc)
+-			*port = min_port;
++		rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
+ 	}
+-	mutex_unlock(&qrtr_port_lock);
+ 
+-	if (rc == -ENOSPC)
++	if (rc == -EBUSY)
+ 		return -EADDRINUSE;
+ 	else if (rc < 0)
+ 		return rc;
+@@ -752,20 +742,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+ static void qrtr_reset_ports(void)
+ {
+ 	struct qrtr_sock *ipc;
+-	int id;
+-
+-	mutex_lock(&qrtr_port_lock);
+-	idr_for_each_entry(&qrtr_ports, ipc, id) {
+-		/* Don't reset control port */
+-		if (id == 0)
+-			continue;
++	unsigned long index;
+ 
++	rcu_read_lock();
++	xa_for_each_start(&qrtr_ports, index, ipc, 1) {
+ 		sock_hold(&ipc->sk);
+ 		ipc->sk.sk_err = ENETRESET;
+ 		ipc->sk.sk_error_report(&ipc->sk);
+ 		sock_put(&ipc->sk);
+ 	}
+-	mutex_unlock(&qrtr_port_lock);
++	rcu_read_unlock();
+ }
+ 
+ /* Bind socket to address.
+-- 
+2.30.2
 
-From code perspective, we will need to add something similar to pci_iov_sysfs_link()
-with the code that you didn't like in previous variants (the one that messes with
-sysfs_create_file API).
-
-It looks not good for large SR-IOV systems with >1K VFs with gazillion
-subdirectories inside PF, while the more natural is to see them in VF.
-
-So I'm completely puzzled why you want to do these files on PF and not
-on VF as v0, v7 and v8 proposed.
-
-Thanks
