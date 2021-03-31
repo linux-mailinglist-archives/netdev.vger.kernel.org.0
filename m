@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35AC4350672
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 20:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D45350690
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 20:42:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235196AbhCaSfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 14:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        id S234954AbhCaSmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 14:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234963AbhCaSfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 14:35:32 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB06C061574;
-        Wed, 31 Mar 2021 11:35:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=0vZ+YaBhujkG/DFgqzNwjOQqJ1o921OtGFpttV4YyFA=; b=jklEy7gQzb5vBp/1CFBQ5AVcq
-        /oFYyKdRqN9Rl+OvtwuysRz00/kEMHBShFHUsGGdF6cv5bavqD8FBjFZbBUgo5WUM6UCu/SPhIA1p
-        SGUzcjKnGFwjwGzSb/iamfyr3bWWB52b9QrHpaqfCSMxyR90aJcCub2HVf3gI0EtA8QIV1aKywy0+
-        JTcnlbLL/gqf+aVyfidB7rrJ6p12jy0v4bSxF3rUcgv36NJtY6UacgW1H5Cn3eVETp/fKPFZlG/I3
-        fcdShUHEjsWtCUnPJDMZYhnugIFpVpjc1u0x+SakX9nc191u2htTCF8rsAC77XHu/jBGO4PsDVzhJ
-        yoy/TpGIA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51982)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lRfgc-0002AN-Hp; Wed, 31 Mar 2021 19:35:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lRfga-000489-Ja; Wed, 31 Mar 2021 19:35:24 +0100
-Date:   Wed, 31 Mar 2021 19:35:24 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     danilokrummrich@dk-develop.de
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
-Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
-Message-ID: <20210331183524.GV1463@shell.armlinux.org.uk>
-References: <20210331141755.126178-1-danilokrummrich@dk-develop.de>
- <20210331141755.126178-3-danilokrummrich@dk-develop.de>
- <YGSi+b/r4zlq9rm8@lunn.ch>
- <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
+        with ESMTP id S234446AbhCaSlo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 14:41:44 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED190C061574;
+        Wed, 31 Mar 2021 11:41:43 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id ha17so9982293pjb.2;
+        Wed, 31 Mar 2021 11:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=miQIpXzzSlxlo4KCoDggGOO7tlc2KNpZkFxFMVFV92M=;
+        b=BBVci2aDzZp0k3vai2pZSBeQB7mvcYj+yO++e/R3MT2nyxhBztOzV/jUK8nLSol0Ve
+         n5jdWA8m98lu6ym230WH3jJqJK3MIYTd9ikGAc5iuqeBwPnnbVs3h2aYrDNX3UQQs8DY
+         vxa0q41TGffu4BpNiR+2UL1IFZK5qJ4Fzuz+SAAd0ywlgQD9WnJU3x337+9dWxX7zC0h
+         +U16xAOOYGnxILBih+qiIqIsoRBkl5fGvjLIWPwlYcmMhcosGl0pzWMFOkpRxyXZ6fVD
+         kjBuTIqnRDLFLE7BsTKwhmhvh0tPkQ8Z9F5fcyBBKykSz8GwqUV8IbexAcd0cpJx1kj1
+         evkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=miQIpXzzSlxlo4KCoDggGOO7tlc2KNpZkFxFMVFV92M=;
+        b=Vx3/d0BG9sbZNo8rB3GCm4/MjlJCOllIzuRfB10aMGuXKUHiVmAfsD+EpgUe7OAc0n
+         VU828UHuyX+xVCkukj8DVzfFabw868bdOKuPg8V+tPCHaJqQLCMiFTmHpvF06ZZZUiQA
+         pi4wIT+KG9QWSxohv0wzHSwV59Xk1Rd4sYlxI6/tkcTQIvQ5tTCJ2SentXmjBvx87HBq
+         cp/R5bJ9MTORTxGEAHx8iMZDYl8IcidebxFYUJv03sQAWkl2iZYoD0tkN8+rNAooN8Gn
+         88Hz3YLnqW182ePdjacWkGpvQ59PdPSru2S5Bass/zr3HU9N8fG9QVJL4t6+O3WeMhOL
+         0vvA==
+X-Gm-Message-State: AOAM531meht+/7gKtyvkDi3HdU19ze3yX7Bwg6pyvnrb4d52YyH2m8Cr
+        8mEOQDm5mLkVYjjEgd68a2K5Vrz2o6PWUDkn7PIn14qY0gk=
+X-Google-Smtp-Source: ABdhPJzFs3H28CHSDD+2uHFVGTJ2YH4CC9EargAoxmhssLeqrr2MRMXDf55oft1ELN+nkIWvMm9zOsZcgzqHf4vNv2E=
+X-Received: by 2002:a17:903:22c7:b029:e6:faf5:eb3a with SMTP id
+ y7-20020a17090322c7b02900e6faf5eb3amr4483490plg.23.1617216103593; Wed, 31 Mar
+ 2021 11:41:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <20210328221205.726511-1-xie.he.0141@gmail.com>
+In-Reply-To: <20210328221205.726511-1-xie.he.0141@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Wed, 31 Mar 2021 11:41:32 -0700
+Message-ID: <CAJht_EMVAV1eyredF+VEF=hxTTMVRMx+89XdpVAWpD5Lq1Y9Tw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: x25: Queue received packets in the
+ drivers instead of per-CPU queues
+To:     Martin Schiller <ms@dev.tdt.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        linux-doc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 07:58:33PM +0200, danilokrummrich@dk-develop.de wrote:
-> For this cited change the only thing happening is that if get_phy_device()
-> already failed for probing with is_c45==false (C22 devices) it tries to
-> probe with is_c45==true (C45 devices) which then either results into actual
-> C45 frame transfers or indirect accesses by calling mdiobus_c45_*() functions.
+Hi Martin,
 
-Please explain why and how a PHY may not appear to be present using
-C22 frames to read the ID registers, but does appear to be present
-when using C22 frames to the C45 indirect registers - and summarise
-which PHYs have this behaviour.
+Could you ack this patch again? The only change from the RFC version
+(that you previously acked) is the addition of the "__GFP_NOMEMALLOC"
+flag in "dev_alloc_skb". This is because I want to prevent pfmemalloc
+skbs (which can't be handled by netif_receive_skb_core) from
+occurring.
 
-It seems very odd that any PHY would only implement C45 indirect
-registers in the C22 register space.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks!
