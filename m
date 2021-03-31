@@ -2,140 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A3A34FFFC
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 14:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 627B8350013
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 14:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235393AbhCaMLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 08:11:20 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59378 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235019AbhCaMLF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 08:11:05 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id B8E6DB1E5;
-        Wed, 31 Mar 2021 12:11:03 +0000 (UTC)
-Subject: Re: [PATCH V2 1/1] mm:improve the performance during fork
-To:     Andrew Morton <akpm@linux-foundation.org>, qianjun.kernel@gmail.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20210329123635.56915-1-qianjun.kernel@gmail.com>
- <20210330224406.5e195f3b8b971ff2a56c657d@linux-foundation.org>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Message-ID: <9f012469-ccda-2c95-aa5a-7ca4f6fb2891@suse.cz>
-Date:   Wed, 31 Mar 2021 14:11:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        id S235456AbhCaMTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 08:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235286AbhCaMTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 08:19:32 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7C4C06174A
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 05:19:32 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id z10so19028842qkz.13
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 05:19:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PJyuYOXEPThE2Fv31/yb2A5G05WFpUI9cqxqY5aTGFs=;
+        b=lY8FLwMa2kcF/T7oV3kAmGT+GFcjJzTyqpBzA0VBe7KQERhmtwl70OEeapllblGjH/
+         /4zrxh0leobwu+cTHedaMGjHtmJjx/0MkqMPf93pxbD7f7z4esKkdxUIK4DEivB3lS3a
+         P7q9kBsdvo66lka3YUC3xOk6Vuz0E+Sk85v6ktzK5vrJRJlm+QgxCTkSfCQrTt2EZhN7
+         NCP/xox83L2uC+0j0vMhEf4EdwSVvXcpjEZNIm6thm6uNHm1QjkZdLAoI3Z+lve2tCa/
+         qtROhBm9fOvvIG7IG1gQuY1ssIzdHesBWb3jKi7webZdFK6jQONMHiZ9CXV9piz8jLi/
+         GBfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PJyuYOXEPThE2Fv31/yb2A5G05WFpUI9cqxqY5aTGFs=;
+        b=pAwBbMcQbsntG15x/Mtt+SF0llbskLtKDDeaZMEVu09tfwaNWTZaLIcSw7wDAHVNLP
+         376Np2YV4vnEroXXVuhl4ysbiAms4AqgKJdvPccULp306wN+Hv/wzsgJaTYfqLwFpyIr
+         32h0Y1cEdnneDqKcQZ3G2qvnYfM5MZX0LRhzTz3Y+vsMNunS4d0vLxyvquSx6PbOvJCt
+         liPbWYw9L49lOL6E2pdsX1DmV/VN91jtgx9dIHgvpr1FMlg/QcfLyBEOEFVQrEc5BEV6
+         qPmB5lqQVa7IN4XJgiNYv5/+MecEgm6dyoXfZjKLFLOZWtEwIbQ4GNRB4o4cQ4yWieA8
+         5Lxw==
+X-Gm-Message-State: AOAM531ldcMveKlBzRJ8EZcmmxedB53vJ67qm6xC1r1SSWkLPrS93RZ2
+        KWOtT/YvNTeYguZJ5eTK88c0PA==
+X-Google-Smtp-Source: ABdhPJwkTUWmwjW/6AxVt/xVKUV2IWciFy7YCIjz7ea+0L3y7vHWpvlGHOx2deUuGfkMXIkbZdH3Qw==
+X-Received: by 2002:ae9:c011:: with SMTP id u17mr2869066qkk.2.1617193171556;
+        Wed, 31 Mar 2021 05:19:31 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.115.133])
+        by smtp.gmail.com with ESMTPSA id w5sm1288993qkc.85.2021.03.31.05.19.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 05:19:30 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1lRZon-006Jwt-R3; Wed, 31 Mar 2021 09:19:29 -0300
+Date:   Wed, 31 Mar 2021 09:19:29 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210331121929.GX2710221@ziepe.ca>
+References: <20210330194716.GV2710221@ziepe.ca>
+ <20210330204141.GA1305530@bjorn-Precision-5520>
+ <20210330224341.GW2710221@ziepe.ca>
+ <YGQY72LnGB6bfIsI@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <20210330224406.5e195f3b8b971ff2a56c657d@linux-foundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YGQY72LnGB6bfIsI@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/31/21 7:44 AM, Andrew Morton wrote:
-> On Mon, 29 Mar 2021 20:36:35 +0800 qianjun.kernel@gmail.com wrote:
+On Wed, Mar 31, 2021 at 08:38:39AM +0200, Greg Kroah-Hartman wrote:
+> On Tue, Mar 30, 2021 at 07:43:41PM -0300, Jason Gunthorpe wrote:
+> > > With 0000:01:00.0/sriov/BB:DD.F/vf_msix_count, sriov/ will contain
+> > > 1 file and 1K subdirectories.
+> > 
+> > The smallest directory sizes is with the current patch since it
+> > re-uses the existing VF directory. Do we care about directory size at
+> > the sysfs level?
 > 
->> From: jun qian <qianjun.kernel@gmail.com>
->> 
->> In our project, Many business delays come from fork, so
->> we started looking for the reason why fork is time-consuming.
->> I used the ftrace with function_graph to trace the fork, found
->> that the vm_normal_page will be called tens of thousands and
->> the execution time of this vm_normal_page function is only a
->> few nanoseconds. And the vm_normal_page is not a inline function.
->> So I think if the function is inline style, it maybe reduce the
->> call time overhead.
->> 
->> I did the following experiment:
->> 
->> use the bpftrace tool to trace the fork time :
->> 
->> bpftrace -e 'kprobe:_do_fork/comm=="redis-server"/ {@st=nsecs;} \
->> kretprobe:_do_fork /comm=="redis-server"/{printf("the fork time \
->> is %d us\n", (nsecs-@st)/1000)}'
->> 
->> no inline vm_normal_page:
->> result:
->> the fork time is 40743 us
->> the fork time is 41746 us
->> the fork time is 41336 us
->> the fork time is 42417 us
->> the fork time is 40612 us
->> the fork time is 40930 us
->> the fork time is 41910 us
->> 
->> inline vm_normal_page:
->> result:
->> the fork time is 39276 us
->> the fork time is 38974 us
->> the fork time is 39436 us
->> the fork time is 38815 us
->> the fork time is 39878 us
->> the fork time is 39176 us
->> 
->> In the same test environment, we can get 3% to 4% of
->> performance improvement.
->> 
->> note:the test data is from the 4.18.0-193.6.3.el8_2.v1.1.x86_64,
->> because my product use this version kernel to test the redis
->> server, If you need to compare the latest version of the kernel
->> test data, you can refer to the version 1 Patch.
->> 
->> We need to compare the changes in the size of vmlinux:
->>                   inline           non-inline       diff
->> vmlinux size      9709248 bytes    9709824 bytes    -576 bytes
->> 
+> No, that should not matter.
 > 
-> I get very different results with gcc-7.2.0:
+> The "issue" here is that you "broke" the device chain here by adding a
+> random kobject to the directory tree: "BB:DD.F"
 > 
-> q:/usr/src/25> size mm/memory.o
->    text    data     bss     dec     hex filename
->   74898    3375      64   78337   13201 mm/memory.o-before
->   75119    3363      64   78546   132d2 mm/memory.o-after
-
-I got this:
-
-./scripts/bloat-o-meter memory.o.before mm/memory.o
-add/remove: 0/0 grow/shrink: 1/3 up/down: 285/-86 (199)
-Function                                     old     new   delta
-copy_pte_range                              2095    2380    +285
-vm_normal_page                               168     163      -5
-do_anonymous_page                           1039    1003     -36
-do_swap_page                                1835    1790     -45
-Total: Before=42411, After=42610, chg +0.47%
-
-
-> That's a somewhat significant increase in code size, and larger code
-> size has a worsened cache footprint.
+> Again, devices are allowed to have attributes associated with it to be
+> _ONE_ subdirectory level deep.
 > 
-> Not that this is necessarily a bad thing for a function which is
-> tightly called many times in succession as is vm__normal_page()
-
-Hm but the inline only affects the users within mm/memory.c, unless the kernel
-is built with link time optimization (LTO), which is not AFAIK not the standard yet.
-
->> --- a/mm/memory.c
->> +++ b/mm/memory.c
->> @@ -592,7 +592,7 @@ static void print_bad_pte(struct vm_area_struct *vma, unsigned long addr,
->>   * PFNMAP mappings in order to support COWable mappings.
->>   *
->>   */
->> -struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
->> +inline struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long addr,
->>  			    pte_t pte)
->>  {
->>  	unsigned long pfn = pte_pfn(pte);
+> So, to use your path above, this is allowed:
+> 	0000:01:00.0/sriov/vf_msix_count
 > 
-> I'm a bit surprised this made any difference - rumour has it that
-> modern gcc just ignores `inline' and makes up its own mind.  Which is
-> why we added __always_inline.
+> as these are sriov attributes for the 0000:01:00.0 device, but this is
+> not:
+> 	0000:01:00.0/sriov/BB:DD.F/vf_msix_count
+> as you "threw" a random kobject called BB:DD.F into the middle.
+>
+> If you want to have "BB:DD.F" in there, then it needs to be a real
+> struct device and _THEN_ it needs to point its parent to "0000:01:00.0",
+> another struct device, as "sriov" is NOT ANYTHING in the heirachy here
+> at all.
 
-AFAIK it doesn't completely ignore it, just takes it as a hint in addition to
-its own heuristics. So adding the keyword might flip the decision to inline in
-some cases, but is not guaranteed to.
+It isn't a struct device object at all though, it just organizing
+attributes.
+
+> Does that help?  The rules are:
+> 	- Once you use a 'struct device', all subdirs below that device
+> 	  are either an attribute group for that device or a child
+> 	  device.
+> 	- A struct device can NOT have an attribute group as a parent,
+> 	  it can ONLY have another struct device as a parent.
+> 
+> If you break those rules, the kernel has the ability to get really
+> confused unless you are very careful, and userspace will be totally lost
+> as you can not do anything special there.
+
+The kernel gets confused?
+
+I'm not sure I understand why userspace gets confused. I can guess
+udev has some issue, but everything else seems OK, it is just a path.
+
+> > > I'm dense and don't fully understand Greg's subdirectory comment.
+> > 
+> > I also don't know udev well enough. I've certainly seen drivers
+> > creating extra subdirectories using kobjects.
+> 
+> And those drivers are broken.  Please point them out to me and I will be
+> glad to go fix them.  Or tell their authors why they are broken :)
+
+How do you fix them? It is uAPI at this point so we can't change the
+directory names. Can't make them struct devices (userspace would get
+confused if we add *more* sysfs files)
+
+Grep for kobject_init_and_add() under drivers/ and I think you get a
+pretty good overview of the places.
+
+Since it seems like kind of a big problem can we make this allowed
+somehow?
+
+> > > But it doesn't seem like that level of control would be in a udev rule
+> > > anyway.  A PF udev rule might *start* a program to manage MSI-X
+> > > vectors, but such a program should be able to deal with whatever
+> > > directory structure we want.
+> >
+> > Yes, I can't really see this being used from udev either. 
+> 
+> It doesn't matter if you think it could be used, it _will_ be used as
+> you are exposing this stuff to userspace.
+
+Well, from what I understand, it wont be used because udev can't do
+three level deep attributes, and if that hasn't been a problem in that
+last 10 years for the existing places, it might not ever be needed in
+udev at all.
+
+> > I assume there is also the usual race about triggering the uevent
+> > before the subdirectories are created, but we have the
+> > dev_set_uevent_suppress() thing now for that..
+> 
+> Unless you are "pci bus code" you shouldn't be using that :)
+
+There are over 40 users now.
+
+Jason
