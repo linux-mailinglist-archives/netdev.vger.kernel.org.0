@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3276034F6E0
+	by mail.lfdr.de (Postfix) with ESMTP id CAE7934F6E2
 	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 04:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbhCaCjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 22:39:52 -0400
-Received: from mail-m17637.qiye.163.com ([59.111.176.37]:52656 "EHLO
+        id S233417AbhCaCjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 22:39:54 -0400
+Received: from mail-m17637.qiye.163.com ([59.111.176.37]:53056 "EHLO
         mail-m17637.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230284AbhCaCjY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:39:24 -0400
+        with ESMTP id S233285AbhCaCj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:39:29 -0400
 Received: from wanjb-virtual-machine.localdomain (unknown [36.152.145.182])
-        by mail-m17637.qiye.163.com (Hmail) with ESMTPA id 9CD07980166;
-        Wed, 31 Mar 2021 10:39:21 +0800 (CST)
+        by mail-m17637.qiye.163.com (Hmail) with ESMTPA id 19D4E98023A;
+        Wed, 31 Mar 2021 10:39:27 +0800 (CST)
 From:   Wan Jiabing <wanjiabing@vivo.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -38,45 +38,45 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
 Cc:     kael_w@yeah.net
-Subject: [PATCH 2/4] net: wireless: microchip: Remove duplicate struct declaration
-Date:   Wed, 31 Mar 2021 10:35:51 +0800
-Message-Id: <20210331023557.2804128-3-wanjiabing@vivo.com>
+Subject: [PATCH 3/4] net: wireless: marvell: Remove duplicate struct declaration
+Date:   Wed, 31 Mar 2021 10:35:52 +0800
+Message-Id: <20210331023557.2804128-4-wanjiabing@vivo.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331023557.2804128-1-wanjiabing@vivo.com>
 References: <20210331023557.2804128-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
-        oVCBIfWUFZGU1LQkJDQkMeTxlKVkpNSkxKTkNITUlJQ0pVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        oVCBIfWUFZGU8dGRhNHhlOHk9CVkpNSkxKTkNITUxMS0NVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
         FZT0tIVUpKS0hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Phg6GQw4CT8JSzYCSDlJD086
-        DxkKFBZVSlVKTUpMSk5DSE1JTk1KVTMWGhIXVQwaFRESGhkSFRw7DRINFFUYFBZFWVdZEgtZQVlI
-        TVVKTklVSk9OVUpDSVlXWQgBWUFISEJNNwY+
-X-HM-Tid: 0a7886265476d992kuws9cd07980166
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MUk6MAw5Ij8OLDYZSDohD08e
+        EkkaCjNVSlVKTUpMSk5DSE1DS0pNVTMWGhIXVQwaFRESGhkSFRw7DRINFFUYFBZFWVdZEgtZQVlI
+        TVVKTklVSk9OVUpDSVlXWQgBWUFIT05INwY+
+X-HM-Tid: 0a78862669bed992kuws19d4e98023a
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct wilc is declared twice. One has been declared
-at 352nd line. Remove the duplicate.
+struct lbtf_private is declared twice. One has been declared
+at 157th line. Remove the duplicate.
 
 Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 ---
- drivers/net/wireless/microchip/wilc1000/wlan.h | 1 -
+ drivers/net/wireless/marvell/libertas_tf/libertas_tf.h | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/wlan.h b/drivers/net/wireless/microchip/wilc1000/wlan.h
-index d55eb6b3a12a..0d24e711b62b 100644
---- a/drivers/net/wireless/microchip/wilc1000/wlan.h
-+++ b/drivers/net/wireless/microchip/wilc1000/wlan.h
-@@ -392,7 +392,6 @@ struct wilc_cfg_rsp {
- 	u8 seq_no;
+diff --git a/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h b/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
+index 67bbb6a8f113..5d726545d987 100644
+--- a/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
++++ b/drivers/net/wireless/marvell/libertas_tf/libertas_tf.h
+@@ -453,7 +453,6 @@ struct cmd_ds_802_11_beacon_set {
+ 	u8 beacon[MRVL_MAX_BCN_SIZE];
  };
  
--struct wilc;
- struct wilc_vif;
+-struct lbtf_private;
+ struct cmd_ctrl_node;
  
- int wilc_wlan_firmware_download(struct wilc *wilc, const u8 *buffer,
+ /** Function Prototype Declaration */
 -- 
 2.25.1
 
