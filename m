@@ -2,152 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C13C03507A9
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 21:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FC273507CF
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:09:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236347AbhCaTya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 15:54:30 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:52524 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235926AbhCaTy1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 15:54:27 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12VJj8Z2127949;
-        Wed, 31 Mar 2021 19:54:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=PGIS4vP5BB9k6N2oYAPO3ufUTHvcpTMs0w4wLEQ1OS4=;
- b=L8OziY71TluRwlFspQ4t++QjcxlpSbwp9OSkX5jbYKq2i7KMLsROSdAsKCaLkQwOZ7m+
- OvY1yLULDDKp+3aMkBoZPc9JIreHKnL1nj1EAge/HvBSA6D41EGDfsoalykbqo4d4vKS
- 8b+xMnM/gqpZU2fyjgZGd4BJ+lp3b1kTUIT3Xj6Ry07tWicAs1inqdN2FFa5l1Hi4s3n
- jybRpu0zHcWpC3IWirKj6ASK7dCHGNmeobIgW6ru1kGXFWettboOMvugitlbAgcaSQim
- 4xh4Er7CsiHdt9/21/kf2kbCLI1TPa7CHshvylbi8ZmSv9RFWUciDuhSzFHkybec3ovT wg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 37mad9ufsm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 31 Mar 2021 19:54:21 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12VJphY7128938;
-        Wed, 31 Mar 2021 19:54:20 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2108.outbound.protection.outlook.com [104.47.70.108])
-        by aserp3030.oracle.com with ESMTP id 37mabptt7s-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 31 Mar 2021 19:54:20 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dJdrgFaVS7eehPxb6lB5prQjX7ugp0HbPPUZ78LypNbyCxfYwODe8xBrh1g8kLMH/rSLT7Wd9qJdV3f8mMJwxveS34h2/NKcJwLGPetmq6Ty+1uu++0cZ9LDrOXSz1pn3U+9wZ94+MpERm02IzJvqP+5FijLXVGJQXWiov/zLr1V9Yja3VcAd+TAoA5Uv/HZULhskDpjoYL3qOuA2OZkGraqqfgJW+N/Zmdp3YxUlGQnpLXKoe42l8CH9nStfG5WNNjLmDabBqAp/VsSGHlCrtTkWDRRISp9ow9Kt3/sPRfiuVD/wtgBEVDjmo5PLIN+9S7nOCDa3nZFZ+ManSuddQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PGIS4vP5BB9k6N2oYAPO3ufUTHvcpTMs0w4wLEQ1OS4=;
- b=Nm7Ainu47oswJeud9vIPqzDs0/MNEzvAb1Wp/YMnXOlr8CdDV/PypPvW/C8VCQ48EkwfKXiy6HujBo0elVxyS326RsvvCkv86jAPbfgJL+4OqysgjWsUFWHfpQVerK0qrRuONH6aZpCLnwwz4Q7y0A7BXpAL9fzdgcrawKosS2F5cPR3l1/M/+6zcfO+DoHPEYNt+y91+AuKhuO/MB85cMGjknEbF12L3x1w8S2k/7Y/zJPXb8nyD4cHQlzlWi3yq+OyZ39hMF0zGaoJTohWGy2xMVrTNfXXToulK4jAwY6dGahv6iOQ2WWv1VwKBHF6hoTUWD09o0xKklSShp5fIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S236434AbhCaUJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 16:09:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236386AbhCaUJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 16:09:14 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F83CC061574;
+        Wed, 31 Mar 2021 13:09:14 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id l18so23753790edc.9;
+        Wed, 31 Mar 2021 13:09:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PGIS4vP5BB9k6N2oYAPO3ufUTHvcpTMs0w4wLEQ1OS4=;
- b=rCs/JnUPS1r5C2DnMELyr46v33LbJx4DW4Cgbc9Tx7V7SjEib4PMgRvkhync7TrCXYIQde7q2mjC29aON2JjvxTOFHVc/EDhd0dBPGpR2s+b6/0QYrQ7XTNOlSc1tz2oO+SQFutKuLrLzBpSa5xBcG4w9P4YASw0GYTt/0XiJWI=
-Received: from BYAPR10MB3270.namprd10.prod.outlook.com (2603:10b6:a03:159::25)
- by SJ0PR10MB4591.namprd10.prod.outlook.com (2603:10b6:a03:2af::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25; Wed, 31 Mar
- 2021 19:54:17 +0000
-Received: from BYAPR10MB3270.namprd10.prod.outlook.com
- ([fe80::9ceb:27f9:6598:8782]) by BYAPR10MB3270.namprd10.prod.outlook.com
- ([fe80::9ceb:27f9:6598:8782%5]) with mapi id 15.20.3977.033; Wed, 31 Mar 2021
- 19:54:17 +0000
-From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
-To:     Haakon Bugge <haakon.bugge@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
- use it in RDS
-Thread-Topic: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
- use it in RDS
-Thread-Index: AQHXJl2/BwuMcDru7EWjNiXXpoc6NqqegUe3
-Date:   Wed, 31 Mar 2021 19:54:17 +0000
-Message-ID: <BYAPR10MB3270D41D73EA9D9D4FCAF118937C9@BYAPR10MB3270.namprd10.prod.outlook.com>
-References: <1617216194-12890-1-git-send-email-haakon.bugge@oracle.com>
-In-Reply-To: <1617216194-12890-1-git-send-email-haakon.bugge@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [69.181.241.203]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 246ec8d6-ba76-4d73-30fe-08d8f47ec4de
-x-ms-traffictypediagnostic: SJ0PR10MB4591:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SJ0PR10MB4591F657F6B440A1E01F4352937C9@SJ0PR10MB4591.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2331;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3hYkA9if56tAl0DRVvXr5HO9x3e5spGMsznKw2HRt4Ck4feXGrIdLNSjANDp6FGXRbuX+Q4cTm/KToBlfqREL1U8bh77SxSgHt/TNXCXhBVFZ1EViyzf536AuliJeYcYkm5TRl5zmLkX2yx/8lBJWB7hVdtg3BqbP8JlaBpzLxbOCSa+629Pug7Wm0L4SwXqZLnGFP0Xjk+ySa2g/sXVV2F7cWLjXZI1ajLtvHng0YOqL/iQYYbM2QvjWgWwZsEaYz6SpC4Srf+ww42EdNhCCR87DQ5Xgq6Ghy3t0vf186mpl8qymAHP1g3YkOct8V9zNcTyLuMafAAwucW7JfTZijjzAzwBOHGHDSoLSGuvDds2OlsKsy+/2wV09L+dTt3DvBbUzOv+rjVQAqEtfiv5JL92qAoCMswzgiA5WIGU4p9xnHqdbIsBi/38dAeXEFJGXykKpHT9wcCp0GtRa/yFzIqAvOQAcRGxtPohCcHE4+yF/I+81Y4koGQCwUCOHVvw9Kx4QSQNvu9ao6oaOYb6HpL9JxQWiwfAD6LqAr9rvwomnxmNYmsqCcLYGX6HIDQQo5q1mi48QlldWQWW+NH8tmdNNaJut81MDxKAA/IjsMVmEUu7nSSICu144pPXSyhRI03I0OM5BnkPsYCJJPzygHyPlky7xKERiLaTwd7n7f8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3270.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(366004)(39860400002)(376002)(346002)(110136005)(316002)(54906003)(66556008)(8676002)(2906002)(8936002)(5660300002)(558084003)(76116006)(66446008)(38100700001)(66946007)(64756008)(33656002)(9686003)(66476007)(26005)(186003)(71200400001)(55016002)(6506007)(52536014)(7696005)(44832011)(478600001)(86362001)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?Mzsmnw7tsKdNdjSfbeW67xEibuGhT4waXcQtR2eawJDp+3HvEHraMULbtP?=
- =?iso-8859-1?Q?RJXYkAMbpH8gIZpqBd+DYmY7ns4rehvzMmC2xfslydojoHO6GEURRfaDHa?=
- =?iso-8859-1?Q?oGIewX5OWLuXayYLxg9Pl8CqH0hFHjiQvJvSuZnTxVQRtCGHZoRUtubQLH?=
- =?iso-8859-1?Q?6eCOwfr116Yzgz/d1ONbNnANQTDw4xE2/fV9ed+Mffnu1MXDLMKaPG6ZwA?=
- =?iso-8859-1?Q?FHE+rSShXmWliGPje/W5c3heLB7ZPRW8lfF/cSV+GwYGg4jV2SurT9q0q4?=
- =?iso-8859-1?Q?nXslEuarl6mawGJahNdTF+I5bz2Z1wIYQtuCj37A27yBRZTnqYaxQOFGDB?=
- =?iso-8859-1?Q?kPEB1YBtBn+Bp/1qZSY4U7UvCvj4Ed7J2jhKuckRoY37E3VD5c5VcUw1xx?=
- =?iso-8859-1?Q?Gfxx314qU+NxMITWiEMzx/bZ6ZtPHCbPZp+XFUUCZwnvMabvolvdVEuyDL?=
- =?iso-8859-1?Q?NrFmvCrrf9B38PxX1BXP1IwemNN+aiVh817lnjUVC4oC20oOzvj9BL1JUX?=
- =?iso-8859-1?Q?ot62g1PvxiQVTcptks+FWTDH3mNsL4n63r9Fq8XI8OJp0Y1mpUHISQG/3G?=
- =?iso-8859-1?Q?2307Oe/R8BnabQfyqAmb0n4RZqvmc7aBpsO81ruaWfyQ+vNAfFcmznmqdh?=
- =?iso-8859-1?Q?Y39jmSCumf5mBEpEib8xyJEwTnlDK1riDaCUw9ZSovfW/dpIxSUMCjyoPA?=
- =?iso-8859-1?Q?Man/eqa8XKApKv1yhNA1JU7grqaUl5jSGf/p+9NSLe6Hzvtvu3I/sipFKL?=
- =?iso-8859-1?Q?u2ZRc026zmEPq6lBgp4q+r+kDdQFc/S5VqKy5HOJUrTgqtyKyD28z7+y/4?=
- =?iso-8859-1?Q?/XVaeoKvtelyXIg1AZoAaUfstcw0MINNzUgYwZ26Z7yAI2J13EZTinN7U9?=
- =?iso-8859-1?Q?wiE0OledjltDMIvzH1DHqS3qXbYlA9v/YeWqPUyzex1+wStdoZxop2p08O?=
- =?iso-8859-1?Q?JLAOlzWZiuxWv9a6+Abdo6zd1yGvwnFEIzc/u5Io9gRPArSWUWWIjDxOP8?=
- =?iso-8859-1?Q?jwOi0zUA7Qn18bV6zPDzLZmBexjk9e/nbSHD8JIGXBYXt0l4dn77EMSkAl?=
- =?iso-8859-1?Q?jcYFCezHMWTumktUjGOYWI9JPpGIfkkf5INKy4wbCStnhCGmfqcm97A+pP?=
- =?iso-8859-1?Q?nLr/pLLMEvGA0PqMjRRlfgvspPu7ZKA8KHX6WEt8oURmcgqrdRTwgGtqHA?=
- =?iso-8859-1?Q?Ee0Oy2Godj5AXiGmY6RQXHYcPz6ZV3+GdbDd7yfzBfTgxVjJdcn9L7lrsW?=
- =?iso-8859-1?Q?G9FFlDCE4dnrHRz2dqwEBUY7x3xCK6K0rc+Y2h5riEj4R6D8A5MnSOXKg8?=
- =?iso-8859-1?Q?jsWITlD1MYTiNKUEB53BT0PFLLOGwl/XOGpoy7kcQRqqHoFnb0vxUMv8a9?=
- =?iso-8859-1?Q?KX2B8TYuoG?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qpF99nbMLGQ4bgjpmq9TVZKneD9kjHG1BvrLqH3YgvE=;
+        b=Inwsg8dCnVgW7ivUTNLhgXdOiNA2xx4WB8MlQvf+NHUjVXShkfH8l8s6/php+JVMBe
+         QsHN8vskNVnDl60/Stp2jWDUzwS3SziKaiLO/rKU/m2jfzswCFO4OERwymxrdDawWhht
+         WBoo/aOjNzykxXBfbEuWEr4i2kWCk9jWdGTIYSCNakazuosxVAR/vEqfUP7ftCu/gzC2
+         cM4DYugh2R/zos8dARdJuRoDl5aajdehEuJbvu9BRhTmwNC1S97R0bNsm6kZ2SxKbf97
+         iFRaehlq83TdaixObwcCY6Jv5jMYXkSMFJpsCZr639EdBkpotz7iknybSGzV7w9RMDdt
+         4cgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qpF99nbMLGQ4bgjpmq9TVZKneD9kjHG1BvrLqH3YgvE=;
+        b=j4zq2TH4mksjHCWnJzdSqqUbrEvvHchRBOGQWNyzsQvy4qvpFQ1LMj2fd+LQPItGwA
+         pckakHfh4bvz3oFYZTFQx8m6jTN3VqCyBg9svxfioopwfKqezmK/6Jy/lkGdbXaHHZpg
+         l3PWvGDEb9ZbkaQsxrxZLzhyyv61SCbdeLXEzHUC2rcB9BPdvGRu9Mt689KrLD4bBhLt
+         /tB9+FVIWETZNmVwnHBdjaGvM6PMmjJLVrGEVULxVKdFNeOA0ulTcEqQq7ZQltRObpAv
+         hCXPGV+u/eFSwhFw3u4Y8jNj9hyVNF40+Ge7/H6BMKX8Flh/4bzgxhu1JPmEHS0OLI17
+         8yKA==
+X-Gm-Message-State: AOAM532oy08WKRPhFAX0qmOACwAZifGN3f8CkjbPe0IpqGfih3wNQa5F
+        HZOT1pKffMCOYDcbx9BIVs6fatlBrGw=
+X-Google-Smtp-Source: ABdhPJz9FpCx8tcDvwOdforl9xwRQZUhkVr93khZM3ASQuZ8U1SnHf1OG/XzdzMD1KBKOoXWmmI99A==
+X-Received: by 2002:a05:6402:51d4:: with SMTP id r20mr5924888edd.112.1617221352785;
+        Wed, 31 Mar 2021 13:09:12 -0700 (PDT)
+Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id r19sm1691305ejr.55.2021.03.31.13.09.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 13:09:12 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 0/9] XDP for NXP ENETC
+Date:   Wed, 31 Mar 2021 23:08:48 +0300
+Message-Id: <20210331200857.3274425-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3270.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 246ec8d6-ba76-4d73-30fe-08d8f47ec4de
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2021 19:54:17.8188
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2eN40ZUVYj5nCzh6pHv41aSvz5ONjndwBBV6Ble8PZ2GMBqlS5iDZkjMCuhp1q2t8hYHIu0ocTX3KNAwDBmsrRHGDUExcIMeuGWo9EXr5vE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4591
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9940 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0
- malwarescore=0 mlxlogscore=999 adultscore=0 spamscore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2103300000 definitions=main-2103310137
-X-Proofpoint-ORIG-GUID: xTXUmZA0dTfcGZwIPcYmg9ZJIm87o5WG
-X-Proofpoint-GUID: xTXUmZA0dTfcGZwIPcYmg9ZJIm87o5WG
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9940 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- bulkscore=0 clxscore=1011 lowpriorityscore=0 suspectscore=0 adultscore=0
- spamscore=0 mlxscore=0 mlxlogscore=999 phishscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103300000
- definitions=main-2103310136
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[...]=0A=
-=0A=
-Thanks Haakon. Patchset looks fine by me.=0A=
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>=0A=
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+This series adds support to the enetc driver for the basic XDP primitives.
+The ENETC is a network controller found inside the NXP LS1028A SoC,
+which is a dual-core Cortex A72 device for industrial networking,
+with the CPUs clocked at up to 1.3 GHz. On this platform, there are 4
+ENETC ports and a 6-port embedded DSA switch, in a topology that looks
+like this:
+
+  +-------------------------------------------------------------------------+
+  |                    +--------+ 1 Gbps (typically disabled)               |
+  | ENETC PCI          |  ENETC |--------------------------+                |
+  | Root Complex       | port 3 |-----------------------+  |                |
+  | Integrated         +--------+                       |  |                |
+  | Endpoint                                            |  |                |
+  |                    +--------+ 2.5 Gbps              |  |                |
+  |                    |  ENETC |--------------+        |  |                |
+  |                    | port 2 |-----------+  |        |  |                |
+  |                    +--------+           |  |        |  |                |
+  |                                         |  |        |  |                |
+  |                        +------------------------------------------------+
+  |                        |             |  Felix |  |  Felix |             |
+  |                        | Switch      | port 4 |  | port 5 |             |
+  |                        |             +--------+  +--------+             |
+  |                        |                                                |
+  | +--------+  +--------+ | +--------+  +--------+  +--------+  +--------+ |
+  | |  ENETC |  |  ENETC | | |  Felix |  |  Felix |  |  Felix |  |  Felix | |
+  | | port 0 |  | port 1 | | | port 0 |  | port 1 |  | port 2 |  | port 3 | |
+  +-------------------------------------------------------------------------+
+         |          |             |           |            |          |
+         v          v             v           v            v          v
+       Up to      Up to                      Up to 4x 2.5Gbps
+      2.5Gbps     1Gbps
+
+The ENETC ports 2 and 3 can act as DSA masters for the embedded switch.
+Because 4 out of the 6 externally-facing ports of the SoC are switch
+ports, the most interesting use case for XDP on this device is in fact
+XDP_TX on the 2.5Gbps DSA master.
+
+Nonetheless, the results presented below are for IPv4 forwarding between
+ENETC port 0 (eno0) and port 1 (eno1) both configured for 1Gbps.
+There are two streams of IPv4/UDP datagrams with a frame length of 64
+octets delivered at 100% port load to eno0 and to eno1. eno0 has a flow
+steering rule to process the traffic on RX ring 0 (CPU 0), and eno1 has
+a flow steering rule towards RX ring 1 (CPU 1).
+
+For the IPFWD test, standard IP routing was enabled in the netns.
+For the XDP_DROP test, the samples/bpf/xdp1 program was attached to both
+eno0 and to eno1.
+For the XDP_TX test, the samples/bpf/xdp2 program was attached to both
+eno0 and to eno1.
+For the XDP_REDIRECT test, the samples/bpf/xdp_redirect program was
+attached once to the input of eno0/output of eno1, and twice to the
+input of eno1/output of eno0.
+
+Finally, the preliminary results are as follows:
+
+        | IPFWD | XDP_TX | XDP_REDIRECT | XDP_DROP
+--------+-------+--------+-------------------------
+fps     | 761   | 2535   | 1735         | 2783
+Gbps    | 0.51  | 1.71   | 1.17         | n/a
+
+There is a strange phenomenon in my testing sistem where it appears that
+one CPU is processing more than the other. I have not investigated this
+too much. Also, the code might not be very well optimized (for example
+dma_sync_for_device is called with the full ENETC_RXB_DMA_SIZE_XDP).
+
+Design wise, the ENETC is a PCI device with BD rings, so it uses the
+MEM_TYPE_PAGE_SHARED memory model, as can typically be seen in Intel
+devices. The strategy was to build upon the existing model that the
+driver uses, and not change it too much. So you will see things like a
+separate NAPI poll function for XDP.
+
+I have only tested with PAGE_SIZE=4096, and since we split pages in
+half, it means that MTU-sized frames are scatter/gather (the XDP
+headroom + skb_shared_info only leaves us 1476 bytes of data per
+buffer). This is sub-optimal, but I would rather keep it this way and
+help speed up Lorenzo's series for S/G support through testing, rather
+than change the enetc driver to use some other memory model like page_pool.
+My code is already structured for S/G, and that works fine for XDP_DROP
+and XDP_TX, just not for XDP_REDIRECT, even between two enetc ports.
+So the S/G XDP_REDIRECT is stubbed out (the frames are dropped), but
+obviously I would like to remove that limitation soon.
+
+Please note that I am rather new to this kind of stuff, I am more of a
+control path person, so I would appreciate feedback.
+
+Enough talking, on to the patches.
+
+Vladimir Oltean (9):
+  net: enetc: consume the error RX buffer descriptors in a dedicated
+    function
+  net: enetc: move skb creation into enetc_build_skb
+  net: enetc: add a dedicated is_eof bit in the TX software BD
+  net: enetc: clean the TX software BD on the TX confirmation path
+  net: enetc: move up enetc_reuse_page and enetc_page_reusable
+  net: enetc: add support for XDP_DROP and XDP_PASS
+  net: enetc: add support for XDP_TX
+  net: enetc: increase RX ring default size
+  net: enetc: add support for XDP_REDIRECT
+
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 826 +++++++++++++++---
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  53 +-
+ .../ethernet/freescale/enetc/enetc_ethtool.c  |  19 +-
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |   2 +
+ 4 files changed, 796 insertions(+), 104 deletions(-)
+
+-- 
+2.25.1
+
