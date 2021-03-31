@@ -2,66 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C75C3350372
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0835B350334
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235596AbhCaP3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 11:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
+        id S236248AbhCaPWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 11:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235355AbhCaP3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 11:29:40 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F686C061574
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:29:40 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id f22-20020a7bc8d60000b029010c024a1407so1359479wml.2
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:29:40 -0700 (PDT)
+        with ESMTP id S236167AbhCaPWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 11:22:42 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F56CC061574
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:22:42 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id w11so8079775ply.6
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:22:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:from:mime-version:content-transfer-encoding
-         :content-description:subject:to:date:reply-to;
-        bh=of762KLdyKsIQqSd6i1lAmoFoTluBPZFqOpLx9cdtrY=;
-        b=izRu2jPKn2cfPrLP6h7avkRjtPBxeHNOty0Y/9DkxVNzOrXTp89qmfp6GOfR72bG7U
-         lHn5FhJiTn7wO2dh23Ceujza7fCLEHtjs2cW4gNOZBV2xEJVHMzBGOMSgJb6Hl+Ivz1b
-         hvxjT8gWaCYrm3hm7q+2phPeSvJ+SJzUwLXv421QEek3oKkMjwLJKTFt9yMC7uBwYUmr
-         fRLBR+9l5ZJupQ7hgIK9MnzvwEgvSer9S0DllyJy8IAQ/i5vXY99P8ribWybVLDycKg/
-         V7pTHUJR7NqwR4hvTRoSRwO+jKiRBMtdK8+uzVlwhIqq48HBD73ekcE2/kZzfFuE82Eb
-         8QKw==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gw8hwW05jiMxBqU25TXMW+wc8ZbMCFapntG69CCdsDE=;
+        b=cMRVCQWORCqcQuQXoj+dDQlJGnobnxHZlKKPUul3lEPKurl+PSaUGn05zIBLsy6BsO
+         kV0gXFRWJIk+e5OXbJOo/N+EBr+y4i0zVuZGIpSy9MYsx7qDN4mpzBPH3VR/UaVKS+WB
+         OqIqn+3RmRffD/6mSUB6iKsqXhT5S8iDjVTxp+jZoZP979YVbU0O7gUrY2o4E8JhR/CY
+         rvA0J28a3hgUiTEjG0jD/X0OdTEpQj5WT5htX4N4cj6RoC4LJ5IgGucnLamNUR4QSlY6
+         u5xoB2RZQhpNjwZIDr/v8Pl92DErruz+WD5CcIZjYxLDQQX1QSX+02j2EVegsUgrQaHl
+         ejFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:from:mime-version
-         :content-transfer-encoding:content-description:subject:to:date
-         :reply-to;
-        bh=of762KLdyKsIQqSd6i1lAmoFoTluBPZFqOpLx9cdtrY=;
-        b=rheJcb5souavIGz5SuWpmmR0kmKc63eTW1u03iGhZCX2glJXlJaijqZrd45E0TfJLK
-         Uc7b3QXaLABvYYv/KUcUsGlOvjntIFVOy8LLKCVqRvw036L0b7bAfA8Ck9/TSvuVepmz
-         usSoBDDlmaaAeB4K3fbqxTlse43Leo2O+DVtGAclltAUXqxmW9JUiEeJJY3SVRPHsVd0
-         nH1dZc82oewkwwDXYQXYfXouvIpgL0zK+6w4OH5W7mGA3w9JNs2rKqrbmgVuc/xJp+Bm
-         7SzpWg9g3LF+1LBtleBcqE0DRsf5JhIIqhN4EQfopo+Y/yhXGrmo8l37x1yM9bV1iU20
-         +e3Q==
-X-Gm-Message-State: AOAM532mD+/ku3bBJb+8IjFNiI9cr1DroMz3+8Oml7+0YfLjnbxbKy1+
-        0jjn9a1c5mkeusOMZc2DHrI=
-X-Google-Smtp-Source: ABdhPJz0QfiOM75LniCuphqQF2aS2ZFPu/7OmqowvD5G41zQaZBeb4yuZuf1/W0Am5DthpiIQEN73w==
-X-Received: by 2002:a1c:498b:: with SMTP id w133mr3824403wma.134.1617204579133;
-        Wed, 31 Mar 2021 08:29:39 -0700 (PDT)
-Received: from [192.168.1.5] ([154.124.19.111])
-        by smtp.gmail.com with ESMTPSA id m9sm5172396wro.52.2021.03.31.08.29.36
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Wed, 31 Mar 2021 08:29:38 -0700 (PDT)
-Message-ID: <60649562.1c69fb81.1ab12.a69e@mx.google.com>
-From:   calanta camara <ndiayeng66@gmail.com>
-X-Google-Original-From: calanta camara
-Content-Type: text/plain; charset="iso-8859-1"
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gw8hwW05jiMxBqU25TXMW+wc8ZbMCFapntG69CCdsDE=;
+        b=seEGcUeJfl/wWIKzAcAF27Y4SYbancZFW6NsWD9NMak8CZTNy2qQ+GvE+B/JPSi5bc
+         JzzQFHpfhyL6suxt/VNkS46MNqgqols3rbSksqFlWZe0Ikaxr5OyVShCBScyJ94BzbBI
+         5Lrc9PaUyc3qG+eUImnap4mvG+nHNA9tstLkSf6XwDihq1rVsnUYTMk0r5S7DI5CdRP6
+         ZqOc9xA9aNOuvdbQcPy2OS40LBDs/+AEDnyhj0Cxcx4kZthOiKxlD8hxnYEeePZw3OGS
+         3dWu5VUYIhueOETHg4IQDpL29KYywY+jWQkBk1ak33pXyOhaqKUbeQKy+vzbfIRghy6k
+         IQNQ==
+X-Gm-Message-State: AOAM531uOO2R+v1UUW946vErdCHXd2SQcv5dIAVTwA3ZLhnn9yNqgVSX
+        D38QSnsYY80yi6KjJl01zK9guhJZOIsRfiQj/Xb/Mg==
+X-Google-Smtp-Source: ABdhPJy4a7zgAbJet+5og5xBqAfo1Dy5+pdTaoPRXGFJn4Ci79eUkzk0z6sNofJ4mh+cgZNLIwlm79hq2y/DEkqh0mg=
+X-Received: by 2002:a17:902:b210:b029:e6:33b4:cd9e with SMTP id
+ t16-20020a170902b210b02900e633b4cd9emr3635584plr.67.1617204161815; Wed, 31
+ Mar 2021 08:22:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: 
-To:     Recipients <calanta@vger.kernel.org>
-Date:   Wed, 31 Mar 2021 15:29:32 +0000
-Reply-To: calanthacamara202@gmail.com
-X-Mailer: cdcaafe51be8cdb99a1c85906066cad3d0e60e273541515a58395093a7c4e1f0eefb01d7fc4e6278706e9fb8c4dad093c3263345202970888b6b4d817f9e998c032e7d59
+References: <1617187150-13727-1-git-send-email-loic.poulain@linaro.org>
+ <YGRSdQxTuxIy0Qsc@kroah.com> <CAMZdPi-f4wDiFSuib5h17SaFWgORv8q7jKdh8fS_C=iihc0a_A@mail.gmail.com>
+ <YGSNFS5wl13L4OoU@kroah.com>
+In-Reply-To: <YGSNFS5wl13L4OoU@kroah.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 31 Mar 2021 17:30:50 +0200
+Message-ID: <CAMZdPi8LkEw=6zTBaW-HBjYxWGNw+_uqq6fb_vG1BfD+UjTwig@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 1/2] net: Add a WWAN subsystem
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Aleksander Morgado <aleksander@aleksander.es>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-my name is calantha camara i want to talk to you
+On Wed, 31 Mar 2021 at 16:54, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Mar 31, 2021 at 01:35:04PM +0200, Loic Poulain wrote:
+> > Hi Greg,
+> >
+> > On Wed, 31 Mar 2021 at 12:44, Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Wed, Mar 31, 2021 at 12:39:09PM +0200, Loic Poulain wrote:
+> > > > This change introduces initial support for a WWAN subsystem. Given the
+> > > > complexity and heterogeneity of existing WWAN hardwares and interfaces,
+> > > > there is no strict definition of what a WWAN device is and how it should
+> > > > be represented. It's often a collection of multiple devices that perform
+> > > > the global WWAN feature (netdev, tty, chardev, etc).
+> > > >
+> > > > One usual way to expose modem controls and configuration is via high
+> > > > level protocols such as the well known AT command protocol, MBIM or
+> > > > QMI. The USB modems started to expose that as character devices, and
+> > > > user daemons such as ModemManager learnt how to deal with them. This
+> > > > initial version adds the concept of WWAN port, which can be created
+> > > > by any driver to expose one of these protocols. The WWAN core takes
+> > > > care of the generic part, including character device creation and lets
+> > > > the driver implementing access (fops) for the selected protocol.
+> > > >
+> > > > Since the different components/devices do no necesserarly know about
+> > > > each others, and can be created/removed in different orders, the
+> > > > WWAN core ensures that all WAN ports that contribute to the whole
+> > > > WWAN feature are grouped under the same virtual WWAN device, relying
+> > > > on the provided parent device (e.g. mhi controller, USB device). It's
+> > > > a 'trick' I copied from Johannes's earlier WWAN subsystem proposal.
+> > > >
+> > > > This initial version is purposely minimalist, it's essentially moving
+> > > > the generic part of the previously proposed mhi_wwan_ctrl driver inside
+> > > > a common WWAN framework, but the implementation is open and flexible
+> > > > enough to allow extension for further drivers.
+> > > >
+> > > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> > > > ---
+> > > >  v2: update copyright (2021)
+> > > >  v3: Move driver to dedicated drivers/net/wwan directory
+> > > >  v4: Rework to use wwan framework instead of self cdev management
+> > > >  v5: Fix errors/typos in Kconfig
+> > > >  v6: - Move to new wwan interface, No need dedicated call to wwan_dev_create
+> > > >      - Cleanup code (remove legacy from mhi_uci, unused defines/vars...)
+> > > >      - Remove useless write_lock mutex
+> > > >      - Add mhi_wwan_wait_writable and mhi_wwan_wait_dlqueue_lock_irq helpers
+> > > >      - Rework locking
+> > > >      - Add MHI_WWAN_TX_FULL flag
+> > > >      - Add support for NONBLOCK read/write
+> > > >
+> > > >  drivers/net/Kconfig          |   2 +
+> > > >  drivers/net/Makefile         |   1 +
+> > > >  drivers/net/wwan/Kconfig     |  22 +++
+> > > >  drivers/net/wwan/Makefile    |   7 +
+> > > >  drivers/net/wwan/wwan_core.c | 317 +++++++++++++++++++++++++++++++++++++++++++
+> > > >  include/linux/wwan.h         |  73 ++++++++++
+> > > >  6 files changed, 422 insertions(+)
+> > > >  create mode 100644 drivers/net/wwan/Kconfig
+> > > >  create mode 100644 drivers/net/wwan/Makefile
+> > > >  create mode 100644 drivers/net/wwan/wwan_core.c
+> > > >  create mode 100644 include/linux/wwan.h
+> > > >
+> > > > diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+> > > > index 5895905..74dc8e24 100644
+> > > > --- a/drivers/net/Kconfig
+> > > > +++ b/drivers/net/Kconfig
+> > > > @@ -502,6 +502,8 @@ source "drivers/net/wan/Kconfig"
+> > > >
+> > > >  source "drivers/net/ieee802154/Kconfig"
+> > > >
+> > > > +source "drivers/net/wwan/Kconfig"
+> > > > +
+> > > >  config XEN_NETDEV_FRONTEND
+> > > >       tristate "Xen network device frontend driver"
+> > > >       depends on XEN
+> > > > diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+> > > > index 040e20b..7ffd2d0 100644
+> > > > --- a/drivers/net/Makefile
+> > > > +++ b/drivers/net/Makefile
+> > > > @@ -68,6 +68,7 @@ obj-$(CONFIG_SUNGEM_PHY) += sungem_phy.o
+> > > >  obj-$(CONFIG_WAN) += wan/
+> > > >  obj-$(CONFIG_WLAN) += wireless/
+> > > >  obj-$(CONFIG_IEEE802154) += ieee802154/
+> > > > +obj-$(CONFIG_WWAN) += wwan/
+> > > >
+> > > >  obj-$(CONFIG_VMXNET3) += vmxnet3/
+> > > >  obj-$(CONFIG_XEN_NETDEV_FRONTEND) += xen-netfront.o
+> > > > diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+> > > > new file mode 100644
+> > > > index 0000000..545fe54
+> > > > --- /dev/null
+> > > > +++ b/drivers/net/wwan/Kconfig
+> > > > @@ -0,0 +1,22 @@
+> > > > +# SPDX-License-Identifier: GPL-2.0-only
+> > > > +#
+> > > > +# Wireless WAN device configuration
+> > > > +#
+> > > > +
+> > > > +menuconfig WWAN
+> > > > +     bool "Wireless WAN"
+> > > > +     help
+> > > > +       This section contains Wireless WAN driver configurations.
+> > > > +
+> > > > +if WWAN
+> > > > +
+> > > > +config WWAN_CORE
+> > > > +     tristate "WWAN Driver Core"
+> > > > +     help
+> > > > +       Say Y here if you want to use the WWAN driver core. This driver
+> > > > +       provides a common framework for WWAN drivers.
+> > > > +
+> > > > +       To compile this driver as a module, choose M here: the module will be
+> > > > +       called wwan.
+> > > > +
+> > > > +endif # WWAN
+> > > > diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
+> > > > new file mode 100644
+> > > > index 0000000..934590b
+> > > > --- /dev/null
+> > > > +++ b/drivers/net/wwan/Makefile
+> > > > @@ -0,0 +1,7 @@
+> > > > +# SPDX-License-Identifier: GPL-2.0
+> > > > +#
+> > > > +# Makefile for the Linux WWAN device drivers.
+> > > > +#
+> > > > +
+> > > > +obj-$(CONFIG_WWAN_CORE) += wwan.o
+> > > > +wwan-objs += wwan_core.o
+> > > > diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+> > > > new file mode 100644
+> > > > index 0000000..7d9e2643
+> > > > --- /dev/null
+> > > > +++ b/drivers/net/wwan/wwan_core.c
+> > > > @@ -0,0 +1,317 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > > +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
+> > > > +
+> > > > +#include <linux/err.h>
+> > > > +#include <linux/errno.h>
+> > > > +#include <linux/fs.h>
+> > > > +#include <linux/init.h>
+> > > > +#include <linux/idr.h>
+> > > > +#include <linux/kernel.h>
+> > > > +#include <linux/module.h>
+> > > > +#include <linux/slab.h>
+> > > > +#include <linux/types.h>
+> > > > +#include <linux/wwan.h>
+> > > > +
+> > > > +#define WWAN_MAX_MINORS 256 /* Allow the whole available cdev range of minors */
+> > >
+> > > That's not the "whole range of minors" at all...
+> >
+> > Though minor is 20-bit wide, Is 256 not the maximum number of minors
+> > when using register_chrdev()?
+>
+> Using that function, yes, but that is not the minor range allowed at
+> all.  As you say, it's 20 bits wide.
+>
+> > > And what are you using this chardev for at all?  All you have is an
+> > > open() call, but you have nothing to do with it after that.  What is it
+> > > for?
+> > >
+> > > confused,
+> >
+> > The WWAN framework acts a bit like misc or sound frameworks here, the
+> > fops are not directly implemented by WWAN core but passed by the port
+> > driver as parameter on WWAN port registration.There is no real benefit
+> > of having them implemented in WWAN core since it would mostly consist
+> > in forwarding read/write to the 'port driver' (at least for now).
+>
+> So, you are going to have a common class and char device node, that
+> could have any type of device behind it that handles
+> open/read/write/ioctl/close in different ways?
+>
+> That sounds like madness, userspace developers will be cursing your name
+> for eons.  Don't do that, we try to learn from our mistakes, not
+> duplicate them over and over.
+>
+> Please make each major number you use, have all minor numbers in that
+> range operate the same way.  Otherwise again, userspace is going to be
+> cursing you for a very very long time.
+
+Ok understood, the goal is that all WWAN 'control' ports behave
+the same so I guess I should not let them have fops control.
+
+>
+> As it is, the code you have here just implements the misc device layer,
+> but with a new major number?  why???
+
+Right, Instead of creating yet another specific character driver for
+WWAN (like usb wdm_class), the goal would be to have at least the WWAN
+control ports being exposed the same way via this WWAN class and cdev.
+Then extend the framework with additional features (e.g. ports ioctls,
+network interface attaching). I agree that for now, it's similar to
+what misc already doing.
+
+From this discussion, I see two options:
+- Move fops implementation to WWAN core.
+- Simply get rid of this generic WWAN layer and just rely on misc for
+exposing the MHI WWAN control ports.
+
+Thanks,
+Loic
