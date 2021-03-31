@@ -2,202 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 517BE34F69F
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 04:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C32C34F6B0
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 04:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231743AbhCaC2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 22:28:41 -0400
-Received: from mail-mw2nam10on2082.outbound.protection.outlook.com ([40.107.94.82]:6080
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232518AbhCaC2g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 22:28:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hI4CwAlJQRjsZL+uyKtRXPgUy+E/w25sokkQiKrUuzQzIsaFy+jPfdDVudpxZlZn7J7T90jPlAWmZErk9N3gOHAvK7rwOe8ZI3VL6ZPa7Bm2EbVtzS3OyjiW06WisnGHmik4nDBtr5WNZ511Cg7bHRLR041/0ZXLtGY/hmfRYDHO6+uxuFa1F1Bt+IWJe3cEQ+H4f8QKllkLczn9iqh8HKnjY7PbwhnLfCYPHgbQODzXiYYpZPlU3yFxbc0GPfKXC9HJfowjDNVfWHuatpXNCyDGfzB9rcMm/J8nevFFnJaUuA4t1CWyww+pU5VJ1cbrvalx/86KMWb+gTHwDSNR+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zs7FGchpQRg1bKuneaCQ/iQXJvOvIXjd39JEmUCelyk=;
- b=XVJentPq/m7ZqJb5AKVUcK0MuPprZL8sP7p0WDtXbiMQhllgCWSzUa+7Qh6mBIvsWCjvHuNm/sSsVva2Jbs73M4asgfAz4rB3W8POgbmmr9jeuyGBCIGlMfCslGeYD2HSjYtMKLIc8sYg+/JR/DKyCGWA+4QRyAJhE7EETGt5RWok2lAwaKRu8av3PeVJT5DPJBayCEE/ZxtgDzcc8y2jddQaFcgHjniK58kiqNAj0SUW+2PATp4ocEzMBm2C0+IcgMVWm4VT6eZnPmAFHS4Dop7Z897rFfdXPYAe+/DHfqeqIpqsVVY+BZc3LHCGE4svd/1IJFwWTTIekSYAskINg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+        id S233374AbhCaCdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 22:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233393AbhCaCcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:32:47 -0400
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E29EC061574;
+        Tue, 30 Mar 2021 19:32:47 -0700 (PDT)
+Received: by mail-oo1-xc29.google.com with SMTP id s1-20020a4ac1010000b02901cfd9170ce2so2367131oop.12;
+        Tue, 30 Mar 2021 19:32:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=windriversystems.onmicrosoft.com;
- s=selector2-windriversystems-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zs7FGchpQRg1bKuneaCQ/iQXJvOvIXjd39JEmUCelyk=;
- b=KfKLZA9FmTkIkOkPMEUvGRPUBJxZqbP6A4E5Yk8XFO4q/VSu+9Uf5X1kkdYcgWLFw6OYqyX9d5Zugxek8//yQm2oJtddvBo2Fw8EExiFDJhs5ChhLr+GlGbsL18Bp3jVauJ++IyvWxGrFRUmXTpw8mXpf38lYDwEFjxkK37FCH4=
-Received: from PH0PR11MB5175.namprd11.prod.outlook.com (2603:10b6:510:3d::8)
- by PH0PR11MB5080.namprd11.prod.outlook.com (2603:10b6:510:3f::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Wed, 31 Mar
- 2021 02:28:34 +0000
-Received: from PH0PR11MB5175.namprd11.prod.outlook.com
- ([fe80::9429:4c5e:12c5:b88f]) by PH0PR11MB5175.namprd11.prod.outlook.com
- ([fe80::9429:4c5e:12c5:b88f%7]) with mapi id 15.20.3977.033; Wed, 31 Mar 2021
- 02:28:34 +0000
-From:   "Liu, Yongxin" <Yongxin.Liu@windriver.com>
-To:     "brett.creeley@intel.com" <brett.creeley@intel.com>,
-        "madhu.chittim@intel.com" <madhu.chittim@intel.com>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        "andrewx.bowers@intel.com" <andrewx.bowers@intel.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH V2 net] ice: fix memory leak of aRFS after resuming from
- suspend
-Thread-Topic: [PATCH V2 net] ice: fix memory leak of aRFS after resuming from
- suspend
-Thread-Index: AQHXHIszik+p+ak4pEmcm07CmaDEcaqdcTsQ
-Date:   Wed, 31 Mar 2021 02:28:34 +0000
-Message-ID: <PH0PR11MB5175BAF6F45C7F862CD0A33DE57C9@PH0PR11MB5175.namprd11.prod.outlook.com>
-References: <20210319064038.15315-1-yongxin.liu@windriver.com>
-In-Reply-To: <20210319064038.15315-1-yongxin.liu@windriver.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=windriver.com;
-x-originating-ip: [60.247.85.82]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4530f583-61d3-43d5-dddc-08d8f3ecaec9
-x-ms-traffictypediagnostic: PH0PR11MB5080:
-x-microsoft-antispam-prvs: <PH0PR11MB5080CEC88BD7B91462A4F148E57C9@PH0PR11MB5080.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k+n74AIVJ7xd72+TmbvR+iT/fZzjMTh98DjKpJrhMZr0r2Dw/ooIgVwf/9Zx8gGrOfrNqzLl4Tb7gDM6ftXBmKDnXkpnta45rZFtNLpv1pFSxaaAat2fpnNONX7EZrnQCDhfbipfcxcMr51+KD2sUah+yaa/zE0DXC8j0hfRgjFfojt9bNfrVfN357eYzwUH4+NVz1V584vwQDosp9ipt3KXaUdA6nh/9QqCcho62odnAZ4pePjlqlqxPpWaK4lHiXpvQ+qQmh2csjiTV2QAr6YG7GkYgwxQ1UAGAX8lEMu7Vw3sz7RiPCt8wcNFuuEAE4a3K8U7HV7kgfjM2eKwpyrFrAihM2NjTkoh0u3oxTOWyLiuECgOaoe2MgqJMN8V7QnlZPLQxoB9TFkfbmcbKC3tlimX5ADIXintEIxhyKbkmRPMgD6idkg1QfvEeK9QmZeBzOz1LwTWx7kuanUlzLucIOUor1F/GGc2ZFqEKXL5eJXxkuLrLKvh8dB4Zc++HWMQmUotjuI56ZlXkF/5nk4VPxVfrtKtow3YY9wxkP5krVFNanerezT/JEvghRPXxIxPq4hUyFb9xPjTO274n7J4LoN+iXfILt4A21Nb8hHW0wxUkLNBoV4RTS77AFS6YaJKGBUGkXhpgxT0Ex7crnfUH2CjXC9O4DiStsB+m4s=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5175.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(376002)(39850400004)(396003)(366004)(52536014)(7696005)(5660300002)(9686003)(26005)(38100700001)(4326008)(83380400001)(66476007)(186003)(55016002)(71200400001)(6506007)(33656002)(110136005)(76116006)(66946007)(66446008)(66556008)(86362001)(478600001)(64756008)(8676002)(316002)(8936002)(53546011)(15650500001)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?0kRwca9O+g0gL1ZUUersLwxvxDfmCNBw/PwVMtLiMDkt+MkjqmXCQo+4N00U?=
- =?us-ascii?Q?jwJ1AnItp79QTEFFvgFL+3izYmw0xyP3gr2ISf/zkYWr3saRhKDg380scqsy?=
- =?us-ascii?Q?UNMbft9P6vaVIU/Oa7bvyBcMkr9iaFzFZVO/kyOaxW4a/K8bYEAl3qkkAS/r?=
- =?us-ascii?Q?X/0mL7u6O1rSdDLIy1eV8nG5BRGWEbdaQ4XztX40xue9IZR6HveMciXna7IA?=
- =?us-ascii?Q?cGGykg2dl0+hIjoFb5uME+HWSua1Ox3OPb4JzYtdQNd2AY5JcAugiV8rtsPc?=
- =?us-ascii?Q?dlKwMqJUCa+Jqr1HC04+gJ42JPiKsef9pBFWLpOpr6bRzCKPXTiXwRsUJH82?=
- =?us-ascii?Q?v1iYAxfGVYAbnIZtxiXne3HiBLgq2q7b1sGM+1ZFBV4xDpLA0pX2OV4hjeP6?=
- =?us-ascii?Q?XKGwDdcO/CumjKLah+RdmlYYp+xzL5L6Yc8cPhEXvSFhYfrnRnJrITtmNEuN?=
- =?us-ascii?Q?ZPDp8MuRNhFuVtH3yU9LhAcYfgXHHRUT7koggCWOikbSv8Yv+9gfToHsqRAU?=
- =?us-ascii?Q?MJmwhiiixgu0IOk6OIg7mDpK3g2JUOBa6jGO023wYb4u05VrB1AV0TPhLqnv?=
- =?us-ascii?Q?SIyVvYJfsBxLQ52OWzJU4CrzcA3W9VSgwjrV4jZsjKhHtw0F8YE333rdD+sw?=
- =?us-ascii?Q?ydBr7iM8jcqezC0YdDhro7GkNwxsUzMeyeMv2O5T4o50CQw3SGrrj37Htsnr?=
- =?us-ascii?Q?fXfbvqRZBV0LMHKOIPOVLuEotMRwoWcufNzceAbVDnOg8xmAvAl5YFvBS53o?=
- =?us-ascii?Q?5NTTlIHkyB6obSuRKr6gcyuhOKbqRtfyBMRLgiEe9l0tZRyOY7VYqq6qZEne?=
- =?us-ascii?Q?97tSbKNMmfoofoLTVCHvf3xOpBnDTkqfw0eXVuWVlJKQjq9YY33SG24uVbNG?=
- =?us-ascii?Q?mZwGZEZsYI3cIeG6CXvIXbqAcCM58AP6/YDDMeoqEA9MgtBkEUdHmZ2t+wLf?=
- =?us-ascii?Q?eHvsVO4pFSUokRyuteApC4Uw2ENXrhRZdRhfcmnOfGY9rihfdhMSUQEM5Vnb?=
- =?us-ascii?Q?itX+jSDlM6uTCxyL8SOP1bDxrbvc3cwj/aVBWH0EEphIIGyOAe496aD/cbkv?=
- =?us-ascii?Q?MZiPJWp/t+UQLBNXoPoCJzdX1tFFKMe0lshTjqcE3iFrTEGj+Uc/dynHsug+?=
- =?us-ascii?Q?NAWK/Ny2ptKI+jGH9wD12Ds2nlijC0Uwfl8iPAO+e0dW6pUlgY0zMNHfFbsb?=
- =?us-ascii?Q?QFSJuJ69NK9fh9GUjjoBwCEbkujnvJfA9JI1CdA5y5Nvi3oQ264ftj+X+ta2?=
- =?us-ascii?Q?zRYM6JkadJp0nZz7tWcMrtV4NQFPxxZiwdR9C9Nnz9c8Xt8+uqPw7O8zmurD?=
- =?us-ascii?Q?+xM=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MAiYUoSHASu1cIWXXI2lJLlJRc+xqN2+n1Mzd3grv9s=;
+        b=U3uMIekt7a4nEuDqTc9clCQDRFyKZ3LLvRHEvBR/VEjWUNiADX0QwFPKOoQUbfZY/W
+         mf8VVlaJyqu7ErglBaHPuwULsVEf0jWNleB9tO3l0wbe7rp37qZdf0Kj5+Fc/VdUtzEd
+         iReQI2uJlmNNxv75o2K35Qw6v/sJVJvidv+GqF9pa0KjKlc45FKuqzQ8rWkxytX96TG4
+         zPNlvL5wjEMEscWyoapAY64TpUo+7XXw8217LG5kg6w7V9sG+IOSnvsdw76+WIiOkx85
+         Jn1QgIOoKnvMlrq2l0jeoRFgpAHLahdJP4vcsCtXVRoVPBhGauQnguSvCXuM87cUZGhQ
+         Sqxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MAiYUoSHASu1cIWXXI2lJLlJRc+xqN2+n1Mzd3grv9s=;
+        b=Zkl4V1/nTi1o+53pIzE9w4hFviZRU35rr7YvEW3cOawNKwOJUVvIw3+4A7Icyxn/Qs
+         TjgXzZrVIeEfowAEb9nsBNdcx5s+RAMFFpg6kr8LiOGplaPuArLExx6MSByLcqOsGKgg
+         I1cj0sAEHZ3eG6zbY99UYHU8cjzrp5sQD3S/dL6S9C8xkQWYYPVy4y6ZQDr/j2Ug0a1W
+         D0Svua9GQz4QvxIC/PtmzmtmFGFhIx0ExKOf8lDl4BgiiT77lyoQhhy4O7IcAOoWqZpO
+         0tkMCyHcmoIgRit4BaBILFMCVVWttjxCqsR7yhbxL/KEX6cXN8c3ZxIGjvAZDRuKppVT
+         1KqQ==
+X-Gm-Message-State: AOAM5301KedG3d/1UwXmb/dDbAz9IzgS5Jcg+xGmgj46RQ2fWUGZvWxG
+        Pxg1KRhvfwjDOxZWz6AF0plrlowJUwz4SA==
+X-Google-Smtp-Source: ABdhPJwRsd0guE3iUB8SwuJ+SSA+yu8qqr3jxyTxQDCPi3w4oQ2oWFXqKZDb5xBFVw/e9UBTfN3xDw==
+X-Received: by 2002:a4a:d10f:: with SMTP id k15mr858072oor.82.1617157966739;
+        Tue, 30 Mar 2021 19:32:46 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:a099:767b:2b62:48df])
+        by smtp.gmail.com with ESMTPSA id 7sm188125ois.20.2021.03.30.19.32.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Mar 2021 19:32:46 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v8 00/16] sockmap: introduce BPF_SK_SKB_VERDICT and support UDP
+Date:   Tue, 30 Mar 2021 19:32:21 -0700
+Message-Id: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5175.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4530f583-61d3-43d5-dddc-08d8f3ecaec9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2021 02:28:34.1429
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1/2nYWagALkQIPJu7x03nstX5rhKxNT7fjz5XzH5oi8O6/smuL7Gk7AlT2gA3m46OoRg6DE9JLjthKndhkUKNp3gNhWrnVhfHA7EV4t/Hqc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5080
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Brett,
+From: Cong Wang <cong.wang@bytedance.com>
 
-Could you please help to review this V2?
+We have thousands of services connected to a daemon on every host
+via AF_UNIX dgram sockets, after they are moved into VM, we have to
+add a proxy to forward these communications from VM to host, because
+rewriting thousands of them is not practical. This proxy uses an
+AF_UNIX socket connected to services and a UDP socket to connect to
+the host. It is inefficient because data is copied between kernel
+space and user space twice, and we can not use splice() which only
+supports TCP. Therefore, we want to use sockmap to do the splicing
+without going to user-space at all (after the initial setup).
 
+Currently sockmap only fully supports TCP, UDP is partially supported
+as it is only allowed to add into sockmap. This patchset, as the second
+part of the original large patchset, extends sockmap with:
+1) cross-protocol support with BPF_SK_SKB_VERDICT; 2) full UDP support.
 
-Thanks,
-Yongxin
+On the high level, ->read_sock() is required for each protocol to support
+sockmap redirection, and in order to do sock proto update, a new ops
+->psock_update_sk_prot() is introduced, which is also required. And the
+BPF ->recvmsg() is also needed to replace the original ->recvmsg() to
+retrieve skmsg. To make life easier, we have to get rid of lock_sock()
+in sk_psock_handle_skb(), otherwise we would have to implement
+->sendmsg_locked() on top of ->sendmsg(), which is ugly.
 
-> -----Original Message-----
-> From: Liu, Yongxin <yongxin.liu@windriver.com>
-> Sent: Friday, March 19, 2021 14:44
-> To: brett.creeley@intel.com; madhu.chittim@intel.com;
-> anthony.l.nguyen@intel.com; andrewx.bowers@intel.com;
-> jeffrey.t.kirsher@intel.com
-> Cc: netdev@vger.kernel.org
-> Subject: [PATCH V2 net] ice: fix memory leak of aRFS after resuming from
-> suspend
->=20
-> In ice_suspend(), ice_clear_interrupt_scheme() is called, and then
-> irq_free_descs() will be eventually called to free irq and its descriptor=
-.
->=20
-> In ice_resume(), ice_init_interrupt_scheme() is called to allocate new
-> irqs.
-> However, in ice_rebuild_arfs(), struct irq_glue and struct cpu_rmap maybe
-> cannot be freed, if the irqs that released in ice_suspend() were
-> reassigned to other devices, which makes irq descriptor's affinity_notify
-> lost.
->=20
-> So call ice_free_cpu_rx_rmap() before ice_clear_interrupt_scheme(), which
-> can make sure all irq_glue and cpu_rmap can be correctly released before
-> corresponding irq and descriptor are released.
->=20
-> Fix the following memory leak.
->=20
-> unreferenced object 0xffff95bd951afc00 (size 512):
->   comm "kworker/0:1", pid 134, jiffies 4294684283 (age 13051.958s)
->   hex dump (first 32 bytes):
->     18 00 00 00 18 00 18 00 70 fc 1a 95 bd 95 ff ff  ........p.......
->     00 00 ff ff 01 00 ff ff 02 00 ff ff 03 00 ff ff  ................
->   backtrace:
->     [<0000000072e4b914>] __kmalloc+0x336/0x540
->     [<0000000054642a87>] alloc_cpu_rmap+0x3b/0xb0
->     [<00000000f220deec>] ice_set_cpu_rx_rmap+0x6a/0x110 [ice]
->     [<000000002370a632>] ice_probe+0x941/0x1180 [ice]
->     [<00000000d692edba>] local_pci_probe+0x47/0xa0
->     [<00000000503934f0>] work_for_cpu_fn+0x1a/0x30
->     [<00000000555a9e4a>] process_one_work+0x1dd/0x410
->     [<000000002c4b414a>] worker_thread+0x221/0x3f0
->     [<00000000bb2b556b>] kthread+0x14c/0x170
->     [<00000000ad2cf1cd>] ret_from_fork+0x1f/0x30 unreferenced object
-> 0xffff95bd81b0a2a0 (size 96):
->   comm "kworker/0:1", pid 134, jiffies 4294684283 (age 13051.958s)
->   hex dump (first 32 bytes):
->     38 00 00 00 01 00 00 00 e0 ff ff ff 0f 00 00 00  8...............
->     b0 a2 b0 81 bd 95 ff ff b0 a2 b0 81 bd 95 ff ff  ................
->   backtrace:
->     [<00000000582dd5c5>] kmem_cache_alloc_trace+0x31f/0x4c0
->     [<000000002659850d>] irq_cpu_rmap_add+0x25/0xe0
->     [<00000000495a3055>] ice_set_cpu_rx_rmap+0xb4/0x110 [ice]
->     [<000000002370a632>] ice_probe+0x941/0x1180 [ice]
->     [<00000000d692edba>] local_pci_probe+0x47/0xa0
->     [<00000000503934f0>] work_for_cpu_fn+0x1a/0x30
->     [<00000000555a9e4a>] process_one_work+0x1dd/0x410
->     [<000000002c4b414a>] worker_thread+0x221/0x3f0
->     [<00000000bb2b556b>] kthread+0x14c/0x170
->     [<00000000ad2cf1cd>] ret_from_fork+0x1f/0x30
->=20
-> Signed-off-by: Yongxin Liu <yongxin.liu@windriver.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_main.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c
-> b/drivers/net/ethernet/intel/ice/ice_main.c
-> index 2c23c8f468a5..9c2d567a2534 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -4568,6 +4568,7 @@ static int __maybe_unused ice_suspend(struct device
-> *dev)
->  			continue;
->  		ice_vsi_free_q_vectors(pf->vsi[v]);
->  	}
-> +	ice_free_cpu_rx_rmap(ice_get_main_vsi(pf));
->  	ice_clear_interrupt_scheme(pf);
->=20
->  	pci_save_state(pdev);
-> --
-> 2.14.5
+Please see each patch for more details.
+
+To see the big picture, the original patchset is available here:
+https://github.com/congwang/linux/tree/sockmap
+this patchset is also available:
+https://github.com/congwang/linux/tree/sockmap2
+
+---
+v8: get rid of 'offset' in udp_read_sock()
+    add checks for skb_verdict/stream_verdict conflict
+    add two cleanup patches for sock_map_link()
+    add a new test case
+
+v7: use work_mutex to protect psock->work
+    return err in udp_read_sock()
+    add patch 6/13
+    clean up test case
+
+v6: get rid of sk_psock_zap_ingress()
+    add rcu work patch
+
+v5: use INDIRECT_CALL_2() for function pointers
+    use ingress_lock to fix a race condition found by Jacub
+    rename two helper functions
+
+v4: get rid of lock_sock() in sk_psock_handle_skb()
+    get rid of udp_sendmsg_locked()
+    remove an empty line
+    update cover letter
+
+v3: export tcp/udp_update_proto()
+    rename sk->sk_prot->psock_update_sk_prot()
+    improve changelogs
+
+v2: separate from the original large patchset
+    rebase to the latest bpf-next
+    split UDP test case
+    move inet_csk_has_ulp() check to tcp_bpf.c
+    clean up udp_read_sock()
+
+Cong Wang (16):
+  skmsg: lock ingress_skb when purging
+  skmsg: introduce a spinlock to protect ingress_msg
+  net: introduce skb_send_sock() for sock_map
+  skmsg: avoid lock_sock() in sk_psock_backlog()
+  skmsg: use rcu work for destroying psock
+  skmsg: use GFP_KERNEL in sk_psock_create_ingress_msg()
+  sock_map: simplify sock_map_link() a bit
+  sock_map: kill sock_map_link_no_progs()
+  sock_map: introduce BPF_SK_SKB_VERDICT
+  sock: introduce sk->sk_prot->psock_update_sk_prot()
+  udp: implement ->read_sock() for sockmap
+  skmsg: extract __tcp_bpf_recvmsg() and tcp_bpf_wait_data()
+  udp: implement udp_bpf_recvmsg() for sockmap
+  sock_map: update sock type checks for UDP
+  selftests/bpf: add a test case for udp sockmap
+  selftests/bpf: add a test case for loading BPF_SK_SKB_VERDICT
+
+ include/linux/skbuff.h                        |   1 +
+ include/linux/skmsg.h                         |  77 ++++++--
+ include/net/sock.h                            |   3 +
+ include/net/tcp.h                             |   3 +-
+ include/net/udp.h                             |   3 +
+ include/uapi/linux/bpf.h                      |   1 +
+ kernel/bpf/syscall.c                          |   1 +
+ net/core/skbuff.c                             |  55 +++++-
+ net/core/skmsg.c                              | 177 ++++++++++++++----
+ net/core/sock_map.c                           | 118 ++++++------
+ net/ipv4/af_inet.c                            |   1 +
+ net/ipv4/tcp_bpf.c                            | 130 +++----------
+ net/ipv4/tcp_ipv4.c                           |   3 +
+ net/ipv4/udp.c                                |  32 ++++
+ net/ipv4/udp_bpf.c                            |  79 +++++++-
+ net/ipv6/af_inet6.c                           |   1 +
+ net/ipv6/tcp_ipv6.c                           |   3 +
+ net/ipv6/udp.c                                |   3 +
+ net/tls/tls_sw.c                              |   4 +-
+ tools/bpf/bpftool/common.c                    |   1 +
+ tools/bpf/bpftool/prog.c                      |   1 +
+ tools/include/uapi/linux/bpf.h                |   1 +
+ .../selftests/bpf/prog_tests/sockmap_basic.c  |  40 ++++
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 136 ++++++++++++++
+ .../selftests/bpf/progs/test_sockmap_listen.c |  22 +++
+ .../progs/test_sockmap_skb_verdict_attach.c   |  18 ++
+ 26 files changed, 677 insertions(+), 237 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_skb_verdict_attach.c
+
+-- 
+2.25.1
 
