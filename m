@@ -2,62 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 257B3350443
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9015350453
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbhCaQO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 12:14:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53594 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229486AbhCaQOI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 12:14:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D17416102A;
-        Wed, 31 Mar 2021 16:14:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617207244;
-        bh=VgwWgmjg9khzPt0mP1Tojd5JQXXGG70rDa5nw1IZQnQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HalAKJD2CJZEeF30MW0WR05W+hTZFDzEVCSEXzL4OhU+v/mDuPK/+LeXZ+ITxe052
-         nJCA/Qt6D4xMaMQsU8IpXcFRJRvFjosDtMnatRvn1TsQ/Nw7V9u2tGFQ8MCUYu7/1k
-         +IodcWBdDvom3CjuGSlhLKngyeFHjwAnJqPVq8YVU4Nrm4JJ1QiJNkvUCIhO24gdvY
-         fIHNxx89OwUuwSr+yJ+iGIeRM5VCPndF90RrnSNScnmMVWH5Fe/kwzwg1VQIQG3T53
-         oGYxEQAMStzHWeN+N5W5v5K54WbFa9+jCzEBdR3k/oNIOwcWrBaad/1BEknkJ69Pkl
-         N0Ty4VZYUErpA==
-Received: by mail-lj1-f172.google.com with SMTP id u20so24475884lja.13;
-        Wed, 31 Mar 2021 09:14:03 -0700 (PDT)
-X-Gm-Message-State: AOAM530/rKUJc3Pq624N+n9RXB1clOne0IEBUG40zJw1NoasbkONZDjP
-        F0wF2fjEkNlKbNxF8RxmWsSxyjBmorx4d3Me1N8=
-X-Google-Smtp-Source: ABdhPJyZnC6MHHfZno0xYkcUUBI/HLYguDDsNuX/RpDHNIEmgvJHJ/TpM4Nd6uPzwi6dfPuRZaE3/K6pfOjR+l2rvXs=
-X-Received: by 2002:a2e:809a:: with SMTP id i26mr2541423ljg.357.1617207242113;
- Wed, 31 Mar 2021 09:14:02 -0700 (PDT)
+        id S233744AbhCaQRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229486AbhCaQRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:17:31 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5304FC061574;
+        Wed, 31 Mar 2021 09:17:31 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id k8so20263524wrc.3;
+        Wed, 31 Mar 2021 09:17:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+LUmV3vHkxiR9TrSqFPXgZ/3haa7mVuzoeyXiIzlD/Q=;
+        b=ovrd3VFqc8rvz+5dxr735rvsgWHJzDItSqV9k+xNbrZhCW7vWWTLrdfzV7WfjIgfuL
+         PN6P/kEUSWNECjQXzYsDaQXiSenRgeEHwn38FcbZXyyF7QW9BSmd7GgHaF2cRCYhlfMW
+         QVROuNQHqT6dlxPcCB5JOwNKsOSgRM63++G2cxBYTJu8xppgvl1GqLVFZMmz8qIGr/aL
+         J670eO545rzqtycws6Fw7zbpr68dsN0tsHMljVRK07eNUqvyc4zz7QZk+T9Gwaa0XBLb
+         TqBa/OzZFMDH5fllVO14NB0mnFw9cvnyWqQOOvIxGMiVtuK9p4x7bhLunOJ0VlBprn7r
+         J2pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+LUmV3vHkxiR9TrSqFPXgZ/3haa7mVuzoeyXiIzlD/Q=;
+        b=pFJVFiAOGamnbN7QLJ/0svHi9fPrWT7MEZl8kDM33SNkJ0KMSYd8A9hXpKNEhCwM5D
+         m5Gg1nHrax8zlY5VRpnxTDI4T9VweSaPsj9uCwzGDwsJ8uYW5SHJ+dJC/Kp2YL6Uqpbj
+         idvS6Xgdg+SNA7HYpOTML7JYYnRinavQ+mqVC2A0TAMuoE+3/GzAzmvxtPI+5lS6IqgZ
+         DIQC+3trMzviVXypCPodZACvyptIqDhYjoDxYybgvxK5SoJy4fTax0OMDSO6FsUA48rp
+         tV/IBVO+NlUUzzNRxef4lQ8xQxV/99mGBkUIdFF69ZmijB0OwNlnLEtwTDvA5bHXrlQt
+         FiCQ==
+X-Gm-Message-State: AOAM5311lkT7vIdHTnE+pKgY3MrTlxOwLqfGwJFGCJpunrtMtmL1XeH1
+        O0OpRZWvPBzm5j0RBw0q0vaoc0fdRbY=
+X-Google-Smtp-Source: ABdhPJzTCspDm2cy4Z3LxFOSjp9owGYeUOfwlhWKdsHMJzWHexc9oB5dTjb5l7fk4gKsSdlHGgmbow==
+X-Received: by 2002:a05:6000:18f:: with SMTP id p15mr4661255wrx.23.1617207449817;
+        Wed, 31 Mar 2021 09:17:29 -0700 (PDT)
+Received: from [192.168.1.101] ([37.172.182.222])
+        by smtp.gmail.com with ESMTPSA id w131sm5137657wmb.8.2021.03.31.09.17.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Mar 2021 09:17:29 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 5.11 10/38] net: correct sk_acceptq_is_full()
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     liuyacan <yacanliu@163.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20210329222133.2382393-1-sashal@kernel.org>
+ <20210329222133.2382393-10-sashal@kernel.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e08f40b5-7f5b-0714-dfab-f24ed7f348fc@gmail.com>
+Date:   Wed, 31 Mar 2021 18:17:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-References: <20210331075135.3850782-1-hefengqing@huawei.com>
-In-Reply-To: <20210331075135.3850782-1-hefengqing@huawei.com>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 31 Mar 2021 09:13:51 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW60V4WL+SGhYeZTGmLhFvc_vywATB61BBAvc9R8m02pTg@mail.gmail.com>
-Message-ID: <CAPhsuW60V4WL+SGhYeZTGmLhFvc_vywATB61BBAvc9R8m02pTg@mail.gmail.com>
-Subject: Re: [Patch bpf-next] bpf: remove unused parameter from ___bpf_prog_run
-To:     He Fengqing <hefengqing@huawei.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210329222133.2382393-10-sashal@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 12:14 AM He Fengqing <hefengqing@huawei.com> wrote:
->
-> 'stack' parameter is not used in ___bpf_prog_run,
-> the base address have been set to FP reg. So consequently remove it.
->
-> Signed-off-by: He Fengqing <hefengqing@huawei.com>
 
-Acked-by: Song Liu <songliubraving@fb.com>
+
+On 3/30/21 12:21 AM, Sasha Levin wrote:
+> From: liuyacan <yacanliu@163.com>
+> 
+> [ Upstream commit f211ac154577ec9ccf07c15f18a6abf0d9bdb4ab ]
+> 
+> The "backlog" argument in listen() specifies
+> the maximom length of pending connections,
+> so the accept queue should be considered full
+> if there are exactly "backlog" elements.
+> 
+> Signed-off-by: liuyacan <yacanliu@163.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  include/net/sock.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 129d200bccb4..a95f38a4b8c6 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -936,7 +936,7 @@ static inline void sk_acceptq_added(struct sock *sk)
+>  
+>  static inline bool sk_acceptq_is_full(const struct sock *sk)
+>  {
+> -	return READ_ONCE(sk->sk_ack_backlog) > READ_ONCE(sk->sk_max_ack_backlog);
+> +	return READ_ONCE(sk->sk_ack_backlog) >= READ_ONCE(sk->sk_max_ack_backlog);
+>  }
+>  
+>  /*
+> 
+
+
+????
+
+I have not seen this patch going in our trees.
+
+First, there was no Fixes: tag, so this is quite unfortunate.
+
+Second, we already had such wrong patches in the past.
+
+Please look at commits
+64a146513f8f12ba204b7bf5cb7e9505594ead42 [NET]: Revert incorrect accept queue backlog changes.
+8488df894d05d6fa41c2bd298c335f944bb0e401 [NET]: Fix bugs in "Whether sock accept queue is full" checking
+
+Please revert  this patch, thanks !
+
