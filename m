@@ -2,98 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 147A53501C2
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:57:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318563501CA
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 16:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235639AbhCaN5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 09:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
+        id S235892AbhCaN7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 09:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235882AbhCaN4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:56:41 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E42C061574
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:56:41 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id d12so20040335oiw.12
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:56:41 -0700 (PDT)
+        with ESMTP id S235777AbhCaN7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:59:19 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6267C06175F
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:59:18 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id u21so30181633ejo.13
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1nl+n3ykQPtE+4YeQ7Kc4gISHOOu6sfkyWYJgsj9ocI=;
-        b=dG4jre12jnWNU4f1o2wsgkr6gfWZIuZn1ky6FyuJ6aEr5pRdJU+ZY+fivcG8TnwTRH
-         jSNmYO1HDMuTFjcoA0OA+EIM2jfa1OvkdXSc1sPG4xXJ66de0mOt1PziI8Cto3ci0viz
-         d9AOAXWRjqjpC0NTXyIMDKRiZm0ms2v2tyf2dviwgKZJ7BIFpo/jOicqIpFbi2x372Fg
-         LPlXrSQPpEhYyYbaRCCMrL3fi9PmUbeZ0p1HAfSVwtd0XL2L4oFf5TFMUwHgilSv4ZXz
-         R9xuH+zp0pLO1HVqr83B1FPCBLnUQXeJI53O9F0eeJSs5V7nBITkNkgwJtZ1zxgbAhs0
-         RmTA==
+        bh=ghwcCn9upZo2ScDVOGrOotVx0dDg7jQeJeG/I9cIPPU=;
+        b=vav4qwDMP7i6EjFBmJn6551WnKNbAVSoVqU8Z6vejfTYXV3iFII7fDe2WExeA2RqIE
+         bM0wcMOanXWeLSY/nP0Do802ZmKO/aUAHizmV0KSHY/TC35KvM6J529BYc3Ka5q5oIg2
+         JJ0Dx8PRWRPm1KNIxfQvbITACKqd/Y6JEK49c8tWJIE6tfF6boqcbVW+HWfls+Lp2Z00
+         aA0h6jX4e2O1hDWbFzomMcDWmFxBBdpbnH2EeFhj9grLKotics7yHAfigpEwqxdlab+7
+         C4ZcVQgjB7QD4+1MiKiGV0biSoNHR8mHUKfo3B1T5f9CG3TCZCgCB/Lgn/JHdfWgO5xa
+         Zowg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1nl+n3ykQPtE+4YeQ7Kc4gISHOOu6sfkyWYJgsj9ocI=;
-        b=XQxDyK+mJuE4se6a57Zgyl68T5+xQqtYXc4uxHVmEV+uB7bCj2ENCm44ynzc5sJWiE
-         I/7WAaDuL1GBvg/odG8Uahf5Sz4IXkxo9R2P6gCwJ/+Uk1Zmrg91YvQxuGbemU5iRQk0
-         xW3/hUjdZENG2vOvUq7PL1cQQvdyFn3vUG91UD8QyihhBxRMGxijsvOR3uQ/vde3addu
-         DKS4/RSYZdYPnrCcP9M0gZHEkf1UOx+m10KLwwxLC5XDNZ524HcZj1KFS2bIFjAcsVDD
-         CbYgtD8v1d/ulAmu9aTtGA3AAK5320PVIzE59iIxlWMzmqAD2GJDPqoHIw+2dE57lEjt
-         OTZw==
-X-Gm-Message-State: AOAM533TlrVDkZFqz/Zl0+aeMU3Aber56pmtQh8Nth4LFW6hzR+eH+Mf
-        aXYZAqmfTJYr4atlGAach4QfBB0FriZbrrDtTNIUl5DJwQ==
-X-Google-Smtp-Source: ABdhPJxT1jiuxJTTHX/qmSJNNcFrUqkN6VPgEWxC9pm0ge5LWltRyFQRw74avpIOUsMzHuTQJgfn6xw31o8X0HTeih4=
-X-Received: by 2002:aca:ab44:: with SMTP id u65mr2257325oie.122.1617199000403;
- Wed, 31 Mar 2021 06:56:40 -0700 (PDT)
+        bh=ghwcCn9upZo2ScDVOGrOotVx0dDg7jQeJeG/I9cIPPU=;
+        b=htbt9I5Vtsr0HcPLeRVXg7JevOha4ccleijZSCQYogijjbZ9LpxHWo8zzwXLKFL/xr
+         mAnp+BvCK0++Bx7JCbCp+aPEnnn3Rv2zT/roDAL/s1jPo8/zOOJQM/KiszuP/B28qvyI
+         7wX/nX9qFoL6+erCrfJ6+/volt3QMQhyzSE63tVMVi+mHyERJVzTerVoQuuO888iWjiT
+         Mru3A/M4SKPsKQqv7gYF9m1y92Pe9d5w5JP+m8m1UK0Nh6CDZp9dhUJw1sixIZ1wYAX9
+         V5WzZvDoJPyWueJ5LmuTTSVPbsb+ip7v7zU2TUx+jjsaTwR1OBoA7BL3yzdwsRof/j2k
+         1AcQ==
+X-Gm-Message-State: AOAM533WBg0tacaZoXBv7f7KT1OMn4h6Fxe7TLxwJ+FZh6NqvUVir78X
+        UTQqR1MUTClPTIQGNVuzYHfjALxqPnDh1wTjM4gs
+X-Google-Smtp-Source: ABdhPJy1F+1dndmaWxm19LJTyn2LKz2YWhIRQirh52O3KYWsmxmJWiuRe+aQHvYGuBIKQa4hIAktI/HirP2Vh0GTAVU=
+X-Received: by 2002:a17:906:86c6:: with SMTP id j6mr3559138ejy.197.1617199157271;
+ Wed, 31 Mar 2021 06:59:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <MWHPR06MB3503CE521D6993C7786A3E93DC8D0@MWHPR06MB3503.namprd06.prod.outlook.com>
- <20180430125030.GB10066@lunn.ch> <bf9115d87b65766dab2d5671eceb1764d0d8dc0c.camel@canoga.com>
- <YEemYTQ9EhQQ9jyH@lunn.ch> <20fd4a9ce09117e765dbf63f1baa9da5c834a64b.camel@canoga.com>
- <YEf8dFUCB+/vMkU8@lunn.ch> <9d866ab9d2f324f34804b3c74e350138d5413706.camel@canoga.com>
- <YEjM2T8rI05F/Fbr@lunn.ch> <497bb0d287474ba1dbaded0c5068569203a8691a.camel@canoga.com>
-In-Reply-To: <497bb0d287474ba1dbaded0c5068569203a8691a.camel@canoga.com>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Wed, 31 Mar 2021 08:56:28 -0500
-Message-ID: <CAFSKS=OvPO=0bYm6o2L=2BH8eQDKtzPw+qA2Phx2sk59BGRnRA@mail.gmail.com>
-Subject: Re: DSA
-To:     "Wyse, Chris" <cwyse@canoga.com>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "drichards@impinj.com" <drichards@impinj.com>
+References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-2-xieyongji@bytedance.com>
+ <20210331091545.lr572rwpyvrnji3w@wittgenstein> <CACycT3vRhurgcuNvEW7JKuhCQdy__5ZX=5m1AFnVKDk8UwUa7A@mail.gmail.com>
+ <20210331122315.uas3n44vgxz5z5io@wittgenstein>
+In-Reply-To: <20210331122315.uas3n44vgxz5z5io@wittgenstein>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 31 Mar 2021 21:59:07 +0800
+Message-ID: <CACycT3vm_XvitXV+kXivAhrfwN6U0Nm5kZwcYhY+GrriVAKq8g@mail.gmail.com>
+Subject: Re: Re: [PATCH v6 01/10] file: Export receive_fd() to modules
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[snip]
+On Wed, Mar 31, 2021 at 8:23 PM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+>
+> On Wed, Mar 31, 2021 at 07:32:33PM +0800, Yongji Xie wrote:
+> > On Wed, Mar 31, 2021 at 5:15 PM Christian Brauner
+> > <christian.brauner@ubuntu.com> wrote:
+> > >
+> > > On Wed, Mar 31, 2021 at 04:05:10PM +0800, Xie Yongji wrote:
+> > > > Export receive_fd() so that some modules can use
+> > > > it to pass file descriptor between processes without
+> > > > missing any security stuffs.
+> > > >
+> > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > > > ---
+> > >
+> > > Yeah, as I said in the other mail I'd be comfortable with exposing just
+> > > this variant of the helper.
+> >
+> > Thanks, I got it now.
+> >
+> > > Maybe this should be a separate patch bundled together with Christoph's
+> > > patch to split parts of receive_fd() into a separate helper.
+> >
+> > Do we need to add the seccomp notifier into the separate helper? In
+> > our case, the file passed to the separate helper is from another
+> > process.
+>
+> Not sure what you mean. Christoph has proposed
+> https://lore.kernel.org/linux-fsdevel/20210325082209.1067987-2-hch@lst.de
+> I was just saying that if we think this patch is useful we might bundle
+> it together with the
+> EXPORT_SYMBOL(receive_fd)
+> part here, convert all drivers that currently open-code get_unused_fd()
+> + fd_install() to use receive_fd(), and make this a separate patchset.
+>
 
-I'm using an i210 w/ mdio to connect to cascaded mv88e6390 switches on
-an Intel platform. I have patches based on patches sent in 2014 that
-allow use of mdio and configuration with device-tree. I'd like to get
-them upstreamed but there are some unresolved problems. For one I have
-no way of testing external mdio connected phys since my board only
-connects to a switch. Second it's not clear what the "correct" mode
-configured in the EEPROM should be SGMII, 1000BASE_KX or SERDES. Based
-on 2014 mailing list discussion I'm using SGMII in the EEPROM
-configuration but it ends up having to change the link mode to
-E1000_CTRL_EXT_LINK_MODE_PCIE_SERDES when a phy is not detected or it
-won't link with the mv88e6390. I think there may be push back from
-upstream in changing the behavior of various modes even if external
-mdio is enabled in the EEPROM due to fear that vendors may have
-enabled it for no reason (needs more investigation). I've also had to
-add a hack to the mv88e6xxx driver to stop calling
-phylink_helper_basex_speed, otherwise it always tries to use
-2500base-x which doesn't work with the i210. I posted to the ML about
-this but no one bothered to reply.
+Yes, I see. We can split the parts (get_unused_fd() + fd_install()) of
+receive_fd() into a separate helper and convert all drivers to use
+that. What I mean is that I also would like to use
+security_file_receive() in my modules. So I'm not sure if it's ok to
+add security_file_receive() into the separate helper. Or do I need to
+export security_file_receive() separately?
 
-My Intel Atom platform happens to be using u-boot rather than UEFI so
-I'm able to apply DT overlays based on detected PCI subsystem VID/ID
-before the linux kernel is started.
-
-I'm on #linuxswitch on Freenode if there is anything you want to
-discuss off the list. If any of you have interest in getting these
-patches upstream it would be great to work with someone on it.
-
-You can find what I have here:
-https://github.com/gmccollister/linux/tree/net-i210-mv88e6390
-
-Regards,
-George McCollister
+Thanks,
+Yongji
