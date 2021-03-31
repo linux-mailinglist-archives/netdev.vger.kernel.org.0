@@ -2,288 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 228293503AD
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB3C35041B
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:06:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236354AbhCaPia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 11:38:30 -0400
-Received: from mga17.intel.com ([192.55.52.151]:45745 "EHLO mga17.intel.com"
+        id S233750AbhCaQFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:05:37 -0400
+Received: from foss.arm.com ([217.140.110.172]:45844 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235727AbhCaPh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 11:37:57 -0400
-IronPort-SDR: 9S/jrXCFpYuZStpt1ZlySx9hnvo32f8bHaAxycOPvDlDfDKFD1Z5O12AJeHkZ0IMrSq3o7i2pB
- JppwhSpiK4pA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="172063519"
-X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="172063519"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 08:37:56 -0700
-IronPort-SDR: 7FQWBohmvSmWmonY5qIFURU/vmhYx0chzAIGevWpMsTtaye1fB91VGDKoVL2kvHJC0cluebXxg
- 2V7o4C1uBmWw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="418729189"
-Received: from glass.png.intel.com ([10.158.65.59])
-  by orsmga008.jf.intel.com with ESMTP; 31 Mar 2021 08:37:51 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v3 6/6] net: stmmac: Add support for XDP_REDIRECT action
-Date:   Wed, 31 Mar 2021 23:41:35 +0800
-Message-Id: <20210331154135.8507-7-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210331154135.8507-1-boon.leong.ong@intel.com>
-References: <20210331154135.8507-1-boon.leong.ong@intel.com>
+        id S232406AbhCaQFR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 12:05:17 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B767D6E;
+        Wed, 31 Mar 2021 09:05:16 -0700 (PDT)
+Received: from [10.57.24.208] (unknown [10.57.24.208])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 321003F792;
+        Wed, 31 Mar 2021 09:05:14 -0700 (PDT)
+Subject: Re: [PATCH 16/18] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
+To:     Will Deacon <will@kernel.org>
+Cc:     freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
+        Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arm-kernel@lists.infradead.org
+References: <20210316153825.135976-1-hch@lst.de>
+ <20210316153825.135976-17-hch@lst.de>
+ <20210330131149.GP5908@willie-the-truck>
+ <a6952aa7-4d7e-54f0-339e-e15f88596dcc@arm.com>
+ <20210330135801.GA6187@willie-the-truck>
+ <578d6aa5-4239-f5d7-2e9f-686b18e52bba@arm.com>
+ <20210331114947.GA7626@willie-the-truck>
+ <ef895942-e115-7878-ab86-37e8a1614df5@arm.com>
+ <20210331153256.GA7815@willie-the-truck>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <81dd27fe-28ee-c800-fe5d-aaa64cb93513@arm.com>
+Date:   Wed, 31 Mar 2021 17:05:08 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210331153256.GA7815@willie-the-truck>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the support of XDP_REDIRECT to another remote cpu for
-further action. It also implements ndo_xdp_xmit ops, enabling the driver
-to transmit packets forwarded to it by XDP program running on another
-interface.
+On 2021-03-31 16:32, Will Deacon wrote:
+> On Wed, Mar 31, 2021 at 02:09:37PM +0100, Robin Murphy wrote:
+>> On 2021-03-31 12:49, Will Deacon wrote:
+>>> On Tue, Mar 30, 2021 at 05:28:19PM +0100, Robin Murphy wrote:
+>>>> On 2021-03-30 14:58, Will Deacon wrote:
+>>>>> On Tue, Mar 30, 2021 at 02:19:38PM +0100, Robin Murphy wrote:
+>>>>>> On 2021-03-30 14:11, Will Deacon wrote:
+>>>>>>> On Tue, Mar 16, 2021 at 04:38:22PM +0100, Christoph Hellwig wrote:
+>>>>>>>> From: Robin Murphy <robin.murphy@arm.com>
+>>>>>>>>
+>>>>>>>> Instead make the global iommu_dma_strict paramete in iommu.c canonical by
+>>>>>>>> exporting helpers to get and set it and use those directly in the drivers.
+>>>>>>>>
+>>>>>>>> This make sure that the iommu.strict parameter also works for the AMD and
+>>>>>>>> Intel IOMMU drivers on x86.  As those default to lazy flushing a new
+>>>>>>>> IOMMU_CMD_LINE_STRICT is used to turn the value into a tristate to
+>>>>>>>> represent the default if not overriden by an explicit parameter.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>.
+>>>>>>>> [ported on top of the other iommu_attr changes and added a few small
+>>>>>>>>      missing bits]
+>>>>>>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>>>>>>>> ---
+>>>>>>>>      drivers/iommu/amd/iommu.c                   | 23 +-------
+>>>>>>>>      drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 +---------------
+>>>>>>>>      drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 -
+>>>>>>>>      drivers/iommu/arm/arm-smmu/arm-smmu.c       | 27 +--------
+>>>>>>>>      drivers/iommu/dma-iommu.c                   |  9 +--
+>>>>>>>>      drivers/iommu/intel/iommu.c                 | 64 ++++-----------------
+>>>>>>>>      drivers/iommu/iommu.c                       | 27 ++++++---
+>>>>>>>>      include/linux/iommu.h                       |  4 +-
+>>>>>>>>      8 files changed, 40 insertions(+), 165 deletions(-)
+>>>>>>>
+>>>>>>> I really like this cleanup, but I can't help wonder if it's going in the
+>>>>>>> wrong direction. With SoCs often having multiple IOMMU instances and a
+>>>>>>> distinction between "trusted" and "untrusted" devices, then having the
+>>>>>>> flush-queue enabled on a per-IOMMU or per-domain basis doesn't sound
+>>>>>>> unreasonable to me, but this change makes it a global property.
+>>>>>>
+>>>>>> The intent here was just to streamline the existing behaviour of stuffing a
+>>>>>> global property into a domain attribute then pulling it out again in the
+>>>>>> illusion that it was in any way per-domain. We're still checking
+>>>>>> dev_is_untrusted() before making an actual decision, and it's not like we
+>>>>>> can't add more factors at that point if we want to.
+>>>>>
+>>>>> Like I say, the cleanup is great. I'm just wondering whether there's a
+>>>>> better way to express the complicated logic to decide whether or not to use
+>>>>> the flush queue than what we end up with:
+>>>>>
+>>>>> 	if (!cookie->fq_domain && (!dev || !dev_is_untrusted(dev)) &&
+>>>>> 	    domain->ops->flush_iotlb_all && !iommu_get_dma_strict())
+>>>>>
+>>>>> which is mixing up globals, device properties and domain properties. The
+>>>>> result is that the driver code ends up just using the global to determine
+>>>>> whether or not to pass IO_PGTABLE_QUIRK_NON_STRICT to the page-table code,
+>>>>> which is a departure from the current way of doing things.
+>>>>
+>>>> But previously, SMMU only ever saw the global policy piped through the
+>>>> domain attribute by iommu_group_alloc_default_domain(), so there's no
+>>>> functional change there.
+>>>
+>>> For DMA domains sure, but I don't think that's the case for unmanaged
+>>> domains such as those used by VFIO.
+>>
+>> Eh? This is only relevant to DMA domains anyway. Flush queues are part of
+>> the IOVA allocator that VFIO doesn't even use. It's always been the case
+>> that unmanaged domains only use strict invalidation.
+> 
+> Maybe I'm going mad. With this patch, the SMMU driver unconditionally sets
+> IO_PGTABLE_QUIRK_NON_STRICT for page-tables if iommu_get_dma_strict() is
+> true, no? In which case, that will get set for page-tables corresponding
+> to unmanaged domains as well as DMA domains when it is enabled. That didn't
+> happen before because you couldn't set the attribute for unmanaged domains.
+> 
+> What am I missing?
 
-This patch has been tested using "xdp_redirect_cpu" for XDP_REDIRECT
-+ drop testing. It also been tested with "xdp_redirect" sample app
-which can be used to exercise ndo_xdp_xmit ops. The burst traffics are
-generated using pktgen_sample03_burst_single_flow.sh in samples/pktgen
-directory.
+Oh cock... sorry, all this time I've been saying what I *expect* it to 
+do, while overlooking the fact that the IO_PGTABLE_QUIRK_NON_STRICT 
+hunks were the bits I forgot to write and Christoph had to fix up. 
+Indeed, those should be checking the domain type too to preserve the 
+existing behaviour. Apologies for the confusion.
 
-v3: Added 'nq->trans_start = jiffies' to avoid TX time-out as we are
-    sharing TX queue between slow path and XDP. Thanks to Jakub Kicinski
-    for point out.
+Robin.
 
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 98 +++++++++++++++++--
- 2 files changed, 89 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index a93e22a6be59..c49debb62b05 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -39,6 +39,7 @@ struct stmmac_resources {
- enum stmmac_txbuf_type {
- 	STMMAC_TXBUF_T_SKB,
- 	STMMAC_TXBUF_T_XDP_TX,
-+	STMMAC_TXBUF_T_XDP_NDO,
- };
- 
- struct stmmac_tx_info {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 35e9a738d663..370b3c084dda 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -72,6 +72,7 @@ MODULE_PARM_DESC(phyaddr, "Physical device address");
- #define STMMAC_XDP_PASS		0
- #define STMMAC_XDP_CONSUMED	BIT(0)
- #define STMMAC_XDP_TX		BIT(1)
-+#define STMMAC_XDP_REDIRECT	BIT(2)
- 
- static int flow_ctrl = FLOW_AUTO;
- module_param(flow_ctrl, int, 0644);
-@@ -1458,7 +1459,8 @@ static void stmmac_free_tx_buffer(struct stmmac_priv *priv, u32 queue, int i)
- 	}
- 
- 	if (tx_q->xdpf[i] &&
--	    tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_TX) {
-+	    (tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_TX ||
-+	     tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_NDO)) {
- 		xdp_return_frame(tx_q->xdpf[i]);
- 		tx_q->xdpf[i] = NULL;
- 	}
-@@ -2220,7 +2222,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 		struct dma_desc *p;
- 		int status;
- 
--		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_TX) {
-+		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_TX ||
-+		    tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_NDO) {
- 			xdpf = tx_q->xdpf[entry];
- 			skb = NULL;
- 		} else if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_SKB) {
-@@ -2292,6 +2295,12 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 			tx_q->xdpf[entry] = NULL;
- 		}
- 
-+		if (xdpf &&
-+		    tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_NDO) {
-+			xdp_return_frame(xdpf);
-+			tx_q->xdpf[entry] = NULL;
-+		}
-+
- 		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_SKB) {
- 			if (likely(skb)) {
- 				pkts_compl++;
-@@ -4246,10 +4255,9 @@ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
- }
- 
- static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
--				struct xdp_frame *xdpf)
-+				struct xdp_frame *xdpf, bool dma_map)
- {
- 	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
--	struct page *page = virt_to_page(xdpf->data);
- 	unsigned int entry = tx_q->cur_tx;
- 	struct dma_desc *tx_desc;
- 	dma_addr_t dma_addr;
-@@ -4265,12 +4273,23 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
- 	else
- 		tx_desc = tx_q->dma_tx + entry;
- 
--	dma_addr = page_pool_get_dma_addr(page) + sizeof(*xdpf) +
--		   xdpf->headroom;
--	dma_sync_single_for_device(priv->device, dma_addr,
--				   xdpf->len, DMA_BIDIRECTIONAL);
-+	if (dma_map) {
-+		dma_addr = dma_map_single(priv->device, xdpf->data,
-+					  xdpf->len, DMA_TO_DEVICE);
-+		if (dma_mapping_error(priv->device, dma_addr))
-+			return STMMAC_XDP_CONSUMED;
-+
-+		tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_NDO;
-+	} else {
-+		struct page *page = virt_to_page(xdpf->data);
- 
--	tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_TX;
-+		dma_addr = page_pool_get_dma_addr(page) + sizeof(*xdpf) +
-+			   xdpf->headroom;
-+		dma_sync_single_for_device(priv->device, dma_addr,
-+					   xdpf->len, DMA_BIDIRECTIONAL);
-+
-+		tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_TX;
-+	}
- 
- 	tx_q->tx_skbuff_dma[entry].buf = dma_addr;
- 	tx_q->tx_skbuff_dma[entry].map_as_page = false;
-@@ -4339,7 +4358,7 @@ static int stmmac_xdp_xmit_back(struct stmmac_priv *priv,
- 	__netif_tx_lock(nq, cpu);
- 	/* Avoids TX time-out as we are sharing with slow path */
- 	nq->trans_start = jiffies;
--	res = stmmac_xdp_xmit_xdpf(priv, queue, xdpf);
-+	res = stmmac_xdp_xmit_xdpf(priv, queue, xdpf, false);
- 	if (res == STMMAC_XDP_TX) {
- 		stmmac_flush_tx_descriptors(priv, queue);
- 		stmmac_tx_timer_arm(priv, queue);
-@@ -4372,6 +4391,12 @@ static struct sk_buff *stmmac_xdp_run_prog(struct stmmac_priv *priv,
- 	case XDP_TX:
- 		res = stmmac_xdp_xmit_back(priv, xdp);
- 		break;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(priv->dev, xdp, prog) < 0)
-+			res = STMMAC_XDP_CONSUMED;
-+		else
-+			res = STMMAC_XDP_REDIRECT;
-+		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
- 		fallthrough;
-@@ -4407,6 +4432,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 	unsigned int desc_size;
- 	struct sk_buff *skb = NULL;
- 	struct xdp_buff xdp;
-+	int xdp_status = 0;
- 	int buf_sz;
- 
- 	dma_dir = page_pool_get_dma_dir(rx_q->page_pool);
-@@ -4576,6 +4602,12 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 					skb = NULL;
- 					count++;
- 					continue;
-+				} else if (xdp_res & STMMAC_XDP_REDIRECT) {
-+					xdp_status |= xdp_res;
-+					buf->page = NULL;
-+					skb = NULL;
-+					count++;
-+					continue;
- 				}
- 			}
- 		}
-@@ -4658,6 +4690,9 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 		rx_q->state.len = len;
- 	}
- 
-+	if (xdp_status & STMMAC_XDP_REDIRECT)
-+		xdp_do_flush();
-+
- 	stmmac_rx_refill(priv, queue);
- 
- 	priv->xstats.rx_pkt_n += count;
-@@ -5584,6 +5619,48 @@ static int stmmac_bpf(struct net_device *dev, struct netdev_bpf *bpf)
- 	}
- }
- 
-+static int stmmac_xdp_xmit(struct net_device *dev, int num_frames,
-+			   struct xdp_frame **frames, u32 flags)
-+{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	int i, nxmit = 0;
-+	int queue;
-+
-+	if (unlikely(test_bit(STMMAC_DOWN, &priv->state)))
-+		return -ENETDOWN;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	queue = stmmac_xdp_get_tx_queue(priv, cpu);
-+	nq = netdev_get_tx_queue(priv->dev, queue);
-+
-+	__netif_tx_lock(nq, cpu);
-+	/* Avoids TX time-out as we are sharing with slow path */
-+	nq->trans_start = jiffies;
-+
-+	for (i = 0; i < num_frames; i++) {
-+		int res;
-+
-+		res = stmmac_xdp_xmit_xdpf(priv, queue, frames[i], true);
-+		if (res == STMMAC_XDP_CONSUMED)
-+			break;
-+
-+		nxmit++;
-+	}
-+
-+	if (flags & XDP_XMIT_FLUSH) {
-+		stmmac_flush_tx_descriptors(priv, queue);
-+		stmmac_tx_timer_arm(priv, queue);
-+	}
-+
-+	__netif_tx_unlock(nq);
-+
-+	return nxmit;
-+}
-+
- static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_open = stmmac_open,
- 	.ndo_start_xmit = stmmac_xmit,
-@@ -5603,6 +5680,7 @@ static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_vlan_rx_add_vid = stmmac_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid = stmmac_vlan_rx_kill_vid,
- 	.ndo_bpf = stmmac_bpf,
-+	.ndo_xdp_xmit = stmmac_xdp_xmit,
- };
- 
- static void stmmac_reset_subtask(struct stmmac_priv *priv)
--- 
-2.25.1
-
+>>>> Obviously some of the above checks could be factored out into some kind of
+>>>> iommu_use_flush_queue() helper that IOMMU drivers can also call if they need
+>>>> to keep in sync. Or maybe we just allow iommu-dma to set
+>>>> IO_PGTABLE_QUIRK_NON_STRICT directly via iommu_set_pgtable_quirks() if we're
+>>>> treating that as a generic thing now.
+>>>
+>>> I think a helper that takes a domain would be a good starting point.
+>>
+>> You mean device, right? The one condition we currently have is at the device
+>> level, and there's really nothing inherent to the domain itself that matters
+>> (since the type is implicitly IOMMU_DOMAIN_DMA to even care about this).
+> 
+> Device would probably work too; you'd pass the first device to attach to the
+> domain when querying this from the SMMU driver, I suppose.
+> 
+> Will
+> 
