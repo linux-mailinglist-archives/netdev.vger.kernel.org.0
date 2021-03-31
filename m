@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CE834F983
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 09:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607D934F985
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 09:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233954AbhCaHLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 03:11:44 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:34850 "EHLO
+        id S233994AbhCaHLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 03:11:48 -0400
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:60186 "EHLO
         out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233858AbhCaHLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 03:11:42 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UTwOnhz_1617174700;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UTwOnhz_1617174700)
+        by vger.kernel.org with ESMTP id S233892AbhCaHLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 03:11:43 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UTvslTi_1617174700;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UTvslTi_1617174700)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 31 Mar 2021 15:11:40 +0800
+          Wed, 31 Mar 2021 15:11:41 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -34,9 +34,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         KP Singh <kpsingh@kernel.org>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
         Dust Li <dust.li@linux.alibaba.com>
-Subject: [PATCH net-next v3 2/8] xsk: support get page by addr
-Date:   Wed, 31 Mar 2021 15:11:33 +0800
-Message-Id: <20210331071139.15473-3-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net-next v3 3/8] virtio-net: xsk zero copy xmit setup
+Date:   Wed, 31 Mar 2021 15:11:34 +0800
+Message-Id: <20210331071139.15473-4-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
 References: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
@@ -46,45 +46,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xsk adds an interface and returns the page corresponding to
-data. virtio-net does not initialize dma, so it needs page to construct
-scatterlist to pass to vring.
+xsk is a high-performance packet receiving and sending technology.
+
+This patch implements the binding and unbinding operations of xsk and
+the virtio-net queue for xsk zero copy xmit.
+
+The xsk zero copy xmit depends on tx napi. So if tx napi is not opened,
+an error will be reported. And the entire operation is under the
+protection of rtnl_lock
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
 ---
- include/net/xdp_sock_drv.h | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/virtio_net.c | 66 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index 4e295541e396..1d08b5d8d15f 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -72,6 +72,12 @@ static inline dma_addr_t xsk_buff_xdp_get_frame_dma(struct xdp_buff *xdp)
- 	return xp_get_frame_dma(xskb);
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index bb4ea9dbc16b..4e25408a2b37 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -22,6 +22,7 @@
+ #include <net/route.h>
+ #include <net/xdp.h>
+ #include <net/net_failover.h>
++#include <net/xdp_sock_drv.h>
+ 
+ static int napi_weight = NAPI_POLL_WEIGHT;
+ module_param(napi_weight, int, 0444);
+@@ -133,6 +134,11 @@ struct send_queue {
+ 	struct virtnet_sq_stats stats;
+ 
+ 	struct napi_struct napi;
++
++	struct {
++		/* xsk pool */
++		struct xsk_buff_pool __rcu *pool;
++	} xsk;
+ };
+ 
+ /* Internal representation of a receive virtqueue */
+@@ -2526,11 +2532,71 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ 	return err;
  }
  
-+static inline struct page *xsk_buff_xdp_get_page(struct xsk_buff_pool *pool, u64 addr)
++static int virtnet_xsk_pool_enable(struct net_device *dev,
++				   struct xsk_buff_pool *pool,
++				   u16 qid)
 +{
-+	addr = pool->unaligned ? xp_unaligned_add_offset_to_addr(addr) : addr;
-+	return pool->umem->pgs[addr >> PAGE_SHIFT];
++	struct virtnet_info *vi = netdev_priv(dev);
++	struct send_queue *sq;
++	int ret = -EBUSY;
++
++	if (qid >= vi->curr_queue_pairs)
++		return -EINVAL;
++
++	sq = &vi->sq[qid];
++
++	/* xsk zerocopy depend on the tx napi */
++	if (!sq->napi.weight)
++		return -EPERM;
++
++	rcu_read_lock();
++	if (rcu_dereference(sq->xsk.pool))
++		goto end;
++
++	/* Here is already protected by rtnl_lock, so rcu_assign_pointer is
++	 * safe.
++	 */
++	rcu_assign_pointer(sq->xsk.pool, pool);
++	ret = 0;
++end:
++	rcu_read_unlock();
++
++	return ret;
 +}
 +
- static inline struct xdp_buff *xsk_buff_alloc(struct xsk_buff_pool *pool)
- {
- 	return xp_alloc(pool);
-@@ -207,6 +213,11 @@ static inline dma_addr_t xsk_buff_xdp_get_frame_dma(struct xdp_buff *xdp)
- 	return 0;
- }
- 
-+static inline struct page *xsk_buff_xdp_get_page(struct xsk_buff_pool *pool, u64 addr)
++static int virtnet_xsk_pool_disable(struct net_device *dev, u16 qid)
 +{
-+	return NULL;
++	struct virtnet_info *vi = netdev_priv(dev);
++	struct send_queue *sq;
++
++	if (qid >= vi->curr_queue_pairs)
++		return -EINVAL;
++
++	sq = &vi->sq[qid];
++
++	/* Here is already protected by rtnl_lock, so rcu_assign_pointer is
++	 * safe.
++	 */
++	rcu_assign_pointer(sq->xsk.pool, NULL);
++
++	synchronize_rcu(); /* Sync with the XSK wakeup and with NAPI. */
++
++	return 0;
 +}
 +
- static inline struct xdp_buff *xsk_buff_alloc(struct xsk_buff_pool *pool)
+ static int virtnet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
  {
- 	return NULL;
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+ 		return virtnet_xdp_set(dev, xdp->prog, xdp->extack);
++	case XDP_SETUP_XSK_POOL:
++		/* virtio net not use dma before call vring api */
++		xdp->xsk.check_dma = false;
++		if (xdp->xsk.pool)
++			return virtnet_xsk_pool_enable(dev, xdp->xsk.pool,
++						       xdp->xsk.queue_id);
++		else
++			return virtnet_xsk_pool_disable(dev, xdp->xsk.queue_id);
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
 2.31.0
 
