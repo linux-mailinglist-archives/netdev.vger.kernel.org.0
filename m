@@ -2,313 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB5F34FB38
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C25D23500F1
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234387AbhCaIHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 04:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        id S235747AbhCaNIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 09:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234355AbhCaIG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 04:06:57 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3ACC06174A
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 01:06:56 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso812369pjh.2
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 01:06:56 -0700 (PDT)
+        with ESMTP id S235746AbhCaNIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:08:41 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9049BC061574
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:08:40 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id g20so10131161wmk.3
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:08:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DrGe+wSNv+5GrL/VvyrIF4G5z2Kf+xg5gmEDQCgKf7s=;
-        b=DqzZ8q+OkgiXiUnK9PFEYEY4GPyyJUNJwl9trmeo91/ckMTVGZku5qS+JYUp6zbltv
-         7JvdkVX4/kn4rtl7cFCIfEfQP+rRDpBLK3lx/1fTetBxfqIxNrXCCGHQhn3Cs9UAAe8j
-         dEfKQZNP/uRhRK/+NsTGf2ALmlqAwKGqnklVdGVTMTTpLvLxqs+ujglBcrnEeLW9F8st
-         IYRilOFnC/ht3Qb86fq7BfeHYXVqAkQTbbVeDhg84tYsOWIxpLX+liISgJbcKto8LEu7
-         bc1z4i3IgIPP24H5wRqaa2c6qh0L8tCPEDgWo7QOxQQdgBRuH6lxgUd+3n+ii0sHchYm
-         WAxA==
+        d=gmail.com; s=20161025;
+        h=message-id:from:mime-version:content-transfer-encoding
+         :content-description:subject:to:date:reply-to;
+        bh=FnBvxM70j/kelEKjS1bZYeYhzD1qjSDw7n5oMj/HbBI=;
+        b=Fa32bkW9k3mUQoEWloB5JcA+uia71v73/+tT2KGYLFVqjLstyWtZylUdCgl+uC8LdU
+         vtJRLCy4yN3KGnjmgCObN4bLjUzTqgLutUvcSMH3BxZMjmd6ec6mYHb3Gr6JtUbz44bg
+         hYZJoRTAe81I6qbFiAs6WtDZGB/iwmfmoplrZACV8OLtuW3nsn/pszKe3XHTpDgEckGQ
+         c7NoIrRTqI6sdQhd7N/4yXkeaTS/BIr582Zj+2+rudVFoD+tNXMidCbv2SauJtSFgVoL
+         VgmsCn58MM5jL9m3zObsrdmHNXGP6CTJbnuKrnCyhQA6WBnX49cKz0/AzMpOarpoFIGU
+         sIbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DrGe+wSNv+5GrL/VvyrIF4G5z2Kf+xg5gmEDQCgKf7s=;
-        b=PM9g1GOdG/3Y+BPPAV3wqstrj2T6J70j9q2gOMtEB8G9nJWVhzdvghCgTC7IgSQsI1
-         qxlWdV6sydY35i6RQOuq7Zo2I8wu5HFHBijATiPLzGFY85kS7naFG7TkEGAWXdPbqi6M
-         QvAXACxZK3PLG08zo3YDd5DQ0WrMv/R1uNGSDWNKmrjZ2BQxFPffyfT+D+JVAhorKEHH
-         V3Y8PexDS64VwyrYuyC41XixzzetASFzDfLJXt/+SyT282Sf0eRpIEA3m5GLUyWaTuo6
-         b5emgw0UCa48riocChWS/KWNFDl7a756Q1xaY7SiRpSmn87CCrh2WHBVLk36Geu+Bc42
-         HWcA==
-X-Gm-Message-State: AOAM531SOWX7EHuqFy2PNGB/r7z877gGUg1XtcC1HvNbnl0nXyJQ8X5V
-        qqoGvbYGoqS+1oqqJjAb6ad8
-X-Google-Smtp-Source: ABdhPJzUZ0iCW38qBzP+z9ejwSF3QR26iU/iND3BjH9uOIBsmROmq3cVYSj9jxodUlUSY5l5upx6Gg==
-X-Received: by 2002:a17:90b:3551:: with SMTP id lt17mr2338546pjb.89.1617178016286;
-        Wed, 31 Mar 2021 01:06:56 -0700 (PDT)
-Received: from localhost ([139.177.225.243])
-        by smtp.gmail.com with ESMTPSA id w79sm1324798pfc.87.2021.03.31.01.06.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 01:06:55 -0700 (PDT)
-From:   Xie Yongji <xieyongji@bytedance.com>
-To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
-        christian.brauner@canonical.com, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
-Date:   Wed, 31 Mar 2021 16:05:19 +0800
-Message-Id: <20210331080519.172-11-xieyongji@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210331080519.172-1-xieyongji@bytedance.com>
-References: <20210331080519.172-1-xieyongji@bytedance.com>
+        h=x-gm-message-state:message-id:from:mime-version
+         :content-transfer-encoding:content-description:subject:to:date
+         :reply-to;
+        bh=FnBvxM70j/kelEKjS1bZYeYhzD1qjSDw7n5oMj/HbBI=;
+        b=pfcxvLuJtw8m3xQX4aTUiDnrD9LVE39IfeTJr/uICuAuXZS+6ii3OZ0zaNSG1guFQl
+         gV5dKfp/w1nt2Co3S26KCS2+Pwi1HHYSQ5fWwMXGDreV6WN+ScshBbuO3PvA1IpcB7qa
+         gmde4l62lo0snpYc8bB7pv2b3SpDZTER85JW1uL793ERlw03mqXZqqGaCbb/P6FGbLUB
+         QDbmmLoWkdKwx3ofWq6hJhnvng9gpFwX6Fc07FUotftjvzpj87CN/hQuZEVDjCcmbdBg
+         wc/6ZxikKXWVQCd3a1O+I64wM8AFrG5BovtWYHJQyZN3z0m/aBlP/xV9tgnvWTiK2+8U
+         hOgA==
+X-Gm-Message-State: AOAM532srxsA1/IE8pHUvgNiXWp/bY0xRyO79+sPX/eVwSLMC0JUXG0n
+        tMRGv6RJ6aJ7usxlazonJs0ais5hRuM=
+X-Google-Smtp-Source: ABdhPJwhw+Ix77Ix/poKY8AuQqTbg94QbjJDTxp/J0HpDrcUeevjTC/nhELPEcnm4atBPZXARZQzMA==
+X-Received: by 2002:a05:600c:2053:: with SMTP id p19mr3128214wmg.87.1617196118990;
+        Wed, 31 Mar 2021 06:08:38 -0700 (PDT)
+Received: from [192.168.1.71] ([156.38.91.30])
+        by smtp.gmail.com with ESMTPSA id l8sm4535205wrx.83.2021.03.31.06.08.35
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Wed, 31 Mar 2021 06:08:38 -0700 (PDT)
+Message-ID: <60647456.1c69fb81.b47d5.8ab3@mx.google.com>
+From:   Evelyn Robinson <baramnagnalembe@gmail.com>
+X-Google-Original-From: Evelyn Robinson
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Sevgili
+To:     Recipients <Evelyn@vger.kernel.org>
+Date:   Wed, 31 Mar 2021 01:07:57 -0700
+Reply-To: robinsonevelyn997@gmail.com
+X-Antivirus: Avast (VPS 210331-0, 03/30/2021), Outbound message
+X-Antivirus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VDUSE (vDPA Device in Userspace) is a framework to support
-implementing software-emulated vDPA devices in userspace. This
-document is intended to clarify the VDUSE design and usage.
+I'm Evelyn, I need to discuss something with you, I hope we can start a rel=
+ationship from here. I hope to come here soon. Thanks.
 
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
----
- Documentation/userspace-api/index.rst |   1 +
- Documentation/userspace-api/vduse.rst | 212 ++++++++++++++++++++++++++++++++++
- 2 files changed, 213 insertions(+)
- create mode 100644 Documentation/userspace-api/vduse.rst
-
-diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
-index acd2cc2a538d..f63119130898 100644
---- a/Documentation/userspace-api/index.rst
-+++ b/Documentation/userspace-api/index.rst
-@@ -24,6 +24,7 @@ place where this information is gathered.
-    ioctl/index
-    iommu
-    media/index
-+   vduse
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/userspace-api/vduse.rst b/Documentation/userspace-api/vduse.rst
-new file mode 100644
-index 000000000000..8c4e2b2df8bb
---- /dev/null
-+++ b/Documentation/userspace-api/vduse.rst
-@@ -0,0 +1,212 @@
-+==================================
-+VDUSE - "vDPA Device in Userspace"
-+==================================
-+
-+vDPA (virtio data path acceleration) device is a device that uses a
-+datapath which complies with the virtio specifications with vendor
-+specific control path. vDPA devices can be both physically located on
-+the hardware or emulated by software. VDUSE is a framework that makes it
-+possible to implement software-emulated vDPA devices in userspace.
-+
-+How VDUSE works
-+------------
-+Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
-+the character device (/dev/vduse/control). Then a device file with the
-+specified name (/dev/vduse/$NAME) will appear, which can be used to
-+implement the userspace vDPA device's control path and data path.
-+
-+To implement control path, a message-based communication protocol and some
-+types of control messages are introduced in the VDUSE framework:
-+
-+- VDUSE_SET_VQ_ADDR: Set the vring address of virtqueue.
-+
-+- VDUSE_SET_VQ_NUM: Set the size of virtqueue
-+
-+- VDUSE_SET_VQ_READY: Set ready status of virtqueue
-+
-+- VDUSE_GET_VQ_READY: Get ready status of virtqueue
-+
-+- VDUSE_SET_VQ_STATE: Set the state for virtqueue
-+
-+- VDUSE_GET_VQ_STATE: Get the state for virtqueue
-+
-+- VDUSE_SET_FEATURES: Set virtio features supported by the driver
-+
-+- VDUSE_GET_FEATURES: Get virtio features supported by the device
-+
-+- VDUSE_SET_STATUS: Set the device status
-+
-+- VDUSE_GET_STATUS: Get the device status
-+
-+- VDUSE_SET_CONFIG: Write to device specific configuration space
-+
-+- VDUSE_GET_CONFIG: Read from device specific configuration space
-+
-+- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping in device IOTLB
-+
-+Those control messages are mostly based on the vdpa_config_ops in
-+include/linux/vdpa.h which defines a unified interface to control
-+different types of vdpa device. Userspace needs to read()/write()
-+on the VDUSE device file to receive/reply those control messages
-+from/to VDUSE kernel module as follows:
-+
-+.. code-block:: c
-+
-+	static int vduse_message_handler(int dev_fd)
-+	{
-+		int len;
-+		struct vduse_dev_request req;
-+		struct vduse_dev_response resp;
-+
-+		len = read(dev_fd, &req, sizeof(req));
-+		if (len != sizeof(req))
-+			return -1;
-+
-+		resp.request_id = req.request_id;
-+
-+		switch (req.type) {
-+
-+		/* handle different types of message */
-+
-+		}
-+
-+		len = write(dev_fd, &resp, sizeof(resp));
-+		if (len != sizeof(resp))
-+			return -1;
-+
-+		return 0;
-+	}
-+
-+In the data path, vDPA device's iova regions will be mapped into userspace
-+with the help of VDUSE_IOTLB_GET_FD ioctl on the VDUSE device file:
-+
-+- VDUSE_IOTLB_GET_FD: get the file descriptor to the first overlapped iova region.
-+  Userspace can access this iova region by passing fd and corresponding size, offset,
-+  perm to mmap(). For example:
-+
-+.. code-block:: c
-+
-+	static int perm_to_prot(uint8_t perm)
-+	{
-+		int prot = 0;
-+
-+		switch (perm) {
-+		case VDUSE_ACCESS_WO:
-+			prot |= PROT_WRITE;
-+			break;
-+		case VDUSE_ACCESS_RO:
-+			prot |= PROT_READ;
-+			break;
-+		case VDUSE_ACCESS_RW:
-+			prot |= PROT_READ | PROT_WRITE;
-+			break;
-+		}
-+
-+		return prot;
-+	}
-+
-+	static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *len)
-+	{
-+		int fd;
-+		void *addr;
-+		size_t size;
-+		struct vduse_iotlb_entry entry;
-+
-+		entry.start = iova;
-+		entry.last = iova + 1;
-+		fd = ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
-+		if (fd < 0)
-+			return NULL;
-+
-+		size = entry.last - entry.start + 1;
-+		*len = entry.last - iova + 1;
-+		addr = mmap(0, size, perm_to_prot(entry.perm), MAP_SHARED,
-+			    fd, entry.offset);
-+		close(fd);
-+		if (addr == MAP_FAILED)
-+			return NULL;
-+
-+		/* do something to cache this iova region */
-+
-+		return addr + iova - entry.start;
-+	}
-+
-+Besides, the following ioctls on the VDUSE device file are provided to support
-+interrupt injection and setting up eventfd for virtqueue kicks:
-+
-+- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd is used
-+  by VDUSE kernel module to notify userspace to consume the vring.
-+
-+- VDUSE_INJECT_VQ_IRQ: inject an interrupt for specific virtqueue
-+
-+- VDUSE_INJECT_CONFIG_IRQ: inject a config interrupt
-+
-+Register VDUSE device on vDPA bus
-+---------------------------------
-+In order to make the VDUSE device work, administrator needs to use the management
-+API (netlink) to register it on vDPA bus. Some sample codes are show below:
-+
-+.. code-block:: c
-+
-+	static int netlink_add_vduse(const char *name, int device_id)
-+	{
-+		struct nl_sock *nlsock;
-+		struct nl_msg *msg;
-+		int famid;
-+
-+		nlsock = nl_socket_alloc();
-+		if (!nlsock)
-+			return -ENOMEM;
-+
-+		if (genl_connect(nlsock))
-+			goto free_sock;
-+
-+		famid = genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
-+		if (famid < 0)
-+			goto close_sock;
-+
-+		msg = nlmsg_alloc();
-+		if (!msg)
-+			goto close_sock;
-+
-+		if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0, 0,
-+		    VDPA_CMD_DEV_NEW, 0))
-+			goto nla_put_failure;
-+
-+		NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
-+		NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
-+		NLA_PUT_U32(msg, VDPA_ATTR_DEV_ID, device_id);
-+
-+		if (nl_send_sync(nlsock, msg))
-+			goto close_sock;
-+
-+		nl_close(nlsock);
-+		nl_socket_free(nlsock);
-+
-+		return 0;
-+	nla_put_failure:
-+		nlmsg_free(msg);
-+	close_sock:
-+		nl_close(nlsock);
-+	free_sock:
-+		nl_socket_free(nlsock);
-+		return -1;
-+	}
-+
-+MMU-based IOMMU Driver
-+----------------------
-+VDUSE framework implements an MMU-based on-chip IOMMU driver to support
-+mapping the kernel DMA buffer into the userspace iova region dynamically.
-+This is mainly designed for virtio-vdpa case (kernel virtio drivers).
-+
-+The basic idea behind this driver is treating MMU (VA->PA) as IOMMU (IOVA->PA).
-+The driver will set up MMU mapping instead of IOMMU mapping for the DMA transfer
-+so that the userspace process is able to use its virtual address to access
-+the DMA buffer in kernel.
-+
-+And to avoid security issue, a bounce-buffering mechanism is introduced to
-+prevent userspace accessing the original buffer directly which may contain other
-+kernel data. During the mapping, unmapping, the driver will copy the data from
-+the original buffer to the bounce buffer and back, depending on the direction of
-+the transfer. And the bounce-buffer addresses will be mapped into the user address
-+space instead of the original one.
 -- 
-2.11.0
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
 
