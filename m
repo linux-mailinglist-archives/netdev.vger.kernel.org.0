@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7146134FB6D
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B11734FB6A
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 10:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234458AbhCaITl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 04:19:41 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:48072 "EHLO a.mx.secunet.com"
+        id S234444AbhCaITc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 04:19:32 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:48064 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234389AbhCaIS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 04:18:57 -0400
+        id S234385AbhCaIS4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 04:18:56 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 4ACFC205A6;
-        Wed, 31 Mar 2021 10:18:56 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id C699A20569;
+        Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Vm161SePqO9g; Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
+        with ESMTP id 1WgzlzigKh9o; Wed, 31 Mar 2021 10:18:55 +0200 (CEST)
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id AC75D2057A;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 666AB20571;
         Wed, 31 Mar 2021 10:18:54 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
@@ -32,79 +32,88 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 31 Mar
  2021 10:18:53 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 98E8331805F1; Wed, 31 Mar 2021 10:18:52 +0200 (CEST)
+        id 9D74D3180634; Wed, 31 Mar 2021 10:18:52 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 06/11] net: xfrm: Use sequence counter with associated spinlock
-Date:   Wed, 31 Mar 2021 10:18:42 +0200
-Message-ID: <20210331081847.3547641-7-steffen.klassert@secunet.com>
+Subject: [PATCH 07/11] esp: delete NETIF_F_SCTP_CRC bit from features for esp offload
+Date:   Wed, 31 Mar 2021 10:18:43 +0200
+Message-ID: <20210331081847.3547641-8-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331081847.3547641-1-steffen.klassert@secunet.com>
 References: <20210331081847.3547641-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
+From: Xin Long <lucien.xin@gmail.com>
 
-A sequence counter write section must be serialized or its internal
-state can get corrupted. A plain seqcount_t does not contain the
-information of which lock must be held to guaranteee write side
-serialization.
+Now in esp4/6_gso_segment(), before calling inner proto .gso_segment,
+NETIF_F_CSUM_MASK bits are deleted, as HW won't be able to do the
+csum for inner proto due to the packet encrypted already.
 
-For xfrm_state_hash_generation, use seqcount_spinlock_t instead of plain
-seqcount_t.  This allows to associate the spinlock used for write
-serialization with the sequence counter. It thus enables lockdep to
-verify that the write serialization lock is indeed held before entering
-the sequence counter write section.
+So the UDP/TCP packet has to do the checksum on its own .gso_segment.
+But SCTP is using CRC checksum, and for that NETIF_F_SCTP_CRC should
+be deleted to make SCTP do the csum in own .gso_segment as well.
 
-If lockdep is disabled, this lock association is compiled out and has
-neither storage size nor runtime overhead.
+In Xiumei's testing with SCTP over IPsec/veth, the packets are kept
+dropping due to the wrong CRC checksum.
 
-Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Fixes: 7862b4058b9f ("esp: Add gso handlers for esp4 and esp6")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- include/net/netns/xfrm.h | 2 +-
- net/xfrm/xfrm_state.c    | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ net/ipv4/esp4_offload.c | 6 ++++--
+ net/ipv6/esp6_offload.c | 6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index b59d73d529ba..e816b6a3ef2b 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -73,7 +73,7 @@ struct netns_xfrm {
- 	struct dst_ops		xfrm6_dst_ops;
- #endif
- 	spinlock_t		xfrm_state_lock;
--	seqcount_t		xfrm_state_hash_generation;
-+	seqcount_spinlock_t	xfrm_state_hash_generation;
+diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
+index 601f5fbfc63f..ed3de486ea34 100644
+--- a/net/ipv4/esp4_offload.c
++++ b/net/ipv4/esp4_offload.c
+@@ -217,10 +217,12 @@ static struct sk_buff *esp4_gso_segment(struct sk_buff *skb,
  
- 	spinlock_t xfrm_policy_lock;
- 	struct mutex xfrm_cfg_mutex;
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index ffd315cff984..4496f7efa220 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -2665,7 +2665,8 @@ int __net_init xfrm_state_init(struct net *net)
- 	net->xfrm.state_num = 0;
- 	INIT_WORK(&net->xfrm.state_hash_work, xfrm_hash_resize);
- 	spin_lock_init(&net->xfrm.xfrm_state_lock);
--	seqcount_init(&net->xfrm.xfrm_state_hash_generation);
-+	seqcount_spinlock_init(&net->xfrm.xfrm_state_hash_generation,
-+			       &net->xfrm.xfrm_state_lock);
- 	return 0;
+ 	if ((!(skb->dev->gso_partial_features & NETIF_F_HW_ESP) &&
+ 	     !(features & NETIF_F_HW_ESP)) || x->xso.dev != skb->dev)
+-		esp_features = features & ~(NETIF_F_SG | NETIF_F_CSUM_MASK);
++		esp_features = features & ~(NETIF_F_SG | NETIF_F_CSUM_MASK |
++					    NETIF_F_SCTP_CRC);
+ 	else if (!(features & NETIF_F_HW_ESP_TX_CSUM) &&
+ 		 !(skb->dev->gso_partial_features & NETIF_F_HW_ESP_TX_CSUM))
+-		esp_features = features & ~NETIF_F_CSUM_MASK;
++		esp_features = features & ~(NETIF_F_CSUM_MASK |
++					    NETIF_F_SCTP_CRC);
  
- out_byspi:
+ 	xo->flags |= XFRM_GSO_SEGMENT;
+ 
+diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
+index 1ca516fb30e1..f35203ab39f5 100644
+--- a/net/ipv6/esp6_offload.c
++++ b/net/ipv6/esp6_offload.c
+@@ -254,9 +254,11 @@ static struct sk_buff *esp6_gso_segment(struct sk_buff *skb,
+ 	skb->encap_hdr_csum = 1;
+ 
+ 	if (!(features & NETIF_F_HW_ESP) || x->xso.dev != skb->dev)
+-		esp_features = features & ~(NETIF_F_SG | NETIF_F_CSUM_MASK);
++		esp_features = features & ~(NETIF_F_SG | NETIF_F_CSUM_MASK |
++					    NETIF_F_SCTP_CRC);
+ 	else if (!(features & NETIF_F_HW_ESP_TX_CSUM))
+-		esp_features = features & ~NETIF_F_CSUM_MASK;
++		esp_features = features & ~(NETIF_F_CSUM_MASK |
++					    NETIF_F_SCTP_CRC);
+ 
+ 	xo->flags |= XFRM_GSO_SEGMENT;
+ 
 -- 
 2.25.1
 
