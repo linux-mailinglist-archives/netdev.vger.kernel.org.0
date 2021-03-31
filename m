@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2B413509E4
+	by mail.lfdr.de (Postfix) with ESMTP id D4B493509E3
 	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230385AbhCaWA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 18:00:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43072 "EHLO mail.kernel.org"
+        id S232532AbhCaWA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 18:00:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231650AbhCaWAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231974AbhCaWAL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 18:00:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3CCA161075;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 47FC161059;
         Wed, 31 Mar 2021 22:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617228011;
-        bh=COi+4+QgUfh8QYpjI7MKQZz67LaPq7ecOuBQoAANmhw=;
+        bh=+aeUi6fehgzfijv/0PF1YnRsgs9pGyHxdhKzwUGz3mg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MeeDEdmHT9nDhGxPWSpSBAD8NVU4jU3s/G6SHvo7JHTE9BS/TJrRR0kj/L7JbwiyO
-         QvQVGiz8VqXWWDcGo/830zTlJGBetarz2/t+v1iNIo3xhonVe+qLynvAR7gNKTUMUP
-         uC7F8CzZKYZdWh8dKyBqt7or1h8FngmjBgUuv2CsVQ6iEF4NI3w8CFc20Ocuohdg4F
-         D30AwZnilHe7gIOS3ZRbw/OjnkEP2v80Oatrz2ghvsaY1Ly1ailNS2tu4nKJcrWrt/
-         WUQXTQzubCTJTAO7RyxvllY+ijGcbw/JYLgt4ZK6MzavFdHUiS9pfF+Lm4OMyBWOtc
-         U/hbvfn8BmFPA==
+        b=oAD+4lTnnvfMsxEJPXQc7qkqZ7TBWjQqovl3GdA+1ru4A0hKkKZ5Pznt5Y5OAQJpu
+         jZhu+jzAWCphTElW3PRz1/H4FhBj89XCf8JEVTSLozCnwpYQ+0OVxr5vvJjInR74OY
+         ao54RJLb2qrCWiqSlOCLRdMsVN0X4w49ZMA8O/VVzg4WqUekjZPNcYmXy34YVKAC9k
+         l/Yec7KGTE7pkXgIOejDILCv4cfqEfrXZTB/RTSl5NjKXeQeQQwFGaLfY5v8eKJLsO
+         /Lrn32BVHdhDXiJwVPdzzzkhEDC+eRr3T/RAh0HyO+4CqB57kB/1yO3samlfSL0uTM
+         KjV8nxs0T3nFA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2D50A608FA;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 379E060283;
         Wed, 31 Mar 2021 22:00:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 01/11] xfrm: interface: fix ipv4 pmtu check to honor ip header
- df
+Subject: Re: [net 1/9] net/mlx5e: Fix mapping of ct_label zero
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161722801118.26765.7659215180324459152.git-patchwork-notify@kernel.org>
+Message-Id: <161722801122.26765.1069265901666026497.git-patchwork-notify@kernel.org>
 Date:   Wed, 31 Mar 2021 22:00:11 +0000
-References: <20210331081847.3547641-2-steffen.klassert@secunet.com>
-In-Reply-To: <20210331081847.3547641-2-steffen.klassert@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org
+References: <20210331201424.331095-2-saeed@kernel.org>
+In-Reply-To: <20210331201424.331095-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        tariqt@nvidia.com, lariel@nvidia.com, roid@nvidia.com,
+        saeedm@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,40 +47,39 @@ Hello:
 
 This series was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 31 Mar 2021 10:18:37 +0200 you wrote:
-> From: Eyal Birger <eyal.birger@gmail.com>
+On Wed, 31 Mar 2021 13:14:16 -0700 you wrote:
+> From: Ariel Levkovich <lariel@nvidia.com>
 > 
-> Frag needed should only be sent if the header enables DF.
+> ct_label 0 is a default label each flow has and therefore
+> there can be rules that match on ct_label=0 without a prior
+> rule that set the ct_label to this value.
 > 
-> This fix allows packets larger than MTU to pass the xfrm interface
-> and be fragmented after encapsulation, aligning behavior with
-> non-interface xfrm.
+> The ct_label value is not used directly in the HW rules and
+> instead it is mapped to some id within a defined range and this
+> id is used to set and match the metadata register which carries
+> the ct_label.
 > 
 > [...]
 
 Here is the summary with links:
-  - [01/11] xfrm: interface: fix ipv4 pmtu check to honor ip header df
-    https://git.kernel.org/netdev/net/c/8fc0e3b6a866
-  - [02/11] vti: fix ipv4 pmtu check to honor ip header df
-    https://git.kernel.org/netdev/net/c/c7c1abfd6d42
-  - [03/11] vti6: fix ipv4 pmtu check to honor ip header df
-    https://git.kernel.org/netdev/net/c/4c38255892c0
-  - [04/11] xfrm: Use actual socket sk instead of skb socket for xfrm_output_resume
-    https://git.kernel.org/netdev/net/c/9ab1265d5231
-  - [05/11] net: xfrm: Localize sequence counter per network namespace
-    https://git.kernel.org/netdev/net/c/e88add19f681
-  - [06/11] net: xfrm: Use sequence counter with associated spinlock
-    https://git.kernel.org/netdev/net/c/bc8e0adff343
-  - [07/11] esp: delete NETIF_F_SCTP_CRC bit from features for esp offload
-    https://git.kernel.org/netdev/net/c/154deab6a3ba
-  - [08/11] xfrm: BEET mode doesn't support fragments for inner packets
-    https://git.kernel.org/netdev/net/c/68dc022d04eb
-  - [09/11] xfrm: Fix NULL pointer dereference on policy lookup
-    https://git.kernel.org/netdev/net/c/b1e3a5607034
-  - [10/11] xfrm: Provide private skb extensions for segmented and hw offloaded ESP packets
-    https://git.kernel.org/netdev/net/c/c7dbf4c08868
-  - [11/11] xfrm/compat: Cleanup WARN()s that can be user-triggered
-    https://git.kernel.org/netdev/net/c/ef19e111337f
+  - [net,1/9] net/mlx5e: Fix mapping of ct_label zero
+    https://git.kernel.org/netdev/net/c/d24f847e5421
+  - [net,2/9] net/mlx5: Delete auxiliary bus driver eth-rep first
+    https://git.kernel.org/netdev/net/c/1f90aedfb496
+  - [net,3/9] net/mlx5e: Fix ethtool indication of connector type
+    https://git.kernel.org/netdev/net/c/3211434dfe7a
+  - [net,4/9] net/mlx5: E-switch, Create vport miss group only if src rewrite is supported
+    https://git.kernel.org/netdev/net/c/e929e3da537e
+  - [net,5/9] net/mlx5e: kTLS, Fix TX counters atomicity
+    https://git.kernel.org/netdev/net/c/a51bce9698e9
+  - [net,6/9] net/mlx5e: kTLS, Fix RX counters atomicity
+    https://git.kernel.org/netdev/net/c/6f4fdd530a09
+  - [net,7/9] net/mlx5: Don't request more than supported EQs
+    https://git.kernel.org/netdev/net/c/a7b76002ae78
+  - [net,8/9] net/mlx5e: Consider geneve_opts for encap contexts
+    https://git.kernel.org/netdev/net/c/929a2faddd55
+  - [net,9/9] net/mlx5e: Guarantee room for XSK wakeup NOP on async ICOSQ
+    https://git.kernel.org/netdev/net/c/3ff3874fa0b2
 
 You are awesome, thank you!
 --
