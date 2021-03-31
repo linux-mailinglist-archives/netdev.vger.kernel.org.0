@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7217A34F6B7
+	by mail.lfdr.de (Postfix) with ESMTP id E435934F6B8
 	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 04:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbhCaCdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 22:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60422 "EHLO
+        id S233395AbhCaCdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 22:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbhCaCcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:32:48 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A74BC061574;
-        Tue, 30 Mar 2021 19:32:48 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id v24-20020a9d69d80000b02901b9aec33371so17565976oto.2;
-        Tue, 30 Mar 2021 19:32:48 -0700 (PDT)
+        with ESMTP id S233396AbhCaCcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:32:50 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4668FC06175F;
+        Tue, 30 Mar 2021 19:32:50 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id a8so18560067oic.11;
+        Tue, 30 Mar 2021 19:32:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=azpBQutchzCr3FplNtXl63QhozAq1NlwxEgz2eiaadY=;
-        b=kBf+h/AIoHx4fu2MmfkD8h9J7SyGsjPU91DNETj5SIfIoZuWXzrJZIJ1ADtcznpiKU
-         CVBW/3kk96E8J5tLiy+2U9Om7SRIOG9Vkf6OAdu04sG8MsA+FKiATqPxqWyo8+Y+k6E5
-         hNPcI+mE8zCvu+i+ZpXs+6IDBcpMvo5wj60/rk3GXIvNmVhXvpGh7LsJByVhlunrBBgG
-         d/XDGQ/HVL01L//OAGW5e1S7td7gNa+9Lu1CNUZ/IWUFr6sPQ3+/EMA4/gfzllTN+pzB
-         MaiaUQfr0XaS/CNpals9J0rmlel780PRegvEHdle3FmH7VIeZd1AK/rWVI98e+qquVTP
-         ZJPw==
+        bh=1DrML2FTV498fgxHP9w6wGEKfVHhmZ2PXW+mjKUsjIU=;
+        b=MNJoHn25JN6vB2Uy0I5i2x1MSIlVE0RDlfELR1c3uKIqtPusCtRO/p7n31eg1cK2/0
+         QRDVRGURQstqgBTnAMn3JJxRLPhVLlJZeGBF5ZaDdz7JxATzjUTYE3fAhijBTKpmMe85
+         ZanrGVZiKwq+vDZoWYjMZdGrqrMKsmMs3NM+Xaeo/S7zVe68Az1qrEm48HCxfM8+AopY
+         Tu72GxjIDDa6GYegaSi+zz8BM84REBHmjyvKzzw9vTLwlkXHiE7TjwEbuyb76ZfBlPgn
+         8zf7eSMm+PUlqmSLQ+CITDxerOY1NzeedZmmotT2x+skvOXxFb2aYdhUgjCszcQDn27Q
+         s19A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=azpBQutchzCr3FplNtXl63QhozAq1NlwxEgz2eiaadY=;
-        b=ZvciV3JBdZrQZQ3BiEJdc9mlFfoWdJdNuiKJayI//5oETZ2iJozka0l0orKFik2s8j
-         m8vPjTZl8QPAKsNr3wX9AwTRDkM5m0q2or2Af0t95mLbb+TWDZFP30K/1xeYL1MTkQve
-         wkdc8AQqVWSOKtG/hnNMsfqlVCSz8AMtH7MS/nWBNyRf0/vRA4+fGx+bzldma6ZaoBbT
-         xoi4tohqZU1AOsYlaOVcAKMvSaRQLSqGjrgEVStYJ7F8qBXMhsAKGrbqELWjuPM9vA0X
-         +83C9WW3MoHXp/IpGXhcZo2t9RSX4Dr+tZwHEJLujrRUc9Sh6Ewfoa222u1+7kVkIh/l
-         2Hqg==
-X-Gm-Message-State: AOAM532rD2+v2r+VZ+JGYb0rOwg78vbjjnNEIktGjeyfkyqFSWMDw7d2
-        ma5jQIoSsBpdTgRqx14J3JFaa/+2vG4awQ==
-X-Google-Smtp-Source: ABdhPJzqxSB1fVkP2cdWPSaMqufh6YautgKdaLuKmrhlD5JuCXXZEgKRCQnOZkYk6HZ4UAkQYE4uFA==
-X-Received: by 2002:a05:6830:343:: with SMTP id h3mr729857ote.201.1617157967944;
-        Tue, 30 Mar 2021 19:32:47 -0700 (PDT)
+        bh=1DrML2FTV498fgxHP9w6wGEKfVHhmZ2PXW+mjKUsjIU=;
+        b=ZqIXto/K+Te93ZbkkCDHvcg0PQrRbQCtrMrItKZxbtcXrOdN69kpyDcbjrkaTfHVly
+         zd12sM4Q49tNpFImu6eBVAoJzxBbDIrZ0oIRWUfURmEPG7w8Z1bAaCbAzGPoaB2wkG2r
+         DNJJYC5IJaiiqvVmjC/v1ukuOwsllD+Qbw6G65Y2+/Lum1OcyCCupz3e37N11mHcxwoW
+         gAnQryRWu71ZLSE481yAi51tZfcplB1nd43utH/EyG/lbeaChc47FtwEx4pyBS6bbS9u
+         fOpVqedtxAFyTajRo/l4uDPbt5juE0nWGy4q661YwZzC0XLlkPQW4B0Z3EmB8+dWUm7a
+         oqVg==
+X-Gm-Message-State: AOAM531iqjXQwowMlUJMGfKI9LeIGlQjhfPLTMfRSOgXSaf+uFevKa3E
+        7Loz7RRmmne1P11B/qtmwzrbcvUQlalogw==
+X-Google-Smtp-Source: ABdhPJw5uVoP/6VoQM3RqC6pF7zqypNSd1YLuchf/uTqO3DdU8NBNk6u8h2sCfYSn6cw7Cgy8sVLVg==
+X-Received: by 2002:a05:6808:3dc:: with SMTP id o28mr726296oie.120.1617157969441;
+        Tue, 30 Mar 2021 19:32:49 -0700 (PDT)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:a099:767b:2b62:48df])
-        by smtp.gmail.com with ESMTPSA id 7sm188125ois.20.2021.03.30.19.32.46
+        by smtp.gmail.com with ESMTPSA id 7sm188125ois.20.2021.03.30.19.32.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Mar 2021 19:32:47 -0700 (PDT)
+        Tue, 30 Mar 2021 19:32:49 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
         Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf-next v8 01/16] skmsg: lock ingress_skb when purging
-Date:   Tue, 30 Mar 2021 19:32:22 -0700
-Message-Id: <20210331023237.41094-2-xiyou.wangcong@gmail.com>
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [Patch bpf-next v8 02/16] skmsg: introduce a spinlock to protect ingress_msg
+Date:   Tue, 30 Mar 2021 19:32:23 -0700
+Message-Id: <20210331023237.41094-3-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
 References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
@@ -70,33 +70,161 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-Currently we purge the ingress_skb queue only when psock
-refcnt goes down to 0, so locking the queue is not necessary,
-but in order to be called during ->close, we have to lock it
-here.
+Currently we rely on lock_sock to protect ingress_msg,
+it is too big for this, we can actually just use a spinlock
+to protect this list like protecting other skb queues.
 
-Cc: John Fastabend <john.fastabend@gmail.com>
+__tcp_bpf_recvmsg() is still special because of peeking,
+it still has to use lock_sock.
+
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/core/skmsg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/skmsg.h | 46 +++++++++++++++++++++++++++++++++++++++++++
+ net/core/skmsg.c      |  3 +++
+ net/ipv4/tcp_bpf.c    | 18 ++++++-----------
+ 3 files changed, 55 insertions(+), 12 deletions(-)
 
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 6c09d94be2e9..f2d45a73b2b2 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -89,6 +89,7 @@ struct sk_psock {
+ #endif
+ 	struct sk_buff_head		ingress_skb;
+ 	struct list_head		ingress_msg;
++	spinlock_t			ingress_lock;
+ 	unsigned long			state;
+ 	struct list_head		link;
+ 	spinlock_t			link_lock;
+@@ -284,7 +285,45 @@ static inline struct sk_psock *sk_psock(const struct sock *sk)
+ static inline void sk_psock_queue_msg(struct sk_psock *psock,
+ 				      struct sk_msg *msg)
+ {
++	spin_lock_bh(&psock->ingress_lock);
+ 	list_add_tail(&msg->list, &psock->ingress_msg);
++	spin_unlock_bh(&psock->ingress_lock);
++}
++
++static inline struct sk_msg *sk_psock_dequeue_msg(struct sk_psock *psock)
++{
++	struct sk_msg *msg;
++
++	spin_lock_bh(&psock->ingress_lock);
++	msg = list_first_entry_or_null(&psock->ingress_msg, struct sk_msg, list);
++	if (msg)
++		list_del(&msg->list);
++	spin_unlock_bh(&psock->ingress_lock);
++	return msg;
++}
++
++static inline struct sk_msg *sk_psock_peek_msg(struct sk_psock *psock)
++{
++	struct sk_msg *msg;
++
++	spin_lock_bh(&psock->ingress_lock);
++	msg = list_first_entry_or_null(&psock->ingress_msg, struct sk_msg, list);
++	spin_unlock_bh(&psock->ingress_lock);
++	return msg;
++}
++
++static inline struct sk_msg *sk_psock_next_msg(struct sk_psock *psock,
++					       struct sk_msg *msg)
++{
++	struct sk_msg *ret;
++
++	spin_lock_bh(&psock->ingress_lock);
++	if (list_is_last(&msg->list, &psock->ingress_msg))
++		ret = NULL;
++	else
++		ret = list_next_entry(msg, list);
++	spin_unlock_bh(&psock->ingress_lock);
++	return ret;
+ }
+ 
+ static inline bool sk_psock_queue_empty(const struct sk_psock *psock)
+@@ -292,6 +331,13 @@ static inline bool sk_psock_queue_empty(const struct sk_psock *psock)
+ 	return psock ? list_empty(&psock->ingress_msg) : true;
+ }
+ 
++static inline void kfree_sk_msg(struct sk_msg *msg)
++{
++	if (msg->skb)
++		consume_skb(msg->skb);
++	kfree(msg);
++}
++
+ static inline void sk_psock_report_error(struct sk_psock *psock, int err)
+ {
+ 	struct sock *sk = psock->sk;
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 07f54015238a..bebf84ed4e30 100644
+index bebf84ed4e30..305dddc51857 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -634,7 +634,7 @@ static void sk_psock_zap_ingress(struct sk_psock *psock)
- {
- 	struct sk_buff *skb;
+@@ -592,6 +592,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
  
--	while ((skb = __skb_dequeue(&psock->ingress_skb)) != NULL) {
-+	while ((skb = skb_dequeue(&psock->ingress_skb)) != NULL) {
+ 	INIT_WORK(&psock->work, sk_psock_backlog);
+ 	INIT_LIST_HEAD(&psock->ingress_msg);
++	spin_lock_init(&psock->ingress_lock);
+ 	skb_queue_head_init(&psock->ingress_skb);
+ 
+ 	sk_psock_set_state(psock, SK_PSOCK_TX_ENABLED);
+@@ -638,7 +639,9 @@ static void sk_psock_zap_ingress(struct sk_psock *psock)
  		skb_bpf_redirect_clear(skb);
  		kfree_skb(skb);
  	}
++	spin_lock_bh(&psock->ingress_lock);
+ 	__sk_psock_purge_ingress_msg(psock);
++	spin_unlock_bh(&psock->ingress_lock);
+ }
+ 
+ static void sk_psock_link_destroy(struct sk_psock *psock)
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 17c322b875fd..ae980716d896 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -18,9 +18,7 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+ 	struct sk_msg *msg_rx;
+ 	int i, copied = 0;
+ 
+-	msg_rx = list_first_entry_or_null(&psock->ingress_msg,
+-					  struct sk_msg, list);
+-
++	msg_rx = sk_psock_peek_msg(psock);
+ 	while (copied != len) {
+ 		struct scatterlist *sge;
+ 
+@@ -68,22 +66,18 @@ int __tcp_bpf_recvmsg(struct sock *sk, struct sk_psock *psock,
+ 		} while (i != msg_rx->sg.end);
+ 
+ 		if (unlikely(peek)) {
+-			if (msg_rx == list_last_entry(&psock->ingress_msg,
+-						      struct sk_msg, list))
++			msg_rx = sk_psock_next_msg(psock, msg_rx);
++			if (!msg_rx)
+ 				break;
+-			msg_rx = list_next_entry(msg_rx, list);
+ 			continue;
+ 		}
+ 
+ 		msg_rx->sg.start = i;
+ 		if (!sge->length && msg_rx->sg.start == msg_rx->sg.end) {
+-			list_del(&msg_rx->list);
+-			if (msg_rx->skb)
+-				consume_skb(msg_rx->skb);
+-			kfree(msg_rx);
++			msg_rx = sk_psock_dequeue_msg(psock);
++			kfree_sk_msg(msg_rx);
+ 		}
+-		msg_rx = list_first_entry_or_null(&psock->ingress_msg,
+-						  struct sk_msg, list);
++		msg_rx = sk_psock_peek_msg(psock);
+ 	}
+ 
+ 	return copied;
 -- 
 2.25.1
 
