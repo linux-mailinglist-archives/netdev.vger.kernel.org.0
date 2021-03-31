@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98EC93503A4
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:38:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8681C3503A6
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236058AbhCaPiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 11:38:03 -0400
-Received: from mga12.intel.com ([192.55.52.136]:32109 "EHLO mga12.intel.com"
+        id S236264AbhCaPiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 11:38:05 -0400
+Received: from mga17.intel.com ([192.55.52.151]:45745 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235694AbhCaPhl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 11:37:41 -0400
-IronPort-SDR: 5YR32s2jd6tzh2uFkLV8vpd7rrw5AVvSQxZ3ldFD5XNBqFSCPIYwjkewAG1N1uLNv/UHl0gzTR
- TmJlHXL55P/w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="171446721"
+        id S235616AbhCaPhs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 11:37:48 -0400
+IronPort-SDR: e2O23/jMrrc4qAgFtkgEL69LCh7Gj//mqvAZbU2YmTZ0pybQb7EMzGfOYaB5KyYsJPBg8ih/8Y
+ rJjTfEkLeJOA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="172063499"
 X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="171446721"
+   d="scan'208";a="172063499"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 08:37:41 -0700
-IronPort-SDR: VyUGrfC5cfl055cLwtTCZvGhB89fROJzGJUsdS6qepAivCMguhQ2FPXKf471Zna1TdW1vKlggP
- Gw2gRZVHsOaw==
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 08:37:46 -0700
+IronPort-SDR: HKzT1qI3n6NocKHsUVWZ1Fu2naQ2Ma6iYuHZsWPndJUrClhuIxWNn5CwSh/vxCLyJRIZc23Ucp
+ +p94CYDBOp/g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
-   d="scan'208";a="418729139"
+   d="scan'208";a="418729154"
 Received: from glass.png.intel.com ([10.158.65.59])
-  by orsmga008.jf.intel.com with ESMTP; 31 Mar 2021 08:37:36 -0700
+  by orsmga008.jf.intel.com with ESMTP; 31 Mar 2021 08:37:41 -0700
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -43,144 +43,503 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v3 3/6] net: stmmac: arrange Tx tail pointer update to stmmac_flush_tx_descriptors
-Date:   Wed, 31 Mar 2021 23:41:32 +0800
-Message-Id: <20210331154135.8507-4-boon.leong.ong@intel.com>
+Subject: [PATCH net-next v3 4/6] net: stmmac: Add initial XDP support
+Date:   Wed, 31 Mar 2021 23:41:33 +0800
+Message-Id: <20210331154135.8507-5-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331154135.8507-1-boon.leong.ong@intel.com>
 References: <20210331154135.8507-1-boon.leong.ong@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch organizes TX tail pointer update into a new function called
-stmmac_flush_tx_descriptors() so that we can reuse it in stmmac_xmit(),
-stmmac_tso_xmit() and up-coming XDP implementation.
+This patch adds the initial XDP support to stmmac driver. It supports
+XDP_PASS, XDP_DROP and XDP_ABORTED actions. Upcoming patches will add
+support for XDP_TX and XDP_REDIRECT.
 
-Changes to v2:
- - Fix for warning: unused variable ‘desc_size’
-   https://patchwork.hopto.org/static/nipa/457321/12170149/build_32bit/stderr
+To support XDP headroom, this patch adds page_offset into RX buffer and
+change the dma_sync_single_for_device|cpu(). The DMA address used for
+RX operation are changed to take into page_offset too. As page_pool
+can handle dma_sync_single_for_device() on behalf of driver with
+PP_FLAG_DMA_SYNC_DEV flag, we skip doing that in stmmac driver.
 
+Current stmmac driver supports split header support (SPH) in RX but
+the flexibility of splitting header and payload at different position
+makes it very complex to be supported for XDP processing. In addition,
+jumbo frame is not supported in XDP to keep the initial codes simple.
+
+This patch has been tested with the sample app "xdp1" located in
+samples/bpf directory for both SKB and Native (XDP) mode. The burst
+traffic generated using pktgen_sample03_burst_single_flow.sh in
+samples/pktgen directory.
+
+Changes in v3:
+ - factor in xdp header and tail adjustment done by XDP program.
+   Thanks to Jakub Kicinski for pointing out the gap in v2.
+
+Changes in v2:
+ - fix for "warning: variable 'len' set but not used" reported by lkp.
+
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 56 +++++++++----------
- 1 file changed, 26 insertions(+), 30 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  21 ++-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 150 +++++++++++++++---
+ .../net/ethernet/stmicro/stmmac/stmmac_xdp.c  |  40 +++++
+ .../net/ethernet/stmicro/stmmac/stmmac_xdp.h  |  12 ++
+ 5 files changed, 197 insertions(+), 27 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+index 366740ab9c5a..f2e478b884b0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Makefile
++++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+@@ -6,6 +6,7 @@ stmmac-objs:= stmmac_main.o stmmac_ethtool.o stmmac_mdio.o ring_mode.o	\
+ 	      mmc_core.o stmmac_hwtstamp.o stmmac_ptp.o dwmac4_descs.o	\
+ 	      dwmac4_dma.o dwmac4_lib.o dwmac4_core.o dwmac5.o hwif.o \
+ 	      stmmac_tc.o dwxgmac2_core.o dwxgmac2_dma.o dwxgmac2_descs.o \
++	      stmmac_xdp.o \
+ 	      $(stmmac-y)
+ 
+ stmmac-$(CONFIG_STMMAC_SELFTESTS) += stmmac_selftests.o
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index e293423f98c3..e72224c8fbac 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -68,8 +68,9 @@ struct stmmac_tx_queue {
+ 
+ struct stmmac_rx_buffer {
+ 	struct page *page;
+-	struct page *sec_page;
+ 	dma_addr_t addr;
++	__u32 page_offset;
++	struct page *sec_page;
+ 	dma_addr_t sec_addr;
+ };
+ 
+@@ -269,6 +270,9 @@ struct stmmac_priv {
+ 
+ 	/* Receive Side Scaling */
+ 	struct stmmac_rss rss;
++
++	/* XDP BPF Program */
++	struct bpf_prog *xdp_prog;
+ };
+ 
+ enum stmmac_state {
+@@ -285,6 +289,8 @@ void stmmac_set_ethtool_ops(struct net_device *netdev);
+ 
+ void stmmac_ptp_register(struct stmmac_priv *priv);
+ void stmmac_ptp_unregister(struct stmmac_priv *priv);
++int stmmac_open(struct net_device *dev);
++int stmmac_release(struct net_device *dev);
+ int stmmac_resume(struct device *dev);
+ int stmmac_suspend(struct device *dev);
+ int stmmac_dvr_remove(struct device *dev);
+@@ -298,6 +304,19 @@ int stmmac_reinit_ringparam(struct net_device *dev, u32 rx_size, u32 tx_size);
+ int stmmac_bus_clks_config(struct stmmac_priv *priv, bool enabled);
+ void stmmac_fpe_handshake(struct stmmac_priv *priv, bool enable);
+ 
++static inline bool stmmac_xdp_is_enabled(struct stmmac_priv *priv)
++{
++	return !!priv->xdp_prog;
++}
++
++static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
++{
++	if (stmmac_xdp_is_enabled(priv))
++		return XDP_PACKET_HEADROOM;
++
++	return 0;
++}
++
+ #if IS_ENABLED(CONFIG_STMMAC_SELFTESTS)
+ void stmmac_selftest_run(struct net_device *dev,
+ 			 struct ethtool_test *etest, u64 *buf);
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 18e34a1e2367..cb1b2a180429 100644
+index cb1b2a180429..0dad8ab93eb5 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3518,6 +3518,28 @@ static void stmmac_tso_allocator(struct stmmac_priv *priv, dma_addr_t des,
+@@ -38,9 +38,11 @@
+ #include <linux/net_tstamp.h>
+ #include <linux/phylink.h>
+ #include <linux/udp.h>
++#include <linux/bpf_trace.h>
+ #include <net/pkt_cls.h>
+ #include "stmmac_ptp.h"
+ #include "stmmac.h"
++#include "stmmac_xdp.h"
+ #include <linux/reset.h>
+ #include <linux/of_mdio.h>
+ #include "dwmac1000.h"
+@@ -67,6 +69,9 @@ MODULE_PARM_DESC(phyaddr, "Physical device address");
+ #define STMMAC_TX_THRESH(x)	((x)->dma_tx_size / 4)
+ #define STMMAC_RX_THRESH(x)	((x)->dma_rx_size / 4)
+ 
++#define STMMAC_XDP_PASS		0
++#define STMMAC_XDP_CONSUMED	BIT(0)
++
+ static int flow_ctrl = FLOW_AUTO;
+ module_param(flow_ctrl, int, 0644);
+ MODULE_PARM_DESC(flow_ctrl, "Flow control ability [on/off]");
+@@ -1384,6 +1389,7 @@ static int stmmac_init_rx_buffers(struct stmmac_priv *priv, struct dma_desc *p,
+ 	buf->page = page_pool_dev_alloc_pages(rx_q->page_pool);
+ 	if (!buf->page)
+ 		return -ENOMEM;
++	buf->page_offset = stmmac_rx_offset(priv);
+ 
+ 	if (priv->sph) {
+ 		buf->sec_page = page_pool_dev_alloc_pages(rx_q->page_pool);
+@@ -1397,7 +1403,8 @@ static int stmmac_init_rx_buffers(struct stmmac_priv *priv, struct dma_desc *p,
+ 		stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, false);
  	}
+ 
+-	buf->addr = page_pool_get_dma_addr(buf->page);
++	buf->addr = page_pool_get_dma_addr(buf->page) + buf->page_offset;
++
+ 	stmmac_set_desc_addr(priv, p, buf->addr);
+ 	if (priv->dma_buf_sz == BUF_SIZE_16KiB)
+ 		stmmac_init_desc3(priv, p);
+@@ -1503,7 +1510,8 @@ static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
+ 				if (!buf->page)
+ 					goto err_reinit_rx_buffers;
+ 
+-				buf->addr = page_pool_get_dma_addr(buf->page);
++				buf->addr = page_pool_get_dma_addr(buf->page) +
++					    buf->page_offset;
+ 			}
+ 
+ 			if (priv->sph && !buf->sec_page) {
+@@ -1821,6 +1829,7 @@ static void free_dma_tx_desc_resources(struct stmmac_priv *priv)
+  */
+ static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
+ {
++	bool xdp_prog = stmmac_xdp_is_enabled(priv);
+ 	u32 rx_count = priv->plat->rx_queues_to_use;
+ 	int ret = -ENOMEM;
+ 	u32 queue;
+@@ -1834,13 +1843,15 @@ static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
+ 		rx_q->queue_index = queue;
+ 		rx_q->priv_data = priv;
+ 
+-		pp_params.flags = PP_FLAG_DMA_MAP;
++		pp_params.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
+ 		pp_params.pool_size = priv->dma_rx_size;
+ 		num_pages = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
+ 		pp_params.order = ilog2(num_pages);
+ 		pp_params.nid = dev_to_node(priv->device);
+ 		pp_params.dev = priv->device;
+-		pp_params.dma_dir = DMA_FROM_DEVICE;
++		pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
++		pp_params.offset = stmmac_rx_offset(priv);
++		pp_params.max_len = STMMAC_MAX_RX_BUF_SIZE(num_pages);
+ 
+ 		rx_q->page_pool = page_pool_create(&pp_params);
+ 		if (IS_ERR(rx_q->page_pool)) {
+@@ -3268,7 +3279,7 @@ static int stmmac_request_irq(struct net_device *dev)
+  *  0 on success and an appropriate (-)ve integer as defined in errno.h
+  *  file on failure.
+  */
+-static int stmmac_open(struct net_device *dev)
++int stmmac_open(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	int bfsize = 0;
+@@ -3391,7 +3402,7 @@ static void stmmac_fpe_stop_wq(struct stmmac_priv *priv)
+  *  Description:
+  *  This is the stop entry point of the driver.
+  */
+-static int stmmac_release(struct net_device *dev)
++int stmmac_release(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 chan;
+@@ -4064,11 +4075,9 @@ static void stmmac_rx_vlan(struct net_device *dev, struct sk_buff *skb)
+ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+ {
+ 	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+-	int len, dirty = stmmac_rx_dirty(priv, queue);
++	int dirty = stmmac_rx_dirty(priv, queue);
+ 	unsigned int entry = rx_q->dirty_rx;
+ 
+-	len = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE) * PAGE_SIZE;
+-
+ 	while (dirty-- > 0) {
+ 		struct stmmac_rx_buffer *buf = &rx_q->buf_pool[entry];
+ 		struct dma_desc *p;
+@@ -4091,18 +4100,9 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
+ 				break;
+ 
+ 			buf->sec_addr = page_pool_get_dma_addr(buf->sec_page);
+-
+-			dma_sync_single_for_device(priv->device, buf->sec_addr,
+-						   len, DMA_FROM_DEVICE);
+ 		}
+ 
+-		buf->addr = page_pool_get_dma_addr(buf->page);
+-
+-		/* Sync whole allocation to device. This will invalidate old
+-		 * data.
+-		 */
+-		dma_sync_single_for_device(priv->device, buf->addr, len,
+-					   DMA_FROM_DEVICE);
++		buf->addr = page_pool_get_dma_addr(buf->page) + buf->page_offset;
+ 
+ 		stmmac_set_desc_addr(priv, p, buf->addr);
+ 		if (priv->sph)
+@@ -4181,6 +4181,42 @@ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
+ 	return plen - len;
  }
  
-+static void stmmac_flush_tx_descriptors(struct stmmac_priv *priv, int queue)
++static struct sk_buff *stmmac_xdp_run_prog(struct stmmac_priv *priv,
++					   struct xdp_buff *xdp)
 +{
-+	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
-+	int desc_size;
++	struct bpf_prog *prog;
++	int res;
++	u32 act;
 +
-+	if (likely(priv->extend_desc))
-+		desc_size = sizeof(struct dma_extended_desc);
-+	else if (tx_q->tbs & STMMAC_TBS_AVAIL)
-+		desc_size = sizeof(struct dma_edesc);
-+	else
-+		desc_size = sizeof(struct dma_desc);
++	rcu_read_lock();
 +
-+	/* The own bit must be the latest setting done when prepare the
-+	 * descriptor and then barrier is needed to make sure that
-+	 * all is coherent before granting the DMA engine.
-+	 */
-+	wmb();
++	prog = READ_ONCE(priv->xdp_prog);
++	if (!prog) {
++		res = STMMAC_XDP_PASS;
++		goto unlock;
++	}
 +
-+	tx_q->tx_tail_addr = tx_q->dma_tx_phy + (tx_q->cur_tx * desc_size);
-+	stmmac_set_tx_tail_ptr(priv, priv->ioaddr, tx_q->tx_tail_addr, queue);
++	act = bpf_prog_run_xdp(prog, xdp);
++	switch (act) {
++	case XDP_PASS:
++		res = STMMAC_XDP_PASS;
++		break;
++	default:
++		bpf_warn_invalid_xdp_action(act);
++		fallthrough;
++	case XDP_ABORTED:
++		trace_xdp_exception(priv->dev, prog, act);
++		fallthrough;
++	case XDP_DROP:
++		res = STMMAC_XDP_CONSUMED;
++		break;
++	}
++
++unlock:
++	rcu_read_unlock();
++	return ERR_PTR(-res);
 +}
 +
  /**
-  *  stmmac_tso_xmit - Tx entry point of the driver for oversized frames (TSO)
-  *  @skb : the socket buffer
-@@ -3549,10 +3571,10 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dma_desc *desc, *first, *mss_desc = NULL;
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	int desc_size, tmp_pay_len = 0, first_tx;
- 	int nfrags = skb_shinfo(skb)->nr_frags;
- 	u32 queue = skb_get_queue_mapping(skb);
- 	unsigned int first_entry, tx_packets;
-+	int tmp_pay_len = 0, first_tx;
- 	struct stmmac_tx_queue *tx_q;
- 	bool has_vlan, set_ic;
- 	u8 proto_hdr_len, hdr;
-@@ -3750,12 +3772,6 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
- 		stmmac_set_tx_owner(priv, mss_desc);
+  * stmmac_rx - manage the receive process
+  * @priv: driver private structure
+@@ -4196,8 +4232,14 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 	unsigned int count = 0, error = 0, len = 0;
+ 	int status = 0, coe = priv->hw->rx_csum;
+ 	unsigned int next_entry = rx_q->cur_rx;
++	enum dma_data_direction dma_dir;
+ 	unsigned int desc_size;
+ 	struct sk_buff *skb = NULL;
++	struct xdp_buff xdp;
++	int buf_sz;
++
++	dma_dir = page_pool_get_dma_dir(rx_q->page_pool);
++	buf_sz = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE) * PAGE_SIZE;
+ 
+ 	if (netif_msg_rx_status(priv)) {
+ 		void *rx_head;
+@@ -4315,6 +4357,45 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 		}
+ 
+ 		if (!skb) {
++			dma_sync_single_for_cpu(priv->device, buf->addr,
++						buf1_len, dma_dir);
++
++			xdp.data = page_address(buf->page) + buf->page_offset;
++			xdp.data_end = xdp.data + buf1_len;
++			xdp.data_hard_start = page_address(buf->page);
++			xdp_set_data_meta_invalid(&xdp);
++			xdp.frame_sz = buf_sz;
++
++			skb = stmmac_xdp_run_prog(priv, &xdp);
++
++			/* For Not XDP_PASS verdict */
++			if (IS_ERR(skb)) {
++				unsigned int xdp_res = -PTR_ERR(skb);
++
++				if (xdp_res & STMMAC_XDP_CONSUMED) {
++					page_pool_recycle_direct(rx_q->page_pool,
++								 buf->page);
++					buf->page = NULL;
++					priv->dev->stats.rx_dropped++;
++
++					/* Clear skb as it was set as
++					 * status by XDP program.
++					 */
++					skb = NULL;
++
++					if (unlikely((status & rx_not_ls)))
++						goto read_again;
++
++					count++;
++					continue;
++				}
++			}
++		}
++
++		if (!skb) {
++			/* XDP program may expand or reduce tail */
++			buf1_len = xdp.data_end - xdp.data;
++
+ 			skb = napi_alloc_skb(&ch->rx_napi, buf1_len);
+ 			if (!skb) {
+ 				priv->dev->stats.rx_dropped++;
+@@ -4322,10 +4403,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 				goto drain_data;
+ 			}
+ 
+-			dma_sync_single_for_cpu(priv->device, buf->addr,
+-						buf1_len, DMA_FROM_DEVICE);
+-			skb_copy_to_linear_data(skb, page_address(buf->page),
+-						buf1_len);
++			/* XDP program may adjust header */
++			skb_copy_to_linear_data(skb, xdp.data, buf1_len);
+ 			skb_put(skb, buf1_len);
+ 
+ 			/* Data payload copied into SKB, page ready for recycle */
+@@ -4333,9 +4412,9 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			buf->page = NULL;
+ 		} else if (buf1_len) {
+ 			dma_sync_single_for_cpu(priv->device, buf->addr,
+-						buf1_len, DMA_FROM_DEVICE);
++						buf1_len, dma_dir);
+ 			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+-					buf->page, 0, buf1_len,
++					buf->page, buf->page_offset, buf1_len,
+ 					priv->dma_buf_sz);
+ 
+ 			/* Data payload appended into SKB */
+@@ -4345,7 +4424,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 
+ 		if (buf2_len) {
+ 			dma_sync_single_for_cpu(priv->device, buf->sec_addr,
+-						buf2_len, DMA_FROM_DEVICE);
++						buf2_len, dma_dir);
+ 			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+ 					buf->sec_page, 0, buf2_len,
+ 					priv->dma_buf_sz);
+@@ -4503,6 +4582,11 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ 		return -EBUSY;
  	}
  
--	/* The own bit must be the latest setting done when prepare the
--	 * descriptor and then barrier is needed to make sure that
--	 * all is coherent before granting the DMA engine.
--	 */
--	wmb();
--
- 	if (netif_msg_pktdata(priv)) {
- 		pr_info("%s: curr=%d dirty=%d f=%d, e=%d, f_p=%p, nfrags %d\n",
- 			__func__, tx_q->cur_tx, tx_q->dirty_tx, first_entry,
-@@ -3766,13 +3782,7 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
++	if (stmmac_xdp_is_enabled(priv) && new_mtu > ETH_DATA_LEN) {
++		netdev_dbg(priv->dev, "Jumbo frames not supported for XDP\n");
++		return -EINVAL;
++	}
++
+ 	new_mtu = STMMAC_ALIGN(new_mtu);
  
- 	netdev_tx_sent_queue(netdev_get_tx_queue(dev, queue), skb->len);
+ 	/* If condition true, FIFO is too small or MTU too large */
+@@ -4564,6 +4648,7 @@ static int stmmac_set_features(struct net_device *netdev,
+ 	stmmac_rx_ipc(priv, priv->hw);
  
--	if (tx_q->tbs & STMMAC_TBS_AVAIL)
--		desc_size = sizeof(struct dma_edesc);
--	else
--		desc_size = sizeof(struct dma_desc);
--
--	tx_q->tx_tail_addr = tx_q->dma_tx_phy + (tx_q->cur_tx * desc_size);
--	stmmac_set_tx_tail_ptr(priv, priv->ioaddr, tx_q->tx_tail_addr, queue);
-+	stmmac_flush_tx_descriptors(priv, queue);
- 	stmmac_tx_timer_arm(priv, queue);
+ 	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
++
+ 	for (chan = 0; chan < priv->plat->rx_queues_to_use; chan++)
+ 		stmmac_enable_sph(priv, priv->ioaddr, sph_en, chan);
  
- 	return NETDEV_TX_OK;
-@@ -3802,10 +3812,10 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
- 	int nfrags = skb_shinfo(skb)->nr_frags;
- 	int gso = skb_shinfo(skb)->gso_type;
- 	struct dma_edesc *tbs_desc = NULL;
--	int entry, desc_size, first_tx;
- 	struct dma_desc *desc, *first;
- 	struct stmmac_tx_queue *tx_q;
- 	bool has_vlan, set_ic;
-+	int entry, first_tx;
- 	dma_addr_t des;
+@@ -5299,6 +5384,18 @@ static int stmmac_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vi
+ 	return ret;
+ }
  
- 	tx_q = &priv->tx_queue[queue];
-@@ -4007,25 +4017,11 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
++static int stmmac_bpf(struct net_device *dev, struct netdev_bpf *bpf)
++{
++	struct stmmac_priv *priv = netdev_priv(dev);
++
++	switch (bpf->command) {
++	case XDP_SETUP_PROG:
++		return stmmac_xdp_set_prog(priv, bpf->prog, bpf->extack);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static const struct net_device_ops stmmac_netdev_ops = {
+ 	.ndo_open = stmmac_open,
+ 	.ndo_start_xmit = stmmac_xmit,
+@@ -5317,6 +5414,7 @@ static const struct net_device_ops stmmac_netdev_ops = {
+ 	.ndo_set_mac_address = stmmac_set_mac_address,
+ 	.ndo_vlan_rx_add_vid = stmmac_vlan_rx_add_vid,
+ 	.ndo_vlan_rx_kill_vid = stmmac_vlan_rx_kill_vid,
++	.ndo_bpf = stmmac_bpf,
+ };
  
- 	stmmac_set_tx_owner(priv, first);
- 
--	/* The own bit must be the latest setting done when prepare the
--	 * descriptor and then barrier is needed to make sure that
--	 * all is coherent before granting the DMA engine.
--	 */
--	wmb();
--
- 	netdev_tx_sent_queue(netdev_get_tx_queue(dev, queue), skb->len);
- 
- 	stmmac_enable_dma_transmission(priv, priv->ioaddr);
- 
--	if (likely(priv->extend_desc))
--		desc_size = sizeof(struct dma_extended_desc);
--	else if (tx_q->tbs & STMMAC_TBS_AVAIL)
--		desc_size = sizeof(struct dma_edesc);
--	else
--		desc_size = sizeof(struct dma_desc);
--
--	tx_q->tx_tail_addr = tx_q->dma_tx_phy + (tx_q->cur_tx * desc_size);
--	stmmac_set_tx_tail_ptr(priv, priv->ioaddr, tx_q->tx_tail_addr, queue);
-+	stmmac_flush_tx_descriptors(priv, queue);
- 	stmmac_tx_timer_arm(priv, queue);
- 
- 	return NETDEV_TX_OK;
+ static void stmmac_reset_subtask(struct stmmac_priv *priv)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
+new file mode 100644
+index 000000000000..bf38d231860b
+--- /dev/null
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.c
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2021, Intel Corporation. */
++
++#include "stmmac.h"
++#include "stmmac_xdp.h"
++
++int stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,
++			struct netlink_ext_ack *extack)
++{
++	struct net_device *dev = priv->dev;
++	struct bpf_prog *old_prog;
++	bool need_update;
++	bool if_running;
++
++	if_running = netif_running(dev);
++
++	if (prog && dev->mtu > ETH_DATA_LEN) {
++		/* For now, the driver doesn't support XDP functionality with
++		 * jumbo frames so we return error.
++		 */
++		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported");
++		return -EOPNOTSUPP;
++	}
++
++	need_update = !!priv->xdp_prog != !!prog;
++	if (if_running && need_update)
++		stmmac_release(dev);
++
++	old_prog = xchg(&priv->xdp_prog, prog);
++	if (old_prog)
++		bpf_prog_put(old_prog);
++
++	/* Disable RX SPH for XDP operation */
++	priv->sph = priv->sph_cap && !stmmac_xdp_is_enabled(priv);
++
++	if (if_running && need_update)
++		stmmac_open(dev);
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h
+new file mode 100644
+index 000000000000..93948569d92a
+--- /dev/null
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2021, Intel Corporation. */
++
++#ifndef _STMMAC_XDP_H_
++#define _STMMAC_XDP_H_
++
++#define STMMAC_MAX_RX_BUF_SIZE(num)	(((num) * PAGE_SIZE) - XDP_PACKET_HEADROOM)
++
++int stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,
++			struct netlink_ext_ack *extack);
++
++#endif /* _STMMAC_XDP_H_ */
 -- 
 2.25.1
 
