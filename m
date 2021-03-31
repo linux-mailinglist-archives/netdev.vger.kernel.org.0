@@ -2,119 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9015350453
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:18:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74223350444
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233744AbhCaQRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 12:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbhCaQRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:17:31 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5304FC061574;
-        Wed, 31 Mar 2021 09:17:31 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id k8so20263524wrc.3;
-        Wed, 31 Mar 2021 09:17:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+LUmV3vHkxiR9TrSqFPXgZ/3haa7mVuzoeyXiIzlD/Q=;
-        b=ovrd3VFqc8rvz+5dxr735rvsgWHJzDItSqV9k+xNbrZhCW7vWWTLrdfzV7WfjIgfuL
-         PN6P/kEUSWNECjQXzYsDaQXiSenRgeEHwn38FcbZXyyF7QW9BSmd7GgHaF2cRCYhlfMW
-         QVROuNQHqT6dlxPcCB5JOwNKsOSgRM63++G2cxBYTJu8xppgvl1GqLVFZMmz8qIGr/aL
-         J670eO545rzqtycws6Fw7zbpr68dsN0tsHMljVRK07eNUqvyc4zz7QZk+T9Gwaa0XBLb
-         TqBa/OzZFMDH5fllVO14NB0mnFw9cvnyWqQOOvIxGMiVtuK9p4x7bhLunOJ0VlBprn7r
-         J2pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+LUmV3vHkxiR9TrSqFPXgZ/3haa7mVuzoeyXiIzlD/Q=;
-        b=pFJVFiAOGamnbN7QLJ/0svHi9fPrWT7MEZl8kDM33SNkJ0KMSYd8A9hXpKNEhCwM5D
-         m5Gg1nHrax8zlY5VRpnxTDI4T9VweSaPsj9uCwzGDwsJ8uYW5SHJ+dJC/Kp2YL6Uqpbj
-         idvS6Xgdg+SNA7HYpOTML7JYYnRinavQ+mqVC2A0TAMuoE+3/GzAzmvxtPI+5lS6IqgZ
-         DIQC+3trMzviVXypCPodZACvyptIqDhYjoDxYybgvxK5SoJy4fTax0OMDSO6FsUA48rp
-         tV/IBVO+NlUUzzNRxef4lQ8xQxV/99mGBkUIdFF69ZmijB0OwNlnLEtwTDvA5bHXrlQt
-         FiCQ==
-X-Gm-Message-State: AOAM5311lkT7vIdHTnE+pKgY3MrTlxOwLqfGwJFGCJpunrtMtmL1XeH1
-        O0OpRZWvPBzm5j0RBw0q0vaoc0fdRbY=
-X-Google-Smtp-Source: ABdhPJzTCspDm2cy4Z3LxFOSjp9owGYeUOfwlhWKdsHMJzWHexc9oB5dTjb5l7fk4gKsSdlHGgmbow==
-X-Received: by 2002:a05:6000:18f:: with SMTP id p15mr4661255wrx.23.1617207449817;
-        Wed, 31 Mar 2021 09:17:29 -0700 (PDT)
-Received: from [192.168.1.101] ([37.172.182.222])
-        by smtp.gmail.com with ESMTPSA id w131sm5137657wmb.8.2021.03.31.09.17.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Mar 2021 09:17:29 -0700 (PDT)
-Subject: Re: [PATCH AUTOSEL 5.11 10/38] net: correct sk_acceptq_is_full()
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     liuyacan <yacanliu@163.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210329222133.2382393-1-sashal@kernel.org>
- <20210329222133.2382393-10-sashal@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e08f40b5-7f5b-0714-dfab-f24ed7f348fc@gmail.com>
-Date:   Wed, 31 Mar 2021 18:17:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        id S233729AbhCaQO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:14:29 -0400
+Received: from mga11.intel.com ([192.55.52.93]:34566 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229624AbhCaQON (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 12:14:13 -0400
+IronPort-SDR: tKeYW7aSA0P/8fppuSCV/GLY4e4VPfPj5YSJxb3gl36xBlIkMaJejMBDoPUfmHpyC/EZNls8o/
+ U2ESZ1c18y0Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="188782402"
+X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
+   d="scan'208";a="188782402"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 09:14:07 -0700
+IronPort-SDR: WrTshGn4jYlIW31Qo/prw/DSgBfhbbbJBQI4nvgqzP3sGhi1KCTPbujTv3VaI3jUVXwAun0FW8
+ MshyRnLtO4Bg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,293,1610438400"; 
+   d="scan'208";a="416292467"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 31 Mar 2021 09:14:07 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
+        by linux.intel.com (Postfix) with ESMTP id 9AAD158033E;
+        Wed, 31 Mar 2021 09:14:04 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH net-next 1/1] net: stmmac: enable MTL ECC Error Address Status Over-ride by default
+Date:   Thu,  1 Apr 2021 00:18:25 +0800
+Message-Id: <20210331161825.32100-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210329222133.2382393-10-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Voon Weifeng <weifeng.voon@intel.com>
 
+Turn on the MEEAO field of MTL_ECC_Control_Register by default.
 
-On 3/30/21 12:21 AM, Sasha Levin wrote:
-> From: liuyacan <yacanliu@163.com>
-> 
-> [ Upstream commit f211ac154577ec9ccf07c15f18a6abf0d9bdb4ab ]
-> 
-> The "backlog" argument in listen() specifies
-> the maximom length of pending connections,
-> so the accept queue should be considered full
-> if there are exactly "backlog" elements.
-> 
-> Signed-off-by: liuyacan <yacanliu@163.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  include/net/sock.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 129d200bccb4..a95f38a4b8c6 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -936,7 +936,7 @@ static inline void sk_acceptq_added(struct sock *sk)
->  
->  static inline bool sk_acceptq_is_full(const struct sock *sk)
->  {
-> -	return READ_ONCE(sk->sk_ack_backlog) > READ_ONCE(sk->sk_max_ack_backlog);
-> +	return READ_ONCE(sk->sk_ack_backlog) >= READ_ONCE(sk->sk_max_ack_backlog);
->  }
->  
->  /*
-> 
+As the MTL ECC Error Address Status Over-ride(MEEAO) is set by default,
+the following error address fields will hold the last valid address
+where the error is detected.
 
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
+Co-developed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac5.c | 1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac5.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-????
-
-I have not seen this patch going in our trees.
-
-First, there was no Fixes: tag, so this is quite unfortunate.
-
-Second, we already had such wrong patches in the past.
-
-Please look at commits
-64a146513f8f12ba204b7bf5cb7e9505594ead42 [NET]: Revert incorrect accept queue backlog changes.
-8488df894d05d6fa41c2bd298c335f944bb0e401 [NET]: Fix bugs in "Whether sock accept queue is full" checking
-
-Please revert  this patch, thanks !
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
+index 5b010ebfede9..d8c6ff725237 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.c
+@@ -192,6 +192,7 @@ int dwmac5_safety_feat_config(void __iomem *ioaddr, unsigned int asp)
+ 
+ 	/* 1. Enable Safety Features */
+ 	value = readl(ioaddr + MTL_ECC_CONTROL);
++	value |= MEEAO; /* MTL ECC Error Addr Status Override */
+ 	value |= TSOEE; /* TSO ECC */
+ 	value |= MRXPEE; /* MTL RX Parser ECC */
+ 	value |= MESTEE; /* MTL EST ECC */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
+index ff555d8b0cdf..6b2fd37b29ad 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac5.h
+@@ -98,6 +98,7 @@
+ #define ADDR				GENMASK(15, 0)
+ #define MTL_RXP_IACC_DATA		0x00000cb4
+ #define MTL_ECC_CONTROL			0x00000cc0
++#define MEEAO				BIT(8)
+ #define TSOEE				BIT(4)
+ #define MRXPEE				BIT(3)
+ #define MESTEE				BIT(2)
+-- 
+2.25.1
 
