@@ -2,93 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D836234FC94
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 11:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ECEF34FCC5
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 11:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234559AbhCaJWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 05:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234654AbhCaJWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 05:22:30 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35613C061574;
-        Wed, 31 Mar 2021 02:22:30 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id a143so20463711ybg.7;
-        Wed, 31 Mar 2021 02:22:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Io/8COCIMelBlssiGf/QwkSf0NWKvCwN1kFvShgTt3k=;
-        b=e9FcEWP/5o1QjN/f0/33JiTVAOPQ3JdICqsdLJtkSrslvLe7BlX4v4Ri0gKlXbMysA
-         Vxn6iFcYPzUMVM95+IhGqaeL2jgLeVyqxxtLi2PkTdm2WQqh1uIIKxfe74Yz7mXx6GR/
-         HAd7EVV1zWR4aTaAtM46I6Tg5YBw66x8JvdJCnloZ2FdaA4r4/C5Dqxsnvhc5OYzOkk8
-         c9A9dZQe5HQj27NG4Sg8eBohonUeb9CtettyYYNjtlyOOmHMF/EH2ma4MiBFUgDAlE1B
-         wzUDATrXdAnTql6h9rdcnhwOhF/UQ6vALjOqMw44jawpZmlhCGv9PUUPa5QPzpq7MUeK
-         2oEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Io/8COCIMelBlssiGf/QwkSf0NWKvCwN1kFvShgTt3k=;
-        b=QaYTHvOfqQzKPonPpfj6Ru9+5trMv4V35LAye/gAKPf138ebjFl5JRczGKGkoh6BI/
-         8GUZa62gL5G0GsPsdD/uOuKwPVkiQ1UWZwlCrVCyK8kCW+OD1aVjDs+K+x70Wc91bRSN
-         RQ9oLX/tycvIj5vlVhvBxqsZvyi5gcsVKYMzx82Q2E+6vxHILU0zGYGntHregJjE19z4
-         DN4Swa2ZAm1EdQukGU6ZyjP0PikBombOfXG50R2SxG0D41rQAfkgZjxoJvgYud4SvyDT
-         nZ3OzBF6hbGd6fTsaRoSrj4MzNQkql/OeUYsp5d1qZHCcmR5nlZikx25FzW75obIbnfP
-         CC4g==
-X-Gm-Message-State: AOAM531fsxQ6PpGJL02XLBrREOmG/VM5VbTnGoO1cI/QQwLAU2LC8Pkt
-        qBAYROTvfkkVXWq+vE8psxQR+2R8Ird+suTiVJ4=
-X-Google-Smtp-Source: ABdhPJyu9ieNGBg82MYlajy2cM5KBzgiBlcU4P77Qs2Qg8m0lch7OrGnx++N3mC3ia88bCMGMct/gteEy8HLzGXQDqU=
-X-Received: by 2002:a25:ba87:: with SMTP id s7mr3183267ybg.222.1617182549547;
- Wed, 31 Mar 2021 02:22:29 -0700 (PDT)
+        id S234734AbhCaJ1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 05:27:30 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:38712 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234711AbhCaJ1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 05:27:09 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12V9Ov1P189484;
+        Wed, 31 Mar 2021 09:26:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=KPySmHLqAP61MyIasZoJ5OyxdVnPRXNfupUZxb+81o4=;
+ b=CNdULtE6FqBc1YNYMuecY1hB4+Y+Egnrln6yDmvtd7+uCZD2hxu+6kYad9UAJV196U0I
+ WImipTF6nRHSHNksC77MniLcPIJ/VHI+6Kg2I3gVkwuBbML8ujXC/3RjF4fFWkZGi/ZY
+ shWoHk2FxL7uIoYuoxIL7d8mAK5RcK59ysBgkQ4qyxXBxxYpuAFi1+P5JCY8//MI8JtU
+ Uyfu4iVZreoOezdTkZuQfoshBWlGhvLiQbHBXJI1/IoqAmvgujegOu3P0WO2KQHYsYsT
+ HjqiSXvF7xdGcEZWN1KuGJRla2F/sQxQ3iCcFh6VtXR8cHDl/HwksIFGsiAuiQo135uJ QQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 37mafv1k9r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 31 Mar 2021 09:26:44 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12V9JcZT067590;
+        Wed, 31 Mar 2021 09:26:43 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 37mabp6beh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 31 Mar 2021 09:26:43 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 12V9Qa8G007579;
+        Wed, 31 Mar 2021 09:26:36 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 31 Mar 2021 02:26:36 -0700
+Date:   Wed, 31 Mar 2021 12:26:24 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Xie Yongji <xieyongji@bytedance.com>, hch@infradead.org,
+        mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com, parav@nvidia.com,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v6 01/10] file: Export receive_fd() to modules
+Message-ID: <20210331092624.GI2088@kadam>
+References: <20210331080519.172-1-xieyongji@bytedance.com>
+ <20210331080519.172-2-xieyongji@bytedance.com>
+ <20210331091545.lr572rwpyvrnji3w@wittgenstein>
 MIME-Version: 1.0
-References: <20210330074235.525747-1-Jianlin.Lv@arm.com> <20210330093149.GA5281@willie-the-truck>
-In-Reply-To: <20210330093149.GA5281@willie-the-truck>
-From:   Jianlin Lv <iecedge@gmail.com>
-Date:   Wed, 31 Mar 2021 17:22:18 +0800
-Message-ID: <CAFA-uR8_N=RHbhm4PdiB-AMCBdXsoMyM-9WgaPxPQ7-ZF6ujXA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: arm64: Redefine MOV consistent with arch insn
-To:     Will Deacon <will@kernel.org>
-Cc:     Jianlin Lv <Jianlin.Lv@arm.com>, bpf <bpf@vger.kernel.org>,
-        zlim.lnx@gmail.com, catalin.marinas@arm.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210331091545.lr572rwpyvrnji3w@wittgenstein>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9939 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=999 adultscore=0 spamscore=0 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2103300000 definitions=main-2103310068
+X-Proofpoint-ORIG-GUID: YHYYseNx9ByGLpeYrfNz0NmGPzPCiw_B
+X-Proofpoint-GUID: YHYYseNx9ByGLpeYrfNz0NmGPzPCiw_B
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9939 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 adultscore=0
+ impostorscore=0 bulkscore=0 spamscore=0 lowpriorityscore=0 mlxlogscore=999
+ priorityscore=1501 phishscore=0 malwarescore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103300000
+ definitions=main-2103310068
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 5:31 PM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Mar 30, 2021 at 03:42:35PM +0800, Jianlin Lv wrote:
-> > A64_MOV is currently mapped to Add Instruction. Architecturally MOV
-> > (register) is an alias of ORR (shifted register) and MOV (to or from SP)
-> > is an alias of ADD (immediate).
-> > This patch redefines A64_MOV and uses existing functionality
-> > aarch64_insn_gen_move_reg() in insn.c to encode MOV (register) instruction.
-> > For moving between register and stack pointer, rename macro to A64_MOV_SP.
->
-> What does this gain us? There's no requirement for a BPF "MOV" to match an
-> arm64 architectural "MOV", so what's the up-side of aligning them like this?
->
-> Cheers,
->
-> Will
+On Wed, Mar 31, 2021 at 11:15:45AM +0200, Christian Brauner wrote:
+> On Wed, Mar 31, 2021 at 04:05:10PM +0800, Xie Yongji wrote:
+> > Export receive_fd() so that some modules can use
+> > it to pass file descriptor between processes without
+> > missing any security stuffs.
+> > 
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > ---
+> 
+> Yeah, as I said in the other mail I'd be comfortable with exposing just
+> this variant of the helper.
+> Maybe this should be a separate patch bundled together with Christoph's
+> patch to split parts of receive_fd() into a separate helper.
+> This would also allow us to simplify a few other codepaths in drivers as
+> well btw. I just took a hasty stab at two of them:
+> 
+> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> index c119736ca56a..3c716bf6d84b 100644
+> --- a/drivers/android/binder.c
+> +++ b/drivers/android/binder.c
+> @@ -3728,8 +3728,9 @@ static int binder_apply_fd_fixups(struct binder_proc *proc,
+>         int ret = 0;
+> 
+>         list_for_each_entry(fixup, &t->fd_fixups, fixup_entry) {
+> -               int fd = get_unused_fd_flags(O_CLOEXEC);
+> +               int fd = receive_fd(fixup->file, O_CLOEXEC);
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Assignment duplicated on the next line.
 
-According to the description in the Arm Software Optimization Guide,
-Arithmetic(basic) and Logical(basic) instructions have the same
-Exec Latency and Execution Throughput.
-This change did not bring about a performance improvement.
-The original intention was to make the instruction map more 'natively'.
+> 
+> +               fd = receive_fd(fixup->file, O_CLOEXEC);
+>                 if (fd < 0) {
+>                         binder_debug(BINDER_DEBUG_TRANSACTION,
+>                                      "failed fd fixup txn %d fd %d\n",
 
-Jianlin
+regards,
+dan carpenter
+
