@@ -2,62 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B1CD350A63
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D25C350A76
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:47:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232892AbhCaWoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 18:44:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57164 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232718AbhCaWnt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 18:43:49 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lRjYt-00EFFS-L6; Thu, 01 Apr 2021 00:43:43 +0200
-Date:   Thu, 1 Apr 2021 00:43:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Grant Grundler <grundler@chromium.org>
-Cc:     Oliver Neukum <oneukum@suse.com>, Jakub Kicinski <kuba@kernel.org>,
-        Roland Dreier <roland@kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>, netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Grant Grundler <GrantGrundlergrundler@chromium.org>
-Subject: Re: [PATCHv4 4/4] net: cdc_ether: record speed in status method
-Message-ID: <YGT7H9lzypzAAIPR@lunn.ch>
-References: <20210330021651.30906-1-grundler@chromium.org>
- <20210330021651.30906-5-grundler@chromium.org>
+        id S229615AbhCaWrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 18:47:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35852 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231974AbhCaWrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 18:47:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617230826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qoU3TPLBHuNIxYnpAF4zRHyqNQICs2C1L3gVH1zCGfA=;
+        b=cXvqfokmUjgHj+MIdPwGDzoG+brnx+81srFLbpFJHIWnF7ZNhURDm4MFKajjKEPunGxv2U
+        H8Gof6Catpgmy56wiYcHjN8QsXRgbeLRswpMGFGhO4q+snU5GZPuLj8qltJHf3xMI8ALgm
+        dvMTHZSCdV+kvqSZCcZAuTo3tqdU/tw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-287-9ZI0Vbe9MdapCp9HyW5I5g-1; Wed, 31 Mar 2021 18:47:03 -0400
+X-MC-Unique: 9ZI0Vbe9MdapCp9HyW5I5g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7EF56800D62;
+        Wed, 31 Mar 2021 22:47:02 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-112-93.ams2.redhat.com [10.36.112.93])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 88A145D72F;
+        Wed, 31 Mar 2021 22:47:00 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] net: fix hangup on napi_disable for threaded napi
+Date:   Thu,  1 Apr 2021 00:46:18 +0200
+Message-Id: <996c4bb33166b5cf8d881871ea8b61e54ad4da24.1617230551.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210330021651.30906-5-grundler@chromium.org>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 07:16:51PM -0700, Grant Grundler wrote:
-> From: Grant Grundler <Grant Grundler grundler@chromium.org>
-> 
-> Until very recently, the usbnet framework only had support functions
-> for devices which reported the link speed by explicitly querying the
-> PHY over a MDIO interface. However, the cdc_ether devices send
-> notifications when the link state or link speeds change and do not
-> expose the PHY (or modem) directly.
-> 
-> Support funtions (e.g. usbnet_get_link_ksettings_internal()) to directly
-> query state recorded by the cdc_ether driver were added in a previous patch.
-> 
-> Instead of cdc_ether spewing the link speed into the dmesg buffer,
-> record the link speed encoded in these notifications and tell the
-> usbnet framework to use the new functions to get link speed/state.
-> 
-> User space can now get the most recent link speed/state using ethtool.
-> 
-> v4: added to series since cdc_ether uses same notifications
->     as cdc_ncm driver.
-> 
-> Signed-off-by: Grant Grundler <grundler@chromium.org>
+I hit an hangup on napi_disable(), when the threaded
+mode is enabled and the napi is under heavy traffic.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+If the relevant napi has been scheduled and the napi_disable()
+kicks in before the next napi_threaded_wait() completes - so
+that the latter quits due to the napi_disable_pending() condition,
+the existing code leaves the NAPI_STATE_SCHED bit set and the
+napi_disable() loop waiting for such bit will hang.
 
-    Andrew
+Address the issue explicitly clearing the SCHED_BIT on napi_thread
+termination, if the thread is owns the napi.
+
+Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/core/dev.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b4c67a5be606d..e2e716ba027b8 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -7059,6 +7059,14 @@ static int napi_thread_wait(struct napi_struct *napi)
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 	}
+ 	__set_current_state(TASK_RUNNING);
++
++	/* if the thread owns this napi, and the napi itself has been disabled
++	 * in-between napi_schedule() and the above napi_disable_pending()
++	 * check, we need to clear the SCHED bit here, or napi_disable
++	 * will hang waiting for such bit being cleared
++	 */
++	if (test_bit(NAPI_STATE_SCHED_THREADED, &napi->state) || woken)
++		clear_bit(NAPI_STATE_SCHED, &napi->state);
+ 	return -1;
+ }
+ 
+-- 
+2.26.2
+
