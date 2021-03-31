@@ -2,106 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB7593509E6
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:01:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B413509E4
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:01:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbhCaWA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 18:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbhCaWAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 18:00:21 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1701DC061574;
-        Wed, 31 Mar 2021 15:00:21 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id x16so162141iob.1;
-        Wed, 31 Mar 2021 15:00:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=OJa7aLdBWO57LWQ6v7C3AUMAfgikKe2S1MkL/HKL6YE=;
-        b=bVdZ5hw0IPXo/QBzMf2MxbBFy43vg2RajrcN0E4ZYRR5a6Bn6G0iSClyMT1OOiYXny
-         Qezv3MbdyyIarrXql2g3OEP/2wSWAj3S5d9MPVzyf41y9PdsTAJ0H/H9GfEnw2cTM0Kg
-         Y5IL0czg4jXbu1Hn0JgqV0xQXn0diXA6rOwjm6/gYHxWp7/lOGdlZ+7YjX3m69ZSdtgm
-         cPpEirT1jiFhlYPMaNP6XLwv4KVj4KiIVmdz5ut0G6evs+sapDMft7ZBbribvu65Jqvs
-         pwYSlLApZTjWkhDdVMD8wPD5+3XnHq7vM3kTHohLV1LLUAuh+wmd/9S+i/snnUe32oRo
-         IfHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=OJa7aLdBWO57LWQ6v7C3AUMAfgikKe2S1MkL/HKL6YE=;
-        b=GzbSfNY/1DoepoKuMFIxBLBTjyEBmKy5Fi9hQ+3padOORedS5SO5yUC9Tydg/mzCBX
-         7EYmj+m+bAvBjUEeTepLVIvb3WtaeyWd24vN0bLgQNC+5eoDWoYXtWCkFNtXmu2wgvIt
-         GyJwnEpU0U1Ob0HkLuoyhyseIRpwr3AZECrPFfzjiptOjxp7u5AGCGfQ/E91/i79gYq5
-         eZO/IYDLiaT4UjTzG8Jay30mIFG1O7wey+2+mmlrBE7UjnbbYM/7ICGng2fv2tPa/lGu
-         g1ROJ1OXJqcfAECIA2rCdYzsYLjQdAWYdVIgXOx9YS3aXPXr3gR8zovA8jDtfvhaapQV
-         CKOg==
-X-Gm-Message-State: AOAM531X+JHZ9PeDGh5jwXXtalClckCx0YoaOrQQ2xZpQMRhc8UdHsyX
-        TaMFL+f6BKchwTtRRsERf0o=
-X-Google-Smtp-Source: ABdhPJxNj9MoRc0F5aSJBTglJ2+nl87+A9UaUVLaNDuQ3InP8fS/t7PhF77t7eNW41OpIh5F7LGiEQ==
-X-Received: by 2002:a02:9048:: with SMTP id y8mr4873510jaf.66.1617228020497;
-        Wed, 31 Mar 2021 15:00:20 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id c19sm1595613ile.17.2021.03.31.15.00.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 15:00:19 -0700 (PDT)
-Date:   Wed, 31 Mar 2021 15:00:10 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <6064f0ea917f5_868622089b@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210331023237.41094-2-xiyou.wangcong@gmail.com>
-References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
- <20210331023237.41094-2-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v8 01/16] skmsg: lock ingress_skb when purging
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S230385AbhCaWA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 18:00:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43072 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231650AbhCaWAL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 18:00:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3CCA161075;
+        Wed, 31 Mar 2021 22:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617228011;
+        bh=COi+4+QgUfh8QYpjI7MKQZz67LaPq7ecOuBQoAANmhw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MeeDEdmHT9nDhGxPWSpSBAD8NVU4jU3s/G6SHvo7JHTE9BS/TJrRR0kj/L7JbwiyO
+         QvQVGiz8VqXWWDcGo/830zTlJGBetarz2/t+v1iNIo3xhonVe+qLynvAR7gNKTUMUP
+         uC7F8CzZKYZdWh8dKyBqt7or1h8FngmjBgUuv2CsVQ6iEF4NI3w8CFc20Ocuohdg4F
+         D30AwZnilHe7gIOS3ZRbw/OjnkEP2v80Oatrz2ghvsaY1Ly1ailNS2tu4nKJcrWrt/
+         WUQXTQzubCTJTAO7RyxvllY+ijGcbw/JYLgt4ZK6MzavFdHUiS9pfF+Lm4OMyBWOtc
+         U/hbvfn8BmFPA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2D50A608FA;
+        Wed, 31 Mar 2021 22:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 01/11] xfrm: interface: fix ipv4 pmtu check to honor ip header
+ df
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161722801118.26765.7659215180324459152.git-patchwork-notify@kernel.org>
+Date:   Wed, 31 Mar 2021 22:00:11 +0000
+References: <20210331081847.3547641-2-steffen.klassert@secunet.com>
+In-Reply-To: <20210331081847.3547641-2-steffen.klassert@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> Currently we purge the ingress_skb queue only when psock
-> refcnt goes down to 0, so locking the queue is not necessary,
-> but in order to be called during ->close, we have to lock it
-> here.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/core/skmsg.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index 07f54015238a..bebf84ed4e30 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -634,7 +634,7 @@ static void sk_psock_zap_ingress(struct sk_psock *psock)
->  {
->  	struct sk_buff *skb;
->  
-> -	while ((skb = __skb_dequeue(&psock->ingress_skb)) != NULL) {
-> +	while ((skb = skb_dequeue(&psock->ingress_skb)) != NULL) {
->  		skb_bpf_redirect_clear(skb);
->  		kfree_skb(skb);
->  	}
-> -- 
-> 2.25.1
-> 
+Hello:
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+This series was applied to netdev/net.git (refs/heads/master):
+
+On Wed, 31 Mar 2021 10:18:37 +0200 you wrote:
+> From: Eyal Birger <eyal.birger@gmail.com>
+> 
+> Frag needed should only be sent if the header enables DF.
+> 
+> This fix allows packets larger than MTU to pass the xfrm interface
+> and be fragmented after encapsulation, aligning behavior with
+> non-interface xfrm.
+> 
+> [...]
+
+Here is the summary with links:
+  - [01/11] xfrm: interface: fix ipv4 pmtu check to honor ip header df
+    https://git.kernel.org/netdev/net/c/8fc0e3b6a866
+  - [02/11] vti: fix ipv4 pmtu check to honor ip header df
+    https://git.kernel.org/netdev/net/c/c7c1abfd6d42
+  - [03/11] vti6: fix ipv4 pmtu check to honor ip header df
+    https://git.kernel.org/netdev/net/c/4c38255892c0
+  - [04/11] xfrm: Use actual socket sk instead of skb socket for xfrm_output_resume
+    https://git.kernel.org/netdev/net/c/9ab1265d5231
+  - [05/11] net: xfrm: Localize sequence counter per network namespace
+    https://git.kernel.org/netdev/net/c/e88add19f681
+  - [06/11] net: xfrm: Use sequence counter with associated spinlock
+    https://git.kernel.org/netdev/net/c/bc8e0adff343
+  - [07/11] esp: delete NETIF_F_SCTP_CRC bit from features for esp offload
+    https://git.kernel.org/netdev/net/c/154deab6a3ba
+  - [08/11] xfrm: BEET mode doesn't support fragments for inner packets
+    https://git.kernel.org/netdev/net/c/68dc022d04eb
+  - [09/11] xfrm: Fix NULL pointer dereference on policy lookup
+    https://git.kernel.org/netdev/net/c/b1e3a5607034
+  - [10/11] xfrm: Provide private skb extensions for segmented and hw offloaded ESP packets
+    https://git.kernel.org/netdev/net/c/c7dbf4c08868
+  - [11/11] xfrm/compat: Cleanup WARN()s that can be user-triggered
+    https://git.kernel.org/netdev/net/c/ef19e111337f
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
