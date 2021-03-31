@@ -2,108 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D8335049B
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55BBC350478
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:28:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234201AbhCaQc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 12:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbhCaQck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:32:40 -0400
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C29FC061574;
-        Wed, 31 Mar 2021 09:32:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=VCe4QmQLCwyArf7TfS2RTM//Ze/hAyVnYU
-        NMw+5EuIc=; b=Z61ZrDU44qPj/L7wRO9heLuognDflkvGa6LJIdH3hJSuXfWNEM
-        eicCOKPfCbNncVPIkwruwg07siMe475OkwuoY7EuHOshM8YzD2hg0HdHtKGXYbpW
-        kOfjvtlqjqK4IH6gb8jq/SAxmI6yOuxzU+jliUyGkLQVDZEJjZCTif2yE=
-Received: from xhacker (unknown [101.86.19.180])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygB3fkIVpGRgrr16AA--.5145S2;
-        Thu, 01 Apr 2021 00:32:22 +0800 (CST)
-Date:   Thu, 1 Apr 2021 00:27:24 +0800
-From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        " =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?=" <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH v2 5/9] riscv: kprobes: Implement alloc_insn_page()
-Message-ID: <20210401002724.794b3bc4@xhacker>
-In-Reply-To: <20210401002442.2fe56b88@xhacker>
-References: <20210401002442.2fe56b88@xhacker>
+        id S233894AbhCaQ2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:28:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56500 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232319AbhCaQ1t (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 12:27:49 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lRdgv-00ECMX-OU; Wed, 31 Mar 2021 18:27:37 +0200
+Date:   Wed, 31 Mar 2021 18:27:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Danilo Krummrich <danilokrummrich@dk-develop.de>
+Cc:     linux@armlinux.org.uk, davem@davemloft.net, hkallweit1@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jeremy.linton@arm.com
+Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
+Message-ID: <YGSi+b/r4zlq9rm8@lunn.ch>
+References: <20210331141755.126178-1-danilokrummrich@dk-develop.de>
+ <20210331141755.126178-3-danilokrummrich@dk-develop.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygB3fkIVpGRgrr16AA--.5145S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFyDGF45XF4kJrWxuw48WFg_yoWDGrb_C3
-        WxKry3WrWYkrWxWFyDKw4Sqrsak343KFykWr12yryUtr1DWr13Ka95WF45G3sYqr97JFyf
-        GrnxX3srWF42qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4AYjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
-        vEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
-        FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Jr
-        0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY
-        04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        W8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3JwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7IU8S1v3
-        UUUUU==
-X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210331141755.126178-3-danilokrummrich@dk-develop.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+> @@ -670,19 +670,21 @@ struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
+>  	struct phy_device *phydev = ERR_PTR(-ENODEV);
+>  	int err;
+>  
+> +	/* In case of NO_CAP and C22 only, we still can try to scan for C45
+> +	 * devices, since indirect access will be used for busses that are not
+> +	 * capable of C45 frame format.
+> +	 */
+>  	switch (bus->capabilities) {
+>  	case MDIOBUS_NO_CAP:
+>  	case MDIOBUS_C22:
+> -		phydev = get_phy_device(bus, addr, false);
+> -		break;
+> -	case MDIOBUS_C45:
+> -		phydev = get_phy_device(bus, addr, true);
+> -		break;
+>  	case MDIOBUS_C22_C45:
+>  		phydev = get_phy_device(bus, addr, false);
+>  		if (IS_ERR(phydev))
+>  			phydev = get_phy_device(bus, addr, true);
+>  		break;
+> +	case MDIOBUS_C45:
+> +		phydev = get_phy_device(bus, addr, true);
+> +		break;
+>  	}
 
-Allocate PAGE_KERNEL_READ_EXEC(read only, executable) page for kprobes
-insn page. This is to prepare for STRICT_MODULE_RWX.
+I think this is going to cause problems.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- arch/riscv/kernel/probes/kprobes.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+commit 0231b1a074c672f8c00da00a57144072890d816b
+Author: Kevin Hao <haokexin@gmail.com>
+Date:   Tue Mar 20 09:44:53 2018 +0800
 
-diff --git a/arch/riscv/kernel/probes/kprobes.c b/arch/riscv/kernel/probes/kprobes.c
-index 7e2c78e2ca6b..8c1f7a30aeed 100644
---- a/arch/riscv/kernel/probes/kprobes.c
-+++ b/arch/riscv/kernel/probes/kprobes.c
-@@ -84,6 +84,14 @@ int __kprobes arch_prepare_kprobe(struct kprobe *p)
- 	return 0;
- }
- 
-+void *alloc_insn_page(void)
-+{
-+	return  __vmalloc_node_range(PAGE_SIZE, 1, VMALLOC_START, VMALLOC_END,
-+				     GFP_KERNEL, PAGE_KERNEL_READ_EXEC,
-+				     VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
-+				     __builtin_return_address(0));
-+}
-+
- /* install breakpoint in text */
- void __kprobes arch_arm_kprobe(struct kprobe *p)
- {
--- 
-2.31.0
+    net: phy: realtek: Use the dummy stubs for MMD register access for rtl8211b
+    
+    The Ethernet on mpc8315erdb is broken since commit b6b5e8a69118
+    ("gianfar: Disable EEE autoneg by default"). The reason is that
+    even though the rtl8211b doesn't support the MMD extended registers
+    access, it does return some random values if we trying to access
+    the MMD register via indirect method. This makes it seem that the
+    EEE is supported by this phy device. And the subsequent writing to
+    the MMD registers does cause the phy malfunction. So use the dummy
+    stubs for the MMD register access to fix this issue.
 
+Indirect access to C45 via C22 is not a guaranteed part of C22. So
+there are C22 only PHYs which return random junk when you try to use
+this access method.
 
+I'm also a bit confused why this is actually needed. PHY drivers which
+make use of C45 use the functions phy_read_mmd(), phy_write_mmd().
+
+int __phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum)
+{
+	int val;
+
+	if (regnum > (u16)~0 || devad > 32)
+		return -EINVAL;
+
+	if (phydev->drv && phydev->drv->read_mmd) {
+		val = phydev->drv->read_mmd(phydev, devad, regnum);
+	} else if (phydev->is_c45) {
+		val = __mdiobus_c45_read(phydev->mdio.bus, phydev->mdio.addr,
+					 devad, regnum);
+	} else {
+		struct mii_bus *bus = phydev->mdio.bus;
+		int phy_addr = phydev->mdio.addr;
+
+		mmd_phy_indirect(bus, phy_addr, devad, regnum);
+
+		/* Read the content of the MMD's selected register */
+		val = __mdiobus_read(bus, phy_addr, MII_MMD_DATA);
+	}
+	return val;
+}
+
+So if the device is a c45 device, C45 transfers are used, otherwise it
+falls back to mmd_phy_indirect(), which is C45 over C22.
+
+Why does this not work for you?
+
+    Andrew
