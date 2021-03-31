@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B787634F866
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 07:54:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E160734F86B
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 07:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233129AbhCaFyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 01:54:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        id S233620AbhCaF6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 01:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhCaFyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 01:54:03 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E46C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 22:54:03 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id o66so19924371ybg.10
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 22:54:03 -0700 (PDT)
+        with ESMTP id S232805AbhCaF6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 01:58:21 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550ADC061574
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 22:58:20 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id x189so19956191ybg.5
+        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 22:58:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=l+qFmKNXgxPtlaq/SEyk1mUZF4dSzUeUqtPqTPmEvao=;
-        b=qNUlx8wxkPWcBSYJlPMpGJ/wX4drZwTAm5KAaQoYhyVUUdSIYp5UxrR3KPEIbDqel+
-         uEjUG7sv6aDs7NbB8zL+xnIqgy4XYCeApZCuQgr4utVXV3iqeBqEvtb/6rA2IDlnDQih
-         EyceXzYbHUR6wkSu+xcV6ciG8M5zmnBL3A0N1oHSreInXl9iUfWkMGGxwBs2H1nL+q0M
-         7JoufTc+ds0ni6ULn0+9HOkBzAn8J/nGDkI1nNiyuO+0eyPFniq/dsSDBRr8v8XVyTCL
-         /0zXrG6g+5N8gzQl28nMz3ileKdRffD/j5dJiR80K89lItfTPcLfNoaRd50RCZ6lJL6p
-         1iyw==
+        bh=WundDXzAmJFV1KNeY2mYJnKhRj3v/BA2w/7thkTi7IQ=;
+        b=PMrjsK6CBGb3FkaCIwkWV7A8Bcjm2V9RqFuis6ZWJmUYoGQbqQsNDXBAtA74N3Z5sM
+         CkqgOFL5fdzUDoZGvClDeoVOS3ZPFFF2QbVXQ1bGTGJorBopc0TEY1H8nyqHfJ/nwQ24
+         kWOv5Vxant03AF9kUGy6Gp1vTwmQ4SH6gRB4kVvcvBEFbDmG967dWkapcfA7U75a+Rm8
+         Q7aTA5jW3rU25pFZ4pITCMc9zg8OFTrgVzVpKG91yj9TBkOQOW1t7hlXPmzKjZvrfeKp
+         P+9tzXXF4fcXOvgVdkUa8dyYeRQcL1TSgz0l/vyBcyXK+gzlqmDhThk7WTBgGXdPMiEz
+         Tucg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=l+qFmKNXgxPtlaq/SEyk1mUZF4dSzUeUqtPqTPmEvao=;
-        b=I56u6fHMj9Ogsq0codNX4VDtY0c9LiYHEOSmVABxnfVitNgTOVLHkdHjSeJSskcnQ5
-         AWLBvB9oKVHdSfv+S3yRsTCapAcB5kriH/F+u+lFHU/QkH5S6jUZNWB7B/7vmoAyqNt4
-         gX53qgvGng+mFqkQ6eyp5OFORc87duQFdxA3j24hM6qadHNBDKZJUnUxFHp2skiibJl7
-         MMiAZZ7lm0/U1BjL96hyMOCMo5LiCexMnjugj2ylApzpssEOutWP7XKGxyYCjyRwYRyL
-         wJXOkpUIO9051Y5mXkirbx+Gj4H/uYko2UNZ7rsY0xhRMt+heWj759oJJU8pWF0EN2/V
-         15kQ==
-X-Gm-Message-State: AOAM532/GZTCUDHKLBZWDxuCd5ajAPkAY9oosd+eiJNJMe8jGSUGUDMG
-        I17sKs+JwaFjf4V+ubNPZhhm2MknOHbyye/FoqRocK5fDhimDw==
-X-Google-Smtp-Source: ABdhPJwvWsSSag3wUl7fH+reQpCZSbd2ma0vvilhGip7l3HtwY7mxxPJ8lumntsVBPGodXdwNOUp6NYb+NBfSDnCxgI=
-X-Received: by 2002:a25:d687:: with SMTP id n129mr2514380ybg.132.1617170042000;
- Tue, 30 Mar 2021 22:54:02 -0700 (PDT)
+        bh=WundDXzAmJFV1KNeY2mYJnKhRj3v/BA2w/7thkTi7IQ=;
+        b=dzhH4jnYmWoBEzb6qspeIsJLgZq0cNu++uNSWccRmOW/p77v1CVEeKlwIEAKzyRded
+         H/G/FxDWa4x27YLMmV2QXQabNwpQvWEWPPFTAHMhXkqpqS+2zlC069g3lv5n/L0pO/+p
+         iNlV/1Jii5MMyW7jUo48X4kw76TNjMacCvGFRECeEpEjdLoev4DAIfPbp33Y03E/5sdD
+         PwYX382B8DZAZ2hToBye+sX/X/FBUoFbaVeLzo9soujiGeoVUdCgIT3ZGOSCg8EXnf4c
+         WzRlfjBTiizdUywUSWjSXlAZvPDpu9BR0fXOs9BSl2ElZ+ZO1gxQhrZ7EIZkPNK9/j5S
+         48YA==
+X-Gm-Message-State: AOAM530hG+4RqO+NGz/ny9ZlxLbL09wOcb/l9RDIj1+Wq/HYulobO0bk
+        3sAsmtX5/M0V+GZI3PRlTZXD6on08Y72Ldb8G4mwiQ==
+X-Google-Smtp-Source: ABdhPJxZKZcwLe/niUBYaJQ1prlTeI0PgVZw64w+YLHHkapqZYG8ay1Bxg/VGlktjzI23ro4HlVvpZlBt+t5R+STFEg=
+X-Received: by 2002:a25:6a88:: with SMTP id f130mr2468915ybc.234.1617170299189;
+ Tue, 30 Mar 2021 22:58:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <BYAPR11MB2870AD12F9EB897A6B81DC50AB7C9@BYAPR11MB2870.namprd11.prod.outlook.com>
-In-Reply-To: <BYAPR11MB2870AD12F9EB897A6B81DC50AB7C9@BYAPR11MB2870.namprd11.prod.outlook.com>
+References: <BYAPR11MB2870B0910C71BDDFD328B339AB7C9@BYAPR11MB2870.namprd11.prod.outlook.com>
+In-Reply-To: <BYAPR11MB2870B0910C71BDDFD328B339AB7C9@BYAPR11MB2870.namprd11.prod.outlook.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 31 Mar 2021 07:53:50 +0200
-Message-ID: <CANn89iJB_QYWxr5tjR+4uRpO=b5jhe21pAX=c0sFmEHH4+OG6w@mail.gmail.com>
+Date:   Wed, 31 Mar 2021 07:58:07 +0200
+Message-ID: <CANn89iLnzN6n--tF_7_d0Y1tD6sv3Yx=3H+U_iYbeC21=-r92w@mail.gmail.com>
 Subject: Re: [PATCH net-next] sit: proper dev_{hold|put} in ndo_[un]init methods
 To:     "Wong, Vee Khee" <vee.khee.wong@intel.com>
 Cc:     "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
@@ -57,48 +57,83 @@ Cc:     "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "syzkaller@googlegroups.com" <syzkaller@googlegroups.com>,
         "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Content-Type: multipart/mixed; boundary="000000000000e5914d05becebd5f"
+Content-Type: multipart/mixed; boundary="00000000000039fb6705bececd8e"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000e5914d05becebd5f
+--00000000000039fb6705bececd8e
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Mar 31, 2021 at 2:05 AM Wong, Vee Khee <vee.khee.wong@intel.com> wrote:
+On Wed, Mar 31, 2021 at 2:01 AM Wong, Vee Khee <vee.khee.wong@intel.com> wrote:
 >
 > Hi all,
 >
+>
+>
 > This patch introduced the following massive warnings printouts on a
+>
 > Intel x86 Alderlake platform with STMMAC MAC and Marvell 88E2110 PHY.
 >
+>
+>
 > [  149.674232] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  159.930310] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  170.186205] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  180.434311] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  190.682309] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  200.690176] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  210.938310] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  221.186311] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  231.442311] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  241.690186] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  251.698288] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  261.946311] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  272.194181] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  282.442311] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  292.690310] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  302.938313] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  313.186255] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  323.442329] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  333.698309] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  343.946310] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  354.202166] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  364.450190] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
 > [  374.706314] unregister_netdevice: waiting for sit0 to become free. Usage count = 2
+>
+>
 >
 > Is this an expected behavior?
 >
+>
+>
+> Thanks,
+>
+> VK
 
+Same answer than the other thread :
 
 Nope, I already have a fix, but it depends on a pending patch.
 
@@ -108,14 +143,14 @@ https://patchwork.kernel.org/project/netdevbpf/patch/20210330064551.545964-1-eri
 
 You can try the attached patch :
 
---000000000000e5914d05becebd5f
+--00000000000039fb6705bececd8e
 Content-Type: text/x-patch; charset="US-ASCII"; 
 	name="0001-ipv6-remove-extra-dev_hold-for-fallback-tunnels.patch"
 Content-Disposition: attachment; 
 	filename="0001-ipv6-remove-extra-dev_hold-for-fallback-tunnels.patch"
 Content-Transfer-Encoding: base64
-Content-ID: <f_kmx19y480>
-X-Attachment-Id: f_kmx19y480
+Content-ID: <f_kmx1fly80>
+X-Attachment-Id: f_kmx1fly80
 
 RnJvbSAyYzljY2UwNjdhOWExYWVjMzJiMzIzZWY4MDE3OWIxODU2Yzc5NmFmIE1vbiBTZXAgMTcg
 MDA6MDA6MDAgMjAwMQpGcm9tOiBFcmljIER1bWF6ZXQgPGVkdW1hemV0QGdvb2dsZS5jb20+CkRh
@@ -172,4 +207,4 @@ MCw2IEBAIHN0YXRpYyB2b2lkIF9fbmV0X2luaXQgaXBpcDZfZmJfdHVubmVsX2luaXQoc3RydWN0
 IG5ldF9kZXZpY2UgKmRldikKIAlpcGgtPmlobAkJPSA1OwogCWlwaC0+dHRsCQk9IDY0OwogCi0J
 ZGV2X2hvbGQoZGV2KTsKIAlyY3VfYXNzaWduX3BvaW50ZXIoc2l0bi0+dHVubmVsc193Y1swXSwg
 dHVubmVsKTsKIH0KIAotLSAKMi4zMS4wLjI5MS5nNTc2YmE5ZGNkYWYtZ29vZwoK
---000000000000e5914d05becebd5f--
+--00000000000039fb6705bececd8e--
