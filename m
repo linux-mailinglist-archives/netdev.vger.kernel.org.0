@@ -2,73 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7FD350114
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC82C35011B
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235751AbhCaNTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 09:19:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:46805 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235219AbhCaNSj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:18:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617196718;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V3QlNgUSfvr+/PpIlu1o+sRHvXrLP4b4ywJIkeHRotY=;
-        b=eFyBiAShitJdL0K8lEhUwp7XnjS8gYH63cgRpQUIrIZPJBSIxuAQuUuTgd7vfFDXX/zYF4
-        ZOPnc2P4t6hE7xGdarV187tgtzVdrWoQ+RBoIrtm8Qs7y1EMLRP/JojV7BqRjwIxYT/3Ye
-        YMjV1lNv1DIMEvb+KQNtKWEfex9VoIw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-472-FQq3UjclNSeViSGtS0T6pA-1; Wed, 31 Mar 2021 09:18:36 -0400
-X-MC-Unique: FQq3UjclNSeViSGtS0T6pA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48CBF189CD01;
-        Wed, 31 Mar 2021 13:18:35 +0000 (UTC)
-Received: from ovpn-115-15.ams2.redhat.com (ovpn-115-15.ams2.redhat.com [10.36.115.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CC63C100164A;
-        Wed, 31 Mar 2021 13:18:33 +0000 (UTC)
-Message-ID: <2007f97354178599db29b71b3e359168606847f9.camel@redhat.com>
-Subject: Re: [PATCH] udp: Add support for getsockopt(..., ..., UDP_GRO, ...,
- ...)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Norman Maurer <norman.maurer@googlemail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dsahern@kernel.org, davem@davemloft.net
-Date:   Wed, 31 Mar 2021 15:18:32 +0200
-In-Reply-To: <71BBD1B0-FA0A-493D-A1D2-40E7304B0A35@googlemail.com>
-References: <20210325195614.800687-1-norman_maurer@apple.com>
-         <8eadc07055ac1c99bbc55ea10c7b98acc36dde55.camel@redhat.com>
-         <CF78DCAD-6F2C-46C4-9FF1-61DF66183C76@apple.com>
-         <2e667826f183fbef101a62f0ad8ccb4ed253cb75.camel@redhat.com>
-         <71BBD1B0-FA0A-493D-A1D2-40E7304B0A35@googlemail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S235461AbhCaNUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 09:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235347AbhCaNUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:20:18 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BC6C061574;
+        Wed, 31 Mar 2021 06:20:17 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id h10so22271474edt.13;
+        Wed, 31 Mar 2021 06:20:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v54OuxXjYPfnkf0eXlXYXJeCY6yKWqaMFwGEwHKRNUA=;
+        b=Va6gkTiy/Yw2vvFF7gj9/X/LvdR91Yg183cL1F2pUosKrIka4zePYCYvs2lndKX37O
+         fyPJ9gxmxTP7Aj95tFsoCgoE9J2mJc4w59JhsTD+Y7xIJs6utMQGCv7gKJiuNEjd3leb
+         6aSKBWWTiXcxRgLb548agTRau/AKJ5zkUxAFpRzb0QV6jxAky/+mNhhfP1kVW3rIoGU3
+         2CHKASXyYCRkGHl9N971+mZ05TVN/Bc2Kg/0gb8RtfX0dUwSzGLGkEL2cQ80buZnM7kZ
+         pLt/0qEG7gIfgUDP/jhcywl/L7G/f84L8/IMhEJQpcfMNkKHMeA1o0exjurp3atJIdpT
+         RmLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v54OuxXjYPfnkf0eXlXYXJeCY6yKWqaMFwGEwHKRNUA=;
+        b=k6+2CH2nfTILLd4JzpAMuK3erumqfQtQGpm4fmjQy0aRa5qSUNKHnAV5ptzM0wbpZ1
+         +pef9mmDeoTOwcJBQDHYtT+MPW51qfspAshwNiSBZGZWY5erkPPyZeZab0TSVJyIifmn
+         vouvrnrVknYpexGpAl8ahoROf6q169q0G5jeCl42B3nFBPbgnpCPKE6AyEO/sTjjljc8
+         bkMi+IgrhU9M9XqICa5HS7ovdBYq5zXestYzIEA1GC+CxoGn0SBYADRVEncqNvEs8zsF
+         a8wqD1muczppfqRjGitn4RdU4TZlL/7EApVi2PWl5BPAvFDvdGoHPXACeTr4hYEcmZN7
+         BQgA==
+X-Gm-Message-State: AOAM532SKtEKUtrM3D8C2bVfhqZUyFZ2az0Rgr3YyBDJ1/Xw/CkeHTKx
+        Fx4heQ7cVb1CI3bS4/CLK/M=
+X-Google-Smtp-Source: ABdhPJyqP9Ogu0G2cFJk+43OiYbaDjJk8d5XhbXxxWVKEli1Te8lmQkzPqg96zlm2PEBrlf2Ewuu6g==
+X-Received: by 2002:a50:fd8b:: with SMTP id o11mr3632089edt.346.1617196815723;
+        Wed, 31 Mar 2021 06:20:15 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id m7sm1540798edp.81.2021.03.31.06.20.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 06:20:15 -0700 (PDT)
+Date:   Wed, 31 Mar 2021 16:20:13 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: dsa: Allow default tag protocol to be
+ overridden from DT
+Message-ID: <20210331125753.5kbr4wexmudwmrjc@skbuf>
+References: <20210326105648.2492411-1-tobias@waldekranz.com>
+ <20210326105648.2492411-3-tobias@waldekranz.com>
+ <20210326125720.fzmqqmeotzbgt4kd@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210326125720.fzmqqmeotzbgt4kd@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-03-31 at 15:10 +0200, Norman Maurer wrote:
-> As this missing change was most likely an oversight in the original
-> commit I do think it should go into 5.12 and subsequently stable as
-> well. That’s also the reason why I didn’t send a v2 and changed the
-> commit message / subject for the patch. For me it clearly is a bug
-> and not a new feature.
+On Fri, Mar 26, 2021 at 02:57:20PM +0200, Vladimir Oltean wrote:
+> Hi Tobias,
+> 
+> On Fri, Mar 26, 2021 at 11:56:47AM +0100, Tobias Waldekranz wrote:
+> >  	} else {
+> > -		dst->tag_ops = dsa_tag_driver_get(tag_protocol);
+> > -		if (IS_ERR(dst->tag_ops)) {
+> > -			if (PTR_ERR(dst->tag_ops) == -ENOPROTOOPT)
+> > -				return -EPROBE_DEFER;
+> > -			dev_warn(ds->dev, "No tagger for this switch\n");
+> > -			dp->master = NULL;
+> > -			return PTR_ERR(dst->tag_ops);
+> > -		}
+> > +		dst->tag_ops = tag_ops;
+> >  	}
+> 
+> This will conflict with George's bug fix for 'net', am I right?
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210322202650.45776-1-george.mccollister@gmail.com/
+> 
+> Would you mind resending after David merges 'net' into 'net-next'?
+> 
+> This process usually looks like commit d489ded1a369 ("Merge
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net"). However,
+> during this kernel development cycle, I have seen no merge of 'net' into
+> 'net-next' since commit 05a59d79793d ("Merge
+> git://git.kernel.org:/pub/scm/linux/kernel/git/netdev/net"), but that
+> comes directly from Linus Torvalds' v5.12-rc2.
+> 
+> Nonetheless, at some point (and sooner rather than later, I think),
+> David or Jakub should merge the two trees. I would prefer to do it this
+> way because the merge is going to be a bit messy otherwise, and I might
+> want to cherry-pick these patches to some trees and it would be nice if
+> the history was linear.
+> 
+> Thanks!
 
-I have no strong opinion against that (sorry, I hoped that was clear in
-my reply).
-
-Please go ahead.
-
-Thanks,
-
-Paolo
-
+Tobias, I think you can safely resend now, I see George's change is in
+net-next:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/dsa/dsa2.c#n1084
