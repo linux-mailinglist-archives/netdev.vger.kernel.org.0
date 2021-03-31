@@ -2,119 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 318563501CA
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 16:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BAAE3501DA
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 16:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235892AbhCaN7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 09:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
+        id S235939AbhCaOEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 10:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235777AbhCaN7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:59:19 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6267C06175F
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:59:18 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id u21so30181633ejo.13
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:59:18 -0700 (PDT)
+        with ESMTP id S235948AbhCaOE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 10:04:26 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0665C061574
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 07:04:25 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id y1so23950474ljm.10
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 07:04:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ghwcCn9upZo2ScDVOGrOotVx0dDg7jQeJeG/I9cIPPU=;
-        b=vav4qwDMP7i6EjFBmJn6551WnKNbAVSoVqU8Z6vejfTYXV3iFII7fDe2WExeA2RqIE
-         bM0wcMOanXWeLSY/nP0Do802ZmKO/aUAHizmV0KSHY/TC35KvM6J529BYc3Ka5q5oIg2
-         JJ0Dx8PRWRPm1KNIxfQvbITACKqd/Y6JEK49c8tWJIE6tfF6boqcbVW+HWfls+Lp2Z00
-         aA0h6jX4e2O1hDWbFzomMcDWmFxBBdpbnH2EeFhj9grLKotics7yHAfigpEwqxdlab+7
-         C4ZcVQgjB7QD4+1MiKiGV0biSoNHR8mHUKfo3B1T5f9CG3TCZCgCB/Lgn/JHdfWgO5xa
-         Zowg==
+        bh=7WkKKW/QkEs9/kkL1SzWso2zmgtPiw9JFTK148I7Nb4=;
+        b=niP6gSWqtgY8fqKdzU9VHeMUI4+Y+aJZqdJSpI7MrXBBXbr/yaOMsYQfYPtRMHvRbr
+         HFVoWRpG01gTfsI1lXIUDCA6ip2c2A8W/taxgcGCoJ7VmKM/TJYvM9p4JFAmOjKjWed/
+         qYpl40v1nu9CC9vOjChykYcdyjD5HQw6VVb3w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ghwcCn9upZo2ScDVOGrOotVx0dDg7jQeJeG/I9cIPPU=;
-        b=htbt9I5Vtsr0HcPLeRVXg7JevOha4ccleijZSCQYogijjbZ9LpxHWo8zzwXLKFL/xr
-         mAnp+BvCK0++Bx7JCbCp+aPEnnn3Rv2zT/roDAL/s1jPo8/zOOJQM/KiszuP/B28qvyI
-         7wX/nX9qFoL6+erCrfJ6+/volt3QMQhyzSE63tVMVi+mHyERJVzTerVoQuuO888iWjiT
-         Mru3A/M4SKPsKQqv7gYF9m1y92Pe9d5w5JP+m8m1UK0Nh6CDZp9dhUJw1sixIZ1wYAX9
-         V5WzZvDoJPyWueJ5LmuTTSVPbsb+ip7v7zU2TUx+jjsaTwR1OBoA7BL3yzdwsRof/j2k
-         1AcQ==
-X-Gm-Message-State: AOAM533WBg0tacaZoXBv7f7KT1OMn4h6Fxe7TLxwJ+FZh6NqvUVir78X
-        UTQqR1MUTClPTIQGNVuzYHfjALxqPnDh1wTjM4gs
-X-Google-Smtp-Source: ABdhPJy1F+1dndmaWxm19LJTyn2LKz2YWhIRQirh52O3KYWsmxmJWiuRe+aQHvYGuBIKQa4hIAktI/HirP2Vh0GTAVU=
-X-Received: by 2002:a17:906:86c6:: with SMTP id j6mr3559138ejy.197.1617199157271;
- Wed, 31 Mar 2021 06:59:17 -0700 (PDT)
+        bh=7WkKKW/QkEs9/kkL1SzWso2zmgtPiw9JFTK148I7Nb4=;
+        b=EX5ZYoWzCiS/7wee6fUXLJaLoa5nf8oJwbkvI+o4O+BPznDrAWx1UX24eX+HI6Juwc
+         FvH/53PNLO9a40THKA7LmFQHegc10e0Ucvmn0yvKaGDH7EtRz/VOeBclRpYi94VFmeVN
+         8dLbNUWfQ3vWnOp0CcwnNF6ztccf9cPVH0av2du6b69b4NUzACyCi1B2hA/dvT0JIpHX
+         ufGhB0lwReqi1Nwcf1kOlvGFsHzD5fT21chPWJ0Az0Tfh6gaufFzJK7hUhTinKw3NUGp
+         QeaJhnuHOjqJb9prz2xYkKn/t0mpQ+QNKaHM1lNz39JoPOmJp5G1mgJmfcl81VyAXvpS
+         PLLQ==
+X-Gm-Message-State: AOAM530azTwZX9N3XtNLt+WfVbPvFbdZAHh1eXw0PqWTF0qeEF+4E16D
+        hK/mbJYNqEmFr21EkaOmYtREH+twjcKdP2mgsP5HGw==
+X-Google-Smtp-Source: ABdhPJwGGJC46aQqg9+k+oN5WbxooZfC2RyoJrBbGmk9xp43AiM5ChwTRs/po0Pv34t6pPvRXgiXVBdqaoqxaQxZxkQ=
+X-Received: by 2002:a05:651c:118b:: with SMTP id w11mr2156382ljo.223.1617199463908;
+ Wed, 31 Mar 2021 07:04:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-2-xieyongji@bytedance.com>
- <20210331091545.lr572rwpyvrnji3w@wittgenstein> <CACycT3vRhurgcuNvEW7JKuhCQdy__5ZX=5m1AFnVKDk8UwUa7A@mail.gmail.com>
- <20210331122315.uas3n44vgxz5z5io@wittgenstein>
-In-Reply-To: <20210331122315.uas3n44vgxz5z5io@wittgenstein>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 31 Mar 2021 21:59:07 +0800
-Message-ID: <CACycT3vm_XvitXV+kXivAhrfwN6U0Nm5kZwcYhY+GrriVAKq8g@mail.gmail.com>
-Subject: Re: Re: [PATCH v6 01/10] file: Export receive_fd() to modules
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+References: <20210326160501.46234-1-lmb@cloudflare.com>
+In-Reply-To: <20210326160501.46234-1-lmb@cloudflare.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Wed, 31 Mar 2021 15:04:13 +0100
+Message-ID: <CACAyw9_FHepkTzdFkiGUFV6F8u7zaZYOeH+bUjWxcBNBNeBYBg@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 1/2] bpf: link: refuse non-O_RDWR flags in BPF_OBJ_GET
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 8:23 PM Christian Brauner
-<christian.brauner@ubuntu.com> wrote:
+On Fri, 26 Mar 2021 at 16:05, Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> On Wed, Mar 31, 2021 at 07:32:33PM +0800, Yongji Xie wrote:
-> > On Wed, Mar 31, 2021 at 5:15 PM Christian Brauner
-> > <christian.brauner@ubuntu.com> wrote:
-> > >
-> > > On Wed, Mar 31, 2021 at 04:05:10PM +0800, Xie Yongji wrote:
-> > > > Export receive_fd() so that some modules can use
-> > > > it to pass file descriptor between processes without
-> > > > missing any security stuffs.
-> > > >
-> > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > > > ---
-> > >
-> > > Yeah, as I said in the other mail I'd be comfortable with exposing just
-> > > this variant of the helper.
-> >
-> > Thanks, I got it now.
-> >
-> > > Maybe this should be a separate patch bundled together with Christoph's
-> > > patch to split parts of receive_fd() into a separate helper.
-> >
-> > Do we need to add the seccomp notifier into the separate helper? In
-> > our case, the file passed to the separate helper is from another
-> > process.
+> Invoking BPF_OBJ_GET on a pinned bpf_link checks the path access
+> permissions based on file_flags, but the returned fd ignores flags.
+> This means that any user can acquire a "read-write" fd for a pinned
+> link with mode 0664 by invoking BPF_OBJ_GET with BPF_F_RDONLY in
+> file_flags. The fd can be used to invoke BPF_LINK_DETACH, etc.
 >
-> Not sure what you mean. Christoph has proposed
-> https://lore.kernel.org/linux-fsdevel/20210325082209.1067987-2-hch@lst.de
-> I was just saying that if we think this patch is useful we might bundle
-> it together with the
-> EXPORT_SYMBOL(receive_fd)
-> part here, convert all drivers that currently open-code get_unused_fd()
-> + fd_install() to use receive_fd(), and make this a separate patchset.
->
+> Fix this by refusing non-O_RDWR flags in BPF_OBJ_GET. This works
+> because OBJ_GET by default returns a read write mapping and libbpf
+> doesn't expose a way to override this behaviour for programs
+> and links.
 
-Yes, I see. We can split the parts (get_unused_fd() + fd_install()) of
-receive_fd() into a separate helper and convert all drivers to use
-that. What I mean is that I also would like to use
-security_file_receive() in my modules. So I'm not sure if it's ok to
-add security_file_receive() into the separate helper. Or do I need to
-export security_file_receive() separately?
+Hi Alexei and Daniel,
 
-Thanks,
-Yongji
+I think these two patches might have fallen through the cracks, could
+you take a look? I'm not sure what the etiquette is around bumping a
+set, so please let me know if you'd prefer me to send the patches with
+acks included or something like that.
+
+Best
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
