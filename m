@@ -2,120 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D62FA35038D
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E428A350396
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 17:37:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235605AbhCaPgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 11:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235616AbhCaPgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 11:36:09 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A82C061574
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:36:09 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id z15so20391046oic.8
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:36:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PKb2Dw3L+9aiLFno0YG9DA0LN177DlC0BI+f8x134yU=;
-        b=pZ4JNxaGjWg46DzsfYCbMxCNoAEIlWOaCvCf21PImzq2RXYgya/wEGB6qSK5dEbT3o
-         3Y7Y4oDosT9exhuhyF9ktHEshD0bCfbnR71TAJ9YU+Z87KJrmbfnzi1feXypXb5cAFb1
-         Q3GDzSPOs2kwqR1CHe6J+9yuX+dUkFrwOe1KYGP5sWXm7cGCGueS6dHG62DL8JhwSu7X
-         wz99algf2Vw8828g3rpVZF2Uo3Swmc/cZiMIVpNz4n9WxIg6+YuWTg9xv2/r7Z23demR
-         IFuMfl5kJOKlLzTzRvADAVfrLDFzMfSbmlDRXi6U/gn7XdWB10g7LJGilzLmEWDuv314
-         rC6g==
+        id S235634AbhCaPhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 11:37:25 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:52308 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235520AbhCaPhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 11:37:23 -0400
+Received: by mail-io1-f70.google.com with SMTP id d4so1785552iop.19
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 08:37:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PKb2Dw3L+9aiLFno0YG9DA0LN177DlC0BI+f8x134yU=;
-        b=tpkpkIq9MchA3VRyOKBiaHqK8kM2hsrn4vWFGf8/tYv1wz6lksqmFD0mrd1ZZpO1y8
-         EgMY334FJY1gs814o0qnOJ1EEnt7Lbs3vUsGUGt4VSiq6+aa3RdNBT3yHRSNF9bWNSJF
-         LTAe9iQBJIC1tA3Stelg0FScUuuPreFi/UPMY9oxg50E/syKVnfW62hmDoLvqDYXhKU8
-         QQWUmEaLA/n8xERuWLA2QrSLeLq3ewfkKhQusIvnWHxs6s1+1tLu3a7yRyx4N4cTN/LY
-         5V9ATjyQKce7PPqGDUDBS9zwUH9rQKY6Qnz9E7yJpAyd4hLcB5kH6IZa2gJPS/zIHpKb
-         jDqA==
-X-Gm-Message-State: AOAM5320vRgPEvfn8m0ydobhZXCMYE2geKyY7UCHIRlehjdA8wC0JJQA
-        D0Z6j5jaVk9aFwSV/yzoXayWZTxw6gc=
-X-Google-Smtp-Source: ABdhPJyPsdJfXH9loMlzTfhgAjsqxJcRu882qfdWS/yupI+w0UvMt6ypf6bjm36hhYLiG24ZwW9lMg==
-X-Received: by 2002:aca:ed95:: with SMTP id l143mr2786764oih.110.1617204968252;
-        Wed, 31 Mar 2021 08:36:08 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.56])
-        by smtp.googlemail.com with ESMTPSA id k24sm489546oic.51.2021.03.31.08.36.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Mar 2021 08:36:07 -0700 (PDT)
-Subject: Re: [PATCH] ip-nexthop: support flush by id
-To:     Ido Schimmel <idosch@idosch.org>,
-        Chunmei Xu <xuchunmei@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org
-References: <20210331022234.52977-1-xuchunmei@linux.alibaba.com>
- <YGRi0oimvPC/FSRT@shredder.lan>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d2f565b8-f501-2abb-2067-8971ab683bd6@gmail.com>
-Date:   Wed, 31 Mar 2021 09:36:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=z8nPr3JJgPpDKpFIfZ1dGIHn+oOycU54gsgANu1iR7Y=;
+        b=QjicHN+PqPmmo/1peIJOjwMA/4xxFkQYMJJExiXrTNs0ZRY5eKWxUyFG5nWtN4C7Jo
+         vtnIlcNLhxe/Ft1xEqCPHq9IkweJ9nIj8cFv3M7eO1f5Knn78FK6LjEGrKtsVjTMDGZh
+         H2G0ZOIa+fEjjp1Ewc7DuBh9K+aSeTT7+dgFd18YgbevBmdFz2d3n5WhC3ptt+G1EBc+
+         q1qRIHQylcq+c5z+WaDtbCO8810GVOchsLVnxym619UyVPcl21AaTagqQkBiv0/mNOCr
+         4hQSIpz56/YX5EQRpTgf9M7WDzb4l3hF1hi8Wlz/HF3v++tayKMTaAqinyRjIMB+WxAV
+         RvsQ==
+X-Gm-Message-State: AOAM530C1hGDOIBQM+HcPJGk1buKOwS3JHruupYBNTg0ia7p9Pgiy6zt
+        cHJCzoHWq5OSuYszklH2pCl0ae1v55edPpMyAEg4KOj7Z6PU
+X-Google-Smtp-Source: ABdhPJzpn3gNjL7+SCcEUqLRMWQRZSARdIaxLvqqjoq1bXcdI/fd+yjXZLzdGGXK/BOgbLa86Ch6CDdzFZqQkMJqg4RYPqMG2s7l
 MIME-Version: 1.0
-In-Reply-To: <YGRi0oimvPC/FSRT@shredder.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:2f0c:: with SMTP id q12mr2795111iow.82.1617205043423;
+ Wed, 31 Mar 2021 08:37:23 -0700 (PDT)
+Date:   Wed, 31 Mar 2021 08:37:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000246d0105bed6e42d@google.com>
+Subject: [syzbot] possible deadlock in ipv6_sock_ac_close
+From:   syzbot <syzbot+c18d9ae8897308206c1d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/31/21 5:53 AM, Ido Schimmel wrote:
->> @@ -124,6 +125,9 @@ static int flush_nexthop(struct nlmsghdr *nlh, void *arg)
->>  	if (tb[NHA_ID])
->>  		id = rta_getattr_u32(tb[NHA_ID]);
->>  
->> +	if (filter.id && filter.id != id)
->> +		return 0;
->> +
->>  	if (id && !delete_nexthop(id))
->>  		filter.flushed++;
->>  
->> @@ -491,7 +495,10 @@ static int ipnh_list_flush(int argc, char **argv, int action)
->>  			NEXT_ARG();
->>  			if (get_unsigned(&id, *argv, 0))
->>  				invarg("invalid id value", *argv);
->> -			return ipnh_get_id(id);
->> +			if (action == IPNH_FLUSH)
->> +				filter.id = id;
->> +			else
->> +				return ipnh_get_id(id);
-> 
-> I think it's quite weird to ask for a dump of all nexthops only to
-> delete a specific one. How about this:
+Hello,
 
-+1
+syzbot found the following issue on:
 
-> 
-> ```
-> diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-> index 0263307c49df..09a3076231aa 100644
-> --- a/ip/ipnexthop.c
-> +++ b/ip/ipnexthop.c
-> @@ -765,8 +765,16 @@ static int ipnh_list_flush(int argc, char **argv, int action)
->                         if (!filter.master)
->                                 invarg("VRF does not exist\n", *argv);
->                 } else if (!strcmp(*argv, "id")) {
-> -                       NEXT_ARG();
-> -                       return ipnh_get_id(ipnh_parse_id(*argv));
-> +                       /* When 'id' is specified with 'flush' / 'list' we do
-> +                        * not need to perform a dump.
-> +                        */
-> +                       if (action == IPNH_LIST) {
-> +                               NEXT_ARG();
-> +                               return ipnh_get_id(ipnh_parse_id(*argv));
-> +                       } else {
-> +                               return ipnh_modify(RTM_DELNEXTHOP, 0, argc,
-> +                                                  argv);
-> +                       }
+HEAD commit:    37f368d8 lan743x: remove redundant intializations of point..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13fe28ced00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7eff0f22b8563a5f
+dashboard link: https://syzkaller.appspot.com/bug?extid=c18d9ae8897308206c1d
 
-since delete just needs the id, you could refactor ipnh_modify and
-create a ipnh_delete_id.
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c18d9ae8897308206c1d@syzkaller.appspotmail.com
+
+======================================================
+WARNING: possible circular locking dependency detected
+5.12.0-rc4-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.3/17484 is trying to acquire lock:
+ffffffff8d66d328 (rtnl_mutex){+.+.}-{3:3}, at: ipv6_sock_ac_close+0xd5/0x110 net/ipv6/anycast.c:219
+
+but task is already holding lock:
+ffff88806c808120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
+ffff88806c808120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp6_release+0x57/0x130 net/mptcp/protocol.c:3530
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (sk_lock-AF_INET6){+.+.}-{0:0}:
+       lock_sock_nested+0xca/0x120 net/core/sock.c:3071
+       lock_sock include/net/sock.h:1600 [inline]
+       do_ipv6_setsockopt.constprop.0+0x31f/0x4220 net/ipv6/ipv6_sockglue.c:418
+       ipv6_setsockopt+0xd6/0x180 net/ipv6/ipv6_sockglue.c:1003
+       __sys_setsockopt+0x2db/0x610 net/socket.c:2117
+       __do_sys_setsockopt net/socket.c:2128 [inline]
+       __se_sys_setsockopt net/socket.c:2125 [inline]
+       __x64_sys_setsockopt+0xba/0x150 net/socket.c:2125
+       do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+-> #0 (rtnl_mutex){+.+.}-{3:3}:
+       check_prev_add kernel/locking/lockdep.c:2936 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3059 [inline]
+       validate_chain kernel/locking/lockdep.c:3674 [inline]
+       __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
+       lock_acquire kernel/locking/lockdep.c:5510 [inline]
+       lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
+       __mutex_lock_common kernel/locking/mutex.c:949 [inline]
+       __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
+       ipv6_sock_ac_close+0xd5/0x110 net/ipv6/anycast.c:219
+       mptcp6_release+0xc1/0x130 net/mptcp/protocol.c:3539
+       __sock_release+0xcd/0x280 net/socket.c:599
+       sock_close+0x18/0x20 net/socket.c:1258
+       __fput+0x288/0x920 fs/file_table.c:280
+       task_work_run+0xdd/0x1a0 kernel/task_work.c:140
+       tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+       exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
+       exit_to_user_mode_prepare+0x249/0x250 kernel/entry/common.c:208
+       __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
+       syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(sk_lock-AF_INET6);
+                               lock(rtnl_mutex);
+                               lock(sk_lock-AF_INET6);
+  lock(rtnl_mutex);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor.3/17484:
+ #0: ffff888062f3a6d0 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:775 [inline]
+ #0: ffff888062f3a6d0 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:598
+ #1: ffff88806c808120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
+ #1: ffff88806c808120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp6_release+0x57/0x130 net/mptcp/protocol.c:3530
+
+stack backtrace:
+CPU: 0 PID: 17484 Comm: syz-executor.3 Not tainted 5.12.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2127
+ check_prev_add kernel/locking/lockdep.c:2936 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3059 [inline]
+ validate_chain kernel/locking/lockdep.c:3674 [inline]
+ __lock_acquire+0x2b14/0x54c0 kernel/locking/lockdep.c:4900
+ lock_acquire kernel/locking/lockdep.c:5510 [inline]
+ lock_acquire+0x1ab/0x740 kernel/locking/lockdep.c:5475
+ __mutex_lock_common kernel/locking/mutex.c:949 [inline]
+ __mutex_lock+0x139/0x1120 kernel/locking/mutex.c:1096
+ ipv6_sock_ac_close+0xd5/0x110 net/ipv6/anycast.c:219
+ mptcp6_release+0xc1/0x130 net/mptcp/protocol.c:3539
+ __sock_release+0xcd/0x280 net/socket.c:599
+ sock_close+0x18/0x20 net/socket.c:1258
+ __fput+0x288/0x920 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:140
+ tracehook_notify_resume include/linux/tracehook.h:189 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:174 [inline]
+ exit_to_user_mode_prepare+0x249/0x250 kernel/entry/common.c:208
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:290 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:301
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x41926b
+Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
+RSP: 002b:00007fffdbb1c900 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 000000000041926b
+RDX: 0000000000000000 RSI: 000000000d1327a1 RDI: 0000000000000003
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000001b32727cec
+R10: 0000000000000000 R11: 0000000000000293 R12: 000000000056c9e0
+R13: 000000000056c9e0 R14: 000000000056bf60 R15: 000000000005bd25
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
