@@ -2,140 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 670F434F526
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 01:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F5C634F538
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 02:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbhC3XoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 19:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbhC3Xns (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 19:43:48 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCD8C061574
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 16:43:48 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso273743pjh.2
-        for <netdev@vger.kernel.org>; Tue, 30 Mar 2021 16:43:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9xu9V02jfQDUUMS+pOJHv3jfVSzzAQWWHadNZ3WxTEA=;
-        b=RYE18RWxKWt9VGhUgftOsNZurCnvUHqo5fv5nnrn+0jpcQ8SWncPtty8hT7wBM6iUG
-         4RGoqc71XjqNQKRbf+NWBvZ8fEFM8aqLA4cx4iLXur8ye+SHKqIZI+SvA0MtDGLhhEqP
-         /MonkB4G6imWDXZnfx0fIXhuoaTYTMZSD5iC8QwDLd4bE/gbH9SYRrGwNbXNb9aQhW7H
-         DJMGBPNvXrg0w6THAgn7o8SssSI/kU9Gs2DX+cahVkl/9cX/V9IJoLsOzaKeAYrSXOGG
-         7IKq2SqPit/QS+KDuUGv5UNmTUAABhzle/Euzru16FsTqil/6Swo2x4gCpE7kLTBzn4s
-         CxQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9xu9V02jfQDUUMS+pOJHv3jfVSzzAQWWHadNZ3WxTEA=;
-        b=sqiU0WWLVjF58CkXxTOoxi0C/QEqRjHpuV3KcYJEtvWwXB0KHg8v3TvBQZKAKBBQsC
-         acR3i/d7eORq5ivS3SZyljY7B2AtNYzL1bjykGTOq4lCAXAIb8yNBfFJ8aEwXdKoW5PO
-         TqU+stdFGGpPhEwxErdRQRFMtBGouLKOfPZa85qFMmCfPbK4cbrje+1QuaOorVe8o9UZ
-         VF97/qWgPqBj/es9WrVBctjFpt5bUrstVUx2LFujtA/NsswPDvjbYEbjXGU0XYVM6QJY
-         hogL8vTKpqqF+tfWNKtU7UUn19/o2wpPvy/6ceOLeAOlkyHgYo80ymQLdfulegdOF/Y2
-         LYhw==
-X-Gm-Message-State: AOAM532Xgcrq+y+/BhHAaE3NJWXpj/A/LPuOcu0tjxawBiSDtAiDgCJU
-        YQx+RDxqGdQOEKs+1vEJ1rM=
-X-Google-Smtp-Source: ABdhPJybSWlDcFXYpDB5DT4NBKBLrl0nQgkpu36tcHFGv5sB6vGCvM2yQt6cLGgg3HdA34X+Yt+esA==
-X-Received: by 2002:a17:90a:5413:: with SMTP id z19mr684240pjh.137.1617147827755;
-        Tue, 30 Mar 2021 16:43:47 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7943:6407:20df:4b55])
-        by smtp.gmail.com with ESMTPSA id h7sm139382pfo.45.2021.03.30.16.43.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Mar 2021 16:43:47 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Balazs Nemeth <bnemeth@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net: ensure mac header is set in virtio_net_hdr_to_skb()
-Date:   Tue, 30 Mar 2021 16:43:43 -0700
-Message-Id: <20210330234343.3273561-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
+        id S231650AbhCaAAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 20:00:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232126AbhCaAAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 20:00:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7B9EE619C0;
+        Wed, 31 Mar 2021 00:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617148809;
+        bh=OoLnCuZVgOiP83S43AZ1sHcGPSTXyI8TrGz3qNR1n0Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=V3vXA98HoOCAUmCULDNF9/I+vSvpfCkokZtp95pKp+Nv2tHYo0eYiwRMV7jCwHfqU
+         q/XOC/5fL5+jC6zyFi4Cya1uvnC7qq0q2M2H3cP43nWn0NDotRPtygIRFzkw6cmNHZ
+         Z10JgIP/OHpmaK+BLtFg4KH18LzXIDG/iZXroXAeYthNcj8/XbkuoQSdAsbq1yXxLr
+         j1yqe5M9vXghwnTg64uRjmndBjq4NWdHNdQ1vp6x+3Dp7BAeaLt9szzSkfV9nbIGDc
+         sy6Y/JZ0bdTGb6IHl3r+hAdSliJB6DUC5jJviWyXQ0h0soN27YbbaBgc4N6gMMaDqO
+         7vVRM/Wjl6QfQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6E65860A56;
+        Wed, 31 Mar 2021 00:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] nfp: flower: ignore duplicate merge hints from FW
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161714880944.29090.1403816099790593956.git-patchwork-notify@kernel.org>
+Date:   Wed, 31 Mar 2021 00:00:09 +0000
+References: <20210330083023.32495-1-simon.horman@netronome.com>
+In-Reply-To: <20210330083023.32495-1-simon.horman@netronome.com>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, yinjun.zhang@corigine.com,
+        louis.peens@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hello:
 
-Commit 924a9bc362a5 ("net: check if protocol extracted by virtio_net_hdr_set_proto is correct")
-added a call to dev_parse_header_protocol() but mac_header is not yet set.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-This means that eth_hdr() reads complete garbage, and syzbot complained about it [1]
+On Tue, 30 Mar 2021 10:30:23 +0200 you wrote:
+> From: Yinjun Zhang <yinjun.zhang@corigine.com>
+> 
+> A merge hint message needs some time to process before the merged
+> flow actually reaches the firmware, during which we may get duplicate
+> merge hints if there're more than one packet that hit the pre-merged
+> flow. And processing duplicate merge hints will cost extra host_ctx's
+> which are a limited resource.
+> 
+> [...]
 
-This patch resets mac_header earlier, to get more coverage about this change.
+Here is the summary with links:
+  - [net] nfp: flower: ignore duplicate merge hints from FW
+    https://git.kernel.org/netdev/net/c/2ea538dbee1c
 
-Audit of virtio_net_hdr_to_skb() callers shows that this change should be safe.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-[1]
-
-BUG: KASAN: use-after-free in eth_header_parse_protocol+0xdc/0xe0 net/ethernet/eth.c:282
-Read of size 2 at addr ffff888017a6200b by task syz-executor313/8409
-
-CPU: 1 PID: 8409 Comm: syz-executor313 Not tainted 5.12.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x141/0x1d7 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:232
- __kasan_report mm/kasan/report.c:399 [inline]
- kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:416
- eth_header_parse_protocol+0xdc/0xe0 net/ethernet/eth.c:282
- dev_parse_header_protocol include/linux/netdevice.h:3177 [inline]
- virtio_net_hdr_to_skb.constprop.0+0x99d/0xcd0 include/linux/virtio_net.h:83
- packet_snd net/packet/af_packet.c:2994 [inline]
- packet_sendmsg+0x2325/0x52b0 net/packet/af_packet.c:3031
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- sock_no_sendpage+0xf3/0x130 net/core/sock.c:2860
- kernel_sendpage.part.0+0x1ab/0x350 net/socket.c:3631
- kernel_sendpage net/socket.c:3628 [inline]
- sock_sendpage+0xe5/0x140 net/socket.c:947
- pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
- splice_from_pipe_feed fs/splice.c:418 [inline]
- __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
- splice_from_pipe fs/splice.c:597 [inline]
- generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
- do_splice_from fs/splice.c:767 [inline]
- do_splice+0xb7e/0x1940 fs/splice.c:1079
- __do_splice+0x134/0x250 fs/splice.c:1144
- __do_sys_splice fs/splice.c:1350 [inline]
- __se_sys_splice fs/splice.c:1332 [inline]
- __x64_sys_splice+0x198/0x250 fs/splice.c:1332
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-
-Fixes: 924a9bc362a5 ("net: check if protocol extracted by virtio_net_hdr_set_proto is correct")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Balazs Nemeth <bnemeth@redhat.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- include/linux/virtio_net.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index 6b5fcfa1e5553576b0e853ae31a2df655c04204b..98775d7fa69632e2c2da30b581a666f7fbb94b64 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -62,6 +62,8 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 			return -EINVAL;
- 	}
- 
-+	skb_reset_mac_header(skb);
-+
- 	if (hdr->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) {
- 		u16 start = __virtio16_to_cpu(little_endian, hdr->csum_start);
- 		u16 off = __virtio16_to_cpu(little_endian, hdr->csum_offset);
--- 
-2.31.0.291.g576ba9dcdaf-goog
 
