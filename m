@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0CF3508B4
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 23:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC6E350805
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:17:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236577AbhCaURJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 16:17:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55162 "EHLO mail.kernel.org"
+        id S236566AbhCaURI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 16:17:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236469AbhCaUQj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236470AbhCaUQj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 16:16:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 51CA9610A8;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DE47D610A0;
         Wed, 31 Mar 2021 20:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617221798;
-        bh=kXz7SXIDb/+Y1M+LQ1eRsURIkrh16KQ0z1fFV1t8Qfs=;
+        s=k20201202; t=1617221799;
+        bh=Fc9P0/NhrJCRq3AaZlBF/4uS3Zt0W3xejOhimKmYYyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QkoNAEpkDrXjo6BdQ3S6Mgu3AvuMdBj6K522ev6oQqTQ4g+EzGExyzsMBa0rh+yJq
-         68ETq5i00rpe10tKW4smvfoUZrqQW2TZw14X5Yd5UcAUe8neLJkTkHaEkuWP4YkPOI
-         i2qowlKuhPZYtZ4iw1bNjyEJBaKBUXKCW00fdhgnxNNE2KjOEDZ2ljYYV8pE9NMCMv
-         tZgN+VCIcNWKSWSP5+4IapgfQoIJwHeKWdcF7wW6yniw2UqsGyopWaubnW6OTAq0Yx
-         SSjXdzLnrWsCRU92j/AWdD5PEIDq/m29qhliSxguWSLywYYuLyJHNvIG5UVgA1f/4U
-         FdYIJz9WMyS1w==
+        b=gZZ1Fwdc4LIArACGx79HznVw0dXidE4ZZYZX92PCiW4DviUN0TEby/meffQmaj/pa
+         QVATbCE31F2vrVXjh5RVcFX3YsJmUPBGmFxH14uDGvs2O1HS+9UFcoZZPeQjoFYcZk
+         bYbjX1ugwhItCG6E2Ik39/H3/OUY/8VwT2ChKyvCQ+8vc7wh2SGvp3EalLctt8x6hM
+         9xjpRcQuYDAGLCmFBs0+/NY42BWYZ44NDV1X+NPV89l245oWuhOebY//slBrC4Iuzr
+         WrgjzoXwXEEkTw5kJqhBDKGX/+UGMdD86+RnzstoOOqKS0qju2EUJJW+c+G/hn/1Wr
+         m27JgSdqkr1vw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 3/9] net/mlx5e: Fix ethtool indication of connector type
-Date:   Wed, 31 Mar 2021 13:14:18 -0700
-Message-Id: <20210331201424.331095-4-saeed@kernel.org>
+Subject: [net 4/9] net/mlx5: E-switch, Create vport miss group only if src rewrite is supported
+Date:   Wed, 31 Mar 2021 13:14:19 -0700
+Message-Id: <20210331201424.331095-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210331201424.331095-1-saeed@kernel.org>
 References: <20210331201424.331095-1-saeed@kernel.org>
@@ -42,68 +42,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-Use connector_type read from PTYS register when it's valid, based on
-corresponding capability bit.
+Create send to vport miss group was added in order to support traffic
+recirculation to root table with metadata source rewrite.
+This group is created also in case source rewrite isn't supported.
 
-Fixes: 5b4793f81745 ("net/mlx5e: Add support for reading connector type from PTYS")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+Fixed by creating send to vport miss group only if source rewrite is
+supported by FW.
+
+Fixes: 8e404fefa58b ("net/mlx5e: Match recirculated packet miss in slow table using reg_c1")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_ethtool.c  | 22 +++++++++----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 68 +++++++++++--------
+ 1 file changed, 39 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index f5f2a8fd0046..53802e18af90 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -758,11 +758,11 @@ static int get_fec_supported_advertised(struct mlx5_core_dev *dev,
- 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 8694b83968b4..d4a2f8d1ee9f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -537,6 +537,14 @@ esw_setup_vport_dests(struct mlx5_flow_destination *dest, struct mlx5_flow_act *
+ 	return i;
  }
  
--static void ptys2ethtool_supported_advertised_port(struct ethtool_link_ksettings *link_ksettings,
--						   u32 eth_proto_cap,
--						   u8 connector_type, bool ext)
-+static void ptys2ethtool_supported_advertised_port(struct mlx5_core_dev *mdev,
-+						   struct ethtool_link_ksettings *link_ksettings,
-+						   u32 eth_proto_cap, u8 connector_type)
- {
--	if ((!connector_type && !ext) || connector_type >= MLX5E_CONNECTOR_TYPE_NUMBER) {
-+	if (!MLX5_CAP_PCAM_FEATURE(mdev, ptys_connector_type)) {
- 		if (eth_proto_cap & (MLX5E_PROT_MASK(MLX5E_10GBASE_CR)
- 				   | MLX5E_PROT_MASK(MLX5E_10GBASE_SR)
- 				   | MLX5E_PROT_MASK(MLX5E_40GBASE_CR4)
-@@ -898,9 +898,9 @@ static int ptys2connector_type[MLX5E_CONNECTOR_TYPE_NUMBER] = {
- 		[MLX5E_PORT_OTHER]              = PORT_OTHER,
- 	};
++static bool
++esw_src_port_rewrite_supported(struct mlx5_eswitch *esw)
++{
++	return MLX5_CAP_GEN(esw->dev, reg_c_preserve) &&
++	       mlx5_eswitch_vport_match_metadata_enabled(esw) &&
++	       MLX5_CAP_ESW_FLOWTABLE_FDB(esw->dev, ignore_flow_level);
++}
++
+ static int
+ esw_setup_dests(struct mlx5_flow_destination *dest,
+ 		struct mlx5_flow_act *flow_act,
+@@ -550,9 +558,7 @@ esw_setup_dests(struct mlx5_flow_destination *dest,
+ 	int err = 0;
  
--static u8 get_connector_port(u32 eth_proto, u8 connector_type, bool ext)
-+static u8 get_connector_port(struct mlx5_core_dev *mdev, u32 eth_proto, u8 connector_type)
- {
--	if ((connector_type || ext) && connector_type < MLX5E_CONNECTOR_TYPE_NUMBER)
-+	if (MLX5_CAP_PCAM_FEATURE(mdev, ptys_connector_type))
- 		return ptys2connector_type[connector_type];
+ 	if (!mlx5_eswitch_termtbl_required(esw, attr, flow_act, spec) &&
+-	    MLX5_CAP_GEN(esw_attr->in_mdev, reg_c_preserve) &&
+-	    mlx5_eswitch_vport_match_metadata_enabled(esw) &&
+-	    MLX5_CAP_ESW_FLOWTABLE_FDB(esw->dev, ignore_flow_level))
++	    esw_src_port_rewrite_supported(esw))
+ 		attr->flags |= MLX5_ESW_ATTR_FLAG_SRC_REWRITE;
  
- 	if (eth_proto &
-@@ -1001,11 +1001,11 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
- 			 data_rate_oper, link_ksettings);
+ 	if (attr->dest_ft) {
+@@ -1716,36 +1722,40 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw)
+ 	}
+ 	esw->fdb_table.offloads.send_to_vport_grp = g;
  
- 	eth_proto_oper = eth_proto_oper ? eth_proto_oper : eth_proto_cap;
+-	/* meta send to vport */
+-	memset(flow_group_in, 0, inlen);
+-	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
+-		 MLX5_MATCH_MISC_PARAMETERS_2);
 -
--	link_ksettings->base.port = get_connector_port(eth_proto_oper,
--						       connector_type, ext);
--	ptys2ethtool_supported_advertised_port(link_ksettings, eth_proto_admin,
--					       connector_type, ext);
-+	connector_type = connector_type < MLX5E_CONNECTOR_TYPE_NUMBER ?
-+			 connector_type : MLX5E_PORT_UNKNOWN;
-+	link_ksettings->base.port = get_connector_port(mdev, eth_proto_oper, connector_type);
-+	ptys2ethtool_supported_advertised_port(mdev, link_ksettings, eth_proto_admin,
-+					       connector_type);
- 	get_lp_advertising(mdev, eth_proto_lp, link_ksettings);
+-	match_criteria = MLX5_ADDR_OF(create_flow_group_in, flow_group_in, match_criteria);
++	if (esw_src_port_rewrite_supported(esw)) {
++		/* meta send to vport */
++		memset(flow_group_in, 0, inlen);
++		MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
++			 MLX5_MATCH_MISC_PARAMETERS_2);
  
- 	if (an_status == MLX5_AN_COMPLETE)
+-	MLX5_SET(fte_match_param, match_criteria,
+-		 misc_parameters_2.metadata_reg_c_0, mlx5_eswitch_get_vport_metadata_mask());
+-	MLX5_SET(fte_match_param, match_criteria,
+-		 misc_parameters_2.metadata_reg_c_1, ESW_TUN_MASK);
++		match_criteria = MLX5_ADDR_OF(create_flow_group_in, flow_group_in, match_criteria);
+ 
+-	num_vfs = esw->esw_funcs.num_vfs;
+-	if (num_vfs) {
+-		MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ix);
+-		MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, ix + num_vfs - 1);
+-		ix += num_vfs;
++		MLX5_SET(fte_match_param, match_criteria,
++			 misc_parameters_2.metadata_reg_c_0,
++			 mlx5_eswitch_get_vport_metadata_mask());
++		MLX5_SET(fte_match_param, match_criteria,
++			 misc_parameters_2.metadata_reg_c_1, ESW_TUN_MASK);
+ 
+-		g = mlx5_create_flow_group(fdb, flow_group_in);
+-		if (IS_ERR(g)) {
+-			err = PTR_ERR(g);
+-			esw_warn(dev, "Failed to create send-to-vport meta flow group err(%d)\n",
+-				 err);
+-			goto send_vport_meta_err;
++		num_vfs = esw->esw_funcs.num_vfs;
++		if (num_vfs) {
++			MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, ix);
++			MLX5_SET(create_flow_group_in, flow_group_in,
++				 end_flow_index, ix + num_vfs - 1);
++			ix += num_vfs;
++
++			g = mlx5_create_flow_group(fdb, flow_group_in);
++			if (IS_ERR(g)) {
++				err = PTR_ERR(g);
++				esw_warn(dev, "Failed to create send-to-vport meta flow group err(%d)\n",
++					 err);
++				goto send_vport_meta_err;
++			}
++			esw->fdb_table.offloads.send_to_vport_meta_grp = g;
++
++			err = mlx5_eswitch_add_send_to_vport_meta_rules(esw);
++			if (err)
++				goto meta_rule_err;
+ 		}
+-		esw->fdb_table.offloads.send_to_vport_meta_grp = g;
+-
+-		err = mlx5_eswitch_add_send_to_vport_meta_rules(esw);
+-		if (err)
+-			goto meta_rule_err;
+ 	}
+ 
+ 	if (MLX5_CAP_ESW(esw->dev, merged_eswitch)) {
 -- 
 2.30.2
 
