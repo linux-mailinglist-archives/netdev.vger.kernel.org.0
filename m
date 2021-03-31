@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C67F3507D0
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4196A3507D6
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 22:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236444AbhCaUJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 16:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34628 "EHLO
+        id S236457AbhCaUJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 16:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236421AbhCaUJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 16:09:17 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64F3C061574;
-        Wed, 31 Mar 2021 13:09:16 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id r12so31929771ejr.5;
-        Wed, 31 Mar 2021 13:09:16 -0700 (PDT)
+        with ESMTP id S236426AbhCaUJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 16:09:18 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A067C061574;
+        Wed, 31 Mar 2021 13:09:18 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id j3so23682967edp.11;
+        Wed, 31 Mar 2021 13:09:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6BtFP60GJ3rBYTRbobD3G+mjNuY8Ark7ywqMvtfDSOU=;
-        b=P9ZBZDeIxAyz+PzOcLZuJWz7MmmgwwYlr0YUepH5OLhjinQaqCRq7vnJPEf4CcnDVH
-         0TZxodwv3gfzmgIwMdfuqzY7NbcGXF3dj0OHpRBDMb+x5TsMsO2Rs+3qJxSq83+Lx5op
-         ewAM5ATIpb4C+5unpvJbgPT3mAjkBJFHv0hV1w0jReaRWtVAASh5g5SNqbM4XCZHMhhC
-         /cscMW935xUVM5t9rXwOtyEyNAEyeeSvl0+cGOu9DEbHeoflphtzGdAhd61X8bVjrdeg
-         PezZLxz8UaNZnz/cPdl75Jhx8m+0MyPkG1ZdCPhEt2jEBdEGp3C9UmbEdhRCk7gMdu8G
-         1mcg==
+        bh=PDNfoQw+IpfzvKELX6GQsBs9cKWa/BPLH9uWiBL9lZ8=;
+        b=O8jRz+s7iFHpGmulSLyivZIGYA4FgojdBNqedeyFV2ymTwv7xIcQVIcxch6Ybi91px
+         873dw9JKPoqIYBIcUAY3ttDEzhHih/DoVElMAfTjPcFXX92dqMIyrFA4P3PLpmLvSvBD
+         QeWZK3uUPP7peGY9qgJ9QK1nmetvVX/Reyi8XelLp1VD1ldM50OKW7mBJDWkeVgye8HU
+         jB4fDR8VnODvn8zHwAzX1bpq5iCVAvyg9WZZfIYrItzbkmYY1RMKsUwi+SbgnNYKLDpp
+         WJaKQwcWLeKUYmHwlLz8AYCteYr4hM70d3VJqEv6e1vHtXQr1ZLoUTfBBC7n/TeFAtoI
+         wVig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6BtFP60GJ3rBYTRbobD3G+mjNuY8Ark7ywqMvtfDSOU=;
-        b=MVtSOdLRcxTPUQKFonxhKavdnWX1WKxJIupiBtKHP7/ObgCivS2fwCyaEZGw8ZUoxB
-         ryFO4/992PAUi5+tmfLMzgGYC7ADT1Fj0Z3BrX6UFu3Lg+okrKlUQqbhaR/yp6JXbmSa
-         GhjCQKYK5rmRwfrV+p/qGsniU/vgOAU8pYcijsAO1p90K7oULIf6oBsxEemOHMZv7X/7
-         psG9zfTlP8iRDMHEo+82FEPwyP9qMVRleSqMDKaLxuW+eb5eMb5F0pc06NIGa/dq5RxY
-         rRfu8BVppNQ7TEL4UHzN2sjTcr+neyR059sZf3uIq3H05bG89L3tr+dOE0VFApG3mE7H
-         acOw==
-X-Gm-Message-State: AOAM533vRWwZjlek/9IStUrHWL3NdZA6okZPJtrG98rXYG3L9GiJU9AP
-        p6Iq6RLcUwnaA9n53cydEiE=
-X-Google-Smtp-Source: ABdhPJyYoF8LPo571KICu6JTEsa4k0rFRfMyf5OhQiEU0ipa7QqT4EqiNE6h6pQdLWczlt35C1H5pA==
-X-Received: by 2002:a17:907:7745:: with SMTP id kx5mr5431657ejc.3.1617221355702;
-        Wed, 31 Mar 2021 13:09:15 -0700 (PDT)
+        bh=PDNfoQw+IpfzvKELX6GQsBs9cKWa/BPLH9uWiBL9lZ8=;
+        b=RitdD7e19SMl8pgoy0bvaZUBykIsKjT+i7PVZ5dqnc3Q9EHpia9VZpQGjqwae3t3E4
+         VI+WUNuuxtUU+ZkCpFCbESTGDBQ8B9bzR9C9eFQLIT0G9qw/Cdv6ND8t5kv+OsUHjPk8
+         XhLVn5xUllFx5mzgRUexSQMOfAMN6ivjXC9ljN4pEsXQqbAtCyl5atzVZdPMCsmwed2A
+         8bGbTGINJMwAUqsWifitkx1KTLzHquUrUCJZLo7dhWcqi7/La6VVJW4jLwkMFw4KSeLf
+         dXBA1RS2s7jx2XPjjRQDFjSfhV4THhAperv+6VbjAIWfDad9ISEXVRUVw97wWMH9FGI/
+         ZtrQ==
+X-Gm-Message-State: AOAM530bT7u/n2CT2h1soG4cD9ivyizHMYTeOCzaLHZf7kWLK7wpin6H
+        u5Z6kgfX/Q9tYl4Ao9rryMIJLTE2APw=
+X-Google-Smtp-Source: ABdhPJxwAZQi5bldl57IvYLB71XHOnUFsZQvVDBhYk1gpgSca+bsCXIcFUOd5I2JZNKlrIvf6EKzPA==
+X-Received: by 2002:aa7:dcc7:: with SMTP id w7mr5752368edu.255.1617221357052;
+        Wed, 31 Mar 2021 13:09:17 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id r19sm1691305ejr.55.2021.03.31.13.09.14
+        by smtp.gmail.com with ESMTPSA id r19sm1691305ejr.55.2021.03.31.13.09.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 13:09:15 -0700 (PDT)
+        Wed, 31 Mar 2021 13:09:16 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -65,9 +65,9 @@ Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 2/9] net: enetc: move skb creation into enetc_build_skb
-Date:   Wed, 31 Mar 2021 23:08:50 +0300
-Message-Id: <20210331200857.3274425-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/9] net: enetc: add a dedicated is_eof bit in the TX software BD
+Date:   Wed, 31 Mar 2021 23:08:51 +0300
+Message-Id: <20210331200857.3274425-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210331200857.3274425-1-olteanv@gmail.com>
 References: <20210331200857.3274425-1-olteanv@gmail.com>
@@ -79,145 +79,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-We need to build an skb from two code paths now: from the plain RX data
-path and from the XDP data path when the verdict is XDP_PASS.
+In the transmit path, if we have a scatter/gather frame, it is put into
+multiple software buffer descriptors, the last of which has the skb
+pointer populated (which is necessary for rearming the TX MSI vector and
+for collecting the two-step TX timestamp from the TX confirmation path).
 
-Create a new enetc_build_skb function which contains the essential steps
-for building an skb based on the first and last positions of buffer
-descriptors within the RX ring.
-
-We also squash the enetc_process_skb function into enetc_build_skb,
-because what that function did wasn't very meaningful on its own.
-
-The "rx_frm_cnt++" instruction has been moved around napi_gro_receive
-for cosmetic reasons, to be in the same spot as rx_byte_cnt++, which
-itself must be before napi_gro_receive, because that's when we lose
-ownership of the skb.
+At the moment, this is sufficient, but with XDP_TX, we'll need to
+service TX software buffer descriptors that don't have an skb pointer,
+however they might be final nonetheless. So add a dedicated bit for
+final software BDs that we populate and check explicitly. Also, we keep
+looking just for an skb when doing TX timestamping, because we don't
+want/need that for XDP.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c | 81 +++++++++++---------
- 1 file changed, 44 insertions(+), 37 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.c | 7 +++----
+ drivers/net/ethernet/freescale/enetc/enetc.h | 1 +
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index 362cfba7ce14..b2071b8dc316 100644
+index b2071b8dc316..37d2d142a744 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -513,13 +513,6 @@ static void enetc_get_offloads(struct enetc_bdr *rx_ring,
- #endif
- }
+@@ -157,6 +157,7 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb,
+ 	temp_bd.flags = flags;
+ 	*txbd = temp_bd;
  
--static void enetc_process_skb(struct enetc_bdr *rx_ring,
--			      struct sk_buff *skb)
--{
--	skb_record_rx_queue(skb, rx_ring->index);
--	skb->protocol = eth_type_trans(skb, rx_ring->ndev);
--}
--
- static bool enetc_page_reusable(struct page *page)
- {
- 	return (!page_is_pfmemalloc(page) && page_ref_count(page) == 1);
-@@ -627,6 +620,47 @@ static bool enetc_check_bd_errors_and_consume(struct enetc_bdr *rx_ring,
- 	return true;
- }
++	tx_ring->tx_swbd[i].is_eof = true;
+ 	tx_ring->tx_swbd[i].skb = skb;
  
-+static struct sk_buff *enetc_build_skb(struct enetc_bdr *rx_ring,
-+				       u32 bd_status, union enetc_rx_bd **rxbd,
-+				       int *i, int *cleaned_cnt)
-+{
-+	struct sk_buff *skb;
-+	u16 size;
-+
-+	size = le16_to_cpu((*rxbd)->r.buf_len);
-+	skb = enetc_map_rx_buff_to_skb(rx_ring, *i, size);
-+	if (!skb)
-+		return NULL;
-+
-+	enetc_get_offloads(rx_ring, *rxbd, skb);
-+
-+	(*cleaned_cnt)++;
-+
-+	enetc_rxbd_next(rx_ring, rxbd, i);
-+
-+	/* not last BD in frame? */
-+	while (!(bd_status & ENETC_RXBD_LSTATUS_F)) {
-+		bd_status = le32_to_cpu((*rxbd)->r.lstatus);
-+		size = ENETC_RXB_DMA_SIZE;
-+
-+		if (bd_status & ENETC_RXBD_LSTATUS_F) {
-+			dma_rmb();
-+			size = le16_to_cpu((*rxbd)->r.buf_len);
-+		}
-+
-+		enetc_add_rx_buff_to_skb(rx_ring, *i, size, skb);
-+
-+		(*cleaned_cnt)++;
-+
-+		enetc_rxbd_next(rx_ring, rxbd, i);
-+	}
-+
-+	skb_record_rx_queue(skb, rx_ring->index);
-+	skb->protocol = eth_type_trans(skb, rx_ring->ndev);
-+
-+	return skb;
-+}
-+
- #define ENETC_RXBD_BUNDLE 16 /* # of BDs to update at once */
+ 	enetc_bdr_idx_inc(tx_ring, &i);
+@@ -316,8 +317,6 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 	do_tstamp = false;
  
- static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
-@@ -643,7 +677,6 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 		union enetc_rx_bd *rxbd;
- 		struct sk_buff *skb;
- 		u32 bd_status;
--		u16 size;
+ 	while (bds_to_clean && tx_frm_cnt < ENETC_DEFAULT_TX_WORK) {
+-		bool is_eof = !!tx_swbd->skb;
+-
+ 		if (unlikely(tx_swbd->check_wb)) {
+ 			struct enetc_ndev_priv *priv = netdev_priv(ndev);
+ 			union enetc_tx_bd *txbd;
+@@ -335,7 +334,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 		if (likely(tx_swbd->dma))
+ 			enetc_unmap_tx_buff(tx_ring, tx_swbd);
  
- 		if (cleaned_cnt >= ENETC_RXBD_BUNDLE)
- 			cleaned_cnt -= enetc_refill_rx_ring(rx_ring,
-@@ -661,41 +694,15 @@ static int enetc_clean_rx_ring(struct enetc_bdr *rx_ring,
- 						      &rxbd, &i))
- 			break;
+-		if (is_eof) {
++		if (tx_swbd->skb) {
+ 			if (unlikely(do_tstamp)) {
+ 				enetc_tstamp_tx(tx_swbd->skb, tstamp);
+ 				do_tstamp = false;
+@@ -355,7 +354,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ 		}
  
--		size = le16_to_cpu(rxbd->r.buf_len);
--		skb = enetc_map_rx_buff_to_skb(rx_ring, i, size);
-+		skb = enetc_build_skb(rx_ring, bd_status, &rxbd, &i,
-+				      &cleaned_cnt);
- 		if (!skb)
- 			break;
+ 		/* BD iteration loop end */
+-		if (is_eof) {
++		if (tx_swbd->is_eof) {
+ 			tx_frm_cnt++;
+ 			/* re-arm interrupt source */
+ 			enetc_wr_reg_hot(tx_ring->idr, BIT(tx_ring->index) |
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+index 773e412b9f4e..d9e75644b89c 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+@@ -25,6 +25,7 @@ struct enetc_tx_swbd {
+ 	u8 is_dma_page:1;
+ 	u8 check_wb:1;
+ 	u8 do_tstamp:1;
++	u8 is_eof:1;
+ };
  
--		enetc_get_offloads(rx_ring, rxbd, skb);
--
--		cleaned_cnt++;
--
--		enetc_rxbd_next(rx_ring, &rxbd, &i);
--
--		/* not last BD in frame? */
--		while (!(bd_status & ENETC_RXBD_LSTATUS_F)) {
--			bd_status = le32_to_cpu(rxbd->r.lstatus);
--			size = ENETC_RXB_DMA_SIZE;
--
--			if (bd_status & ENETC_RXBD_LSTATUS_F) {
--				dma_rmb();
--				size = le16_to_cpu(rxbd->r.buf_len);
--			}
--
--			enetc_add_rx_buff_to_skb(rx_ring, i, size, skb);
--
--			cleaned_cnt++;
--
--			enetc_rxbd_next(rx_ring, &rxbd, &i);
--		}
--
- 		rx_byte_cnt += skb->len;
--
--		enetc_process_skb(rx_ring, skb);
-+		rx_frm_cnt++;
- 
- 		napi_gro_receive(napi, skb);
--
--		rx_frm_cnt++;
- 	}
- 
- 	rx_ring->next_to_clean = i;
+ #define ENETC_RX_MAXFRM_SIZE	ENETC_MAC_MAXFRM_SIZE
 -- 
 2.25.1
 
