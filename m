@@ -2,107 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A083134F8F7
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B493234F94D
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbhCaGpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 02:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S233883AbhCaGyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 02:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233825AbhCaGov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 02:44:51 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6051FC061574;
-        Tue, 30 Mar 2021 23:44:51 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id l15so20138887ybm.0;
-        Tue, 30 Mar 2021 23:44:51 -0700 (PDT)
+        with ESMTP id S233905AbhCaGyH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 02:54:07 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8938C061574;
+        Tue, 30 Mar 2021 23:54:06 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id w8so20105516ybt.3;
+        Tue, 30 Mar 2021 23:54:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=w+2t2Nye8/SWHewNQ0PONbKMAheaX+6xvIxOoDicxJY=;
-        b=EHXOecWLhM3zqNL8RZ2gQLCoKS4neY+nYRBnBU5aVMtLaCGrKBOmRkfNFzY6pDhgme
-         D5GE20FGAPqodO7fhYq0if3lVVv53iDPKpeQHnNvIDDg/cqMVF1924dxfvD5ldNG3sfo
-         wvCT2jaJpYeNsfouhTtwgjd+j5A7zT2cDDbydxcRRYESwa5azP+qH+URhJ2q5ftQ32Hs
-         QE0MEQc5p7wo51sCNxaRXh01xPSr5GuyrScaL4ZJO7NGq+HGVQN4qv9rYxupXnUOBC+I
-         A26VOI7+6gz8ebxHU2lR6P6iaBSyJMXdeHP03McYI0cKNXsB4nsBHrOis+DjhOxwRBnf
-         XYVg==
+        bh=qZ3SKuaY+ZUKX6y7erBmTFWnYGpQCsQub2RCDZGga5U=;
+        b=geyO7kmocph0iXRsk2wYAghlsnGnYkewakhWdv9RM3Ci7iHpN8Zw6pOwI/R1hw9FSC
+         A2n7E1Bxl7Y1lB+xkahWq97WJ65rOQFE9CRtMFL9Cjara8/0Ua8ZTlaXW9XHNfzJp0Fz
+         zVx8gCUxgo5LNUqgbCuBQVbyQZX0qhWTdzwGWnkvogS6LdWc+qYWhNB99qlgkFv/TjqK
+         KlstQtQWIqeNxpXBbIQGKMzY+vQkpMBX/a6yd1JHGQ04Wk1BqmflD6jW22BdjL/GGHQZ
+         HG1lt8xmcMDQ4cbj8VWUfP7mihACHQEbyrhqcSshq010XudPKtqfYBEfvAAK3TEfXu6r
+         L1hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=w+2t2Nye8/SWHewNQ0PONbKMAheaX+6xvIxOoDicxJY=;
-        b=nOo1HpgiK8+oJZ29IOW/G+z2r5LIG0cP++GaH18kdOx4C8wDtPbnfVKgrwTTaQkZu3
-         XzqDakPpPGMZY5DblTp2YS6Ame3tdY2NBQ/OO27tOwKmNim9KslVf3wGvJAELN8jgtqk
-         Se21el3VO8+l9F+lYpBGDKSBYK/U7xOBPQX0lGNLQkkpDbsC1GByH5iIzILmLoS+b/O3
-         KcM3KOWVEvFI7mc7PFQK+Rc2LMEJ7kZ1Jid3lErI9k3LwuwOyhnzYAao0BJiUToAJAjj
-         DCAHvCiwh/kn6S18oyIekOQlfl3QN1m9E00oeNYuZGi+jwV07nHbvfA4DBx6/JPPHdiZ
-         ZV5Q==
-X-Gm-Message-State: AOAM532RpoBJPey2LA/oEB6oYknCiEXGABhrnQwJhj538X3HhOWi+yAm
-        BhC+M54xAMiLYXUR09UcGTVMNzt/Od2PM+hqohXg5/Iy
-X-Google-Smtp-Source: ABdhPJxyC4hA4TMwpBV8p1/kjAVmemLM/MkqRLq3JXI8X6+5r5LdMAlXHyTNQVre9evpuf/ZDMvr2TGRbyFQIao/4DQ=
-X-Received: by 2002:a25:becd:: with SMTP id k13mr2548836ybm.459.1617173090668;
- Tue, 30 Mar 2021 23:44:50 -0700 (PDT)
+        bh=qZ3SKuaY+ZUKX6y7erBmTFWnYGpQCsQub2RCDZGga5U=;
+        b=Ov3V/4Uwh38iletyGf/uiChw5m3BHbXJBSMT37fScsVvlT8hlfzj2zuYiGWhXDbNLs
+         UMrmWzVyKD6NeTmYgkF9UEIGWTOW5NaxOUeGRqejcp7FEBBt33dazMgwA0tuAK39KD2e
+         GIHTG1szXyEW6ZKQ0itBIOF2aUmCbI3TUwGjAy8j9YpGnQBjjSjHZ2U6XI18aVxhUe4R
+         2x2oNTtQWJN3pxgwBMSzak7AlNZrARITGrd+sQoKdVE4tYJ4dDL9M7s7rjCshISOa12/
+         wXVzhISyho0tVHaGyXbQIvIwZ9GyanKiUFsoDN9SQIsRulCBWGvRB2oAeTxtFUR7XGUi
+         BXzw==
+X-Gm-Message-State: AOAM532SKJr/rwODvt9zeuqjlIhvkDthF2d/fhj/aA3deXtyG3vAQgxZ
+        hM+82zffFg2+eEBTsZwkEs3GvMAxte6RsMuVr7gkZSxT
+X-Google-Smtp-Source: ABdhPJzr4pOWU/8+Mpx1X7D++8c9QS82eHyWmaso7p+feT0R8sgxxeQ0IHuWjnYRWYUhecHpBGMjQ+3JeAEhKFd18dU=
+X-Received: by 2002:a25:6d83:: with SMTP id i125mr2629842ybc.27.1617173646186;
+ Tue, 30 Mar 2021 23:54:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210325015124.1543397-1-kafai@fb.com> <CAM_iQpWGn000YOmF2x6Cm0FqCOSq0yUjc_+Up+Ek3r6NrBW3mw@mail.gmail.com>
- <CAADnVQKAXsEzsEkxhUG=79V+gAJbv=-Wuh_oJngjs54g1xGW7Q@mail.gmail.com>
- <CAM_iQpU7y+YE9wbqFZK30o4A+Gmm9jMLgqPqOw6SCDP8mHibTQ@mail.gmail.com>
- <CAADnVQJoeEqZK8eWfCi-BkHY4rSzaPuXYVEFvR75Ecdbt+oGgA@mail.gmail.com>
- <CAM_iQpUTFs_60vkS6LTRr5VBt8yTHiSgaHoKrtt4GGDe4tCcew@mail.gmail.com>
- <20210329012437.somtubekt2dqzz3x@kafai-mbp.dhcp.thefacebook.com>
- <CACAyw99gXvpnCwkz4vniABV5OQ29BE2K2iJY0tB898Fd9_8h6Q@mail.gmail.com> <20210329190851.2vy4yfrbfgiypxuz@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210329190851.2vy4yfrbfgiypxuz@kafai-mbp.dhcp.thefacebook.com>
+References: <20210328161055.257504-1-pctammela@mojatatu.com>
+In-Reply-To: <20210328161055.257504-1-pctammela@mojatatu.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Mar 2021 23:44:39 -0700
-Message-ID: <CAEf4BzY+6TspHiTH5Y7w5itCeHv9qe4Hg8sB-yBJK6kYXYoonA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 00/14] bpf: Support calling kernel function
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Date:   Tue, 30 Mar 2021 23:53:55 -0700
+Message-ID: <CAEf4BzZ+O3x9AksV6MGuicDQO+gObFCQQR7t6UK=RBhuSbOiZg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: add 'BPF_RB_MAY_WAKEUP' flag
+To:     Pedro Tammela <pctammela@gmail.com>
+Cc:     Pedro Tammela <pctammela@mojatatu.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Joe Stringer <joe@cilium.io>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Sun, Mar 28, 2021 at 9:11 AM Pedro Tammela <pctammela@gmail.com> wrote:
 >
-> On Mon, Mar 29, 2021 at 05:06:26PM +0100, Lorenz Bauer wrote:
-> > On Mon, 29 Mar 2021 at 02:25, Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > > > >
-> > > > > > # pahole --version
-> > > > > > v1.17
-> > > > >
-> > > > > That is the most likely reason.
-> > > > > In lib/Kconfig.debug
-> > > > > we have pahole >= 1.19 requirement for BTF in modules.
-> > > > > Though your config has CUBIC=y I suspect something odd goes on.
-> > > > > Could you please try the latest pahole 1.20 ?
-> > > >
-> > > > Sure, I will give it a try tomorrow, I am not in control of the CI I ran.
-> > > Could you also check the CONFIG_DYNAMIC_FTRACE and also try 'y' if it
-> > > is not set?
-> >
-> > I hit the same problem on newer pahole:
-> >
-> > $ pahole --version
-> > v1.20
-> >
-> > CONFIG_DYNAMIC_FTRACE=y resolves the issue.
-> Thanks for checking.
+> The current way to provide a no-op flag to 'bpf_ringbuf_submit()',
+> 'bpf_ringbuf_discard()' and 'bpf_ringbuf_output()' is to provide a '0'
+> value.
 >
-> pahole only generates the btf_id for external function
-> and ftrace-able function.  Some functions in the bpf_tcp_ca_kfunc_ids list
-> are static (e.g. cubictcp_init), so it fails during resolve_btfids.
+> A '0' value might notify the consumer if it already caught up in processing,
+> so let's provide a more descriptive notation for this value.
 >
-> I will post a patch to limit the bpf_tcp_ca_kfunc_ids list
-> to CONFIG_DYNAMIC_FTRACE.  I will address the pahole
-> generation in a followup and then remove this
-> CONFIG_DYNAMIC_FTRACE limitation.
+> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> ---
 
-We should still probably add CONFIG_DYNAMIC_FTRACE=y to selftests/bpf/config?
+flags == 0 means "no extra modifiers of behavior". That's default
+adaptive notification. If you want to adjust default behavior, only
+then you specify non-zero flags. I don't think anyone will bother
+typing BPF_RB_MAY_WAKEUP for this, nor I think it's really needed. The
+documentation update is nice (if no flags are specified notification
+will be sent if needed), but the new "pseudo-flag" seems like an
+overkill to me.
+
+>  include/uapi/linux/bpf.h                               | 8 ++++++++
+>  tools/include/uapi/linux/bpf.h                         | 8 ++++++++
+>  tools/testing/selftests/bpf/progs/ima.c                | 2 +-
+>  tools/testing/selftests/bpf/progs/ringbuf_bench.c      | 2 +-
+>  tools/testing/selftests/bpf/progs/test_ringbuf.c       | 2 +-
+>  tools/testing/selftests/bpf/progs/test_ringbuf_multi.c | 2 +-
+>  6 files changed, 20 insertions(+), 4 deletions(-)
+>
+
+[...]
