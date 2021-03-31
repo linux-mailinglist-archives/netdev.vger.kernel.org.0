@@ -2,112 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCFE3500FD
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:10:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E4C83500FF
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 15:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235454AbhCaNK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 09:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235219AbhCaNKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:10:06 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF02C061574;
-        Wed, 31 Mar 2021 06:10:05 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id w3so30020598ejc.4;
-        Wed, 31 Mar 2021 06:10:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:content-transfer-encoding:mime-version:subject:date:references
-         :to:in-reply-to:message-id;
-        bh=NK4vUHta/woqJAuJAeHWHekKytBeMpGPEWYPmmzlnLM=;
-        b=MKxrilH2QI84hoQaekvmb/yVWVOy4ktRSVpOfhG9jllSIWd/5Xed45+KHUI9vaNff0
-         Zf5yDjPLg+XZ9bY0r73RV5DYPBadM3UeVTkKjQSXJ5RhPE2b7qjF4e4En6pTUNeEKidF
-         ojOiVs6JyB8YjMlcUl+DqoIHgW+FDFrnzWn2BkGEAxXhrkOG3Ru9kgzAwkyNkJTPqfJj
-         iGjLR9d38sK4OJnqwHGKQmzasLqCMJ1AWjvwoKaCtXZda38DbBgoL4EaWRa7nLNbKR0u
-         61uesxeQXhBRjSGj2dILFxQc7yqE7+8e230oubmQzremIHcUJe1WCJyl99y++N68Begf
-         lJug==
+        id S235770AbhCaNKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 09:10:32 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36854 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235754AbhCaNKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 09:10:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617196220;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zJ1v/ByVz0LVci4ZFy2wRr2g5wKarpHLC+9VqsIXhEI=;
+        b=TpFYf0hY0VP/lNtAdWZ38nuf4eruW2SYIEWGb68iZ7wMX0Gljv3bh0lWergeZN0GirLxOs
+        C6EY4ZGNgAxFfpaKhI60pD8F7zbhrFZ7KdBMO5HZh/ehLQilvTCvWrjiKZYJwHxY2tnG/1
+        84zrUMGld58IoCexAYwAUakWIT4mp3g=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-530-X46pb9X9OdmxlcrL57QOBA-1; Wed, 31 Mar 2021 09:10:18 -0400
+X-MC-Unique: X46pb9X9OdmxlcrL57QOBA-1
+Received: by mail-ej1-f72.google.com with SMTP id fy8so758789ejb.19
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 06:10:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:content-transfer-encoding:mime-version
-         :subject:date:references:to:in-reply-to:message-id;
-        bh=NK4vUHta/woqJAuJAeHWHekKytBeMpGPEWYPmmzlnLM=;
-        b=qql0uSiuLlG2bkKFkTiCWTLjhDYzE+rzqf8kZlRVtOugc4R5rArff4ap11akpXrrCm
-         5yKl+vQUHYhLx+Tu7wMXVwd+laYeO2M+TUs4OwM3U4wFbqlMGXl100Udgy5+1nr7Bhf3
-         g1XJHh+DpG5tcOAXJrxZSCcs/dpHP/o26SMyDvvJ9q2eQ4/lyLWO3RPmt/jf0nz9j0c6
-         32NkzY1k/W+RXKyT4aQW7i74w1J9NO66beKEdUDtDAuLBo3tMUBnDf9vZBKqcPK5K5rg
-         1lT4VzgxrJjkWT5I+X7+zDMOldp6Y7+Fel8Srj0U9EdjubmWBBUy7Xb/MZYvvLnyS0Zd
-         7asg==
-X-Gm-Message-State: AOAM5331Pigg9MAwhCqi2gjNlna/57ax3yOd0TpdMftUtJaqVX2+8rC2
-        NPVIwrkqKicgMJpxhJjeTSg=
-X-Google-Smtp-Source: ABdhPJzEdySfRZdS8SPzH5NG64YArEhPYkWmMZY0hKz8okszlIVGXInzcsAyIPq7l+zj5tiLp+jS2g==
-X-Received: by 2002:a17:906:c45a:: with SMTP id ck26mr3366433ejb.125.1617196204316;
-        Wed, 31 Mar 2021 06:10:04 -0700 (PDT)
-Received: from ?IPv6:2a02:908:2612:d580:b423:5e79:2bd2:4a95? ([2a02:908:2612:d580:b423:5e79:2bd2:4a95])
-        by smtp.googlemail.com with ESMTPSA id x1sm1200207eji.8.2021.03.31.06.10.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 31 Mar 2021 06:10:03 -0700 (PDT)
-From:   Norman Maurer <norman.maurer@googlemail.com>
-Content-Type: text/plain;
-        charset=utf-8
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=zJ1v/ByVz0LVci4ZFy2wRr2g5wKarpHLC+9VqsIXhEI=;
+        b=J4PVaiMIwQN02sEVckk7PXjZcHTN5QGAvVm0429WzQmRml93GhxKczqfEy0qJHrx1l
+         1GBeKnc3mf8TfaTvf7lWK2GH6D5okstc3ZC4xds59Wd11Ilfal7vtsPIwUzgiU2+wRsa
+         YbMklLiohg951jbDcmmBFpEWwUZx0x27NIkmYsM0yiwfOgwlm8IWZOCUYoymT6tGWR4y
+         tZ67tYdNzdJHKv6IyA+o3mEfLCjfKJO6UMIL/gwUPya0O6maZMPt1RjAS12dKSt6eRVW
+         0HzoOc8ICd3ij5WLY+esbpSirBH6qSv1lt6S+TLIIOWvG2mwU7VSZC9lCW4ouunMGaG2
+         EFhg==
+X-Gm-Message-State: AOAM532XwFYjMzQElOWVoD2AQIxQH5MknvTg6QRFZ3gN5pwjwH/Cxk9R
+        IR3sntYR4O2BNrhzwLkjgHBI7C6ZXqqe9S4eCe3IrCIBNZym8vVx+9vYhNY06EczrxBgpmENYZR
+        HdY3i3RYEJwaPmxWn
+X-Received: by 2002:a17:907:7014:: with SMTP id wr20mr3429173ejb.179.1617196216995;
+        Wed, 31 Mar 2021 06:10:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxz44gLfORHkiMvrYcdGjX+JWgs3nM3kvEs0NV1oSesnPwMj1FMJD9FAf+k5cktLYImXhxLIA==
+X-Received: by 2002:a17:907:7014:: with SMTP id wr20mr3429118ejb.179.1617196216561;
+        Wed, 31 Mar 2021 06:10:16 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id s13sm1621718edr.86.2021.03.31.06.10.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 06:10:15 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2A8A51801A8; Wed, 31 Mar 2021 15:10:14 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, andrii@kernel.org
+Cc:     bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        ciara.loftus@intel.com, john.fastabend@gmail.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: Re: [PATCH v5 bpf-next 06/17] libbpf: xsk: use bpf_link
+In-Reply-To: <20210329224316.17793-7-maciej.fijalkowski@intel.com>
+References: <20210329224316.17793-1-maciej.fijalkowski@intel.com>
+ <20210329224316.17793-7-maciej.fijalkowski@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 31 Mar 2021 15:10:14 +0200
+Message-ID: <87o8ezpiyx.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH] udp: Add support for getsockopt(..., ..., UDP_GRO, ...,
- ...)
-Date:   Wed, 31 Mar 2021 15:10:01 +0200
-References: <20210325195614.800687-1-norman_maurer@apple.com>
- <8eadc07055ac1c99bbc55ea10c7b98acc36dde55.camel@redhat.com>
- <CF78DCAD-6F2C-46C4-9FF1-61DF66183C76@apple.com>
- <2e667826f183fbef101a62f0ad8ccb4ed253cb75.camel@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dsahern@kernel.org,
-        davem@davemloft.net
-In-Reply-To: <2e667826f183fbef101a62f0ad8ccb4ed253cb75.camel@redhat.com>
-Message-Id: <71BBD1B0-FA0A-493D-A1D2-40E7304B0A35@googlemail.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Friendly ping=E2=80=A6=20
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
 
-As this missing change was most likely an oversight in the original =
-commit I do think it should go into 5.12 and subsequently stable as =
-well. That=E2=80=99s also the reason why I didn=E2=80=99t send a v2 and =
-changed the commit message / subject for the patch. For me it clearly is =
-a bug and not a new feature.
+> Currently, if there are multiple xdpsock instances running on a single
+> interface and in case one of the instances is terminated, the rest of
+> them are left in an inoperable state due to the fact of unloaded XDP
+> prog from interface.
+>
+> Consider the scenario below:
+>
+> // load xdp prog and xskmap and add entry to xskmap at idx 10
+> $ sudo ./xdpsock -i ens801f0 -t -q 10
+>
+> // add entry to xskmap at idx 11
+> $ sudo ./xdpsock -i ens801f0 -t -q 11
+>
+> terminate one of the processes and another one is unable to work due to
+> the fact that the XDP prog was unloaded from interface.
+>
+> To address that, step away from setting bpf prog in favour of bpf_link.
+> This means that refcounting of BPF resources will be done automatically
+> by bpf_link itself.
+>
+> Provide backward compatibility by checking if underlying system is
+> bpf_link capable. Do this by looking up/creating bpf_link on loopback
+> device. If it failed in any way, stick with netlink-based XDP prog.
+> therwise, use bpf_link-based logic.
+>
+> When setting up BPF resources during xsk socket creation, check whether
+> bpf_link for a given ifindex already exists via set of calls to
+> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
+> and comparing the ifindexes from bpf_link and xsk socket.
+>
+> For case where resources exist but they are not AF_XDP related, bail out
+> and ask user to remove existing prog and then retry.
+>
+> Lastly, do a bit of refactoring within __xsk_setup_xdp_prog and pull out
+> existing code branches based on prog_id value onto separate functions
+> that are responsible for resource initialization if prog_id was 0 and
+> for lookup existing resources for non-zero prog_id as that implies that
+> XDP program is present on the underlying net device. This in turn makes
+> it easier to follow, especially the teardown part of both branches.
+>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-
-Thanks
-Norman
-
-
-> On 26. Mar 2021, at 13:22, Paolo Abeni <pabeni@redhat.com> wrote:
->=20
-> On Fri, 2021-03-26 at 11:22 +0100, Norman Maurer wrote:
->> On 26. Mar 2021, at 10:36, Paolo Abeni <pabeni@redhat.com> wrote:
->>> One thing you can do to simplifies the maintainer's life, would be =
-post
->>> a v2 with the correct tag (and ev. obsolete this patch in =
-patchwork).
->>=20
->> I am quite new to contribute patches to the kernel so I am not sure
->> how I would =E2=80=9Cobsolete=E2=80=9D this patch and make a v2. If =
-you can give me
->> some pointers I am happy to do so.
->=20
-> Well, I actually gave you a bad advice about fiddling with patchwork.
->=20
-> The autoritative documentation:
->=20
-> Documentation/networking/netdev-FAQ.rst
->=20
-> (inside the kernel tree) suggests to avoid it.
->=20
-> Just posting a v2 will suffice.
->=20
-> Thanks!
->=20
-> Paolo
->=20
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
