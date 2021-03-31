@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B493234F94D
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14A4834F95C
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 08:59:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233883AbhCaGyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 02:54:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59910 "EHLO
+        id S233861AbhCaG6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 02:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbhCaGyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 02:54:07 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8938C061574;
-        Tue, 30 Mar 2021 23:54:06 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id w8so20105516ybt.3;
-        Tue, 30 Mar 2021 23:54:06 -0700 (PDT)
+        with ESMTP id S233822AbhCaG62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 02:58:28 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B18C061574;
+        Tue, 30 Mar 2021 23:58:27 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id j2so20089906ybj.8;
+        Tue, 30 Mar 2021 23:58:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qZ3SKuaY+ZUKX6y7erBmTFWnYGpQCsQub2RCDZGga5U=;
-        b=geyO7kmocph0iXRsk2wYAghlsnGnYkewakhWdv9RM3Ci7iHpN8Zw6pOwI/R1hw9FSC
-         A2n7E1Bxl7Y1lB+xkahWq97WJ65rOQFE9CRtMFL9Cjara8/0Ua8ZTlaXW9XHNfzJp0Fz
-         zVx8gCUxgo5LNUqgbCuBQVbyQZX0qhWTdzwGWnkvogS6LdWc+qYWhNB99qlgkFv/TjqK
-         KlstQtQWIqeNxpXBbIQGKMzY+vQkpMBX/a6yd1JHGQ04Wk1BqmflD6jW22BdjL/GGHQZ
-         HG1lt8xmcMDQ4cbj8VWUfP7mihACHQEbyrhqcSshq010XudPKtqfYBEfvAAK3TEfXu6r
-         L1hw==
+        bh=d0Y8mGGB6DjgCAiNywpkqHwFV0rhGv7lRh5z1AofPlM=;
+        b=DZfh0/Vc6AvS2La89J/pGyAwN9RUfDiFcbBLsX+LwpzlSjryriFnOUnprkIlIoGnhb
+         B8pWfg4TD6jkReyHOylJtlGuHChpqtlYxD4t4sUvd5o8CdTki/FYasBH77vUlW2XEe9N
+         IX2V4vx8MykZTOub6BLyIp5ZRmtfxoQtX1Av1CmSegYTRDpP0do81E10QelywKH6jOMf
+         ZBAB59PVjITCLy9XB4Y5DdgzPz6C0UHI1lfyFEWR0paR5M4DIJ/XbaDdK6/cmI9AfgO3
+         zC2YwKcUL/vY0icGJa/fdj524hoiL2clq0TfuU5OdBT3oE1Lj7UCN/TQiqBy9RUSEDEH
+         W5gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qZ3SKuaY+ZUKX6y7erBmTFWnYGpQCsQub2RCDZGga5U=;
-        b=Ov3V/4Uwh38iletyGf/uiChw5m3BHbXJBSMT37fScsVvlT8hlfzj2zuYiGWhXDbNLs
-         UMrmWzVyKD6NeTmYgkF9UEIGWTOW5NaxOUeGRqejcp7FEBBt33dazMgwA0tuAK39KD2e
-         GIHTG1szXyEW6ZKQ0itBIOF2aUmCbI3TUwGjAy8j9YpGnQBjjSjHZ2U6XI18aVxhUe4R
-         2x2oNTtQWJN3pxgwBMSzak7AlNZrARITGrd+sQoKdVE4tYJ4dDL9M7s7rjCshISOa12/
-         wXVzhISyho0tVHaGyXbQIvIwZ9GyanKiUFsoDN9SQIsRulCBWGvRB2oAeTxtFUR7XGUi
-         BXzw==
-X-Gm-Message-State: AOAM532SKJr/rwODvt9zeuqjlIhvkDthF2d/fhj/aA3deXtyG3vAQgxZ
-        hM+82zffFg2+eEBTsZwkEs3GvMAxte6RsMuVr7gkZSxT
-X-Google-Smtp-Source: ABdhPJzr4pOWU/8+Mpx1X7D++8c9QS82eHyWmaso7p+feT0R8sgxxeQ0IHuWjnYRWYUhecHpBGMjQ+3JeAEhKFd18dU=
-X-Received: by 2002:a25:6d83:: with SMTP id i125mr2629842ybc.27.1617173646186;
- Tue, 30 Mar 2021 23:54:06 -0700 (PDT)
+        bh=d0Y8mGGB6DjgCAiNywpkqHwFV0rhGv7lRh5z1AofPlM=;
+        b=UxScSvt5uLJaCMPs9Or8DQdr+Ml6oROpI1fAKDDlxMAvYY91IuJfZRKBQS3SqjUV44
+         I2dtMQyvcu5eC0+JJh/WixYA738IyqDHg3h7Ow9CDq1fIReRJr+kBpYea/ICFOB5Ns2z
+         kc/sBDFi4FH/Kx+Pr7GGl8pfjUm8H0q+5301mwhm+HydJzPhbc7viMBQxAy40iYYJX5e
+         5Yx8G3/o82dsrUHj8rlY1HbVfniah0+UjutsWzkMzog21eiYmgws2idXq8kKEEU6Xyfv
+         ldm+sVCGIUAWQxpoBPevcr5uDJdC4o/+GegeTAoxkRjXsWtBVgych5VDv36hdEEf+m4Q
+         u75A==
+X-Gm-Message-State: AOAM530nIkTExNzzTsVQ22gFcs1wxfh5QWhNgnUeG9p2Zl1ZvHJnEjRl
+        2D0nUZ4g+iHaEWDa/34IEhV73b/m0XNNYaE6lUM=
+X-Google-Smtp-Source: ABdhPJzYeA5Fhdxsa9swwh7FR5tI7eMDAx+d8sb8A8qUVlYtVDdyVbvKw2rZ/Zv4ZY35tkq+EcRTUOlGm49kIPGYOeU=
+X-Received: by 2002:a25:becd:: with SMTP id k13mr2603933ybm.459.1617173907341;
+ Tue, 30 Mar 2021 23:58:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210328161055.257504-1-pctammela@mojatatu.com>
-In-Reply-To: <20210328161055.257504-1-pctammela@mojatatu.com>
+References: <20210328161055.257504-1-pctammela@mojatatu.com> <20210328161055.257504-2-pctammela@mojatatu.com>
+In-Reply-To: <20210328161055.257504-2-pctammela@mojatatu.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 30 Mar 2021 23:53:55 -0700
-Message-ID: <CAEf4BzZ+O3x9AksV6MGuicDQO+gObFCQQR7t6UK=RBhuSbOiZg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: add 'BPF_RB_MAY_WAKEUP' flag
+Date:   Tue, 30 Mar 2021 23:58:16 -0700
+Message-ID: <CAEf4BzZ5hZ+ca-S3cBWmkEtsB4nvQhzR5EA5+Q6En0m+N8um4w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: check flags in 'bpf_ringbuf_discard()' and 'bpf_ringbuf_submit()'
 To:     Pedro Tammela <pctammela@gmail.com>
 Cc:     Pedro Tammela <pctammela@mojatatu.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -71,33 +71,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 28, 2021 at 9:11 AM Pedro Tammela <pctammela@gmail.com> wrote:
+On Sun, Mar 28, 2021 at 9:12 AM Pedro Tammela <pctammela@gmail.com> wrote:
 >
-> The current way to provide a no-op flag to 'bpf_ringbuf_submit()',
-> 'bpf_ringbuf_discard()' and 'bpf_ringbuf_output()' is to provide a '0'
-> value.
->
-> A '0' value might notify the consumer if it already caught up in processing,
-> so let's provide a more descriptive notation for this value.
+> The current code only checks flags in 'bpf_ringbuf_output()'.
 >
 > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 > ---
-
-flags == 0 means "no extra modifiers of behavior". That's default
-adaptive notification. If you want to adjust default behavior, only
-then you specify non-zero flags. I don't think anyone will bother
-typing BPF_RB_MAY_WAKEUP for this, nor I think it's really needed. The
-documentation update is nice (if no flags are specified notification
-will be sent if needed), but the new "pseudo-flag" seems like an
-overkill to me.
-
->  include/uapi/linux/bpf.h                               | 8 ++++++++
->  tools/include/uapi/linux/bpf.h                         | 8 ++++++++
->  tools/testing/selftests/bpf/progs/ima.c                | 2 +-
->  tools/testing/selftests/bpf/progs/ringbuf_bench.c      | 2 +-
->  tools/testing/selftests/bpf/progs/test_ringbuf.c       | 2 +-
->  tools/testing/selftests/bpf/progs/test_ringbuf_multi.c | 2 +-
->  6 files changed, 20 insertions(+), 4 deletions(-)
+>  include/uapi/linux/bpf.h       |  8 ++++----
+>  kernel/bpf/ringbuf.c           | 13 +++++++++++--
+>  tools/include/uapi/linux/bpf.h |  8 ++++----
+>  3 files changed, 19 insertions(+), 10 deletions(-)
 >
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 100cb2e4c104..232b5e5dd045 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4073,7 +4073,7 @@ union bpf_attr {
+>   *             Valid pointer with *size* bytes of memory available; NULL,
+>   *             otherwise.
+>   *
+> - * void bpf_ringbuf_submit(void *data, u64 flags)
+> + * int bpf_ringbuf_submit(void *data, u64 flags)
+>   *     Description
+>   *             Submit reserved ring buffer sample, pointed to by *data*.
+>   *             If **BPF_RB_NO_WAKEUP** is specified in *flags*, no notification
+> @@ -4083,9 +4083,9 @@ union bpf_attr {
+>   *             If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, notification
+>   *             of new data availability is sent unconditionally.
+>   *     Return
+> - *             Nothing. Always succeeds.
+
+bpf_ringbuf_submit/bpf_ringbuf_commit has to alway succeed. That's an
+explicit and strict rule, which BPF verifier relies on. We cannot bail
+out due to unknown flags, because then ringbuf sample won't ever be
+submitted and will block all the subsequent samples.
+
+> + *             0 on success, or a negative error in case of failure.
+>   *
 
 [...]
