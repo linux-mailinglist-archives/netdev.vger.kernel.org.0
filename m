@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F10F350490
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:32:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 295FB350495
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:32:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234071AbhCaQby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 12:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        id S234092AbhCaQcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234124AbhCaQbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:31:34 -0400
+        with ESMTP id S233704AbhCaQcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:32:07 -0400
 Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71E64C061574;
-        Wed, 31 Mar 2021 09:31:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BE3EC061574;
+        Wed, 31 Mar 2021 09:32:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
         Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=Ikp7PZAuK4fo1XgsXlr4Y+BaLjbJ/cSgtN
-        EE/K8IQMY=; b=RpJibMn2q1x3JBg0uDL3WvIWknem8AoXR8PCRtkf4CYZzIeItC
-        O52qT98r5vRu5A/TIJ2+zQfeLPvkGxzRoAZFowPQ33ho+Z+QgJ6NEHURQK0FkuAH
-        PQdK58jo6t1irJ798W33iZEKb4ZjVBsuXa/8WFSzGPO3kv3QVT+BO6gq8=
+        Content-Transfer-Encoding; bh=X3JnzAWB/wP2byqIVYcRzkGaaPhYaCeo9n
+        v6lfgBPe0=; b=Xo6Hhyt/U2nM1S0+Fv8bA14b51KjeutJR0dCicPexA8ZKbeIJz
+        CI1fcTfvliBJ+0g+xXnpQl8lMV+4c4b+YNYeUI5ouSq9pqN6FGxiGy6vCLDVlUw9
+        lCAXXDCUYEtvuUFLY68pHxdbqMQChrcLkbDW6AP0vFob7zFYIZ5dKEvA4=
 Received: from xhacker (unknown [101.86.19.180])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygCXOpnWo2Rgs7x6AA--.15943S2;
-        Thu, 01 Apr 2021 00:31:18 +0800 (CST)
-Date:   Thu, 1 Apr 2021 00:26:21 +0800
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDX30v0o2RgKr16AA--.16474S2;
+        Thu, 01 Apr 2021 00:31:48 +0800 (CST)
+Date:   Thu, 1 Apr 2021 00:26:51 +0800
 From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
 To:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -45,30 +45,30 @@ To:     Paul Walmsley <paul.walmsley@sifive.com>,
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         kasan-dev@googlegroups.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH v2 3/9] riscv: Constify sys_call_table
-Message-ID: <20210401002621.409624ee@xhacker>
+Subject: [PATCH v2 4/9] riscv: Constify sbi_ipi_ops
+Message-ID: <20210401002651.1da9087e@xhacker>
 In-Reply-To: <20210401002442.2fe56b88@xhacker>
 References: <20210401002442.2fe56b88@xhacker>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygCXOpnWo2Rgs7x6AA--.15943S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7KFyxuF4kuF1rWw17ZFyrJFb_yoW8GrWxpr
-        sxC34kKr95WF18CFyakFyxuryxJ3Z8W34agr1qkan8Cw13trZ8tws0ga4ayFyDGFZrWrW0
-        gF4I9r90kr48XFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkGb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
+X-CM-TRANSID: LkAmygDX30v0o2RgKr16AA--.16474S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KFyxuF4kuF1rWw17ZFyrJFb_yoW8tw1kpw
+        4UCr45CFWrGFn7Ga43tFWku3y3K3ZrWwnIy34Yka45JFnIqrWUAan0qw12vwn8GFyDuFyS
+        9r4rCrZ0vF1UAFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkEb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
         0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
         A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4j6r4UJwA2z4x0Y4
-        vEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
-        FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Jr
-        0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY
-        04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        WxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6r4j6FyUMIIF0xvEx4A2jsIE14v26r1j6r4U
-        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jndbbUUU
-        UU=
+        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjc
+        xK6I8E87Iv6xkF7I0E14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG
+        64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r
+        1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrwACI402YVCY1x02628vn2kI
+        c2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
+        v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkG
+        c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
+        0_Gr1j6F4UJwCI42IY6xAIw20EY4v20xvaj40_Gr0_Zr1lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07je7K
+        sUUUUU=
 X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -76,42 +76,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jisheng Zhang <jszhang@kernel.org>
 
-Constify the sys_call_table so that it will be placed in the .rodata
-section. This will cause attempts to modify the table to fail when
-strict page permissions are in place.
+Constify the sbi_ipi_ops so that it will be placed in the .rodata
+section. This will cause attempts to modify it to fail when strict
+page permissions are in place.
 
 Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
- arch/riscv/include/asm/syscall.h  | 2 +-
- arch/riscv/kernel/syscall_table.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/riscv/include/asm/smp.h | 4 ++--
+ arch/riscv/kernel/sbi.c      | 2 +-
+ arch/riscv/kernel/smp.c      | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/riscv/include/asm/syscall.h b/arch/riscv/include/asm/syscall.h
-index 49350c8bd7b0..b933b1583c9f 100644
---- a/arch/riscv/include/asm/syscall.h
-+++ b/arch/riscv/include/asm/syscall.h
-@@ -15,7 +15,7 @@
- #include <linux/err.h>
+diff --git a/arch/riscv/include/asm/smp.h b/arch/riscv/include/asm/smp.h
+index df1f7c4cd433..a7d2811f3536 100644
+--- a/arch/riscv/include/asm/smp.h
++++ b/arch/riscv/include/asm/smp.h
+@@ -46,7 +46,7 @@ int riscv_hartid_to_cpuid(int hartid);
+ void riscv_cpuid_to_hartid_mask(const struct cpumask *in, struct cpumask *out);
  
- /* The array of function pointers for syscalls. */
--extern void *sys_call_table[];
-+extern void * const sys_call_table[];
+ /* Set custom IPI operations */
+-void riscv_set_ipi_ops(struct riscv_ipi_ops *ops);
++void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops);
  
- /*
-  * Only the low 32 bits of orig_r0 are meaningful, so we return int.
-diff --git a/arch/riscv/kernel/syscall_table.c b/arch/riscv/kernel/syscall_table.c
-index f1ead9df96ca..a63c667c27b3 100644
---- a/arch/riscv/kernel/syscall_table.c
-+++ b/arch/riscv/kernel/syscall_table.c
-@@ -13,7 +13,7 @@
- #undef __SYSCALL
- #define __SYSCALL(nr, call)	[nr] = (call),
+ /* Clear IPI for current CPU */
+ void riscv_clear_ipi(void);
+@@ -92,7 +92,7 @@ static inline void riscv_cpuid_to_hartid_mask(const struct cpumask *in,
+ 	cpumask_set_cpu(boot_cpu_hartid, out);
+ }
  
--void *sys_call_table[__NR_syscalls] = {
-+void * const sys_call_table[__NR_syscalls] = {
- 	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
- #include <asm/unistd.h>
+-static inline void riscv_set_ipi_ops(struct riscv_ipi_ops *ops)
++static inline void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops)
+ {
+ }
+ 
+diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
+index cbd94a72eaa7..cb848e80865e 100644
+--- a/arch/riscv/kernel/sbi.c
++++ b/arch/riscv/kernel/sbi.c
+@@ -556,7 +556,7 @@ static void sbi_send_cpumask_ipi(const struct cpumask *target)
+ 	sbi_send_ipi(cpumask_bits(&hartid_mask));
+ }
+ 
+-static struct riscv_ipi_ops sbi_ipi_ops = {
++static const struct riscv_ipi_ops sbi_ipi_ops = {
+ 	.ipi_inject = sbi_send_cpumask_ipi
  };
+ 
+diff --git a/arch/riscv/kernel/smp.c b/arch/riscv/kernel/smp.c
+index 504284d49135..e035124f06dc 100644
+--- a/arch/riscv/kernel/smp.c
++++ b/arch/riscv/kernel/smp.c
+@@ -85,9 +85,9 @@ static void ipi_stop(void)
+ 		wait_for_interrupt();
+ }
+ 
+-static struct riscv_ipi_ops *ipi_ops __ro_after_init;
++static const struct riscv_ipi_ops *ipi_ops __ro_after_init;
+ 
+-void riscv_set_ipi_ops(struct riscv_ipi_ops *ops)
++void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops)
+ {
+ 	ipi_ops = ops;
+ }
 -- 
 2.31.0
 
