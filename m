@@ -2,48 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B20DB350A29
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF66350A28
 	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 00:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232967AbhCaWVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 18:21:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50196 "EHLO mail.kernel.org"
+        id S232981AbhCaWVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 18:21:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50174 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230380AbhCaWUS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229615AbhCaWUS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 31 Mar 2021 18:20:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 89A2361090;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7221F6108B;
         Wed, 31 Mar 2021 22:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617229218;
-        bh=manWhZhu/NQAbHmtzEDKxvO3sIpDmPpIR4Wb97E++h0=;
+        bh=KnGr7iX3Wn+o/EQEB1ldp5+QTpPSXhkqKZmPgoEEx2U=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JkU6l4959Uh72ZihQaglWFBFE6/bSkJALLtL/AOfUzSbpa68I0bK1MutdiqZgpXpa
-         /k1EyLXkToc8CBCguYRV78RgsqxhsXb4oUtzr07mMl1AvDPa4h7hSuOYU7CZTg8pR+
-         0K9X2p0BcRQfKCDZx0uRyascdoggwlNfbazb1Ik5p3/Vg0wvA+tC7bSQtFFNdhqw+r
-         +50fgAh0N5TVYXTGhvcue751tNPFJXc/1x9qyV4PPXKFeoUa4+AXWlcbvRUFHQuQ7A
-         /Bea1AquyiAL23Y26Lv+fjCoRqwlowPTyOs05InU9E3PUpI1eIYDgt76GOUSnL7c6m
-         oqWhd+M/O8HOA==
+        b=UjrI5gqBGNhexMEv+1HfBgmuilRN4FZVjqkh1GC2YGwQd30Q16W7M8uLfGWgr11Ph
+         pMf9Df8WfnQJwyI3r9asSYxPenc+iaccJgU1C31Qg4fYtQdZQ8p+oWKdBndolJkpmc
+         qQI7FHoLXQtzQVhSp3K+S5AjUElvESHVqCXW6JZg1dmotCDMauR5Km0DgGaWZK6Z3R
+         eeC4QFUngGQrzhcXKKMhQjSweUkADQsT0hHMyr6zBH7SQy5R8l8ZWtWg8RIYqf3xbG
+         Ufi4Ggj/XSifOA/800QaSJrBJPZnVepOy0LVBF47SuJ+wzozB51cT6hAfDswJuh/Ju
+         VptHx8ZhgsVaQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 80633608FD;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6D30B608FA;
         Wed, 31 Mar 2021 22:20:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/1] net: stmmac: enable MTL ECC Error Address Status
- Over-ride by default
+Subject: Re: [PATCH net-next] ipv6: remove extra dev_hold() for fallback tunnels
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161722921852.2890.11864817205968379354.git-patchwork-notify@kernel.org>
+Message-Id: <161722921844.2890.11000209611383163900.git-patchwork-notify@kernel.org>
 Date:   Wed, 31 Mar 2021 22:20:18 +0000
-References: <20210331161825.32100-1-vee.khee.wong@linux.intel.com>
-In-Reply-To: <20210331161825.32100-1-vee.khee.wong@linux.intel.com>
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        weifeng.voon@intel.com, boon.leong.ong@intel.com,
-        vee.khee.wong@intel.com
+References: <20210331213811.847054-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210331213811.847054-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, syzkaller@googlegroups.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -52,20 +46,19 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu,  1 Apr 2021 00:18:25 +0800 you wrote:
-> From: Voon Weifeng <weifeng.voon@intel.com>
+On Wed, 31 Mar 2021 14:38:11 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Turn on the MEEAO field of MTL_ECC_Control_Register by default.
+> My previous commits added a dev_hold() in tunnels ndo_init(),
+> but forgot to remove it from special functions setting up fallback tunnels.
 > 
-> As the MTL ECC Error Address Status Over-ride(MEEAO) is set by default,
-> the following error address fields will hold the last valid address
-> where the error is detected.
+> Fallback tunnels do call their respective ndo_init()
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/1] net: stmmac: enable MTL ECC Error Address Status Over-ride by default
-    https://git.kernel.org/netdev/net-next/c/b494ba5a3cf8
+  - [net-next] ipv6: remove extra dev_hold() for fallback tunnels
+    https://git.kernel.org/netdev/net-next/c/0d7a7b2014b1
 
 You are awesome, thank you!
 --
