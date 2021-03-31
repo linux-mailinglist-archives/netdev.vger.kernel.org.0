@@ -2,122 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7839C35042B
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 257B3350443
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233777AbhCaQI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 12:08:26 -0400
-Received: from foss.arm.com ([217.140.110.172]:45924 "EHLO foss.arm.com"
+        id S233614AbhCaQO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:14:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53594 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233757AbhCaQIF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 12:08:05 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6D11FD6E;
-        Wed, 31 Mar 2021 09:08:04 -0700 (PDT)
-Received: from [10.57.24.208] (unknown [10.57.24.208])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3FF463F792;
-        Wed, 31 Mar 2021 09:08:02 -0700 (PDT)
-Subject: Re: [PATCH 16/18] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-To:     Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>
-Cc:     freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        David Woodhouse <dwmw2@infradead.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-17-hch@lst.de>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <163376d7-ab23-a470-5bba-7fcd8ae95a4e@arm.com>
-Date:   Wed, 31 Mar 2021 17:07:56 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S229486AbhCaQOI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 12:14:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D17416102A;
+        Wed, 31 Mar 2021 16:14:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617207244;
+        bh=VgwWgmjg9khzPt0mP1Tojd5JQXXGG70rDa5nw1IZQnQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=HalAKJD2CJZEeF30MW0WR05W+hTZFDzEVCSEXzL4OhU+v/mDuPK/+LeXZ+ITxe052
+         nJCA/Qt6D4xMaMQsU8IpXcFRJRvFjosDtMnatRvn1TsQ/Nw7V9u2tGFQ8MCUYu7/1k
+         +IodcWBdDvom3CjuGSlhLKngyeFHjwAnJqPVq8YVU4Nrm4JJ1QiJNkvUCIhO24gdvY
+         fIHNxx89OwUuwSr+yJ+iGIeRM5VCPndF90RrnSNScnmMVWH5Fe/kwzwg1VQIQG3T53
+         oGYxEQAMStzHWeN+N5W5v5K54WbFa9+jCzEBdR3k/oNIOwcWrBaad/1BEknkJ69Pkl
+         N0Ty4VZYUErpA==
+Received: by mail-lj1-f172.google.com with SMTP id u20so24475884lja.13;
+        Wed, 31 Mar 2021 09:14:03 -0700 (PDT)
+X-Gm-Message-State: AOAM530/rKUJc3Pq624N+n9RXB1clOne0IEBUG40zJw1NoasbkONZDjP
+        F0wF2fjEkNlKbNxF8RxmWsSxyjBmorx4d3Me1N8=
+X-Google-Smtp-Source: ABdhPJyZnC6MHHfZno0xYkcUUBI/HLYguDDsNuX/RpDHNIEmgvJHJ/TpM4Nd6uPzwi6dfPuRZaE3/K6pfOjR+l2rvXs=
+X-Received: by 2002:a2e:809a:: with SMTP id i26mr2541423ljg.357.1617207242113;
+ Wed, 31 Mar 2021 09:14:02 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210316153825.135976-17-hch@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20210331075135.3850782-1-hefengqing@huawei.com>
+In-Reply-To: <20210331075135.3850782-1-hefengqing@huawei.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 31 Mar 2021 09:13:51 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW60V4WL+SGhYeZTGmLhFvc_vywATB61BBAvc9R8m02pTg@mail.gmail.com>
+Message-ID: <CAPhsuW60V4WL+SGhYeZTGmLhFvc_vywATB61BBAvc9R8m02pTg@mail.gmail.com>
+Subject: Re: [Patch bpf-next] bpf: remove unused parameter from ___bpf_prog_run
+To:     He Fengqing <hefengqing@huawei.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-16 15:38, Christoph Hellwig wrote:
-[...]
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index f1e38526d5bd40..996dfdf9d375dd 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2017,7 +2017,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
->   		.iommu_dev	= smmu->dev,
->   	};
->   
-> -	if (smmu_domain->non_strict)
-> +	if (!iommu_get_dma_strict())
+On Wed, Mar 31, 2021 at 12:14 AM He Fengqing <hefengqing@huawei.com> wrote:
+>
+> 'stack' parameter is not used in ___bpf_prog_run,
+> the base address have been set to FP reg. So consequently remove it.
+>
+> Signed-off-by: He Fengqing <hefengqing@huawei.com>
 
-As Will raised, this also needs to be checking "domain->type == 
-IOMMU_DOMAIN_DMA" to maintain equivalent behaviour to the attribute code 
-below.
-
->   		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
->   
->   	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
-> @@ -2449,52 +2449,6 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
->   	return group;
->   }
->   
-> -static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> -				    enum iommu_attr attr, void *data)
-> -{
-> -	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> -
-> -	switch (domain->type) {
-> -	case IOMMU_DOMAIN_DMA:
-> -		switch (attr) {
-> -		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
-> -			*(int *)data = smmu_domain->non_strict;
-> -			return 0;
-> -		default:
-> -			return -ENODEV;
-> -		}
-> -		break;
-> -	default:
-> -		return -EINVAL;
-> -	}
-> -}
-[...]
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index f985817c967a25..edb1de479dd1a7 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -668,7 +668,6 @@ struct arm_smmu_domain {
->   	struct mutex			init_mutex; /* Protects smmu pointer */
->   
->   	struct io_pgtable_ops		*pgtbl_ops;
-> -	bool				non_strict;
->   	atomic_t			nr_ats_masters;
->   
->   	enum arm_smmu_domain_stage	stage;
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 0aa6d667274970..3dde22b1f8ffb0 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -761,6 +761,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   		.iommu_dev	= smmu->dev,
->   	};
->   
-> +	if (!iommu_get_dma_strict())
-
-Ditto here.
-
-Sorry for not spotting that sooner :(
-
-Robin.
-
-> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-> +
->   	if (smmu->impl && smmu->impl->init_context) {
->   		ret = smmu->impl->init_context(smmu_domain, &pgtbl_cfg, dev);
->   		if (ret)
+Acked-by: Song Liu <songliubraving@fb.com>
