@@ -2,115 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D81350712
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 21:00:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DB935071F
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 21:03:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235559AbhCaS76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 14:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
+        id S235860AbhCaTDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 15:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235335AbhCaS7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 14:59:39 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFFCC061574;
-        Wed, 31 Mar 2021 11:59:39 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id o66so22245166ybg.10;
-        Wed, 31 Mar 2021 11:59:39 -0700 (PDT)
+        with ESMTP id S235355AbhCaTCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 15:02:54 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBF6C061574;
+        Wed, 31 Mar 2021 12:02:54 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id i144so22295716ybg.1;
+        Wed, 31 Mar 2021 12:02:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HNKRmMDJ0kvnDvoOj/CCsz+qwaOi3OAp0sSF6SSBBwE=;
-        b=V5HyIvcVQ+pi/bismrOytiQLYnDnSYyZcziTYNyKpUEURcwxXnEHcrgr+gJmFYJkB8
-         OmXc9M6H6Tdhpx7gat1OHCT/WwSoOxKwJd04Vc8jWgmyhblht3Vel946c3wITL/oRRTM
-         yiN/G6a4Zwj5iOYK4lqxj1zEaCSqAnz8IHCtcdXukIGJ9pNIGXIMrgQKZCV+ePmXA8oc
-         vTbIEp7ComL+U5kPaVVqk6zwwVze1fae35jZ30el/8XQRRfni71n7H30pBgCYd4cRrrb
-         q1a34kseSKavh9oObpnIubjay1t8raNBAxIzBhCScQcwMs3dRA+UARDHlNev28u2htWL
-         nrFg==
+        bh=x4YJuvsy/+GmcZTEa0tdVi7R2ikqrBhX1iPZvjApLAs=;
+        b=eh6miJHWMN67GvZJKMUUlqC/vt5HffuuJekrIXqnOFja9szLbtMyRO2kQ460axt5em
+         voPwdMMQ3q0ES1q7EpvecsLeEmghddOhd0LySWDFG37IUR5V3YSgFq9SVDFWFjLMs5Wl
+         5fY1Jd7i7xv650MK/jcIsoBAWbRncrPdNEXAGBg8gH8Tj7Cv3AnsMlHnY3Ty0MtvAz5h
+         aKulvk61B21qI3rxwRL39Ln4W89Cw+eY5SJItZtc1/XfIihM/wseanCoGxjbXYcHlnTG
+         +cGAl7Tf0Clek2mGcqnr+MHuGwB1WMD3KX1huwbPC/NKnwfxIA9mfwVp2fxi6TPhEeq1
+         gMxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HNKRmMDJ0kvnDvoOj/CCsz+qwaOi3OAp0sSF6SSBBwE=;
-        b=qLrHpR2VqeMBx6qj/yfsuhV9tBnP9ujmZENHh7M5AdtAnPtxL/C+B+jJhFfi4cK4Wh
-         OESuSh/L6y+R3KnCgMf2aXgCMC9auqTOmnmYqFMb9QLjLsMcj6bDUhvcwIZNc6kMrX+8
-         C/Edmrpw7mzwvItAfGIjeMpCOCTvPvBDnioLR8tX1v2udnys3iTjz7Pe6pnyNVhT5MUL
-         WXZEx9tozGaCLB7iUkjemsbo65SckgJhCh3zFpS4yBUu/qpY4gX6g2nWmlwAxaDpITHw
-         r2i1M7z9JYlTVtRnlhacic1QjlMnM+22TBv80H5R0FXENdKvL4Qb0XZpndE2HMFHBDlm
-         TogQ==
-X-Gm-Message-State: AOAM533lmwzTYFkmhaHZ0+h6D70k95fVDOoMl+ixNiYyyXcd+McNgf4w
-        zyZgtHFywRaqtsAzPRUsZZHLent3qMVFiV6PQrYDzdT2yZ8=
-X-Google-Smtp-Source: ABdhPJxgwGlhRV9Tc2fFDhdbm4lE+5eb8GppQ4sb9FTdDyhCVNVn3hSGpMaXpJaUzD7eo0hpipcclhC+xkRd3u9uEsc=
-X-Received: by 2002:a25:5b55:: with SMTP id p82mr6222226ybb.510.1617217178546;
- Wed, 31 Mar 2021 11:59:38 -0700 (PDT)
+        bh=x4YJuvsy/+GmcZTEa0tdVi7R2ikqrBhX1iPZvjApLAs=;
+        b=d1J9T1nE03qfTxf/pR0jArl/+hUqI0J7kwKBz/Xazlz/uKpau3sm4wAY1BRqZUq9Bw
+         zAqBuTbeJ4tlMuF7j/J0jFTLsxuF/uPkkihmnI/EiZ06JiNuRgh00VI7hQK+irYrM7aM
+         2h55kmHKEMX9NW+kdFQxFfozRgAMUbrRKVsKQwu4OvCvdsNngq9BBKYSExgk4V9VIvpA
+         eID4t3TTB4kPTXV2EG5NXqw19w5XX3oX4ukl5xExW3bC2Q77cMyGLjgoN7/uGK7TEEgk
+         xMnJig5DRnsEE3gphnrPgxJryvw9tPgw9wzSQe0B5liWs1yZby2v+ehD6/mOg43w6BrW
+         Gd3g==
+X-Gm-Message-State: AOAM532IrP8bpfrATz7ZCZ4b3h1HM0DjkuSWLFyGnyFOQ/SILD0qWDLh
+        DMlVp2CWqG4T5FfZrK6CVGXQlkpxufwx/458iuQ=
+X-Google-Smtp-Source: ABdhPJwoyy0ZYnVd7MLaLqauT7nPJ6FBJnNpTBaiWgC42URXaos//I5E6tR5+2lkl7HE7aazVbTzr7Dv4aKh9XbhEeQ=
+X-Received: by 2002:a25:5b55:: with SMTP id p82mr6243094ybb.510.1617217373404;
+ Wed, 31 Mar 2021 12:02:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210328161055.257504-1-pctammela@mojatatu.com>
- <20210328161055.257504-3-pctammela@mojatatu.com> <BCF68ADA-5114-4E61-87DE-D5E5C946BC6F@fb.com>
-In-Reply-To: <BCF68ADA-5114-4E61-87DE-D5E5C946BC6F@fb.com>
+References: <20210330020656.26bb2dfd@xhacker>
+In-Reply-To: <20210330020656.26bb2dfd@xhacker>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 31 Mar 2021 11:59:27 -0700
-Message-ID: <CAEf4BzYWoczwZwG1qKhZc8jEfr4EQAwY76AaD_LuJsM1ohVJkQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Add '_wait()' and '_nowait()' macros for 'bpf_ring_buffer__poll()'
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Pedro Tammela <pctammela@gmail.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Wed, 31 Mar 2021 12:02:42 -0700
+Message-ID: <CAEf4BzZv7SHKFQ1CX4omQXotA=t4Vhdbd6=1aObpNeu03tT5qQ@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: add LDFLAGS when building test_verifier
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Joe Stringer <joe@cilium.io>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
+        KP Singh <kpsingh@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 9:28 AM Song Liu <songliubraving@fb.com> wrote:
+On Mon, Mar 29, 2021 at 11:11 AM Jisheng Zhang
+<jszhang3@mail.ustc.edu.cn> wrote:
 >
+> From: Jisheng Zhang <jszhang@kernel.org>
 >
->
-> > On Mar 28, 2021, at 9:10 AM, Pedro Tammela <pctammela@gmail.com> wrote:
-> >
-> > 'bpf_ring_buffer__poll()' abstracts the polling method, so abstract the
-> > constants that make the implementation don't wait or wait indefinetly
-> > for data.
-> >
-> > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> > ---
-> > tools/lib/bpf/libbpf.h                                 | 3 +++
-> > tools/testing/selftests/bpf/benchs/bench_ringbufs.c    | 2 +-
-> > tools/testing/selftests/bpf/prog_tests/ringbuf.c       | 6 +++---
-> > tools/testing/selftests/bpf/prog_tests/ringbuf_multi.c | 4 ++--
-> > 4 files changed, 9 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > index f500621d28e5..3817d84f91c6 100644
-> > --- a/tools/lib/bpf/libbpf.h
-> > +++ b/tools/lib/bpf/libbpf.h
-> > @@ -540,6 +540,9 @@ LIBBPF_API int ring_buffer__poll(struct ring_buffer *rb, int timeout_ms);
-> > LIBBPF_API int ring_buffer__consume(struct ring_buffer *rb);
-> > LIBBPF_API int ring_buffer__epoll_fd(const struct ring_buffer *rb);
-> >
-> > +#define ring_buffer__poll_wait(rb) ring_buffer__poll(rb, -1)
-> > +#define ring_buffer__poll_nowait(rb) ring_buffer__poll(rb, 0)
->
-> I think we don't need ring_buffer__poll_wait() as ring_buffer__poll() already
-> means "wait for timeout_ms".
->
-> Actually, I think ring_buffer__poll() is enough. ring_buffer__poll_nowait()
-> is not that useful either.
->
+> This is useful for cross compile process to point linker to the
+> correct libelf, libcap, libz path.
 
-I agree. I think adding a comment to the API itself might be useful
-specifying 0 and -1 as somewhat special cases.
+Is this enough to make cross-compilation of selftests/bpf work? I
+think there was a discussion another day about cross-compiling
+selftests/bpf, so I wonder if this is the only change that's needed to
+make it work.
 
-> Thanks,
-> Song
+>
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  tools/testing/selftests/bpf/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 044bfdcf5b74..dac1c5094e28 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -447,7 +447,7 @@ verifier/tests.h: verifier/*.c
+>                 ) > verifier/tests.h)
+>  $(OUTPUT)/test_verifier: test_verifier.c verifier/tests.h $(BPFOBJ) | $(OUTPUT)
+>         $(call msg,BINARY,,$@)
+> -       $(Q)$(CC) $(CFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
+> +       $(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
+>
+>  # Make sure we are able to include and link libbpf against c++.
+>  $(OUTPUT)/test_cpp: test_cpp.cpp $(OUTPUT)/test_core_extern.skel.h $(BPFOBJ)
+> --
+> 2.31.0
+>
 >
