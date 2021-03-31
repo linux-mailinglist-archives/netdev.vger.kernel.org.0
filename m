@@ -2,89 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E4E34F670
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 04:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F2E334F676
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 04:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbhCaCAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 22:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
+        id S233270AbhCaCDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 22:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbhCaCAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:00:15 -0400
+        with ESMTP id S232956AbhCaCDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Mar 2021 22:03:03 -0400
 Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B6B1C061574;
-        Tue, 30 Mar 2021 19:00:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28219C061574;
+        Tue, 30 Mar 2021 19:03:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=OycOHuyRcI
-        IO+xylTwknRNm1rxJYX7lsX0dug9h2cBI=; b=D3MgoIexR9DmyQIRzDsE0CeZBI
-        DO+NCf3lvx1JXaa5ZvVy2G7vKCuXH1SKGqA19+PF+ftSDBizL7NL/96RVICR8MQB
-        KvaObYsS0cBflktfQbg2wvRB+3387TYcEgYmlCV9Jf+KeRDZd9YNSQnIwUA36qmn
-        5ybhziOxiJIqQCfKs=
-Received: from ubuntu.localdomain (unknown [202.38.69.14])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygAXIqyk12NgIbl0AA--.651S4;
-        Wed, 31 Mar 2021 10:00:04 +0800 (CST)
-From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-To:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Subject: [PATCH v2] net/rds: Fix a use after free in rds_message_map_pages
-Date:   Tue, 30 Mar 2021 18:59:59 -0700
-Message-Id: <20210331015959.4404-1-lyl2019@mail.ustc.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        In-Reply-To:References:Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID; bh=DcSskP8B4CWNXBYnK2+AtYODix9KPxwm3sCY
+        rw4gNP0=; b=AeKZgHy2riAm3+brGQVmGiZplE1Rpwyg5HTjlLgDJ14peuBaOPzW
+        xmD3wDXU0sTlSOBd7fhz0TQ2Keo8fVEDQ2CiPR5uESqMPaM/8uy9wiBEBhXfZ0Sg
+        W5ZTt+anrgf5mSzFC+bBytReHQ4F7YsmwH548spFGIQFjxxPxoOW5+c=
+Received: by ajax-webmail-newmailweb.ustc.edu.cn (Coremail) ; Wed, 31 Mar
+ 2021 10:02:57 +0800 (GMT+08:00)
+X-Originating-IP: [202.38.69.14]
+Date:   Wed, 31 Mar 2021 10:02:57 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   lyl2019@mail.ustc.edu.cn
+To:     "David Miller" <davem@davemloft.net>
+Cc:     santosh.shilimkar@oracle.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH] net/rds: Fix a use after free in
+ rds_message_map_pages
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT3.0.8 dev build
+ 20190610(cb3344cf) Copyright (c) 2002-2021 www.mailtech.cn ustc-xl
+In-Reply-To: <20210330.170228.191449180243560631.davem@davemloft.net>
+References: <20210330101602.22505-1-lyl2019@mail.ustc.edu.cn>
+ <20210330.170228.191449180243560631.davem@davemloft.net>
+X-SendMailWithSms: false
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: LkAmygAXIqyk12NgIbl0AA--.651S4
-X-Coremail-Antispam: 1UD129KBjvdXoWrtrWrGF1UCF1fJw4Duw45KFg_yoWDAFg_Zr
-        WxJFn7W347XFnFy397GrsxAr4fXr1kJw109a42qFn5tFWDAFn5Xw4ktrn8uwnrCF42qr1x
-        W3yDXr9xA34kZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbVkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lc2xSY4AK67AK6r4UMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
-        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
-        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
-        x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VU1wZ23UUUUU==
-X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
+Message-ID: <3c258c4e.20f4b.1788604fd68.Coremail.lyl2019@mail.ustc.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: LkAmygBnb39R2GNgUL90AA--.5W
+X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/1tbiAQoRBlQhn5kl4AABsr
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rds_message_map_pages, the rm is freed by rds_message_put(rm).
-But rm is still used by rm->data.op_sg in return value.
-
-My patch assigns ERR_CAST(rm->data.op_sg) to err before the rm is
-freed to avoid the uaf.
-
-Fixes: 7dba92037baf3 ("net/rds: Use ERR_PTR for rds_message_alloc_sgs()")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
----
- net/rds/message.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/rds/message.c b/net/rds/message.c
-index 071a261fdaab..799034e0f513 100644
---- a/net/rds/message.c
-+++ b/net/rds/message.c
-@@ -347,8 +347,9 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
- 	rm->data.op_nents = DIV_ROUND_UP(total_len, PAGE_SIZE);
- 	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
- 	if (IS_ERR(rm->data.op_sg)) {
-+		void *err = ERR_CAST(rm->data.op_sg);
- 		rds_message_put(rm);
--		return ERR_CAST(rm->data.op_sg);
-+		return err;
- 	}
- 
- 	for (i = 0; i < rm->data.op_nents; ++i) {
--- 
-2.25.1
-
-
+DQoNCg0KPiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tDQo+IOWPkeS7tuS6ujogIkRhdmlkIE1pbGxl
+ciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+DQo+IOWPkemAgeaXtumXtDogMjAyMS0wMy0zMSAwODow
+MjoyOCAo5pif5pyf5LiJKQ0KPiDmlLbku7bkuro6IGx5bDIwMTlAbWFpbC51c3RjLmVkdS5jbg0K
+PiDmioTpgIE6IHNhbnRvc2guc2hpbGlta2FyQG9yYWNsZS5jb20sIGt1YmFAa2VybmVsLm9yZywg
+bmV0ZGV2QHZnZXIua2VybmVsLm9yZywgbGludXgtcmRtYUB2Z2VyLmtlcm5lbC5vcmcsIHJkcy1k
+ZXZlbEBvc3Mub3JhY2xlLmNvbSwgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiDkuLvp
+opg6IFJlOiBbUEFUQ0hdIG5ldC9yZHM6IEZpeCBhIHVzZSBhZnRlciBmcmVlIGluIHJkc19tZXNz
+YWdlX21hcF9wYWdlcw0KPiANCj4gRnJvbTogTHYgWXVubG9uZyA8bHlsMjAxOUBtYWlsLnVzdGMu
+ZWR1LmNuPg0KPiBEYXRlOiBUdWUsIDMwIE1hciAyMDIxIDAzOjE2OjAyIC0wNzAwDQo+IA0KPiA+
+IEBAIC0zNDgsNyArMzQ4LDcgQEAgc3RydWN0IHJkc19tZXNzYWdlICpyZHNfbWVzc2FnZV9tYXBf
+cGFnZXModW5zaWduZWQgbG9uZyAqcGFnZV9hZGRycywgdW5zaWduZWQgaW4NCj4gPiAgCXJtLT5k
+YXRhLm9wX3NnID0gcmRzX21lc3NhZ2VfYWxsb2Nfc2dzKHJtLCBudW1fc2dzKTsNCj4gPiAgCWlm
+IChJU19FUlIocm0tPmRhdGEub3Bfc2cpKSB7DQo+ID4gIAkJcmRzX21lc3NhZ2VfcHV0KHJtKTsN
+Cj4gPiAtCQlyZXR1cm4gRVJSX0NBU1Qocm0tPmRhdGEub3Bfc2cpOw0KPiA+ICsJCXJldHVybiBF
+UlJfUFRSKC1FTk9NRU0pOw0KPiA+ICAJfQ0KPiA+ICANCj4gPiAgCWZvciAoaSA9IDA7IGkgPCBy
+bS0+ZGF0YS5vcF9uZW50czsgKytpKSB7DQo+IA0KPiBNYXliZSBpbnN0ZWFkIGRvOg0KPiANCj4g
+ICAgICAgaW50IGVyciA9IEVSUl9DQVNUKHJtLT5kYXRhLm9wX3NnKTsNCj4gICAgICAgcmRzX21l
+c3NhZ2VfcHV0KHJtKTsNCj4gICAgICAgcmV0dXJuIGVycjsNCj4gDQo+IFRoZW4gaWYgcmRzX21l
+c3NhZ2VfYWxsb2Nfc2dzKCkgc3RhcnRzIHRvIHJldHVybiBvdGhlciBlcnJvcnMsIHRoZXkgd2ls
+bCBwcm9wYWdhdGUuDQo+IA0KPiBUaGFuayB5b3UuDQoNClRoZSB0eXBlIG9mIEVSUl9DQVNUKCkg
+aXMgdm9pZCAqLCBub3QgaW50LiANCkkgdGhpbmsgdGhlIGNvcnJlY3QgcGF0Y2ggaXM6DQoNCiAg
+ICAgICAgdm9pZCAqZXJyID0gRVJSX0NBU1Qocm0tPmRhdGEub3Bfc2cpOw0KICAgICAgICByZHNf
+bWVzc2FnZV9wdXQocm0pOw0KICAgICAgICByZXR1cm4gZXJyOw0KDQpJIGhhdmUgc3VibWl0dGVk
+IHRoZSBQQVRDSCB2MiBmb3IgeW91IHRvIHJldmlldy4NCg0KVGhhbmtzLg0K
