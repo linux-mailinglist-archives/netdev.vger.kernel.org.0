@@ -2,124 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDD034F553
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 02:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B94434F559
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 02:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232678AbhCaAJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Mar 2021 20:09:38 -0400
-Received: from mga01.intel.com ([192.55.52.88]:35604 "EHLO mga01.intel.com"
+        id S232404AbhCaAKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Mar 2021 20:10:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232101AbhCaAJE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 30 Mar 2021 20:09:04 -0400
-IronPort-SDR: m+wTydnebTx5ea7HbASO+XRnalwV/K/VNh30kgLAi30VnS2VBtnZmD8OU/hlLhVkNRVc4NnBlf
- nJiadj/gZU7A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9939"; a="212108120"
-X-IronPort-AV: E=Sophos;i="5.81,291,1610438400"; 
-   d="scan'208";a="212108120"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 17:09:03 -0700
-IronPort-SDR: H4mVB+kLrMkhdwb5I5Z5wK1ERDZrH8nwzMHbr2OAUpZLSMi0u4rknrn9ZBPWqos10rqVTNL7Sx
- rlj7bE7ED21A==
-X-IronPort-AV: E=Sophos;i="5.81,291,1610438400"; 
-   d="scan'208";a="378682562"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.25.43])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2021 17:09:02 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 6/6] selftests: mptcp: remove id 0 address testcases
-Date:   Tue, 30 Mar 2021 17:08:56 -0700
-Message-Id: <20210331000856.117636-7-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210331000856.117636-1-mathew.j.martineau@linux.intel.com>
-References: <20210331000856.117636-1-mathew.j.martineau@linux.intel.com>
+        id S232770AbhCaAKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 30 Mar 2021 20:10:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6648E619D9;
+        Wed, 31 Mar 2021 00:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617149409;
+        bh=/0LRbsaltMti8B7mmjtHchCXMqUeMYXvNEe4Sx1pXSY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DU2MCFNzjiwjwhMwOJJq2cdXvF9jL0Zi1mFgioSG/Zz05WimGIN83zSAuq72QbFbr
+         tnAhS3D8Pyg2MHsj5nFozEO73Mq3ak7CHx6HUIo6/Ei//7tk6NJYv8MwlPW4mK7jr5
+         xztyoQ9JETrfpmZgXPN91I0tFb8hatP1L8X3gjtu41VG1oQ4VZy1VwcUThxSpohWLr
+         aO3NeawtGmNqZI4tdtRWVngolbpbqD2214C4Rsw4G9cF5lJXsBaDEQ7s08UxNKM08v
+         tSxrgy7vasQS4yf+DewCOTgXEzxwogGlG+Ikm9Robbfc/VR7crNNh2sdGfyPk4MJb7
+         duuUPy8CZ+C6w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 55FED60A5B;
+        Wed, 31 Mar 2021 00:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ppp: deflate: Remove useless call "zlib_inflateEnd"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161714940934.32754.10257093294349777080.git-patchwork-notify@kernel.org>
+Date:   Wed, 31 Mar 2021 00:10:09 +0000
+References: <1617097890-27020-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <1617097890-27020-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     paulus@samba.org, davem@davemloft.net, kuba@kernel.org,
+        linux-ppp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+Hello:
 
-This patch added the testcases for removing the id 0 subflow and the id 0
-address.
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-In do_transfer, use the removing addresses number '9' for deleting the id
-0 address.
+On Tue, 30 Mar 2021 17:51:30 +0800 you wrote:
+> Fix the following whitescan warning:
+> 
+> Calling "zlib_inflateEnd(&state->strm)" is only useful for its return
+> value, which is ignored.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> 
+> [...]
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 35 +++++++++++++++++--
- 1 file changed, 33 insertions(+), 2 deletions(-)
+Here is the summary with links:
+  - ppp: deflate: Remove useless call "zlib_inflateEnd"
+    https://git.kernel.org/netdev/net-next/c/dc5fa2073f63
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 679de3abaf34..d2273b88e72c 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -294,9 +294,12 @@ do_transfer()
- 					let id+=1
- 				done
- 			fi
--		else
-+		elif [ $rm_nr_ns1 -eq 8 ]; then
- 			sleep 1
- 			ip netns exec ${listener_ns} ./pm_nl_ctl flush
-+		elif [ $rm_nr_ns1 -eq 9 ]; then
-+			sleep 1
-+			ip netns exec ${listener_ns} ./pm_nl_ctl del 0 ${connect_addr}
- 		fi
- 	fi
- 
-@@ -333,9 +336,18 @@ do_transfer()
- 					let id+=1
- 				done
- 			fi
--		else
-+		elif [ $rm_nr_ns2 -eq 8 ]; then
- 			sleep 1
- 			ip netns exec ${connector_ns} ./pm_nl_ctl flush
-+		elif [ $rm_nr_ns2 -eq 9 ]; then
-+			local addr
-+			if is_v6 "${connect_addr}"; then
-+				addr="dead:beef:1::2"
-+			else
-+				addr="10.0.1.2"
-+			fi
-+			sleep 1
-+			ip netns exec ${connector_ns} ./pm_nl_ctl del 0 $addr
- 		fi
- 	fi
- 
-@@ -988,6 +1000,25 @@ remove_tests()
- 	chk_join_nr "flush invalid addresses" 1 1 1
- 	chk_add_nr 3 3
- 	chk_rm_nr 3 1 invert
-+
-+	# remove id 0 subflow
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+	ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+	ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
-+	run_tests $ns1 $ns2 10.0.1.1 0 0 -9 slow
-+	chk_join_nr "remove id 0 subflow" 1 1 1
-+	chk_rm_nr 1 1
-+
-+	# remove id 0 address
-+	reset
-+	ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-+	ip netns exec $ns2 ./pm_nl_ctl limits 1 1
-+	run_tests $ns1 $ns2 10.0.1.1 0 -9 0 slow
-+	chk_join_nr "remove id 0 address" 1 1 1
-+	chk_add_nr 1 1
-+	chk_rm_nr 1 1 invert
- }
- 
- add_tests()
--- 
-2.31.1
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
