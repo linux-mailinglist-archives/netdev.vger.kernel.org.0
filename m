@@ -2,101 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62C803504B6
-	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D3E3504B4
+	for <lists+netdev@lfdr.de>; Wed, 31 Mar 2021 18:36:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234343AbhCaQfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 12:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        id S233970AbhCaQfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 12:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234400AbhCaQfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:35:02 -0400
-Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C43DC061574;
-        Wed, 31 Mar 2021 09:35:00 -0700 (PDT)
+        with ESMTP id S234466AbhCaQfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 12:35:17 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F71C061574
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 09:35:17 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id s11so8885642pfm.1
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 09:35:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mail.ustc.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
-        Content-Transfer-Encoding; bh=9CYVVSdbdIN1CqoSzahmxkYgo2mgL2GjKI
-        5zP4cVXEs=; b=rEPMMiUzL+HWH+kbAS0OkvcrqLRAUS2ByDImzgrCVoJ33uPQot
-        Flu0VFv9hfmQDgn7sdVBA/5W1bnIAmCIYMPAV/QR4bEFLcnwYU2dClDuJsxCZ/o9
-        dEEvtEaRCB0MjE42Mpd4sVwkPl4HwHseN8ieqbaBDdWSYccwBa/hdTnPE=
-Received: from xhacker (unknown [101.86.19.180])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygBX+pimpGRg7b96AA--.53526S2;
-        Thu, 01 Apr 2021 00:34:46 +0800 (CST)
-Date:   Thu, 1 Apr 2021 00:29:49 +0800
-From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        " =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?=" <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH v2 9/9] riscv: Set ARCH_HAS_STRICT_MODULE_RWX if MMU
-Message-ID: <20210401002949.2d501560@xhacker>
-In-Reply-To: <20210401002442.2fe56b88@xhacker>
-References: <20210401002442.2fe56b88@xhacker>
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+frtawoEjy5vWMtZfzjH9Zs/qfUusrBnfbabdSsa4XE=;
+        b=VEhTIrGp/lM6EqC5PJCe5mC9cjgvGuaw4rYsyo/eMcOUcyqW4Ed6+8+ibClbTD9g+i
+         7DUw5hIhopmNYUPxGgTAAEqx+4Ad6jFzZr/PzAAfMEmzIQ08yMtKerGtBsIWXRXAZW+7
+         +n5e1eq8pcTdTT+r28YNiDfVLq/jiA5snlIvAajPTxX8hd8xV6jEtg+ebGsHapywvIXN
+         qMZx85SLXwtEaI4yes/UsQ0k8TKBKsPhEY4yqqCG63RswWvxTOZx2/DJXQkTAAG1NoTJ
+         x0G8ZuNw5882xv38uwr95Wn30MzmTl85U1sEJb9SoJ8AbTH+o8wOFNHZ01QlNYXo/qBW
+         iM7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+frtawoEjy5vWMtZfzjH9Zs/qfUusrBnfbabdSsa4XE=;
+        b=OQgTc0qT3lKUkM15wQ4gVzftx2VO55nir81mIejFofw1CX1tm3WPIVp+kar045BvmG
+         FEIePbo9fbIEYr85IzQuydsHGbGt0WygohDSKGIB5UdSlk9icCTQpcNxHqE4IoohHaYz
+         ow+cEJ2d11HGnwMHSodGd8AnvzbZDy1spby9Vr4LosrN2NGkmAQjl3bwEH59lI8s9+qj
+         W6gra37P7/UAdbqzDtVgwJSCgrCN9lsm9Fcl0M/AkXWiBcb4tYwzfjgpwq1GTm8a09ji
+         DSNufc7Y4bycUr5vM0pBFq8lM73BLS9W2v9yMtryoadyfuX2+mB25DmOlHancE4l9j2k
+         Q5Uw==
+X-Gm-Message-State: AOAM533WOA4mUWcWMRAaYJ25opIPbCRdOrd0aeDq7U6Xpw8euON7ai99
+        FZGoN0rQ8FE3zZJVlGdSGno=
+X-Google-Smtp-Source: ABdhPJzY4fu67BZ6Mi13xZh66TAbnVFIFz9aKpQQkppj0hvNR66vIORUD8XQe8IEKVYtOAvNRynhHQ==
+X-Received: by 2002:aa7:9a89:0:b029:200:1eed:1388 with SMTP id w9-20020aa79a890000b02902001eed1388mr3738089pfi.79.1617208516887;
+        Wed, 31 Mar 2021 09:35:16 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:9107:b184:4a71:45d0])
+        by smtp.gmail.com with ESMTPSA id i14sm2782330pjh.17.2021.03.31.09.35.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 09:35:16 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        iuyacan <yacanliu@163.com>
+Subject: [PATCH net] Revert "net: correct sk_acceptq_is_full()"
+Date:   Wed, 31 Mar 2021 09:35:12 -0700
+Message-Id: <20210331163512.577893-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygBX+pimpGRg7b96AA--.53526S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFy3Cw48Cr4DZw4DKF13CFg_yoW3ZrX_Ja
-        yxJF9xur1rJaykCFZ2gr4fZr1jv3y8WF18uF1Y9ryUZa42gw13X3Zxt3Z5ZF15Zw13WF4x
-        Z3yIqF4UGr1UWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4AYjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Xr0_Wr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
-        vEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40E
-        FcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAFwI0_Gr
-        0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY
-        04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI
-        0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y
-        0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxV
-        W8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3JwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7IU8PEf7
-        UUUUU==
-X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-Now we can set ARCH_HAS_STRICT_MODULE_RWX for MMU riscv platforms, this
-is good from security perspective.
+This reverts commit f211ac154577ec9ccf07c15f18a6abf0d9bdb4ab.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+We had similar attempt in the past, and we reverted it.
+
+History:
+
+64a146513f8f12ba204b7bf5cb7e9505594ead42 [NET]: Revert incorrect accept queue backlog changes.
+8488df894d05d6fa41c2bd298c335f944bb0e401 [NET]: Fix bugs in "Whether sock accept queue is full" checking
+
+I am adding a fat comment so that future attempts will
+be much harder.
+
+Fixes: f211ac154577 ("net: correct sk_acceptq_is_full()")
+Cc: iuyacan <yacanliu@163.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- arch/riscv/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/sock.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 87d7b52f278f..9716be3674a2 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -28,6 +28,7 @@ config RISCV
- 	select ARCH_HAS_SET_DIRECT_MAP
- 	select ARCH_HAS_SET_MEMORY
- 	select ARCH_HAS_STRICT_KERNEL_RWX if MMU
-+	select ARCH_HAS_STRICT_MODULE_RWX if MMU
- 	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
- 	select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT if MMU
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 3e3a5da2ce5aedbcfaca1880eb7c2e239c86b5ae..8487f58da36d21335f690edd2194986c3d4fed23 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -934,9 +934,13 @@ static inline void sk_acceptq_added(struct sock *sk)
+ 	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog + 1);
+ }
+ 
++/* Note: If you think the test should be:
++ *	return READ_ONCE(sk->sk_ack_backlog) >= READ_ONCE(sk->sk_max_ack_backlog);
++ * Then please take a look at commit 64a146513f8f ("[NET]: Revert incorrect accept queue backlog changes.")
++ */
+ static inline bool sk_acceptq_is_full(const struct sock *sk)
+ {
+-	return READ_ONCE(sk->sk_ack_backlog) >= READ_ONCE(sk->sk_max_ack_backlog);
++	return READ_ONCE(sk->sk_ack_backlog) > READ_ONCE(sk->sk_max_ack_backlog);
+ }
+ 
+ /*
 -- 
-2.31.0
-
+2.31.0.291.g576ba9dcdaf-goog
 
