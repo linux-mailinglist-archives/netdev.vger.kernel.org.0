@@ -2,233 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B6DE351D55
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46B30351C35
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:45:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238002AbhDAS2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 14:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S237985AbhDASOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 14:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239494AbhDASQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 14:16:33 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11314C02FEA4;
-        Thu,  1 Apr 2021 09:09:47 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id jy13so3695952ejc.2;
-        Thu, 01 Apr 2021 09:09:46 -0700 (PDT)
+        with ESMTP id S236924AbhDASLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 14:11:41 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4A8C031149
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 09:43:20 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id b16so2674377eds.7
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 09:43:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=us+3Yp591gmxYbF9mhS2gMKfe8LxyfhDKgXk1LVCWx4=;
-        b=iFnOKtd9w2BlsxxD++8UE77w+uiRs8+99uEAykGyQ93TTtc2v1tkfBZhEzQOK/v34H
-         9MJK/+S7fPFlWD8j3CTm5Jxp/Hp1W4rRnAyj3ifUL1BFItCqHPoC5J7hBgGRh2ixrulA
-         +rgFpSwS3z+/AoZGJH540lxqLURMYpy4xDJQLF5BoMjhV9dQxeB1s7u9WED94LE6c0B/
-         ybEmgo95jcAo9tRFy8hP4HqdcoKJaYDZYCjykWjikLoz/GZc8ambESkqHZ6qush8TazO
-         8j2gZ0nf6CDliR2dk5RuKK93Ck3d+G0XiFbw8G8MIGmcQAHcNjxP+kpU4UQl1pB/WG6u
-         9tFA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=BKWqsL3e4gXp+F9sxSIQ2/H/xGExoEj3G1MUBGpuqFY=;
+        b=LqiEI7NvPPBr4wtOwhEmndy0k4clOZPMKOpI09X22bX/j1BpOD5TCL+sonqpuGC+i1
+         TGPtnGUKiLGSiefAcgGLSr9aljAKWzS2rjxXjuNmPhDBP86TpqVIDUbn3jWLNsY7Zs67
+         2vyULX86wGwtAxrWoRxYetURKMZORZufL/ALXWWIp4KrGvTN7MpDTkaYvPsA7mr79k8m
+         JcLl/EVSeKh/L3sI3PLlV+UNnbuWLNuJMSaAWsKvG9AsI2B/qlT9V6tLcLZpokTLbv9l
+         /AS17PWhdli28CUiN880o01jeP8JBdME7qEmrOKYZYziEIjeJu7uWVehk5+g2DwkNt+M
+         dhow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=us+3Yp591gmxYbF9mhS2gMKfe8LxyfhDKgXk1LVCWx4=;
-        b=R14i4dueZnoubT/HmGZI20kOE5FMAyXCLd/Rc4FRSfR4qZdLhrhLz+plwr1y0HV4xH
-         QuftmJq/4WmqrfDK+o77ZMIPZCJZrCPQUMVYCfijrcsObcp9T+DiFZVHVXsONTtVs9gd
-         K2Y0QYYud9tQnnf9OP2CB0cZsRnDlehvDn27XQMguURqbnH6AESYqRJAD7x0fNV++CWr
-         +ml3fR4M4qcww3GUhPhoI1Qb9wOAy8pPRYmKZKuY39lF+znTzPgMaZFcYYIeN4Vf5djs
-         pJok3pA4noYwU6fbJcZM/ot3s76wQOXxi1Xbm/lQiW9cnQsW9MvrlF2rjFwLlz9WKN4v
-         6sgg==
-X-Gm-Message-State: AOAM530j8IqqhDdyRoDk4FJlEYM6awyVB+OP47jbljeK6hhbRtHJPgPE
-        pYA/ZCMPUU5NW0kEwJQbfRA=
-X-Google-Smtp-Source: ABdhPJyrwyPfRMr4KqfP6OorQAfwCEQQlVGm7Sxql3/HJLyN8t1gJQzvMgwEIaQA6QuO6HlcywSVEQ==
-X-Received: by 2002:a17:906:fcb2:: with SMTP id qw18mr9578431ejb.434.1617293385778;
-        Thu, 01 Apr 2021 09:09:45 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id l12sm3617631edb.39.2021.04.01.09.09.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=BKWqsL3e4gXp+F9sxSIQ2/H/xGExoEj3G1MUBGpuqFY=;
+        b=jxVYEPnM/IVvAcTbEomVlRK+VG/z8HQn2ACDkJgUXWDFyFXzBu/3mfK4vafBqOhkYt
+         H/lHcsP74GjPwkYjusJ4H4rfott5wRKBi6mzCr3+1rrSQHfc4IOTo+dJtjJs9h5uDUT2
+         vJgzq7ebsQOgYtXbjVAQCIkEi0+DJkgfTSbwLLM8ubrubk7uDLJGLnDMumZpk6ZN8xqJ
+         boS0j7PEHuXGi52KY0JFLjWBKOMj4pjOjLqpbj1mY2N8D2dE+0wrrEChEvmAKkGvypUI
+         sjyHZwtWCwlzW4xle/wN7RUiPxooLW+KJ825LxlfEuigBJDXf4PC2428VcerO3zwCV/d
+         gQwQ==
+X-Gm-Message-State: AOAM532x3eG3nbi4nXx/yx7/uMQHEkrqWMX4Y+uI5Ak3K1yzogJqHnMr
+        Z0tpaejt0KPJbN5v+j0HJ9A=
+X-Google-Smtp-Source: ABdhPJw/RltAeHIP+4Y6XTJ4bG07YJWsapsW0S3V/6e0dcy8m2DQw64SqPlbdzD+wcHbnFowT0qUBw==
+X-Received: by 2002:a05:6402:26d3:: with SMTP id x19mr10881259edd.349.1617295399131;
+        Thu, 01 Apr 2021 09:43:19 -0700 (PDT)
+Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id w24sm3821270edt.44.2021.04.01.09.43.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 09:09:45 -0700 (PDT)
-Date:   Thu, 1 Apr 2021 19:09:43 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Alexander Duyck <alexander.duyck@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 9/9] net: enetc: add support for XDP_REDIRECT
-Message-ID: <20210401160943.frw7l3rio7spr33n@skbuf>
-References: <20210331200857.3274425-1-olteanv@gmail.com>
- <20210331200857.3274425-10-olteanv@gmail.com>
- <87blaynt4l.fsf@toke.dk>
- <20210401113133.vzs3uxkp52k2ctla@skbuf>
- <875z16nsiu.fsf@toke.dk>
+        Thu, 01 Apr 2021 09:43:18 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 2/3] dpaa2-eth: add rx copybreak support
+Date:   Thu,  1 Apr 2021 19:39:55 +0300
+Message-Id: <20210401163956.766628-3-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210401163956.766628-1-ciorneiioana@gmail.com>
+References: <20210401163956.766628-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <875z16nsiu.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 01, 2021 at 01:39:05PM +0200, Toke Høiland-Jørgensen wrote:
-> Vladimir Oltean <olteanv@gmail.com> writes:
->
-> > On Thu, Apr 01, 2021 at 01:26:02PM +0200, Toke Høiland-Jørgensen wrote:
-> >> > +int enetc_xdp_xmit(struct net_device *ndev, int num_frames,
-> >> > +		   struct xdp_frame **frames, u32 flags)
-> >> > +{
-> >> > +	struct enetc_tx_swbd xdp_redirect_arr[ENETC_MAX_SKB_FRAGS] = {0};
-> >> > +	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-> >> > +	struct enetc_bdr *tx_ring;
-> >> > +	int xdp_tx_bd_cnt, i, k;
-> >> > +	int xdp_tx_frm_cnt = 0;
-> >> > +
-> >> > +	tx_ring = priv->tx_ring[smp_processor_id()];
-> >>
-> >> What mechanism guarantees that this won't overflow the array? :)
-> >
-> > Which array, the array of TX rings?
->
-> Yes.
->
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-The problem isn't even accessing an out-of-bounds element in the TX ring array.
+DMA unmapping, allocating a new buffer and DMA mapping it back on the
+refill path is really not that efficient. Proper buffer recycling (page
+pool, flipping the page and using the other half) cannot be done for
+DPAA2 since it's not a ring based controller but it rather deals with
+multiple queues which all get their buffers from the same buffer pool on
+Rx.
 
-As it turns out, I had a relatively superficial understanding of how
-things are organized, but let me try to explain.
+To circumvent these limitations, add support for Rx copybreak. For small
+sized packets instead of creating a skb around the buffer in which the
+frame was received, allocate a new sk buffer altogether, copy the
+contents of the frame and release the initial page back into the buffer
+pool.
 
-The number of TX rings is a configurable resource (between PFs and VFs)
-and we read the capability at probe time:
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 36 +++++++++++++++++--
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  2 ++
+ 2 files changed, 35 insertions(+), 3 deletions(-)
 
-enetc_get_si_caps:
-	val = enetc_rd(hw, ENETC_SICAPR0);
-	si->num_rx_rings = (val >> 16) & 0xff;
-	si->num_tx_rings = val & 0xff;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index f545cb99388a..200831b41078 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -418,6 +418,33 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
+ 	return xdp_act;
+ }
+ 
++struct sk_buff *dpaa2_eth_copybreak(struct dpaa2_eth_channel *ch,
++				    const struct dpaa2_fd *fd, void *fd_vaddr)
++{
++	u16 fd_offset = dpaa2_fd_get_offset(fd);
++	u32 fd_length = dpaa2_fd_get_len(fd);
++	struct sk_buff *skb = NULL;
++	unsigned int skb_len;
++
++	if (fd_length > DPAA2_ETH_DEFAULT_COPYBREAK)
++		return NULL;
++
++	skb_len = fd_length + dpaa2_eth_needed_headroom(NULL);
++
++	skb = napi_alloc_skb(&ch->napi, skb_len);
++	if (!skb)
++		return NULL;
++
++	skb_reserve(skb, dpaa2_eth_needed_headroom(NULL));
++	skb_put(skb, fd_length);
++
++	memcpy(skb->data, fd_vaddr + fd_offset, fd_length);
++
++	dpaa2_eth_recycle_buf(ch->priv, ch, dpaa2_fd_get_addr(fd));
++
++	return skb;
++}
++
+ /* Main Rx frame processing routine */
+ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
+ 			 struct dpaa2_eth_channel *ch,
+@@ -459,9 +486,12 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
+ 			return;
+ 		}
+ 
+-		dma_unmap_page(dev, addr, priv->rx_buf_size,
+-			       DMA_BIDIRECTIONAL);
+-		skb = dpaa2_eth_build_linear_skb(ch, fd, vaddr);
++		skb = dpaa2_eth_copybreak(ch, fd, vaddr);
++		if (!skb) {
++			dma_unmap_page(dev, addr, priv->rx_buf_size,
++				       DMA_BIDIRECTIONAL);
++			skb = dpaa2_eth_build_linear_skb(ch, fd, vaddr);
++		}
+ 	} else if (fd_format == dpaa2_fd_sg) {
+ 		WARN_ON(priv->xdp_prog);
+ 
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 9ba31c2706bb..f8d2b4769983 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -489,6 +489,8 @@ struct dpaa2_eth_trap_data {
+ 	struct dpaa2_eth_priv *priv;
+ };
+ 
++#define DPAA2_ETH_DEFAULT_COPYBREAK	512
++
+ /* Driver private data */
+ struct dpaa2_eth_priv {
+ 	struct net_device *net_dev;
+-- 
+2.30.0
 
-enetc_init_si_rings_params:
-	priv->num_tx_rings = si->num_tx_rings;
-
-In any case, the TX array is declared as:
-
-struct enetc_ndev_priv {
-	struct enetc_bdr *tx_ring[16];
-	struct enetc_bdr *rx_ring[16];
-};
-
-because that's the maximum hardware capability.
-
-The priv->tx_ring array is populated in:
-
-enetc_alloc_msix:
-	/* # of tx rings per int vector */
-	v_tx_rings = priv->num_tx_rings / priv->bdr_int_num;
-
-	for (i = 0; i < priv->bdr_int_num; i++) {
-		for (j = 0; j < v_tx_rings; j++) {
-			if (priv->bdr_int_num == ENETC_MAX_BDR_INT)
-				idx = 2 * j + i; /* 2 CPUs */
-			else
-				idx = j + i * v_tx_rings; /* default */
-
-			priv->tx_ring[idx] = bdr;
-		}
-	}
-
-priv->bdr_int_num is set to "num_online_cpus()".
-On LS1028A, it can be either 1 or 2 (and the ENETC_MAX_BDR_INT macro is
-equal to 2).
-
-Otherwise said, the convoluted logic above does the following:
-- It affines an MSI interrupt vector per CPU
-- It affines an RX ring per MSI vector, hence per CPU
-- It balances the fixed number of TX rings (say 8) among the available
-  MSI vectors, hence CPUs (say 2). It does this by iterating with i
-  through the RX MSI interrupt vectors, and with j through the number of
-  TX rings per MSI vector.
-
-This logic maps:
-- the even TX rings to CPU 0 and the odd TX rings to CPU 1, if 2 CPUs
-  are used
-- all TX rings to CPU 0, if 1 CPU is used
-
-This is done because we have this logic in enetc_poll:
-
-	for (i = 0; i < v->count_tx_rings; i++)
-		if (!enetc_clean_tx_ring(&v->tx_ring[i], budget))
-			complete = false;
-
-for processing the TX completions of a given group of TX rings in the RX
-MSI interrupt handler of a certain CPU.
-
-Otherwise said, priv->tx_ring[i] is always BD ring i, and that mapping
-never changes. All 8 TX rings are enabled and available for use.
-
-What I knew about tc-taprio and tc-mqprio is that they only enqueue to
-TX queues [0, num_tc-1] because of this, as it turns out:
-
-enetc_xmit:
-	tx_ring = priv->tx_ring[skb->queue_mapping];
-
-where skb->queue_mapping is given by:
-	err = netif_set_real_num_tx_queues(ndev, priv->num_tx_rings);
-and by this, respectively, from the mqprio code path:
-	netif_set_real_num_tx_queues(ndev, num_tc);
-
-As for why XDP works, and priv->tx_ring[smp_processor_id()] is:
-- TX ring 0 for CPU 0 and TX ring 1 for CPU 1, if 2 CPUs are used
-- TX ring 0, if 1 CPU is used
-
-The TX completions in the first case are handled by:
-- CPU 0 for TX ring 0 (because it is even) and CPU 1 for TX ring 1
-  (because it is odd), if 2 CPUs are used, due to the mapping I talked
-  about earlier
-- CPU 0 if only 1 CPU is used
-
-> > You mean that it's possible to receive a TC_SETUP_QDISC_MQPRIO or
-> > TC_SETUP_QDISC_TAPRIO with num_tc == 1, and we have 2 CPUs?
->
-> Not just that, this ndo can be called on arbitrary CPUs after a
-> redirect. The code just calls through from the XDP receive path so which
-> CPU it ends up on depends on the RSS+IRQ config of the other device,
-> which may not even be the same driver; i.e., you have no control over
-> that... :)
->
-
-What do you mean by "arbitrary" CPU? You can't plug CPUs in, it's a dual
-core system... Why does the source ifindex matter at all? I'm using the
-TX ring affined to the CPU that ndo_xdp_xmit is currently running on.
-
-> > Well, yeah, I don't know what's the proper way to deal with that. Ideas?
->
-> Well the obvious one is just:
->
-> tx_ring = priv->tx_ring[smp_processor_id() % num_ring_ids];
->
-> and then some kind of locking to deal with multiple CPUs accessing the
-> same TX ring...
-
-By multiple CPUs accessing the same TX ring, you mean locking between
-ndo_xdp_xmit and ndo_start_xmit? Can that even happen if the hardware
-architecture is to have at least as many TX rings as CPUs?
-
-Because otherwise, I see that ndo_xdp_xmit is only called from
-xdp_do_flush, which is in softirq context, which to my very rudimentary
-knowledge run with bottom halves, thus preemption, disabled? So I don't
-think it's possible for ndo_xdp_xmit and ndo_xmit, or even two
-ndo_xdp_xmit instances, to access the same TX ring?
-
-Sorry, I'm sure these are trivial questions, but I would like to really
-understand what I need to change and why :D
