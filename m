@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B3CF352366
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:22:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6953E352363
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236270AbhDAXUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 19:20:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38916 "EHLO mail.kernel.org"
+        id S236189AbhDAXUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 19:20:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235912AbhDAXUL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Apr 2021 19:20:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DA61A61153;
+        id S235909AbhDAXUK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 19:20:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D3D3861152;
         Thu,  1 Apr 2021 23:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617319209;
-        bh=MG5dO0j4BU/FGn2S970gXVwHPFpUqaV/64qbjgzRfXg=;
+        bh=a4J8hSWn61N2uanLnkkW2W+XHIHI96a+n0os9TlOm8w=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CD7ykvNWfAjwlxBPcRNhpEk8QqrOvDhNGjN7J8JpL2dsUBJSvGnJ7Pc9s7YjuT1j2
-         5ZYTBXIHcPQ/lMF21ZkKrDmWb+PIyevyVyhR8xmbKsU1dwqSItDnBEkBSqRjS0IwOV
-         oJijpq1P/RvrBeHSnctGX4S5Wmp4E/FoCZ7GjPpLrWp9U4JIXOwo4MIK2E1BMUeLmP
-         yNtXXq54787S9ycm5h0uY0rNgiqwGQkEnGiQqMdJdIfGXb9j/DsIOStYN4B4AFsPiU
-         qXc5MzsnVUd5o/vLIYjiXugUbFlGDY7gFgtrEZLnS8IrPdqNmg6qz1mKHL1wazhQz1
-         5mG+Bomjj9tuw==
+        b=O7B4FQ9zLxHsKWBCGBoXUrWRvbETAoWq1BVcze/eEi78rujoiJzrqcwVwiAJZ1U2Q
+         U+93+eBJeIjgFpDByOPxfwzAWU6omLQIekurDctYbdtUS0B4D/OfKi2y0KPlGMvHmj
+         ob3KtjsO6rdu/XYTe/aQq2PMBa7rbR439iEuOa3UV8FxE6+U1K/jbXTHUX1TF84NET
+         gqrMB++qa16uzFryWUhoQkbKQRmnRf6wwA3XELdXb87O6bJdVQ7v01EnS9sJlTpLst
+         z8xc6hYcd89LT8OiEIRQhJGrAdEb9lR/e1K2LRJXRBfy5mCMO+szO9fThd+HVKC6cu
+         SlXzaV2P1W7gQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CD3D6609D3;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C409D609D2;
         Thu,  1 Apr 2021 23:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: document a side effect of
- ip_local_reserved_ports
+Subject: Re: [PATCH] include: net: Remove repeated struct declaration
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161731920983.16404.61942789615445016.git-patchwork-notify@kernel.org>
+Message-Id: <161731920979.16404.5049234780996551334.git-patchwork-notify@kernel.org>
 Date:   Thu, 01 Apr 2021 23:20:09 +0000
-References: <20210401155704.35341-1-otto.hollmann@suse.com>
-In-Reply-To: <20210401155704.35341-1-otto.hollmann@suse.com>
-To:     Otto Hollmann <otto.hollmann@suse.com>
+References: <20210401070823.994760-1-wanjiabing@vivo.com>
+In-Reply-To: <20210401070823.994760-1-wanjiabing@vivo.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, corbet@lwn.net, dsahern@kernel.org,
-        mkubecek@suse.cz, edumazet@google.com
+        linux-kernel@vger.kernel.org, kael_w@yeah.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,22 +46,18 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu,  1 Apr 2021 17:57:05 +0200 you wrote:
-> If there is overlapp between ip_local_port_range and ip_local_reserved_ports with a huge reserved block, it will affect probability of selecting ephemeral ports, see file net/ipv4/inet_hashtables.c:723
+On Thu,  1 Apr 2021 15:08:22 +0800 you wrote:
+> struct ctl_table_header is declared twice. One is declared
+> at 46th line. The blew one is not needed. Remove the duplicate.
 > 
->     int __inet_hash_connect(
->     ...
->             for (i = 0; i < remaining; i += 2, port += 2) {
->                     if (unlikely(port >= high))
->                             port -= remaining;
->                     if (inet_is_local_reserved_port(net, port))
->                             continue;
-> 
-> [...]
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  include/net/net_namespace.h | 1 -
+>  1 file changed, 1 deletion(-)
 
 Here is the summary with links:
-  - [net-next] net: document a side effect of ip_local_reserved_ports
-    https://git.kernel.org/netdev/net-next/c/a7a80b17c750
+  - include: net: Remove repeated struct declaration
+    https://git.kernel.org/netdev/net-next/c/9fadafa46f48
 
 You are awesome, thank you!
 --
