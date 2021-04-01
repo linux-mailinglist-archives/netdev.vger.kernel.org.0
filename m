@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C5BE3519D8
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:03:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43BF2351B51
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235833AbhDAR4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 13:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59964 "EHLO
+        id S236731AbhDASHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 14:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237274AbhDARvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:51:12 -0400
+        with ESMTP id S235087AbhDASBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 14:01:36 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F16FC02D577;
-        Thu,  1 Apr 2021 08:53:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D174C02D57E;
+        Thu,  1 Apr 2021 08:54:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=6DcxZsiPepfGUgEn3X4Pytv10TvLFSsigpRcj4GEp8w=; b=uRAAEOxv+dvr1q453virD2Gtg2
-        RxsviVpQmrYjUOesDnzmffH1s4f5/g/ydd6GmWzsNFgEAhk4MwZz160FCUG54cbCwoO7u9CKV2e6H
-        oA/2q/iPNV0v3FgBw4/fS+dY5iILltmFPA24gZPu1D2JMj/qR3IqQRU6Y3/mqHpy3MK6b3FqwnQMT
-        ZIKQX7drOizNIcl/RvwRzhCvsTPnqRZzU1azHpSJ2cwTryCvxHonansIz6pnu26oZ3I9+tYVkzdGQ
-        Ub7tBWI6c7Tf08rokSakQpzuRx3oyNbi65wV30f87Ope5E1zKUA3FQEE9GQ5dk0QmbFmXxQyTxWUb
-        Q2It65xg==;
+        bh=a335jwrDQUCIDB0PLMT4Bi0PLGtfSsidoCsV+7NPZSw=; b=Jm4YM1cgbTXujlbOs7gh/YkZXl
+        6bHE0FEMAACZyycfzai0Zrl9+34hJNJ67gIyXK6JRT4CXiC62BEJ2u2Xf5O4f/eNl7ZE/T637Sbun
+        uOUfGXy7AIV7WWuJoeUBV2LiYRJY6Mq9NDnszI/oN2JzrfKLoXx7xfQMPP4vcQyOgL8CGEM7RkxRG
+        snKrJrSiL7ptfKsi0YkiCGWY6qgPobaUY8VNpCHXIzWi0WsxI2lhQmG99snBIuHusV0CsysNNhLBt
+        lsb8XMDH5z+8/aFy4jA0asAUu/C66IyIflLuP+uOGzWvUK2BmVRRLIFBdcJULD3dwH9DzQUNx6T2C
+        UteOvdqg==;
 Received: from [2001:4bb8:180:7517:83e4:a809:b0aa:ca74] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lRzdg-00Cict-3h; Thu, 01 Apr 2021 15:53:44 +0000
+        id 1lRzdz-00Cifp-Mc; Thu, 01 Apr 2021 15:54:04 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         Li Yang <leoyang.li@nxp.com>
@@ -38,9 +38,9 @@ Cc:     Michael Ellerman <mpe@ellerman.id.au>,
         iommu@lists.linux-foundation.org,
         linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH 13/20] iommu/fsl_pamu: hardcode the window address and size in pamu_config_ppaace
-Date:   Thu,  1 Apr 2021 17:52:49 +0200
-Message-Id: <20210401155256.298656-14-hch@lst.de>
+Subject: [PATCH 20/20] iommu: remove iommu_domain_{get,set}_attr
+Date:   Thu,  1 Apr 2021 17:52:56 +0200
+Message-Id: <20210401155256.298656-21-hch@lst.de>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210401155256.298656-1-hch@lst.de>
 References: <20210401155256.298656-1-hch@lst.de>
@@ -51,113 +51,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The win_addr and win_size parameters are always set to 0 and 1 << 36
-respectively, so just hard code them.
+Remove the now unused iommu attr infrastructure.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/fsl_pamu.c        | 23 ++++-------------------
- drivers/iommu/fsl_pamu.h        |  3 +--
- drivers/iommu/fsl_pamu_domain.c | 10 ++--------
- 3 files changed, 7 insertions(+), 29 deletions(-)
+ drivers/iommu/iommu.c | 26 --------------------------
+ include/linux/iommu.h | 36 ------------------------------------
+ 2 files changed, 62 deletions(-)
 
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 742fa0e8c45b88..fc38b1fba7cff0 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -178,8 +178,6 @@ int pamu_update_paace_stash(int liodn, u32 value)
-  * pamu_config_paace() - Sets up PPAACE entry for specified liodn
-  *
-  * @liodn: Logical IO device number
-- * @win_addr: starting address of DSA window
-- * @win-size: size of DSA window
-  * @omi: Operation mapping index -- if ~omi == 0 then omi not defined
-  * @stashid: cache stash id for associated cpu -- if ~stashid == 0 then
-  *	     stashid not defined
-@@ -187,35 +185,22 @@ int pamu_update_paace_stash(int liodn, u32 value)
-  *
-  * Returns 0 upon success else error code < 0 returned
-  */
--int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
--		       u32 omi, u32 stashid, int prot)
-+int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
- {
- 	struct paace *ppaace;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index bf7dcd2fc08643..d19944733b9dac 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2665,32 +2665,6 @@ static int __init iommu_init(void)
+ }
+ core_initcall(iommu_init);
  
--	if ((win_size & (win_size - 1)) || win_size < PAMU_PAGE_SIZE) {
--		pr_debug("window size too small or not a power of two %pa\n",
--			 &win_size);
+-int iommu_domain_get_attr(struct iommu_domain *domain,
+-			  enum iommu_attr attr, void *data)
+-{
+-	if (!domain->ops->domain_get_attr)
 -		return -EINVAL;
+-	return domain->ops->domain_get_attr(domain, attr, data);
+-}
+-EXPORT_SYMBOL_GPL(iommu_domain_get_attr);
+-
+-int iommu_domain_set_attr(struct iommu_domain *domain,
+-			  enum iommu_attr attr, void *data)
+-{
+-	int ret = 0;
+-
+-	switch (attr) {
+-	default:
+-		if (domain->ops->domain_set_attr == NULL)
+-			return -EINVAL;
+-
+-		ret = domain->ops->domain_set_attr(domain, attr, data);
 -	}
 -
--	if (win_addr & (win_size - 1)) {
--		pr_debug("window address is not aligned with window size\n");
--		return -EINVAL;
--	}
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
 -
- 	ppaace = pamu_get_ppaace(liodn);
- 	if (!ppaace)
- 		return -ENOENT;
- 
- 	/* window size is 2^(WSE+1) bytes */
- 	set_bf(ppaace->addr_bitfields, PPAACE_AF_WSE,
--	       map_addrspace_size_to_wse(win_size));
-+	       map_addrspace_size_to_wse(1ULL << 36));
- 
- 	pamu_init_ppaace(ppaace);
- 
--	ppaace->wbah = win_addr >> (PAMU_PAGE_SHIFT + 20);
--	set_bf(ppaace->addr_bitfields, PPAACE_AF_WBAL,
--	       (win_addr >> PAMU_PAGE_SHIFT));
-+	ppaace->wbah = 0;
-+	set_bf(ppaace->addr_bitfields, PPAACE_AF_WBAL, 0);
- 
- 	/* set up operation mapping if it's configured */
- 	if (omi < OME_NUMBER_ENTRIES) {
-diff --git a/drivers/iommu/fsl_pamu.h b/drivers/iommu/fsl_pamu.h
-index c96b29f0c7077f..36df7975ff64d3 100644
---- a/drivers/iommu/fsl_pamu.h
-+++ b/drivers/iommu/fsl_pamu.h
-@@ -383,8 +383,7 @@ struct ome {
- int pamu_domain_init(void);
- int pamu_enable_liodn(int liodn);
- int pamu_disable_liodn(int liodn);
--int pamu_config_ppaace(int liodn, phys_addr_t win_addr, phys_addr_t win_size,
--		       u32 omi, uint32_t stashid, int prot);
-+int pamu_config_ppaace(int liodn, u32 omi, uint32_t stashid, int prot);
- 
- u32 get_stash_id(u32 stash_dest_hint, u32 vcpu);
- void get_ome_index(u32 *omi_index, struct device *dev);
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index c83f1e7c2cb0c9..32944d67baa495 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -78,8 +78,6 @@ static int update_liodn_stash(int liodn, struct fsl_dma_domain *dma_domain,
- static int pamu_set_liodn(struct fsl_dma_domain *dma_domain, struct device *dev,
- 			  int liodn)
+ int iommu_enable_nesting(struct iommu_domain *domain)
  {
--	struct iommu_domain *domain = &dma_domain->iommu_domain;
--	struct iommu_domain_geometry *geom = &domain->geometry;
- 	u32 omi_index = ~(u32)0;
- 	unsigned long flags;
- 	int ret;
-@@ -95,14 +93,10 @@ static int pamu_set_liodn(struct fsl_dma_domain *dma_domain, struct device *dev,
- 	ret = pamu_disable_liodn(liodn);
- 	if (ret)
- 		goto out_unlock;
--	ret = pamu_config_ppaace(liodn, geom->aperture_start,
--				 geom->aperture_end + 1, omi_index,
--				 dma_domain->stash_id, 0);
-+	ret = pamu_config_ppaace(liodn, omi_index, dma_domain->stash_id, 0);
- 	if (ret)
- 		goto out_unlock;
--	ret = pamu_config_ppaace(liodn, geom->aperture_start,
--				 geom->aperture_end + 1, ~(u32)0,
--				 dma_domain->stash_id,
-+	ret = pamu_config_ppaace(liodn, ~(u32)0, dma_domain->stash_id,
- 				 PAACE_AP_PERMS_QUERY | PAACE_AP_PERMS_UPDATE);
- out_unlock:
- 	spin_unlock_irqrestore(&iommu_lock, flags);
+ 	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 4280be90a27956..1a905446dc4ca1 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -96,20 +96,6 @@ enum iommu_cap {
+ 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
+ };
+ 
+-/*
+- * Following constraints are specifc to FSL_PAMUV1:
+- *  -aperture must be power of 2, and naturally aligned
+- *  -number of windows must be power of 2, and address space size
+- *   of each window is determined by aperture size / # of windows
+- *  -the actual size of the mapped region of a window must be power
+- *   of 2 starting with 4KB and physical address must be naturally
+- *   aligned.
+- */
+-
+-enum iommu_attr {
+-	DOMAIN_ATTR_MAX,
+-};
+-
+ /* These are the possible reserved region types */
+ enum iommu_resv_type {
+ 	/* Memory regions which must be mapped 1:1 at all times */
+@@ -191,8 +177,6 @@ struct iommu_iotlb_gather {
+  * @probe_finalize: Do final setup work after the device is added to an IOMMU
+  *                  group and attached to the groups domain
+  * @device_group: find iommu group for a particular device
+- * @domain_get_attr: Query domain attributes
+- * @domain_set_attr: Change domain attributes
+  * @enable_nesting: Enable nesting
+  * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
+  * @get_resv_regions: Request list of reserved regions for a device
+@@ -243,10 +227,6 @@ struct iommu_ops {
+ 	void (*release_device)(struct device *dev);
+ 	void (*probe_finalize)(struct device *dev);
+ 	struct iommu_group *(*device_group)(struct device *dev);
+-	int (*domain_get_attr)(struct iommu_domain *domain,
+-			       enum iommu_attr attr, void *data);
+-	int (*domain_set_attr)(struct iommu_domain *domain,
+-			       enum iommu_attr attr, void *data);
+ 	int (*enable_nesting)(struct iommu_domain *domain);
+ 	int (*set_pgtable_quirks)(struct iommu_domain *domain,
+ 				  unsigned long quirks);
+@@ -493,10 +473,6 @@ extern int iommu_page_response(struct device *dev,
+ extern int iommu_group_id(struct iommu_group *group);
+ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+ 
+-extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+-				 void *data);
+-extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+-				 void *data);
+ int iommu_enable_nesting(struct iommu_domain *domain);
+ int iommu_set_pgtable_quirks(struct iommu_domain *domain,
+ 		unsigned long quirks);
+@@ -869,18 +845,6 @@ static inline int iommu_group_id(struct iommu_group *group)
+ 	return -ENODEV;
+ }
+ 
+-static inline int iommu_domain_get_attr(struct iommu_domain *domain,
+-					enum iommu_attr attr, void *data)
+-{
+-	return -EINVAL;
+-}
+-
+-static inline int iommu_domain_set_attr(struct iommu_domain *domain,
+-					enum iommu_attr attr, void *data)
+-{
+-	return -EINVAL;
+-}
+-
+ static inline int iommu_set_pgtable_quirks(struct iommu_domain *domain,
+ 		unsigned long quirks)
+ {
 -- 
 2.30.1
 
