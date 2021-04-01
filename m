@@ -2,77 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E67635234E
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF995352351
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:22:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235061AbhDAXR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 19:17:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37632 "EHLO mail.kernel.org"
+        id S234525AbhDAXTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 19:19:52 -0400
+Received: from mga14.intel.com ([192.55.52.115]:18940 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233677AbhDAXR4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Apr 2021 19:17:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B29C61104;
-        Thu,  1 Apr 2021 23:17:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617319076;
-        bh=ymiY8ZTzmhOuR3loDD2Rxst61HGOdmFWPlL6kzcgJes=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=F5b9czjGxoWcTVYm9K81Z7AbRg+iHFONt3L7rIdIqu70KIq7Hq2Ugdi4GoVCvhPU7
-         V2nmHs/JqM1xxglvZSswsdT+FNL9FNXUI/OgcwugKkM6bDOYXtWIqZpqlUk8HC23e1
-         vE+xxCIfYqLfcSS76j2fwj6NBHPW92rZtreXPwed7Q36N+wZ9pcV7e0PKEbVSiF55x
-         VBp6zrb8ige7PjdXRoxcarKYF0rrOzXWZIrs55bzX5LmQLwMxOCmTouhbl2im0kl45
-         oo2HhODHHSvG19pJiX8xfgQZb7lu7nT4iJe7gu3DN820NmvLbSqexMngGYubJ5jbRA
-         O2u6ETTLwLJlA==
-Received: by mail-lj1-f176.google.com with SMTP id a1so3963803ljp.2;
-        Thu, 01 Apr 2021 16:17:56 -0700 (PDT)
-X-Gm-Message-State: AOAM532NA5Z1NVm3SbmOJCoXVYxveoq+vaWUqDctZfd24/406hBKBUCr
-        3UL2xK23eyY12PGN+WnnvGDCm/cSmEtO0d+ACY4=
-X-Google-Smtp-Source: ABdhPJzKeVQTL3CELzeA2yV1t99oNC3zlANJ1CjJTEA05FRxs4UxvsKoOzmgSd05y2P3yi52l8aaJ+gH+AKpAHMW4Lg=
-X-Received: by 2002:a05:651c:200b:: with SMTP id s11mr6382133ljo.177.1617319074579;
- Thu, 01 Apr 2021 16:17:54 -0700 (PDT)
+        id S233677AbhDAXTw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 19:19:52 -0400
+IronPort-SDR: 6reVHlYIDqcfWoUVgxyBGr4KqwpJgUFp3vxGueUCFf/CTl+yXm6swpvuYSHcvqj1/9xY/A66J4
+ ruz7nBNS4z5A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="191829875"
+X-IronPort-AV: E=Sophos;i="5.81,298,1610438400"; 
+   d="scan'208";a="191829875"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 16:19:52 -0700
+IronPort-SDR: 4JS3CCvQwCj8MYHVRpD7UoySHalZIT+eMblnD3YdL5FmZ1NiSamSr+Ku9MCn9YShj8k8TGcikc
+ AyVLKEvm2Row==
+X-IronPort-AV: E=Sophos;i="5.81,298,1610438400"; 
+   d="scan'208";a="446269181"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.252.128.105])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 16:19:51 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/7] MPTCP: Miscellaneous changes
+Date:   Thu,  1 Apr 2021 16:19:40 -0700
+Message-Id: <20210401231947.162836-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210401142301.1686904-1-yangyingliang@huawei.com>
-In-Reply-To: <20210401142301.1686904-1-yangyingliang@huawei.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 1 Apr 2021 16:17:43 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6H6z5-35ja37fzC9JNYcG+P2zV3y6SCFqPwfaMVSp9tw@mail.gmail.com>
-Message-ID: <CAPhsuW6H6z5-35ja37fzC9JNYcG+P2zV3y6SCFqPwfaMVSp9tw@mail.gmail.com>
-Subject: Re: [PATCH -next] libbpf: remove redundant semi-colon
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 1, 2021 at 10:58 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
->
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Here is a collection of patches from the MPTCP tree:
 
-Please add a short commit log.
 
-Thanks,
-Song
+Patches 1 and 2 add some helpful MIB counters for connection
+information.
 
-> ---
->  tools/lib/bpf/linker.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-> index 46b16cbdcda3..4e08bc07e635 100644
-> --- a/tools/lib/bpf/linker.c
-> +++ b/tools/lib/bpf/linker.c
-> @@ -1895,7 +1895,7 @@ static int finalize_btf_ext(struct bpf_linker *linker)
->         hdr->func_info_len = funcs_sz;
->         hdr->line_info_off = funcs_sz;
->         hdr->line_info_len = lines_sz;
-> -       hdr->core_relo_off = funcs_sz + lines_sz;;
-> +       hdr->core_relo_off = funcs_sz + lines_sz;
->         hdr->core_relo_len = core_relos_sz;
->
->         if (funcs_sz) {
-> --
-> 2.25.1
->
+Patch 3 cleans up some unnecessary checks.
+
+Patch 4 is a new feature, support for the MP_TCPRST option. This option
+is used when resetting one subflow within a MPTCP connection, and
+provides a reason code that the recipient can use when deciding how to
+adapt to the lost subflow.
+
+Patches 5-7 update the existing MPTCP selftests to improve timeout
+handling and to share better information when tests fail.
+
+
+Florian Westphal (1):
+  mptcp: add mptcp reset option support
+
+Matthieu Baerts (3):
+  selftests: mptcp: launch mptcp_connect with timeout
+  selftests: mptcp: init nstat history
+  selftests: mptcp: dump more info on mpjoin errors
+
+Paolo Abeni (3):
+  mptcp: add mib for token creation fallback
+  mptcp: add active MPC mibs
+  mptcp: remove unneeded check on first subflow
+
+ include/net/mptcp.h                           | 18 ++++-
+ include/uapi/linux/mptcp.h                    | 11 +++
+ net/ipv4/tcp_ipv4.c                           | 21 +++++-
+ net/ipv6/tcp_ipv6.c                           | 14 +++-
+ net/mptcp/mib.c                               |  3 +
+ net/mptcp/mib.h                               |  3 +
+ net/mptcp/options.c                           | 69 +++++++++++++++++--
+ net/mptcp/pm_netlink.c                        | 12 ++++
+ net/mptcp/protocol.c                          | 20 ++++--
+ net/mptcp/protocol.h                          | 14 +++-
+ net/mptcp/subflow.c                           | 34 +++++++--
+ tools/testing/selftests/net/mptcp/diag.sh     | 55 +++++++++------
+ .../selftests/net/mptcp/mptcp_connect.sh      | 22 ++++--
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 39 ++++++++---
+ .../selftests/net/mptcp/simult_flows.sh       | 13 +++-
+ 15 files changed, 291 insertions(+), 57 deletions(-)
+
+
+base-commit: 247ca657e20460375bf3217073d6477440f48025
+-- 
+2.31.1
+
