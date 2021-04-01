@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0200E350FA5
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3713E350FA3
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233493AbhDAG5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 02:57:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42476 "EHLO mail.kernel.org"
+        id S233470AbhDAG5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 02:57:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233240AbhDAG5e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Apr 2021 02:57:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 39AF9600EF;
-        Thu,  1 Apr 2021 06:57:32 +0000 (UTC)
+        id S233376AbhDAG51 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 02:57:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 63D9361057;
+        Thu,  1 Apr 2021 06:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617260253;
-        bh=Hlopmtsyvj627ObnwAtg6OK1EI2+m3QH4PNmFvmzOEk=;
+        s=k20201202; t=1617260247;
+        bh=qqgym3ZImLzrZ/bfAC2kk5LAa27jppiee5uZ74LdJAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J4oKu90sRm73B9P9VhFHwHVH8yCRTvH2SnbILbdRfoJOpOtSm+ypSqGyuMm/ZhTaX
-         UgXEQMqzmheTtEDOxp+rm7BMdHcgEeAce3MAFoEHQrbKKoxM+dLMRyG9pP6GA5WgB6
-         GcILW9f18/+grLMj97djFaW6vL3XWfO07MKh93MDkz4ePLpwGmy820mEbwPnR8Vub1
-         34QBsE3ybWhAwUw2faYBdoCAeV4ePswSHK6e96rFFHOQ2URRibkwByuFBWkFGehI98
-         /6Aq/SjWImjuKETOOp+QHafs6SLWHs/V63Daa4u8syUjRlyIHveHfUlbpVuAIOK/BI
-         UNUVL18YOJRiw==
+        b=fjodSnuamgAja9u/n212mR6hYLFz2ZP74lU4/Fqme4uJKpq/+TyE97k7BXc17hCJY
+         vXUYpoXtdGrlecbiyZd9MrOFyMWzAzu+GTCBoB2b6XpooA5HDNmAHf4MSQkuVX5+DK
+         wg8PQs0nhe6YfZyWTS5kayaBQJuzzkJZuwjYtKCydmUOjzrqWHxNoyYqOJJehelbqL
+         WHkULfyJiGQ804+Y/tiRcIHn8pDhjALU3J8f2RFeRBV2wHT/rclWKw4v/gbPoTUezB
+         ZNnrDMUhTZfahH/+Td+Ngh/d1eN3jqECoSyImWcOnajIJBK2MDLTAwkXlKRQzYZ74e
+         EKlswLbV6UpKA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -35,9 +35,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         netdev@vger.kernel.org, Selvin Xavier <selvin.xavier@broadcom.com>,
         Somnath Kotur <somnath.kotur@broadcom.com>,
         Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: [PATCH rdma-next v2 2/5] RDMA/bnxt_re: Create direct symbolic link between bnxt modules
-Date:   Thu,  1 Apr 2021 09:57:12 +0300
-Message-Id: <20210401065715.565226-3-leon@kernel.org>
+Subject: [PATCH rdma-next v2 3/5] RDMA/bnxt_re: Get rid of custom module reference counting
+Date:   Thu,  1 Apr 2021 09:57:13 +0300
+Message-Id: <20210401065715.565226-4-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210401065715.565226-1-leon@kernel.org>
 References: <20210401065715.565226-1-leon@kernel.org>
@@ -49,74 +49,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Convert indirect probe call to its direct equivalent to create
-symbols link between RDMA and netdev modules. This will give
-us an ability to remove custom module reference counting that
-doesn't belong to the driver.
+Instead of manually messing with parent driver module reference
+counting rely on export symbol mechanism to ensure that proper
+probe/remove chain is performed.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/hw/bnxt_re/main.c          | 7 +------
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 2 --
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 1 -
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 1 +
- 4 files changed, 2 insertions(+), 9 deletions(-)
+ drivers/infiniband/hw/bnxt_re/main.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/infiniband/hw/bnxt_re/main.c b/drivers/infiniband/hw/bnxt_re/main.c
-index b30d37f0bad2..140c54ee5916 100644
+index 140c54ee5916..8bfbf0231a9e 100644
 --- a/drivers/infiniband/hw/bnxt_re/main.c
 +++ b/drivers/infiniband/hw/bnxt_re/main.c
-@@ -610,15 +610,10 @@ static void bnxt_re_dev_unprobe(struct net_device *netdev,
+@@ -601,13 +601,6 @@ static struct bnxt_re_dev *bnxt_re_from_netdev(struct net_device *netdev)
+ 	return container_of(ibdev, struct bnxt_re_dev, ibdev);
+ }
  
+-static void bnxt_re_dev_unprobe(struct net_device *netdev,
+-				struct bnxt_en_dev *en_dev)
+-{
+-	dev_put(netdev);
+-	module_put(en_dev->pdev->driver->driver.owner);
+-}
+-
  static struct bnxt_en_dev *bnxt_re_dev_probe(struct net_device *netdev)
  {
--	struct bnxt *bp = netdev_priv(netdev);
  	struct bnxt_en_dev *en_dev;
- 	struct pci_dev *pdev;
- 
--	/* Call bnxt_en's RoCE probe via indirect API */
--	if (!bp->ulp_probe)
--		return ERR_PTR(-EINVAL);
--
--	en_dev = bp->ulp_probe(netdev);
-+	en_dev = bnxt_ulp_probe(netdev);
- 	if (IS_ERR(en_dev))
- 		return en_dev;
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index a680fd9c68ea..3f0e4bde5dc9 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12859,8 +12859,6 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (!BNXT_CHIP_P4_PLUS(bp))
- 		bp->flags |= BNXT_FLAG_DOUBLE_DB;
- 
--	bp->ulp_probe = bnxt_ulp_probe;
--
- 	rc = bnxt_init_mac_addr(bp);
- 	if (rc) {
- 		dev_err(&pdev->dev, "Unable to initialize mac address.\n");
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 1259e68cba2a..eb0314d7a9b1 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1745,7 +1745,6 @@ struct bnxt {
- 	(BNXT_CHIP_P4(bp) || BNXT_CHIP_P5(bp))
- 
- 	struct bnxt_en_dev	*edev;
--	struct bnxt_en_dev *	(*ulp_probe)(struct net_device *);
- 
- 	struct bnxt_napi	**bnapi;
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-index 64dbbb04b043..a918e374f3c5 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-@@ -491,3 +491,4 @@ struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
+@@ -628,10 +621,6 @@ static struct bnxt_en_dev *bnxt_re_dev_probe(struct net_device *netdev)
+ 		return ERR_PTR(-ENODEV);
  	}
- 	return bp->edev;
+ 
+-	/* Bump net device reference count */
+-	if (!try_module_get(pdev->driver->driver.owner))
+-		return ERR_PTR(-ENODEV);
+-
+ 	dev_hold(netdev);
+ 
+ 	return en_dev;
+@@ -1558,13 +1547,12 @@ static int bnxt_re_dev_init(struct bnxt_re_dev *rdev, u8 wqe_mode)
+ 
+ static void bnxt_re_dev_unreg(struct bnxt_re_dev *rdev)
+ {
+-	struct bnxt_en_dev *en_dev = rdev->en_dev;
+ 	struct net_device *netdev = rdev->netdev;
+ 
+ 	bnxt_re_dev_remove(rdev);
+ 
+ 	if (netdev)
+-		bnxt_re_dev_unprobe(netdev, en_dev);
++		dev_put(netdev);
  }
-+EXPORT_SYMBOL(bnxt_ulp_probe);
+ 
+ static int bnxt_re_dev_reg(struct bnxt_re_dev **rdev, struct net_device *netdev)
+@@ -1586,7 +1574,7 @@ static int bnxt_re_dev_reg(struct bnxt_re_dev **rdev, struct net_device *netdev)
+ 	*rdev = bnxt_re_dev_add(netdev, en_dev);
+ 	if (!*rdev) {
+ 		rc = -ENOMEM;
+-		bnxt_re_dev_unprobe(netdev, en_dev);
++		dev_put(netdev);
+ 		goto exit;
+ 	}
+ exit:
 -- 
 2.30.2
 
