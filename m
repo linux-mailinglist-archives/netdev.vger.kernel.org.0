@@ -2,117 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BD4351F4E
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31729351F47
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236689AbhDATFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 15:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
+        id S237192AbhDATEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 15:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237888AbhDATD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:03:26 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECCEC0F26DF
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 10:56:21 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id kr3-20020a17090b4903b02900c096fc01deso1418854pjb.4
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 10:56:21 -0700 (PDT)
+        with ESMTP id S235821AbhDATDW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:03:22 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C402C0F26EE
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 10:56:22 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id x7-20020a17090a2b07b02900c0ea793940so3485747pjc.2
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 10:56:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=i+aPU5Ee9/6UCmQ5mpktEF4Z5MZf27bH3a8PlGJ9k0A=;
-        b=Yk3NNpOYoTHprEkN3B9amkQ8A4MHJRTEgaTkow5pfXNHUlMyDGSiMZdN1JW46VgMhn
-         zCbt2N2AL7xtxaJthyqL5g5VcQ2g9p0Y2yJ4GS66hfVGHLkQbEWxM2RMVVJavq5mxkbD
-         UjNgIQWO/qt91OKTxpb6Z02/9OvIl7PdPUr4R/oy9Ow1/KEZ4RTMt6mSHFqRq7AF5gQW
-         R+nnHUiWqD9ggvPt116X25Vw7ilSAjx0sXnZSxdHvpVz1st61HPHOx7W2AFB4/n5a01B
-         1bvA3MzNBtBS7ViIY1xR4JDzBd5W09bDgOa68iNVn41gOXL8HDUy8WIXcGMqGI0kPM+t
-         VKCw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=7QmnBG0pTePDt842nweNMSdTAO53eyMxLkJlDiWzq7E=;
+        b=0tKvGnQ695EPgsLypOyYXiWFTNlQ/xpRL0fmwvjIhUhh4o4PTboQgxTL3ov6ooaaJx
+         Su0UK6zL6QHG5IfpAwySRElTnvyOAMzE0GK+R8O5HrxIJwgJEgQFiD6ol3BlmC+kTvnq
+         m3SwMzy+Jrvsir4nO+Rcpf1AXgJbhP4Y1auXrcMSGCP5uYQieQtsHpCmj2bccIHPRPUE
+         FJOY8+yWYOgA6PQsnHRJbAeB8bHFA/LGwnK/IvSEOP+uo1u+Fb64R5lyyisw83k+Drtj
+         T9mt/MVQrGIWpl0u4NCTmyfQAu11nGTc90w64HI7hfSYozXjiA+mt5h9UaNQ4blploC/
+         /g6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=i+aPU5Ee9/6UCmQ5mpktEF4Z5MZf27bH3a8PlGJ9k0A=;
-        b=SPponuMG7ACsvsfp/+fgyOo31wO2oT89V2AofyRtBPY+yzbd3WxDhmUTKo6GSqq5SP
-         QEdJKyrV7Bdpo4CgoKhBOf24x7xkTqi/X9rHLHxmFE2xVVn/Sehp/kMKg41wafBXJukI
-         HkPkmzjwKkRGq2DJwtv51A9pd0eRyXsummp2hlg2DnweqWBydkvKcgjddR1S/+XiaTeK
-         q6O5NmaKYh+BK8nutR1/E2jRifINIQ0z94WwcYO4/257QB4Wo5EURTm8QVWwVEOmOzzZ
-         ADeAzmUeWy0Hrmof9Y9HaZw66OC6j5f/uHzDANsbv8Uwu2FZTe63PaFSUpNGHg2QqUe2
-         hRBw==
-X-Gm-Message-State: AOAM533DXZKPiHuW41vY9E+qdVr580oQ0k52mmU8stiBPbujY+rk8Rc9
-        JInoHWKhhaS43Kmxw2Za/GBYCK30E4GGZw==
-X-Google-Smtp-Source: ABdhPJxE3kJAKrCyJpag7Xmv6uDYG8Vp+8jTYsrK49eciID9RsmYidh7vZKdL3UVpXrIpUDn08b4rw==
-X-Received: by 2002:a17:90a:43a2:: with SMTP id r31mr10117022pjg.52.1617299780928;
-        Thu, 01 Apr 2021 10:56:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=7QmnBG0pTePDt842nweNMSdTAO53eyMxLkJlDiWzq7E=;
+        b=uoJYOQwcUyDRGYLEUzY410aFpsEDTbuxOFiVlNIUCL9C62IiBuQuoz9/XVDGi60/SL
+         G69xRFYUPriG0YTre5lfhnkNM1lY12S4vnYXO5waQG8Tv4z3HPo5SNmd/XlX3uorBp48
+         4dPRQidfQhNCh3PUl3PZgWNvUgBXDT8H4AKSK0u+Q+NVMJ8J9MSGAHTite5/Mo+LLnGP
+         s9eJXYxNqTIMbUTX9+8Og5UFanngkY912mbDfeISu8lF3ufh2gEotIIPFgkdezEAc19r
+         7dBc05ierv2ZR8KpZewvHHV7n+ccf1zrP4TICVUNlOPxugK4Dsv4bBhYHGuLOV8eIlzd
+         rHGA==
+X-Gm-Message-State: AOAM530RXiYFy/VtAomodIL6wmpZF+uFx3h0h0t9i2DTC91GU4fmH9vr
+        hP1nLj+6Wktpm6Yf/r5oHtGxBYLzIPSzjA==
+X-Google-Smtp-Source: ABdhPJyvZLXcW0O3iPsc1OKbJbbp4GqDuU/JTdk60nqb/sKSK+V9+kEepY7tI7EMfe3PbGGCH8z0CA==
+X-Received: by 2002:a17:902:820e:b029:e6:f006:fcff with SMTP id x14-20020a170902820eb02900e6f006fcffmr8917301pln.60.1617299781906;
+        Thu, 01 Apr 2021 10:56:21 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id n5sm6195909pfq.44.2021.04.01.10.56.20
+        by smtp.gmail.com with ESMTPSA id n5sm6195909pfq.44.2021.04.01.10.56.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 10:56:20 -0700 (PDT)
+        Thu, 01 Apr 2021 10:56:21 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 00/12] ionic: add PTP and hw clock support
-Date:   Thu,  1 Apr 2021 10:55:58 -0700
-Message-Id: <20210401175610.44431-1-snelson@pensando.io>
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
+        Allen Hubbe <allenbh@pensando.io>
+Subject: [PATCH net-next 01/12] ionic: add new queue features to interface
+Date:   Thu,  1 Apr 2021 10:55:59 -0700
+Message-Id: <20210401175610.44431-2-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210401175610.44431-1-snelson@pensando.io>
+References: <20210401175610.44431-1-snelson@pensando.io>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset adds support for accessing the DSC hardware clock and
-for offloading PTP timestamping.
+Add queue feature extensions to prepare for features that
+can be queue specific, in addition to the general queue
+features already defined.  While we're here, change the
+existing feature ids from #defines to enum.
 
-Tx packet timestamping happens through a separate Tx queue set up with
-expanded completion descriptors that can report the timestamp.
+Signed-off-by: Allen Hubbe <allenbh@pensando.io>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  1 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 27 ++++++++++++++-----
+ .../net/ethernet/pensando/ionic/ionic_lif.c   |  3 +++
+ 3 files changed, 25 insertions(+), 6 deletions(-)
 
-Rx timestamping can happen either on all queues, or on a separate
-timestamping queue when specific filtering is requested.  Again, the
-timestamps are reported with the expanded completion descriptors.
-
-The timestamping offload ability is advertised but not enabled until an
-OS service asks for it.  At that time the driver's queues are reconfigured
-to use the different completion descriptors and the private processing
-queues as needed.
-
-Reading the raw clock value comes through a new pair of values in the
-device info registers in BAR0.  These high and low values are interpreted
-with help from new clock mask, mult, and shift values in the device
-identity information.
-
-First we add the ability to detect new queue features, then the handling
-of the new descriptor sizes.  After adding the new interface structures,
-we start adding the support code, saving the advertising to the stack
-for last.
-
-Shannon Nelson (12):
-  ionic: add new queue features to interface
-  ionic: add handling of larger descriptors
-  ionic: add hw timestamp structs to interface
-  ionic: split adminq post and wait calls
-  ionic: add hw timestamp support files
-  ionic: link in the new hw timestamp code
-  ionic: add rx filtering for hw timestamp steering
-  ionic: set up hw timestamp queues
-  ionic: add and enable tx and rx timestamp handling
-  ionic: add ethtool support for PTP
-  ionic: ethtool ptp stats
-  ionic: advertise support for hardware timestamps
-
- drivers/net/ethernet/pensando/ionic/Makefile  |   1 +
- drivers/net/ethernet/pensando/ionic/ionic.h   |   6 +
- .../net/ethernet/pensando/ionic/ionic_dev.c   |   2 +
- .../net/ethernet/pensando/ionic/ionic_dev.h   |   3 +
- .../ethernet/pensando/ionic/ionic_ethtool.c   |  93 +++
- .../net/ethernet/pensando/ionic/ionic_if.h    | 214 ++++++-
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 439 ++++++++++++-
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  75 +++
- .../net/ethernet/pensando/ionic/ionic_main.c  |  17 +-
- .../net/ethernet/pensando/ionic/ionic_phc.c   | 589 ++++++++++++++++++
- .../ethernet/pensando/ionic/ionic_rx_filter.c |  21 +
- .../ethernet/pensando/ionic/ionic_rx_filter.h |   1 +
- .../net/ethernet/pensando/ionic/ionic_stats.c |  38 +-
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 138 +++-
- .../net/ethernet/pensando/ionic/ionic_txrx.h  |   3 +
- 15 files changed, 1565 insertions(+), 75 deletions(-)
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_phc.c
-
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 0c0533737b2b..68e5e7a97801 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -222,6 +222,7 @@ struct ionic_queue {
+ 	u64 stop;
+ 	u64 wake;
+ 	u64 drop;
++	u64 features;
+ 	struct ionic_dev *idev;
+ 	unsigned int type;
+ 	unsigned int hw_index;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+index 88210142395d..23043ce0a5d8 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+@@ -345,6 +345,23 @@ enum ionic_logical_qtype {
+ 	IONIC_QTYPE_MAX     = 16,
+ };
+ 
++/**
++ * enum ionic_q_feature - Common Features for most queue types
++ *
++ * Common features use bits 0-15. Per-queue-type features use higher bits.
++ *
++ * @IONIC_QIDENT_F_CQ:      Queue has completion ring
++ * @IONIC_QIDENT_F_SG:      Queue has scatter/gather ring
++ * @IONIC_QIDENT_F_EQ:      Queue can use event queue
++ * @IONIC_QIDENT_F_CMB:     Queue is in cmb bar
++ */
++enum ionic_q_feature {
++	IONIC_QIDENT_F_CQ		= BIT_ULL(0),
++	IONIC_QIDENT_F_SG		= BIT_ULL(1),
++	IONIC_QIDENT_F_EQ		= BIT_ULL(2),
++	IONIC_QIDENT_F_CMB		= BIT_ULL(3),
++};
++
+ /**
+  * struct ionic_lif_logical_qtype - Descriptor of logical to HW queue type
+  * @qtype:          Hardware Queue Type
+@@ -529,7 +546,7 @@ struct ionic_q_identify_comp {
+  * union ionic_q_identity - queue identity information
+  *     @version:        Queue type version that can be used with FW
+  *     @supported:      Bitfield of queue versions, first bit = ver 0
+- *     @features:       Queue features
++ *     @features:       Queue features (enum ionic_q_feature, etc)
+  *     @desc_sz:        Descriptor size
+  *     @comp_sz:        Completion descriptor size
+  *     @sg_desc_sz:     Scatter/Gather descriptor size
+@@ -541,10 +558,6 @@ union ionic_q_identity {
+ 		u8      version;
+ 		u8      supported;
+ 		u8      rsvd[6];
+-#define IONIC_QIDENT_F_CQ	0x01	/* queue has completion ring */
+-#define IONIC_QIDENT_F_SG	0x02	/* queue has scatter/gather ring */
+-#define IONIC_QIDENT_F_EQ	0x04	/* queue can use event queue */
+-#define IONIC_QIDENT_F_CMB	0x08	/* queue is in cmb bar */
+ 		__le64  features;
+ 		__le16  desc_sz;
+ 		__le16  comp_sz;
+@@ -585,6 +598,7 @@ union ionic_q_identity {
+  * @ring_base:    Queue ring base address
+  * @cq_ring_base: Completion queue ring base address
+  * @sg_ring_base: Scatter/Gather ring base address
++ * @features:     Mask of queue features to enable, if not in the flags above.
+  */
+ struct ionic_q_init_cmd {
+ 	u8     opcode;
+@@ -608,7 +622,8 @@ struct ionic_q_init_cmd {
+ 	__le64 ring_base;
+ 	__le64 cq_ring_base;
+ 	__le64 sg_ring_base;
+-	u8     rsvd2[20];
++	u8     rsvd2[12];
++	__le64 features;
+ } __packed;
+ 
+ /**
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index a51be25723a5..1b89549b243b 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -731,6 +731,7 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
+ 			.ring_base = cpu_to_le64(q->base_pa),
+ 			.cq_ring_base = cpu_to_le64(cq->base_pa),
+ 			.sg_ring_base = cpu_to_le64(q->sg_base_pa),
++			.features = cpu_to_le64(q->features),
+ 		},
+ 	};
+ 	unsigned int intr_index;
+@@ -791,6 +792,7 @@ static int ionic_lif_rxq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
+ 			.ring_base = cpu_to_le64(q->base_pa),
+ 			.cq_ring_base = cpu_to_le64(cq->base_pa),
+ 			.sg_ring_base = cpu_to_le64(q->sg_base_pa),
++			.features = cpu_to_le64(q->features),
+ 		},
+ 	};
+ 	int err;
+@@ -2214,6 +2216,7 @@ static const struct net_device_ops ionic_netdev_ops = {
+ static void ionic_swap_queues(struct ionic_qcq *a, struct ionic_qcq *b)
+ {
+ 	/* only swapping the queues, not the napi, flags, or other stuff */
++	swap(a->q.features,   b->q.features);
+ 	swap(a->q.num_descs,  b->q.num_descs);
+ 	swap(a->q.base,       b->q.base);
+ 	swap(a->q.base_pa,    b->q.base_pa);
 -- 
 2.17.1
 
