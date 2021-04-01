@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7492135114D
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 10:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CB73512A7
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 11:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbhDAI41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 04:56:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42382 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233610AbhDAI4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Apr 2021 04:56:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1AF6961055;
-        Thu,  1 Apr 2021 08:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617267378;
-        bh=dLK+gkD9yjbg+ylZLufKb81JzFoxbR6dl3EUaz7fH6w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=oxm4a/XWSILSo/QFShVPP5HFjPFMPupkuOjg93k9WECwo5GGil08DkMWYDhk7OsTJ
-         p7hH8Xr5eLvvp3sykgqErJeplkDnmOUI9rFu5rTlGJQLM7CqomjSyXeonZNpJUaK/x
-         HTxBE6grdL8ZOu0jNSL9q0zQdu7IV3WQTjHMCmHVN1dxdWOOzOOdwSg9U4aZFNrHYr
-         RHMi2TWxbU8etQF7MkKQFaox+RXwq/dWupZq0lMcuvJDSOb6hwLDycQM75HVIwvzUO
-         6u/EL8uRAxK4q23wIXUrRETK5OIJSpwHsl7QpQdNtdr+DUT6mryTmd/PLHBSK05ezA
-         ryaZVkc1YzyMA==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, brouer@redhat.com
-Subject: [PATCH bpf-next] cpumap: bulk skb using netif_receive_skb_list
-Date:   Thu,  1 Apr 2021 10:56:08 +0200
-Message-Id: <e01b1a562c523f64049fa45da6c031b0749ca412.1617267115.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        id S233954AbhDAJpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 05:45:39 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:15847 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233024AbhDAJp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 05:45:26 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4F9yRW6tbcz93Zs;
+        Thu,  1 Apr 2021 17:23:51 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.498.0; Thu, 1 Apr 2021
+ 17:25:52 +0800
+From:   Lu Wei <luwei32@huawei.com>
+To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <trix@redhat.com>,
+        <jesse.brandeburg@intel.com>, <wanghai38@huawei.com>,
+        <dinghao.liu@zju.edu.cn>, <baijiaju1990@gmail.com>,
+        <song.bao.hua@hisilicon.com>, <tariqt@mellanox.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: hns: Fix some typos
+Date:   Thu, 1 Apr 2021 17:27:01 +0800
+Message-ID: <20210401092701.281820-1-luwei32@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rely on netif_receive_skb_list routine to send skbs converted from
-xdp_frames in cpu_map_kthread_run in order to improve i-cache usage.
-The proposed patch has been tested running xdp_redirect_cpu bpf sample
-available in the kernel tree that is used to redirect UDP frames from
-ixgbe driver to a cpumap entry and then to the networking stack.
-UDP frames are generated using pkt_gen.
+Fix some typos.
 
-$xdp_redirect_cpu  --cpu <cpu> --progname xdp_cpu_map0 --dev <eth>
-
-bpf-next: ~2.2Mpps
-bpf-next + cpumap skb-list: ~3.15Mpps
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Lu Wei <luwei32@huawei.com>
 ---
- kernel/bpf/cpumap.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 0cf2791d5099..b33114ce2e2b 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -257,6 +257,7 @@ static int cpu_map_kthread_run(void *data)
- 		void *frames[CPUMAP_BATCH];
- 		void *skbs[CPUMAP_BATCH];
- 		int i, n, m, nframes;
-+		LIST_HEAD(list);
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index c66a7a51198e..5c61e5821d5c 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -1235,7 +1235,7 @@ static int hns_nic_init_affinity_mask(int q_num, int ring_idx,
+ {
+ 	int cpu;
  
- 		/* Release CPU reschedule checks */
- 		if (__ptr_ring_empty(rcpu->queue)) {
-@@ -305,7 +306,6 @@ static int cpu_map_kthread_run(void *data)
- 		for (i = 0; i < nframes; i++) {
- 			struct xdp_frame *xdpf = frames[i];
- 			struct sk_buff *skb = skbs[i];
--			int ret;
+-	/* Diffrent irq banlance between 16core and 32core.
++	/* Different irq balance between 16core and 32core.
+ 	 * The cpu mask set by ring index according to the ring flag
+ 	 * which indicate the ring is tx or rx.
+ 	 */
+@@ -1592,7 +1592,7 @@ static void hns_disable_serdes_lb(struct net_device *ndev)
+  *       which buffer size is 4096.
+  *    2. we set the chip serdes loopback and set rss indirection to the ring.
+  *    3. construct 64-bytes ip broadcast packages, wait the associated rx ring
+- *       recieving all packages and it will fetch new descriptions.
++ *       receiving all packages and it will fetch new descriptions.
+  *    4. recover to the original state.
+  *
+  *@ndev: net device
+@@ -1621,7 +1621,7 @@ static int hns_nic_clear_all_rx_fetch(struct net_device *ndev)
+ 	if (!org_indir)
+ 		return -ENOMEM;
  
- 			skb = __xdp_build_skb_from_frame(xdpf, skb,
- 							 xdpf->dev_rx);
-@@ -314,11 +314,10 @@ static int cpu_map_kthread_run(void *data)
- 				continue;
- 			}
+-	/* store the orginal indirection */
++	/* store the original indirection */
+ 	ops->get_rss(h, org_indir, NULL, NULL);
  
--			/* Inject into network stack */
--			ret = netif_receive_skb_core(skb);
--			if (ret == NET_RX_DROP)
--				drops++;
-+			list_add_tail(&skb->list, &list);
- 		}
-+		netif_receive_skb_list(&list);
-+
- 		/* Feedback loop via tracepoint */
- 		trace_xdp_cpumap_kthread(rcpu->map_id, n, drops, sched, &stats);
- 
+ 	cur_indir = kzalloc(indir_size, GFP_KERNEL);
 -- 
-2.30.2
+2.17.1
 
