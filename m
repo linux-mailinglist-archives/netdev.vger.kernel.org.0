@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A61A2351F5D
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:12:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76EBE351F5F
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234323AbhDATMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 15:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
+        id S234550AbhDATNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 15:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234035AbhDATLs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:11:48 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700BFC041B39
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 11:02:27 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id j9so2652154wrx.12
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 11:02:27 -0700 (PDT)
+        with ESMTP id S234326AbhDATMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:12:34 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04261C02FEA2;
+        Thu,  1 Apr 2021 11:03:15 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id 184so3169633ljf.9;
+        Thu, 01 Apr 2021 11:03:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=uvaJxOMF68u/mryvJz6oilbFQS2YMDQUaK8sfeTQE6s=;
-        b=KS2QCtFII36A6lXKXPKFWAP1yjJQGcFV4DHs9bFMC1QxqPN2/e1khAGal3SYXpvALh
-         Bh6QjL3emlanYxwYU3x1tBai11BRu7GCNucM3i01u07IleckJjqgcbT/y7hf0M9xq76c
-         fkC1C1Wvt4FvbNQxDyM/GTcBluBjdY/kK+dViaMigxYFI6d8uVkPPA3rTA1c3lUNQy7z
-         rikPO5s73UXyPlABrMCEuiZJwWRFSOzPhDn46cRGsca0IPzHhc96HzB7s2vjnpxpt2eD
-         WsOJy6InlJTysM02Ib090ThMDS1W2/AIpZkhqOkXeh9nNBWZsO0JO6doODmyqUyy5MZN
-         EfRA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5j2wGNIifPE9DtC+i6h/LtepDO3gR15cYtvvyMQ28/U=;
+        b=oBhXLAryHgdavgOFDKjAdEEQzuPceFFXRQEKJnryrnFiyJH3+NvTPdmlT3ka+E75Ky
+         2GGyGGfaM1HeTORchAhAL+ID5cQ66pp+gqYBeSOJxViKDf5sVKlZWMraaUyTd6JVAuz/
+         UDaZGJIywBfzqW/VHohhL3NTl1l+PjAaK9gaeVD1beWxWGH9byY+MPZ4WZZb7Zghi2ND
+         clZC64HExAl2F4Ot9mHfVxbxVEkZFSrdFVfI3kmlfW+TaWVf56JaVSvgwaRf2ccT+qDH
+         GvAfRel7S+u5Msn4hKawitEA68iaLFR9sPk9WEL3K9F5FlWzcOtqmfzosXvvHPeFjaGp
+         PO5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=uvaJxOMF68u/mryvJz6oilbFQS2YMDQUaK8sfeTQE6s=;
-        b=DHlmhYqMtmlyhW/pCw6FnJJdQWRKiHEiOJ8u4BKKdZZwgBVfxk+3MSwu8WN6GQKbrZ
-         3LZlkO9NAP+Y04IPn5YLGYBeup7gOO5O8dkXv1pOqUZAwK4X7SaXSs0DyaI0RExRO4i4
-         /guGgK1l3a9qvCowJ+Zua3o2fpS1U2zaLegq5Ff99pFqv+SG/DtDGEVN+lSa2b14R9+S
-         pEopXOtuUV43JiDd7ewxj6KaG4p1/NKUOs6dXrEVYhhvzPpTTCqS9YJbDJmdRK5li68/
-         DTRk8sDIJvL81LuHTVCm+lSAhyRqe2NOPSPtGm9DLfbHnE95249qI1U/NubR9EOSrAZ2
-         S2hA==
-X-Gm-Message-State: AOAM533STwZHd7+5AosmP7F/TEU6k1D98zeBDyv0Rl09yxeAfeZv/gJb
-        CGfgeXEBYIQKvIaxJ4Wo4rxcyPyOGZEmakH5SlU=
-X-Google-Smtp-Source: ABdhPJw/NVNmTMtw0l5BtX53ghNKzvaLa/lb9e4bMHzal1x0+hnOnX6hDmTuMi2syszUC2jsrDiLl785QlarVIBdCNU=
-X-Received: by 2002:adf:9bca:: with SMTP id e10mr11239624wrc.364.1617300146204;
- Thu, 01 Apr 2021 11:02:26 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5j2wGNIifPE9DtC+i6h/LtepDO3gR15cYtvvyMQ28/U=;
+        b=cI32w4ZDSzvMlWFZ8rabDHSWeEqPtQmKyfx8uAH4tTgEelsDH2OvNNTcVvCEKlkcjL
+         spslJe+duEzllgijFt3FmZSycyY5dJ5ZVv4EQ084Qr+9rRbI/p61ntFeIizlbN2ewy8y
+         xeGQBA/+ANUYcTaq+tioALmgkB5WKGenhGUzjCs2mAe9imJJe6vqxQhCnJpGRJBKzAFS
+         /5LZqCfvDOAmHQWY53MjWKS+uyqQOBDdBx8OlPWlwfQTVCU7YloJ2pPV5XU9aB1Rz9pW
+         bEpRogXo8Pec43y+EQ1ge44PwTYkr4pTvQ54s25sqYydGxwYEdewc2694cwD43SN4zAu
+         LiJg==
+X-Gm-Message-State: AOAM532hz4Vc/SAcAD7cu0iAxmZUPk1XjKrbTwpRIZMDV3JqBfrBFb1h
+        c7R2vQFXryC9d3VIEH2gULn75haZG1OU7aqf72vpTPc4
+X-Google-Smtp-Source: ABdhPJxMeAkRSh/QhjsbprT+ZINUC9UiSXuyyNvDFfVrVlxS1LiwX81cTGzomh1B923wkeLS80bbLZlc/GK8N+pLNSc=
+X-Received: by 2002:a2e:981a:: with SMTP id a26mr6123992ljj.204.1617300193470;
+ Thu, 01 Apr 2021 11:03:13 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: tofilbaman1@gmail.com
-Sender: paymentcenter24@gmail.com
-Received: by 2002:adf:f2ca:0:0:0:0:0 with HTTP; Thu, 1 Apr 2021 11:02:25 -0700 (PDT)
-From:   Tofil Bama <tofilbaman@gmail.com>
-Date:   Thu, 1 Apr 2021 19:02:25 +0100
-X-Google-Sender-Auth: IBuqWBcPhNn_W3tpamtOSEgMWKU
-Message-ID: <CAMdX_aWDW3KzmKz1+caa+Rnq89KFA2xtTM2bezuikn2UGrMSGA@mail.gmail.com>
-Subject: GREAT OPPORTUNITY.
-To:     undisclosed-recipients:;
+References: <20210331023237.41094-1-xiyou.wangcong@gmail.com> <6065fa04de8a2_4ff9208b1@john-XPS-13-9370.notmuch>
+In-Reply-To: <6065fa04de8a2_4ff9208b1@john-XPS-13-9370.notmuch>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 1 Apr 2021 11:03:01 -0700
+Message-ID: <CAADnVQKj__ZSDnCdZDuRzFAp9E8TBkLrX_3WWccT=UxVzk86aA@mail.gmail.com>
+Subject: Re: [Patch bpf-next v8 00/16] sockmap: introduce BPF_SK_SKB_VERDICT
+ and support UDP
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear,
+On Thu, Apr 1, 2021 at 10:52 AM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > We have thousands of services connected to a daemon on every host
+> > via AF_UNIX dgram sockets, after they are moved into VM, we have to
+> > add a proxy to forward these communications from VM to host, because
+> > rewriting thousands of them is not practical. This proxy uses an
+> > AF_UNIX socket connected to services and a UDP socket to connect to
+> > the host. It is inefficient because data is copied between kernel
+> > space and user space twice, and we can not use splice() which only
+> > supports TCP. Therefore, we want to use sockmap to do the splicing
+> > without going to user-space at all (after the initial setup).
+> >
+> > Currently sockmap only fully supports TCP, UDP is partially supported
+> > as it is only allowed to add into sockmap. This patchset, as the second
+> > part of the original large patchset, extends sockmap with:
+> > 1) cross-protocol support with BPF_SK_SKB_VERDICT; 2) full UDP support.
+> >
+> > On the high level, ->read_sock() is required for each protocol to support
+> > sockmap redirection, and in order to do sock proto update, a new ops
+> > ->psock_update_sk_prot() is introduced, which is also required. And the
+> > BPF ->recvmsg() is also needed to replace the original ->recvmsg() to
+> > retrieve skmsg. To make life easier, we have to get rid of lock_sock()
+> > in sk_psock_handle_skb(), otherwise we would have to implement
+> > ->sendmsg_locked() on top of ->sendmsg(), which is ugly.
+> >
+> > Please see each patch for more details.
+> >
+> > To see the big picture, the original patchset is available here:
+> > https://github.com/congwang/linux/tree/sockmap
+> > this patchset is also available:
+> > https://github.com/congwang/linux/tree/sockmap2
+> >
+> > ---
+>
+> This LGTM, thanks for doing this Cong.
 
-My name is Mr Tofil Bama, I am the Bill and Exchange assistant
-Manager in Bank of Africa Ouagadougou Burkina Faso. In my department
-I discovered an abandoned sum of eighteen million three hundred
-thousand United State of American dollars (18.3MILLION USA DOLLARS)
-in an account that belongs to one of our foreign customer
-(late Mr Shitu Nuri) who died in Ethiopian Airlines Flight 409 that
-crashed into the Mediterranean Sea on 25th January 2010.
-
-Since I got information about his death I have been expecting
-his next of kin to come over and claim his money because we
-cannot release it unless somebody applies for it as the next
-of kin or relation to the deceased as indicated in our banking
-guidelines, unfortunately we learnt that all his supposed next of
-kin or relation died alongside with him in the plane crash leaving
-nobody behind for the claim.
-
-It is therefore upon this discovery that I decided to make this
-business proposal to you and release the money to you as next of kin
-to the deceased for safety and subsequent disbursement since nobody
-is coming for the fund, it is 10 years now the money is lying pending in
-the account of our deceased and I don't want the money to go into the
-bank treasury as unclaimed bill.
-
-You will be entitled with 40% of the total sum while 60% will be for
-me after which I will visit your Country to invest my own share when
-the fund is successfully transferred into your account, Please I would
-like you to keep this transaction confidential and as a top secret
-between me and you until we successfully achieve this golden
-opportunity.
-
-Yours sincerely,
-Mr Tofil Bama.
+Applied. Thanks everyone.
+Cong, please follow up with minor cleanup that John requested.
