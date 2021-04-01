@@ -2,154 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46B30351C35
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:45:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3705351D62
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:49:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237985AbhDASOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 14:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
+        id S238246AbhDAS2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 14:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236924AbhDASLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 14:11:41 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4A8C031149
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 09:43:20 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id b16so2674377eds.7
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 09:43:20 -0700 (PDT)
+        with ESMTP id S237284AbhDASTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 14:19:04 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAADCC03114E;
+        Thu,  1 Apr 2021 09:44:36 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id d191so1362600wmd.2;
+        Thu, 01 Apr 2021 09:44:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BKWqsL3e4gXp+F9sxSIQ2/H/xGExoEj3G1MUBGpuqFY=;
-        b=LqiEI7NvPPBr4wtOwhEmndy0k4clOZPMKOpI09X22bX/j1BpOD5TCL+sonqpuGC+i1
-         TGPtnGUKiLGSiefAcgGLSr9aljAKWzS2rjxXjuNmPhDBP86TpqVIDUbn3jWLNsY7Zs67
-         2vyULX86wGwtAxrWoRxYetURKMZORZufL/ALXWWIp4KrGvTN7MpDTkaYvPsA7mr79k8m
-         JcLl/EVSeKh/L3sI3PLlV+UNnbuWLNuJMSaAWsKvG9AsI2B/qlT9V6tLcLZpokTLbv9l
-         /AS17PWhdli28CUiN880o01jeP8JBdME7qEmrOKYZYziEIjeJu7uWVehk5+g2DwkNt+M
-         dhow==
+        h=from:to:cc:references:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dsZYTG5YjRYIylzLECh8VUqy5Nq7ENfTH8PmA/1aukE=;
+        b=SEp0n4y/wxztrOXia6Y2ncc4SWEsVWT0v7PfduwVzHDoszXd3cSTsNhzauJy9QheWF
+         2QcGmVSNCcLLEoY0Mo42isZ1onV2bDIwLw51pQr7Zlc+nompdU7A7QKXUbV55bakOgwI
+         pW0wzL8f0ZWA+B4RSHKBhLOzyE4hZRgGz3YXNg0yk0uUUkGGjc95Uuo5fZ4qhkKOAFDl
+         Kc5XvNr4Q+3Izlj8gn1qsP5bDIkWOSIf8jn7kQ1KwBQUaeaAwldb8bDx2dr3qcB1yR8l
+         TncTSn09jqv36lKcdrTmcUs1DspNnPomDa5iaC5247OJKiBPa+/vdmjssyY/OkeL4qSx
+         W0hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BKWqsL3e4gXp+F9sxSIQ2/H/xGExoEj3G1MUBGpuqFY=;
-        b=jxVYEPnM/IVvAcTbEomVlRK+VG/z8HQn2ACDkJgUXWDFyFXzBu/3mfK4vafBqOhkYt
-         H/lHcsP74GjPwkYjusJ4H4rfott5wRKBi6mzCr3+1rrSQHfc4IOTo+dJtjJs9h5uDUT2
-         vJgzq7ebsQOgYtXbjVAQCIkEi0+DJkgfTSbwLLM8ubrubk7uDLJGLnDMumZpk6ZN8xqJ
-         boS0j7PEHuXGi52KY0JFLjWBKOMj4pjOjLqpbj1mY2N8D2dE+0wrrEChEvmAKkGvypUI
-         sjyHZwtWCwlzW4xle/wN7RUiPxooLW+KJ825LxlfEuigBJDXf4PC2428VcerO3zwCV/d
-         gQwQ==
-X-Gm-Message-State: AOAM532x3eG3nbi4nXx/yx7/uMQHEkrqWMX4Y+uI5Ak3K1yzogJqHnMr
-        Z0tpaejt0KPJbN5v+j0HJ9A=
-X-Google-Smtp-Source: ABdhPJw/RltAeHIP+4Y6XTJ4bG07YJWsapsW0S3V/6e0dcy8m2DQw64SqPlbdzD+wcHbnFowT0qUBw==
-X-Received: by 2002:a05:6402:26d3:: with SMTP id x19mr10881259edd.349.1617295399131;
-        Thu, 01 Apr 2021 09:43:19 -0700 (PDT)
-Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id w24sm3821270edt.44.2021.04.01.09.43.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 09:43:18 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 2/3] dpaa2-eth: add rx copybreak support
-Date:   Thu,  1 Apr 2021 19:39:55 +0300
-Message-Id: <20210401163956.766628-3-ciorneiioana@gmail.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210401163956.766628-1-ciorneiioana@gmail.com>
-References: <20210401163956.766628-1-ciorneiioana@gmail.com>
+        h=x-gm-message-state:from:to:cc:references:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dsZYTG5YjRYIylzLECh8VUqy5Nq7ENfTH8PmA/1aukE=;
+        b=U9DV6qPf6wRrVDxmZOiv1hsAWyTe66GQKAdzZq5Y1ZGEC3KMsq16WRYNVl+aF3A+ru
+         3RMIZyFJxzzVBnPUU1BO6RfYpZEDLDJQyGMqQl+qRem1B0HHzlfO0Q7R+QqfZf8T8LyP
+         NyqhBN9q8J8OxS63KzLZhPXdIR3/hmuzoQgrBYzNfRc9uiJ/7exqCb9R3TIVhn8OV9RE
+         FSp5sVtQb9CaCU8ciMW6dm+w1/5kk2G83SaWFqppCP4fIYDiEcUmaX+8fwkxhE6xi8a7
+         CpJJFTWs2Z36pWRYZ0ceTd5sql/qBSF8Pp71Ki0ylcmldOvPvmjhHG9K6/YuAlSUVcaX
+         uRXA==
+X-Gm-Message-State: AOAM532xK4RQ14JfLjLF39wjac4BVWIHDFCwidsWQIhQ+76EA21EuDYJ
+        5UBEdmTGR4nOXilRnd8wbz3QG42FC6c49A==
+X-Google-Smtp-Source: ABdhPJzuWtuDjAu1sovzH17Gr8k8/fS+vntCAbg4BsS+EF8kjJ/UPRNArdTs1HXXEGzifhnk4+3qvg==
+X-Received: by 2002:a05:600c:ac2:: with SMTP id c2mr8394938wmr.23.1617295474784;
+        Thu, 01 Apr 2021 09:44:34 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f1f:bb00:5544:e633:d47e:4b76? (p200300ea8f1fbb005544e633d47e4b76.dip0.t-ipconnect.de. [2003:ea:8f1f:bb00:5544:e633:d47e:4b76])
+        by smtp.googlemail.com with ESMTPSA id c8sm8863953wmb.34.2021.04.01.09.44.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Apr 2021 09:44:32 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        Michael Chan <michael.chan@broadcom.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "Manoj N. Kumar" <manoj@linux.ibm.com>,
+        "Matthew R. Ochs" <mrochs@linux.ibm.com>,
+        Uma Krishnan <ukrishn@linux.ibm.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        SCSI development list <linux-scsi@vger.kernel.org>
+References: <1a0155ce-6c20-b653-d319-58e6505a1a40@gmail.com>
+Subject: [PATCH 2/3] PCI/VPD: Remove argument off from pci_vpd_find_tag
+Message-ID: <f62e6e19-5423-2ead-b2bd-62844b23ef8f@gmail.com>
+Date:   Thu, 1 Apr 2021 18:43:15 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
+In-Reply-To: <1a0155ce-6c20-b653-d319-58e6505a1a40@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ioana Ciornei <ioana.ciornei@nxp.com>
+All callers pass 0 as offset. Therefore remove the parameter and use
+a fixed offset 0 in pci_vpd_find_tag().
 
-DMA unmapping, allocating a new buffer and DMA mapping it back on the
-refill path is really not that efficient. Proper buffer recycling (page
-pool, flipping the page and using the other half) cannot be done for
-DPAA2 since it's not a ring based controller but it rather deals with
-multiple queues which all get their buffers from the same buffer pool on
-Rx.
-
-To circumvent these limitations, add support for Rx copybreak. For small
-sized packets instead of creating a skb around the buffer in which the
-frame was received, allocate a new sk buffer altogether, copy the
-contents of the frame and release the initial page back into the buffer
-pool.
-
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 36 +++++++++++++++++--
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  2 ++
- 2 files changed, 35 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2.c             | 2 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 3 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c        | 2 +-
+ drivers/net/ethernet/broadcom/tg3.c              | 4 ++--
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c       | 2 +-
+ drivers/net/ethernet/sfc/efx.c                   | 2 +-
+ drivers/net/ethernet/sfc/falcon/efx.c            | 2 +-
+ drivers/pci/vpd.c                                | 4 ++--
+ drivers/scsi/cxlflash/main.c                     | 3 +--
+ include/linux/pci.h                              | 3 +--
+ 10 files changed, 12 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index f545cb99388a..200831b41078 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -418,6 +418,33 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
- 	return xdp_act;
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 3e8a179f3..c0986096c 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8057,7 +8057,7 @@ bnx2_read_vpd_fw_ver(struct bnx2 *bp)
+ 		data[i + 3] = data[i + BNX2_VPD_LEN];
+ 	}
+ 
+-	i = pci_vpd_find_tag(data, 0, BNX2_VPD_LEN, PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_tag(data, BNX2_VPD_LEN, PCI_VPD_LRDT_RO_DATA);
+ 	if (i < 0)
+ 		goto vpd_done;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 568013875..281b1c2e0 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -12206,8 +12206,7 @@ static void bnx2x_read_fwinfo(struct bnx2x *bp)
+ 	/* VPD RO tag should be first tag after identifier string, hence
+ 	 * we should be able to find it in first BNX2X_VPD_LEN chars
+ 	 */
+-	i = pci_vpd_find_tag(vpd_start, 0, BNX2X_VPD_LEN,
+-			     PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_tag(vpd_start, BNX2X_VPD_LEN, PCI_VPD_LRDT_RO_DATA);
+ 	if (i < 0)
+ 		goto out_not_found;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 6f1364212..4c517fe70 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -12719,7 +12719,7 @@ static void bnxt_vpd_read_info(struct bnxt *bp)
+ 		goto exit;
+ 	}
+ 
+-	i = pci_vpd_find_tag(vpd_data, 0, vpd_size, PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_tag(vpd_data, vpd_size, PCI_VPD_LRDT_RO_DATA);
+ 	if (i < 0) {
+ 		netdev_err(bp->dev, "VPD READ-Only not found\n");
+ 		goto exit;
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index d23819299..b0e49643f 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -13016,7 +13016,7 @@ static int tg3_test_nvram(struct tg3 *tp)
+ 	if (!buf)
+ 		return -ENOMEM;
+ 
+-	i = pci_vpd_find_tag((u8 *)buf, 0, len, PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_tag((u8 *)buf, len, PCI_VPD_LRDT_RO_DATA);
+ 	if (i > 0) {
+ 		j = pci_vpd_lrdt_size(&((u8 *)buf)[i]);
+ 		if (j < 0)
+@@ -15629,7 +15629,7 @@ static void tg3_read_vpd(struct tg3 *tp)
+ 	if (!vpd_data)
+ 		goto out_no_vpd;
+ 
+-	i = pci_vpd_find_tag(vpd_data, 0, vpdlen, PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_tag(vpd_data, vpdlen, PCI_VPD_LRDT_RO_DATA);
+ 	if (i < 0)
+ 		goto out_not_found;
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index 98829e482..ef5d10e1c 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -2774,7 +2774,7 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
+ 	if (id_len > ID_LEN)
+ 		id_len = ID_LEN;
+ 
+-	i = pci_vpd_find_tag(vpd, 0, VPD_LEN, PCI_VPD_LRDT_RO_DATA);
++	i = pci_vpd_find_tag(vpd, VPD_LEN, PCI_VPD_LRDT_RO_DATA);
+ 	if (i < 0) {
+ 		dev_err(adapter->pdev_dev, "missing VPD-R section\n");
+ 		ret = -EINVAL;
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 36c8625a6..c746ca723 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -920,7 +920,7 @@ static void efx_probe_vpd_strings(struct efx_nic *efx)
+ 	}
+ 
+ 	/* Get the Read only section */
+-	ro_start = pci_vpd_find_tag(vpd_data, 0, vpd_size, PCI_VPD_LRDT_RO_DATA);
++	ro_start = pci_vpd_find_tag(vpd_data, vpd_size, PCI_VPD_LRDT_RO_DATA);
+ 	if (ro_start < 0) {
+ 		netif_err(efx, drv, efx->net_dev, "VPD Read-only not found\n");
+ 		return;
+diff --git a/drivers/net/ethernet/sfc/falcon/efx.c b/drivers/net/ethernet/sfc/falcon/efx.c
+index f89799919..5e7a57b68 100644
+--- a/drivers/net/ethernet/sfc/falcon/efx.c
++++ b/drivers/net/ethernet/sfc/falcon/efx.c
+@@ -2800,7 +2800,7 @@ static void ef4_probe_vpd_strings(struct ef4_nic *efx)
+ 	}
+ 
+ 	/* Get the Read only section */
+-	ro_start = pci_vpd_find_tag(vpd_data, 0, vpd_size, PCI_VPD_LRDT_RO_DATA);
++	ro_start = pci_vpd_find_tag(vpd_data, vpd_size, PCI_VPD_LRDT_RO_DATA);
+ 	if (ro_start < 0) {
+ 		netif_err(efx, drv, efx->net_dev, "VPD Read-only not found\n");
+ 		return;
+diff --git a/drivers/pci/vpd.c b/drivers/pci/vpd.c
+index 85889718a..5b80db02d 100644
+--- a/drivers/pci/vpd.c
++++ b/drivers/pci/vpd.c
+@@ -367,11 +367,11 @@ void pci_vpd_release(struct pci_dev *dev)
+ 	kfree(dev->vpd);
  }
  
-+struct sk_buff *dpaa2_eth_copybreak(struct dpaa2_eth_channel *ch,
-+				    const struct dpaa2_fd *fd, void *fd_vaddr)
-+{
-+	u16 fd_offset = dpaa2_fd_get_offset(fd);
-+	u32 fd_length = dpaa2_fd_get_len(fd);
-+	struct sk_buff *skb = NULL;
-+	unsigned int skb_len;
-+
-+	if (fd_length > DPAA2_ETH_DEFAULT_COPYBREAK)
-+		return NULL;
-+
-+	skb_len = fd_length + dpaa2_eth_needed_headroom(NULL);
-+
-+	skb = napi_alloc_skb(&ch->napi, skb_len);
-+	if (!skb)
-+		return NULL;
-+
-+	skb_reserve(skb, dpaa2_eth_needed_headroom(NULL));
-+	skb_put(skb, fd_length);
-+
-+	memcpy(skb->data, fd_vaddr + fd_offset, fd_length);
-+
-+	dpaa2_eth_recycle_buf(ch->priv, ch, dpaa2_fd_get_addr(fd));
-+
-+	return skb;
-+}
-+
- /* Main Rx frame processing routine */
- static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
- 			 struct dpaa2_eth_channel *ch,
-@@ -459,9 +486,12 @@ static void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
- 			return;
- 		}
+-int pci_vpd_find_tag(const u8 *buf, unsigned int off, unsigned int len, u8 rdt)
++int pci_vpd_find_tag(const u8 *buf, unsigned int len, u8 rdt)
+ {
+ 	int i;
  
--		dma_unmap_page(dev, addr, priv->rx_buf_size,
--			       DMA_BIDIRECTIONAL);
--		skb = dpaa2_eth_build_linear_skb(ch, fd, vaddr);
-+		skb = dpaa2_eth_copybreak(ch, fd, vaddr);
-+		if (!skb) {
-+			dma_unmap_page(dev, addr, priv->rx_buf_size,
-+				       DMA_BIDIRECTIONAL);
-+			skb = dpaa2_eth_build_linear_skb(ch, fd, vaddr);
-+		}
- 	} else if (fd_format == dpaa2_fd_sg) {
- 		WARN_ON(priv->xdp_prog);
+-	for (i = off; i < len; ) {
++	for (i = 0; i < len; ) {
+ 		u8 val = buf[i];
  
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 9ba31c2706bb..f8d2b4769983 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -489,6 +489,8 @@ struct dpaa2_eth_trap_data {
- 	struct dpaa2_eth_priv *priv;
- };
+ 		if (val & PCI_VPD_LRDT) {
+diff --git a/drivers/scsi/cxlflash/main.c b/drivers/scsi/cxlflash/main.c
+index dc36531d5..222593bc2 100644
+--- a/drivers/scsi/cxlflash/main.c
++++ b/drivers/scsi/cxlflash/main.c
+@@ -1649,8 +1649,7 @@ static int read_vpd(struct cxlflash_cfg *cfg, u64 wwpn[])
+ 	}
  
-+#define DPAA2_ETH_DEFAULT_COPYBREAK	512
-+
- /* Driver private data */
- struct dpaa2_eth_priv {
- 	struct net_device *net_dev;
+ 	/* Get the read only section offset */
+-	ro_start = pci_vpd_find_tag(vpd_data, 0, vpd_size,
+-				    PCI_VPD_LRDT_RO_DATA);
++	ro_start = pci_vpd_find_tag(vpd_data, vpd_size, PCI_VPD_LRDT_RO_DATA);
+ 	if (unlikely(ro_start < 0)) {
+ 		dev_err(dev, "%s: VPD Read-only data not found\n", __func__);
+ 		rc = -ENODEV;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 51660ab67..56125397f 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -2311,14 +2311,13 @@ static inline u8 pci_vpd_info_field_size(const u8 *info_field)
+ /**
+  * pci_vpd_find_tag - Locates the Resource Data Type tag provided
+  * @buf: Pointer to buffered vpd data
+- * @off: The offset into the buffer at which to begin the search
+  * @len: The length of the vpd buffer
+  * @rdt: The Resource Data Type to search for
+  *
+  * Returns the index where the Resource Data Type was found or
+  * -ENOENT otherwise.
+  */
+-int pci_vpd_find_tag(const u8 *buf, unsigned int off, unsigned int len, u8 rdt);
++int pci_vpd_find_tag(const u8 *buf, unsigned int len, u8 rdt);
+ 
+ /**
+  * pci_vpd_find_info_keyword - Locates an information field keyword in the VPD
 -- 
-2.30.0
+2.31.1
+
 
