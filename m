@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B57351B67
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F092D351B69
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:10:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237549AbhDASIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 14:08:13 -0400
-Received: from mga07.intel.com ([134.134.136.100]:1677 "EHLO mga07.intel.com"
+        id S236753AbhDASI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 14:08:27 -0400
+Received: from mga07.intel.com ([134.134.136.100]:1874 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234536AbhDASEL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237705AbhDASEL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Apr 2021 14:04:11 -0400
-IronPort-SDR: wcoWYTFasKTPTDpedpOs8WXRE750betHwyGZO7l9Wbhlon1hN4k/6prdOjImmTEPyLLmlGpYFC
- RJrcIQ00/8JQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="256275599"
+IronPort-SDR: o7RQZ4AnFDPghpglxUmqbNKRlE56xjT6GuvurQ6riNoo63Yx9Y8OSAvkCA3eILAE8IEwZziFyV
+ m37E2V8cvO0g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="256275601"
 X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
-   d="scan'208";a="256275599"
+   d="scan'208";a="256275601"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 10:19:30 -0700
-IronPort-SDR: E9PZSs7VViRF8udTMD82knQaQQdLlFW3gVNVoGsPEbFlCfevzTzwn/LkMMTRtvo+lrJTTkpCrx
- VXNkAHSo+Q5g==
+IronPort-SDR: pB344TSnesTmSoTn7LioQX0Xoop/xKEFqTVI8npRkHD7SBM2Fn1fGiXK2r5vDA+Uk0TV9/GHrr
+ imLl1rEW3mSg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
-   d="scan'208";a="439290157"
+   d="scan'208";a="439290160"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 01 Apr 2021 10:19:29 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 01 Apr 2021 10:19:30 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
-        Sreedevi Joshi <sreedevi.joshi@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>
-Subject: [PATCH net 2/3] i40e: fix receiving of single packets in xsk zero-copy mode
-Date:   Thu,  1 Apr 2021 10:21:06 -0700
-Message-Id: <20210401172107.1191618-3-anthony.l.nguyen@intel.com>
+Cc:     Eryk Rybak <eryk.roch.rybak@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        Dave Switzer <david.switzer@intel.com>
+Subject: [PATCH net 3/3] i40e: Fix display statistics for veb_tc
+Date:   Thu,  1 Apr 2021 10:21:07 -0700
+Message-Id: <20210401172107.1191618-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210401172107.1191618-1-anthony.l.nguyen@intel.com>
 References: <20210401172107.1191618-1-anthony.l.nguyen@intel.com>
@@ -45,59 +44,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+From: Eryk Rybak <eryk.roch.rybak@intel.com>
 
-Fix so that single packets are received immediately instead of in
-batches of 8. If you sent 1 pps to a system, you received 8 packets
-every 8 seconds instead of 1 packet every second. The problem behind
-this was that the work_done reporting from the Tx part of the driver
-was broken. The work_done reporting in i40e controls not only the
-reporting back to the napi logic but also the setting of the interrupt
-throttling logic. When Tx or Rx reports that it has more to do,
-interrupts are throttled or coalesced and when they both report that
-they are done, interrupts are armed right away. If the wrong work_done
-value is returned, the logic will start to throttle interrupts in a
-situation where it should have just enabled them. This leads to the
-undesired batching behavior seen in user-space.
+If veb-stats was enabled, the ethtool stats triggered a warning
+due to invalid size: 'unexpected stat size for veb.tc_%u_tx_packets'.
+This was due to an incorrect structure definition for the statistics.
+Structures and functions have been improved in line with requirements
+for the presentation of statistics, in particular for the functions:
+'i40e_add_ethtool_stats' and 'i40e_add_stat_strings'.
 
-Fix this by returning the correct boolean value from the Tx xsk
-zero-copy path. Return true if there is nothing to do or if we got
-fewer packets to process than we asked for. Return false if we got as
-many packets as the budget since there might be more packets we can
-process.
-
-Fixes: 3106c580fb7c ("i40e: Use batched xsk Tx interfaces to increase performance")
-Reported-by: Sreedevi Joshi <sreedevi.joshi@intel.com>
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Fixes: 1510ae0be2a4 ("i40e: convert VEB TC stats to use an i40e_stats array")
+Signed-off-by: Eryk Rybak <eryk.roch.rybak@intel.com>
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Reviewed-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Tested-by: Dave Switzer <david.switzer@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 52 ++++++++++++++++---
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index fc32c5019b0f..12ca84113587 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -471,7 +471,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 2c637a5678b3..96d5202a73e8 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -232,6 +232,8 @@ static void __i40e_add_stat_strings(u8 **p, const struct i40e_stats stats[],
+ 	I40E_STAT(struct i40e_vsi, _name, _stat)
+ #define I40E_VEB_STAT(_name, _stat) \
+ 	I40E_STAT(struct i40e_veb, _name, _stat)
++#define I40E_VEB_TC_STAT(_name, _stat) \
++	I40E_STAT(struct i40e_cp_veb_tc_stats, _name, _stat)
+ #define I40E_PFC_STAT(_name, _stat) \
+ 	I40E_STAT(struct i40e_pfc_stats, _name, _stat)
+ #define I40E_QUEUE_STAT(_name, _stat) \
+@@ -266,11 +268,18 @@ static const struct i40e_stats i40e_gstrings_veb_stats[] = {
+ 	I40E_VEB_STAT("veb.rx_unknown_protocol", stats.rx_unknown_protocol),
+ };
  
- 	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, descs, budget);
- 	if (!nb_pkts)
--		return false;
-+		return true;
++struct i40e_cp_veb_tc_stats {
++	u64 tc_rx_packets;
++	u64 tc_rx_bytes;
++	u64 tc_tx_packets;
++	u64 tc_tx_bytes;
++};
++
+ static const struct i40e_stats i40e_gstrings_veb_tc_stats[] = {
+-	I40E_VEB_STAT("veb.tc_%u_tx_packets", tc_stats.tc_tx_packets),
+-	I40E_VEB_STAT("veb.tc_%u_tx_bytes", tc_stats.tc_tx_bytes),
+-	I40E_VEB_STAT("veb.tc_%u_rx_packets", tc_stats.tc_rx_packets),
+-	I40E_VEB_STAT("veb.tc_%u_rx_bytes", tc_stats.tc_rx_bytes),
++	I40E_VEB_TC_STAT("veb.tc_%u_tx_packets", tc_tx_packets),
++	I40E_VEB_TC_STAT("veb.tc_%u_tx_bytes", tc_tx_bytes),
++	I40E_VEB_TC_STAT("veb.tc_%u_rx_packets", tc_rx_packets),
++	I40E_VEB_TC_STAT("veb.tc_%u_rx_bytes", tc_rx_bytes),
+ };
  
- 	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
- 		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
-@@ -488,7 +488,7 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
- 
- 	i40e_update_tx_stats(xdp_ring, nb_pkts, total_bytes);
- 
--	return true;
-+	return nb_pkts < budget;
+ static const struct i40e_stats i40e_gstrings_misc_stats[] = {
+@@ -2217,6 +2226,29 @@ static int i40e_get_sset_count(struct net_device *netdev, int sset)
+ 	}
  }
  
++/**
++ * i40e_get_veb_tc_stats - copy VEB TC statistics to formatted structure
++ * @tc: the TC statistics in VEB structure (veb->tc_stats)
++ * @i: the index of traffic class in (veb->tc_stats) structure to copy
++ *
++ * Copy VEB TC statistics from structure of arrays (veb->tc_stats) to
++ * one dimensional structure i40e_cp_veb_tc_stats.
++ * Produce formatted i40e_cp_veb_tc_stats structure of the VEB TC
++ * statistics for the given TC.
++ **/
++static struct i40e_cp_veb_tc_stats
++i40e_get_veb_tc_stats(struct i40e_veb_tc_stats *tc, unsigned int i)
++{
++	struct i40e_cp_veb_tc_stats veb_tc = {
++		.tc_rx_packets = tc->tc_rx_packets[i],
++		.tc_rx_bytes = tc->tc_rx_bytes[i],
++		.tc_tx_packets = tc->tc_tx_packets[i],
++		.tc_tx_bytes = tc->tc_tx_bytes[i],
++	};
++
++	return veb_tc;
++}
++
  /**
+  * i40e_get_pfc_stats - copy HW PFC statistics to formatted structure
+  * @pf: the PF device structure
+@@ -2301,8 +2333,16 @@ static void i40e_get_ethtool_stats(struct net_device *netdev,
+ 			       i40e_gstrings_veb_stats);
+ 
+ 	for (i = 0; i < I40E_MAX_TRAFFIC_CLASS; i++)
+-		i40e_add_ethtool_stats(&data, veb_stats ? veb : NULL,
+-				       i40e_gstrings_veb_tc_stats);
++		if (veb_stats) {
++			struct i40e_cp_veb_tc_stats veb_tc =
++				i40e_get_veb_tc_stats(&veb->tc_stats, i);
++
++			i40e_add_ethtool_stats(&data, &veb_tc,
++					       i40e_gstrings_veb_tc_stats);
++		} else {
++			i40e_add_ethtool_stats(&data, NULL,
++					       i40e_gstrings_veb_tc_stats);
++		}
+ 
+ 	i40e_add_ethtool_stats(&data, pf, i40e_gstrings_stats);
+ 
 -- 
 2.26.2
 
