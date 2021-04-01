@@ -2,69 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B431D35232D
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E4035233C
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233789AbhDAXKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 19:10:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34266 "EHLO mail.kernel.org"
+        id S234548AbhDAXNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 19:13:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35384 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231160AbhDAXKI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Apr 2021 19:10:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CE47D610FC;
-        Thu,  1 Apr 2021 23:10:08 +0000 (UTC)
+        id S231160AbhDAXNO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 19:13:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 33387610FA;
+        Thu,  1 Apr 2021 23:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617318608;
-        bh=Y+ae4vE+FskqQEGrUAyD4C6AHKzc1GipMQ2rbkQeqJs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=J0H7meUz9HDvY5Smx6ga3Zm9g20ZKfqDz8SnJvzAlHUe+kwzdAIf22UCnsHsA0r97
-         E5uYM5IxgdqKGDEA5xpp/xa5UWa1aseABtbv0Px92qdhCEU3LrtfB/3w3l1NTjxLNR
-         YJqB2JAD0v+UoJz8yNdXBlyQQxWwaaXok5OGlXtRpmpWiRbcVcDlrlhxKg35GjdyH/
-         cC/C4JekBzC15griDv6g8KeWTOspOwHd74/mZN05JQBSe7UuUPXlfBv5EfdPucdOEl
-         +EZYBF2Ombm60iRivjQmshkm7BFhXOhuPTZYx5gCZVfOy86RzhtCt3JWEd3IRa9m5k
-         oFDhit9QNFMZA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BCCA4609CD;
-        Thu,  1 Apr 2021 23:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1617318793;
+        bh=ByCZqIe1e7hazFRH++kiAEAGCdLWiVrfLdpiyiJTX1M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mPhEiXIkPFXJMpr4Rn5vHC83CeO2jA0z84WR/f/rvHN4uwes+P4ZedrrIcbXJa5Si
+         sqd19/2y/3Ek+NR3ADc2AVtHPDBE/zLKmszckysp21ASND6ICjOA9piKjKSPGo8mtQ
+         pPQ4q1U/MlFBSmsoLOcY77AkFGyqLKNSbUjR8i9jg/asel/IbImwjUEFSR+cVym2Ee
+         12BgMZTZEZNYAVkaegyCPzkP4hREvdP5+apC4Uw2Aj/O2/+95pLN+y1ssYOphw0jvr
+         h0pnrdJ7RmNH1K3lN5mveYr+q3xqpQgz7K4nOdtCL0Gj7tIGe8bouTNErwlXtEhsnB
+         oKWGjn6oGlf8g==
+Received: by mail-lf1-f51.google.com with SMTP id w28so5167347lfn.2;
+        Thu, 01 Apr 2021 16:13:13 -0700 (PDT)
+X-Gm-Message-State: AOAM533JDy2/z4Cu/U3ZX7uyT8bVt8xaCzkupmG0JUmw8TqjV5UEh79K
+        gqhqRjrh3hYm9JflYWc0ARvRfV936dYeF4GSQUQ=
+X-Google-Smtp-Source: ABdhPJzfULRP6XTk/DCoDWy/oq9taXLGT1wyYUiQaw0gEdqD3RAjbxyzKJrllK95F41URpYn+U4wtsXw8Vj1HFFYtaE=
+X-Received: by 2002:a05:6512:3582:: with SMTP id m2mr6985279lfr.10.1617318791424;
+ Thu, 01 Apr 2021 16:13:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] mptcp: mptcp: fix deadlock in mptcp{,6}_release
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161731860876.11591.13180900206221380898.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Apr 2021 23:10:08 +0000
-References: <cover.1617295578.git.pabeni@redhat.com>
-In-Reply-To: <cover.1617295578.git.pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, mptcp@lists.linux.dev, davem@davemloft.net,
-        kuba@kernel.org
+References: <20210401072037.995849-1-wanjiabing@vivo.com>
+In-Reply-To: <20210401072037.995849-1-wanjiabing@vivo.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 1 Apr 2021 16:13:00 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW43X4ra8JU+YYndT7VKkc3h0k=2oKKpCtUtf+w+emPorw@mail.gmail.com>
+Message-ID: <CAPhsuW43X4ra8JU+YYndT7VKkc3h0k=2oKKpCtUtf+w+emPorw@mail.gmail.com>
+Subject: Re: [PATCH] linux/bpf.h: Remove repeated struct declaration
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, kael_w@yeah.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Apr 1, 2021 at 12:22 AM Wan Jiabing <wanjiabing@vivo.com> wrote:
+>
+> struct btf_type is declared twice. One is declared at 35th line.
+> The blew one is not needed. Remove the duplicate.
+>
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Thu,  1 Apr 2021 18:57:43 +0200 you wrote:
-> syzkaller has reported a few deadlock triggered by
-> mptcp{,6}_release.
-> 
-> These patches address the issue in the easy way - blocking
-> the relevant, multicast related, sockopt options on MPTCP
-> sockets.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,1/2] mptcp: forbit mcast-related sockopt on MPTCP sockets
-    https://git.kernel.org/netdev/net/c/86581852d771
-  - [net,2/2] mptcp: revert "mptcp: provide subflow aware release function"
-    https://git.kernel.org/netdev/net/c/0a3cc57978d1
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Song Liu <songliubraving@fb.com>
