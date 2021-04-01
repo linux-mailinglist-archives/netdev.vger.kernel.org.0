@@ -2,80 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDB73518A5
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 789D23518BE
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:49:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235792AbhDARqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 13:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
+        id S235064AbhDARrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 13:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234948AbhDARlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:41:35 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF4EC00F7D4
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 08:06:50 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id ha17so1313362pjb.2
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 08:06:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pqB5cCC/Jqcw+wkSt2/1lFjptsGclZ/CAukxZnCa79U=;
-        b=hIqfbooU8DpK4C+ZGXLR6X0oujJvp8X52S6vDN4ergb7HgdU1tAQT+MT/idk4Q6LnV
-         cReiqTDhJuZDNOd/4UOasU+V0bKxPRHFz3huDs523vvr01t8T35H/ykVB9bUKp3HN5Oy
-         FjKnQYutACnCkZ8HzaqgnY5O5DERdTCBd9VRVFUPQ9ThD6orrVMpQzE/IeYU0Ik+Ciq8
-         ybTHcLocTIG2CaGtmzfIk11iepbmf05O9N6iNVXvjfdRxnzfbwMI60VtYpETZRVt6GFT
-         LoL6i0AFiHM6ngRb0+Kmmi0rEcep8U8DNbsoD4ufwvyZ/qarYDRpGBETwK8cjOxCYh2z
-         yx2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pqB5cCC/Jqcw+wkSt2/1lFjptsGclZ/CAukxZnCa79U=;
-        b=K52fmKqobT6QOc0LRUs38DrCvFrIv3Hdz7IVT8LgYvpx05Ne73j7Y/9jkX1RaP+Cfz
-         guP1zKlYd9WU3w7fLP1jq3LCHEKpjPtVbNxXeJsnIhp8peGIs0/lUUrODq/0FqlxLW2j
-         kpACNctX7wgZGUWd5ptoT+1azWiu9Uq6GLtUrNGqo9J1dlmTx+OF9eMA6pNXQOJxr1N9
-         cBFkjIxpiBGpi4bg4rcijYvgEzpoAV5y9zdBSm5xZuwQX3ZNnhsfaRazdiWxrbXMabVr
-         v21uVt4uNd37v3BpHyxZinErLVJmIed1uId4HWTJtkoKnWkMLV+Gtl74nPXfQWhzU9Kz
-         2QPg==
-X-Gm-Message-State: AOAM533Co/n8uDnVNFyCoIgdka46/ezPqp92c3Q/r/HDwKep/uTx8g8a
-        3VsR83/4f8PeolaF04pZqO3OMzP6uc3/Jw==
-X-Google-Smtp-Source: ABdhPJy/3I/CIYWtFtcW1iznK2tds49Ijz9TIJhZHiEswS/THCHlUcmmjD/SchuTeMTTbd5RdrETTg==
-X-Received: by 2002:a17:90b:4c0a:: with SMTP id na10mr9650562pjb.227.1617289610348;
-        Thu, 01 Apr 2021 08:06:50 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id i7sm6037880pfq.184.2021.04.01.08.06.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 08:06:49 -0700 (PDT)
-Date:   Thu, 1 Apr 2021 08:06:40 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Hongren Zheng <i@zenithal.me>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Subject: Re: [RFC] add extack errors for iptoken
-Message-ID: <20210401080640.34cc6777@hermes.local>
-In-Reply-To: <2854a1c9-ca3e-312d-c94f-12aea1469bc0@gmail.com>
-References: <YF80x4bBaXpS4s/W@Sun>
-        <20210331204902.78d87b40@hermes.local>
-        <2854a1c9-ca3e-312d-c94f-12aea1469bc0@gmail.com>
+        with ESMTP id S236008AbhDARnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:43:33 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA766C02D56A;
+        Thu,  1 Apr 2021 08:53:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=F/At/y3YpRYA0xMifJb6WYaRvzw/qWs4U1Utp3fOA3I=; b=HFkBoDC2gQqzR0/BMkABluFzVb
+        3gakMZuzB5XR+6BX0Aj1OytKg2i4hAn10GfCqqYygamx5QBLvyvglTO+CwociDtgFFHoBElQl2z9C
+        8vSKoiBIAW3F6tqOLYPp5fiGR2bP6vbJGLE7cWb6BixFCeOSNvJ4K1maSU3n4g1Q7mpPZT2T07c35
+        IOMTZ0zeIeEGgKA2dxIZ8EK0kU0QMV3JhqqKyPs1AV8kBZN19SvvyFxFLUzRFNH5pIb+XJhARJbkW
+        zRtou/lbZms6YtiTWLVyM7tCMX4ldsM7ZmafF6EhBjKGqEfhr9PhwxC99sSvMht8lYVuOOmKk4W3l
+        pxTq5pyQ==;
+Received: from [2001:4bb8:180:7517:83e4:a809:b0aa:ca74] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+        id 1lRzd6-00CiZO-UO; Thu, 01 Apr 2021 15:53:09 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: cleanup unused or almost unused IOMMU APIs and the FSL PAMU driver v3
+Date:   Thu,  1 Apr 2021 17:52:36 +0200
+Message-Id: <20210401155256.298656-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Apr 2021 08:31:05 -0600
-David Ahern <dsahern@gmail.com> wrote:
+Hi all,
 
-> On 3/31/21 9:49 PM, Stephen Hemminger wrote:
-> > @@ -5681,14 +5682,29 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token)
-> >  
-> >  	ASSERT_RTNL();
-> >  
-> > -	if (!token)
-> > +	if (!token) {  
-> 
-> You forgot to add a message here.
+there are a bunch of IOMMU APIs that are entirely unused, or only used as
+a private communication channel between the FSL PAMU driver and it's only
+consumer, the qbman portal driver.
 
-This branch is unreachable, function is  only called from place where it is not NULL.
+So this series drops a huge chunk of entirely unused FSL PAMU
+functionality, then drops all kinds of unused IOMMU APIs, and then
+replaces what is left of the iommu_attrs with properly typed, smaller
+and easier to use specific APIs.
+
+Changes since v2:
+ - remove a comment fragment a little bit earlier
+ - fix the aperture end passed to pamu_config_ppaace
+ - fix a few trivial typos
+ - remove more unused arguments to pamu_config_ppaace
+ - do not accidentally enable lazy flushing for non-dma domains
+
+Changes since v1:
+ - use a different way to control strict flushing behavior (from Robin)
+ - remove the iommu_cmd_line wrappers
+ - simplify the pagetbl quirks a little more
+ - slightly improved patch ordering
+ - better changelogs
+
+Diffstat:
+ arch/powerpc/include/asm/fsl_pamu_stash.h   |   12 
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c     |    5 
+ drivers/iommu/amd/iommu.c                   |   23 
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   75 ---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |    1 
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  111 +---
+ drivers/iommu/arm/arm-smmu/arm-smmu.h       |    2 
+ drivers/iommu/dma-iommu.c                   |    9 
+ drivers/iommu/fsl_pamu.c                    |  293 -----------
+ drivers/iommu/fsl_pamu.h                    |   12 
+ drivers/iommu/fsl_pamu_domain.c             |  688 ++--------------------------
+ drivers/iommu/fsl_pamu_domain.h             |   46 -
+ drivers/iommu/intel/iommu.c                 |   95 ---
+ drivers/iommu/iommu.c                       |  118 +---
+ drivers/soc/fsl/qbman/qman_portal.c         |   55 --
+ drivers/vfio/vfio_iommu_type1.c             |   31 -
+ drivers/vhost/vdpa.c                        |   10 
+ include/linux/io-pgtable.h                  |    4 
+ include/linux/iommu.h                       |   76 ---
+ 19 files changed, 203 insertions(+), 1463 deletions(-)
