@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC02B351AB6
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 381A63519DD
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:03:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236705AbhDASCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 14:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33000 "EHLO
+        id S236996AbhDAR4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 13:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235549AbhDAR5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:57:16 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68996C031148
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 09:43:19 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ap14so3890978ejc.0
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 09:43:19 -0700 (PDT)
+        with ESMTP id S237333AbhDARv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:51:29 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3849BC03114A
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 09:43:21 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id e7so2653625edu.10
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 09:43:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vYlbfdlzeautMqT/19BMG+KdW7W8IY0mDtzZJCnvWck=;
-        b=TOXNZv8rMKbqXI29vr9+uyubunhgM2xh1INCAwVc50su/dHsCgeDrDjCXIczoZGKVz
-         weXCd3DluKCb3mhrdVfW3dWpG91usiIZUAvbAVVgkTcpKBVIlH4+WdyeJA7WSJt8llJx
-         Cxs8Zn79XVdeoGh43jh2XB7YW/yQ1ziFxXHebaS/Ufzm5dCTnQ7TbwrCQQPFfU7keT4v
-         snD8QxIqnE2GgqmrEK5BAqTm4w0/WD8aWVj3uzeo02WldtH+Tay6MWQN/gntFOFnxfNo
-         mSv/ZBbvZQFrpnPJ3Bw5iA6GZbt8uCzI7SZBKj6cJvzOquFWtiR7OFgVmMU1/AMdvNRh
-         KMKA==
+        bh=/76YHoYgZCtB5bLfWXgnw3f01zAtb9JZmKGdBG6u+Eo=;
+        b=dWIw00ZO9lvagWWTzj5aby9oZPghy8dzLaugJeKXyoHkKzmjhlzCyZsppiotiVPqlT
+         amT+cZqrKl7+zqTHoCJSbGn3raVv6KhBzFlKf4hAvibxM/kwP4iWS+1UYyBvUoE+orla
+         5zmsrQZKQ/WGiFuQvPHYjUzFpAzQr/fYvJLMnEVn7esPHF412f4FZ5xR5qTP4fPfL+Jx
+         ddYANHCL+Geisj18Ejr4t+zqfNdVtM/E6COOA0/5KuN+svxBFgCkShvKP30CiNYjxLGF
+         IkrCGGoqpiLfD9v5Drry5fA6PB9JnaGM0uB6J3G2kj0pEBQuoY6Et8ceaexqkR1GLppz
+         hhUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vYlbfdlzeautMqT/19BMG+KdW7W8IY0mDtzZJCnvWck=;
-        b=ptAiNkaIHiPqA0+T9etZm4FsRjecuCD6/93+NFT8ebFbETMmCtzagcXmup+AmOUqGw
-         E9KCpRg1Xn/4K5gMfSPu5l7+XOUME/hBxan612JCY7gupOWL99IMk1uD18c32m/Jymde
-         5H8ydNoiXThJaEzFfs6a5/HgQyY0C9CRHKHdOQ6rCGoe4Bq4Oy+5Pank6apN/3b7nRKY
-         ThhAwdDZPScP9AuDD3VCNqxBjd8e5tGRwn5jmJguIr9+kwdjXNZa6buJmVnGCLuEEk7i
-         r34gd9vDduFkESTy5VDDWAMQh3+JWC2lF6jtYDJV/57PJrphLof+80XcngyOw7AkygPb
-         zpVw==
-X-Gm-Message-State: AOAM532YWx0caBJPcsH2Ppms7SP7mc6nXjj9tixeE3sSHZ1zPRGSsDX1
-        cft5cNdl0xoYJmHXhkyefr4=
-X-Google-Smtp-Source: ABdhPJw5Eg5dvIcOMGbstX2kZlrQovQlXyMeHOxSXr6UePDLnOvFPXKM/8f+LRsqaKaXrVpZ6PO9gQ==
-X-Received: by 2002:a17:906:3496:: with SMTP id g22mr10370879ejb.143.1617295398131;
-        Thu, 01 Apr 2021 09:43:18 -0700 (PDT)
+        bh=/76YHoYgZCtB5bLfWXgnw3f01zAtb9JZmKGdBG6u+Eo=;
+        b=XVz/SePbJknc3B3RCNczpMSUZ83z8v3Tpasb6e1xG7CGEe7V+ySTW4p90VD/xANF2C
+         uLvnL4M+i4IiPZe7cMdQYN674CH0Jvenl9Z583Kj7T5Xc3hPcTeev6uNmLS0EGo+wA7w
+         9T4PFprMAGF8hL1rNS5du1iFokeIVcYdVsjW9rhv/Ne5yePC3f4Ifh7pOQzABzR6biGL
+         Bmp/YjlOpFMfDMjR804HmFM/QnO+JxwaqoOZ5k36KoTNQnymDDEFLao+fG4IZKX2kbA3
+         a9E4F5pLuzrSo0pxwXW/Gspw8Tj/tmFoT+kngxlK6XagU0NuJbmvNdb3dZtQ1cICppWj
+         jN4g==
+X-Gm-Message-State: AOAM530yBy/f8WpjiGh/aXzqHWNqpwQkA1ya/H2ZnekBTNh1xtKXmI6R
+        tETO2zxsZ0CVFa5w3b4+B9E=
+X-Google-Smtp-Source: ABdhPJx0kZaoQ94CUQ0oN7egUu1UEbUqkc68J5ghFTlG2CnPd9Uxk1AXRKiOi16ZeTWEyjxVlio+3Q==
+X-Received: by 2002:a05:6402:698:: with SMTP id f24mr10809436edy.262.1617295399986;
+        Thu, 01 Apr 2021 09:43:19 -0700 (PDT)
 Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id w24sm3821270edt.44.2021.04.01.09.43.17
+        by smtp.gmail.com with ESMTPSA id w24sm3821270edt.44.2021.04.01.09.43.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 09:43:17 -0700 (PDT)
+        Thu, 01 Apr 2021 09:43:19 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 1/3] dpaa2-eth: rename dpaa2_eth_xdp_release_buf into dpaa2_eth_recycle_buf
-Date:   Thu,  1 Apr 2021 19:39:54 +0300
-Message-Id: <20210401163956.766628-2-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 3/3] dpaa2-eth: export the rx copybreak value as an ethtool tunable
+Date:   Thu,  1 Apr 2021 19:39:56 +0300
+Message-Id: <20210401163956.766628-4-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210401163956.766628-1-ciorneiioana@gmail.com>
 References: <20210401163956.766628-1-ciorneiioana@gmail.com>
@@ -64,116 +64,121 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Rename the dpaa2_eth_xdp_release_buf function into dpaa2_eth_recycle_buf
-since in the next patches we'll be using the same recycle mechanism for
-the normal stack path beside for XDP_DROP.
-
-Also, rename the array which holds the buffers to be recycled so that it
-does not have any reference to XDP.
+It's useful, especially for debugging purposes, to have the Rx copybreak
+value changeable at runtime. Export it as an ethtool tunable.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 26 +++++++++----------
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  6 +++--
- 2 files changed, 17 insertions(+), 15 deletions(-)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  7 +++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  2 +
+ .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  | 40 +++++++++++++++++++
+ 3 files changed, 47 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index fc0eb82cdd6a..f545cb99388a 100644
+index 200831b41078..e9d606f99377 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -223,31 +223,31 @@ static void dpaa2_eth_free_bufs(struct dpaa2_eth_priv *priv, u64 *buf_array,
- 	}
- }
- 
--static void dpaa2_eth_xdp_release_buf(struct dpaa2_eth_priv *priv,
--				      struct dpaa2_eth_channel *ch,
--				      dma_addr_t addr)
-+static void dpaa2_eth_recycle_buf(struct dpaa2_eth_priv *priv,
-+				  struct dpaa2_eth_channel *ch,
-+				  dma_addr_t addr)
+@@ -422,11 +422,12 @@ struct sk_buff *dpaa2_eth_copybreak(struct dpaa2_eth_channel *ch,
+ 				    const struct dpaa2_fd *fd, void *fd_vaddr)
  {
- 	int retries = 0;
- 	int err;
+ 	u16 fd_offset = dpaa2_fd_get_offset(fd);
++	struct dpaa2_eth_priv *priv = ch->priv;
+ 	u32 fd_length = dpaa2_fd_get_len(fd);
+ 	struct sk_buff *skb = NULL;
+ 	unsigned int skb_len;
  
--	ch->xdp.drop_bufs[ch->xdp.drop_cnt++] = addr;
--	if (ch->xdp.drop_cnt < DPAA2_ETH_BUFS_PER_CMD)
-+	ch->recycled_bufs[ch->recycled_bufs_cnt++] = addr;
-+	if (ch->recycled_bufs_cnt < DPAA2_ETH_BUFS_PER_CMD)
- 		return;
+-	if (fd_length > DPAA2_ETH_DEFAULT_COPYBREAK)
++	if (fd_length > priv->rx_copybreak)
+ 		return NULL;
  
- 	while ((err = dpaa2_io_service_release(ch->dpio, priv->bpid,
--					       ch->xdp.drop_bufs,
--					       ch->xdp.drop_cnt)) == -EBUSY) {
-+					       ch->recycled_bufs,
-+					       ch->recycled_bufs_cnt)) == -EBUSY) {
- 		if (retries++ >= DPAA2_ETH_SWP_BUSY_RETRIES)
- 			break;
- 		cpu_relax();
- 	}
+ 	skb_len = fd_length + dpaa2_eth_needed_headroom(NULL);
+@@ -440,7 +441,7 @@ struct sk_buff *dpaa2_eth_copybreak(struct dpaa2_eth_channel *ch,
  
- 	if (err) {
--		dpaa2_eth_free_bufs(priv, ch->xdp.drop_bufs, ch->xdp.drop_cnt);
--		ch->buf_count -= ch->xdp.drop_cnt;
-+		dpaa2_eth_free_bufs(priv, ch->recycled_bufs, ch->recycled_bufs_cnt);
-+		ch->buf_count -= ch->recycled_bufs_cnt;
- 	}
+ 	memcpy(skb->data, fd_vaddr + fd_offset, fd_length);
  
--	ch->xdp.drop_cnt = 0;
-+	ch->recycled_bufs_cnt = 0;
+-	dpaa2_eth_recycle_buf(ch->priv, ch, dpaa2_fd_get_addr(fd));
++	dpaa2_eth_recycle_buf(priv, ch, dpaa2_fd_get_addr(fd));
+ 
+ 	return skb;
  }
+@@ -4332,6 +4333,8 @@ static int dpaa2_eth_probe(struct fsl_mc_device *dpni_dev)
  
- static int dpaa2_eth_xdp_flush(struct dpaa2_eth_priv *priv,
-@@ -300,7 +300,7 @@ static void dpaa2_eth_xdp_tx_flush(struct dpaa2_eth_priv *priv,
- 		ch->stats.xdp_tx++;
- 	}
- 	for (i = enqueued; i < fq->xdp_tx_fds.num; i++) {
--		dpaa2_eth_xdp_release_buf(priv, ch, dpaa2_fd_get_addr(&fds[i]));
-+		dpaa2_eth_recycle_buf(priv, ch, dpaa2_fd_get_addr(&fds[i]));
- 		percpu_stats->tx_errors++;
- 		ch->stats.xdp_tx_err++;
- 	}
-@@ -382,7 +382,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
- 		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
- 		fallthrough;
- 	case XDP_DROP:
--		dpaa2_eth_xdp_release_buf(priv, ch, addr);
-+		dpaa2_eth_recycle_buf(priv, ch, addr);
- 		ch->stats.xdp_drop++;
- 		break;
- 	case XDP_REDIRECT:
-@@ -403,7 +403,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
- 				free_pages((unsigned long)vaddr, 0);
- 			} else {
- 				ch->buf_count++;
--				dpaa2_eth_xdp_release_buf(priv, ch, addr);
-+				dpaa2_eth_recycle_buf(priv, ch, addr);
- 			}
- 			ch->stats.xdp_drop++;
- 		} else {
+ 	skb_queue_head_init(&priv->tx_skbs);
+ 
++	priv->rx_copybreak = DPAA2_ETH_DEFAULT_COPYBREAK;
++
+ 	/* Obtain a MC portal */
+ 	err = fsl_mc_portal_allocate(dpni_dev, FSL_MC_IO_ATOMIC_CONTEXT_PORTAL,
+ 				     &priv->mc_io);
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 9b6a89709ce1..9ba31c2706bb 100644
+index f8d2b4769983..cdb623d5f2c1 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -438,8 +438,6 @@ struct dpaa2_eth_fq {
- 
- struct dpaa2_eth_ch_xdp {
- 	struct bpf_prog *prog;
--	u64 drop_bufs[DPAA2_ETH_BUFS_PER_CMD];
--	int drop_cnt;
- 	unsigned int res;
- };
- 
-@@ -457,6 +455,10 @@ struct dpaa2_eth_channel {
- 	struct dpaa2_eth_ch_xdp xdp;
- 	struct xdp_rxq_info xdp_rxq;
- 	struct list_head *rx_list;
+@@ -571,6 +571,8 @@ struct dpaa2_eth_priv {
+ 	struct devlink *devlink;
+ 	struct dpaa2_eth_trap_data *trap_data;
+ 	struct devlink_port devlink_port;
 +
-+	/* Buffers to be recycled back in the buffer pool */
-+	u64 recycled_bufs[DPAA2_ETH_BUFS_PER_CMD];
-+	int recycled_bufs_cnt;
++	u32 rx_copybreak;
  };
  
- struct dpaa2_eth_dist_fields {
+ struct dpaa2_eth_devlink_priv {
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index bf59708b869e..ad5e374eeccf 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+@@ -782,6 +782,44 @@ static int dpaa2_eth_get_ts_info(struct net_device *dev,
+ 	return 0;
+ }
+ 
++static int dpaa2_eth_get_tunable(struct net_device *net_dev,
++				 const struct ethtool_tunable *tuna,
++				 void *data)
++{
++	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
++	int err = 0;
++
++	switch (tuna->id) {
++	case ETHTOOL_RX_COPYBREAK:
++		*(u32 *)data = priv->rx_copybreak;
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	return err;
++}
++
++static int dpaa2_eth_set_tunable(struct net_device *net_dev,
++				 const struct ethtool_tunable *tuna,
++				 const void *data)
++{
++	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
++	int err = 0;
++
++	switch (tuna->id) {
++	case ETHTOOL_RX_COPYBREAK:
++		priv->rx_copybreak = *(u32 *)data;
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	return err;
++}
++
+ const struct ethtool_ops dpaa2_ethtool_ops = {
+ 	.get_drvinfo = dpaa2_eth_get_drvinfo,
+ 	.nway_reset = dpaa2_eth_nway_reset,
+@@ -796,4 +834,6 @@ const struct ethtool_ops dpaa2_ethtool_ops = {
+ 	.get_rxnfc = dpaa2_eth_get_rxnfc,
+ 	.set_rxnfc = dpaa2_eth_set_rxnfc,
+ 	.get_ts_info = dpaa2_eth_get_ts_info,
++	.get_tunable = dpaa2_eth_get_tunable,
++	.set_tunable = dpaa2_eth_set_tunable,
+ };
 -- 
 2.30.0
 
