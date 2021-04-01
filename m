@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9354F351051
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 09:48:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2A23510A3
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 10:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233240AbhDAHsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 03:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        id S233080AbhDAIKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 04:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232310AbhDAHr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 03:47:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4E2C0613E6
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 00:47:58 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lRs3V-0001u2-GP; Thu, 01 Apr 2021 09:47:53 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lRs3T-000588-IB; Thu, 01 Apr 2021 09:47:51 +0200
-Date:   Thu, 1 Apr 2021 09:47:51 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH net-next v1 3/3] net: fec: add basic selftest support
-Message-ID: <20210401074751.so4m7k3pnhcjeofx@pengutronix.de>
-References: <20210330135407.17010-1-o.rempel@pengutronix.de>
- <20210330135407.17010-4-o.rempel@pengutronix.de>
- <YGRqpxefTxZjqp6w@lunn.ch>
+        with ESMTP id S233024AbhDAIKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 04:10:25 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29437C061788
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 01:10:25 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id 12so1492857lfq.13
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 01:10:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=359/3Z1CYKxxl5toasV/Z3a4f/q0gbTdIT4dOTC6TX4=;
+        b=hmy31Zhh31GXyDnFegs87CjLtlaApmiQ/cw90wjma2uhuGFInGbEfs1W1jA+9p5qIG
+         dblYVTYk1fLeQEWJvUUIwfgKqNSC60dzwaCyDus2zXZYFc6RptCP1CDCDw/88N0MpZ/m
+         iIG3sQgvnpjzpmnfnZmK83lJ5CN4oYgfj2H+U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=359/3Z1CYKxxl5toasV/Z3a4f/q0gbTdIT4dOTC6TX4=;
+        b=ReJ8zB4Z232AGXqYHzslpJFQXeXmLI45TG2OPUcO6kqkidGwXxh5+b/2rkmsOrUbPy
+         hFZxNyvikYEzWCLfst+aL4tH8dI+ffK0aywxzBjmSot7cwwvObJIWIdzDoOiexZn7h7Y
+         3RdT24tXcFn9nuZD/h6636F/VOa4APPmGF+9cpU9j7lKyJayyzvxCldscckFqTkhq9qQ
+         DDOfHpaZ00HP9hSRlm67cOLm5BGB/J/forPbgRoIo97ON4t693tUk2RqczVZenZPRu17
+         /GoO9O36PwMeKCNkeOlDiMre2uGfuD1pGiey8MfTUfF794ufB7zCGvdXgrotKBoPtBWz
+         ooyQ==
+X-Gm-Message-State: AOAM531N9OPy4/ygSOHxdrQCNxWstdkqps9f7kgnj3U7un3IzfE1tZEj
+        jChnjqaICQTxJNHxuYUjmfGA5A==
+X-Google-Smtp-Source: ABdhPJzqPkCkdYPRatKHnZ5p6Tzfh31w0pWZqV6gEe7smyLxtkbY3Cd2vS+HT00hSPyWRUDVKwqAhA==
+X-Received: by 2002:ac2:50d0:: with SMTP id h16mr4790179lfm.369.1617264623102;
+        Thu, 01 Apr 2021 01:10:23 -0700 (PDT)
+Received: from cloudflare.com (83.5.248.223.ipv4.supernova.orange.pl. [83.5.248.223])
+        by smtp.gmail.com with ESMTPSA id d21sm535710ljo.55.2021.04.01.01.10.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Apr 2021 01:10:22 -0700 (PDT)
+References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
+ <20210331023237.41094-4-xiyou.wangcong@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [Patch bpf-next v8 03/16] net: introduce skb_send_sock() for
+ sock_map
+In-reply-to: <20210331023237.41094-4-xiyou.wangcong@gmail.com>
+Date:   Thu, 01 Apr 2021 10:10:20 +0200
+Message-ID: <87tuoq2zo3.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YGRqpxefTxZjqp6w@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 09:44:36 up 119 days, 21:50, 47 users,  load average: 0.01, 0.04,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 02:27:19PM +0200, Andrew Lunn wrote:
-> On Tue, Mar 30, 2021 at 03:54:07PM +0200, Oleksij Rempel wrote:
-> > Port some parts of the stmmac selftest to the FEC. This patch was tested
-> > on iMX6DL.
-> > With this tests it is possible to detect some basic issues like:
-> > - MAC loopback fail: most probably wrong clock configuration.
-> > - PHY loopback fail: incorrect RGMII timings, damaged traces, etc
-> 
-> Hi
-> 
-> Oleksij
-> 
-> I've not done a side-by-side diff with stmmac, but i guess a lot of
-> this code is identical?
+On Wed, Mar 31, 2021 at 04:32 AM CEST, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+>
+> We only have skb_send_sock_locked() which requires callers
+> to use lock_sock(). Introduce a variant skb_send_sock()
+> which locks on its own, callers do not need to lock it
+> any more. This will save us from adding a ->sendmsg_locked
+> for each protocol.
+>
+> To reuse the code, pass function pointers to __skb_send_sock()
+> and build skb_send_sock() and skb_send_sock_locked() on top.
+>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-ack
-
-> Rather than make a copy/paste, could you move
-> it somewhere under net and turn it into a library any driver can use?
-
-yes, I assume, it is possible to make this code complete generic for all
-devices, but we will need to provide some more call backs. For example
-enable MAC loop back, enable DSA loopbacks and so on.
-
-Do you have ideas for the new location of generic selftest code and
-where  can be added loopback options for different levels?
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
