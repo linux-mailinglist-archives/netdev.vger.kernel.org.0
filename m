@@ -2,157 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51141350BD7
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 03:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E4CE350BDE
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 03:24:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232601AbhDABXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 21:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbhDABXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 21:23:12 -0400
-Received: from hs01.dk-develop.de (hs01.dk-develop.de [IPv6:2a02:c207:3002:6234::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BD4C061574;
-        Wed, 31 Mar 2021 18:23:11 -0700 (PDT)
-Received: from mail.dk-develop.de (hs01.dk-develop.de [IPv6:::1])
-        by hs01.dk-develop.de (Postfix) with ESMTP id 43E66240605;
-        Thu,  1 Apr 2021 03:23:05 +0200 (CEST)
+        id S233020AbhDABYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 21:24:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44976 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229486AbhDABXm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 21:23:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 93CCA6105A;
+        Thu,  1 Apr 2021 01:23:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617240221;
+        bh=sRdVV8qXXrxvlTg36n0mCkioer+tCPG3FnMd4wV+7Vw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=YrcGN+u3WyCaB7+GDZSmsWTdd3Lf39Kj4xIpSFps2DydAC1YmWE7hJrTdF9/BW4bv
+         IYMbysR3unXN0aZhBFPf3xxjTybPSDbs4u0dmi+36MyIOQWD6aFXE35EZCBbgEyC8K
+         1giK2wFgLTSS8xEI830LzJ9yF53qhUgDqYHZIq/0zn1PoRr21Yg1iqrH6kcXcxgA8g
+         GS/Ja0ciIGuUEeg/hITsHeix2yHk3B3WogBr6WoQ+A9RWKoO+57AF0vWUYPBJXRL7X
+         a+hAzrHqnpxZOZzvU6m1z2fMM/8E7c543GQ2+vqsnK55Rri9nZVb3E2J7lzuWDxw8p
+         rcAwZ6ehfEw1Q==
+Date:   Wed, 31 Mar 2021 20:23:40 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Keith Busch <kbusch@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH mlx5-next v7 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210401012340.GA1423690@bjorn-Precision-5520>
 MIME-Version: 1.0
-Date:   Thu, 01 Apr 2021 03:23:05 +0200
-From:   danilokrummrich@dk-develop.de
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
-Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
-In-Reply-To: <20210331183524.GV1463@shell.armlinux.org.uk>
-References: <20210331141755.126178-1-danilokrummrich@dk-develop.de>
- <20210331141755.126178-3-danilokrummrich@dk-develop.de>
- <YGSi+b/r4zlq9rm8@lunn.ch> <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
- <20210331183524.GV1463@shell.armlinux.org.uk>
-User-Agent: Roundcube Webmail/1.4.9
-Message-ID: <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
-X-Sender: danilokrummrich@dk-develop.de
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YGP1p7KH+/gL4NAU@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-03-31 20:35, Russell King - ARM Linux admin wrote:
-> On Wed, Mar 31, 2021 at 07:58:33PM +0200, danilokrummrich@dk-develop.de 
-> wrote:
->> For this cited change the only thing happening is that if 
->> get_phy_device()
->> already failed for probing with is_c45==false (C22 devices) it tries 
->> to
->> probe with is_c45==true (C45 devices) which then either results into 
->> actual
->> C45 frame transfers or indirect accesses by calling mdiobus_c45_*() 
->> functions.
+[+cc Rafael, in case you're interested in the driver core issue here]
+
+On Wed, Mar 31, 2021 at 07:08:07AM +0300, Leon Romanovsky wrote:
+> On Tue, Mar 30, 2021 at 03:41:41PM -0500, Bjorn Helgaas wrote:
+> > On Tue, Mar 30, 2021 at 04:47:16PM -0300, Jason Gunthorpe wrote:
+> > > On Tue, Mar 30, 2021 at 10:00:19AM -0500, Bjorn Helgaas wrote:
+> > > > On Tue, Mar 30, 2021 at 10:57:38AM -0300, Jason Gunthorpe wrote:
+> > > > > On Mon, Mar 29, 2021 at 08:29:49PM -0500, Bjorn Helgaas wrote:
+> > > > > 
+> > > > > > I think I misunderstood Greg's subdirectory comment.  We already have
+> > > > > > directories like this:
+> > > > > 
+> > > > > Yes, IIRC, Greg's remark applies if you have to start creating
+> > > > > directories with manual kobjects.
+> > > > > 
+> > > > > > and aspm_ctrl_attr_group (for "link") is nicely done with static
+> > > > > > attributes.  So I think we could do something like this:
+> > > > > > 
+> > > > > >   /sys/bus/pci/devices/0000:01:00.0/   # PF directory
+> > > > > >     sriov/                             # SR-IOV related stuff
+> > > > > >       vf_total_msix
+> > > > > >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of first VF
+> > > > > >       ...
+> > > > > >       vf_msix_count_BB:DD.F        # includes bus/dev/fn of last VF
+> > > > > 
+> > > > > It looks a bit odd that it isn't a subdirectory, but this seems
+> > > > > reasonable.
+> > > > 
+> > > > Sorry, I missed your point; you'll have to lay it out more explicitly.
+> > > > I did intend that "sriov" *is* a subdirectory of the 0000:01:00.0
+> > > > directory.  The full paths would be:
+> > > >
+> > > >   /sys/bus/pci/devices/0000:01:00.0/sriov/vf_total_msix
+> > > >   /sys/bus/pci/devices/0000:01:00.0/sriov/vf_msix_count_BB:DD.F
+> > > >   ...
+> > > 
+> > > Sorry, I was meaning what you first proposed:
+> > > 
+> > >    /sys/bus/pci/devices/0000:01:00.0/sriov/BB:DD.F/vf_msix_count
+> > > 
+> > > Which has the extra sub directory to organize the child VFs.
+> > > 
+> > > Keep in mind there is going to be alot of VFs here, > 1k - so this
+> > > will be a huge directory.
+> > 
+> > With 0000:01:00.0/sriov/vf_msix_count_BB:DD.F, sriov/ will contain
+> > 1 + 1K files ("vf_total_msix" + 1 per VF).
+> > 
+> > With 0000:01:00.0/sriov/BB:DD.F/vf_msix_count, sriov/ will contain
+> > 1 file and 1K subdirectories.
 > 
-> Please explain why and how a PHY may not appear to be present using
-> C22 frames to read the ID registers, but does appear to be present
-> when using C22 frames to the C45 indirect registers - and summarise
-> which PHYs have this behaviour.
+> This is racy by design, in order to add new file and create BB:DD.F
+> directory, the VF will need to do it after or during it's creation.
+> During PF creation it is unknown to PF those BB:DD.F values.
 > 
-> It seems very odd that any PHY would only implement C45 indirect
-> registers in the C22 register space.
-Honestly, I can't list examples of that case (at least none that have an
-upstream driver already). This part of my patch, to fall back to c45 bus
-probing when c22 probing does not succeed, is also motivated by the fact
-that this behaviour was already introduced with this patch:
+> The race here is due to the events of PF,VF directory already sent
+> but new directory structure is not ready yet.
+>
+> From code perspective, we will need to add something similar to
+> pci_iov_sysfs_link() with the code that you didn't like in previous
+> variants (the one that messes with sysfs_create_file API).
+> 
+> It looks not good for large SR-IOV systems with >1K VFs with
+> gazillion subdirectories inside PF, while the more natural is to see
+> them in VF.
+> 
+> So I'm completely puzzled why you want to do these files on PF and
+> not on VF as v0, v7 and v8 proposed.
 
-commit 0cc8fecf041d3e5285380da62cc6662bdc942d8c
-Author: Jeremy Linton <jeremy.linton@arm.com>
-Date:   Mon Jun 22 20:35:32 2020 +0530
+On both mlx5 and NVMe, the "assign vectors to VF" functionality is
+implemented by the PF, so I think it's reasonable to explore the idea
+of "associate the vector assignment sysfs file with the PF."
 
-     net: phy: Allow mdio buses to auto-probe c45 devices
+Assume 1K VFs.  Either way we have >1K subdirectories of
+/sys/devices/pci0000:00/.  I think we should avoid an extra
+subdirectory level, so I think the choices on the table are:
 
-     The mdiobus_scan logic is currently hardcoded to only
-     work with c22 devices. This works fairly well in most
-     cases, but its possible that a c45 device doesn't respond
-     despite being a standard phy. If the parent hardware
-     is capable, it makes sense to scan for c22 devices before
-     falling back to c45.
+Associate "vf_msix_count" with the PF:
 
-     As we want this to reflect the capabilities of the STA,
-     lets add a field to the mii_bus structure to represent
-     the capability. That way devices can opt into the extended
-     scanning. Existing users should continue to default to c22
-     only scanning as long as they are zero'ing the structure
-     before use.
+  - /sys/.../<PF>/sriov/vf_total_msix    # all on PF
 
-     Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-     Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-     Signed-off-by: David S. Miller <davem@davemloft.net>
+  - /sys/.../<PF>/sriov/vf_msix_count_BB:DD.F (1K of these).  Greg
+    says the number of these is not a problem.
 
-In this patch i.a. the following lines were added.
+  - The "vf_total_msix" and "vf_msix_count_*" files are all related
+    and are grouped together in PF/sriov/.
 
-+       case MDIOBUS_C22_C45:
-+               phydev = get_phy_device(bus, addr, false);
-+               if (IS_ERR(phydev))
-+                       phydev = get_phy_device(bus, addr, true);
-+               break;
+  - The "vf_msix_count_*" files operate directly on the PF.  Lock the
+    PF for serialization, lookup and lock the VF to ensure no VF
+    driver, call PF driver callback to assign vectors.
 
-I'm applying the same logic for MDIOBUS_NO_CAP and MDIOBUS_C22, since
-with my patch MDIO controllers with those capabilities can handle c45 
-bus
-probing with indirect accesses.
+  - Requires special sysfs code to create/remove "vf_msix_count_*"
+    files when setting/clearing VF Enable.  This code could create
+    them only when the PF driver actually supports vector assignment.
+    Unavoidable sysfs/uevent race, see below.
 
-[By the way, I'm unsure if this order for MDIO bus controllers with the
-capability MDIOBUS_C22_C45 makes sense, because if we assume that the
-majority of c45 PHYs responds well to c22 probing (which I'm convinced 
-of)
-the PHY would still be registered as is_c45==false, which results in the 
-fact
-that even though the underlying bus is capable of real c45 framing only
-indirect accessing would be performed. But this is another topic and
-unrelated to the patch.]
+Associate "vf_msix_count" with the VF:
 
-However, this is not the main motivation of my patch. The main driver is
-of_mdiobus_register_phy():
+  - /sys/.../<PF>/sriov_vf_total_msix    # on PF
 
-	is_c45 = of_device_is_compatible(child,
-					 "ethernet-phy-ieee802.3-c45");
+  - /sys/.../<VF>/sriov_vf_msix_count    # on each VF
 
-	if (!is_c45 && !of_get_phy_id(child, &phy_id))
-		phy = phy_device_create(mdio, addr, phy_id, 0, NULL);
-	else
-		phy = get_phy_device(mdio, addr, is_c45);
+  - The "sriov_vf_msix_count" files enter via the VF.  Lock the VF to
+    ensure no VF driver, lookup and lock the PF for serialization,
+    call PF driver callback to assign vectors.
 
-In the case a PHY is registered as a c45 compatible PHY in the device 
-tree,
-it is probed in c45 mode and therefore finally  mdiobus_c45_read() is 
-called,
-which as by now just expects the underlying MDIO bus controller to be 
-capable
-to do c45 framing and therefore the operation would fail in case it is 
-not.
-Hence, in my opinion it is useful to fall back to indirect accesses in 
-such a
-case to be able to support those PHYs.
+  - Can be done with static sysfs attributes.  This means creating
+    "sriov_vf_msix_count" *always*, even if PF driver doesn't support
+    vector assignment.
 
-There is a similar issue in phy_mii_ioctl(). Let's assume a c45 capable 
-PHY is
-connected to a MDIO bus controller that is not capable of c45 framing. 
-We can
-also assume that it was probed with c22 bus probing, since without this 
-patch
-nothing else is possible.
-Now, there might be an ioctl() asking for a c45 transfer by specifying
-MDIO_PHY_ID_C45_MASK e.g. in order to access a different MMD's register,
-since the PHY is actually capable of c45. Currently, this would result 
-in
+IIUC, putting "vf_msix_count_*" under the PF involves a race.  When we
+call device_add() for each new VF, it creates the VF sysfs directory
+and emits the KOBJ_ADD uevent, but the "vf_msix_count_*" file doesn't
+exist yet.  It can't be created before device_add() because the sysfs
+directory doesn't exist.  If we create it after device_add(), the "add
+VF" uevent has already been emitted, so userspace may consume it
+before "vf_msix_count_*" is created.
 
-devad = mdiobus_c45_addr(devad, mii_data->reg_num);
-mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
+  sriov_enable
+    <set VF Enable>                     <-- VFs created on PCI
+    sriov_add_vfs
+      for (i = 0; i < num_vfs; i++) {
+        pci_iov_add_virtfn
+          pci_device_add
+            device_initialize
+            device_add
+              device_add_attrs          <-- add VF sysfs attrs
+              kobject_uevent(KOBJ_ADD)  <-- emit uevent
+                                        <-- add "vf_msix_count_*" sysfs attr
+          pci_iov_sysfs_link
+          pci_bus_add_device
+            pci_create_sysfs_dev_files
+            device_attach
+      }
 
-calls, which would fail, since the bus doesn't support it. Instead 
-falling back
-to indirect access might be the better option. Surely, the userspace 
-program
-could implement the indirect access as well, but I think this way it's 
-just more
-convenient, e.g. "phytool read iface/addr:devad/reg".
+Conceptually, I like having the "vf_total_msix" and "vf_msix_count_*"
+files associated directly with the PF.  I think that's more natural
+because they both operate directly on the PF.
+
+But I don't like the race, and using static attributes seems much
+cleaner implementation-wise.
+
+Bjorn
