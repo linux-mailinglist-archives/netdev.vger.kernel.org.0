@@ -2,89 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7038D3532DA
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 08:45:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ADC1353316
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 10:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236134AbhDCGpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 02:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232140AbhDCGpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 02:45:38 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DD1C0613E6;
-        Fri,  2 Apr 2021 23:45:35 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id o10so10225066lfb.9;
-        Fri, 02 Apr 2021 23:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GEfGTCfkrKkYIhxPCGweey7DAMBSosPp3/p3EwEGYSc=;
-        b=lMCJZh9L6wGuFPrk+qTLj4Hhv71c02PMNf//MMFlKrWDjBQAjXmz/Lb9SXmDiTzhSQ
-         ryTN8+yMhECtjDZyuPfwptbktIfhv/zpqsuyYpqDSg4cIhLEVcnbCzY7utz1ro6KueZg
-         XceLoK/pWb/45iOeBWqNfyu8iAc6yy6uyPvqtoIIRkfizw/bTVp2HlJnngSdblI8o1Jc
-         GLgPfKbEKo0i+htLNY7LyS0yTn2YA2rr0CHDh/Wwsd7dGPpGhlek3iYh5uLAksbRIS9W
-         vKupoS/g0QnXvRUnW0KJ9Upm7/tHctx++y/Z1CasLFgHPktZ20a6+nNGRlHohJr2oS/A
-         Q4eQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GEfGTCfkrKkYIhxPCGweey7DAMBSosPp3/p3EwEGYSc=;
-        b=r4Rp8JzwJoEgdu99mfdV9CJsZM247SoACvzhPqMeXIvBJQUS37M+0ZjSSKrlrl2nOI
-         9/CwZ8P+BkAEPUUyQe5ruGmvddwRLVR/EAm8f396DhlXJB0axv+52Rf2SVG3U5RKN5Ej
-         yVsGvWQ5J7w3wn2aknJKR243trjhXtF6ithIIRlNSvXY1mLo8BD2Stp4OEelPQBwKjCt
-         lYLcvOSDUHdVYV1aDZBadAG4C3LCll2e6qo5auuDhWqGXMMs3G3Gz3XzNR0uvi6B3CmH
-         HMru5WFybmoRYS/+ckXOZ2byFRqu/LfPJOnDu+tnnyqrO8cmbQFObK7oLKWtsGpphSuA
-         N3DQ==
-X-Gm-Message-State: AOAM533jwzIJRbAQnZrhyWX4+uokvq2aO1dHfK9ojiE//aDOhhCRKVOa
-        zPwdskai+44m7rKKXASiNDfpvBA1nGyLXI4ipCBsm56f
-X-Google-Smtp-Source: ABdhPJx7O685/ty6GJOb4vOjJH9mvn+0Q8Jecm+iYguMTJBy+Vxj03W3ZpjlM7jZ6yrpf55ybYS6+e1mdrllIQHblaE=
-X-Received: by 2002:a19:ed06:: with SMTP id y6mr11382704lfy.539.1617432334144;
- Fri, 02 Apr 2021 23:45:34 -0700 (PDT)
+        id S232194AbhDCIOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 04:14:47 -0400
+Received: from 93804.cloudwaysapps.com ([178.62.255.238]:37902 "EHLO
+        93804.cloudwaysapps.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232146AbhDCIOq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 04:14:46 -0400
+Received: from 127.0.0.1 (93804.cloudwaysapps.com [127.0.0.1])
+        by 93804.cloudwaysapps.com (Postfix) with SMTP id 05D3C28C10;
+        Thu,  1 Apr 2021 23:07:01 +0000 (UTC)
+Received: from [29.238.26.104] by 127.0.0.1 id Qqr6b5II23V7; Thu, 01 Apr 2021 18:00:13 -0600
+Message-ID: <e-c7$$4th-0-s5k1$3t-2ha$-8$5@e9ywulv277wy>
+From:   "FM CONSULTING LTD" <fkinneyofd@tampabay.rr.com>
+Reply-To: "FM CONSULTING LTD" <fkinneyofd@tampabay.rr.com>
+To:     netcam.munka@gmail.com
+Subject: WE OFFER  INVESTMENT FUNDING
+Date:   Thu, 01 Apr 21 18:00:13 GMT
+X-Mailer: AOL 7.0 for Windows US sub 118
 MIME-Version: 1.0
-References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
- <20210331023237.41094-12-xiyou.wangcong@gmail.com> <6065619aa26d1_938bb2085e@john-XPS-13-9370.notmuch>
- <CAM_iQpVG3Sd=jA4jdt6HFRr8rKn7DRdWRyHBd9O3q0DuubMsRg@mail.gmail.com>
-In-Reply-To: <CAM_iQpVG3Sd=jA4jdt6HFRr8rKn7DRdWRyHBd9O3q0DuubMsRg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 2 Apr 2021 23:45:22 -0700
-Message-ID: <CAADnVQ+F3GBo_tpbBkB0C2h12VXpzBT4dr2LekxB3NXeWnU=Tg@mail.gmail.com>
-Subject: Re: [Patch bpf-next v8 11/16] udp: implement ->read_sock() for sockmap
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/alternative;
+        boundary="0B64CC6D8_D__."
+X-Priority: 3
+X-MSMail-Priority: Normal
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 2, 2021 at 10:12 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Wed, Mar 31, 2021 at 11:01 PM John Fastabend
-> <john.fastabend@gmail.com> wrote:
-> > This 'else if' is always true if above is false right? Would be
-> > impler and clearer IMO as,
-> >
-> >                if (used <= 0) {
-> >                         if (!copied)
-> >                                 copied = used;
-> >                         break;
-> >                }
-> >                copied += used;
-> >
-> > I don't see anyway for used to be great than  skb->len.
->
-> Yes, slightly better. Please feel free to submit a patch by yourself,
-> like always your patches are welcome.
 
-Please submit a follow up patch as John requested
-or I'm reverting your set.
+--0B64CC6D8_D__.
+Content-Type: text/plain;
+Content-Transfer-Encoding: quoted-printable
+
+We introduce ourselves as mandated capital providers. 
+We are interested in having your company represents us exclusively in your=
+ jurisdiction for the placement of loan and investment financing.
+Being direct financiers we offer financing for businesses for expansion, w=
+orking capital, construction projects, factoring, energy, manufacturing, t=
+elecommunications and the real estate sector to name a few.
+Our pool of funds is provided by high net worth individuals, trust funds, =
+family office funds as well as corporate and institutional funds. We act a=
+s the direct custodian of these funds provided by our clients who request =
+that we operate with the utmost of privacy and discretion. As a result we =
+normally fund individual projects starting from USD3 million well into the=
+ 100 to 200 million dollar range.
+Sincerely 
+Rix Anthony
+FM Consultant New Zealand
+
+--0B64CC6D8_D__.--
+
