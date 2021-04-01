@@ -2,328 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D78C5351FFB
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A987E35200A
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:40:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235260AbhDATi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 15:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235192AbhDATiZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:38:25 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915A6C061788;
-        Thu,  1 Apr 2021 12:38:25 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id w3so4539218ejc.4;
-        Thu, 01 Apr 2021 12:38:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=FUisLyP9/7yFPjo7Y5Px4toPKdEKzV/KpNaFeA9tWJY=;
-        b=qF6gDbGabnRaFy9zLHwnI2WG5v+B8x1muJM1tonmjx+yxWM6i6x800o4M8CV8BVN5U
-         /9h8clOu7YmgxQIkMfbMVh33Lq51NKDqTnr+jMTcLt9F/G8HffRwRU/sa91+40kk23gC
-         9WUanJ1xpsczlRHLkfKZnRIaakF40PnBn7hGaR1/ALA7C5NkgdUCfqjSkwoD564MedmJ
-         5kLGcpJQZmHjhmkilgKm5mRQci23iIwZp46uC+59+XQbaCbpoNmYjfp6WntbYK5cb5zL
-         YkE/xHKAnmgzMhZA0K7U4cm+ddSURagcPdDsF3vemG8sdVO0ps88gqkX+9HduG3Is3NX
-         iRIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=FUisLyP9/7yFPjo7Y5Px4toPKdEKzV/KpNaFeA9tWJY=;
-        b=P02xGoRTIJOkcn/eXXPltRiesX+T6sHDP2u09ysgYwGG4yhwZgeSwfVvmXUsUY/Put
-         nbNWgM0m4cg6ZpbSyEeP0FCl6n2/daPjfQ3aMZb3c4vtQca5IEJA2kkZ9e1LErqlrYg/
-         r6YO9HAAVyFk6w32R7s2FHqnEKriYK8ZL57kbGgbMd3dl0l7ymIWZ9M23vHP15KElbqe
-         N1HiFQCQw9IBkBTVG5JlMPr2r226s3b8pgwpaz4vavIBI88T3cbd0mm4oiSLOtZr9bTE
-         ckoaHRmLgBKUDfZ2b6nlMSf6xErw+/HxtXcZtUNqafQcRKUpkn8Yl2vrWOO8ZkyYdRVQ
-         t/DA==
-X-Gm-Message-State: AOAM531aHOAJG6S5WPKkNzk64N/xw02wF9cqanGKzYeXH5VBdsrI7xK7
-        xwN2f70mJiGUnKcRlxVudKk=
-X-Google-Smtp-Source: ABdhPJzPWyNw+0rj3FOTqr57/F3ZxG+JAzxmABq3yPfoe+OVN0G5eBxjIHAUCs595enSQWUXCGZ8GQ==
-X-Received: by 2002:a17:906:33d9:: with SMTP id w25mr11207362eja.413.1617305904201;
-        Thu, 01 Apr 2021 12:38:24 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id dg26sm4104311edb.88.2021.04.01.12.38.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 12:38:23 -0700 (PDT)
-Date:   Thu, 1 Apr 2021 22:38:21 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Alexander Duyck <alexander.duyck@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 9/9] net: enetc: add support for XDP_REDIRECT
-Message-ID: <20210401193821.3fmfxvnpwzam7b6f@skbuf>
-References: <20210331200857.3274425-1-olteanv@gmail.com>
- <20210331200857.3274425-10-olteanv@gmail.com>
- <87blaynt4l.fsf@toke.dk>
- <20210401113133.vzs3uxkp52k2ctla@skbuf>
- <875z16nsiu.fsf@toke.dk>
- <20210401160943.frw7l3rio7spr33n@skbuf>
- <87lfa1nat5.fsf@toke.dk>
+        id S234377AbhDATk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 15:40:26 -0400
+Received: from mga01.intel.com ([192.55.52.88]:57496 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233786AbhDATkZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 15:40:25 -0400
+IronPort-SDR: 3jQmY/vznNcVF7wOR/qWRaOfSAzKwdFOkxmWAuAW8SZGxtmBfV8hExL+PImPb3qgDldXGTBkkI
+ oHRex6KHYYdA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="212589478"
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="212589478"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 12:40:26 -0700
+IronPort-SDR: BbUk/UUk2FFtIP8KlQygtPDobPNQPfoJNvKmaXy+KXux+aTaJ+Ajz5YlI8Ld6o1CaHs8HW7Z/x
+ iCzuPMDwvGNg==
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="419337883"
+Received: from jmurunue-mobl2.amr.corp.intel.com ([10.251.11.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 12:40:25 -0700
+Date:   Thu, 1 Apr 2021 12:40:25 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net 1/2] mptcp: forbit mcast-related sockopt on MPTCP
+ sockets
+In-Reply-To: <b7d0edf1f94da07d39e9319cdd78a7863473eacf.1617295578.git.pabeni@redhat.com>
+Message-ID: <19889968-a3cb-61eb-1915-12c15133bf32@linux.intel.com>
+References: <cover.1617295578.git.pabeni@redhat.com> <b7d0edf1f94da07d39e9319cdd78a7863473eacf.1617295578.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87lfa1nat5.fsf@toke.dk>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 01, 2021 at 08:01:42PM +0200, Toke Høiland-Jørgensen wrote:
-> Vladimir Oltean <olteanv@gmail.com> writes:
-> 
-> > On Thu, Apr 01, 2021 at 01:39:05PM +0200, Toke Høiland-Jørgensen wrote:
-> >> Vladimir Oltean <olteanv@gmail.com> writes:
-> >>
-> >> > On Thu, Apr 01, 2021 at 01:26:02PM +0200, Toke Høiland-Jørgensen wrote:
-> >> >> > +int enetc_xdp_xmit(struct net_device *ndev, int num_frames,
-> >> >> > +		   struct xdp_frame **frames, u32 flags)
-> >> >> > +{
-> >> >> > +	struct enetc_tx_swbd xdp_redirect_arr[ENETC_MAX_SKB_FRAGS] = {0};
-> >> >> > +	struct enetc_ndev_priv *priv = netdev_priv(ndev);
-> >> >> > +	struct enetc_bdr *tx_ring;
-> >> >> > +	int xdp_tx_bd_cnt, i, k;
-> >> >> > +	int xdp_tx_frm_cnt = 0;
-> >> >> > +
-> >> >> > +	tx_ring = priv->tx_ring[smp_processor_id()];
-> >> >>
-> >> >> What mechanism guarantees that this won't overflow the array? :)
-> >> >
-> >> > Which array, the array of TX rings?
-> >>
-> >> Yes.
-> >>
-> >
-> > The problem isn't even accessing an out-of-bounds element in the TX ring array.
-> >
-> > As it turns out, I had a relatively superficial understanding of how
-> > things are organized, but let me try to explain.
-> >
-> > The number of TX rings is a configurable resource (between PFs and VFs)
-> > and we read the capability at probe time:
-> >
-> > enetc_get_si_caps:
-> > 	val = enetc_rd(hw, ENETC_SICAPR0);
-> > 	si->num_rx_rings = (val >> 16) & 0xff;
-> > 	si->num_tx_rings = val & 0xff;
-> >
-> > enetc_init_si_rings_params:
-> > 	priv->num_tx_rings = si->num_tx_rings;
-> >
-> > In any case, the TX array is declared as:
-> >
-> > struct enetc_ndev_priv {
-> > 	struct enetc_bdr *tx_ring[16];
-> > 	struct enetc_bdr *rx_ring[16];
-> > };
-> >
-> > because that's the maximum hardware capability.
-> >
-> > The priv->tx_ring array is populated in:
-> >
-> > enetc_alloc_msix:
-> > 	/* # of tx rings per int vector */
-> > 	v_tx_rings = priv->num_tx_rings / priv->bdr_int_num;
-> >
-> > 	for (i = 0; i < priv->bdr_int_num; i++) {
-> > 		for (j = 0; j < v_tx_rings; j++) {
-> > 			if (priv->bdr_int_num == ENETC_MAX_BDR_INT)
-> > 				idx = 2 * j + i; /* 2 CPUs */
-> > 			else
-> > 				idx = j + i * v_tx_rings; /* default */
-> >
-> > 			priv->tx_ring[idx] = bdr;
-> > 		}
-> > 	}
-> >
-> > priv->bdr_int_num is set to "num_online_cpus()".
-> > On LS1028A, it can be either 1 or 2 (and the ENETC_MAX_BDR_INT macro is
-> > equal to 2).
-> >
-> > Otherwise said, the convoluted logic above does the following:
-> > - It affines an MSI interrupt vector per CPU
-> > - It affines an RX ring per MSI vector, hence per CPU
-> > - It balances the fixed number of TX rings (say 8) among the available
-> >   MSI vectors, hence CPUs (say 2). It does this by iterating with i
-> >   through the RX MSI interrupt vectors, and with j through the number of
-> >   TX rings per MSI vector.
-> >
-> > This logic maps:
-> > - the even TX rings to CPU 0 and the odd TX rings to CPU 1, if 2 CPUs
-> >   are used
-> > - all TX rings to CPU 0, if 1 CPU is used
-> >
-> > This is done because we have this logic in enetc_poll:
-> >
-> > 	for (i = 0; i < v->count_tx_rings; i++)
-> > 		if (!enetc_clean_tx_ring(&v->tx_ring[i], budget))
-> > 			complete = false;
-> >
-> > for processing the TX completions of a given group of TX rings in the RX
-> > MSI interrupt handler of a certain CPU.
-> >
-> > Otherwise said, priv->tx_ring[i] is always BD ring i, and that mapping
-> > never changes. All 8 TX rings are enabled and available for use.
-> >
-> > What I knew about tc-taprio and tc-mqprio is that they only enqueue to
-> > TX queues [0, num_tc-1] because of this, as it turns out:
-> >
-> > enetc_xmit:
-> > 	tx_ring = priv->tx_ring[skb->queue_mapping];
-> >
-> > where skb->queue_mapping is given by:
-> > 	err = netif_set_real_num_tx_queues(ndev, priv->num_tx_rings);
-> > and by this, respectively, from the mqprio code path:
-> > 	netif_set_real_num_tx_queues(ndev, num_tc);
-> >
-> > As for why XDP works, and priv->tx_ring[smp_processor_id()] is:
-> > - TX ring 0 for CPU 0 and TX ring 1 for CPU 1, if 2 CPUs are used
-> > - TX ring 0, if 1 CPU is used
-> >
-> > The TX completions in the first case are handled by:
-> > - CPU 0 for TX ring 0 (because it is even) and CPU 1 for TX ring 1
-> >   (because it is odd), if 2 CPUs are used, due to the mapping I talked
-> >   about earlier
-> > - CPU 0 if only 1 CPU is used
-> 
-> Right - thank you for the details! So what are the constraints on the
-> configuration. Specifically, given two netdevs on the same device, is it
-> possible that the system can ever end up in a situation where one device
-> has two *RXQs* configured, and the other only one *TXQ*. Because then
-> you could get a redirect from RXQ 1 on one device, which would also end
-> up trying to transmit on TXQ 1 on the other device; and that would break
-> if that other device only has TXQ 0 configured... Same thing if a single
-> device has 2 RXQs but only one TXQ (it can redirect to itself).
+On Thu, 1 Apr 2021, Paolo Abeni wrote:
 
-I discover more and more of the driver as I talk to you, I like it :D
+> Unrolling mcast state at msk dismantel time is bug prone, as
+> syzkaller reported:
+>
+> ======================================================
+> WARNING: possible circular locking dependency detected
+> 5.11.0-syzkaller #0 Not tainted
+> ------------------------------------------------------
+> syz-executor905/8822 is trying to acquire lock:
+> ffffffff8d678fe8 (rtnl_mutex){+.+.}-{3:3}, at: ipv6_sock_mc_close+0xd7/0x110 net/ipv6/mcast.c:323
+>
+> but task is already holding lock:
+> ffff888024390120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1600 [inline]
+> ffff888024390120 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp6_release+0x57/0x130 net/mptcp/protocol.c:3507
+>
+> which lock already depends on the new lock.
+>
+> Instead we can simply forbit any mcast-related setsockopt
+>
+> Fixes: 717e79c867ca5 ("mptcp: Add setsockopt()/getsockopt() socket operations")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> net/mptcp/protocol.c | 45 ++++++++++++++++++++++++++++++++++++++++++++
+> 1 file changed, 45 insertions(+)
+>
 
-So I said that there is a maximum number of RX and TX rings splittable
-between the PF and its VFs, but I wasn't exactly sure where that
-configuration is done. I found it now.
+Thanks Paolo.
 
-enetc_port_si_configure: (SI == station interface)
-	- read Port capability register 0 (PCAPR0) to determine how many
-	  RX rings and TX rings the hardware has for this port (PFs + VFs)
-	  in total.
-	- assign num_rings = min(TX rings, RX rings)
-	- try to assign 8 TX rings and 8 RX rings to the PF
-	  - if this fails, just assign ${num_rings} TX rings and
-	    ${num_rings} RX rings to the PF
-	- split the remaining RX and TX rings to the number of
-	  configured VFs (example: if there are 16 RX rings and 16 TX
-	  rings for a port with 2 VFs, the driver assigns 8RX/8TX rings
-	  for the PF, and 4RX/4TX rings for each VF).
-	   - if we couldn't assign 8RX/8TX rings for the PF in the
-	     previous step, we don't assign any ring to the VF
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-So yeah, we have an equal number of RX and TX rings. The driver,
-however, only uses 2 RX rings _actively_: one per CPU. The other 6, I
-don't know, I guess I can use them for AF_XDP (I haven't looked very
-closely at that yet), at the moment they're pretty much unused, even if
-reserved and not given to VFs.
-
-> >> > You mean that it's possible to receive a TC_SETUP_QDISC_MQPRIO or
-> >> > TC_SETUP_QDISC_TAPRIO with num_tc == 1, and we have 2 CPUs?
-> >>
-> >> Not just that, this ndo can be called on arbitrary CPUs after a
-> >> redirect. The code just calls through from the XDP receive path so which
-> >> CPU it ends up on depends on the RSS+IRQ config of the other device,
-> >> which may not even be the same driver; i.e., you have no control over
-> >> that... :)
-> >>
-> >
-> > What do you mean by "arbitrary" CPU? You can't plug CPUs in, it's a dual
-> > core system... Why does the source ifindex matter at all? I'm using the
-> > TX ring affined to the CPU that ndo_xdp_xmit is currently running on.
-> 
-> See, this is why I asked 'what mechanism ensures'. Because if that
-> mechanism is 'this driver is only ever used on a system with fewer CPUs
-> than TXQs', then that's of course fine :)
-> 
-> But there are drivers that do basically the same thing as what you've
-> done here, *without* having such an assurance, and just looking at that
-> function it's not obvious that there's an out-of-band reason why it's
-> safe. And I literally just came from looking at such a case when I
-> replied to your initial patch...
-
-Maybe you were confused seeing that this is a PCI device, thinking it's
-a plug-in card or something, therefore we don't get to choose the number
-of CPUs that the host has. In hindsight, I don't know why you didn't ask
-about this, it is pretty strange when you think about it.
-
-It is actually more like a platform device with a PCI front-end - we
-found this loophole in the PCI standard where you can create a "root
-complex/integrated endpoint" which is basically an ECAM where the config
-space contains PFs corresponding to some platform devices in the SoC (in
-our case, all 4 Ethernet ports have their own PF, the switch has its own
-PF, same thing for the MDIO controller and the 1588 timer). Their
-register map is exposed as a number of BARs which use Enhanced
-Allocation, so the generic PCI ECAM driver doesn't need to create any
-translation windows for these addresses, it just uses what's in there,
-which, surprise, is the actual base address of the peripheral in the
-SoC's memory space.
-
-We do that because we gain a lot of cool stuff by appearing as PCI
-devices to system software, like for example multiple interfaces on top
-of a 'shared MAC' are simply mapped over SR-IOV.
-
-So it just 'smells' like PCI, but they're regular memory-mapped devices,
-there is no PCI transaction layer or physical layer. At the moment the
-LS1028A is the only SoC running Linux that integrates the ENETC block,
-so we fully control the environment.
-
-> >> > Well, yeah, I don't know what's the proper way to deal with that. Ideas?
-> >>
-> >> Well the obvious one is just:
-> >>
-> >> tx_ring = priv->tx_ring[smp_processor_id() % num_ring_ids];
-> >>
-> >> and then some kind of locking to deal with multiple CPUs accessing the
-> >> same TX ring...
-> >
-> > By multiple CPUs accessing the same TX ring, you mean locking between
-> > ndo_xdp_xmit and ndo_start_xmit? Can that even happen if the hardware
-> > architecture is to have at least as many TX rings as CPUs?
-> >
-> > Because otherwise, I see that ndo_xdp_xmit is only called from
-> > xdp_do_flush, which is in softirq context, which to my very rudimentary
-> > knowledge run with bottom halves, thus preemption, disabled? So I don't
-> > think it's possible for ndo_xdp_xmit and ndo_xmit, or even two
-> > ndo_xdp_xmit instances, to access the same TX ring?
-> 
-> Yup, I think you're right about that. The "we always have more TXQs than
-> CPUs" condition was the bit I was missing (and of course you're *sure*
-> that this would never change sometime in the future, right? ;)).
-
-I'm pretty sure, yeah, we build the SoCs and one of the requirements we
-have is that every ENETC PF has enough TX rings in order for every CPU
-to have its own one. That helps a lot with avoiding contention and
-simplifying the driver. Maybe I'll use this opportunity to talk again to
-the hardware design guys and make sure that the next SoCs with Linux
-follow the same pattern as LS1028A, although I see no reason why not.
-
-> > Sorry, I'm sure these are trivial questions, but I would like to really
-> > understand what I need to change and why :D
-> 
-> Given the above I think the only potentially breaking thing is the
-> #RXQ > #TXQ case I outlined. And maybe a comment documenting why indexing
-> the tx_ring array by smp_processor_id() is safe would be nice? :)
-
-Sure, which part exactly do you think would explain it best? Should I
-add a reference to enetc_port_si_configure?
+--
+Mat Martineau
+Intel
