@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF713350CFC
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 05:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B5F1350D01
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 05:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbhDADMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 23:12:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
+        id S232565AbhDADO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 23:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232492AbhDADLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 23:11:45 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B8FC061788
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 20:11:45 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id u128so4419558ybf.12
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 20:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=RmMaazUpNv9dO0QVdc1//Lz/b+2IP+ReIbSX7312Y+8=;
-        b=DWp72/rU729D+hNGxjG+KVccftla4VD7a3chImMlNuJh5r4/oHs86378r5+At3wKLo
-         UDRk7mV/mRTupfLSxZQh8dvayAwuZkOC+SZfTycsU3Luq1SSbqOdTR1E4jYXoRVqjS4r
-         MGa5uEmiTAMyuxuvuiSGKiO7CnH/t2stpHq3pC3yjU7xYSQ9Z3UlvkyMpdeJQ8DpQ0eG
-         UXE9sNvQeJ4dBiERcJFZ/AUPSz0u1accV6fojG++W4IQmF8AKaL6P0tpiX1Um49NTsoe
-         jNWusKX65n5RCovDUKJJr1zF6p+4+ODgVsX2rtjh6kFsQys9GH8wARX9sftz3WlroL9G
-         VOIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=RmMaazUpNv9dO0QVdc1//Lz/b+2IP+ReIbSX7312Y+8=;
-        b=jCp5OGNJqTSamC8blmYe0WbTNnpWKMZ8xh/O7ibGuQ7qecA+xFHy9gow05mEodSWDT
-         yqqrDb+Qvw/V8tVMkiQsKbUA4TIbNeZWy20DzfVJ49xK3nw7YWAqtOxZksRZvbOLd5+Q
-         aXh2L6HtM4en5K8DibEEcG/sfy8Yq933PbNzsOgq+VWVbq8mCZQSUyRnETaz+ZUIVC1V
-         P1hn6tOieMdu8IXTdPvIaOSvdAPh3gLZJJzCzwO4WGuFxKG382yf9IWJrqk9P7cwOj02
-         R7AMt5Y8YsEmXTpQHuFXz694EHH2IbVlf18ylOEJew5EOxIHLKka5PI9F6smDemXMAGc
-         qOFA==
-X-Gm-Message-State: AOAM533lMG6BUmHXWo5F+jCeMxLQ0M2XkC3Xqf8FHbufrCerGXJi0WwS
-        pkjuEFjMtdo7yOkbigckDOmVBLnjIADB
-X-Google-Smtp-Source: ABdhPJzlfwkJIYqwcBVjfLPx8f6dUBnhcDwwnnv822xSCx5WdAOodoBa9nWHxL/IAIe/c2LX4cmnxKqqjF3O
-X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:7d3f:ea49:2c08:677b])
- (user=apusaka job=sendgmr) by 2002:a5b:98d:: with SMTP id c13mr8478703ybq.463.1617246704286;
- Wed, 31 Mar 2021 20:11:44 -0700 (PDT)
-Date:   Thu,  1 Apr 2021 11:11:33 +0800
-Message-Id: <20210401111036.1.I26d172ded4e4ac8ad334516a8d196539777fba2a@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-Subject: [PATCH] Bluetooth: Check inquiry status before sending one
-From:   Archie Pusaka <apusaka@google.com>
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S232994AbhDADOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 23:14:41 -0400
+X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Mar 2021 20:14:41 PDT
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 2324FC0613E6
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 20:14:41 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 9870450AC2E
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 03:13:36 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bluematt.me;
+        s=1617244862; t=1617246816;
+        bh=xN/rVOY63VaNmaYocf9pUPpZ5ZOM5G3OiapUGD3CPIo=;
+        h=Date:To:From:Subject:From;
+        b=laVL7Z6o6rEgV5kbOQ92F9wD5H2KlPnNyvdOz0P5gbFpuTLWntzlf2lAvUeaQ7atV
+         jlcsijd+nQevWVe9L01lWZmffZGNW8Ue5f/V2HOjq6WEB+evwrGWTSjAVarTX9JtBf
+         nHYmnq/nYxup6F8DB/qy3u/+f6nFsVsjIr0/FpLdi80GvQDJS6eA86TAnfk08NAZrD
+         bOy5XKu6D9ITVqZhR9K+202I9PW4KyJJNRFbonj5FtDAVYH+IFHYMmEVYkvvy1KbkK
+         4lPvxQW9xGlPESglfITRM4NZhVVlfl0HDXem8o85XLwo+eYHbZBGQNxeTMfwtyiPwo
+         pU/Ulf6PPc57A==
+Message-ID: <5d8c685d-471c-852c-46bd-f0c80f82e416@bluematt.me>
+Date:   Wed, 31 Mar 2021 23:13:36 -0400
+MIME-Version: 1.0
+Content-Language: en-US
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Matt Corallo <linux-net@bluematt.me>
+Subject: [PATCH] Reduce IP_FRAG_TIME fragment-reassembly timeout to 1s, from
+ 30s
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+The default IP reassembly timeout of 30 seconds predates git
+history (and cursory web searches turn up nothing related to it).
+The only relevant source cited in net/ipv4/ip_fragment.c is RFC
+791 defining IPv4 in 1981. RFC 791 suggests allowing the timer to
+increase on the receipt of each fragment (which Linux deliberately
+does not do), with a default timeout for each fragment of 15
+seconds. It suggests 15s to cap a 10Kb/s flow to a 150Kb buffer of
+fragments.
 
-There is a possibility where HCI_INQUIRY flag is set but we still
-send HCI_OP_INQUIRY anyway.
+When Linux receives a fragment, if the total memory used for the
+fragment reassembly buffer (across all hosts) exceeds
+net.ipv4.ipfrag_high_thresh (or the equivalent for IPv6), it
+silently drops all future fragments fragments until the timers on
+the original expire.
 
-Such a case can be reproduced by connecting to an LE device while
-active scanning. When the device is discovered, we initiate a
-connection, stop LE Scan, and send Discovery MGMT with status
-disabled, but we don't cancel the inquiry.
+All the way in 2021, these numbers feel almost comical. The default
+buffer size for fragmentation reassembly is hard-coded at 4MiB as
+`net->ipv4.fqdir->high_thresh = 4 * 1024 * 1024;` capping a host at
+1.06Mb/s of lost fragments before all fragments received on the
+host are dropped (with independent limits for IPv6).
 
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+Reducing the default fragment timeout to 1sec gives us 32Mb/s of
+fragments before we drop all fragments, which is certainly more in
+line with today's network speeds than 1.06Mb/s, though an optimal
+value may be still lower. Sadly, reducing it further requires a
+change to the sysctl interface, as net.ipv4.ipfrag_time is only
+specified in seconds.
 ---
+  include/net/ip.h | 2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
 
- net/bluetooth/hci_request.c | 3 +++
- 1 file changed, 3 insertions(+)
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 2d6b985d11cc..f1473ac5a27c 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -135,7 +135,7 @@ struct ip_ra_chain {
+  #define IP_MF		0x2000		/* Flag: "More Fragments"	*/
+  #define IP_OFFSET	0x1FFF		/* "Fragment Offset" part	*/
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 8ace5d34b01e..5a5ec7ed15ea 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -2952,6 +2952,9 @@ static int bredr_inquiry(struct hci_request *req, unsigned long opt)
- 	const u8 liac[3] = { 0x00, 0x8b, 0x9e };
- 	struct hci_cp_inquiry cp;
- 
-+	if (test_bit(HCI_INQUIRY, &req->hdev->flags))
-+		return 0;
-+
- 	bt_dev_dbg(req->hdev, "");
- 
- 	hci_dev_lock(req->hdev);
+-#define IP_FRAG_TIME	(30 * HZ)		/* fragment lifetime	*/
++#define IP_FRAG_TIME	(1 * HZ)		/* fragment lifetime	*/
+
+  struct msghdr;
+  struct net_device;
 -- 
-2.31.0.291.g576ba9dcdaf-goog
-
+2.30.2
