@@ -2,104 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2535350E9F
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC3E5350EAB
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbhDAF7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 01:59:02 -0400
-Received: from mga14.intel.com ([192.55.52.115]:3661 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229515AbhDAF6c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Apr 2021 01:58:32 -0400
-IronPort-SDR: 16Y5WlAo0HdYyPlTcqxuHNnMLHRYPgbwY4+bcgbNH+h18NUD1ZI2Gzp6Axpqd0zHwj2fOa4vXW
- 16NMwUQ1Up8w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191640980"
-X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
-   d="scan'208";a="191640980"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 22:58:32 -0700
-IronPort-SDR: gGck3JOSqyN3h8KmFVKd+VeDv/XjVplRu1cjb6DmIr3euSou4z/Xxpd0v3/TZLaE0xDmLc73eB
- 2Rw4P3Atcgvw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
-   d="scan'208";a="412516712"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga008.fm.intel.com with ESMTP; 31 Mar 2021 22:58:31 -0700
-Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
-        by linux.intel.com (Postfix) with ESMTP id 62D0F580932;
-        Wed, 31 Mar 2021 22:58:29 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/1] stmmac: intel: use managed PCI function on probe and resume
-Date:   Thu,  1 Apr 2021 14:02:50 +0800
-Message-Id: <20210401060250.24109-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S233395AbhDAGBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 02:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233353AbhDAGBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 02:01:07 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DEAC0613E6;
+        Wed, 31 Mar 2021 23:01:07 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id r193so1025516ior.9;
+        Wed, 31 Mar 2021 23:01:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=06y1qDdm9ehv2aJ33VAMzR7RKpCaEtAz7uhrKJ60mxg=;
+        b=a17lqAMJYXlKpH8d97gDcuihF9k+s5JGy/dvs8rKnosvZvz0JRTYkAAWPzI2y+X68Q
+         R77dcfFZwAw0fq6NWkh8Bim1BchDa84si2g3ABiAeHDA+1118BulRHn5HrX8S3hfBveF
+         UGAJc1MbrS1TxGKiUH/lEDwYlHfIUTQZqpwgDIy6TfY0nH7vBfqUgVNSlNLFSPcj2bRa
+         298wO2tPW3uqyvF9sILsgOEXsjELsaEFMIlAVXc5oyAFmFvKRC+xx/p/5mEwqfGv1hWx
+         hzI0dk6ra83OMn6dluf+fDVPHjHz8h6Yv8yWnlZc7jWxGSohzF9HoUNSriKZRETRntd0
+         /OmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=06y1qDdm9ehv2aJ33VAMzR7RKpCaEtAz7uhrKJ60mxg=;
+        b=iTZx/LNGeQpkWgSAqvQpJSi5tOVRS8Motf94nJC2nkEsv7NBOZJufa1QloDZPsuY0M
+         7U1oaH9IGoUThVT8lgo0uGnSSzpiuhy132gug16cK9X9eNxjXY9oQvVuhf0xjonD90/I
+         KAvL0jAa+o8KVu9Lc5IgZydgePqMjSCIglp9o3u74j0USQeCjaZvFakf6B9e6RdkIFPG
+         mzaeC09KzdeO5HnMRmSJ5N5c2OVsZ00N0qYauaoRgpfnSnXZhdT6njztXZ1n1+xmkqTZ
+         reET6KdNXWJseNQfZp+ozxydVsfHp1rGYY+bNBUdvyW52WIGp9qepL+BULPtQA7F3b8l
+         1fbg==
+X-Gm-Message-State: AOAM5332PnXdM5Gt1YX8szxypQSzydlPUKm+wCAyzlGFo87FWoxLAIMa
+        9jOAkVryBKBxbYMpnCRaBkU=
+X-Google-Smtp-Source: ABdhPJwcq17ij/DtCkCl3cigFcxX7mliHh+fsQmSIobFdFrMvO0ks8t3RJfUI8L3oFD5jJ/OUIuWfw==
+X-Received: by 2002:a6b:d20e:: with SMTP id q14mr5353279iob.200.1617256866891;
+        Wed, 31 Mar 2021 23:01:06 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id x6sm2228152ioh.19.2021.03.31.23.01.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Mar 2021 23:01:06 -0700 (PDT)
+Date:   Wed, 31 Mar 2021 23:00:58 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <6065619aa26d1_938bb2085e@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210331023237.41094-12-xiyou.wangcong@gmail.com>
+References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
+ <20210331023237.41094-12-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v8 11/16] udp: implement ->read_sock() for
+ sockmap
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update dwmac-intel to use managed function, i.e. pcim_enable_device().
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> This is similar to tcp_read_sock(), except we do not need
+> to worry about connections, we just need to retrieve skb
+> from UDP receive queue.
+> 
+> Note, the return value of ->read_sock() is unused in
+> sk_psock_verdict_data_ready(), and UDP still does not
+> support splice() due to lack of ->splice_read(), so users
+> can not reach udp_read_sock() directly.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-This will allow devres framework to call resource free function for us.
+Thanks this is easier to read IMO. One nit below.
 
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 3d9a57043af2..add95e20548d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -924,7 +924,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 		return -ENOMEM;
- 
- 	/* Enable pci device */
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
- 			__func__);
-@@ -1006,13 +1006,9 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
- 
- 	stmmac_dvr_remove(&pdev->dev);
- 
--	pci_free_irq_vectors(pdev);
--
- 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
- 
- 	pcim_iounmap_regions(pdev, BIT(0));
--
--	pci_disable_device(pdev);
- }
- 
- static int __maybe_unused intel_eth_pci_suspend(struct device *dev)
-@@ -1028,7 +1024,6 @@ static int __maybe_unused intel_eth_pci_suspend(struct device *dev)
- 	if (ret)
- 		return ret;
- 
--	pci_disable_device(pdev);
- 	pci_wake_from_d3(pdev, true);
- 	return 0;
- }
-@@ -1041,7 +1036,7 @@ static int __maybe_unused intel_eth_pci_resume(struct device *dev)
- 	pci_restore_state(pdev);
- 	pci_set_power_state(pdev, PCI_D0);
- 
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret)
- 		return ret;
- 
--- 
-2.25.1
+[...]
 
+>  
+> +int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
+> +		  sk_read_actor_t recv_actor)
+> +{
+> +	int copied = 0;
+> +
+> +	while (1) {
+> +		struct sk_buff *skb;
+> +		int err, used;
+> +
+> +		skb = skb_recv_udp(sk, 0, 1, &err);
+> +		if (!skb)
+> +			return err;
+> +		used = recv_actor(desc, skb, 0, skb->len);
+> +		if (used <= 0) {
+> +			if (!copied)
+> +				copied = used;
+> +			break;
+> +		} else if (used <= skb->len) {
+> +			copied += used;
+> +		}
+
+This 'else if' is always true if above is false right? Would be
+impler and clearer IMO as,
+
+               if (used <= 0) {
+		        if (!copied)
+				copied = used;
+			break;
+               }
+               copied += used;
+
+I don't see anyway for used to be great than  skb->len.
+
+> +
+> +		if (!desc->count)
+> +			break;
+> +	}
+> +
+> +	return copied;
+> +}
+> +EXPORT_SYMBOL(udp_read_sock);
+> +
