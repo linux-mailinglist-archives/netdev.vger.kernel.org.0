@@ -2,70 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38EAB350B65
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 02:51:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45661350B85
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 03:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbhDAAu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 20:50:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232884AbhDAAuI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 20:50:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 949BB61056;
-        Thu,  1 Apr 2021 00:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617238207;
-        bh=XPF4Q0/UPk92f59QRnwx26hlEZhsY0om0aOe7itde7I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rWqJ0hKcC8iDGEDG1RUsgyTZeilqU8Lg2ECYtRJ2ssC7z765UK++I2vo6/7IDfQp/
-         VHqAuJRtMAmtPvTUEQEcmZHaEkYpzV1tQUmifekctvOw68JsvQV0ipjCTqW61ap8u3
-         TzE0llbS2p+wGgX/rO7H1wELdus7q68QFQ1c+g12bgxpclKs+gx4NnKQc3w6VFt8sy
-         IwoU5z2xw8ypIRURhNU7CDZOIcjpiP9D/zvrVPP0c20+nKorVCksNP634T/oiL7X6B
-         zJ5dSzVmjQZyXGHrW4AbyDLFnkx1W2IcpOMq2N7V24sqW2T/HIdhASrTNz8nfMUPX2
-         t4mceqHrYDP0A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 892CE608FD;
-        Thu,  1 Apr 2021 00:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231974AbhDABIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 21:08:54 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:48240 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230248AbhDABIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 21:08:17 -0400
+Received: by mail-io1-f71.google.com with SMTP id g12so2778471ion.15
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 18:08:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=HhXZSdtRdZONG6W//ZnC0o+E0uXZyzIdW05SEDejhRI=;
+        b=YOEbu76NZGyv1ROsvPoIUK+GXlbaks0wnhSRe4x4UlpS6VGN67R8tIDFcN8Jisu0UO
+         t8/ARps++wj02se0WJ/mGVsGfdTSqT7If8mzyMfP/SgguTENZ8+95dWGssstd0SffLfr
+         BCGxpYki8UMtUXTIITwEepkDYnUPaCeeSo5kYH1Guuickbauq88y4SL1YJSzdbbMW4Cn
+         Bs8NV+Mi8mgQUxdLhoTWnIagVrc54m1tsbuOz5WF5ZicaHDCEsfhyhoW3xWjvA2yaAgn
+         JVqTejW/P4daYlmjY2PP5DVrksRLw0/M/j3InhZsdhQnNe6WV9wGt4GaLtTCpkNvf1PI
+         bVEg==
+X-Gm-Message-State: AOAM532wf7kZjSJHf5pqyEPV+ZVZaJU63S+YrlEyk29vL6nXdakyQy6h
+        R7pGjZyY+bmKJKcGTEsAUa4EGQ8TFuTP0k5SrkoRn0Rv8AGX
+X-Google-Smtp-Source: ABdhPJxRG2A1XbTYVHAQer5B/AXXuXwpzcTQx1FSnrCnLb4+x+o7eoZfn1yC5fbJYF3rbpC7Co0C7bW0E1x7QM8/fB+BYzDMfYxn
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] selftests/net: so_txtime multi-host support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161723820755.26411.3929314544690696185.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Apr 2021 00:50:07 +0000
-References: <20210401004020.3523920-1-cmllamas@google.com>
-In-Reply-To: <20210401004020.3523920-1-cmllamas@google.com>
-To:     Carlos Llamas <cmllamas@google.com>
-Cc:     willemb@google.com, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org
+X-Received: by 2002:a92:c90c:: with SMTP id t12mr79501ilp.248.1617239296423;
+ Wed, 31 Mar 2021 18:08:16 -0700 (PDT)
+Date:   Wed, 31 Mar 2021 18:08:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c7bbd305bededd29@google.com>
+Subject: [syzbot] memory leak in bpf (2)
+From:   syzbot <syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello,
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+syzbot found the following issue on:
 
-On Thu,  1 Apr 2021 00:40:20 +0000 you wrote:
-> SO_TXTIME hardware offload requires testing across devices, either
-> between machines or separate network namespaces.
-> 
-> Split up SO_TXTIME test into tx and rx modes, so traffic can be
-> sent from one process to another. Create a veth-pair on different
-> namespaces and bind each process to an end point via [-S]ource and
-> [-D]estination parameters. Optional start [-t]ime parameter can be
-> passed to synchronize the test across the hosts (with synchorinzed
-> clocks).
-> 
-> [...]
+HEAD commit:    0f4498ce Merge tag 'for-5.12/dm-fixes-2' of git://git.kern..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1250e126d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=49f2683f4e7a4347
+dashboard link: https://syzkaller.appspot.com/bug?extid=5d895828587f49e7fe9b
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a17016d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10a32016d00000
 
-Here is the summary with links:
-  - [net-next] selftests/net: so_txtime multi-host support
-    https://git.kernel.org/netdev/net-next/c/040806343bb4
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Warning: Permanently added '10.128.0.74' (ECDSA) to the list of known hosts.
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff8881133295c0 (size 64):
+  comm "syz-executor529", pid 8395, jiffies 4294943939 (age 8.130s)
+  hex dump (first 32 bytes):
+    40 48 3c 04 00 ea ff ff 00 48 3c 04 00 ea ff ff  @H<......H<.....
+    c0 e7 3c 04 00 ea ff ff 80 e7 3c 04 00 ea ff ff  ..<.......<.....
+  backtrace:
+    [<ffffffff8139511c>] kmalloc_node include/linux/slab.h:577 [inline]
+    [<ffffffff8139511c>] __bpf_map_area_alloc+0xfc/0x120 kernel/bpf/syscall.c:300
+    [<ffffffff813d2414>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:90 [inline]
+    [<ffffffff813d2414>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:131 [inline]
+    [<ffffffff813d2414>] ringbuf_map_alloc kernel/bpf/ringbuf.c:170 [inline]
+    [<ffffffff813d2414>] ringbuf_map_alloc+0x134/0x350 kernel/bpf/ringbuf.c:146
+    [<ffffffff8139c8d3>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
+    [<ffffffff8139c8d3>] map_create kernel/bpf/syscall.c:828 [inline]
+    [<ffffffff8139c8d3>] __do_sys_bpf+0x7c3/0x2fe0 kernel/bpf/syscall.c:4375
+    [<ffffffff842df20d>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<ffffffff84400068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
 
 
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
