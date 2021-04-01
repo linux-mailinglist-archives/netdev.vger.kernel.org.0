@@ -2,91 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC99350E98
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 07:53:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2535350E9F
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbhDAFw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 01:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47188 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbhDAFwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 01:52:24 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDFDC0613E6;
-        Wed, 31 Mar 2021 22:51:58 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id f19so1039914ion.3;
-        Wed, 31 Mar 2021 22:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=OTyQxYLSlThQz6eRBuBi8jp2yti8YzRb4dxOv5HfhEI=;
-        b=AiE+mjccUKeSTPrt2xxATdWOgiNqVrk7cZOH9q6jl2tUSGtC4Lml8AGSryY54AgVVB
-         Btn8R26BLXBhAdiaC9KZ7k/Dp49xCUlmcnkNHZXxY52BJsxIWtRAPus9Scq1IWngOLdg
-         BSDON4uzdLlC8YxrQp3ugLAD5NllsJLKl/lGpZEwObBWAX4nI45K/G6U/QELJZ31pFxp
-         COE8QyE/ECxs0PCW/7QbGOP1UUzNPLrBdZeWImT4yeiOcci7J3+bIXZFwIAHgKoYXUlB
-         JL1ibymXul32cqnfz08RTas4fEHOZ97CnFa1CQRzxz3gGnL2w5XgE3D+Vnnu4xFGz1BD
-         lXzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=OTyQxYLSlThQz6eRBuBi8jp2yti8YzRb4dxOv5HfhEI=;
-        b=Mz3KP7K6Mryq55r6XlIQrrtL8oNl2T+qm6v0Gmx9AvEEC+AoOW3kdzR/qqxbRCmH0b
-         3ej/3pkJ8Kibr+IeCKRhXezw6l0eqRtFps4noL2282wAzrSfoYX1f/1wZcZCZyJlZiqW
-         OAos2JW4P0P8YcEL/AGmvqssR8C57irq9YHLpzgUHx31/jzKA8yiWYzmDnpw8fO+iZt3
-         VH2RG71JeDpmBDUgrIgyLnP/cktqSYBk+5ytJyJ8kHIg3hakp6iMH0x9KX2X8FPxNU4E
-         lridA2jdJ529ZT2oVqfAnOdBgnXDmYNk0EcHlox6nhvvkcb8HllecRMm63HkXSnuqSRZ
-         KVIQ==
-X-Gm-Message-State: AOAM532sz1vSoqiPiT0wYHv/AbIgNzfnoWR/WTGBX9vORpqQBU7K8tUO
-        j/qOWap1rc12QWjR5aszjNM=
-X-Google-Smtp-Source: ABdhPJwzJlWOEuR8qsxpoU+4AN+1+RkLdwjzCcnb+ZQyO0gq3IkEG0QKlCjCC8OT4g8pPFEJGVnymQ==
-X-Received: by 2002:a02:a303:: with SMTP id q3mr6358504jai.32.1617256318002;
-        Wed, 31 Mar 2021 22:51:58 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id a4sm2188693iow.55.2021.03.31.22.51.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 22:51:57 -0700 (PDT)
-Date:   Wed, 31 Mar 2021 22:51:49 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <60655f759ee6e_938bb208f6@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210331023237.41094-10-xiyou.wangcong@gmail.com>
-References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
- <20210331023237.41094-10-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v8 09/16] sock_map: introduce BPF_SK_SKB_VERDICT
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S233193AbhDAF7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 01:59:02 -0400
+Received: from mga14.intel.com ([192.55.52.115]:3661 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229515AbhDAF6c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 01:58:32 -0400
+IronPort-SDR: 16Y5WlAo0HdYyPlTcqxuHNnMLHRYPgbwY4+bcgbNH+h18NUD1ZI2Gzp6Axpqd0zHwj2fOa4vXW
+ 16NMwUQ1Up8w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="191640980"
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="191640980"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 22:58:32 -0700
+IronPort-SDR: gGck3JOSqyN3h8KmFVKd+VeDv/XjVplRu1cjb6DmIr3euSou4z/Xxpd0v3/TZLaE0xDmLc73eB
+ 2Rw4P3Atcgvw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="412516712"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 31 Mar 2021 22:58:31 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
+        by linux.intel.com (Postfix) with ESMTP id 62D0F580932;
+        Wed, 31 Mar 2021 22:58:29 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/1] stmmac: intel: use managed PCI function on probe and resume
+Date:   Thu,  1 Apr 2021 14:02:50 +0800
+Message-Id: <20210401060250.24109-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> Reusing BPF_SK_SKB_STREAM_VERDICT is possible but its name is
-> confusing and more importantly we still want to distinguish them
-> from user-space. So we can just reuse the stream verdict code but
-> introduce a new type of eBPF program, skb_verdict. Users are not
-> allowed to attach stream_verdict and skb_verdict programs to the
-> same map.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
+Update dwmac-intel to use managed function, i.e. pcim_enable_device().
 
-Looks good.
+This will allow devres framework to call resource free function for us.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 3d9a57043af2..add95e20548d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -924,7 +924,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 		return -ENOMEM;
+ 
+ 	/* Enable pci device */
+-	ret = pci_enable_device(pdev);
++	ret = pcim_enable_device(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
+ 			__func__);
+@@ -1006,13 +1006,9 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+ 
+ 	stmmac_dvr_remove(&pdev->dev);
+ 
+-	pci_free_irq_vectors(pdev);
+-
+ 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
+ 
+ 	pcim_iounmap_regions(pdev, BIT(0));
+-
+-	pci_disable_device(pdev);
+ }
+ 
+ static int __maybe_unused intel_eth_pci_suspend(struct device *dev)
+@@ -1028,7 +1024,6 @@ static int __maybe_unused intel_eth_pci_suspend(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	pci_disable_device(pdev);
+ 	pci_wake_from_d3(pdev, true);
+ 	return 0;
+ }
+@@ -1041,7 +1036,7 @@ static int __maybe_unused intel_eth_pci_resume(struct device *dev)
+ 	pci_restore_state(pdev);
+ 	pci_set_power_state(pdev, PCI_D0);
+ 
+-	ret = pci_enable_device(pdev);
++	ret = pcim_enable_device(pdev);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.25.1
+
