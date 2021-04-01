@@ -2,88 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24F7F350EC9
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:03:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A281350EC6
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 08:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233496AbhDAGCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 02:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233641AbhDAGCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 02:02:40 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9DCC0613E6;
-        Wed, 31 Mar 2021 23:02:40 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id 19so1150315ilj.2;
-        Wed, 31 Mar 2021 23:02:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=HteIhZbIjuEuTNli338lqBwZmsNCD2KIvODa9OzqwxY=;
-        b=lbSAKEseY1ERPlsr52NFL7DjK+gIN44auGXUvBbB6pRo023jPA/IUy84RvFgXJ/DMW
-         WJCvyxXvUV2vU/zdyoAUL+lGtKSUeC7icKF82W7RSfLTSdGsCSdEL5F7YAgS+xwMCYRk
-         HCBEP1aOEL1Bm150Tawq17aTR+01/3Agi6wt69m4CxYUSAcCD0QCWs5E/BCVJy36LdIR
-         bc9re+nSEvRT+pGM6l8dQj/WRhw6le5Bsz77/jEFKtt4YMGwvg5mNCkslMy2WsT9ZKBZ
-         5HNE5W4kIZJvLegaR/WBpBFfdhET7LRsklYcPXj9rYpTbdxi7uaoK9qZ3CGBPSY0SsEm
-         jQKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=HteIhZbIjuEuTNli338lqBwZmsNCD2KIvODa9OzqwxY=;
-        b=RghsNMmQgJOzQARvgpH3mTO5xtwIIueiz7j1/v/JA1sEwPb6aEkkqUIBmozpbN4jsu
-         amc8xArA0waey2XfdUeLF4oHIbYifZtZEBhymKBPP5t+Cyq9dMZiuLXRh3te/KMRZEmm
-         atmW1Hv5RocfLY3YQSWb8x+vaAPynQ7hysqSj3jh6+LnxWqZ6Je2wTi3tD7RhwcsI+Zg
-         2BpCfMIfwmTVkqgSLTS268VH9NftJ4XLDA4a6KCBqTWIzFwXUDB/kn0gdQzjOxjyhu/Q
-         WGTJuayzwN/6tkk0GekKrwHVHgmqjF2A0fEatR6izkOxol9ic/tFxGVAC380br0cypc2
-         r2ng==
-X-Gm-Message-State: AOAM532cFtbcdXMiKw9qZFpBY+k35jp2gYYgKEH+//A/WBwZ6bQQTBQY
-        5RCrNQgj6kt5ilJiJgdbohE=
-X-Google-Smtp-Source: ABdhPJx2mIvZufFqvpEcJY+1AVDN/Z1AbV+gKbUqRo7QdefVGYuhtiBKn/j/UZ2pnQV2HTgxB+SIog==
-X-Received: by 2002:a92:dc83:: with SMTP id c3mr5619765iln.167.1617256959523;
-        Wed, 31 Mar 2021 23:02:39 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id w1sm2214023iom.53.2021.03.31.23.02.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 23:02:39 -0700 (PDT)
-Date:   Wed, 31 Mar 2021 23:02:31 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <606561f77d15e_938bb208d6@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210331023237.41094-15-xiyou.wangcong@gmail.com>
-References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
- <20210331023237.41094-15-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v8 14/16] sock_map: update sock type checks for
- UDP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S233143AbhDAGCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 02:02:48 -0400
+Received: from mga04.intel.com ([192.55.52.120]:24122 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233589AbhDAGCS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 02:02:18 -0400
+IronPort-SDR: UWmDSWNdsWUV+rcRMAK5bEsrFweQJpG3mtTOzoTiOWvzj330R7pQKAOAAz0wJjfQ2axZbSle96
+ Y35IJkTk0sKQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="189929995"
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="189929995"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 23:02:14 -0700
+IronPort-SDR: 3syucskN8LM8LtLBaJYl15+HJr2elqI3Irezo8nFFZK7qqndb3cAk7h8Sm6ZMiEAa1rK5s636C
+ M8QXjV6XVGBA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="377569641"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 31 Mar 2021 23:02:09 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
+        by linux.intel.com (Postfix) with ESMTP id 6387F5808ED;
+        Wed, 31 Mar 2021 23:02:07 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/1] net: stmmac: remove unnecessary pci_enable_msi() call
+Date:   Thu,  1 Apr 2021 14:06:28 +0800
+Message-Id: <20210401060628.27339-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> Now UDP supports sockmap and redirection, we can safely update
-> the sock type checks for it accordingly.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/core/sock_map.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+The commit d2a029bde37b ("stmmac: pci: add MSI support for Intel Quark
+X1000") introduced a pci_enable_msi() call in stmmac_pci.c.
+
+With the commit 58da0cfa6cf1 ("net: stmmac: create dwmac-intel.c to
+contain all Intel platform"), Intel Quark platform related codes
+have been moved to the newly created driver.
+
+Removing this unnecessary pci_enable_msi() call as there are no other
+devices that uses stmmac-pci and need MSI to be enabled.
+
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index 272cb47af9f2..95e0e4d6f74d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -198,8 +198,6 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
+ 	if (ret)
+ 		return ret;
+ 
+-	pci_enable_msi(pdev);
+-
+ 	memset(&res, 0, sizeof(res));
+ 	res.addr = pcim_iomap_table(pdev)[i];
+ 	res.wol_irq = pdev->irq;
+-- 
+2.25.1
+
