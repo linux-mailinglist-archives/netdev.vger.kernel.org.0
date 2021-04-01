@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 789D23518BE
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 585D1351793
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:47:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235064AbhDARrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 13:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        id S235211AbhDARmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 13:42:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236008AbhDARnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:43:33 -0400
+        with ESMTP id S234407AbhDARhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:37:11 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA766C02D56A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB29C02D56E;
         Thu,  1 Apr 2021 08:53:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=F/At/y3YpRYA0xMifJb6WYaRvzw/qWs4U1Utp3fOA3I=; b=HFkBoDC2gQqzR0/BMkABluFzVb
-        3gakMZuzB5XR+6BX0Aj1OytKg2i4hAn10GfCqqYygamx5QBLvyvglTO+CwociDtgFFHoBElQl2z9C
-        8vSKoiBIAW3F6tqOLYPp5fiGR2bP6vbJGLE7cWb6BixFCeOSNvJ4K1maSU3n4g1Q7mpPZT2T07c35
-        IOMTZ0zeIeEGgKA2dxIZ8EK0kU0QMV3JhqqKyPs1AV8kBZN19SvvyFxFLUzRFNH5pIb+XJhARJbkW
-        zRtou/lbZms6YtiTWLVyM7tCMX4ldsM7ZmafF6EhBjKGqEfhr9PhwxC99sSvMht8lYVuOOmKk4W3l
-        pxTq5pyQ==;
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=bDulEFC5ArmGy+DYIEUW3EiV2iZECmYjHEkGluCYUVw=; b=uX9/ysk2c5yNZPrgqGa+LKrjjY
+        CPo31KIQUr5iR8POv/BJJzIxOsBj3AtcHQZT4ZYyRDhN2hPxaUMrv3ZC33WIurTNlhicSccdFRrhH
+        iVY5u1L8eBe6Bpiic6KX6G1Qecb3vN2VQ2toNFRHLaf56VeoCaD2qtQpnJgff3H//8x/auMMo23XQ
+        bb/e9JWW1DkIbrk8f/YNVPRIiP2baTSrHdR85H1vQSKFoJV3J4TG+fMefpid8PQ+VVnAS5LZsjokM
+        v2KIT4oKfgvPo9nNvUERBun216Eab+LPm2LkfQDNmuLRxyFeHTMmfifogA4ZXzoCCyxui7lrErfSp
+        swXXamBQ==;
 Received: from [2001:4bb8:180:7517:83e4:a809:b0aa:ca74] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
-        id 1lRzd6-00CiZO-UO; Thu, 01 Apr 2021 15:53:09 +0000
+        id 1lRzd9-00CiZs-Pd; Thu, 01 Apr 2021 15:53:12 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
         Li Yang <leoyang.li@nxp.com>
@@ -38,10 +38,12 @@ Cc:     Michael Ellerman <mpe@ellerman.id.au>,
         iommu@lists.linux-foundation.org,
         linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: cleanup unused or almost unused IOMMU APIs and the FSL PAMU driver v3
-Date:   Thu,  1 Apr 2021 17:52:36 +0200
-Message-Id: <20210401155256.298656-1-hch@lst.de>
+Subject: [PATCH 01/20] iommu: remove the unused domain_window_disable method
+Date:   Thu,  1 Apr 2021 17:52:37 +0200
+Message-Id: <20210401155256.298656-2-hch@lst.de>
 X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20210401155256.298656-1-hch@lst.de>
+References: <20210401155256.298656-1-hch@lst.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -49,49 +51,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+domain_window_disable is wired up by fsl_pamu, but never actually called.
 
-there are a bunch of IOMMU APIs that are entirely unused, or only used as
-a private communication channel between the FSL PAMU driver and it's only
-consumer, the qbman portal driver.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Will Deacon <will@kernel.org>
+Acked-by: Li Yang <leoyang.li@nxp.com>
+---
+ drivers/iommu/fsl_pamu_domain.c | 48 ---------------------------------
+ include/linux/iommu.h           |  2 --
+ 2 files changed, 50 deletions(-)
 
-So this series drops a huge chunk of entirely unused FSL PAMU
-functionality, then drops all kinds of unused IOMMU APIs, and then
-replaces what is left of the iommu_attrs with properly typed, smaller
-and easier to use specific APIs.
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index b2110767caf49c..53380cf1fa452f 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -473,53 +473,6 @@ static int update_domain_mapping(struct fsl_dma_domain *dma_domain, u32 wnd_nr)
+ 	return ret;
+ }
+ 
+-static int disable_domain_win(struct fsl_dma_domain *dma_domain, u32 wnd_nr)
+-{
+-	struct device_domain_info *info;
+-	int ret = 0;
+-
+-	list_for_each_entry(info, &dma_domain->devices, link) {
+-		if (dma_domain->win_cnt == 1 && dma_domain->enabled) {
+-			ret = pamu_disable_liodn(info->liodn);
+-			if (!ret)
+-				dma_domain->enabled = 0;
+-		} else {
+-			ret = pamu_disable_spaace(info->liodn, wnd_nr);
+-		}
+-	}
+-
+-	return ret;
+-}
+-
+-static void fsl_pamu_window_disable(struct iommu_domain *domain, u32 wnd_nr)
+-{
+-	struct fsl_dma_domain *dma_domain = to_fsl_dma_domain(domain);
+-	unsigned long flags;
+-	int ret;
+-
+-	spin_lock_irqsave(&dma_domain->domain_lock, flags);
+-	if (!dma_domain->win_arr) {
+-		pr_debug("Number of windows not configured\n");
+-		spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
+-		return;
+-	}
+-
+-	if (wnd_nr >= dma_domain->win_cnt) {
+-		pr_debug("Invalid window index\n");
+-		spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
+-		return;
+-	}
+-
+-	if (dma_domain->win_arr[wnd_nr].valid) {
+-		ret = disable_domain_win(dma_domain, wnd_nr);
+-		if (!ret) {
+-			dma_domain->win_arr[wnd_nr].valid = 0;
+-			dma_domain->mapped--;
+-		}
+-	}
+-
+-	spin_unlock_irqrestore(&dma_domain->domain_lock, flags);
+-}
+ 
+ static int fsl_pamu_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+ 				  phys_addr_t paddr, u64 size, int prot)
+@@ -1032,7 +985,6 @@ static const struct iommu_ops fsl_pamu_ops = {
+ 	.attach_dev	= fsl_pamu_attach_device,
+ 	.detach_dev	= fsl_pamu_detach_device,
+ 	.domain_window_enable = fsl_pamu_window_enable,
+-	.domain_window_disable = fsl_pamu_window_disable,
+ 	.iova_to_phys	= fsl_pamu_iova_to_phys,
+ 	.domain_set_attr = fsl_pamu_set_domain_attr,
+ 	.domain_get_attr = fsl_pamu_get_domain_attr,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 5e7fe519430af4..47c8b318d8f523 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -209,7 +209,6 @@ struct iommu_iotlb_gather {
+  * @put_resv_regions: Free list of reserved regions for a device
+  * @apply_resv_region: Temporary helper call-back for iova reserved ranges
+  * @domain_window_enable: Configure and enable a particular window for a domain
+- * @domain_window_disable: Disable a particular window for a domain
+  * @of_xlate: add OF master IDs to iommu grouping
+  * @is_attach_deferred: Check if domain attach should be deferred from iommu
+  *                      driver init to device driver init (default no)
+@@ -270,7 +269,6 @@ struct iommu_ops {
+ 	/* Window handling functions */
+ 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
+ 				    phys_addr_t paddr, u64 size, int prot);
+-	void (*domain_window_disable)(struct iommu_domain *domain, u32 wnd_nr);
+ 
+ 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+ 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+-- 
+2.30.1
 
-Changes since v2:
- - remove a comment fragment a little bit earlier
- - fix the aperture end passed to pamu_config_ppaace
- - fix a few trivial typos
- - remove more unused arguments to pamu_config_ppaace
- - do not accidentally enable lazy flushing for non-dma domains
-
-Changes since v1:
- - use a different way to control strict flushing behavior (from Robin)
- - remove the iommu_cmd_line wrappers
- - simplify the pagetbl quirks a little more
- - slightly improved patch ordering
- - better changelogs
-
-Diffstat:
- arch/powerpc/include/asm/fsl_pamu_stash.h   |   12 
- drivers/gpu/drm/msm/adreno/adreno_gpu.c     |    5 
- drivers/iommu/amd/iommu.c                   |   23 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   75 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |    1 
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  111 +---
- drivers/iommu/arm/arm-smmu/arm-smmu.h       |    2 
- drivers/iommu/dma-iommu.c                   |    9 
- drivers/iommu/fsl_pamu.c                    |  293 -----------
- drivers/iommu/fsl_pamu.h                    |   12 
- drivers/iommu/fsl_pamu_domain.c             |  688 ++--------------------------
- drivers/iommu/fsl_pamu_domain.h             |   46 -
- drivers/iommu/intel/iommu.c                 |   95 ---
- drivers/iommu/iommu.c                       |  118 +---
- drivers/soc/fsl/qbman/qman_portal.c         |   55 --
- drivers/vfio/vfio_iommu_type1.c             |   31 -
- drivers/vhost/vdpa.c                        |   10 
- include/linux/io-pgtable.h                  |    4 
- include/linux/iommu.h                       |   76 ---
- 19 files changed, 203 insertions(+), 1463 deletions(-)
