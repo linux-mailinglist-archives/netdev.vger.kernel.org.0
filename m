@@ -2,95 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45661350B85
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 03:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51141350BD7
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 03:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231974AbhDABIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 21:08:54 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:48240 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbhDABIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 21:08:17 -0400
-Received: by mail-io1-f71.google.com with SMTP id g12so2778471ion.15
-        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 18:08:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=HhXZSdtRdZONG6W//ZnC0o+E0uXZyzIdW05SEDejhRI=;
-        b=YOEbu76NZGyv1ROsvPoIUK+GXlbaks0wnhSRe4x4UlpS6VGN67R8tIDFcN8Jisu0UO
-         t8/ARps++wj02se0WJ/mGVsGfdTSqT7If8mzyMfP/SgguTENZ8+95dWGssstd0SffLfr
-         BCGxpYki8UMtUXTIITwEepkDYnUPaCeeSo5kYH1Guuickbauq88y4SL1YJSzdbbMW4Cn
-         Bs8NV+Mi8mgQUxdLhoTWnIagVrc54m1tsbuOz5WF5ZicaHDCEsfhyhoW3xWjvA2yaAgn
-         JVqTejW/P4daYlmjY2PP5DVrksRLw0/M/j3InhZsdhQnNe6WV9wGt4GaLtTCpkNvf1PI
-         bVEg==
-X-Gm-Message-State: AOAM532wf7kZjSJHf5pqyEPV+ZVZaJU63S+YrlEyk29vL6nXdakyQy6h
-        R7pGjZyY+bmKJKcGTEsAUa4EGQ8TFuTP0k5SrkoRn0Rv8AGX
-X-Google-Smtp-Source: ABdhPJxRG2A1XbTYVHAQer5B/AXXuXwpzcTQx1FSnrCnLb4+x+o7eoZfn1yC5fbJYF3rbpC7Co0C7bW0E1x7QM8/fB+BYzDMfYxn
+        id S232601AbhDABXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 21:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229486AbhDABXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 21:23:12 -0400
+Received: from hs01.dk-develop.de (hs01.dk-develop.de [IPv6:2a02:c207:3002:6234::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BD4C061574;
+        Wed, 31 Mar 2021 18:23:11 -0700 (PDT)
+Received: from mail.dk-develop.de (hs01.dk-develop.de [IPv6:::1])
+        by hs01.dk-develop.de (Postfix) with ESMTP id 43E66240605;
+        Thu,  1 Apr 2021 03:23:05 +0200 (CEST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:c90c:: with SMTP id t12mr79501ilp.248.1617239296423;
- Wed, 31 Mar 2021 18:08:16 -0700 (PDT)
-Date:   Wed, 31 Mar 2021 18:08:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c7bbd305bededd29@google.com>
-Subject: [syzbot] memory leak in bpf (2)
-From:   syzbot <syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 01 Apr 2021 03:23:05 +0200
+From:   danilokrummrich@dk-develop.de
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
+Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
+In-Reply-To: <20210331183524.GV1463@shell.armlinux.org.uk>
+References: <20210331141755.126178-1-danilokrummrich@dk-develop.de>
+ <20210331141755.126178-3-danilokrummrich@dk-develop.de>
+ <YGSi+b/r4zlq9rm8@lunn.ch> <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
+ <20210331183524.GV1463@shell.armlinux.org.uk>
+User-Agent: Roundcube Webmail/1.4.9
+Message-ID: <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
+X-Sender: danilokrummrich@dk-develop.de
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2021-03-31 20:35, Russell King - ARM Linux admin wrote:
+> On Wed, Mar 31, 2021 at 07:58:33PM +0200, danilokrummrich@dk-develop.de 
+> wrote:
+>> For this cited change the only thing happening is that if 
+>> get_phy_device()
+>> already failed for probing with is_c45==false (C22 devices) it tries 
+>> to
+>> probe with is_c45==true (C45 devices) which then either results into 
+>> actual
+>> C45 frame transfers or indirect accesses by calling mdiobus_c45_*() 
+>> functions.
+> 
+> Please explain why and how a PHY may not appear to be present using
+> C22 frames to read the ID registers, but does appear to be present
+> when using C22 frames to the C45 indirect registers - and summarise
+> which PHYs have this behaviour.
+> 
+> It seems very odd that any PHY would only implement C45 indirect
+> registers in the C22 register space.
+Honestly, I can't list examples of that case (at least none that have an
+upstream driver already). This part of my patch, to fall back to c45 bus
+probing when c22 probing does not succeed, is also motivated by the fact
+that this behaviour was already introduced with this patch:
 
-syzbot found the following issue on:
+commit 0cc8fecf041d3e5285380da62cc6662bdc942d8c
+Author: Jeremy Linton <jeremy.linton@arm.com>
+Date:   Mon Jun 22 20:35:32 2020 +0530
 
-HEAD commit:    0f4498ce Merge tag 'for-5.12/dm-fixes-2' of git://git.kern..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1250e126d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=49f2683f4e7a4347
-dashboard link: https://syzkaller.appspot.com/bug?extid=5d895828587f49e7fe9b
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10a17016d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10a32016d00000
+     net: phy: Allow mdio buses to auto-probe c45 devices
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com
+     The mdiobus_scan logic is currently hardcoded to only
+     work with c22 devices. This works fairly well in most
+     cases, but its possible that a c45 device doesn't respond
+     despite being a standard phy. If the parent hardware
+     is capable, it makes sense to scan for c22 devices before
+     falling back to c45.
 
-Warning: Permanently added '10.128.0.74' (ECDSA) to the list of known hosts.
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff8881133295c0 (size 64):
-  comm "syz-executor529", pid 8395, jiffies 4294943939 (age 8.130s)
-  hex dump (first 32 bytes):
-    40 48 3c 04 00 ea ff ff 00 48 3c 04 00 ea ff ff  @H<......H<.....
-    c0 e7 3c 04 00 ea ff ff 80 e7 3c 04 00 ea ff ff  ..<.......<.....
-  backtrace:
-    [<ffffffff8139511c>] kmalloc_node include/linux/slab.h:577 [inline]
-    [<ffffffff8139511c>] __bpf_map_area_alloc+0xfc/0x120 kernel/bpf/syscall.c:300
-    [<ffffffff813d2414>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:90 [inline]
-    [<ffffffff813d2414>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:131 [inline]
-    [<ffffffff813d2414>] ringbuf_map_alloc kernel/bpf/ringbuf.c:170 [inline]
-    [<ffffffff813d2414>] ringbuf_map_alloc+0x134/0x350 kernel/bpf/ringbuf.c:146
-    [<ffffffff8139c8d3>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
-    [<ffffffff8139c8d3>] map_create kernel/bpf/syscall.c:828 [inline]
-    [<ffffffff8139c8d3>] __do_sys_bpf+0x7c3/0x2fe0 kernel/bpf/syscall.c:4375
-    [<ffffffff842df20d>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<ffffffff84400068>] entry_SYSCALL_64_after_hwframe+0x44/0xae
+     As we want this to reflect the capabilities of the STA,
+     lets add a field to the mii_bus structure to represent
+     the capability. That way devices can opt into the extended
+     scanning. Existing users should continue to default to c22
+     only scanning as long as they are zero'ing the structure
+     before use.
 
+     Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+     Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+     Signed-off-by: David S. Miller <davem@davemloft.net>
 
+In this patch i.a. the following lines were added.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
++       case MDIOBUS_C22_C45:
++               phydev = get_phy_device(bus, addr, false);
++               if (IS_ERR(phydev))
++                       phydev = get_phy_device(bus, addr, true);
++               break;
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+I'm applying the same logic for MDIOBUS_NO_CAP and MDIOBUS_C22, since
+with my patch MDIO controllers with those capabilities can handle c45 
+bus
+probing with indirect accesses.
+
+[By the way, I'm unsure if this order for MDIO bus controllers with the
+capability MDIOBUS_C22_C45 makes sense, because if we assume that the
+majority of c45 PHYs responds well to c22 probing (which I'm convinced 
+of)
+the PHY would still be registered as is_c45==false, which results in the 
+fact
+that even though the underlying bus is capable of real c45 framing only
+indirect accessing would be performed. But this is another topic and
+unrelated to the patch.]
+
+However, this is not the main motivation of my patch. The main driver is
+of_mdiobus_register_phy():
+
+	is_c45 = of_device_is_compatible(child,
+					 "ethernet-phy-ieee802.3-c45");
+
+	if (!is_c45 && !of_get_phy_id(child, &phy_id))
+		phy = phy_device_create(mdio, addr, phy_id, 0, NULL);
+	else
+		phy = get_phy_device(mdio, addr, is_c45);
+
+In the case a PHY is registered as a c45 compatible PHY in the device 
+tree,
+it is probed in c45 mode and therefore finally  mdiobus_c45_read() is 
+called,
+which as by now just expects the underlying MDIO bus controller to be 
+capable
+to do c45 framing and therefore the operation would fail in case it is 
+not.
+Hence, in my opinion it is useful to fall back to indirect accesses in 
+such a
+case to be able to support those PHYs.
+
+There is a similar issue in phy_mii_ioctl(). Let's assume a c45 capable 
+PHY is
+connected to a MDIO bus controller that is not capable of c45 framing. 
+We can
+also assume that it was probed with c22 bus probing, since without this 
+patch
+nothing else is possible.
+Now, there might be an ioctl() asking for a c45 transfer by specifying
+MDIO_PHY_ID_C45_MASK e.g. in order to access a different MMD's register,
+since the PHY is actually capable of c45. Currently, this would result 
+in
+
+devad = mdiobus_c45_addr(devad, mii_data->reg_num);
+mii_data->val_out = mdiobus_read(phydev->mdio.bus, prtad, devad);
+
+calls, which would fail, since the bus doesn't support it. Instead 
+falling back
+to indirect access might be the better option. Surely, the userspace 
+program
+could implement the indirect access as well, but I think this way it's 
+just more
+convenient, e.g. "phytool read iface/addr:devad/reg".
