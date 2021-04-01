@@ -2,280 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53401350C62
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 04:09:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA60350CB6
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 04:32:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233395AbhDACIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 22:08:35 -0400
-Received: from mga17.intel.com ([192.55.52.151]:22177 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233305AbhDACII (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 22:08:08 -0400
-IronPort-SDR: 49dRrPkplTcfkmu5zeC9DjlJ8W0K1h9YxcYmD9TLPY4VxxL+M6dwWK827F7s7EFlnbeW8qefjq
- odqaRwrwNVvA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9940"; a="172163702"
-X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="172163702"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2021 19:08:08 -0700
-IronPort-SDR: 88+4Hve+PQjv7Zhmtn6b1OBdEapIKl9MYDgo4SP1QnZip5D+7+aIjWSwO5oGA78EJGiB1A/7K7
- NF30+/i37/tA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,295,1610438400"; 
-   d="scan'208";a="528004281"
-Received: from glass.png.intel.com ([10.158.65.59])
-  by orsmga004.jf.intel.com with ESMTP; 31 Mar 2021 19:08:02 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v4 6/6] net: stmmac: Add support for XDP_REDIRECT action
-Date:   Thu,  1 Apr 2021 10:11:17 +0800
-Message-Id: <20210401021117.13360-7-boon.leong.ong@intel.com>
+        id S233155AbhDACba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 22:31:30 -0400
+Received: from mail-eopbgr00090.outbound.protection.outlook.com ([40.107.0.90]:2960
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232271AbhDACbI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Mar 2021 22:31:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D6FZKUCfhdb0csNii42ohiT2L44sBZHLjOl39Mk755eC/MxTZLOgrg/crpDuS9n3tdkT2Q26LYcY+oNvli14h/1z9YV5yXvNcW/wVx4H1RQL6ocCOv/ADt9puZj1jwECYmp0UlqXxbw48EaAwvHJ30oBu3fzP4omTQbvaTswV1YY+JS3CXzjBBEWqJvLtfaciC002UK2sLKdjf8cJAWkh8sM8f9k6BRLynOT9CHqANKOQdE+s9S4sOpMuYP2hUI+Es2oUVo/l+6bHjr+Jze9TEJcD5l3lxAAR4wzCX3DGIelMnc22qj7JDLQij44kSvK5eaFmk/mKSFE4g8NL8DaYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AVLay29BjkiDbNTUaJKTsZ7EtWjHXOw54/lCqSy6Wxs=;
+ b=RVVXd1M6uRhniapHTcHpG2KSJrha1yXE3S8NavhjRbbWf5MYj++eeNZY6wp3618yHHhr2jjf7R1NHp/aOvV0TfpRyXnz9BdhX+stsU8f97fSFOVQjxLK5K0NE5NJ4h+AeNZOrwpMKS6R8s9oa/tP6xg1FlCc3NFeNYDvJqron5+z9KdANFseBicEzHRyaxfEp8DB4yVvfBCQ0CGdG3PACuYTdWx8U1zKql6SRKpJ5lAsp20oq6Wa07L6NyggpC4ik7dHP7gGOnuuJE12e7p43z+t4ekOGCOBzWkxv2oyCFTzsNFOyPeTKcFhLbbEhpjN4as+AO8Td+ND354UyafjoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AVLay29BjkiDbNTUaJKTsZ7EtWjHXOw54/lCqSy6Wxs=;
+ b=sqyFbsQ5vGCoC5AnamcbhwbhGPCLCtqPzhpMPYQ6jDDyknbmkkPqCx9plK9GXXcELKsLCKlputunbBWNqLlr83V48VW/M0JttCarknfGappI3rVb7vCyH5rlPzf+WSEz7yDgnnEGlezyPVvf4GrjeFwCOifdmIWlQ7StgBFFtnc=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=dektech.com.au;
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
+ by VI1PR05MB3231.eurprd05.prod.outlook.com (2603:10a6:802:1f::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.33; Thu, 1 Apr
+ 2021 02:31:05 +0000
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::5573:2fb4:56e0:1cc3]) by VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::5573:2fb4:56e0:1cc3%6]) with mapi id 15.20.3955.024; Thu, 1 Apr 2021
+ 02:31:05 +0000
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tuan.a.vo@dektech.com.au, tung.q.nguyen@dektech.com.au
+Cc:     stable@vger.kernel.org
+Subject: [net] tipc: fix unique bearer names sanity check
+Date:   Thu,  1 Apr 2021 09:30:48 +0700
+Message-Id: <20210401023048.5006-1-hoang.h.le@dektech.com.au>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210401021117.13360-1-boon.leong.ong@intel.com>
-References: <20210401021117.13360-1-boon.leong.ong@intel.com>
-MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [113.20.114.51]
+X-ClientProxiedBy: HK2P15301CA0003.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:202:1::13) To VI1PR05MB4605.eurprd05.prod.outlook.com
+ (2603:10a6:802:61::21)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (113.20.114.51) by HK2P15301CA0003.APCP153.PROD.OUTLOOK.COM (2603:1096:202:1::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.0 via Frontend Transport; Thu, 1 Apr 2021 02:31:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1e6d3d0a-2edf-4681-7e4d-08d8f4b632c4
+X-MS-TrafficTypeDiagnostic: VI1PR05MB3231:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB3231E93956DFCF4933F3CC9EF17B9@VI1PR05MB3231.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:370;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ddlSffL+F5oFOqM0tuPFzxXNYAQoSPqlHeGPP8AsJUV2w5ckdy6G6eIxdYOhqfnRq75/OdEX5ZQWZM2ruUarvmCmYIYWIsHs8+FTxzvJ1DmjZAtT15eUUo1xTytoTtKnn0eq0yZsH/o0ME1MRakSIBEQLH2b0aj0NuJCakhp5mOlOqHI9gQvbzlyJaVW2L72WjlgJA/IpuGMKlP9TBpn4y7gAM6lCM/OIQ96820xBqnWR8pBXZt3p1PeoRwYwJOggfY3tqCROBSQKehcHOCNCDtk4sZ0SN1SHB5JHz3YHbyVOBbv+15ujmbI6YthHqhzEqKw5mi4ReWImtIS6XjCt0sZs9dDbOlyR+LGAn10c90RZUI45Ff5zFB6+jXrChsUdoi6x7MnzcgBZOxpvFkyi1IO7OoJqDjzzk4n24Ht5f0yLropZ9y4Gu3q3aa3wn4bamFS8jspcH0RN20RbpJ8TRZm7sRla0Xc1Nj9n1tROyLaMBvYQVY0DvQI/G7F6vNy039+D/AXGPJlFyrRphxmx3XITZDWF5aIhVH5Gwofsk8DX+Ilg6wEakTsM1MTNRLKq3u5pSyXhsZlWRIx9wA7rUuvYHDsvceCZmgD44ePA3yRvKUtyKreBvNxIVApWikcvHpwy6g2kHpIfW44oVkOdw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(396003)(346002)(39840400004)(366004)(186003)(316002)(2616005)(16526019)(86362001)(38100700001)(26005)(4326008)(7696005)(2906002)(52116002)(55016002)(66476007)(66946007)(1076003)(66556008)(956004)(6666004)(8936002)(8676002)(5660300002)(103116003)(36756003)(83380400001)(478600001)(6636002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?CF3DHYxXPdufcMamI3qL8L5klOAjj8Zw2KsFLbAUNcJC5X+oCGSRykpvQLdq?=
+ =?us-ascii?Q?MdQV+MA9CR9ALSRbBUGKsGO3GcxkDJ46MCpXx1R9XzV0DbEWH2eNXPYAdqi+?=
+ =?us-ascii?Q?KvdW1jV4iFImEyCYvaacKA5ovFTGvnFeiWW1gCd/vS7Hoc9waySx1LRO4MyG?=
+ =?us-ascii?Q?ABRCq1u3Fj5a4zl6r2tXHx2uWblbYh3oCR0zeDTo0ZqmF7GMIM5VKitb4DeV?=
+ =?us-ascii?Q?HUtY82sfHMSSkmIXx/36lCRs1f5NC0IGb3XYTYeHwGkpbfzHNnCqN68+Nref?=
+ =?us-ascii?Q?0x2uSeb358ehVNlOeOb2jPZqiJw7V+fTuZyXL1LghIoN8drMl4w4wwYIfBgl?=
+ =?us-ascii?Q?gAPjXdftSAu8juwAtBUAOasr7M15H4FG89sARcOI5KCVSX1aT9eIMHLf7N4f?=
+ =?us-ascii?Q?ynHx/iNhgQViCBFNqzm22CepibHu2HZOgrJXTIHCGwppeWCMlEQQg0hVaask?=
+ =?us-ascii?Q?HWyXvcO/TZGDvVQ2n5XUcCugG85Zz50eGkdBBjZF6glhTeHCvXyLrg1EJRZb?=
+ =?us-ascii?Q?5pvjZfK8takVWp6kmqA2jzQD7dIZGLIbV+lV9swrGgFdXQJcP0XNfRjpcyjN?=
+ =?us-ascii?Q?bR4Ed8GlqjRgaEfz4DiBfyZ8cQ/frGWC3VkUFovXhPMK4N4aCjlW9hee3KfA?=
+ =?us-ascii?Q?Zj6PDGTbKorEAmygopjElYf85lBWNMKSlHg7Pl5XniK96vj4klx36qrl7Rkz?=
+ =?us-ascii?Q?OFzk/Drt65Q6SDGVZSVeiL4/yQ57Pd8sqG8xnMn0Hgj/f84a4dT8iWEvXZNN?=
+ =?us-ascii?Q?rrXQDgsOH0qxg7OWmHe83syDZjYBWmf/Jm8ESbzEYA66OWzY+oqii7aipqsd?=
+ =?us-ascii?Q?D5HbnFcHDd4DhpOJB95qZSg38pAs6NKy8+oiQiyQXQb4+4AGGhVsaa9IUZZK?=
+ =?us-ascii?Q?jYcudTULvRaGwx4A55FYiVytj4ikOzdqUnsfmTQtvwLcpdh2BFvZ9yY7tvQW?=
+ =?us-ascii?Q?D2a8Kvt7sJ+I5nMITO0AUBckd7Wg41VRM/mobX3pUoXL1z1RbF0AcJIL+Q/7?=
+ =?us-ascii?Q?6rH6cPLdzPK8Oz4sN2wbNhO5JfSuHD6pzYCRE6KPD0pDDDgPoqhGudBhXuVn?=
+ =?us-ascii?Q?dnii6HwjsUGxBwW4UIk5uBSFmc+X5PUIas09xQLr+OCcRZGNYPyr5oIazQ7I?=
+ =?us-ascii?Q?cTg2j/3Pl1pvKDrbZcDDCw7GU8jUA8BxGH3wcnqoZFVdZ7kn2KQi63k5TwQZ?=
+ =?us-ascii?Q?ZKn8WPcU+mgXxKay5g/1OxqUHMbNdsk5mSdKj7aT1d/s8BTRroc9JH2NC4l7?=
+ =?us-ascii?Q?njJ8WAAnr3hGa/vs9uCDM4+SF6/Ex9UXh+1wM8iuUGIpdnT718nXSWdkRtHB?=
+ =?us-ascii?Q?+Iaxms133FhclTA5orS5GhUY?=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e6d3d0a-2edf-4681-7e4d-08d8f4b632c4
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2021 02:31:04.8726
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RNiDjmKStGFh987WYA9xx3uamd9sms6Tm+PjfJ7qZh6BmiJCwyqKSwyRf4hT7dAWQ4AieLyuZieAFwKjTJs42mxO/wsxSRE1ORvYsWiU6kg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3231
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the support of XDP_REDIRECT to another remote cpu for
-further action. It also implements ndo_xdp_xmit ops, enabling the driver
-to transmit packets forwarded to it by XDP program running on another
-interface.
+When enabling a bearer by name, we don't sanity check its name with
+higher slot in bearer list. This may have the effect that the name
+of an already enabled bearer bypasses the check.
 
-This patch has been tested using "xdp_redirect_cpu" for XDP_REDIRECT
-+ drop testing. It also been tested with "xdp_redirect" sample app
-which can be used to exercise ndo_xdp_xmit ops. The burst traffics are
-generated using pktgen_sample03_burst_single_flow.sh in samples/pktgen
-directory.
+To fix the above issue, we just perform an extra checking with all
+existing bearers.
 
-v4: Move xdp_do_flush() processing into stmmac_finalize_xdp_rx() and
-    combined the XDP verdict of XDP TX and REDIRECT together.
-
-v3: Added 'nq->trans_start = jiffies' to avoid TX time-out as we are
-    sharing TX queue between slow path and XDP. Thanks to Jakub Kicinski
-    for point out.
-
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Fixes: cb30a63384bc9 ("tipc: refactor function tipc_enable_bearer()")
+Cc: stable@vger.kernel.org
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 94 ++++++++++++++++---
- 2 files changed, 84 insertions(+), 11 deletions(-)
+ net/tipc/bearer.c | 46 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 27 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index a93e22a6be59..c49debb62b05 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -39,6 +39,7 @@ struct stmmac_resources {
- enum stmmac_txbuf_type {
- 	STMMAC_TXBUF_T_SKB,
- 	STMMAC_TXBUF_T_XDP_TX,
-+	STMMAC_TXBUF_T_XDP_NDO,
- };
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index d47e0b940ac9..443f8e5b9477 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -256,6 +256,7 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	int bearer_id = 0;
+ 	int res = -EINVAL;
+ 	char *errstr = "";
++	u32 i;
  
- struct stmmac_tx_info {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 65163b51f8ad..77285646c5fc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -72,6 +72,7 @@ MODULE_PARM_DESC(phyaddr, "Physical device address");
- #define STMMAC_XDP_PASS		0
- #define STMMAC_XDP_CONSUMED	BIT(0)
- #define STMMAC_XDP_TX		BIT(1)
-+#define STMMAC_XDP_REDIRECT	BIT(2)
+ 	if (!bearer_name_validate(name, &b_names)) {
+ 		errstr = "illegal name";
+@@ -280,31 +281,38 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 		prio = m->priority;
  
- static int flow_ctrl = FLOW_AUTO;
- module_param(flow_ctrl, int, 0644);
-@@ -1458,7 +1459,8 @@ static void stmmac_free_tx_buffer(struct stmmac_priv *priv, u32 queue, int i)
- 	}
- 
- 	if (tx_q->xdpf[i] &&
--	    tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_TX) {
-+	    (tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_TX ||
-+	     tx_q->tx_skbuff_dma[i].buf_type == STMMAC_TXBUF_T_XDP_NDO)) {
- 		xdp_return_frame(tx_q->xdpf[i]);
- 		tx_q->xdpf[i] = NULL;
- 	}
-@@ -2220,7 +2222,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 		struct dma_desc *p;
- 		int status;
- 
--		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_TX) {
-+		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_TX ||
-+		    tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_NDO) {
- 			xdpf = tx_q->xdpf[entry];
- 			skb = NULL;
- 		} else if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_SKB) {
-@@ -2292,6 +2295,12 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 			tx_q->xdpf[entry] = NULL;
- 		}
- 
-+		if (xdpf &&
-+		    tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_XDP_NDO) {
-+			xdp_return_frame(xdpf);
-+			tx_q->xdpf[entry] = NULL;
+ 	/* Check new bearer vs existing ones and find free bearer id if any */
+-	while (bearer_id < MAX_BEARERS) {
+-		b = rtnl_dereference(tn->bearer_list[bearer_id]);
+-		if (!b)
+-			break;
++	bearer_id = MAX_BEARERS;
++	i = MAX_BEARERS;
++	while (i-- != 0) {
++		b = rtnl_dereference(tn->bearer_list[i]);
++		if (!b) {
++			bearer_id = i;
++			continue;
 +		}
+ 		if (!strcmp(name, b->name)) {
+ 			errstr = "already enabled";
+ 			NL_SET_ERR_MSG(extack, "Already enabled");
+ 			goto rejected;
+ 		}
+-		bearer_id++;
+-		if (b->priority != prio)
+-			continue;
+-		if (++with_this_prio <= 2)
+-			continue;
+-		pr_warn("Bearer <%s>: already 2 bearers with priority %u\n",
+-			name, prio);
+-		if (prio == TIPC_MIN_LINK_PRI) {
+-			errstr = "cannot adjust to lower";
+-			NL_SET_ERR_MSG(extack, "Cannot adjust to lower");
+-			goto rejected;
 +
- 		if (tx_q->tx_skbuff_dma[entry].buf_type == STMMAC_TXBUF_T_SKB) {
- 			if (likely(skb)) {
- 				pkts_compl++;
-@@ -4246,10 +4255,9 @@ static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
- }
- 
- static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
--				struct xdp_frame *xdpf)
-+				struct xdp_frame *xdpf, bool dma_map)
- {
- 	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
--	struct page *page = virt_to_page(xdpf->data);
- 	unsigned int entry = tx_q->cur_tx;
- 	struct dma_desc *tx_desc;
- 	dma_addr_t dma_addr;
-@@ -4265,12 +4273,23 @@ static int stmmac_xdp_xmit_xdpf(struct stmmac_priv *priv, int queue,
- 	else
- 		tx_desc = tx_q->dma_tx + entry;
- 
--	dma_addr = page_pool_get_dma_addr(page) + sizeof(*xdpf) +
--		   xdpf->headroom;
--	dma_sync_single_for_device(priv->device, dma_addr,
--				   xdpf->len, DMA_BIDIRECTIONAL);
-+	if (dma_map) {
-+		dma_addr = dma_map_single(priv->device, xdpf->data,
-+					  xdpf->len, DMA_TO_DEVICE);
-+		if (dma_mapping_error(priv->device, dma_addr))
-+			return STMMAC_XDP_CONSUMED;
++		if (b->priority == prio &&
++		    (++with_this_prio > 2)) {
++			pr_warn("Bearer <%s>: already 2 bearers with priority %u\n",
++				name, prio);
 +
-+		tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_NDO;
-+	} else {
-+		struct page *page = virt_to_page(xdpf->data);
++			if (prio == TIPC_MIN_LINK_PRI) {
++				errstr = "cannot adjust to lower";
++				NL_SET_ERR_MSG(extack, "Cannot adjust to lower");
++				goto rejected;
++			}
 +
-+		dma_addr = page_pool_get_dma_addr(page) + sizeof(*xdpf) +
-+			   xdpf->headroom;
-+		dma_sync_single_for_device(priv->device, dma_addr,
-+					   xdpf->len, DMA_BIDIRECTIONAL);
- 
--	tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_TX;
-+		tx_q->tx_skbuff_dma[entry].buf_type = STMMAC_TXBUF_T_XDP_TX;
-+	}
- 
- 	tx_q->tx_skbuff_dma[entry].buf = dma_addr;
- 	tx_q->tx_skbuff_dma[entry].map_as_page = false;
-@@ -4340,7 +4359,7 @@ static int stmmac_xdp_xmit_back(struct stmmac_priv *priv,
- 	/* Avoids TX time-out as we are sharing with slow path */
- 	nq->trans_start = jiffies;
- 
--	res = stmmac_xdp_xmit_xdpf(priv, queue, xdpf);
-+	res = stmmac_xdp_xmit_xdpf(priv, queue, xdpf, false);
- 	if (res == STMMAC_XDP_TX)
- 		stmmac_flush_tx_descriptors(priv, queue);
- 
-@@ -4372,6 +4391,12 @@ static struct sk_buff *stmmac_xdp_run_prog(struct stmmac_priv *priv,
- 	case XDP_TX:
- 		res = stmmac_xdp_xmit_back(priv, xdp);
- 		break;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(priv->dev, xdp, prog) < 0)
-+			res = STMMAC_XDP_CONSUMED;
-+		else
-+			res = STMMAC_XDP_REDIRECT;
-+		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
- 		fallthrough;
-@@ -4398,6 +4423,9 @@ static void stmmac_finalize_xdp_rx(struct stmmac_priv *priv,
- 
- 	if (xdp_status & STMMAC_XDP_TX)
- 		stmmac_tx_timer_arm(priv, queue);
-+
-+	if (xdp_status & STMMAC_XDP_REDIRECT)
-+		xdp_do_flush();
- }
- 
- /**
-@@ -4584,7 +4612,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 
- 					count++;
- 					continue;
--				} else if (xdp_res & STMMAC_XDP_TX) {
-+				} else if (xdp_res & (STMMAC_XDP_TX |
-+						      STMMAC_XDP_REDIRECT)) {
- 					xdp_status |= xdp_res;
- 					buf->page = NULL;
- 					skb = NULL;
-@@ -5600,6 +5629,48 @@ static int stmmac_bpf(struct net_device *dev, struct netdev_bpf *bpf)
++			pr_warn("Bearer <%s>: trying with adjusted priority\n",
++				name);
++			prio--;
++			bearer_id = MAX_BEARERS;
++			i = MAX_BEARERS;
++			with_this_prio = 1;
+ 		}
+-		pr_warn("Bearer <%s>: trying with adjusted priority\n", name);
+-		prio--;
+-		bearer_id = 0;
+-		with_this_prio = 1;
  	}
- }
  
-+static int stmmac_xdp_xmit(struct net_device *dev, int num_frames,
-+			   struct xdp_frame **frames, u32 flags)
-+{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	int i, nxmit = 0;
-+	int queue;
-+
-+	if (unlikely(test_bit(STMMAC_DOWN, &priv->state)))
-+		return -ENETDOWN;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	queue = stmmac_xdp_get_tx_queue(priv, cpu);
-+	nq = netdev_get_tx_queue(priv->dev, queue);
-+
-+	__netif_tx_lock(nq, cpu);
-+	/* Avoids TX time-out as we are sharing with slow path */
-+	nq->trans_start = jiffies;
-+
-+	for (i = 0; i < num_frames; i++) {
-+		int res;
-+
-+		res = stmmac_xdp_xmit_xdpf(priv, queue, frames[i], true);
-+		if (res == STMMAC_XDP_CONSUMED)
-+			break;
-+
-+		nxmit++;
-+	}
-+
-+	if (flags & XDP_XMIT_FLUSH) {
-+		stmmac_flush_tx_descriptors(priv, queue);
-+		stmmac_tx_timer_arm(priv, queue);
-+	}
-+
-+	__netif_tx_unlock(nq);
-+
-+	return nxmit;
-+}
-+
- static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_open = stmmac_open,
- 	.ndo_start_xmit = stmmac_xmit,
-@@ -5619,6 +5690,7 @@ static const struct net_device_ops stmmac_netdev_ops = {
- 	.ndo_vlan_rx_add_vid = stmmac_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid = stmmac_vlan_rx_kill_vid,
- 	.ndo_bpf = stmmac_bpf,
-+	.ndo_xdp_xmit = stmmac_xdp_xmit,
- };
- 
- static void stmmac_reset_subtask(struct stmmac_priv *priv)
+ 	if (bearer_id >= MAX_BEARERS) {
 -- 
 2.25.1
 
