@@ -2,151 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8784B351F55
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A61A2351F5D
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 21:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236393AbhDATF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 15:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        id S234323AbhDATMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 15:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240138AbhDATEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:04:06 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC39C03D20A
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 10:56:35 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id il9-20020a17090b1649b0290114bcb0d6c2so3500030pjb.0
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 10:56:35 -0700 (PDT)
+        with ESMTP id S234035AbhDATLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 15:11:48 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700BFC041B39
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 11:02:27 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id j9so2652154wrx.12
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 11:02:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QU+/yIXvO+plGLGdb6Eou3LsEzYGxOH2fALgRHWg/6I=;
-        b=genrHoOFPkBa/LxVFvUBx8helwVw3DMQzULg6Cng3sF8Gf9xD0V/aoFdFnpAxxtiSB
-         TuEb55TBNfirGbYBMB3WY0APb91lYGhCyZtcQ+K4yPCgjZskG/2JEPZPF4StZiBPhSzE
-         OQCVgP62yeHhXBJ+K0a5ZgglLZ4hupM/hLWms4ZS4XHciL6hKMOQK+jgWpiFCCrT7TYJ
-         HJhM4MQLotlG2ahuIZJHo4mqYZSuf9Lzrntgzd82z3djypn9yncxYs37mCzF06qcG1bH
-         qj3xgeylsUGRxZDa7HKOZZfecwHr3wS+kewawkn0cw9lvidFZP0SbW6mWE7t2aui1iPd
-         BL+Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=uvaJxOMF68u/mryvJz6oilbFQS2YMDQUaK8sfeTQE6s=;
+        b=KS2QCtFII36A6lXKXPKFWAP1yjJQGcFV4DHs9bFMC1QxqPN2/e1khAGal3SYXpvALh
+         Bh6QjL3emlanYxwYU3x1tBai11BRu7GCNucM3i01u07IleckJjqgcbT/y7hf0M9xq76c
+         fkC1C1Wvt4FvbNQxDyM/GTcBluBjdY/kK+dViaMigxYFI6d8uVkPPA3rTA1c3lUNQy7z
+         rikPO5s73UXyPlABrMCEuiZJwWRFSOzPhDn46cRGsca0IPzHhc96HzB7s2vjnpxpt2eD
+         WsOJy6InlJTysM02Ib090ThMDS1W2/AIpZkhqOkXeh9nNBWZsO0JO6doODmyqUyy5MZN
+         EfRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=QU+/yIXvO+plGLGdb6Eou3LsEzYGxOH2fALgRHWg/6I=;
-        b=ljZXyzMHHVDxuXAryhdVWCIzti6iZnqqD8y9K6tDKYHUOg45Gr15FleQ9DiOSUSQN7
-         CIhLNJIvplAvjIUs4e+pkXDJUq6ISBKOldPYIddGQLklabNIfvbnWdou/bpOTfulMnsE
-         HapQza4JmVote6e0ASck/tXQ4X6bXhQQqyXxf+FlPDQfxk74nQ9Gce7r3AugRqVLVHXP
-         Z4Kn5qE+FbU37EiKOVY3jOhrOkj4TRUp0ggClnyeKZxlVaVCN1WGFRuWGcS8xDOHmivS
-         i6iE8K8tc+r4De1/vUpuLWVoOltLZQ1JTg19FU61n2GVTQEqvFw8Otfu6SY/1nRb8j2I
-         wtrA==
-X-Gm-Message-State: AOAM5324Tz0Pk+tGpLxEk3Pn6+Aew3UIEwDJg5L2hHyCF7QK1smK3gT2
-        dSukyF6J43CBXpAV87PKVllZ6izgzANtPg==
-X-Google-Smtp-Source: ABdhPJynY2Z/qGINrjEBw8utgtQFgnz7RjOppzBHCh+RSN4R0ThCRQibTvJXXB7mZpsvg3zyelnaFQ==
-X-Received: by 2002:a17:90a:de90:: with SMTP id n16mr10098346pjv.10.1617299794942;
-        Thu, 01 Apr 2021 10:56:34 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id n5sm6195909pfq.44.2021.04.01.10.56.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 10:56:34 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
-        Allen Hubbe <allenbh@pensando.io>
-Subject: [PATCH net-next 12/12] ionic: advertise support for hardware timestamps
-Date:   Thu,  1 Apr 2021 10:56:10 -0700
-Message-Id: <20210401175610.44431-13-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210401175610.44431-1-snelson@pensando.io>
-References: <20210401175610.44431-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=uvaJxOMF68u/mryvJz6oilbFQS2YMDQUaK8sfeTQE6s=;
+        b=DHlmhYqMtmlyhW/pCw6FnJJdQWRKiHEiOJ8u4BKKdZZwgBVfxk+3MSwu8WN6GQKbrZ
+         3LZlkO9NAP+Y04IPn5YLGYBeup7gOO5O8dkXv1pOqUZAwK4X7SaXSs0DyaI0RExRO4i4
+         /guGgK1l3a9qvCowJ+Zua3o2fpS1U2zaLegq5Ff99pFqv+SG/DtDGEVN+lSa2b14R9+S
+         pEopXOtuUV43JiDd7ewxj6KaG4p1/NKUOs6dXrEVYhhvzPpTTCqS9YJbDJmdRK5li68/
+         DTRk8sDIJvL81LuHTVCm+lSAhyRqe2NOPSPtGm9DLfbHnE95249qI1U/NubR9EOSrAZ2
+         S2hA==
+X-Gm-Message-State: AOAM533STwZHd7+5AosmP7F/TEU6k1D98zeBDyv0Rl09yxeAfeZv/gJb
+        CGfgeXEBYIQKvIaxJ4Wo4rxcyPyOGZEmakH5SlU=
+X-Google-Smtp-Source: ABdhPJw/NVNmTMtw0l5BtX53ghNKzvaLa/lb9e4bMHzal1x0+hnOnX6hDmTuMi2syszUC2jsrDiLl785QlarVIBdCNU=
+X-Received: by 2002:adf:9bca:: with SMTP id e10mr11239624wrc.364.1617300146204;
+ Thu, 01 Apr 2021 11:02:26 -0700 (PDT)
+MIME-Version: 1.0
+Reply-To: tofilbaman1@gmail.com
+Sender: paymentcenter24@gmail.com
+Received: by 2002:adf:f2ca:0:0:0:0:0 with HTTP; Thu, 1 Apr 2021 11:02:25 -0700 (PDT)
+From:   Tofil Bama <tofilbaman@gmail.com>
+Date:   Thu, 1 Apr 2021 19:02:25 +0100
+X-Google-Sender-Auth: IBuqWBcPhNn_W3tpamtOSEgMWKU
+Message-ID: <CAMdX_aWDW3KzmKz1+caa+Rnq89KFA2xtTM2bezuikn2UGrMSGA@mail.gmail.com>
+Subject: GREAT OPPORTUNITY.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let the network stack know we've got support for timestamping
-the packets.
+Dear,
 
-Signed-off-by: Allen Hubbe <allenbh@pensando.io>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 25 +++++++++++++++++++
- 1 file changed, 25 insertions(+)
+My name is Mr Tofil Bama, I am the Bill and Exchange assistant
+Manager in Bank of Africa Ouagadougou Burkina Faso. In my department
+I discovered an abandoned sum of eighteen million three hundred
+thousand United State of American dollars (18.3MILLION USA DOLLARS)
+in an account that belongs to one of our foreign customer
+(late Mr Shitu Nuri) who died in Ethiopian Airlines Flight 409 that
+crashed into the Mediterranean Sea on 25th January 2010.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index e14c93fbbd68..ee56fed12e07 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1540,6 +1540,9 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
- 
- 	ctx.cmd.lif_setattr.features = ionic_netdev_features_to_nic(features);
- 
-+	if (lif->phc)
-+		ctx.cmd.lif_setattr.features |= cpu_to_le64(IONIC_ETH_HW_TIMESTAMP);
-+
- 	err = ionic_adminq_post_wait(lif, &ctx);
- 	if (err)
- 		return err;
-@@ -1587,6 +1590,8 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
- 		dev_dbg(dev, "feature ETH_HW_TSO_UDP\n");
- 	if (lif->hw_features & IONIC_ETH_HW_TSO_UDP_CSUM)
- 		dev_dbg(dev, "feature ETH_HW_TSO_UDP_CSUM\n");
-+	if (lif->hw_features & IONIC_ETH_HW_TIMESTAMP)
-+		dev_dbg(dev, "feature ETH_HW_TIMESTAMP\n");
- 
- 	return 0;
- }
-@@ -2260,6 +2265,20 @@ static int ionic_stop(struct net_device *netdev)
- 	return 0;
- }
- 
-+static int ionic_do_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+
-+	switch (cmd) {
-+	case SIOCSHWTSTAMP:
-+		return ionic_lif_hwstamp_set(lif, ifr);
-+	case SIOCGHWTSTAMP:
-+		return ionic_lif_hwstamp_get(lif, ifr);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int ionic_get_vf_config(struct net_device *netdev,
- 			       int vf, struct ifla_vf_info *ivf)
- {
-@@ -2508,6 +2527,7 @@ static int ionic_set_vf_link_state(struct net_device *netdev, int vf, int set)
- static const struct net_device_ops ionic_netdev_ops = {
- 	.ndo_open               = ionic_open,
- 	.ndo_stop               = ionic_stop,
-+	.ndo_do_ioctl		= ionic_do_ioctl,
- 	.ndo_start_xmit		= ionic_start_xmit,
- 	.ndo_get_stats64	= ionic_get_stats64,
- 	.ndo_set_rx_mode	= ionic_ndo_set_rx_mode,
-@@ -3331,6 +3351,8 @@ int ionic_lif_register(struct ionic_lif *lif)
- {
- 	int err;
- 
-+	ionic_lif_register_phc(lif);
-+
- 	INIT_WORK(&lif->ionic->nb_work, ionic_lif_notify_work);
- 
- 	lif->ionic->nb.notifier_call = ionic_lif_notify;
-@@ -3343,6 +3365,7 @@ int ionic_lif_register(struct ionic_lif *lif)
- 	err = register_netdev(lif->netdev);
- 	if (err) {
- 		dev_err(lif->ionic->dev, "Cannot register net device, aborting\n");
-+		ionic_lif_unregister_phc(lif);
- 		return err;
- 	}
- 
-@@ -3364,6 +3387,8 @@ void ionic_lif_unregister(struct ionic_lif *lif)
- 	if (lif->netdev->reg_state == NETREG_REGISTERED)
- 		unregister_netdev(lif->netdev);
- 
-+	ionic_lif_unregister_phc(lif);
-+
- 	lif->registered = false;
- }
- 
--- 
-2.17.1
+Since I got information about his death I have been expecting
+his next of kin to come over and claim his money because we
+cannot release it unless somebody applies for it as the next
+of kin or relation to the deceased as indicated in our banking
+guidelines, unfortunately we learnt that all his supposed next of
+kin or relation died alongside with him in the plane crash leaving
+nobody behind for the claim.
 
+It is therefore upon this discovery that I decided to make this
+business proposal to you and release the money to you as next of kin
+to the deceased for safety and subsequent disbursement since nobody
+is coming for the fund, it is 10 years now the money is lying pending in
+the account of our deceased and I don't want the money to go into the
+bank treasury as unclaimed bill.
+
+You will be entitled with 40% of the total sum while 60% will be for
+me after which I will visit your Country to invest my own share when
+the fund is successfully transferred into your account, Please I would
+like you to keep this transaction confidential and as a top secret
+between me and you until we successfully achieve this golden
+opportunity.
+
+Yours sincerely,
+Mr Tofil Bama.
