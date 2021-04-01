@@ -2,174 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F068350E19
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 06:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 510A9350E39
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 06:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbhDAEak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 00:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        id S232565AbhDAErM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 00:47:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbhDAEaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 00:30:17 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23A2C0613E6;
-        Wed, 31 Mar 2021 21:30:17 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id s21so468680pjq.1;
-        Wed, 31 Mar 2021 21:30:17 -0700 (PDT)
+        with ESMTP id S229459AbhDAEqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 00:46:40 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521A0C0613E6;
+        Wed, 31 Mar 2021 21:46:40 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id z8so763953ljm.12;
+        Wed, 31 Mar 2021 21:46:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YxTk/lpU+LkM2o2udpVxTEZdf8huKmT/Aw7Jdz8+xH8=;
-        b=W1D7OImq6T4DAiTLrLF1/hjS6H0EUCWtixO1zqLRsBjXPm3vrv+U0Fl7qGSVsxAXAd
-         K5/3yZd/Kwp18DdQUgqp0U4IlWbb9aBH39PHE8QYtVDTEvXd41A2tWabevzdEv0jQH16
-         m8iY8PXz0i57K7syefCDlAWnIlulPy7zfibALl9XW7GLmlGGSKXjT47PTo7b0v0U1Bk9
-         oOiHpxejxzYb7MAdxE9tsNLtRud20hSShRFjFJjbfqgNW8te0legoXtTbY6FYHaTPn2m
-         j3KQJY7Ddqcq4KH15FSxA+3wk0kT5+ekLyqNNOJOaKanFAqgwBj3OmYi0nrCpXbiHMEf
-         qy+A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zjqdiooQd5/01txoaSk7jE08J1uiZ+F+O8QxpLK+ei4=;
+        b=XnpEJG2HT1OMn2+AW9X47ZWsDL892/KS0v5ic9jdz4wRnh+vIMiqMLm9Es5Hw8x4Oc
+         0d2x5OQtKpp9iIWaGYSy/qT2/XopLkZ5f+PttxFU2c7SZxB2VJeRVbOg6iStAVY7s3fh
+         YaqNLYTgCAoUfpS6sEUj1KLUN25w8499BmKqcxyXW/b3O3NscwUxzM+CebuGykG09Gmy
+         9dBfybyE+jBVQhMHpesHzwOJDS0NttuNkAklHbujUltLDRqxBVjF1BAHkmdQ8nw0OqY9
+         oWp75R4dLQdMbsvPlLxPrd7+QzO3S4moqQMcAeFagW8p6hjIzEVCWT3NZYf/LpAa/yZF
+         c+sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YxTk/lpU+LkM2o2udpVxTEZdf8huKmT/Aw7Jdz8+xH8=;
-        b=XKkV0x4ucjVz79Y/6d5Vwy4aO3v2+btvnhVDNHzW9aETcP47c8SSgpXqtVkauVajD1
-         7Z/LBaL85chE9Ezuklm1Ub8sBNZZRCKjR5Zvid2cLKLUIM8FAczMJjK0Uk7oENlrQmWS
-         OB6jm5zGRC3P/p2XdF8GR/VIy/KxstBSyLNHW+KX/9cVSr/TZ9U+zRQFP0flxtuyYwly
-         VRMdlDZgvD1bd1G+0+barLbSqxmoYX2Q8NVkpLHObS68WpjrzEHakdmWpL7q0uCMqMd+
-         JV/WYKWRiQz7/CA/vLXHcF4hajR6iYgWKS7OGYCLaXWv1+nW5ZgxjcCtPxgVdQESkJEJ
-         y8gw==
-X-Gm-Message-State: AOAM533CMqk83j4fopVL0rkRfH3lyHdmn4C1YCAhCmJlbnBj253bTqL6
-        xwR//qc5thckaULfeOvAAwo=
-X-Google-Smtp-Source: ABdhPJwVvajXzP7MMGu9z2r6Cc+/UFvXwEPIiuPESm4smBDbrsrhHk0q/YXsxD7NFaT5GP5QVmtoEQ==
-X-Received: by 2002:a17:902:7c06:b029:e6:adb4:7c19 with SMTP id x6-20020a1709027c06b02900e6adb47c19mr6378940pll.8.1617251417123;
-        Wed, 31 Mar 2021 21:30:17 -0700 (PDT)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f65sm4057993pgc.19.2021.03.31.21.30.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zjqdiooQd5/01txoaSk7jE08J1uiZ+F+O8QxpLK+ei4=;
+        b=pMJm67BoLIiD08qvHYJd2M07L5t5qJiziLKcNP2TFv1SKDh7NHUde5az8QC1Io2iV1
+         4H1vXMqYXHOh/zOUBphMg+GTvSb677hx8L2mC/+IOJxoYsVe8gXLpNvV4Gl/rT6B4Gg+
+         FmfYT/x1KrPFMMLOO1pV/wYJMSxa+J7IUlnCFTeVimbqLO1ay5w0CsmOQZkv5d9Af7oZ
+         yX3ymeGDTp7Gbxzb75lHxe/WJmRPAnSHJxV7VhopZK/scEWLtCqDiWrVv0xdqYrx497S
+         euU3DlL7UCQas6sXQKJCY6IcxF0sDD49KusDKNyqYiDP4/1PW5nBcQFK+FcqmCfK4m8j
+         nAxw==
+X-Gm-Message-State: AOAM5315/84beJ9eUDn7JsV7ACzY34VHITw10UiH0QrtUK6AwSN4pCwv
+        SVWkmW93KfULbTJJE0lutaA=
+X-Google-Smtp-Source: ABdhPJyz3NEQm9Q8izBmRjhDMCSUIjXsftQO8zVzOyEVy91PGj04o6ewrh7dbAE90v/qJhdLaTcr5w==
+X-Received: by 2002:a2e:8159:: with SMTP id t25mr4263398ljg.437.1617252398843;
+        Wed, 31 Mar 2021 21:46:38 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.149])
+        by smtp.gmail.com with ESMTPSA id f8sm482754ljn.1.2021.03.31.21.46.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 21:30:16 -0700 (PDT)
-Date:   Thu, 1 Apr 2021 12:30:04 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Subject: Re: [PATCHv3 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-Message-ID: <20210401043004.GE2900@Leo-laptop-t470s>
-References: <20210325092733.3058653-1-liuhangbin@gmail.com>
- <20210325092733.3058653-3-liuhangbin@gmail.com>
- <87lfa3phj6.fsf@toke.dk>
+        Wed, 31 Mar 2021 21:46:38 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     stefan@datenfreihafen.org, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+28a246747e0a465127f3@syzkaller.appspotmail.com
+Subject: [PATCH] drivers: net: fix memory leak in atusb_probe
+Date:   Thu,  1 Apr 2021 07:46:24 +0300
+Message-Id: <20210401044624.19017-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87lfa3phj6.fsf@toke.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 03:41:17PM +0200, Toke Høiland-Jørgensen wrote:
-> > @@ -1491,13 +1492,20 @@ static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifind
-> >  		 */
-> >  		ri->map_id = INT_MAX; /* Valid map id idr range: [1,INT_MAX[ */
-> >  		ri->map_type = BPF_MAP_TYPE_UNSPEC;
-> > -		return flags;
-> > +		return flags & BPF_F_ACTION_MASK;
-> >  	}
-> >  
-> >  	ri->tgt_index = ifindex;
-> >  	ri->map_id = map->id;
-> >  	ri->map_type = map->map_type;
-> >  
-> > +	if ((map->map_type == BPF_MAP_TYPE_DEVMAP ||
-> > +	     map->map_type == BPF_MAP_TYPE_DEVMAP_HASH) &&
-> > +	    (flags & BPF_F_BROADCAST)) {
-> > +		ri->flags = flags;
-> 
-> This, combined with this:
-> 
-> [...]
-> 
-> > +	if (ri->flags & BPF_F_BROADCAST) {
-> > +		map = READ_ONCE(ri->map);
-> > +		WRITE_ONCE(ri->map, NULL);
-> > +	}
-> > +
-> >  	switch (map_type) {
-> >  	case BPF_MAP_TYPE_DEVMAP:
-> >  		fallthrough;
-> >  	case BPF_MAP_TYPE_DEVMAP_HASH:
-> > -		err = dev_map_enqueue(fwd, xdp, dev);
-> > +		if (ri->flags & BPF_F_BROADCAST)
-> > +			err = dev_map_enqueue_multi(xdp, dev, map,
-> > +						    ri->flags & BPF_F_EXCLUDE_INGRESS);
-> > +		else
-> > +			err = dev_map_enqueue(fwd, xdp, dev);
-> 
-> Means that (since the flags value is never cleared again) once someone
-> has done a broadcast redirect, that's all they'll ever get until the
-> next reboot ;)
+syzbot reported memory leak in atusb_probe()[1].
+The problem was in atusb_alloc_urbs().
+Since urb is anchored, we need to release the reference
+to correctly free the urb
 
-How about just get the ri->flags first and clean it directly. e.g.
+backtrace:
+    [<ffffffff82ba0466>] kmalloc include/linux/slab.h:559 [inline]
+    [<ffffffff82ba0466>] usb_alloc_urb+0x66/0xe0 drivers/usb/core/urb.c:74
+    [<ffffffff82ad3888>] atusb_alloc_urbs drivers/net/ieee802154/atusb.c:362 [inline][2]
+    [<ffffffff82ad3888>] atusb_probe+0x158/0x820 drivers/net/ieee802154/atusb.c:1038 [1]
 
-flags = ri->flags;
-ri->flags = 0;
+Reported-by: syzbot+28a246747e0a465127f3@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/net/ieee802154/atusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-With this we don't need to add an extra field ri->exclude_ingress as you
-mentioned later.
+diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+index 0dd0ba915ab9..23ee0b14cbfa 100644
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -365,6 +365,7 @@ static int atusb_alloc_urbs(struct atusb *atusb, int n)
+ 			return -ENOMEM;
+ 		}
+ 		usb_anchor_urb(urb, &atusb->idle_urbs);
++		usb_free_urb(urb);
+ 		n--;
+ 	}
+ 	return 0;
+-- 
+2.30.2
 
-People may also need the flags field in future.
-
-> 
-> Also, the bpf_clear_redirect_map() call has no effect since the call to
-> dev_map_enqueue_multi() only checks the flags and not the value of the
-> map pointer before deciding which enqueue function to call.
-> 
-> To fix both of these, how about changing the logic so that:
-> 
-> - __bpf_xdp_redirect_map() sets the map pointer if the broadcast flag is
->   set (and clears it if the flag isn't set!)
-
-OK
-> 
-> - xdp_do_redirect() does the READ_ONCE/WRITE_ONCE on ri->map
->   unconditionally and then dispatches to dev_map_enqueue_multi() if the
->   read resulted in a non-NULL pointer
-> 
-> Also, it should be invalid to set the broadcast flag with a map type
-> other than a devmap; __bpf_xdp_redirect_map() should check that.
-
-The current code only do if (unlikely(flags > XDP_TX)) and didn't check the
-map type. I also only set the map when there has devmap + broadcast flag.
-Do you mean we need a more strict check? like
-
-if (unlikely((flags & ~(BPF_F_ACTION_MASK | BPF_F_REDIR_MASK)) ||
-	      (map->map_type != BPF_MAP_TYPE_DEVMAP &&
-	       map->map_type != BPF_MAP_TYPE_DEVMAP_HASH &&
-	       flags & BPF_F_REDIR_MASK)))
-
-Thanks
-Hangbin
-
-> 
-> And finally, with the changes above, you no longer need the broadcast
-> flag in do_redirect() at all, so you could just have a bool
-> ri->exclude_ingress that is set in the helper and pass that directly to
-> dev_map_enqueue_multi().
-> 
-> A selftest that validates that the above works as it's supposed to might
-> be nice as well (i.e., one that broadcasts and does a regular redirect
-> after one another)
-> 
-> -Toke
-> 
