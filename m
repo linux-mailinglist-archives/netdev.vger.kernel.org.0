@@ -2,156 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8522A351AD7
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CA1351B5B
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 20:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237097AbhDASDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 14:03:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45220 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237032AbhDAR7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:59:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617299959;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hg5lDUjDIV35CST3SAEwKb0ItcnfppBDuUprlCff6EM=;
-        b=L5D89mfm8rrZnIsQ766LReI3R5/aAcOA5MZYrtFuhSxTQE9Q7wHyDqpja51r2zmtR1wM6a
-        +TO7tgiehis1qbZzUjwgu92pW7pMnoB8hn1aL0xI/Ax5Yyc8oznn4Gs2jduLaIDf/QdliT
-        kWsgh+c7f7CInAgVqFZ1lcF0cVDEoaU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-245-mRmZ1xVZNXmvFUIOjOwkDg-1; Thu, 01 Apr 2021 12:58:12 -0400
-X-MC-Unique: mRmZ1xVZNXmvFUIOjOwkDg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 345A91019623;
-        Thu,  1 Apr 2021 16:58:11 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-114-240.ams2.redhat.com [10.36.114.240])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C1AF19C46;
-        Thu,  1 Apr 2021 16:58:09 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 2/2] mptcp: revert "mptcp: provide subflow aware release function"
-Date:   Thu,  1 Apr 2021 18:57:45 +0200
-Message-Id: <ad4571485ca31026738cf57d67d68d681997a012.1617295578.git.pabeni@redhat.com>
-In-Reply-To: <cover.1617295578.git.pabeni@redhat.com>
-References: <cover.1617295578.git.pabeni@redhat.com>
+        id S236306AbhDASHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 14:07:54 -0400
+Received: from mga07.intel.com ([134.134.136.100]:1737 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236623AbhDASCq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Apr 2021 14:02:46 -0400
+IronPort-SDR: 2GNhjo8v/uWtvVXArLObcgf5JbHomOWzZhfhm+j9y/72lexYpoA5oPS6iNWkNX8rFdtClm6nbM
+ K/wEhETlLOWA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="256275595"
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="256275595"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 10:19:29 -0700
+IronPort-SDR: rhJ48G03twwUO1royRDfug38cwdv40sO9XXl8VH7W/iQzJvxf14/thFUQc0VFMZeCIgjaSLjm6
+ HMVq6lXIYqUA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="439290147"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga004.fm.intel.com with ESMTP; 01 Apr 2021 10:19:29 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates 2021-04-01
+Date:   Thu,  1 Apr 2021 10:21:04 -0700
+Message-Id: <20210401172107.1191618-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change reverts commit ad98dd37051e ("mptcp: provide subflow aware
-release function"). The latter introduced a deadlock spotted by
-syzkaller and is not needed anymore after the previous commit.
+This series contains updates to i40e driver only.
 
-Fixes: ad98dd37051e ("mptcp: provide subflow aware release function")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 55 ++------------------------------------------
- 1 file changed, 2 insertions(+), 53 deletions(-)
+Arkadiusz fixes warnings for inconsistent indentation.
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index e06cea0a3c54..4bde960e19dc 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -11,7 +11,6 @@
- #include <linux/netdevice.h>
- #include <linux/sched/signal.h>
- #include <linux/atomic.h>
--#include <linux/igmp.h>
- #include <net/sock.h>
- #include <net/inet_common.h>
- #include <net/inet_hashtables.h>
-@@ -20,7 +19,6 @@
- #include <net/tcp_states.h>
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- #include <net/transp_v6.h>
--#include <net/addrconf.h>
- #endif
- #include <net/mptcp.h>
- #include <net/xfrm.h>
-@@ -3464,34 +3462,10 @@ static __poll_t mptcp_poll(struct file *file, struct socket *sock,
- 	return mask;
- }
- 
--static int mptcp_release(struct socket *sock)
--{
--	struct mptcp_subflow_context *subflow;
--	struct sock *sk = sock->sk;
--	struct mptcp_sock *msk;
--
--	if (!sk)
--		return 0;
--
--	lock_sock(sk);
--
--	msk = mptcp_sk(sk);
--
--	mptcp_for_each_subflow(msk, subflow) {
--		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
--
--		ip_mc_drop_socket(ssk);
--	}
--
--	release_sock(sk);
--
--	return inet_release(sock);
--}
--
- static const struct proto_ops mptcp_stream_ops = {
- 	.family		   = PF_INET,
- 	.owner		   = THIS_MODULE,
--	.release	   = mptcp_release,
-+	.release	   = inet_release,
- 	.bind		   = mptcp_bind,
- 	.connect	   = mptcp_stream_connect,
- 	.socketpair	   = sock_no_socketpair,
-@@ -3583,35 +3557,10 @@ void __init mptcp_proto_init(void)
- }
- 
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
--static int mptcp6_release(struct socket *sock)
--{
--	struct mptcp_subflow_context *subflow;
--	struct mptcp_sock *msk;
--	struct sock *sk = sock->sk;
--
--	if (!sk)
--		return 0;
--
--	lock_sock(sk);
--
--	msk = mptcp_sk(sk);
--
--	mptcp_for_each_subflow(msk, subflow) {
--		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
--
--		ip_mc_drop_socket(ssk);
--		ipv6_sock_mc_close(ssk);
--		ipv6_sock_ac_close(ssk);
--	}
--
--	release_sock(sk);
--	return inet6_release(sock);
--}
--
- static const struct proto_ops mptcp_v6_stream_ops = {
- 	.family		   = PF_INET6,
- 	.owner		   = THIS_MODULE,
--	.release	   = mptcp6_release,
-+	.release	   = inet6_release,
- 	.bind		   = mptcp_bind,
- 	.connect	   = mptcp_stream_connect,
- 	.socketpair	   = sock_no_socketpair,
+Magnus fixes an issue on xsk receive where single packets over time
+are batched rather than received immediately.
+
+Eryk corrects warnings and reporting of veb-stats.
+
+The following are changes since commit 622d13694b5f048c01caa7ba548498d9880d4cb0:
+  xdp: fix xdp_return_frame() kernel BUG throw for page_pool memory model
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+
+Arkadiusz Kubalewski (1):
+  i40e: Fix inconsistent indenting
+
+Eryk Rybak (1):
+  i40e: Fix display statistics for veb_tc
+
+Magnus Karlsson (1):
+  i40e: fix receiving of single packets in xsk zero-copy mode
+
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 52 ++++++++++++++++---
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  8 +--
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  4 +-
+ 3 files changed, 52 insertions(+), 12 deletions(-)
+
 -- 
 2.26.2
 
