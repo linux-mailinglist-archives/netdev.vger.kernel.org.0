@@ -2,98 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 461A4350CD2
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 04:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF713350CFC
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 05:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233139AbhDAC4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Mar 2021 22:56:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59644 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229497AbhDAC4V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Mar 2021 22:56:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DD1AD600EF;
-        Thu,  1 Apr 2021 02:56:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617245781;
-        bh=w7NVPPGTTh0gPs1DoBHzvxj/J6sTyov5mzsx9iIJ54g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y9LqF7PTplzcK0+UOiPMiWusr8MxAR1pAvt3HH4leJ96Vsxzwb/5GKvHOUWFviKhw
-         tx0as+f9gqvs9db+BdKxKVBKaxhPSzBfVXTg3aBwf7S/bRRF8bv4qRiyoNi5Q3XJgT
-         6+HkeLsUgXrFLNzKNRq1wCUBi69htaYWHRpt1hQAYcX9f7T86PJOU8SAGx14Niiarp
-         P8bTodFZ0B0EJk40KGsm6JEuTBE2/ZR1vkoEJf0ck1ugXaU4M/IrHuxMvDgXHZFKey
-         iBWrvCBcN9eFxekq99+fsI+oToiVJqLiL/MZBrgZd9J0c+/O0Y3GpypfCWGHfB5X15
-         8Vc0q95KOjwqg==
-Date:   Wed, 31 Mar 2021 22:56:20 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        liuyacan <yacanliu@163.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.11 10/38] net: correct sk_acceptq_is_full()
-Message-ID: <YGU2VD+IzR6rVyK0@sashalap>
-References: <20210329222133.2382393-1-sashal@kernel.org>
- <20210329222133.2382393-10-sashal@kernel.org>
- <e08f40b5-7f5b-0714-dfab-f24ed7f348fc@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <e08f40b5-7f5b-0714-dfab-f24ed7f348fc@gmail.com>
+        id S232419AbhDADMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Mar 2021 23:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232492AbhDADLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Mar 2021 23:11:45 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B8FC061788
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 20:11:45 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id u128so4419558ybf.12
+        for <netdev@vger.kernel.org>; Wed, 31 Mar 2021 20:11:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=RmMaazUpNv9dO0QVdc1//Lz/b+2IP+ReIbSX7312Y+8=;
+        b=DWp72/rU729D+hNGxjG+KVccftla4VD7a3chImMlNuJh5r4/oHs86378r5+At3wKLo
+         UDRk7mV/mRTupfLSxZQh8dvayAwuZkOC+SZfTycsU3Luq1SSbqOdTR1E4jYXoRVqjS4r
+         MGa5uEmiTAMyuxuvuiSGKiO7CnH/t2stpHq3pC3yjU7xYSQ9Z3UlvkyMpdeJQ8DpQ0eG
+         UXE9sNvQeJ4dBiERcJFZ/AUPSz0u1accV6fojG++W4IQmF8AKaL6P0tpiX1Um49NTsoe
+         jNWusKX65n5RCovDUKJJr1zF6p+4+ODgVsX2rtjh6kFsQys9GH8wARX9sftz3WlroL9G
+         VOIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=RmMaazUpNv9dO0QVdc1//Lz/b+2IP+ReIbSX7312Y+8=;
+        b=jCp5OGNJqTSamC8blmYe0WbTNnpWKMZ8xh/O7ibGuQ7qecA+xFHy9gow05mEodSWDT
+         yqqrDb+Qvw/V8tVMkiQsKbUA4TIbNeZWy20DzfVJ49xK3nw7YWAqtOxZksRZvbOLd5+Q
+         aXh2L6HtM4en5K8DibEEcG/sfy8Yq933PbNzsOgq+VWVbq8mCZQSUyRnETaz+ZUIVC1V
+         P1hn6tOieMdu8IXTdPvIaOSvdAPh3gLZJJzCzwO4WGuFxKG382yf9IWJrqk9P7cwOj02
+         R7AMt5Y8YsEmXTpQHuFXz694EHH2IbVlf18ylOEJew5EOxIHLKka5PI9F6smDemXMAGc
+         qOFA==
+X-Gm-Message-State: AOAM533lMG6BUmHXWo5F+jCeMxLQ0M2XkC3Xqf8FHbufrCerGXJi0WwS
+        pkjuEFjMtdo7yOkbigckDOmVBLnjIADB
+X-Google-Smtp-Source: ABdhPJzlfwkJIYqwcBVjfLPx8f6dUBnhcDwwnnv822xSCx5WdAOodoBa9nWHxL/IAIe/c2LX4cmnxKqqjF3O
+X-Received: from apusaka-p920.tpe.corp.google.com ([2401:fa00:1:b:7d3f:ea49:2c08:677b])
+ (user=apusaka job=sendgmr) by 2002:a5b:98d:: with SMTP id c13mr8478703ybq.463.1617246704286;
+ Wed, 31 Mar 2021 20:11:44 -0700 (PDT)
+Date:   Thu,  1 Apr 2021 11:11:33 +0800
+Message-Id: <20210401111036.1.I26d172ded4e4ac8ad334516a8d196539777fba2a@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
+Subject: [PATCH] Bluetooth: Check inquiry status before sending one
+From:   Archie Pusaka <apusaka@google.com>
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Sonny Sasaka <sonnysasaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 06:17:27PM +0200, Eric Dumazet wrote:
->
->
->On 3/30/21 12:21 AM, Sasha Levin wrote:
->> From: liuyacan <yacanliu@163.com>
->>
->> [ Upstream commit f211ac154577ec9ccf07c15f18a6abf0d9bdb4ab ]
->>
->> The "backlog" argument in listen() specifies
->> the maximom length of pending connections,
->> so the accept queue should be considered full
->> if there are exactly "backlog" elements.
->>
->> Signed-off-by: liuyacan <yacanliu@163.com>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>  include/net/sock.h | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/include/net/sock.h b/include/net/sock.h
->> index 129d200bccb4..a95f38a4b8c6 100644
->> --- a/include/net/sock.h
->> +++ b/include/net/sock.h
->> @@ -936,7 +936,7 @@ static inline void sk_acceptq_added(struct sock *sk)
->>
->>  static inline bool sk_acceptq_is_full(const struct sock *sk)
->>  {
->> -	return READ_ONCE(sk->sk_ack_backlog) > READ_ONCE(sk->sk_max_ack_backlog);
->> +	return READ_ONCE(sk->sk_ack_backlog) >= READ_ONCE(sk->sk_max_ack_backlog);
->>  }
->>
->>  /*
->>
->
->
->????
->
->I have not seen this patch going in our trees.
->
->First, there was no Fixes: tag, so this is quite unfortunate.
->
->Second, we already had such wrong patches in the past.
->
->Please look at commits
->64a146513f8f12ba204b7bf5cb7e9505594ead42 [NET]: Revert incorrect accept queue backlog changes.
->8488df894d05d6fa41c2bd298c335f944bb0e401 [NET]: Fix bugs in "Whether sock accept queue is full" checking
->
->Please revert  this patch, thanks !
+From: Archie Pusaka <apusaka@chromium.org>
 
-Dropped, thanks for letting me know!
+There is a possibility where HCI_INQUIRY flag is set but we still
+send HCI_OP_INQUIRY anyway.
 
+Such a case can be reproduced by connecting to an LE device while
+active scanning. When the device is discovered, we initiate a
+connection, stop LE Scan, and send Discovery MGMT with status
+disabled, but we don't cancel the inquiry.
+
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+---
+
+ net/bluetooth/hci_request.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 8ace5d34b01e..5a5ec7ed15ea 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -2952,6 +2952,9 @@ static int bredr_inquiry(struct hci_request *req, unsigned long opt)
+ 	const u8 liac[3] = { 0x00, 0x8b, 0x9e };
+ 	struct hci_cp_inquiry cp;
+ 
++	if (test_bit(HCI_INQUIRY, &req->hdev->flags))
++		return 0;
++
+ 	bt_dev_dbg(req->hdev, "");
+ 
+ 	hci_dev_lock(req->hdev);
 -- 
-Thanks,
-Sasha
+2.31.0.291.g576ba9dcdaf-goog
+
