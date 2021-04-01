@@ -2,92 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF995352351
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6764E352352
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 01:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234525AbhDAXTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 19:19:52 -0400
+        id S235441AbhDAXTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 19:19:53 -0400
 Received: from mga14.intel.com ([192.55.52.115]:18940 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233677AbhDAXTw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233921AbhDAXTw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 1 Apr 2021 19:19:52 -0400
-IronPort-SDR: 6reVHlYIDqcfWoUVgxyBGr4KqwpJgUFp3vxGueUCFf/CTl+yXm6swpvuYSHcvqj1/9xY/A66J4
- ruz7nBNS4z5A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="191829875"
+IronPort-SDR: Tq2So5m2KwHT8FLoBWFb4p3UdhaHpnPSp44d6XfEP8Usk6OTF7sxNxd8BHCwdGUs8VWt7ytwAq
+ agQaEdMco85A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="191829877"
 X-IronPort-AV: E=Sophos;i="5.81,298,1610438400"; 
-   d="scan'208";a="191829875"
+   d="scan'208";a="191829877"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 16:19:52 -0700
-IronPort-SDR: 4JS3CCvQwCj8MYHVRpD7UoySHalZIT+eMblnD3YdL5FmZ1NiSamSr+Ku9MCn9YShj8k8TGcikc
- AyVLKEvm2Row==
+IronPort-SDR: 4AWNG12Iypa19vUT9P7oPRn+oQz6L2IZkd8hDfhDcNHfi7KgUucLMdoNQ/iAG2yTZm//FL9MJy
+ UBZArSGzMOjQ==
 X-IronPort-AV: E=Sophos;i="5.81,298,1610438400"; 
-   d="scan'208";a="446269181"
+   d="scan'208";a="446269182"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.252.128.105])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 16:19:51 -0700
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 16:19:52 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev
-Subject: [PATCH net-next 0/7] MPTCP: Miscellaneous changes
-Date:   Thu,  1 Apr 2021 16:19:40 -0700
-Message-Id: <20210401231947.162836-1-mathew.j.martineau@linux.intel.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 1/7] mptcp: add mib for token creation fallback
+Date:   Thu,  1 Apr 2021 16:19:41 -0700
+Message-Id: <20210401231947.162836-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210401231947.162836-1-mathew.j.martineau@linux.intel.com>
+References: <20210401231947.162836-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here is a collection of patches from the MPTCP tree:
+From: Paolo Abeni <pabeni@redhat.com>
 
+If the MPTCP protocol is unable to create a new token,
+the socket fallback to plain TCP, let's keep track
+of such events via a specific MIB.
 
-Patches 1 and 2 add some helpful MIB counters for connection
-information.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/mib.c      | 1 +
+ net/mptcp/mib.h      | 1 +
+ net/mptcp/protocol.c | 4 +++-
+ net/mptcp/subflow.c  | 3 +++
+ 4 files changed, 8 insertions(+), 1 deletion(-)
 
-Patch 3 cleans up some unnecessary checks.
-
-Patch 4 is a new feature, support for the MP_TCPRST option. This option
-is used when resetting one subflow within a MPTCP connection, and
-provides a reason code that the recipient can use when deciding how to
-adapt to the lost subflow.
-
-Patches 5-7 update the existing MPTCP selftests to improve timeout
-handling and to share better information when tests fail.
-
-
-Florian Westphal (1):
-  mptcp: add mptcp reset option support
-
-Matthieu Baerts (3):
-  selftests: mptcp: launch mptcp_connect with timeout
-  selftests: mptcp: init nstat history
-  selftests: mptcp: dump more info on mpjoin errors
-
-Paolo Abeni (3):
-  mptcp: add mib for token creation fallback
-  mptcp: add active MPC mibs
-  mptcp: remove unneeded check on first subflow
-
- include/net/mptcp.h                           | 18 ++++-
- include/uapi/linux/mptcp.h                    | 11 +++
- net/ipv4/tcp_ipv4.c                           | 21 +++++-
- net/ipv6/tcp_ipv6.c                           | 14 +++-
- net/mptcp/mib.c                               |  3 +
- net/mptcp/mib.h                               |  3 +
- net/mptcp/options.c                           | 69 +++++++++++++++++--
- net/mptcp/pm_netlink.c                        | 12 ++++
- net/mptcp/protocol.c                          | 20 ++++--
- net/mptcp/protocol.h                          | 14 +++-
- net/mptcp/subflow.c                           | 34 +++++++--
- tools/testing/selftests/net/mptcp/diag.sh     | 55 +++++++++------
- .../selftests/net/mptcp/mptcp_connect.sh      | 22 ++++--
- .../testing/selftests/net/mptcp/mptcp_join.sh | 39 ++++++++---
- .../selftests/net/mptcp/simult_flows.sh       | 13 +++-
- 15 files changed, 291 insertions(+), 57 deletions(-)
-
-
-base-commit: 247ca657e20460375bf3217073d6477440f48025
+diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
+index 3780c29c321d..b0429aca4f76 100644
+--- a/net/mptcp/mib.c
++++ b/net/mptcp/mib.c
+@@ -13,6 +13,7 @@ static const struct snmp_mib mptcp_snmp_list[] = {
+ 	SNMP_MIB_ITEM("MPCapableACKRX", MPTCP_MIB_MPCAPABLEPASSIVEACK),
+ 	SNMP_MIB_ITEM("MPCapableFallbackACK", MPTCP_MIB_MPCAPABLEPASSIVEFALLBACK),
+ 	SNMP_MIB_ITEM("MPCapableFallbackSYNACK", MPTCP_MIB_MPCAPABLEACTIVEFALLBACK),
++	SNMP_MIB_ITEM("MPFallbackTokenInit", MPTCP_MIB_TOKENFALLBACKINIT),
+ 	SNMP_MIB_ITEM("MPTCPRetrans", MPTCP_MIB_RETRANSSEGS),
+ 	SNMP_MIB_ITEM("MPJoinNoTokenFound", MPTCP_MIB_JOINNOTOKEN),
+ 	SNMP_MIB_ITEM("MPJoinSynRx", MPTCP_MIB_JOINSYNRX),
+diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
+index 72afbc135f8e..50e1668c9a01 100644
+--- a/net/mptcp/mib.h
++++ b/net/mptcp/mib.h
+@@ -6,6 +6,7 @@ enum linux_mptcp_mib_field {
+ 	MPTCP_MIB_MPCAPABLEPASSIVEACK,	/* Received third ACK with MP_CAPABLE */
+ 	MPTCP_MIB_MPCAPABLEPASSIVEFALLBACK,/* Server-side fallback during 3-way handshake */
+ 	MPTCP_MIB_MPCAPABLEACTIVEFALLBACK, /* Client-side fallback during 3-way handshake */
++	MPTCP_MIB_TOKENFALLBACKINIT,	/* Could not init/allocate token */
+ 	MPTCP_MIB_RETRANSSEGS,		/* Segments retransmitted at the MPTCP-level */
+ 	MPTCP_MIB_JOINNOTOKEN,		/* Received MP_JOIN but the token was not found */
+ 	MPTCP_MIB_JOINSYNRX,		/* Received a SYN + MP_JOIN */
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 171b77537dcb..3b50e8cc0c5f 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -3224,8 +3224,10 @@ static int mptcp_stream_connect(struct socket *sock, struct sockaddr *uaddr,
+ 	if (rcu_access_pointer(tcp_sk(ssock->sk)->md5sig_info))
+ 		mptcp_subflow_early_fallback(msk, subflow);
+ #endif
+-	if (subflow->request_mptcp && mptcp_token_new_connect(ssock->sk))
++	if (subflow->request_mptcp && mptcp_token_new_connect(ssock->sk)) {
++		MPTCP_INC_STATS(sock_net(ssock->sk), MPTCP_MIB_TOKENFALLBACKINIT);
+ 		mptcp_subflow_early_fallback(msk, subflow);
++	}
+ 
+ do_connect:
+ 	err = ssock->ops->connect(ssock, uaddr, addr_len, flags);
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 6c074d3db0ed..b96e8dc01f08 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -165,6 +165,7 @@ static int subflow_check_req(struct request_sock *req,
+ 			if (mptcp_token_exists(subflow_req->token)) {
+ 				if (retries-- > 0)
+ 					goto again;
++				SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_TOKENFALLBACKINIT);
+ 			} else {
+ 				subflow_req->mp_capable = 1;
+ 			}
+@@ -176,6 +177,8 @@ static int subflow_check_req(struct request_sock *req,
+ 			subflow_req->mp_capable = 1;
+ 		else if (retries-- > 0)
+ 			goto again;
++		else
++			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_TOKENFALLBACKINIT);
+ 
+ 	} else if (mp_opt.mp_join && listener->request_mptcp) {
+ 		subflow_req->ssn_offset = TCP_SKB_CB(skb)->seq;
 -- 
 2.31.1
 
