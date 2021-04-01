@@ -2,94 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F3F350FAD
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 09:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F61350FB6
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 09:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233286AbhDAG7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 02:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
+        id S233516AbhDAHB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 03:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232951AbhDAG72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 02:59:28 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25012C0613E6;
-        Wed, 31 Mar 2021 23:59:28 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id h13so721619eds.5;
-        Wed, 31 Mar 2021 23:59:28 -0700 (PDT)
+        with ESMTP id S233518AbhDAHB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 03:01:27 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9118DC0613E6;
+        Thu,  1 Apr 2021 00:01:26 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id w18so769955edc.0;
+        Thu, 01 Apr 2021 00:01:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cMxe7I7l2vSX0n+XPp1Pbjsdyyq6ZSpuIHYWB6ESO5o=;
-        b=kmR3ElAIn+fDgfAe3qxvOysNle3yOcD5Ty25mY4ft6p1NtFaB3epHPi8r4ZorAlT+a
-         Mv5zpbmM3Kd0l+T96WVrRcoHU8ROwj/4ChMQ0u/ZawZQrNu82JqtwpzshZmlbtPfCWt/
-         bzuVVW6H55UJTyCQvLTrJokjlVQiuRgTc+L4NRZRE2cykUcKwDrR01k+MFCN25JxPVzL
-         vp/80IJFT2qL+ZkHk16pS0t1M50lWWMWE+zf/k8/FkBq92gcKEM2y9FiRA3E0vnheHmh
-         CLJTdA+QY6FYi5J3FgLxgUyTZ6i7Yz2z+bEyuqUxhI8iCW4oI2UqyvHok74MI9NBIs+R
-         ZrLg==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=RfyP1xiGI0VpUoYZLnJKoM6XTKZ7fkZlrS16zaUSR6g=;
+        b=rqLBX5P2cgwitwagfOy/0gCQ9NoS3CwVGbOo94AyfwnQmvxu7eicPdSg3kCWXsTqjJ
+         oWpEdTPoLXxX829vz9WII0BI38rVeN6RFJjV5zwYi4BlP/GeADHlOvhvT2+0gpRJidka
+         nDNN12uA116WyVU7a+QqzCKVEMxbsuiUBYEf5v525Gd/tJ8DUaSp3L5IoGouL/F/HHr/
+         ABDVDgjNomSvmAyJdxjXZTNYPxy/be4zQTK5HfcpGIFKw1UxH/EETFVImnyajv3xQRfP
+         3ez3ycNrtZRvaa3U2A6/lXcxcNxlsOq2U3fVwHqg0OgOq6E3Y7OaY9zwUpnY041jE6y3
+         Vbuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cMxe7I7l2vSX0n+XPp1Pbjsdyyq6ZSpuIHYWB6ESO5o=;
-        b=F0X3IOC9mybaErmXML1ImJFXjvLebO0SfWkuQOC1pL+Ii6YEtb8MrendFMvBoejjYF
-         TOutj2GJmpHyeLiz8Q8eMCufGX32jJb/Ac39VirbZk+To2YlPL3du3ztTa2Mr7u8jKmP
-         bs8TXztAZFPF4lLli8gzRoa5UgI4Z5Tm6zvyuc4YrvsYOVesN+JWl+xkEQEsNDJH1g8e
-         Pg0h3CrJJKw1eulIgzjgutJLVMfjg1KLxGIfRiNvle/2w+XQ2MHcX1r0fGlNI73NzYWj
-         F+NPMAFQRevU9W2nQWIZh6T50tFAHmPZtQPPjVw8M/36MU0fk1+0Pc0ZRqX3A3xe0Hh0
-         6HRA==
-X-Gm-Message-State: AOAM532JE/HpjVgxO9LMSjHxNiLZC3LTDP4jRvQ0TG2u0pG1RgIad8nI
-        nvusucJn7/+oKEa6LzbC8gBwdZjSVLRe9A==
-X-Google-Smtp-Source: ABdhPJzSgdplA+nTMXP6cAfBlom2HWzng16tTcgQkgRD12d6aXUFDTl3x7FrdWW2eKt+XXBX2VQdPA==
-X-Received: by 2002:a05:6402:2cd:: with SMTP id b13mr8277948edx.55.1617260366962;
-        Wed, 31 Mar 2021 23:59:26 -0700 (PDT)
-Received: from localhost.localdomain (ip-178-202-123-242.hsi09.unitymediagroup.de. [178.202.123.242])
-        by smtp.googlemail.com with ESMTPSA id bm21sm2313817ejb.36.2021.03.31.23.59.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Mar 2021 23:59:26 -0700 (PDT)
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=RfyP1xiGI0VpUoYZLnJKoM6XTKZ7fkZlrS16zaUSR6g=;
+        b=A8kKCifawOe+b9KauvT8mQh9Covxa7Us259SpynpEvRuVmwf5VXajoiJzKxI40BM8E
+         jFMPT71tqEN13vMMGhg4Vc31nd5nKvRGeIQtP1l2mE6+yL1bNtrza70XQnfNSjCJNHb0
+         YtmDZdKDEJ5rSr7aupU1aniae3jDInRDX1dsFZhZp3OFTN9+Sp0Fe6txldDojbhK1eoY
+         VnTMBSe7RJIkjk/ftTi7fnUtJpoE3FLZU9irWlJpZ9PFY4yGLAumHwiUOkgqcfg8sD/i
+         ca4E3kv8p9jqZi6WkOoAXF1DX/yaD+zoeoPiwaxnla5tOORK2iWgjC34Z3SH9kd6WrTs
+         QjhQ==
+X-Gm-Message-State: AOAM533DLe7IwLs4juUfHvQmPaHdBBIgj4/IQhGxLL8sSjnZUy/IgGUC
+        BSeIdgCvCW7C1GtDRDGiLjeWUnU5beT03g==
+X-Google-Smtp-Source: ABdhPJx1rOsRL6ERpIo6ABY/A+PeZ5Ux5v8owULBf+BYHys10hI2pN3YeP87FYoweTZOzT/JP44ccg==
+X-Received: by 2002:a05:6402:614:: with SMTP id n20mr8085285edv.58.1617260485397;
+        Thu, 01 Apr 2021 00:01:25 -0700 (PDT)
+Received: from ?IPv6:2a02:908:2612:d580:40bf:92ad:5605:7d95? ([2a02:908:2612:d580:40bf:92ad:5605:7d95])
+        by smtp.googlemail.com with ESMTPSA id e26sm3184802edj.29.2021.04.01.00.01.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Apr 2021 00:01:23 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: Re: [PATCH] udp: Add support for getsockopt(..., ..., UDP_GRO, ...,
+ ...)
 From:   Norman Maurer <norman.maurer@googlemail.com>
-X-Google-Original-From: Norman Maurer <norman_maurer@apple.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org
-Cc:     pabeni@redhat.com, Norman Maurer <norman_maurer@apple.com>
-Subject: [PATCH net] net: udp: Add support for getsockopt(..., ..., UDP_GRO, ..., ...);
-Date:   Thu,  1 Apr 2021 08:59:17 +0200
-Message-Id: <20210401065917.78025-1-norman_maurer@apple.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <4ba2450c-413a-0417-e805-2486ab562df8@gmail.com>
+Date:   Thu, 1 Apr 2021 09:01:22 +0200
+Cc:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dsahern@kernel.org,
+        davem@davemloft.net
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <85D1EA5E-BC43-45AD-B714-C35EE5CB2AF6@googlemail.com>
+References: <20210325195614.800687-1-norman_maurer@apple.com>
+ <8eadc07055ac1c99bbc55ea10c7b98acc36dde55.camel@redhat.com>
+ <CF78DCAD-6F2C-46C4-9FF1-61DF66183C76@apple.com>
+ <2e667826f183fbef101a62f0ad8ccb4ed253cb75.camel@redhat.com>
+ <71BBD1B0-FA0A-493D-A1D2-40E7304B0A35@googlemail.com>
+ <4ba2450c-413a-0417-e805-2486ab562df8@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Norman Maurer <norman_maurer@apple.com>
 
-Support for UDP_GRO was added in the past but the implementation for
-getsockopt was missed which did lead to an error when we tried to
-retrieve the setting for UDP_GRO. This patch adds the missing switch
-case for UDP_GRO
 
-Fixes: e20cf8d3f1f7 ("udp: implement GRO for plain UDP sockets.")
-Signed-off-by: Norman Maurer <norman_maurer@apple.com>
----
- net/ipv4/udp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> On 1. Apr 2021, at 02:18, David Ahern <dsahern@gmail.com> wrote:
+>=20
+> On 3/31/21 7:10 AM, Norman Maurer wrote:
+>> Friendly ping=E2=80=A6=20
+>>=20
+>> As this missing change was most likely an oversight in the original =
+commit I do think it should go into 5.12 and subsequently stable as =
+well. That=E2=80=99s also the reason why I didn=E2=80=99t send a v2 and =
+changed the commit message / subject for the patch. For me it clearly is =
+a bug and not a new feature.
+>>=20
+>>=20
+>=20
+> I agree that it should be added to net
+>=20
+> If you do not see it here:
+>  https://patchwork.kernel.org/project/netdevbpf/list/
+>=20
+> you need to re-send and clearly mark it as [PATCH net]. Make sure it =
+has
+> a Fixes tag.
+>=20
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4a0478b17243..99d743eb9dc4 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2754,6 +2754,10 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
- 		val = up->gso_size;
- 		break;
- 
-+	case UDP_GRO:
-+		val = up->gro_enabled;
-+		break;
-+
- 	/* The following two cannot be changed on UDP sockets, the return is
- 	 * always 0 (which corresponds to the full checksum coverage of UDP). */
- 	case UDPLITE_SEND_CSCOV:
--- 
-2.30.2
+Done: =
+https://lore.kernel.org/netdev/20210401065917.78025-1-norman_maurer@apple.=
+com/
+
+Thanks a lot of the review and help.
+
+Bye
+Norman
+
 
