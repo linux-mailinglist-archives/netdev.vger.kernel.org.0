@@ -2,341 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C04735173B
-	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7D63517F7
+	for <lists+netdev@lfdr.de>; Thu,  1 Apr 2021 19:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358800AbhCDAOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Mar 2021 19:14:21 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:10136 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384860AbhCCQ2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Mar 2021 11:28:50 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B603fb9160000>; Wed, 03 Mar 2021 08:28:06 -0800
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 3 Mar
- 2021 16:28:06 +0000
-Received: from [10.21.240.34] (172.20.145.6) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 3 Mar 2021
- 16:28:03 +0000
-Subject: Re: [RFC PATCH net-next 1/5] ethtool: Allow network drivers to dump
- arbitrary EEPROM data
-To:     Andrew Lunn <andrew@lunn.ch>, Moshe Shemesh <moshe@nvidia.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
-References: <1614181274-28482-1-git-send-email-moshe@nvidia.com>
- <1614181274-28482-2-git-send-email-moshe@nvidia.com>
- <YDrnwFyvCFT8owgd@lunn.ch>
-From:   Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-Message-ID: <e1775d96-9ab6-4f7a-bb0b-63652bc53164@nvidia.com>
-Date:   Wed, 3 Mar 2021 18:28:00 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S235711AbhDARnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Apr 2021 13:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234651AbhDARi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 13:38:58 -0400
+Received: from mail-io1-xd46.google.com (mail-io1-xd46.google.com [IPv6:2607:f8b0:4864:20::d46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AF6C08EA74
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 06:30:03 -0700 (PDT)
+Received: by mail-io1-xd46.google.com with SMTP id w8so3980874iox.13
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 06:30:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=V1YPBBmXV6Zf6ofFKc69jLxBo6I+75nDp0+ssUeEtEM=;
+        b=W/HJpm5J7TSU66EaAedsHh9vZCUFu57vuOM9zAQ+dHcuDOPueuveEE8Cn6/8v10gtI
+         phJA2F0X43NdA5TLZTJCfg3D/1zK/71dOqLZetJL3eY/sFWztTBFgHLOIqwmeIRjoFdd
+         /VW5/t3J7mVQWprmN1IYi9nbaLAUrlb7en2q9rOqp+UGLDyEUJea/TLI++NA+SFwUEO5
+         7zWnlRwp+s1lKNCG/igWG8Uv0IuvWki1v9UnDYfTa5oHLqheyg2YK3VN/Vp66OEU3UhW
+         QZIYCo36e2dGWvPbuxUZlLWl8cCBS9OGY/DOb0vU3sRJcDSkW1Oaaqbyio3SUxsfZt60
+         IhTw==
+X-Gm-Message-State: AOAM530cmKBX1zHPRcxP/Si+g01LGnZNqn4h8uzLwtgK8qBbKUfBKWwa
+        q4VCdBtZhNIA5hE4KXB6UfejAvImFvaOY9d1NuNd2AQOFIuH
+X-Google-Smtp-Source: ABdhPJx/5tqNGXQlJ27uFdO6oc1q+y5cAbEhG+gQ0NtMiUPsSxdE1cBf9c1xnuC34oj9gnsTFZUhqBMyOMroa7wQiaswaike9eKr
 MIME-Version: 1.0
-In-Reply-To: <YDrnwFyvCFT8owgd@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1614788886; bh=1ITloKfvMCs5hhwG8infEro09iCV/Lrdgz4g2POXzew=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-         Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=OeLDoI7Ecov9YiX+gcPD5PEQ+UGGaGAahfyI2yzjOEKsXEv7nERIwJLwJMcNlAMzo
-         4ONyb2vrD6Pqv+fSHlwez21LjgK6kESiliMxXv0LKASBiZyLs/hsCPfqj+kZrbyOuZ
-         oI8cYQdR6sfc60vStV1oyIbA+2mpxYcdaAGqNWyfHBa5oJ8oQrquSq5ss93TV73tKB
-         k84GWBB8/CqPWID0XirJwMH4hLStxiOer+MreiN848v5QOuKLFlYOPOLjyEqjXZquc
-         6wc5Q0kiIj3WNKccG43vCoTT5lEEAbXYlrmnbKOm8EdP1ogjShWlNL/nADqs8r9Hv7
-         AhRKyCaFkLltQ==
+X-Received: by 2002:a05:6e02:20cd:: with SMTP id 13mr6179334ilq.126.1617276559816;
+ Thu, 01 Apr 2021 04:29:19 -0700 (PDT)
+Date:   Thu, 01 Apr 2021 04:29:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d9fefa05bee78afd@google.com>
+Subject: [syzbot] WARNING in bpf_test_run
+From:   syzbot <syzbot+774c590240616eaa3423@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        bp@alien8.de, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, hpa@zytor.com,
+        jmattson@google.com, john.fastabend@gmail.com, joro@8bytes.org,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, masahiroy@kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, pbonzini@redhat.com, peterz@infradead.org,
+        rafael.j.wysocki@intel.com, rostedt@goodmis.org, seanjc@google.com,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, vkuznets@redhat.com, wanpengli@tencent.com,
+        will@kernel.org, x86@kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 28-Feb-21 02:45, Andrew Lunn wrote:
-> On Wed, Feb 24, 2021 at 05:41:10PM +0200, Moshe Shemesh wrote:
->> From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
->>
->> Define get_module_eeprom_data_by_page() ethtool callback and implement
->> netlink infrastructure.
->>
->> get_module_eeprom_data_by_page() allows network drivers to dump a part
->> of module's EEPROM specified by page and bank numbers along with offset
->> and length. It is effectively a netlink replacement for
->> get_module_info() and get_module_eeprom() pair, which is needed due to
->> emergence of complex non-linear EEPROM layouts.
->>
->> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
->> ---
->>   include/linux/ethtool.h              |   5 +
->>   include/uapi/linux/ethtool.h         |  25 +++++
->>   include/uapi/linux/ethtool_netlink.h |  19 ++++
->>   net/ethtool/Makefile                 |   2 +-
->>   net/ethtool/eeprom.c                 | 149 +++++++++++++++++++++++++++
->>   net/ethtool/netlink.c                |  10 ++
->>   net/ethtool/netlink.h                |   2 +
->>   7 files changed, 211 insertions(+), 1 deletion(-)
->>   create mode 100644 net/ethtool/eeprom.c
->>
->> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
->> index ec4cd3921c67..6032313fa914 100644
->> --- a/include/linux/ethtool.h
->> +++ b/include/linux/ethtool.h
->> @@ -410,6 +410,9 @@ struct ethtool_pause_stats {
->>    * @get_ethtool_phy_stats: Return extended statistics about the PHY device.
->>    *	This is only useful if the device maintains PHY statistics and
->>    *	cannot use the standard PHY library helpers.
->> + * @get_module_eeprom_data_by_page: Get a region of plug-in module EEPROM data
->> + *	from specified page. Updates length to the amount actually read.
->> + *	Returns a negative error code or zero.
->>    *
->>    * All operations are optional (i.e. the function pointer may be set
->>    * to %NULL) and callers must take this into account.  Callers must
->> @@ -515,6 +518,8 @@ struct ethtool_ops {
->>   				   const struct ethtool_tunable *, void *);
->>   	int	(*set_phy_tunable)(struct net_device *,
->>   				   const struct ethtool_tunable *, const void *);
->> +	int	(*get_module_eeprom_data_by_page)(struct net_device *dev,
->> +						  struct ethtool_eeprom_data *page);
-> Hi Moshe, Vladyslav
->
-> I think it would be good to pass an extack here, so we can report more
-> useful errors.
+syzbot found the following issue on:
 
-Hi Andrew!
+HEAD commit:    36e79851 libbpf: Preserve empty DATASEC BTFs during static..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1569bb06d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7eff0f22b8563a5f
+dashboard link: https://syzkaller.appspot.com/bug?extid=774c590240616eaa3423
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17556b7cd00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1772be26d00000
 
-Yes, I will add this parameter.
+The issue was bisected to:
 
->> +/**
->> + * struct ethtool_eeprom_data - EEPROM dump from specified page
->> + * @offset: Offset within the specified EEPROM page to begin read, in bytes.
->> + * @length: Number of bytes to read. On successful return, number of bytes
->> + *	actually read.
->> + * @page: Page number to read from.
->> + * @bank: Page bank number to read from, if applicable by EEPROM spec.
->> + * @i2c_address: I2C address of a page. Zero indicates a driver should choose
->> + *	by itself.
-> I don't particularly like the idea of the driver deciding what to
-> read. User space should really be passing 0x50 or 0x51 for the normal
-> case. And we need to make it clear what these addresses mean, since
-> they are often referred to as 0xA0 and 0xA2, due to addresses being
-> shifted one bit left and a r/w bit added.
+commit 997acaf6b4b59c6a9c259740312a69ea549cc684
+Author: Mark Rutland <mark.rutland@arm.com>
+Date:   Mon Jan 11 15:37:07 2021 +0000
 
-I was thinking what address should I send from userspace by default?
-Should I send 0x50 or 0xA0 and at some point to do the shift?
-mlx5 uses 0x50 and 0x51, for example.
+    lockdep: report broken irq restoration
 
-> I also don't think the in place length should be modified. It would be
-> better to follow the use semantics of returning a negative value on
-> error, or a positive value for the length actually
-> read. ethtool_eeprom_data can then be passed as a const.
-But how would userspace know how much actually was read?
-Should I fail the command if only part of a data requested was read?
->> + * @data: Pointer to buffer with EEPROM data of @length size.
->> + *
->> + * This can be used to manage pages during EEPROM dump in ethtool and pass
->> + * required information to the driver.
->> + */
->> +struct ethtool_eeprom_data {
->> +	__u32	offset;
->> +	__u32	length;
->> +	__u32	page;
->> +	__u32	bank;
->> +	__u32	i2c_address;
->> +	__u8	*data;
->> +};
->> +
->>   /**
->>    * struct ethtool_eee - Energy Efficient Ethernet information
->>    * @cmd: ETHTOOL_{G,S}EEE
->> @@ -1865,6 +1888,8 @@ static inline int ethtool_validate_duplex(__u8 duplex)
->>   #define ETH_MODULE_SFF_8636_MAX_LEN     640
->>   #define ETH_MODULE_SFF_8436_MAX_LEN     640
->>   
->> +#define ETH_MODULE_EEPROM_MAX_LEN	640
-> I'm surprised such a high value is allowed. 128 seems more
-> appropriate, given the size of 1/2 pages.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10197016d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=12197016d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=14197016d00000
 
-This is done for backwards compatibility mechanism (last patch in the 
-series)
-to work properly. I wanted to limit the length to 128 (or 256, maybe), but
-currently ethtool supports dumps of 640 bytes at most.
-I guess I can add another value like ETH_MODULE_EEPROM_PAGE_MAX_LEN 256 
-and if
-new ndo is available or page number is specified, use it for check.
-If ndo is not implemented, use 640 instead.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+774c590240616eaa3423@syzkaller.appspotmail.com
+Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
 
-What do you think?
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 8725 at include/linux/bpf-cgroup.h:193 bpf_cgroup_storage_set include/linux/bpf-cgroup.h:193 [inline]
+WARNING: CPU: 0 PID: 8725 at include/linux/bpf-cgroup.h:193 bpf_test_run+0x65e/0xaa0 net/bpf/test_run.c:109
+Modules linked in:
+CPU: 0 PID: 8725 Comm: syz-executor927 Not tainted 5.12.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:bpf_cgroup_storage_set include/linux/bpf-cgroup.h:193 [inline]
+RIP: 0010:bpf_test_run+0x65e/0xaa0 net/bpf/test_run.c:109
+Code: e9 29 fe ff ff e8 b2 9d 3a fa 41 83 c6 01 bf 08 00 00 00 44 89 f6 e8 51 a5 3a fa 41 83 fe 08 0f 85 74 fc ff ff e8 92 9d 3a fa <0f> 0b bd f0 ff ff ff e9 5c fd ff ff e8 81 9d 3a fa 83 c5 01 bf 08
+RSP: 0018:ffffc900017bfaf0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffc90000f29000 RCX: 0000000000000000
+RDX: ffff88801bc68000 RSI: ffffffff8739543e RDI: 0000000000000003
+RBP: 0000000000000007 R08: 0000000000000008 R09: 0000000000000001
+R10: ffffffff8739542f R11: 0000000000000000 R12: dffffc0000000000
+R13: ffff888021dd54c0 R14: 0000000000000008 R15: 0000000000000000
+FS:  00007f00157d7700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f0015795718 CR3: 00000000157ae000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ bpf_prog_test_run_skb+0xabc/0x1c70 net/bpf/test_run.c:628
+ bpf_prog_test_run kernel/bpf/syscall.c:3132 [inline]
+ __do_sys_bpf+0x218b/0x4f40 kernel/bpf/syscall.c:4411
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x446199
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f00157d72f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00000000004cb440 RCX: 0000000000446199
+RDX: 0000000000000028 RSI: 0000000020000080 RDI: 000000000000000a
+RBP: 000000000049b074 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: f9abde7200f522cd
+R13: 3952ddf3af240c07 R14: 1631e0d82d3fa99d R15: 00000000004cb448
 
->> +
->>   /* Reset flags */
->>   /* The reset() operation must clear the flags for the components which
->>    * were actually reset.  On successful return, the flags indicate the
->> diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
->> index a286635ac9b8..60dd848d0b54 100644
->> --- a/include/uapi/linux/ethtool_netlink.h
->> +++ b/include/uapi/linux/ethtool_netlink.h
->> @@ -42,6 +42,7 @@ enum {
->>   	ETHTOOL_MSG_CABLE_TEST_ACT,
->>   	ETHTOOL_MSG_CABLE_TEST_TDR_ACT,
->>   	ETHTOOL_MSG_TUNNEL_INFO_GET,
->> +	ETHTOOL_MSG_EEPROM_DATA_GET,
->>   
->>   	/* add new constants above here */
->>   	__ETHTOOL_MSG_USER_CNT,
->> @@ -80,6 +81,7 @@ enum {
->>   	ETHTOOL_MSG_CABLE_TEST_NTF,
->>   	ETHTOOL_MSG_CABLE_TEST_TDR_NTF,
->>   	ETHTOOL_MSG_TUNNEL_INFO_GET_REPLY,
->> +	ETHTOOL_MSG_EEPROM_DATA_GET_REPLY,
->>   
->>   	/* add new constants above here */
->>   	__ETHTOOL_MSG_KERNEL_CNT,
->> @@ -629,6 +631,23 @@ enum {
->>   	ETHTOOL_A_TUNNEL_INFO_MAX = (__ETHTOOL_A_TUNNEL_INFO_CNT - 1)
->>   };
->>   
->> +/* MODULE EEPROM DATA */
->> +
->> +enum {
->> +	ETHTOOL_A_EEPROM_DATA_UNSPEC,
->> +	ETHTOOL_A_EEPROM_DATA_HEADER,
->> +
->> +	ETHTOOL_A_EEPROM_DATA_OFFSET,
->> +	ETHTOOL_A_EEPROM_DATA_LENGTH,
->> +	ETHTOOL_A_EEPROM_DATA_PAGE,
->> +	ETHTOOL_A_EEPROM_DATA_BANK,
->> +	ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS,
->> +	ETHTOOL_A_EEPROM_DATA,
->> +
->> +	__ETHTOOL_A_EEPROM_DATA_CNT,
->> +	ETHTOOL_A_EEPROM_DATA_MAX = (__ETHTOOL_A_EEPROM_DATA_CNT - 1)
->> +};
->> +
->>   /* generic netlink info */
->>   #define ETHTOOL_GENL_NAME "ethtool"
->>   #define ETHTOOL_GENL_VERSION 1
->> diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
->> index 7a849ff22dad..d604346bc074 100644
->> --- a/net/ethtool/Makefile
->> +++ b/net/ethtool/Makefile
->> @@ -7,4 +7,4 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
->>   ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
->>   		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
->>   		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
->> -		   tunnels.o
->> +		   tunnels.o eeprom.o
->> diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
->> new file mode 100644
->> index 000000000000..51a2ed81a273
->> --- /dev/null
->> +++ b/net/ethtool/eeprom.c
->> @@ -0,0 +1,149 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +
->> +#include <linux/ethtool.h>
->> +#include "netlink.h"
->> +#include "common.h"
->> +
->> +struct eeprom_data_req_info {
->> +	struct ethnl_req_info	base;
->> +	u32			offset;
->> +	u32			length;
->> +	u32			page;
->> +	u32			bank;
->> +	u32			i2c_address;
->> +};
->> +
->> +struct eeprom_data_reply_data {
->> +	struct ethnl_reply_data base;
->> +	u32			length;
->> +	u32			i2c_address;
->> +	u8			*data;
->> +};
->> +
->> +#define EEPROM_DATA_REQINFO(__req_base) \
->> +	container_of(__req_base, struct eeprom_data_req_info, base)
->> +
->> +#define EEPROM_DATA_REPDATA(__reply_base) \
->> +	container_of(__reply_base, struct eeprom_data_reply_data, base)
->> +
->> +static int eeprom_data_prepare_data(const struct ethnl_req_info *req_base,
->> +				    struct ethnl_reply_data *reply_base,
->> +				    struct genl_info *info)
->> +{
->> +	struct eeprom_data_reply_data *reply = EEPROM_DATA_REPDATA(reply_base);
->> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_base);
->> +	struct ethtool_eeprom_data page_data = {0};
->> +	struct net_device *dev = reply_base->dev;
->> +	int err;
->> +
->> +	if (!dev->ethtool_ops->get_module_eeprom_data_by_page)
->> +		return -EOPNOTSUPP;
->> +	err = ethnl_ops_begin(dev);
->> +	if (err)
->> +		return err;
->> +
->> +	page_data.offset = request->offset;
->> +	page_data.length = request->length;
->> +	page_data.i2c_address = request->i2c_address;
->> +	page_data.page = request->page;
->> +	page_data.bank = request->bank;
->> +	page_data.data = kmalloc(page_data.length, GFP_KERNEL);
->> +	if (!page_data.data)
->> +		return -ENOMEM;
-> Isn't an ethnl_ops_complete(dev); needed here? Maybe postpone the
-> ethnl_ops_begin(dev) call until after the memory allocation?
-Yes, I should just move it after kmalloc().
->> +
->> +	err = dev->ethtool_ops->get_module_eeprom_data_by_page(dev, &page_data);
->> +	if (err)
->> +		goto err_out;
->> +
->> +	reply->length = page_data.length;
->> +	reply->i2c_address = page_data.i2c_address;
->> +	reply->data = page_data.data;
->> +
->> +	ethnl_ops_complete(dev);
->> +	return 0;
->> +
->> +err_out:
->> +	kfree(page_data.data);
->> +	ethnl_ops_complete(dev);
->> +	return err;
->> +}
->> +
->> +static int eeprom_data_parse_request(struct ethnl_req_info *req_info, struct nlattr **tb,
->> +				     struct netlink_ext_ack *extack)
->> +{
->> +	struct eeprom_data_req_info *request = EEPROM_DATA_REQINFO(req_info);
->> +
->> +	if (!tb[ETHTOOL_A_EEPROM_DATA_OFFSET] ||
->> +	    !tb[ETHTOOL_A_EEPROM_DATA_LENGTH] ||
->> +	    !tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS])
->> +		return -EINVAL;
->> +
->> +	request->length = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_LENGTH]);
->> +	if (request->length > ETH_MODULE_EEPROM_MAX_LEN)
->> +		return -EINVAL;
->> +
->> +	request->offset = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_OFFSET]);
-> I think you need to validate that offset + length is not passed the
-> end of a 1/2 page. There seems to be odd wrap around semantics, so we
-> probably want to avoid that.
 
-I think I will add this check in case a page was specified and this is not
-a case ofbackwards compatible flow.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
->> +	request->i2c_address = nla_get_u32(tb[ETHTOOL_A_EEPROM_DATA_I2C_ADDRESS]);
-> Maybe validate the i2c address. Most busses are limited to 7 bit
-> addresses, but some do allow 10 bits. I think we can probably ignore
-> 10 bit addresses for this use case, so check that address is < 128.
-
-Yes, this check is possible, if I expect 0x50 or 0x51 in request. I will 
-add it.
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
