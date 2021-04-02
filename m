@@ -2,158 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A2B6352F85
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 21:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E02DC352FB3
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 21:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbhDBTIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 15:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbhDBTIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 15:08:37 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692F3C0613E6;
-        Fri,  2 Apr 2021 12:08:34 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id a22-20020a17090aa516b02900c1215e9b33so4979066pjq.5;
-        Fri, 02 Apr 2021 12:08:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vcm2XPETRMJjxtPIhb8l7WsmDGD0aL+j1F2VkszeHMY=;
-        b=QwMqkvMGpzoYLScjb2eWKSZOcGpOfoS8hsC2umnqUN5lDsZIbX/jDksX9FA8ofOJUk
-         shDzBwMXVR36lmB2hI4vPsmBLJYvD6TafUPEeAOattB9bgGjwfbzbsX3Al1y1n1hXywe
-         SYpQ4VWbDruyeDdA7O+BVdRb7+gH/E+1m82RVKUlETRlNlP7l5p90yO5H9l5a4DKVbjJ
-         MHS+vNpfwHeg1JthhvS0ngFqEZ8AyuuywAaaykwx61Db8yFJgWidIHNooCgJSTxdsSyK
-         zbDmwDmPvFHAJ5DBATc72PApHgJJ6i64GPwXp3PHJ9pUBsBAQpW3+mf0noYGHvFGaq+o
-         Cvrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vcm2XPETRMJjxtPIhb8l7WsmDGD0aL+j1F2VkszeHMY=;
-        b=UufKBqmPVE9ruYEyk5jXK8lO1KeEzuyo2UdkvBwGpNF7rbceiBCLMAwnOSbjDjXq/C
-         LBVcyU59Un4TYLeXoAJDLYGBiYH/BcHexSSOcNP9vZRxW+vyzCRHvk4/lu1TAs7Nyq99
-         3Z30huyamdNAjhQPV6G6lTtOXouyFg8VxBNmhYsOOhVcLGcvLxkHXocdijYaS9+F/gQS
-         VqVxSRL1X2hRwCbnYRke3EfFL586KEG3DQP5brZf6ZJ9UnNze7AH//oKBJYIHWgu+tf5
-         9vde67ESKDD7m+/rnDZGf+dY5GVqte32d129zCW640lDMu+gotS9z/dsmZs8N5hR7qvN
-         TuHw==
-X-Gm-Message-State: AOAM530lRlZ+hKUpKO30ffQlMqIOU7OKs78DVKy9YFWzMcR9qXg5PlEx
-        axUwia5+NvMcMGngl7QIFFc876n5DKOwyxwnNgY=
-X-Google-Smtp-Source: ABdhPJzKgq2UBdFcOaBRjhDgSv/tOVjFmYljVJd/mLC+tnRMXE61rsTfiIXhJ1+vNo/l4+a7pjo0sigQzcMyfADrKAM=
-X-Received: by 2002:a17:90a:a08c:: with SMTP id r12mr434461pjp.231.1617390513993;
- Fri, 02 Apr 2021 12:08:33 -0700 (PDT)
+        id S236452AbhDBT0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 15:26:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36242 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236255AbhDBT0C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Apr 2021 15:26:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C3018600D3;
+        Fri,  2 Apr 2021 19:25:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617391561;
+        bh=Ur/RPoLJAFNQ/xo2Az7wZnPpTvyn9qFxiOG6Tvgto4g=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=lrH9MHjapHs5Z13vdaZwdG2XD8TgjL8lBjyuLrGWX8mgyfBHW1ok+EJqooW/fN6M+
+         lvaV4XoalHG2L8tELTgrfSERJfwR6YSD+mNiI0XqWWig2I3GLvb1aEhTqrx5wgwt24
+         QBb6m6+tOXz0RT2a3NINiEa9AgtnD/FYsYlvLbYx6Pwq4X5rXxz3/Vwnr2oVzXUPIi
+         zAvxLWe9kaeJVsyrDAE2NdjPfIxOeeExM9aaCSFYpDvgtejq+31/aNrtpYZ24ExIgD
+         yuwvo73gDOCvptd18e3AESfzz2eSgY3zpW7BhI+5Xc3qPp+1+sT6oXPxWsJPna5DQT
+         20XxkPm2Cd6vA==
+Date:   Fri, 2 Apr 2021 21:25:56 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     John Fastabend <john.fastabend@gmail.com>
+cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kehuan Feng <kehuan.feng@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Jike Song <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+In-Reply-To: <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
+Message-ID: <nycvar.YFH.7.76.2104022120050.12405@cbobk.fhfr.pm>
+References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com> <20200822032800.16296-1-hdanton@sina.com> <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com> <20200825032312.11776-1-hdanton@sina.com> <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
+ <20200825162329.11292-1-hdanton@sina.com> <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com> <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com> <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
+ <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AB7fd2vUOQ@mail.gmail.com> <20200827125747.5816-1-hdanton@sina.com> <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com> <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
+ <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com> <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com> <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
- <B42B247A-4D0B-4DE9-B4D3-0C452472532D@fb.com> <CAM_iQpW-cuiYsPsu4mYZxZ1Oixffu2pV1TFg1c+eg9XT3wWwPQ@mail.gmail.com>
- <E0D5B076-A726-4845-8F12-640BAA853525@fb.com> <CAM_iQpWdO7efdcA2ovDsOF9XLhWJGgd6Be5qq0=xLphVBRE_Gw@mail.gmail.com>
- <93BBD473-7E1C-4A6E-8BB7-12E63D4799E8@fb.com>
-In-Reply-To: <93BBD473-7E1C-4A6E-8BB7-12E63D4799E8@fb.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 2 Apr 2021 12:08:23 -0700
-Message-ID: <CAM_iQpXEuxwQvT9FNqDa7y5kNpknA4xMNo_973ncy3iYaF-NTA@mail.gmail.com>
-Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
-To:     Song Liu <songliubraving@fb.com>
-Cc:     "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>,
-        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
-        "wangdongdong.6@bytedance.com" <wangdongdong.6@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 2, 2021 at 10:57 AM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Apr 2, 2021, at 10:34 AM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Thu, Apr 1, 2021 at 1:17 PM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >>
-> >>
-> >>> On Apr 1, 2021, at 10:28 AM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >>>
-> >>> On Wed, Mar 31, 2021 at 11:38 PM Song Liu <songliubraving@fb.com> wrote:
-> >>>>
-> >>>>
-> >>>>
-> >>>>> On Mar 31, 2021, at 9:26 PM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >>>>>
-> >>>>> From: Cong Wang <cong.wang@bytedance.com>
-> >>>>>
-> >>>>> (This patch is still in early stage and obviously incomplete. I am sending
-> >>>>> it out to get some high-level feedbacks. Please kindly ignore any coding
-> >>>>> details for now and focus on the design.)
-> >>>>
-> >>>> Could you please explain the use case of the timer? Is it the same as
-> >>>> earlier proposal of BPF_MAP_TYPE_TIMEOUT_HASH?
-> >>>>
-> >>>> Assuming that is the case, I guess the use case is to assign an expire
-> >>>> time for each element in a hash map; and periodically remove expired
-> >>>> element from the map.
-> >>>>
-> >>>> If this is still correct, my next question is: how does this compare
-> >>>> against a user space timer? Will the user space timer be too slow?
-> >>>
-> >>> Yes, as I explained in timeout hashmap patchset, doing it in user-space
-> >>> would require a lot of syscalls (without batching) or copying (with batching).
-> >>> I will add the explanation here, in case people miss why we need a timer.
-> >>
-> >> How about we use a user space timer to trigger a BPF program (e.g. use
-> >> BPF_PROG_TEST_RUN on a raw_tp program); then, in the BPF program, we can
-> >> use bpf_for_each_map_elem and bpf_map_delete_elem to scan and update the
-> >> map? With this approach, we only need one syscall per period.
-> >
-> > Interesting, I didn't know we can explicitly trigger a BPF program running
-> > from user-space. Is it for testing purposes only?
->
-> This is not only for testing. We will use this in perf (starting in 5.13).
->
-> /* currently in Arnaldo's tree, tools/perf/util/bpf_counter.c: */
->
-> /* trigger the leader program on a cpu */
-> static int bperf_trigger_reading(int prog_fd, int cpu)
-> {
->         DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
->                             .ctx_in = NULL,
->                             .ctx_size_in = 0,
->                             .flags = BPF_F_TEST_RUN_ON_CPU,
->                             .cpu = cpu,
->                             .retval = 0,
->                 );
->
->         return bpf_prog_test_run_opts(prog_fd, &opts);
-> }
->
-> test_run also passes return value (retval) back to user space, so we and
-> adjust the timer interval based on retval.
+On Thu, 3 Sep 2020, John Fastabend wrote:
 
-This is really odd, every name here contains a "test" but it is not for testing
-purposes. You probably need to rename/alias it. ;)
+> > > At this point I fear we could consider reverting the NOLOCK stuff.
+> > > I personally would hate doing so, but it looks like NOLOCK benefits are
+> > > outweighed by its issues.
+> > 
+> > I agree, NOLOCK brings more pains than gains. There are many race
+> > conditions hidden in generic qdisc layer, another one is enqueue vs.
+> > reset which is being discussed in another thread.
+> 
+> Sure. Seems they crept in over time. I had some plans to write a
+> lockless HTB implementation. But with fq+EDT with BPF it seems that
+> it is no longer needed, we have a more generic/better solution.  So
+> I dropped it. Also most folks should really be using fq, fq_codel,
+> etc. by default anyways. Using pfifo_fast alone is not ideal IMO.
 
-So, with this we have to get a user-space daemon running just to keep
-this "timer" alive. If I want to run it every 1ms, it means I have to issue
-a syscall BPF_PROG_TEST_RUN every 1ms. Even with a timer fd, we
-still need poll() and timerfd_settime(). This is a considerable overhead
-for just a single timer.
+Half a year later, we still have the NOLOCK implementation 
+present, and pfifo_fast still does set the TCQ_F_NOLOCK flag on itself. 
 
-With current design, user-space can just exit after installing the timer,
-either it can adjust itself or other eBPF code can adjust it, so the per
-timer overhead is the same as a kernel timer.
+And we've just been bitten by this very same race which appears to be 
+still unfixed, with single packet being stuck in pfifo_fast qdisc 
+basically indefinitely due to this very race that this whole thread began 
+with back in 2019.
 
-The visibility to other BPF code is important for the conntrack case,
-because each time we get an expired item during a lookup, we may
-want to schedule the GC timer to run sooner. At least this would give
-users more freedom to decide when to reschedule the timer.
+Unless there are
 
-Thanks.
+	(a) any nice ideas how to solve this in an elegant way without 
+	    (re-)introducing extra spinlock (Cong's fix) or
+
+	(b) any objections to revert as per the argumentation above
+
+I'll be happy to send a revert of the whole NOLOCK implementation next 
+week.
+
+Thanks,
+
+-- 
+Jiri Kosina
+SUSE Labs
+
