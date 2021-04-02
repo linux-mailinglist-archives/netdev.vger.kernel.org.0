@@ -2,113 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1820C352B14
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 15:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B5A352B32
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 16:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235596AbhDBNin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 09:38:43 -0400
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:16413 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235204AbhDBNil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 09:38:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1617370720; x=1648906720;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=yG0zNJNDTld2DVB53Gy0mL9wk/1ZNB/IybEFKT6Dw0I=;
-  b=KacO5tFPJnJzxysj0DrnFk0DTIflr5yEYXdZbG2kHj7HyY9hPTvxrED3
-   +5GfwSo5367UN8xEyeuxkxU8DHVwg4ZTpMsWUbRI7n33+EaAcvnWit9v8
-   8BjsGvvAJ2fgweCj8br0i6tMO5uk+qosj3feJ4++cgTMpcr4RaAHNWSqj
-   GslKAAlM9l+Oa5PyZcA8294TVejBG4ISgbc38Yrx5n2eyB0vxiuA8BVyC
-   KdgMmRUC82t5m3W4DO9B+InqTDrGi/bOLhaF+kah8KBC+AvCnz2+qYHRd
-   XhLB909/YzwkXfi4Gt9N8wE9SbL5f+VDZ3J/TPQ6EJ8M90F/37Lzf/PS8
-   g==;
-IronPort-SDR: Tab07F+0/k4/etpOzirtNpQ723JUe0TTg5X6QA2x2tSfT+V11E03Sm0SyK8hLfRDTFRtho8J7h
- tGNvc3BumIGOYLILgdVaslxOKHu7l/Q4eCQhlySn6GkDuPk8JsCf7ncPo3H67o6fe5PjcvoPIe
- Cz6C5da/atvTWpVyWvavVP/jFFs2plrK6lMi3K8NQ5eJjyZ/FPlQk0GIRgZSnNn2rdGR7ltoun
- QpYWwgV/PRuZzSG1A/sXY5Dlby7GRuptIY+FWMfhW2cHg9lg2do+FR15j68Sl4kc8s8KBAGWnj
- 2FM=
-X-IronPort-AV: E=Sophos;i="5.81,299,1610434800"; 
-   d="scan'208";a="121563933"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Apr 2021 06:38:40 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 2 Apr 2021 06:38:40 -0700
-Received: from [10.12.72.81] (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Fri, 2 Apr 2021 06:38:38 -0700
-Subject: Re: [PATCH 1/1] net: macb: restore cmp registers on resume path
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20210402124253.3027-1-claudiu.beznea@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-Message-ID: <e3409fe8-72ea-47a2-60cb-8aa558dfefab@microchip.com>
-Date:   Fri, 2 Apr 2021 15:38:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S235616AbhDBOC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 10:02:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42056 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234161AbhDBOC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Apr 2021 10:02:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 693C261057;
+        Fri,  2 Apr 2021 14:02:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1617372174;
+        bh=s3K4Wdxl6b65FG3Udt8GNekVFtUvsnmMqMflAqm5g7w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pJA2uuHT69eee+pddHyNM1UuxGgq1lp1ToFfRh0pISLuoOCm28HRLy3otbwargDP5
+         tkEVbP/iL37RCbIidXMURFALeycf6nMjvvxQoUmLuohyk46xrWg6KjywY/ti9+AfZ4
+         jLobbHokKclYKwr8BBDaPUdEb/arB7kd2N5sWpwQ=
+Date:   Fri, 2 Apr 2021 16:02:52 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     kuba@kernel.org, davem@davemloft.net,
+        linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org
+Subject: Re: [PATCH net-next v8 1/2] net: Add a WWAN subsystem
+Message-ID: <YGckDNXbeRoOBQPW@kroah.com>
+References: <1617372397-13988-1-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20210402124253.3027-1-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1617372397-13988-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/04/2021 at 14:42, Claudiu Beznea wrote:
-> Restore CMP screener registers on resume path.
+On Fri, Apr 02, 2021 at 04:06:36PM +0200, Loic Poulain wrote:
+> This change introduces initial support for a WWAN framework. Given the
+> complexity and heterogeneity of existing WWAN hardwares and interfaces,
+> there is no strict definition of what a WWAN device is and how it should
+> be represented. It's often a collection of multiple devices that perform
+> the global WWAN feature (netdev, tty, chardev, etc).
 > 
-> Fixes: c1e85c6ce57ef ("net: macb: save/restore the remaining registers and features")
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-Thanks for this fix Claudiu. Best regards,
-   Nicolas
-
-> ---
->   drivers/net/ethernet/cadence/macb_main.c | 7 +++++++
->   1 file changed, 7 insertions(+)
+> One usual way to expose modem controls and configuration is via high
+> level protocols such as the well known AT command protocol, MBIM or
+> QMI. The USB modems started to expose that as character devices, and
+> user daemons such as ModemManager learnt how to deal with them. This
+> initial version adds the concept of WWAN port, which can be created
+> by any driver to expose one of these protocols. The WWAN core takes
+> care of the generic part, including character device management, and
+> rely on port operations to received and submit protocol data.
 > 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index f56f3dbbc015..ffd56a23f8b0 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -3269,6 +3269,9 @@ static void gem_prog_cmp_regs(struct macb *bp, struct ethtool_rx_flow_spec *fs)
->   	bool cmp_b = false;
->   	bool cmp_c = false;
->   
-> +	if (!macb_is_gem(bp))
-> +		return;
+> Since the different components/devices do no necesserarly know about
+> each others, and can be created/removed in different orders, the
+> WWAN core ensures that all WAN ports that contribute to the 'whole'
+> WWAN feature are grouped under the same virtual WWAN device, relying
+> on the provided parent device (e.g. mhi controller, USB device). It's
+> a 'trick' I copied from Johannes's earlier WWAN subsystem proposal.
+> 
+> This initial version is purposely minimalist, it's essentially moving
+> the generic part of the previously proposed mhi_wwan_ctrl driver inside
+> a common WWAN framework, but the implementation is open and flexible
+> enough to allow extension for further drivers.
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+
+Always run checkpatch before sending stuff off :(
+
+Anyway, one thing did stand out:
+
+> --- /dev/null
+> +++ b/include/linux/wwan.h
+> @@ -0,0 +1,127 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
 > +
->   	tp4sp_v = &(fs->h_u.tcp_ip4_spec);
->   	tp4sp_m = &(fs->m_u.tcp_ip4_spec);
->   
-> @@ -3637,6 +3640,7 @@ static void macb_restore_features(struct macb *bp)
->   {
->   	struct net_device *netdev = bp->dev;
->   	netdev_features_t features = netdev->features;
-> +	struct ethtool_rx_fs_item *item;
->   
->   	/* TX checksum offload */
->   	macb_set_txcsum_feature(bp, features);
-> @@ -3645,6 +3649,9 @@ static void macb_restore_features(struct macb *bp)
->   	macb_set_rxcsum_feature(bp, features);
->   
->   	/* RX Flow Filters */
-> +	list_for_each_entry(item, &bp->rx_fs_list.list, list)
-> +		gem_prog_cmp_regs(bp, &item->fs);
+> +#ifndef __WWAN_H
+> +#define __WWAN_H
 > +
->   	macb_set_rxflow_feature(bp, features);
->   }
->   
-> 
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/skbuff.h>
+> +
+> +/**
+> + * enum wwan_port_type - WWAN port types
+> + * @WWAN_PORT_AT: AT commands
+> + * @WWAN_PORT_MBIM: Mobile Broadband Interface Model control
+> + * @WWAN_PORT_QMI: Qcom modem/MSM interface for modem control
+> + * @WWAN_PORT_QCDM: Qcom Modem diagnostic interface
+> + * @WWAN_PORT_FIREHOSE: XML based command protocol
+> + * @WWAN_PORT_MAX
+> + */
+> +enum wwan_port_type {
+> +	WWAN_PORT_AT,
+> +	WWAN_PORT_MBIM,
+> +	WWAN_PORT_QMI,
+> +	WWAN_PORT_QCDM,
+> +	WWAN_PORT_FIREHOSE,
+> +	WWAN_PORT_MAX,
+> +};
+> +
+> +/**
+> + * struct wwan_port - The structure that defines a WWAN port
+> + * @type: Port type
+> + * @start_count: Port start counter
+> + * @flags: Store port state and capabilities
+> + * @ops: Pointer to WWAN port operations
+> + * @ops_lock: Protect port ops
+> + * @dev: Underlying device
+> + * @rxq: Buffer inbound queue
+> + * @waitqueue: The waitqueue for port fops (read/write/poll)
+> + */
+> +struct wwan_port {
+> +	enum wwan_port_type type;
+> +	unsigned int start_count;
+> +	unsigned long flags;
+> +	const struct wwan_port_ops *ops;
+> +	struct mutex ops_lock;
+> +	struct device dev;
+> +	struct sk_buff_head rxq;
+> +	wait_queue_head_t waitqueue;
+> +};
 
+No need to put the actual definition of struct wwan_port in this .h
+file, keep it private in your .c file to keep wwan drivers from poking
+around in it where they shouldn't be :)
 
--- 
-Nicolas Ferre
+thanks,
+
+greg k-h
