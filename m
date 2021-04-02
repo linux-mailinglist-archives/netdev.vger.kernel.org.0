@@ -2,144 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3663E353027
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 22:12:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B60C7353034
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 22:22:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236406AbhDBUMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 16:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
+        id S236452AbhDBUWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 16:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbhDBUMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 16:12:09 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E5AC0613E6;
-        Fri,  2 Apr 2021 13:12:07 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso3027400pjh.2;
-        Fri, 02 Apr 2021 13:12:07 -0700 (PDT)
+        with ESMTP id S229647AbhDBUWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 16:22:07 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3CB0C0613E6
+        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 13:22:04 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso3036144pjh.2
+        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 13:22:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=y1RHCSC+V11qd9eqh8bG77F8uwj+77oBzm4p8tM50sA=;
-        b=XeC/pJBkpIbRf6GgSFJGe85Yd4CZILNbPufOyxgb8LXPhhHX2LHH4F+tmcdS9O44DB
-         cWK16sobfxN6t/lkJreCdHtyGnytdM8A/Bl9N0rVKhIiDfWfy6Finmqse10A3qN54nIJ
-         7dB8uCp86pkRLql8PCm0od4h0ahAg5lDvdwXsrp8GzCUBStsv9cFiOwuY8SrjwZyU/MS
-         JXM/P72IHGzT6liKrlSobLMQ4esS1IExs9hcXUHFBjnVcmVGxVlI7I5jpyZaReJGdCcJ
-         J/ZYbODpegxP2Qqtb/tzJFVv8EF3SbDXinRi8QhCUzQoTjfK3im3sOl8l0xA8BlRRi5H
-         QEpA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nVqsmwMPkzC42KyAwGO+gYq2EHIzl8y3FoVHaXaAwNk=;
+        b=BrHqgOxPo6gajZsdlCYqhbMzWVYMvrTeYOajQBC7c/3zhi3McG7SQnR4Tv1Oad8gjm
+         I9HJzz7OdQMRD9XQz34iMgdGrKyF8WZZPB0GApnBxw5erTVcohwvZcFT28gwSj3WY8fY
+         LBeGtd+E1FlY9XO6+91Q2dGExO2FKzTMQf+Qq6vaiVQVzL/zwk0/qZSt9tMKMoUHo2+C
+         ORKL3azvlm3leTpyi2+BKTEWfelui1nr+Cm+uelRjimoh0iRPtRPPKOujudlfDxFl8Bk
+         /oM8DvKO1OU2GieDIgG/JI4NWEcqOMbDAMDsnmngH+dtyA95xfwpVp5OSqAXwtCVwG5C
+         z3uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=y1RHCSC+V11qd9eqh8bG77F8uwj+77oBzm4p8tM50sA=;
-        b=FKCxvrHHlbuJxA27xjJz7LHzk3JKvRU2hOw8FaqyS5RENjSXzpq8RjpPwtVQIlO+bE
-         VXGAGZy+eT6VhA4O9jEWTxtYVsKD2Br01UbB5kgGgA8Wfx8gV1AKtymJ9LAQQk1Uezux
-         NzrP2LMTZQ5D3py8hg9Eg7ZdzML3Rv0SglSqbL8Viav7S87GDzy6sISv6WRfoqVEdKJj
-         F7X1bfqz/J7XnTgMmCdw+tlHvD0TlvDmzGCtr6dpKYHmYUpLu9CzhDQwiSnGPErm3fO1
-         0LHwBIIBwEbbzufmOicX4WC57Nvl2gXXq13eA2Kq9bXYCQx/TpfKCvz5+9MjZrTgPyRl
-         XSsw==
-X-Gm-Message-State: AOAM5322ceQsLAPN68Ba7tq6p8xqqFju6/e8BNzSLiHqtQRuEBRMle5I
-        4TmIAI6JMqcCgIXeqLXibJc=
-X-Google-Smtp-Source: ABdhPJyeHnx3PhROsSay6Qhc5/rhXrmHJTSBl2GIY8CnL3ORSt1GC+9SGXsO6+s8MgqhLCZwcuKbCg==
-X-Received: by 2002:a17:90a:fc5:: with SMTP id 63mr15560949pjz.233.1617394327238;
-        Fri, 02 Apr 2021 13:12:07 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:e15f:835a:6bcd:3410])
-        by smtp.gmail.com with ESMTPSA id h15sm8864994pfo.20.2021.04.02.13.12.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nVqsmwMPkzC42KyAwGO+gYq2EHIzl8y3FoVHaXaAwNk=;
+        b=C76PKb5EvZtyoMQDuvxfNLY3ijVYIFV47/SF/kg8s18MtKVbvPsOcchem3QkncyxdN
+         HOQB4t+e8we6VyiU9ufUN6AT/5LfK4rMzj2n1+9LmRu6T0JFxF4bOqbupaofnkl2S5S7
+         Cw0lbB0UIWaz0iYWaqLlZ0LSs5RxPe/KQuIxphfQk7qnnSoaEtLhDVRAuT7jEtIqWNrd
+         fhGFXKBnaAbTkc5fbjSUfzTyDp2QnOpZkO63MmumKpIZ36F0sdhcz2Oak9fOjCKY03oS
+         TWx4HgAn8TSJF0ivu/hlck1uspcKSKoLTsXo7j/xql/6Nu4GIrTOM8BG1rgQzoU85ZSj
+         tOUw==
+X-Gm-Message-State: AOAM531l+rS/HW/a/xIY6IrTKae4eonc0bPyLJW2i5cJRouJ6yWAYWxP
+        OWNVaIVe/vPZws3X/IJylgzGzw==
+X-Google-Smtp-Source: ABdhPJwzCIM6OZHQNyn4Qm+ZQvJbXm43WxQCfld3OizqI4Hu3mEZVBeA9TCz556q3Q5qBwNN0Vwj6A==
+X-Received: by 2002:a17:90a:a403:: with SMTP id y3mr15316933pjp.227.1617394924285;
+        Fri, 02 Apr 2021 13:22:04 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id j21sm8048377pfc.114.2021.04.02.13.22.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 13:12:06 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>,
-        Manoj Basapathi <manojbm@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Subject: [PATCH netfilter] netfilter: xt_IDLETIMER: fix idletimer_tg_helper non-kosher casts
-Date:   Fri,  2 Apr 2021 13:11:56 -0700
-Message-Id: <20210402201156.2789453-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
+        Fri, 02 Apr 2021 13:22:03 -0700 (PDT)
+Date:   Fri, 2 Apr 2021 13:21:55 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] tcp: reorder tcp_congestion_ops for better
+ cache locality
+Message-ID: <20210402132155.5cb367e4@hermes.local>
+In-Reply-To: <20210402181037.19736-1-eric.dumazet@gmail.com>
+References: <20210402181037.19736-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+On Fri,  2 Apr 2021 11:10:37 -0700
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
 
-The code is relying on the identical layout of the beginning
-of the v0 and v1 structs, but this can easily lead to code bugs
-if one were to try to extend this further...
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Group all the often used fields in the first cache line,
+> to reduce cache line misses.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-I use:
-  char (*plabel)[MAX_IDLETIMER_LABEL_SIZE]
-instead of:
-  char label[MAX_IDLETIMER_LABEL_SIZE]
-as the helper's argument to get better type safety
-(the former checks array size, the latter does not).
-
-Cc: Manoj Basapathi <manojbm@codeaurora.org>
-Cc: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- net/netfilter/xt_IDLETIMER.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
-
-diff --git a/net/netfilter/xt_IDLETIMER.c b/net/netfilter/xt_IDLETIMER.c
-index 7b2f359bfce4..2b5e81f6e0bd 100644
---- a/net/netfilter/xt_IDLETIMER.c
-+++ b/net/netfilter/xt_IDLETIMER.c
-@@ -283,18 +283,19 @@ static unsigned int idletimer_tg_target_v1(struct sk_buff *skb,
- 	return XT_CONTINUE;
- }
- 
--static int idletimer_tg_helper(struct idletimer_tg_info *info)
-+static int idletimer_tg_helper(__u32 timeout,
-+			       char (*plabel)[MAX_IDLETIMER_LABEL_SIZE])
- {
--	if (info->timeout == 0) {
-+	if (timeout == 0) {
- 		pr_debug("timeout value is zero\n");
- 		return -EINVAL;
- 	}
--	if (info->timeout >= INT_MAX / 1000) {
-+	if (timeout >= INT_MAX / 1000) {
- 		pr_debug("timeout value is too big\n");
- 		return -EINVAL;
- 	}
--	if (info->label[0] == '\0' ||
--	    strnlen(info->label,
-+	if ((*plabel)[0] == '\0' ||
-+	    strnlen(*plabel,
- 		    MAX_IDLETIMER_LABEL_SIZE) == MAX_IDLETIMER_LABEL_SIZE) {
- 		pr_debug("label is empty or not nul-terminated\n");
- 		return -EINVAL;
-@@ -310,9 +311,8 @@ static int idletimer_tg_checkentry(const struct xt_tgchk_param *par)
- 
- 	pr_debug("checkentry targinfo%s\n", info->label);
- 
--	ret = idletimer_tg_helper(info);
--	if(ret < 0)
--	{
-+	ret = idletimer_tg_helper(info->timeout, &info->label);
-+	if (ret < 0) {
- 		pr_debug("checkentry helper return invalid\n");
- 		return -EINVAL;
- 	}
-@@ -349,9 +349,8 @@ static int idletimer_tg_checkentry_v1(const struct xt_tgchk_param *par)
- 	if (info->send_nl_msg)
- 		return -EOPNOTSUPP;
- 
--	ret = idletimer_tg_helper((struct idletimer_tg_info *)info);
--	if(ret < 0)
--	{
-+	ret = idletimer_tg_helper(info->timeout, &info->label);
-+	if (ret < 0) {
- 		pr_debug("checkentry helper return invalid\n");
- 		return -EINVAL;
- 	}
--- 
-2.31.0.208.g409f899ff0-goog
+Makes sense.
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
 
