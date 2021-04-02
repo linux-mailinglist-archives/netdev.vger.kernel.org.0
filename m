@@ -2,177 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB7E6352AFC
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 15:26:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1820C352B14
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 15:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235285AbhDBN0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 09:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbhDBN0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 09:26:09 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A3CC0613E6
-        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 06:26:06 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id lr1-20020a17090b4b81b02900ea0a3f38c1so6194561pjb.0
-        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 06:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Nk+eDWG+Yugeh+2vUQ3xh9rieveuu83pFSxXTHCSafY=;
-        b=B2uCfpeLEfh7+GbIRXc92PEReJZPG8BgODY1iTU947PttSc1udmsdBVjcPOoriAixR
-         FyOfN5k0IL+LrCvxBJk/vwh0V+yWkXlw5rO4V9LPmQBEr28bgLoytT4sWrAcG9R3ZZ15
-         p0PHhZljifXdclzWtfw5MPBO3EFOPL5Z3nzIjJoiMKMkMkj+TaFsKk0Q22gmnaxB8x8A
-         vrCcpm9loqwbDrDWd8rznfahQtAgDj6I5xK+K+Lb1WzZq6WOKir4uHHXXs/RqRO1IBMn
-         tqkP4ba57yZE9LLVjuGHsVlr9fXGu0LNLEJPmKFA5+Nxmo7FThhOyxRAzpYtuzQMAVxc
-         QGBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Nk+eDWG+Yugeh+2vUQ3xh9rieveuu83pFSxXTHCSafY=;
-        b=RjxU9jnuoBc8AXZNAFc1HX2UWc6oa67Q44b/qnYV2aYquA12KhMUSRCc14iQ0v9QYZ
-         Vf8llWZbWKM3KOWX44e8g/MA0msLF7lvGPac4WnbbFP4JycG9IyD5kMxI5R6pK5/S5l+
-         kJ0oKz/mSCs29qYAhkVd3pKKNe0x2iIOQcVAMdY519uRj1whmWytHXupeWde9Ds5oqNi
-         KrLGj2ZyQrFfS0W0Ku45y6B5gqfQRiBVwgIUMTnxCzRyTpLnknWU9Pvw9ChB1O9IzGYE
-         yyIqMXOV8xgJlyNqWnZhKJLba9T0OpzMOg2vtMSHPnwl6akJKfq7/cCaaup6DUDkVRyk
-         MLPA==
-X-Gm-Message-State: AOAM530KHACHHomM12xfiAdU4ADytBtbb0HVdFC6Xt9GjufRk+X/H+Rx
-        tP8a+5UvTkQET3hNI4pCeRc=
-X-Google-Smtp-Source: ABdhPJz75mHHj1AwPACN1N3Khde/fIrHWHsGNKQt88nZjq2LvlV8IY6bbUOiBoDPXvcxYAE3Q9sDVw==
-X-Received: by 2002:a17:902:bd8f:b029:e6:ec5a:3a6 with SMTP id q15-20020a170902bd8fb02900e6ec5a03a6mr13074978pls.31.1617369966016;
-        Fri, 02 Apr 2021 06:26:06 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:a57a:ec96:644b:4d80])
-        by smtp.gmail.com with ESMTPSA id s22sm8143247pjs.42.2021.04.02.06.26.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 06:26:05 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH net] virtio_net: Do not pull payload in skb->head
-Date:   Fri,  2 Apr 2021 06:26:02 -0700
-Message-Id: <20210402132602.3659282-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
+        id S235596AbhDBNin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 09:38:43 -0400
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:16413 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235204AbhDBNil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 09:38:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1617370720; x=1648906720;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=yG0zNJNDTld2DVB53Gy0mL9wk/1ZNB/IybEFKT6Dw0I=;
+  b=KacO5tFPJnJzxysj0DrnFk0DTIflr5yEYXdZbG2kHj7HyY9hPTvxrED3
+   +5GfwSo5367UN8xEyeuxkxU8DHVwg4ZTpMsWUbRI7n33+EaAcvnWit9v8
+   8BjsGvvAJ2fgweCj8br0i6tMO5uk+qosj3feJ4++cgTMpcr4RaAHNWSqj
+   GslKAAlM9l+Oa5PyZcA8294TVejBG4ISgbc38Yrx5n2eyB0vxiuA8BVyC
+   KdgMmRUC82t5m3W4DO9B+InqTDrGi/bOLhaF+kah8KBC+AvCnz2+qYHRd
+   XhLB909/YzwkXfi4Gt9N8wE9SbL5f+VDZ3J/TPQ6EJ8M90F/37Lzf/PS8
+   g==;
+IronPort-SDR: Tab07F+0/k4/etpOzirtNpQ723JUe0TTg5X6QA2x2tSfT+V11E03Sm0SyK8hLfRDTFRtho8J7h
+ tGNvc3BumIGOYLILgdVaslxOKHu7l/Q4eCQhlySn6GkDuPk8JsCf7ncPo3H67o6fe5PjcvoPIe
+ Cz6C5da/atvTWpVyWvavVP/jFFs2plrK6lMi3K8NQ5eJjyZ/FPlQk0GIRgZSnNn2rdGR7ltoun
+ QpYWwgV/PRuZzSG1A/sXY5Dlby7GRuptIY+FWMfhW2cHg9lg2do+FR15j68Sl4kc8s8KBAGWnj
+ 2FM=
+X-IronPort-AV: E=Sophos;i="5.81,299,1610434800"; 
+   d="scan'208";a="121563933"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Apr 2021 06:38:40 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 2 Apr 2021 06:38:40 -0700
+Received: from [10.12.72.81] (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Fri, 2 Apr 2021 06:38:38 -0700
+Subject: Re: [PATCH 1/1] net: macb: restore cmp registers on resume path
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20210402124253.3027-1-claudiu.beznea@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <e3409fe8-72ea-47a2-60cb-8aa558dfefab@microchip.com>
+Date:   Fri, 2 Apr 2021 15:38:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210402124253.3027-1-claudiu.beznea@microchip.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On 02/04/2021 at 14:42, Claudiu Beznea wrote:
+> Restore CMP screener registers on resume path.
+> 
+> Fixes: c1e85c6ce57ef ("net: macb: save/restore the remaining registers and features")
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Xuan Zhuo reported that commit 3226b158e67c ("net: avoid 32 x truesize
-under-estimation for tiny skbs") brought  a ~10% performance drop.
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-The reason for the performance drop was that GRO was forced
-to chain sk_buff (using skb_shinfo(skb)->frag_list), which
-uses more memory but also cause packet consumers to go over
-a lot of overhead handling all the tiny skbs.
+Thanks for this fix Claudiu. Best regards,
+   Nicolas
 
-It turns out that virtio_net page_to_skb() has a wrong strategy :
-It allocates skbs with GOOD_COPY_LEN (128) bytes in skb->head, then
-copies 128 bytes from the page, before feeding the packet to GRO stack.
+> ---
+>   drivers/net/ethernet/cadence/macb_main.c | 7 +++++++
+>   1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index f56f3dbbc015..ffd56a23f8b0 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -3269,6 +3269,9 @@ static void gem_prog_cmp_regs(struct macb *bp, struct ethtool_rx_flow_spec *fs)
+>   	bool cmp_b = false;
+>   	bool cmp_c = false;
+>   
+> +	if (!macb_is_gem(bp))
+> +		return;
+> +
+>   	tp4sp_v = &(fs->h_u.tcp_ip4_spec);
+>   	tp4sp_m = &(fs->m_u.tcp_ip4_spec);
+>   
+> @@ -3637,6 +3640,7 @@ static void macb_restore_features(struct macb *bp)
+>   {
+>   	struct net_device *netdev = bp->dev;
+>   	netdev_features_t features = netdev->features;
+> +	struct ethtool_rx_fs_item *item;
+>   
+>   	/* TX checksum offload */
+>   	macb_set_txcsum_feature(bp, features);
+> @@ -3645,6 +3649,9 @@ static void macb_restore_features(struct macb *bp)
+>   	macb_set_rxcsum_feature(bp, features);
+>   
+>   	/* RX Flow Filters */
+> +	list_for_each_entry(item, &bp->rx_fs_list.list, list)
+> +		gem_prog_cmp_regs(bp, &item->fs);
+> +
+>   	macb_set_rxflow_feature(bp, features);
+>   }
+>   
+> 
 
-This was suboptimal before commit 3226b158e67c ("net: avoid 32 x truesize
-under-estimation for tiny skbs") because GRO was using 2 frags per MSS,
-meaning we were not packing MSS with 100% efficiency.
 
-Fix is to pull only the ethernet header in page_to_skb()
-
-Then, we change virtio_net_hdr_to_skb() to pull the missing
-headers, instead of assuming they were already pulled by callers.
-
-This fixes the performance regression, but could also allow virtio_net
-to accept packets with more than 128bytes of headers.
-
-Many thanks to Xuan Zhuo for his report, and his tests/help.
-
-Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny skbs")
-Reported-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Link: https://www.spinics.net/lists/netdev/msg731397.html
-Co-Developed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: virtualization@lists.linux-foundation.org
----
- drivers/net/virtio_net.c   | 10 +++++++---
- include/linux/virtio_net.h | 14 +++++++++-----
- 2 files changed, 16 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 82e520d2cb1229a0c7b9fd0def3e4a7135536478..0824e6999e49957f7aaf7c990f6259792d42f32b 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -406,9 +406,13 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 	offset += hdr_padded_len;
- 	p += hdr_padded_len;
- 
--	copy = len;
--	if (copy > skb_tailroom(skb))
--		copy = skb_tailroom(skb);
-+	/* Copy all frame if it fits skb->head, otherwise
-+	 * we let virtio_net_hdr_to_skb() and GRO pull headers as needed.
-+	 */
-+	if (len <= skb_tailroom(skb))
-+		copy = len;
-+	else
-+		copy = ETH_HLEN + metasize;
- 	skb_put_data(skb, p, copy);
- 
- 	if (metasize) {
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index 98775d7fa69632e2c2da30b581a666f7fbb94b64..b465f8f3e554f27ced45c35f54f113cf6dce1f07 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -65,14 +65,18 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 	skb_reset_mac_header(skb);
- 
- 	if (hdr->flags & VIRTIO_NET_HDR_F_NEEDS_CSUM) {
--		u16 start = __virtio16_to_cpu(little_endian, hdr->csum_start);
--		u16 off = __virtio16_to_cpu(little_endian, hdr->csum_offset);
-+		u32 start = __virtio16_to_cpu(little_endian, hdr->csum_start);
-+		u32 off = __virtio16_to_cpu(little_endian, hdr->csum_offset);
-+		u32 needed = start + max_t(u32, thlen, off + sizeof(__sum16));
-+
-+		if (!pskb_may_pull(skb, needed))
-+			return -EINVAL;
- 
- 		if (!skb_partial_csum_set(skb, start, off))
- 			return -EINVAL;
- 
- 		p_off = skb_transport_offset(skb) + thlen;
--		if (p_off > skb_headlen(skb))
-+		if (!pskb_may_pull(skb, p_off))
- 			return -EINVAL;
- 	} else {
- 		/* gso packets without NEEDS_CSUM do not set transport_offset.
-@@ -102,14 +106,14 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 			}
- 
- 			p_off = keys.control.thoff + thlen;
--			if (p_off > skb_headlen(skb) ||
-+			if (!pskb_may_pull(skb, p_off) ||
- 			    keys.basic.ip_proto != ip_proto)
- 				return -EINVAL;
- 
- 			skb_set_transport_header(skb, keys.control.thoff);
- 		} else if (gso_type) {
- 			p_off = thlen;
--			if (p_off > skb_headlen(skb))
-+			if (!pskb_may_pull(skb, p_off))
- 				return -EINVAL;
- 		}
- 	}
 -- 
-2.31.0.208.g409f899ff0-goog
-
+Nicolas Ferre
