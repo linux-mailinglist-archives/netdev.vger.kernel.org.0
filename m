@@ -2,91 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 862E73529D2
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 12:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 018073529E7
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 12:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234975AbhDBKgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 06:36:46 -0400
-Received: from rcdn-iport-5.cisco.com ([173.37.86.76]:49486 "EHLO
-        rcdn-iport-5.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbhDBKgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 06:36:45 -0400
-X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Fri, 02 Apr 2021 06:36:45 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1756; q=dns/txt; s=iport;
-  t=1617359804; x=1618569404;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=oX4Xjs6xIax6QT5FPvQicGpoHmruqb/WYUjrcq49PqY=;
-  b=KSbOM3gmp86bVCvDoSrIZ6UoFOFfEe73/OIIXTxR2cZAo91FYKW9BndO
-   ObrkMdKxNjN1wmOxkPOZxk2NqfxAy71gqsBjMNt6YUO66O1txvLAfcZ6/
-   I6+v/9rjEuxskrEG7j8V9xBg6rGYCdT5M7ZCrvuPCzyFWjDyYBsGYb9D6
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.81,299,1610409600"; 
-   d="scan'208";a="610497171"
-Received: from alln-core-4.cisco.com ([173.36.13.137])
-  by rcdn-iport-5.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 02 Apr 2021 10:29:39 +0000
-Received: from sjc-ads-2883.cisco.com (sjc-ads-2883.cisco.com [171.70.33.62])
-        by alln-core-4.cisco.com (8.15.2/8.15.2) with ESMTPS id 132ATd1v019823
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 2 Apr 2021 10:29:39 GMT
-Received: by sjc-ads-2883.cisco.com (Postfix, from userid 725528)
-        id 25BD2CC1251; Fri,  2 Apr 2021 03:29:39 -0700 (PDT)
-From:   Ivan Khoronzhuk <ikhoronz@cisco.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, hch@lst.de,
-        Ivan Khoronzhuk <ikhoronz@cisco.com>
-Subject: [PATCH net] net: octeon: mgmt: fix xmit hang as busy
-Date:   Fri,  2 Apr 2021 10:29:22 +0000
-Message-Id: <20210402102922.8495-1-ikhoronz@cisco.com>
-X-Mailer: git-send-email 2.23.1
+        id S234984AbhDBKtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 06:49:04 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:15534 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229599AbhDBKtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 06:49:03 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FBcDC4fFYzNs7v;
+        Fri,  2 Apr 2021 18:46:19 +0800 (CST)
+Received: from huawei.com (10.67.165.24) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.498.0; Fri, 2 Apr 2021
+ 18:48:59 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net/Bluetooth - delete unneeded variable initialization
+Date:   Fri, 2 Apr 2021 18:46:29 +0800
+Message-ID: <1617360389-42664-1-git-send-email-yekai13@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Outbound-SMTP-Client: 171.70.33.62, sjc-ads-2883.cisco.com
-X-Outbound-Node: alln-core-4.cisco.com
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The issue happens only at appropriate circumstances, in my case I
-faced it only while running crash kernel, when basic kernel worked
-fine. The code inspection has shown tx_current_fill counter overflow,
-after one packet or couple packets were sent. That's because tx
-cleanup tasklet dequeued bunch of not correct packets afterwards when
-it should only one. As result xmit queue counter becomes more than
-tx ring size and xmit always returns NETDEV_TX_BUSY. The reason is in
-some trash got by dma after ringing the bell. The wmb() in correct
-place solved the issue, so reason likely in removal of
-mips_swiotlb_ops which had an mb() after most of the operations and
-the removal of the ops had broken the tx functionality of the driver
-implicitly.
+Delete unneeded variable initialization.
 
-The patch has been tested on Octeon II.
-
-Fixes: a999933db9ed ("MIPS: remove mips_swiotlb_ops")
-Change-Id: I947c359d9451c75a693bc4a3f2958489503fc0ab
-Signed-off-by: Ivan Khoronzhuk <ikhoronz@cisco.com>
+Signed-off-by: Kai Ye <yekai13@huawei.com>
 ---
-Based on net/master
+ net/bluetooth/6lowpan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/net/ethernet/cavium/octeon/octeon_mgmt.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-index ecffebd513be..be1c353b961c 100644
---- a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-+++ b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
-@@ -1315,6 +1315,10 @@ octeon_mgmt_xmit(struct sk_buff *skb, struct net_device *netdev)
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index cff4944..ee4b0ec 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -692,7 +692,7 @@ static struct l2cap_chan *add_peer_chan(struct l2cap_chan *chan,
+ static int setup_netdev(struct l2cap_chan *chan, struct lowpan_btle_dev **dev)
+ {
+ 	struct net_device *netdev;
+-	int err = 0;
++	int err;
  
- 	spin_unlock_irqrestore(&p->tx_list.lock, flags);
- 
-+	/* Make sure there is no reorder of filling the ring and ringing
-+	 * the bell
-+	 */
-+	wmb();
- 	dma_sync_single_for_device(p->dev, p->tx_ring_handle,
- 				   ring_size_to_bytes(OCTEON_MGMT_TX_RING_SIZE),
- 				   DMA_BIDIRECTIONAL);
+ 	netdev = alloc_netdev(LOWPAN_PRIV_SIZE(sizeof(struct lowpan_btle_dev)),
+ 			      IFACE_NAME_TEMPLATE, NET_NAME_UNKNOWN,
 -- 
-2.18.2
+2.8.1
 
