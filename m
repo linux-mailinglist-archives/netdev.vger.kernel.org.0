@@ -2,261 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E2E3526FD
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 09:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 239E2352709
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 09:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234133AbhDBHiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 03:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbhDBHis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 03:38:48 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63147C0613E6
-        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 00:38:48 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id t18so2347618pjs.3
-        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 00:38:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZQyosvpYzgaNLnK4CTFKYypMlXR24eWULckLtBc2ljQ=;
-        b=FVJtWp3DjCS0fEXtGjZKAJFHr4T+8hDTBgLciJlvDhnvOJV9aOkdUbhh1Q/Flu8Nxv
-         1ccGLcSWmPmNY+1nlEefN7UhDvnns9vJ9z8rezUS7Ks3px2ZsvRUoLnRvNXwjHeK4/yq
-         RSDP0RV7WnFmB0fBJl6z41nGqpeAIyihFX2NHawhqvHWCNwLii7atqBW93qKagzKwulC
-         wq+vegCMNLP+O1jisk4oDyyJKIZLZUfNL8gVl+kWz3u3ioPQ63aXbt5wZ3TvZjrBMKkq
-         BWhtyciLvL2VhtITZyB3ZykwLdmHPBa3BGcuCy5uSshSmQL62w5jsIYuaV12eaFJDGEy
-         MFDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZQyosvpYzgaNLnK4CTFKYypMlXR24eWULckLtBc2ljQ=;
-        b=jNjFeE1+ihbYeoR54s84hM/7a7hiAAQs4hqS3VZfGgnVtTX4ufcqvxSGBL+Admzb2r
-         nchCTmo1RwqHZaSBkc6fShgXkaJ+3Jkcf/Uf31Ev1UCrEUNRTBiHTZcDyp0+nV4Yo9Xy
-         uykjsb5pVaB/F1oQpdmJA5o2pE5YCpHn/Ie8OJ54YcLk9yRBHamb4Xo/19XLzQ8kOnTB
-         OeTqMntFCj5HkluCRPWeuDM5dELfKs38LcRcoJFvlDfRvOl+jGumgH3tKdu+nH3ZO7za
-         wuucsgN/0m2FuWjk4t6Bjdk2Mc/2IPucLcZkMpSBJ897NUIgxfjrB7XMegDN5qZ01TEp
-         wfkg==
-X-Gm-Message-State: AOAM532bY9AZg0Z1OhhPyDU1q0NwHhPQrszoeyX3ZOxp5YBTT6dBPv2y
-        ks2ZpgBLAFPUERVcNGSSOPTjV0mpiWg92w==
-X-Google-Smtp-Source: ABdhPJxvw1UYyAIWpI1rGN07eSTZG/QJSLo8i4LaMdX9pqBZlDbpLcoH8Dn/CZz/bX0VK1uLKh+CSw==
-X-Received: by 2002:a17:903:18a:b029:e6:7fc1:1c2a with SMTP id z10-20020a170903018ab02900e67fc11c2amr11479191plg.5.1617349127800;
-        Fri, 02 Apr 2021 00:38:47 -0700 (PDT)
-Received: from laptop.hsd1.wa.comcast.net ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id d11sm7273251pjz.47.2021.04.02.00.38.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 00:38:47 -0700 (PDT)
-From:   Andrei Vagin <avagin@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Subject: [PATCH net-next] net: Allow to specify ifindex when device is moved to another namespace
-Date:   Fri,  2 Apr 2021 00:36:22 -0700
-Message-Id: <20210402073622.1260310-1-avagin@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        id S234316AbhDBHpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 03:45:13 -0400
+Received: from mga18.intel.com ([134.134.136.126]:30044 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230492AbhDBHpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Apr 2021 03:45:09 -0400
+IronPort-SDR: 8B/EjX4MTNjSmCiy9bAkHncHB33pTjRF1jCtU0W1iuTxtlgyYqyGTPAcrCgMjc582egtiMypU2
+ Wr3vaFUD1RsQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="179945023"
+X-IronPort-AV: E=Sophos;i="5.81,299,1610438400"; 
+   d="scan'208";a="179945023"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2021 00:45:08 -0700
+IronPort-SDR: h0X+cMwm4H7ZTsxzfb8NJtOY2+J9hVv0gmq79pYysqkh3KpJB1zlWAvyl6ji+pKv3INZyQCwRH
+ wNUyFioltDIw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,299,1610438400"; 
+   d="scan'208";a="379606872"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+  by orsmga006.jf.intel.com with ESMTP; 02 Apr 2021 00:45:07 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 2 Apr 2021 00:45:07 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Fri, 2 Apr 2021 00:45:07 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Fri, 2 Apr 2021 00:45:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C7U0wIQoEey+YepiO9hCzT0/zrCL10F0iIWOmlTHu5ovCiiccsQTwA7/kDzvWCmzNV5Bj3A9K70a0/xYusMJ6hmv8dFTTTz6inup5BmAr6wm5Dbi+Eyp+i4XuwL5T49Zo9IxykG+wWxYx2itEsgI4yLOAJIwCyZ5nOceHqf8iikclzJSRAYlxUv+hvrjnIMAT0GZ2gDa5HNbVWvH+Nyddi9sybEt9kPc+TdXnJNrLr1sVzLLBhjbVownTvVwisK+yv7ZPs3F8Xdl8jZ/BcOggItFepl7NvFfQnRiGKgiPLNTlgHAyGJdhMVUSGU3qti8smuhAx7JvikHnX7OyJFFuw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Zx992Xjr0uR41avrnqU4PMF0cDt/fAIZhwQTMvoAcVo=;
+ b=jykHwhAjwNsrmmosoJfGMYER79aKOoXU/UTX93XWrWwbx65nbqCRy4fhSBV+PYb0FqD/ZkGic1ifWCw9ifJNf71mF4KZlHriyRwN3qBSdKHoQxv57fI/WvDkuPs+OuK1Tb+tqabNKFGoenvagP4M3kBOA3Qp2gCWQe7QpuEsE7y4JTtIBjN1cbTtncwag/2vV68VrJvG2W5lDlpIusKoJvJ7Qh+dalo6vfIjqmZCQij2rssrEaJTwoWt7KqGZAWkgjeXnP73gGR1/yF+Q7EopDsMbpv4V0Cm3vA/JE4oLH+sorFte7h8Sw8oqlZW6IIlNmZJGOdNQbHXsyL/q0Du+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Zx992Xjr0uR41avrnqU4PMF0cDt/fAIZhwQTMvoAcVo=;
+ b=LMNyZza416bqzMcDmhPB1syLyxxz9iYS7P7ixJJ61s1nDP72AQvC95TkaNHFb9PTA9X6/HkW1k2M/EkBj3i/getTeUDmGB9gltxxuWGgPSmt/G4E1M+Ij/KCjVIM3cCoETBNL14keewpFNMgd38j29sqaOqN8OxRruEgQ6iuuOg=
+Received: from SN6PR11MB3136.namprd11.prod.outlook.com (2603:10b6:805:da::30)
+ by SN6PR11MB2672.namprd11.prod.outlook.com (2603:10b6:805:58::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Fri, 2 Apr
+ 2021 07:45:04 +0000
+Received: from SN6PR11MB3136.namprd11.prod.outlook.com
+ ([fe80::5143:5d07:51b:63a7]) by SN6PR11MB3136.namprd11.prod.outlook.com
+ ([fe80::5143:5d07:51b:63a7%5]) with mapi id 15.20.3977.033; Fri, 2 Apr 2021
+ 07:45:04 +0000
+From:   "Voon, Weifeng" <weifeng.voon@intel.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
+CC:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "qiangqing.zhang@nxp.com" <qiangqing.zhang@nxp.com>,
+        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
+        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
+        "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+Subject: RE: [PATCH net-next 1/2] net: stmmac: enable 2.5Gbps link speed
+Thread-Topic: [PATCH net-next 1/2] net: stmmac: enable 2.5Gbps link speed
+Thread-Index: AQHXJwi9OfCjiapOEkC0eUgABv6UiaqfxE4AgAEOrbA=
+Date:   Fri, 2 Apr 2021 07:45:04 +0000
+Message-ID: <SN6PR11MB3136F7A7ACA1A5C324031607887A9@SN6PR11MB3136.namprd11.prod.outlook.com>
+References: <20210401150152.22444-1-michael.wei.hong.sit@intel.com>
+ <20210401150152.22444-2-michael.wei.hong.sit@intel.com>
+ <20210401151044.GZ1463@shell.armlinux.org.uk>
+In-Reply-To: <20210401151044.GZ1463@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [202.190.27.70]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0647f8cd-276a-446b-f1cb-08d8f5ab3ac9
+x-ms-traffictypediagnostic: SN6PR11MB2672:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR11MB2672A39AE51015A797EE0C04887A9@SN6PR11MB2672.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: NvnCDehlxmbNzkQGbXU9PlmzXQoe2eIkmAk3LrteBx6kb9xADY7V+rvmykZZtZrLIJ31xGYsAEp+BJ4of+aqD80MjPK+rF1K4tXc9CKTLkC2DyHoa+sS9Gnn2axlWWRNovjTpDTG8SCbCpVeExVbVx59zMRIakF5zBliUP7eFHfXLThZC6KSqUK3BTBvGJ7ubDJjJnTA8GPO13CJXT9oWYbclHTXuO7MOH/g5N/nTNPqnEmO717LM54f3Z+vWSltxKgal5WxCkYXf6fiR9QLcWTZYF7louLVui5slcPw+CHx2oyHOpVAkVcq1zVJFus8bzWwi6EnSUO65NRfAJIGo0DcOgBGFQHMlnlyiPmcf7xMJfEphYW1RIsT/qY5UopDy3Pvq9nEj76Om3/SDiqyIpUQSx/Z6YgCiQbUFyCl2JXrfTy+3nnnyMfdqsfHk1DupY8LFf2Cft+48K96IOfDwSlx+iCSPyZjZW7XG0Q0msu9mGzEvQArpCh9Lv29hjae+W5wuQ49+z07TtWtQAh7ugfReRWZiJblAlav1HoQCSJ9eUalqJnWAA3nd+IG7MMGiwY0SoFQphsoksJSrBBMIcWLCbVbfAHaeqsrCnUbXiCZi5MegCXjBHlYcDPg4sBnsVd/IBDjoB8BhGsLGxn1N9CNdVbpzCS0O9iHKEVNv4o=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3136.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(366004)(396003)(136003)(346002)(39860400002)(5660300002)(4744005)(26005)(52536014)(71200400001)(8676002)(6506007)(478600001)(55016002)(2906002)(4326008)(6636002)(316002)(8936002)(186003)(76116006)(38100700001)(66476007)(9686003)(66946007)(86362001)(64756008)(110136005)(66556008)(66446008)(54906003)(33656002)(7416002)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?UbD+x7uyXLF5emlA+bLmLXn+fEbbKcqJnDnI+SGSJTaVyY15GyTR+Wi2vN65?=
+ =?us-ascii?Q?bLWp+kUfOlJ4F1UZ1tsrkiLboyB3d7A5DEi1ns/utFbSZHoRQiIdxqmFkFZQ?=
+ =?us-ascii?Q?PqMKS203msZrIa/UgrG0ZntVy5BtGDafON+tAWVDjqWGNo50L64Q6PwkGtLP?=
+ =?us-ascii?Q?gTgptR/1NGuhKydu7mtqKpnObUNvnyqykrLQyimLUfEHGAIcvfVt23mhg8k/?=
+ =?us-ascii?Q?QGHDnMe2lad8d1VfUAbtKT/gqm2uWgAL+G/ST0avUvNRix6SAWt+jIkhihGN?=
+ =?us-ascii?Q?KZEkUnLV/TmA/ADMAQSWGCxQNiJLCVEKK//BpDFidnL4Xl30Ys2XGFb++5Y/?=
+ =?us-ascii?Q?JIi0/Nxx/j5+xkfADBePSYGjRahtJ+9yMMLV6A6fiEY0HMu4Bqson0/Ij7gs?=
+ =?us-ascii?Q?/AOpqqZ69ME1ONNWv59WaPI4mX7mwUr+J5VwZxPA12/3X9l4aRLCRmdUmv0/?=
+ =?us-ascii?Q?pzgQrPNawgFKPSlx0R4GgzSjvEY7kHp566/ZZIJFphXD4v0x2IxoApp0t24J?=
+ =?us-ascii?Q?IsldD2ewr/2eLFBV5k7SSF2p0yLgTYwzPFt0or8OyYo0lZQuelTgDVAdGiUt?=
+ =?us-ascii?Q?zxPqeb9zyopB9N9dU1PMq3ZuYlYuJabs38JDIAezMynZttQZl6Q/Y1D7gN2+?=
+ =?us-ascii?Q?Eo1qxVyctrchTxe8KDR9yOTefLJf3g5YQX/hO0qbUpojrVu6NkG9vQlwCFKE?=
+ =?us-ascii?Q?me7RtveF4D5I9G2ypyUrpRRRMdWdRgGVooOASS1SiAr6ZLa/4PpEFFiIQWVE?=
+ =?us-ascii?Q?zgBGcShJFMwUbUSJsowlALo9h47sRANnsXlydVMEC4ljIlOe/+K72f9RV7FT?=
+ =?us-ascii?Q?VLVCe8QXDN3lX53cn/iF86GuCY0wnyoesiaiolvugvYAf3f6pUDyp/5Ke4Nj?=
+ =?us-ascii?Q?ZpXSptX1zxYv9YkWkitHrtv2GE5y+9ynjlVb549CRXOTDzoRLNrpyLZsB3oh?=
+ =?us-ascii?Q?xITL0JKqM1nHXAUnRoSYvRhz1/o1/+81S+QI6GW0IaZR39xYjj/nW6g5lbgc?=
+ =?us-ascii?Q?ShmypvXV3x/o4dIqOd4v9RadvqRs7OLjM+s+duanKOhmyt/0k+fd5nEQfDVT?=
+ =?us-ascii?Q?No/Vw2QZQX1j+v/5wL74uNYyrtUnGmePzRf2Cw3wb+EfiM/6xxU0RtaRaNeN?=
+ =?us-ascii?Q?3i8AvQaxfmd1rFndDaj61iX9rfz5I59Pl6cA7C0EqEeiOYwP49q8Jg9/EKZ3?=
+ =?us-ascii?Q?G8UkX+yaa+W17cr1xJoma2E1qGrTthI8apsCDw2TXZVc1g6J3iF1SR/eaEtz?=
+ =?us-ascii?Q?6H0d167c1yyPKO1ATGMyCxeRV1kKQfpipRGOucg3/IBC3e26IoaKQLyOLryI?=
+ =?us-ascii?Q?hc5Sx2JIezrRFD3NjKF1vkHJ?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3136.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0647f8cd-276a-446b-f1cb-08d8f5ab3ac9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Apr 2021 07:45:04.5352
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P3d6/ChvUwRTtzECOx+GwQUSOG4CfxsdBqkeEx/TsGfqvdQkdNKG3xzCLPvcHS6LIYGccu8jqumchq2S7Dy4AA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2672
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, we can specify ifindex on link creation. This change allows
-to specify ifindex when a device is moved to another network namespace.
+> > +	/* 2.5G mode only support 2500baseT full duplex only */
+> > +	if (priv->plat->has_gmac4 && priv->plat->speed_2500_en) {
+> > +		phylink_set(mac_supported, 2500baseT_Full);
+> > +		phylink_set(mask, 10baseT_Half);
+> > +		phylink_set(mask, 10baseT_Full);
+> > +		phylink_set(mask, 100baseT_Half);
+> > +		phylink_set(mask, 100baseT_Full);
+> > +		phylink_set(mask, 1000baseT_Half);
+> > +		phylink_set(mask, 1000baseT_Full);
+> > +		phylink_set(mask, 1000baseKX_Full);
+>=20
+> Why? This seems at odds to the comment above?
 
-CRIU users want to restore containers with pre-created network devices.
-A user will provide network devices and instructions where they have to
-be restored, then CRIU will restore network namespaces and move devices
-into them. The problem is that devices have to be restored with the same
-indexes that they have before C/R.
+> What about 2500baseX_Full ?
 
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Suggested-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Andrei Vagin <avagin@gmail.com>
----
- drivers/net/hyperv/netvsc_drv.c |  2 +-
- include/linux/netdevice.h       |  3 ++-
- net/core/dev.c                  | 24 +++++++++++++++++-------
- net/core/rtnetlink.c            | 14 ++++++++++----
- net/ieee802154/core.c           |  4 ++--
- net/wireless/core.c             |  4 ++--
- 6 files changed, 34 insertions(+), 17 deletions(-)
+The comments explain that the PCS<->PHY link is in 2500BASE-X
+and why 10/100/1000 link speed is mutually exclusive with 2500.
+But the connected external PHY are twisted pair cable which only
+supports 2500baseT_full.
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 15f262b70489..0f72748217a3 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2368,7 +2368,7 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
- 	 */
- 	if (!net_eq(dev_net(ndev), dev_net(vf_netdev))) {
- 		ret = dev_change_net_namespace(vf_netdev,
--					       dev_net(ndev), "eth%d");
-+					       dev_net(ndev), "eth%d", 0);
- 		if (ret)
- 			netdev_err(vf_netdev,
- 				   "could not move to same namespace as %s: %d\n",
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 87a5d186faff..cab59db40a52 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3923,7 +3923,8 @@ void __dev_notify_flags(struct net_device *, unsigned int old_flags,
- int dev_change_name(struct net_device *, const char *);
- int dev_set_alias(struct net_device *, const char *, size_t);
- int dev_get_alias(const struct net_device *, char *, size_t);
--int dev_change_net_namespace(struct net_device *, struct net *, const char *);
-+int dev_change_net_namespace(struct net_device *dev, struct net *net,
-+			     const char *pat, int new_ifindex);
- int __dev_set_mtu(struct net_device *, int);
- int dev_validate_mtu(struct net_device *dev, int mtu,
- 		     struct netlink_ext_ack *extack);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 0f72ff5d34ba..c296ee642e39 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -11001,6 +11001,8 @@ EXPORT_SYMBOL(unregister_netdev);
-  *	@net: network namespace
-  *	@pat: If not NULL name pattern to try if the current device name
-  *	      is already taken in the destination network namespace.
-+ *	@new_ifindex: If not zero, specifies device index in the target
-+ *	              namespace.
-  *
-  *	This function shuts down a device interface and moves it
-  *	to a new network namespace. On success 0 is returned, on
-@@ -11009,10 +11011,11 @@ EXPORT_SYMBOL(unregister_netdev);
-  *	Callers must hold the rtnl semaphore.
-  */
- 
--int dev_change_net_namespace(struct net_device *dev, struct net *net, const char *pat)
-+int dev_change_net_namespace(struct net_device *dev, struct net *net,
-+			     const char *pat, int new_ifindex)
- {
- 	struct net *net_old = dev_net(dev);
--	int err, new_nsid, new_ifindex;
-+	int err, new_nsid;
- 
- 	ASSERT_RTNL();
- 
-@@ -11043,6 +11046,11 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
- 			goto out;
- 	}
- 
-+	/* Check that new_ifindex isn't used yet. */
-+	err = -EBUSY;
-+	if (new_ifindex && __dev_get_by_index(net, new_ifindex))
-+		goto out;
-+
- 	/*
- 	 * And now a mini version of register_netdevice unregister_netdevice.
- 	 */
-@@ -11070,10 +11078,12 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
- 
- 	new_nsid = peernet2id_alloc(dev_net(dev), net, GFP_KERNEL);
- 	/* If there is an ifindex conflict assign a new one */
--	if (__dev_get_by_index(net, dev->ifindex))
--		new_ifindex = dev_new_index(net);
--	else
--		new_ifindex = dev->ifindex;
-+	if (!new_ifindex) {
-+		if (__dev_get_by_index(net, dev->ifindex))
-+			new_ifindex = dev_new_index(net);
-+		else
-+			new_ifindex = dev->ifindex;
-+	}
- 
- 	rtmsg_ifinfo_newnet(RTM_DELLINK, dev, ~0U, GFP_KERNEL, &new_nsid,
- 			    new_ifindex);
-@@ -11382,7 +11392,7 @@ static void __net_exit default_device_exit(struct net *net)
- 		snprintf(fb_name, IFNAMSIZ, "dev%d", dev->ifindex);
- 		if (__dev_get_by_name(&init_net, fb_name))
- 			snprintf(fb_name, IFNAMSIZ, "dev%%d");
--		err = dev_change_net_namespace(dev, &init_net, fb_name);
-+		err = dev_change_net_namespace(dev, &init_net, fb_name, 0);
- 		if (err) {
- 			pr_emerg("%s: failed to move %s to init_net: %d\n",
- 				 __func__, dev->name, err);
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 1bdcb33fb561..9508d3a0a28f 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2603,14 +2603,20 @@ static int do_setlink(const struct sk_buff *skb,
- 		return err;
- 
- 	if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] || tb[IFLA_TARGET_NETNSID]) {
--		struct net *net = rtnl_link_get_net_capable(skb, dev_net(dev),
--							    tb, CAP_NET_ADMIN);
-+		int new_ifindex = -1;
-+		struct net *net;
-+
-+		net = rtnl_link_get_net_capable(skb, dev_net(dev),
-+						tb, CAP_NET_ADMIN);
- 		if (IS_ERR(net)) {
- 			err = PTR_ERR(net);
- 			goto errout;
- 		}
- 
--		err = dev_change_net_namespace(dev, net, ifname);
-+		if (tb[IFLA_NEW_IFINDEX])
-+			new_ifindex = nla_get_s32(tb[IFLA_NEW_IFINDEX]);
-+
-+		err = dev_change_net_namespace(dev, net, ifname, new_ifindex);
- 		put_net(net);
- 		if (err)
- 			goto errout;
-@@ -3452,7 +3458,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err < 0)
- 		goto out_unregister;
- 	if (link_net) {
--		err = dev_change_net_namespace(dev, dest_net, ifname);
-+		err = dev_change_net_namespace(dev, dest_net, ifname, 0);
- 		if (err < 0)
- 			goto out_unregister;
- 	}
-diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
-index de259b5170ab..ec3068937fc3 100644
---- a/net/ieee802154/core.c
-+++ b/net/ieee802154/core.c
-@@ -205,7 +205,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 		if (!wpan_dev->netdev)
- 			continue;
- 		wpan_dev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
--		err = dev_change_net_namespace(wpan_dev->netdev, net, "wpan%d");
-+		err = dev_change_net_namespace(wpan_dev->netdev, net, "wpan%d", 0);
- 		if (err)
- 			break;
- 		wpan_dev->netdev->features |= NETIF_F_NETNS_LOCAL;
-@@ -222,7 +222,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 				continue;
- 			wpan_dev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
- 			err = dev_change_net_namespace(wpan_dev->netdev, net,
--						       "wpan%d");
-+						       "wpan%d", 0);
- 			WARN_ON(err);
- 			wpan_dev->netdev->features |= NETIF_F_NETNS_LOCAL;
- 		}
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index a2785379df6e..fabb677b7d58 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -165,7 +165,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 		if (!wdev->netdev)
- 			continue;
- 		wdev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
--		err = dev_change_net_namespace(wdev->netdev, net, "wlan%d");
-+		err = dev_change_net_namespace(wdev->netdev, net, "wlan%d", 0);
- 		if (err)
- 			break;
- 		wdev->netdev->features |= NETIF_F_NETNS_LOCAL;
-@@ -182,7 +182,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 				continue;
- 			wdev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
- 			err = dev_change_net_namespace(wdev->netdev, net,
--							"wlan%d");
-+							"wlan%d", 0);
- 			WARN_ON(err);
- 			wdev->netdev->features |= NETIF_F_NETNS_LOCAL;
- 		}
--- 
-2.29.2
-
+Weifeng
