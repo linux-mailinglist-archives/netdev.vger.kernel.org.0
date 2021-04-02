@@ -2,90 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 960A6353046
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 22:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDFEE353068
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 22:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236574AbhDBU0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 16:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S234856AbhDBUx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 16:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbhDBU0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 16:26:42 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B451C0613E6;
-        Fri,  2 Apr 2021 13:26:41 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id t20so2942671plr.13;
-        Fri, 02 Apr 2021 13:26:41 -0700 (PDT)
+        with ESMTP id S229722AbhDBUxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 16:53:55 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A6BC0613E6;
+        Fri,  2 Apr 2021 13:53:53 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id v4so5616879wrp.13;
+        Fri, 02 Apr 2021 13:53:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2iEnItltnm0jnmhsLT70bA1klLSw3FluLsNppsZ+Zd8=;
-        b=COFellU8AeVgYaXrAvcyN29Yxa5wJmHlPp4xkJsie4HlrU5JnQyTIZLPEgMkuCXrXi
-         91vMgY3a7R/82o9DUzhECjagoQwEOmiK7JrmvIFdBhxAb2GZA4usU5W/gpDMGq5cA/t5
-         ctHmm5FYZ2O8DG/GXiUKaa79/9mNU7zr0lvGRh9OvEDaSyM1o7JH1H7QH8vQExPg3P9u
-         xErWZHKheACeZbZ9mgauMP+8SfU5rOopSDmqCnNvvh3qlkr1aAhv13Q9u5VnLE2ki9oM
-         tLO/ILyOjMuXvKH8X5jic/sw2qqNIuacpd7PernNcKt6jxc2pLw7EgCOqdl+HqhmxynQ
-         wwIQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ad8+4vvgRoJKzOknFf9IRYyd66+3erW31k5BSaoEf+c=;
+        b=HidmHgb/sOyGVcW6jXrCNrf2v+UDiio7uzj5SRxhMvG4eSX99KUviTX2Ap+jVWBQ2m
+         QzC2OIDsKtO1z+W0UA8TMXsm8/FoCe8hhbU5ygfurtvrOQiRD8Qkohrj+cOeqyz5Jfb0
+         S1nZsipoKDD86piMqTa/J1kh/3qg0uxzzz55px4GI+yMEmPk5PM7SSed9ogHCOah8rGc
+         qMNR3cHpfg8xnXbKY16fCbDy1Jjf4PSuAt2ADLtCZDSfGQUP+WBrt4PlP1ppfNs30OEQ
+         OHL7jctzIfiwf3f/xPinjVEYrxkUAsyYnSDM18aUCwZMj7sDOq3T2jQEEGZ3yS0LlRE3
+         YFtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=2iEnItltnm0jnmhsLT70bA1klLSw3FluLsNppsZ+Zd8=;
-        b=BcwqcMrr/0dZzwHyVnRlfi1PzbRl0MTbfO+1Imq7HHX88+FR+BfqWiJca6dD+3RHXL
-         ON4KsFOCSVX8jvLfcq7a+49yCFmuhJHUVwYeZBWNjB5+zfkE4W5Ws9VZafwjS79qyuGQ
-         bL7jm5zoBTVhQRvhSTUL0sH28NK6R2h3sHyrbwsAnWKHLMBZHk7E/L8Ez957kfTXnN8u
-         +WoSetREosNvp7u4Zeii9u+5iK912Y8trX3XIKYTud8XxD8V5HfS+KiEVlad9UVXsHsL
-         ZLLDd0/dTqXr12xcTbRo2VcSCRZYQbvAt2uNTY3YL+mdNFSumsl39t4xZRLhe6uXkJY4
-         UCQg==
-X-Gm-Message-State: AOAM532XsNs/VWQoecqioJ01J6RsrHuwp4ykLJkOy8czP9SP1M14DjPm
-        gQtrrHbRYfDKfXA+mbZYUUo=
-X-Google-Smtp-Source: ABdhPJwYSAZCPd6alaK5AZo+0PB7LK6CP6WjgNsmPF4K+xUg08KXRrp9yv63kjqVH5j98vbwbGr4Eg==
-X-Received: by 2002:a17:90a:c257:: with SMTP id d23mr15433979pjx.102.1617395200734;
-        Fri, 02 Apr 2021 13:26:40 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:e15f:835a:6bcd:3410])
-        by smtp.gmail.com with ESMTPSA id e6sm8558364pgh.17.2021.04.02.13.26.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 13:26:40 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Subject: [PATCH iptables] fix build for missing ETH_ALEN definition
-Date:   Fri,  2 Apr 2021 13:26:28 -0700
-Message-Id: <20210402202628.2793741-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
+        bh=Ad8+4vvgRoJKzOknFf9IRYyd66+3erW31k5BSaoEf+c=;
+        b=Aie+PezEGUafvOcLntAaZzEjbO22U8jY0LbMFyboCKzOOSW0g+Otgj7PL1W0PeMJA8
+         aicY8cAVMpivJrEcIOr+1SceX9xWvY6Ao/xZj36Yc8zqPtlc+RYvacBPCC9WB1TTjfbu
+         lY+oN6jOB0RjDWUnEhu3NMk1XHErJXwMFPE/EXB9e4Uc9A6FyzcA4tYCgePRDRCHUm9o
+         jvHQh2tQ/WoEGtylZYqCQljj80bjhFLd8dChowl+cKYftCVK14PraRII8vIhZHXltLe8
+         3Fl+3rHzSbnCVhMbXL7Cj6e6B+Nb7GbOjjQQiG8ZqEoygWefR2CmDQnWV2hWdMmP5btj
+         hacA==
+X-Gm-Message-State: AOAM532WvbHVUrwNySE8MhnYaPXc0HnhyyuxdwzbI0eAG0lY32iQQUo0
+        QepBWRVHlOohfS6Fw/aup81UzJ1Hhqk=
+X-Google-Smtp-Source: ABdhPJwHo63N6QReuQKjsCqtKZ0sJst31jeXRGWCzZkl6Pv7kkREq/WwysS/uvQnmmsTQxvVKaCAig==
+X-Received: by 2002:adf:fa11:: with SMTP id m17mr3596191wrr.287.1617396831566;
+        Fri, 02 Apr 2021 13:53:51 -0700 (PDT)
+Received: from [192.168.1.101] ([37.166.24.151])
+        by smtp.gmail.com with ESMTPSA id h9sm13277017wmb.35.2021.04.02.13.53.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Apr 2021 13:53:51 -0700 (PDT)
+Subject: Re: [PATCH] net: initialize local variables in net/ipv6/mcast.c and
+ net/ipv4/igmp.c
+To:     Phillip Potter <phil@philpotter.co.uk>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210402173617.895-1-phil@philpotter.co.uk>
+ <d2334631-4b3a-48e5-5305-7320adc50909@gmail.com> <YGdeAK3BwWSnDwRX@equinox>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <37f4c845-e63b-87b8-29ec-b28d895326cd@gmail.com>
+Date:   Fri, 2 Apr 2021 22:53:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YGdeAK3BwWSnDwRX@equinox>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
 
-(this is needed at least with bionic)
 
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- libxtables/xtables.c | 1 +
- 1 file changed, 1 insertion(+)
+On 4/2/21 8:10 PM, Phillip Potter wrote:
+> On Fri, Apr 02, 2021 at 07:49:44PM +0200, Eric Dumazet wrote:
+>>
+>>
+>> On 4/2/21 7:36 PM, Phillip Potter wrote:
+>>> Use memset to initialize two local buffers in net/ipv6/mcast.c,
+>>> and another in net/ipv4/igmp.c. Fixes a KMSAN found uninit-value
+>>> bug reported by syzbot at:
+>>> https://syzkaller.appspot.com/bug?id=0766d38c656abeace60621896d705743aeefed51
+>>
+>>
+>> According to this link, the bug no longer triggers.
+>>
+>> Please explain why you think it is still there.
+>>
+> 
+> Dear Eric,
+> 
+> It definitely still triggers, tested it on the master branch of
+> https://github.com/google/kmsan last night. The patch which fixes the
+> crash on that page is the same patch I've sent in.
 
-diff --git a/libxtables/xtables.c b/libxtables/xtables.c
-index bc42ba82..77bc18f6 100644
---- a/libxtables/xtables.c
-+++ b/libxtables/xtables.c
-@@ -45,6 +45,7 @@
- 
- #include <xtables.h>
- #include <limits.h> /* INT_MAX in ip_tables.h/ip6_tables.h */
-+#include <linux/if_ether.h> /* ETH_ALEN */
- #include <linux/netfilter_ipv4/ip_tables.h>
- #include <linux/netfilter_ipv6/ip6_tables.h>
- #include <libiptc/libxtc.h>
--- 
-2.31.0.208.g409f899ff0-goog
+Please send the full report (stack trace)
+
+Thanks.
+
+
 
