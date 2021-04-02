@@ -2,141 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69DB6352F82
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 21:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2B6352F85
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 21:08:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236073AbhDBTIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 15:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
+        id S236274AbhDBTIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 15:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbhDBTIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 15:08:15 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433C8C0613E6;
-        Fri,  2 Apr 2021 12:08:13 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id c17so4121664pfn.6;
-        Fri, 02 Apr 2021 12:08:13 -0700 (PDT)
+        with ESMTP id S229722AbhDBTIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 15:08:37 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692F3C0613E6;
+        Fri,  2 Apr 2021 12:08:34 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id a22-20020a17090aa516b02900c1215e9b33so4979066pjq.5;
+        Fri, 02 Apr 2021 12:08:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P6/8i5KYWBwtKewMiq4TVS1lrndCLrJeUPK5dwemxFM=;
-        b=TntiS3Fs12b1MOrQAQJtAYmrceTL6VNqagyxw/qoTckayCCYX+nxjIhDtJPAYIzDVs
-         XJSV6rOq8Q0dCkge1pxfqwF1/sPeCfHj9ehl/vnZT+UUkA02orlemYpbb7+B2/VOdD5d
-         KnL+9+nxzwtD7jakueMhVHgR89Y5CVwGjBZ08vFmW+HVY8C5qm1a845PbWIF0a3iwpa8
-         tUGHU0NvGizDy4C4k8cRS/idPwQPH+daPy0OMeyl7rBbu6V7AfdqWwm/kZbaGCCOtdD7
-         VdnWoYNrJpIu71tN00MqoiEi/7NdKFpsO2liqxIJB5XYwKKIsDOIe3Kj+lKgXPwYx5Ns
-         nzDA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vcm2XPETRMJjxtPIhb8l7WsmDGD0aL+j1F2VkszeHMY=;
+        b=QwMqkvMGpzoYLScjb2eWKSZOcGpOfoS8hsC2umnqUN5lDsZIbX/jDksX9FA8ofOJUk
+         shDzBwMXVR36lmB2hI4vPsmBLJYvD6TafUPEeAOattB9bgGjwfbzbsX3Al1y1n1hXywe
+         SYpQ4VWbDruyeDdA7O+BVdRb7+gH/E+1m82RVKUlETRlNlP7l5p90yO5H9l5a4DKVbjJ
+         MHS+vNpfwHeg1JthhvS0ngFqEZ8AyuuywAaaykwx61Db8yFJgWidIHNooCgJSTxdsSyK
+         zbDmwDmPvFHAJ5DBATc72PApHgJJ6i64GPwXp3PHJ9pUBsBAQpW3+mf0noYGHvFGaq+o
+         Cvrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P6/8i5KYWBwtKewMiq4TVS1lrndCLrJeUPK5dwemxFM=;
-        b=fi7XvXo0kXt6q0JcwG7oZ79WZe8AgHDuDjn2viUR7fvhUEaiI0UlPzdwS7UEx3PvFk
-         s5H9Nfiw34wHjajrXYzKC5H1BscknfWlJYJBjiWpzPnH2JvxvKSSOoygVBbwU95yo8g9
-         k6DaOu82vULhmrj1cTaLADZSVhRTf/KzJURcydJlfDJePzveYQ59TK2AbJx5uKnN2qXW
-         71iyPH7E8ijtYP1Jp8o8biltWcHu4BBMSmsNfsNuHfYgzAimvW5YsbVdccuLcU2umm72
-         MwA5T4LY4LJtyE2ZctNpRDww2tY7uFsKIw9IGuyEmX+Pn8/TirOyUzCqL8zn4Tc9TjkC
-         VE7Q==
-X-Gm-Message-State: AOAM5308cskjiiaKk5GHT+XraQi64raSq0/JOXYPr01qfjM1zDFBmYKn
-        NDM0SwEWzGGTtpIgJ6Tq8ocf3e60km0rbA==
-X-Google-Smtp-Source: ABdhPJz25seraxy07Imz6KaRoG0kPQpZqaCFhF5Ayb89Y9TeOvdSu9ff+SFq49eH/nFxal4lPwe4YA==
-X-Received: by 2002:a63:79c6:: with SMTP id u189mr12942397pgc.154.1617390492540;
-        Fri, 02 Apr 2021 12:08:12 -0700 (PDT)
-Received: from localhost ([112.79.204.47])
-        by smtp.gmail.com with ESMTPSA id k13sm8773580pfc.50.2021.04.02.12.08.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 12:08:12 -0700 (PDT)
-Date:   Sat, 3 Apr 2021 00:38:06 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
-Message-ID: <20210402190806.nhcgappm3iocvd3d@apollo>
-References: <20210325120020.236504-1-memxor@gmail.com>
- <20210325120020.236504-4-memxor@gmail.com>
- <CAEf4Bzbz9OQ_vfqyenurPV7XRVpK=zcvktwH2Dvj-9kUGL1e7w@mail.gmail.com>
- <20210328080648.oorx2no2j6zslejk@apollo>
- <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
- <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
- <20210331094400.ldznoctli6fljz64@apollo>
- <5d59b5ee-a21e-1860-e2e5-d03f89306fd8@iogearbox.net>
- <20210402152743.dbadpgcmrgjt4eca@apollo>
- <CAADnVQ+wqrEnOGd8E1yp+1WTAx8ZcAx3HUjJs6ipPd0eKmOrgA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vcm2XPETRMJjxtPIhb8l7WsmDGD0aL+j1F2VkszeHMY=;
+        b=UufKBqmPVE9ruYEyk5jXK8lO1KeEzuyo2UdkvBwGpNF7rbceiBCLMAwnOSbjDjXq/C
+         LBVcyU59Un4TYLeXoAJDLYGBiYH/BcHexSSOcNP9vZRxW+vyzCRHvk4/lu1TAs7Nyq99
+         3Z30huyamdNAjhQPV6G6lTtOXouyFg8VxBNmhYsOOhVcLGcvLxkHXocdijYaS9+F/gQS
+         VqVxSRL1X2hRwCbnYRke3EfFL586KEG3DQP5brZf6ZJ9UnNze7AH//oKBJYIHWgu+tf5
+         9vde67ESKDD7m+/rnDZGf+dY5GVqte32d129zCW640lDMu+gotS9z/dsmZs8N5hR7qvN
+         TuHw==
+X-Gm-Message-State: AOAM530lRlZ+hKUpKO30ffQlMqIOU7OKs78DVKy9YFWzMcR9qXg5PlEx
+        axUwia5+NvMcMGngl7QIFFc876n5DKOwyxwnNgY=
+X-Google-Smtp-Source: ABdhPJzKgq2UBdFcOaBRjhDgSv/tOVjFmYljVJd/mLC+tnRMXE61rsTfiIXhJ1+vNo/l4+a7pjo0sigQzcMyfADrKAM=
+X-Received: by 2002:a17:90a:a08c:: with SMTP id r12mr434461pjp.231.1617390513993;
+ Fri, 02 Apr 2021 12:08:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+wqrEnOGd8E1yp+1WTAx8ZcAx3HUjJs6ipPd0eKmOrgA@mail.gmail.com>
+References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
+ <B42B247A-4D0B-4DE9-B4D3-0C452472532D@fb.com> <CAM_iQpW-cuiYsPsu4mYZxZ1Oixffu2pV1TFg1c+eg9XT3wWwPQ@mail.gmail.com>
+ <E0D5B076-A726-4845-8F12-640BAA853525@fb.com> <CAM_iQpWdO7efdcA2ovDsOF9XLhWJGgd6Be5qq0=xLphVBRE_Gw@mail.gmail.com>
+ <93BBD473-7E1C-4A6E-8BB7-12E63D4799E8@fb.com>
+In-Reply-To: <93BBD473-7E1C-4A6E-8BB7-12E63D4799E8@fb.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 2 Apr 2021 12:08:23 -0700
+Message-ID: <CAM_iQpXEuxwQvT9FNqDa7y5kNpknA4xMNo_973ncy3iYaF-NTA@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+To:     Song Liu <songliubraving@fb.com>
+Cc:     "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>,
+        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
+        "wangdongdong.6@bytedance.com" <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 03, 2021 at 12:02:14AM IST, Alexei Starovoitov wrote:
-> On Fri, Apr 2, 2021 at 8:27 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
-> > [...]
+On Fri, Apr 2, 2021 at 10:57 AM Song Liu <songliubraving@fb.com> wrote:
 >
-> All of these things are messy because of tc legacy. bpf tried to follow tc style
-> with cls and act distinction and it didn't quite work. cls with
-> direct-action is the only
-> thing that became mainstream while tc style attach wasn't really addressed.
-> There were several incidents where tc had tens of thousands of progs attached
-> because of this attach/query/index weirdness described above.
-> I think the only way to address this properly is to introduce bpf_link style of
-> attaching to tc. Such bpf_link would support ingress/egress only.
-> direction-action will be implied. There won't be any index and query
-> will be obvious.
+>
+>
+> > On Apr 2, 2021, at 10:34 AM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Thu, Apr 1, 2021 at 1:17 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >>
+> >>
+> >>> On Apr 1, 2021, at 10:28 AM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >>>
+> >>> On Wed, Mar 31, 2021 at 11:38 PM Song Liu <songliubraving@fb.com> wrote:
+> >>>>
+> >>>>
+> >>>>
+> >>>>> On Mar 31, 2021, at 9:26 PM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >>>>>
+> >>>>> From: Cong Wang <cong.wang@bytedance.com>
+> >>>>>
+> >>>>> (This patch is still in early stage and obviously incomplete. I am sending
+> >>>>> it out to get some high-level feedbacks. Please kindly ignore any coding
+> >>>>> details for now and focus on the design.)
+> >>>>
+> >>>> Could you please explain the use case of the timer? Is it the same as
+> >>>> earlier proposal of BPF_MAP_TYPE_TIMEOUT_HASH?
+> >>>>
+> >>>> Assuming that is the case, I guess the use case is to assign an expire
+> >>>> time for each element in a hash map; and periodically remove expired
+> >>>> element from the map.
+> >>>>
+> >>>> If this is still correct, my next question is: how does this compare
+> >>>> against a user space timer? Will the user space timer be too slow?
+> >>>
+> >>> Yes, as I explained in timeout hashmap patchset, doing it in user-space
+> >>> would require a lot of syscalls (without batching) or copying (with batching).
+> >>> I will add the explanation here, in case people miss why we need a timer.
+> >>
+> >> How about we use a user space timer to trigger a BPF program (e.g. use
+> >> BPF_PROG_TEST_RUN on a raw_tp program); then, in the BPF program, we can
+> >> use bpf_for_each_map_elem and bpf_map_delete_elem to scan and update the
+> >> map? With this approach, we only need one syscall per period.
+> >
+> > Interesting, I didn't know we can explicitly trigger a BPF program running
+> > from user-space. Is it for testing purposes only?
+>
+> This is not only for testing. We will use this in perf (starting in 5.13).
+>
+> /* currently in Arnaldo's tree, tools/perf/util/bpf_counter.c: */
+>
+> /* trigger the leader program on a cpu */
+> static int bperf_trigger_reading(int prog_fd, int cpu)
+> {
+>         DECLARE_LIBBPF_OPTS(bpf_test_run_opts, opts,
+>                             .ctx_in = NULL,
+>                             .ctx_size_in = 0,
+>                             .flags = BPF_F_TEST_RUN_ON_CPU,
+>                             .cpu = cpu,
+>                             .retval = 0,
+>                 );
+>
+>         return bpf_prog_test_run_opts(prog_fd, &opts);
+> }
+>
+> test_run also passes return value (retval) back to user space, so we and
+> adjust the timer interval based on retval.
 
-Note that we already have bpf_link support working (without support for pinning
-ofcourse) in a limited way. The ifindex, protocol, parent_id, priority, handle,
-chain_index tuple uniquely identifies a filter, so we stash this in the bpf_link
-and are able to operate on the exact filter during release.
+This is really odd, every name here contains a "test" but it is not for testing
+purposes. You probably need to rename/alias it. ;)
 
-> So I would like to propose to take this patch set a step further from
-> what Daniel said:
-> int bpf_tc_attach(prog_fd, ifindex, {INGRESS,EGRESS}):
-> and make this proposed api to return FD.
-> To detach from tc ingress/egress just close(fd).
+So, with this we have to get a user-space daemon running just to keep
+this "timer" alive. If I want to run it every 1ms, it means I have to issue
+a syscall BPF_PROG_TEST_RUN every 1ms. Even with a timer fd, we
+still need poll() and timerfd_settime(). This is a considerable overhead
+for just a single timer.
 
-You mean adding an fd-based TC API to the kernel?
+With current design, user-space can just exit after installing the timer,
+either it can adjust itself or other eBPF code can adjust it, so the per
+timer overhead is the same as a kernel timer.
 
-> The user processes will not conflict with each other and will not accidently
-> detach bpf program that was attached by another user process.
-> Such api will address the existing tc query/attach/detach race race conditions.
+The visibility to other BPF code is important for the conntrack case,
+because each time we get an expired item during a lookup, we may
+want to schedule the GC timer to run sooner. At least this would give
+users more freedom to decide when to reschedule the timer.
 
-Hmm, I think we do solve the race condition by returning the id. As long as you
-don't misuse the interface and go around deleting filters arbitrarily (i.e. only
-detach using the id), programs won't step over each other's filters. Storing the
-id from the netlink response received during detach also eliminates any
-ambigiuity from probing through get_info after attach. Same goes for actions,
-and the same applies to the bpf_link returning API (which stashes id/index).
-
-Do you have any other example that can still be racy given the current API?
-
-The only advantage of fd would be the possibility of pinning it, and extending
-lifetime of the filter.
-
-> And libbpf side of support for this api will be trivial. Single bpf
-> link_create command
-> with ifindex and ingress|egress arguments.
-> wdyt?
-
---
-Kartikeya
+Thanks.
