@@ -2,82 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30676352EE4
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 20:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8EB7352EEC
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 20:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235890AbhDBSDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 14:03:43 -0400
-Received: from mga04.intel.com ([192.55.52.120]:18756 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235797AbhDBSDl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Apr 2021 14:03:41 -0400
-IronPort-SDR: ZEpGtzEbGitHKyCIZoNMcNEiDin8jG1dAOHTrdiAwO2Vt+1A3PhCH8FkV9/tobKACKMw8WrUEG
- LHEPizgoYW7Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9942"; a="190280282"
-X-IronPort-AV: E=Sophos;i="5.81,300,1610438400"; 
-   d="scan'208";a="190280282"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2021 11:03:40 -0700
-IronPort-SDR: WumWdpleoF65p5ruzr1qyjb6z5Psmn/BDjvXG2Siymu/YdclJNW2Q/yBWJ7dtMdfOBbjc3vCUe
- y/FZqOLxOHJA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,300,1610438400"; 
-   d="scan'208";a="446891023"
-Received: from lkp-server01.sh.intel.com (HELO 69d8fcc516b7) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 02 Apr 2021 11:03:33 -0700
-Received: from kbuild by 69d8fcc516b7 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lSO8r-0007HQ-1u; Fri, 02 Apr 2021 18:03:33 +0000
-Date:   Sat, 3 Apr 2021 02:03:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Loic Poulain <loic.poulain@linaro.org>, gregkh@linuxfoundation.org,
-        kuba@kernel.org, davem@davemloft.net
-Cc:     kbuild-all@lists.01.org, linux-arm-msm@vger.kernel.org,
-        aleksander@aleksander.es, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bjorn.andersson@linaro.org,
-        manivannan.sadhasivam@linaro.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH] net: fix err_cast.cocci warnings
-Message-ID: <20210402180311.GA42695@0469b872480c>
-References: <1617372397-13988-1-git-send-email-loic.poulain@linaro.org>
+        id S235797AbhDBSF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 14:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234984AbhDBSF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 14:05:29 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB809C0613E6;
+        Fri,  2 Apr 2021 11:05:26 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id j20-20020a05600c1914b029010f31e15a7fso4658939wmq.1;
+        Fri, 02 Apr 2021 11:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7mr2GfJg5eEcgvBSMCjlj1cDx5zt7P141cpidCvA+OE=;
+        b=Bqpu5KNZC8ZgmSc6En7KsM0W7HKnyvePVTplgtYftLWqZ+TNghdf20o1psAEI+kaew
+         KDYPXs+KYA2s5Gz2Y5eprNf/ieV+N3tgD6Y+UZmrnzmjZKYd0DMMWKFjZwnum1FlmFm5
+         aGz2QvkBW/as3KtSS0xqaEqlBJBUwAhjkim5t8n3WSxF5a+Lradyt96TCSWTKDsM64Pl
+         eSOonjh4hCD8nG1bEKRE6L/E+ZouOr+vpkwHAHpVwGZnWScZ0cm2+TqFxTGghmDqZsyv
+         PKLlDKM/aCOxMqxEYLV+qflPTxGdqDAZPRQS8uBYUBm3eC9MsXJGGNxthK3KHWW0V7l1
+         Yj9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7mr2GfJg5eEcgvBSMCjlj1cDx5zt7P141cpidCvA+OE=;
+        b=jdHURbEGOdDwd9wQjilNPxjNZ/3RBhLBGaj+0wse5w9zGgWX5ArvZclQLeNP0lK1jZ
+         WFX92tVaVd2zAtnuoA2C/7LlqPaUNPFYqLMyK55hmkp3wl0BikEuOmr1DQPiRfoL5O9a
+         UMk4WGCA67ykuUvrEQGnUFsdAAIaiIphjKfKwRAnQGUSY4appTPpQxb3yasWhqjvaQMg
+         jAwTbFnC9IABKJNqfRXDFBrEfF31Xq9mhLnBWHSlr1yrPB/TpHphLeEkiQxNXr88I/GB
+         uZ81Nrnvdi0CeP9Y5X1RvW4JcsMkKU08XI14YNN1bi4zWwPgfQHPuFvvdzgIDnMBZRvX
+         gr6g==
+X-Gm-Message-State: AOAM533xBOYV3Ru26tM9ztSxBsINHv97DF1SMuNjl/RNmzHZjCgbphYU
+        vZuuOnz11Ks/Ulx+TZs3Ej1aFd8W1ts=
+X-Google-Smtp-Source: ABdhPJyaAtduqP9asCyPMlwX/IljNTQoupAqwWq5JfOut4afupWIFZmlDfHqtqmErqN1C8ZgqKkvDA==
+X-Received: by 2002:a05:600c:4f89:: with SMTP id n9mr14084482wmq.133.1617386725296;
+        Fri, 02 Apr 2021 11:05:25 -0700 (PDT)
+Received: from [192.168.1.101] ([37.166.24.151])
+        by smtp.gmail.com with ESMTPSA id u17sm11954151wmq.3.2021.04.02.11.05.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Apr 2021 11:05:24 -0700 (PDT)
+Subject: Re: [PATCH net v2] atl1c: move tx cleanup processing out of interrupt
+To:     Gatis Peisenieks <gatis@mikrotik.com>, chris.snook@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
+        jesse.brandeburg@intel.com, dchickles@marvell.com,
+        tully@mikrotik.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <c6ea0a3d1bcf79bb1e319d1e99cfed9b@mikrotik.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e8b35b3e-ee20-412b-b2cd-5362e4282abf@gmail.com>
+Date:   Fri, 2 Apr 2021 20:05:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1617372397-13988-1-git-send-email-loic.poulain@linaro.org>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <c6ea0a3d1bcf79bb1e319d1e99cfed9b@mikrotik.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
-
-drivers/net/wwan/wwan_core.c:208:9-16: WARNING: ERR_CAST can be used with wwandev
 
 
- Use ERR_CAST inlined function instead of ERR_PTR(PTR_ERR(...))
+On 4/2/21 7:20 PM, Gatis Peisenieks wrote:
+> Tx queue cleanup happens in interrupt handler on same core as rx queue processing.
+> Both can take considerable amount of processing in high packet-per-second scenarios.
+> 
+> Sending big amounts of packets can stall the rx processing which is unfair
+> and also can lead to to out-of-memory condition since __dev_kfree_skb_irq
+> queues the skbs for later kfree in softirq which is not allowed to happen
+> with heavy load in interrupt handler.
+> 
+> This puts tx cleanup in its own napi and enables threaded napi to allow the rx/tx
+> queue processing to happen on different cores.
+> 
+> The ability to sustain equal amounts of tx/rx traffic increased:
+> from 280Kpps to 1130Kpps on Threadripper 3960X with upcoming Mikrotik 10/25G NIC,
+> from 520Kpps to 850Kpps on Intel i3-3320 with Mikrotik RB44Ge adapter.
+> 
+> Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+> ---
+>  drivers/net/ethernet/atheros/atl1c/atl1c.h    |  2 +
+>  .../net/ethernet/atheros/atl1c/atl1c_main.c   | 43 +++++++++++++++++--
+>  2 files changed, 41 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+> index a0562a90fb6d..4404fa44d719 100644
+> --- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
+> +++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+> @@ -506,6 +506,7 @@ struct atl1c_adapter {
+>      struct net_device   *netdev;
+>      struct pci_dev      *pdev;
+>      struct napi_struct  napi;
+> +    struct napi_struct  tx_napi;
+>      struct page         *rx_page;
+>      unsigned int        rx_page_offset;
+>      unsigned int        rx_frag_size;
+> @@ -529,6 +530,7 @@ struct atl1c_adapter {
+>      u16 link_duplex;
+> 
+>      spinlock_t mdio_lock;
+> +    spinlock_t irq_mask_lock;
+>      atomic_t irq_sem;
+> 
+>      struct work_struct common_task;
+> diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> index 3f65f2b370c5..f51b28e8b6dc 100644
+> --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+> @@ -813,6 +813,7 @@ static int atl1c_sw_init(struct atl1c_adapter *adapter)
+>      atl1c_set_rxbufsize(adapter, adapter->netdev);
+>      atomic_set(&adapter->irq_sem, 1);
+>      spin_lock_init(&adapter->mdio_lock);
+> +    spin_lock_init(&adapter->irq_mask_lock);
+>      set_bit(__AT_DOWN, &adapter->flags);
+> 
+>      return 0;
+> @@ -1530,7 +1531,7 @@ static inline void atl1c_clear_phy_int(struct atl1c_adapter *adapter)
+>      spin_unlock(&adapter->mdio_lock);
+>  }
+> 
+> -static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
+> +static unsigned atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
+>                  enum atl1c_trans_queue type)
 
-Generated by: scripts/coccinelle/api/err_cast.cocci
 
-CC: Loic Poulain <loic.poulain@linaro.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
+This v2 is much better, thanks.
 
-url:    https://github.com/0day-ci/linux/commits/Loic-Poulain/net-Add-a-WWAN-subsystem/20210402-220002
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git bd78980be1a68d14524c51c4b4170782fada622b
+You might rename this atl1c_clean_tx_irq(), because it is now
+not run under hard irqs ?
 
- wwan_core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Maybe merge atl1c_clean_tx_irq() and atl1c_clean_tx() into a single function ?
 
---- a/drivers/net/wwan/wwan_core.c
-+++ b/drivers/net/wwan/wwan_core.c
-@@ -205,7 +205,7 @@ struct wwan_port *wwan_create_port(struc
- 	 */
- 	wwandev = wwan_create_dev(parent);
- 	if (IS_ERR(wwandev))
--		return ERR_PTR(PTR_ERR(wwandev));
-+		return ERR_CAST(wwandev);
- 
- 	/* A port is exposed as character device, get a minor */
- 	minor = ida_alloc_range(&minors, 0, WWAN_MAX_MINORS - 1, GFP_KERNEL);
+
