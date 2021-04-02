@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC0535292A
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 11:57:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B6235292B
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 11:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbhDBJ5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 05:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
+        id S229553AbhDBJ5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 05:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbhDBJ5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 05:57:00 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39DDC0613E6
-        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 02:56:58 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id w8so2477155pjf.4
-        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 02:56:58 -0700 (PDT)
+        with ESMTP id S234275AbhDBJ5G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 05:57:06 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D863C0613E6
+        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 02:57:04 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id l123so1793348pfl.8
+        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 02:57:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XW87w4qSyfmGOHCyYDNi3sfZsu5hL8j9oGxPnvJpokw=;
-        b=S/AgGnZFfiTUd6ccJlBnO3KlWW9Nm8ZfgH0qF73W0rb9tBMl+id4N/rva/tReLIOsu
-         gIfUac4ybqHJc7TFIx/u4UIuhu3tqeds82Pe/6eat24X+iQAXw3HnmqStJ7zR7l3A2N3
-         WW3+gSpMgV9yA8/ZTDNaazzirQC7FyLw/MfeacAfh7wDXsvFQzL55RrX+GTGo/7eZV/N
-         3CIBGuX8PBjK4OHAcA3Y/zc+c0sAf1ceGYdcgP/ASfGvSL3JZMv7swWdzprHK/5/uE7K
-         wFtqNb8cqMusdOnHamiicyQrcIaRZWP/DGcu2KxylVbB+VbqDHSv5M/9mkWf2f5rqRhx
-         kYHg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=q8fZ6bXiBKdKxq6WTnwN2X3L/4J4BXa/QeiEAL+Oam0=;
+        b=klGSRr7XIkSCU/bXbFaNIPohrtOBM2CUwkeUtEHEBbz6jM3iMgaZhRdYZNxa8z+CQ2
+         KyB+6F1VaWsTKG9w5CDuuS4JgyaPYI4OwDnVwUJnwmMx94u2R5zITVe1eQ1/pgjAa/0k
+         hVqqcKd02gJf2Ry0my6LLC0R2jdlZE85y6k4Hfmb7Ho/BT7jPymScV0V0DXql2h5460x
+         NSSrzRMqjKq6zbP4c4O4fqgCYKwi1nqkE61kHH6zZBxcamu24M+7JPcWXYlrg8u3f5ec
+         Sk9ZMp2HqRvDEUp/D19mPf43Y/P55yq4Tvs3KzB6+0a/ieJODq7zEnqSTxy189rTWwhy
+         OkhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XW87w4qSyfmGOHCyYDNi3sfZsu5hL8j9oGxPnvJpokw=;
-        b=gT9qO4cMMrPrzE0XCBuZC47yTBgiTFpErsfZkUTKqNqLefnfxsqnRb67Cj29OrFQpp
-         MgoULOrrZn+1v2DBnWwKzpATx3SfTrHq0Jz+2qpkuTL8jUAS+uY0hGto738jf5F/o+0O
-         Ay9KlzriM0NNT20A4cutjYz92+45WO6bWsUOmNumrYXJWY7pu1ErA4qzkdisaJzzE1z6
-         p4td2W5k+0q5mdS6edAZKgIAKS1wr4ywN9ERVUQJZ8w7lvujYxYbsFCrSarPOezAw+fo
-         y+Kqhe52lc8Wy9LP5JIpj3Q9C92LQc3VTnYh89ubFysKfIRQuZczY8q5ACfchN4RQJL2
-         ybWA==
-X-Gm-Message-State: AOAM530O4vUk/PplreMR4wPRP1vyletOc2o13E+kKRYbKeEeS0xBRBj0
-        yVqcigxNXm8cd3hHTR9xd9A=
-X-Google-Smtp-Source: ABdhPJz9qHG+w4fVqmUoIUvVTR06SWLFjQYPGjQpQZCivdnAOMGAp96YiFtJKuirUa2OM7bhZuw49w==
-X-Received: by 2002:a17:902:9f85:b029:e6:f010:a57e with SMTP id g5-20020a1709029f85b02900e6f010a57emr11752621plq.61.1617357418292;
-        Fri, 02 Apr 2021 02:56:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=q8fZ6bXiBKdKxq6WTnwN2X3L/4J4BXa/QeiEAL+Oam0=;
+        b=h2zw4Kt2KxLjcG+Rdfb5yDDkdIbg8LUtFGL2HkRVt70rP0nJd/2hT46odUEiJrWCMj
+         CGWKoRTwTguqOyUYveAy+LhUPfYvzM3KnbMMGhcfvWmD4yZEG/yyfTUWpauIPQV19YBA
+         LCtc9blvKVof6tqUqmKCykU7ypGMxkGVeUB0nE1ilet/zvT0cuWztmei6K8kLx9Ksd9K
+         KK3u00jhZ3f2HDC3ypOBoX6rO5RFVTO9bA7Z9pxPW19La10E5PtWtwrJq/GxCZ8i2IOQ
+         /6lTGQWrVf0oLBVl5hv4I2OB6ZiKJwkjNL/7MIDW+mlf1f7letac1duxH+Tn6OAwhMjD
+         o3Tg==
+X-Gm-Message-State: AOAM532qMcfNyb30CHMyFtg5tSfxY1BSX2FpL8QFHpaKmiJmL16PzkNC
+        ETsRpePE/UnCyMDM53CypFA=
+X-Google-Smtp-Source: ABdhPJzCU0kFs4rul6fRrBftHIV5W1PfGYPucuYpa2maEuHMIaIXDYPupXt7RtqB4FkfetPPFXc5lA==
+X-Received: by 2002:aa7:8b0f:0:b029:20d:1b60:e823 with SMTP id f15-20020aa78b0f0000b029020d1b60e823mr11534138pfd.16.1617357423816;
+        Fri, 02 Apr 2021 02:57:03 -0700 (PDT)
 Received: from yoga-910.localhost (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id d13sm8009505pgb.6.2021.04.02.02.56.53
+        by smtp.gmail.com with ESMTPSA id d13sm8009505pgb.6.2021.04.02.02.56.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 02:56:57 -0700 (PDT)
+        Fri, 02 Apr 2021 02:57:03 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 0/3] dpaa2-eth: add rx copybreak support
-Date:   Fri,  2 Apr 2021 12:55:29 +0300
-Message-Id: <20210402095532.925929-1-ciorneiioana@gmail.com>
+Cc:     ruxandra.radulescu@nxp.com, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next v2 1/3] dpaa2-eth: rename dpaa2_eth_xdp_release_buf into dpaa2_eth_recycle_buf
+Date:   Fri,  2 Apr 2021 12:55:30 +0300
+Message-Id: <20210402095532.925929-2-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210402095532.925929-1-ciorneiioana@gmail.com>
+References: <20210402095532.925929-1-ciorneiioana@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -62,47 +65,120 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-DMA unmapping, allocating a new buffer and DMA mapping it back on the
-refill path is really not that efficient. Proper buffer recycling (page
-pool, flipping the page and using the other half) cannot be done for
-DPAA2 since it's not a ring based controller but it rather deals with
-multiple queues which all get their buffers from the same buffer pool on
-Rx.
+Rename the dpaa2_eth_xdp_release_buf function into dpaa2_eth_recycle_buf
+since in the next patches we'll be using the same recycle mechanism for
+the normal stack path beside for XDP_DROP.
 
-To circumvent these limitations, add support for Rx copybreak in
-dpaa2-eth.
+Also, rename the array which holds the buffers to be recycled so that it
+does not have any reference to XDP.
 
-Below you can find a summary of the tests that were run to end up
-with the default rx copybreak value of 512.
-A bit about the setup - a LS2088A SoC, 8 x Cortex A72 @ 1.8GHz, IPfwd
-zero loss test @ 20Gbit/s throughput.  I tested multiple frame sizes to
-get an idea where is the break even point.
-
-Here are 2 sets of results, (1) is the baseline and (2) is just
-allocating a new skb for all frames sizes received (as if the copybreak
-was even to the MTU). All numbers are in Mpps.
-
-         64   128    256   512  640   768   896
-
-(1)     3.23  3.23  3.24  3.21  3.1  2.76  2.71
-(2)     3.95  3.88  3.79  3.62  3.3  3.02  2.65
-
-It seems that even for 512 bytes frame sizes it's comfortably better when
-allocating a new skb. After that, we see diminishing rewards or even worse.
-
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
 Changes in v2:
- - properly marked dpaa2_eth_copybreak as static
+ - none
 
-Ioana Ciornei (3):
-  dpaa2-eth: rename dpaa2_eth_xdp_release_buf into dpaa2_eth_recycle_buf
-  dpaa2-eth: add rx copybreak support
-  dpaa2-eth: export the rx copybreak value as an ethtool tunable
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 26 +++++++++----------
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  6 +++--
+ 2 files changed, 17 insertions(+), 15 deletions(-)
 
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 66 ++++++++++++++-----
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  | 10 ++-
- .../ethernet/freescale/dpaa2/dpaa2-ethtool.c  | 40 +++++++++++
- 3 files changed, 98 insertions(+), 18 deletions(-)
-
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index fc0eb82cdd6a..f545cb99388a 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -223,31 +223,31 @@ static void dpaa2_eth_free_bufs(struct dpaa2_eth_priv *priv, u64 *buf_array,
+ 	}
+ }
+ 
+-static void dpaa2_eth_xdp_release_buf(struct dpaa2_eth_priv *priv,
+-				      struct dpaa2_eth_channel *ch,
+-				      dma_addr_t addr)
++static void dpaa2_eth_recycle_buf(struct dpaa2_eth_priv *priv,
++				  struct dpaa2_eth_channel *ch,
++				  dma_addr_t addr)
+ {
+ 	int retries = 0;
+ 	int err;
+ 
+-	ch->xdp.drop_bufs[ch->xdp.drop_cnt++] = addr;
+-	if (ch->xdp.drop_cnt < DPAA2_ETH_BUFS_PER_CMD)
++	ch->recycled_bufs[ch->recycled_bufs_cnt++] = addr;
++	if (ch->recycled_bufs_cnt < DPAA2_ETH_BUFS_PER_CMD)
+ 		return;
+ 
+ 	while ((err = dpaa2_io_service_release(ch->dpio, priv->bpid,
+-					       ch->xdp.drop_bufs,
+-					       ch->xdp.drop_cnt)) == -EBUSY) {
++					       ch->recycled_bufs,
++					       ch->recycled_bufs_cnt)) == -EBUSY) {
+ 		if (retries++ >= DPAA2_ETH_SWP_BUSY_RETRIES)
+ 			break;
+ 		cpu_relax();
+ 	}
+ 
+ 	if (err) {
+-		dpaa2_eth_free_bufs(priv, ch->xdp.drop_bufs, ch->xdp.drop_cnt);
+-		ch->buf_count -= ch->xdp.drop_cnt;
++		dpaa2_eth_free_bufs(priv, ch->recycled_bufs, ch->recycled_bufs_cnt);
++		ch->buf_count -= ch->recycled_bufs_cnt;
+ 	}
+ 
+-	ch->xdp.drop_cnt = 0;
++	ch->recycled_bufs_cnt = 0;
+ }
+ 
+ static int dpaa2_eth_xdp_flush(struct dpaa2_eth_priv *priv,
+@@ -300,7 +300,7 @@ static void dpaa2_eth_xdp_tx_flush(struct dpaa2_eth_priv *priv,
+ 		ch->stats.xdp_tx++;
+ 	}
+ 	for (i = enqueued; i < fq->xdp_tx_fds.num; i++) {
+-		dpaa2_eth_xdp_release_buf(priv, ch, dpaa2_fd_get_addr(&fds[i]));
++		dpaa2_eth_recycle_buf(priv, ch, dpaa2_fd_get_addr(&fds[i]));
+ 		percpu_stats->tx_errors++;
+ 		ch->stats.xdp_tx_err++;
+ 	}
+@@ -382,7 +382,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
+ 		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
+ 		fallthrough;
+ 	case XDP_DROP:
+-		dpaa2_eth_xdp_release_buf(priv, ch, addr);
++		dpaa2_eth_recycle_buf(priv, ch, addr);
+ 		ch->stats.xdp_drop++;
+ 		break;
+ 	case XDP_REDIRECT:
+@@ -403,7 +403,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
+ 				free_pages((unsigned long)vaddr, 0);
+ 			} else {
+ 				ch->buf_count++;
+-				dpaa2_eth_xdp_release_buf(priv, ch, addr);
++				dpaa2_eth_recycle_buf(priv, ch, addr);
+ 			}
+ 			ch->stats.xdp_drop++;
+ 		} else {
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 9b6a89709ce1..9ba31c2706bb 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -438,8 +438,6 @@ struct dpaa2_eth_fq {
+ 
+ struct dpaa2_eth_ch_xdp {
+ 	struct bpf_prog *prog;
+-	u64 drop_bufs[DPAA2_ETH_BUFS_PER_CMD];
+-	int drop_cnt;
+ 	unsigned int res;
+ };
+ 
+@@ -457,6 +455,10 @@ struct dpaa2_eth_channel {
+ 	struct dpaa2_eth_ch_xdp xdp;
+ 	struct xdp_rxq_info xdp_rxq;
+ 	struct list_head *rx_list;
++
++	/* Buffers to be recycled back in the buffer pool */
++	u64 recycled_bufs[DPAA2_ETH_BUFS_PER_CMD];
++	int recycled_bufs_cnt;
+ };
+ 
+ struct dpaa2_eth_dist_fields {
 -- 
 2.30.0
 
