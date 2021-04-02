@@ -2,230 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C816C352E2A
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 19:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91BD3352E55
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 19:31:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235975AbhDBRUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 13:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
+        id S235421AbhDBRbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 13:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbhDBRUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 13:20:44 -0400
-Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E6CC0613E6;
-        Fri,  2 Apr 2021 10:20:43 -0700 (PDT)
-Received: from localhost ([127.0.0.1] helo=bute.mt.lv)
-        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <gatis@mikrotik.com>)
-        id 1lSNTI-0004Hz-Vd; Fri, 02 Apr 2021 20:20:37 +0300
+        with ESMTP id S235971AbhDBRa7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 13:30:59 -0400
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EC0C0617A9
+        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 10:30:58 -0700 (PDT)
+Received: by mail-oo1-xc30.google.com with SMTP id x187-20020a4a41c40000b02901b664cf3220so1428835ooa.10
+        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 10:30:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tFq3dY0RT72BHrk7ok6eI3664JDFeam9zNV3RjnEcwo=;
+        b=MF9qQTPHMzKD/a89/l6mzPKMnDHOy8gl7/jMOglep0Upik6UjiUnePay4UvNamsmQX
+         +ntd0mloiZ3zUI9QtQ1lp+J4iZUpbPhUlsJP72AyhcsDxik8TkhMzgP1+bJjAacAFIPL
+         Fwjh1j1bwoYMh8zfwRyYJ/NObwWOVXpiZh3xsusv0ZeNEwPCpEiCL/R96RG1mldvnWWZ
+         6KBatLU2qCHdKji4NZaURwFv7Gk3/ej2voQmuyPeEtuHMh2GgnV6B1mVxCbsqmYg8g4t
+         oSs3Ee9a7QBA3GUjSQxtDwNkUvsoH6MqOmB7V7pgiqBl25XEmrN/QQOcBEx2a39xC6am
+         Jzxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tFq3dY0RT72BHrk7ok6eI3664JDFeam9zNV3RjnEcwo=;
+        b=nTHFuJf9zk1XISbIMhnYC03bAwqT/GIDpNSlR3fig6q7/HSHtDzCExYLJtmjE9exJH
+         xyM0or2oQMQMQ183bx9D3yx63aooFe9rrFXNFlVQIBR6fmQNO+SZsSSYawUE+fMitAD9
+         1D3nqa7s52pCNBF5dBiqss035wjoNAKl7n1BXCfI4wDuaO3hfwYCdOoEsmybI7Ahkbev
+         yyTvxMrNtF/uEPRRfNhPOMF9GDo1Tu0M8G95g1pp/G/tVVEYaBJOc9L2UhH1qQkl6kqE
+         TuvZNZuPf1ToM/g5Au/61RGg3V6UsN3sptm7qiRGOIANm9ULP9Q7kxgcU83Wc4iw/Me8
+         EeEw==
+X-Gm-Message-State: AOAM532wUf1j6MfGomBurTaVgRBNd+WHt/sB8r1FjbKuxozhMt/bxdTO
+        44+AENeBjs62v8UdVhgRXTV1lg==
+X-Google-Smtp-Source: ABdhPJzWtjLOq+7MW6am6fJ2qyojfFrbGcIApptCWxka+tmPAPEoEqLeC+rWN7I0VOh+1PggpJUwIw==
+X-Received: by 2002:a4a:e70a:: with SMTP id y10mr12527509oou.75.1617384657315;
+        Fri, 02 Apr 2021 10:30:57 -0700 (PDT)
+Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id 3sm695680oti.30.2021.04.02.10.30.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Apr 2021 10:30:56 -0700 (PDT)
+Date:   Fri, 2 Apr 2021 12:30:54 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     netdev@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>
+Subject: Re: [PATCH v2] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
+Message-ID: <20210402173054.GR904837@yoga>
+References: <20210315154629.652824-1-bjorn.andersson@linaro.org>
+ <1b6ebc71-5efd-53ea-95b5-85e17d5804d1@linaro.org>
 MIME-Version: 1.0
-Date:   Fri, 02 Apr 2021 20:20:36 +0300
-From:   Gatis Peisenieks <gatis@mikrotik.com>
-To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
-        dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] atl1c: move tx cleanup processing out of interrupt
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <c6ea0a3d1bcf79bb1e319d1e99cfed9b@mikrotik.com>
-X-Sender: gatis@mikrotik.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1b6ebc71-5efd-53ea-95b5-85e17d5804d1@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tx queue cleanup happens in interrupt handler on same core as rx queue 
-processing.
-Both can take considerable amount of processing in high 
-packet-per-second scenarios.
+On Mon 15 Mar 11:16 CDT 2021, Alex Elder wrote:
 
-Sending big amounts of packets can stall the rx processing which is 
-unfair
-and also can lead to to out-of-memory condition since 
-__dev_kfree_skb_irq
-queues the skbs for later kfree in softirq which is not allowed to 
-happen
-with heavy load in interrupt handler.
+> On 3/15/21 10:46 AM, Bjorn Andersson wrote:
+> > Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
+> > flags from the default of ingress-aggregate only.
+> 
+> To be clear, this default is implemented in the kernel RMNet
+> driver, not in "iproute2".  And it is ingress deaggregation
+> (unpacking of aggregated packets from a buffer), not aggregation
+> (which would be supplying a buffer of aggregated packets to the
+> hardware).
+> 
 
-This puts tx cleanup in its own napi and enables threaded napi to allow 
-the rx/tx
-queue processing to happen on different cores.
+Thanks, I'll update the commit message to clarify this point.
 
-The ability to sustain equal amounts of tx/rx traffic increased:
-from 280Kpps to 1130Kpps on Threadripper 3960X with upcoming Mikrotik 
-10/25G NIC,
-from 520Kpps to 850Kpps on Intel i3-3320 with Mikrotik RB44Ge adapter.
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> 
+> I have some suggestions on your help text (and flag names).
+> The code looks good to me otherwise.  I trust you've
+> confirmed the RMNet driver uses the flags exactly as
+> you intend when they're provided this way.
+> 
 
-Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
----
-  drivers/net/ethernet/atheros/atl1c/atl1c.h    |  2 +
-  .../net/ethernet/atheros/atl1c/atl1c_main.c   | 43 +++++++++++++++++--
-  2 files changed, 41 insertions(+), 4 deletions(-)
+I've confirmed that it flips the bits in the rmnet driver and that
+flipping the right bit(s) my laptop starts deaggregating messages.
 
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h 
-b/drivers/net/ethernet/atheros/atl1c/atl1c.h
-index a0562a90fb6d..4404fa44d719 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
-@@ -506,6 +506,7 @@ struct atl1c_adapter {
-  	struct net_device   *netdev;
-  	struct pci_dev      *pdev;
-  	struct napi_struct  napi;
-+	struct napi_struct  tx_napi;
-  	struct page         *rx_page;
-  	unsigned int	    rx_page_offset;
-  	unsigned int	    rx_frag_size;
-@@ -529,6 +530,7 @@ struct atl1c_adapter {
-  	u16 link_duplex;
+> 					-Alex
+> > ---
+> > 
+> > Changes since v1:
+> > - s/ifla_vlan_flags/ifla_rmnet_flags/ in print_opt
+> > 
+> >   ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 42 insertions(+)
+> > 
+> > diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
+> > index 1d16440c6900..a847c838def2 100644
+> > --- a/ip/iplink_rmnet.c
+> > +++ b/ip/iplink_rmnet.c
+> > @@ -16,6 +16,10 @@ static void print_explain(FILE *f)
+> >   {
+> >   	fprintf(f,
+> >   		"Usage: ... rmnet mux_id MUXID\n"
+> > +		"                 [ingress-deaggregation]\n"
+> > +		"                 [ingress-commands]\n"
+> > +		"                 [ingress-chksumv4]\n"
+> > +		"                 [egress-chksumv4]\n"
+> 
+> Other help output (in print_explain()) put spaces after
+> the '[' and before the ']'; so you'd be better to stay
+> consistent with that.
+> 
 
-  	spinlock_t mdio_lock;
-+	spinlock_t irq_mask_lock;
-  	atomic_t irq_sem;
+I had missed that, thanks.
 
-  	struct work_struct common_task;
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c 
-b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index 3f65f2b370c5..f51b28e8b6dc 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -813,6 +813,7 @@ static int atl1c_sw_init(struct atl1c_adapter 
-*adapter)
-  	atl1c_set_rxbufsize(adapter, adapter->netdev);
-  	atomic_set(&adapter->irq_sem, 1);
-  	spin_lock_init(&adapter->mdio_lock);
-+	spin_lock_init(&adapter->irq_mask_lock);
-  	set_bit(__AT_DOWN, &adapter->flags);
+> And I know the name is based on the C symbol, but I think
+> you should follow the convention that seems to be used for
+> all others, and use "csum" to mean checksum.
+> 
+> Also it's not clear what the "v4" means.  I'm not sure I
+> like this suggestion, but...  It comes from QMAP version 4,
+> as opposed to QMAP version 5, so maybe use "csum-qmap4"
+> in place of "csumv4?"
+> 
 
-  	return 0;
-@@ -1530,7 +1531,7 @@ static inline void atl1c_clear_phy_int(struct 
-atl1c_adapter *adapter)
-  	spin_unlock(&adapter->mdio_lock);
-  }
+Make sense, I'll update this to ingress-csum-qmap4 etc.
 
--static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
-+static unsigned atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
-  				enum atl1c_trans_queue type)
-  {
-  	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
-@@ -1564,7 +1565,25 @@ static bool atl1c_clean_tx_irq(struct 
-atl1c_adapter *adapter,
-  		netif_wake_queue(adapter->netdev);
-  	}
+> Is there any way to disable ingress deaggregation?  Since
+> it's on by default, you might want to use a "[ on | off ]"
+> type option for that case (or all of them for that matter).
+> Otherwise, the deaggregation parameter doesn't really help
+> anything.
+> 
 
--	return true;
-+	return total_packets;
-+}
-+
-+static int atl1c_clean_tx(struct napi_struct *napi, int budget)
-+{
-+	struct atl1c_adapter *adapter =
-+		container_of(napi, struct atl1c_adapter, tx_napi);
-+	unsigned long flags;
-+	int work_done = atl1c_clean_tx_irq(adapter, atl1c_trans_normal);
-+
-+	if (work_done < budget) {
-+		napi_complete_done(napi, work_done);
-+		spin_lock_irqsave(&adapter->irq_mask_lock, flags);
-+		adapter->hw.intr_mask |= ISR_TX_PKT;
-+		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
-+		spin_unlock_irqrestore(&adapter->irq_mask_lock, flags);
-+		return work_done;
-+	}
-+	return budget;
-  }
+Unfortunately, in contrast to other implementers of IFLAG_x_FLAGS we
+find the following snippet in the rmnet driver:
 
-  /**
-@@ -1599,13 +1618,22 @@ static irqreturn_t atl1c_intr(int irq, void 
-*data)
-  		AT_WRITE_REG(hw, REG_ISR, status | ISR_DIS_INT);
-  		if (status & ISR_RX_PKT) {
-  			if (likely(napi_schedule_prep(&adapter->napi))) {
-+				spin_lock(&adapter->irq_mask_lock);
-  				hw->intr_mask &= ~ISR_RX_PKT;
-  				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
-+				spin_unlock(&adapter->irq_mask_lock);
-  				__napi_schedule(&adapter->napi);
-  			}
-  		}
--		if (status & ISR_TX_PKT)
--			atl1c_clean_tx_irq(adapter, atl1c_trans_normal);
-+		if (status & ISR_TX_PKT) {
-+			if (napi_schedule_prep(&adapter->tx_napi)) {
-+				spin_lock(&adapter->irq_mask_lock);
-+				hw->intr_mask &= ~ISR_TX_PKT;
-+				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
-+				spin_unlock(&adapter->irq_mask_lock);
-+				__napi_schedule(&adapter->tx_napi);
-+			}
-+		}
+  data_format = flags->flags & flags->mask;
 
-  		handled = IRQ_HANDLED;
-  		/* check if PCIE PHY Link down */
-@@ -1870,6 +1898,7 @@ static int atl1c_clean(struct napi_struct *napi, 
-int budget)
-  	struct atl1c_adapter *adapter =
-  			container_of(napi, struct atl1c_adapter, napi);
-  	int work_done = 0;
-+	unsigned long flags;
+So rather than flags->mask specifying which bits to update, it masks
+flags->flags and whatever is left is your new flags. And given that this
+is non-standard, the iplink flow doesn't support read/modify/write on
+the tool side.
 
-  	/* Keep link state information with original netdev */
-  	if (!netif_carrier_ok(adapter->netdev))
-@@ -1880,8 +1909,10 @@ static int atl1c_clean(struct napi_struct *napi, 
-int budget)
-  	if (work_done < budget) {
-  quit_polling:
-  		napi_complete_done(napi, work_done);
-+		spin_lock_irqsave(&adapter->irq_mask_lock, flags);
-  		adapter->hw.intr_mask |= ISR_RX_PKT;
-  		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
-+		spin_unlock_irqrestore(&adapter->irq_mask_lock, flags);
-  	}
-  	return work_done;
-  }
-@@ -2319,6 +2350,7 @@ static int atl1c_up(struct atl1c_adapter *adapter)
-  	atl1c_check_link_status(adapter);
-  	clear_bit(__AT_DOWN, &adapter->flags);
-  	napi_enable(&adapter->napi);
-+	napi_enable(&adapter->tx_napi);
-  	atl1c_irq_enable(adapter);
-  	netif_start_queue(netdev);
-  	return err;
-@@ -2339,6 +2371,7 @@ static void atl1c_down(struct atl1c_adapter 
-*adapter)
-  	set_bit(__AT_DOWN, &adapter->flags);
-  	netif_carrier_off(netdev);
-  	napi_disable(&adapter->napi);
-+	napi_disable(&adapter->tx_napi);
-  	atl1c_irq_disable(adapter);
-  	atl1c_free_irq(adapter);
-  	/* disable ASPM if device inactive */
-@@ -2504,6 +2537,7 @@ static int atl1c_init_netdev(struct net_device 
-*netdev, struct pci_dev *pdev)
-  				NETIF_F_TSO6;
-  	netdev->features =	netdev->hw_features	|
-  				NETIF_F_HW_VLAN_CTAG_TX;
-+	netdev->threaded = true;
-  	return 0;
-  }
+As such it's not possible to toggle individual bits, you always pass the
+new flags. So the way to disable a particular feature, is to issue an
+change link request without the particular feature specified.
 
-@@ -2588,6 +2622,7 @@ static int atl1c_probe(struct pci_dev *pdev, const 
-struct pci_device_id *ent)
-  	adapter->mii.phy_id_mask = 0x1f;
-  	adapter->mii.reg_num_mask = MDIO_CTRL_REG_MASK;
-  	netif_napi_add(netdev, &adapter->napi, atl1c_clean, 64);
-+	netif_napi_add(netdev, &adapter->tx_napi, atl1c_clean_tx, 64);
-  	timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
-  	/* setup the private structure */
-  	err = atl1c_sw_init(adapter);
--- 
-2.28.0
----
+> >   		"\n"
+> >   		"MUXID := 1-254\n"
+> >   	);
+> > @@ -29,6 +33,7 @@ static void explain(void)
+> >   static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+> >   			   struct nlmsghdr *n)
+> >   {
+> > +	struct ifla_rmnet_flags flags = { };
+> >   	__u16 mux_id;
+> 
+> Do you know why this is __u16?  Is it because it's exposed
+> to user space?  Not a problem... just curious.
+> 
 
-Resending the patch with threaded napi which does the trick as suggested 
-by Eric Dumazet.
+This seems to be the data type used throughout the project to denote
+16 bit unsigned integers, so it seems to me that Daniele just followed
+the coding standard of the project here - and it's defined in the kernel
+to be a 16 bit unsigned integer...
 
 Regards,
-Gatis
+Bjorn
+
+> >   	while (argc > 0) {
+> > @@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+> >   			if (get_u16(&mux_id, *argv, 0))
+> >   				invarg("mux_id is invalid", *argv);
+> >   			addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
+> > +		} else if (matches(*argv, "ingress-deaggregation") == 0) {
+> > +			flags.mask = ~0;
+> > +			flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
+> > +		} else if (matches(*argv, "ingress-commands") == 0) {
+> > +			flags.mask = ~0;
+> > +			flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
+> > +		} else if (matches(*argv, "ingress-chksumv4") == 0) {
+> > +			flags.mask = ~0;
+> > +			flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
+> > +		} else if (matches(*argv, "egress-chksumv4") == 0) {
+> > +			flags.mask = ~0;
+> > +			flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
+> >   		} else if (matches(*argv, "help") == 0) {
+> >   			explain();
+> >   			return -1;
+> > @@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
+> >   		argc--, argv++;
+> >   	}
+> > +	if (flags.mask)
+> > +		addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
+> > +
+> >   	return 0;
+> >   }
+> > +static void rmnet_print_flags(FILE *fp, __u32 flags)
+> > +{
+> > +	if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
+> > +		print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
+> > +	if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
+> > +		print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
+> > +	if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
+> > +		print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
+> > +	if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
+> > +		print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
+> > +}
+> > +
+> >   static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+> >   {
+> > +	struct ifla_rmnet_flags *flags;
+> > +
+> >   	if (!tb)
+> >   		return;
+> > @@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+> >   		   "mux_id",
+> >   		   "mux_id %u ",
+> >   		   rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
+> > +
+> > +	if (tb[IFLA_RMNET_FLAGS]) {
+> > +		if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
+> > +			return;
+> > +		flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
+> > +
+> > +		rmnet_print_flags(f, flags->flags);
+> > +	}
+> >   }
+> >   static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
+> > 
+> 
