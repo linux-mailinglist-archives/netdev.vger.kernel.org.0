@@ -2,269 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D850352590
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 04:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B60593525F2
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 06:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234089AbhDBCwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Apr 2021 22:52:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48141 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233870AbhDBCw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Apr 2021 22:52:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617331948;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sME/iN6vwvwo4Ih5YpRMgvNm1XNzNI9BHCvyMM7imLE=;
-        b=TgNsfj/UCpJvw3lRAPs6RbLX/c36XXQYvKIS9F4aQPn6icpa3LmbMUw6AP/mDslPNjTgHC
-        slewaaj+xUa9NiElJoaIs1FuFDDLc0se8QK8HdGuvDM0OGu1R6Q+tY8z83UBYcMKZIk2p9
-        JcNKhQ6tpxnsyMSzTOPZ0OiyC2re+gU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-535-qDlrB3dKMvSQlv1kFgRIkg-1; Thu, 01 Apr 2021 22:52:26 -0400
-X-MC-Unique: qDlrB3dKMvSQlv1kFgRIkg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7975654;
-        Fri,  2 Apr 2021 02:52:24 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-12-24.pek2.redhat.com [10.72.12.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4466F19C59;
-        Fri,  2 Apr 2021 02:52:16 +0000 (UTC)
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-To:     Eric Dumazet <edumazet@google.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Thelen <gthelen@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, su-lifan@linux.alibaba.com,
-        "dust.li" <dust.li@linux.alibaba.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <cd931f86-e213-78f1-8a88-79a28c506ec5@redhat.com>
- <1617267183.5697193-1-xuanzhuo@linux.alibaba.com>
- <CANn89iJA=RMKFNk5LFUxuQPUsXBoL2UbcskkX94UeFZo-B9LEw@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <4a29cb99-749d-e697-34a6-db50361cedff@redhat.com>
-Date:   Fri, 2 Apr 2021 10:52:12 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.0
+        id S229605AbhDBEIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 00:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229466AbhDBEIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 00:08:15 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6B3C0613E6
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 21:08:15 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id t5-20020a1c77050000b029010e62cea9deso1821657wmi.0
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 21:08:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r29s2NuB4h8xDuoc4V2TUkw3k2SQOmwLpoFzxMpsSfU=;
+        b=uO9cVaFbcLWG2qSj/V5Qkp9SImi/1O/PNF5uCdkXCUUYZJA9vpqlZt2zRX/qXJ+oah
+         rO4VamcAG68UI6cC43pmYE6l2QOlTbqrFGjbSxNuXrWd/OtmqO6rMnqhxjBVRyqFyxlC
+         OUKieCjk5HQ7Tftt13rMzjeAfydRy7xK+3jCFtWg8v5ll3hzus2DVE8HIb+pwdbsI7yC
+         QVCqXkHxo8PllGMMtIKKFuW4k/d3AriUj05NbOe4teBaYbR9X2E74zD2YaXYDn5M4r7L
+         PIglkR+DonJicpVCPf6bYjXpdXpqh5F3TGvDZnH7i+ffnm5eBtVnpMfc7h/1w6E2v96N
+         XOog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r29s2NuB4h8xDuoc4V2TUkw3k2SQOmwLpoFzxMpsSfU=;
+        b=RhDYG1IjVenBPSOnXJuoCUOwvAlsu/wZO+lXQXAEnH49YQEB8xMUCo7A4UzClXgYds
+         70dHV3EFzuMDnc7wzC40TpbbBdkoHcYHXUDkfoipMqN5jynfllVd4WVOjA9I4ap78q4t
+         bZbHPABrrIfWohaOgV199pnxBANF3XYDixMNQ9vItACCRfpvEyeahlYxC69MxLJICj4m
+         jPMCZuVCccO1ohM+L/YLl0/8/KrfdRm8eGNjCM+FLOYSR8ndzNwtU+E+vsf7frQrE1LM
+         cJ7PrWrbfrF/XOq4dYzVNLVbLt14xn2SHrbHyr4TgAdsfAKBZMz4IRTFl8FS9OtclsvN
+         gPHw==
+X-Gm-Message-State: AOAM5339TdN7/0uA3ivEq5TfeH3CGlJ54o6/bTnWAU6Z0iONMfLuNni8
+        ooVHfPl0yXUhXwWlsj/FQXGoGiyEdZVquyYW2z7eAw==
+X-Google-Smtp-Source: ABdhPJzufLcR/4YtyTXgyOTuNyEx/ynwbR2Yl8q78bJ+i0nAQpDxD5IjgzH727vIE/K26GxxXakVKXJN8RA1Zji4Frc=
+X-Received: by 2002:a05:600c:9:: with SMTP id g9mr11022806wmc.134.1617336493632;
+ Thu, 01 Apr 2021 21:08:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJA=RMKFNk5LFUxuQPUsXBoL2UbcskkX94UeFZo-B9LEw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20210401002442.2fe56b88@xhacker> <20210401002518.5cf48e91@xhacker>
+In-Reply-To: <20210401002518.5cf48e91@xhacker>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Fri, 2 Apr 2021 09:38:02 +0530
+Message-ID: <CAAhSdy0CgxZj14Jx62CS=gRVzZs9c9NUysWi1iTTZ3BJvAOjPQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] riscv: add __init section marker to some functions
+To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        kasan-dev@googlegroups.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-在 2021/4/1 下午5:58, Eric Dumazet 写道:
-> On Thu, Apr 1, 2021 at 11:04 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->> On Thu, 1 Apr 2021 15:14:18 +0800, Jason Wang <jasowang@redhat.com> wrote:
->>> 在 2021/3/31 下午4:11, Michael S. Tsirkin 写道:
->>>> On Mon, Mar 29, 2021 at 11:06:09AM +0200, Eric Dumazet wrote:
->>>>> On Mon, Mar 29, 2021 at 10:52 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->>>>>> On Wed, 13 Jan 2021 08:18:19 -0800, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>>>>>> From: Eric Dumazet <edumazet@google.com>
->>>>>>>
->>>>>>> Both virtio net and napi_get_frags() allocate skbs
->>>>>>> with a very small skb->head
->>>>>>>
->>>>>>> While using page fragments instead of a kmalloc backed skb->head might give
->>>>>>> a small performance improvement in some cases, there is a huge risk of
->>>>>>> under estimating memory usage.
->>>>>>>
->>>>>>> For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
->>>>>>> per page (order-3 page in x86), or even 64 on PowerPC
->>>>>>>
->>>>>>> We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
->>>>>>> but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
->>>>>>>
->>>>>>> Even if we force napi_alloc_skb() to only use order-0 pages, the issue
->>>>>>> would still be there on arches with PAGE_SIZE >= 32768
->>>>>>>
->>>>>>> This patch makes sure that small skb head are kmalloc backed, so that
->>>>>>> other objects in the slab page can be reused instead of being held as long
->>>>>>> as skbs are sitting in socket queues.
->>>>>>>
->>>>>>> Note that we might in the future use the sk_buff napi cache,
->>>>>>> instead of going through a more expensive __alloc_skb()
->>>>>>>
->>>>>>> Another idea would be to use separate page sizes depending
->>>>>>> on the allocated length (to never have more than 4 frags per page)
->>>>>>>
->>>>>>> I would like to thank Greg Thelen for his precious help on this matter,
->>>>>>> analysing crash dumps is always a time consuming task.
->>>>>> This patch causes a performance degradation of about 10% in the scenario of
->>>>>> virtio-net + GRO.
->>>>>>
->>>>>> For GRO, there is no way to merge skbs based on frags with this patch, only
->>>>>> frag_list can be used to link skbs. The problem that this cause are that compared
->>>>>> to the GRO package merged into the frags way, the current skb needs to call
->>>>>> kfree_skb_list to release each skb, resulting in performance degradation.
->>>>>>
->>>>>> virtio-net will store some data onto the linear space after receiving it. In
->>>>>> addition to the header, there are also some payloads, so "headlen <= offset"
->>>>>> fails. And skb->head_frag is failing when use kmalloc() for skb->head allocation.
->>>>>>
->>>>> Thanks for the report.
->>>>>
->>>>> There is no way we can make things both fast for existing strategies
->>>>> used by _insert_your_driver
->>>>> and malicious usages of data that can sit for seconds/minutes in socket queues.
->>>>>
->>>>> I think that if you want to gain this 10% back, you have to change
->>>>> virtio_net to meet optimal behavior.
->>>>>
->>>>> Normal drivers make sure to not pull payload in skb->head, only headers.
->>>> Hmm we do have hdr_len field, but seem to ignore it on RX.
->>>> Jason do you see any issues with using it for the head len?
->>>
->>> This might work only if the device sets a correct hdr_len. I'm not sure
->>> all of the devices can do this properly. E.g for tap, we use
->>> skb_headlen() in virtio_net_hdr_from_skb() which depends highly on the
->>> behaviour of the underlayer layers (device driver or GRO). And we only
->>> set this hint for GSO packet but virtio-net may tries to do GRO for non
->>> GSO packets.
->>>
->>> Thanks
->> hi, Jason
->>
->> I personally prefer to use build_skb to create skb, so the problem here is
->> actually gone.
->>
->> The premise of this is that the buffer added by add_recvbuf_mergeable must
->> retain a skb_shared_info. Of course, then rx frags coalescing won't
->> work. But I consider that suppose the size of the mrg_avg_pkt_len 1500, so we
->> can still store 17 * 1500 = 24k packets in a skb. If the packet is really big,
->> the mrg_avg_pkt_len will also increase, and the buffer allocated later will
->> increase. When the mrg_avg_pkt_len is greater than PAGE_SIZE/2, rx frags
->> coalesce is no longer needed. Because we can't allocate two bufs with a value of
->> mrg_avg_pkt_len on the same page.
->>
-> For the record I implemented build_skb() 10 years ago, so you can
-> trust me when I
-> am saying this will not help.
+On Wed, Mar 31, 2021 at 10:00 PM Jisheng Zhang
+<jszhang3@mail.ustc.edu.cn> wrote:
 >
-> Using build_skb() will waste additional skb_shared_info per MSS.
-> That's an increase of 20% of memory, for nothing at all.
-
-
-So I wonder something like the following like this help. We know the 
-frag size, that means, if we know there's sufficient tailroom we can use 
-build_skb() without reserving dedicated room for skb_shared_info.
-
-Thanks
-
-
+> From: Jisheng Zhang <jszhang@kernel.org>
 >
-> Also there are cases when this won't be possible, say if you use an MTU of 4000
+> They are not needed after booting, so mark them as __init to move them
+> to the __init section.
 >
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  arch/riscv/kernel/traps.c  | 2 +-
+>  arch/riscv/mm/init.c       | 6 +++---
+>  arch/riscv/mm/kasan_init.c | 6 +++---
+>  arch/riscv/mm/ptdump.c     | 2 +-
+>  4 files changed, 8 insertions(+), 8 deletions(-)
 >
+> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+> index 1357abf79570..07fdded10c21 100644
+> --- a/arch/riscv/kernel/traps.c
+> +++ b/arch/riscv/kernel/traps.c
+> @@ -197,6 +197,6 @@ int is_valid_bugaddr(unsigned long pc)
+>  #endif /* CONFIG_GENERIC_BUG */
 >
->
->
->> Thanks.
->>
->>>
->>>>
->>>>> Optimal GRO packets are when payload is in page fragments.
->>>>>
->>>>> (I am speaking not only for raw performance, but ability for systems
->>>>> to cope with network outages and sudden increase of memory usage in
->>>>> out of order queues)
->>>>>
->>>>> This has been quite clearly stated in my changelog.
->>>>>
->>>>> Thanks.
->>>>>
->>>>>
->>>>>> int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
->>>>>> {
->>>>>>           struct skb_shared_info *pinfo, *skbinfo = skb_shinfo(skb);
->>>>>>           unsigned int offset = skb_gro_offset(skb);
->>>>>>           unsigned int headlen = skb_headlen(skb);
->>>>>>
->>>>>>       .......
->>>>>>
->>>>>>           if (headlen <= offset) {         // virtio-net will fail
->>>>>>           ........ // merge by frags
->>>>>>                   goto done;
->>>>>>           } else if (skb->head_frag) {     // skb->head_frag is fail when use kmalloc() for skb->head allocation
->>>>>>           ........ // merge by frags
->>>>>>                   goto done;
->>>>>>           }
->>>>>>
->>>>>> merge:
->>>>>>       ......
->>>>>>
->>>>>>           if (NAPI_GRO_CB(p)->last == p)
->>>>>>                   skb_shinfo(p)->frag_list = skb;
->>>>>>           else
->>>>>>                   NAPI_GRO_CB(p)->last->next = skb;
->>>>>>
->>>>>>       ......
->>>>>>           return 0;
->>>>>> }
->>>>>>
->>>>>>
->>>>>> test cmd:
->>>>>>    for i in $(seq 1 4)
->>>>>>    do
->>>>>>       redis-benchmark -r 10000000 -n 10000000 -t set -d 1024 -c 8 -P 32 -h  <ip> -p 6379 2>&1 | grep 'per second'  &
->>>>>>    done
->>>>>>
->>>>>> Reported-by: su-lifan@linux.alibaba.com
->>>>>>
->>>>>>> Fixes: fd11a83dd363 ("net: Pull out core bits of __netdev_alloc_skb and add __napi_alloc_skb")
->>>>>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
->>>>>>> Cc: Alexander Duyck <alexanderduyck@fb.com>
->>>>>>> Cc: Paolo Abeni <pabeni@redhat.com>
->>>>>>> Cc: Michael S. Tsirkin <mst@redhat.com>
->>>>>>> Cc: Greg Thelen <gthelen@google.com>
->>>>>>> ---
->>>>>>>    net/core/skbuff.c | 9 +++++++--
->>>>>>>    1 file changed, 7 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>>>>>> index 7626a33cce590e530f36167bd096026916131897..3a8f55a43e6964344df464a27b9b1faa0eb804f3 100644
->>>>>>> --- a/net/core/skbuff.c
->>>>>>> +++ b/net/core/skbuff.c
->>>>>>> @@ -501,13 +501,17 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
->>>>>>>    struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->>>>>>>                                  gfp_t gfp_mask)
->>>>>>>    {
->>>>>>> -     struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
->>>>>>> +     struct napi_alloc_cache *nc;
->>>>>>>         struct sk_buff *skb;
->>>>>>>         void *data;
->>>>>>>
->>>>>>>         len += NET_SKB_PAD + NET_IP_ALIGN;
->>>>>>>
->>>>>>> -     if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
->>>>>>> +     /* If requested length is either too small or too big,
->>>>>>> +      * we use kmalloc() for skb->head allocation.
->>>>>>> +      */
->>>>>>> +     if (len <= SKB_WITH_OVERHEAD(1024) ||
->>>>>>> +         len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
->>>>>>>             (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
->>>>>>>                 skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
->>>>>>>                 if (!skb)
->>>>>>> @@ -515,6 +519,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->>>>>>>                 goto skb_success;
->>>>>>>         }
->>>>>>>
->>>>>>> +     nc = this_cpu_ptr(&napi_alloc_cache);
->>>>>>>         len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->>>>>>>         len = SKB_DATA_ALIGN(len);
->>>>>>>
->>>>>>> --
->>>>>>> 2.30.0.284.gd98b1dd5eaa7-goog
->>>>>>>
+>  /* stvec & scratch is already set from head.S */
+> -void trap_init(void)
+> +void __init trap_init(void)
+>  {
+>  }
 
+The trap_init() is unused currently so you can drop this change
+and remove trap_init() as a separate patch.
+
+> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+> index 067583ab1bd7..76bf2de8aa59 100644
+> --- a/arch/riscv/mm/init.c
+> +++ b/arch/riscv/mm/init.c
+> @@ -57,7 +57,7 @@ static void __init zone_sizes_init(void)
+>         free_area_init(max_zone_pfns);
+>  }
+>
+> -static void setup_zero_page(void)
+> +static void __init setup_zero_page(void)
+>  {
+>         memset((void *)empty_zero_page, 0, PAGE_SIZE);
+>  }
+> @@ -75,7 +75,7 @@ static inline void print_mlm(char *name, unsigned long b, unsigned long t)
+>                   (((t) - (b)) >> 20));
+>  }
+>
+> -static void print_vm_layout(void)
+> +static void __init print_vm_layout(void)
+>  {
+>         pr_notice("Virtual kernel memory layout:\n");
+>         print_mlk("fixmap", (unsigned long)FIXADDR_START,
+> @@ -557,7 +557,7 @@ static inline void setup_vm_final(void)
+>  #endif /* CONFIG_MMU */
+>
+>  #ifdef CONFIG_STRICT_KERNEL_RWX
+> -void protect_kernel_text_data(void)
+> +void __init protect_kernel_text_data(void)
+>  {
+>         unsigned long text_start = (unsigned long)_start;
+>         unsigned long init_text_start = (unsigned long)__init_text_begin;
+> diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
+> index 4f85c6d0ddf8..e1d041ac1534 100644
+> --- a/arch/riscv/mm/kasan_init.c
+> +++ b/arch/riscv/mm/kasan_init.c
+> @@ -60,7 +60,7 @@ asmlinkage void __init kasan_early_init(void)
+>         local_flush_tlb_all();
+>  }
+>
+> -static void kasan_populate_pte(pmd_t *pmd, unsigned long vaddr, unsigned long end)
+> +static void __init kasan_populate_pte(pmd_t *pmd, unsigned long vaddr, unsigned long end)
+>  {
+>         phys_addr_t phys_addr;
+>         pte_t *ptep, *base_pte;
+> @@ -82,7 +82,7 @@ static void kasan_populate_pte(pmd_t *pmd, unsigned long vaddr, unsigned long en
+>         set_pmd(pmd, pfn_pmd(PFN_DOWN(__pa(base_pte)), PAGE_TABLE));
+>  }
+>
+> -static void kasan_populate_pmd(pgd_t *pgd, unsigned long vaddr, unsigned long end)
+> +static void __init kasan_populate_pmd(pgd_t *pgd, unsigned long vaddr, unsigned long end)
+>  {
+>         phys_addr_t phys_addr;
+>         pmd_t *pmdp, *base_pmd;
+> @@ -117,7 +117,7 @@ static void kasan_populate_pmd(pgd_t *pgd, unsigned long vaddr, unsigned long en
+>         set_pgd(pgd, pfn_pgd(PFN_DOWN(__pa(base_pmd)), PAGE_TABLE));
+>  }
+>
+> -static void kasan_populate_pgd(unsigned long vaddr, unsigned long end)
+> +static void __init kasan_populate_pgd(unsigned long vaddr, unsigned long end)
+>  {
+>         phys_addr_t phys_addr;
+>         pgd_t *pgdp = pgd_offset_k(vaddr);
+> diff --git a/arch/riscv/mm/ptdump.c b/arch/riscv/mm/ptdump.c
+> index ace74dec7492..3b7b6e4d025e 100644
+> --- a/arch/riscv/mm/ptdump.c
+> +++ b/arch/riscv/mm/ptdump.c
+> @@ -331,7 +331,7 @@ static int ptdump_show(struct seq_file *m, void *v)
+>
+>  DEFINE_SHOW_ATTRIBUTE(ptdump);
+>
+> -static int ptdump_init(void)
+> +static int __init ptdump_init(void)
+>  {
+>         unsigned int i, j;
+>
+> --
+> 2.31.0
+>
+>
+>
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
+
+Apart from above, looks good to me.
+
+Reviewed-by: Anup Patel <anup@brainfault.org>
+
+Regards,
+Anup
