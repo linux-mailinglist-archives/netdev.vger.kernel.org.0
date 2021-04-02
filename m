@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AAE352600
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 06:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46554352605
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 06:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbhDBEMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 00:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
+        id S229714AbhDBEOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 00:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbhDBEMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 00:12:53 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A50AC06178A
-        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 21:12:53 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id b9so3667387wrt.8
-        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 21:12:53 -0700 (PDT)
+        with ESMTP id S229520AbhDBEOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 00:14:37 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE7EC061788
+        for <netdev@vger.kernel.org>; Thu,  1 Apr 2021 21:14:35 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id v11so3661779wro.7
+        for <netdev@vger.kernel.org>; Thu, 01 Apr 2021 21:14:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=brainfault-org.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1Ab9mXgnZVMv96jlr6O1hIj0YRsCl0wKzDzAenTSuZc=;
-        b=xf/w8QzI+ZBwFIoabuDx3ObP6k759O1uCoWKy8RIkcmvbjl+DGebyX85YYxjgYo4sX
-         PaHW64tHXrgYHQBDApeA8ph+hznPztWlLMwAuqexcuiajj5rV0IdISu7vxJlEx7koGkb
-         cmxXFNAz9rVUj/h3eC9Chtfz2c3nvzDmCxjioinaxE8P7iQpnz7fL0B9DCgyeWWYflH7
-         mTp7kJmwjDBAqoitDCZoxKxQrbvyuWrDiprfRCtkRx9Sga5ojkbpKWXVVgbwg5Nudq3D
-         5TARSmVvgAdFsa5vtlxP2J5AzOqXeuDc0OKVeaVKw/l+P/4hKIyB4i5N8arf5pBVZPya
-         XjBA==
+        bh=aTF4DSgy0PHbD8hdS+0qJlLOgVDSXpSKNN+yUg9A0Hs=;
+        b=IOwAv1pJyRJV4gn9mjCUoyrx9uKAxA+FBfNG9Mf4HIXV+pvQHAitUv7k5D3+aOt41l
+         GgTI/wiTUT5w5zeKpjSfD/MrilhGKYx/6q2TpM7IabcdfcmJOlAjTqWunt61zo7wi708
+         CGGDUhtD+1zL/KGi9MTQdV0YcKnKiDUn+wcriEoGsN9rH9BZ++dDSV4jof7EyvkIkNXI
+         NNcdilvjzbV3PJxlQf0UEA3QYia9hqMrQl8WTpV0itVsIDOcez06rZ9/cRYZ9Rk3UFNu
+         hg9I/2eIGjJ47UU7VT2oRMh14v1ZJQaKH9Zi8YWoZZCH+xi5ybGoghfYn4cHqMlRz8z1
+         1dmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1Ab9mXgnZVMv96jlr6O1hIj0YRsCl0wKzDzAenTSuZc=;
-        b=B6PzhlXyhdbwFT0GR3kwioZ2G9rWCT1KcUZ0IAbEVwTc4BGNYEk/esWHbh9/dC5cru
-         L8zWmkWX+Z0cdZ6E76WuniPCEWD7eVYarmW89KNBvB5lCQIyelm1i+IKSiK7TVVCvsKW
-         2+Dzty5ccURfAMplQl74WGpInJdMcREi2K9BFJlqo8vDsyJptRNmr0BLTd1BhYxfaBBa
-         OirVcoPu2YXQZR88/wO7qiDsBb44u4EsbmjcFUe+A46Lajf3dYZfz+ok7BhvCN2O7L7B
-         U3DgYWuY2oQUrZzKkOTRW7OyX0CgaLMwT6ccLsDJcu77QOOcqtzfWKfl6gWE3aYcyxVw
-         PiuA==
-X-Gm-Message-State: AOAM533CegpDl0muPZ10Kwc/bvc1+9tkEP3zaZQCLwIWqONK/W0Yue8x
-        lnH12x+yF5Op7LuswYfp8F1WE1ZSHdzDpVMGGRjMvw==
-X-Google-Smtp-Source: ABdhPJzce57ZbjTnYu4jCQZ2VOeAbeFZGI80++FdsSrgqHui+/61LSGd1A4m/MCwzZEPoTJBilxreUdun/rWvR5X5xo=
-X-Received: by 2002:adf:9544:: with SMTP id 62mr12956426wrs.128.1617336771963;
- Thu, 01 Apr 2021 21:12:51 -0700 (PDT)
+        bh=aTF4DSgy0PHbD8hdS+0qJlLOgVDSXpSKNN+yUg9A0Hs=;
+        b=MsdkenVgWSKq6RbpCP2fzjiOHieWSIYiQpW9+8DDiyWoe7mWwJvt2rGQ9YmapottBj
+         HWbno1w3oG/+ZLZ6Dot9U8DKanvgavi+IbPPmuQV6JzV441h6BC4YhREDMyHCDJYwXBM
+         nSEzo6Q3CRBfGwb1MJ2j5c/RKlSxTnl0xElPOuMKrDrmIsQlGYztUh59s5wvEsZlhDpM
+         qlgyeuVPIp+jNKid6dqPGdclaWggAVJzlhUFwolPyYAq5G/mVJ1A6+EePCQtVPL+V2rD
+         IKe57UN97zd+VfF8/KxEYsCDQfHMnh5iMd9B3UZM/2obpJ4YBnUSmI78wMsxZDi7Bx+s
+         yyMw==
+X-Gm-Message-State: AOAM530029Mst7or68R09iQ1Sm8EHtT7Te180lHsnLtDapZFL84X7aAR
+        +c7J5iRdVTBzXMSyE3RaYKedk8ENphoZ2M3YeInAgQ==
+X-Google-Smtp-Source: ABdhPJy7kkYMQxTXJp2WyoNHqq3yHqeByHqHc7dSE27OX8CeJmSRxaQ0rEoYl8xvHJs4qnnACcmvyAiguHo7lXT6Tuw=
+X-Received: by 2002:a05:6000:c7:: with SMTP id q7mr13176764wrx.356.1617336873672;
+ Thu, 01 Apr 2021 21:14:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210401002442.2fe56b88@xhacker> <20210401002651.1da9087e@xhacker>
-In-Reply-To: <20210401002651.1da9087e@xhacker>
+References: <20210401002442.2fe56b88@xhacker> <20210401002949.2d501560@xhacker>
+In-Reply-To: <20210401002949.2d501560@xhacker>
 From:   Anup Patel <anup@brainfault.org>
-Date:   Fri, 2 Apr 2021 09:42:41 +0530
-Message-ID: <CAAhSdy18AwkvNj5bgq6nLV29UNBQcs2MTDCwf_9GL5dC+4=8og@mail.gmail.com>
-Subject: Re: [PATCH v2 4/9] riscv: Constify sbi_ipi_ops
+Date:   Fri, 2 Apr 2021 09:44:22 +0530
+Message-ID: <CAAhSdy0p4g1o2xLbHXzMer7P=DgLjYfbiO4nYTU1gqPbLgLUKg@mail.gmail.com>
+Subject: Re: [PATCH v2 9/9] riscv: Set ARCH_HAS_STRICT_MODULE_RWX if MMU
 To:     Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
 Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -76,14 +76,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 10:02 PM Jisheng Zhang
+On Wed, Mar 31, 2021 at 10:05 PM Jisheng Zhang
 <jszhang3@mail.ustc.edu.cn> wrote:
 >
 > From: Jisheng Zhang <jszhang@kernel.org>
 >
-> Constify the sbi_ipi_ops so that it will be placed in the .rodata
-> section. This will cause attempts to modify it to fail when strict
-> page permissions are in place.
+> Now we can set ARCH_HAS_STRICT_MODULE_RWX for MMU riscv platforms, this
+> is good from security perspective.
 >
 > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 
@@ -95,62 +94,21 @@ Regards,
 Anup
 
 > ---
->  arch/riscv/include/asm/smp.h | 4 ++--
->  arch/riscv/kernel/sbi.c      | 2 +-
->  arch/riscv/kernel/smp.c      | 4 ++--
->  3 files changed, 5 insertions(+), 5 deletions(-)
+>  arch/riscv/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/arch/riscv/include/asm/smp.h b/arch/riscv/include/asm/smp.h
-> index df1f7c4cd433..a7d2811f3536 100644
-> --- a/arch/riscv/include/asm/smp.h
-> +++ b/arch/riscv/include/asm/smp.h
-> @@ -46,7 +46,7 @@ int riscv_hartid_to_cpuid(int hartid);
->  void riscv_cpuid_to_hartid_mask(const struct cpumask *in, struct cpumask *out);
->
->  /* Set custom IPI operations */
-> -void riscv_set_ipi_ops(struct riscv_ipi_ops *ops);
-> +void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops);
->
->  /* Clear IPI for current CPU */
->  void riscv_clear_ipi(void);
-> @@ -92,7 +92,7 @@ static inline void riscv_cpuid_to_hartid_mask(const struct cpumask *in,
->         cpumask_set_cpu(boot_cpu_hartid, out);
->  }
->
-> -static inline void riscv_set_ipi_ops(struct riscv_ipi_ops *ops)
-> +static inline void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops)
->  {
->  }
->
-> diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
-> index cbd94a72eaa7..cb848e80865e 100644
-> --- a/arch/riscv/kernel/sbi.c
-> +++ b/arch/riscv/kernel/sbi.c
-> @@ -556,7 +556,7 @@ static void sbi_send_cpumask_ipi(const struct cpumask *target)
->         sbi_send_ipi(cpumask_bits(&hartid_mask));
->  }
->
-> -static struct riscv_ipi_ops sbi_ipi_ops = {
-> +static const struct riscv_ipi_ops sbi_ipi_ops = {
->         .ipi_inject = sbi_send_cpumask_ipi
->  };
->
-> diff --git a/arch/riscv/kernel/smp.c b/arch/riscv/kernel/smp.c
-> index 504284d49135..e035124f06dc 100644
-> --- a/arch/riscv/kernel/smp.c
-> +++ b/arch/riscv/kernel/smp.c
-> @@ -85,9 +85,9 @@ static void ipi_stop(void)
->                 wait_for_interrupt();
->  }
->
-> -static struct riscv_ipi_ops *ipi_ops __ro_after_init;
-> +static const struct riscv_ipi_ops *ipi_ops __ro_after_init;
->
-> -void riscv_set_ipi_ops(struct riscv_ipi_ops *ops)
-> +void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops)
->  {
->         ipi_ops = ops;
->  }
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 87d7b52f278f..9716be3674a2 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -28,6 +28,7 @@ config RISCV
+>         select ARCH_HAS_SET_DIRECT_MAP
+>         select ARCH_HAS_SET_MEMORY
+>         select ARCH_HAS_STRICT_KERNEL_RWX if MMU
+> +       select ARCH_HAS_STRICT_MODULE_RWX if MMU
+>         select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
+>         select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
+>         select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT if MMU
 > --
 > 2.31.0
 >
