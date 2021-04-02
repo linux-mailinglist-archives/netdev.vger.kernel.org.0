@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 264BF3531AF
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 01:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB2F3531AE
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 01:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235979AbhDBXuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 19:50:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35742 "EHLO mail.kernel.org"
+        id S234908AbhDBXuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 19:50:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235256AbhDBXuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235228AbhDBXuK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 2 Apr 2021 19:50:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0AA2A61186;
-        Fri,  2 Apr 2021 23:50:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id F1A0561184;
+        Fri,  2 Apr 2021 23:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617407409;
-        bh=3Bi7GR+aSkQtPpGZta6shYRhKPLMp8cHPLrhYjl9g1k=;
+        bh=1IVvjuyZ1QICzilp2XowpWfGo8fIWk7amz0N5v9AgA0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=s4rCNm1km5QIzlNyWd1LZeN6CmssPqfeFmF6ViSlJmtRi3RpAmhGQKT+9eONFYT3s
-         TKcXjGE5AwLBvMSjLK3ssckN/6ppSTtmi4ODo4uouGp+jqYGW4S5dfUopzw4s7fy8i
-         2R111OgIpttv/rRQBh619EcAiRT7n4ehcVeX2ejrdYhXALYNaPtaCtrB5JFAgf6Yt6
-         1Qsuc5j0w9gyll2wulpIWafCpIH5jYru96RbQOW0Zvv3E69DAiKwWGmNLAf3vgM2Ss
-         1ZLNs61gYC6wRxF6Qu0HjNh9w1poZORpaNWndc6V6umDN/yzMT+9qx4kIuHqz6tiCJ
-         EKIKKio4pZ87Q==
+        b=YLoPcRYbTVkesYusNKy60PYlZAMuINHzl8HZc6HFy3N/z0gGRT1lXciXCLBkzMeVk
+         BeJlb4QfscvjyHYXzSBjs0bhnSDuAp/uZgCUkWcNu06dXFNQHqatACJP7zRuWuvNNe
+         AnyZ2y6gq1i1QdlLBMv3Cb7ZXxSWKYSo3hSKPIx0FvMWBYDoYlixB/ckKO/vmrUjpd
+         5XptuOyzVF8+aqMg64nU+9guw4D0sn96x9idXV3cm2pv1hjj1yUcmqC46KS3hz55yX
+         0aLUm6QkZN/Rc9UrdaJ3UV65ZYk+G+t7hUchlwyoYfNbKD+DK4hijMQOBjJekGgJ+Y
+         C26NCKHoGXyMA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EFE49609D3;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E648D609DC;
         Fri,  2 Apr 2021 23:50:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] linux/bpf-cgroup.h: Delete repeated struct declaration
+Subject: Re: [Patch bpf-next] bpf: remove unused parameter from ___bpf_prog_run
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161740740897.27506.7716128219327085410.git-patchwork-notify@kernel.org>
+Message-Id: <161740740893.27506.2977951925004823983.git-patchwork-notify@kernel.org>
 Date:   Fri, 02 Apr 2021 23:50:08 +0000
-References: <20210401064637.993327-1-wanjiabing@vivo.com>
-In-Reply-To: <20210401064637.993327-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kael_w@yeah.net
+References: <20210331075135.3850782-1-hefengqing@huawei.com>
+In-Reply-To: <20210331075135.3850782-1-hefengqing@huawei.com>
+To:     He Fengqing <hefengqing@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, kpsingh@kernel.org,
+        john.fastabend@gmail.com, yhs@fb.com, songliubraving@fb.com,
+        kafai@fb.com, andrii@kernel.org, daniel@iogearbox.net,
+        ast@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,19 +49,18 @@ Hello:
 
 This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-On Thu,  1 Apr 2021 14:46:37 +0800 you wrote:
-> struct bpf_prog is declared twice. There is one declaration
-> which is independent on the MACRO at 18th line.
-> So the below one is not needed though. Remove the duplicate.
+On Wed, 31 Mar 2021 07:51:35 +0000 you wrote:
+> 'stack' parameter is not used in ___bpf_prog_run,
+> the base address have been set to FP reg. So consequently remove it.
 > 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> Signed-off-by: He Fengqing <hefengqing@huawei.com>
 > ---
->  include/linux/bpf-cgroup.h | 1 -
->  1 file changed, 1 deletion(-)
+>  kernel/bpf/core.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 
 Here is the summary with links:
-  - linux/bpf-cgroup.h: Delete repeated struct declaration
-    https://git.kernel.org/bpf/bpf-next/c/2daae89666ad
+  - [bpf-next] bpf: remove unused parameter from ___bpf_prog_run
+    https://git.kernel.org/bpf/bpf-next/c/2ec9898e9c70
 
 You are awesome, thank you!
 --
