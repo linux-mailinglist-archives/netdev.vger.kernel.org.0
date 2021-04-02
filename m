@@ -2,99 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A64352A54
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 13:45:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44D4352A80
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 14:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235170AbhDBLp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 07:45:26 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:49428 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbhDBLpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 07:45:24 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 132BdrLH134594;
-        Fri, 2 Apr 2021 11:44:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=/hVKKBXs7Xaa9Z4zApQwuQO2S1qguLAABlgQIBFeKI4=;
- b=em0bNNnM3cO3uVW3NDuNU2QN9YFO+JomY7MQnVQWO9XLr7NsEEPDHWXUePpbuz+ObBhb
- ybYy5NNHM6cToHDtOgK/T2dbMc0MM1b/7zbVZzgO6wzD3XDmjdYAggLHFKHBX+pJyn8A
- IdujvybkCjuN1HvW7xH2Ww24q/VQI9FWJMaVtbHpmnPrCs942ou0RkrYvYexFjtaDTo9
- 78E490FwKF5cZxGBanjTC4DvE+PJmOwOuHlnz6+/KgTacT1VDhTW2oUoLV24y+Uq/a4G
- ieJvmaTkWTfgJGdah1wI6vwG6mZFRnDUyWYBZmIAi8YvrQRWvGUGa9S52JF2k1zu1gAb 4A== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 37n2akmgkk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Apr 2021 11:44:53 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 132Beleu164353;
-        Fri, 2 Apr 2021 11:44:51 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 37n2pbp4bj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Apr 2021 11:44:51 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 132Bin5u002981;
-        Fri, 2 Apr 2021 11:44:49 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 02 Apr 2021 04:44:48 -0700
-Date:   Fri, 2 Apr 2021 14:44:42 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Samuel Ortiz <sameo@linux.intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] nfc: pn533: prevent potential memory corruption
-Message-ID: <YGcDqkN1v/NVZA9z@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9941 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=999
- adultscore=0 bulkscore=0 mlxscore=0 spamscore=0 malwarescore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2103310000 definitions=main-2104020086
-X-Proofpoint-ORIG-GUID: MamheoFcieL_Glcrj2BvBQ3QB6vRdxjt
-X-Proofpoint-GUID: MamheoFcieL_Glcrj2BvBQ3QB6vRdxjt
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9941 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0 phishscore=0
- bulkscore=0 adultscore=0 clxscore=1011 malwarescore=0 priorityscore=1501
- suspectscore=0 spamscore=0 mlxlogscore=999 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103310000
- definitions=main-2104020086
+        id S235293AbhDBMQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 08:16:38 -0400
+Received: from m12-17.163.com ([220.181.12.17]:35310 "EHLO m12-17.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229932AbhDBMQh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Apr 2021 08:16:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=IWxKbG8Cj43FYem+vi
+        40htkvh411QjWWlh67x/zPVmw=; b=Tr9LDxn7SOW6Qxbk0PlypryMV45g1kf2lp
+        ZzS/9yutOpOtsOmbOpvChmDXkMzb/97uSb+25DGCxUJtVPymfcl3buL1Dm36wZ8w
+        S9qm2sLhGeBtu8aUEFQbp0ddDaMwcRio3P+a/W101ywn84u69IrPRMF8f3/D4VJk
+        SPOOSwqlw=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp13 (Coremail) with SMTP id EcCowACXwob2Cmdgsxc2tQ--.61767S2;
+        Fri, 02 Apr 2021 20:15:52 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     krzysztof.kozlowski@canonical.com, k.opasiak@samsung.com
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] nfc: s3fwrn5: remove unnecessary label
+Date:   Fri,  2 Apr 2021 20:15:48 +0800
+Message-Id: <20210402121548.3260-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: EcCowACXwob2Cmdgsxc2tQ--.61767S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWrtrW3Xw43uF4rCr15AF1UKFg_yoW8JryrpF
+        Z8Ka4xCFyFkF4rG34vyr4q9F9a93y3GFyxG3yjqws7A3yrZw4vvFnFyFyYkrykCrWUGFy3
+        JF42qrs8uFy7Kw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jWApnUUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbirA1osVr7s48WXgAAst
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the "type_a->nfcid_len" is too large then it would lead to memory
-corruption in pn533_target_found_type_a() when we do:
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-	memcpy(nfc_tgt->nfcid1, tgt_type_a->nfcid_data, nfc_tgt->nfcid1_len);
+In function s3fwrn5_nci_post_setup, The variable ret is assigned to 0,
+then goto out label, but just return ret in out label, so we use
+return 0 to replace it. and other goto sentences are similar, we use
+return sentences to replace it and delete out label.
 
-Fixes: c3b1e1e8a76f ("NFC: Export NFCID1 from pn533")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
 ---
- drivers/nfc/pn533/pn533.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/nfc/s3fwrn5/core.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index f1469ac8ff42..3fe5b81eda2d 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -706,6 +706,9 @@ static bool pn533_target_type_a_is_valid(struct pn533_target_type_a *type_a,
- 	if (PN533_TYPE_A_SEL_CASCADE(type_a->sel_res) != 0)
- 		return false;
+diff --git a/drivers/nfc/s3fwrn5/core.c b/drivers/nfc/s3fwrn5/core.c
+index c00b7a0..865d3e3 100644
+--- a/drivers/nfc/s3fwrn5/core.c
++++ b/drivers/nfc/s3fwrn5/core.c
+@@ -124,13 +124,12 @@ static int s3fwrn5_nci_post_setup(struct nci_dev *ndev)
  
-+	if (type_a->nfcid_len > NFC_NFCID1_MAXSIZE)
-+		return false;
-+
- 	return true;
+ 	if (s3fwrn5_firmware_init(info)) {
+ 		//skip bootloader mode
+-		ret = 0;
+-		goto out;
++		return 0;
+ 	}
+ 
+ 	ret = s3fwrn5_firmware_update(info);
+ 	if (ret < 0)
+-		goto out;
++		return ret;
+ 
+ 	/* NCI core reset */
+ 
+@@ -139,12 +138,9 @@ static int s3fwrn5_nci_post_setup(struct nci_dev *ndev)
+ 
+ 	ret = nci_core_reset(info->ndev);
+ 	if (ret < 0)
+-		goto out;
+-
+-	ret = nci_core_init(info->ndev);
++		return ret;
+ 
+-out:
+-	return ret;
++	return nci_core_init(info->ndev);
  }
  
+ static struct nci_ops s3fwrn5_nci_ops = {
 -- 
-2.30.2
+1.9.1
+
 
