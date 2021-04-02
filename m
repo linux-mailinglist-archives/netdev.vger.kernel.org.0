@@ -2,126 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F18A8352EBB
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 19:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1DE352EC5
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 19:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235984AbhDBRtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 13:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S235151AbhDBRyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 13:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234275AbhDBRtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 13:49:50 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D18C0613E6;
-        Fri,  2 Apr 2021 10:49:48 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id i18so1871849wrm.5;
-        Fri, 02 Apr 2021 10:49:48 -0700 (PDT)
+        with ESMTP id S234361AbhDBRyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 13:54:51 -0400
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93316C061788
+        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 10:54:49 -0700 (PDT)
+Received: by mail-qk1-x749.google.com with SMTP id k188so6168935qkb.5
+        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 10:54:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6/S7y9C8nRxZmjQeY8wpCEGGx7d5w2nUI9mEHAzOyr4=;
-        b=EKJRA9qiti7P9cUGyyz4nzgoW4eR1olaGPIr8PtEys12m9EmxxXJqBe73YBwGzSwbN
-         TqnMm1GU6uCV7ISWh57RMLiE9Ns0bhZFqdMfvBlyWc2uJSssoMYy5dJQqQG/O5jTTUSL
-         EmppftdLqPklLWp/IQTtjH3du7sMMkpmxFUp8OsPqP4GqU6/7pxl4nxo5uMb5Hv56YKx
-         jj+6/MIjAaAxQwSSp9q/8cKbR+b4rgDqA0vkE1lKlv/KSaowHakhJuS7DfxTXycaPSFf
-         lspjUzd5LR5ojUcP+ZYseL07LH/jtqnI6Z6Q7PHO5BPuxJH9Z29JMCWZTwzk3dXE6kKd
-         2Hqw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=H/QN+XLAOQblK5KA0ufolQMfBhTIuBh3TpbLAoLglYU=;
+        b=YVISu5OC169fQpXC59PG7UjpCT2nVConTKQq7BlmNxFw1NwTbpa8+Dx45CDJmkBANz
+         Cwyb4qWFklymIw3FoLDpQdNCpfOP8zE7zeZq2BGCpbdBnxnJ4+J1CPiU5FEqoJRnSTDp
+         nH++68MoadOxp9NDhN4HJPPtmEAnXJ62EQdEiEhGtH9Z/g538baHVzV1vO6cjBdBA2xS
+         drA7pZWdLHSsN3tju9dfz1bOfitw+vdP0HGHg1GFjQt4WYXnAoKnFXVM9KvfW/ilPvwm
+         Vx97iVt4M/HUF4Q+b12qjqje+btT0wl+5TxpZoowhk3ttOIjm93yvmgG0soCO7XJ0uAU
+         lx1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6/S7y9C8nRxZmjQeY8wpCEGGx7d5w2nUI9mEHAzOyr4=;
-        b=aKyEqFWKDtzxl/TJgcQ+UrJrRphR33Mvnen7cU0b67l43RO/q3qeOhTryaZjA9MJiw
-         yiuBFLEOGfpWzH+f3cOiQBj0ZujtwTggY+G4jF3EbX0yuGW+i4AqduLAgmMGcw0MXhvT
-         9n+zE29pGTbXNqJgA7KtIQdPnkfNRROnU3u6x4TXhmKh+ILNBkI9baZ+FKjLyGm/YYnH
-         jLPThcoWFBkcsc8PtC4/7nCnQn8SSv5fjlNi1GBP1dxo9CKfvDk0LxMGbMFT/P6HkBkH
-         l2L0KcOWbuLnan91dpVXUjPxETWqu7LoD+Wp4J2uMTdpcjXidgmV41Ium7c46CX4VyQv
-         NP3g==
-X-Gm-Message-State: AOAM5304M45/IxK0SrqvcymoLQAx+MJxtmcgYyv16uQQlWYcim86bid/
-        cQigAtcFR381v8anpdxzZWAaLIkI24g=
-X-Google-Smtp-Source: ABdhPJw8bkMpDdw4laVwoNHLaRMSJeXL7Ze2yJGqxwMYXo9ucLuObt0MlgbVEIMpRMBhG9soE6lzvw==
-X-Received: by 2002:a5d:6106:: with SMTP id v6mr16696092wrt.268.1617385786821;
-        Fri, 02 Apr 2021 10:49:46 -0700 (PDT)
-Received: from [192.168.1.101] ([37.166.24.151])
-        by smtp.gmail.com with ESMTPSA id h8sm15305784wrt.94.2021.04.02.10.49.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Apr 2021 10:49:45 -0700 (PDT)
-Subject: Re: [PATCH] net: initialize local variables in net/ipv6/mcast.c and
- net/ipv4/igmp.c
-To:     Phillip Potter <phil@philpotter.co.uk>, davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210402173617.895-1-phil@philpotter.co.uk>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d2334631-4b3a-48e5-5305-7320adc50909@gmail.com>
-Date:   Fri, 2 Apr 2021 19:49:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
-MIME-Version: 1.0
-In-Reply-To: <20210402173617.895-1-phil@philpotter.co.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=H/QN+XLAOQblK5KA0ufolQMfBhTIuBh3TpbLAoLglYU=;
+        b=QoDu0bo1x3m7g55iUEOkbvUoDiMUa1sGeYbUYe8vMtCH1ots0ihSZmuzf1hSXlrB+L
+         u0DOcGUYx5Nk8H9SQSB6u4xY3LqO84vxuciwVn5+x50pMusXqQhGCThVvzB3XVQ+vWZE
+         hgTsaJNOmgVQJHwAUBWZDgmRYWdTB/k2aB+n0Fr7CNb7SaEdHmik6QXyxc5ZsNLZkZTR
+         tF1bC/3e9nhOZfJnFBDGelrcUZ5IRCqPdra31d6a3Px5LFZZtRko4vSGd2Ut8G3UrZ3w
+         Ny4SDzO5tDXuLnXxiko89uYaKQ7NSoaze/+oklnEBVWfLbGi3br2pW5Q0EsNL/WmKjQ3
+         JcVg==
+X-Gm-Message-State: AOAM531CZo/SBXAglL+WVoQbhVXTPtL22XQHBw5fE0d90cvEyptWHOUp
+        I43HZGl75wvfNpIQcs/19Hi8XQVtsqG1
+X-Google-Smtp-Source: ABdhPJyFjIXNtYDwMvOnpZyTqKgcA/IlZyKsLZJ5HwyMpDLPFt4CF66H243aUk/39iUBh+PDp8uP57/+F/qW
+X-Received: from yudiliu.mtv.corp.google.com ([2620:15c:202:201:a4ba:ce38:21e0:52a5])
+ (user=yudiliu job=sendgmr) by 2002:a05:6214:2507:: with SMTP id
+ gf7mr13843817qvb.40.1617386088760; Fri, 02 Apr 2021 10:54:48 -0700 (PDT)
+Date:   Fri,  2 Apr 2021 10:54:44 -0700
+Message-Id: <20210402105437.v1.1.Id5ee0a2edda8f0902498aaeb1b6c78d062579b75@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
+Subject: [PATCH v1] Bluetooth: Return whether a connection is outbound
+From:   Yu Liu <yudiliu@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        chromeos-bluetooth-upstreaming@chromium.org
+Cc:     Yu Liu <yudiliu@google.com>, Miao-chen Chou <mcchou@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When an MGMT_EV_DEVICE_CONNECTED event is reported back to the user
+space we will set the flags to tell if the established connection is
+outbound or not. This is useful for the user space to log better metrics
+and error messages.
 
+Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+Reviewed-by: Alain Michaud <alainm@chromium.org>
+Signed-off-by: Yu Liu <yudiliu@google.com>
+---
 
-On 4/2/21 7:36 PM, Phillip Potter wrote:
-> Use memset to initialize two local buffers in net/ipv6/mcast.c,
-> and another in net/ipv4/igmp.c. Fixes a KMSAN found uninit-value
-> bug reported by syzbot at:
-> https://syzkaller.appspot.com/bug?id=0766d38c656abeace60621896d705743aeefed51
+Changes in v1:
+- Initial change
 
+ include/net/bluetooth/mgmt.h | 2 ++
+ net/bluetooth/mgmt.c         | 5 +++++
+ 2 files changed, 7 insertions(+)
 
-According to this link, the bug no longer triggers.
+diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+index a7cffb069565..7cc724386b00 100644
+--- a/include/net/bluetooth/mgmt.h
++++ b/include/net/bluetooth/mgmt.h
+@@ -885,6 +885,8 @@ struct mgmt_ev_new_long_term_key {
+ 	struct mgmt_ltk_info key;
+ } __packed;
+ 
++#define MGMT_DEV_CONN_INITIATED_CONNECTION 0x08
++
+ #define MGMT_EV_DEVICE_CONNECTED	0x000B
+ struct mgmt_ev_device_connected {
+ 	struct mgmt_addr_info addr;
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 09e099c419f2..77213e67e8e4 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -8774,6 +8774,11 @@ void mgmt_device_connected(struct hci_dev *hdev, struct hci_conn *conn,
+ 	bacpy(&ev->addr.bdaddr, &conn->dst);
+ 	ev->addr.type = link_to_bdaddr(conn->type, conn->dst_type);
+ 
++	if (conn->out)
++		flags |= MGMT_DEV_CONN_INITIATED_CONNECTION;
++	else
++		flags &= ~MGMT_DEV_CONN_INITIATED_CONNECTION;
++
+ 	ev->flags = __cpu_to_le32(flags);
+ 
+ 	/* We must ensure that the EIR Data fields are ordered and
+-- 
+2.31.0.208.g409f899ff0-goog
 
-Please explain why you think it is still there.
-
-> 
-> Reported-by: syzbot+001516d86dbe88862cec@syzkaller.appspotmail.com
-> Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-> ---
->  net/ipv4/igmp.c  | 2 ++
->  net/ipv6/mcast.c | 4 ++++
->  2 files changed, 6 insertions(+)
-> 
-> diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-> index 7b272bbed2b4..bc8e358a9a2a 100644
-> --- a/net/ipv4/igmp.c
-> +++ b/net/ipv4/igmp.c
-> @@ -1131,6 +1131,8 @@ static void ip_mc_filter_add(struct in_device *in_dev, __be32 addr)
->  	char buf[MAX_ADDR_LEN];
->  	struct net_device *dev = in_dev->dev;
->  
-> +	memset(buf, 0, sizeof(buf));
-> +
->  	/* Checking for IFF_MULTICAST here is WRONG-WRONG-WRONG.
->  	   We will get multicast token leakage, when IFF_MULTICAST
->  	   is changed. This check should be done in ndo_set_rx_mode
-> diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-> index 6c8604390266..ad90dc28f318 100644
-> --- a/net/ipv6/mcast.c
-> +++ b/net/ipv6/mcast.c
-> @@ -658,6 +658,8 @@ static void igmp6_group_added(struct ifmcaddr6 *mc)
->  	struct net_device *dev = mc->idev->dev;
->  	char buf[MAX_ADDR_LEN];
->  
-> +	memset(buf, 0, sizeof(buf));
-> +
->  	if (IPV6_ADDR_MC_SCOPE(&mc->mca_addr) <
->  	    IPV6_ADDR_SCOPE_LINKLOCAL)
->  		return;
-> @@ -694,6 +696,8 @@ static void igmp6_group_dropped(struct ifmcaddr6 *mc)
->  	struct net_device *dev = mc->idev->dev;
->  	char buf[MAX_ADDR_LEN];
->  
-> +	memset(buf, 0, sizeof(buf));
-> +
->  	if (IPV6_ADDR_MC_SCOPE(&mc->mca_addr) <
->  	    IPV6_ADDR_SCOPE_LINKLOCAL)
->  		return;
-> 
