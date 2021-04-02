@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D773530CC
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 23:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB8F3530CF
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 23:41:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234908AbhDBVkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 17:40:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36300 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229722AbhDBVkK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Apr 2021 17:40:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8FE7361179;
-        Fri,  2 Apr 2021 21:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617399608;
-        bh=ZRkEpPL3j0p7XjCIG30V0V2yYRJfMj39CJ/mPQQh938=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dlWwzdYUH6MGK7YHhVbjAGdAGz/EoNbJwrZrabi1k6DDGZOiLqpNLFXBs5teDuSYZ
-         nz71sx6v4jBpAmC5tRBrD6pnNlrQoMeXEfLHbZ+T4jU0F42lFXxbjvSbJ62uveNPVq
-         jd866KM7XcFp33E0yb1t//ML2awytrPivoi9pQJR4jg/n2emr+A9iMvmcYCAvg35Hj
-         DVUMfcgM6zmKPSwK6i5fhpoxPx/jBcMIaOGy5rRPaf7EuauuIoTD0JN8KxZpf1RYPP
-         aFRUfolTg4YU3ajjdkXKW98LlhNdopMThn2szDcwCacJi9xGH3l4eC6LXA/RCXeUKQ
-         yV5pBEpuCuXUw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7F0A3609D3;
-        Fri,  2 Apr 2021 21:40:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S235336AbhDBVk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 17:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229722AbhDBVk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 17:40:57 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76028C0613E6;
+        Fri,  2 Apr 2021 14:40:55 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1lSRX7-0001fH-Ik; Fri, 02 Apr 2021 23:40:49 +0200
+Date:   Fri, 2 Apr 2021 23:40:49 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>,
+        Manoj Basapathi <manojbm@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: Re: [PATCH netfilter] netfilter: xt_IDLETIMER: fix
+ idletimer_tg_helper non-kosher casts
+Message-ID: <20210402214049.GL13699@breakpoint.cc>
+References: <20210402201156.2789453-1-zenczykowski@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/1] net: macb: restore cmp registers on resume path
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161739960851.5485.6193757213761249921.git-patchwork-notify@kernel.org>
-Date:   Fri, 02 Apr 2021 21:40:08 +0000
-References: <20210402124253.3027-1-claudiu.beznea@microchip.com>
-In-Reply-To: <20210402124253.3027-1-claudiu.beznea@microchip.com>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     nicolas.ferre@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20210402201156.2789453-1-zenczykowski@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 2 Apr 2021 15:42:53 +0300 you wrote:
-> Restore CMP screener registers on resume path.
+Maciej Żenczykowski <zenczykowski@gmail.com> wrote:
+> From: Maciej Żenczykowski <maze@google.com>
 > 
-> Fixes: c1e85c6ce57ef ("net: macb: save/restore the remaining registers and features")
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> ---
->  drivers/net/ethernet/cadence/macb_main.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+> The code is relying on the identical layout of the beginning
+> of the v0 and v1 structs, but this can easily lead to code bugs
+> if one were to try to extend this further...
 
-Here is the summary with links:
-  - [1/1] net: macb: restore cmp registers on resume path
-    https://git.kernel.org/netdev/net/c/a14d273ba159
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+What is the concern?  These structs are part of ABI, they
+cannot be changed.
