@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A9EA352F22
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 20:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A75C7352F2C
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 20:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbhDBSVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 14:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
+        id S236067AbhDBS0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 14:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbhDBSUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 14:20:55 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30CCAC0613E6;
-        Fri,  2 Apr 2021 11:20:54 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id j4-20020a05600c4104b029010c62bc1e20so2726582wmi.3;
-        Fri, 02 Apr 2021 11:20:54 -0700 (PDT)
+        with ESMTP id S229553AbhDBS0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 14:26:41 -0400
+Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F1A3C0613E6;
+        Fri,  2 Apr 2021 11:26:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=IK3P6moRtbr3GXePGjyoKwVTBySnTC80FZZAwgYpc2k=;
-        b=OANzGNsAYXnblsIsVSpq9y6XcOiByCDvuKNym1v+nCzx7++T/1z6pzz6DB3PV2Ih6w
-         8redi8QHQ85zWSba0oNwsBOPl5EXGTbavpgebV7Ol/cpKh8Ed7yvcZV8mfr6JSXlJGWr
-         QyqwNmIbGvTYV50rIWkaHWmShBeJ7poejZlU98UTOeJnh8E0tGbDr+NtzHJ0VL2mKKKk
-         j+yfhdeKnDIhdiJ57E+DKGyC8T4jIBTY3no8Lol+2wOPYHaq1xswGqJodZkW4dXUZJyt
-         nTmDsxFqiT1eG5fozBiKOsPsQEdnvkauNNIvJvq+MgrrQpV3icylnF+RJ1Q96nXptHJb
-         tbnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=IK3P6moRtbr3GXePGjyoKwVTBySnTC80FZZAwgYpc2k=;
-        b=LU3JowwARYVpEOjERI8uVRjlW6I1yxAcw4z0Pi5GAGKYDenXl7UvvFeOScKULdFj4L
-         h3hnEDOVBeGJ6lhu9zW0z7sNFxzuNmS6ZgabAz/4W3q4PfotMNx8IBHyFnu1AaZtww0L
-         h4sGGXJ4hrYFr7Itv45dB6TqTavaq0ABVS+xKWDZ3aB6PK/Su52m8e2+Z65OdkAk5KvD
-         agHGxphj0uf9Vhx3gKlTV7O2P9bnkVMlQXugeYgAq/4xs05IndY8HftbDJT916zJwzWm
-         +Kg6KqVmOW/zzQ6YlwfQfOm+v+skDNTJnZp0AGMn4J1lsgVKkI/KIQPyGDWnQ7l5exQW
-         61Og==
-X-Gm-Message-State: AOAM532fZRTW1l77mqrFYrcXjYwfNa5mTwQ12zR8EfaOL92gZW1Mczv3
-        ZYahZk27CgdpLHKwLwstzI0rXlqjOdY=
-X-Google-Smtp-Source: ABdhPJx+MVlOXgqJ4rC9OILIDn/RFcxafYMzdF+BB1tlSusn93Ehy5QhEbD0mVfR01OE9vpTomPwig==
-X-Received: by 2002:a7b:c357:: with SMTP id l23mr13677428wmj.152.1617387652748;
-        Fri, 02 Apr 2021 11:20:52 -0700 (PDT)
-Received: from [192.168.1.101] ([37.166.24.151])
-        by smtp.gmail.com with ESMTPSA id h10sm15189196wrp.22.2021.04.02.11.20.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Apr 2021 11:20:52 -0700 (PDT)
-Subject: Re: [PATCH net v2] atl1c: move tx cleanup processing out of interrupt
-To:     Gatis Peisenieks <gatis@mikrotik.com>, chris.snook@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
-        jesse.brandeburg@intel.com, dchickles@marvell.com,
-        tully@mikrotik.com, eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <c6ea0a3d1bcf79bb1e319d1e99cfed9b@mikrotik.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <502d7e87-3bd9-29f3-eb18-753331d424e6@gmail.com>
-Date:   Fri, 2 Apr 2021 20:20:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=ro6FMNoOrO
+        0XEPRabqokeCXCn1zTlPGE+6MinH0yRww=; b=eB82CVb8uwTCIDRspd1HcTthSl
+        osXDtrCD6DEFM00shiDoHPv6P+N3QWfJaL2sGe6tduPKz3WpnonVkLYphWrcxMdx
+        M8kUe5p4hplnCO3iKIu+cF7qnxen22UjRljnOUIugwi0oAWwpMZQ+zE42+Djdwpk
+        aSiHubZifDOng5YA4=
+Received: from ubuntu.localdomain (unknown [202.38.69.14])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygCXoqzVYWdgHZqMAA--.553S4;
+        Sat, 03 Apr 2021 02:26:30 +0800 (CST)
+From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+To:     buytenh@wantstofly.org, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, gustavoars@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Subject: [PATCH] wireless: marvell: mwl8k: Fix a double Free in mwl8k_probe_hw
+Date:   Fri,  2 Apr 2021 11:26:27 -0700
+Message-Id: <20210402182627.4256-1-lyl2019@mail.ustc.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <c6ea0a3d1bcf79bb1e319d1e99cfed9b@mikrotik.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: LkAmygCXoqzVYWdgHZqMAA--.553S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7GrW7Aw1kur4rCF15CF4rZrb_yoWDKwbE93
+        W8WFnrWry7GrnFga1Uua1jv34S9Fy0gay8Wry7trWxWFWxAa9FqFWSkF13Ja43Cay3ZF9x
+        Xrs3Jr1UAa47XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbVkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
+        0_Cr1UM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
+        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJV
+        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI2
+        0VAGYxC7MxkIecxEwVAFwVW5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUUX_-DUUUUU==
+X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In mwl8k_probe_hw, hw->priv->txq is freed at the first time by
+dma_free_coherent() in the call chain:
+if(!priv->ap_fw)->mwl8k_init_txqs(hw)->mwl8k_txq_init(hw, i).
+
+Then in err_free_queues of mwl8k_probe_hw, hw->priv->txq is freed
+at the second time by mwl8k_txq_deinit(hw, i)->dma_free_coherent().
+
+My patch set txq->txd to NULL after the first free to avoid the
+double free.
+
+Fixes: a66098daacee2 ("mwl8k: Marvell TOPDOG wireless driver")
+Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+---
+ drivers/net/wireless/marvell/mwl8k.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
+index c9f8c056aa51..84b32a5f01ee 100644
+--- a/drivers/net/wireless/marvell/mwl8k.c
++++ b/drivers/net/wireless/marvell/mwl8k.c
+@@ -1473,6 +1473,7 @@ static int mwl8k_txq_init(struct ieee80211_hw *hw, int index)
+ 	if (txq->skb == NULL) {
+ 		dma_free_coherent(&priv->pdev->dev, size, txq->txd,
+ 				  txq->txd_dma);
++		txq->txd = NULL;
+ 		return -ENOMEM;
+ 	}
+ 
+-- 
+2.25.1
 
 
-On 4/2/21 7:20 PM, Gatis Peisenieks wrote:
-> Tx queue cleanup happens in interrupt handler on same core as rx queue processing.
-> Both can take considerable amount of processing in high packet-per-second scenarios.
-> 
-
-...
-
-> @@ -2504,6 +2537,7 @@ static int atl1c_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
->                  NETIF_F_TSO6;
->      netdev->features =    netdev->hw_features    |
->                  NETIF_F_HW_VLAN_CTAG_TX;
-> +    netdev->threaded = true;
-
-Shouldn't it use dev_set_threaded() ?
-
->      return 0;
->  }
-> 
-> @@ -2588,6 +2622,7 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->      adapter->mii.phy_id_mask = 0x1f;
->      adapter->mii.reg_num_mask = MDIO_CTRL_REG_MASK;
->      netif_napi_add(netdev, &adapter->napi, atl1c_clean, 64);
-> +    netif_napi_add(netdev, &adapter->tx_napi, atl1c_clean_tx, 64);
->      timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
->      /* setup the private structure */
->      err = atl1c_sw_init(adapter);
