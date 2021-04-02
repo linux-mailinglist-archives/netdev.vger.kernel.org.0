@@ -2,239 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 147AD352FC2
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 21:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31144352FCD
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 21:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236555AbhDBT2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 15:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54512 "EHLO
+        id S236496AbhDBTd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 15:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235392AbhDBT23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 15:28:29 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC43C0613E6;
-        Fri,  2 Apr 2021 12:28:27 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id x126so4131313pfc.13;
-        Fri, 02 Apr 2021 12:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qzxHzGuLfubJaD1BeP2oz9tkIUBEYknTaCVf5njFEWo=;
-        b=OJRWPZ5w7FNuCzY77omt+HggTbeJZP5z8Z/FCCwcE0MCEMx8mQY4m047Fbnm774bv0
-         Jzr4cW2BQUSBW5Nw0q1R6D5L2npHtux+bRDHj7dLXMIzfFTjc4oAckUCS6mHJiqCJb1/
-         8rRy/CMHCTRiQllYJcE5sf+oVdgobiPnyLMqUsDyBWIfZ04uZQ9mSGgIleZ+dG9c1LGB
-         7eRMckpoy+l/iznz19BwqNbJE5X4R4fOlXMwBPPUZW98wUoea2yH0Qk9OYFaaTECLij4
-         PFh7R4pt9G5lhd2Yl9lF5/K9KI6EoNKJGuOp+fsRZwscs/6vqod7BZy0p5exHG47XT9E
-         iCSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qzxHzGuLfubJaD1BeP2oz9tkIUBEYknTaCVf5njFEWo=;
-        b=Ba7wFl3DF8QEppmhh8EUZ6M9GZe+I0X2fwzg2iorRbcB5y03TcTxCd0cBdGgRwzVhL
-         yfdTZht4KUmBE2puUHdeeGKFd7eiUXgx9udQHngDRnR398TiZAcTedUm61z34+1AAKBS
-         xMJlHI2nRMVOl+YUWQKy1if3ES3gEMwQc9O11qbaY7jhWxPueqzywO9dST3M5xhk+Ft/
-         AQPPOeYrpiSDFkUf8TOXqA4bxLpYdwg5K7Sqg8lkA2VFGUXye/lhY9iIT7at+49+SZrt
-         NKtnGXeTLs1Mfn36EyKMF9a+l8mGdwlfw1kkPWO3xJT66NusKB9WDCwR5NQVTbAAwhsV
-         z9hw==
-X-Gm-Message-State: AOAM532RBzV4P3zTeYTY0FiHSchgoY8C1x3HWYlyB66/5mr91sV5jdSB
-        s4lCNysyXvnf+Kywka6Xdxo=
-X-Google-Smtp-Source: ABdhPJx4PjfkPbyc7P3i/GmC1X1a249mZSMk4ThiPFU/NO/Esr67XP+zgLRidqRR23aNWoP1UTBG6A==
-X-Received: by 2002:a63:f258:: with SMTP id d24mr12901593pgk.174.1617391706601;
-        Fri, 02 Apr 2021 12:28:26 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:f671])
-        by smtp.gmail.com with ESMTPSA id t12sm8997127pga.85.2021.04.02.12.28.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 12:28:26 -0700 (PDT)
-Date:   Fri, 2 Apr 2021 12:28:23 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        songmuchun@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
-Message-ID: <20210402192823.bqwgipmky3xsucs5@ast-mbp>
-References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
+        with ESMTP id S229553AbhDBTd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 15:33:57 -0400
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDD4C0613E6;
+        Fri,  2 Apr 2021 12:33:55 -0700 (PDT)
+Received: from pps.filterd (m0122330.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 132JSfXB024238;
+        Fri, 2 Apr 2021 20:33:41 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=v92gebLFRntrWcKfwv3ITHL0Gz5UJtZWckv/T7wA7AE=;
+ b=Ps7Jyb+XpvIStwxWPTUgGGptK2Y+5StYXXQZJt5iV6kmQn0KIrdwWdCKRFi8j1UBcQT8
+ BIp2x//GWIn6ueSAFtQdSdEFmmXRbAfmgnQ9UrLCbWsQ/z3vqzrbR6HXl5Dz1b+mzvPI
+ 0IMQYHDss/QHndhY4JOyvNCMU328D9fs9Vn7g3ChZtnRTQ0rmKhHC0Sowbu4/s21tfqs
+ jl8cjwsCSa4PBHEG3yTzhPKtHFwxk4tLQIiwtiRRtXZJlM7Yq6/sDcoNf29eAjigdsCM
+ 2x0CnEX7ivuVJ8Nj6CNmT4lNVWjyy/GngVfJsOdk/dVmLN/uGy8CFKSwWrHKs5cvB1Og yw== 
+Received: from prod-mail-ppoint2 (prod-mail-ppoint2.akamai.com [184.51.33.19] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 37p3wsb14k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 02 Apr 2021 20:33:41 +0100
+Received: from pps.filterd (prod-mail-ppoint2.akamai.com [127.0.0.1])
+        by prod-mail-ppoint2.akamai.com (8.16.0.43/8.16.0.43) with SMTP id 132J7IbO010293;
+        Fri, 2 Apr 2021 15:33:40 -0400
+Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
+        by prod-mail-ppoint2.akamai.com with ESMTP id 37n2ewn0b9-1;
+        Fri, 02 Apr 2021 15:33:40 -0400
+Received: from [0.0.0.0] (prod-ssh-gw02.sanmateo.corp.akamai.com [172.22.187.166])
+        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id B97F025C2A;
+        Fri,  2 Apr 2021 19:33:38 +0000 (GMT)
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+To:     Jiri Kosina <jikos@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kehuan Feng <kehuan.feng@gmail.com>,
+        Hillf Danton <hdanton@sina.com>,
+        Jike Song <albcamus@gmail.com>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        David Miller <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Netdev <netdev@vger.kernel.org>
+References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
+ <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
+ <20200825032312.11776-1-hdanton@sina.com>
+ <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
+ <20200825162329.11292-1-hdanton@sina.com>
+ <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
+ <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com>
+ <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
+ <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AB7fd2vUOQ@mail.gmail.com>
+ <20200827125747.5816-1-hdanton@sina.com>
+ <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
+ <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
+ <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
+ <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
+ <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
+ <nycvar.YFH.7.76.2104022120050.12405@cbobk.fhfr.pm>
+From:   Josh Hunt <johunt@akamai.com>
+Message-ID: <39c837d3-0435-a5a7-ac48-975a4d2f170e@akamai.com>
+Date:   Fri, 2 Apr 2021 12:33:38 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <nycvar.YFH.7.76.2104022120050.12405@cbobk.fhfr.pm>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-04-02_12:2021-04-01,2021-04-02 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 phishscore=0
+ malwarescore=0 spamscore=0 suspectscore=0 mlxlogscore=631 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103310000
+ definitions=main-2104020129
+X-Proofpoint-ORIG-GUID: r74LgAYT9aiHAOLff8Ok-4_CfL6KgaS2
+X-Proofpoint-GUID: r74LgAYT9aiHAOLff8Ok-4_CfL6KgaS2
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-04-02_14:2021-04-01,2021-04-02 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=568 priorityscore=1501
+ bulkscore=0 adultscore=0 clxscore=1011 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 suspectscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2103310000
+ definitions=main-2104020131
+X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 184.51.33.19)
+ smtp.mailfrom=johunt@akamai.com smtp.helo=prod-mail-ppoint2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 31, 2021 at 09:26:35PM -0700, Cong Wang wrote:
-
-> This patch introduces a bpf timer map and a syscall to create bpf timer
-> from user-space.
-
-That will severely limit timer api usability.
-I agree with Song here. If user space has to create it there is no reason
-to introduce new sys_bpf command. Just do all timers in user space
-and trigger bpf prog via bpf_prog_test_run cmd.
-
+On 4/2/21 12:25 PM, Jiri Kosina wrote:
+> On Thu, 3 Sep 2020, John Fastabend wrote:
 > 
-> The reason why we have to use a map is because the lifetime of a timer,
-> without a map, we have to delete the timer before exiting the eBPF program,
-> this would significately limit its use cases. With a map, the timer can
-> stay as long as the map itself and can be actually updated via map update
-> API's too,
-
-this part is correct.
-
-> where the key is the timer ID and the value is the timer expire
-> timer.
-
-The timer ID is unnecessary. We cannot introduce new IDR for every new
-bpf object. It doesn't scale.
-
-> Timer creation is not easy either. In order to prevent users creating a
-> timer but not adding it to a map, we have to enforce this in the API which
-> takes a map parameter and adds the new timer into the map in one shot.
-
-Not quite true. The timer memory should be a part of the map otherwise
-the timer life time is hard to track. But arming the timer and initializing
-it with a callback doesn't need to be tied with allocation of timer memory.
-
-> And because timer is asynchronous, we can not just use its callback like
-> bpf_for_each_map_elem().
-
-Not quite. We can do it the same way as bpf_for_each_map_elem() despite
-being async.
-
-> More importantly, we have to properly reference
-> count its struct bpf_prog too. 
-
-It's true that callback prog or subprog has to stay alive while timer
-is alive.
-Traditional maps can live past the time of the progs that use them.
-Like bpf prog can load with a pointer to already created hash map.
-Then prog can unload and hashmap will stay around just fine.
-All maps are like this with the exception of prog_array.
-The progs get deleted from the prog_array map when appropriate.
-The same thing can work for maps with embedded timers.
-For example the subprog/prog can to be deleted from the timer if
-that prog is going away. Similar to ref/uref distinction we have for prog_array.
-
-> It seems impossible to do this either in
-> verifier or in JIT, so we have to make its callback code a separate eBPF
-> program and pass a program fd from user-space. Fortunately, timer callback
-> can still live in the same object file with the rest eBPF code and share
-> data too.
+>>>> At this point I fear we could consider reverting the NOLOCK stuff.
+>>>> I personally would hate doing so, but it looks like NOLOCK benefits are
+>>>> outweighed by its issues.
+>>>
+>>> I agree, NOLOCK brings more pains than gains. There are many race
+>>> conditions hidden in generic qdisc layer, another one is enqueue vs.
+>>> reset which is being discussed in another thread.
+>>
+>> Sure. Seems they crept in over time. I had some plans to write a
+>> lockless HTB implementation. But with fq+EDT with BPF it seems that
+>> it is no longer needed, we have a more generic/better solution.  So
+>> I dropped it. Also most folks should really be using fq, fq_codel,
+>> etc. by default anyways. Using pfifo_fast alone is not ideal IMO.
 > 
-> Here is a quick demo of the timer callback code:
+> Half a year later, we still have the NOLOCK implementation
+> present, and pfifo_fast still does set the TCQ_F_NOLOCK flag on itself.
 > 
-> static __u64
-> check_expired_elem(struct bpf_map *map, __u32 *key, __u64 *val,
->                   int *data)
-> {
->   u64 expires = *val;
+> And we've just been bitten by this very same race which appears to be
+> still unfixed, with single packet being stuck in pfifo_fast qdisc
+> basically indefinitely due to this very race that this whole thread began
+> with back in 2019.
 > 
->   if (expires < bpf_jiffies64()) {
->     bpf_map_delete_elem(map, key);
->     *data++;
->   }
->   return 0;
-> }
+> Unless there are
 > 
-> SEC("timer")
-> u32 timer_callback(void)
-> {
->   int count = 0;
+> 	(a) any nice ideas how to solve this in an elegant way without
+> 	    (re-)introducing extra spinlock (Cong's fix) or
 > 
->   bpf_for_each_map_elem(&map, check_expired_elem, &count, 0);
->   if (count)
->      return 0; // not re-arm this timer
->   else
->      return 10; // reschedule this timeGr after 10 jiffies
-> }
+> 	(b) any objections to revert as per the argumentation above
+> 
+> I'll be happy to send a revert of the whole NOLOCK implementation next
+> week.
+> 
 
-As Song pointed out the exact same thing can be done with timers in user space
-and user space triggering prog exec with bpf_prog_test_run.
+Jiri
 
-Here is how more general timers might look like:
-https://lore.kernel.org/bpf/20210310011905.ozz4xahpkqbfkkvd@ast-mbp.dhcp.thefacebook.com/
+If you have a reproducer can you try 
+https://lkml.org/lkml/2021/3/24/1485 ? If that doesn't work I think your 
+suggestion of reverting nolock makes sense to me. We've moved to using 
+fq as our default now b/c of this bug.
 
-include/uapi/linux/bpf.h:
-struct bpf_timer {
-  u64 opaque;
-};
-The 'opaque' field contains a pointer to dynamically allocated struct timer_list and other data.
-
-The prog would do:
-struct map_elem {
-    int stuff;
-    struct bpf_timer timer;
-};
-
-struct {
-    __uint(type, BPF_MAP_TYPE_HASH);
-    __uint(max_entries, 1);
-    __type(key, int);
-    __type(value, struct map_elem);
-} hmap SEC(".maps");
-
-static int timer_cb(struct map_elem *elem)
-{
-    if (whatever && elem->stuff)
-        bpf_timer_mod(&elem->timer, new_expire);
-}
-
-int bpf_timer_test(...)
-{
-    struct map_elem *val;
-
-    val = bpf_map_lookup_elem(&hmap, &key);
-    if (val) {
-        bpf_timer_init(&val->timer, timer_cb, flags);
-        val->stuff = 123;
-        bpf_timer_mod(&val->timer, expires);
-    }
-}
-
-bpf_map_update_elem() either from bpf prog or from user space
-allocates map element and zeros 8 byte space for the timer pointer.
-bpf_timer_init() allocates timer_list and stores it into opaque if opaque == 0.
-The validation of timer_cb() is done by the verifier.
-bpf_map_delete_elem() either from bpf prog or from user space
-does del_timer() if elem->opaque != 0.
-If prog refers such hmap as above during prog free the kernel does
-for_each_map_elem {if (elem->opaque) del_timer().}
-I think that is the simplest way of prevent timers firing past the prog life time.
-There could be other ways to solve it (like prog_array and ref/uref).
-
-Pseudo code:
-int bpf_timer_init(struct bpf_timer *timer, void *timer_cb, int flags)
-{
-  if (timer->opaque)
-    return -EBUSY;
-  t = alloc timer_list
-  t->cb = timer_cb;
-  t->..
-  timer->opaque = (long)t;
-}
-
-int bpf_timer_mod(struct bpf_timer *timer, u64 expires)
-{
-  if (!time->opaque)
-    return -EINVAL;
-  t = (struct timer_list *)timer->opaque;
-  mod_timer(t,..);
-}
-
-int bpf_timer_del(struct bpf_timer *timer)
-{
-  if (!time->opaque)
-    return -EINVAL;
-  t = (struct timer_list *)timer->opaque;
-  del_timer(t);
-}
-
-The verifier would need to check that 8 bytes occupied by bpf_timer and not accessed
-via load/store by the program. The same way it does it for bpf_spin_lock.
+Josh
