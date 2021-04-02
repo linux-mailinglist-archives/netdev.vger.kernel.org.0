@@ -2,236 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91BD3352E55
-	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 19:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 898BB352E7F
+	for <lists+netdev@lfdr.de>; Fri,  2 Apr 2021 19:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235421AbhDBRbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 13:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
+        id S235307AbhDBRfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 13:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235971AbhDBRa7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 13:30:59 -0400
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EC0C0617A9
-        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 10:30:58 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id x187-20020a4a41c40000b02901b664cf3220so1428835ooa.10
-        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 10:30:58 -0700 (PDT)
+        with ESMTP id S229553AbhDBRfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 13:35:04 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316C6C0613E6;
+        Fri,  2 Apr 2021 10:35:02 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id g10so2794888plt.8;
+        Fri, 02 Apr 2021 10:35:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tFq3dY0RT72BHrk7ok6eI3664JDFeam9zNV3RjnEcwo=;
-        b=MF9qQTPHMzKD/a89/l6mzPKMnDHOy8gl7/jMOglep0Upik6UjiUnePay4UvNamsmQX
-         +ntd0mloiZ3zUI9QtQ1lp+J4iZUpbPhUlsJP72AyhcsDxik8TkhMzgP1+bJjAacAFIPL
-         Fwjh1j1bwoYMh8zfwRyYJ/NObwWOVXpiZh3xsusv0ZeNEwPCpEiCL/R96RG1mldvnWWZ
-         6KBatLU2qCHdKji4NZaURwFv7Gk3/ej2voQmuyPeEtuHMh2GgnV6B1mVxCbsqmYg8g4t
-         oSs3Ee9a7QBA3GUjSQxtDwNkUvsoH6MqOmB7V7pgiqBl25XEmrN/QQOcBEx2a39xC6am
-         Jzxg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BMBDLVBHReXrptTsoHAndpojA7TxC5isHE8cJZNoRik=;
+        b=PsgFSvfkjq36ChFMniqiCXeatRfJey9RpMwyFwXYiWWrW30nEqsNsDtrMCp1Mh/kvI
+         wAQCL/nYrGfbPAQrwuvUi6BR0AvA4Vv4S+u1dN5GgmrismCjIIzQosNMSPLJWHVj7dm9
+         HIatkDo1VsfoByRpQQYD6oIYK4z5X43MGzi4ngC+5hoeCxlPTU3AO38rZnvxDT5l/j9H
+         ra59BPPrPhF47Y7AOS1YmdEnWGwS7iUNlbz7yFi4x/BItbkpP7yG/zv/tzS335OdVFJJ
+         19xbzEITqg5HD5+HzYTW76wZjs7WLveYT3KMQaJ6IypUtPoqOvTTkNzHuRuQtAWNRGcv
+         PhlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tFq3dY0RT72BHrk7ok6eI3664JDFeam9zNV3RjnEcwo=;
-        b=nTHFuJf9zk1XISbIMhnYC03bAwqT/GIDpNSlR3fig6q7/HSHtDzCExYLJtmjE9exJH
-         xyM0or2oQMQMQ183bx9D3yx63aooFe9rrFXNFlVQIBR6fmQNO+SZsSSYawUE+fMitAD9
-         1D3nqa7s52pCNBF5dBiqss035wjoNAKl7n1BXCfI4wDuaO3hfwYCdOoEsmybI7Ahkbev
-         yyTvxMrNtF/uEPRRfNhPOMF9GDo1Tu0M8G95g1pp/G/tVVEYaBJOc9L2UhH1qQkl6kqE
-         TuvZNZuPf1ToM/g5Au/61RGg3V6UsN3sptm7qiRGOIANm9ULP9Q7kxgcU83Wc4iw/Me8
-         EeEw==
-X-Gm-Message-State: AOAM532wUf1j6MfGomBurTaVgRBNd+WHt/sB8r1FjbKuxozhMt/bxdTO
-        44+AENeBjs62v8UdVhgRXTV1lg==
-X-Google-Smtp-Source: ABdhPJzWtjLOq+7MW6am6fJ2qyojfFrbGcIApptCWxka+tmPAPEoEqLeC+rWN7I0VOh+1PggpJUwIw==
-X-Received: by 2002:a4a:e70a:: with SMTP id y10mr12527509oou.75.1617384657315;
-        Fri, 02 Apr 2021 10:30:57 -0700 (PDT)
-Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 3sm695680oti.30.2021.04.02.10.30.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 10:30:56 -0700 (PDT)
-Date:   Fri, 2 Apr 2021 12:30:54 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     netdev@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>
-Subject: Re: [PATCH v2] iplink_rmnet: Allow passing IFLA_RMNET_FLAGS
-Message-ID: <20210402173054.GR904837@yoga>
-References: <20210315154629.652824-1-bjorn.andersson@linaro.org>
- <1b6ebc71-5efd-53ea-95b5-85e17d5804d1@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BMBDLVBHReXrptTsoHAndpojA7TxC5isHE8cJZNoRik=;
+        b=Jv6OMszbH3x9kIqgi7GH/sXsMgQjXzgjWwG0wAbmkhFmeAD9cFCtwsWiLzwiZONf+T
+         LPLT10oiceLEd+P3jLdax2unYIntoNnDghsz8phctLFyCdKjaQuokUpitJcKgbZNoTPw
+         GVDqsxc5OTcwFQCys5Yf+tXfOFfUj95UKn+qJhIFvE2l4+SdMDte9ckcDNLERP6AsSKB
+         +KTcPazkadVIlBbzioCtPe7RRB2pZidiayWyXQVvJBln7lISTzRpqaZY/auAW1lLi2Dj
+         fppqCRtiEUihluDciLhf5kL0SuTw9w6o7tjY+zj/aCFhti6tGe5XYXjPEek2sSOsVN26
+         Aqvw==
+X-Gm-Message-State: AOAM531/Ee2De60aQDshaR4vdJA5E+VDMnxp2tDpYU2bGXn+7ZAgLoDk
+        9s6gftL5/5USN8IYYH0nE1/ylQLe1zfNSwuANOk=
+X-Google-Smtp-Source: ABdhPJx/6nxRu7rPD1Xe98bgH4WhOPjIM3VBD91fy+uPji1W2gGr/7Vl413mHWMnHiwGLnqVOgBglFH3p/VULny209U=
+X-Received: by 2002:a17:902:8347:b029:e7:4a2d:6589 with SMTP id
+ z7-20020a1709028347b02900e74a2d6589mr14007273pln.64.1617384901714; Fri, 02
+ Apr 2021 10:35:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1b6ebc71-5efd-53ea-95b5-85e17d5804d1@linaro.org>
+References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
+ <B42B247A-4D0B-4DE9-B4D3-0C452472532D@fb.com> <CAM_iQpW-cuiYsPsu4mYZxZ1Oixffu2pV1TFg1c+eg9XT3wWwPQ@mail.gmail.com>
+ <E0D5B076-A726-4845-8F12-640BAA853525@fb.com>
+In-Reply-To: <E0D5B076-A726-4845-8F12-640BAA853525@fb.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 2 Apr 2021 10:34:50 -0700
+Message-ID: <CAM_iQpWdO7efdcA2ovDsOF9XLhWJGgd6Be5qq0=xLphVBRE_Gw@mail.gmail.com>
+Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
+To:     Song Liu <songliubraving@fb.com>
+Cc:     "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>,
+        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
+        "wangdongdong.6@bytedance.com" <wangdongdong.6@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 15 Mar 11:16 CDT 2021, Alex Elder wrote:
+On Thu, Apr 1, 2021 at 1:17 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Apr 1, 2021, at 10:28 AM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Wed, Mar 31, 2021 at 11:38 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >>
+> >>
+> >>> On Mar 31, 2021, at 9:26 PM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >>>
+> >>> From: Cong Wang <cong.wang@bytedance.com>
+> >>>
+> >>> (This patch is still in early stage and obviously incomplete. I am sending
+> >>> it out to get some high-level feedbacks. Please kindly ignore any coding
+> >>> details for now and focus on the design.)
+> >>
+> >> Could you please explain the use case of the timer? Is it the same as
+> >> earlier proposal of BPF_MAP_TYPE_TIMEOUT_HASH?
+> >>
+> >> Assuming that is the case, I guess the use case is to assign an expire
+> >> time for each element in a hash map; and periodically remove expired
+> >> element from the map.
+> >>
+> >> If this is still correct, my next question is: how does this compare
+> >> against a user space timer? Will the user space timer be too slow?
+> >
+> > Yes, as I explained in timeout hashmap patchset, doing it in user-space
+> > would require a lot of syscalls (without batching) or copying (with batching).
+> > I will add the explanation here, in case people miss why we need a timer.
+>
+> How about we use a user space timer to trigger a BPF program (e.g. use
+> BPF_PROG_TEST_RUN on a raw_tp program); then, in the BPF program, we can
+> use bpf_for_each_map_elem and bpf_map_delete_elem to scan and update the
+> map? With this approach, we only need one syscall per period.
 
-> On 3/15/21 10:46 AM, Bjorn Andersson wrote:
-> > Parse and pass IFLA_RMNET_FLAGS to the kernel, to allow changing the
-> > flags from the default of ingress-aggregate only.
-> 
-> To be clear, this default is implemented in the kernel RMNet
-> driver, not in "iproute2".  And it is ingress deaggregation
-> (unpacking of aggregated packets from a buffer), not aggregation
-> (which would be supplying a buffer of aggregated packets to the
-> hardware).
-> 
+Interesting, I didn't know we can explicitly trigger a BPF program running
+from user-space. Is it for testing purposes only?
 
-Thanks, I'll update the commit message to clarify this point.
+But we also want the timer code itself to change the expire time too, it is
+common to adjust the expire time based on the size of the workset, for
+example, the number of elements in a hashmap.
 
-> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> 
-> I have some suggestions on your help text (and flag names).
-> The code looks good to me otherwise.  I trust you've
-> confirmed the RMNet driver uses the flags exactly as
-> you intend when they're provided this way.
-> 
+With the current design, both kernel and user-space can modify the
+expire time with map update API's.
 
-I've confirmed that it flips the bits in the rmnet driver and that
-flipping the right bit(s) my laptop starts deaggregating messages.
-
-> 					-Alex
-> > ---
-> > 
-> > Changes since v1:
-> > - s/ifla_vlan_flags/ifla_rmnet_flags/ in print_opt
-> > 
-> >   ip/iplink_rmnet.c | 42 ++++++++++++++++++++++++++++++++++++++++++
-> >   1 file changed, 42 insertions(+)
-> > 
-> > diff --git a/ip/iplink_rmnet.c b/ip/iplink_rmnet.c
-> > index 1d16440c6900..a847c838def2 100644
-> > --- a/ip/iplink_rmnet.c
-> > +++ b/ip/iplink_rmnet.c
-> > @@ -16,6 +16,10 @@ static void print_explain(FILE *f)
-> >   {
-> >   	fprintf(f,
-> >   		"Usage: ... rmnet mux_id MUXID\n"
-> > +		"                 [ingress-deaggregation]\n"
-> > +		"                 [ingress-commands]\n"
-> > +		"                 [ingress-chksumv4]\n"
-> > +		"                 [egress-chksumv4]\n"
-> 
-> Other help output (in print_explain()) put spaces after
-> the '[' and before the ']'; so you'd be better to stay
-> consistent with that.
-> 
-
-I had missed that, thanks.
-
-> And I know the name is based on the C symbol, but I think
-> you should follow the convention that seems to be used for
-> all others, and use "csum" to mean checksum.
-> 
-> Also it's not clear what the "v4" means.  I'm not sure I
-> like this suggestion, but...  It comes from QMAP version 4,
-> as opposed to QMAP version 5, so maybe use "csum-qmap4"
-> in place of "csumv4?"
-> 
-
-Make sense, I'll update this to ingress-csum-qmap4 etc.
-
-> Is there any way to disable ingress deaggregation?  Since
-> it's on by default, you might want to use a "[ on | off ]"
-> type option for that case (or all of them for that matter).
-> Otherwise, the deaggregation parameter doesn't really help
-> anything.
-> 
-
-Unfortunately, in contrast to other implementers of IFLAG_x_FLAGS we
-find the following snippet in the rmnet driver:
-
-  data_format = flags->flags & flags->mask;
-
-So rather than flags->mask specifying which bits to update, it masks
-flags->flags and whatever is left is your new flags. And given that this
-is non-standard, the iplink flow doesn't support read/modify/write on
-the tool side.
-
-As such it's not possible to toggle individual bits, you always pass the
-new flags. So the way to disable a particular feature, is to issue an
-change link request without the particular feature specified.
-
-> >   		"\n"
-> >   		"MUXID := 1-254\n"
-> >   	);
-> > @@ -29,6 +33,7 @@ static void explain(void)
-> >   static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
-> >   			   struct nlmsghdr *n)
-> >   {
-> > +	struct ifla_rmnet_flags flags = { };
-> >   	__u16 mux_id;
-> 
-> Do you know why this is __u16?  Is it because it's exposed
-> to user space?  Not a problem... just curious.
-> 
-
-This seems to be the data type used throughout the project to denote
-16 bit unsigned integers, so it seems to me that Daniele just followed
-the coding standard of the project here - and it's defined in the kernel
-to be a 16 bit unsigned integer...
-
-Regards,
-Bjorn
-
-> >   	while (argc > 0) {
-> > @@ -37,6 +42,18 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
-> >   			if (get_u16(&mux_id, *argv, 0))
-> >   				invarg("mux_id is invalid", *argv);
-> >   			addattr16(n, 1024, IFLA_RMNET_MUX_ID, mux_id);
-> > +		} else if (matches(*argv, "ingress-deaggregation") == 0) {
-> > +			flags.mask = ~0;
-> > +			flags.flags |= RMNET_FLAGS_INGRESS_DEAGGREGATION;
-> > +		} else if (matches(*argv, "ingress-commands") == 0) {
-> > +			flags.mask = ~0;
-> > +			flags.flags |= RMNET_FLAGS_INGRESS_MAP_COMMANDS;
-> > +		} else if (matches(*argv, "ingress-chksumv4") == 0) {
-> > +			flags.mask = ~0;
-> > +			flags.flags |= RMNET_FLAGS_INGRESS_MAP_CKSUMV4;
-> > +		} else if (matches(*argv, "egress-chksumv4") == 0) {
-> > +			flags.mask = ~0;
-> > +			flags.flags |= RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
-> >   		} else if (matches(*argv, "help") == 0) {
-> >   			explain();
-> >   			return -1;
-> > @@ -48,11 +65,28 @@ static int rmnet_parse_opt(struct link_util *lu, int argc, char **argv,
-> >   		argc--, argv++;
-> >   	}
-> > +	if (flags.mask)
-> > +		addattr_l(n, 1024, IFLA_RMNET_FLAGS, &flags, sizeof(flags));
-> > +
-> >   	return 0;
-> >   }
-> > +static void rmnet_print_flags(FILE *fp, __u32 flags)
-> > +{
-> > +	if (flags & RMNET_FLAGS_INGRESS_DEAGGREGATION)
-> > +		print_string(PRINT_ANY, NULL, "%s ", "ingress-deaggregation");
-> > +	if (flags & RMNET_FLAGS_INGRESS_MAP_COMMANDS)
-> > +		print_string(PRINT_ANY, NULL, "%s ", "ingress-commands");
-> > +	if (flags & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-> > +		print_string(PRINT_ANY, NULL, "%s ", "ingress-chksumv4");
-> > +	if (flags & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
-> > +		print_string(PRINT_ANY, NULL, "%s ", "egress-cksumv4");
-> > +}
-> > +
-> >   static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-> >   {
-> > +	struct ifla_rmnet_flags *flags;
-> > +
-> >   	if (!tb)
-> >   		return;
-> > @@ -64,6 +98,14 @@ static void rmnet_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
-> >   		   "mux_id",
-> >   		   "mux_id %u ",
-> >   		   rta_getattr_u16(tb[IFLA_RMNET_MUX_ID]));
-> > +
-> > +	if (tb[IFLA_RMNET_FLAGS]) {
-> > +		if (RTA_PAYLOAD(tb[IFLA_RMNET_FLAGS]) < sizeof(*flags))
-> > +			return;
-> > +		flags = RTA_DATA(tb[IFLA_RMNET_FLAGS]);
-> > +
-> > +		rmnet_print_flags(f, flags->flags);
-> > +	}
-> >   }
-> >   static void rmnet_print_help(struct link_util *lu, int argc, char **argv,
-> > 
-> 
+Thanks.
