@@ -2,87 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9EF63534BF
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 18:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C173534DF
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 19:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236893AbhDCQiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 12:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236808AbhDCQiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 12:38:16 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6B0C0613E6;
-        Sat,  3 Apr 2021 09:38:13 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id mh7so1235327ejb.12;
-        Sat, 03 Apr 2021 09:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r7z9PZUHOLRPlsyUlJgKqk0kSJfJAIYpWl69+JjFgoI=;
-        b=p8w9WxO9mvUwXBifb2jC2gia/2IL49GV/IWNE5RhAElRlHOgGbSXCqd1uAt1T/l/oi
-         E3sFN57uNk9+2vPl14W42U1SuSDkpsguH1laX6/SqMJR3fs8Vh8JhITNq0q0it5qIUqR
-         uTI9b4iohZCAhanWrLlDBSjLkp4mZBu+zfXTrxnHRzv0KTCEuyIQ7JUyLnOzKfRneOO4
-         uGMLS+ffJwPngqL7xw3QnhTxga+cO6HQgPpAXZXrtFrNBk2XPAamIF0jeUKygQcL8hGB
-         Oq/CJN9nFXtndK6CJUStRUy4SNQxBpP5RxqAoPbMuWOAcY5MJjBSnCncwiJOeewCl4Ij
-         34CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=r7z9PZUHOLRPlsyUlJgKqk0kSJfJAIYpWl69+JjFgoI=;
-        b=fapy+BLT1Qx2a1NiOddrxjbEaK3S7hmau16mXPWFotWcIvJFIY7Eq6DKOa97qgRAEa
-         Si5lU603NluOJMw9vxYU2mr1IqeaZv3YiF6aa8k98z/XfK+CcSGkk9/urCiJc8UzjFHJ
-         Q5SfNDVmzW5+dr2PACOpaQCC/WJO1ILHNpKuPIlRggwNVCr9aIljTxgYbMD7+R01Edrc
-         Zs3AZJaB2/ZRD19YpJp00G87IiI+8RgCBR3Yq7n+AY9We+wmaztUukb3rkIcp4u+yVxN
-         aYe1UQhWW8qZS2g+Iny853+udWrayWO09uBTJvYltogJrVh1JTj1YtwlEKX0YGlHi3Cm
-         L8Hg==
-X-Gm-Message-State: AOAM531/6XLCJ8Wg9eeBT4a98uF2qI4RLvyfr9ZYkYO4jlg0o9NqdgZX
-        TDhxXGkUn63EStbonauzdgE=
-X-Google-Smtp-Source: ABdhPJwKerWFa1OIrj6ZrGjYJSLBWDSIIdqGH0oppIu0Bp8FChk2eAUw95BXiDLpqmFvTj8rh4zO2g==
-X-Received: by 2002:a17:906:7c4:: with SMTP id m4mr20098498ejc.63.1617467892122;
-        Sat, 03 Apr 2021 09:38:12 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id r25sm7345698edv.78.2021.04.03.09.38.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Apr 2021 09:38:11 -0700 (PDT)
-Date:   Sat, 3 Apr 2021 19:38:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S236940AbhDCRPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 13:15:21 -0400
+Received: from mout.gmx.net ([212.227.15.15]:42917 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236819AbhDCRPU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Apr 2021 13:15:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1617470100;
+        bh=JrV89Lo/xurYMRPkWpl1O0IqJxEWTwx1p8wZRHot3Tk=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=cOmkdq+7mvDKGLg+zGlgtPtlMu8zgGX/jZSScRKGuxkD9QIyYuZ+el3+qXXK3XSBl
+         CETSiUc7XzYi3sVtgYfp0fMTY7htPg3OD4ug7NlKTMDNnkhhYlHlu6YRQb4M38ZlJr
+         1PL9uFQOeAs0V4JIexz30y81hG9F70sMfyi2Rf5U=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.55] ([95.91.192.147]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MatVh-1m0Qmt2evj-00cNrs; Sat, 03
+ Apr 2021 19:15:00 +0200
+Subject: Re: [PATCH net-next v1 2/9] net: dsa: tag_ar9331: detect IGMP and MLD
+ packets
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-mips@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 2/9] net: dsa: tag_ar9331: detect IGMP and
- MLD packets
-Message-ID: <20210403163810.xut2oilz4d7zuqli@skbuf>
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
 References: <20210403114848.30528-1-o.rempel@pengutronix.de>
- <20210403114848.30528-3-o.rempel@pengutronix.de>
- <20210403130318.lqkd6id7gehg3bin@skbuf>
- <20210403132636.h7ghwk2eaekskx2b@pengutronix.de>
- <20210403134606.tm7dyy3gt2nop2sj@skbuf>
- <20210403152224.u7vbehkijg2wzxon@pengutronix.de>
+ <20210403114848.30528-3-o.rempel@pengutronix.de> <YGiAjngOfDVWz/D7@lunn.ch>
+From:   Oleksij Rempel <linux@rempel-privat.de>
+Message-ID: <f4856601-4219-09c7-2933-2161afd03abe@rempel-privat.de>
+Date:   Sat, 3 Apr 2021 19:14:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210403152224.u7vbehkijg2wzxon@pengutronix.de>
+In-Reply-To: <YGiAjngOfDVWz/D7@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Gtx01aF/6gl4/c7myW4dDa77MMX4E5f7rZ2FRxZX8CruSrEy5ZP
+ ldPhJ0dUlDXXSMiJmc3cn7eu1lAxPgy6rOVuCc5jjJnyqEn8b91kNJuP/a6F8n7cNf606CH
+ qynwN1zRHnxJuaTyqzVIq30YCvcSBT5B17vdepDD9wtF/tQrOWHNxO5F4+9lAgKxxOVTTLN
+ WV1M0Zrcgq856HWp4zaoQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dvXwZOyeFAw=:4WxPuj6fRWDf420c12wRU+
+ lf9oQsAXeYf+0nhIv/xMBe2feFjxWgToHawWgdcqj6P74EsnTvT8WMBU/s1+SWwHUdGy8sZ67
+ 5KU5x7WBxJDGiZDkXjZfcPPvdntOwjapLja+FVQmAp2nOh2VYV6XBuB0dW5s3AvqkQciIbLu2
+ pQfw/mxAro6nQJGv3a2NuObrvh5s14bRnuSNnjPyQFe5NEcsLhGhW/mOhCIykehjDvxG91OzJ
+ zradMsx0MA08SYBOKdY++rDrUAecbUuwc/RJ9v995/CaAPFmn36Pp2eQbCmiIVqswi5hTTuAO
+ 5sBuTZPOrbI8eJmR+wiooDudnVfhMRZ8G0x3Dx+V/v+2Qdkf++UViyY+Gop18zWl9G2yevxlr
+ UqK1+daEZfnb8oyj7oQ8dtpaMAxmQ28qyOd+aE+ndh45eIg6KdNd/oKNm/mVIzyF3DzB8Ljjh
+ 3clKiN74qvwCvYg32IhScbd/vK7xsyEz2WLsMsrpm5mxpPfA4fgF9id1rf+kIsmN9u9YggiOs
+ 2cuWJOpFQzkluXkY3b8HyNX+GcEfQ5hElYuKBSeSTfeUsco8lksMn95hqorYKyvjmGUXX2AKU
+ RBi6jm8T6SPvi445Au+tvUUObggj0JOKRvyb9Gr8VIdL5SousdH/C2uIh/bJsqhcx5jmJFNXx
+ 2Pzj8P5811I1FpZTG1aX3LuHVaVOgGZRwBzxfE3/6TToGefbv5yLkwUspod75kfe0b5PWa0wL
+ gR5cwjizmg1XupPR/OH0tXa+4g9QfxtYhKwy2HmLYiFHRO4RaPZJ516vHIKiuWW5PdN2Li14Z
+ Qk0I0w+JF3EaPVo6ROV2sLut7OHsz2afahhVTsNJy56HKh4xKV+asqDUsDOoJjraBSrM35ile
+ jAUSFdrL7ArY59reJNAyV2xNBt6SMlsWm9rXWVROy8D4nsTLEEd6+jjHN1dbawbpf3XcNzwu6
+ JLOoD+KStsxDY5wXo2Ip0bHnqA7zsGbBFfWZxMyUYKWGede91zzNAI40R+R7HoI99UGSkfBxk
+ ccfwHQ9XtUAkgzu6TjuyU2trVucYfYWv9d+7QPabTHta2eoKNqn5vTFiqOD7JQnmZc+89XklQ
+ 364bpXqnkovgAo1U+Ab7QkZKZ3vcqntsNl2LXSYvdhrBoJ2iyCyrF5gHCFTK5+EAVvd9HdWci
+ DXT44Lq8Ur4N/5MD4XSgql3GoMWQHIkgdoVbnfrMcMetvwLYpQ1UINQhTgGAbo7RLoMrRxGlt
+ dYQQwobR4eJJ6PtU/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 03, 2021 at 05:22:24PM +0200, Oleksij Rempel wrote:
-> Off-topic question, this patch set stops to work after rebasing against
-> latest netdev. I get following warning:
-> ip l s lan0 master test
-> RTNETLINK answers: Invalid argumen
-> 
-> Are there some API changes?
+Am 03.04.21 um 16:49 schrieb Andrew Lunn:
+>> @@ -31,6 +96,13 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buf=
+f *skb,
+>>  	__le16 *phdr;
+>>  	u16 hdr;
+>>
+>> +	if (dp->stp_state =3D=3D BR_STATE_BLOCKING) {
+>> +		/* TODO: should we reflect it in the stats? */
+>> +		netdev_warn_once(dev, "%s:%i dropping blocking packet\n",
+>> +				 __func__, __LINE__);
+>> +		return NULL;
+>> +	}
+>> +
+>>  	phdr =3D skb_push(skb, AR9331_HDR_LEN);
+>>
+>>  	hdr =3D FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
+>
+> Hi Oleksij
+>
+> This change does not seem to fit with what this patch is doing.
 
-Yes, it's likely that you are returning -EINVAL to some of the functions
-with which DSA calls you at .port_bridge_join time, see dsa_port_switchdev_sync.
+done
+
+> I also think it is wrong. You still need BPDU to pass through a
+> blocked port, otherwise spanning tree protocol will be unstable.
+
+We need a better filter, otherwise, in case of software based STP, we are =
+leaking packages on
+blocked port. For example DHCP do trigger lots of spam in the kernel log.
+
+I'll drop STP patch for now, it will be better to make a generic soft STP =
+for all switches without
+HW offloading. For example ksz9477 is doing SW based STP in similar way.
+
+=2D-
+Regards,
+Oleksij
