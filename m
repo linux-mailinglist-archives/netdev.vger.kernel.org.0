@@ -2,83 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5F673532B2
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 07:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8950E3532BB
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 07:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235598AbhDCFNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 01:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        id S232178AbhDCF1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 01:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbhDCFNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 01:13:54 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417E8C0613E6;
-        Fri,  2 Apr 2021 22:13:52 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id ot17-20020a17090b3b51b0290109c9ac3c34so5429797pjb.4;
-        Fri, 02 Apr 2021 22:13:52 -0700 (PDT)
+        with ESMTP id S230000AbhDCF1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 01:27:33 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743A2C0613E6;
+        Fri,  2 Apr 2021 22:27:31 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id c3so6981562qkc.5;
+        Fri, 02 Apr 2021 22:27:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vozdZ0e1A0cPa/cEgn/WnGI+6yRgZk0FApnNuMCWEuU=;
-        b=Iwt9FdQdi2fdry1fqQNwr0MZGC68iuOs3D9t+N6EYw9Ichg39GXptZyVsfY3ikVBrh
-         kJxuZFMeN6+AeQxft/HLFI/ZCpSPzsz9dpVpvd3YMLvCOFXJt17IlmBOWahavhmsNgy0
-         fYobAKWpdxalszdZTB1n1Vrw18ua4eI5ZpvJLW70mU5NRAO54FPTEGE9xo3kbDmdhmt1
-         zZbf0mr9pnMBFmLSMtK91Z2L9+x+MWfx7MaznuoNkX7xdQEnvpYQ4oFHIkGEMF0jKwbE
-         bYXDsgpjKcUYHyhOpn8GIvzDetiPhOPQK+p2Zwozp+V7jYliWQ5sjXOUAOVk0cHc9SWq
-         Uc9g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ABtMI8ksFSdWzNo+QyX4TO78LN4nqKlOQbP/dp/j8yA=;
+        b=ZF6hI2cjwuyUsdYmcWCMvhfhVFtrHBp2hsJdQMyfoH+/EJ1hYOUPXzbzANyEFwDBB9
+         fUCETIEKtRsH581Gafpcu7iYCW6Y8ZFKJojwKTP4Y1N5eOr1Ljj0xTeOp4A+mGLxh5CH
+         G9Jfk6y9tI5Phg1sF2H5n8V3QQKrljT49vA6269keoy9/6XxpwUMk+EDhG8W6u2V7bkT
+         0/q/SpuerHhM34PVLBnq8GiLg4IyQme1ye3HmU4G5UJmAL3fYbldjzOZsoJ+mmAklAJj
+         AqaU6T9MB7lYopmlx2LMul6x8uTuHVuKfrJV16pTF5I7cNra6fUuQrNnHbDbEvoMJ00x
+         a5Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vozdZ0e1A0cPa/cEgn/WnGI+6yRgZk0FApnNuMCWEuU=;
-        b=nibdAUPk/TwKAosi6KZLix07nV284h756ZPQ8nvL7CTpL7xyu5DJAw1DlkD/HJlsv3
-         aQ9AelXl6ApMXkQdg3G7YADEvCVtBsk88QR3yWJEZEkjKNZlrEffESZm97MU/5IwHXJ2
-         W1JjjptyOozWMNGYRrAGM1fBWxjYfYgKjClbBda6ED+KflwCDIQSNLdFCKZU73VPAzbO
-         Xn39kVmvFxMwd1Kdu4BoWeUb+cIqB59rjfvxymIVTyCXq6PC6Keqat6xpZsf/aytCy3P
-         +8K7vY0VksXFIghKhA57YbinujdBEWPsjw+MzIxQX5gH5Aw3nICW5cwURK1jQPhmGxtx
-         zwfA==
-X-Gm-Message-State: AOAM533Syz3SZNSJhFFf0Vp3ZEcCjmNuSHOq5pxsbEIg7DL/tdL5eEji
-        zI2sQhQpySzHFKbjAZBtWSsNN3KmeQRgUqPp6FU=
-X-Google-Smtp-Source: ABdhPJyAPdNCXSc45xEF8J5trRqfFUuVHedSUEe5t+ggEjKTIJWi8iSEglIxemhlAGBBGNuqQplO4LRFTRKle2NYg6o=
-X-Received: by 2002:a17:90b:514:: with SMTP id r20mr17002091pjz.145.1617426831877;
- Fri, 02 Apr 2021 22:13:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
- <20210331023237.41094-11-xiyou.wangcong@gmail.com> <87sg492dq3.fsf@cloudflare.com>
-In-Reply-To: <87sg492dq3.fsf@cloudflare.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ABtMI8ksFSdWzNo+QyX4TO78LN4nqKlOQbP/dp/j8yA=;
+        b=JgTveuaC1sQwUzIOwm+xeOaDWS6M0sW/Hc/mZUhQdPtCWZbl5eiHiIghqzyIR+yqNM
+         I0L8HgpbTXIKt5VQhwf/k5y8kCFw5NTaZxOhe2Lat7HyA9rK3apj82VdUqMtL+iQIwGg
+         poKb21sfrtO5K+hgMQvpyDp0NhOq8mJ6aimBGLL0h07Kluh6hMh3qrlhDiZL0xZIMMYv
+         XqgJmFYcFaVlL37Z6/n9nLaO6MVffW4yVByFnCcuYsZ7uivoTi2+P64OtWCiwkTjh7dR
+         luiaCQOIN42w5ZcfE6301EIZPmTYVn5zbIcIgD4OdOagb47e78PQaFxURdDT0CBdIAk3
+         imeg==
+X-Gm-Message-State: AOAM530BXjdNR5chPiZMefbEIgsxWSaTFT8tCq8Xm7RzlH1sRsJ+5vIZ
+        Px6WRzlcRel35CS1Fs1iHrw/Y17JeB5NIA==
+X-Google-Smtp-Source: ABdhPJwf+ODeyrc94hUge2+X1fh2EhD8g9HcWgBg0FoXBUQzwXFi+rW2B9FoBGem3nGUR+AdeWx3Eg==
+X-Received: by 2002:a37:78b:: with SMTP id 133mr16001499qkh.109.1617427650588;
+        Fri, 02 Apr 2021 22:27:30 -0700 (PDT)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:d1:9277:b313:2e46])
+        by smtp.gmail.com with ESMTPSA id v35sm8076007qtd.56.2021.04.02.22.27.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Apr 2021 22:27:30 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 2 Apr 2021 22:13:40 -0700
-Message-ID: <CAM_iQpVL=3wYLeZchLz0XhenF6yCV_Y4BOzmDmaMrjCYVQ+LMg@mail.gmail.com>
-Subject: Re: [Patch bpf-next v8 10/16] sock: introduce sk->sk_prot->psock_update_sk_prot()
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [Patch bpf-next] udp_bpf: remove some pointless comments
+Date:   Fri,  2 Apr 2021 22:27:15 -0700
+Message-Id: <20210403052715.13854-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 2, 2021 at 3:16 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> > -struct proto *udp_bpf_get_proto(struct sock *sk, struct sk_psock *psock)
-> > +int udp_bpf_update_proto(struct sock *sk, bool restore)
-> >  {
-> >       int family = sk->sk_family == AF_INET ? UDP_BPF_IPV4 : UDP_BPF_IPV6;
-> > +     struct sk_psock *psock = sk_psock(sk);
-> > +
-> > +     if (restore) {
-> > +             sk->sk_write_space = psock->saved_write_space;
-> > +             /* Pairs with lockless read in sk_clone_lock() */
->
-> Just to clarify. UDP sockets don't get cloned, so the above comment
-> apply.
+From: Cong Wang <cong.wang@bytedance.com>
 
-Good catch! It is clearly a copy-n-paste. I will send a patch to remove it.
+These comments in udp_bpf_update_proto() are copied from the
+original TCP code and apparently do not apply to UDP. Just
+remove them.
 
-Thanks.
+Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+ net/ipv4/udp_bpf.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
+index 7d5c4ebf42fe..4a7e38c5d842 100644
+--- a/net/ipv4/udp_bpf.c
++++ b/net/ipv4/udp_bpf.c
+@@ -110,7 +110,6 @@ int udp_bpf_update_proto(struct sock *sk, bool restore)
+ 
+ 	if (restore) {
+ 		sk->sk_write_space = psock->saved_write_space;
+-		/* Pairs with lockless read in sk_clone_lock() */
+ 		WRITE_ONCE(sk->sk_prot, psock->sk_proto);
+ 		return 0;
+ 	}
+@@ -118,7 +117,6 @@ int udp_bpf_update_proto(struct sock *sk, bool restore)
+ 	if (sk->sk_family == AF_INET6)
+ 		udp_bpf_check_v6_needs_rebuild(psock->sk_proto);
+ 
+-	/* Pairs with lockless read in sk_clone_lock() */
+ 	WRITE_ONCE(sk->sk_prot, &udp_bpf_prots[family]);
+ 	return 0;
+ }
+-- 
+2.25.1
+
