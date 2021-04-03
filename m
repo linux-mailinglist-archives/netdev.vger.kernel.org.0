@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8950E3532BB
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 07:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2AD93532C4
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 07:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232178AbhDCF1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 01:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
+        id S232200AbhDCFsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 01:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbhDCF1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 01:27:33 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743A2C0613E6;
-        Fri,  2 Apr 2021 22:27:31 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id c3so6981562qkc.5;
-        Fri, 02 Apr 2021 22:27:31 -0700 (PDT)
+        with ESMTP id S232140AbhDCFsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 01:48:12 -0400
+Received: from ustc.edu.cn (email6.ustc.edu.cn [IPv6:2001:da8:d800::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07DD1C0613E6;
+        Fri,  2 Apr 2021 22:48:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ABtMI8ksFSdWzNo+QyX4TO78LN4nqKlOQbP/dp/j8yA=;
-        b=ZF6hI2cjwuyUsdYmcWCMvhfhVFtrHBp2hsJdQMyfoH+/EJ1hYOUPXzbzANyEFwDBB9
-         fUCETIEKtRsH581Gafpcu7iYCW6Y8ZFKJojwKTP4Y1N5eOr1Ljj0xTeOp4A+mGLxh5CH
-         G9Jfk6y9tI5Phg1sF2H5n8V3QQKrljT49vA6269keoy9/6XxpwUMk+EDhG8W6u2V7bkT
-         0/q/SpuerHhM34PVLBnq8GiLg4IyQme1ye3HmU4G5UJmAL3fYbldjzOZsoJ+mmAklAJj
-         AqaU6T9MB7lYopmlx2LMul6x8uTuHVuKfrJV16pTF5I7cNra6fUuQrNnHbDbEvoMJ00x
-         a5Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ABtMI8ksFSdWzNo+QyX4TO78LN4nqKlOQbP/dp/j8yA=;
-        b=JgTveuaC1sQwUzIOwm+xeOaDWS6M0sW/Hc/mZUhQdPtCWZbl5eiHiIghqzyIR+yqNM
-         I0L8HgpbTXIKt5VQhwf/k5y8kCFw5NTaZxOhe2Lat7HyA9rK3apj82VdUqMtL+iQIwGg
-         poKb21sfrtO5K+hgMQvpyDp0NhOq8mJ6aimBGLL0h07Kluh6hMh3qrlhDiZL0xZIMMYv
-         XqgJmFYcFaVlL37Z6/n9nLaO6MVffW4yVByFnCcuYsZ7uivoTi2+P64OtWCiwkTjh7dR
-         luiaCQOIN42w5ZcfE6301EIZPmTYVn5zbIcIgD4OdOagb47e78PQaFxURdDT0CBdIAk3
-         imeg==
-X-Gm-Message-State: AOAM530BXjdNR5chPiZMefbEIgsxWSaTFT8tCq8Xm7RzlH1sRsJ+5vIZ
-        Px6WRzlcRel35CS1Fs1iHrw/Y17JeB5NIA==
-X-Google-Smtp-Source: ABdhPJwf+ODeyrc94hUge2+X1fh2EhD8g9HcWgBg0FoXBUQzwXFi+rW2B9FoBGem3nGUR+AdeWx3Eg==
-X-Received: by 2002:a37:78b:: with SMTP id 133mr16001499qkh.109.1617427650588;
-        Fri, 02 Apr 2021 22:27:30 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:d1:9277:b313:2e46])
-        by smtp.gmail.com with ESMTPSA id v35sm8076007qtd.56.2021.04.02.22.27.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Apr 2021 22:27:30 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next] udp_bpf: remove some pointless comments
-Date:   Fri,  2 Apr 2021 22:27:15 -0700
-Message-Id: <20210403052715.13854-1-xiyou.wangcong@gmail.com>
+        d=mail.ustc.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=U6U25Q7oy9
+        Cp9XMB8iKbrDhc9wIxlBHGI4NY2S+Os98=; b=U8CrhRfyTFuI/N2i210hz7LFRp
+        EBcK228pAUWoawWMEA8f10AQ8nguQS+uaSUPwQqGbp0/61GolkNHUruCibz0CTe5
+        fKFKXDG2wzlec0qRT7ds6vkxet5MBFmdrbPmHHFQkBY3Hnu3t/+2/9z5P83OrNCG
+        hT6mXCxXL8yEJ7KRM=
+Received: from ubuntu.localdomain (unknown [202.38.69.14])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygAXHKSNAWhgflqPAA--.209S4;
+        Sat, 03 Apr 2021 13:47:57 +0800 (CST)
+From:   Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+To:     luciano.coelho@intel.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        mordechay.goodstein@intel.com, johannes.berg@intel.com,
+        emmanuel.grumbach@intel.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Subject: [PATCH] wireless: iwlwifi: Fix a double free in iwl_txq_dyn_alloc_dma
+Date:   Fri,  2 Apr 2021 22:47:55 -0700
+Message-Id: <20210403054755.4781-1-lyl2019@mail.ustc.edu.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: LkAmygAXHKSNAWhgflqPAA--.209S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Gry7Zw43uw4UJF17ZF48Crg_yoW8Jr4rpF
+        4DCr12kFZ8Xa1DZ34kAF4SgFnxJa1Uua93Ka4jyw1fu343Ars5K3WkuFyjqry8JF4rZr1S
+        9F1YkF45GF98XFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWlnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
+        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
+        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6r4rMxAIw28IcxkI7VAKI4
+        8JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xv
+        wVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjx
+        v20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20E
+        Y4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
+        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUYkucDUUUU
+X-CM-SenderInfo: ho1ojiyrz6zt1loo32lwfovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+In iwl_txq_dyn_alloc_dma, txq->tfds is freed at first time by:
+iwl_txq_alloc()->goto err_free_tfds->dma_free_coherent(). But
+it forgot to set txq->tfds to NULL.
 
-These comments in udp_bpf_update_proto() are copied from the
-original TCP code and apparently do not apply to UDP. Just
-remove them.
+Then the txq->tfds is freed again in iwl_txq_dyn_alloc_dma by:
+goto error->iwl_txq_gen2_free_memory()->dma_free_coherent().
 
-Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+My patch sets txq->tfds to NULL after the first free to avoid the
+double free.
+
+Fixes: 0cd1ad2d7fd41 ("iwlwifi: move all bus-independent TX functions to common code")
+Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
 ---
- net/ipv4/udp_bpf.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/queue/tx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 7d5c4ebf42fe..4a7e38c5d842 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -110,7 +110,6 @@ int udp_bpf_update_proto(struct sock *sk, bool restore)
- 
- 	if (restore) {
- 		sk->sk_write_space = psock->saved_write_space;
--		/* Pairs with lockless read in sk_clone_lock() */
- 		WRITE_ONCE(sk->sk_prot, psock->sk_proto);
- 		return 0;
- 	}
-@@ -118,7 +117,6 @@ int udp_bpf_update_proto(struct sock *sk, bool restore)
- 	if (sk->sk_family == AF_INET6)
- 		udp_bpf_check_v6_needs_rebuild(psock->sk_proto);
- 
--	/* Pairs with lockless read in sk_clone_lock() */
- 	WRITE_ONCE(sk->sk_prot, &udp_bpf_prots[family]);
+diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+index 833f43d1ca7a..99c8e473031a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+@@ -1101,6 +1101,7 @@ int iwl_txq_alloc(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
  	return 0;
- }
+ err_free_tfds:
+ 	dma_free_coherent(trans->dev, tfd_sz, txq->tfds, txq->dma_addr);
++	txq->tfds = NULL;
+ error:
+ 	if (txq->entries && cmd_queue)
+ 		for (i = 0; i < slots_num; i++)
 -- 
 2.25.1
+
 
