@@ -2,80 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 620693531C2
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 02:29:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD663531D6
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 03:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235836AbhDCA31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 20:29:27 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63864 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235689AbhDCA31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 20:29:27 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1330FvSI015626
-        for <netdev@vger.kernel.org>; Fri, 2 Apr 2021 17:29:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=RdsVRbNzjeirpfyPIdX85ZAiOT6bbZFUWOo4gkwmKqs=;
- b=k+Utd+Mx1jTMkuLDiV70rc9+MGwGmOVOP9jUF4vpnNM5ckhzEGqHBGplGlHtoUbycXib
- /83dQR73Woec2DORrlp4EA3XdGUQWNrdTw4XhoRCNubJ4L1CDIGciLu+Mglb7HLIJjZA
- bISjaTcw8+k4StbYzfMGZ7VLEWN4D2nPEjk= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 37nsn9dtf3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 17:29:25 -0700
-Received: from intmgw002.25.frc3.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 2 Apr 2021 17:29:24 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id A0CB42940BEE; Fri,  2 Apr 2021 17:29:21 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH bpf-next] bpf: selftests: Specify CONFIG_DYNAMIC_FTRACE in the testing config
-Date:   Fri, 2 Apr 2021 17:29:21 -0700
-Message-ID: <20210403002921.3419721-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
+        id S235341AbhDCBQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 21:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234488AbhDCBQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Apr 2021 21:16:06 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE3CC0613E6
+        for <netdev@vger.kernel.org>; Fri,  2 Apr 2021 18:16:04 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id y19-20020a0568301d93b02901b9f88a238eso6296620oti.11
+        for <netdev@vger.kernel.org>; Fri, 02 Apr 2021 18:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=5k5sb3CSMxJH27w8zOtLdfdpPEt+zJypD6kRJDViD58=;
+        b=sVKUoVpI0biN8qAnWSrPgtKUL8d/wolp/yn8XNI8CCpwTtjIEp4egolCiUl9nCOv2g
+         vgeZqk3hKKxgFrXmzXoH38muKhngv+dE5OIlsOr1ZH3MhpcMh8W/4uZVyK+p9qnIs2ug
+         OJYbIczk5Z/BuIjlaW7bI7NOJbpxVWpO1rE9yRD28u/0diSpMPZZ42VQLuiY6EMS4qgg
+         Ad5B713l96mcD/owi/VXHIg+OIp6WFRXtQXj82LmKx23RK8oAGKgo9hbwOWjSXcUhC02
+         JZj37wtm/6Kb5pB/rZDa5Ub6Y4jrYZS1rQKYsTZygtKxFp8qaaXoLdsMJ7Xk5jymf1A0
+         L1Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5k5sb3CSMxJH27w8zOtLdfdpPEt+zJypD6kRJDViD58=;
+        b=CaLWA1seClVsykorDhbssDfLWhcJFR35Qlt/rpxbQdmHRlwFWFSG6hCXh30VRTNoVh
+         1lxsoqCW/PsZSEw3tCea6PUz6/8PkdG5F914zKtA2Uh27cVaMHsgfz4rYWWUra53VjnK
+         bU9d0zPvcYiMbtJg93EWY7R7AYbAhcSCH4ZcJem4StzlZqnxTIGHPlbTag/NyoNawrzS
+         STURB4nT89Lol2OmtWbeQxJnTqZdTApTc7Au60EXQrc9tq164wvN5M6vy+hzdhOQ/nVK
+         2ycIWwFwlKBxBHJEMEzu18iwKzZyl01lJ5WTm9+UdXEZ5PY98U5OeMKZLgOjGmpZOx98
+         QRnA==
+X-Gm-Message-State: AOAM531CGSO5hPK1/0xRPOsCTjhNN92uaAFbQNMBqK2W7tlzHrx2iegB
+        qhfJ3TO6XNlz1is9FqPp6g4gmHlZ9qA=
+X-Google-Smtp-Source: ABdhPJyVb6hTzU3+I+CaRcy5roo+2D2xQ9DM4s4CDowx1UekqW999dFebnURmuGQsJnAtceU1EjGOQ==
+X-Received: by 2002:a05:6830:225b:: with SMTP id t27mr13008201otd.73.1617412563603;
+        Fri, 02 Apr 2021 18:16:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id g22sm2098214oop.7.2021.04.02.18.16.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Apr 2021 18:16:02 -0700 (PDT)
+Subject: Re: [iproute2-next] tipc: use the libmnl functions in lib/mnl_utils.c
+To:     Hoang Le <hoang.h.le@dektech.com.au>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, jmaloy@redhat.com,
+        maloy@donjonn.com, ying.xue@windriver.com,
+        tuan.a.vo@dektech.com.au, tung.q.nguyen@dektech.com.au
+References: <20210401023409.6332-1-hoang.h.le@dektech.com.au>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <6d124a86-6474-77da-c3e1-cfc6dcf43903@gmail.com>
+Date:   Fri, 2 Apr 2021 19:16:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: BZ_f1MeDaFPsrV-KEenq4GleGpaCjuJ3
-X-Proofpoint-GUID: BZ_f1MeDaFPsrV-KEenq4GleGpaCjuJ3
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-04-02_16:2021-04-01,2021-04-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- suspectscore=0 lowpriorityscore=0 adultscore=0 phishscore=0
- priorityscore=1501 malwarescore=0 impostorscore=0 mlxscore=0
- mlxlogscore=846 bulkscore=0 clxscore=1015 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2103310000
- definitions=main-2104030000
-X-FB-Internal: deliver
+In-Reply-To: <20210401023409.6332-1-hoang.h.le@dektech.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tracing test and the recent kfunc call test require
-CONFIG_DYNAMIC_FTRACE.  This patch adds it to the config file.
+On 3/31/21 8:34 PM, Hoang Le wrote:
+> To avoid code duplication, tipc should be converted to use the helper
+> functions for working with libmnl in lib/mnl_utils.c
+> 
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+> ---
+>  tipc/bearer.c    |  38 ++++++--------
+>  tipc/cmdl.c      |   2 -
+>  tipc/link.c      |  37 +++++--------
+>  tipc/media.c     |  15 +++---
+>  tipc/msg.c       | 132 +++--------------------------------------------
+>  tipc/msg.h       |   2 +-
+>  tipc/nametable.c |   5 +-
+>  tipc/node.c      |  33 +++++-------
+>  tipc/peer.c      |   8 ++-
+>  tipc/socket.c    |  10 ++--
+>  tipc/tipc.c      |  21 +++++++-
+>  11 files changed, 83 insertions(+), 220 deletions(-)
+> 
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- tools/testing/selftests/bpf/config | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests=
-/bpf/config
-index 37e1f303fc11..528af74e0c8f 100644
---- a/tools/testing/selftests/bpf/config
-+++ b/tools/testing/selftests/bpf/config
-@@ -44,3 +44,4 @@ CONFIG_SECURITYFS=3Dy
- CONFIG_IMA_WRITE_POLICY=3Dy
- CONFIG_IMA_READ_POLICY=3Dy
- CONFIG_BLK_DEV_LOOP=3Dy
-+CONFIG_DYNAMIC_FTRACE=3Dy
---=20
-2.30.2
+applied to iproute2-next.
 
