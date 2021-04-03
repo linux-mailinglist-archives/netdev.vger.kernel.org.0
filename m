@@ -2,108 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1BB13534BA
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 18:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9EF63534BF
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 18:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236724AbhDCQdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 12:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
+        id S236893AbhDCQiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 12:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbhDCQda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 12:33:30 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA911C0613E6;
-        Sat,  3 Apr 2021 09:33:27 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id o16so8506499ljp.3;
-        Sat, 03 Apr 2021 09:33:27 -0700 (PDT)
+        with ESMTP id S236808AbhDCQiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 12:38:16 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6B0C0613E6;
+        Sat,  3 Apr 2021 09:38:13 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id mh7so1235327ejb.12;
+        Sat, 03 Apr 2021 09:38:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=GM6DBaeG+OLBXg3SeHdBc39md8Ic7y70PJaj4aCWnkw=;
-        b=skzHdNOTxaMrgEUADT04r72dJcsjl3B8ZT3pavEd4VgbuHZ2+1wTUASXKNgF3/FbEq
-         wyZjO9zfwXZOZPWSdsuZJmAcSHmGfGaz7WdXsmkqMVOYGsQ1OYtx2cEP6rP1qxBrWQha
-         TVlooz+bG/sbv29SfNCbVQgv6g0XWk5p7c4xFSwRO7Bv+h0gW7Tc7TqCZBTnIyGdpriv
-         8ne7jypkGlic3nolpDv9Of3YdFi+lrZHQ4h5qFSbeBDsYDZ5WiKtBxWrxQp3Wr39kyGX
-         rn3xMBNngAsbwgM9bBsmpaBzKU0/kfKGWhprzcSBWCXFdzclp354Av8LrZcx4HpI2CcU
-         igQQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=r7z9PZUHOLRPlsyUlJgKqk0kSJfJAIYpWl69+JjFgoI=;
+        b=p8w9WxO9mvUwXBifb2jC2gia/2IL49GV/IWNE5RhAElRlHOgGbSXCqd1uAt1T/l/oi
+         E3sFN57uNk9+2vPl14W42U1SuSDkpsguH1laX6/SqMJR3fs8Vh8JhITNq0q0it5qIUqR
+         uTI9b4iohZCAhanWrLlDBSjLkp4mZBu+zfXTrxnHRzv0KTCEuyIQ7JUyLnOzKfRneOO4
+         uGMLS+ffJwPngqL7xw3QnhTxga+cO6HQgPpAXZXrtFrNBk2XPAamIF0jeUKygQcL8hGB
+         Oq/CJN9nFXtndK6CJUStRUy4SNQxBpP5RxqAoPbMuWOAcY5MJjBSnCncwiJOeewCl4Ij
+         34CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=GM6DBaeG+OLBXg3SeHdBc39md8Ic7y70PJaj4aCWnkw=;
-        b=hb0FE4Luf+RkIvusKh5T3Xc25F6PjrNIcx3hMiilJIMubjHFvYyndiU9hMKBFWFSg2
-         f4ZJ69PsL2CV8db9xdTHyiPfK0jUCuXhmb+FQXFJMNV4EPocIxkosgp2vlcCEAp9iHH9
-         Sad4ndi0xeZxXlC10L98kUre7bsQ8SRsGlrIoLMa55eSQdsFz7cfd4G9mT5iAHjRWep5
-         7SjVz3FIdrSCB1LOPhWM041HGc/USzx7DRY0YAuxEXv0r7rr7l8mfoXVhZXbjt52yBrC
-         cZryzEihBZKlfLd8zTtnDKdOzGnmVCSvECi/Gj4g4vclSVItGIc/T4UKQa5LWYAiqnVy
-         4KyA==
-X-Gm-Message-State: AOAM531jC1OXIM4VBuEEHeyNIUOx3hMerYIS+U7hSnsMmMYfFFcICP1N
-        C3HRR9FTQ9PXaqM08v2AbPBMApjr+R4Sp7L3y+g=
-X-Google-Smtp-Source: ABdhPJwxasRl9NRsMQLvnJ7dwRxjkeG2rKWFFCkxQ0O2Zdy/fNfFPtyHcBIc/tT4z88MksFM4CDLNg==
-X-Received: by 2002:a2e:8e87:: with SMTP id z7mr11692549ljk.142.1617467606057;
-        Sat, 03 Apr 2021 09:33:26 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.229.149])
-        by smtp.gmail.com with ESMTPSA id z6sm1188052lfr.34.2021.04.03.09.33.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r7z9PZUHOLRPlsyUlJgKqk0kSJfJAIYpWl69+JjFgoI=;
+        b=fapy+BLT1Qx2a1NiOddrxjbEaK3S7hmau16mXPWFotWcIvJFIY7Eq6DKOa97qgRAEa
+         Si5lU603NluOJMw9vxYU2mr1IqeaZv3YiF6aa8k98z/XfK+CcSGkk9/urCiJc8UzjFHJ
+         Q5SfNDVmzW5+dr2PACOpaQCC/WJO1ILHNpKuPIlRggwNVCr9aIljTxgYbMD7+R01Edrc
+         Zs3AZJaB2/ZRD19YpJp00G87IiI+8RgCBR3Yq7n+AY9We+wmaztUukb3rkIcp4u+yVxN
+         aYe1UQhWW8qZS2g+Iny853+udWrayWO09uBTJvYltogJrVh1JTj1YtwlEKX0YGlHi3Cm
+         L8Hg==
+X-Gm-Message-State: AOAM531/6XLCJ8Wg9eeBT4a98uF2qI4RLvyfr9ZYkYO4jlg0o9NqdgZX
+        TDhxXGkUn63EStbonauzdgE=
+X-Google-Smtp-Source: ABdhPJwKerWFa1OIrj6ZrGjYJSLBWDSIIdqGH0oppIu0Bp8FChk2eAUw95BXiDLpqmFvTj8rh4zO2g==
+X-Received: by 2002:a17:906:7c4:: with SMTP id m4mr20098498ejc.63.1617467892122;
+        Sat, 03 Apr 2021 09:38:12 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id r25sm7345698edv.78.2021.04.03.09.38.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Apr 2021 09:33:25 -0700 (PDT)
-Message-ID: <1308b92b9592f6a3331b199658e306714c8c9cac.camel@gmail.com>
-Subject: Re: [PATCH] net: netlink: fix error check in
- genl_family_rcv_msg_doit
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date:   Sat, 03 Apr 2021 19:33:24 +0300
-In-Reply-To: <b8a83042f83af92e87550085175da5c1d95cc4b0.camel@sipsolutions.net>
-References: <20210403151312.31796-1-paskripkin@gmail.com>
-         <b8a83042f83af92e87550085175da5c1d95cc4b0.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 
+        Sat, 03 Apr 2021 09:38:11 -0700 (PDT)
+Date:   Sat, 3 Apr 2021 19:38:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-mips@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v1 2/9] net: dsa: tag_ar9331: detect IGMP and
+ MLD packets
+Message-ID: <20210403163810.xut2oilz4d7zuqli@skbuf>
+References: <20210403114848.30528-1-o.rempel@pengutronix.de>
+ <20210403114848.30528-3-o.rempel@pengutronix.de>
+ <20210403130318.lqkd6id7gehg3bin@skbuf>
+ <20210403132636.h7ghwk2eaekskx2b@pengutronix.de>
+ <20210403134606.tm7dyy3gt2nop2sj@skbuf>
+ <20210403152224.u7vbehkijg2wzxon@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210403152224.u7vbehkijg2wzxon@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-
-On Sat, 2021-04-03 at 18:26 +0200, Johannes Berg wrote:
-> On Sat, 2021-04-03 at 15:13 +0000, Pavel Skripkin wrote:
-> > genl_family_rcv_msg_attrs_parse() can return NULL
-> > pointer:
-> > 
-> >         if (!ops->maxattr)
-> >                 return NULL;
-> > 
-> > But this condition doesn't cause an error in
-> > genl_family_rcv_msg_doit
+On Sat, Apr 03, 2021 at 05:22:24PM +0200, Oleksij Rempel wrote:
+> Off-topic question, this patch set stops to work after rebasing against
+> latest netdev. I get following warning:
+> ip l s lan0 master test
+> RTNETLINK answers: Invalid argumen
 > 
-> And I'm almost certain that in fact it shouldn't cause an error!
-> 
-> If the family doesn't set maxattr then it doesn't want to have
-> generic
-> netlink doing the parsing, but still it should be possible to call
-> the
-> ops. Look at fs/dlm/netlink.c for example, it doesn't even have
-> attributes. You're breaking it with this patch.
-> 
-> Also, the (NULL) pointer is not actually _used_ anywhere, so why
-> would
-> it matter?
-> 
+> Are there some API changes?
 
-Oh, I see now. I thought, it could cause a NULL ptr deference in some
-cases, because some ->doit() functions accessing info.attrs directly.
-Now I understand the point, sorry for my misunderstanding the
-situation.
-
-> johannes
-> 
-
-With regards,
-Pavel Skripkin
-
-
+Yes, it's likely that you are returning -EINVAL to some of the functions
+with which DSA calls you at .port_bridge_join time, see dsa_port_switchdev_sync.
