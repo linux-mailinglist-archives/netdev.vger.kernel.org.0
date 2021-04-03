@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16827353477
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 17:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8680835347D
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 17:19:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236728AbhDCPOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 11:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
+        id S236777AbhDCPTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 11:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbhDCPOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 11:14:01 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FAEC0613E6;
-        Sat,  3 Apr 2021 08:13:57 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id v15so11346399lfq.5;
-        Sat, 03 Apr 2021 08:13:57 -0700 (PDT)
+        with ESMTP id S236364AbhDCPTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 11:19:02 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840CEC0613E6;
+        Sat,  3 Apr 2021 08:18:59 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id d13so11359589lfg.7;
+        Sat, 03 Apr 2021 08:18:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=K3Jb56LOApi297xEEIjS/VCdKqZUuXjd8AUAcVzA0V8=;
-        b=pZosICLiqaTDTTeAzLLUy72xsrdO36JNiueb9h/Hl+9w64PtoFL6arRGY5oBpfJ6uk
-         +mM8ZmHBQlZdqHoBOlIrit92IJd/+fJ+yKK/mOvAqnDJvRGKkVmm9NCTnPAhB+LUWG0l
-         n+pKTIemjHPoj5+gwj2QC/7lQkArIRxxJKYg9H3vWim81hT4mt3ceHTk64kN9lFrIQA2
-         OvXnOA/QRJXPOlkaBFlstVVfOQ68ax4yGQqdl/aCG48gGyQ5egbUeSu365Ow3sbGZht5
-         q6hsxj73BtuGaQWE52Egc1ptQwszlmmPhUNbZBCiNvIPCIqcyarP//lqpEyqXtoiatvZ
-         wyTQ==
+        bh=LJMSco07kl6UgHcL4lI5BdZNbUDIYrJUOjySLJzHFcw=;
+        b=sEBxfjtVS3jSVCEFwhxfH7RjMIkNyDTkHmAKxhHX28Oq7cvSprBREUyQTVousYRTju
+         MZ3hIJPWFXF/gQ/JyXlCeS+R3CIsSpIfqJtDbTJAOOVyFya08iec3zsSIv4alskyAR6J
+         5LJE3OnMjPvDIsmEADZUX8LI+QImh4jWx6i5qbM0hvIxkG/Xy5vDcG3cZKwgFf4s6hJj
+         WXv5S2F8iTk1HND2alaWng6FUXjXLsWeDINEDrwK+VPHfL3KQj+VcUQmmzdj4YinjIji
+         y/GDKxQXV1JM/Dmcsu1LKsPQqr81FxyP+CwUaihk54uwojFex0zsGbg2QkpFEGBAUZCf
+         YDRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=K3Jb56LOApi297xEEIjS/VCdKqZUuXjd8AUAcVzA0V8=;
-        b=fjUC50NzQyVRao2ZAMBsj8ww6bOBRKmSjnMQIMuKn8Z0ReNMDNTljjn4qUglNrSSxm
-         rSZHXfjL96cB0gYCYz6vF2E2IwuHwz3e4tKAEfGJmAjJJ9SnVSFCu0WEgNJGxShYEzOE
-         eLuTTpvaqCN/URj1NVtyXR1qSJIx3D7/LYw3/rrLd4k0/tzic28vWZ14uPm/EvUSWWwB
-         yK11FjB7zMWwqKaWkoVJGJUYM1JZT0qyAn6l4nfP9FOZfoJd6wP8K7m+Qmwuq/ewv1pf
-         NisM6WmvKHUU0FrjyiHC4I1BwidhQqsczaKaxp4zpGUGGt5XuFOJvu3puJwf5iiIg8fv
-         CG0w==
-X-Gm-Message-State: AOAM533+3aPhs7UFAbV3+XtqNLI+tQwD/J7hFm7VDLsaorBTW8hq6uDP
-        d3h+31jFo2T0emUeCM4BkXw=
-X-Google-Smtp-Source: ABdhPJy6unKX9vl33a30tYZ3wwEi9Eq7hlSy7MoPtLgXyzwMglTnVkHtjpHd+1Qaw5xpWNBHmHbwxg==
-X-Received: by 2002:a19:5219:: with SMTP id m25mr11517883lfb.416.1617462836237;
-        Sat, 03 Apr 2021 08:13:56 -0700 (PDT)
+        bh=LJMSco07kl6UgHcL4lI5BdZNbUDIYrJUOjySLJzHFcw=;
+        b=nacoH6iLp5Rp1omzEgkQdELXf4ElN570jnTSSr5v7juueP3Y7Vk9cyTPIUpNXT9mmK
+         gYNv1jFLkVQw4LmDS1TXzrVQ4vsr0enndoz021N2WN4c1jgztNFp35QiVrw1d1CCf2nO
+         mlzxSsDmpoV+C23tf/m+9sRUOPK2aUQu7KWNFZbsX8ytiea9N1H7+L2URFhfxTvyFUxl
+         qG6gy6Ah/gHpfGe4DBAOA5fe1wToIsDJMy1qzS/CaQeLX7gvf4AG5AFyl0Gf/VXIplLg
+         n4dZLeNtgwj7RcavMm0dvXfYBPxenWSadGrthmFatEQLNWmGc+7Q/CBHtiL/7qoWr2Ac
+         /4Kg==
+X-Gm-Message-State: AOAM531Wve45Q6eS/MW1lG9XyT2CRZSy0vec9SarwDtBRqgRsNgSeZh2
+        x0kDr6ZUqpWJlwVd0fT3RzA=
+X-Google-Smtp-Source: ABdhPJzdjHoTcKsPHbzfuMr6Zmj8CuysNF1elSXfZ86spAL44RsAs5/tD0AWZ81rKIrqlOWOFILuzA==
+X-Received: by 2002:a05:6512:104e:: with SMTP id c14mr11626975lfb.570.1617463137430;
+        Sat, 03 Apr 2021 08:18:57 -0700 (PDT)
 Received: from localhost.localdomain ([94.103.229.149])
-        by smtp.gmail.com with ESMTPSA id z7sm1222966ljo.64.2021.04.03.08.13.55
+        by smtp.gmail.com with ESMTPSA id a18sm1216549ljj.106.2021.04.03.08.18.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 03 Apr 2021 08:13:55 -0700 (PDT)
+        Sat, 03 Apr 2021 08:18:57 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH] net: netlink: fix error check in genl_family_rcv_msg_doit
-Date:   Sat,  3 Apr 2021 18:13:12 +0300
-Message-Id: <20210403151312.31796-1-paskripkin@gmail.com>
+To:     alex.aring@gmail.com, stefan@datenfreihafen.org,
+        davem@davemloft.net
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+ac5c11d2959a8b3c4806@syzkaller.appspotmail.com
+Subject: [PATCH] net: fix NULL ptr dereference in nl802154_del_llsec_key
+Date:   Sat,  3 Apr 2021 18:18:51 +0300
+Message-Id: <20210403151851.9437-1-paskripkin@gmail.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,33 +64,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-genl_family_rcv_msg_attrs_parse() can return NULL
-pointer:
+syzbot reported NULL ptr dereference in nl802154_del_llsec_key()[1]
+The problem was in case of info->attrs[NL802154_ATTR_SEC_KEY] == NULL.
+nla_parse_nested_deprecated()[2] doesn't check this condition before calling
+nla_len()[3]
 
-	if (!ops->maxattr)
-		return NULL;
+Call Trace:
+ nla_len include/net/netlink.h:1148 [inline]                       [3]
+ nla_parse_nested_deprecated include/net/netlink.h:1231 [inline]   [2]
+ nl802154_del_llsec_key+0x16d/0x320 net/ieee802154/nl802154.c:1595 [1]
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
 
-But this condition doesn't cause an error in
-genl_family_rcv_msg_doit
-
+Reported-by: syzbot+ac5c11d2959a8b3c4806@syzkaller.appspotmail.com
 Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- net/netlink/genetlink.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ieee802154/nl802154.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index 2d6fdf40df66..c06d06ead181 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -719,6 +719,8 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
- 						  GENL_DONT_VALIDATE_STRICT);
- 	if (IS_ERR(attrbuf))
- 		return PTR_ERR(attrbuf);
-+	if (!attrbuf)
-+		return -EINVAL;
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index 7c5a1aa5adb4..2f0a138bd5eb 100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1592,7 +1592,8 @@ static int nl802154_del_llsec_key(struct sk_buff *skb, struct genl_info *info)
+ 	struct nlattr *attrs[NL802154_KEY_ATTR_MAX + 1];
+ 	struct ieee802154_llsec_key_id id;
  
- 	info.snd_seq = nlh->nlmsg_seq;
- 	info.snd_portid = NETLINK_CB(skb).portid;
+-	if (nla_parse_nested_deprecated(attrs, NL802154_KEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_KEY], nl802154_key_policy, info->extack))
++	if (!info->attrs[NL802154_ATTR_SEC_KEY] ||
++	    nla_parse_nested_deprecated(attrs, NL802154_KEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_KEY], nl802154_key_policy, info->extack))
+ 		return -EINVAL;
+ 
+ 	if (ieee802154_llsec_parse_key_id(attrs[NL802154_KEY_ATTR_ID], &id) < 0)
 -- 
 2.30.2
 
