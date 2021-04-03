@@ -2,89 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F4035341F
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 15:26:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 274DD353423
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 15:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236697AbhDCN0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 09:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59456 "EHLO
+        id S236788AbhDCN3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 09:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbhDCN0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 09:26:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBEAC0613E6
-        for <netdev@vger.kernel.org>; Sat,  3 Apr 2021 06:26:45 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lSgIR-0000ze-EP; Sat, 03 Apr 2021 15:26:39 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lSgIO-00064V-9v; Sat, 03 Apr 2021 15:26:36 +0200
-Date:   Sat, 3 Apr 2021 15:26:36 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>, linux-mips@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 2/9] net: dsa: tag_ar9331: detect IGMP and
- MLD packets
-Message-ID: <20210403132636.h7ghwk2eaekskx2b@pengutronix.de>
-References: <20210403114848.30528-1-o.rempel@pengutronix.de>
- <20210403114848.30528-3-o.rempel@pengutronix.de>
- <20210403130318.lqkd6id7gehg3bin@skbuf>
+        with ESMTP id S236687AbhDCN3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 09:29:06 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9156AC0613E6;
+        Sat,  3 Apr 2021 06:29:03 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id v26so7778945iox.11;
+        Sat, 03 Apr 2021 06:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=SWygQCqYJBcPdL7J1tLNEfA+a85qIQLhd/8toqYvPTY=;
+        b=RcCal+FaiZlVHr9+Itmdy5eyBBDc1E+duNmvNCUnDHX5FimjB4mtCaC3BQGjWkd/+T
+         ja7+iww0gg8b2bSV8nAv3ja+XOLgHcJKKgO14auqx53IRcgAzdRI0fjkshKdejnoCXDW
+         f0N0voeHWUpggPsQ6Io3hFqRfajoNQSsEd4P0n8g2facYNpNi+pZewvZOD0th1h75GeI
+         7A3RkHNa9sQ2G39WwX7rEsZchBvN3rrWYyUyzwCCDBmH7I0dlz3ZzTCJPoQi+/GUdb5h
+         dnRjcutXMml57UYIwoOvJPmUUpntiLfj3RDW0SSrht+KW37De1ZQ3vsGloQa2BNBFHzm
+         gDUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SWygQCqYJBcPdL7J1tLNEfA+a85qIQLhd/8toqYvPTY=;
+        b=nMuxSPcZspsXagqVvdklKIjSqv1/6VppzDRJ5qROlVRacZ/C4435uB9jHwTbBNM/nV
+         o8o6I/igDHjtLaQO9aw6VMgveAiBZ63AXPtjCgJybRrsTlaNUlZNvQigqZnLQ6PghTDF
+         t35q2VLKlDWGijMvLeX7Zu65DvL3KjaIbnKOpL+LWxkanuNkvrM7FotFP9De8ocjWXop
+         V2X35moT5b+4AJitycG/vyGBbWabOdf+z+UGkCFZHCd4AUNjd5a63TPWpP+FcVZCop1J
+         F3exfCbn1BhIUAiotI7dNkDpw0ghwgzmuC6aGvmeCgNKduFcCBW9CA5uHuoZjSBcgfWc
+         xH9w==
+X-Gm-Message-State: AOAM532nBNvCs3UN6zZ7aliSryrjrIfgujd/S6OWyawdmAHwAZSkYgpb
+        pPbkAhgfMCBL70Ow4mktK4AjjvhXitggDZho1IY=
+X-Google-Smtp-Source: ABdhPJxxrKXQHHQY41eKZq2fLVXoyDOq2SytVF0laLpS7kdw5Sg8Debs7tTWKHsJdFRTuswjmjUzv7oJkK3mFDRX1lM=
+X-Received: by 2002:a02:c908:: with SMTP id t8mr16841871jao.78.1617456542948;
+ Sat, 03 Apr 2021 06:29:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210403130318.lqkd6id7gehg3bin@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 15:23:49 up 122 days,  3:30, 32 users,  load average: 0.17, 0.07,
- 0.03
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210330223748.399563-1-pctammela@mojatatu.com>
+ <CAADnVQK+n69_uUm6Ac1WgvqM4X0_74nXHwkYxbkWFc1F5hU98Q@mail.gmail.com> <CAEf4BzZmBiq_JG5-Y2u9jTZraEtyyuOJYWgKivcKk0WFCzKa8g@mail.gmail.com>
+In-Reply-To: <CAEf4BzZmBiq_JG5-Y2u9jTZraEtyyuOJYWgKivcKk0WFCzKa8g@mail.gmail.com>
+From:   Pedro Tammela <pctammela@gmail.com>
+Date:   Sat, 3 Apr 2021 10:28:51 -0300
+Message-ID: <CAKY_9u3VR+B=q0rPNYV1V9sr7+DG=T7786wQwMf1jrSxsKUgfw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpf: check flags in 'bpf_ringbuf_discard()'
+ and 'bpf_ringbuf_submit()'
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Joe Stringer <joe@cilium.io>,
+        Quentin Monnet <quentin@isovalent.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
+        Pedro Tammela <pctammela@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 03, 2021 at 04:03:18PM +0300, Vladimir Oltean wrote:
-> Hi Oleksij,
-> 
-> On Sat, Apr 03, 2021 at 01:48:41PM +0200, Oleksij Rempel wrote:
-> > The ar9331 switch is not forwarding IGMP and MLD packets if IGMP
-> > snooping is enabled. This patch is trying to mimic the HW heuristic to take
-> > same decisions as this switch would do to be able to tell the linux
-> > bridge if some packet was prabably forwarded or not.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> 
-> I am not familiar with IGMP/MLD, therefore I don't really understand
-> what problem you are trying to solve.
-> 
-> Your switch has packet traps for IGMP and MLD, ok. So it doesn't forward
-> them. Must the IGMP/MLD packets be forwarded by an IGMP/MLD snooping
-> bridge? Which ones and under what circumstances?
+Em qua., 31 de mar. de 2021 =C3=A0s 04:02, Andrii Nakryiko
+<andrii.nakryiko@gmail.com> escreveu:
+>
+> On Tue, Mar 30, 2021 at 4:16 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Mar 30, 2021 at 3:54 PM Pedro Tammela <pctammela@gmail.com> wro=
+te:
+> > >
+> > >  BPF_CALL_2(bpf_ringbuf_submit, void *, sample, u64, flags)
+> > >  {
+> > > +       if (unlikely(flags & ~(BPF_RB_NO_WAKEUP | BPF_RB_FORCE_WAKEUP=
+)))
+> > > +               return -EINVAL;
+> > > +
+> > >         bpf_ringbuf_commit(sample, flags, false /* discard */);
+> > > +
+> > >         return 0;
+> >
+> > I think ringbuf design was meant for bpf_ringbuf_submit to never fail.
+> > If we do flag validation it probably should be done at the verifier tim=
+e.
+>
+> Oops, replied on another version already. But yes, BPF verifier relies
+> on it succeeding. I don't think we can do flags validation at BPF
+> verification time, though, because it is defined as non-const integer
+> and we do have valid cases where we dynamically determine whether to
+> FORCE_WAKEUP or NO_WAKEUP, based on application-driven criteria (e.g.,
+> amount of enqueued data).
 
-I'll better refer to the rfc:
-https://tools.ietf.org/html/rfc4541
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Then shouldn't we remove the flags check in 'bpf_ringbuf_output()'?
