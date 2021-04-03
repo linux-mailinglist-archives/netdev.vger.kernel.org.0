@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7115A3531BE
-	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 02:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2333531C1
+	for <lists+netdev@lfdr.de>; Sat,  3 Apr 2021 02:25:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235366AbhDCAYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Apr 2021 20:24:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37414 "EHLO mail.kernel.org"
+        id S235668AbhDCAZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Apr 2021 20:25:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234161AbhDCAYb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Apr 2021 20:24:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E236E61152;
-        Sat,  3 Apr 2021 00:24:28 +0000 (UTC)
+        id S234161AbhDCAZI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Apr 2021 20:25:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5916C61185;
+        Sat,  3 Apr 2021 00:25:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617409469;
-        bh=15v5TUkk6UUr+f7BZtRWWTmH8eBHVd7MCLN4Dz1fqbU=;
+        s=k20201202; t=1617409506;
+        bh=nyVl1XWL5jdEwBH69HaHGBNx9VaqoAohN+AdM6vbWT4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=XYCHvFvpVD0ljoLorcAZ5eRrROUkavhU6127oQfVuCIQ/9Jt4G+z/RVWSdHFR7BSL
-         fBOJgV1AUtT3p2xNFlHZAtHphntq54EUvXNURmz64e1sPqzBqOaZvJbSpcJgKBlUfH
-         z0tpj5XSgupJcvEwHn2G+3H9SO/ejA4QiUJzP8bqDwtoeaSkKV66OcUH3K8wF8lP5a
-         nOI8qcldyoMqDTzoeOW3XNPiA1jw+O3N9qNTZ315Kgq5ihINMH8dzFMbKfxneq7Qj4
-         StPKYuUgfHGCo//qbttrXZ4jQ9az3JCSBVxyDXH8QClgXDNd19Y64IOstkx7alSu7d
-         HRok1Kb9SrDag==
-Date:   Fri, 2 Apr 2021 19:24:26 -0500
+        b=ZPXuajVHaswNB2u6SWm0ca7crgkrqKzbWCNlFS6VDg6axrVZWMca3B2yfYdEWN4Jv
+         bqFFZCNc9VGEBM/ZmChteUfdZGwxX5yqalTUQgnm5N63tmibSHK8ZAhfqbbr0ZfUtI
+         qx/5+tmGXWto18fbu4xWivkFgWPnwq/z6mv1ieT1T1n//TFszeDfLCb9etOKj1OpfT
+         l6DLxYlvfkZ+SNPfGhx0feaPTs5YwUEnQ8SGfaY9t+nS3gKIw8dJH58izF9OsWc8rS
+         T0vL1/KWhUlqROgNKG7OMSrE/FAHYTGpVVxniU55dTsqccDfi0a8klQUB3usrgE+d7
+         tDraSZM1TLgWA==
+Date:   Fri, 2 Apr 2021 19:25:04 -0500
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     Leon Romanovsky <leon@kernel.org>
 Cc:     Bjorn Helgaas <bhelgaas@google.com>,
@@ -36,166 +36,145 @@ Cc:     Bjorn Helgaas <bhelgaas@google.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH mlx5-next v8 1/4] PCI: Add a sysfs file to change the
- MSI-X table size of SR-IOV VFs
-Message-ID: <20210403002426.GA1560457@bjorn-Precision-5520>
+Subject: Re: [PATCH mlx5-next v8 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <20210403002504.GA1560634@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210314124256.70253-2-leon@kernel.org>
+In-Reply-To: <20210314124256.70253-1-leon@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Possible subject, since this adds *two* files, not just "a file":
-
-  PCI/IOV: Add sysfs MSI-X vector assignment interface
-
-On Sun, Mar 14, 2021 at 02:42:53PM +0200, Leon Romanovsky wrote:
-> A typical cloud provider SR-IOV use case is to create many VFs for use by
-> guest VMs. The VFs may not be assigned to a VM until a customer requests a
-> VM of a certain size, e.g., number of CPUs. A VF may need MSI-X vectors
-> proportional to the number of CPUs in the VM, but there is no standard way
-> to change the number of MSI-X vectors supported by a VF.
-> ...
-
-> +#ifdef CONFIG_PCI_MSI
-> +static ssize_t sriov_vf_msix_count_store(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 const char *buf, size_t count)
-> +{
-> +	struct pci_dev *vf_dev = to_pci_dev(dev);
-> +	struct pci_dev *pdev = pci_physfn(vf_dev);
-> +	int val, ret;
-> +
-> +	ret = kstrtoint(buf, 0, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val < 0)
-> +		return -EINVAL;
-> +
-> +	device_lock(&pdev->dev);
-> +	if (!pdev->driver || !pdev->driver->sriov_set_msix_vec_count) {
-> +		ret = -EOPNOTSUPP;
-> +		goto err_pdev;
-> +	}
-> +
-> +	device_lock(&vf_dev->dev);
-> +	if (vf_dev->driver) {
-> +		/*
-> +		 * A driver is already attached to this VF and has configured
-> +		 * itself based on the current MSI-X vector count. Changing
-> +		 * the vector size could mess up the driver, so block it.
-> +		 */
-> +		ret = -EBUSY;
-> +		goto err_dev;
-> +	}
-> +
-> +	ret = pdev->driver->sriov_set_msix_vec_count(vf_dev, val);
-> +
-> +err_dev:
-> +	device_unlock(&vf_dev->dev);
-> +err_pdev:
-> +	device_unlock(&pdev->dev);
-> +	return ret ? : count;
-> +}
-> +static DEVICE_ATTR_WO(sriov_vf_msix_count);
-> +
-> +static ssize_t sriov_vf_total_msix_show(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	u32 vf_total_msix = 0;
-> +
-> +	device_lock(dev);
-> +	if (!pdev->driver || !pdev->driver->sriov_get_vf_total_msix)
-> +		goto unlock;
-> +
-> +	vf_total_msix = pdev->driver->sriov_get_vf_total_msix(pdev);
-> +unlock:
-> +	device_unlock(dev);
-> +	return sysfs_emit(buf, "%u\n", vf_total_msix);
-> +}
-> +static DEVICE_ATTR_RO(sriov_vf_total_msix);
-
-Can you reverse the order of sriov_vf_total_msix_show() and
-sriov_vf_msix_count_store()?  Currently we have:
-
-  VF stuff (msix_count_store)
-  PF stuff (total_msix)
-  more VF stuff related to the above (vf_dev_attrs, are_visible)
-
-so the total_msix bit is mixed in the middle.
-
-> +#endif
-> +
-> +static struct attribute *sriov_vf_dev_attrs[] = {
-> +#ifdef CONFIG_PCI_MSI
-> +	&dev_attr_sriov_vf_msix_count.attr,
-> +#endif
-> +	NULL,
-> +};
-> +
-> +static umode_t sriov_vf_attrs_are_visible(struct kobject *kobj,
-> +					  struct attribute *a, int n)
-> +{
-> +	struct device *dev = kobj_to_dev(kobj);
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +	if (!pdev->is_virtfn)
-> +		return 0;
-> +
-> +	return a->mode;
-> +}
-> +
-> +const struct attribute_group sriov_vf_dev_attr_group = {
-> +	.attrs = sriov_vf_dev_attrs,
-> +	.is_visible = sriov_vf_attrs_are_visible,
-> +};
-> +
->  int pci_iov_add_virtfn(struct pci_dev *dev, int id)
->  {
->  	int i;
-> @@ -400,18 +487,21 @@ static DEVICE_ATTR_RO(sriov_stride);
->  static DEVICE_ATTR_RO(sriov_vf_device);
->  static DEVICE_ATTR_RW(sriov_drivers_autoprobe);
+On Sun, Mar 14, 2021 at 02:42:52PM +0200, Leon Romanovsky wrote:
+> ---------------------------------------------------------------------------------
+> Changelog
+> v8:
+>  * Added "physical/virtual function" words near PF and VF acronyms.
+> v7: https://lore.kernel.org/linux-pci/20210301075524.441609-1-leon@kernel.org
+>  * Rebase on top v5.12-rc1
+>  * More english fixes
+>  * Returned to static sysfs creation model as was implemented in v0/v1.
+> v6: https://lore.kernel.org/linux-pci/20210209133445.700225-1-leon@kernel.org
+>  * Patch 1:
+>    * English fixes
+>    * Moved pci_vf_set_msix_vec_count() from msi.c to iov.c
+>    * Embedded pci_vf_set_msix_vec_count() into sriov_vf_msix_count_store
+>    * Deleted sriov_vf_msix_count_show
+>    * Deleted vfs_overlay folder
+>    * Renamed functions *_vfs_overlay_* to be *_vf_overlay_*
+>    * Deleted is_supported and attribute_group because it confused people more than
+>      it gave advantage.
+>    * Changed vf_total_msix to be callback
+>  * Patch 3:
+>    * Fixed english as suggested by Bjorn
+>    * Added more explanations to the commit message
+>  * Patch 4:
+>    * Protected enable/disable with capability check
+> v5: https://lore.kernel.org/linux-pci/20210126085730.1165673-1-leon@kernel.org
+>  * Patch 1:
+>   * Added forgotten "inline" keyword when declaring empty functions.
+> v4: https://lore.kernel.org/linux-pci/20210124131119.558563-1-leon@kernel.org
+>  * Used sysfs_emit() instead of sprintf() in new sysfs entries.
+>  * Changed EXPORT_SYMBOL to be EXPORT_SYMBOL_GPL for pci_iov_virtfn_devfn().
+>  * Rewrote sysfs registration code to be driven by PF that wants to enable VF
+>    overlay instead of creating to all SR-IOV devices.
+>  * Grouped all such functionality under new "vfs_overlay" folder.
+>  * Combined two PCI patches into one.
+> v3: https://lore.kernel.org/linux-pci/20210117081548.1278992-1-leon@kernel.org
+>  * Renamed pci_set_msix_vec_count to be pci_vf_set_msix_vec_count.
+>  * Added VF msix_cap check to hide sysfs entry if device doesn't support msix.
+>  * Changed "-" to be ":" in the mlx5 patch to silence CI warnings about missing
+>    kdoc description.
+>  * Split differently error print in mlx5 driver to avoid checkpatch warning.
+> v2: https://lore.kernel.org/linux-pci/20210114103140.866141-1-leon@kernel.org
+>  * Patch 1:
+>   * Renamed vf_msix_vec sysfs knob to be sriov_vf_msix_count
+>   * Added PF and VF device locks during set MSI-X call to protect from parallel
+>     driver bind/unbind operations.
+>   * Removed extra checks when reading sriov_vf_msix, because users will
+>     be able to distinguish between supported/not supported by looking on
+>     sriov_vf_total_msix count.
+>   * Changed all occurrences of "numb" to be "count"
+>   * Changed returned error from EOPNOTSUPP to be EBUSY if user tries to set
+>     MSI-X count after driver already bound to the VF.
+>   * Added extra comment in pci_set_msix_vec_count() to emphasize that driver
+>     should not be bound.
+>  * Patch 2:
+>   * Changed vf_total_msix from int to be u32 and updated function signatures
+>     accordingly.
+>   * Improved patch title
+> v1: https://lore.kernel.org/linux-pci/20210110150727.1965295-1-leon@kernel.org
+>  * Improved wording and commit messages of first PCI patch
+>  * Added extra PCI patch to provide total number of MSI-X vectors
+>  * Prohibited read of vf_msix_vec sysfs file if driver doesn't support write
+>  * Removed extra function definition in pci.h
+> v0: https://lore.kernel.org/linux-pci/20210103082440.34994-1-leon@kernel.org
 > 
-> -static struct attribute *sriov_dev_attrs[] = {
-> +static struct attribute *sriov_pf_dev_attrs[] = {
+> --------------------------------------------------------------------
+> Hi,
+> 
+> The number of MSI-X vectors is PCI property visible through lspci, that
+> field is read-only and configured by the device.
+> 
+> The static assignment of an amount of MSI-X vectors doesn't allow utilize
+> the newly created VF because it is not known to the device the future load
+> and configuration where that VF will be used.
+> 
+> The VFs are created on the hypervisor and forwarded to the VMs that have
+> different properties (for example number of CPUs).
+> 
+> To overcome the inefficiency in the spread of such MSI-X vectors, we
+> allow the kernel to instruct the device with the needed number of such
+> vectors, before VF is initialized and bounded to the driver.
+> 
+> Before this series:
+> [root@server ~]# lspci -vs 0000:08:00.2
+> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+> ....
+>         Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
+> 
+> Configuration script:
+> 1. Start fresh
+> echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+> modprobe -q -r mlx5_ib mlx5_core
+> 2. Ensure that driver doesn't run and it is safe to change MSI-X
+> echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
+> 3. Load driver for the PF
+> modprobe mlx5_core
+> 4. Configure one of the VFs with new number
+> echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+> echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
+> 
+> After this series:
+> [root@server ~]# lspci -vs 0000:08:00.2
+> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+> ....
+>         Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
+> 
+> Thanks
+> 
+> Leon Romanovsky (4):
+>   PCI: Add a sysfs file to change the MSI-X table size of SR-IOV VFs
+>   net/mlx5: Add dynamic MSI-X capabilities bits
+>   net/mlx5: Dynamically assign MSI-X vectors count
+>   net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
+> 
+>  Documentation/ABI/testing/sysfs-bus-pci       |  29 +++++
+>  .../net/ethernet/mellanox/mlx5/core/main.c    |   6 ++
+>  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  12 +++
+>  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  73 +++++++++++++
+>  .../net/ethernet/mellanox/mlx5/core/sriov.c   |  48 ++++++++-
+>  drivers/pci/iov.c                             | 102 ++++++++++++++++--
+>  drivers/pci/pci-sysfs.c                       |   3 +-
+>  drivers/pci/pci.h                             |   3 +-
+>  include/linux/mlx5/mlx5_ifc.h                 |  11 +-
+>  include/linux/pci.h                           |   8 ++
+>  10 files changed, 284 insertions(+), 11 deletions(-)
 
-This and the related sriov_pf_attrs_are_visible change below are nice.
-Would you mind splitting them to a preliminary patch, since they
-really aren't related to the concept of *this* patch?
+Looks good to me, thanks for persevering with this.
 
->  	&dev_attr_sriov_totalvfs.attr,
->  	&dev_attr_sriov_numvfs.attr,
->  	&dev_attr_sriov_offset.attr,
->  	&dev_attr_sriov_stride.attr,
->  	&dev_attr_sriov_vf_device.attr,
->  	&dev_attr_sriov_drivers_autoprobe.attr,
-> +#ifdef CONFIG_PCI_MSI
-> +	&dev_attr_sriov_vf_total_msix.attr,
-> +#endif
->  	NULL,
->  };
-> 
-> -static umode_t sriov_attrs_are_visible(struct kobject *kobj,
-> -				       struct attribute *a, int n)
-> +static umode_t sriov_pf_attrs_are_visible(struct kobject *kobj,
-> +					  struct attribute *a, int n)
->  {
->  	struct device *dev = kobj_to_dev(kobj);
-> 
-> @@ -421,9 +511,9 @@ static umode_t sriov_attrs_are_visible(struct kobject *kobj,
->  	return a->mode;
->  }
-> 
-> -const struct attribute_group sriov_dev_attr_group = {
-> -	.attrs = sriov_dev_attrs,
-> -	.is_visible = sriov_attrs_are_visible,
-> +const struct attribute_group sriov_pf_dev_attr_group = {
-> +	.attrs = sriov_pf_dev_attrs,
-> +	.is_visible = sriov_pf_attrs_are_visible,
->  };
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+Minor comments on 1/4, not critical.
+
