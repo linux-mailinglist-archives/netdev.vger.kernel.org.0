@@ -2,88 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F92353728
-	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 09:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 951C3353734
+	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 09:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbhDDHLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Apr 2021 03:11:16 -0400
-Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:50030 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbhDDHLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 03:11:13 -0400
-Received: from localhost.localdomain ([90.126.11.170])
-        by mwinf5d04 with ME
-        id oXB62400m3g7mfN03XB7CC; Sun, 04 Apr 2021 09:11:08 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 04 Apr 2021 09:11:08 +0200
-X-ME-IP: 90.126.11.170
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: openvswitch: Use 'skb_push_rcsum()' instead of hand coding it
-Date:   Sun,  4 Apr 2021 09:11:03 +0200
-Message-Id: <0c50411744412a25332ada56836c6181674843df.1617520174.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.27.0
+        id S229587AbhDDHdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Apr 2021 03:33:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45364 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229550AbhDDHdl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Apr 2021 03:33:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 04D0D61245;
+        Sun,  4 Apr 2021 07:33:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617521617;
+        bh=ltS7lq4oXwcn7gTInXVuSFeWg967RnQ1h1YAVoS7KHI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IJG0WfniHlbsZb0VDPfNg0+8CCvKmiJinx8bTmTGR0BRexWXAiVtz4k+3oJulYT5S
+         Jt8Cw9CyGbxhgz2VIEKzhFoEg6Tk8GP4jNjFzLXw7RjjSuiNqaTmnB/9W+nk081GFx
+         wZ0N3f4AzZL22TXMW9Z75EuiTUpklEyNzok+ULisHJSuMshEEn+BJg7tI3Mbzt72nb
+         HDBRCZ/b+sFA5gHuaJMLAs86+AYvXfPjylwTI0fuSaqY64dV7OeGdAJbQPHDrhGy9Z
+         nzFwQDDDKoeZuiRD1JKg308m8NeDqq3IWZjfv9UPTPaJy4drpSKeIwxKHgshulEE0s
+         azjXXcI48ophA==
+Date:   Sun, 4 Apr 2021 10:33:33 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH mlx5-next v8 0/4] Dynamically assign MSI-X vectors count
+Message-ID: <YGlrzXvOJErgcWiz@unreal>
+References: <20210314124256.70253-1-leon@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210314124256.70253-1-leon@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'skb_push()'/'skb_postpush_rcsum()' can be replaced by an equivalent
-'skb_push_rcsum()' which is less verbose.
+On Sun, Mar 14, 2021 at 02:42:52PM +0200, Leon Romanovsky wrote:
+> ---------------------------------------------------------------------------------
+> Changelog
+> v8:
+>  * Added "physical/virtual function" words near PF and VF acronyms.
+> v7: https://lore.kernel.org/linux-pci/20210301075524.441609-1-leon@kernel.org
+>  * Rebase on top v5.12-rc1
+>  * More english fixes
+>  * Returned to static sysfs creation model as was implemented in v0/v1.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- net/openvswitch/conntrack.c    | 6 ++----
- net/openvswitch/vport-netdev.c | 7 +++----
- 2 files changed, 5 insertions(+), 8 deletions(-)
+<...>
 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 71cec03e8612..c29b0ef1fc27 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -809,8 +809,7 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
- 
- 	err = nf_nat_packet(ct, ctinfo, hooknum, skb);
- push:
--	skb_push(skb, nh_off);
--	skb_postpush_rcsum(skb, skb->data, nh_off);
-+	skb_push_rcsum(skb, nh_off);
- 
- 	return err;
- }
-@@ -1322,8 +1321,7 @@ int ovs_ct_execute(struct net *net, struct sk_buff *skb,
- 	else
- 		err = ovs_ct_lookup(net, key, info, skb);
- 
--	skb_push(skb, nh_ofs);
--	skb_postpush_rcsum(skb, skb->data, nh_ofs);
-+	skb_push_rcsum(skb, nh_ofs);
- 	if (err)
- 		kfree_skb(skb);
- 	return err;
-diff --git a/net/openvswitch/vport-netdev.c b/net/openvswitch/vport-netdev.c
-index 57d6436e6f6a..8e1a88f13622 100644
---- a/net/openvswitch/vport-netdev.c
-+++ b/net/openvswitch/vport-netdev.c
-@@ -44,10 +44,9 @@ static void netdev_port_receive(struct sk_buff *skb)
- 	if (unlikely(!skb))
- 		return;
- 
--	if (skb->dev->type == ARPHRD_ETHER) {
--		skb_push(skb, ETH_HLEN);
--		skb_postpush_rcsum(skb, skb->data, ETH_HLEN);
--	}
-+	if (skb->dev->type == ARPHRD_ETHER)
-+		skb_push_rcsum(skb, ETH_HLEN);
-+
- 	ovs_vport_receive(vport, skb, skb_tunnel_info(skb));
- 	return;
- error:
--- 
-2.27.0
+> Leon Romanovsky (4):
+>   PCI: Add a sysfs file to change the MSI-X table size of SR-IOV VFs
+>   net/mlx5: Add dynamic MSI-X capabilities bits
+>   net/mlx5: Dynamically assign MSI-X vectors count
+>   net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
 
+applied to mlx5-next with changes asked by Bjorn.
+
+e71b75f73763 net/mlx5: Implement sriov_get_vf_total_msix/count() callbacks
+604774add516 net/mlx5: Dynamically assign MSI-X vectors count
+0b989c1e3705 net/mlx5: Add dynamic MSI-X capabilities bits
+c3d5c2d96d69 PCI/IOV: Add sysfs MSI-X vector assignment interface
+
+Thanks
