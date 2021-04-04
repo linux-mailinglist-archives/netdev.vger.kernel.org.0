@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42BB35362B
-	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 04:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FAC035362F
+	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 04:27:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236853AbhDDCUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 22:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
+        id S236787AbhDDC1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 22:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236618AbhDDCUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 22:20:44 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8BFC061756;
-        Sat,  3 Apr 2021 19:20:40 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id v10so6012078pfn.5;
-        Sat, 03 Apr 2021 19:20:40 -0700 (PDT)
+        with ESMTP id S236618AbhDDC1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 22:27:06 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252E7C061756;
+        Sat,  3 Apr 2021 19:27:03 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id w31-20020a9d36220000b02901f2cbfc9743so8367576otb.7;
+        Sat, 03 Apr 2021 19:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1nWds0fJN29rk2uMDm0KQFBeflTNB9KKpY7wmQwJEGY=;
-        b=jqFXDi7GN+rcG/plPYV1dCYWZrD91E1KntrlAzDy0KY2DOR64S0k8qrRQzJCVfpREv
-         YKQsNlt7uQGsG/EP3vykBCPt+jtZ8f+M2kSaVPurstrFgMxisjhBuVn1qPH7MZgxNmvi
-         koo5pMcruQlBL+6PAKcMFiEMy0jI1RGj/BkCKkYAA4LiB/pP6aeW7KWAgTsHBJ1CJZGn
-         whuohid1bbQS3c5/eZFpOUdKZBOcdN43asgoCNK/9XxjYa+nm5avy5deqpec9oujlbaG
-         FFPOenqMmefhtRrWbjjFPTqkKRT0UpRpjta1Ry5S6H3j4JBYWsyzFV/xVOJj/R2f/QMD
-         aJgA==
+        bh=2SDB3YU1ytBkqQbKe2z8gBexfClS4b7RI4flCaWJLjU=;
+        b=gXmTrja5EDjkmbNYRR+MsdfXEFl9YpVk8uoEM1Dc2fOQBlLQe5M2f6A5ITTAr00QQ1
+         zYRoaTMkbOoBupp0XWBsEJOYICjT4mWrsWaqrSBWWpZcm5eeeDZH6qGJXc1S0mZHTuKo
+         GaGWNntbVrCUDbRb6Jt56wMei7NKiKH7earkYwFfcG1hzZr0eu3tmmM1Q+NDuapWevDX
+         +PEzuQy3sfU9LxRZrxKJuFZiV0TijVGUs6r0S/YmCuEWcartdx6FsdoS///kuuvX1b/N
+         4O3VOmTOsopgV2lFR3PGttjwYd567keeHMggZ7AUAkUWrgXCFRreb0JQT10+V864MO8o
+         UAtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=1nWds0fJN29rk2uMDm0KQFBeflTNB9KKpY7wmQwJEGY=;
-        b=BV2YQS95OXNYEb6XHxFlhmbjkRF64pXzAHnYnGuU17px0bTij96w1RWlhT3qD/aHzj
-         4J8EiXmGrjLJT77Za31C9JhIK8khk9cX/XaWiSSnGjC61hYUSqX93HLiK4C0+j+UMQg9
-         ujVDPy9sPiYqwWEczP0LE37Hi71UnvPvtJWhnnwiWMG75L0BBqLU3OwppGY54eKi3VFL
-         4Cadl+iRz42foLH40VJcXtn4/H/qhxQwxwtxiBSeyd+LVkplhXQykbu7ZLlF5LCDqWDD
-         bztfikn7v8Ht/+PTEtwT/hx+N+Daq4fKzI6T1ijgnC/xtw2VS1YO/RICtasRANhiZE8v
-         JZ5A==
-X-Gm-Message-State: AOAM533DVfVP6BPuH1fiZORrSDW78Mxvy4cAsHMOODnpjIQVgLd9lwz8
-        OGOiDaW39ON37s0Wp703RjvuJjf1jOE=
-X-Google-Smtp-Source: ABdhPJzQ60tlIXfSRQRof2b/LhtzbNl6iz7IH2eR6Y6xSnV+KL1vxP6GCC61I/UIXULx1KsIwukHOQ==
-X-Received: by 2002:aa7:96bc:0:b029:1f6:9937:fe43 with SMTP id g28-20020aa796bc0000b02901f69937fe43mr18312733pfk.68.1617502839819;
-        Sat, 03 Apr 2021 19:20:39 -0700 (PDT)
+        bh=2SDB3YU1ytBkqQbKe2z8gBexfClS4b7RI4flCaWJLjU=;
+        b=kuiHXVtLW1zWs5BWysHefTge58YibXreMeI81uEESK/TVK9EGgcmmFr8MYPH6azkiu
+         IQ5FCMxPP1XkptvtSYCsPITiqkRMjadFPzmhp0qlMR7k2wvwy0iXR4o9m0gBD0k1erTg
+         sk8lpNEADtxK8jWeWZMQNsm0dOf+HXvkEaLHkMqZRzXns2KUIpbUeyaAoGTziWdUWL2M
+         /t+BNT4wyslDt5IGW1NKfqdw04hmYc9SiQoFrSEi3CVJRm0zkzHO0uRppxjYPW48T4Xe
+         Hwc7xJwSFsZHqj0ozYan8YvrHffjU4ArLWhqlbHfM9koEKFsQVZuD4w0TwHrsHQjZB3N
+         pqHA==
+X-Gm-Message-State: AOAM531V3yCZVaLycOyVbakq+pjExrKAsm8a4pdGpkphroCYtGqzNYUo
+        63paEnG6VigQtUy7O4vFG7/+nADjCoU=
+X-Google-Smtp-Source: ABdhPJxqOWbZegjcVGuey/gF6IxzAZaVf1I1AJI+o3eFy1rvE7DCTg1wqXnXOuH11kaJol70qhxXnA==
+X-Received: by 2002:a05:6830:22f4:: with SMTP id t20mr17752372otc.45.1617503221968;
+        Sat, 03 Apr 2021 19:27:01 -0700 (PDT)
 Received: from ?IPv6:2600:1700:dfe0:49f0:d9ea:8934:6811:fd93? ([2600:1700:dfe0:49f0:d9ea:8934:6811:fd93])
-        by smtp.gmail.com with ESMTPSA id a191sm12156374pfa.115.2021.04.03.19.20.32
+        by smtp.gmail.com with ESMTPSA id t14sm2907073otj.50.2021.04.03.19.26.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 03 Apr 2021 19:20:39 -0700 (PDT)
-Subject: Re: [PATCH net-next v1 6/9] net: dsa: qca: ar9331: add ageing time
- support
+        Sat, 03 Apr 2021 19:27:01 -0700 (PDT)
+Subject: Re: [PATCH net-next v1 7/9] net: dsa: qca: ar9331: add bridge support
 To:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,14 +60,14 @@ Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mips@vger.kernel.org
 References: <20210403114848.30528-1-o.rempel@pengutronix.de>
- <20210403114848.30528-7-o.rempel@pengutronix.de>
+ <20210403114848.30528-8-o.rempel@pengutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <7ae15dbc-98ab-ddd8-e524-646567664746@gmail.com>
-Date:   Sat, 3 Apr 2021 19:20:31 -0700
+Message-ID: <a9e70010-ed16-0f53-2e8a-47fa0050d87b@gmail.com>
+Date:   Sat, 3 Apr 2021 19:26:45 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <20210403114848.30528-7-o.rempel@pengutronix.de>
+In-Reply-To: <20210403114848.30528-8-o.rempel@pengutronix.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -79,10 +78,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/3/2021 04:48, Oleksij Rempel wrote:
-> This switch provides global ageing time configuration, so let DSA use
-> it.
+> This switch is providing forwarding matrix, with it we can configure
+> individual bridges. Potentially we can configure more then one not VLAN
+
+s/then/than/
+
+> based bridge on this HW.
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>   drivers/net/dsa/qca/ar9331.c | 73 ++++++++++++++++++++++++++++++++++++
+>   1 file changed, 73 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+> index b2c22ba924f0..bf9588574205 100644
+> --- a/drivers/net/dsa/qca/ar9331.c
+> +++ b/drivers/net/dsa/qca/ar9331.c
+> @@ -40,6 +40,7 @@
+>    */
+>   
+>   #include <linux/bitfield.h>
+> +#include <linux/if_bridge.h>
+>   #include <linux/module.h>
+>   #include <linux/of_irq.h>
+>   #include <linux/of_mdio.h>
+> @@ -1134,6 +1135,76 @@ static int ar9331_sw_set_ageing_time(struct dsa_switch *ds,
+>   				  val);
+>   }
+>   
+> +static int ar9331_sw_port_bridge_join(struct dsa_switch *ds, int port,
+> +				      struct net_device *br)
+> +{
+> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
+> +	struct regmap *regmap = priv->regmap;
+> +	int port_mask = BIT(priv->cpu_port);
+> +	int i, ret;
+> +	u32 val;
+> +
+> +	for (i = 0; i < ds->num_ports; i++) {
+> +		if (dsa_to_port(ds, i)->bridge_dev != br)
+> +			continue;
+> +
+> +		if (!dsa_is_user_port(ds, port))
+> +			continue;
+> +
+> +		val = FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, BIT(port));
+> +		ret = regmap_set_bits(regmap, AR9331_SW_REG_PORT_VLAN(i), val);
+> +		if (ret)
+> +			goto error;
+> +
+> +		if (i != port)
+> +			port_mask |= BIT(i);
+> +	}
+> +
+> +	val = FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, port_mask);
+> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
+> +				 AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, val);
+> +	if (ret)
+> +		goto error;
+> +
+> +	return 0;
+> +error:
+> +	dev_err_ratelimited(priv->dev, "%s: error: %i\n", __func__, ret);
+
+This is not called more than once per port and per bridge join operation 
+so I would drop the rate limiting here. With that fixed:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
