@@ -2,77 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83381353977
-	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 21:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B682D35399B
+	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 22:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbhDDTYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Apr 2021 15:24:11 -0400
-Received: from hs01.dk-develop.de ([173.249.23.66]:46914 "EHLO
-        hs01.dk-develop.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbhDDTYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 15:24:09 -0400
-Date:   Sun, 4 Apr 2021 21:23:55 +0200
-From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
-Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
-Message-ID: <YGoSS7llrl5K6D+/@arch-linux>
-References: <20210331141755.126178-1-danilokrummrich@dk-develop.de>
- <20210331141755.126178-3-danilokrummrich@dk-develop.de>
- <YGSi+b/r4zlq9rm8@lunn.ch>
- <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
- <20210331183524.GV1463@shell.armlinux.org.uk>
- <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
- <20210401084857.GW1463@shell.armlinux.org.uk>
- <YGZvGfNSBBq/92D+@arch-linux>
- <20210402125858.GB1463@shell.armlinux.org.uk>
+        id S231476AbhDDUEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Apr 2021 16:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230169AbhDDUEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 16:04:12 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD2EC061756;
+        Sun,  4 Apr 2021 13:04:07 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id j17so4671091qvo.13;
+        Sun, 04 Apr 2021 13:04:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9CGn1Zx6vig6iDgOvfLviFqMqMh8pEFz8A4kgE+xhP4=;
+        b=QV4zj/7OUWVYZf1MiDXhBjnJW/+DvTgdVoNxCP4Lk7hOMYciw9dD9mKYmSShIxuIag
+         CHNx78trjgtb+hlsZFAmQzt3cZoduZU+ZeJLCo0TjH4snbFOGEJqtauE0GHAkLhkoKZV
+         nTC1L1T28km1LG/qqpcSIaCZwQOnI5kmuRQzQ89zgJkUw7lhcMBg5+jBNrJ/+hL3OXpF
+         BnRgqt0fGdZ+uqB1kk9OTMYhIDw00NuEI6lA9js7/tlI/H2tJJpiDALaDnNGSVQgfxXM
+         GhXOU4vxDHMT/KcoiQng1WUPKyUl0t/BFo2/OMmdPOkQ51UqobXogZwnd59IeLniUjjA
+         XVAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9CGn1Zx6vig6iDgOvfLviFqMqMh8pEFz8A4kgE+xhP4=;
+        b=ATwnhDrtRE6rCCQWbTDzZOqM0YqAnxTw6gJtM/qwNecMxn32LoDTWgI9JoPw0qAzmP
+         KGJKFHZ7W6wbbaqkExmMAJ3sw+X6AKr8jUoHRY+dmiESdtjeQzBFEMDKle3iuXvWwdqb
+         myqO6gHEZzczEw6R3gWxMmRg7udvNZrQ7iTD1Iq8UwD6Snti/Bn9w4+2M+zqjQ54UHsK
+         xEIyINLu7AC8mUqW04L2/Egu3IOEOsGd067dvbIjoJ7ZLwJ/CmHz+uJSZKkLB00DkGw5
+         DcSrRfjIXyh9MnKOUJ3QAXDwKgmpjo1TaPYqY+Q9uCErlOKGP0mkgE0SY94gsCBY1/Gf
+         xT8w==
+X-Gm-Message-State: AOAM533YZqZAIVZc6YQDseKeUjkgfu64eNUoZWxbijhVD2zWo2U8BfAk
+        /5qQ8K6BdK6VN05bbfw350Y=
+X-Google-Smtp-Source: ABdhPJy6nEXFXpghYGgWZfWjrc1BDdUoZWz4GZRMeGY2HY3ANenPOKOZiIVtnGObSlJeBhH11CYYsA==
+X-Received: by 2002:a0c:aa55:: with SMTP id e21mr1704803qvb.28.1617566640798;
+        Sun, 04 Apr 2021 13:04:00 -0700 (PDT)
+Received: from localhost.localdomain ([179.218.4.27])
+        by smtp.gmail.com with ESMTPSA id d24sm12163480qkl.49.2021.04.04.13.03.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Apr 2021 13:04:00 -0700 (PDT)
+From:   Pedro Tammela <pctammela@gmail.com>
+X-Google-Original-From: Pedro Tammela <pctammela@mojatatu.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        David Verbeiren <david.verbeiren@tessares.net>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list),
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK)
+Subject: [PATCH bpf-next 0/3] add batched ops support for percpu array
+Date:   Sun,  4 Apr 2021 17:02:45 -0300
+Message-Id: <20210404200256.300532-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210402125858.GB1463@shell.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 02, 2021 at 01:58:58PM +0100, Russell King - ARM Linux admin wrote:
-> On Fri, Apr 02, 2021 at 03:10:49AM +0200, Danilo Krummrich wrote:
-> > On Thu, Apr 01, 2021 at 09:48:58AM +0100, Russell King - ARM Linux admin wrote:
-> > > One could also argue this is a feature, and it allows userspace to
-> > > know whether C45 cycles are supported or not.
-> > >
-> > No, if the userspace requests such a transfer although the MDIO controller
-> > does not support real c45 framing the kernel will call mdiobus_c45_addr() to
-> > join the devaddr and  and regaddr in one parameter and pass it to
-> > mdiobus_read() or mdiobus_write(). A bus driver not supporting c45 framing
-> > will not care and just mask/shift the joined value and write it to the
-> > particular register. Obviously, this will result into complete garbage being
-> > read or (even worse) written.
-> 
-> 
-> We have established that MDIO drivers need to reject accesses for
-> reads/writes that they do not support - this isn't something that
-> they have historically checked for because it is only recent that
-> phylib has really started to support clause 45 PHYs.
-> 
-I see, that's why you consider it a feature - because it is.
-What do you think about adding a flag MDIO_PHY_ID_MMD (or similar) analog to
-MDIO_PHY_ID_C45 for phy_mii_ioctl() to check for, such that userspace can ask
-for an indirect access in order to save userspace doing the indirect access
-itself. A nice side effect would be saving 3 syscalls per request.
-> More modern MDIO drivers check the requested access type and error
-> out - we need the older MDIO drivers to do the same.
-> 
-So currently every driver should check for the flag MII_ADDR_C45 and report an
-error in case it's unsupported.
+This patchset introduces batched operations for the per-cpu variant of
+the array map.
 
-What do you think about checking the bus' capabilities instead in
-mdiobus_c45_*()? This way the check if C45 is supported can even happen before
-calling the driver at all. I think that would be a little cleaner than having
-two places where information of the bus' capabilities are stored (return value
-of read/write functions and the capabilities field).
+It also introduces a standard way to define per-cpu values via the
+'BPF_PERCPU_TYPE()' macro, which handles the alignment transparently.
+This was already implemented in the selftests and was merely refactored
+out to libbpf, with some simplifications for reuse.
 
-I think there are not too many drivers setting their capabilities though, but
-it should be easy to derive this information from how and if they handle the
-MII_ADDR_C45 flag.
+The tests were updated to reflect all the new changes.
+
+Pedro Tammela (3):
+  bpf: add batched ops support for percpu array
+  libbpf: selftests: refactor 'BPF_PERCPU_TYPE()' and 'bpf_percpu()'
+    macros
+  bpf: selftests: update array map tests for per-cpu batched ops
+
+ kernel/bpf/arraymap.c                         |   2 +
+ tools/lib/bpf/bpf.h                           |  10 ++
+ tools/testing/selftests/bpf/bpf_util.h        |   7 --
+ .../bpf/map_tests/array_map_batch_ops.c       | 114 +++++++++++++-----
+ .../bpf/map_tests/htab_map_batch_ops.c        |  48 ++++----
+ .../selftests/bpf/prog_tests/map_init.c       |   5 +-
+ tools/testing/selftests/bpf/test_maps.c       |  16 +--
+ 7 files changed, 133 insertions(+), 69 deletions(-)
+
+-- 
+2.25.1
+
