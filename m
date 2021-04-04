@@ -2,72 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAC035362F
-	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 04:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3DB353636
+	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 04:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236787AbhDDC1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Apr 2021 22:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56358 "EHLO
+        id S236829AbhDDCdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Apr 2021 22:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236618AbhDDC1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 22:27:06 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252E7C061756;
-        Sat,  3 Apr 2021 19:27:03 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id w31-20020a9d36220000b02901f2cbfc9743so8367576otb.7;
-        Sat, 03 Apr 2021 19:27:03 -0700 (PDT)
+        with ESMTP id S236618AbhDDCdN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Apr 2021 22:33:13 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89D5C061756;
+        Sat,  3 Apr 2021 19:33:09 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id i81so8609042oif.6;
+        Sat, 03 Apr 2021 19:33:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2SDB3YU1ytBkqQbKe2z8gBexfClS4b7RI4flCaWJLjU=;
-        b=gXmTrja5EDjkmbNYRR+MsdfXEFl9YpVk8uoEM1Dc2fOQBlLQe5M2f6A5ITTAr00QQ1
-         zYRoaTMkbOoBupp0XWBsEJOYICjT4mWrsWaqrSBWWpZcm5eeeDZH6qGJXc1S0mZHTuKo
-         GaGWNntbVrCUDbRb6Jt56wMei7NKiKH7earkYwFfcG1hzZr0eu3tmmM1Q+NDuapWevDX
-         +PEzuQy3sfU9LxRZrxKJuFZiV0TijVGUs6r0S/YmCuEWcartdx6FsdoS///kuuvX1b/N
-         4O3VOmTOsopgV2lFR3PGttjwYd567keeHMggZ7AUAkUWrgXCFRreb0JQT10+V864MO8o
-         UAtg==
+        bh=9kK4JLftKzlx8Dd9WsCAD10DkpUFDpGIS6PjT+XywEg=;
+        b=B6gGGFGhaC1KefgVKVBye+qwFkxvOzewH3KW6fIbSLw2tLYGss+OPaUlkLzTuWpoOb
+         Jbm3dHMKyeJnIOlzZiD9OFEYswE5tPps4NJsQMoRDpElr+mfAxGp2UjMb9Lr+IUWQVIg
+         p7v6xjerEfqhnr/pcy6Zh7Cdnx7bIrQIeVTnoq/J+Dg6No3iDHnmxTmDeZY68WcQmCt9
+         Udr9R8EOTLoE2Q+e3D84imq+Z8y2vXsziBiOiKJZod1I4u3FtU6MSJ9nJ11NCLAt5Lbl
+         FJ/MrX2E6Q2v4KdAJnnZ9Nr4Z3rDY79rYk371iZJoVfJuhWeQJCOELeO/kDYQpO3F16v
+         1+ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=2SDB3YU1ytBkqQbKe2z8gBexfClS4b7RI4flCaWJLjU=;
-        b=kuiHXVtLW1zWs5BWysHefTge58YibXreMeI81uEESK/TVK9EGgcmmFr8MYPH6azkiu
-         IQ5FCMxPP1XkptvtSYCsPITiqkRMjadFPzmhp0qlMR7k2wvwy0iXR4o9m0gBD0k1erTg
-         sk8lpNEADtxK8jWeWZMQNsm0dOf+HXvkEaLHkMqZRzXns2KUIpbUeyaAoGTziWdUWL2M
-         /t+BNT4wyslDt5IGW1NKfqdw04hmYc9SiQoFrSEi3CVJRm0zkzHO0uRppxjYPW48T4Xe
-         Hwc7xJwSFsZHqj0ozYan8YvrHffjU4ArLWhqlbHfM9koEKFsQVZuD4w0TwHrsHQjZB3N
-         pqHA==
-X-Gm-Message-State: AOAM531V3yCZVaLycOyVbakq+pjExrKAsm8a4pdGpkphroCYtGqzNYUo
-        63paEnG6VigQtUy7O4vFG7/+nADjCoU=
-X-Google-Smtp-Source: ABdhPJxqOWbZegjcVGuey/gF6IxzAZaVf1I1AJI+o3eFy1rvE7DCTg1wqXnXOuH11kaJol70qhxXnA==
-X-Received: by 2002:a05:6830:22f4:: with SMTP id t20mr17752372otc.45.1617503221968;
-        Sat, 03 Apr 2021 19:27:01 -0700 (PDT)
+        bh=9kK4JLftKzlx8Dd9WsCAD10DkpUFDpGIS6PjT+XywEg=;
+        b=eCUFEpNuZqkIIe+R720kXC2+EZaLTYNDBtFtNwxu5YKvcc+Efwx9Dys7/IUUG3Wnjy
+         ag2br44LqInScWnlFnr48q9sKKQONARRwQ+01I/E3BCxbZPPSboF4SFgm9K+dkhE8OJ7
+         mP3jQcvrJGKItc+jvXX3rKCerNk4s55QNwN3pbLQodHc5Z7OaqZdVWUK6iV88qZtBOjm
+         aLItdqF9iEVqJPyKTk9LuyD8oJ3qPD2hZ4uMG3Yq11Gc9LMNKiqA44PkEMKo+NelaIrA
+         2c4gCqvOyBeO22DjYW8SDxoF1p03U/g2lfNReUdQV40Y/8viepX86OjtRA+xjXEdETNA
+         CyRw==
+X-Gm-Message-State: AOAM533xIbOurgdVe2giEToErsFIeQNLHV68n/Pxnsjj3mkNz42otvdH
+        bzqkneSB9+65n1P6BSPzDLMTbRdc3fE=
+X-Google-Smtp-Source: ABdhPJzC3HWE2ylpgtXM5qJiE/qVb1ttVbl9OIJRl6FWVl814rQ0ZMfEcz+952a3lS4sYl5pV2HHHw==
+X-Received: by 2002:aca:4e83:: with SMTP id c125mr13911341oib.38.1617503588787;
+        Sat, 03 Apr 2021 19:33:08 -0700 (PDT)
 Received: from ?IPv6:2600:1700:dfe0:49f0:d9ea:8934:6811:fd93? ([2600:1700:dfe0:49f0:d9ea:8934:6811:fd93])
-        by smtp.gmail.com with ESMTPSA id t14sm2907073otj.50.2021.04.03.19.26.52
+        by smtp.gmail.com with ESMTPSA id n10sm2940225otj.36.2021.04.03.19.32.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 03 Apr 2021 19:27:01 -0700 (PDT)
-Subject: Re: [PATCH net-next v1 7/9] net: dsa: qca: ar9331: add bridge support
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Sat, 03 Apr 2021 19:33:08 -0700 (PDT)
+Subject: Re: [PATCH net-next v1 1/9] net: dsa: add rcv_post call back
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mips@vger.kernel.org
 References: <20210403114848.30528-1-o.rempel@pengutronix.de>
- <20210403114848.30528-8-o.rempel@pengutronix.de>
+ <20210403114848.30528-2-o.rempel@pengutronix.de>
+ <20210403140534.c4ydlgu5hqh7bmcq@skbuf>
+ <20210403232116.knf6d7gdrvamk2lj@skbuf>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a9e70010-ed16-0f53-2e8a-47fa0050d87b@gmail.com>
-Date:   Sat, 3 Apr 2021 19:26:45 -0700
+Message-ID: <53d84140-c072-f4ab-2f5c-af5c62abce2d@gmail.com>
+Date:   Sat, 3 Apr 2021 19:32:48 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <20210403114848.30528-8-o.rempel@pengutronix.de>
+In-Reply-To: <20210403232116.knf6d7gdrvamk2lj@skbuf>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,73 +79,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/3/2021 04:48, Oleksij Rempel wrote:
-> This switch is providing forwarding matrix, with it we can configure
-> individual bridges. Potentially we can configure more then one not VLAN
-
-s/then/than/
-
-> based bridge on this HW.
+On 4/3/2021 16:21, Vladimir Oltean wrote:
+> On Sat, Apr 03, 2021 at 05:05:34PM +0300, Vladimir Oltean wrote:
+>> On Sat, Apr 03, 2021 at 01:48:40PM +0200, Oleksij Rempel wrote:
+>>> Some switches (for example ar9331) do not provide enough information
+>>> about forwarded packets. If the switch decision was made based on IPv4
+>>> or IPv6 header, we need to analyze it and set proper flag.
+>>>
+>>> Potentially we can do it in existing rcv path, on other hand we can
+>>> avoid part of duplicated work and let the dsa framework set skb header
+>>> pointers and then use preprocessed skb one step later withing the rcv_post
+>>> call back.
+>>>
+>>> This patch is needed for ar9331 switch.
+>>>
+>>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+>>> ---
+>>
+>> I don't necessarily disagree with this, perhaps we can even move
+>> Florian's dsa_untag_bridge_pvid() call inside a rcv_post() method
+>> implemented by the DSA_TAG_PROTO_BRCM_LEGACY, DSA_TAG_PROTO_BRCM_PREPEND
+>> and DSA_TAG_PROTO_BRCM taggers. Or even better, because Oleksij's
+>> rcv_post is already prototype-compatible with dsa_untag_bridge_pvid, we
+>> can already do:
+>>
+>> 	.rcv_post = dsa_untag_bridge_pvid,
+>>
+>> This should be generally useful for stuff that DSA taggers need to do
+>> which is easiest done after eth_type_trans() was called.
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->   drivers/net/dsa/qca/ar9331.c | 73 ++++++++++++++++++++++++++++++++++++
->   1 file changed, 73 insertions(+)
+> I had some fun with an alternative method of parsing the frame for IGMP
+> so that you can clear skb->offload_fwd_mark, which doesn't rely on the
+> introduction of a new method in DSA. It should also have several other
+> advantages compared to your solution such as the fact that it should
+> work with VLAN-tagged packets.
 > 
-> diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-> index b2c22ba924f0..bf9588574205 100644
-> --- a/drivers/net/dsa/qca/ar9331.c
-> +++ b/drivers/net/dsa/qca/ar9331.c
-> @@ -40,6 +40,7 @@
->    */
->   
->   #include <linux/bitfield.h>
-> +#include <linux/if_bridge.h>
->   #include <linux/module.h>
->   #include <linux/of_irq.h>
->   #include <linux/of_mdio.h>
-> @@ -1134,6 +1135,76 @@ static int ar9331_sw_set_ageing_time(struct dsa_switch *ds,
->   				  val);
->   }
->   
-> +static int ar9331_sw_port_bridge_join(struct dsa_switch *ds, int port,
-> +				      struct net_device *br)
-> +{
-> +	struct ar9331_sw_priv *priv = (struct ar9331_sw_priv *)ds->priv;
-> +	struct regmap *regmap = priv->regmap;
-> +	int port_mask = BIT(priv->cpu_port);
-> +	int i, ret;
-> +	u32 val;
-> +
-> +	for (i = 0; i < ds->num_ports; i++) {
-> +		if (dsa_to_port(ds, i)->bridge_dev != br)
-> +			continue;
-> +
-> +		if (!dsa_is_user_port(ds, port))
-> +			continue;
-> +
-> +		val = FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, BIT(port));
-> +		ret = regmap_set_bits(regmap, AR9331_SW_REG_PORT_VLAN(i), val);
-> +		if (ret)
-> +			goto error;
-> +
-> +		if (i != port)
-> +			port_mask |= BIT(i);
-> +	}
-> +
-> +	val = FIELD_PREP(AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, port_mask);
-> +	ret = regmap_update_bits(regmap, AR9331_SW_REG_PORT_VLAN(port),
-> +				 AR9331_SW_PORT_VLAN_PORT_VID_MEMBER, val);
-> +	if (ret)
-> +		goto error;
-> +
-> +	return 0;
-> +error:
-> +	dev_err_ratelimited(priv->dev, "%s: error: %i\n", __func__, ret);
+> Background: we made Receive Packet Steering work on DSA master interfaces
+> (echo 3 > /sys/class/net/eth0/queues/rx-1/rps_cpus) even when the DSA
+> tag shifts to the right the IP headers and everything that comes
+> afterwards. The flow dissector had to be patched for that, just grep for
+> DSA in net/core/flow_dissector.c.
+> 
+> The problem you're facing is that you can't parse the IP and IGMP
+> headers in the tagger's rcv() method, since the network header,
+> transport header offsets and skb->protocol are all messed up, since
+> eth_type_trans hasn't been called yet.
+> 
+> And that's the trick right there, you're between a rock and a hard
+> place: too early because eth_type_trans wasn't called yet, and too late
+> because skb->dev was changed and no longer points to the DSA master, so
+> the flow dissector adjustment we made doesn't apply.
+> 
+> But if you call the flow dissector _before_ you call "skb->dev =
+> dsa_master_find_slave" (and yes, while the DSA tag is still there), then
+> it's virtually as if you had called that while the skb belonged to the
+> DSA master, so it should work with __skb_flow_dissect.
+> 
+> In fact I prototyped this idea below. I wanted to check whether I can
+> match something as fine-grained as an IGMPv2 Membership Report message,
+> and I could.
+> 
+> I prototyped it inside the ocelot tagging protocol driver because that's
+> what I had handy. I used __skb_flow_dissect with my own flow dissector
+> which had to be initialized at the tagger module_init time, even though
+> I think I could have probably just called skb_flow_dissect_flow_keys
+> with a standard dissector, and that would have removed the need for the
+> custom module_init in tag_ocelot.c. One thing that is interesting is
+> that I had to add the bits for IGMP parsing to the flow dissector
+> myself (based on the existing ICMP code). I was too lazy to do that for
+> MLD as well, but it is really not hard. Or even better, if you don't
+> need to look at all inside the IGMP/MLD header, I think you can even
+> omit adding this parsing code to the flow dissector and just look at
+> basic.n_proto and basic.ip_proto.
+> 
+> See the snippet below. Hope it helps.
 
-This is not called more than once per port and per bridge join operation 
-so I would drop the rate limiting here. With that fixed:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This looks a lot better than introducing hooks at various points in 
+dsa_switch_rcv().
 -- 
 Florian
