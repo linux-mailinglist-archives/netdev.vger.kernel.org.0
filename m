@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7759353671
-	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 06:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EA54353672
+	for <lists+netdev@lfdr.de>; Sun,  4 Apr 2021 06:20:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236955AbhDDEUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Apr 2021 00:20:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40882 "EHLO mail.kernel.org"
+        id S236964AbhDDEU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Apr 2021 00:20:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40890 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232315AbhDDEUO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Apr 2021 00:20:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AE39E61388;
-        Sun,  4 Apr 2021 04:20:10 +0000 (UTC)
+        id S232542AbhDDEUP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Apr 2021 00:20:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 213D061382;
+        Sun,  4 Apr 2021 04:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617510011;
-        bh=1SMCHHtJahYWMxBOC07Z+5dsD2UuWDDwZXGn2+6mB24=;
+        bh=YN+i2/f2wSqqlKcBi2UPjg4ATZA9ay6h6FMrSyj92Jg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nm9E74ZldtK1gbpL8nag/zQnZmB6fcKzkq5kqWBr3XYpb6P/4wF7jUxx3o3kWi6YA
-         cj68zRqFIaXCVZkIiLyFKpApbT5UdnMPYlAv1vcd5p9xoNepoOXJXUzfPu9MqHiTyW
-         j6iik6ueFbKoi6q1x/oeGLx19BYMf4iQii7fAzuV/enMwe3DM2Tsz+2xwHLnoN+Gh6
-         4RGcCI1dh8j+A5Qp25n9hdmorlQwdYr9CFMqjv5uFM0z4JmJcYkbkfzlBXY/HrXDEC
-         +z3D273mdk7z7IgHCL+NkgUhRGdLDUtLROwvzJ8uZxIO3OITNCvt48TbdFkKI8GbQO
-         /fsnH5k5Rf3TA==
+        b=exf3GLM9tFO/0I/y0fTvq1M1PSyTJjicc4TxydOqkDdWzhbqFUMOsQxLFwD/FTuVr
+         7Em396ucQuq5czG/7PbvlPaTymvkMAymSKMVRRYq4tUxCz57a7bsA1JRYVo2voxk97
+         e/bX20TlkORxGzf258ooEZ7phDWfpOgAI/m3N5sVN+sPOmFMC4WY+7/R3TIi0GOmDi
+         /mNNb89O/WSn0jPy2DXUgLOicInE2wNBo4QQH86N3EtJwraZvWK1NZyqhOdRe4pZSu
+         KI9ILGp0pCBRtDPCeKjAqJC9NDHJeIvZ99Yxoy2zGZg0F42/RDTXGacs5waWlkRKWJ
+         +YtYnb4t9lqvQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 10/16] net/mlx5: Pair mutex_destory with mutex_init for rate limit table
-Date:   Sat,  3 Apr 2021 21:19:48 -0700
-Message-Id: <20210404041954.146958-11-saeed@kernel.org>
+Subject: [net-next 11/16] net/mlx5: E-Switch, cut down mlx5_vport_info structure size by 8 bytes
+Date:   Sat,  3 Apr 2021 21:19:49 -0700
+Message-Id: <20210404041954.146958-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210404041954.146958-1-saeed@kernel.org>
 References: <20210404041954.146958-1-saeed@kernel.org>
@@ -43,42 +43,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-Add missing mutex_destroy() to pair with mutex_init().
+Structure mlx5_vport_info consumes 40 bytes of space due to a hole
+in it. After packing it reduces to 32 bytes.
 
-This should be done only when table is initialized, hence perform
-mutex_init() only when table is initialized.
+Currently:
+pahole -C mlx5_vport_info drivers/net/ethernet/mellanox/mlx5/core/eswitch.o
+struct mlx5_vport_info {
+        u8                         mac[6];               /*     0     6 */
+        u16                        vlan;                 /*     6     2 */
+        u8                         qos;                  /*     8     1 */
+
+        /* XXX 7 bytes hole, try to pack */
+
+        u64                        node_guid;            /*    16     8 */
+        int                        link_state;           /*    24     4 */
+        u32                        min_rate;             /*    28     4 */
+        u32                        max_rate;             /*    32     4 */
+        bool                       spoofchk;             /*    36     1 */
+        bool                       trusted;              /*    37     1 */
+
+        /* size: 40, cachelines: 1, members: 9 */
+        /* sum members: 31, holes: 1, sum holes: 7 */
+        /* padding: 2 */
+        /* last cacheline: 40 bytes */
+};
+
+After packing:
+
+$ pahole -C mlx5_vport_info drivers/net/ethernet/mellanox/mlx5/core/eswitch.o
+
+struct mlx5_vport_info {
+        u8                         mac[6];               /*     0     6 */
+        u16                        vlan;                 /*     6     2 */
+        u64                        node_guid;            /*     8     8 */
+        int                        link_state;           /*    16     4 */
+        u32                        min_rate;             /*    20     4 */
+        u32                        max_rate;             /*    24     4 */
+        u8                         qos;                  /*    28     1 */
+        u8                         spoofchk:1;           /*    29: 0  1 */
+        u8                         trusted:1;            /*    29: 1  1 */
+
+        /* size: 32, cachelines: 1, members: 9 */
+        /* padding: 2 */
+        /* bit_padding: 6 bits */
+        /* last cacheline: 32 bytes */
+};
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/rl.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/rl.c b/drivers/net/ethernet/mellanox/mlx5/core/rl.c
-index 0526e3798c09..7161220afe30 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/rl.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/rl.c
-@@ -367,12 +367,13 @@ int mlx5_init_rl_table(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_rl_table *table = &dev->priv.rl_table;
- 
--	mutex_init(&table->rl_lock);
- 	if (!MLX5_CAP_GEN(dev, qos) || !MLX5_CAP_QOS(dev, packet_pacing)) {
- 		table->max_size = 0;
- 		return 0;
- 	}
- 
-+	mutex_init(&table->rl_lock);
-+
- 	/* First entry is reserved for unlimited rate */
- 	table->max_size = MLX5_CAP_QOS(dev, packet_pacing_rate_table_size) - 1;
- 	table->max_rate = MLX5_CAP_QOS(dev, packet_pacing_max_rate);
-@@ -394,4 +395,5 @@ void mlx5_cleanup_rl_table(struct mlx5_core_dev *dev)
- 		return;
- 
- 	mlx5_rl_table_free(dev, table);
-+	mutex_destroy(&table->rl_lock);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index 64db903068c1..5d50b127f81a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -120,6 +120,8 @@ struct mlx5_vport_info {
+ 	u16                     vlan;
+ 	u64                     node_guid;
+ 	int                     link_state;
++	u32                     min_rate;
++	u32                     max_rate;
+ 	u8                      qos;
+ 	u8                      spoofchk: 1;
+ 	u8                      trusted: 1;
 -- 
 2.30.2
 
