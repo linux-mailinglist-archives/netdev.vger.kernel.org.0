@@ -2,76 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88D40353A29
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 01:45:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E30E1353A31
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 02:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbhDDXoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Apr 2021 19:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
+        id S231680AbhDEAQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Apr 2021 20:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231643AbhDDXoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 19:44:08 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF55C061756
-        for <netdev@vger.kernel.org>; Sun,  4 Apr 2021 16:44:02 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id h8so4849806plt.7
-        for <netdev@vger.kernel.org>; Sun, 04 Apr 2021 16:44:02 -0700 (PDT)
+        with ESMTP id S230286AbhDEAQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 20:16:43 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50760C061756;
+        Sun,  4 Apr 2021 17:16:38 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id g38so10874521ybi.12;
+        Sun, 04 Apr 2021 17:16:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+wa9Ed4rEEf6nZw0uNl2cU76jMIPzLswHXHlLPF2vn4=;
-        b=tcRFHoBn0bS89bE0t2ebRcf7KEKLdRcBc9hdqp2Sxn9OJ5zn0mIG/kMpTC6Gr7xk9p
-         GVLS76APtOsT5ttgBEvjSzD2mWzPIzqm8IehpnMXKCCz9y4E6uTFdQlNZOiL1fhTvJ3w
-         j0QsndSPqAmzSWbkEmX9IDsDwK/uwJ6jX45uXa3ThFi5x1pXfa3+4ZURtWiMSCbNt0/q
-         vh+BsJY/DGCtrZTuWxkq4tvFD/mwW6/Oar1ItiRHARrrxgnvk21ufcMiT98ZcD3Yauzv
-         cGiCmf5sy+OJbWAKCe/1PV3a3LWrQKraLRXrcW8SD+Y0vFBsFjRsUr6lQDcnAVazrMFe
-         +Juw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2OVvztDvgrvzKuODIaNCcyWB5/1r0S8OTEYJE9jDz8E=;
+        b=S3Bc+GdqRNFE3OLAF5A6IHVF5MBOLXeCKFhSHiQlJMKcScZOpvhe2qakuiJq04b0D/
+         Usf+eB2EH9SLoAjnzgC4G2AQQEWJJOqd7L289opGF5oCN0qpixr98tSLWhTudrnZycfC
+         nZYeClxeUDX4H3Vnk7a/G5UdDFe/iDJYpodJ8Ioef4IC1GIHDW6LV/+aY2FUUG8R3VGV
+         LFkPrwHdE9O2ukCc10boX9kCUSyXC8tE2xpVMppO1EwKs0/EQZlUBvH2YmcJyc9yvpUk
+         IynBVyMJwTTRFBrmE8DZnph/fSgIDwQnG4xyEmwgWI6Uqeo/wSSz2aFlXOt7w2QYqE88
+         eqyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+wa9Ed4rEEf6nZw0uNl2cU76jMIPzLswHXHlLPF2vn4=;
-        b=q20Wlj+NhMBzU2Z63UvOTpmwoIfQiTUZe9CVKhSQVpobKPhINBZeQXZc75SmrxAvvj
-         nlcEtQrzePYy2JZ4rMOCJN3rGoYFEBILcGxzwhJyufWn6pLhxNvY5YG4GLoqocyjEpAL
-         U/zY/zUqwOzT/7SCY3ZXqZda+qEr1PBf74aMvGdud7a3ccdNCmJxx8vk5OPtvyyzAyMG
-         VnOL0wY3c1FGPZRpztcp5cxjcP+Jbg45zb3ttXHRewuvkAcynfRnJUk8SO+NOyUpFFhl
-         09ekYfilRTv0A0OSW6JSlooWtX+JiLhlnbNtGjD9vw6A74NgKxbtgMztxAbOzWymp4pg
-         gZNQ==
-X-Gm-Message-State: AOAM5313rF1Jryk74YthUmYF2EK+OES+cmAxIm+0SfC1XqO7ljHxacey
-        M39HleBH1Qpl/+KaMgBrCws=
-X-Google-Smtp-Source: ABdhPJw/EdA5LaL0bYOitfJoOGMIzmnBKQ7vIR4FjSIIEOTK2z/B5UICI1G88swFHxKxz5IaG68OzQ==
-X-Received: by 2002:a17:90a:e646:: with SMTP id ep6mr24415001pjb.101.1617579842257;
-        Sun, 04 Apr 2021 16:44:02 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id 14sm13001116pgz.48.2021.04.04.16.44.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Apr 2021 16:44:01 -0700 (PDT)
-Date:   Sun, 4 Apr 2021 16:43:59 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
-Subject: Re: [PATCH net-next 12/12] ionic: advertise support for hardware
- timestamps
-Message-ID: <20210404234359.GE24720@hoboy.vegasvil.org>
-References: <20210401175610.44431-1-snelson@pensando.io>
- <20210401175610.44431-13-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2OVvztDvgrvzKuODIaNCcyWB5/1r0S8OTEYJE9jDz8E=;
+        b=oJjRAAy9f9BXhi34W2j0fKmz0i4AoO4JE5nRLblSHOk/0H0N2WBwIE6A7JztAQZtC9
+         wy89vPQWg6uyLuFX0wADnvVXldqsB5sBXCW/lFg6X2fg3Q38dszEnYKqf417qgMkJHKK
+         +S8OgL6uN/VUeKSBy3/1Oh8U6G27yGfcvhygy3XLyaBqSWRI9fsRuLLTwWsLmj3ZZtgG
+         KSbp86fQ8WsnfRfLEn06dw+Sv8lV3oK/awMNPVabXzTTK/cHJ8weyDkTFuxHY6gBJi8S
+         sdY5YHh6Bk35hHGn55xHRNch8V1xzjHp0pzeVkha0LbCTw1BAsgSEeE5GFxB0RLGdsWF
+         b0NQ==
+X-Gm-Message-State: AOAM532IigjSZHX2SX6H8jvigYxG1Q3JFbc6Eit+evzGButMW1vS1Vp7
+        +3SIIxi8NEnMA7oO8qApEq+MDcY7dmtkvoEEUBE=
+X-Google-Smtp-Source: ABdhPJyu8nJVIkfKwQJUPVBPwkF80o/DiuO33mH9K3DfVRBNhDna/9R3cIBjEjf8rwxQ1DLQDE0Vxck+ecZhXosTva8=
+X-Received: by 2002:a25:d87:: with SMTP id 129mr22991641ybn.260.1617581796896;
+ Sun, 04 Apr 2021 17:16:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210401175610.44431-13-snelson@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <ME4P282MB1174C26FCD8E61817960F596C0789@ME4P282MB1174.AUSP282.PROD.OUTLOOK.COM>
+In-Reply-To: <ME4P282MB1174C26FCD8E61817960F596C0789@ME4P282MB1174.AUSP282.PROD.OUTLOOK.COM>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sun, 4 Apr 2021 17:16:26 -0700
+Message-ID: <CAEf4BzZyyQLchpK9OjH3A5N5-eKNBq0t7p2fvuPbGVty3gFh5g@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Fix KERNEL_VERSION macro
+To:     Hengqi Chen <chenhengqi@outlook.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 01, 2021 at 10:56:10AM -0700, Shannon Nelson wrote:
-> Let the network stack know we've got support for timestamping
-> the packets.
+On Sun, Apr 4, 2021 at 2:53 AM Hengqi Chen <chenhengqi@outlook.com> wrote:
+>
+> Add missing ')' for KERNEL_VERSION macro.
+>
+> Signed-off-by: Hengqi Chen <chenhengqi@outlook.com>
+> ---
 
-Actually, you already advertised the support to user space in Patch 10,
-so this present patch should go before that one (or together).
+The fix looks good, thank you. But your patch didn't make it into
+bpf/netdev patchworks instance ([0]) most probably due to too long CC
+list. Can you please re-send with just maintainers and bpf@ and
+netdev@ mailing lists in to/cc.
 
-Thanks,
-Richard
+Also for bpf and bpf-next tree, we ask to specify the tree with [PATCH
+bpf-next] prefix, so when re-submitting please adjust as well. Thanks.
+
+  [0] https://patchwork.kernel.org/project/netdevbpf/list/
+
+>  tools/lib/bpf/bpf_helpers.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index cc2e51c64a54..b904128626c2 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -51,7 +51,7 @@
+>  #endif
+>
+>  #ifndef KERNEL_VERSION
+> -#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c))
+> +#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))
+>  #endif
+>
+>  /*
+> --
+> 2.25.1
+>
