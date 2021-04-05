@@ -2,143 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09903353C28
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 09:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B17353C2F
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 09:36:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232331AbhDEHHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 03:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
+        id S232354AbhDEHO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 03:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbhDEHHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 03:07:07 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D7BC061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 00:07:01 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id q10so7592899pgj.2
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 00:07:01 -0700 (PDT)
+        with ESMTP id S232012AbhDEHO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 03:14:57 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5C8C061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 00:14:51 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id bg21so2573146pjb.0
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 00:14:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wmNdKTcqG9F0uqO6s49Xz7s10PBgTm5zewutxoY2oGM=;
-        b=sjkagA184bjGS5DfXdi9cDqXrTQHE80hoPUh9nAVs77mtWLXZLOpl17vvg9ooHUxOt
-         T42kSr5K2vG7hPW1dPeX2X0I1tJh+JELxg3QNL+xAq6Bru/DHrF98dr5TGXhjpdmboGV
-         atssFPZTW3peDZwl6PMRLO+p+nNi8iLJSedO3WAZ2OpDYVn5++Jkucyybj7GOeZlsoRk
-         S6vdgnyM8f6WJJ/o9ZSc3t04ECFs4yf1AQ9XlmBJl0uPTIvFm/hFlv00PQluorsus6XG
-         sTEbqwDPNjpyhsKk8SBcNnN4MSxIP8Fxk/8ulJVhSi7fwf9/wcwpQJjrQCqE2ca7q8iJ
-         2uFA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=G0UczTn55Lpurwx3mDocmCqfIhg/tWH/l5D5dAvIobU=;
+        b=Ibg1MlxlQfTuUgDp3eD5n3AhYuOn/HIcjDog0Ky7hhtz3y62yLg/K4gyw6HnOMfzdf
+         Onxh+KrtpsO+tXTI7CwU7GdhquRSWKbcmBja7kPfFt+yjzU1T3TB8WDkzDhCGD96D0iB
+         ydW3tLRG3kaPJCFx8uvFY/T8mgV64ekMjwZHjVTO7nAG/Ybv/VMTbY8hpo1GxlyZ74x4
+         1845tA3rtADuvOeooFg44V5mmMMRgxArt7kAXuw5yrhmD8S8nXsFtfmR64CKfpUto5/E
+         kYVnbCrjQ3jLZxsEkZO7ok+avJ3xSWe08MydnH/hZyHeBX58tBD5QkxaguJDULaLmgHS
+         OdDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wmNdKTcqG9F0uqO6s49Xz7s10PBgTm5zewutxoY2oGM=;
-        b=CKpU8gjN+RnA9UeyKfIIcLVa0VlJj9XZ5M2/B4LGwweq8tt/DeQTYEmTbfw5dAO60Y
-         a9Jc+WuBhwNkdwhT0yrohAk1FbRD2H4GP5mBthYdOrylK9EfnZQrcIvBQ+ficHP+3s0L
-         4Aa+65nFW0VQ91S/ZcTrRGeUQ9s3z9gsQ6YbQ68/Nv/Ih7VShsCpH7ROyqEPT5g2cpSJ
-         WXWXtgzeT7Y9zcYyeYx1DtnPy/d/lirIgGHgCuSIb95Uzc+F85nxjW3Dr0yICfyI6R7E
-         DOZp1VC3vM6TTqdUIxJzH03mDdICN//fjmxWORsWwfQByF6BdBSMqSc1qYgrEDbFyixy
-         MkGQ==
-X-Gm-Message-State: AOAM531sYNpL48DwaOjhc1hCgxKjqjG2Xq6joddCK/+A7kVAn8bzrQlE
-        Qcl5hK8XdHCONM19/bTnQlo=
-X-Google-Smtp-Source: ABdhPJxGQODBU/m7CUnJuvTzLbEl6OoXRQ0UB00/IV+aiLE8wIEoaUh3+OD9LZXclZtiPfUK7Ajtrg==
-X-Received: by 2002:a62:33c6:0:b029:225:5266:28df with SMTP id z189-20020a6233c60000b0290225526628dfmr22035849pfz.7.1617606420892;
-        Mon, 05 Apr 2021 00:07:00 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:7c09:9a81:b829:6f7f])
-        by smtp.gmail.com with ESMTPSA id a6sm15096859pfc.61.2021.04.05.00.06.59
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=G0UczTn55Lpurwx3mDocmCqfIhg/tWH/l5D5dAvIobU=;
+        b=hUHrISO6plm1Ao8BRQ4QUoNdVT3Yhn3s2K5L6fCwxmvz+OW7TgjHuns+HdjnCNgtvX
+         LErJYH2o6tDlhDQiM2sUxpI3tp+Dq4TtyJpjAqGTPHunzmGBahlTpnDF9F3p2eSea1Tx
+         Y1xNRJzzddL4Xa2MxN3RysKVCb7DrnLe8T1NToNbgnWmarWTaq0Kho41B/9K7okv/rnz
+         Ji3lABJQLFNoLRbArE4mOb2LHt3yLKTx4lzF1iSqb2zjz5wRcNY7QciZSfr0ZMX2t7JJ
+         yAk7A2niOoDppm9y7dlWO8Mzh/JwQOCAoF/EYSm22oClqXbw5XwThGljLEUCYYmh6Kfr
+         l3tA==
+X-Gm-Message-State: AOAM533ykSViGtYHaNaUbyktRH0Q3PS77Umx9KHxVtm5z2kgIdrBoCF0
+        vtj+QHJ0JUOdu5L+jR68VsKJ7RjmcCpsHw==
+X-Google-Smtp-Source: ABdhPJzy0mhMrrh7l1fwNOJD7LvWDUD78tetK4uAkPsS3cfpvLk1qDTUNTfje4ksoIT0TTcYjHMcJQ==
+X-Received: by 2002:a17:902:e98c:b029:e5:defc:ccf8 with SMTP id f12-20020a170902e98cb02900e5defcccf8mr22659111plb.20.1617606891238;
+        Mon, 05 Apr 2021 00:14:51 -0700 (PDT)
+Received: from laptop.hsd1.wa.comcast.net ([2601:600:8500:5f14:d627:c51e:516e:a105])
+        by smtp.gmail.com with ESMTPSA id e14sm7471175pga.14.2021.04.05.00.14.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Apr 2021 00:07:00 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Lorenzo Colitti <lorenzo@google.com>
-Subject: [PATCH] net-ipv6: bugfix - raw & sctp - switch to ipv6_can_nonlocal_bind()
-Date:   Mon,  5 Apr 2021 00:06:52 -0700
-Message-Id: <20210405070652.2447152-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
+        Mon, 05 Apr 2021 00:14:50 -0700 (PDT)
+From:   Andrei Vagin <avagin@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Subject: [PATCH] net: Allow to specify ifindex when device is moved to another namespace
+Date:   Mon,  5 Apr 2021 00:12:23 -0700
+Message-Id: <20210405071223.138101-1-avagin@gmail.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210402073622.1260310-1-avagin@gmail.com>
+References: <20210402073622.1260310-1-avagin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Currently, we can specify ifindex on link creation. This change allows
+to specify ifindex when a device is moved to another network namespace.
 
-Found by virtue of ipv6 raw sockets not honouring the per-socket
-IP{,V6}_FREEBIND setting.
+Even now, a device ifindex can be changed if there is another device
+with the same ifindex in the target namespace. So this change doesn't
+introduce completely new behavior, it adds more control to the process.
 
-Based on hits found via:
-  git grep '[.]ip_nonlocal_bind'
-We fix both raw ipv6 sockets to honour IP{,V6}_FREEBIND and IP{,V6}_TRANSPARENT,
-and we fix sctp sockets to honour IP{,V6}_TRANSPARENT (they already honoured
-FREEBIND), and not just the ipv6 'ip_nonlocal_bind' sysctl.
+CRIU users want to restore containers with pre-created network devices.
+A user will provide network devices and instructions where they have to
+be restored, then CRIU will restore network namespaces and move devices
+into them. The problem is that devices have to be restored with the same
+indexes that they have before C/R.
 
-The helper is defined as:
-  static inline bool ipv6_can_nonlocal_bind(struct net *net, struct inet_sock *inet) {
-    return net->ipv6.sysctl.ip_nonlocal_bind || inet->freebind || inet->transparent;
-  }
-so this change only widens the accepted opt-outs and is thus a clean bugfix.
-
-I'm not entirely sure what 'fixes' tag to add, since this is AFAICT an ancient bug,
-but IMHO this should be applied to stable kernels as far back as possible.
-As such I'm adding a 'fixes' tag with the commit that originally added the helper,
-which happened in 4.19.  Backporting to older LTS kernels (at least 4.9 and 4.14)
-would presumably require open-coding it or backporting the helper as well.
-
-Other possibly relevant commits:
-  v4.18-rc6-1502-g83ba4645152d net: add helpers checking if socket can be bound to nonlocal address
-  v4.18-rc6-1431-gd0c1f01138c4 net/ipv6: allow any source address for sendmsg pktinfo with ip_nonlocal_bind
-  v4.14-rc5-271-gb71d21c274ef sctp: full support for ipv6 ip_nonlocal_bind & IP_FREEBIND
-  v4.7-rc7-1883-g9b9742022888 sctp: support ipv6 nonlocal bind
-  v4.1-12247-g35a256fee52c ipv6: Nonlocal bind
-
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Fixes: 83ba4645152d ("net: add helpers checking if socket can be bound to nonlocal address")
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Suggested-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Andrei Vagin <avagin@gmail.com>
 ---
- net/ipv6/raw.c  | 2 +-
- net/sctp/ipv6.c | 7 +++----
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/hyperv/netvsc_drv.c |  2 +-
+ include/linux/netdevice.h       |  3 ++-
+ net/core/dev.c                  | 24 +++++++++++++++++-------
+ net/core/rtnetlink.c            | 19 +++++++++++++++----
+ net/ieee802154/core.c           |  4 ++--
+ net/wireless/core.c             |  4 ++--
+ 6 files changed, 39 insertions(+), 17 deletions(-)
 
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 1f56d9aae589..bf3646b57c68 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -298,7 +298,7 @@ static int rawv6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 		 */
- 		v4addr = LOOPBACK4_IPV6;
- 		if (!(addr_type & IPV6_ADDR_MULTICAST) &&
--		    !sock_net(sk)->ipv6.sysctl.ip_nonlocal_bind) {
-+		    !ipv6_can_nonlocal_bind(sock_net(sk), inet)) {
- 			err = -EADDRNOTAVAIL;
- 			if (!ipv6_chk_addr(sock_net(sk), &addr->sin6_addr,
- 					   dev, 0)) {
-diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
-index c3e89c776e66..bd08807c9e44 100644
---- a/net/sctp/ipv6.c
-+++ b/net/sctp/ipv6.c
-@@ -664,8 +664,8 @@ static int sctp_v6_available(union sctp_addr *addr, struct sctp_sock *sp)
- 	if (!(type & IPV6_ADDR_UNICAST))
- 		return 0;
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 7349a70af083..8c0c70e1da77 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -2354,7 +2354,7 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
+ 	 */
+ 	if (!net_eq(dev_net(ndev), dev_net(vf_netdev))) {
+ 		ret = dev_change_net_namespace(vf_netdev,
+-					       dev_net(ndev), "eth%d");
++					       dev_net(ndev), "eth%d", 0);
+ 		if (ret)
+ 			netdev_err(vf_netdev,
+ 				   "could not move to same namespace as %s: %d\n",
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index f57b70fc251f..b482236c0e99 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4026,7 +4026,8 @@ void __dev_notify_flags(struct net_device *, unsigned int old_flags,
+ int dev_change_name(struct net_device *, const char *);
+ int dev_set_alias(struct net_device *, const char *, size_t);
+ int dev_get_alias(const struct net_device *, char *, size_t);
+-int dev_change_net_namespace(struct net_device *, struct net *, const char *);
++int dev_change_net_namespace(struct net_device *dev, struct net *net,
++			     const char *pat, int new_ifindex);
+ int __dev_set_mtu(struct net_device *, int);
+ int dev_validate_mtu(struct net_device *dev, int mtu,
+ 		     struct netlink_ext_ack *extack);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b4c67a5be606..9d1a8fac793f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -11067,6 +11067,8 @@ EXPORT_SYMBOL(unregister_netdev);
+  *	@net: network namespace
+  *	@pat: If not NULL name pattern to try if the current device name
+  *	      is already taken in the destination network namespace.
++ *	@new_ifindex: If not zero, specifies device index in the target
++ *	              namespace.
+  *
+  *	This function shuts down a device interface and moves it
+  *	to a new network namespace. On success 0 is returned, on
+@@ -11075,10 +11077,11 @@ EXPORT_SYMBOL(unregister_netdev);
+  *	Callers must hold the rtnl semaphore.
+  */
  
--	return sp->inet.freebind || net->ipv6.sysctl.ip_nonlocal_bind ||
--		ipv6_chk_addr(net, in6, NULL, 0);
-+	return ipv6_can_nonlocal_bind(net, &sp->inet) ||
-+	       ipv6_chk_addr(net, in6, NULL, 0);
- }
+-int dev_change_net_namespace(struct net_device *dev, struct net *net, const char *pat)
++int dev_change_net_namespace(struct net_device *dev, struct net *net,
++			     const char *pat, int new_ifindex)
+ {
+ 	struct net *net_old = dev_net(dev);
+-	int err, new_nsid, new_ifindex;
++	int err, new_nsid;
  
- /* This function checks if the address is a valid address to be used for
-@@ -954,8 +954,7 @@ static int sctp_inet6_bind_verify(struct sctp_sock *opt, union sctp_addr *addr)
- 			net = sock_net(&opt->inet.sk);
- 			rcu_read_lock();
- 			dev = dev_get_by_index_rcu(net, addr->v6.sin6_scope_id);
--			if (!dev || !(opt->inet.freebind ||
--				      net->ipv6.sysctl.ip_nonlocal_bind ||
-+			if (!dev || !(ipv6_can_nonlocal_bind(net, &opt->inet) ||
- 				      ipv6_chk_addr(net, &addr->v6.sin6_addr,
- 						    dev, 0))) {
- 				rcu_read_unlock();
+ 	ASSERT_RTNL();
+ 
+@@ -11109,6 +11112,11 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
+ 			goto out;
+ 	}
+ 
++	/* Check that new_ifindex isn't used yet. */
++	err = -EBUSY;
++	if (new_ifindex && __dev_get_by_index(net, new_ifindex))
++		goto out;
++
+ 	/*
+ 	 * And now a mini version of register_netdevice unregister_netdevice.
+ 	 */
+@@ -11136,10 +11144,12 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
+ 
+ 	new_nsid = peernet2id_alloc(dev_net(dev), net, GFP_KERNEL);
+ 	/* If there is an ifindex conflict assign a new one */
+-	if (__dev_get_by_index(net, dev->ifindex))
+-		new_ifindex = dev_new_index(net);
+-	else
+-		new_ifindex = dev->ifindex;
++	if (!new_ifindex) {
++		if (__dev_get_by_index(net, dev->ifindex))
++			new_ifindex = dev_new_index(net);
++		else
++			new_ifindex = dev->ifindex;
++	}
+ 
+ 	rtmsg_ifinfo_newnet(RTM_DELLINK, dev, ~0U, GFP_KERNEL, &new_nsid,
+ 			    new_ifindex);
+@@ -11448,7 +11458,7 @@ static void __net_exit default_device_exit(struct net *net)
+ 		snprintf(fb_name, IFNAMSIZ, "dev%d", dev->ifindex);
+ 		if (__dev_get_by_name(&init_net, fb_name))
+ 			snprintf(fb_name, IFNAMSIZ, "dev%%d");
+-		err = dev_change_net_namespace(dev, &init_net, fb_name);
++		err = dev_change_net_namespace(dev, &init_net, fb_name, 0);
+ 		if (err) {
+ 			pr_emerg("%s: failed to move %s to init_net: %d\n",
+ 				 __func__, dev->name, err);
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 1bdcb33fb561..d51252afde0a 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2266,6 +2266,9 @@ static int validate_linkmsg(struct net_device *dev, struct nlattr *tb[])
+ 			return -EINVAL;
+ 	}
+ 
++	if (tb[IFLA_NEW_IFINDEX] && nla_get_s32(tb[IFLA_NEW_IFINDEX]) <= 0)
++		return -EINVAL;
++
+ 	if (tb[IFLA_AF_SPEC]) {
+ 		struct nlattr *af;
+ 		int rem, err;
+@@ -2603,14 +2606,22 @@ static int do_setlink(const struct sk_buff *skb,
+ 		return err;
+ 
+ 	if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] || tb[IFLA_TARGET_NETNSID]) {
+-		struct net *net = rtnl_link_get_net_capable(skb, dev_net(dev),
+-							    tb, CAP_NET_ADMIN);
++		struct net *net;
++		int new_ifindex;
++
++		net = rtnl_link_get_net_capable(skb, dev_net(dev),
++						tb, CAP_NET_ADMIN);
+ 		if (IS_ERR(net)) {
+ 			err = PTR_ERR(net);
+ 			goto errout;
+ 		}
+ 
+-		err = dev_change_net_namespace(dev, net, ifname);
++		if (tb[IFLA_NEW_IFINDEX])
++			new_ifindex = nla_get_s32(tb[IFLA_NEW_IFINDEX]);
++		else
++			new_ifindex = 0;
++
++		err = dev_change_net_namespace(dev, net, ifname, new_ifindex);
+ 		put_net(net);
+ 		if (err)
+ 			goto errout;
+@@ -3452,7 +3463,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (err < 0)
+ 		goto out_unregister;
+ 	if (link_net) {
+-		err = dev_change_net_namespace(dev, dest_net, ifname);
++		err = dev_change_net_namespace(dev, dest_net, ifname, 0);
+ 		if (err < 0)
+ 			goto out_unregister;
+ 	}
+diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
+index de259b5170ab..ec3068937fc3 100644
+--- a/net/ieee802154/core.c
++++ b/net/ieee802154/core.c
+@@ -205,7 +205,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
+ 		if (!wpan_dev->netdev)
+ 			continue;
+ 		wpan_dev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
+-		err = dev_change_net_namespace(wpan_dev->netdev, net, "wpan%d");
++		err = dev_change_net_namespace(wpan_dev->netdev, net, "wpan%d", 0);
+ 		if (err)
+ 			break;
+ 		wpan_dev->netdev->features |= NETIF_F_NETNS_LOCAL;
+@@ -222,7 +222,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
+ 				continue;
+ 			wpan_dev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
+ 			err = dev_change_net_namespace(wpan_dev->netdev, net,
+-						       "wpan%d");
++						       "wpan%d", 0);
+ 			WARN_ON(err);
+ 			wpan_dev->netdev->features |= NETIF_F_NETNS_LOCAL;
+ 		}
+diff --git a/net/wireless/core.c b/net/wireless/core.c
+index a2785379df6e..fabb677b7d58 100644
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -165,7 +165,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
+ 		if (!wdev->netdev)
+ 			continue;
+ 		wdev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
+-		err = dev_change_net_namespace(wdev->netdev, net, "wlan%d");
++		err = dev_change_net_namespace(wdev->netdev, net, "wlan%d", 0);
+ 		if (err)
+ 			break;
+ 		wdev->netdev->features |= NETIF_F_NETNS_LOCAL;
+@@ -182,7 +182,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
+ 				continue;
+ 			wdev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
+ 			err = dev_change_net_namespace(wdev->netdev, net,
+-							"wlan%d");
++							"wlan%d", 0);
+ 			WARN_ON(err);
+ 			wdev->netdev->features |= NETIF_F_NETNS_LOCAL;
+ 		}
 -- 
-2.31.0.208.g409f899ff0-goog
+2.29.2
 
