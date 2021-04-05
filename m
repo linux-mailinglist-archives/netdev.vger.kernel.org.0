@@ -2,102 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E30E1353A31
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 02:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57104353A41
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 02:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231680AbhDEAQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Apr 2021 20:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbhDEAQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 20:16:43 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50760C061756;
-        Sun,  4 Apr 2021 17:16:38 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id g38so10874521ybi.12;
-        Sun, 04 Apr 2021 17:16:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2OVvztDvgrvzKuODIaNCcyWB5/1r0S8OTEYJE9jDz8E=;
-        b=S3Bc+GdqRNFE3OLAF5A6IHVF5MBOLXeCKFhSHiQlJMKcScZOpvhe2qakuiJq04b0D/
-         Usf+eB2EH9SLoAjnzgC4G2AQQEWJJOqd7L289opGF5oCN0qpixr98tSLWhTudrnZycfC
-         nZYeClxeUDX4H3Vnk7a/G5UdDFe/iDJYpodJ8Ioef4IC1GIHDW6LV/+aY2FUUG8R3VGV
-         LFkPrwHdE9O2ukCc10boX9kCUSyXC8tE2xpVMppO1EwKs0/EQZlUBvH2YmcJyc9yvpUk
-         IynBVyMJwTTRFBrmE8DZnph/fSgIDwQnG4xyEmwgWI6Uqeo/wSSz2aFlXOt7w2QYqE88
-         eqyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2OVvztDvgrvzKuODIaNCcyWB5/1r0S8OTEYJE9jDz8E=;
-        b=oJjRAAy9f9BXhi34W2j0fKmz0i4AoO4JE5nRLblSHOk/0H0N2WBwIE6A7JztAQZtC9
-         wy89vPQWg6uyLuFX0wADnvVXldqsB5sBXCW/lFg6X2fg3Q38dszEnYKqf417qgMkJHKK
-         +S8OgL6uN/VUeKSBy3/1Oh8U6G27yGfcvhygy3XLyaBqSWRI9fsRuLLTwWsLmj3ZZtgG
-         KSbp86fQ8WsnfRfLEn06dw+Sv8lV3oK/awMNPVabXzTTK/cHJ8weyDkTFuxHY6gBJi8S
-         sdY5YHh6Bk35hHGn55xHRNch8V1xzjHp0pzeVkha0LbCTw1BAsgSEeE5GFxB0RLGdsWF
-         b0NQ==
-X-Gm-Message-State: AOAM532IigjSZHX2SX6H8jvigYxG1Q3JFbc6Eit+evzGButMW1vS1Vp7
-        +3SIIxi8NEnMA7oO8qApEq+MDcY7dmtkvoEEUBE=
-X-Google-Smtp-Source: ABdhPJyu8nJVIkfKwQJUPVBPwkF80o/DiuO33mH9K3DfVRBNhDna/9R3cIBjEjf8rwxQ1DLQDE0Vxck+ecZhXosTva8=
-X-Received: by 2002:a25:d87:: with SMTP id 129mr22991641ybn.260.1617581796896;
- Sun, 04 Apr 2021 17:16:36 -0700 (PDT)
+        id S231734AbhDEAbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Apr 2021 20:31:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55579 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231693AbhDEAbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 20:31:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617582666;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=iSJ3pKh1BivwXCh+A/1gJQXkiIPD6okedKlGIxFuIhA=;
+        b=FJb9dyW4xHdwEeCVgEp3rbuJj9FnpMn8EXMk8g+L09r7pa9rVQ02a6Z1OYhiMtPQEaY3T8
+        CDGv8rOukC5YS7mfCItuyzffblrD68oXa8htDJGbycy1oPnQqO8NNQiipP3CRVtsFs+cl+
+        H+dTJMSJv4TQYfvbJAKFISrWnPs+FqQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-421-sPF1MGPDOoyiR4pz-sy-UQ-1; Sun, 04 Apr 2021 20:31:04 -0400
+X-MC-Unique: sPF1MGPDOoyiR4pz-sy-UQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21222817469;
+        Mon,  5 Apr 2021 00:31:03 +0000 (UTC)
+Received: from carbon.redhat.com (ovpn-113-102.rdu2.redhat.com [10.10.113.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A00A42B189;
+        Mon,  5 Apr 2021 00:31:01 +0000 (UTC)
+From:   Alexander Aring <aahringo@redhat.com>
+To:     stefan@datenfreihafen.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH RESEND wpan 00/15] net: ieee802154: forbid sec params for monitors
+Date:   Sun,  4 Apr 2021 20:30:39 -0400
+Message-Id: <20210405003054.256017-1-aahringo@redhat.com>
 MIME-Version: 1.0
-References: <ME4P282MB1174C26FCD8E61817960F596C0789@ME4P282MB1174.AUSP282.PROD.OUTLOOK.COM>
-In-Reply-To: <ME4P282MB1174C26FCD8E61817960F596C0789@ME4P282MB1174.AUSP282.PROD.OUTLOOK.COM>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 4 Apr 2021 17:16:26 -0700
-Message-ID: <CAEf4BzZyyQLchpK9OjH3A5N5-eKNBq0t7p2fvuPbGVty3gFh5g@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: Fix KERNEL_VERSION macro
-To:     Hengqi Chen <chenhengqi@outlook.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 4, 2021 at 2:53 AM Hengqi Chen <chenhengqi@outlook.com> wrote:
->
-> Add missing ')' for KERNEL_VERSION macro.
->
-> Signed-off-by: Hengqi Chen <chenhengqi@outlook.com>
-> ---
+Hi,
 
-The fix looks good, thank you. But your patch didn't make it into
-bpf/netdev patchworks instance ([0]) most probably due to too long CC
-list. Can you please re-send with just maintainers and bpf@ and
-netdev@ mailing lists in to/cc.
+this patch series contains fixes to forbid various security parameters
+settings for monitor types. Monitor types doesn't use the llsec security
+currently and we don't support it. With this patch series the user will
+be notified with a EOPNOTSUPP error that for monitor interfaces security
+is not supported yet. However there might be a possibility in future
+that the kernel will decrypt frames with llsec information for sniffing
+frames and deliver plaintext to userspace, but this isn't supported yet.
 
-Also for bpf and bpf-next tree, we ask to specify the tree with [PATCH
-bpf-next] prefix, so when re-submitting please adjust as well. Thanks.
+- Alex
 
-  [0] https://patchwork.kernel.org/project/netdevbpf/list/
+Alexander Aring (15):
+  net: ieee802154: nl-mac: fix check on panid
+  net: ieee802154: forbid monitor for set llsec params
+  net: ieee802154: stop dump llsec keys for monitors
+  net: ieee802154: forbid monitor for add llsec key
+  net: ieee802154: forbid monitor for del llsec key
+  net: ieee802154: stop dump llsec devs for monitors
+  net: ieee802154: forbid monitor for add llsec dev
+  net: ieee802154: forbid monitor for del llsec dev
+  net: ieee802154: stop dump llsec devkeys for monitors
+  net: ieee802154: forbid monitor for add llsec devkey
+  net: ieee802154: forbid monitor for del llsec devkey
+  net: ieee802154: stop dump llsec seclevels for monitors
+  net: ieee802154: forbid monitor for add llsec seclevel
+  net: ieee802154: forbid monitor for del llsec seclevel
+  net: ieee802154: stop dump llsec params for monitors
 
->  tools/lib/bpf/bpf_helpers.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> index cc2e51c64a54..b904128626c2 100644
-> --- a/tools/lib/bpf/bpf_helpers.h
-> +++ b/tools/lib/bpf/bpf_helpers.h
-> @@ -51,7 +51,7 @@
->  #endif
->
->  #ifndef KERNEL_VERSION
-> -#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c))
-> +#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))
->  #endif
->
->  /*
-> --
-> 2.25.1
->
+ net/ieee802154/nl-mac.c   |  7 +++---
+ net/ieee802154/nl802154.c | 52 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+), 3 deletions(-)
+
+-- 
+2.26.3
+
