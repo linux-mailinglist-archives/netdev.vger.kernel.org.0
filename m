@@ -2,106 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3AD353C3E
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 09:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55384353C43
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 09:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232433AbhDEHtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 03:49:14 -0400
-Received: from dvalin.narfation.org ([213.160.73.56]:46644 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232187AbhDEHtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 03:49:14 -0400
-X-Greylist: delayed 550 seconds by postgrey-1.27 at vger.kernel.org; Mon, 05 Apr 2021 03:49:13 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1617608393;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5uVHC4wQ6FlbPBFZq+nqEhyjmvDRykRRhBKERQcVG6A=;
-        b=NDu0LxfH73CCJvWmPe7jTRIghdpSBGm3/zPjF5YNq4CAKtxiAvSJq+5YGEnAsCuxEvPrcA
-        NVr7HJfhbqdJl3PCR19bkpsvMHX5Y2sr4QCsyJnWuPmyDdeNc5KYemsSfpGYHBXxj8n3yY
-        DEbEo4kJvpd4wqp68eri5S1CW6OIP1c=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     netdev@vger.kernel.org,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Subject: Re: [PATCH] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
-Date:   Mon, 05 Apr 2021 09:39:50 +0200
-Message-ID: <6915766.LLSpSeZOKX@sven-l14>
-In-Reply-To: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
-References: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
+        id S232441AbhDEH52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 03:57:28 -0400
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:45174 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232437AbhDEH50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 03:57:26 -0400
+Received: from localhost.localdomain ([90.126.11.170])
+        by mwinf5d68 with ME
+        id ovxG240053g7mfN03vxGo5; Mon, 05 Apr 2021 09:57:18 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 05 Apr 2021 09:57:18 +0200
+X-ME-IP: 90.126.11.170
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] rtlwifi: Simplify locking of a skb list accesses
+Date:   Mon,  5 Apr 2021 09:57:14 +0200
+Message-Id: <99cf8894fd52202cb7ce2ec6e3200eef400bc071.1617609346.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2830896.hENeXy47Wg"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart2830896.hENeXy47Wg
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: netdev@vger.kernel.org, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Subject: Re: [PATCH] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
-Date: Mon, 05 Apr 2021 09:39:50 +0200
-Message-ID: <6915766.LLSpSeZOKX@sven-l14>
-In-Reply-To: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
-References: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
+The 'c2hcmd_lock' spinlock is only used to protect some __skb_queue_tail()
+and __skb_dequeue() calls.
+Use the lock provided in the skb itself and call skb_queue_tail() and
+skb_dequeue(). These functions already include the correct locking.
 
-On Monday, 5 April 2021 07:33:06 CEST Tetsuo Handa wrote:
-[...]
-> ---
->  net/batman-adv/translation-table.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-table.c
-> index f8761281aab0..eb82576557e6 100644
-> --- a/net/batman-adv/translation-table.c
-> +++ b/net/batman-adv/translation-table.c
-> @@ -973,6 +973,7 @@ batadv_tt_prepare_tvlv_local_data(struct batadv_priv *bat_priv,
->  
->  		tt_vlan->vid = htons(vlan->vid);
->  		tt_vlan->crc = htonl(vlan->tt.crc);
-> +		tt_vlan->reserved = 0;
->  
->  		tt_vlan++;
->  	}
-> 
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/wireless/realtek/rtlwifi/base.c | 15 ++-------------
+ drivers/net/wireless/realtek/rtlwifi/wifi.h |  1 -
+ 2 files changed, 2 insertions(+), 14 deletions(-)
 
-Thanks but this patch is incomplete. Please also fix 
-batadv_tt_prepare_tvlv_global_data (exactly the same way)
-
-Kind regards,
-	Sven
-
---nextPart2830896.hENeXy47Wg
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmBqvsYACgkQXYcKB8Em
-e0Yusg/6AxfjdXLgogTL2mANdd/Nz7SOoKHtXAVupSewoAmqil8GyFf5cNWHgphS
-RuWWfoloFT5qiFUAI17z6e0h6SkbSUP3XYp8epkzDIyzA09NersxqBX4GKsy71fJ
-BO2k49RWysrn1F+Pq6e65HBMgjLMfgaa198kZKSRv3aeI2N9G6juI18fxvAEbp5i
-6j716OHHp7n4lAX7jfYDUlCCJhpKDC/rQRg9c5rDH+PrwG6ZlJCZsGPTbwuWbPl8
-VdS5sg9qIQPycCld6DNUUKfwPFC5zB7/Ru27ItB8u0z3ndL8t6VhxKZ9Leo+bYgC
-lUbFJiDEfI9oBOLW0nAVYRDy2+ZRoKcyh9V2YwpmRFQHt8P4UQFxXPZiYTI+SuCd
-U5iDIu9z35GpyiMJ2lSZsTbbuu2vqjLpwESDzZis9oC4dSwKVDvNIjGQVpWlFXgh
-2krd2NwZ/UrXsIPMjtuEfntxuwtPERN5iGs8+eiGXV8eyd4YL9/olT116wfLiZun
-uLEdqVywJ0jKBlYEvzSjKY+0OFiFesRk+xnqrkEVNY9o+sM8OOeaZQGwo6DuQ4Ib
-YeAjgQP3UqRKIlLdWP+j8uUCZh9/fhjyPqEt3MbVzTpjRO+kT8UE387D60tdcqjD
-JyoHpDzpBDyYdnwIQR/sLdmX4WLHT3S2D/d99kh7r9DQW2AMKy4=
-=VqOn
------END PGP SIGNATURE-----
-
---nextPart2830896.hENeXy47Wg--
-
-
+diff --git a/drivers/net/wireless/realtek/rtlwifi/base.c b/drivers/net/wireless/realtek/rtlwifi/base.c
+index 6e8bd99e8911..2a7ee90a3f54 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/base.c
++++ b/drivers/net/wireless/realtek/rtlwifi/base.c
+@@ -551,7 +551,6 @@ int rtl_init_core(struct ieee80211_hw *hw)
+ 	spin_lock_init(&rtlpriv->locks.rf_lock);
+ 	spin_lock_init(&rtlpriv->locks.waitq_lock);
+ 	spin_lock_init(&rtlpriv->locks.entry_list_lock);
+-	spin_lock_init(&rtlpriv->locks.c2hcmd_lock);
+ 	spin_lock_init(&rtlpriv->locks.scan_list_lock);
+ 	spin_lock_init(&rtlpriv->locks.cck_and_rw_pagea_lock);
+ 	spin_lock_init(&rtlpriv->locks.fw_ps_lock);
+@@ -2269,7 +2268,6 @@ static bool rtl_c2h_fast_cmd(struct ieee80211_hw *hw, struct sk_buff *skb)
+ void rtl_c2hcmd_enqueue(struct ieee80211_hw *hw, struct sk_buff *skb)
+ {
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+-	unsigned long flags;
+ 
+ 	if (rtl_c2h_fast_cmd(hw, skb)) {
+ 		rtl_c2h_content_parsing(hw, skb);
+@@ -2278,11 +2276,7 @@ void rtl_c2hcmd_enqueue(struct ieee80211_hw *hw, struct sk_buff *skb)
+ 	}
+ 
+ 	/* enqueue */
+-	spin_lock_irqsave(&rtlpriv->locks.c2hcmd_lock, flags);
+-
+-	__skb_queue_tail(&rtlpriv->c2hcmd_queue, skb);
+-
+-	spin_unlock_irqrestore(&rtlpriv->locks.c2hcmd_lock, flags);
++	skb_queue_tail(&rtlpriv->c2hcmd_queue, skb);
+ 
+ 	/* wake up wq */
+ 	queue_delayed_work(rtlpriv->works.rtl_wq, &rtlpriv->works.c2hcmd_wq, 0);
+@@ -2340,16 +2334,11 @@ void rtl_c2hcmd_launcher(struct ieee80211_hw *hw, int exec)
+ {
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+ 	struct sk_buff *skb;
+-	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < 200; i++) {
+ 		/* dequeue a task */
+-		spin_lock_irqsave(&rtlpriv->locks.c2hcmd_lock, flags);
+-
+-		skb = __skb_dequeue(&rtlpriv->c2hcmd_queue);
+-
+-		spin_unlock_irqrestore(&rtlpriv->locks.c2hcmd_lock, flags);
++		skb = skb_dequeue(&rtlpriv->c2hcmd_queue);
+ 
+ 		/* do it */
+ 		if (!skb)
+diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+index 9119144bb5a3..877ed6a1589f 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
++++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+@@ -2450,7 +2450,6 @@ struct rtl_locks {
+ 	spinlock_t waitq_lock;
+ 	spinlock_t entry_list_lock;
+ 	spinlock_t usb_lock;
+-	spinlock_t c2hcmd_lock;
+ 	spinlock_t scan_list_lock; /* lock for the scan list */
+ 
+ 	/*FW clock change */
+-- 
+2.27.0
 
