@@ -2,87 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95D82354534
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D47354539
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242401AbhDEQd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 12:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238558AbhDEQdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 12:33:55 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC989C061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 09:33:48 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id s21so6353161pjq.1
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 09:33:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=692RzP2XNLkViuazF9VmOw2T8IJC35Rfwh4Hdr97wxg=;
-        b=ldKGZKgOpHbJNrRKdSmhkZwzi9kaHyvfxWR4RfHYecHezkl7ablod9KUdGupj7XO7I
-         K7/bwmCD/KnV7/mMszrSBUNY6bgdkLUwbOZAGwtccbJdLFW26hU75ikoLeIhSauDx+oK
-         7ixOVsSnWxFkt7sfUFOHGY5yZah4b4b6TM7RZL4UBuY9UzmUzmNiC+FvpScbXgbxgw04
-         xsp93mocL14K1PhwR7jOXqIcypWMcrsZWbOMvPDw5BnLWS0ytA9wMESb3cvcqM1JpbLO
-         zuNqY00uhIoZfsN07bIMOTMszvYpGwziDOzaKpLIqOXdAzpX5Ss2Duh0uXVZfPCsZLnK
-         n5JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=692RzP2XNLkViuazF9VmOw2T8IJC35Rfwh4Hdr97wxg=;
-        b=QVMlxPIYVTuEVduU+j9w2E9XQNvsOuXRwGOfIq7/OVXTxbNXecPtFcwQj3Cgk3T+4k
-         gPgERN5olk6953w1DGqv9OKesAPFGA0vKta9uIhUjQxTWtYKSHZzlbw8jOaHaarZpf7A
-         BtOIQirlBvHQEAPiQYbA4QANN2iW8yLklG6QgkTiTKigXXt88nEUNDcoYiZCBxvmZ8fi
-         tigRDvFyG4qFQ+CDTR/xkROJrDM5ra6p7IUm6mBiDk/PqSCokB6swaQTdpRhFilbybYw
-         fI2bw2dj4CKvSTJex1pFxIxHfUaR2NuY/BrXqaBfOcs7hHV8khKdSc5O3VwOo656LyUo
-         6yRQ==
-X-Gm-Message-State: AOAM531eNxRwF8SXOurngu20JDJJ3/bBuVxEO+WsPvWNcy1mfukloq4j
-        iggmBOHhHS2VfM8NI0Rt2Yn07w==
-X-Google-Smtp-Source: ABdhPJz9QbvDtbQNd6QQgV7DzSeVz51TgIirSXKhifx08iOX/0e9SOEtGmtcRkdf1+FHRJp3vbLxjg==
-X-Received: by 2002:a17:902:9008:b029:e6:f37a:2183 with SMTP id a8-20020a1709029008b02900e6f37a2183mr24897405plp.49.1617640428322;
-        Mon, 05 Apr 2021 09:33:48 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id c25sm15849428pfo.101.2021.04.05.09.33.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Apr 2021 09:33:47 -0700 (PDT)
-Subject: Re: [PATCH net-next 12/12] ionic: advertise support for hardware
- timestamps
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
-References: <20210401175610.44431-1-snelson@pensando.io>
- <20210401175610.44431-13-snelson@pensando.io>
- <20210404234359.GE24720@hoboy.vegasvil.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <58f57a07-ef4c-c408-652d-708647f44e3d@pensando.io>
-Date:   Mon, 5 Apr 2021 09:33:46 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.0
-MIME-Version: 1.0
-In-Reply-To: <20210404234359.GE24720@hoboy.vegasvil.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S242413AbhDEQeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 12:34:10 -0400
+Received: from mga04.intel.com ([192.55.52.120]:57217 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242379AbhDEQeJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 12:34:09 -0400
+IronPort-SDR: LDx/x2FlNKcJpYVLGW0m1qdMJnTFCEBBpCNB1Msmt0srZHx/aGUP/dk15e29Rj/ogJLmJdehLQ
+ oD3DNb9Y+NfQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9945"; a="190703885"
+X-IronPort-AV: E=Sophos;i="5.81,307,1610438400"; 
+   d="scan'208";a="190703885"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2021 09:34:01 -0700
+IronPort-SDR: qrZggW1wuGgXboJhW4PVAuqiPs1PMOZsICrSO1BpPpXNTL9B3/KYDgzLEcgC9jz8pRc++nyiDq
+ vCdbH4607gfQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,307,1610438400"; 
+   d="scan'208";a="612200825"
+Received: from climb.png.intel.com ([10.221.118.165])
+  by fmsmga005.fm.intel.com with ESMTP; 05 Apr 2021 09:33:58 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH net-next] net: intel: Enable SERDES PHY rx clk for PSE
+Date:   Tue,  6 Apr 2021 00:33:57 +0800
+Message-Id: <20210405163357.30902-1-weifeng.voon@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/4/21 4:43 PM, Richard Cochran wrote:
-> On Thu, Apr 01, 2021 at 10:56:10AM -0700, Shannon Nelson wrote:
->> Let the network stack know we've got support for timestamping
->> the packets.
-> Actually, you already advertised the support to user space in Patch 10,
-> so this present patch should go before that one (or together).
->
-> Thanks,
-> Richard
+EHL PSE SGMII mode requires to ungate the SERDES PHY rx clk for power up
+sequence and vice versa.
 
-Yes, I supposed they could have gone together.  However, I believe that 
-in a bisection this will only slightly confuse the user space tools, but 
-won't cause any kernel pain.
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 10 ++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h |  1 +
+ 2 files changed, 11 insertions(+)
 
-sln
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index add95e20548d..a4fec5fe0779 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -153,6 +153,11 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
+ 		return data;
+ 	}
+ 
++	/* PSE only - ungate SGMII PHY Rx Clock */
++	if (intel_priv->is_pse)
++		mdiobus_modify(priv->mii, serdes_phy_addr, SERDES_GCR0,
++			       0, SERDES_PHY_RX_CLK);
++
+ 	return 0;
+ }
+ 
+@@ -168,6 +173,11 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
+ 
+ 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
+ 
++	/* PSE only - gate SGMII PHY Rx Clock */
++	if (intel_priv->is_pse)
++		mdiobus_modify(priv->mii, serdes_phy_addr, SERDES_GCR0,
++			       SERDES_PHY_RX_CLK, 0);
++
+ 	/*  move power state to P3 */
+ 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
+index e723096c0b15..542acb8ce467 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
+@@ -14,6 +14,7 @@
+ 
+ /* SERDES defines */
+ #define SERDES_PLL_CLK		BIT(0)		/* PLL clk valid signal */
++#define SERDES_PHY_RX_CLK	BIT(1)		/* PSE SGMII PHY rx clk */
+ #define SERDES_RST		BIT(2)		/* Serdes Reset */
+ #define SERDES_PWR_ST_MASK	GENMASK(6, 4)	/* Serdes Power state*/
+ #define SERDES_PWR_ST_SHIFT	4
+-- 
+2.17.1
 
