@@ -2,212 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F623545A4
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:48:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EBCF3545BE
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 19:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231928AbhDEQrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 12:47:55 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:55715 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbhDEQrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 12:47:48 -0400
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id CEB002224E;
-        Mon,  5 Apr 2021 18:47:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1617641259;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lACUh6+pO6Mh+0/uWp/aTCFDfW7S2kCGechEIv6LxiY=;
-        b=lwFE87EYukRw6Yc6p60CLMzC5zc1q4XkEPTn8w8EvzA1JTUuv+YccJm62Q7VbOfBftWYWl
-        UYVpBPvEm+zmXff6Nt+50Y7ystqKWnOHm4H8B+opiuB/6tPwdRVQ2hz+cKHZqMG/Bd3MLL
-        hij5E+nDvi2JnjZOiwmh02pWHeeGxPw=
-From:   Michael Walle <michael@walle.cc>
-To:     ath9k-devel@qca.qualcomm.com, UNGLinuxDriver@microchip.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org, linux-oxnas@groups.io,
-        linux-omap@vger.kernel.org, linux-wireless@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-staging@lists.linux.dev
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Andreas Larsson <andreas@gaisler.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Joyce Ooi <joyce.ooi@intel.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Wingman Kwok <w-kwok2@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH 2/2] of: net: fix of_get_mac_addr_nvmem() for PCI and DSA nodes
-Date:   Mon,  5 Apr 2021 18:46:43 +0200
-Message-Id: <20210405164643.21130-3-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210405164643.21130-1-michael@walle.cc>
-References: <20210405164643.21130-1-michael@walle.cc>
+        id S232723AbhDERB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 13:01:59 -0400
+Received: from mail-bn8nam08on2083.outbound.protection.outlook.com ([40.107.100.83]:35277
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232677AbhDERB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 13:01:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d/8rPwUX89N4AXs8ajyQ7b3SZhfQY6rDJcITaCYALlk/G3V7sK8XAjFVslCXekhElCsYMP4JEbgACFzEy7mx0Ocb24rfbYXCruZ5/I7PrqRwAMGWFs1svhyie7GNSGlWY6EWqjts6oovFzifUfeDobZ6VkzMv4NHVJdCrtN3JCvDWKUTIIINUwPQ6CmaBpmfvLPne8v2XG3eHxjp5IJUSmcGkbdjKghjT3XsSea/ZvsUa8s7ZNLiI+wWuYgzf/3CdpTc20QV644tC3tb1A6lVuKkmc1lMpS9h6KRqonQwHNRbtI+Av7jetfZlgt4VD8+jQoCVxvqXyf9+YZ3vjxn5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=crGBCZhTeBJy1ZIHfPftBoRvFiI9zENKOVVvb/HdE/I=;
+ b=FXkG7n6XqtHpreSKvEN9iVMqq82p4qwyDoV07jqc4u1TgqQ4poc6ProhCIMgM8yAYaQDjY65xpLIHzSp22OPw3ViEVuUTBKxlqE6ZsHP5ZdRYf8exJwh09e337z5UFI6zhW12SOTTC3S4KzoCUuanM+ZVyE3grcA/peMnErQwikfKILxK3CtW57t3XcXy9WRj7Jlw+Xx+1aCMjXR/ahUg57Bfhwj9bRIkPjUtJwU852CzMgVa9ASNL7Qs537f84Ki8ObmL0CnfxypOQBf79dbzh2L3GOxViAnHtKA3S65ZJX+UCWrdm3R6xW1cgeM6Qj9LosxVdNiDeZeUVcCGuDEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=crGBCZhTeBJy1ZIHfPftBoRvFiI9zENKOVVvb/HdE/I=;
+ b=kUWvlF+4cY5KTZv0afjGSWC9z2e+05PKyFJD62RsvWsH0mqgphm5FWstgEnTRQQosBBfrujcPeR2lNCdNoSBuCkf3BGCHPCaWRT0wM+58B0KyoLXHV+WMtQUewtw8IILBEeaiExHkqJAdilzvRVZOYipyYxjtU8TDhP8ruA8r3BF3VjxwkRaEjfxLfSfGzzJRCAdPGMVvnjfeLtD1IALTTggmCvwAGAu12VeYj1MKDQFQkhfJLZQvqVv7kB395UiponPMo1veT00n7uC9G/hNDe+WXH2BzNWvfFeXBK6KX1rB5+uL2LZ606T/ZAkmWVObZ8CzFaPXB3XUzdSyVbCDA==
+Received: from DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20)
+ by DM6PR12MB3689.namprd12.prod.outlook.com (2603:10b6:5:1c7::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.28; Mon, 5 Apr
+ 2021 17:01:51 +0000
+Received: from DM6PR12MB4516.namprd12.prod.outlook.com
+ ([fe80::8423:fe54:e2ea:7775]) by DM6PR12MB4516.namprd12.prod.outlook.com
+ ([fe80::8423:fe54:e2ea:7775%8]) with mapi id 15.20.3999.032; Mon, 5 Apr 2021
+ 17:01:51 +0000
+From:   Danielle Ratson <danieller@nvidia.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "acardace@redhat.com" <acardace@redhat.com>,
+        "irusskikh@marvell.com" <irusskikh@marvell.com>,
+        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "ecree@solarflare.com" <ecree@solarflare.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        mlxsw <mlxsw@nvidia.com>
+Subject: RE: [PATCH net v2 1/2] ethtool: Add link_mode parameter capability
+ bit to ethtool_ops
+Thread-Topic: [PATCH net v2 1/2] ethtool: Add link_mode parameter capability
+ bit to ethtool_ops
+Thread-Index: AQHXKSqiy1NCZxxuWEyWWVUMq+pPVqqkje0AgAGXmpA=
+Date:   Mon, 5 Apr 2021 17:01:50 +0000
+Message-ID: <DM6PR12MB451678D11E9553D61C3304DDD8779@DM6PR12MB4516.namprd12.prod.outlook.com>
+References: <20210404081433.1260889-1-danieller@nvidia.com>
+ <20210404081433.1260889-2-danieller@nvidia.com> <YGnqKFddCJGikOo8@lunn.ch>
+In-Reply-To: <YGnqKFddCJGikOo8@lunn.ch>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8a1227ac-f3df-462f-1e4f-08d8f85481c2
+x-ms-traffictypediagnostic: DM6PR12MB3689:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR12MB3689E70ECA4D973CBCD2F762D8779@DM6PR12MB3689.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vQx/qRdRBz5hQAgXeX9DbfrQWNyyPyoJmgq6OJgf12qkiaP7wrLcjQ7c2tqtjmVpQyzJA3GF/DEe8amZ+ErqmcduK6MOP0MqPxqfkGdA5THQ+fmbBuu15ykJG5lNLz1FQ4n5LJnUBtng6AavK56odsO8wMtkaxZbQZ5a3nYzroHYhqrEkNU4yjLM0bajM9Xh4ONsHyIqxuPcj+YZRFJENJUET5L/micJxZgwY3Q5ZQhMNbS8NAnP9AsRr+iieNp0eRBGp3JNbwQ0nz+bktjp+rw124dmWgKuqjhgrEleg3e8ShbWUtgJgrt4QNJ2EpoRq3L2s+or3/582oS/GbU3Kb4pMc4ZX1itocHAQJmZNCKg1x6KPRf9z0Hdk1AcmFBUp6koS+GicQWK4oRPMLK47HcCWHy2PBOyysz/lijllToeh5VKWJOU8gwUsTTjXF5PTLhQkYtA7BkeTAmkvIy6a4uXcbpygy9XNGpzi2+9RF33f7Xai9Lpd2zqwA9fP3LsEmjck0P+53C4wuc2qvTR+K6glMRmJRxONckWT3Sbykn851XkM6+N7eAZa89Fn3Fk1/BrbrcBfIFYPCZKA/ZA/DpsCabafCCeWZFVQft7f7fVTBbWtIArR1lVv3rvtHaiDm4dWn4L3SkcEmhCMzWUZWbWjwueg+VQdARs2I5FxIrYkYhPRGamcN5n1J+Nea90RRRLaOBh+Yjh9hewugNxKEQCYtZ81eLDhzyQiKtHmCjbuw8hoSc+nLClRbfkbE4F
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4516.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(396003)(39860400002)(136003)(376002)(7416002)(38100700001)(71200400001)(316002)(5660300002)(8936002)(64756008)(9686003)(2906002)(8676002)(76116006)(966005)(4326008)(66946007)(54906003)(55016002)(107886003)(6506007)(66446008)(53546011)(66476007)(66556008)(186003)(6916009)(52536014)(86362001)(7696005)(478600001)(33656002)(83380400001)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?qlSufW5XzQHS5GCxX2Y0R/D6UMaCK8/5nkhrQI5aUdQGDp55yPbCl6OMlPT5?=
+ =?us-ascii?Q?e/oAJzFKo414cpoQQ25pdCtfrVMeBSQeYHeL4p6LazljwNE+zdCernY3blj5?=
+ =?us-ascii?Q?4NsYSqN1xzQbcpDxXLs7qAENpff46JoHXeE3iNNcnxds+YOXDHTAl3GS4Nh0?=
+ =?us-ascii?Q?32zzCB9NA2oV+fm+3AoF1ID4RgnKY1GUAdy9SzGbS1SUOPLfEv3WSqAKG02G?=
+ =?us-ascii?Q?hDf4qQqENSdlgnSAc0f+L+eSINbW9JZhPFU9yjcn1VV+4VWwLuJJDi3PTaoI?=
+ =?us-ascii?Q?zzWafrAzwREiuo2A4bTjU/9tdoh0HZDaWbcWA3rh8F7PxPLBIzmwWJwtchLt?=
+ =?us-ascii?Q?zUopV+27qD88iuAEcbq7fnpZwwZHxb2S/sGUAcWMxbkutYv0gBhJMJED2gEr?=
+ =?us-ascii?Q?JISCDB6DsRMAmVjrsFEqQ8FsEYzLE1CnLjHQ6aHH184oAibcKVfLRn+OsZtt?=
+ =?us-ascii?Q?VwZhtkd7+HtmWxUt3ooARjT6cOaJEQPchr0wh3+Q1ypbAUySSDaEu636v7Zp?=
+ =?us-ascii?Q?8nsITW7Wjh+0hDpfSFRHd5PXv7Ss7iqvoJteVMsPGHXQE33zceumUgc1VYq3?=
+ =?us-ascii?Q?FlBK3DEJ1DVWg0KHb0avl9SYsyEvMnMSSfDz0NOIGtCM+7SWGVDjZ9vQsmOl?=
+ =?us-ascii?Q?Ru1Rua3tJ4GwvkrjdNrZzYoewO99K0qq0UOVBGUNJzQXXsJVfyBCdQTp6DTU?=
+ =?us-ascii?Q?aXfameT5MRqbRG+tyKYruGcQvJ3c1GdNTlD8Fh+5tJWbT8WBrUW3fFwtBbOU?=
+ =?us-ascii?Q?BEXNo+483hl8Fkb0XJW7JBIQyzRX+IahOe8wcByQ8WsmnN+hyL5e+8ODDk/p?=
+ =?us-ascii?Q?RqxyOa5lbaJMigwlyaWoiMyub+OHWZczFzUG1evQtmdQXtAWphgzic1w4N1p?=
+ =?us-ascii?Q?o/BmyqYCim/yaMKS0eJUMjr9oUfjtNuvJJgYwhSmBJTrDcz84A/eeetvnke6?=
+ =?us-ascii?Q?92F7Xo4ZqQmO7naz5Q938yW+tdddUdzkcu5NHvgq1wCUzDKzfpH3BAHKVkLW?=
+ =?us-ascii?Q?d6C6SNUDApmi4MuSxABE0m/0VgmjSZTSlsUwTiLz0Vfysgb4XSgk/C1GJzVy?=
+ =?us-ascii?Q?90y86Pg/8RfOP2zYDm2RcYn57negPrWOeEfacZiAIHQjC37/R73bPSMW+uWB?=
+ =?us-ascii?Q?j6FfU/AAa1W4gacZcf+4XDwAughj5tM6Qy+TkBgD1qIKBRLZc6O850zdoE86?=
+ =?us-ascii?Q?efLgpZE+EPTZTWpEOQNwfkG0fxC2s4yfHQme5m5/M9aXK8aC7VZZVxf9Ss5a?=
+ =?us-ascii?Q?wn1Xl1rGoldmCtIL3tbXEo5UStmSeIyBVoU8nFLqqlubeo9HxXJEhdYqIdPu?=
+ =?us-ascii?Q?6EVkWrfS+g8vFyagKmPsgQse?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4516.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a1227ac-f3df-462f-1e4f-08d8f85481c2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Apr 2021 17:01:50.9843
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rSOqSsou+yI2l1Dj0+B0Ef8lZkcBWlI0aXT88v9u1lZeHMKGFkc6x2vH8JXV8K5jwU0Og7KbXKJO3h+3SMgBDw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3689
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-of_get_mac_address() already supports fetching the MAC address by an
-nvmem provider. But until now, it was just working for platform devices.
-Esp. it was not working for DSA ports and PCI devices. It gets more
-common that PCI devices have a device tree binding since SoCs contain
-integrated root complexes.
 
-Use the nvmem of_* binding to fetch the nvmem cells by a struct
-device_node. We still have to try to read the cell by device first
-because there might be a nvmem_cell_lookup associated with that device.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-Please note, that I've kept the nvmem_get_mac_address() which operates
-on a device. The new of_get_mac_addr_nvmem() is almost identical and
-there are no users of the former function right now, but it seems to be
-the "newer" version to get the MAC address for a "struct device". Thus
-I've kept it. Please advise, if I should kill it though.
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Sunday, April 4, 2021 7:33 PM
+> To: Danielle Ratson <danieller@nvidia.com>
+> Cc: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org; eric.du=
+mazet@gmail.com; mkubecek@suse.cz;
+> f.fainelli@gmail.com; acardace@redhat.com; irusskikh@marvell.com; gustavo=
+@embeddedor.com; magnus.karlsson@intel.com;
+> ecree@solarflare.com; Ido Schimmel <idosch@nvidia.com>; Jiri Pirko <jiri@=
+nvidia.com>; mlxsw <mlxsw@nvidia.com>
+> Subject: Re: [PATCH net v2 1/2] ethtool: Add link_mode parameter capabili=
+ty bit to ethtool_ops
+>=20
+> > @@ -436,12 +436,16 @@ int __ethtool_get_link_ksettings(struct
+> > net_device *dev,
+> >
+> >  	memset(link_ksettings, 0, sizeof(*link_ksettings));
+> >
+> > -	link_ksettings->link_mode =3D -1;
+> >  	err =3D dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
+> >  	if (err)
+> >  		return err;
+> >
+> > -	if (link_ksettings->link_mode !=3D -1) {
+> > +	if (dev->ethtool_ops->cap_link_mode_supported &&
+> > +	    link_ksettings->link_mode !=3D -1) {
+>=20
+> Is this -1 behaviour documented anywhere? It seems like you just changed =
+its meaning. It used to mean, this field has not been set,
+> ignore it. Adding the cap_link_mode_supported it now means, we have field=
+ has been set, but we have no idea what link mode is
+> being used.
+> So you should probably add something to the documentation of struct ethto=
+ol_link_ksettings.
+>=20
+> I wonder if we should actually add ETHTOOL_LINK_MODE_UNKNOWN to enum etht=
+ool_link_mode_bit_indices?
+>=20
+> > +		if (WARN_ON_ONCE(link_ksettings->link_mode >=3D
+> > +				 __ETHTOOL_LINK_MODE_MASK_NBITS))
+> > +			return -EINVAL;
+> > +
+> >  		link_info =3D &link_mode_params[link_ksettings->link_mode];
+> >  		link_ksettings->base.speed =3D link_info->speed;
+> >  		link_ksettings->lanes =3D link_info->lanes;
+>=20
+> If dev->ethtool_ops->cap_link_mode_supported && link_ksettings->link_mode=
+ =3D=3D -1 should you be setting speed to
+> SPEED_UNKNOWN, and lanes to LANE_UNKNOWN? Or is that already the default?
+>=20
+> But over all, this API between the core and the driver seems messy. Why n=
+ot just add a helper in common.c which translates link
+> mode to speed/duplex/lanes and call it in the driver. Then you don't need=
+ this capability flags, which i doubt any other driver will ever
+> use. And you don't need to worry about drivers returning random values. A=
+s far as i can see, the link_mode returned by the driver is
+> not used for anything other than for this translation. So i don't see a n=
+eed for it outside of the driver. Or maybe i'm missing
+> something?
+>=20
+> 	Andrew
 
- drivers/of/of_net.c | 37 +++++++++++++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 6 deletions(-)
+Hi Andrew,
 
-diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
-index 2344ad7fff5e..2323c6063eaf 100644
---- a/drivers/of/of_net.c
-+++ b/drivers/of/of_net.c
-@@ -11,6 +11,7 @@
- #include <linux/phy.h>
- #include <linux/export.h>
- #include <linux/device.h>
-+#include <linux/nvmem-consumer.h>
- 
- /**
-  * of_get_phy_mode - Get phy mode for given device_node
-@@ -56,18 +57,42 @@ static int of_get_mac_addr(struct device_node *np, const char *name, u8 *addr)
- 	return -ENODEV;
- }
- 
--static int of_get_mac_addr_nvmem(struct device_node *np, u8 addr)
-+static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
- {
- 	struct platform_device *pdev = of_find_device_by_node(np);
-+	struct nvmem_cell *cell;
-+	const void *mac;
-+	size_t len;
- 	int ret;
- 
--	if (!pdev)
--		return -ENODEV;
-+	/* Try lookup by device first, there might be a nvmem_cell_lookup
-+	 * associated with a given device.
-+	 */
-+	if (pdev) {
-+		ret = nvmem_get_mac_address(&pdev->dev, addr);
-+		put_device(&pdev->dev);
-+		return ret;
-+	}
-+
-+	cell = of_nvmem_cell_get(np, "mac-address");
-+	if (IS_ERR(cell))
-+		return PTR_ERR(cell);
-+
-+	mac = nvmem_cell_read(cell, &len);
-+	nvmem_cell_put(cell);
-+
-+	if (IS_ERR(mac))
-+		return PTR_ERR(mac);
-+
-+	if (len != ETH_ALEN || !is_valid_ether_addr(mac)) {
-+		kfree(mac);
-+		return -EINVAL;
-+	}
- 
--	ret = nvmem_get_mac_address(&pdev->dev, addr);
--	put_device(&pdev->dev);
-+	ether_addr_copy(addr, mac);
-+	kfree(mac);
- 
--	return ret;
-+	return 0;
- }
- 
- /**
--- 
-2.20.1
+Please see my patch here: https://github.com/daniellerts/linux_mlxsw/commit=
+/72ca614951418843aa87323630c354691d9e50d4
+Since a lack of time until the window closes, please see if that is what yo=
+u meant and you are ok with it, before I am sending another version.
 
+Thanks,
+Danielle=20
