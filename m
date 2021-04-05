@@ -2,85 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3AD354243
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:13:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA68435425B
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:27:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237334AbhDENNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 09:13:11 -0400
-Received: from mga05.intel.com ([192.55.52.43]:9550 "EHLO mga05.intel.com"
+        id S237260AbhDEN1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 09:27:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33956 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232702AbhDENNK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 09:13:10 -0400
-IronPort-SDR: uTSk5KZqzzdGpbaH5iVCpnMZUGVjWatMGMUHp9r6rDi8Of2YAXBteUyAgXheOc9Iy0yvxsF8tV
- i7mDkyBcUMig==
-X-IronPort-AV: E=McAfee;i="6000,8403,9945"; a="278087612"
-X-IronPort-AV: E=Sophos;i="5.81,306,1610438400"; 
-   d="scan'208";a="278087612"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2021 06:12:50 -0700
-IronPort-SDR: IRrSVaQqj7Y4poiz5fiR5lOGGx9AZ3RxXUleicj6H25AbiCXfdd7uJQuHrOAo4YERoI2FAnwp4
- 1nSoaJsNGMHQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,306,1610438400"; 
-   d="scan'208";a="378965481"
-Received: from lkp-server01.sh.intel.com (HELO 69d8fcc516b7) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2021 06:12:47 -0700
-Received: from kbuild by 69d8fcc516b7 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1lTP26-000A8c-QR; Mon, 05 Apr 2021 13:12:46 +0000
-Date:   Mon, 5 Apr 2021 21:12:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Loic Poulain <loic.poulain@linaro.org>, gregkh@linuxfoundation.org,
-        kuba@kernel.org, davem@davemloft.net
-Cc:     kbuild-all@lists.01.org, linux-arm-msm@vger.kernel.org,
-        aleksander@aleksander.es, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bjorn.andersson@linaro.org,
-        manivannan.sadhasivam@linaro.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH] net: fix odd_ptr_err.cocci warnings
-Message-ID: <20210405131223.GA21985@2ab4936ad957>
-References: <1617616369-27305-2-git-send-email-loic.poulain@linaro.org>
+        id S232694AbhDEN1g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 09:27:36 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTPGL-00EviA-AK; Mon, 05 Apr 2021 15:27:29 +0200
+Date:   Mon, 5 Apr 2021 15:27:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Julian Labus <julian@freifunk-rtk.de>
+Cc:     netdev@vger.kernel.org, mschiffer@universe-factory.net
+Subject: Re: stmmac: zero udp checksum
+Message-ID: <YGsQQUHPpuEGIRoh@lunn.ch>
+References: <cfc1ede9-4a1c-1a62-bdeb-d1e54c27f2e7@freifunk-rtk.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1617616369-27305-2-git-send-email-loic.poulain@linaro.org>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <cfc1ede9-4a1c-1a62-bdeb-d1e54c27f2e7@freifunk-rtk.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On Mon, Apr 05, 2021 at 02:53:15PM +0200, Julian Labus wrote:
+> Hi all,
+> 
+> in our community mesh network we recently discovered that a TP-Link Archer
+> C2600 device is unable to receive IPv6 UDP packets with a zero checksum when
+> RX checksum offloading is enabled. The device uses ipq806x-gmac-dwmac for
+> its ethernet ports.
+> 
+> According to https://tools.ietf.org/html/rfc2460#section-8.1 this sounds
+> like correct behavior as it says a UDP checksum must not be zero for IPv6
+> packets. But this definition was relaxed in
+> https://tools.ietf.org/html/rfc6935#section-5 to allow zero checksums in
+> tunneling protocols like VXLAN where we discovered the problem.
+> 
+> Can the behavior of the stmmac driver be changed to meet RFC6935 or would it
+> be possible to make the (RX) Checksum Offloading Engine configurable via a
+> device tree property to disable it in environments were it causes problems?
 
-drivers/net/wwan/mhi_wwan_ctrl.c:239:5-11: inconsistent IS_ERR and PTR_ERR on line 241.
+Hi Julian
 
- PTR_ERR should access the value just tested by IS_ERR
+I don't know the stmmac driver at all...
 
-Semantic patch information:
- There can be false positives in the patch case, where it is the call to
- IS_ERR that is wrong.
+Have you played around with ethtool -k/-K? Can use this to turn off
+hardware checksums?
 
-Generated by: scripts/coccinelle/tests/odd_ptr_err.cocci
+I doubt a DT property would be accepted. What you probably want to do
+is react on the NETDEV notifiers for when an upper interface is
+changed. If a VXLAN interface is added, turn off hardware checksums.
 
-CC: Loic Poulain <loic.poulain@linaro.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-url:    https://github.com/0day-ci/linux/commits/Loic-Poulain/net-Add-a-WWAN-subsystem/20210405-174547
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 7d42e84eb99daf9b7feef37e8f2ea1eaf975346b
-
- mhi_wwan_ctrl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/net/wwan/mhi_wwan_ctrl.c
-+++ b/drivers/net/wwan/mhi_wwan_ctrl.c
-@@ -238,7 +238,7 @@ static int mhi_wwan_ctrl_probe(struct mh
- 				&wwan_pops, mhiwwan);
- 	if (IS_ERR(mhiwwan->wwan_port)) {
- 		kfree(mhiwwan);
--		return PTR_ERR(port);
-+		return PTR_ERR(mhiwwan->wwan_port);
- 	}
- 
- 	mhiwwan->wwan_port = port;
+	 Andrew
