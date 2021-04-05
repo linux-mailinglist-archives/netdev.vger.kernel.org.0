@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0187E35423F
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE3AD354243
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:13:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240967AbhDENL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 09:11:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33942 "EHLO vps0.lunn.ch"
+        id S237334AbhDENNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 09:13:11 -0400
+Received: from mga05.intel.com ([192.55.52.43]:9550 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235568AbhDENL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 09:11:27 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lTP0W-00EvY7-HE; Mon, 05 Apr 2021 15:11:08 +0200
-Date:   Mon, 5 Apr 2021 15:11:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk,
-        weifeng.voon@intel.com, boon.leong.ong@intel.com,
-        qiangqing.zhang@nxp.com, vee.khee.wong@intel.com,
-        fugang.duan@nxp.com, kim.tatt.chuah@intel.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH net-next v2 0/2] Enable 2.5Gbps speed for stmmac
-Message-ID: <YGsMbBW9h4H1y/T8@lunn.ch>
-References: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
+        id S232702AbhDENNK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 09:13:10 -0400
+IronPort-SDR: uTSk5KZqzzdGpbaH5iVCpnMZUGVjWatMGMUHp9r6rDi8Of2YAXBteUyAgXheOc9Iy0yvxsF8tV
+ i7mDkyBcUMig==
+X-IronPort-AV: E=McAfee;i="6000,8403,9945"; a="278087612"
+X-IronPort-AV: E=Sophos;i="5.81,306,1610438400"; 
+   d="scan'208";a="278087612"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2021 06:12:50 -0700
+IronPort-SDR: IRrSVaQqj7Y4poiz5fiR5lOGGx9AZ3RxXUleicj6H25AbiCXfdd7uJQuHrOAo4YERoI2FAnwp4
+ 1nSoaJsNGMHQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,306,1610438400"; 
+   d="scan'208";a="378965481"
+Received: from lkp-server01.sh.intel.com (HELO 69d8fcc516b7) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2021 06:12:47 -0700
+Received: from kbuild by 69d8fcc516b7 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lTP26-000A8c-QR; Mon, 05 Apr 2021 13:12:46 +0000
+Date:   Mon, 5 Apr 2021 21:12:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Loic Poulain <loic.poulain@linaro.org>, gregkh@linuxfoundation.org,
+        kuba@kernel.org, davem@davemloft.net
+Cc:     kbuild-all@lists.01.org, linux-arm-msm@vger.kernel.org,
+        aleksander@aleksander.es, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bjorn.andersson@linaro.org,
+        manivannan.sadhasivam@linaro.org,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH] net: fix odd_ptr_err.cocci warnings
+Message-ID: <20210405131223.GA21985@2ab4936ad957>
+References: <1617616369-27305-2-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
+In-Reply-To: <1617616369-27305-2-git-send-email-loic.poulain@linaro.org>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 07:29:51PM +0800, Michael Sit Wei Hong wrote:
-> This patchset enables 2.5Gbps speed mode for stmmac.
-> Link speed mode is detected and configured at serdes power up sequence.
-> For 2.5G, we do not use SGMII in-band AN, we check the link speed mode
-> in the serdes and disable the in-band AN accordingly.
-> 
-> Changes:
-> v1 -> v2
->  patch 1/2
->  -Remove MAC supported link speed masking
-> 
->  patch 2/2
->  -Add supported link speed masking in the PCS
+From: kernel test robot <lkp@intel.com>
 
-So there still some confusion here.
+drivers/net/wwan/mhi_wwan_ctrl.c:239:5-11: inconsistent IS_ERR and PTR_ERR on line 241.
 
-------------            --------
-|MAC - PCS |---serdes---| PHY  |--- copper 
-------------            --------
+ PTR_ERR should access the value just tested by IS_ERR
 
+Semantic patch information:
+ There can be false positives in the patch case, where it is the call to
+ IS_ERR that is wrong.
 
-You have a MAC and an PCS in the stmmac IP block. That then has some
-sort of SERDES interface, running 1000BaseX, SGMII, SGMII overclocked
-at 2.5G or 25000BaseX. Connected to the SERDES you have a PHY which
-converts to copper, giving you 2500BaseT.
+Generated by: scripts/coccinelle/tests/odd_ptr_err.cocci
 
-You said earlier, that the PHY can only do 2500BaseT. So it should be
-the PHY driver which sets supported to 2500BaseT and no other speeds.
+CC: Loic Poulain <loic.poulain@linaro.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
 
-You should think about when somebody uses this MAC with a different
-PHY, one that can do the full range of 10/half through to 2.5G
-full. What generally happens is that the PHY performs auto-neg to
-determine the link speed. For 10M-1G speeds the PHY will configure its
-SERDES interface to SGMII and phylink will ask the PCS to also be
-configured to SGMII. If the PHY negotiates 2500BaseT, it will
-configure its side of the SERDES to 2500BaseX or SGMII overclocked at
-2.5G. Again, phylink will ask the PCS to match what the PHY is doing.
+url:    https://github.com/0day-ci/linux/commits/Loic-Poulain/net-Add-a-WWAN-subsystem/20210405-174547
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 7d42e84eb99daf9b7feef37e8f2ea1eaf975346b
 
-So, where exactly is the limitation in your hardware? PCS or PHY?
+ mhi_wwan_ctrl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-     Andrew
+--- a/drivers/net/wwan/mhi_wwan_ctrl.c
++++ b/drivers/net/wwan/mhi_wwan_ctrl.c
+@@ -238,7 +238,7 @@ static int mhi_wwan_ctrl_probe(struct mh
+ 				&wwan_pops, mhiwwan);
+ 	if (IS_ERR(mhiwwan->wwan_port)) {
+ 		kfree(mhiwwan);
+-		return PTR_ERR(port);
++		return PTR_ERR(mhiwwan->wwan_port);
+ 	}
+ 
+ 	mhiwwan->wwan_port = port;
