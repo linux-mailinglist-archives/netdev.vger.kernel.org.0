@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CBF354895
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 00:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D825F35489E
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 00:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242700AbhDEWUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 18:20:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241409AbhDEWUP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 18:20:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2A434613DC;
-        Mon,  5 Apr 2021 22:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617661209;
-        bh=yuAFba5TV3uaje2qLcuVIpi2uQUMF5gRLJQaTXszNs4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ODt2h6yMTEpxxCPKN+CJItkigImQr+CBT0PE7qrYoVoZZ/cU2v4hJxRIM7HiG5JkE
-         o1f3UNB6htUl6NkQAkSYL+PDPI3kh1xqG3L7ASQyDQgehZfwCUIJb7Qef2XK82Prbc
-         JSZpyse+xMnvZEoaNm9+O1ZtwZ4dTfSi3q2SK5UPgSadS8qpumivZbVVGwyVRk3tAB
-         kmwuaTU2UYaaouhV7iXX8GZB7cuAsTPKO3UkbZ3OxaRibfYQWnKjm4dY8to2NuA6l+
-         67JtRyTiC4UBYnqkMb5atT3/nDNaVks3z44G3T0vYnW6jjPqJ9OLutgBe8ocbVvRrI
-         Z/QYBEVFYvkfg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 19F2060A00;
-        Mon,  5 Apr 2021 22:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S242794AbhDEWaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 18:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233086AbhDEWaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 18:30:19 -0400
+Received: from hs01.dk-develop.de (hs01.dk-develop.de [IPv6:2a02:c207:3002:6234::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A8AC06174A;
+        Mon,  5 Apr 2021 15:30:12 -0700 (PDT)
+Date:   Tue, 6 Apr 2021 00:30:08 +0200
+From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        davem@davemloft.net, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
+Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
+Message-ID: <YGuPcNPXiQZkEehh@arch-linux>
+References: <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
+ <20210331183524.GV1463@shell.armlinux.org.uk>
+ <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
+ <20210401084857.GW1463@shell.armlinux.org.uk>
+ <YGZvGfNSBBq/92D+@arch-linux>
+ <20210402125858.GB1463@shell.armlinux.org.uk>
+ <YGoSS7llrl5K6D+/@arch-linux>
+ <YGsRwxwXILC1Tp2S@lunn.ch>
+ <YGtdv++nv3H5K43E@arch-linux>
+ <YGtksD5p5JVpnazu@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] batman-adv: initialize "struct
- batadv_tvlv_tt_vlan_data"->reserved field
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161766120910.29259.17290126153206373220.git-patchwork-notify@kernel.org>
-Date:   Mon, 05 Apr 2021 22:20:09 +0000
-References: <20210405101650.6779-1-penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20210405101650.6779-1-penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YGtksD5p5JVpnazu@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Mon,  5 Apr 2021 19:16:50 +0900 you wrote:
-> KMSAN found uninitialized value at batadv_tt_prepare_tvlv_local_data()
-> [1], for commit ced72933a5e8ab52 ("batman-adv: use CRC32C instead of CRC16
-> in TT code") inserted 'reserved' field into "struct batadv_tvlv_tt_data"
-> and commit 7ea7b4a142758dea ("batman-adv: make the TT CRC logic VLAN
-> specific") moved that field to "struct batadv_tvlv_tt_vlan_data" but left
-> that field uninitialized.
+On Mon, Apr 05, 2021 at 09:27:44PM +0200, Andrew Lunn wrote:
+> > Now, instead of encoding this information of the bus' capabilities at both
+> > places, I'd propose just checking the mii_bus->capabilities field in the
+> > mdiobus_c45_*() functions. IMHO this would be a little cleaner, than having two
+> > places where this information is stored. What do you think about that?
 > 
-> [...]
+> You will need to review all the MDIO bus drivers to make sure they
+> correctly set the capabilities. There is something like 55 using
+> of_mdiobus_register() and 45 using mdiobus_register(). So you have 100
+> drivers to review.
+Yes, but I think it would be enough to look at the drivers handling the
+MII_ADDR_C45 flag, because those are either
+- actually capable to do C45 bus transfers or
+- do properly return -EOPNOTSUPP.
 
-Here is the summary with links:
-  - [v2] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
-    https://git.kernel.org/netdev/net/c/08c27f3322fe
+I counted 27 drivers handling the MII_ADDR_C45 flag. Setting the capabilities
+for those should be pretty easy.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+The remaining ones, which should be about 73 then, could be left untouched,
+because the default capability MDIOBUS_NO_CAP would indicate they can C22 only.
+Since they don't handle the MII_ADDR_C45 flag at all, this should be the
+correct assumption.
+> 
+> 	Andrew
+> 
