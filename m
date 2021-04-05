@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E80F353F96
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 12:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE55353EE9
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 12:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239438AbhDEJNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 05:13:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60342 "EHLO mail.kernel.org"
+        id S238715AbhDEJIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 05:08:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53378 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239308AbhDEJNF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 05:13:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 17E9061002;
-        Mon,  5 Apr 2021 09:12:57 +0000 (UTC)
+        id S238548AbhDEJIg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 05:08:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DCA4D6139D;
+        Mon,  5 Apr 2021 09:08:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1617613978;
-        bh=1GOnMOlLeJLuqLMNX4aSagmBsEVaUzYWZuK/D6aoQTc=;
+        s=korg; t=1617613710;
+        bh=Ok61us+P9CB763zO6Z0zn352ZD9TAne1Jz05CsWiz4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UOE3JM7vpqdVHcNd65xnuvgmOD5+voH02gQNHWX1BTjn0MeYMQ3Jtue0zdHVbGnhT
-         B0K4BThHn7dIoTzbRxPASv+zmoagvESwL8XteO50jD8dwO+Bde8iQsDFSvQV8vofrS
-         Tk5/PCjCm/kUD7Ukw5OWh7qHDU+nf1EUbndtrUk4=
+        b=m4SDYxC6zNXY+vqJO70zDnM6x3/Y9eyNJJuQe2WKmKDX/DpF8a66hbALQxgXIXo6C
+         zReEdXWyEon6m1CaZ1mTaCijBzqAuSAnWO7ZFEIC2hRv8h1iguk117IqfYkJBZI3fM
+         ri5gQHg68lUDhqK2vhHLRFgVZI3m3LKN+qbJ+xhE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, netdev@vger.kernel.org,
         Stefan Metzmacher <metze@samba.org>,
         Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.11 039/152] io_uring: call req_set_fail_links() on short send[msg]()/recv[msg]() with MSG_WAITALL
-Date:   Mon,  5 Apr 2021 10:53:08 +0200
-Message-Id: <20210405085035.545987518@linuxfoundation.org>
+Subject: [PATCH 5.10 036/126] io_uring: call req_set_fail_links() on short send[msg]()/recv[msg]() with MSG_WAITALL
+Date:   Mon,  5 Apr 2021 10:53:18 +0200
+Message-Id: <20210405085032.239680865@linuxfoundation.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210405085034.233917714@linuxfoundation.org>
-References: <20210405085034.233917714@linuxfoundation.org>
+In-Reply-To: <20210405085031.040238881@linuxfoundation.org>
+References: <20210405085031.040238881@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -95,18 +95,18 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 20 insertions(+), 4 deletions(-)
 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 26b4af9831da..2b0b9c3dda33 100644
+index fe2dfdab0acd..4ccf99cb8cdc 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -4628,6 +4628,7 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
+@@ -4401,6 +4401,7 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
  	struct io_async_msghdr iomsg, *kmsg;
  	struct socket *sock;
  	unsigned flags;
 +	int min_ret = 0;
  	int ret;
  
- 	sock = sock_from_file(req->file);
-@@ -4654,6 +4655,9 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
+ 	sock = sock_from_file(req->file, &ret);
+@@ -4427,6 +4428,9 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
  	else if (force_nonblock)
  		flags |= MSG_DONTWAIT;
  
@@ -116,7 +116,7 @@ index 26b4af9831da..2b0b9c3dda33 100644
  	ret = __sys_sendmsg_sock(sock, &kmsg->msg, flags);
  	if (force_nonblock && ret == -EAGAIN)
  		return io_setup_async_msg(req, kmsg);
-@@ -4663,7 +4667,7 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
+@@ -4436,7 +4440,7 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
  	if (kmsg->iov != kmsg->fast_iov)
  		kfree(kmsg->iov);
  	req->flags &= ~REQ_F_NEED_CLEANUP;
@@ -125,15 +125,15 @@ index 26b4af9831da..2b0b9c3dda33 100644
  		req_set_fail_links(req);
  	__io_req_complete(req, ret, 0, cs);
  	return 0;
-@@ -4677,6 +4681,7 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
+@@ -4450,6 +4454,7 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
  	struct iovec iov;
  	struct socket *sock;
  	unsigned flags;
 +	int min_ret = 0;
  	int ret;
  
- 	sock = sock_from_file(req->file);
-@@ -4698,6 +4703,9 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
+ 	sock = sock_from_file(req->file, &ret);
+@@ -4471,6 +4476,9 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
  	else if (force_nonblock)
  		flags |= MSG_DONTWAIT;
  
@@ -143,7 +143,7 @@ index 26b4af9831da..2b0b9c3dda33 100644
  	msg.msg_flags = flags;
  	ret = sock_sendmsg(sock, &msg);
  	if (force_nonblock && ret == -EAGAIN)
-@@ -4705,7 +4713,7 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
+@@ -4478,7 +4486,7 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
  	if (ret == -ERESTARTSYS)
  		ret = -EINTR;
  
@@ -152,15 +152,15 @@ index 26b4af9831da..2b0b9c3dda33 100644
  		req_set_fail_links(req);
  	__io_req_complete(req, ret, 0, cs);
  	return 0;
-@@ -4857,6 +4865,7 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
+@@ -4630,6 +4638,7 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
  	struct socket *sock;
  	struct io_buffer *kbuf;
  	unsigned flags;
 +	int min_ret = 0;
  	int ret, cflags = 0;
  
- 	sock = sock_from_file(req->file);
-@@ -4892,6 +4901,9 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
+ 	sock = sock_from_file(req->file, &ret);
+@@ -4665,6 +4674,9 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
  	else if (force_nonblock)
  		flags |= MSG_DONTWAIT;
  
@@ -170,7 +170,7 @@ index 26b4af9831da..2b0b9c3dda33 100644
  	ret = __sys_recvmsg_sock(sock, &kmsg->msg, req->sr_msg.umsg,
  					kmsg->uaddr, flags);
  	if (force_nonblock && ret == -EAGAIN)
-@@ -4904,7 +4916,7 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
+@@ -4677,7 +4689,7 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
  	if (kmsg->iov != kmsg->fast_iov)
  		kfree(kmsg->iov);
  	req->flags &= ~REQ_F_NEED_CLEANUP;
@@ -179,15 +179,15 @@ index 26b4af9831da..2b0b9c3dda33 100644
  		req_set_fail_links(req);
  	__io_req_complete(req, ret, cflags, cs);
  	return 0;
-@@ -4920,6 +4932,7 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
+@@ -4693,6 +4705,7 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
  	struct socket *sock;
  	struct iovec iov;
  	unsigned flags;
 +	int min_ret = 0;
  	int ret, cflags = 0;
  
- 	sock = sock_from_file(req->file);
-@@ -4950,6 +4963,9 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
+ 	sock = sock_from_file(req->file, &ret);
+@@ -4723,6 +4736,9 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
  	else if (force_nonblock)
  		flags |= MSG_DONTWAIT;
  
@@ -197,7 +197,7 @@ index 26b4af9831da..2b0b9c3dda33 100644
  	ret = sock_recvmsg(sock, &msg, flags);
  	if (force_nonblock && ret == -EAGAIN)
  		return -EAGAIN;
-@@ -4958,7 +4974,7 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
+@@ -4731,7 +4747,7 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
  out_free:
  	if (req->flags & REQ_F_BUFFER_SELECTED)
  		cflags = io_put_recv_kbuf(req);
