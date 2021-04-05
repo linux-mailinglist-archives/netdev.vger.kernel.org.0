@@ -2,97 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34568354135
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 12:44:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE6635416B
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 13:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232723AbhDEKko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 06:40:44 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:15545 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232035AbhDEKkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 06:40:43 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FDRv40C7czPnnS;
-        Mon,  5 Apr 2021 18:37:52 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 5 Apr 2021 18:40:27 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH] net: nfc: Fix spelling errors in net/nfc module
-Date:   Mon, 5 Apr 2021 18:54:35 +0800
-Message-ID: <20210405105435.15747-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S233337AbhDELJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 07:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232721AbhDELJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 07:09:49 -0400
+X-Greylist: delayed 12587 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Apr 2021 04:09:43 PDT
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E219C061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 04:09:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1617620979;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wwe/0hb6s2cUAQY7NxLrjPy5VpMNLQNY/4quBidv9P0=;
+        b=hF5YepMRInKtpYCCpVvI7LQRgWSldcs4E0bCRG+Rk59IsiWQjZEYSBKOrXbPoMPSwJKUQW
+        4TKq+pCewxxI04mgAjNFd7JJD9Ru2P5JT+NDzT8e4az63Xs3VqPMi1l+TBgqY7tNCD20Fv
+        Z2l8q4s5BTYwV7UZvNJLqjxoBFNRjbw=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     netdev@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH v2] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
+Date:   Mon, 05 Apr 2021 13:09:36 +0200
+Message-ID: <5561744.yYbohhxq0P@sven-l14>
+In-Reply-To: <20210405101650.6779-1-penguin-kernel@I-love.SAKURA.ne.jp>
+References: <8010915.lm9TqgPHxW@sven-l14> <20210405101650.6779-1-penguin-kernel@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="nextPart2406507.j6KcVWh5vx"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These patches fix a series of spelling errors in net/nfc module.
+--nextPart2406507.j6KcVWh5vx
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: netdev@vger.kernel.org, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH v2] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
+Date: Mon, 05 Apr 2021 13:09:36 +0200
+Message-ID: <5561744.yYbohhxq0P@sven-l14>
+In-Reply-To: <20210405101650.6779-1-penguin-kernel@I-love.SAKURA.ne.jp>
+References: <8010915.lm9TqgPHxW@sven-l14> <20210405101650.6779-1-penguin-kernel@I-love.SAKURA.ne.jp>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- net/nfc/digital_dep.c | 2 +-
- net/nfc/nci/core.c    | 2 +-
- net/nfc/nci/uart.c    | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+On Monday, 5 April 2021 12:16:50 CEST Tetsuo Handa wrote:
+> KMSAN found uninitialized value at batadv_tt_prepare_tvlv_local_data()
+> [1], for commit ced72933a5e8ab52 ("batman-adv: use CRC32C instead of CRC16
+> in TT code") inserted 'reserved' field into "struct batadv_tvlv_tt_data"
+> and commit 7ea7b4a142758dea ("batman-adv: make the TT CRC logic VLAN
+> specific") moved that field to "struct batadv_tvlv_tt_vlan_data" but left
+> that field uninitialized.
+> 
+> [1] https://syzkaller.appspot.com/bug?id=07f3e6dba96f0eb3cabab986adcd8a58b9bdbe9d
+> 
+> Reported-by: syzbot <syzbot+50ee810676e6a089487b@syzkaller.appspotmail.com>
+> Tested-by: syzbot <syzbot+50ee810676e6a089487b@syzkaller.appspotmail.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Fixes: ced72933a5e8ab52 ("batman-adv: use CRC32C instead of CRC16 in TT code")
+> Fixes: 7ea7b4a142758dea ("batman-adv: make the TT CRC logic VLAN specific")
+> ---
+>  net/batman-adv/translation-table.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-diff --git a/net/nfc/digital_dep.c b/net/nfc/digital_dep.c
-index 5971fb6f51cc..1150731126e2 100644
---- a/net/nfc/digital_dep.c
-+++ b/net/nfc/digital_dep.c
-@@ -1217,7 +1217,7 @@ static void digital_tg_recv_dep_req(struct nfc_digital_dev *ddev, void *arg,
- 
- 		/* ACK */
- 		if (ddev->atn_count) {
--			/* The target has previously recevied one or more ATN
-+			/* The target has previously received one or more ATN
- 			 * PDUs.
- 			 */
- 			ddev->atn_count = 0;
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index 59257400697d..9a585332ea84 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -1507,7 +1507,7 @@ static void nci_rx_work(struct work_struct *work)
- 		}
- 	}
- 
--	/* check if a data exchange timout has occurred */
-+	/* check if a data exchange timeout has occurred */
- 	if (test_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags)) {
- 		/* complete the data exchange transaction, if exists */
- 		if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
-diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
-index 1204c438e87d..6af5752cde09 100644
---- a/net/nfc/nci/uart.c
-+++ b/net/nfc/nci/uart.c
-@@ -234,7 +234,7 @@ static void nci_uart_tty_wakeup(struct tty_struct *tty)
-  *     Called by tty low level driver when receive data is
-  *     available.
-  *
-- * Arguments:  tty          pointer to tty isntance data
-+ * Arguments:  tty          pointer to tty instance data
-  *             data         pointer to received data
-  *             flags        pointer to flags for data
-  *             count        count of received data in bytes
-@@ -374,7 +374,7 @@ static int nci_uart_default_recv_buf(struct nci_uart *nu, const u8 *data,
- 		data += chunk_len;
- 		count -= chunk_len;
- 
--		/* Chcek if packet is fully received */
-+		/* Check if packet is fully received */
- 		if (nu->rx_packet_len == nu->rx_skb->len) {
- 			/* Pass RX packet to driver */
- 			if (nu->ops.recv(nu, nu->rx_skb) != 0)
--- 
-2.25.1
+Thanks,
+
+Acked-by: Sven Eckelmann <sven@narfation.org>
+
+> diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-table.c
+> index f8761281aab0..434b4f042909 100644
+> --- a/net/batman-adv/translation-table.c
+> +++ b/net/batman-adv/translation-table.c
+> @@ -890,6 +890,7 @@ batadv_tt_prepare_tvlv_global_data(struct batadv_orig_node *orig_node,
+>  	hlist_for_each_entry(vlan, &orig_node->vlan_list, list) {
+>  		tt_vlan->vid = htons(vlan->vid);
+>  		tt_vlan->crc = htonl(vlan->tt.crc);
+> +		tt_vlan->reserved = 0;
+>  
+>  		tt_vlan++;
+>  	}
+> @@ -973,6 +974,7 @@ batadv_tt_prepare_tvlv_local_data(struct batadv_priv *bat_priv,
+>  
+>  		tt_vlan->vid = htons(vlan->vid);
+>  		tt_vlan->crc = htonl(vlan->tt.crc);
+> +		tt_vlan->reserved = 0;
+>  
+>  		tt_vlan++;
+>  	}
+> 
+
+
+--nextPart2406507.j6KcVWh5vx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmBq7/AACgkQXYcKB8Em
+e0aKDw/9FsWpGw0xrZsono49gy4SXiOCTCKMIHq2EaGUq630shBZgimUqoM8opty
+WrmfLYqvOfYhaDTWUatzyG4wYt8BoCoDb4viUy9i55Vk0n/3ChXCby3OyB7L4ZRO
+hnBSGIcodb9R0IJiR+Z+8fv5uA6yCNQzaPkLTzVqK4vAJTIplb3q03u8zqxUF98B
+/nanfA59MjVTwwYK/wg3Kmxr1xvA/Hu5m9vYCvnqogz6kZ8h+u2hBm5eSLDuZofp
+y/oiYiJpQeAx6ugvs/QKow+Mrt8sGhDUn2MQvmK6EeLfZi+8ETvLDPlj0+GQH78U
+Hf9ZFt18Cuzx2oNy3DF4Aw8wDngcYyq9Vh7BxQEeEz5bvGG+9ovUvnC5KYgfpeTT
+MhsXxMalQC4cC0R0EwEBAaHer05T0QvajeTLFkZmBwWI7WBxOb2oNpqmzyrFaytD
+mztc4Pvx0dcRWTyTJoOP6MsKKnTDLAKUu2nbq+u8VCm4JP50WzDrWerbY5SW4SVs
+Y6TOs0bcbe4+6xgc+kXQNTYBbi3C5Re1qmxPY/30QnwUwY1a7mDJkY9NFBl+2wAH
+W5MJYrS1UJtmXxI1MDdhsy3J6vLnfZuOyYSLIjhLfN9AYzHHuIcdfGB8WJJkEakr
+VgsNcTkqC1/npUb6moDhPu+WFuk/4TGPIAMiusY6PEDIH17b72E=
+=I0Ll
+-----END PGP SIGNATURE-----
+
+--nextPart2406507.j6KcVWh5vx--
+
+
 
