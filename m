@@ -2,140 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF10354514
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C944354528
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239145AbhDEQV0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Apr 2021 12:21:26 -0400
-Received: from frasgout.his.huawei.com ([185.176.79.56]:2758 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238897AbhDEQVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 12:21:25 -0400
-Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FDbJS55t8z685PJ;
-        Tue,  6 Apr 2021 00:11:52 +0800 (CST)
-Received: from lhreml701-chm.china.huawei.com (10.201.108.50) by
- fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Mon, 5 Apr 2021 18:21:17 +0200
-Received: from lhreml703-chm.china.huawei.com (10.201.108.52) by
- lhreml701-chm.china.huawei.com (10.201.108.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Mon, 5 Apr 2021 17:21:16 +0100
-Received: from lhreml703-chm.china.huawei.com ([10.201.68.198]) by
- lhreml703-chm.china.huawei.com ([10.201.68.198]) with mapi id 15.01.2106.013;
- Mon, 5 Apr 2021 17:21:16 +0100
-From:   Salil Mehta <salil.mehta@huawei.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>,
-        "linuxarm@openeuler.org" <linuxarm@openeuler.org>
-Subject: RE: [PATCH net 1/2] net: hns3: Remove the left over redundant check &
- assignment
-Thread-Topic: [PATCH net 1/2] net: hns3: Remove the left over redundant check
- & assignment
-Thread-Index: AQHXKCnLHaQ/R/ieO0avXcKs+3D9qaqj1ZcAgAIEzID///cBgIAATB7A
-Date:   Mon, 5 Apr 2021 16:21:15 +0000
-Message-ID: <0728cf845791450c8e0ea2b199c9072c@huawei.com>
-References: <20210403013520.22108-1-salil.mehta@huawei.com>
- <20210403013520.22108-2-salil.mehta@huawei.com> <YGlb6CgaW5r4lwaC@unreal>
- <09176e61b8ca495f8c20b94845d26ba0@huawei.com> <YGsF4Q4XlvpoBUJY@unreal>
-In-Reply-To: <YGsF4Q4XlvpoBUJY@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.69.183]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S242367AbhDEQ2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 12:28:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238474AbhDEQ2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 12:28:53 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08230C061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 09:28:47 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id y2so5921886plg.5
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 09:28:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=pJ/sTXb40aVRvwtnarKWOPi5GQ7A30VKT2lH5CND+hg=;
+        b=wDNwNSYbQVFtEP8fGF2bbinSIFfs3U08GyigFWkguRzWzVKQUk6qiIf0+tY2siwmvV
+         SZPFl2ijddaaXOj6AqVHGuVxEu7p5EPdbiJdAV3C+wt/8K5T1ujJSaFmNIrnmqGRlyYU
+         vDKQvEgZnevZgBkL674dy1p2muApZhjS2u2zwTkOfOBhyps+NCU5+0qGgNGmJ/Ol6Tlp
+         xiMKE6p38mm4M1jLFfZwlDbKz8DIzZf2jyt6mjz/he+mqUavucFsprEB/M7VMbbJlDSv
+         QVkUYZ3OynnLFC83lzgB4WYTOmPX148CKNit38tWP481yQrZ9obpv0PBkHDpENjgKpRX
+         mdHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=pJ/sTXb40aVRvwtnarKWOPi5GQ7A30VKT2lH5CND+hg=;
+        b=fHXaBje9f8pg154pHVRiVc3MJsC1nI92+HWdRf4CzAxT0QzW2tvgi7jHjyHY6XPb4y
+         L883bnaCjAUd5mwR/Ase/imtbPMOWM9lSjEsHX1JPaDM2jZ3XHE+VGsJ0huagoPsreMS
+         ZxBX/gQYBP+rnNLh4fsLtAv3CHponEOzqQZO5PUOO2nDM64z4dhaJQPB0TD5x72Wwicw
+         EMSN43UJKOWcRBfD3nRtq3EcH6cMbWboH/5nW4FqkhstlgbuE8VXtQkPMybdjimufOox
+         ZUwRee29IuD0WenugekRTLj8D5v0LCXSv9IOEeGNnz/gGXxuGHQKxukfoRfkU8RbP5u9
+         WK7w==
+X-Gm-Message-State: AOAM533YL+F7JvEYvnWS4wi/qp9KfTf0iAlA7VfnhcQ7M/BWcpSRz4pj
+        fwm+H9u7Ow4bUsLGokeNYVx+zpeT2yUpuA==
+X-Google-Smtp-Source: ABdhPJwRiH/nS9m8b8RECJfXdFU++vAE1Xuvtq86M2+Q4RP7mErThVKMbimE0A84Sr0e+KPZ16BiOA==
+X-Received: by 2002:a17:902:704b:b029:e9:b5e:5333 with SMTP id h11-20020a170902704bb02900e90b5e5333mr5700688plt.78.1617640126586;
+        Mon, 05 Apr 2021 09:28:46 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id s26sm16041013pfd.5.2021.04.05.09.28.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Apr 2021 09:28:45 -0700 (PDT)
+Subject: Re: [PATCH net-next 09/12] ionic: add and enable tx and rx timestamp
+ handling
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
+References: <20210401175610.44431-1-snelson@pensando.io>
+ <20210401175610.44431-10-snelson@pensando.io>
+ <20210404234107.GD24720@hoboy.vegasvil.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <6e0e4d73-f436-21c0-59fe-ee4f5c133f95@pensando.io>
+Date:   Mon, 5 Apr 2021 09:28:44 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210404234107.GD24720@hoboy.vegasvil.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Leon Romanovsky [mailto:leon@kernel.org]
-> Sent: Monday, April 5, 2021 1:43 PM
-> To: Salil Mehta <salil.mehta@huawei.com>
-> Cc: davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Linuxarm <linuxarm@huawei.com>;
-> linuxarm@openeuler.org
-> Subject: Re: [PATCH net 1/2] net: hns3: Remove the left over redundant check
-> & assignment
-> 
-> On Mon, Apr 05, 2021 at 12:26:37PM +0000, Salil Mehta wrote:
-> > Hi Leon,
-> > Thanks for the review.
-> >
-> > > From: Leon Romanovsky [mailto:leon@kernel.org]
-> > > Sent: Sunday, April 4, 2021 7:26 AM
-> > > To: Salil Mehta <salil.mehta@huawei.com>
-> > > Cc: davem@davemloft.net; kuba@kernel.org; netdev@vger.kernel.org;
-> > > linux-kernel@vger.kernel.org; Linuxarm <linuxarm@huawei.com>;
-> > > linuxarm@openeuler.org
-> > > Subject: Re: [PATCH net 1/2] net: hns3: Remove the left over redundant check
-> > > & assignment
-> > >
-> > > On Sat, Apr 03, 2021 at 02:35:19AM +0100, Salil Mehta wrote:
-> > > > This removes the left over check and assignment which is no longer used
-> > > > anywhere in the function and should have been removed as part of the
-> > > > below mentioned patch.
-> > > >
-> > > > Fixes: 012fcb52f67c ("net: hns3: activate reset timer when calling
-> > > reset_event")
-> > > > Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
-> > > > ---
-> > > >  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 2 --
-> > > >  1 file changed, 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > > index e3f81c7e0ce7..7ad0722383f5 100644
-> > > > --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> > > > @@ -3976,8 +3976,6 @@ static void hclge_reset_event(struct pci_dev *pdev,
-> > > struct hnae3_handle *handle)
-> > > >  	 * want to make sure we throttle the reset request. Therefore, we will
-> > > >  	 * not allow it again before 3*HZ times.
-> > > >  	 */
-> > > > -	if (!handle)
-> > > > -		handle = &hdev->vport[0].nic;
-> > >
-> > > The comment above should be updated too, and probably the signature of
-> > > hclge_reset_event() worth to be changed.
-> >
-> >
-> > Yes, true. Both the comment and the prototype will be updated in near future.
-> > I can assure you this did not go un-noticed during the change. There are
-> > some internal subtleties which I am trying to sort out. Those might come
-> > as part of different patch-set which deals with other related changes as well.
-> 
-> I can buy such explanation for the change in function signature, but have hard
-> time to believe that extra commit is needed to change comment above.
+On 4/4/21 4:41 PM, Richard Cochran wrote:
+> On Thu, Apr 01, 2021 at 10:56:07AM -0700, Shannon Nelson wrote:
+>
+>> @@ -1150,6 +1232,10 @@ netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+>>   		return NETDEV_TX_OK;
+>>   	}
+>>   
+>> +	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
+>> +		if (lif->hwstamp_txq)
+>> +			return ionic_start_hwstamp_xmit(skb, netdev);
+> The check for SKBTX_HW_TSTAMP and hwstamp_txq is good, but I didn't
+> see hwstamp_txq getting cleared in ionic_lif_hwstamp_set() when the
+> user turns off Tx time stamping via the SIOCSHWTSTAMP ioctl.
 
-Sure, I understand your point. Earlier I thought to retain the comment for reference
-and make it part of the refactor change. But will send another version changing
-the comment now. No issues :)
+Once the hwstamp queues are up, we leave them there for future use until 
+the interface is stopped, assuming that the stack isn't going to send us 
+SKBTX_HW_STAMP after it has disabled the offload.
 
-Many thanks
+>
+> In addition, the code should set
+>
+> 	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+>
+> once the above tests pass.
 
-> 
-> Thanks
-> 
-> >
-> > The current change(and some other) will pave the way for necessary refactoring
-> > Of the code being done.
-> >
-> >
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > >  	if (time_before(jiffies, (hdev->last_reset_time +
-> > > >  				  HCLGE_RESET_INTERVAL))) {
-> > > > --
-> > > > 2.17.1
-> > > >
+I can add that in a followup patch.
+
+Thanks,
+sln
+
+>
+> Thanks,
+> Richard
+>
+>
+
