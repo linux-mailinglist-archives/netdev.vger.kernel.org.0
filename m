@@ -2,279 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38B17353C2F
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 09:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3AD353C3E
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 09:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232354AbhDEHO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 03:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232012AbhDEHO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 03:14:57 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5C8C061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 00:14:51 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id bg21so2573146pjb.0
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 00:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G0UczTn55Lpurwx3mDocmCqfIhg/tWH/l5D5dAvIobU=;
-        b=Ibg1MlxlQfTuUgDp3eD5n3AhYuOn/HIcjDog0Ky7hhtz3y62yLg/K4gyw6HnOMfzdf
-         Onxh+KrtpsO+tXTI7CwU7GdhquRSWKbcmBja7kPfFt+yjzU1T3TB8WDkzDhCGD96D0iB
-         ydW3tLRG3kaPJCFx8uvFY/T8mgV64ekMjwZHjVTO7nAG/Ybv/VMTbY8hpo1GxlyZ74x4
-         1845tA3rtADuvOeooFg44V5mmMMRgxArt7kAXuw5yrhmD8S8nXsFtfmR64CKfpUto5/E
-         kYVnbCrjQ3jLZxsEkZO7ok+avJ3xSWe08MydnH/hZyHeBX58tBD5QkxaguJDULaLmgHS
-         OdDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G0UczTn55Lpurwx3mDocmCqfIhg/tWH/l5D5dAvIobU=;
-        b=hUHrISO6plm1Ao8BRQ4QUoNdVT3Yhn3s2K5L6fCwxmvz+OW7TgjHuns+HdjnCNgtvX
-         LErJYH2o6tDlhDQiM2sUxpI3tp+Dq4TtyJpjAqGTPHunzmGBahlTpnDF9F3p2eSea1Tx
-         Y1xNRJzzddL4Xa2MxN3RysKVCb7DrnLe8T1NToNbgnWmarWTaq0Kho41B/9K7okv/rnz
-         Ji3lABJQLFNoLRbArE4mOb2LHt3yLKTx4lzF1iSqb2zjz5wRcNY7QciZSfr0ZMX2t7JJ
-         yAk7A2niOoDppm9y7dlWO8Mzh/JwQOCAoF/EYSm22oClqXbw5XwThGljLEUCYYmh6Kfr
-         l3tA==
-X-Gm-Message-State: AOAM533ykSViGtYHaNaUbyktRH0Q3PS77Umx9KHxVtm5z2kgIdrBoCF0
-        vtj+QHJ0JUOdu5L+jR68VsKJ7RjmcCpsHw==
-X-Google-Smtp-Source: ABdhPJzy0mhMrrh7l1fwNOJD7LvWDUD78tetK4uAkPsS3cfpvLk1qDTUNTfje4ksoIT0TTcYjHMcJQ==
-X-Received: by 2002:a17:902:e98c:b029:e5:defc:ccf8 with SMTP id f12-20020a170902e98cb02900e5defcccf8mr22659111plb.20.1617606891238;
-        Mon, 05 Apr 2021 00:14:51 -0700 (PDT)
-Received: from laptop.hsd1.wa.comcast.net ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id e14sm7471175pga.14.2021.04.05.00.14.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Apr 2021 00:14:50 -0700 (PDT)
-From:   Andrei Vagin <avagin@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Subject: [PATCH] net: Allow to specify ifindex when device is moved to another namespace
-Date:   Mon,  5 Apr 2021 00:12:23 -0700
-Message-Id: <20210405071223.138101-1-avagin@gmail.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210402073622.1260310-1-avagin@gmail.com>
-References: <20210402073622.1260310-1-avagin@gmail.com>
+        id S232433AbhDEHtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 03:49:14 -0400
+Received: from dvalin.narfation.org ([213.160.73.56]:46644 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232187AbhDEHtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 03:49:14 -0400
+X-Greylist: delayed 550 seconds by postgrey-1.27 at vger.kernel.org; Mon, 05 Apr 2021 03:49:13 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1617608393;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5uVHC4wQ6FlbPBFZq+nqEhyjmvDRykRRhBKERQcVG6A=;
+        b=NDu0LxfH73CCJvWmPe7jTRIghdpSBGm3/zPjF5YNq4CAKtxiAvSJq+5YGEnAsCuxEvPrcA
+        NVr7HJfhbqdJl3PCR19bkpsvMHX5Y2sr4QCsyJnWuPmyDdeNc5KYemsSfpGYHBXxj8n3yY
+        DEbEo4kJvpd4wqp68eri5S1CW6OIP1c=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     netdev@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
+Date:   Mon, 05 Apr 2021 09:39:50 +0200
+Message-ID: <6915766.LLSpSeZOKX@sven-l14>
+In-Reply-To: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
+References: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="nextPart2830896.hENeXy47Wg"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, we can specify ifindex on link creation. This change allows
-to specify ifindex when a device is moved to another network namespace.
+--nextPart2830896.hENeXy47Wg
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc: netdev@vger.kernel.org, Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Subject: Re: [PATCH] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
+Date: Mon, 05 Apr 2021 09:39:50 +0200
+Message-ID: <6915766.LLSpSeZOKX@sven-l14>
+In-Reply-To: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
+References: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
 
-Even now, a device ifindex can be changed if there is another device
-with the same ifindex in the target namespace. So this change doesn't
-introduce completely new behavior, it adds more control to the process.
+On Monday, 5 April 2021 07:33:06 CEST Tetsuo Handa wrote:
+[...]
+> ---
+>  net/batman-adv/translation-table.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-table.c
+> index f8761281aab0..eb82576557e6 100644
+> --- a/net/batman-adv/translation-table.c
+> +++ b/net/batman-adv/translation-table.c
+> @@ -973,6 +973,7 @@ batadv_tt_prepare_tvlv_local_data(struct batadv_priv *bat_priv,
+>  
+>  		tt_vlan->vid = htons(vlan->vid);
+>  		tt_vlan->crc = htonl(vlan->tt.crc);
+> +		tt_vlan->reserved = 0;
+>  
+>  		tt_vlan++;
+>  	}
+> 
 
-CRIU users want to restore containers with pre-created network devices.
-A user will provide network devices and instructions where they have to
-be restored, then CRIU will restore network namespaces and move devices
-into them. The problem is that devices have to be restored with the same
-indexes that they have before C/R.
+Thanks but this patch is incomplete. Please also fix 
+batadv_tt_prepare_tvlv_global_data (exactly the same way)
 
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Suggested-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Andrei Vagin <avagin@gmail.com>
----
- drivers/net/hyperv/netvsc_drv.c |  2 +-
- include/linux/netdevice.h       |  3 ++-
- net/core/dev.c                  | 24 +++++++++++++++++-------
- net/core/rtnetlink.c            | 19 +++++++++++++++----
- net/ieee802154/core.c           |  4 ++--
- net/wireless/core.c             |  4 ++--
- 6 files changed, 39 insertions(+), 17 deletions(-)
+Kind regards,
+	Sven
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 7349a70af083..8c0c70e1da77 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2354,7 +2354,7 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
- 	 */
- 	if (!net_eq(dev_net(ndev), dev_net(vf_netdev))) {
- 		ret = dev_change_net_namespace(vf_netdev,
--					       dev_net(ndev), "eth%d");
-+					       dev_net(ndev), "eth%d", 0);
- 		if (ret)
- 			netdev_err(vf_netdev,
- 				   "could not move to same namespace as %s: %d\n",
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index f57b70fc251f..b482236c0e99 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4026,7 +4026,8 @@ void __dev_notify_flags(struct net_device *, unsigned int old_flags,
- int dev_change_name(struct net_device *, const char *);
- int dev_set_alias(struct net_device *, const char *, size_t);
- int dev_get_alias(const struct net_device *, char *, size_t);
--int dev_change_net_namespace(struct net_device *, struct net *, const char *);
-+int dev_change_net_namespace(struct net_device *dev, struct net *net,
-+			     const char *pat, int new_ifindex);
- int __dev_set_mtu(struct net_device *, int);
- int dev_validate_mtu(struct net_device *dev, int mtu,
- 		     struct netlink_ext_ack *extack);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b4c67a5be606..9d1a8fac793f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -11067,6 +11067,8 @@ EXPORT_SYMBOL(unregister_netdev);
-  *	@net: network namespace
-  *	@pat: If not NULL name pattern to try if the current device name
-  *	      is already taken in the destination network namespace.
-+ *	@new_ifindex: If not zero, specifies device index in the target
-+ *	              namespace.
-  *
-  *	This function shuts down a device interface and moves it
-  *	to a new network namespace. On success 0 is returned, on
-@@ -11075,10 +11077,11 @@ EXPORT_SYMBOL(unregister_netdev);
-  *	Callers must hold the rtnl semaphore.
-  */
- 
--int dev_change_net_namespace(struct net_device *dev, struct net *net, const char *pat)
-+int dev_change_net_namespace(struct net_device *dev, struct net *net,
-+			     const char *pat, int new_ifindex)
- {
- 	struct net *net_old = dev_net(dev);
--	int err, new_nsid, new_ifindex;
-+	int err, new_nsid;
- 
- 	ASSERT_RTNL();
- 
-@@ -11109,6 +11112,11 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
- 			goto out;
- 	}
- 
-+	/* Check that new_ifindex isn't used yet. */
-+	err = -EBUSY;
-+	if (new_ifindex && __dev_get_by_index(net, new_ifindex))
-+		goto out;
-+
- 	/*
- 	 * And now a mini version of register_netdevice unregister_netdevice.
- 	 */
-@@ -11136,10 +11144,12 @@ int dev_change_net_namespace(struct net_device *dev, struct net *net, const char
- 
- 	new_nsid = peernet2id_alloc(dev_net(dev), net, GFP_KERNEL);
- 	/* If there is an ifindex conflict assign a new one */
--	if (__dev_get_by_index(net, dev->ifindex))
--		new_ifindex = dev_new_index(net);
--	else
--		new_ifindex = dev->ifindex;
-+	if (!new_ifindex) {
-+		if (__dev_get_by_index(net, dev->ifindex))
-+			new_ifindex = dev_new_index(net);
-+		else
-+			new_ifindex = dev->ifindex;
-+	}
- 
- 	rtmsg_ifinfo_newnet(RTM_DELLINK, dev, ~0U, GFP_KERNEL, &new_nsid,
- 			    new_ifindex);
-@@ -11448,7 +11458,7 @@ static void __net_exit default_device_exit(struct net *net)
- 		snprintf(fb_name, IFNAMSIZ, "dev%d", dev->ifindex);
- 		if (__dev_get_by_name(&init_net, fb_name))
- 			snprintf(fb_name, IFNAMSIZ, "dev%%d");
--		err = dev_change_net_namespace(dev, &init_net, fb_name);
-+		err = dev_change_net_namespace(dev, &init_net, fb_name, 0);
- 		if (err) {
- 			pr_emerg("%s: failed to move %s to init_net: %d\n",
- 				 __func__, dev->name, err);
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 1bdcb33fb561..d51252afde0a 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2266,6 +2266,9 @@ static int validate_linkmsg(struct net_device *dev, struct nlattr *tb[])
- 			return -EINVAL;
- 	}
- 
-+	if (tb[IFLA_NEW_IFINDEX] && nla_get_s32(tb[IFLA_NEW_IFINDEX]) <= 0)
-+		return -EINVAL;
-+
- 	if (tb[IFLA_AF_SPEC]) {
- 		struct nlattr *af;
- 		int rem, err;
-@@ -2603,14 +2606,22 @@ static int do_setlink(const struct sk_buff *skb,
- 		return err;
- 
- 	if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] || tb[IFLA_TARGET_NETNSID]) {
--		struct net *net = rtnl_link_get_net_capable(skb, dev_net(dev),
--							    tb, CAP_NET_ADMIN);
-+		struct net *net;
-+		int new_ifindex;
-+
-+		net = rtnl_link_get_net_capable(skb, dev_net(dev),
-+						tb, CAP_NET_ADMIN);
- 		if (IS_ERR(net)) {
- 			err = PTR_ERR(net);
- 			goto errout;
- 		}
- 
--		err = dev_change_net_namespace(dev, net, ifname);
-+		if (tb[IFLA_NEW_IFINDEX])
-+			new_ifindex = nla_get_s32(tb[IFLA_NEW_IFINDEX]);
-+		else
-+			new_ifindex = 0;
-+
-+		err = dev_change_net_namespace(dev, net, ifname, new_ifindex);
- 		put_net(net);
- 		if (err)
- 			goto errout;
-@@ -3452,7 +3463,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err < 0)
- 		goto out_unregister;
- 	if (link_net) {
--		err = dev_change_net_namespace(dev, dest_net, ifname);
-+		err = dev_change_net_namespace(dev, dest_net, ifname, 0);
- 		if (err < 0)
- 			goto out_unregister;
- 	}
-diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
-index de259b5170ab..ec3068937fc3 100644
---- a/net/ieee802154/core.c
-+++ b/net/ieee802154/core.c
-@@ -205,7 +205,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 		if (!wpan_dev->netdev)
- 			continue;
- 		wpan_dev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
--		err = dev_change_net_namespace(wpan_dev->netdev, net, "wpan%d");
-+		err = dev_change_net_namespace(wpan_dev->netdev, net, "wpan%d", 0);
- 		if (err)
- 			break;
- 		wpan_dev->netdev->features |= NETIF_F_NETNS_LOCAL;
-@@ -222,7 +222,7 @@ int cfg802154_switch_netns(struct cfg802154_registered_device *rdev,
- 				continue;
- 			wpan_dev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
- 			err = dev_change_net_namespace(wpan_dev->netdev, net,
--						       "wpan%d");
-+						       "wpan%d", 0);
- 			WARN_ON(err);
- 			wpan_dev->netdev->features |= NETIF_F_NETNS_LOCAL;
- 		}
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index a2785379df6e..fabb677b7d58 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -165,7 +165,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 		if (!wdev->netdev)
- 			continue;
- 		wdev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
--		err = dev_change_net_namespace(wdev->netdev, net, "wlan%d");
-+		err = dev_change_net_namespace(wdev->netdev, net, "wlan%d", 0);
- 		if (err)
- 			break;
- 		wdev->netdev->features |= NETIF_F_NETNS_LOCAL;
-@@ -182,7 +182,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
- 				continue;
- 			wdev->netdev->features &= ~NETIF_F_NETNS_LOCAL;
- 			err = dev_change_net_namespace(wdev->netdev, net,
--							"wlan%d");
-+							"wlan%d", 0);
- 			WARN_ON(err);
- 			wdev->netdev->features |= NETIF_F_NETNS_LOCAL;
- 		}
--- 
-2.29.2
+--nextPart2830896.hENeXy47Wg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmBqvsYACgkQXYcKB8Em
+e0Yusg/6AxfjdXLgogTL2mANdd/Nz7SOoKHtXAVupSewoAmqil8GyFf5cNWHgphS
+RuWWfoloFT5qiFUAI17z6e0h6SkbSUP3XYp8epkzDIyzA09NersxqBX4GKsy71fJ
+BO2k49RWysrn1F+Pq6e65HBMgjLMfgaa198kZKSRv3aeI2N9G6juI18fxvAEbp5i
+6j716OHHp7n4lAX7jfYDUlCCJhpKDC/rQRg9c5rDH+PrwG6ZlJCZsGPTbwuWbPl8
+VdS5sg9qIQPycCld6DNUUKfwPFC5zB7/Ru27ItB8u0z3ndL8t6VhxKZ9Leo+bYgC
+lUbFJiDEfI9oBOLW0nAVYRDy2+ZRoKcyh9V2YwpmRFQHt8P4UQFxXPZiYTI+SuCd
+U5iDIu9z35GpyiMJ2lSZsTbbuu2vqjLpwESDzZis9oC4dSwKVDvNIjGQVpWlFXgh
+2krd2NwZ/UrXsIPMjtuEfntxuwtPERN5iGs8+eiGXV8eyd4YL9/olT116wfLiZun
+uLEdqVywJ0jKBlYEvzSjKY+0OFiFesRk+xnqrkEVNY9o+sM8OOeaZQGwo6DuQ4Ib
+YeAjgQP3UqRKIlLdWP+j8uUCZh9/fhjyPqEt3MbVzTpjRO+kT8UE387D60tdcqjD
+JyoHpDzpBDyYdnwIQR/sLdmX4WLHT3S2D/d99kh7r9DQW2AMKy4=
+=VqOn
+-----END PGP SIGNATURE-----
+
+--nextPart2830896.hENeXy47Wg--
+
+
 
