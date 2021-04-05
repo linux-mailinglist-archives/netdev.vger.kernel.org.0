@@ -2,432 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EAEE3540F3
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 12:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA24835410A
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 12:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240302AbhDEJoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 05:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240207AbhDEJoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 05:44:15 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A115CC061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 02:44:09 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id j18so10424836wra.2
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 02:44:09 -0700 (PDT)
+        id S240877AbhDEKBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 06:01:34 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31412 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232063AbhDEKBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 06:01:33 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 135A0OH6023867;
+        Mon, 5 Apr 2021 03:01:24 -0700
+Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2042.outbound.protection.outlook.com [104.47.73.42])
+        by mx0b-0016f401.pphosted.com with ESMTP id 37q2ms2wew-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 05 Apr 2021 03:01:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BMlt9Z8UZUFNG1s9ZXGW+kum2LFZpw+IQYQgfH9/ZsaB1TeIK9OJMdsVKGVG0Rpq+p1Hfay2BBtLlFnmZ18EYamEvDR0wsq3YQzXW8RpjNvw2A665EtamvSLmO3xXVinZCeaDdIsTCMEHefbAPYawsvYkBdImXUTY2Rf4DWWgn+L8VlXMWY6r7M6U8mvJNcwh2IJvsqxRkkrP+Nkg5XMEBZpVCzCTKbf4X2uesFrxWGkK/8tAGua/oyx6iejhTKAL8uTwONARc1WEN+m+dF1W914fl3fZY2/r5Xt46J0S8e15SuqcNMXqskHilWpQWjZuXIlHrS3PXvFEo80QkJ5CQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yOfRDOyGQ0YBgi8XWmpD3rQHeh6BEk0wexnx4L1Rtas=;
+ b=YzdJMnwTvHLw7Nv8Yn2FrWDEMd1wIyfZRPMClPfhRkBxo8M6ccweYx2fdKhfLHK3glJLh5EVUi+fyJw9mlbjIM9By++abYGwThyAuy56m+m6bxTLKBtYSiUDbG8SdbgyvSjGd2IG6yVSb5Rh45nxmGu9ieVtQ5yzulzW9eRbQIi9q9i4e1JvbmL/LdzYxaOUc3AMFD58t+8bPdVOfHxWBIAF7PKciEbBxK4o3NI0UFsxeWTspoiJho8EV+USYBj9R07BQG9oZPaR2lVIGURUMN0Va3v9SEVHqzunB1aN48qIjncLlYPYLpMB3ETZ+TykMdsqJ14L7FM/l6xKiTVDNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rEfxwFa9aRihWqiEpLVZwH8m4iHNhizOOU1k1FZxLo0=;
-        b=IR7tRUGAvfnlr+ba/aq0K36SRPpxC0i2TJM8b+soQq/Ni77TFF/0Rw8/rnL5VyM04w
-         m58HZp0Qzi4zfyqMZrzK5q0FbuSoUf1qtx9ShP9uKWKV6E/0HX16RrNBUsUFvL6Vlsuo
-         Y87SFNXWT14oAZAV9oadSHMGrq2XEXjbTlt6bM3FsrGwxIEIcZRf9KdFeJkdwxj0KCz+
-         AaPZVHyyO0cDhlaxjLMvO8VLxIF9dTiuMRBL2VJ2IkbTdr3xvZQAoQl7L3g2cP5ZPP1l
-         FrxEj7Obw0R47+6JyZzurz5pmtouQb1wyMh/qYsSC5nLBcxPOAYBaYIhCC87Kfw+VTFd
-         IUgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=rEfxwFa9aRihWqiEpLVZwH8m4iHNhizOOU1k1FZxLo0=;
-        b=i2NJaYbfl7YgKjWfROAlt7bWQQ6DugYroCE2dZDaa5DR5sXx9QPSbn/PAXbLgBv93V
-         9k1z6B9P2+ZGXZW3RFTuRcUB2OFx3j5ZhDrQLxv2YMH0+YtPx9KbCnaSzyfunUkGLHvC
-         MJHPKfLBxFA82ydyHeGQ9sD8PnYkuHeqcG1/1Zb9XNItTLapolwziKVZ63lVXkYcwaRZ
-         mC42/I2eydkdAU9W/MKpZjMaFp78TuSCS0/P9v03pGbYNvLXVRYX1nzgMrvA3ghvFFfJ
-         NIMkfGT6tZJEWIJIavKkDgwZ2NZvwNdIH33lA9ku0kvMagTmngbC9frxjSnhryBjgs7+
-         Jhdw==
-X-Gm-Message-State: AOAM53239BaoiVSCfBqbrcckd8FvV1V10fxUfBhYdgqpreFXYlPOOeJ4
-        iD1r07qDHRr4g6G3gb3klpKnglaZadi/YEtc
-X-Google-Smtp-Source: ABdhPJydMrIUR/vMcvjDex9B5rdo5P4+uAJhz6egZVxyWfxWGGFv+tOGP8puT4BblKljcc89+gIz2g==
-X-Received: by 2002:a5d:47c4:: with SMTP id o4mr27993128wrc.138.1617615848184;
-        Mon, 05 Apr 2021 02:44:08 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:e0a:82c:5f0:5167:245d:4a0a:9d97])
-        by smtp.gmail.com with ESMTPSA id o1sm34822wrw.23.2021.04.05.02.44.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Apr 2021 02:44:07 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     gregkh@linuxfoundation.org, kuba@kernel.org, davem@davemloft.net
-Cc:     linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH net-next v9 2/2] net: Add Qcom WWAN control driver
-Date:   Mon,  5 Apr 2021 11:52:49 +0200
-Message-Id: <1617616369-27305-2-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1617616369-27305-1-git-send-email-loic.poulain@linaro.org>
-References: <1617616369-27305-1-git-send-email-loic.poulain@linaro.org>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yOfRDOyGQ0YBgi8XWmpD3rQHeh6BEk0wexnx4L1Rtas=;
+ b=CCnzlIycAw0A933w7WgztnWocfzA78XBI+BYvJO0y7xYYqKcdrcceuKk4EuT8QjavYrheJpGJitANSMM4RlUmN0U0Xk+dV8fjCaerdpdMZGqmTvkEw2hUlrp7p4zxp89myPLKKon4xj2BUUGl2nHBxhFyARjw77qasrig5r8PSY=
+Received: from DM6PR18MB3388.namprd18.prod.outlook.com (2603:10b6:5:1cc::13)
+ by DM5PR1801MB1980.namprd18.prod.outlook.com (2603:10b6:4:62::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Mon, 5 Apr
+ 2021 10:01:19 +0000
+Received: from DM6PR18MB3388.namprd18.prod.outlook.com
+ ([fe80::954d:da2:7c1a:37b5]) by DM6PR18MB3388.namprd18.prod.outlook.com
+ ([fe80::954d:da2:7c1a:37b5%3]) with mapi id 15.20.3999.032; Mon, 5 Apr 2021
+ 10:01:19 +0000
+From:   Manish Chopra <manishc@marvell.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: RE: [EXT] [PATCH 1/2] qede: Remove a erroneous ++ in
+ 'qede_rx_build_jumbo()'
+Thread-Topic: [EXT] [PATCH 1/2] qede: Remove a erroneous ++ in
+ 'qede_rx_build_jumbo()'
+Thread-Index: AQHXKVAKAi4n35jF+U6sz2JOr2jbJ6qlshHA
+Date:   Mon, 5 Apr 2021 10:01:19 +0000
+Message-ID: <DM6PR18MB3388733FA76041D09B546CA8AB779@DM6PR18MB3388.namprd18.prod.outlook.com>
+References: <1c27abb938a430e58bd644729597015b3414d4aa.1617540100.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <1c27abb938a430e58bd644729597015b3414d4aa.1617540100.git.christophe.jaillet@wanadoo.fr>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: wanadoo.fr; dkim=none (message not signed)
+ header.d=none;wanadoo.fr; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [2409:4042:278b:70f6:c9fb:d831:d2e5:ee85]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0cee7313-5bc4-4b34-f08b-08d8f819c2b4
+x-ms-traffictypediagnostic: DM5PR1801MB1980:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR1801MB1980C32139468836C921D4B8AB779@DM5PR1801MB1980.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KpQIKxYUyzdF7879O3X/t8uQuGXXdOtpjoJ4uk3FZFqEGEgVfImv6xjkDW5yXWOmZ46NVzJTHPXgRkuyk8Pv+ROeExHiHHgEztk0IhmowDaq/b4domashZDTpTTG2wCQVrG+K3/mL13yiZF+DtRoPe0Xq2ul1/s0wZzy57zZ92XE9oeXxWFDaAKzi0SP9nBgbSKV2XrIsJWLXIj3Czw4QLrxYpg1Pn6OcdxbQY293RllPM3PpfS6uvqQMKngJwZQcnd1T+YxQ6I0RjRMxJAm3DPAiTWpuihqTX1RkMKvOiyfPFy+rFXqC5HskOQcWk7ctPezZNw2evCQnYOvrhyg4W2+WeQUGxwfd7CLRhGJG0uIU3Hx3NQMkM8KzzJTv62B7W2X4fYCYo1Ac/aAiNlbcpXpIDCnZzIzB90xneHKKXT6+G7LKdBCqNj4oXMz3Y7VHzEHv5XAwAw3anbYpdiPVi9hUVAtTXgXylkaUjp2cUCQlS4zxUz/onODqbo4ak+bYC/I9fEoFPWsWsDzhbTIXHA+EhC3xRwG7JH7M2xKhT9o0zN8ppuWrtCwWtByU4z/Xkpeaw/vj3ef3UW9+FwVvZg6SAJf6f2yzzmRYf+mBDMHHhhv92Vvxm4vGq1dMglqb6V3K+kKKqlpPlFlSIp1pftwK/Umykorl40Oduf7ugE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR18MB3388.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(346002)(136003)(39850400004)(396003)(478600001)(316002)(86362001)(7696005)(38100700001)(71200400001)(2906002)(54906003)(52536014)(83380400001)(33656002)(110136005)(66446008)(64756008)(66476007)(6506007)(53546011)(66556008)(76116006)(4326008)(55016002)(9686003)(66946007)(186003)(5660300002)(8676002)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?WNUuxp38y3vk9OcBnrrmP2IdsPtjw10u5qPYqZIBIOscJaCZGOYAkqGucPVR?=
+ =?us-ascii?Q?VsYH/utBQtb/T+VYAA/OYutLCIQLhvrjQH9zA2j8S9IT8f/NgLs+MCTeQX3e?=
+ =?us-ascii?Q?nUrOfpB/6sJ2QyGTRz1LOtALvNv7NooJ0onW+A0vM/mJfsQLgCfsWh3Wn3y5?=
+ =?us-ascii?Q?KrZye3gA2VB2RS4nqnEQLcO+vjXffMNiLOVDamI7EVvYdfKIyrFAoDODEAQg?=
+ =?us-ascii?Q?ZkvmX+p90UyYzFvCw6lVgLjpZj01Eq/A5plR81muhpEyz1ogQvsUEvfWHIDc?=
+ =?us-ascii?Q?vvBb34B+I12RXW5rzVFeOAOSqSUj+HWIBL1c4p6oOkOlyem019kcc+1AxZ3k?=
+ =?us-ascii?Q?BN5txyuo/CCWqK7EdHb931C7RwWzkdKUJkVU4yUTOcbwaVrEV37cBOaGktRG?=
+ =?us-ascii?Q?DKj0OpmotbPCc5YDRlKFwHwzoqb4mLIwtm8r/AuQSjXhnz6SMhtiivVDTLXs?=
+ =?us-ascii?Q?0eraweI26NoiHgyeIlcC6acxB7top3pLr/kDkSRxK9YGzq09mZV7o24PmBRu?=
+ =?us-ascii?Q?qPzi0MqOaBJVhhyV8KF7H9e+RwN5MhZssx+BgbuWLF7ynikVLeho3e4oVSf3?=
+ =?us-ascii?Q?AGprCTj5xNuFTJAsGbU3cWsx7Bq7i7gDOLpbo4KozsMbz0X3qmZiE35SizBJ?=
+ =?us-ascii?Q?pHNwqGCgUEypR7iqeNfC+BcZWn97zybH8uikrzTmHwfYLRfgYF/FdOAnSYzk?=
+ =?us-ascii?Q?iscMYrgBs6HaBIyTWU1HBp1u1gNf61y6XBSUFtSvvsydlelQ30XDhPORgewC?=
+ =?us-ascii?Q?ByvdzzbTr57t5oncKcFOf/Ny2q/Y81rdbEJK+g+R4gzZT6T6wvMPn5OY51MB?=
+ =?us-ascii?Q?ThE4tiMV1yLpYnCdBQDJIjYdXymmhKRDOianlwXllgQDykj2hId9KN4nyezZ?=
+ =?us-ascii?Q?VmpGLICt5n+OJG55rP4mGEpMtN4gwfV99YPXw1a0KjGbl0+OiTn63woNL/8C?=
+ =?us-ascii?Q?Lmj9JsPOvAaaP9L77ul/t/0cT+sEaPEcad8cYrLJKEvC7BjS7GXES1lVFGla?=
+ =?us-ascii?Q?3lUo6HgUYabZZ3gKA8xsaaIoi0yokm3t17CN9egGVCWKmML1sdy9nSvwU6s6?=
+ =?us-ascii?Q?Cato3UfJM26TNINkOakgkFZpzmoNjyEC1xbbcc4LcUtxu/Q3cD7rb2ql7SDC?=
+ =?us-ascii?Q?Bqjcwift/vpLcFv/s9NENiqM4tMTfUa5hWcs3h+XyjTGz4CZKM4ABJxy5CTG?=
+ =?us-ascii?Q?dsSbgtEFQicwYE4jx5kBNvUkrj9JSUbV9PjJWcWjhC1dDkCkt9AySD5UoMkt?=
+ =?us-ascii?Q?5q/uw3m37A+PvVyMdh/OwkcjDgzANtmDBm5hR8bYWQ7zRLbt+lFdcCUwB6Lz?=
+ =?us-ascii?Q?cg/gtyHKaLX6Mb3uJinGxADjBhu5EclDvF8VUreFqspPyuHwI8OO4obncnh3?=
+ =?us-ascii?Q?53u9Und4t0ctE6R9o1IhFc4vdK2z?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR18MB3388.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0cee7313-5bc4-4b34-f08b-08d8f819c2b4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Apr 2021 10:01:19.5425
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lpxvlUjtYO209nAa7ODDjqFR+qOr2zI3ubmFsKv24Zb1av/QK4CulXbLMSFutoN8urWn4f4RPz+Fm1mxJPGgXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1801MB1980
+X-Proofpoint-GUID: rHgBb-hML_VPYI165opwgEGil760ImkE
+X-Proofpoint-ORIG-GUID: rHgBb-hML_VPYI165opwgEGil760ImkE
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-04-05_07:2021-04-01,2021-04-05 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MHI WWWAN control driver allows MHI QCOM-based modems to expose
-different modem control protocols/ports via the WWAN framework, so that
-userspace modem tools or daemon (e.g. ModemManager) can control WWAN
-config and state (APN config, SMS, provider selection...). A QCOM-based
-modem can expose one or several of the following protocols:
-- AT: Well known AT commands interactive protocol (microcom, minicom...)
-- MBIM: Mobile Broadband Interface Model (libmbim, mbimcli)
-- QMI: QCOM MSM/Modem Interface (libqmi, qmicli)
-- QCDM: QCOM Modem diagnostic interface (libqcdm)
-- FIREHOSE: XML-based protocol for Modem firmware management
-        (qmi-firmware-update)
+> -----Original Message-----
+> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Sent: Sunday, April 4, 2021 6:13 PM
+> To: Ariel Elior <aelior@marvell.com>; GR-everest-linux-l2 <GR-everest-lin=
+ux-
+> l2@marvell.com>; davem@davemloft.net; kuba@kernel.org
+> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; kernel-
+> janitors@vger.kernel.org; Christophe JAILLET <christophe.jaillet@wanadoo.=
+fr>
+> Subject: [EXT] [PATCH 1/2] qede: Remove a erroneous ++ in
+> 'qede_rx_build_jumbo()'
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> This ++ is confusing. It looks duplicated with the one already performed =
+in
+> 'skb_fill_page_desc()'.
+>=20
+> In fact, it is harmless. 'nr_frags' is written twice with the same value.
+> Once, because of the nr_frags++, and once because of the 'nr_frags =3D i =
++ 1'
+> in 'skb_fill_page_desc()'.
+>=20
+> So axe this post-increment to avoid confusion.
+>=20
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/net/ethernet/qlogic/qede/qede_fp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> index 102d0e0808d5..ee3e45e38cb7 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> +++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+> @@ -1209,7 +1209,7 @@ static int qede_rx_build_jumbo(struct qede_dev
+> *edev,
+>  		dma_unmap_page(rxq->dev, bd->mapping,
+>  			       PAGE_SIZE, DMA_FROM_DEVICE);
+>=20
+> -		skb_fill_page_desc(skb, skb_shinfo(skb)->nr_frags++,
+> +		skb_fill_page_desc(skb, skb_shinfo(skb)->nr_frags,
+>  				   bd->data, rxq->rx_headroom, cur_size);
+>=20
+>  		skb->truesize +=3D PAGE_SIZE;
+> --
+> 2.27.0
 
-Note that this patch is mostly a rework of the earlier MHI UCI
-tentative that was a generic interface for accessing MHI bus from
-userspace. As suggested, this new version is WWAN specific and is
-dedicated to only expose channels used for controlling a modem, and
-for which related opensource userpace support exist.
-
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
----
- v2: update copyright (2021)
- v3: Move driver to dedicated drivers/net/wwan directory
- v4: Rework to use wwan framework instead of self cdev management
- v5: Fix errors/typos in Kconfig
- v6: - Move to new wwan interface, No need dedicated call to wwan_dev_create
-     - Cleanup code (remove legacy from mhi_uci, unused defines/vars...)
-     - Remove useless write_lock mutex
-     - Add mhi_wwan_wait_writable and mhi_wwan_wait_dlqueue_lock_irq helpers
-     - Rework locking
-     - Add MHI_WWAN_TX_FULL flag
-     - Add support for NONBLOCK read/write
- v7: Fix change log (mixed up 1/2 and 2/2)
- v8: - Implement wwan_port_ops instead of fops
-     - Remove all obsolete elements (kref, lock, waitqueues)
-     - Add tracking of RX buffer budget
-     - Use WWAN TX flow control function to stop TX when MHI queue is full
- v9: - Add proper locking for rx_budget + rx_refill scheduling
-     - Fix cocci errors (use-after-free, ERR_CAST)
-
- drivers/net/wwan/Kconfig         |  14 ++
- drivers/net/wwan/Makefile        |   2 +
- drivers/net/wwan/mhi_wwan_ctrl.c | 282 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 298 insertions(+)
- create mode 100644 drivers/net/wwan/mhi_wwan_ctrl.c
-
-diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-index fc3f3a1..7ad1920 100644
---- a/drivers/net/wwan/Kconfig
-+++ b/drivers/net/wwan/Kconfig
-@@ -20,4 +20,18 @@ config WWAN_CORE
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called wwan.
- 
-+config MHI_WWAN_CTRL
-+	tristate "MHI WWAN control driver for QCOM-based PCIe modems"
-+	select WWAN_CORE
-+	depends on MHI_BUS
-+	help
-+	  MHI WWAN CTRL allows QCOM-based PCIe modems to expose different modem
-+	  control protocols/ports to userspace, including AT, MBIM, QMI, DIAG
-+	  and FIREHOSE. These protocols can be accessed directly from userspace
-+	  (e.g. AT commands) or via libraries/tools (e.g. libmbim, libqmi,
-+	  libqcdm...).
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called mhi_wwan_ctrl.
-+
- endif # WWAN
-diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
-index 934590b..556cd90 100644
---- a/drivers/net/wwan/Makefile
-+++ b/drivers/net/wwan/Makefile
-@@ -5,3 +5,5 @@
- 
- obj-$(CONFIG_WWAN_CORE) += wwan.o
- wwan-objs += wwan_core.o
-+
-+obj-$(CONFIG_MHI_WWAN_CTRL) += mhi_wwan_ctrl.o
-diff --git a/drivers/net/wwan/mhi_wwan_ctrl.c b/drivers/net/wwan/mhi_wwan_ctrl.c
-new file mode 100644
-index 0000000..479bb92
---- /dev/null
-+++ b/drivers/net/wwan/mhi_wwan_ctrl.c
-@@ -0,0 +1,282 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-+#include <linux/kernel.h>
-+#include <linux/mhi.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/wwan.h>
-+
-+/* MHI wwan flags */
-+#define MHI_WWAN_DL_CAP		BIT(0)
-+#define MHI_WWAN_UL_CAP		BIT(1)
-+#define MHI_WWAN_RX_REFILL	BIT(2)
-+
-+#define MHI_WWAN_MAX_MTU	0x8000
-+
-+struct mhi_wwan_dev {
-+	/* Lower level is a mhi dev, upper level is a wwan port */
-+	struct mhi_device *mhi_dev;
-+	struct wwan_port *wwan_port;
-+
-+	/* State and capabilities */
-+	unsigned long flags;
-+	size_t mtu;
-+
-+	/* Protect against concurrent TX and TX-completion (bh) */
-+	spinlock_t tx_lock;
-+
-+	/* Protect RX budget and rx_refill scheduling */
-+	spinlock_t rx_lock;
-+	struct work_struct rx_refill;
-+
-+	/* RX budget, initially sets to the size of the MHI RX queue, is used to
-+	 * limit the number of allocated and queued packets. It is decremented
-+	 * on data queueing and incremented on data release.
-+	 */
-+	unsigned int rx_budget;
-+};
-+
-+/* Increment RX budget and schedule RX refill if necessary */
-+static void mhi_wwan_rx_budget_inc(struct mhi_wwan_dev *mhiwwan)
-+{
-+	spin_lock(&mhiwwan->rx_lock);
-+
-+	mhiwwan->rx_budget++;
-+
-+	if (test_bit(MHI_WWAN_RX_REFILL, &mhiwwan->flags))
-+		schedule_work(&mhiwwan->rx_refill);
-+
-+	spin_unlock(&mhiwwan->rx_lock);
-+}
-+
-+/* Decrement RX budget if non-zero and return true on success */
-+static bool mhi_wwan_rx_budget_dec(struct mhi_wwan_dev *mhiwwan)
-+{
-+	bool ret = false;
-+
-+	spin_lock(&mhiwwan->rx_lock);
-+
-+	if (mhiwwan->rx_budget)
-+		mhiwwan->rx_budget--;
-+
-+	if (mhiwwan->rx_budget && test_bit(MHI_WWAN_RX_REFILL, &mhiwwan->flags))
-+		ret = true;
-+
-+	spin_unlock(&mhiwwan->rx_lock);
-+
-+	return ret;
-+}
-+
-+static void __mhi_skb_destructor(struct sk_buff *skb)
-+{
-+	/* RX buffer has been consumed, increase the allowed budget */
-+	mhi_wwan_rx_budget_inc(skb_shinfo(skb)->destructor_arg);
-+}
-+
-+static void mhi_wwan_ctrl_refill_work(struct work_struct *work)
-+{
-+	struct mhi_wwan_dev *mhiwwan = container_of(work, struct mhi_wwan_dev, rx_refill);
-+	struct mhi_device *mhi_dev = mhiwwan->mhi_dev;
-+
-+	while (mhi_wwan_rx_budget_dec(mhiwwan)) {
-+		struct sk_buff *skb;
-+
-+		skb = alloc_skb(mhiwwan->mtu, GFP_KERNEL);
-+		if (!skb) {
-+			mhi_wwan_rx_budget_inc(mhiwwan);
-+			break;
-+		}
-+
-+		/* To prevent unlimited buffer allocation if nothing consumes
-+		 * the RX buffers (passed to WWAN core), track their lifespan
-+		 * to not allocate more than allowed budget.
-+		 */
-+		skb->destructor = __mhi_skb_destructor;
-+		skb_shinfo(skb)->destructor_arg = mhiwwan;
-+
-+		if (mhi_queue_skb(mhi_dev, DMA_FROM_DEVICE, skb, mhiwwan->mtu, MHI_EOT)) {
-+			dev_err(&mhi_dev->dev, "Failed to queue buffer\n");
-+			kfree_skb(skb);
-+			break;
-+		}
-+	}
-+}
-+
-+static int mhi_wwan_ctrl_start(struct wwan_port *port)
-+{
-+	struct mhi_wwan_dev *mhiwwan = wwan_port_get_drvdata(port);
-+	int ret;
-+
-+	/* Start mhi device's channel(s) */
-+	ret = mhi_prepare_for_transfer(mhiwwan->mhi_dev);
-+	if (ret)
-+		return ret;
-+
-+	/* Don't allocate more buffers than MHI channel queue size */
-+	mhiwwan->rx_budget = mhi_get_free_desc_count(mhiwwan->mhi_dev, DMA_FROM_DEVICE);
-+
-+	/* Add buffers to the MHI inbound queue */
-+	if (test_bit(MHI_WWAN_DL_CAP, &mhiwwan->flags)) {
-+		set_bit(MHI_WWAN_RX_REFILL, &mhiwwan->flags);
-+		mhi_wwan_ctrl_refill_work(&mhiwwan->rx_refill);
-+	}
-+
-+	return 0;
-+}
-+
-+static void mhi_wwan_ctrl_stop(struct wwan_port *port)
-+{
-+	struct mhi_wwan_dev *mhiwwan = wwan_port_get_drvdata(port);
-+
-+	spin_lock(&mhiwwan->rx_lock);
-+	clear_bit(MHI_WWAN_RX_REFILL, &mhiwwan->flags);
-+	spin_unlock(&mhiwwan->rx_lock);
-+
-+	cancel_work_sync(&mhiwwan->rx_refill);
-+
-+	mhi_unprepare_from_transfer(mhiwwan->mhi_dev);
-+}
-+
-+static int mhi_wwan_ctrl_tx(struct wwan_port *port, struct sk_buff *skb)
-+{
-+	struct mhi_wwan_dev *mhiwwan = wwan_port_get_drvdata(port);
-+	int ret;
-+
-+	if (skb->len > mhiwwan->mtu)
-+		return -EMSGSIZE;
-+
-+	if (!test_bit(MHI_WWAN_UL_CAP, &mhiwwan->flags))
-+		return -EOPNOTSUPP;
-+
-+	/* Queue the packet for MHI transfer and check fullness of the queue */
-+	spin_lock_bh(&mhiwwan->tx_lock);
-+	ret = mhi_queue_skb(mhiwwan->mhi_dev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
-+	if (mhi_queue_is_full(mhiwwan->mhi_dev, DMA_TO_DEVICE))
-+		wwan_port_txoff(port);
-+	spin_unlock_bh(&mhiwwan->tx_lock);
-+
-+	return ret;
-+}
-+
-+static const struct wwan_port_ops wwan_pops = {
-+	.start = mhi_wwan_ctrl_start,
-+	.stop = mhi_wwan_ctrl_stop,
-+	.tx = mhi_wwan_ctrl_tx,
-+};
-+
-+static void mhi_ul_xfer_cb(struct mhi_device *mhi_dev,
-+			   struct mhi_result *mhi_result)
-+{
-+	struct mhi_wwan_dev *mhiwwan = dev_get_drvdata(&mhi_dev->dev);
-+	struct wwan_port *port = mhiwwan->wwan_port;
-+	struct sk_buff *skb = mhi_result->buf_addr;
-+
-+	dev_dbg(&mhi_dev->dev, "%s: status: %d xfer_len: %zu\n", __func__,
-+		mhi_result->transaction_status, mhi_result->bytes_xferd);
-+
-+	/* MHI core has done with the buffer, release it */
-+	consume_skb(skb);
-+
-+	/* There is likely new slot available in the MHI queue, re-allow TX */
-+	spin_lock_bh(&mhiwwan->tx_lock);
-+	if (!mhi_queue_is_full(mhiwwan->mhi_dev, DMA_TO_DEVICE))
-+		wwan_port_txon(port);
-+	spin_unlock_bh(&mhiwwan->tx_lock);
-+}
-+
-+static void mhi_dl_xfer_cb(struct mhi_device *mhi_dev,
-+			   struct mhi_result *mhi_result)
-+{
-+	struct mhi_wwan_dev *mhiwwan = dev_get_drvdata(&mhi_dev->dev);
-+	struct wwan_port *port = mhiwwan->wwan_port;
-+	struct sk_buff *skb = mhi_result->buf_addr;
-+
-+	dev_dbg(&mhi_dev->dev, "%s: status: %d receive_len: %zu\n", __func__,
-+		mhi_result->transaction_status, mhi_result->bytes_xferd);
-+
-+	if (mhi_result->transaction_status &&
-+	    mhi_result->transaction_status != -EOVERFLOW) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	/* MHI core does not update skb->len, do it before forward */
-+	skb_put(skb, mhi_result->bytes_xferd);
-+	wwan_port_rx(port, skb);
-+
-+	/* Do not increment rx budget nor refill RX buffers now, wait for the
-+	 * buffer to be consumed. Done from __mhi_skb_destructor().
-+	 */
-+}
-+
-+static int mhi_wwan_ctrl_probe(struct mhi_device *mhi_dev,
-+			       const struct mhi_device_id *id)
-+{
-+	struct mhi_controller *cntrl = mhi_dev->mhi_cntrl;
-+	struct mhi_wwan_dev *mhiwwan;
-+	struct wwan_port *port;
-+
-+	mhiwwan = kzalloc(sizeof(*mhiwwan), GFP_KERNEL);
-+	if (!mhiwwan)
-+		return -ENOMEM;
-+
-+	mhiwwan->mhi_dev = mhi_dev;
-+	mhiwwan->mtu = MHI_WWAN_MAX_MTU;
-+	INIT_WORK(&mhiwwan->rx_refill, mhi_wwan_ctrl_refill_work);
-+	spin_lock_init(&mhiwwan->tx_lock);
-+	spin_lock_init(&mhiwwan->rx_lock);
-+
-+	if (mhi_dev->dl_chan)
-+		set_bit(MHI_WWAN_DL_CAP, &mhiwwan->flags);
-+	if (mhi_dev->ul_chan)
-+		set_bit(MHI_WWAN_UL_CAP, &mhiwwan->flags);
-+
-+	dev_set_drvdata(&mhi_dev->dev, mhiwwan);
-+
-+	/* Register as a wwan port, id->driver_data contains wwan port type */
-+	port = wwan_create_port(&cntrl->mhi_dev->dev, id->driver_data,
-+				&wwan_pops, mhiwwan);
-+	if (IS_ERR(mhiwwan->wwan_port)) {
-+		kfree(mhiwwan);
-+		return PTR_ERR(port);
-+	}
-+
-+	mhiwwan->wwan_port = port;
-+
-+	return 0;
-+};
-+
-+static void mhi_wwan_ctrl_remove(struct mhi_device *mhi_dev)
-+{
-+	struct mhi_wwan_dev *mhiwwan = dev_get_drvdata(&mhi_dev->dev);
-+
-+	wwan_remove_port(mhiwwan->wwan_port);
-+	kfree(mhiwwan);
-+}
-+
-+static const struct mhi_device_id mhi_wwan_ctrl_match_table[] = {
-+	{ .chan = "DUN", .driver_data = WWAN_PORT_AT },
-+	{ .chan = "MBIM", .driver_data = WWAN_PORT_MBIM },
-+	{ .chan = "QMI", .driver_data = WWAN_PORT_QMI },
-+	{ .chan = "DIAG", .driver_data = WWAN_PORT_QCDM },
-+	{ .chan = "FIREHOSE", .driver_data = WWAN_PORT_FIREHOSE },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(mhi, mhi_wwan_ctrl_match_table);
-+
-+static struct mhi_driver mhi_wwan_ctrl_driver = {
-+	.id_table = mhi_wwan_ctrl_match_table,
-+	.remove = mhi_wwan_ctrl_remove,
-+	.probe = mhi_wwan_ctrl_probe,
-+	.ul_xfer_cb = mhi_ul_xfer_cb,
-+	.dl_xfer_cb = mhi_dl_xfer_cb,
-+	.driver = {
-+		.name = "mhi_wwan_ctrl",
-+	},
-+};
-+
-+module_mhi_driver(mhi_wwan_ctrl_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("MHI WWAN CTRL Driver");
-+MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
--- 
-2.7.4
-
+Acked-by: Manish Chopra <manishc@marvell.com>
