@@ -2,119 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC9D35429E
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 16:10:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B49603542A8
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 16:16:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241279AbhDEOIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 10:08:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55574 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237431AbhDEOIn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 10:08:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D99C613B1;
-        Mon,  5 Apr 2021 14:08:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617631717;
-        bh=LF0+zRsEi7jGYk/Bg8vQa1eqOiMQAgaqbYGUkXrouMw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I6k7K+GugdLkntOIS/XDUjVAG89FAmzBko1fER7cc3uE9NDtxEXpfu2Xnwtq/0NxL
-         ckDn8FJGtmNFigRJklJ7KJ88kfm6kTIfkzu3K1al8GZ7hrG/NbQzaebZPrLuRPMKeV
-         AptGe6e5kFiM39xIw5oZeLhyTwrYwxKuFNMZKvbh6T+PyVEguwKyGNPBgMTiuZrCtk
-         1J4xCIyRWGlQcLyexllVaPJpVxprEGXSRehfPLV3q2bRKrFBLmzp+wrTu00d0Soctr
-         YYj1Q6Vs4W+Ds4QlJ6sIRBcayMiU899q/lysRyhZ5ut6I4xryD2Pm4kvUfyk5iXnMH
-         E6a7i+TLCgJHQ==
-Date:   Mon, 5 Apr 2021 17:08:33 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Avihai Horon <avihaih@nvidia.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
-Message-ID: <YGsZ4Te1+DQODj34@unreal>
-References: <20210405052404.213889-1-leon@kernel.org>
- <20210405134115.GA22346@lst.de>
+        id S237592AbhDEOQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 10:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237537AbhDEOQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 10:16:07 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E10FC061756;
+        Mon,  5 Apr 2021 07:16:01 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id 82so2068249yby.7;
+        Mon, 05 Apr 2021 07:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wkzE6z3jlVm2CtBojLYq0ziEdm7E4Xl4LO0dFtmTEpw=;
+        b=WRA6gOF50mK8Yydfg22tp/JRfwty1RZLFbHXGr/ilPwlupU1ZzeB9EJVjMzypHkwds
+         AonT2GnqBrDJ7JWewO3XBYJ5Zc7OY0ITrQSkmVVNu9h45uIPQGlIBqVEolM89Q8/6YQK
+         XYhxDmh9yIs+9HBusFGjUK2UVqgBeo1bwGMaQeXAaMkpRGDdqZc67cnNmb8TZpXhs2ZY
+         4lvXFt62T6dHf3nRhpwvJN0lnS0HJXip/zVEJQYQKjmPZf8YW/Ma501lKV9IyhoFuNxM
+         8QVp4yHP1gUxABZioxikRhgo0ktE8DmEc7h7fAU5qxEgM33fH9a2j2EOKdVNpEJXVFil
+         GOyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wkzE6z3jlVm2CtBojLYq0ziEdm7E4Xl4LO0dFtmTEpw=;
+        b=VH8rrj+4VvIcApd6nFMA8blF4WgaLT3/bTGv9nWgR9H/XA+A/MLZPtiJDcMTaHPz07
+         1p042AdPfLJ88rZLslg249inTt6UvOtk+0fEW0BNKdYd5IsomvrMqJQivewNPofooZai
+         +h+gYYeq2ZeisRJAy/n5r5sVqGuYgjrAe7YwfZLD2niX06iOazIjtUW7sqzzzOFwfaPl
+         ZnbeQThFQ7ZY0E6fZMwgjG1y4cGCC6uPggu/IbvLHy6V2o37GNDpdhLBpEN7annx20zO
+         X2kp83nBbb9rZ+Dj+MHc1aDlHh73hRTMCZjAE2fxROScNP81jMT+GiBQYshBpNminvZN
+         /gYw==
+X-Gm-Message-State: AOAM530retP8O8j/ie/PH31im5OpLCTiwV7jY9Q9qg7QKYAruUJa+Haj
+        iK2njB4eADou2zIGr1uTzEN7yqEUlQBJDZEsaeU=
+X-Google-Smtp-Source: ABdhPJyU2Y+l2VCLhvR9N4qk/aIM8kE57PfiYGZCXApt3RUU/oGlxkTjEPV9ZloX1FqcfBUsq5biBqoYid5GnIKtnVg=
+X-Received: by 2002:a25:5b55:: with SMTP id p82mr34997409ybb.510.1617632160631;
+ Mon, 05 Apr 2021 07:16:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210405134115.GA22346@lst.de>
+References: <20210405040119.802188-1-hengqi.chen@gmail.com>
+In-Reply-To: <20210405040119.802188-1-hengqi.chen@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 5 Apr 2021 07:15:49 -0700
+Message-ID: <CAEf4BzYz3KYJ0xSZhJfTfNWC4J2ibyVsuy842W0w3sNs1JW12w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: Fix KERNEL_VERSION macro
+To:     Hengqi Chen <hengqi.chen@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 03:41:15PM +0200, Christoph Hellwig wrote:
-> On Mon, Apr 05, 2021 at 08:23:54AM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > >From Avihai,
-> > 
-> > Relaxed Ordering is a PCIe mechanism that relaxes the strict ordering
-> > imposed on PCI transactions, and thus, can improve performance.
-> > 
-> > Until now, relaxed ordering could be set only by user space applications
-> > for user MRs. The following patch series enables relaxed ordering for the
-> > kernel ULPs as well. Relaxed ordering is an optional capability, and as
-> > such, it is ignored by vendors that don't support it.
-> > 
-> > The following test results show the performance improvement achieved
-> > with relaxed ordering. The test was performed on a NVIDIA A100 in order
-> > to check performance of storage infrastructure over xprtrdma:
-> 
-> Isn't the Nvidia A100 a GPU not actually supported by Linux at all?
-> What does that have to do with storage protocols?
+On Sun, Apr 4, 2021 at 9:01 PM Hengqi Chen <hengqi.chen@gmail.com> wrote:
+>
+> Add missing ')' for KERNEL_VERSION macro.
+>
+> Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
+> ---
 
-This system is in use by our storage oriented customer who performed the
-test. He runs drivers/infiniband/* stack from the upstream, simply backported
-to specific kernel version.
+Applied to bpf-next, thanks.
 
-The performance boost is seen in other systems too.
-
-> 
-> Also if you enable this for basically all kernel ULPs, why not have
-> an opt-out into strict ordering for the cases that need it (if there are
-> any).
-
-The RO property is optional, it can only improve. In addition, all in-kernel ULPs
-don't need strict ordering. I can be mistaken here and Jason will correct me, it
-is because of two things: ULP doesn't touch data before CQE and DMA API prohibits it.
-
-Thanks
+>  tools/lib/bpf/bpf_helpers.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index cc2e51c64a54..b904128626c2 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -51,7 +51,7 @@
+>  #endif
+>
+>  #ifndef KERNEL_VERSION
+> -#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c))
+> +#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))
+>  #endif
+>
+>  /*
+> --
+> 2.25.1
+>
