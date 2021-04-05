@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5631D353BDE
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBD7353BE1
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbhDEFuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 01:50:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34180 "EHLO mail.kernel.org"
+        id S232069AbhDEFuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 01:50:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34270 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229727AbhDEFuO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 01:50:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 42EA761399;
-        Mon,  5 Apr 2021 05:50:08 +0000 (UTC)
+        id S232054AbhDEFuR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 01:50:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B1EC6138A;
+        Mon,  5 Apr 2021 05:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617601808;
-        bh=F5IJVEwD/ds8nR2UWRrmKXAI11023OkVeObLtcX5Os8=;
+        s=k20201202; t=1617601812;
+        bh=PsROXfLh1PLcHMlKcwD6/kCYX1+1tHQ0rQ8neODxlfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NODekafGzp5kSojCg+hpr6B9AlQvD3zKz1kSQUnnab6bpFEEOrBv7H4HhlV/xDoFY
-         TqFAkD/p2pVLkh3I28NPd/1jujvuwkWrGbTce9KKjJN/16uPujucZoym8KBnN1wLlc
-         QKvVKGhzBkFZWDuJHsCWo1j2ZxDkXtxY53SB2B/tPDIPN7O8ZOy0WgPKkTKjRH+lQW
-         C07RwZj1T/8gB8IjoV1gkCqJobugEN3Ocv/6PIomvbhVfoWbJP1831Zr9n3Xnb6wdM
-         v7QgnCVGlTYCiSGHb7jlz3Xm72ANX8GWg/U5Rafawy+7PiQVcdMJ8O/EQs4ePWufCD
-         EjCIRobdjqIrA==
+        b=G0FAGW+541Z00Z1bI3RulQKM/s0QIS0cuSGHw/14luvghB1iYsKox5jHVeR1lI2bi
+         qB8vcBK6/3Ar8Sw+el7Ed++NRSbD7E6Dvj2WyIDsk/MwiajX+53FRf3CoSRAMuBEc/
+         gV2jo1Feyzz62ybr0BgEgJv0VCleevlXrMyoXNhM0OkeraAc/46NOy6FUne8F9Uxpv
+         qsHUphlPdcetw+nuSI1hAfevmQqpJ2jjoGd7B1S7aIbgvoQL9Iy3lVjqo3vHhfJSc/
+         KQg6VNmC9Mu0bb5GBqMzu+ELRy9e+ZmNhu6kKmOG04nX6prLNp8qOyJr0m1rUUP6tO
+         I0eqv0aGIrOkw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -36,9 +36,9 @@ Cc:     Parav Pandit <parav@nvidia.com>,
         Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Subject: [PATCH rdma-next 2/8] RDMA/cma: Skip device which doesn't support CM
-Date:   Mon,  5 Apr 2021 08:49:54 +0300
-Message-Id: <20210405055000.215792-3-leon@kernel.org>
+Subject: [PATCH rdma-next 3/8] IB/cm: Skip device which doesn't support IB CM
+Date:   Mon,  5 Apr 2021 08:49:55 +0300
+Message-Id: <20210405055000.215792-4-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210405055000.215792-1-leon@kernel.org>
 References: <20210405055000.215792-1-leon@kernel.org>
@@ -50,72 +50,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-A switchdev RDMA device do not support IB CM. When such device is added
-to the RDMA CM's device list, when application invokes rdma_listen(),
-cma attempts to listen to such device, however it has IB CM attribute
-disabled.
+There are at least 3 types of RDMA devices which do not support IB CM.
+They are
+(1) A (eswitch) switchdev RDMA device,
+(2) iWARP device and
+(3) RDMA device without a RoCE capability
 
-Due to this, rdma_listen() call fails to listen for other non
-switchdev devices as well.
+Hence, avoid IB CM initialization for such devices.
 
-A below error message can be seen.
-
-infiniband mlx5_0: RDMA CMA: cma_listen_on_dev, error -38
-
-A failing call flow is below.
-
-rdma_listen()
-  cma_listen_on_all()
-    cma_listen_on_dev()
-      _cma_attach_to_dev()
-      rdma_listen() <- fails on a specific switchdev device
-
-Hence, when a IB device doesn't support IB CM or IW CM, avoid adding
-such device to the cma list.
+This saves 8Kbytes of memory for eswitch device consist of 512 ports and
+also avoids unnecessary initialization for all above 3 types of devices.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/core/cma.c | 15 ++++++++++++++-
+ drivers/infiniband/core/cm.c | 15 ++++++++++++++-
  1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 42a1c8955c50..80156faf90de 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -157,11 +157,13 @@ EXPORT_SYMBOL(rdma_res_to_id);
- 
- static int cma_add_one(struct ib_device *device);
- static void cma_remove_one(struct ib_device *device, void *client_data);
-+static bool cma_supported(struct ib_device *device);
- 
- static struct ib_client cma_client = {
- 	.name   = "cma",
- 	.add    = cma_add_one,
--	.remove = cma_remove_one
-+	.remove = cma_remove_one,
-+	.is_supported = cma_supported,
+diff --git a/drivers/infiniband/core/cm.c b/drivers/infiniband/core/cm.c
+index 8a7791ebae69..5025f2c1347b 100644
+--- a/drivers/infiniband/core/cm.c
++++ b/drivers/infiniband/core/cm.c
+@@ -87,6 +87,7 @@ struct cm_id_private;
+ struct cm_work;
+ static int cm_add_one(struct ib_device *device);
+ static void cm_remove_one(struct ib_device *device, void *client_data);
++static bool cm_supported(struct ib_device *device);
+ static void cm_process_work(struct cm_id_private *cm_id_priv,
+ 			    struct cm_work *work);
+ static int cm_send_sidr_rep_locked(struct cm_id_private *cm_id_priv,
+@@ -103,7 +104,8 @@ static int cm_send_rej_locked(struct cm_id_private *cm_id_priv,
+ static struct ib_client cm_client = {
+ 	.name   = "cm",
+ 	.add    = cm_add_one,
+-	.remove = cm_remove_one
++	.remove = cm_remove_one,
++	.is_supported = cm_supported,
  };
  
- static struct ib_sa_client sa_client;
-@@ -4870,6 +4872,17 @@ static void cma_process_remove(struct cma_device *cma_dev)
- 	wait_for_completion(&cma_dev->comp);
+ static struct ib_cm {
+@@ -4371,6 +4373,17 @@ static void cm_remove_port_fs(struct cm_port *port)
+ 
  }
  
-+static bool cma_supported(struct ib_device *device)
++static bool cm_supported(struct ib_device *device)
 +{
 +	u32 i;
 +
 +	rdma_for_each_port(device, i) {
-+		if (rdma_cap_ib_cm(device, i) || rdma_cap_iw_cm(device, i))
++		if (rdma_cap_ib_cm(device, i))
 +			return true;
 +	}
 +	return false;
 +}
 +
- static int cma_add_one(struct ib_device *device)
+ static int cm_add_one(struct ib_device *ib_device)
  {
- 	struct rdma_id_private *to_destroy;
+ 	struct cm_device *cm_dev;
 -- 
 2.30.2
 
