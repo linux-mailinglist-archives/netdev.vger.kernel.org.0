@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 885CB353B2A
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 06:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA8F353B6A
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 06:54:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbhDEEBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 00:01:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbhDEEBv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 00:01:51 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61A1C061756;
-        Sun,  4 Apr 2021 21:01:45 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id z12so1000207plb.9;
-        Sun, 04 Apr 2021 21:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PDFygVdRC4jKdnikvmKXB+IbIVJh+o4K3UKwARLovJg=;
-        b=Wwru1snon1dQV46ne9ocYmXCzU13RltKV1DMzj48CAyVOUoO3m98hfVYE0Kah8tXHA
-         HEfjI7T01WOkky5Rmw1RD3oRyqn8Z7MAcz5vnNp2tICsOOpXm9/lWYa3XZ+DIhkMGw8Y
-         Pqli5ETONBJim/2qrd1owXIZF4URBEtcbcI4gPJFk7bTtAiRgXpjPmKNK4IhVfycMerD
-         4d4TGTn1xGNhmRtiQAjopckbnzx8sGE7Nkri5Jl3ZNzxd0Y2AtKYbZ/d31rgCRMT54l/
-         haOi9LIOoahjpV24YGZ3CzBdpm/qdMBs0gvfrGZsLpst0r1EoHbXRVd23XB5Wemw7zzz
-         p//w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PDFygVdRC4jKdnikvmKXB+IbIVJh+o4K3UKwARLovJg=;
-        b=jtosON9wOWa43gnUf8tS7GbkOZthCrrffN2VhZ4+vHn1ZxAVKscspCSxei6vgbpZaM
-         Bj5s9y/q+DtKMMHIDjSR2jHjEyC+meTJIjgVn+K1bUmEsCk/GRtAZ89z5zyBJs9eIhgZ
-         z/J2lKCLq9sA6H0lzXp+kME0sA45vKezEUFb4bRdeo+F4FFxbH2peWFvfJcxCuAkxqix
-         uOaOiykMQanFX17bpF51lfZWO6KgrE2YTTpAHdTOTP0X5G4ZQooP7xMfthBsbF+G4IUQ
-         MghfxXrDn9/yKFwuIcTRo7kdPmRn6aaP/O9f171jzmcCvraOgDVMZn+5+SzxbRJUeXyw
-         8U6g==
-X-Gm-Message-State: AOAM532JlfAiE3PwxkfyTUV8TggxGyz9KGJdYwwy+FefCMEkG+S4wTK6
-        HluV+/CbVOR1bUYcQ5j8G6g2nv4vtrt/0R1N
-X-Google-Smtp-Source: ABdhPJxyrDVIIdh71T8+5S7yXEKrqNV7t9vtNithJoJJqbBnl14tUjJB2gAMNUHgI/JVqq+eKFxr/w==
-X-Received: by 2002:a17:90a:86c2:: with SMTP id y2mr4522331pjv.164.1617595305282;
-        Sun, 04 Apr 2021 21:01:45 -0700 (PDT)
-Received: from localhost.localdomain ([119.28.83.143])
-        by smtp.gmail.com with ESMTPSA id q8sm13873051pgn.22.2021.04.04.21.01.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Apr 2021 21:01:44 -0700 (PDT)
-From:   Hengqi Chen <hengqi.chen@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, andrii@kernel.org, yhs@fb.com,
-        hengqi.chen@gmail.com
-Subject: [PATCH bpf-next] libbpf: Fix KERNEL_VERSION macro
-Date:   Mon,  5 Apr 2021 12:01:19 +0800
-Message-Id: <20210405040119.802188-1-hengqi.chen@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S231822AbhDEEyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 00:54:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55058 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230036AbhDEEyJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 00:54:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0E3DC61398;
+        Mon,  5 Apr 2021 04:54:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617598443;
+        bh=VzTVAnybf+oOGdlUEfj0vhEj5VpT1Xt7TmY+rOpnhVU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JRoC0fS68b3QvsXfLiL4nLpRYfxZYVeNLgr/F0hkzyhU5Ee5zf0vXE/AwKY3evxyK
+         pSo0KvGbnHgDxXEoiDz9iiZRUixzwbGjC1NZG4aC6e4Qshe44eKtAQfBoYi8wFmoEA
+         iUzZ5QPZRIof6Gsq/1NpLVLAJ2SiSirPUYr5Kwue6zj0mYUtUIpEJd6brfRw+374Yq
+         rLARe584e4oIDnnLvKI7RABDFK6ljaPtUDQqAL8LdSdCtWCLbEpDaBh88P+yky7maY
+         +6C5IxTkznqZRWb8DP8jIhjYHWVE8AYPsimWsEML0mTYhMZ7EH/OSAZBoOqbYv7kIs
+         SWGIKEpyReR0A==
+Date:   Mon, 5 Apr 2021 07:53:59 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, drivers@pensando.io,
+        Allen Hubbe <allenbh@pensando.io>
+Subject: Re: [PATCH net-next 05/12] ionic: add hw timestamp support files
+Message-ID: <YGqX511MvGNiLMXi@unreal>
+References: <20210401175610.44431-1-snelson@pensando.io>
+ <20210401175610.44431-6-snelson@pensando.io>
+ <20210404230526.GB24720@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210404230526.GB24720@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing ')' for KERNEL_VERSION macro.
+On Sun, Apr 04, 2021 at 04:05:26PM -0700, Richard Cochran wrote:
+> On Thu, Apr 01, 2021 at 10:56:03AM -0700, Shannon Nelson wrote:
+> > @@ -0,0 +1,589 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright(c) 2017 - 2021 Pensando Systems, Inc */
+> > +
+> > +#include <linux/netdevice.h>
+> > +#include <linux/etherdevice.h>
+> > +
+> > +#include "ionic.h"
+> > +#include "ionic_bus.h"
+> > +#include "ionic_lif.h"
+> > +#include "ionic_ethtool.h"
+> > +
+> > +static int ionic_hwstamp_tx_mode(int config_tx_type)
+> > +{
+> > +	switch (config_tx_type) {
+> > +	case HWTSTAMP_TX_OFF:
+> > +		return IONIC_TXSTAMP_OFF;
+> > +	case HWTSTAMP_TX_ON:
+> > +		return IONIC_TXSTAMP_ON;
+> > +	case HWTSTAMP_TX_ONESTEP_SYNC:
+> > +		return IONIC_TXSTAMP_ONESTEP_SYNC;
+> > +#ifdef HAVE_HWSTAMP_TX_ONESTEP_P2P
+> > +	case HWTSTAMP_TX_ONESTEP_P2P:
+> > +		return IONIC_TXSTAMP_ONESTEP_P2P;
+> > +#endif
+> 
+> This ifdef is not needed.  (I guess you have to support older kernel
+> versions, but my understanding of the policy is that new code
+> shouldn't carry such stuff).
 
-Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
----
- tools/lib/bpf/bpf_helpers.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The HAVE_HWSTAMP_TX_ONESTEP_P2P don't exist in the kernel and the ifdef should
+be deleted.
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index cc2e51c64a54..b904128626c2 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -51,7 +51,7 @@
- #endif
- 
- #ifndef KERNEL_VERSION
--#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c))
-+#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))
- #endif
- 
- /*
--- 
-2.25.1
-
+Thanks
