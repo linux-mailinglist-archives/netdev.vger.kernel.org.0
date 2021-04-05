@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE3E354239
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:02:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0187E35423F
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235641AbhDENCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 09:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbhDENCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 09:02:21 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D64C061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 06:02:13 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id k25so4966174iob.6
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 06:02:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=C/wEzvBut+12wjAyDnTHbSbbqL+Etwy+l5r7Xnp8jg4=;
-        b=IG935/wZfB5k0eIoIT8KxRbuzQ1eFGt9nRwxqCtDtuLDxpGF2Krvvw2H43fstxAWBz
-         pbeIBp8DuJknQ3hP2/andnxgMxYqg3o+IwZMYIn1iT/4l/p6+ansEynzr8UBhRYdi6FQ
-         aNedcl1fsWEsWHXPJTbNO6ZZYSOy6vtGjI6uNqAeFpzZea8RaPSobbwkQE0cjQaQ22Ww
-         vGKNFScL44ZcsgtfMF1YFv63UWxZ1AUfukCG6CbNmScCk4wRkDaFY73WSc7+DBsui003
-         lwKs16pymoBhiDpLDszrJs5B2Sd2cwtZA5+nFoifzvRoQV66fV4+pcG9M5EerowRsmGt
-         kHWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=C/wEzvBut+12wjAyDnTHbSbbqL+Etwy+l5r7Xnp8jg4=;
-        b=kQBoTVTkUXBVhGuSbIE6kcW+rFGNzWCUwaYWwEQV4/SV3uFCAL538DiGufhWuncstW
-         rgUV8f32WeKCvyOHZ3giy7IncWxISrANjZvDS021OkJvxkcxnMubfQXR4pQixtqWBvEo
-         0+sHdgw/WsOAnLR8RD2eF66l/Uzfmyp9/Jlv8KQU36dQwbpccWr4pOj5U7435123ugoF
-         PiS+SVyN7H4dRwNU/fFwY9k7WQJDzaiZ/PoXq3azKy4BkRfCUylLQwEVZMMCQqgyj8Qt
-         OHT8QhkDwbMv9OVltZCQT0S/UNmW14eMnHC+/ySNbEyck1oim4j4QR6zw56fmjvwx5LK
-         qATw==
-X-Gm-Message-State: AOAM5324C//cLaLNrU2ZivethnZfL0iQfs6CNsOCo/iVnRdhZVU2U0u2
-        8xn2TI9giQrftEASgQxlHiFAhAR3iugWkZ+cXRouVA==
-X-Google-Smtp-Source: ABdhPJwbFihDHfDOM98UHeL1FyCMKiymnoTSDnjhFd2IQ9as4iPY055CByZ0j0KJY7EzLmRnQZQ8+rRpr8gtNEfohz8=
-X-Received: by 2002:a02:7f0e:: with SMTP id r14mr23592305jac.112.1617627732127;
- Mon, 05 Apr 2021 06:02:12 -0700 (PDT)
+        id S240967AbhDENL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 09:11:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33942 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235568AbhDENL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 09:11:27 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTP0W-00EvY7-HE; Mon, 05 Apr 2021 15:11:08 +0200
+Date:   Mon, 5 Apr 2021 15:11:08 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk,
+        weifeng.voon@intel.com, boon.leong.ong@intel.com,
+        qiangqing.zhang@nxp.com, vee.khee.wong@intel.com,
+        fugang.duan@nxp.com, kim.tatt.chuah@intel.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH net-next v2 0/2] Enable 2.5Gbps speed for stmmac
+Message-ID: <YGsMbBW9h4H1y/T8@lunn.ch>
+References: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
 MIME-Version: 1.0
-References: <20210405070652.2447152-1-zenczykowski@gmail.com>
-In-Reply-To: <20210405070652.2447152-1-zenczykowski@gmail.com>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Mon, 5 Apr 2021 22:01:59 +0900
-Message-ID: <CAKD1Yr3NgUKE+eVmGQkFq1o4RoWpwfDuvmnbT+hh+UCRpuQs1w@mail.gmail.com>
-Subject: Re: [PATCH] net-ipv6: bugfix - raw & sctp - switch to ipv6_can_nonlocal_bind()
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 5, 2021 at 4:07 PM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
-> The helper is defined as:
->   static inline bool ipv6_can_nonlocal_bind(struct net *net, struct inet_=
-sock *inet) {
->     return net->ipv6.sysctl.ip_nonlocal_bind || inet->freebind || inet->t=
-ransparent;
->   }
-> so this change only widens the accepted opt-outs and is thus a clean bugf=
-ix.
+On Mon, Apr 05, 2021 at 07:29:51PM +0800, Michael Sit Wei Hong wrote:
+> This patchset enables 2.5Gbps speed mode for stmmac.
+> Link speed mode is detected and configured at serdes power up sequence.
+> For 2.5G, we do not use SGMII in-band AN, we check the link speed mode
+> in the serdes and disable the in-band AN accordingly.
+> 
+> Changes:
+> v1 -> v2
+>  patch 1/2
+>  -Remove MAC supported link speed masking
+> 
+>  patch 2/2
+>  -Add supported link speed masking in the PCS
 
-Reviewed-By: Lorenzo Colitti <lorenzo@google.com>
+So there still some confusion here.
+
+------------            --------
+|MAC - PCS |---serdes---| PHY  |--- copper 
+------------            --------
+
+
+You have a MAC and an PCS in the stmmac IP block. That then has some
+sort of SERDES interface, running 1000BaseX, SGMII, SGMII overclocked
+at 2.5G or 25000BaseX. Connected to the SERDES you have a PHY which
+converts to copper, giving you 2500BaseT.
+
+You said earlier, that the PHY can only do 2500BaseT. So it should be
+the PHY driver which sets supported to 2500BaseT and no other speeds.
+
+You should think about when somebody uses this MAC with a different
+PHY, one that can do the full range of 10/half through to 2.5G
+full. What generally happens is that the PHY performs auto-neg to
+determine the link speed. For 10M-1G speeds the PHY will configure its
+SERDES interface to SGMII and phylink will ask the PCS to also be
+configured to SGMII. If the PHY negotiates 2500BaseT, it will
+configure its side of the SERDES to 2500BaseX or SGMII overclocked at
+2.5G. Again, phylink will ask the PCS to match what the PHY is doing.
+
+So, where exactly is the limitation in your hardware? PCS or PHY?
+
+     Andrew
