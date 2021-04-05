@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D58D8353B91
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B60E6353B97
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbhDEFY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 01:24:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56772 "EHLO mail.kernel.org"
+        id S232158AbhDEFYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 01:24:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232098AbhDEFYZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 01:24:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 892346139E;
-        Mon,  5 Apr 2021 05:24:18 +0000 (UTC)
+        id S232141AbhDEFY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 01:24:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F258160724;
+        Mon,  5 Apr 2021 05:24:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617600259;
-        bh=nRfDFwKnXvGxEINJ1gcUC5CV0hDDdn2QGMGYyGbA7kU=;
+        s=k20201202; t=1617600262;
+        bh=TEonNohSk3EOSuNC7NQhTyXQR/le1bI4Rm+lbGRMhFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHoI+pUcHzU20igTKYZrklmw7W/BSsCop538orqhMBlWsUMJ25vZUuom6KI8GJ6xJ
-         HaROOmDmBRB/yGlqL4AtjyV/K9d0f4v9hRClzfsYeretoARDsMPdSctmtreSR/Ht6H
-         WsuQfYs5lXbXpYinCPOm6HuwsFhisYx9BDQrlcETN+mrI4GhkEA6+wOgjRdIQp5X8s
-         MkOBzOg7YwifLq7AcIG4RMeq9ySjzFiBaMHNvR5zm5Xwhn6DtVXYST+6bXKykJbjXZ
-         kH30bar0LGJwgxKwOoqtsOY+jzXkUPejDXliyyPKH5uOYsOsInJ5kpgXj2s9xBpBbs
-         +swSb/FSAvQ+A==
+        b=OYZI5B7xWpbmozNboLJR3DNhlI8gl+yFyBzL8s8rkQ9v3cxdRSR4Pcl95wBnkwIGw
+         7WpqToEYZZxUC46b/gQsHXzarF7l05/xnPGzOa0KcFQnnWj79dVfrWZUT5eLVKXgqv
+         pz4DQa+RVAw7nQAqAHF2civ70nLPbDRMkJj5iColoB4/u3rLW1mugaxyWVa1KIw4Z3
+         p1l89kLcOsl2MGAbplU8xnOMrt9uTcsZf1+hOJgSaNp2kSu5AIzZgbgMKnUwEg5CBs
+         MbKq8oGOxt9TmW0UuTH05peUnwILEeGNCr+CJWKKIMLZ+pqVrW1f6rox4r6cw0impJ
+         CHjWu7sq0Q2yw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -68,9 +68,9 @@ Cc:     Avihai Horon <avihaih@nvidia.com>,
         Weihang Li <liweihang@huawei.com>,
         Yishai Hadas <yishaih@nvidia.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH rdma-next 03/10] RDMA/iser: Enable Relaxed Ordering
-Date:   Mon,  5 Apr 2021 08:23:57 +0300
-Message-Id: <20210405052404.213889-4-leon@kernel.org>
+Subject: [PATCH rdma-next 04/10] RDMA/rtrs: Enable Relaxed Ordering
+Date:   Mon,  5 Apr 2021 08:23:58 +0300
+Message-Id: <20210405052404.213889-5-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210405052404.213889-1-leon@kernel.org>
 References: <20210405052404.213889-1-leon@kernel.org>
@@ -82,72 +82,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Avihai Horon <avihaih@nvidia.com>
 
-Enable Relaxed Ordering for iser.
+Enable Relaxed Ordering fro rtrs client and server.
 
 Relaxed Ordering is an optional access flag and as such, it is ignored
 by vendors that don't support it.
 
 Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Max Gurtovoy <maxg@mellanox.com>
 Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/ulp/iser/iser_memory.c | 10 ++++------
- drivers/infiniband/ulp/iser/iser_verbs.c  |  6 ++++--
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/infiniband/ulp/rtrs/rtrs-clt.c |  6 ++++--
+ drivers/infiniband/ulp/rtrs/rtrs-srv.c | 15 ++++++++-------
+ 2 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/iser/iser_memory.c b/drivers/infiniband/ulp/iser/iser_memory.c
-index afec40da9b58..29849c9e82e8 100644
---- a/drivers/infiniband/ulp/iser/iser_memory.c
-+++ b/drivers/infiniband/ulp/iser/iser_memory.c
-@@ -271,9 +271,8 @@ iser_reg_sig_mr(struct iscsi_iser_task *iser_task,
- 	wr->wr.send_flags = 0;
- 	wr->mr = mr;
- 	wr->key = mr->rkey;
--	wr->access = IB_ACCESS_LOCAL_WRITE |
--		     IB_ACCESS_REMOTE_READ |
--		     IB_ACCESS_REMOTE_WRITE;
-+	wr->access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_READ |
-+		     IB_ACCESS_REMOTE_WRITE | IB_ACCESS_RELAXED_ORDERING;
- 	rsc->mr_valid = 1;
+diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
+index 0d3960ed5b2b..a3fbb47a3574 100644
+--- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
++++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
+@@ -1099,7 +1099,8 @@ static int rtrs_clt_read_req(struct rtrs_clt_io_req *req)
+ 			.mr = req->mr,
+ 			.key = req->mr->rkey,
+ 			.access = (IB_ACCESS_LOCAL_WRITE |
+-				   IB_ACCESS_REMOTE_WRITE),
++				   IB_ACCESS_REMOTE_WRITE |
++				   IB_ACCESS_RELAXED_ORDERING),
+ 		};
+ 		wr = &rwr.wr;
  
- 	sig_reg->sge.lkey = mr->lkey;
-@@ -318,9 +317,8 @@ static int iser_fast_reg_mr(struct iscsi_iser_task *iser_task,
- 	wr->wr.num_sge = 0;
- 	wr->mr = mr;
- 	wr->key = mr->rkey;
--	wr->access = IB_ACCESS_LOCAL_WRITE  |
--		     IB_ACCESS_REMOTE_WRITE |
--		     IB_ACCESS_REMOTE_READ;
-+	wr->access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE |
-+		     IB_ACCESS_REMOTE_READ | IB_ACCESS_RELAXED_ORDERING;
+@@ -1260,7 +1261,8 @@ static int alloc_sess_reqs(struct rtrs_clt_sess *sess)
+ 			goto out;
  
- 	rsc->mr_valid = 1;
- 
-diff --git a/drivers/infiniband/ulp/iser/iser_verbs.c b/drivers/infiniband/ulp/iser/iser_verbs.c
-index 3c370ee25f2f..1e236b1cf29b 100644
---- a/drivers/infiniband/ulp/iser/iser_verbs.c
-+++ b/drivers/infiniband/ulp/iser/iser_verbs.c
-@@ -121,7 +121,8 @@ iser_create_fastreg_desc(struct iser_device *device,
- 	else
- 		mr_type = IB_MR_TYPE_MEM_REG;
- 
--	desc->rsc.mr = ib_alloc_mr(pd, mr_type, size, 0);
-+	desc->rsc.mr = ib_alloc_mr(pd, mr_type, size,
-+		IB_ACCESS_RELAXED_ORDERING);
- 	if (IS_ERR(desc->rsc.mr)) {
- 		ret = PTR_ERR(desc->rsc.mr);
- 		iser_err("Failed to allocate ib_fast_reg_mr err=%d\n", ret);
-@@ -129,7 +130,8 @@ iser_create_fastreg_desc(struct iser_device *device,
+ 		req->mr = ib_alloc_mr(sess->s.dev->ib_pd, IB_MR_TYPE_MEM_REG,
+-				      sess->max_pages_per_mr, 0);
++				      sess->max_pages_per_mr,
++				      IB_ACCESS_RELAXED_ORDERING);
+ 		if (IS_ERR(req->mr)) {
+ 			err = PTR_ERR(req->mr);
+ 			req->mr = NULL;
+diff --git a/drivers/infiniband/ulp/rtrs/rtrs-srv.c b/drivers/infiniband/ulp/rtrs/rtrs-srv.c
+index 575f31ff20fd..c28ed5e2245d 100644
+--- a/drivers/infiniband/ulp/rtrs/rtrs-srv.c
++++ b/drivers/infiniband/ulp/rtrs/rtrs-srv.c
+@@ -312,8 +312,8 @@ static int rdma_write_sg(struct rtrs_srv_op *id)
+ 		rwr.mr = srv_mr->mr;
+ 		rwr.wr.send_flags = 0;
+ 		rwr.key = srv_mr->mr->rkey;
+-		rwr.access = (IB_ACCESS_LOCAL_WRITE |
+-			      IB_ACCESS_REMOTE_WRITE);
++		rwr.access = (IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE |
++			      IB_ACCESS_RELAXED_ORDERING);
+ 		msg = srv_mr->iu->buf;
+ 		msg->buf_id = cpu_to_le16(id->msg_id);
+ 		msg->type = cpu_to_le16(RTRS_MSG_RKEY_RSP);
+@@ -432,8 +432,8 @@ static int send_io_resp_imm(struct rtrs_srv_con *con, struct rtrs_srv_op *id,
+ 		rwr.wr.send_flags = 0;
+ 		rwr.mr = srv_mr->mr;
+ 		rwr.key = srv_mr->mr->rkey;
+-		rwr.access = (IB_ACCESS_LOCAL_WRITE |
+-			      IB_ACCESS_REMOTE_WRITE);
++		rwr.access = (IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE |
++			      IB_ACCESS_RELAXED_ORDERING);
+ 		msg = srv_mr->iu->buf;
+ 		msg->buf_id = cpu_to_le16(id->msg_id);
+ 		msg->type = cpu_to_le16(RTRS_MSG_RKEY_RSP);
+@@ -638,7 +638,7 @@ static int map_cont_bufs(struct rtrs_srv_sess *sess)
+ 			goto free_sg;
+ 		}
+ 		mr = ib_alloc_mr(sess->s.dev->ib_pd, IB_MR_TYPE_MEM_REG,
+-				 sgt->nents, 0);
++				 sgt->nents, IB_ACCESS_RELAXED_ORDERING);
+ 		if (IS_ERR(mr)) {
+ 			err = PTR_ERR(mr);
+ 			goto unmap_sg;
+@@ -823,8 +823,9 @@ static int process_info_req(struct rtrs_srv_con *con,
+ 		rwr[mri].wr.send_flags = 0;
+ 		rwr[mri].mr = mr;
+ 		rwr[mri].key = mr->rkey;
+-		rwr[mri].access = (IB_ACCESS_LOCAL_WRITE |
+-				   IB_ACCESS_REMOTE_WRITE);
++		rwr[mri].access =
++			(IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE |
++			 IB_ACCESS_RELAXED_ORDERING);
+ 		reg_wr = &rwr[mri].wr;
  	}
  
- 	if (pi_enable) {
--		desc->rsc.sig_mr = ib_alloc_mr_integrity(pd, size, size, 0);
-+		desc->rsc.sig_mr = ib_alloc_mr_integrity(pd, size, size,
-+			IB_ACCESS_RELAXED_ORDERING);
- 		if (IS_ERR(desc->rsc.sig_mr)) {
- 			ret = PTR_ERR(desc->rsc.sig_mr);
- 			iser_err("Failed to allocate sig_mr err=%d\n", ret);
 -- 
 2.30.2
 
