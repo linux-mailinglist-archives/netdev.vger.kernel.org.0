@@ -2,110 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7CDF35486C
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 23:58:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C60A835486D
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 23:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241367AbhDEV6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 17:58:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53111 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241318AbhDEV6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 17:58:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617659918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rp0B3Z0gvL548SBUOTCx5smRmcVt/tRjB04FMO2XAaU=;
-        b=IaYUlTDipOQet/miNz55hBWZ5Yz9AXj0I2mhv+MbrVdIF7UfRn3X+Gp/PmP1XLqOvfL/te
-        hgBhvJQ8RLPmhxAzqmkGnvr9ut2jOrUbaZM2LuyNjil8IhyMNcsWyr7VlN48V6y1EZWNSb
-        nTlKPNd4veNgYdySnmjXSsWPwXyP/GU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-154-m2NPmldfNDCt_1mt-l5W0g-1; Mon, 05 Apr 2021 17:58:34 -0400
-X-MC-Unique: m2NPmldfNDCt_1mt-l5W0g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BA7991005D54;
-        Mon,  5 Apr 2021 21:58:32 +0000 (UTC)
-Received: from krava (unknown [10.40.192.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 12EB819C45;
-        Mon,  5 Apr 2021 21:58:26 +0000 (UTC)
-Date:   Mon, 5 Apr 2021 23:58:25 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC PATCH bpf-next 1/4] bpf: Allow trampoline re-attach
-Message-ID: <YGuIAWA4kRJCfI4U@krava>
-References: <20210328112629.339266-1-jolsa@kernel.org>
- <20210328112629.339266-2-jolsa@kernel.org>
- <87blavd31f.fsf@toke.dk>
- <20210403182155.upi6267fh3gsdvrq@ast-mbp>
- <YGsZ0VGMk/hBfr2y@krava>
- <87ft04rf51.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87ft04rf51.fsf@toke.dk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S237101AbhDEV7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 17:59:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241318AbhDEV7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 17:59:37 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B6CC061756;
+        Mon,  5 Apr 2021 14:59:30 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 70CDA4D309A87;
+        Mon,  5 Apr 2021 14:59:28 -0700 (PDT)
+Date:   Mon, 05 Apr 2021 14:59:21 -0700 (PDT)
+Message-Id: <20210405.145921.1248097047641627556.davem@davemloft.net>
+To:     phil@philpotter.co.uk
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: tun: set tun->dev->addr_len during TUNSETLINK
+ processing
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210405113555.9419-1-phil@philpotter.co.uk>
+References: <20210405113555.9419-1-phil@philpotter.co.uk>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 05 Apr 2021 14:59:28 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 04:15:54PM +0200, Toke Høiland-Jørgensen wrote:
-> Jiri Olsa <jolsa@redhat.com> writes:
+From: Phillip Potter <phil@philpotter.co.uk>
+Date: Mon,  5 Apr 2021 12:35:55 +0100
+
+> When changing type with TUNSETLINK ioctl command, set tun->dev->addr_len
+> to match the appropriate type, using new tun_get_addr_len utility function
+> which returns appropriate address length for given type. Fixes a
+> KMSAN-found uninit-value bug reported by syzbot at:
+> https://syzkaller.appspot.com/bug?id=0766d38c656abeace60621896d705743aeefed51
 > 
-> > On Sat, Apr 03, 2021 at 11:21:55AM -0700, Alexei Starovoitov wrote:
-> >> On Sat, Apr 03, 2021 at 01:24:12PM +0200, Toke Høiland-Jørgensen wrote:
-> >> > >  	if (!prog->aux->dst_trampoline && !tgt_prog) {
-> >> > > -		err = -ENOENT;
-> >> > > -		goto out_unlock;
-> >> > > +		/*
-> >> > > +		 * Allow re-attach for tracing programs, if it's currently
-> >> > > +		 * linked, bpf_trampoline_link_prog will fail.
-> >> > > +		 */
-> >> > > +		if (prog->type != BPF_PROG_TYPE_TRACING) {
-> >> > > +			err = -ENOENT;
-> >> > > +			goto out_unlock;
-> >> > > +		}
-> >> > > +		if (!prog->aux->attach_btf) {
-> >> > > +			err = -EINVAL;
-> >> > > +			goto out_unlock;
-> >> > > +		}
-> >> > 
-> >> > I'm wondering about the two different return codes here. Under what
-> >> > circumstances will aux->attach_btf be NULL, and why is that not an
-> >> > ENOENT error? :)
-> >> 
-> >> The feature makes sense to me as well.
-> >> I don't quite see how it would get here with attach_btf == NULL.
-> >> Maybe WARN_ON then?
-> >
-> > right, that should be always there
-> >
-> >> Also if we're allowing re-attach this way why exclude PROG_EXT and LSM?
-> >> 
-> >
-> > I was enabling just what I needed for the test, which is so far
-> > the only use case.. I'll see if I can enable that for all of them
+> Reported-by: syzbot+001516d86dbe88862cec@syzkaller.appspotmail.com
+> Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> ---
+>  drivers/net/tun.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
 > 
-> How would that work? For PROG_EXT we clear the destination on the first
-> attach (to avoid keeping a ref on it), so re-attach can only be done
-> with an explicit target (which already works just fine)...
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 978ac0981d16..56c26339ee3b 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -69,6 +69,14 @@
+>  #include <linux/bpf.h>
+>  #include <linux/bpf_trace.h>
+>  #include <linux/mutex.h>
+> +#include <linux/ieee802154.h>
+> +#include <linux/if_ltalk.h>
+> +#include <uapi/linux/if_fddi.h>
+> +#include <uapi/linux/if_hippi.h>
+> +#include <uapi/linux/if_fc.h>
+> +#include <net/ax25.h>
+> +#include <net/rose.h>
+> +#include <net/6lowpan.h>
+>  
+>  #include <linux/uaccess.h>
+>  #include <linux/proc_fs.h>
+> @@ -2925,6 +2933,45 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
+>  	return __tun_set_ebpf(tun, prog_p, prog);
+>  }
+>  
+> +/* Return correct value for tun->dev->addr_len based on tun->dev->type. */
+> +static inline unsigned char tun_get_addr_len(unsigned short type)
+> +{
 
-right, I'm just looking on it ;-) extensions already seem allow for that,
-I'll check LSM
+Please do not use inline in foo.c files, let the compiler decide.
 
-jirka
-
+Thanks.
