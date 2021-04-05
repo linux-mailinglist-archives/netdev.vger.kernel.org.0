@@ -2,91 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74527353AFD
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 04:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F71353B08
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 05:10:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbhDECyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Apr 2021 22:54:00 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:16338 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbhDECx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 22:53:59 -0400
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FDFY95Bp6z942p;
-        Mon,  5 Apr 2021 10:51:41 +0800 (CST)
-Received: from use12-sp2.huawei.com (10.67.189.174) by
- DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 5 Apr 2021 10:53:42 +0800
-From:   Xiaoming Ni <nixiaoming@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <vladbu@nvidia.com>,
-        <dlinkin@nvidia.com>, <saeedm@nvidia.com>, <leon@kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <roid@nvidia.com>,
-        <dan.carpenter@oracle.com>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>
-CC:     <nixiaoming@huawei.com>, <xiaoqian9@huawei.com>
-Subject: [PATCH] net/mlx5: fix kfree mismatch in indir_table.c
-Date:   Mon, 5 Apr 2021 10:53:39 +0800
-Message-ID: <20210405025339.86176-1-nixiaoming@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        id S231916AbhDEDKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Apr 2021 23:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231782AbhDEDKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Apr 2021 23:10:15 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839B3C061756;
+        Sun,  4 Apr 2021 20:10:09 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id x21so11189243eds.4;
+        Sun, 04 Apr 2021 20:10:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/ybUuVGV/ftbkhaL6dd8KgunndxjqVlMExLpZx+2c90=;
+        b=TBxj+T6jtZc5CpRQnmGBEmipLj3LGjnLbVtSazOH3ZI2C5g1KFWQyeB2RBrYO/ZCfO
+         q0GRCulGutcnLE5RK/qST4tBRC7eavLYvCkYMzkg6ibmZKoyf+TjrVleSLVpaS9lxHnd
+         b/XYNOYc/pnPk6TiNu2Rkfp/JGrhnYmMKo853c+G3rPMeQMF61Ro6m41nRy4rNmdsm+T
+         OzjnmNkI/GlZ5/jKiHuapARuWARh1pEfTkjsJBI5YQPUsq44yyWkUnuWXX4WrmsxAH1+
+         7IxhWaCS7X5ZpZvL5GMAhtaQW5sv28COXO8NgjLRN/jBIKeH9Z7FSS1XvhO/kqteL7CQ
+         IEGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/ybUuVGV/ftbkhaL6dd8KgunndxjqVlMExLpZx+2c90=;
+        b=ZyGdWTEQeBhGDn9tAyhXz8TGKy5HQe93JfwPAKh3NB/CMn1qAGApBQ3zrShC15DGFS
+         ubl83JUu+5hTB9JuV81W6vzR2FR69O7PbessvXbdWi1tngjBVwqXkCuc54l/i1f46n52
+         lqop3QY9TQkRg9QyXwtQYIxVIeOxxnFQySaS/lY9w9V24xTF+9d+PKJPk3gkil1I9a0A
+         wgVEhCMaB/2wTnPHZ0WhvNCId16bfXprC69epMoDX/zSpO2zAcbhKoS1BFp4/lsz+YEg
+         p0bckVnu4ienGEdH+MccHnmRTdeaSn8Pgjr5/lTmQU50V1PBX3z336nStu68+k7AKKUg
+         IyZA==
+X-Gm-Message-State: AOAM533npnz4WTzGDlOl1tUH7Kpz0KgRql1ab6NCGZYfbd5U3o7KhsTX
+        S5WdIak8aoOmD1Vej8dsQHsSiKsG/K8RfeziH1YKzTsutXk=
+X-Google-Smtp-Source: ABdhPJwg/B1NRjSSo1xg3oKdxwJ92yV1R5GKrTHieEcyBsN+BTYRe6XN797UQa0m/k0bZPXnjg1v8A8eDPxRR8D8OF4=
+X-Received: by 2002:aa7:d813:: with SMTP id v19mr28961632edq.213.1617592208271;
+ Sun, 04 Apr 2021 20:10:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.189.174]
-X-CFilter-Loop: Reflected
+References: <20210404175031.3834734-1-i.maximets@ovn.org> <84e7d112-f29f-022a-8863-69f1db157c10@ovn.org>
+In-Reply-To: <84e7d112-f29f-022a-8863-69f1db157c10@ovn.org>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 5 Apr 2021 11:09:25 +0800
+Message-ID: <CAMDZJNXvqMaTxwF2M79ohos0VYpGvjKjMokBv4wrEgej=bdJrA@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net] openvswitch: fix send of uninitialized
+ stack memory in ct limit reply
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Pravin B Shelar <pshelar@ovn.org>, ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Memory allocated by kvzalloc() should be freed by kvfree().
+On Mon, Apr 5, 2021 at 2:01 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>
+> CC: ovs-dev
+>
+> On 4/4/21 7:50 PM, Ilya Maximets wrote:
+> > 'struct ovs_zone_limit' has more members than initialized in
+> > ovs_ct_limit_get_default_limit().  The rest of the memory is a random
+> > kernel stack content that ends up being sent to userspace.
+> >
+> > Fix that by using designated initializer that will clear all
+> > non-specified fields.
+> >
+> > Fixes: 11efd5cb04a1 ("openvswitch: Support conntrack zone limit")
+> > Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> > ---
+> >  net/openvswitch/conntrack.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> > index c29b0ef1fc27..cadb6a29b285 100644
+> > --- a/net/openvswitch/conntrack.c
+> > +++ b/net/openvswitch/conntrack.c
+> > @@ -2032,10 +2032,10 @@ static int ovs_ct_limit_del_zone_limit(struct nlattr *nla_zone_limit,
+> >  static int ovs_ct_limit_get_default_limit(struct ovs_ct_limit_info *info,
+> >                                         struct sk_buff *reply)
+> >  {
+> > -     struct ovs_zone_limit zone_limit;
+> > -
+> > -     zone_limit.zone_id = OVS_ZONE_LIMIT_DEFAULT_ZONE;
+> > -     zone_limit.limit = info->default_limit;
+> > +     struct ovs_zone_limit zone_limit = {
+> > +             .zone_id = OVS_ZONE_LIMIT_DEFAULT_ZONE,
+> > +             .limit   = info->default_limit,
+> > +     };
+I review the code, userspace don't use the count of ovs_zone_lime
+struct, but this patch looks to to me.
+Thanks Ilya.
+Acked-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >       return nla_put_nohdr(reply, sizeof(zone_limit), &zone_limit);
+> >  }
+> >
+>
+> _______________________________________________
+> dev mailing list
+> dev@openvswitch.org
+> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
 
-Fixes: 34ca65352ddf2 ("net/mlx5: E-Switch, Indirect table infrastructur")
-Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
----
- .../net/ethernet/mellanox/mlx5/core/esw/indir_table.c  | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
-index 6f6772bf61a2..3da7becc1069 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
-@@ -248,7 +248,7 @@ static int mlx5_esw_indir_table_rule_get(struct mlx5_eswitch *esw,
- err_ethertype:
- 	kfree(rule);
- out:
--	kfree(rule_spec);
-+	kvfree(rule_spec);
- 	return err;
- }
- 
-@@ -328,7 +328,7 @@ static int mlx5_create_indir_recirc_group(struct mlx5_eswitch *esw,
- 	e->recirc_cnt = 0;
- 
- out:
--	kfree(in);
-+	kvfree(in);
- 	return err;
- }
- 
-@@ -347,7 +347,7 @@ static int mlx5_create_indir_fwd_group(struct mlx5_eswitch *esw,
- 
- 	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
- 	if (!spec) {
--		kfree(in);
-+		kvfree(in);
- 		return -ENOMEM;
- 	}
- 
-@@ -371,8 +371,8 @@ static int mlx5_create_indir_fwd_group(struct mlx5_eswitch *esw,
- 	}
- 
- err_out:
--	kfree(spec);
--	kfree(in);
-+	kvfree(spec);
-+	kvfree(in);
- 	return err;
- }
- 
+
 -- 
-2.27.0
-
+Best regards, Tonghao
