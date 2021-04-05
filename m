@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C944354528
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:29:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D82354534
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 18:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242367AbhDEQ2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 12:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
+        id S242401AbhDEQd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 12:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238474AbhDEQ2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 12:28:53 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08230C061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 09:28:47 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id y2so5921886plg.5
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 09:28:47 -0700 (PDT)
+        with ESMTP id S238558AbhDEQdz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 12:33:55 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC989C061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 09:33:48 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id s21so6353161pjq.1
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 09:33:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=pJ/sTXb40aVRvwtnarKWOPi5GQ7A30VKT2lH5CND+hg=;
-        b=wDNwNSYbQVFtEP8fGF2bbinSIFfs3U08GyigFWkguRzWzVKQUk6qiIf0+tY2siwmvV
-         SZPFl2ijddaaXOj6AqVHGuVxEu7p5EPdbiJdAV3C+wt/8K5T1ujJSaFmNIrnmqGRlyYU
-         vDKQvEgZnevZgBkL674dy1p2muApZhjS2u2zwTkOfOBhyps+NCU5+0qGgNGmJ/Ol6Tlp
-         xiMKE6p38mm4M1jLFfZwlDbKz8DIzZf2jyt6mjz/he+mqUavucFsprEB/M7VMbbJlDSv
-         QVkUYZ3OynnLFC83lzgB4WYTOmPX148CKNit38tWP481yQrZ9obpv0PBkHDpENjgKpRX
-         mdHA==
+        bh=692RzP2XNLkViuazF9VmOw2T8IJC35Rfwh4Hdr97wxg=;
+        b=ldKGZKgOpHbJNrRKdSmhkZwzi9kaHyvfxWR4RfHYecHezkl7ablod9KUdGupj7XO7I
+         K7/bwmCD/KnV7/mMszrSBUNY6bgdkLUwbOZAGwtccbJdLFW26hU75ikoLeIhSauDx+oK
+         7ixOVsSnWxFkt7sfUFOHGY5yZah4b4b6TM7RZL4UBuY9UzmUzmNiC+FvpScbXgbxgw04
+         xsp93mocL14K1PhwR7jOXqIcypWMcrsZWbOMvPDw5BnLWS0ytA9wMESb3cvcqM1JpbLO
+         zuNqY00uhIoZfsN07bIMOTMszvYpGwziDOzaKpLIqOXdAzpX5Ss2Duh0uXVZfPCsZLnK
+         n5JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=pJ/sTXb40aVRvwtnarKWOPi5GQ7A30VKT2lH5CND+hg=;
-        b=fHXaBje9f8pg154pHVRiVc3MJsC1nI92+HWdRf4CzAxT0QzW2tvgi7jHjyHY6XPb4y
-         L883bnaCjAUd5mwR/Ase/imtbPMOWM9lSjEsHX1JPaDM2jZ3XHE+VGsJ0huagoPsreMS
-         ZxBX/gQYBP+rnNLh4fsLtAv3CHponEOzqQZO5PUOO2nDM64z4dhaJQPB0TD5x72Wwicw
-         EMSN43UJKOWcRBfD3nRtq3EcH6cMbWboH/5nW4FqkhstlgbuE8VXtQkPMybdjimufOox
-         ZUwRee29IuD0WenugekRTLj8D5v0LCXSv9IOEeGNnz/gGXxuGHQKxukfoRfkU8RbP5u9
-         WK7w==
-X-Gm-Message-State: AOAM533YL+F7JvEYvnWS4wi/qp9KfTf0iAlA7VfnhcQ7M/BWcpSRz4pj
-        fwm+H9u7Ow4bUsLGokeNYVx+zpeT2yUpuA==
-X-Google-Smtp-Source: ABdhPJwRiH/nS9m8b8RECJfXdFU++vAE1Xuvtq86M2+Q4RP7mErThVKMbimE0A84Sr0e+KPZ16BiOA==
-X-Received: by 2002:a17:902:704b:b029:e9:b5e:5333 with SMTP id h11-20020a170902704bb02900e90b5e5333mr5700688plt.78.1617640126586;
-        Mon, 05 Apr 2021 09:28:46 -0700 (PDT)
+        bh=692RzP2XNLkViuazF9VmOw2T8IJC35Rfwh4Hdr97wxg=;
+        b=QVMlxPIYVTuEVduU+j9w2E9XQNvsOuXRwGOfIq7/OVXTxbNXecPtFcwQj3Cgk3T+4k
+         gPgERN5olk6953w1DGqv9OKesAPFGA0vKta9uIhUjQxTWtYKSHZzlbw8jOaHaarZpf7A
+         BtOIQirlBvHQEAPiQYbA4QANN2iW8yLklG6QgkTiTKigXXt88nEUNDcoYiZCBxvmZ8fi
+         tigRDvFyG4qFQ+CDTR/xkROJrDM5ra6p7IUm6mBiDk/PqSCokB6swaQTdpRhFilbybYw
+         fI2bw2dj4CKvSTJex1pFxIxHfUaR2NuY/BrXqaBfOcs7hHV8khKdSc5O3VwOo656LyUo
+         6yRQ==
+X-Gm-Message-State: AOAM531eNxRwF8SXOurngu20JDJJ3/bBuVxEO+WsPvWNcy1mfukloq4j
+        iggmBOHhHS2VfM8NI0Rt2Yn07w==
+X-Google-Smtp-Source: ABdhPJz9QbvDtbQNd6QQgV7DzSeVz51TgIirSXKhifx08iOX/0e9SOEtGmtcRkdf1+FHRJp3vbLxjg==
+X-Received: by 2002:a17:902:9008:b029:e6:f37a:2183 with SMTP id a8-20020a1709029008b02900e6f37a2183mr24897405plp.49.1617640428322;
+        Mon, 05 Apr 2021 09:33:48 -0700 (PDT)
 Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id s26sm16041013pfd.5.2021.04.05.09.28.45
+        by smtp.gmail.com with ESMTPSA id c25sm15849428pfo.101.2021.04.05.09.33.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Apr 2021 09:28:45 -0700 (PDT)
-Subject: Re: [PATCH net-next 09/12] ionic: add and enable tx and rx timestamp
- handling
+        Mon, 05 Apr 2021 09:33:47 -0700 (PDT)
+Subject: Re: [PATCH net-next 12/12] ionic: advertise support for hardware
+ timestamps
 To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
 References: <20210401175610.44431-1-snelson@pensando.io>
- <20210401175610.44431-10-snelson@pensando.io>
- <20210404234107.GD24720@hoboy.vegasvil.org>
+ <20210401175610.44431-13-snelson@pensando.io>
+ <20210404234359.GE24720@hoboy.vegasvil.org>
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <6e0e4d73-f436-21c0-59fe-ee4f5c133f95@pensando.io>
-Date:   Mon, 5 Apr 2021 09:28:44 -0700
+Message-ID: <58f57a07-ef4c-c408-652d-708647f44e3d@pensando.io>
+Date:   Mon, 5 Apr 2021 09:33:46 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <20210404234107.GD24720@hoboy.vegasvil.org>
+In-Reply-To: <20210404234359.GE24720@hoboy.vegasvil.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/4/21 4:41 PM, Richard Cochran wrote:
-> On Thu, Apr 01, 2021 at 10:56:07AM -0700, Shannon Nelson wrote:
->
->> @@ -1150,6 +1232,10 @@ netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev)
->>   		return NETDEV_TX_OK;
->>   	}
->>   
->> +	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
->> +		if (lif->hwstamp_txq)
->> +			return ionic_start_hwstamp_xmit(skb, netdev);
-> The check for SKBTX_HW_TSTAMP and hwstamp_txq is good, but I didn't
-> see hwstamp_txq getting cleared in ionic_lif_hwstamp_set() when the
-> user turns off Tx time stamping via the SIOCSHWTSTAMP ioctl.
-
-Once the hwstamp queues are up, we leave them there for future use until 
-the interface is stopped, assuming that the stack isn't going to send us 
-SKBTX_HW_STAMP after it has disabled the offload.
-
->
-> In addition, the code should set
->
-> 	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
->
-> once the above tests pass.
-
-I can add that in a followup patch.
-
-Thanks,
-sln
-
+On 4/4/21 4:43 PM, Richard Cochran wrote:
+> On Thu, Apr 01, 2021 at 10:56:10AM -0700, Shannon Nelson wrote:
+>> Let the network stack know we've got support for timestamping
+>> the packets.
+> Actually, you already advertised the support to user space in Patch 10,
+> so this present patch should go before that one (or together).
 >
 > Thanks,
 > Richard
->
->
+
+Yes, I supposed they could have gone together.  However, I believe that 
+in a bisection this will only slightly confuse the user space tools, but 
+won't cause any kernel pain.
+
+sln
 
