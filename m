@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F1D1353BE6
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5631D353BDE
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbhDEFuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 01:50:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34330 "EHLO mail.kernel.org"
+        id S232033AbhDEFuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 01:50:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34180 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232078AbhDEFuV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 01:50:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECC0A6138A;
-        Mon,  5 Apr 2021 05:50:14 +0000 (UTC)
+        id S229727AbhDEFuO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 01:50:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 42EA761399;
+        Mon,  5 Apr 2021 05:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617601815;
-        bh=OZcrC5GanjfRIBMiqGHldB7KHYyxXozI8j3d7T22USc=;
+        s=k20201202; t=1617601808;
+        bh=F5IJVEwD/ds8nR2UWRrmKXAI11023OkVeObLtcX5Os8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mi3dfg3at4/ueREeId3jg7bTAy/4OXL1XBmR9UH001oVmWDFY8KoNBkRoWlTR8Dx/
-         zHryp2NxJGbOPHv2uvxSwTXG2LIx2oop0vngtomkWjljR2ADN3sOthTu8bYalDEXSk
-         jWhO6eqOzd5P5JlBNEtn5CbxWW56Y7jaREo0AgW3sGasikYwtia1fQUIuDq9vHP4wI
-         Wltdboz7BB2mUeogc0dTNFtkfC6s8VOw8+cRbPjByJXPD0Xcj69LVZ3/CuXXG9UpEP
-         7nptGF1rYPcCt6/dj1sU/Ysa2bOANGNInQRP4el2NdanyOvhl1FwX+KpQmkyims/sN
-         CcuTKY03/Kxmw==
+        b=NODekafGzp5kSojCg+hpr6B9AlQvD3zKz1kSQUnnab6bpFEEOrBv7H4HhlV/xDoFY
+         TqFAkD/p2pVLkh3I28NPd/1jujvuwkWrGbTce9KKjJN/16uPujucZoym8KBnN1wLlc
+         QKvVKGhzBkFZWDuJHsCWo1j2ZxDkXtxY53SB2B/tPDIPN7O8ZOy0WgPKkTKjRH+lQW
+         C07RwZj1T/8gB8IjoV1gkCqJobugEN3Ocv/6PIomvbhVfoWbJP1831Zr9n3Xnb6wdM
+         v7QgnCVGlTYCiSGHb7jlz3Xm72ANX8GWg/U5Rafawy+7PiQVcdMJ8O/EQs4ePWufCD
+         EjCIRobdjqIrA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -36,9 +36,9 @@ Cc:     Parav Pandit <parav@nvidia.com>,
         Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Subject: [PATCH rdma-next 1/8] RDMA/core: Check if client supports IB device or not
-Date:   Mon,  5 Apr 2021 08:49:53 +0300
-Message-Id: <20210405055000.215792-2-leon@kernel.org>
+Subject: [PATCH rdma-next 2/8] RDMA/cma: Skip device which doesn't support CM
+Date:   Mon,  5 Apr 2021 08:49:54 +0300
+Message-Id: <20210405055000.215792-3-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210405055000.215792-1-leon@kernel.org>
 References: <20210405055000.215792-1-leon@kernel.org>
@@ -50,55 +50,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-RDMA devices are of different transport(iWarp, IB, RoCE) and have
-different attributes.
-Not all clients are interested in all type of devices.
+A switchdev RDMA device do not support IB CM. When such device is added
+to the RDMA CM's device list, when application invokes rdma_listen(),
+cma attempts to listen to such device, however it has IB CM attribute
+disabled.
 
-Implement a generic callback that each IB client can implement to decide
-if client add() or remove() should be done by the IB core or not for a
-given IB device, client combination.
+Due to this, rdma_listen() call fails to listen for other non
+switchdev devices as well.
+
+A below error message can be seen.
+
+infiniband mlx5_0: RDMA CMA: cma_listen_on_dev, error -38
+
+A failing call flow is below.
+
+rdma_listen()
+  cma_listen_on_all()
+    cma_listen_on_dev()
+      _cma_attach_to_dev()
+      rdma_listen() <- fails on a specific switchdev device
+
+Hence, when a IB device doesn't support IB CM or IW CM, avoid adding
+such device to the cma list.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/core/device.c | 3 +++
- include/rdma/ib_verbs.h          | 9 +++++++++
- 2 files changed, 12 insertions(+)
+ drivers/infiniband/core/cma.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
-index c660cef66ac6..c9af2deba8c1 100644
---- a/drivers/infiniband/core/device.c
-+++ b/drivers/infiniband/core/device.c
-@@ -691,6 +691,9 @@ static int add_client_context(struct ib_device *device,
- 	if (!device->kverbs_provider && !client->no_kverbs_req)
- 		return 0;
+diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
+index 42a1c8955c50..80156faf90de 100644
+--- a/drivers/infiniband/core/cma.c
++++ b/drivers/infiniband/core/cma.c
+@@ -157,11 +157,13 @@ EXPORT_SYMBOL(rdma_res_to_id);
  
-+	if (client->is_supported && !client->is_supported(device))
-+		return 0;
+ static int cma_add_one(struct ib_device *device);
+ static void cma_remove_one(struct ib_device *device, void *client_data);
++static bool cma_supported(struct ib_device *device);
+ 
+ static struct ib_client cma_client = {
+ 	.name   = "cma",
+ 	.add    = cma_add_one,
+-	.remove = cma_remove_one
++	.remove = cma_remove_one,
++	.is_supported = cma_supported,
+ };
+ 
+ static struct ib_sa_client sa_client;
+@@ -4870,6 +4872,17 @@ static void cma_process_remove(struct cma_device *cma_dev)
+ 	wait_for_completion(&cma_dev->comp);
+ }
+ 
++static bool cma_supported(struct ib_device *device)
++{
++	u32 i;
 +
- 	down_write(&device->client_data_rwsem);
- 	/*
- 	 * So long as the client is registered hold both the client and device
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index 59138174affa..777fbcbd4858 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -2756,6 +2756,15 @@ struct ib_client {
- 			const union ib_gid *gid,
- 			const struct sockaddr *addr,
- 			void *client_data);
-+	/*
-+	 * Returns if the client is supported for a given device or not.
-+	 * @dev: An RDMA device to check if client can support this RDMA or not.
-+	 *
-+	 * A client that is interested in specific device attributes, should
-+	 * implement it to check if client can be supported for this device or
-+	 * not.
-+	 */
-+	bool (*is_supported)(struct ib_device *dev);
- 
- 	refcount_t uses;
- 	struct completion uses_zero;
++	rdma_for_each_port(device, i) {
++		if (rdma_cap_ib_cm(device, i) || rdma_cap_iw_cm(device, i))
++			return true;
++	}
++	return false;
++}
++
+ static int cma_add_one(struct ib_device *device)
+ {
+ 	struct rdma_id_private *to_destroy;
 -- 
 2.30.2
 
