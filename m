@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E59735418C
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 13:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B4C2354192
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 13:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234784AbhDELfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 07:35:43 -0400
-Received: from mga06.intel.com ([134.134.136.31]:35073 "EHLO mga06.intel.com"
+        id S234819AbhDELfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 07:35:51 -0400
+Received: from mga04.intel.com ([192.55.52.120]:32372 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233431AbhDELfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 07:35:43 -0400
-IronPort-SDR: vMK0n5+Ef8Ueq2qkpEA5hMEk3A80yZuZbE2mYZ/OBOIu8ajR9u59GPFsshJyPwTfTzfVzy9xUs
- yj5v+CSPYs9w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9944"; a="254169324"
+        id S233431AbhDELfv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 07:35:51 -0400
+IronPort-SDR: q5x8iN/t9hFldK6J5qtiGuxAOXtqCJJU7GjcR92iVbruYvCxcYXEKOOz2rUC5LN6i5J5IWU+qu
+ UZZ8DE/rWEGg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9944"; a="190649507"
 X-IronPort-AV: E=Sophos;i="5.81,306,1610438400"; 
-   d="scan'208";a="254169324"
+   d="scan'208";a="190649507"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2021 04:35:36 -0700
-IronPort-SDR: TH5332Obysrd576bvhDuX4G61pJrWOIGOPgjXXKzhsGeuYxOzI3cwwEVNUTpUN+a1TOvETpiaM
- Pvpcw7po8nKQ==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2021 04:35:44 -0700
+IronPort-SDR: x799B1AM2OWse/Ypn9vzVP6MYxPf4lIF2/qJu/oDggxd+WKT5DbXszaCbnVd3t2RFZMsxMUIWN
+ o3zQOiMyn7YA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,306,1610438400"; 
-   d="scan'208";a="378939399"
+   d="scan'208";a="378939430"
 Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2021 04:35:28 -0700
+  by orsmga003.jf.intel.com with ESMTP; 05 Apr 2021 04:35:37 -0700
 From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
@@ -35,204 +35,244 @@ To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         andrew@lunn.ch, hkallweit1@gmail.com
-Subject: [PATCH net-next v2 0/2] Enable 2.5Gbps speed for stmmac
-Date:   Mon,  5 Apr 2021 19:29:51 +0800
-Message-Id: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
+Subject: [PATCH net-next v2 1/2] net: stmmac: enable 2.5Gbps link speed
+Date:   Mon,  5 Apr 2021 19:29:52 +0800
+Message-Id: <20210405112953.26008-2-michael.wei.hong.sit@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
+References: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset enables 2.5Gbps speed mode for stmmac.
-Link speed mode is detected and configured at serdes power up sequence.
-For 2.5G, we do not use SGMII in-band AN, we check the link speed mode
-in the serdes and disable the in-band AN accordingly.
+From: Voon Weifeng <weifeng.voon@intel.com>
 
-Changes:
-v1 -> v2
- patch 1/2
- -Remove MAC supported link speed masking
+The MAC support 2.5G mode when the PCS is in 1000BASE-T mode. The
+2.5G mode of operation is functionally same as 1000BASE-T mode,
+except that the clock rate is 2.5 times the original rate.
+In this mode, the serdes/PHY operates at a serial baud rate of
+3.125 Gbps and the PCS data path and GMII interface of the MAC
+operate at 312.5 MHz instead of 125 MHz.
 
- patch 2/2
- -Add supported link speed masking in the PCS
+The MAC running in 10M/100M/1G mode or 2.5G mode depends on
+the link speed mode in the serdes.
 
-iperf3 and ping for 2.5Gbps and regression test on 10M/100M/1000Mbps
-is done to prevent regresson issues.
-
-10Mbps
-host@EHL$ ethtool -s enp0s30f4 duplex full speed 10
-[  310.132264] intel-eth-pci 0000:00:1e.4 enp0s30f4: Link is Down
-[  312.438102] intel-eth-pci 0000:00:1e.4 enp0s30f4: Link is Up - 10Mbps/Full - flow control off
-[  312.447652] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s30f4: link becomes ready
-host@EHL$ iperf3 -c 192.168.1.1
-Connecting to host 192.168.1.1, port 5201
-[  5] local 192.168.1.2 port 60706 connected to 192.168.1.1 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec  1.26 MBytes  10.6 Mbits/sec    0   29.7 KBytes
-[  5]   1.00-2.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes
-[  5]   2.00-3.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes
-[  5]   3.00-4.00   sec  1.15 MBytes  9.68 Mbits/sec    0   29.7 KBytes
-[  5]   4.00-5.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes
-[  5]   5.00-6.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes
-[  5]   6.00-7.00   sec  1.15 MBytes  9.68 Mbits/sec    0   29.7 KBytes
-[  5]   7.00-8.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes
-[  5]   8.00-9.00   sec  1.09 MBytes  9.17 Mbits/sec    0   29.7 KBytes
-[  5]   9.00-10.00  sec  1.15 MBytes  9.68 Mbits/sec    0   29.7 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  11.3 MBytes  9.47 Mbits/sec    0             sender
-[  5]   0.00-10.01  sec  11.1 MBytes  9.34 Mbits/sec                  receiver
-
-iperf Done.
-host@EHL$ ping 192.168.1.1
-PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.557 ms
-64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.528 ms
-64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.535 ms
-64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.525 ms
-64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.527 ms
-64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.555 ms
-64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.539 ms
-64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.588 ms
-64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.570 ms
-64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.540 ms
-
---- 192.168.1.1 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9194ms
-rtt min/avg/max/mdev = 0.525/0.546/0.588/0.019 ms
-host@EHL$
-
-100Mbps
-host@EHL$ ethtool -s enp0s30f4 duplex full speed 100
-[  204.178572] intel-eth-pci 0000:00:1e.4 enp0s30f4: Link is Down
-[  207.990094] intel-eth-pci 0000:00:1e.4 enp0s30f4: Link is Up - 100Mbps/Full - flow control off
-[  207.999744] IPv6: ADDRCONF(NETDEV_CHANGE): enp0s30f4: link becomes ready
-host@EHL$ iperf3 -c 192.168.1.1
-Connecting to host 192.168.1.1, port 5201
-[  5] local 192.168.1.2 port 60702 connected to 192.168.1.1 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec  11.6 MBytes  97.0 Mbits/sec    1    102 KBytes
-[  5]   1.00-2.00   sec  10.9 MBytes  91.7 Mbits/sec    0    102 KBytes
-[  5]   2.00-3.00   sec  10.8 MBytes  90.5 Mbits/sec    0    102 KBytes
-[  5]   3.00-4.00   sec  11.0 MBytes  92.6 Mbits/sec    0    102 KBytes
-[  5]   4.00-5.00   sec  10.8 MBytes  90.6 Mbits/sec    0    102 KBytes
-[  5]   5.00-6.00   sec  11.0 MBytes  92.6 Mbits/sec    0    102 KBytes
-[  5]   6.00-7.00   sec  11.0 MBytes  92.6 Mbits/sec    0    102 KBytes
-[  5]   7.00-8.00   sec  10.8 MBytes  90.6 Mbits/sec    0    102 KBytes
-[  5]   8.00-9.00   sec  11.0 MBytes  92.6 Mbits/sec    0    102 KBytes
-[  5]   9.00-10.00  sec  11.0 MBytes  92.6 Mbits/sec    0    102 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec   110 MBytes  92.3 Mbits/sec    1             sender
-[  5]   0.00-10.00  sec   109 MBytes  91.8 Mbits/sec                  receiver
-
-iperf Done.
-host@EHL$ ping 192.168.1.1
-PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.331 ms
-64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.322 ms
-64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.315 ms
-64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.315 ms
-64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.295 ms
-64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.300 ms
-64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.307 ms
-64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.294 ms
-64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.292 ms
-64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.297 ms
-
---- 192.168.1.1 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9215ms
-rtt min/avg/max/mdev = 0.292/0.306/0.331/0.012 ms
-
-1G speed
-host@EHL$ iperf3 -c 192.168.1.1
-Connecting to host 192.168.1.1, port 5201
-[  5] local 192.168.1.2 port 60698 connected to 192.168.1.1 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec   114 MBytes   954 Mbits/sec    0    533 KBytes
-[  5]   1.00-2.00   sec   112 MBytes   942 Mbits/sec    0    591 KBytes
-[  5]   2.00-3.00   sec   113 MBytes   945 Mbits/sec    0    621 KBytes
-[  5]   3.00-4.00   sec   112 MBytes   941 Mbits/sec    0    621 KBytes
-[  5]   4.00-5.00   sec   112 MBytes   942 Mbits/sec    0    764 KBytes
-[  5]   5.00-6.00   sec   112 MBytes   944 Mbits/sec    0    764 KBytes
-[  5]   6.00-7.00   sec   111 MBytes   933 Mbits/sec    0    803 KBytes
-[  5]   7.00-8.00   sec   112 MBytes   944 Mbits/sec    0    803 KBytes
-[  5]   8.00-9.00   sec   112 MBytes   944 Mbits/sec    0    843 KBytes
-[  5]   9.00-10.00  sec   112 MBytes   944 Mbits/sec    0    843 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  1.10 GBytes   943 Mbits/sec    0             sender
-[  5]   0.00-10.00  sec  1.09 GBytes   940 Mbits/sec                  receiver
-
-iperf Done.
-host@EHL$ ping 192.168.1.1
-PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.299 ms
-64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.277 ms
-64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.277 ms
-64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.286 ms
-64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.330 ms
-64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.276 ms
-64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.296 ms
-64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.272 ms
-64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.276 ms
-64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.274 ms
-
---- 192.168.1.1 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9196ms
-rtt min/avg/max/mdev = 0.272/0.286/0.330/0.017 ms
-
-2.5G speed
-host@EHL$ iperf3 -c 192.168.1.1
-Connecting to host 192.168.1.1, port 5201
-[  5] local 192.168.1.2 port 55160 connected to 192.168.1.1 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec   175 MBytes  1.47 Gbits/sec   17    683 KBytes
-[  5]   1.00-2.00   sec   202 MBytes  1.70 Gbits/sec    0    707 KBytes
-[  5]   2.00-3.00   sec   204 MBytes  1.71 Gbits/sec    0    751 KBytes
-[  5]   3.00-4.00   sec   204 MBytes  1.71 Gbits/sec    0    773 KBytes
-[  5]   4.00-5.00   sec   202 MBytes  1.70 Gbits/sec    0    773 KBytes
-[  5]   5.00-6.00   sec   204 MBytes  1.71 Gbits/sec    0    798 KBytes
-[  5]   6.00-7.00   sec   204 MBytes  1.71 Gbits/sec    0    807 KBytes
-[  5]   7.00-8.00   sec   204 MBytes  1.71 Gbits/sec    0    807 KBytes
-[  5]   8.00-9.00   sec   204 MBytes  1.71 Gbits/sec    0    807 KBytes
-[  5]   9.00-10.00  sec   202 MBytes  1.70 Gbits/sec    0    807 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  1.96 GBytes  1.68 Gbits/sec   17             sender
-[  5]   0.00-10.00  sec  1.96 GBytes  1.68 Gbits/sec                  receiver
-
-iperf Done.
-host@EHL$ ping 192.168.1.1
-PING 192.168.1.1 (192.168.1.1) 56(84) bytes of data.
-64 bytes from 192.168.1.1: icmp_seq=1 ttl=64 time=0.671 ms
-64 bytes from 192.168.1.1: icmp_seq=2 ttl=64 time=0.300 ms
-64 bytes from 192.168.1.1: icmp_seq=3 ttl=64 time=0.300 ms
-64 bytes from 192.168.1.1: icmp_seq=4 ttl=64 time=0.291 ms
-64 bytes from 192.168.1.1: icmp_seq=5 ttl=64 time=0.296 ms
-64 bytes from 192.168.1.1: icmp_seq=6 ttl=64 time=0.301 ms
-64 bytes from 192.168.1.1: icmp_seq=7 ttl=64 time=0.328 ms
-64 bytes from 192.168.1.1: icmp_seq=8 ttl=64 time=0.306 ms
-64 bytes from 192.168.1.1: icmp_seq=9 ttl=64 time=0.299 ms
-64 bytes from 192.168.1.1: icmp_seq=10 ttl=64 time=0.293 ms
-
---- 192.168.1.1 ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9251ms
-rtt min/avg/max/mdev = 0.291/0.338/0.671/0.111 ms
-
-Voon Weifeng (2):
-  net: stmmac: enable 2.5Gbps link speed
-  net: pcs: configure xpcs 2.5G speed mode
-
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+---
  .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 44 ++++++++++++++++++-
  .../net/ethernet/stmicro/stmmac/dwmac-intel.h | 13 ++++++
  .../net/ethernet/stmicro/stmmac/dwmac4_core.c |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 20 ++++++++-
- drivers/net/pcs/pcs-xpcs.c                    | 39 ++++++++++++++++
- include/linux/pcs/pcs-xpcs.h                  |  1 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 19 +++++++-
  include/linux/stmmac.h                        |  2 +
- 7 files changed, 117 insertions(+), 3 deletions(-)
+ 5 files changed, 76 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 3d9a57043af2..4f70a12b42f9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -102,6 +102,22 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
+ 
+ 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
+ 
++	/* Set the serdes rate and the PCLK rate */
++	data = mdiobus_read(priv->mii, serdes_phy_addr,
++			    SERDES_GCR0);
++
++	data &= ~SERDES_RATE_MASK;
++	data &= ~SERDES_PCLK_MASK;
++
++	if (priv->plat->speed_2500_en)
++		data |= SERDES_RATE_PCIE_GEN2 << SERDES_RATE_PCIE_SHIFT |
++			SERDES_PCLK_37p5MHZ << SERDES_PCLK_SHIFT;
++	else
++		data |= SERDES_RATE_PCIE_GEN1 << SERDES_RATE_PCIE_SHIFT |
++			SERDES_PCLK_70MHZ << SERDES_PCLK_SHIFT;
++
++	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
++
+ 	/* assert clk_req */
+ 	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
+ 	data |= SERDES_PLL_CLK;
+@@ -220,6 +236,28 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
+ 	}
+ }
+ 
++static bool intel_speed_mode_2500(struct net_device *ndev, void *intel_data)
++{
++	struct intel_priv_data *intel_priv = intel_data;
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	int serdes_phy_addr = 0;
++	u32 data = 0;
++
++	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
++
++	/* Determine the link speed mode: 2.5Gbps/1Gbps */
++	data = mdiobus_read(priv->mii, serdes_phy_addr,
++			    SERDES_GCR);
++
++	if (((data & SERDES_LINK_MODE_MASK) >> SERDES_LINK_MODE_SHIFT) ==
++	    SERDES_LINK_MODE_2G5) {
++		dev_info(priv->device, "Link Speed Mode: 2.5Gbps\n");
++		return true;
++	} else {
++		return false;
++	}
++}
++
+ /* Program PTP Clock Frequency for different variant of
+  * Intel mGBE that has slightly different GPO mapping
+  */
+@@ -540,7 +578,7 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
+ {
+ 	plat->bus_id = 1;
+ 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
+-
++	plat->speed_mode_2500 = intel_speed_mode_2500;
+ 	plat->serdes_powerup = intel_serdes_powerup;
+ 	plat->serdes_powerdown = intel_serdes_powerdown;
+ 
+@@ -593,6 +631,7 @@ static int ehl_pse0_sgmii1g_data(struct pci_dev *pdev,
+ 				 struct plat_stmmacenet_data *plat)
+ {
+ 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
++	plat->speed_mode_2500 = intel_speed_mode_2500;
+ 	plat->serdes_powerup = intel_serdes_powerup;
+ 	plat->serdes_powerdown = intel_serdes_powerdown;
+ 	return ehl_pse0_common_data(pdev, plat);
+@@ -631,6 +670,7 @@ static int ehl_pse1_sgmii1g_data(struct pci_dev *pdev,
+ 				 struct plat_stmmacenet_data *plat)
+ {
+ 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
++	plat->speed_mode_2500 = intel_speed_mode_2500;
+ 	plat->serdes_powerup = intel_serdes_powerup;
+ 	plat->serdes_powerdown = intel_serdes_powerdown;
+ 	return ehl_pse1_common_data(pdev, plat);
+@@ -655,6 +695,7 @@ static int tgl_sgmii_phy0_data(struct pci_dev *pdev,
+ {
+ 	plat->bus_id = 1;
+ 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
++	plat->speed_mode_2500 = intel_speed_mode_2500;
+ 	plat->serdes_powerup = intel_serdes_powerup;
+ 	plat->serdes_powerdown = intel_serdes_powerdown;
+ 	return tgl_common_data(pdev, plat);
+@@ -669,6 +710,7 @@ static int tgl_sgmii_phy1_data(struct pci_dev *pdev,
+ {
+ 	plat->bus_id = 2;
+ 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
++	plat->speed_mode_2500 = intel_speed_mode_2500;
+ 	plat->serdes_powerup = intel_serdes_powerup;
+ 	plat->serdes_powerdown = intel_serdes_powerdown;
+ 	return tgl_common_data(pdev, plat);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
+index e723096c0b15..021a5c178d97 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
+@@ -9,6 +9,7 @@
+ #define POLL_DELAY_US 8
+ 
+ /* SERDES Register */
++#define SERDES_GCR	0x0	/* Global Conguration */
+ #define SERDES_GSR0	0x5	/* Global Status Reg0 */
+ #define SERDES_GCR0	0xb	/* Global Configuration Reg0 */
+ 
+@@ -16,8 +17,20 @@
+ #define SERDES_PLL_CLK		BIT(0)		/* PLL clk valid signal */
+ #define SERDES_RST		BIT(2)		/* Serdes Reset */
+ #define SERDES_PWR_ST_MASK	GENMASK(6, 4)	/* Serdes Power state*/
++#define SERDES_RATE_MASK	GENMASK(9, 8)
++#define SERDES_PCLK_MASK	GENMASK(14, 12)	/* PCLK rate to PHY */
++#define SERDES_LINK_MODE_MASK	GENMASK(2, 1)
++#define SERDES_LINK_MODE_SHIFT	1
+ #define SERDES_PWR_ST_SHIFT	4
+ #define SERDES_PWR_ST_P0	0x0
+ #define SERDES_PWR_ST_P3	0x3
++#define SERDES_LINK_MODE_2G5	0x3
++#define SERSED_LINK_MODE_1G	0x2
++#define SERDES_PCLK_37p5MHZ	0x0
++#define SERDES_PCLK_70MHZ	0x1
++#define SERDES_RATE_PCIE_GEN1	0x0
++#define SERDES_RATE_PCIE_GEN2	0x1
++#define SERDES_RATE_PCIE_SHIFT	8
++#define SERDES_PCLK_SHIFT	12
+ 
+ #endif /* __DWMAC_INTEL_H__ */
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index 95864f014ffa..4c3f27a9e8b2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -1357,6 +1357,7 @@ int dwmac4_setup(struct stmmac_priv *priv)
+ 	mac->link.speed10 = GMAC_CONFIG_PS;
+ 	mac->link.speed100 = GMAC_CONFIG_FES | GMAC_CONFIG_PS;
+ 	mac->link.speed1000 = 0;
++	mac->link.speed2500 = GMAC_CONFIG_FES;
+ 	mac->link.speed_mask = GMAC_CONFIG_FES | GMAC_CONFIG_PS;
+ 	mac->mii.addr = GMAC_MDIO_ADDR;
+ 	mac->mii.data = GMAC_MDIO_DATA;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d34388b1ffcc..7def80c6347e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -882,6 +882,11 @@ static void stmmac_validate(struct phylink_config *config,
+ 	phylink_set(mac_supported, Asym_Pause);
+ 	phylink_set_port_modes(mac_supported);
+ 
++	/* 2.5G mode only support 2500baseT full duplex only */
++	if (priv->plat->has_gmac4 && priv->plat->speed_2500_en) {
++		phylink_set(mac_supported, 2500baseT_Full);
++	}
++
+ 	/* Cut down 1G if asked to */
+ 	if ((max_speed > 0) && (max_speed < 1000)) {
+ 		phylink_set(mask, 1000baseT_Full);
+@@ -1192,8 +1197,13 @@ static int stmmac_phy_setup(struct stmmac_priv *priv)
+ 	priv->phylink_config.dev = &priv->dev->dev;
+ 	priv->phylink_config.type = PHYLINK_NETDEV;
+ 	priv->phylink_config.pcs_poll = true;
+-	priv->phylink_config.ovr_an_inband =
+-		priv->plat->mdio_bus_data->xpcs_an_inband;
++	/* For 2.5G, we do not use SGMII in-band AN */
++	if (priv->plat->speed_2500_en) {
++		priv->phylink_config.ovr_an_inband = false;
++	} else {
++		priv->phylink_config.ovr_an_inband =
++			priv->plat->mdio_bus_data->xpcs_an_inband;
++	}
+ 
+ 	if (!fwnode)
+ 		fwnode = dev_fwnode(priv->device);
+@@ -5815,6 +5825,11 @@ int stmmac_dvr_probe(struct device *device,
+ 		}
+ 	}
+ 
++	if (priv->plat->speed_mode_2500) {
++		priv->plat->speed_2500_en = priv->plat->speed_mode_2500(ndev,
++									priv->plat->bsp_priv);
++	}
++
+ 	ret = stmmac_phy_setup(priv);
+ 	if (ret) {
+ 		netdev_err(ndev, "failed to setup phy (%d)\n", ret);
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index e338ef7abc00..a43ce24d2a42 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -209,6 +209,7 @@ struct plat_stmmacenet_data {
+ 	void (*fix_mac_speed)(void *priv, unsigned int speed);
+ 	int (*serdes_powerup)(struct net_device *ndev, void *priv);
+ 	void (*serdes_powerdown)(struct net_device *ndev, void *priv);
++	bool (*speed_mode_2500)(struct net_device *ndev, void *priv);
+ 	void (*ptp_clk_freq_config)(void *priv);
+ 	int (*init)(struct platform_device *pdev, void *priv);
+ 	void (*exit)(struct platform_device *pdev, void *priv);
+@@ -234,6 +235,7 @@ struct plat_stmmacenet_data {
+ 	int has_xgmac;
+ 	bool vlan_fail_q_en;
+ 	u8 vlan_fail_q;
++	bool speed_2500_en;
+ 	unsigned int eee_usecs_rate;
+ 	struct pci_dev *pdev;
+ 	bool has_crossts;
 -- 
 2.17.1
 
