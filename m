@@ -2,154 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98FB35436C
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 17:27:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7430035438B
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 17:45:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238055AbhDEP12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 11:27:28 -0400
-Received: from mail-pj1-f49.google.com ([209.85.216.49]:52087 "EHLO
-        mail-pj1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232714AbhDEP10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 11:27:26 -0400
-Received: by mail-pj1-f49.google.com with SMTP id s21so6260363pjq.1;
-        Mon, 05 Apr 2021 08:27:20 -0700 (PDT)
+        id S238760AbhDEPp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 11:45:29 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:35715 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236173AbhDEPp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 11:45:27 -0400
+Received: by mail-il1-f199.google.com with SMTP id y11so9741147ilq.2
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 08:45:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=s6/xO6zDlOcf9rGpsVwdjh2veGTAn/Y535MvhVK0maI=;
-        b=h9EtD5dygBgSwlVuY9Jq6t+X2QFeSKBAkLNb8O5qKyvy3AGmgN7kScbfC7a9jLtSQi
-         Z1sS31l/OWdoApZgs07IyDTIt4Vt9unJzh2oUmBlZ1dcZbglfJyRHc343UVzS0J/gB69
-         Eia2NxXoItDcvXbhXr5JyUWefkOUynENpPCvCqLT9uJG+gOFHktluYVVAQujWgyZ1CXH
-         opKRO9ZSgM82jTPeMpxBKC0oaMvZJI5J2mbEq8lDlJOJniapJWlAacenFoG7FVAhIWso
-         riUNBcde/x8w0fA7n4Oc8Niicf6zMOAoLtUKfLTObExCAUybVvDZH1RCzngmYP1J1Z/E
-         BRNQ==
-X-Gm-Message-State: AOAM53271sAdFQyyNyFbp7r9nebheGfwuj34uN9tQFpPpqb7rY50RQiR
-        Js8Q6+WcdfOTSJSj21l2Ok0=
-X-Google-Smtp-Source: ABdhPJxlWm0Lzuy1NvlR6D9W30X3v6KfefWidA41cG0vntzFiFzAU4ozy7Gn2cAEzl4sPpga7IG/QA==
-X-Received: by 2002:a17:90b:33d0:: with SMTP id lk16mr14383989pjb.115.1617636440145;
-        Mon, 05 Apr 2021 08:27:20 -0700 (PDT)
-Received: from ?IPv6:2601:647:4000:d7:20c0:5960:9793:8deb? ([2601:647:4000:d7:20c0:5960:9793:8deb])
-        by smtp.gmail.com with ESMTPSA id p11sm16137366pjo.48.2021.04.05.08.27.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Apr 2021 08:27:19 -0700 (PDT)
-Subject: Re: [PATCH rdma-next 01/10] RDMA: Add access flags to ib_alloc_mr()
- and ib_mr_pool_init()
-To:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     Avihai Horon <avihaih@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-References: <20210405052404.213889-1-leon@kernel.org>
- <20210405052404.213889-2-leon@kernel.org>
-From:   Bart Van Assche <bvanassche@acm.org>
-Message-ID: <c21edd64-396c-4c7c-86f8-79045321a528@acm.org>
-Date:   Mon, 5 Apr 2021 08:27:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=+x9/MKuc2hmxIJVR5bNwtBPQEtsjTs7ETZd3G6qI0TE=;
+        b=ZOtZFKKorFCzewWXkaYTWtaBSU1laTNCnMtYZra02yneWoRfaGsnsQfJMKY72veldM
+         TtJ6EN457JegUVHbPoXnyYQhPRt8Hg4EDljminwszGpy2B4skJThfRTG7Q74Iajpfn61
+         PodkwoN1OwVJkkyuCUsC8T8FcUSp1FnS9iWhKs5Jc4Ov9y2xISBB97gZ8PzhsQeEzdIX
+         qc5/iPm+sVZQ/ZijBhC7eeK1vC4mFteEB7NhpzELkVOACjuM122SqlI0j4jC5W0YuhwD
+         CNilrzRS9vjwE98LiGFQdCiMk7yGMuCdc+4CsTbsxvTZTTAX3y+KPvqbIf6V0FTEcBD4
+         YrOQ==
+X-Gm-Message-State: AOAM532eIrXV7TCbiG16cD+na5GLSuGvM0DB9FSjW2I0Ac7xgTG6BP8i
+        EKdtcsHDtqaouuF2uZcGT2kaSFRteRfrzZ+Dl2aNS0Kl0SET
+X-Google-Smtp-Source: ABdhPJzD7s2Zc45ImbfUcMY8nAFcTIlyrXFu4hSwoKW418AJ3Sx3xHQrWBnP0sohlKOQwvM8tvMlKyGj5IPFkQ/ENRBuGJHFFnyk
 MIME-Version: 1.0
-In-Reply-To: <20210405052404.213889-2-leon@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:1cad:: with SMTP id x13mr21246553ill.144.1617637520858;
+ Mon, 05 Apr 2021 08:45:20 -0700 (PDT)
+Date:   Mon, 05 Apr 2021 08:45:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ce66e005bf3b9531@google.com>
+Subject: [syzbot] WARNING: suspicious RCU usage in lock_sock_nested
+From:   syzbot <syzbot+80a4f8091f8d5ba51de9@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/4/21 10:23 PM, Leon Romanovsky wrote:
-> diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-> index bed4cfe50554..59138174affa 100644
-> --- a/include/rdma/ib_verbs.h
-> +++ b/include/rdma/ib_verbs.h
-> @@ -2444,10 +2444,10 @@ struct ib_device_ops {
->  				       struct ib_udata *udata);
->  	int (*dereg_mr)(struct ib_mr *mr, struct ib_udata *udata);
->  	struct ib_mr *(*alloc_mr)(struct ib_pd *pd, enum ib_mr_type mr_type,
-> -				  u32 max_num_sg);
-> +				  u32 max_num_sg, u32 access);
->  	struct ib_mr *(*alloc_mr_integrity)(struct ib_pd *pd,
->  					    u32 max_num_data_sg,
-> -					    u32 max_num_meta_sg);
-> +					    u32 max_num_meta_sg, u32 access);
->  	int (*advise_mr)(struct ib_pd *pd,
->  			 enum ib_uverbs_advise_mr_advice advice, u32 flags,
->  			 struct ib_sge *sg_list, u32 num_sge,
-> @@ -4142,11 +4142,10 @@ static inline int ib_dereg_mr(struct ib_mr *mr)
->  }
->  
->  struct ib_mr *ib_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,
-> -			  u32 max_num_sg);
-> +			  u32 max_num_sg, u32 access);
->  
-> -struct ib_mr *ib_alloc_mr_integrity(struct ib_pd *pd,
-> -				    u32 max_num_data_sg,
-> -				    u32 max_num_meta_sg);
-> +struct ib_mr *ib_alloc_mr_integrity(struct ib_pd *pd, u32 max_num_data_sg,
-> +				    u32 max_num_meta_sg, u32 access);
->  
->  /**
->   * ib_update_fast_reg_key - updates the key portion of the fast_reg MR
-> diff --git a/include/rdma/mr_pool.h b/include/rdma/mr_pool.h
-> index e77123bcb43b..2a0ee791037d 100644
-> --- a/include/rdma/mr_pool.h
-> +++ b/include/rdma/mr_pool.h
-> @@ -11,7 +11,8 @@ struct ib_mr *ib_mr_pool_get(struct ib_qp *qp, struct list_head *list);
->  void ib_mr_pool_put(struct ib_qp *qp, struct list_head *list, struct ib_mr *mr);
->  
->  int ib_mr_pool_init(struct ib_qp *qp, struct list_head *list, int nr,
-> -		enum ib_mr_type type, u32 max_num_sg, u32 max_num_meta_sg);
-> +		    enum ib_mr_type type, u32 max_num_sg, u32 max_num_meta_sg,
-> +		    u32 access);
->  void ib_mr_pool_destroy(struct ib_qp *qp, struct list_head *list);
->  
->  #endif /* _RDMA_MR_POOL_H */
+Hello,
 
-Does the new 'access' argument only control whether or not PCIe relaxed
-ordering is enabled? It seems wrong to me to make enabling of PCIe
-relaxed ordering configurable. I think this mechanism should be enabled
-unconditionally if the HCA supports it.
+syzbot found the following issue on:
 
-Thanks,
+HEAD commit:    d19cc4bf Merge tag 'trace-v5.12-rc5' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14898326d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d1a3d65a48dbd1bc
+dashboard link: https://syzkaller.appspot.com/bug?extid=80a4f8091f8d5ba51de9
 
-Bart.
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+80a4f8091f8d5ba51de9@syzkaller.appspotmail.com
+
+=============================
+WARNING: suspicious RCU usage
+5.12.0-rc5-syzkaller #0 Not tainted
+-----------------------------
+kernel/sched/core.c:8294 Illegal context switch in RCU-bh read-side critical section!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 0
+no locks held by syz-executor.3/8407.
+
+stack backtrace:
+CPU: 0 PID: 8407 Comm: syz-executor.3 Not tainted 5.12.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+ ___might_sleep+0x229/0x2c0 kernel/sched/core.c:8294
+ lock_sock_nested+0x25/0x120 net/core/sock.c:3062
+ lock_sock include/net/sock.h:1600 [inline]
+ do_ip_getsockopt+0x227/0x18e0 net/ipv4/ip_sockglue.c:1536
+ ip_getsockopt+0x84/0x1c0 net/ipv4/ip_sockglue.c:1761
+ tcp_getsockopt+0x86/0xd0 net/ipv4/tcp.c:4239
+ __sys_getsockopt+0x21f/0x5f0 net/socket.c:2161
+ __do_sys_getsockopt net/socket.c:2176 [inline]
+ __se_sys_getsockopt net/socket.c:2173 [inline]
+ __x64_sys_getsockopt+0xba/0x150 net/socket.c:2173
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x467a6a
+Code: 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 37 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc76a6a848 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
+RAX: ffffffffffffffda RBX: 00007ffc76a6a85c RCX: 0000000000467a6a
+RDX: 0000000000000060 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 0000000000000003 R08: 00007ffc76a6a85c R09: 00007ffc76a6a8c0
+R10: 00007ffc76a6a860 R11: 0000000000000246 R12: 00007ffc76a6a860
+R13: 000000000005ecdc R14: 0000000000000000 R15: 00007ffc76a6afd0
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
