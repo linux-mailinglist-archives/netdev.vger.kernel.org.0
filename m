@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89B68353BA8
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56127353BAF
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbhDEFYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 01:24:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57314 "EHLO mail.kernel.org"
+        id S232284AbhDEFYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 01:24:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232218AbhDEFYj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 01:24:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D3E3C6139F;
-        Mon,  5 Apr 2021 05:24:31 +0000 (UTC)
+        id S232184AbhDEFYm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 01:24:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F92E613A7;
+        Mon,  5 Apr 2021 05:24:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617600272;
-        bh=H8VyokLLj861miN6eL/BS/iydH8X5tcb3ZsH8b+Rr3E=;
+        s=k20201202; t=1617600276;
+        bh=PAgj56Yc//zBEZolPkWhsSnGjEMS6kZSDqBlkURbZas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pc2AL8IA2ENJh5d/e1ATkUHiXYZJp3c0RoiDrukP7UR18XgRnLUPOt455aETZDgD+
-         9tN6dCnr71sF7xwuEtUhcHtpYZv9kBVm2hXs5G4KU8C43sJeLHi9n4p2Yca+o1XWUm
-         4x87/gYWytjWu5929v6HulHxqQmQQA+kzbo5WGRzXAT/mfUU28J4IoUVN36S0olB1C
-         SSiN6RrpurpK+3g49qd79KBJ73uiaGztbXchONgqfNrwuB6SP1tsCLgjB4KFzTjLHK
-         0DkCmaVePHL7WmR8f37thwoi/35+N1BSlEBQDZAZbwzNsjvUBXpKze2FWem04y6aEO
-         Jk8f5lhdh17MQ==
+        b=AYxv5/O9LXkexYx1MQDU6ox6EdhzHB4uGJEl6xIqmgN3v+/+IXqbR/96mtUTQxa7L
+         jSdhIGDVjcJBsXfrWfnoQ9hoWgB51uBDgqGKwBVjvHr7sKGRXuHD4KE5U5+mvekNf2
+         jgaH/6UhjlCgxX93pKq/a/2N39eIzYUIbsccbxUAttXvyG30WG82NYcoyLgMJp/QLy
+         GIhiZMCeqTaqK2op2Fnk/dZyJf+fOiHxDpGjeTQwZtW7yad/MlAgSOwdOLXw6TYcP6
+         A0EKyLcC6rRPmGH9WfOryJ9ALoePf3A/Oe68jTK5RXqYw+Xr+hzYsSTH7CPeDp+ZOr
+         uoDtLhQl6cu1Q==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -68,9 +68,9 @@ Cc:     Avihai Horon <avihaih@nvidia.com>,
         Weihang Li <liweihang@huawei.com>,
         Yishai Hadas <yishaih@nvidia.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH rdma-next 07/10] cifs: smbd: Enable Relaxed Ordering
-Date:   Mon,  5 Apr 2021 08:24:01 +0300
-Message-Id: <20210405052404.213889-8-leon@kernel.org>
+Subject: [PATCH rdma-next 08/10] net/rds: Enable Relaxed Ordering
+Date:   Mon,  5 Apr 2021 08:24:02 +0300
+Message-Id: <20210405052404.213889-9-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210405052404.213889-1-leon@kernel.org>
 References: <20210405052404.213889-1-leon@kernel.org>
@@ -82,7 +82,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Avihai Horon <avihaih@nvidia.com>
 
-Enable Relaxed Ordering for smbd.
+Enable Relaxed Ordering for rds.
 
 Relaxed Ordering is an optional access flag and as such, it is ignored
 by vendors that don't support it.
@@ -91,50 +91,34 @@ Signed-off-by: Avihai Horon <avihaih@nvidia.com>
 Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- fs/cifs/smbdirect.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ net/rds/ib_frmr.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/fs/cifs/smbdirect.c b/fs/cifs/smbdirect.c
-index 647098a5cf3b..1e86dc8bbe85 100644
---- a/fs/cifs/smbdirect.c
-+++ b/fs/cifs/smbdirect.c
-@@ -2178,8 +2178,10 @@ static void smbd_mr_recovery_work(struct work_struct *work)
- 				continue;
- 			}
+diff --git a/net/rds/ib_frmr.c b/net/rds/ib_frmr.c
+index 694eb916319e..1a60c2c90c78 100644
+--- a/net/rds/ib_frmr.c
++++ b/net/rds/ib_frmr.c
+@@ -76,7 +76,7 @@ static struct rds_ib_mr *rds_ib_alloc_frmr(struct rds_ib_device *rds_ibdev,
  
--			smbdirect_mr->mr = ib_alloc_mr(info->pd, info->mr_type,
--						       info->max_frmr_depth, 0);
-+			smbdirect_mr->mr =
-+				ib_alloc_mr(info->pd, info->mr_type,
-+					    info->max_frmr_depth,
-+					    IB_ACCESS_RELAXED_ORDERING);
- 			if (IS_ERR(smbdirect_mr->mr)) {
- 				log_rdma_mr(ERR, "ib_alloc_mr failed mr_type=%x max_frmr_depth=%x\n",
- 					    info->mr_type,
-@@ -2244,7 +2246,8 @@ static int allocate_mr_list(struct smbd_connection *info)
- 		if (!smbdirect_mr)
- 			goto out;
- 		smbdirect_mr->mr = ib_alloc_mr(info->pd, info->mr_type,
--					       info->max_frmr_depth, 0);
-+					       info->max_frmr_depth,
-+					       IB_ACCESS_RELAXED_ORDERING);
- 		if (IS_ERR(smbdirect_mr->mr)) {
- 			log_rdma_mr(ERR, "ib_alloc_mr failed mr_type=%x max_frmr_depth=%x\n",
- 				    info->mr_type, info->max_frmr_depth);
-@@ -2406,9 +2409,10 @@ struct smbd_mr *smbd_register_mr(
- 	reg_wr->wr.send_flags = IB_SEND_SIGNALED;
- 	reg_wr->mr = smbdirect_mr->mr;
- 	reg_wr->key = smbdirect_mr->mr->rkey;
--	reg_wr->access = writing ?
--			IB_ACCESS_REMOTE_WRITE | IB_ACCESS_LOCAL_WRITE :
--			IB_ACCESS_REMOTE_READ;
-+	reg_wr->access =
-+		(writing ? IB_ACCESS_REMOTE_WRITE | IB_ACCESS_LOCAL_WRITE :
-+			   IB_ACCESS_REMOTE_READ) |
-+		IB_ACCESS_RELAXED_ORDERING;
+ 	frmr = &ibmr->u.frmr;
+ 	frmr->mr = ib_alloc_mr(rds_ibdev->pd, IB_MR_TYPE_MEM_REG,
+-			       pool->max_pages, 0);
++			       pool->max_pages, IB_ACCESS_RELAXED_ORDERING);
+ 	if (IS_ERR(frmr->mr)) {
+ 		pr_warn("RDS/IB: %s failed to allocate MR", __func__);
+ 		err = PTR_ERR(frmr->mr);
+@@ -156,9 +156,8 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
+ 	reg_wr.wr.num_sge = 0;
+ 	reg_wr.mr = frmr->mr;
+ 	reg_wr.key = frmr->mr->rkey;
+-	reg_wr.access = IB_ACCESS_LOCAL_WRITE |
+-			IB_ACCESS_REMOTE_READ |
+-			IB_ACCESS_REMOTE_WRITE;
++	reg_wr.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_READ |
++			IB_ACCESS_REMOTE_WRITE | IB_ACCESS_RELAXED_ORDERING;
+ 	reg_wr.wr.send_flags = IB_SEND_SIGNALED;
  
- 	/*
- 	 * There is no need for waiting for complemtion on ib_post_send
+ 	ret = ib_post_send(ibmr->ic->i_cm_id->qp, &reg_wr.wr, NULL);
 -- 
 2.30.2
 
