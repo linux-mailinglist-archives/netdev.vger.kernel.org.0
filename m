@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73012353BE9
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13B62353BED
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232108AbhDEFu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 01:50:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34432 "EHLO mail.kernel.org"
+        id S232154AbhDEFua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 01:50:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34500 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232096AbhDEFuY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 01:50:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6483661393;
-        Mon,  5 Apr 2021 05:50:18 +0000 (UTC)
+        id S232120AbhDEFu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 01:50:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B823B6138A;
+        Mon,  5 Apr 2021 05:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617601819;
-        bh=546fGdgC8SELgOTgK16DtIQhtdQvE38vpzuMVIP5F1U=;
+        s=k20201202; t=1617601822;
+        bh=ZX6nMrTjbVRTF1HIZ1FsEV+ThojL4OW20xRXaCnWaVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ox73jiWftd/wanyKh8k00x9xX3j7k39NF4uvD1Ak6tQOV9KfBK+BZH8T1mUf5n+wR
-         FJ2Nt4BbDlzYiGIz9mbnli/SEUh4JHAU2ASpED1/ocjPHChDnajmT22NXFM9WYbYL0
-         w6Y4/xDB0Ty2VQo+g7a1gTiRiJ8eiOEKZIoKekwZji7Ybxg71daCG4POi2fX7h8NLW
-         rIE2SfTJ7P3BXWivrnxPnUazMZaNSsnW6z8pntprtryMyAP3Z19uBYmQQzaFFNoW7R
-         1pLFUV+S/50/gWtt+xdi2CC1PeSZQnlyH9XO1TrkK5n5S+q8mykPwUgQVw1gdTnioZ
-         xeeSImH3O2VcA==
+        b=rtNlK/zpqXVFmqJNkjBVG1/n2H61wpYEGMcLmjuJ+NKNQml0wJ7YOIthbbkZa2qRV
+         BBhLKACy0SZ0gAPrYjjZOXQj33NyknO5tktvAf4Q8IEmGEacZGQXUz39GayNo+5ZVH
+         wF2OmwOcxk/htZYzTAGJX8qvlja3+JxmBj3aEIZWPFEhB9WsTj32FV+oPrCfR9CKP4
+         FsEyJ0jgTOEohy+ovR/86YxtHe16s/yHFYMEiKAP6j/n3c/klRzJkQ4N3N0TciDaCH
+         ksbTt0rZI+qwn4DljChW3yGeP7m14USIkfK3eKKR2r/eIEyUtBAi1cU0/HWVWLjumu
+         DDR6MP8Sa7sew==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>
@@ -36,9 +36,9 @@ Cc:     Parav Pandit <parav@nvidia.com>,
         Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Subject: [PATCH rdma-next 5/8] IB/IPoIB: Skip device which doesn't have InfiniBand port
-Date:   Mon,  5 Apr 2021 08:49:57 +0300
-Message-Id: <20210405055000.215792-6-leon@kernel.org>
+Subject: [PATCH rdma-next 6/8] IB/opa_vnic: Move to client_supported callback
+Date:   Mon,  5 Apr 2021 08:49:58 +0300
+Message-Id: <20210405055000.215792-7-leon@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210405055000.215792-1-leon@kernel.org>
 References: <20210405055000.215792-1-leon@kernel.org>
@@ -50,53 +50,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-Skip RDMA device which doesn't have InfiniBand ports using newly
-introduced client_supported() callback.
+Move to newly introduced client_supported callback
+Avoid client registration using newly introduced helper callback if the
+IB device doesn't have OPA VNIC capability.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/ulp/ipoib/ipoib_main.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/infiniband/ulp/opa_vnic/opa_vnic_vema.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/ipoib/ipoib_main.c b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-index 8f769ebaacc6..b02c10dea242 100644
---- a/drivers/infiniband/ulp/ipoib/ipoib_main.c
-+++ b/drivers/infiniband/ulp/ipoib/ipoib_main.c
-@@ -93,6 +93,7 @@ static struct net_device *ipoib_get_net_dev_by_params(
- 		struct ib_device *dev, u32 port, u16 pkey,
- 		const union ib_gid *gid, const struct sockaddr *addr,
- 		void *client_data);
-+static bool ipoib_client_supported(struct ib_device *device);
- static int ipoib_set_mac(struct net_device *dev, void *addr);
- static int ipoib_ioctl(struct net_device *dev, struct ifreq *ifr,
- 		       int cmd);
-@@ -102,6 +103,7 @@ static struct ib_client ipoib_client = {
- 	.add    = ipoib_add_one,
- 	.remove = ipoib_remove_one,
- 	.get_net_dev_by_params = ipoib_get_net_dev_by_params,
-+	.is_supported = ipoib_client_supported,
+diff --git a/drivers/infiniband/ulp/opa_vnic/opa_vnic_vema.c b/drivers/infiniband/ulp/opa_vnic/opa_vnic_vema.c
+index cecf0f7cadf9..58658eba97dd 100644
+--- a/drivers/infiniband/ulp/opa_vnic/opa_vnic_vema.c
++++ b/drivers/infiniband/ulp/opa_vnic/opa_vnic_vema.c
+@@ -121,6 +121,7 @@ static struct ib_client opa_vnic_client = {
+ 	.name   = opa_vnic_driver_name,
+ 	.add    = opa_vnic_vema_add_one,
+ 	.remove = opa_vnic_vema_rem_one,
++	.is_supported = rdma_cap_opa_vnic,
  };
  
- #ifdef CONFIG_INFINIBAND_IPOIB_DEBUG
-@@ -2530,6 +2532,17 @@ static struct net_device *ipoib_add_port(const char *format,
- 	return ERR_PTR(-ENOMEM);
- }
+ /**
+@@ -993,9 +994,6 @@ static int opa_vnic_vema_add_one(struct ib_device *device)
+ 	struct opa_vnic_ctrl_port *cport;
+ 	int rc, size = sizeof(*cport);
  
-+static bool ipoib_client_supported(struct ib_device *device)
-+{
-+	u32 i;
-+
-+	rdma_for_each_port(device, i) {
-+		if (rdma_protocol_ib(device, i))
-+			return true;
-+	}
-+	return false;
-+}
-+
- static int ipoib_add_one(struct ib_device *device)
- {
- 	struct list_head *dev_list;
+-	if (!rdma_cap_opa_vnic(device))
+-		return -EOPNOTSUPP;
+-
+ 	size += device->phys_port_cnt * sizeof(struct opa_vnic_vema_port);
+ 	cport = kzalloc(size, GFP_KERNEL);
+ 	if (!cport)
 -- 
 2.30.2
 
