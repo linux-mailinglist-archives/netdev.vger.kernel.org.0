@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01EF335487F
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 00:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4D3354883
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 00:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242717AbhDEWKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 18:10:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40668 "EHLO mail.kernel.org"
+        id S242775AbhDEWKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 18:10:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40680 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242652AbhDEWKQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S242678AbhDEWKQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 5 Apr 2021 18:10:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B1D62613DA;
+Received: by mail.kernel.org (Postfix) with ESMTPS id C699A613DC;
         Mon,  5 Apr 2021 22:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617660609;
-        bh=PHEF6eyH5ket9wzLT9jo9CV1f0m3V2zFioMjBk21KZU=;
+        bh=JNJYD9b52dFWU2LT48z84lhgV/FbvuYQdrZmTYOkicQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pkjsn44ZB3xxTFG5aTaswK3LOQ9uIcQTBTqbYXYWV0K4i1YwH6bG36I4eqYRdKhl1
-         oXlp+WxkhoSQRIKZmejPeheyfuH0NheHGloHofv/XeQuL/poxvoM5aGgNL7tfmkK+h
-         qCswScg1C7qMovh80XU3dK+YnW8SAW6sK72tMloN0YP0s/kAsoVPAdbBdhXj3TF8N+
-         Hg76s/IwmIxMOJZ/FVKibZX2bURs9HvD5MJaTSOeKTmi48vkVTHZ9eIlwTCdpTZMJc
-         jNuz4096sbaT1eIWu/5ZNZVHjXXYRpVvnwroQGVxXurvv58eiIXrWJL7XDHAD9AK+a
-         ZIF1oe2XiK+BQ==
+        b=BpOirhVigPLeoNDVJAtJwnd39gosS74Jb7lMxdOwsu0ZG9iDa3hEzhgtVQZnhJvJ/
+         qDsudyMt9VFYceWUY9nWdka5OTtvb9RuRsmgZMaRMTASv64TnHEtVwWqf5omgPz+sQ
+         k/Yl0+Ld00YDni2wSJ+uhuumjyCLGuqvK9t4M/pdjVYQZF/GrOhr93l4CqwufZAwYI
+         YAZHP9XtdihUf9txPa8o86ZO07WOzPH+NTmz+aqvb4cfx0TlHToe8XBcP7Pnn1YGPX
+         DNA3RKj4/TYaGYUcxlszOEoxWwsKJllxwtf1kKLqfcLQlsOL4z2QVPYsoaCRN67Ud+
+         RxwdgVJybARnw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC4AF60A00;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BED2C60A19;
         Mon,  5 Apr 2021 22:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: Allow to specify ifindex when device is moved to another
- namespace
+Subject: Re: [PATCH] net: smsc911x: skip acpi_device_id table when !CONFIG_ACPI
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161766060970.24414.3057452106128976357.git-patchwork-notify@kernel.org>
+Message-Id: <161766060977.24414.13288647159413382781.git-patchwork-notify@kernel.org>
 Date:   Mon, 05 Apr 2021 22:10:09 +0000
-References: <20210405071223.138101-1-avagin@gmail.com>
-In-Reply-To: <20210405071223.138101-1-avagin@gmail.com>
-To:     Andrei Vagin <avagin@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        christian.brauner@ubuntu.com, alexander.mikhalitsyn@virtuozzo.com
+References: <20210405181548.52501-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20210405181548.52501-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     steve.glendinning@shawell.net, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,19 +47,20 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon,  5 Apr 2021 00:12:23 -0700 you wrote:
-> Currently, we can specify ifindex on link creation. This change allows
-> to specify ifindex when a device is moved to another network namespace.
+On Mon,  5 Apr 2021 20:15:48 +0200 you wrote:
+> The driver can match via multiple methods.  Its acpi_device_id table is
+> referenced via ACPI_PTR() so it will be unused for !CONFIG_ACPI builds:
 > 
-> Even now, a device ifindex can be changed if there is another device
-> with the same ifindex in the target namespace. So this change doesn't
-> introduce completely new behavior, it adds more control to the process.
+>   drivers/net/ethernet/smsc/smsc911x.c:2652:36: warning:
+>     ‘smsc911x_acpi_match’ defined but not used [-Wunused-const-variable=]
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - net: Allow to specify ifindex when device is moved to another namespace
-    https://git.kernel.org/netdev/net-next/c/eeb85a14ee34
+  - net: smsc911x: skip acpi_device_id table when !CONFIG_ACPI
+    https://git.kernel.org/netdev/net-next/c/cc0626c2aaed
 
 You are awesome, thank you!
 --
