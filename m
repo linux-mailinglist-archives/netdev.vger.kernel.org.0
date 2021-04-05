@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B59373546BC
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 20:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2B83546D3
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 20:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235105AbhDESXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 14:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234552AbhDESXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 14:23:39 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18620C061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 11:23:32 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id h8so6073406plt.7
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 11:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=/rgYvZOR96hVJwdVg1HGJnuISqKz0TKUJ2ixZZ12lds=;
-        b=nVv83mWvxXmN1ahWjB/5/h17ElLA+ljKMoF3tAaleC7o6L5XvKvb0Kc0J2kSc6mHUV
-         jG4OilyAFxejh2dc0GOhvHSJ19USe2iHD3DshpT69g0FW14hA2OZr0ruc2/isGEKShRH
-         OnrP6bZeh05QN3zxxPe+Mzix45nxc29qglX+x1KgcecoZwEidw+kk9Gg87na/Dn47afr
-         JNBn7q3Yr1PobP1cTmN3t1LZLiKnKrcG3YOtm68LYARh/s7lQ6oGHW7MysNiV9+amEHB
-         ZO7fDG6q/Ux+2l1xDQl4PDFebEz8WYlRrioppcZ0SR9zDw3f66pYYoyiOGh4tBpOBJMp
-         IULw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=/rgYvZOR96hVJwdVg1HGJnuISqKz0TKUJ2ixZZ12lds=;
-        b=b8b0TSybmHYQts0ko4ETmEwlyVfHqudqfMbcvtDRdPiQwVNFSBR5XtpR+QWSI4luTP
-         Nn+dDT4y0AkEzsnQh1tdeMEVnvOsNCQv8tjGCSloZRDeyh+ZGJpZuv/VzPOLXiyXq52L
-         lLNfeWhtbQOWXZ4quW98ReO4QwetHT01Z4L8omrXlozSZET7sAUKdu1utyV2A0xcpmLO
-         4lLqVfhNTFMedd0HeMp+SltgJBvM0NprCZc7tFKAbmeSdSBhIpsaTjSFYLDDXm+WkM3O
-         QHtzsNwnRrLKHHQYcWkdyzMfoR/nIMQneJcxAX1QHb+ULbDs0BUtM5NFed9Siw0uVrn3
-         myyQ==
-X-Gm-Message-State: AOAM531XbIvITXmDbajhJuSMQlqUKTlnWNLBGxbm5jtmYWwanRjdSkdL
-        sUBDhlLUqqlMnWCr4SMviIE=
-X-Google-Smtp-Source: ABdhPJw1yooL3WnpgB0GBgiirWv65jvw2unZk8NDmuz3a+mmOb4bvBXLl9bIblVoxYWbNC3UIdRGFA==
-X-Received: by 2002:a17:90a:9309:: with SMTP id p9mr408400pjo.37.1617647011795;
-        Mon, 05 Apr 2021 11:23:31 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id mv9sm148818pjb.29.2021.04.05.11.23.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Apr 2021 11:23:31 -0700 (PDT)
-Date:   Mon, 5 Apr 2021 11:23:29 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
-Subject: Re: [PATCH net-next 12/12] ionic: advertise support for hardware
- timestamps
-Message-ID: <20210405182329.GC29333@hoboy.vegasvil.org>
-References: <20210401175610.44431-1-snelson@pensando.io>
- <20210401175610.44431-13-snelson@pensando.io>
- <20210404234359.GE24720@hoboy.vegasvil.org>
- <58f57a07-ef4c-c408-652d-708647f44e3d@pensando.io>
+        id S235320AbhDES6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 14:58:42 -0400
+Received: from hs01.dk-develop.de ([173.249.23.66]:48088 "EHLO
+        hs01.dk-develop.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234913AbhDES6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 14:58:38 -0400
+Date:   Mon, 5 Apr 2021 20:58:07 +0200
+From:   Danilo Krummrich <danilokrummrich@dk-develop.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        davem@davemloft.net, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
+Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
+Message-ID: <YGtdv++nv3H5K43E@arch-linux>
+References: <20210331141755.126178-3-danilokrummrich@dk-develop.de>
+ <YGSi+b/r4zlq9rm8@lunn.ch>
+ <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
+ <20210331183524.GV1463@shell.armlinux.org.uk>
+ <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
+ <20210401084857.GW1463@shell.armlinux.org.uk>
+ <YGZvGfNSBBq/92D+@arch-linux>
+ <20210402125858.GB1463@shell.armlinux.org.uk>
+ <YGoSS7llrl5K6D+/@arch-linux>
+ <YGsRwxwXILC1Tp2S@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <58f57a07-ef4c-c408-652d-708647f44e3d@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YGsRwxwXILC1Tp2S@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 09:33:46AM -0700, Shannon Nelson wrote:
-> Yes, I supposed they could have gone together.  However, I believe that in a
-> bisection this will only slightly confuse the user space tools, but won't
-> cause any kernel pain.
+On Mon, Apr 05, 2021 at 03:33:55PM +0200, Andrew Lunn wrote:
+> On Sun, Apr 04, 2021 at 09:23:55PM +0200, Danilo Krummrich wrote:
+> > So currently every driver should check for the flag MII_ADDR_C45 and report an
+> > error in case it's unsupported.
+> > 
+> > What do you think about checking the bus' capabilities instead in
+> > mdiobus_c45_*()? This way the check if C45 is supported can even happen before
+> > calling the driver at all. I think that would be a little cleaner than having
+> > two places where information of the bus' capabilities are stored (return value
+> > of read/write functions and the capabilities field).
+> > 
+> > I think there are not too many drivers setting their capabilities though, but
+> > it should be easy to derive this information from how and if they handle the
+> > MII_ADDR_C45 flag.
+> 
+> I actually don't think anything needs to change. The Marvell PHY
+> probably probes due to its C22 IDs. The driver will then requests C45
+> access which automagically get converted into C45 over C22 for your
+> hardware, but remain C45 access for bus drivers which support C45.
+> 
+Thanks Andrew - I agree, for the Marvell PHY to work I likly don't need any
+change, since I also expect that it will probe with the C22 IDs. I'll try
+this soon.
 
-Bisection typically involves running tests from user space.  The test
-failing or passing determines whether the commit will be marked GOOD
-or BAD.  This use case is a real thing.
+However, this was about something else - Russell wrote:
+> > > We have established that MDIO drivers need to reject accesses for
+> > > reads/writes that they do not support [..]
+The MDIO drivers do this by checking the MII_ADDR_C45 flag if it's a C45 bus
+request. In case they don't support it they return -EOPNOTSUPP. So basically,
+the bus drivers read/write functions (should) encode the capability of doing
+C45 transfers.
 
-Thanks,
-Richard
+I just noted that this is redundant to the bus' capabilities field of
+struct mii_bus which also encodes the bus' capabilities of doing C22 and/or C45
+transfers.
+
+Now, instead of encoding this information of the bus' capabilities at both
+places, I'd propose just checking the mii_bus->capabilities field in the
+mdiobus_c45_*() functions. IMHO this would be a little cleaner, than having two
+places where this information is stored. What do you think about that?
+> 	  Andrew
