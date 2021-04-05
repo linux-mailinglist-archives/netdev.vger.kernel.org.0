@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E80354235
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 14:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE3E354239
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235573AbhDEM7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 08:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
+        id S235641AbhDENCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 09:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbhDEM7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 08:59:17 -0400
-X-Greylist: delayed 338 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Apr 2021 05:59:11 PDT
-Received: from discovery.labus-online.de (discovery.labus-online.de [IPv6:2a01:4f8:231:4262::1001])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B63C061756
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 05:59:11 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by discovery.labus-online.de (Postfix) with ESMTP id 7B102112004F;
-        Mon,  5 Apr 2021 14:53:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=freifunk-rtk.de;
-        s=modoboa; t=1617627207;
-        bh=gMzwMjWkc89hSxNbYCUuvLWhYXrz4tejpkshy0LJDlY=;
-        h=From:Subject:To:Cc:Date:From;
-        b=tpwinEIZ1End4JaQC5ySn6/dt3XMo9suqDnpu48uE2kBbXBTBmK4OusGYd8kJ3V2C
-         L1eBxvA8dICfGWPZ1lQeorNgyE86jWmOOFszfjJHvXB0lm2vXlNhxCHT6PJMes5Sja
-         FlmzOp/XSkh0cP8PcqIzpglSpT8Is13oMgr1ecsqqnZktZCAUqjc8Nt+7QRMzVGeDY
-         6MvgsLTo6QxMLVaP06FzoDeAYa0Iwwy2etZj5FB40x+jcQfLVBlAAN5HMdcnR8/8GI
-         2cv8wFnqBx7cpTSnRTeh6dvik1iq6Svo1i+qgglVgAxgyoD0KfClEppdlSozo3tWRb
-         Y5A0uDvtvmnUA==
-X-Virus-Scanned: Debian amavisd-new at discovery.labus-online.de
-Received: from discovery.labus-online.de ([127.0.0.1])
-        by localhost (mail.labus-online.de [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id mJr4bQZcF4Xo; Mon,  5 Apr 2021 14:53:15 +0200 (CEST)
-Received: from [IPv6:2a02:908:1966:3a60:b62e:99ff:fe91:d1a9] (unknown [IPv6:2a02:908:1966:3a60:b62e:99ff:fe91:d1a9])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384))
-        (No client certificate requested)
-        by discovery.labus-online.de (Postfix) with ESMTPSA;
-        Mon,  5 Apr 2021 14:53:15 +0200 (CEST)
-From:   Julian Labus <julian@freifunk-rtk.de>
-Subject: stmmac: zero udp checksum
-To:     netdev@vger.kernel.org
-Cc:     mschiffer@universe-factory.net
-Message-ID: <cfc1ede9-4a1c-1a62-bdeb-d1e54c27f2e7@freifunk-rtk.de>
-Date:   Mon, 5 Apr 2021 14:53:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        with ESMTP id S229681AbhDENCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 09:02:21 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D64C061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 06:02:13 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id k25so4966174iob.6
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 06:02:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=C/wEzvBut+12wjAyDnTHbSbbqL+Etwy+l5r7Xnp8jg4=;
+        b=IG935/wZfB5k0eIoIT8KxRbuzQ1eFGt9nRwxqCtDtuLDxpGF2Krvvw2H43fstxAWBz
+         pbeIBp8DuJknQ3hP2/andnxgMxYqg3o+IwZMYIn1iT/4l/p6+ansEynzr8UBhRYdi6FQ
+         aNedcl1fsWEsWHXPJTbNO6ZZYSOy6vtGjI6uNqAeFpzZea8RaPSobbwkQE0cjQaQ22Ww
+         vGKNFScL44ZcsgtfMF1YFv63UWxZ1AUfukCG6CbNmScCk4wRkDaFY73WSc7+DBsui003
+         lwKs16pymoBhiDpLDszrJs5B2Sd2cwtZA5+nFoifzvRoQV66fV4+pcG9M5EerowRsmGt
+         kHWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=C/wEzvBut+12wjAyDnTHbSbbqL+Etwy+l5r7Xnp8jg4=;
+        b=kQBoTVTkUXBVhGuSbIE6kcW+rFGNzWCUwaYWwEQV4/SV3uFCAL538DiGufhWuncstW
+         rgUV8f32WeKCvyOHZ3giy7IncWxISrANjZvDS021OkJvxkcxnMubfQXR4pQixtqWBvEo
+         0+sHdgw/WsOAnLR8RD2eF66l/Uzfmyp9/Jlv8KQU36dQwbpccWr4pOj5U7435123ugoF
+         PiS+SVyN7H4dRwNU/fFwY9k7WQJDzaiZ/PoXq3azKy4BkRfCUylLQwEVZMMCQqgyj8Qt
+         OHT8QhkDwbMv9OVltZCQT0S/UNmW14eMnHC+/ySNbEyck1oim4j4QR6zw56fmjvwx5LK
+         qATw==
+X-Gm-Message-State: AOAM5324C//cLaLNrU2ZivethnZfL0iQfs6CNsOCo/iVnRdhZVU2U0u2
+        8xn2TI9giQrftEASgQxlHiFAhAR3iugWkZ+cXRouVA==
+X-Google-Smtp-Source: ABdhPJwbFihDHfDOM98UHeL1FyCMKiymnoTSDnjhFd2IQ9as4iPY055CByZ0j0KJY7EzLmRnQZQ8+rRpr8gtNEfohz8=
+X-Received: by 2002:a02:7f0e:: with SMTP id r14mr23592305jac.112.1617627732127;
+ Mon, 05 Apr 2021 06:02:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210405070652.2447152-1-zenczykowski@gmail.com>
+In-Reply-To: <20210405070652.2447152-1-zenczykowski@gmail.com>
+From:   Lorenzo Colitti <lorenzo@google.com>
+Date:   Mon, 5 Apr 2021 22:01:59 +0900
+Message-ID: <CAKD1Yr3NgUKE+eVmGQkFq1o4RoWpwfDuvmnbT+hh+UCRpuQs1w@mail.gmail.com>
+Subject: Re: [PATCH] net-ipv6: bugfix - raw & sctp - switch to ipv6_can_nonlocal_bind()
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Mon, Apr 5, 2021 at 4:07 PM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
+> The helper is defined as:
+>   static inline bool ipv6_can_nonlocal_bind(struct net *net, struct inet_=
+sock *inet) {
+>     return net->ipv6.sysctl.ip_nonlocal_bind || inet->freebind || inet->t=
+ransparent;
+>   }
+> so this change only widens the accepted opt-outs and is thus a clean bugf=
+ix.
 
-in our community mesh network we recently discovered that a TP-Link 
-Archer C2600 device is unable to receive IPv6 UDP packets with a zero 
-checksum when RX checksum offloading is enabled. The device uses 
-ipq806x-gmac-dwmac for its ethernet ports.
-
-According to https://tools.ietf.org/html/rfc2460#section-8.1 this sounds 
-like correct behavior as it says a UDP checksum must not be zero for 
-IPv6 packets. But this definition was relaxed in 
-https://tools.ietf.org/html/rfc6935#section-5 to allow zero checksums in 
-tunneling protocols like VXLAN where we discovered the problem.
-
-Can the behavior of the stmmac driver be changed to meet RFC6935 or 
-would it be possible to make the (RX) Checksum Offloading Engine 
-configurable via a device tree property to disable it in environments 
-were it causes problems?
-
-Best regards,
-Julian Labus
+Reviewed-By: Lorenzo Colitti <lorenzo@google.com>
