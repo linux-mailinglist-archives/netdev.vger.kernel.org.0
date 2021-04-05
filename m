@@ -2,80 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50AF935491A
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 01:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E60354927
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 01:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241483AbhDEXDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 19:03:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50972 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238588AbhDEXDr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 19:03:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E73A261245;
-        Mon,  5 Apr 2021 23:03:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617663820;
-        bh=1AznXBQfF1+pBkELXM8nG0mQZUPP9odUX2yAu3YDAQk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=idhKNXMpAKmA6s0RF7c1Pva/twDK/S610l/S2HVR9afYjjcNiT7hTgV5sm7YAzDLu
-         AvCiLCJ4Ilwf5XE5edAzAtf5LptOa1d8zAQ2V6fd2uuSOpRJXdXcPKKi7C3pqMbiB2
-         wQp410uTA+EMC7JZqdg271Av41ZHlhLEcbVYtY8h+Jc7ec9wfKyQ1QUKAEov1MYYln
-         odchKma8Kx8G6zo+yIJy9W/xlykRn87PsGgUZkacI8/QUOeK80vWda5bfvrl99vkx5
-         dunR0uOboFo+kbAKWiCcYQIyLlWV3Rb3XD+AJVm3zpEsperYjrFZfiwMhveH8G/7st
-         dOGH6Ri9fxOJQ==
-Date:   Mon, 5 Apr 2021 16:03:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Julian Labus <julian@freifunk-rtk.de>, netdev@vger.kernel.org,
-        mschiffer@universe-factory.net,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: stmmac: zero udp checksum
-Message-ID: <20210405160339.1c264af4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YGs+DeFzhVh7UlEh@lunn.ch>
-References: <cfc1ede9-4a1c-1a62-bdeb-d1e54c27f2e7@freifunk-rtk.de>
-        <YGsQQUHPpuEGIRoh@lunn.ch>
-        <98fcc1a7-8ce2-ac15-92a1-8c53b0e12658@freifunk-rtk.de>
-        <YGs+DeFzhVh7UlEh@lunn.ch>
+        id S236366AbhDEXOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 19:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235520AbhDEXOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 19:14:00 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460A2C061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 16:13:53 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id c4so13191280qkg.3
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 16:13:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oY9AEHqMCoctA85AChPKxlTTwqq5V8ksN6WFesdYeHM=;
+        b=SPE2oLxix0ZnxE10qCqINgJc8Ncpd4gIloyEunLq07fnxspwS+9sqwRSnsr/P0mpKV
+         QRzQUhfmHGXXQO7NrE2twBpRcVECM2vnTmGi4rBYW80eb3qLiSN1X09SAM21337HbF40
+         8/UACXQ34wfjiQWXws7DZNxpf6Yi/+TRHV/bw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oY9AEHqMCoctA85AChPKxlTTwqq5V8ksN6WFesdYeHM=;
+        b=hNtjyqGLrMAw0vZZgrgenCPoez6d/OsoS3Dw2B7iPqC+HBkkv/j36U6u4D1NYk7p/k
+         ip4sb9Sb73PlvU/uyBBPegQn2Iji4H4vHcHPU9ow37m4L9uPMa03C+8AMNSNxJ2FPt75
+         Ws7ImrZsFX1ATonlnaUsMYIlVW0WzNu6/ktmNKFHTuRY9TvXy55vESfBSqLtSFiRh2dm
+         PF8mryTpuhuGjmlSHpGrUKfzuOMfgP1w8+Plr7DCt5Dq14Ap42zsldKlZjS9vb2yHfau
+         zYrYCbCgi42s57KED0pBVKF21rx349ymdfLY9sheNimEOqUSPQQ20NAW1nZI9Mk1ebHy
+         on2Q==
+X-Gm-Message-State: AOAM531pGe0Y9YgzXXCIhtmsKVehbLtePNzw73uHwrc7k8QO6BOba1jm
+        4+av14eh13Ru7NORByi6C6ACZg==
+X-Google-Smtp-Source: ABdhPJwyGo4QG+wg2pQsoVa5tL2+SgxR3n93EHzX1oJNog5PTiePblgDmjkdHHKviHB91pxQcFs8lQ==
+X-Received: by 2002:a05:620a:440a:: with SMTP id v10mr26128060qkp.357.1617664432401;
+        Mon, 05 Apr 2021 16:13:52 -0700 (PDT)
+Received: from grundler-glapstation.lan ([70.134.62.80])
+        by smtp.gmail.com with ESMTPSA id b17sm13151650qtp.73.2021.04.05.16.13.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Apr 2021 16:13:51 -0700 (PDT)
+From:   Grant Grundler <grundler@chromium.org>
+To:     Oliver Neukum <oneukum@suse.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Roland Dreier <roland@kernel.org>, nic_swsd <nic_swsd@realtek.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Grant Grundler <grundler@chromium.org>
+Subject: [PATCH net-next v4 0/4] usbnet: speed reporting for devices without MDIO
+Date:   Mon,  5 Apr 2021 16:13:40 -0700
+Message-Id: <20210405231344.1403025-1-grundler@chromium.org>
+X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 5 Apr 2021 18:42:53 +0200 Andrew Lunn wrote:
-> > But was is still a bit strange to me is that it seems like the stmmac driver
-> > behaves different than other ethernet drivers which do not drop UDP packets
-> > with zero checksums when rx checksumming is enabled.  
-> 
-> To answer that, you need somebody with more knowledge of the stmmac
-> hardware.
+This series introduces support for USB network devices that report
+speed as a part of their protocol, not emulating an MII to be accessed
+over MDIO.
 
-+1 stmmac maintainers could you advise?
+v2: rebased on recent upstream changes
+v3: incorporated hints on naming and comments
+v4: fix misplaced hunks; reword some commit messages;
+    add same change for cdc_ether
+v4-repost: added "net-next" to subject and Andrew Lunn's Reviewed-by
 
-> It is actually quite hard to do. It means you need to parse
-> more of the frame to determine if the frame contains a VXLAN
-> encapsulated frame. Probably the stmmac cannot do that. It sees the
-> checksum is wrong and drops the packet.
->
-> Have you looked at where it actually drops the packet?
-> Is it one of
-> 
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/stmicro/stmmac/norm_desc.c#L95
-> 
-> or
-> 
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/stmicro/stmmac/enh_desc.c#L87
-> 
-> It could be, you need to see if the checksum has fail, then check if
-> the checksum is actually zero, and then go deeper into the frame and
-> check if it is a vxlan frame. It could be the linux software checksum
-> code knows about this vxlan exception, so you can just run that before
-> deciding to drop the frame.
+I'm reposting Oliver Neukum's <oneukum@suse.com> patch series with
+fix ups for "misplaced hunks" (landed in the wrong patches).
+Please fixup the "author" if "git am" fails to attribute the
+patches 1-3 (of 4) to Oliver.
 
-To be clear the expectation is that devices / drivers will only drop
-packets on L2 / FCS errors. If L3 or L4 csum is incorrect the packet
-should be passed up the stack and kernel will handle it how it sees fit.
+I've tested v4 series with "5.12-rc3+" kernel on Intel NUC6i5SYB
+and + Sabrent NT-S25G. Google Pixelbook Go (chromeos-4.4 kernel)
++ Alpha Network AUE2500C were connected directly to the NT-S25G
+to get 2.5Gbps link rate:
+# ethtool enx002427880815
+Settings for enx002427880815:
+        Supported ports: [  ]
+        Supported link modes:   Not reported
+        Supported pause frame use: No
+        Supports auto-negotiation: No
+        Supported FEC modes: Not reported
+        Advertised link modes:  Not reported
+        Advertised pause frame use: No
+        Advertised auto-negotiation: No
+        Advertised FEC modes: Not reported
+        Speed: 2500Mb/s
+        Duplex: Half
+        Auto-negotiation: off
+        Port: Twisted Pair
+        PHYAD: 0
+        Transceiver: internal
+        MDI-X: Unknown
+        Current message level: 0x00000007 (7)
+                               drv probe link
+        Link detected: yes
+
+
+"Duplex" is a lie since we get no information about it.
+
+I expect "Auto-Negotiation" is always true for cdc_ncm and
+cdc_ether devices and perhaps someone knows offhand how
+to have ethtool report "true" instead.
+
+But this is good step in the right direction.
+
+base-commit: 1c273e10bc0cc7efb933e0ca10e260cdfc9f0b8c
