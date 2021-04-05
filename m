@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1283435492D
+	by mail.lfdr.de (Postfix) with ESMTP id D004135492F
 	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 01:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241608AbhDEXOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 19:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
+        id S241653AbhDEXOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 19:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241554AbhDEXOQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 19:14:16 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FDD8C06178C
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 16:14:09 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id h7so9870783qtx.3
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 16:14:09 -0700 (PDT)
+        with ESMTP id S241556AbhDEXOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 19:14:18 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA84BC061793
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 16:14:10 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id j3so4209133qvs.1
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 16:14:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2B7CVc4bneBn0+oIH4XJcVlXMfyFNghvu+iRTDeNX6E=;
-        b=hlR5KlLWXM3SfaqIji/GJ8Jc+0M4zRkzN+/wAyXllIpop6vWFWlDL8IRGTQF5CUh9j
-         Y8CnUIfxF302XZui5/tCs8DUiP2GnYjcjVdP58xmTb5+XtVz95nnJ542KC9CYWvNAaL+
-         0IumAXSH2jXP8pNGHkAUjgzivvUCD5JOIGaqc=
+        bh=P/PJIlYMvtvOjmWKMvD86+isUEsA4SFh08VG5H5krSE=;
+        b=AtUtSyilVCumg3/2d6qBmx4TlBGwzZFJS3Q617LXCDmHu5oLh1kGA+L5ts+JvS1eY4
+         H/V2H6nYyxLmPTJuMHGAhoi9Q1M9FrG1Je23/C0LjLZsr+3mHCMd1Dz5phPPnP54JPCU
+         nH7SghuJPwL6STx+334CH8HRxOQqmTNDd/Muw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2B7CVc4bneBn0+oIH4XJcVlXMfyFNghvu+iRTDeNX6E=;
-        b=hlQ6tl5cKgwZm+1eObr65Ch5MmIHtTnLxzhnnOlpVNYLUwXDK8INPUNconCY7x9OKS
-         xxpfdk+p9vJGUn1kntS20y9bZiPhnmFDqSw+PINSlFI8THYn61kCWf8AcybTnG2H6YOf
-         ihdb24mba5osegwYRW4QumlPLaJ1GOMkMomV6E8SSvmb523IL13yW5xFDslFGdsAtkxZ
-         ZMoqqlc12nuiKx2ZzLkuWTDoLttfP5IPXU8Q5rVhVb65JbglrXzj2jfYePFk1xbFh4Bt
-         q5Fw5eHQ3ieUzUJy7vysZc1PduAIO1N1/t0iskV013i/r5gblmh6s2qpFJuZlzqJWNi+
-         q5Sg==
-X-Gm-Message-State: AOAM5321orixIv0hou5yYS2TR8wjVri9BmtSFzYZayA5LO76gYifPThx
-        3LbQZpdXf9lpONuyt8t1PADGPw==
-X-Google-Smtp-Source: ABdhPJxBm2XITBxGdegJx/1I2S/ScdcXXL3a+0vuUJyp7n+K2Fv1Cu3jfTqct8YKoD4op/xMDa+KzA==
-X-Received: by 2002:aed:3001:: with SMTP id 1mr24888246qte.344.1617664448588;
-        Mon, 05 Apr 2021 16:14:08 -0700 (PDT)
+        bh=P/PJIlYMvtvOjmWKMvD86+isUEsA4SFh08VG5H5krSE=;
+        b=nWbP1LPxwCVF/hU5pG8Qb7pAMY7QGU+mV701e+Fggd3rVoFSC0MjMxV1vEHz+xMkNj
+         BJyKGH43o4q5EU15qBndqBFUwF/Felj28Tof04R7U40cRRX5oB6ZVxmp5QPqmN/MeZPX
+         156FvVufLvf+8NnpbvckEfaoty8y7n5SU42e5+pza0m3HYyLfQvVS/ag5kRIse/QMP4T
+         jsZUGWE1VaMHVBsrZonDzcdHbcEgsapn742kN9uH3+1qXs3JFPhm7xR5MR7t8mkfY7Kk
+         9NtHFikWWqa4cwvnUjcKGBgu0LMFkuU197SIhxmcKYIufFVd0u+sgc0tly1Jt8u3RMdp
+         zLOg==
+X-Gm-Message-State: AOAM5313l0z7Cws2qUa/zlx3+/n3k3zrw9MkJXk3mukL/ts56d+YleEd
+        bQhyk+/bnB1xa+ZRIN5RzMMf5zghoqz3Zw==
+X-Google-Smtp-Source: ABdhPJzuCJF7g+T0vM/FKWm5gCCOAnSR+OpyF3oNPUIgHg+vhgf6Hmj7l03tEpZD5t4iwyEpUleIfg==
+X-Received: by 2002:a0c:b294:: with SMTP id r20mr25283932qve.16.1617664450042;
+        Mon, 05 Apr 2021 16:14:10 -0700 (PDT)
 Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id b17sm13151650qtp.73.2021.04.05.16.14.07
+        by smtp.gmail.com with ESMTPSA id b17sm13151650qtp.73.2021.04.05.16.14.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Apr 2021 16:14:08 -0700 (PDT)
+        Mon, 05 Apr 2021 16:14:09 -0700 (PDT)
 From:   Grant Grundler <grundler@chromium.org>
 To:     Oliver Neukum <oneukum@suse.com>, Jakub Kicinski <kuba@kernel.org>
 Cc:     Roland Dreier <roland@kernel.org>, nic_swsd <nic_swsd@realtek.com>,
@@ -52,9 +52,9 @@ Cc:     Roland Dreier <roland@kernel.org>, nic_swsd <nic_swsd@realtek.com>,
         LKML <linux-kernel@vger.kernel.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Grant Grundler <grundler@chromium.org>
-Subject: [PATCH net-next v4 3/4] net: cdc_ncm: record speed in status method
-Date:   Mon,  5 Apr 2021 16:13:43 -0700
-Message-Id: <20210405231344.1403025-4-grundler@chromium.org>
+Subject: [PATCH net-next v4 4/4] net: cdc_ether: record speed in status method
+Date:   Mon,  5 Apr 2021 16:13:44 -0700
+Message-Id: <20210405231344.1403025-5-grundler@chromium.org>
 X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
 In-Reply-To: <20210405231344.1403025-1-grundler@chromium.org>
 References: <20210405231344.1403025-1-grundler@chromium.org>
@@ -64,120 +64,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
-
 Until very recently, the usbnet framework only had support functions
 for devices which reported the link speed by explicitly querying the
-PHY over a MDIO interface. However, the cdc_ncm devices send
+PHY over a MDIO interface. However, the cdc_ether devices send
 notifications when the link state or link speeds change and do not
 expose the PHY (or modem) directly.
 
 Support funtions (e.g. usbnet_get_link_ksettings_internal()) to directly
-query state recorded by the cdc_ncm driver were added in a previous patch.
+query state recorded by the cdc_ether driver were added in a previous patch.
 
-So instead of cdc_ncm spewing the link speed into the dmesg buffer,
+Instead of cdc_ether spewing the link speed into the dmesg buffer,
 record the link speed encoded in these notifications and tell the
 usbnet framework to use the new functions to get link speed/state.
-Link speed/state is now available via ethtool.
 
-This is especially useful given all current RTL8156 devices emit
-a connection/speed status notification every 32ms and this would
-fill the dmesg buffer. This implementation replaces the one
-recently submitted in de658a195ee23ca6aaffe197d1d2ea040beea0a2 :
-   "net: usb: cdc_ncm: don't spew notifications"
+User space can now get the most recent link speed/state using ethtool.
 
-v2: rebased on upstream
-v3: changed variable names
-v4: rewrote commit message
+v4: added to series since cdc_ether uses same notifications
+    as cdc_ncm driver.
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Tested-by: Roland Dreier <roland@kernel.org>
 Signed-off-by: Grant Grundler <grundler@chromium.org>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/usb/cdc_ncm.c | 55 ++++++++++++---------------------------
- 1 file changed, 17 insertions(+), 38 deletions(-)
+ drivers/net/usb/cdc_ether.c | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 2644234d4c4d..6f330c7dcad2 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -133,17 +133,17 @@ static void cdc_ncm_get_strings(struct net_device __always_unused *netdev, u32 s
- static void cdc_ncm_update_rxtx_max(struct usbnet *dev, u32 new_rx, u32 new_tx);
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index a9b551028659..7eb0109e9baa 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -92,6 +92,18 @@ void usbnet_cdc_update_filter(struct usbnet *dev)
+ }
+ EXPORT_SYMBOL_GPL(usbnet_cdc_update_filter);
  
- static const struct ethtool_ops cdc_ncm_ethtool_ops = {
--	.get_link          = usbnet_get_link,
--	.nway_reset        = usbnet_nway_reset,
--	.get_drvinfo       = usbnet_get_drvinfo,
--	.get_msglevel      = usbnet_get_msglevel,
--	.set_msglevel      = usbnet_set_msglevel,
--	.get_ts_info       = ethtool_op_get_ts_info,
--	.get_sset_count    = cdc_ncm_get_sset_count,
--	.get_strings       = cdc_ncm_get_strings,
--	.get_ethtool_stats = cdc_ncm_get_ethtool_stats,
--	.get_link_ksettings      = usbnet_get_link_ksettings_mii,
--	.set_link_ksettings      = usbnet_set_link_ksettings_mii,
++/* We need to override usbnet_*_link_ksettings in bind() */
++static const struct ethtool_ops cdc_ether_ethtool_ops = {
 +	.get_link		= usbnet_get_link,
 +	.nway_reset		= usbnet_nway_reset,
 +	.get_drvinfo		= usbnet_get_drvinfo,
 +	.get_msglevel		= usbnet_get_msglevel,
 +	.set_msglevel		= usbnet_set_msglevel,
 +	.get_ts_info		= ethtool_op_get_ts_info,
-+	.get_sset_count		= cdc_ncm_get_sset_count,
-+	.get_strings		= cdc_ncm_get_strings,
-+	.get_ethtool_stats	= cdc_ncm_get_ethtool_stats,
 +	.get_link_ksettings	= usbnet_get_link_ksettings_internal,
 +	.set_link_ksettings	= NULL,
- };
++};
++
+ /* probes control interface, claims data interface, collects the bulk
+  * endpoints, activates data interface (if needed), maybe sets MTU.
+  * all pure cdc, except for certain firmware workarounds, and knowing
+@@ -310,6 +322,9 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		return -ENODEV;
+ 	}
  
- static u32 cdc_ncm_check_rx_max(struct usbnet *dev, u32 new_rx)
-@@ -1826,33 +1826,9 @@ static void
- cdc_ncm_speed_change(struct usbnet *dev,
- 		     struct usb_cdc_speed_change *data)
++	/* override ethtool_ops */
++	dev->net->ethtool_ops = &cdc_ether_ethtool_ops;
++
+ 	return 0;
+ 
+ bad_desc:
+@@ -379,12 +394,10 @@ EXPORT_SYMBOL_GPL(usbnet_cdc_unbind);
+  * (by Brad Hards) talked with, with more functionality.
+  */
+ 
+-static void dumpspeed(struct usbnet *dev, __le32 *speeds)
++static void speed_change(struct usbnet *dev, __le32 *speeds)
  {
--	uint32_t rx_speed = le32_to_cpu(data->DLBitRRate);
--	uint32_t tx_speed = le32_to_cpu(data->ULBitRate);
--
--	/* if the speed hasn't changed, don't report it.
--	 * RTL8156 shipped before 2021 sends notification about every 32ms.
--	 */
--	if (dev->rx_speed == rx_speed && dev->tx_speed == tx_speed)
--		return;
--
--	dev->rx_speed = rx_speed;
--	dev->tx_speed = tx_speed;
--
--	/*
--	 * Currently the USB-NET API does not support reporting the actual
--	 * device speed. Do print it instead.
--	 */
--	if ((tx_speed > 1000000) && (rx_speed > 1000000)) {
--		netif_info(dev, link, dev->net,
--			   "%u mbit/s downlink %u mbit/s uplink\n",
--			   (unsigned int)(rx_speed / 1000000U),
--			   (unsigned int)(tx_speed / 1000000U));
--	} else {
--		netif_info(dev, link, dev->net,
--			   "%u kbit/s downlink %u kbit/s uplink\n",
--			   (unsigned int)(rx_speed / 1000U),
--			   (unsigned int)(tx_speed / 1000U));
--	}
-+	/* RTL8156 shipped before 2021 sends notification about every 32ms. */
-+	dev->rx_speed = le32_to_cpu(data->DLBitRRate);
-+	dev->tx_speed = le32_to_cpu(data->ULBitRate);
+-	netif_info(dev, timer, dev->net,
+-		   "link speeds: %u kbps up, %u kbps down\n",
+-		   __le32_to_cpu(speeds[0]) / 1000,
+-		   __le32_to_cpu(speeds[1]) / 1000);
++	dev->tx_speed = __le32_to_cpu(speeds[0]);
++	dev->rx_speed = __le32_to_cpu(speeds[1]);
  }
  
- static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
-@@ -1878,6 +1854,9 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
- 		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
- 		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
- 		 */
-+		/* RTL8156 shipped before 2021 sends notification about
-+		 * every 32ms. Don't forward notification if state is same.
-+		 */
- 		if (netif_carrier_ok(dev->net) != !!event->wValue)
- 			usbnet_link_change(dev, !!event->wValue, 0);
+ void usbnet_cdc_status(struct usbnet *dev, struct urb *urb)
+@@ -396,7 +409,7 @@ void usbnet_cdc_status(struct usbnet *dev, struct urb *urb)
+ 
+ 	/* SPEED_CHANGE can get split into two 8-byte packets */
+ 	if (test_and_clear_bit(EVENT_STS_SPLIT, &dev->flags)) {
+-		dumpspeed(dev, (__le32 *) urb->transfer_buffer);
++		speed_change(dev, (__le32 *) urb->transfer_buffer);
+ 		return;
+ 	}
+ 
+@@ -413,7 +426,7 @@ void usbnet_cdc_status(struct usbnet *dev, struct urb *urb)
+ 		if (urb->actual_length != (sizeof(*event) + 8))
+ 			set_bit(EVENT_STS_SPLIT, &dev->flags);
+ 		else
+-			dumpspeed(dev, (__le32 *) &event[1]);
++			speed_change(dev, (__le32 *) &event[1]);
  		break;
+ 	/* USB_CDC_NOTIFY_RESPONSE_AVAILABLE can happen too (e.g. RNDIS),
+ 	 * but there are no standard formats for the response data.
 -- 
 2.30.1
 
