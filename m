@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B1C7354613
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 19:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4551F354619
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 19:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238705AbhDERe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 13:34:26 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:34240 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238661AbhDEReZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 13:34:25 -0400
-Received: by mail-io1-f72.google.com with SMTP id l4so3996610iop.1
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 10:34:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=vd51XgEIvP4DQDs0VI5+bjubW08Kj6vjDtH+/7eNtLk=;
-        b=pGY1LT9SNroDjYoKB0uGxQ1Pj85OcCFoC4OKBiRNZuTewbVUCwAr0Bbt2bfjiLpRcz
-         NlCV5UUhkns+8xtMk4bnC8VufQX2Y36w0SxfA5qND+/afOiuFwBM0vru4wGi4GeaK2BC
-         x5Ry/o7LKDAOXKkYCeHaQsjqRBi+cl8GjSqJVn78f0fUhIRQNwfcEbVHrphHziPtxTDF
-         847j8JPoVgIj9P8xWhPD1O/gZuwZEgi8ZlgApSQV1SfDck2LPgRdF+4TQnJSDHCTP6DC
-         pS7uc7qMr56H9fvLtv6hNEm4gRSWAZSPv35/prTLxS2K2CNEEnmKEBYHkK/S3t+fQEOp
-         MPDw==
-X-Gm-Message-State: AOAM532/dBIxSTXMRfpVsJjf4UDY02VNvIscWztbIPB1vbWAOPMwdUAP
-        9MUZNjhEaMCDueKVYl5XLn/mhlaFKpCCIzmAmY462VY8xAaJ
-X-Google-Smtp-Source: ABdhPJxoaysSvm/vwPCZE9vCdUOjIG9huA7+Z034KzCf5cRvCelFCyvZ8u9yGuK1MunvlnEZcan1x4bLAO6PZp/nV+pIRNS2I2e7
+        id S234386AbhDERkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 13:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234136AbhDERkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 13:40:12 -0400
+X-Greylist: delayed 117 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 05 Apr 2021 10:40:05 PDT
+Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id D21EBC061756
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 10:40:05 -0700 (PDT)
+Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id A380A51538D;
+        Mon,  5 Apr 2021 17:38:06 +0000 (UTC)
+X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mattcorallo.com;
+        s=1617642064; t=1617644286;
+        bh=xN/rVOY63VaNmaYocf9pUPpZ5ZOM5G3OiapUGD3CPIo=;
+        h=Date:To:Cc:From:Subject:From;
+        b=0fVEw2tXnFPH/hgy9MyK6CUycv4b2cglVvZWIiSamGcO4n3L7Fhduuzj6zgydU9Vr
+         eiXYKomVQIQgxUbpT8Rfj6Gmq5OoRyvZQJ/cN85P1aB8lQAj5FVBcKw/KR+EVcW32s
+         bvGXy6XpPkemQNZ+aBVBwNZKyp2WPr1RzYjkNAd+zjhiVPxXJSAqpU0iDK/0GPX73f
+         8GORMOHCsaKi2IvMuqgHsIQ/3bPDFnJFqiNgP1O+uyEa9QO2MS6u1urCPrIiKS0vyB
+         H4hF8UGcF9lQPpVnEjHg7RLUU4CMm4GT7fMYUh0r7ahI+HzPC6HpLlwhzuKyz3RTdn
+         irEWHWapbEHDw==
+Message-ID: <c3d462dd-9b33-8c06-2de5-35ea1cc55139@bluematt.me>
+Date:   Mon, 5 Apr 2021 13:38:06 -0400
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:149:: with SMTP id j9mr21536639ilr.57.1617644058638;
- Mon, 05 Apr 2021 10:34:18 -0700 (PDT)
-Date:   Mon, 05 Apr 2021 10:34:18 -0700
-In-Reply-To: <0000000000003798d705aedd870d@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007cfd9b05bf3d1b70@google.com>
-Subject: Re: [syzbot] memory leak in mgmt_cmd_status
-From:   syzbot <syzbot+80f5bab4eb14d14e7386@syzkaller.appspotmail.com>
-To:     anant.thazhemadam@gmail.com, davem@davemloft.net,
-        johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+From:   Matt Corallo <netdev-list@mattcorallo.com>
+Subject: [PATCH RESEND] Reduce IP_FRAG_TIME fragment-reassembly timeout to 1s,
+ from 30s
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+The default IP reassembly timeout of 30 seconds predates git
+history (and cursory web searches turn up nothing related to it).
+The only relevant source cited in net/ipv4/ip_fragment.c is RFC
+791 defining IPv4 in 1981. RFC 791 suggests allowing the timer to
+increase on the receipt of each fragment (which Linux deliberately
+does not do), with a default timeout for each fragment of 15
+seconds. It suggests 15s to cap a 10Kb/s flow to a 150Kb buffer of
+fragments.
 
-HEAD commit:    e49d033b Linux 5.12-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12579f11d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b8dbd3c72fdc7777
-dashboard link: https://syzkaller.appspot.com/bug?extid=80f5bab4eb14d14e7386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143b1696d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14c5a30ed00000
+When Linux receives a fragment, if the total memory used for the
+fragment reassembly buffer (across all hosts) exceeds
+net.ipv4.ipfrag_high_thresh (or the equivalent for IPv6), it
+silently drops all future fragments fragments until the timers on
+the original expire.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+80f5bab4eb14d14e7386@syzkaller.appspotmail.com
+All the way in 2021, these numbers feel almost comical. The default
+buffer size for fragmentation reassembly is hard-coded at 4MiB as
+`net->ipv4.fqdir->high_thresh = 4 * 1024 * 1024;` capping a host at
+1.06Mb/s of lost fragments before all fragments received on the
+host are dropped (with independent limits for IPv6).
 
-BUG: memory leak
-unreferenced object 0xffff88810ddf4700 (size 232):
-  comm "kworker/u5:2", pid 8406, jiffies 4294997792 (age 10.670s)
-  hex dump (first 32 bytes):
-    d0 f0 af 0e 81 88 ff ff d0 f0 af 0e 81 88 ff ff  ................
-    00 00 00 00 00 00 00 00 00 f0 af 0e 81 88 ff ff  ................
-  backtrace:
-    [<ffffffff8364af8f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:412
-    [<ffffffff83c5f871>] alloc_skb include/linux/skbuff.h:1103 [inline]
-    [<ffffffff83c5f871>] mgmt_cmd_status+0x31/0x160 net/bluetooth/mgmt_util.c:102
-    [<ffffffff83c2a669>] mgmt_set_discoverable_complete+0x1b9/0x1e0 net/bluetooth/mgmt.c:1357
-    [<ffffffff83c579d8>] discoverable_update_work+0x88/0xb0 net/bluetooth/hci_request.c:2806
-    [<ffffffff812595d9>] process_one_work+0x2c9/0x600 kernel/workqueue.c:2275
-    [<ffffffff81259ec9>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2421
-    [<ffffffff812615f8>] kthread+0x178/0x1b0 kernel/kthread.c:292
-    [<ffffffff8100227f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Reducing the default fragment timeout to 1sec gives us 32Mb/s of
+fragments before we drop all fragments, which is certainly more in
+line with today's network speeds than 1.06Mb/s, though an optimal
+value may be still lower. Sadly, reducing it further requires a
+change to the sysctl interface, as net.ipv4.ipfrag_time is only
+specified in seconds.
+---
+   include/net/ip.h | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 2d6b985d11cc..f1473ac5a27c 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -135,7 +135,7 @@ struct ip_ra_chain {
+   #define IP_MF		0x2000		/* Flag: "More Fragments"	*/
+   #define IP_OFFSET	0x1FFF		/* "Fragment Offset" part	*/
 
+-#define IP_FRAG_TIME	(30 * HZ)		/* fragment lifetime	*/
++#define IP_FRAG_TIME	(1 * HZ)		/* fragment lifetime	*/
+
+   struct msghdr;
+   struct net_device;
+-- 
+2.30.2
