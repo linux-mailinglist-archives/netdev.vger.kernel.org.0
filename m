@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2280E35493F
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 01:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70D65354942
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 01:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241802AbhDEXdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 19:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
+        id S241827AbhDEXdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 19:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241711AbhDEXde (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 19:33:34 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021B6C06178C
-        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 16:33:27 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id a128so6643048pgc.9
-        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 16:33:26 -0700 (PDT)
+        with ESMTP id S241776AbhDEXdh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 19:33:37 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E36C061788
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 16:33:29 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id n13so18627681ybp.14
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 16:33:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=HPTI6CO+kSdi1thvqgPehfBWso2sQojBqpZVVccLYlA=;
-        b=C7eJ3y6GPJ+S35NBKbS5DakcYR2ahrZCstmTJPcKVifURHE/CgGFEc86NbKipBmCSL
-         dA6toN44nlCfvF5Iq3YPR//L0ZHwOIHQuwPmfmyOhPflVZeWT3D4PPpqt4XGx0fSjXyf
-         /IOnTqYGD+xBC9k/PyhB4UWZ4dHALex2G+LXx5smKMES4ltU0n4mEorovDNIotAxShmD
-         zwUNK58RzoxrTvZZGhVeCB1D7ZQOUkfogDlxEfDQ4LTXn8UOCVACsaAIS9M82V9uEGP6
-         S6f0DRBQVTYs564cyxfQn2s70GsGiO4ggI86zgScEY0/J8FJjNEKZBNOIby4Pd7k/wrv
-         BJ5g==
+        bh=to6Vxja+Arjc3jgF2y75CIMjsTw24v2WgNqXzBAN2G4=;
+        b=jEYZqFK4qYXZjXqxm8kJnUCJ/HGf/4pQIRB3IfRcS9nSXWq37L5cg4Hi2cjXeoec+Y
+         QnyrSCmtSZLs/Wo+mR1kcl0lYR1DdUH485SifgpfypYPOhxj9SOOkLl5fZZ4tsAIQ9Qf
+         rDIgDY5ZuSYQt3oPjxqLelVRZdVuEfncudKq9I++0cqVs9dEy1LV5rCOV698B0jjw4J5
+         CI39vHBdXuePVt9HTbWvUfu/6q6I4jfkGC/jm8Hx/STZPVNilKzwWk3DvjDaHzxLqAEX
+         emx3YEzYVMaedIFqzd3/NrmWhZNUOa/AQb1U60F1GLzo9Bfpp6VOWQ8til8ccyzxFDBD
+         woDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=HPTI6CO+kSdi1thvqgPehfBWso2sQojBqpZVVccLYlA=;
-        b=E1eyAyIf1wRuJW0hRyc5NmP+FkVtj+MF6QrMbPOvne01fAhhYeZoJNiuFa/FUPWx4s
-         P4jFzbVBrZHeeJIOmUtJP5P//+vUbTlPv9+Knf2IAzrXgDF37jmTc4S713Qdn6zTYWzK
-         4k0KXq1AlvuErYr0hMhwJOgPeQnCJLH++shENw0xXxIPmccQHW3bHRrawLTGNtItarZX
-         g3a3+GhM6bOqBrSbG7FhMRgsIlWKLw+1sIuTZ6NlmTfjGNtN9s4U594LykqxHZ8SgsLE
-         SwWhwSgVwsHUbLcciST5yk4HRckHL9vxMcTpLkq7NdRwLD6UuI2p7pdrbvvDekkkvJ/0
-         UD5g==
-X-Gm-Message-State: AOAM532ZBLEs6vl2bkn+vO60Z8BzSM6TkDOKpKww9cTaAj73bDno9qL4
-        Fsh9D4hp077QS3oX/+jlKRSaq6GvBXQOFMNoHCu/
-X-Google-Smtp-Source: ABdhPJy7yHGGqIVq9CL3HofU8vyHA6j9u/fhZ9DDqOZz4wzB7nBbLJwv9LS94A5oHwi8syBe2hqao59WdoyFg6kvM+yV
+        bh=to6Vxja+Arjc3jgF2y75CIMjsTw24v2WgNqXzBAN2G4=;
+        b=jNEy7GVaI7FU3n6m3UI1eiP/yN3YfK9dBfpfwOSzMKGk1hrK9uztyavBXeAHLibSJv
+         YLi9HuobVWI69TbOEeWHNA7agJ2NKuBHbj7XlsaeaBJT0ariEBv05oMsxf9yDbdqqN9v
+         1lgUI0Om934VYHLyIwnaMbGeOLXIKgGK9Hw0WpjD7EbNAJU6shTFhbwcuJA1KJLqDGI3
+         Mkm8uPsDkaa+1R2lSUHPx5MWIKq/ta4FwryFkd8i9gWN//Mhy+51wH2teMvZMt9BHu2/
+         ii3mYawP440mKe2cegvwPJlHgogQ+O0V/pC38qM/6EsAAyV1BiC/Q4QWzRWgDim6PRUn
+         nO2Q==
+X-Gm-Message-State: AOAM531K3ePHEMi1BGLHfgZBjGUu4xXFNR7v8DSm46aFUKNIKh2ki5kR
+        D/SV4qwGdmTewxviLhkCze4O7vLErtbVF4EQn/IZ
+X-Google-Smtp-Source: ABdhPJxACUkz/6Pr+kJuu/6e3/KOIdlQcw8bE7vaqlYhTWwjONXYmo90PEfWYGytXsD0uf87TrfxIxGk2snIXjvSmRN5
 X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:1cb3:ad22:2ed6:7c62])
- (user=danielwinkler job=sendgmr) by 2002:a17:902:7585:b029:e6:cc10:61fe with
- SMTP id j5-20020a1709027585b02900e6cc1061femr26020769pll.23.1617665606465;
- Mon, 05 Apr 2021 16:33:26 -0700 (PDT)
-Date:   Mon,  5 Apr 2021 16:33:04 -0700
+ (user=danielwinkler job=sendgmr) by 2002:a5b:448:: with SMTP id
+ s8mr37252543ybp.363.1617665608348; Mon, 05 Apr 2021 16:33:28 -0700 (PDT)
+Date:   Mon,  5 Apr 2021 16:33:05 -0700
 In-Reply-To: <20210405233305.92431-1-danielwinkler@google.com>
-Message-Id: <20210405162905.1.I3c9905e2c5aa4d2e6c894b5cd18ce62350b8af4a@changeid>
+Message-Id: <20210405162905.2.Iaac4fb40841e46f9ab815bffee439c91e44f0639@changeid>
 Mime-Version: 1.0
 References: <20210405233305.92431-1-danielwinkler@google.com>
 X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
-Subject: [PATCH 1/2] Bluetooth: Use ext adv handle from requests in CCs
+Subject: [PATCH 2/2] Bluetooth: Do not set cur_adv_instance in adv param MGMT request
 From:   Daniel Winkler <danielwinkler@google.com>
 To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
 Cc:     chromeos-bluetooth-upstreaming@chromium.org,
@@ -67,80 +66,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some extended advertising hci command complete events are still using
-hdev->cur_adv_instance to map the request to the correct advertisement
-handle. However, with extended advertising, "current instance" doesn't
-make sense as we can have multiple concurrent advertisements. This
-change switches these command complete handlers to use the advertising
-handle from the request/event, to ensure we will always use the correct
-advertising handle regardless of the state of hdev->cur_adv_instance.
+We set hdev->cur_adv_instance in the adv param MGMT request to allow the
+callback to the hci param request to set the tx power to the correct
+instance. Now that the callbacks use the advertising handle from the hci
+request (as they should), this workaround is no longer necessary.
 
-This change is tested on hatch and kefka chromebooks and run through
-single- and multi-advertising automated tests to confirm callbacks
-report tx power to the correct advertising handle, etc.
+Furthermore, this change resolves a race condition that is more
+prevalent when using the extended advertising MGMT calls - if
+hdev->cur_adv_instance is set in the params request, then when the data
+request is called, we believe our new instance is already active. This
+treats it as an update and immediately schedules the instance with the
+controller, which has a potential race with the software rotation adv
+update. By not setting hdev->cur_adv_instance too early, the new
+instance is queued as it should be, to be used when the rotation comes
+around again.
+
+This change is tested on harrison peak to confirm that it resolves the
+race condition on registration, and that there is no regression in
+single- and multi-advertising automated tests.
 
 Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
 Signed-off-by: Daniel Winkler <danielwinkler@google.com>
 ---
 
- net/bluetooth/hci_event.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ net/bluetooth/mgmt.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 593eafa282e31a..016b2999f21957 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1212,12 +1212,11 @@ static void hci_cc_le_set_adv_set_random_addr(struct hci_dev *hdev,
- 
- 	hci_dev_lock(hdev);
- 
--	if (!hdev->cur_adv_instance) {
-+	if (!cp->handle) {
- 		/* Store in hdev for instance 0 (Set adv and Directed advs) */
- 		bacpy(&hdev->random_addr, &cp->bdaddr);
- 	} else {
--		adv_instance = hci_find_adv_instance(hdev,
--						     hdev->cur_adv_instance);
-+		adv_instance = hci_find_adv_instance(hdev, cp->handle);
- 		if (adv_instance)
- 			bacpy(&adv_instance->random_addr, &cp->bdaddr);
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 09e099c419f251..59f8016c486626 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -7979,7 +7979,6 @@ static int add_ext_adv_params(struct sock *sk, struct hci_dev *hdev,
+ 		goto unlock;
  	}
-@@ -1778,17 +1777,16 @@ static void hci_cc_set_ext_adv_param(struct hci_dev *hdev, struct sk_buff *skb)
  
- 	hci_dev_lock(hdev);
- 	hdev->adv_addr_type = cp->own_addr_type;
--	if (!hdev->cur_adv_instance) {
-+	if (!cp->handle) {
- 		/* Store in hdev for instance 0 */
- 		hdev->adv_tx_power = rp->tx_power;
- 	} else {
--		adv_instance = hci_find_adv_instance(hdev,
--						     hdev->cur_adv_instance);
-+		adv_instance = hci_find_adv_instance(hdev, cp->handle);
- 		if (adv_instance)
- 			adv_instance->tx_power = rp->tx_power;
- 	}
- 	/* Update adv data as tx power is known now */
--	hci_req_update_adv_data(hdev, hdev->cur_adv_instance);
-+	hci_req_update_adv_data(hdev, cp->handle);
- 
- 	hci_dev_unlock(hdev);
- }
-@@ -5308,12 +5306,12 @@ static void hci_le_ext_adv_term_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		if (hdev->adv_addr_type != ADDR_LE_DEV_RANDOM)
- 			return;
- 
--		if (!hdev->cur_adv_instance) {
-+		if (!ev->handle) {
- 			bacpy(&conn->resp_addr, &hdev->random_addr);
- 			return;
- 		}
- 
--		adv_instance = hci_find_adv_instance(hdev, hdev->cur_adv_instance);
-+		adv_instance = hci_find_adv_instance(hdev, ev->handle);
- 		if (adv_instance)
- 			bacpy(&conn->resp_addr, &adv_instance->random_addr);
- 	}
+-	hdev->cur_adv_instance = cp->instance;
+ 	/* Submit request for advertising params if ext adv available */
+ 	if (ext_adv_capable(hdev)) {
+ 		hci_req_init(&req, hdev);
 -- 
 2.31.0.208.g409f899ff0-goog
 
