@@ -2,98 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C111354298
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 16:08:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC9D35429E
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 16:10:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241260AbhDEOIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 10:08:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21773 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237271AbhDEOIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 10:08:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617631707;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kds2HNIrOSBVMRE8AkMvF2kwivsUAU3ayRmgSX22+j4=;
-        b=SA1Kpts+z8b3+yHVhaZovLU2K747oLeil9U6YAMBTwJqJauObeYxbql67/v6hglp88hXZz
-        t7sRFuuLQBIr553kRcqrTSai37JT0G8GfQqy2YEOcTmDeF8azM0bEo7pAfhDiWucMZP9nN
-        xJL/hm+jgpcYl3PCsvhYCB7/yDvFp2o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-31-QIMO-kMiOkqFBKqk1CHBbA-1; Mon, 05 Apr 2021 10:08:26 -0400
-X-MC-Unique: QIMO-kMiOkqFBKqk1CHBbA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4DE931019630;
-        Mon,  5 Apr 2021 14:08:24 +0000 (UTC)
-Received: from krava (unknown [10.40.192.146])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 790F25D741;
-        Mon,  5 Apr 2021 14:08:18 +0000 (UTC)
-Date:   Mon, 5 Apr 2021 16:08:17 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC PATCH bpf-next 1/4] bpf: Allow trampoline re-attach
-Message-ID: <YGsZ0VGMk/hBfr2y@krava>
-References: <20210328112629.339266-1-jolsa@kernel.org>
- <20210328112629.339266-2-jolsa@kernel.org>
- <87blavd31f.fsf@toke.dk>
- <20210403182155.upi6267fh3gsdvrq@ast-mbp>
+        id S241279AbhDEOIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 10:08:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237431AbhDEOIn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 10:08:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D99C613B1;
+        Mon,  5 Apr 2021 14:08:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617631717;
+        bh=LF0+zRsEi7jGYk/Bg8vQa1eqOiMQAgaqbYGUkXrouMw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=I6k7K+GugdLkntOIS/XDUjVAG89FAmzBko1fER7cc3uE9NDtxEXpfu2Xnwtq/0NxL
+         ckDn8FJGtmNFigRJklJ7KJ88kfm6kTIfkzu3K1al8GZ7hrG/NbQzaebZPrLuRPMKeV
+         AptGe6e5kFiM39xIw5oZeLhyTwrYwxKuFNMZKvbh6T+PyVEguwKyGNPBgMTiuZrCtk
+         1J4xCIyRWGlQcLyexllVaPJpVxprEGXSRehfPLV3q2bRKrFBLmzp+wrTu00d0Soctr
+         YYj1Q6Vs4W+Ds4QlJ6sIRBcayMiU899q/lysRyhZ5ut6I4xryD2Pm4kvUfyk5iXnMH
+         E6a7i+TLCgJHQ==
+Date:   Mon, 5 Apr 2021 17:08:33 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
+        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
+        samba-technical@lists.samba.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+Message-ID: <YGsZ4Te1+DQODj34@unreal>
+References: <20210405052404.213889-1-leon@kernel.org>
+ <20210405134115.GA22346@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210403182155.upi6267fh3gsdvrq@ast-mbp>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20210405134115.GA22346@lst.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 03, 2021 at 11:21:55AM -0700, Alexei Starovoitov wrote:
-> On Sat, Apr 03, 2021 at 01:24:12PM +0200, Toke Høiland-Jørgensen wrote:
-> > >  	if (!prog->aux->dst_trampoline && !tgt_prog) {
-> > > -		err = -ENOENT;
-> > > -		goto out_unlock;
-> > > +		/*
-> > > +		 * Allow re-attach for tracing programs, if it's currently
-> > > +		 * linked, bpf_trampoline_link_prog will fail.
-> > > +		 */
-> > > +		if (prog->type != BPF_PROG_TYPE_TRACING) {
-> > > +			err = -ENOENT;
-> > > +			goto out_unlock;
-> > > +		}
-> > > +		if (!prog->aux->attach_btf) {
-> > > +			err = -EINVAL;
-> > > +			goto out_unlock;
-> > > +		}
+On Mon, Apr 05, 2021 at 03:41:15PM +0200, Christoph Hellwig wrote:
+> On Mon, Apr 05, 2021 at 08:23:54AM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
 > > 
-> > I'm wondering about the two different return codes here. Under what
-> > circumstances will aux->attach_btf be NULL, and why is that not an
-> > ENOENT error? :)
+> > >From Avihai,
+> > 
+> > Relaxed Ordering is a PCIe mechanism that relaxes the strict ordering
+> > imposed on PCI transactions, and thus, can improve performance.
+> > 
+> > Until now, relaxed ordering could be set only by user space applications
+> > for user MRs. The following patch series enables relaxed ordering for the
+> > kernel ULPs as well. Relaxed ordering is an optional capability, and as
+> > such, it is ignored by vendors that don't support it.
+> > 
+> > The following test results show the performance improvement achieved
+> > with relaxed ordering. The test was performed on a NVIDIA A100 in order
+> > to check performance of storage infrastructure over xprtrdma:
 > 
-> The feature makes sense to me as well.
-> I don't quite see how it would get here with attach_btf == NULL.
-> Maybe WARN_ON then?
+> Isn't the Nvidia A100 a GPU not actually supported by Linux at all?
+> What does that have to do with storage protocols?
 
-right, that should be always there
+This system is in use by our storage oriented customer who performed the
+test. He runs drivers/infiniband/* stack from the upstream, simply backported
+to specific kernel version.
 
-> Also if we're allowing re-attach this way why exclude PROG_EXT and LSM?
+The performance boost is seen in other systems too.
+
 > 
+> Also if you enable this for basically all kernel ULPs, why not have
+> an opt-out into strict ordering for the cases that need it (if there are
+> any).
 
-I was enabling just what I needed for the test, which is so far
-the only use case.. I'll see if I can enable that for all of them
+The RO property is optional, it can only improve. In addition, all in-kernel ULPs
+don't need strict ordering. I can be mistaken here and Jason will correct me, it
+is because of two things: ULP doesn't touch data before CQE and DMA API prohibits it.
 
-jirka
-
+Thanks
