@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27A0E35487A
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 00:11:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01EF335487F
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 00:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242686AbhDEWKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 18:10:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40622 "EHLO mail.kernel.org"
+        id S242717AbhDEWKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 18:10:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40668 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232628AbhDEWKP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 18:10:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 14643613D4;
+        id S242652AbhDEWKQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 18:10:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id B1D62613DA;
         Mon,  5 Apr 2021 22:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617660609;
-        bh=z28x4DHRRmuF6Tht7yn/Q8NaIZ/Q/w1JgBUS/5pRB6Y=;
+        bh=PHEF6eyH5ket9wzLT9jo9CV1f0m3V2zFioMjBk21KZU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X0cB4e4qvSmoqlD8j2SgEVxPjfyJuAnzwMKN1rG9tTWbvuw5RNTP8dDTDfv77Qsdh
-         R5ijZ+1t1b0mo8MpQ8KppfCwxmzDwk6haVtPaxQXB/DwzuVyo7JbLmz56fF7NXLY3u
-         mGlI6XzZSyhDsgBu/i0BRqcWf7fmebJJ/14aAETJJV3cZXDwathxOVH9mK477yz8Pa
-         5wRJrt1PCmBp8o4/t7xlhJpYNJ611St7nKLHTeFITBTgE3/NyM8EueodNBZH30tbKV
-         MPN5b0qgPuvqqEmF9RahdEgUA3d2kMnxDizL4Qs8BGqjvkKPi9ZrZ2FuLV359xA5TR
-         XrghdFZ0tI3EA==
+        b=pkjsn44ZB3xxTFG5aTaswK3LOQ9uIcQTBTqbYXYWV0K4i1YwH6bG36I4eqYRdKhl1
+         oXlp+WxkhoSQRIKZmejPeheyfuH0NheHGloHofv/XeQuL/poxvoM5aGgNL7tfmkK+h
+         qCswScg1C7qMovh80XU3dK+YnW8SAW6sK72tMloN0YP0s/kAsoVPAdbBdhXj3TF8N+
+         Hg76s/IwmIxMOJZ/FVKibZX2bURs9HvD5MJaTSOeKTmi48vkVTHZ9eIlwTCdpTZMJc
+         jNuz4096sbaT1eIWu/5ZNZVHjXXYRpVvnwroQGVxXurvv58eiIXrWJL7XDHAD9AK+a
+         ZIF1oe2XiK+BQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 054A760A00;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC4AF60A00;
         Mon,  5 Apr 2021 22:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] openvswitch: fix send of uninitialized stack memory in ct
- limit reply
+Subject: Re: [PATCH] net: Allow to specify ifindex when device is moved to another
+ namespace
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161766060901.24414.14462323309343322855.git-patchwork-notify@kernel.org>
+Message-Id: <161766060970.24414.3057452106128976357.git-patchwork-notify@kernel.org>
 Date:   Mon, 05 Apr 2021 22:10:09 +0000
-References: <20210404175031.3834734-1-i.maximets@ovn.org>
-In-Reply-To: <20210404175031.3834734-1-i.maximets@ovn.org>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        yihung.wei@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210405071223.138101-1-avagin@gmail.com>
+In-Reply-To: <20210405071223.138101-1-avagin@gmail.com>
+To:     Andrei Vagin <avagin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        christian.brauner@ubuntu.com, alexander.mikhalitsyn@virtuozzo.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun,  4 Apr 2021 19:50:31 +0200 you wrote:
-> 'struct ovs_zone_limit' has more members than initialized in
-> ovs_ct_limit_get_default_limit().  The rest of the memory is a random
-> kernel stack content that ends up being sent to userspace.
+On Mon,  5 Apr 2021 00:12:23 -0700 you wrote:
+> Currently, we can specify ifindex on link creation. This change allows
+> to specify ifindex when a device is moved to another network namespace.
 > 
-> Fix that by using designated initializer that will clear all
-> non-specified fields.
+> Even now, a device ifindex can be changed if there is another device
+> with the same ifindex in the target namespace. So this change doesn't
+> introduce completely new behavior, it adds more control to the process.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] openvswitch: fix send of uninitialized stack memory in ct limit reply
-    https://git.kernel.org/netdev/net/c/4d51419d4993
+  - net: Allow to specify ifindex when device is moved to another namespace
+    https://git.kernel.org/netdev/net-next/c/eeb85a14ee34
 
 You are awesome, thank you!
 --
