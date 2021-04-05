@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A6935425F
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A79BA35426A
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 15:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237421AbhDENeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 09:34:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33976 "EHLO vps0.lunn.ch"
+        id S241206AbhDENla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 09:41:30 -0400
+Received: from verein.lst.de ([213.95.11.211]:50764 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232694AbhDENeH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 09:34:07 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lTPMZ-00EvmM-Ns; Mon, 05 Apr 2021 15:33:55 +0200
-Date:   Mon, 5 Apr 2021 15:33:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Danilo Krummrich <danilokrummrich@dk-develop.de>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        davem@davemloft.net, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jeremy.linton@arm.com
-Subject: Re: [PATCH 2/2] net: mdio: support c45 peripherals on c22 busses
-Message-ID: <YGsRwxwXILC1Tp2S@lunn.ch>
-References: <20210331141755.126178-1-danilokrummrich@dk-develop.de>
- <20210331141755.126178-3-danilokrummrich@dk-develop.de>
- <YGSi+b/r4zlq9rm8@lunn.ch>
- <6f1dfc28368d098ace9564e53ed92041@dk-develop.de>
- <20210331183524.GV1463@shell.armlinux.org.uk>
- <2f0ea3c3076466e197ca2977753b07f3@dk-develop.de>
- <20210401084857.GW1463@shell.armlinux.org.uk>
- <YGZvGfNSBBq/92D+@arch-linux>
- <20210402125858.GB1463@shell.armlinux.org.uk>
- <YGoSS7llrl5K6D+/@arch-linux>
+        id S235826AbhDENl3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 09:41:29 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C3BD068BEB; Mon,  5 Apr 2021 15:41:15 +0200 (CEST)
+Date:   Mon, 5 Apr 2021 15:41:15 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
+        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
+        samba-technical@lists.samba.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+Message-ID: <20210405134115.GA22346@lst.de>
+References: <20210405052404.213889-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YGoSS7llrl5K6D+/@arch-linux>
+In-Reply-To: <20210405052404.213889-1-leon@kernel.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 04, 2021 at 09:23:55PM +0200, Danilo Krummrich wrote:
-> On Fri, Apr 02, 2021 at 01:58:58PM +0100, Russell King - ARM Linux admin wrote:
-> > On Fri, Apr 02, 2021 at 03:10:49AM +0200, Danilo Krummrich wrote:
-> > > On Thu, Apr 01, 2021 at 09:48:58AM +0100, Russell King - ARM Linux admin wrote:
-> > > > One could also argue this is a feature, and it allows userspace to
-> > > > know whether C45 cycles are supported or not.
-> > > >
-> > > No, if the userspace requests such a transfer although the MDIO controller
-> > > does not support real c45 framing the kernel will call mdiobus_c45_addr() to
-> > > join the devaddr and  and regaddr in one parameter and pass it to
-> > > mdiobus_read() or mdiobus_write(). A bus driver not supporting c45 framing
-> > > will not care and just mask/shift the joined value and write it to the
-> > > particular register. Obviously, this will result into complete garbage being
-> > > read or (even worse) written.
-> > 
-> > 
-> > We have established that MDIO drivers need to reject accesses for
-> > reads/writes that they do not support - this isn't something that
-> > they have historically checked for because it is only recent that
-> > phylib has really started to support clause 45 PHYs.
-> > 
-> I see, that's why you consider it a feature - because it is.
-> What do you think about adding a flag MDIO_PHY_ID_MMD (or similar) analog to
-> MDIO_PHY_ID_C45 for phy_mii_ioctl() to check for, such that userspace can ask
-> for an indirect access in order to save userspace doing the indirect access
-> itself. A nice side effect would be saving 3 syscalls per request.
-
-We don't care about the performance of this IOCTL interface. It is for
-debug only, and you need to be very careful how you use it, because
-you can very easily shoot yourself in the foot.
-
-> So currently every driver should check for the flag MII_ADDR_C45 and report an
-> error in case it's unsupported.
+On Mon, Apr 05, 2021 at 08:23:54AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> What do you think about checking the bus' capabilities instead in
-> mdiobus_c45_*()? This way the check if C45 is supported can even happen before
-> calling the driver at all. I think that would be a little cleaner than having
-> two places where information of the bus' capabilities are stored (return value
-> of read/write functions and the capabilities field).
+> >From Avihai,
 > 
-> I think there are not too many drivers setting their capabilities though, but
-> it should be easy to derive this information from how and if they handle the
-> MII_ADDR_C45 flag.
+> Relaxed Ordering is a PCIe mechanism that relaxes the strict ordering
+> imposed on PCI transactions, and thus, can improve performance.
+> 
+> Until now, relaxed ordering could be set only by user space applications
+> for user MRs. The following patch series enables relaxed ordering for the
+> kernel ULPs as well. Relaxed ordering is an optional capability, and as
+> such, it is ignored by vendors that don't support it.
+> 
+> The following test results show the performance improvement achieved
+> with relaxed ordering. The test was performed on a NVIDIA A100 in order
+> to check performance of storage infrastructure over xprtrdma:
 
-I actually don't think anything needs to change. The Marvell PHY
-probably probes due to its C22 IDs. The driver will then requests C45
-access which automagically get converted into C45 over C22 for your
-hardware, but remain C45 access for bus drivers which support C45.
+Isn't the Nvidia A100 a GPU not actually supported by Linux at all?
+What does that have to do with storage protocols?
 
-	  Andrew
+Also if you enable this for basically all kernel ULPs, why not have
+an opt-out into strict ordering for the cases that need it (if there are
+any).
