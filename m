@@ -2,126 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FFC2353BBF
-	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:26:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF8F353BCA
+	for <lists+netdev@lfdr.de>; Mon,  5 Apr 2021 07:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbhDEFYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 01:24:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57808 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232296AbhDEFYt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 01:24:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 98D37613A5;
-        Mon,  5 Apr 2021 05:24:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617600283;
-        bh=dMWjVf2aUxdb7ZrnGVveey6nby3LeCk61fbfNTM9fl4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gTxgWIVArORnsJVcmrlN8d/R5yi5c6bOrNBzElohC5vaA3tthZxAmBXekzQxLPZt1
-         znzexk81BrDTA5rsNCCVYOvwwlFDnzS86wc5yRwGWJWRt2aJNEqlhMh8X3Yin5MnUg
-         egYUxDlxiP5r1F4WaDRJYqPSPkYbHdcFvkPU39s/4JSgSFdlIFeQGgL/MD/zmAqfpV
-         quoKIMb/Ra/cj5B4Sy7YeCi7JhHJGHVrBLPV05lfGEptIVl6j3TYWFL1RzMBwdrQlr
-         KEGiPPxsxY/9/6wsL1nkOvjaFxpOYMEgu7CPBdfRPgPfo6Fuhy9FxKi4vnWqOGX83B
-         98mrg+Kp01FKw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Avihai Horon <avihaih@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        id S229610AbhDEFdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 01:33:22 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:50838 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229454AbhDEFdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 01:33:20 -0400
+Received: from fsav303.sakura.ne.jp (fsav303.sakura.ne.jp [153.120.85.134])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 1355XCY7010840;
+        Mon, 5 Apr 2021 14:33:12 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav303.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp);
+ Mon, 05 Apr 2021 14:33:12 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp)
+Received: from localhost.localdomain (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 1355X8va010672
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 5 Apr 2021 14:33:12 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        Sven Eckelmann <sven@narfation.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH rdma-next 10/10] xprtrdma: Enable Relaxed Ordering
-Date:   Mon,  5 Apr 2021 08:24:04 +0300
-Message-Id: <20210405052404.213889-11-leon@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210405052404.213889-1-leon@kernel.org>
-References: <20210405052404.213889-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH] batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field
+Date:   Mon,  5 Apr 2021 14:33:06 +0900
+Message-Id: <20210405053306.3437-1-penguin-kernel@I-love.SAKURA.ne.jp>
+X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Avihai Horon <avihaih@nvidia.com>
+KMSAN found uninitialized value at batadv_tt_prepare_tvlv_local_data()
+[1], for commit ced72933a5e8ab52 ("batman-adv: use CRC32C instead of CRC16
+in TT code") inserted 'reserved' field into "struct batadv_tvlv_tt_data"
+and commit 7ea7b4a142758dea ("batman-adv: make the TT CRC logic VLAN
+specific") moved that field to "struct batadv_tvlv_tt_vlan_data" but left
+that field uninitialized.
 
-Enable Relaxed Ordering for xprtrdma.
+Although this patch passed "#syz test:" check, there might be similar bugs
+remaining. It might be better to proactively use __GFP_ZERO than trying to
+find uninitialized fields in this module.
 
-Relaxed Ordering is an optional access flag and as such, it is ignored
-by vendors that don't support it.
+[1] https://syzkaller.appspot.com/bug?id=07f3e6dba96f0eb3cabab986adcd8a58b9bdbe9d
 
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Reported-by: syzbot <syzbot+50ee810676e6a089487b@syzkaller.appspotmail.com>
+Tested-by: syzbot <syzbot+50ee810676e6a089487b@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: ced72933a5e8ab52 ("batman-adv: use CRC32C instead of CRC16 in TT code")
+Fixes: 7ea7b4a142758dea ("batman-adv: make the TT CRC logic VLAN specific")
 ---
- net/sunrpc/xprtrdma/frwr_ops.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/batman-adv/translation-table.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/sunrpc/xprtrdma/frwr_ops.c b/net/sunrpc/xprtrdma/frwr_ops.c
-index cfbdd197cdfe..f9334c0a1a13 100644
---- a/net/sunrpc/xprtrdma/frwr_ops.c
-+++ b/net/sunrpc/xprtrdma/frwr_ops.c
-@@ -135,7 +135,8 @@ int frwr_mr_init(struct rpcrdma_xprt *r_xprt, struct rpcrdma_mr *mr)
- 	struct ib_mr *frmr;
- 	int rc;
+diff --git a/net/batman-adv/translation-table.c b/net/batman-adv/translation-table.c
+index f8761281aab0..eb82576557e6 100644
+--- a/net/batman-adv/translation-table.c
++++ b/net/batman-adv/translation-table.c
+@@ -973,6 +973,7 @@ batadv_tt_prepare_tvlv_local_data(struct batadv_priv *bat_priv,
  
--	frmr = ib_alloc_mr(ep->re_pd, ep->re_mrtype, depth, 0);
-+	frmr = ib_alloc_mr(ep->re_pd, ep->re_mrtype, depth,
-+			   IB_ACCESS_RELAXED_ORDERING);
- 	if (IS_ERR(frmr))
- 		goto out_mr_err;
+ 		tt_vlan->vid = htons(vlan->vid);
+ 		tt_vlan->crc = htonl(vlan->tt.crc);
++		tt_vlan->reserved = 0;
  
-@@ -339,9 +340,10 @@ struct rpcrdma_mr_seg *frwr_map(struct rpcrdma_xprt *r_xprt,
- 	reg_wr = &mr->frwr.fr_regwr;
- 	reg_wr->mr = ibmr;
- 	reg_wr->key = ibmr->rkey;
--	reg_wr->access = writing ?
--			 IB_ACCESS_REMOTE_WRITE | IB_ACCESS_LOCAL_WRITE :
--			 IB_ACCESS_REMOTE_READ;
-+	reg_wr->access =
-+		(writing ? IB_ACCESS_REMOTE_WRITE | IB_ACCESS_LOCAL_WRITE :
-+			   IB_ACCESS_REMOTE_READ) |
-+		IB_ACCESS_RELAXED_ORDERING;
- 
- 	mr->mr_handle = ibmr->rkey;
- 	mr->mr_length = ibmr->length;
+ 		tt_vlan++;
+ 	}
 -- 
-2.30.2
+2.18.4
 
