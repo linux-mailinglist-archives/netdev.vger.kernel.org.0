@@ -2,156 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5A3355D9B
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 23:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21E9F355DA3
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 23:08:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343543AbhDFVFY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 6 Apr 2021 17:05:24 -0400
-Received: from mga02.intel.com ([134.134.136.20]:6537 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230395AbhDFVFV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 17:05:21 -0400
-IronPort-SDR: 2Xh+YU1NAG1CcZUvKFzaIDKbkpbklox5CMQOuxBlV+DxON520TeAiFAXtdwke7WSDOq2CuD66S
- RlXvnV0qsFSg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="180288781"
-X-IronPort-AV: E=Sophos;i="5.82,201,1613462400"; 
-   d="scan'208";a="180288781"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 14:05:12 -0700
-IronPort-SDR: o9rFf+icZjjDvubnl7SRpNXqhhN5pTdKS7mU/Pg7xALgRITVPuvkD46rssU8z/jdz783fuWCbm
- 1bfUXeN/WdCw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,201,1613462400"; 
-   d="scan'208";a="441067511"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Apr 2021 14:05:12 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 6 Apr 2021 14:05:11 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 6 Apr 2021 14:05:10 -0700
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
- Tue, 6 Apr 2021 14:05:10 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     "dledford@redhat.com" <dledford@redhat.com>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Subject: RE: [PATCH v4 00/23] Add Intel Ethernet Protocol Driver for RDMA
- (irdma)
-Thread-Topic: [PATCH v4 00/23] Add Intel Ethernet Protocol Driver for RDMA
- (irdma)
-Thread-Index: AQHXKyghWxg1YMB540GtculmvcetP6qn+haQ
-Date:   Tue, 6 Apr 2021 21:05:10 +0000
-Message-ID: <a76853a97dda4ccb96c35d4095e4866a@intel.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
-In-Reply-To: <20210406210125.241-1-shiraz.saleem@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S239224AbhDFVIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 17:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232861AbhDFVIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 17:08:14 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6182C06174A;
+        Tue,  6 Apr 2021 14:08:05 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id 6so4710875ilt.9;
+        Tue, 06 Apr 2021 14:08:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=xxIJkbvz2ORzIHZBYWPlcoyRH9ByZNBxfwlcDMmobcs=;
+        b=Ra6mCwmqi7gIxrDUvEZwd9SMVCRkjPK5Q1D2Ro2K9+DoRmxtFWI/1rSpPgx5OLKbA9
+         7RM/pxy2r9UN1kFgGVZT5+j0KaX035y+VXb6RizEANx6eAR17htA+a8Da0MZ+oQ5XuM3
+         GO5CbHSa1gf/Eg7VrWYJBFSQCH1IxMQcKvifTyBND+zZTZbEh0NTLbEnK+YG/IHLSDDg
+         hk/lsIa2B9ounBTJ6FKhjbSQJKqUa7D3pkARJl2swCppuFycafVcxZPVODyzTryiim6S
+         O24yjDWhJjRbnzE2wjGBDFK2gi2F2aWtwfs7fc1ee0eVPzzYHsU3/zzPnEXqB/4/ge76
+         mwDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=xxIJkbvz2ORzIHZBYWPlcoyRH9ByZNBxfwlcDMmobcs=;
+        b=BaxElYc2RMoCMhCoDfs0jqSaaNN+DsCUWs1mETU+cJkOeuvJGJ1/JGk5DCFGt6Itkt
+         TOfPgk98ux60LFiOm/ksq0lmxVvBFU/hPCCk77qOI4Ay9cwz3hEGwDbjWkgnTniqFymm
+         CadyTnEH4/0yOp7cGwKjPK67hOfbu287Hx5YX8DAo4P9e0N/ZfRpZD58qmvmF/PaKIFl
+         j9zDwd35b8I2nIpokyPBE/o7xPkufsoZTdqe+X0si3B2RTbOtZJLvRXr577kU5NNg80S
+         3v265yNiuRJ5Ybge1eDqSPSPE04zC5AKB9CfPDR3o5EMXt552cPWQ8PdxYYe/o8+v93c
+         Vq7Q==
+X-Gm-Message-State: AOAM5337QMT1brTyB3lptjeBVHJtDzJJnFpfG6w9loHO4nvVn4C2JPPK
+        MSSIsBwqPdDwqNP8tdgT6PA=
+X-Google-Smtp-Source: ABdhPJyhEtc1S4vbxNTCZrOBwr9QChm8pVQXtJeFqu6rOHLclNv7U4r9ATOw5/V9/JlXwcb+iAZcTQ==
+X-Received: by 2002:a05:6e02:1303:: with SMTP id g3mr192342ilr.262.1617743285094;
+        Tue, 06 Apr 2021 14:08:05 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id w16sm14131142iod.51.2021.04.06.14.08.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Apr 2021 14:08:04 -0700 (PDT)
+Date:   Tue, 06 Apr 2021 14:07:56 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <606ccdacdbbf6_22ba52087f@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpVd8s0yqMLOR2B5uBxKFzWWZYoZ20WAN2MjcVEiiHX++A@mail.gmail.com>
+References: <20210331023237.41094-1-xiyou.wangcong@gmail.com>
+ <20210331023237.41094-11-xiyou.wangcong@gmail.com>
+ <1aeb42b4-c0fe-4a25-bd73-00bc7b7de285@gmail.com>
+ <CAM_iQpVd8s0yqMLOR2B5uBxKFzWWZYoZ20WAN2MjcVEiiHX++A@mail.gmail.com>
+Subject: Re: [Patch bpf-next v8 10/16] sock: introduce
+ sk->sk_prot->psock_update_sk_prot()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [PATCH v4 00/23] Add Intel Ethernet Protocol Driver for RDMA (irdma)
+Cong Wang wrote:
+> On Mon, Apr 5, 2021 at 1:25 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> >
+> >
+> > On 3/31/21 4:32 AM, Cong Wang wrote:
+> > > From: Cong Wang <cong.wang@bytedance.com>
+> > >
+> > > Currently sockmap calls into each protocol to update the struct
+> > > proto and replace it. This certainly won't work when the protocol
+> > > is implemented as a module, for example, AF_UNIX.
+> > >
+> > > Introduce a new ops sk->sk_prot->psock_update_sk_prot(), so each
+> > > protocol can implement its own way to replace the struct proto.
+> > > This also helps get rid of symbol dependencies on CONFIG_INET.
+> >
+> > [...]
+> >
+> >
+> > >
+> > > -struct proto *tcp_bpf_get_proto(struct sock *sk, struct sk_psock *psock)
+> > > +int tcp_bpf_update_proto(struct sock *sk, bool restore)
+> > >  {
+> > > +     struct sk_psock *psock = sk_psock(sk);
+> >
+> > I do not think RCU is held here ?
+> >
+> > sk_psock() is using rcu_dereference_sk_user_data()
 > 
-> The following patch series introduces a unified Intel Ethernet Protocol Driver for
-> RDMA (irdma) for the X722 iWARP device and a new E810 device which supports
-> iWARP and RoCEv2. The irdma module replaces the legacy i40iw module for X722
-> and extends the ABI already defined for i40iw. It is backward compatible with
-> legacy X722 rdma-core provider (libi40iw).
+> Right, I just saw the syzbot report. But here we already have
+> the writer lock of sk_callback_lock, hence RCU read lock here
+> makes no sense to me. Probably we just have to tell RCU we
+> already have sk_callback_lock.
 > 
-> X722 and E810 are PCI network devices that are RDMA capable. The RDMA block
-> of this parent device is represented via an auxiliary device exported to 'irdma'
-> using the core auxiliary bus infrastructure recently added for 5.11 kernel.
-> The parent PCI netdev drivers 'i40e' and 'ice' register auxiliary RDMA devices with
-> private data/ops encapsulated that bind to auxiliary drivers registered in irdma
-> module.
-> 
-> This patchset was initially submitted as an RFC where in we got feedback to come
-> up with a generic scheme for RDMA drivers to attach to a PCI device owned by
-> netdev PCI driver [1]. Solutions using platform bus and MFD were explored but
-> rejected by the community and the consensus was to add a new bus infrastructure
-> to support this usage model.
-> 
-> Further revisions of this series along with the auxiliary bus were submitted [2]. At
-> this point, Greg KH requested that we take the auxiliary bus review and revision
-> process to an internal mailing list and garner the buy-in of a respected kernel
-> contributor, along with consensus of all major stakeholders including Nvidia (for
-> mlx5 sub-function use-case) and Intel sound driver. This process took a while and
-> stalled further development/review of this netdev/irdma series.
-> The auxiliary bus was eventually merged in 5.11.
-> 
-> Between v1 to v2 of this submission, the IIDC went through a major re-write based
-> on the feedback and we hope it is now more in alignment with what the community
-> wants.
-> 
-> This series is built against rdma for-next and currently includes the netdev patches
-> for ease of review. This includes updates to 'ice' driver to provide RDMA support
-> and converts 'i40e' driver to use the auxiliary bus infrastructure.
-> Once the patches are closer to merging, a shared pull request will be submitted.
-> 
-> v3-->v4:
-> * Fixup W=1 warnings in ice patches
-> * Fix issues uncovered by pyverbs for create user AH and multicast
-> * Fix descriptor set issue for fast register introduced during port to FIELD_PREP
-> in v2 submission
-> 
-> v2-->v3:
-> * rebase rdma for-next. Adapt to core change '1fb7f8973f51 ("RDMA: Support
-> more than 255 rdma ports")'
-> * irdma Kconfig updates to conform with linux coding style.
-> * Fix a 0-day build issue
-> * Remove rdma_resource_limits selector devlink param. Follow on patch to be
-> submitted for it with suggestion from Parav to use devlink resource.
-> * Capitalize abbreviations in ice idc. e.g. 'aux' to 'AUX'
-> 
-> v1-->v2:
-> * Remove IIDC channel OPs - open, close, peer_register and peer_unregister.
->   And all its associated FSM in ice PCI core driver.
-> * Use device_lock in ice PCI core driver while issuing IIDC ops callbacks.
-> * Remove peer_* verbiage from shared IIDC header and rename the structs and
-> channel ops
->   with iidc_core*/iidc_auxiliary*.
-> * Allocate ib_device at start and register it at the end of drv.probe() in irdma gen2
-> auxiliary driver.
-> * Use ibdev_* printing extensively throughout most of the driver
->   Remove idev_to_dev, ihw_to_dev macros as no longer required in new print
-> scheme.
-> * Do not bump ABI ver. to 6 in irdma. Maintain irdma ABI ver. at 5 for legacy i40iw
-> user-provider compatibility.
-> * Add a boundary check in irdma_alloc_ucontext to fail binding with < 4 user-space
-> provider version.
-> * Remove devlink from irdma. Add 2 new rdma-related devlink parameters added
-> to ice PCI core driver.
-> * Use FIELD_PREP/FIELD_GET/GENMASK on get/set of descriptor fields versus
-> home grown ones LS_*/RS_*.
-> * Bind 2 separate auxiliary drivers in irdma - one for gen1 and one for gen2 and
-> future devices.
-> * Misc. driver fixes in irdma
-> 
-> [1] https://patchwork.kernel.org/project/linux-rdma/patch/20190215171107.6464-2-
-> shiraz.saleem@intel.com/
-> [2] https://lore.kernel.org/linux-rdma/20200520070415.3392210-1-
-> jeffrey.t.kirsher@intel.com/
-> 
+> Thanks.
 
-The irdma rdma-core provider will be send out shortly.
-
-Shiraz
+I think you need to ensure its the psock we originally grabbed as
+well. Otherwise how do we ensure the psock is not swapped from
+another thread?
