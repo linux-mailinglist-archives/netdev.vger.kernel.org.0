@@ -2,117 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1266D354AEA
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 04:38:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00DC8354B04
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 04:45:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243404AbhDFCiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 22:38:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60622 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232271AbhDFCiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 22:38:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617676673;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=J5Y7rI+FtGX0I4XVdEnNnyzKf98zHZb+U6KjZK4yGbc=;
-        b=VloZjShIsRprW0Lf7G4DxDkz/EbvC8QpPGufxQM0FthDC2azZGhPxXMxwg+DxqhPHpDDd2
-        H+kBBKe0jUNirBhFPG4OuZiLsIoGiT8YsZ2DEWU/t37Yy4PhnHnowxj+W/eCxN3QX+CRag
-        bVj9jUdOHSvUeQLg5A3hLM15Q5PC6QE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-425-SuhA5TQCNkCWqJin6rD1AA-1; Mon, 05 Apr 2021 22:37:51 -0400
-X-MC-Unique: SuhA5TQCNkCWqJin6rD1AA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 468601800D50;
-        Tue,  6 Apr 2021 02:37:45 +0000 (UTC)
-Received: from localhost (unknown [10.66.128.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1E86A690F5;
-        Tue,  6 Apr 2021 02:37:41 +0000 (UTC)
-Date:   Tue, 6 Apr 2021 10:37:38 +0800
-From:   Honggang LI <honli@redhat.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Avihai Horon <avihaih@nvidia.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
-Message-ID: <20210406023738.GB80908@dhcp-128-72.nay.redhat.com>
-References: <20210405052404.213889-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210405052404.213889-1-leon@kernel.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        id S243471AbhDFCpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 22:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233030AbhDFCpk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 22:45:40 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DD5C06174A
+        for <netdev@vger.kernel.org>; Mon,  5 Apr 2021 19:45:32 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id a12so9405855pfc.7
+        for <netdev@vger.kernel.org>; Mon, 05 Apr 2021 19:45:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=gl2BFEkCoDtmwGmzxzT5c7YxkCDCRL5qgOQzUI0dIQ4=;
+        b=C7OflORWo003HRWv3LYbSA+lPOUhEcl7QTOc/rOXH7JQBrnJwSHD2NioMjydj0DaeQ
+         8q5H8Hxd3GNllhL2o4K5ts06S4UeLlVsw1OYi5ESRK+gcTou2QEztxgexJELg4qW1goD
+         X84DbKsodCdqVSFRSCj9ipbXkmrjsBsec9wO3ABOjlP80PYfuij5h/mASd+VTHtlsm2t
+         ZQQ7xsigdMiMFJdaDnJ7tDkmFE4wZVvg+QKfyVD9hIYSDB8MhLH6wBDvHFgGXunsdxII
+         Q5yIRhQxv+sWQtRxzhAksm332cj2MKL8Q3O9UXCgNwTsFDglq9GYPy6+/0ZhyR7rlxJA
+         T2Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gl2BFEkCoDtmwGmzxzT5c7YxkCDCRL5qgOQzUI0dIQ4=;
+        b=QTVM946u+/k5ULc0dFrR5VknJFotnNhdohkYgGbB0aopw+l7DwH+P9BIaFvVArMjqy
+         UR3mYOZKXeSK10Hoe6qCnbFLCua5ev9h/UBnUvcH9d9VTRai1wWRQHjaPXPpD9cvs1FW
+         7Bm7brchjx/7NbR44kTab1WejUSRnxx8+8l5SL3w527o10gEVuO6K56xR7Pi/hW+tiKz
+         xCzgKHLtNqlp7Oep6nW2p3/3S1zI0Sb9aU7+O9OBapldQKaQs7PWOmGdGPhYyzWxg+n4
+         a25NwVOW0G5nqE33DBjlpkLyDmIiKavjypIY2AM9WwMPSGgtZKnHipkxcOWqz3A2Hbtw
+         LWnQ==
+X-Gm-Message-State: AOAM530rzeU7b2RNldgpRqUSbKeKknb1c1rUDVKhfN1srFygUKEeeKRN
+        l8iqMyB0UQGfHppe3q5Nl/GQ1gbNyplvHwfk
+X-Google-Smtp-Source: ABdhPJz5G8Je67f+YEuq9WjrMo1f+/JusrFUHAz88/dJ2YJrxIPVFkF88EF3PQeX20RYBqUmAvQ0Hw==
+X-Received: by 2002:a62:ddd2:0:b029:1f1:533b:b1cf with SMTP id w201-20020a62ddd20000b02901f1533bb1cfmr25409528pff.56.1617677131323;
+        Mon, 05 Apr 2021 19:45:31 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id r26sm10441989pgn.15.2021.04.05.19.45.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Apr 2021 19:45:30 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>,
+        tipc-discussion@lists.sourceforge.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Tuong Lien <tuong.t.lien@dektech.com.au>
+Subject: [PATCH net] tipc: increment the tmp aead refcnt before attaching it
+Date:   Tue,  6 Apr 2021 10:45:23 +0800
+Message-Id: <c273cb4165a007c0125fac044def1416bd302fc7.1617677123.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 08:23:54AM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> From Avihai,
-> 
-> Relaxed Ordering is a PCIe mechanism that relaxes the strict ordering
-> imposed on PCI transactions, and thus, can improve performance.
-> 
-> Until now, relaxed ordering could be set only by user space applications
-> for user MRs. The following patch series enables relaxed ordering for the
-> kernel ULPs as well. Relaxed ordering is an optional capability, and as
-> such, it is ignored by vendors that don't support it.
-> 
-> The following test results show the performance improvement achieved
+Li Shuang found a NULL pointer dereference crash in her testing:
 
-Did you test this patchset with CPU does not support relaxed ordering?
+  [] BUG: unable to handle kernel NULL pointer dereference at 0000000000000020
+  [] RIP: 0010:tipc_crypto_rcv_complete+0xc8/0x7e0 [tipc]
+  [] Call Trace:
+  []  <IRQ>
+  []  tipc_crypto_rcv+0x2d9/0x8f0 [tipc]
+  []  tipc_rcv+0x2fc/0x1120 [tipc]
+  []  tipc_udp_recv+0xc6/0x1e0 [tipc]
+  []  udpv6_queue_rcv_one_skb+0x16a/0x460
+  []  udp6_unicast_rcv_skb.isra.35+0x41/0xa0
+  []  ip6_protocol_deliver_rcu+0x23b/0x4c0
+  []  ip6_input+0x3d/0xb0
+  []  ipv6_rcv+0x395/0x510
+  []  __netif_receive_skb_core+0x5fc/0xc40
 
-We observed significantly performance degradation when run perftest with
-relaxed ordering enabled over old CPU.
+This is caused by NULL returned by tipc_aead_get(), and then crashed when
+dereferencing it later in tipc_crypto_rcv_complete(). This might happen
+when tipc_crypto_rcv_complete() is called by two threads at the same time:
+the tmp attached by tipc_crypto_key_attach() in one thread may be released
+by the one attached by that in the other thread.
 
-https://github.com/linux-rdma/perftest/issues/116
+This patch is to fix it by incrementing the tmp's refcnt before attaching
+it instead of calling tipc_aead_get() after attaching it.
 
-thanks
+Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
+Reported-by: Li Shuang <shuali@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/tipc/crypto.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index f4fca8f..97710ce 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -1941,12 +1941,13 @@ static void tipc_crypto_rcv_complete(struct net *net, struct tipc_aead *aead,
+ 			goto rcv;
+ 		if (tipc_aead_clone(&tmp, aead) < 0)
+ 			goto rcv;
++		WARN_ON(!refcount_inc_not_zero(&tmp->refcnt));
+ 		if (tipc_crypto_key_attach(rx, tmp, ehdr->tx_key, false) < 0) {
+ 			tipc_aead_free(&tmp->rcu);
+ 			goto rcv;
+ 		}
+ 		tipc_aead_put(aead);
+-		aead = tipc_aead_get(tmp);
++		aead = tmp;
+ 	}
+ 
+ 	if (unlikely(err)) {
+-- 
+2.1.0
 
