@@ -2,122 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A076C354F6B
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 11:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3343C354FA0
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 11:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244769AbhDFJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 05:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233581AbhDFJHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 05:07:41 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8A4C06174A
-        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 02:07:33 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id f16so15633963ljm.1
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 02:07:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=55VWKKQ7vLzvbshjSiRHs3/wzxC9LdbwbFJFuPk7kA0=;
-        b=WNAYogfYN19ue2p9hae/KtPq1bz4RVDQr9lKCAQfxXUBW94p9faBWT+H/h7JLkaDNv
-         S8GdoI6NU8IKWiQYubjwvwn56Kx+DD7LHqM9/uSy7w2Or/Vrz8cm0rdUakOzMef86vbR
-         c9q4+i21klcm3NaiY9H8eKu7Sci6BNspCSlDBoJcCgqkTTDpMBJy4BL2ttgsOhMtOwWt
-         Q2sNr35aTE3JMz1wFMDBYQbx5BFXe1Rong8XL0VAzPlq7/cGr0LfaupPyC/FFN1yA8Um
-         fvHEor2kihCphnWzPCup/PlEtKPjpl+9UTfNsV9U/yo4x8GnPa/dJnv1H57jKC4O2EIz
-         hrNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=55VWKKQ7vLzvbshjSiRHs3/wzxC9LdbwbFJFuPk7kA0=;
-        b=Pc1QfZXX9K607Hd3mMKKhdVsqAbfV0KWdIHz01mKGi2vJl5I8aIkdzbEj08crDK0H/
-         FmGUTKWjgW4fis75qyZe1F7bi9rSypnki8gUuZMr4Gi4yP2uJGTz/oyZJdDxZA9vnzg/
-         nxy25iKiAi+vrnS6CBMxcydz0EW7d4WaqsZCKIY0gzX7xtygNe7OV9BbIJvPp+oqZ7oc
-         6GetbXpr3orH1AJZDv1kmfnNKS6NzoZfukG4ln78zaYWsKhPlKr8dHaBnNgbUM4Efc3l
-         P2zRjjUhyXW7eXTO6+rUcUcW7f/Z5wiZwKY9tA+3t+Ss6qqc7ceNeOjZfszhkKBYI8sy
-         u0rw==
-X-Gm-Message-State: AOAM530kyJsvKsC9KI/PBfKZkjJERRWNBglZjttTZ4oLoPcWq0vmg+ua
-        BpribOrcxGZYIPapvVdecd2MWA==
-X-Google-Smtp-Source: ABdhPJxUS1FM7zf8GhXW72jNmJAjXACJuCfmN3H+BeYtdBLeUthe42Tr5QUmaIflwkKFWsVQ9GQHqA==
-X-Received: by 2002:a2e:8984:: with SMTP id c4mr17909998lji.456.1617700052191;
-        Tue, 06 Apr 2021 02:07:32 -0700 (PDT)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id z9sm2151199lji.139.2021.04.06.02.07.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 02:07:31 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: dsa: mv88e6xxx: Allow dynamic reconfiguration of tag protocol
-In-Reply-To: <YGCfvDhRFcfESYKx@lunn.ch>
-References: <20210326105648.2492411-1-tobias@waldekranz.com> <20210326105648.2492411-2-tobias@waldekranz.com> <YGCfvDhRFcfESYKx@lunn.ch>
-Date:   Tue, 06 Apr 2021 11:07:30 +0200
-Message-ID: <87eefnlr1p.fsf@waldekranz.com>
+        id S244799AbhDFJMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 05:12:07 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:55477 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236391AbhDFJMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 05:12:05 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id D86D35C0060;
+        Tue,  6 Apr 2021 05:11:57 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 06 Apr 2021 05:11:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=8WS8zanY9FE0fnyBFIsk5d9BynT
+        FXKYLOq4YQPULBsk=; b=YX6Q+S7eLYQMHjdtH+3GvEO3gk9YtpTAyJBaw2EaMkG
+        wvpnmJ3xb1qqMvVZAtPpc3dduxN9Ci4o46a3I44z5SYUUk5di/PK5qiZGEOt0KiY
+        bJ8JWWRzEft8CLHLP6UXO0QHmQw30GXwZAzLoW3zkRGQZFgPPTpEpjaYmcFDC8TI
+        oRcfUkZyIew+ymdt8mR01zQcxEvEF6/bUUaTf9Bu1mEt8LOCkAvcMev8vGFrzYWY
+        I/8Td2Nvw8el/3YaPUNudJzEFYHQQ10ve9DE6i737HB+urKj13963qVXwLJF1f9x
+        4HmiOTWZhj+dQD3pBG5bs8TFJsD+fACFH0sKd2e4zvg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=8WS8za
+        nY9FE0fnyBFIsk5d9BynTFXKYLOq4YQPULBsk=; b=wsFW+cuqtxHenPZmARizoE
+        3lDHJlKlpzwRquDWh0bSnOWOHZHHEVmQBKS6zzr+oE/gTtBi1qgQjIgKKE+QQ9JN
+        Lz9DAfYg7Nz5shiL03ZhRg/NEuGMp5NlEG6hVXVw1PKMlfY803Yg+ubHA5bZYLbh
+        qnOEEBSIrB/R/Z0/166DvrC6lgnnwzQhk23UZmfG7sqEy0Nq6a4PebCW+BEk0oks
+        //RmlhCiJhCtpbh0s67a2sYsIOEi3xPFUyPTm7JiqNzzkGvQf3OFfH703yENAQ4A
+        UDFp49ex9OvmM/omwboYCSCIOsbjdSaZnlMqI6BhEJhecwrVv79nG+eFkvru0JhQ
+        ==
+X-ME-Sender: <xms:3CVsYJ2YjchrrefrEEToo_ZVjpb8Dhw7J7fuxH4Mu1CgNpjMnQcrYw>
+    <xme:3CVsYAElGbrmHfZwZLZMkHTAfRdc-BxDTTl1oPZzLEZc9wrh3uAUidg9ua20A9aWk
+    0S6ESkH5AIS_g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudejgedgudefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucfkphepkeel
+    rddvtdehrdduvdelrddvgeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:3CVsYJ7_P8a4Pv-ROobKY2fCcIR_JyfD6zUOFTxkJesV_tzkxe7sZg>
+    <xmx:3CVsYG02c9fy55QDtm31qnlKm9AxdsB9VhdNgrWZUPrXFS64U9eZbA>
+    <xmx:3CVsYMHesy1A8yPSncxfMGCC6iYwIUPgm3qjZv4syf24GU0ZpGTATw>
+    <xmx:3SVsYBNstZIFBtAxmWnIsovirB1Ir1eMAoBXMRu_lVxGBCjpT6C5cw>
+Received: from localhost (unknown [89.205.129.244])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 373BB108005F;
+        Tue,  6 Apr 2021 05:11:56 -0400 (EDT)
+Date:   Tue, 6 Apr 2021 11:11:53 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Jiri Slaby <jslaby@suse.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: Re: linux-next: manual merge of the tty tree with the net-next tree
+Message-ID: <YGwl2VvvGcmCciMn@kroah.com>
+References: <20210406184814.3c958f51@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210406184814.3c958f51@canb.auug.org.au>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 28, 2021 at 17:24, Andrew Lunn <andrew@lunn.ch> wrote:
-> On Fri, Mar 26, 2021 at 11:56:46AM +0100, Tobias Waldekranz wrote:
->> All devices are capable of using regular DSA tags. Support for
->> Ethertyped DSA tags sort into three categories:
->> 
->> 1. No support. Older chips fall into this category.
->> 
->> 2. Full support. Datasheet explicitly supports configuring the CPU
->>    port to receive FORWARDs with a DSA tag.
->> 
->> 3. Undocumented support. Datasheet lists the configuration from
->>    category 2 as "reserved for future use", but does empirically
->>    behave like a category 2 device.
->
->> +static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
->> +					 enum dsa_tag_protocol proto)
->> +{
->> +	struct mv88e6xxx_chip *chip = ds->priv;
->> +	enum dsa_tag_protocol old_protocol;
->> +	int err;
->> +
->> +	switch (proto) {
->> +	case DSA_TAG_PROTO_EDSA:
->> +		if (chip->info->tag_protocol != DSA_TAG_PROTO_EDSA)
->> +			dev_warn(chip->dev, "Relying on undocumented EDSA tagging behavior\n");
->> +
->> +		break;
->> +	case DSA_TAG_PROTO_DSA:
->> +		break;
->> +	default:
->> +		return -EPROTONOSUPPORT;
->> +	}
->
-> You are handling cases 2 and 3 here, but not 1. Which makes it a bit
-> of a foot cannon for older devices.
->
-> Now that we have chip->tag_protocol, maybe we should change
-> chip->info->tag_protocol to mean supported protocols?
->
-> BIT(0) DSA
-> BIT(1) EDSA
-> BIT(2) Undocumented EDSA
+On Tue, Apr 06, 2021 at 06:48:14PM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the tty tree got a conflict in:
+> 
+>   net/nfc/nci/uart.c
+> 
+> between commit:
+> 
+>   d3295869c40c ("net: nfc: Fix spelling errors in net/nfc module")
+> 
+> from the net-next tree and commit:
+> 
+>   c2a5a45c0276 ("net: nfc: nci: drop nci_uart_ops::recv_buf")
+> 
+> from the tty tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
 
-Since DSA is supported on all devices, perhaps we should just have:
+Change looks correct to me, thanks!
 
-enum mv88e6xxx_edsa_support {
-     MV88E6XXX_EDSA_UNSUPPORTED,
-     MV88E6XXX_EDSA_UNDOCUMENTED,
-     MV88E6XXX_EDSA_SUPPORTED,
-};
-
-?
-
-Do we also want to default to DSA on all devices unless there is a
-DT-property saying something else? Using EDSA does not really give you
-anything over bare tags anymore. You have fixed the tcpdump-issue, and
-the tagger drivers have been unified so there should be no risk of any
-regressions there either.
+greg k-h
