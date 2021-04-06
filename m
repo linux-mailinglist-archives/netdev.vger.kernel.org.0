@@ -2,213 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 279F83556D0
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 16:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 410413556FE
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 16:49:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbhDFOkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 10:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S1345303AbhDFOtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 10:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233070AbhDFOkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 10:40:52 -0400
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (mail-co1nam04on061e.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe4d::61e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2026FC06174A;
-        Tue,  6 Apr 2021 07:40:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hG98hl+yWLKNVdFqMG/Ept10RdAMQ4JC8qm9ApOFjCjqFEPa5juNvQkpA1tjkeSLoJcDMaFnl1WQPmQG9EgAYAQ7g7OitzVqs5cfOQ7XhmSN5ZY5u652BfPMnXi9pBUrqorf47vAAU7GTMuieQFdjATZdz8XSjJ71Ko+akyusOlqrE++pWHnXEdZuqjo6a39ZHsglL6mW1kTj37dlwKjNYUb+OzCcISriccchet7ThVOiUsU09hTcHBoUNLIFL0z0rJn+mMBmwx22/KVd4Uu0qTfSLkoYVo1lyypuXIfo9VoZtJJBfy7ifyn8FqBHhXxLQZIOo9mF1mpHQJ+wE8wXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NbNlPFzZ+LloSluv42Yv8u2KdBXG8/DdxMDpts0f1PE=;
- b=LoNByi4zPBFN4eShbX3vJconx0FcuPugiSuUWR+blOvpWXiJUoiNwBIqucwQDBggfgvnFKVolFZ8b7QSwcsbNr+X4AJvM6rnJ43ZiItnKBD+N/4Ee7mYP5rmFTbXJ8QUlqnEOzgSBx87QlKIurgV+mGuByYwBrGs+W4nlCW5sxxH7v1YFf7/9geAlyk9xWdYCCs/AWNi93Z2AHlGpXFtgCKKwzJdguQ+0cgDg9mDnMiQ9O2GLw1TFDBg0gvCoDIs317zO/7g7LnvR8KAfCQsE6ZZ93xZJrVBtYuT1Oe3jhQhgkbTXiimHhYgeWHXjGdCKXBMXTv0cLzLmmj0O0SYDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NbNlPFzZ+LloSluv42Yv8u2KdBXG8/DdxMDpts0f1PE=;
- b=JLiqUIVdzo/yR2UGD1nIkeAaVOOiLTNQyfKFw28EDDNRDjqNeT28XLnf3gRm5vjzRZhnwXaSdsnZfg8thlcOCtRDSkC12mh9CaewaLa678NYJOFBR6Wnyc8G7rxN4Rs2MoyDUG1QlkKkXE4DEaF4XbklpL1SDMsDCdCKXqvbXCpgVONT/k1hWwKUjRFQAbYvse0TYfbognV6OXmDx6UjYDnoXRl/Ucz3EU9HT/RQq8tWp0hNb538IZJIOGuct7+QIqMFiSAOgAbm/TmAv30FTdLhFjqJaPxvbwjShCh9JKhSG9jaw9wP7rhJ675Q6MK9avyiwUmB586oEqh6gSMEIg==
-Authentication-Results: lst.de; dkim=none (message not signed)
- header.d=none;lst.de; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4267.namprd12.prod.outlook.com (2603:10b6:5:21e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Tue, 6 Apr
- 2021 14:40:42 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3999.032; Tue, 6 Apr 2021
- 14:40:42 +0000
-Date:   Tue, 6 Apr 2021 11:40:39 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Avihai Horon <avihaih@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next 01/10] RDMA: Add access flags to ib_alloc_mr()
- and ib_mr_pool_init()
-Message-ID: <20210406144039.GS7405@nvidia.com>
-References: <20210405052404.213889-1-leon@kernel.org>
- <20210405052404.213889-2-leon@kernel.org>
- <c21edd64-396c-4c7c-86f8-79045321a528@acm.org>
- <YGvwUI022t/rJy5U@unreal>
- <20210406052717.GA4835@lst.de>
- <YGv4niuc31WnqpEJ@unreal>
- <20210406121312.GK7405@nvidia.com>
- <20210406123034.GA28930@lst.de>
- <20210406140437.GR7405@nvidia.com>
- <20210406141552.GA4936@lst.de>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210406141552.GA4936@lst.de>
-X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: BL1PR13CA0331.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::6) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        with ESMTP id S239002AbhDFOtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 10:49:47 -0400
+Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8D8C06174A;
+        Tue,  6 Apr 2021 07:49:39 -0700 (PDT)
+Received: from localhost ([127.0.0.1] helo=bute.mt.lv)
+        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <gatis@mikrotik.com>)
+        id 1lTn1I-0004z9-G9; Tue, 06 Apr 2021 17:49:32 +0300
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0331.namprd13.prod.outlook.com (2603:10b6:208:2c6::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.8 via Frontend Transport; Tue, 6 Apr 2021 14:40:41 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lTmsh-0019DW-Q6; Tue, 06 Apr 2021 11:40:39 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d4779066-176d-4e6c-d3dd-08d8f909f3e4
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4267:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB42676D482D3787D5F20FF19EC2769@DM6PR12MB4267.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DyMC1ukkr3ZEQ7nvGmqTegzKIqIM0ejkeuBzhFC2ab3x3wNX19qG9KlXOSXtGD2NmFhCAP4kqEOisEpmkQcwBCFkcbSi+aZs3jyZoyu5n3WK2i00e2jip0OoW85qhbB/RnLaPW6vlukHO7+0DZjw/WP4qJTkzpC2FQhb98kWS/quhN+c/79dhLeV2nVm9O0cS/An8jAQHtuFcmx8FwPrJ/Ecy2Z6AhlmvL5sf6rmtBY8yGA2KvVaP+Awkq8J3iwuZfD1O0ZRR8HEIzRE9TQ9CXAiS3Srh9azklb3CfuQHL3XaKaGnLPMH9U9877K0acKB4T+TyPxeilw6/SKl4ZvpvtRUzpjHgiEvaZQ3X/Ayk3wydFTUsEgKTnGSN02bueP60Fj1f1ZyaWxBSbaWsXW2wvJiiS46eF8s4bT1kBZLd3qo3axuRXVGB2vX9uJmO1Dsp7eseSTaAizsqKFw1jmj48PHcRVfl6d6Eeq55OwKZuyVxjOeMbIbnLCAAOJKo3o+HbiBZzuR/b9BNYkXHQvCrHuUDd2vnHceO7HveXqnToVPhw8oAXBCS2zEl+BV22Z2HkUWqMRrLy8ooMN6DLkwgRjbeAsRFkFWhHzZvnSAipr8ZYv5WWgQV4xPlONdQ+aJv20ZYFvnojrl6zXPtdH90gfnkpuMJlzv86j9g3hfmc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(366004)(396003)(346002)(136003)(38100700001)(9786002)(33656002)(6916009)(186003)(8676002)(36756003)(66556008)(5660300002)(316002)(54906003)(9746002)(83380400001)(1076003)(2906002)(4326008)(8936002)(478600001)(86362001)(7406005)(26005)(7416002)(426003)(2616005)(66476007)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?8yphmt3yGhHX5Zsba9uMbf0nWm1Fs0hkgV4Wzs/lPfqePvsmbEWytuuf/d2e?=
- =?us-ascii?Q?Az1ssoz301u6Vt3/iNqzxEBgust9VUqGVJHoCb7xkhg3W700ViSbdTcVajUV?=
- =?us-ascii?Q?bXR2i84J4sAbPGPTgtDDibdEyc1Zydv/0R1nkM/rcVL5+DvtqczsHfXSoz9M?=
- =?us-ascii?Q?3xBr0ai1qz+5SctuAeSLZ47T6XajXypyTsyj5DJ7OM4wBGu8q/wR0kxVciq8?=
- =?us-ascii?Q?XB4lG8tCIRQRobOyPMn1YoR1mA/Vl9lTn10+8hcctEVO05IQC0B82N9ExZI9?=
- =?us-ascii?Q?BsvPekysXOIggEhxlQe06mMmAIaDlHo/NcR7JDeYGWujIu8ztDywoPnO/pB+?=
- =?us-ascii?Q?vgVNF1POd5/IID/AhoiD6vHM0oWo2TYT0WMuUa8xcqOgO50gep5iQyytB2OD?=
- =?us-ascii?Q?PXDnDWgqreSjhI7LBb3jkdRK36qjsskmFvRJDapCXVjvKB2aA9A5n1wTKc1z?=
- =?us-ascii?Q?By/6zoT/XbQr1eSkdyYdktC41JcdY01YtiHgWXYWePIQcUPFo8TxnUn68t6v?=
- =?us-ascii?Q?ydUsMlvoLRzi2cGmhk6iVso7CCqK7pnv9GF0sP/flW62znx6ptc4w4dLaOzZ?=
- =?us-ascii?Q?4gzje2+HV4jfK9rxsZ/LZHBRo+BgcAMSxtNXv2b65Ay4kbMbeb2Tuy1OBkLx?=
- =?us-ascii?Q?OZIY509mVnAYU34JOeurarq825ZJg3r6P6ViuJU/o5lelzgukzkDxmFSFdxS?=
- =?us-ascii?Q?d3fNqegdUAoonEAQ+PbDylUMrYGWYxIDI06kxHqKYRgqj9bp7XcHYYZm9EkT?=
- =?us-ascii?Q?dnWSwq9bb32lQls+uNtjTFv8OLY5Davz/PiCrIA2hxe177YZn/SHfX+jDETN?=
- =?us-ascii?Q?4FCE9uE5rZypTRQTOY2YWTRnu+6SzwXAKRXNvoNlvw8RLhfvDaDS3TFLXUFu?=
- =?us-ascii?Q?HS5anVfYmI0cjWIhQ8dTPf2rNjDOzKy6R6CgYp1CRtI5F+b5Rd/dUYRgpRf2?=
- =?us-ascii?Q?EtIhk/yWvRPqtbZlxF878M05S8Pkj9xjIN1xrgEGb6Vzb/Cm3lsC4vsQRTkb?=
- =?us-ascii?Q?ZeUXIBu/yRsJTMnLfCYSgqxgChBxVP3HOEtnXSebtET7/x3L9RxouPNr4seh?=
- =?us-ascii?Q?td9Sj/8C7pXKBrKTgrIruTPOboyurdm1Aej8LtS1YdTUkXvsWOB2Yoz3Uwe6?=
- =?us-ascii?Q?BbSjE93V40li0ENQqIKP+ApxwCCmOiH5JsseQ3lAHsQSfbtdsEayjDpDhN/1?=
- =?us-ascii?Q?5blG9OxWKTKk4pjDSrM0cB+c6AiAU4r0wer0T+lFpKyjGLUIogC+b/CLTcju?=
- =?us-ascii?Q?ef4FE48vIce5nVYdaqZI/Tt8CBfV9In0Yev9pMfInXrLi8VUoBzjGvsmXGJn?=
- =?us-ascii?Q?LMZgcLzo6rGcE0xq4qqXndXLtF6NeAifd4yt+KCbHWoM7g=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4779066-176d-4e6c-d3dd-08d8f909f3e4
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2021 14:40:41.8155
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nJRKVGEknL/KzJR/nZzGNpfhXsAKDNN/iumt1+FprcSNhoDz7G0UO8stOCAdTz7j
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4267
+Date:   Tue, 06 Apr 2021 17:49:32 +0300
+From:   Gatis Peisenieks <gatis@mikrotik.com>
+To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
+        dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v4] atl1c: move tx cleanup processing out of interrupt
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <c8327d4bb516dd4741878c64fa6485cd@mikrotik.com>
+X-Sender: gatis@mikrotik.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 04:15:52PM +0200, Christoph Hellwig wrote:
-> On Tue, Apr 06, 2021 at 11:04:37AM -0300, Jason Gunthorpe wrote:
-> > It might be idiodic, but I have to keep the uverbs thing working
-> > too.
-> > 
-> > There is a lot of assumption baked in to all the drivers that
-> > user/kernel is the same thing, we'd have to go in and break this.
-> > 
-> > Essentially #2 ends up as deleting IB_ACCESS_RELAXED_ORDERING kernel
-> > side and instead doing some IB_ACCESS_DISABLE_RO in kernel,
-> > translating uverbs IBV_ACCESS_* to this then finding and inverting all
-> > the driver logic and also finding and unblocking all the places that
-> > enforce valid access flags in the drivers. It is complicated enough
-> 
-> Inverting the polarity of a flag at the uapi boundary is pretty
-> trivial and we already do it all over the kernel.
+Tx queue cleanup happens in interrupt handler on same core as rx queue
+processing. Both can take considerable amount of processing in high
+packet-per-second scenarios.
 
-Yes, but the complexity is how the drivers are constructed they are
-designed to reject flags they don't know about..
+Sending big amounts of packets can stall the rx processing which is 
+unfair
+and also can lead to out-of-memory condition since __dev_kfree_skb_irq
+queues the skbs for later kfree in softirq which is not allowed to 
+happen
+with heavy load in interrupt handler.
 
-Hum, it looks like someone has already been in here and we now have a
-IB_ACCESS_OPTIONAL concept. 
+This puts tx cleanup in its own napi and enables threaded napi to allow
+the rx/tx queue processing to happen on different cores. Also as the 
+first
+in-driver user of dev_set_threaded API, need to add EXPORT_SYMBOL for 
+it.
 
-Something like this would be the starting point:
+The ability to sustain equal amounts of tx/rx traffic increased:
+from 280Kpps to 1130Kpps on Threadripper 3960X with upcoming
+Mikrotik 10/25G NIC,
+from 520Kpps to 850Kpps on Intel i3-3320 with Mikrotik RB44Ge adapter.
 
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index bed4cfe50554f7..fcb107df0eefc6 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -1440,9 +1440,11 @@ enum ib_access_flags {
- 	IB_ZERO_BASED = IB_UVERBS_ACCESS_ZERO_BASED,
- 	IB_ACCESS_ON_DEMAND = IB_UVERBS_ACCESS_ON_DEMAND,
- 	IB_ACCESS_HUGETLB = IB_UVERBS_ACCESS_HUGETLB,
--	IB_ACCESS_RELAXED_ORDERING = IB_UVERBS_ACCESS_RELAXED_ORDERING,
- 
- 	IB_ACCESS_OPTIONAL = IB_UVERBS_ACCESS_OPTIONAL_RANGE,
-+	_IB_ACCESS_RESERVED1 = IB_UVERBS_ACCESS_RELAXED_ORDERING,
-+	IB_ACCESS_DISABLE_RELAXED_ORDERING,
-+
- 	IB_ACCESS_SUPPORTED =
- 		((IB_ACCESS_HUGETLB << 1) - 1) | IB_ACCESS_OPTIONAL,
- };
+Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+---
+changes since v3:
+	- made scripts/checkpatch.pl happy (commit message line wrap +
+	  missing comment on spinlock)
+	- moved the new intr_mask_lock to be besides the intr_mask it
+	  protects so they are more likely to be on same cacheline
+changes since v2:
+	- addressed comments from Eric Dumazet
+	- added EXPORT_SYMBOL for dev_set_threaded
 
-However I see only EFA actually uses IB_ACCESS_OPTIONAL, so the lead
-up would be to audit all the drivers to process optional access_flags
-properly. Maybe this was done, but I don't see much evidence of it..
+Sorry for reposting, noticed that scripts/checkpatch.pl was not happy.
+---
+  drivers/net/ethernet/atheros/atl1c/atl1c.h    |  2 +
+  .../net/ethernet/atheros/atl1c/atl1c_main.c   | 44 ++++++++++++++-----
+  net/core/dev.c                                |  1 +
+  3 files changed, 37 insertions(+), 10 deletions(-)
 
-Sigh. It is a big mess cleaning adventure in drivers really.
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h 
+b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+index a0562a90fb6d..28ae5c16831e 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+@@ -367,6 +367,7 @@ struct atl1c_hw {
+  	u16 phy_id1;
+  	u16 phy_id2;
 
-> Do we actually ever need the strict ordering semantics in the kernel?
++	spinlock_t intr_mask_lock;	/* protect the intr_mask */
+  	u32 intr_mask;
 
-No, only for uverbs.
+  	u8 preamble_len;
+@@ -506,6 +507,7 @@ struct atl1c_adapter {
+  	struct net_device   *netdev;
+  	struct pci_dev      *pdev;
+  	struct napi_struct  napi;
++	struct napi_struct  tx_napi;
+  	struct page         *rx_page;
+  	unsigned int	    rx_page_offset;
+  	unsigned int	    rx_frag_size;
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c 
+b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index 3f65f2b370c5..cfa1ce91402e 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -813,6 +813,7 @@ static int atl1c_sw_init(struct atl1c_adapter 
+*adapter)
+  	atl1c_set_rxbufsize(adapter, adapter->netdev);
+  	atomic_set(&adapter->irq_sem, 1);
+  	spin_lock_init(&adapter->mdio_lock);
++	spin_lock_init(&adapter->hw.intr_mask_lock);
+  	set_bit(__AT_DOWN, &adapter->flags);
 
-Jason
+  	return 0;
+@@ -1530,20 +1531,19 @@ static inline void atl1c_clear_phy_int(struct 
+atl1c_adapter *adapter)
+  	spin_unlock(&adapter->mdio_lock);
+  }
+
+-static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
+-				enum atl1c_trans_queue type)
++static int atl1c_clean_tx(struct napi_struct *napi, int budget)
+  {
+-	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
++	struct atl1c_adapter *adapter =
++		container_of(napi, struct atl1c_adapter, tx_napi);
++	struct atl1c_tpd_ring *tpd_ring = 
+&adapter->tpd_ring[atl1c_trans_normal];
+  	struct atl1c_buffer *buffer_info;
+  	struct pci_dev *pdev = adapter->pdev;
+  	u16 next_to_clean = atomic_read(&tpd_ring->next_to_clean);
+  	u16 hw_next_to_clean;
+-	u16 reg;
+  	unsigned int total_bytes = 0, total_packets = 0;
++	unsigned long flags;
+
+-	reg = type == atl1c_trans_high ? REG_TPD_PRI1_CIDX : 
+REG_TPD_PRI0_CIDX;
+-
+-	AT_READ_REGW(&adapter->hw, reg, &hw_next_to_clean);
++	AT_READ_REGW(&adapter->hw, REG_TPD_PRI0_CIDX, &hw_next_to_clean);
+
+  	while (next_to_clean != hw_next_to_clean) {
+  		buffer_info = &tpd_ring->buffer_info[next_to_clean];
+@@ -1564,7 +1564,15 @@ static bool atl1c_clean_tx_irq(struct 
+atl1c_adapter *adapter,
+  		netif_wake_queue(adapter->netdev);
+  	}
+
+-	return true;
++	if (total_packets < budget) {
++		napi_complete_done(napi, total_packets);
++		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
++		adapter->hw.intr_mask |= ISR_TX_PKT;
++		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
++		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
++		return total_packets;
++	}
++	return budget;
+  }
+
+  /**
+@@ -1599,13 +1607,22 @@ static irqreturn_t atl1c_intr(int irq, void 
+*data)
+  		AT_WRITE_REG(hw, REG_ISR, status | ISR_DIS_INT);
+  		if (status & ISR_RX_PKT) {
+  			if (likely(napi_schedule_prep(&adapter->napi))) {
++				spin_lock(&hw->intr_mask_lock);
+  				hw->intr_mask &= ~ISR_RX_PKT;
+  				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
++				spin_unlock(&hw->intr_mask_lock);
+  				__napi_schedule(&adapter->napi);
+  			}
+  		}
+-		if (status & ISR_TX_PKT)
+-			atl1c_clean_tx_irq(adapter, atl1c_trans_normal);
++		if (status & ISR_TX_PKT) {
++			if (napi_schedule_prep(&adapter->tx_napi)) {
++				spin_lock(&hw->intr_mask_lock);
++				hw->intr_mask &= ~ISR_TX_PKT;
++				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
++				spin_unlock(&hw->intr_mask_lock);
++				__napi_schedule(&adapter->tx_napi);
++			}
++		}
+
+  		handled = IRQ_HANDLED;
+  		/* check if PCIE PHY Link down */
+@@ -1870,6 +1887,7 @@ static int atl1c_clean(struct napi_struct *napi, 
+int budget)
+  	struct atl1c_adapter *adapter =
+  			container_of(napi, struct atl1c_adapter, napi);
+  	int work_done = 0;
++	unsigned long flags;
+
+  	/* Keep link state information with original netdev */
+  	if (!netif_carrier_ok(adapter->netdev))
+@@ -1880,8 +1898,10 @@ static int atl1c_clean(struct napi_struct *napi, 
+int budget)
+  	if (work_done < budget) {
+  quit_polling:
+  		napi_complete_done(napi, work_done);
++		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
+  		adapter->hw.intr_mask |= ISR_RX_PKT;
+  		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
++		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
+  	}
+  	return work_done;
+  }
+@@ -2319,6 +2339,7 @@ static int atl1c_up(struct atl1c_adapter *adapter)
+  	atl1c_check_link_status(adapter);
+  	clear_bit(__AT_DOWN, &adapter->flags);
+  	napi_enable(&adapter->napi);
++	napi_enable(&adapter->tx_napi);
+  	atl1c_irq_enable(adapter);
+  	netif_start_queue(netdev);
+  	return err;
+@@ -2339,6 +2360,7 @@ static void atl1c_down(struct atl1c_adapter 
+*adapter)
+  	set_bit(__AT_DOWN, &adapter->flags);
+  	netif_carrier_off(netdev);
+  	napi_disable(&adapter->napi);
++	napi_disable(&adapter->tx_napi);
+  	atl1c_irq_disable(adapter);
+  	atl1c_free_irq(adapter);
+  	/* disable ASPM if device inactive */
+@@ -2587,7 +2609,9 @@ static int atl1c_probe(struct pci_dev *pdev, const 
+struct pci_device_id *ent)
+  	adapter->mii.mdio_write = atl1c_mdio_write;
+  	adapter->mii.phy_id_mask = 0x1f;
+  	adapter->mii.reg_num_mask = MDIO_CTRL_REG_MASK;
++	dev_set_threaded(netdev, true);
+  	netif_napi_add(netdev, &adapter->napi, atl1c_clean, 64);
++	netif_napi_add(netdev, &adapter->tx_napi, atl1c_clean_tx, 64);
+  	timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
+  	/* setup the private structure */
+  	err = atl1c_sw_init(adapter);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0f72ff5d34ba..489ac60b530c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6789,6 +6789,7 @@ int dev_set_threaded(struct net_device *dev, bool 
+threaded)
+
+  	return err;
+  }
++EXPORT_SYMBOL(dev_set_threaded);
+
+  void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+  		    int (*poll)(struct napi_struct *, int), int weight)
+-- 
+2.31.1
