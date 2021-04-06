@@ -2,83 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE19356050
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:30:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8483E35605A
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242052AbhDGA3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        id S1347424AbhDGAcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241974AbhDGA3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 20:29:42 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EF8C06174A
-        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 17:29:32 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id t140so11661555pgb.13
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 17:29:32 -0700 (PDT)
+        with ESMTP id S236581AbhDGAct (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 20:32:49 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4C6C06174A;
+        Tue,  6 Apr 2021 17:32:40 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id n2so18499005ejy.7;
+        Tue, 06 Apr 2021 17:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LLarwwKAs0HSVvbZ8ib9VIb2FoujGLWDIrjWhL74VOg=;
-        b=CRsuUXJyBFVH6f5rSu0H8wMN6kFOT6a2PfWbe7WECf5IcvP2JYmHsJSKiMGab+9+eu
-         nnMLZYessHIs2c7Z6xCpZO5SJV6dRjGDK3EDd1WN+4YjHNwdq8YHoNEUhJ5PbrP4MKwb
-         qJDjmtyTrCUrJZuItGS98XjLv5t0PsX6Tzg7NN6Uu0sa8WQxy7I5qloE5fj2sBM0iIXg
-         cyLHudco0eqv347i4rixKB3JCJr6gIpZjrp+JPOFe6r04BaVNgKWkBs2yRmH4HD0cdMd
-         A4dMSCxsvHn+ab05q1Rj16X6LX2RSjWqTQUtVPOO6CXpr2wKghDrXblWF8kG76+Gr+Qm
-         flCA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sV9cwVjyvXxbW0ehUMCGQIeQ9SC41q6QfFAJr+V6US8=;
+        b=PjqPEKC7jL/xniF2pAXcOM2VFrAq0Ytpx1oKo36koUtZwU9dUMEhfneWLSuqHyLJ0m
+         wMNsnJrhhJX8amsCDjA8WuNdIo1zfnqWInqjzmcNUbR/0S6xE33g+1cx//dVBJXWK7rA
+         HRPfaRbqyu9d0I+t7/pTOpfgN8z61VXbYQxnmSc+YGUnQTTaTcs0k0HFn1XOF9SNqlrY
+         I6wQcJMHVkJYDApbjxhqBVhYDlAI/4mfaYZkOUD8V3cddzsplmVXWvEKtMayF8o1cq4H
+         a28h1LqzZ7Df4AnJ3Or+fdGsR1w3LTyeS8limCUn3eD2w1XUKIg1iEhIiIb5OlLIKa34
+         6+2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LLarwwKAs0HSVvbZ8ib9VIb2FoujGLWDIrjWhL74VOg=;
-        b=EijVU4IaoNV9QdEqQbzXCLulwadDszCPygHP0GZ4617ldwMrSNejvAQ5mIIZaNrfST
-         gX78tAymurdaIae1mKUXbXiHIeVVMSo1uIzA2BA8ujKBppyTeXOPgDO/x2ZgwG1CQ4DY
-         mqrL3eGhDM1h7lSxz83065uBbMLPfwlGwdw3sxNMk85WgWydP1xInMrWa2i7lqtxZkcY
-         EJHzu8MaLBetDdHlO3kVkpJlcvv2Yn/fMNVe1krefOrz5zwWwlWEm4006JotA3nXrF9b
-         xVYnA/+JJJ+nEmtSUHF6MtWN4HP0zpfepME8A0Qulay2BeNx/8j3z0hwq5fzWQUADZDG
-         fk8A==
-X-Gm-Message-State: AOAM531agrbd2hr5WDNKj0pfLo7HOwga2Z06fLKsgWCBauKUYvgpiOtS
-        55Y8NW1airjXU8Pol8XIoQk=
-X-Google-Smtp-Source: ABdhPJzqG7wRLmULvsNg/b+TFko0JJNirZ8cl/94eqhBscnVtL4AtYnHBoD1eCO4jmtoIjEcsPK1eQ==
-X-Received: by 2002:a62:ee0c:0:b029:214:7a61:6523 with SMTP id e12-20020a62ee0c0000b02902147a616523mr686293pfi.59.1617755371999;
-        Tue, 06 Apr 2021 17:29:31 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id v1sm2885118pjv.0.2021.04.06.17.29.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sV9cwVjyvXxbW0ehUMCGQIeQ9SC41q6QfFAJr+V6US8=;
+        b=VWq9yOdPiNzS0mq4TQPcJCwGReDrosKMi+YHwbO2a4czbzHMja/yTuwa+ICJ7UkW/+
+         inK7+a/sUCDPniQXwb3k6abeJ4XUmkGEPOjO1HpviyBC8jJQmQGIdc0EosKlcUvpmPH+
+         w9+pzpU4zNZyezy27WIiOzRf2QuofZAZvf+mB3Joa+xGe0yqV1wfYlb6vHwwN3ZqElWm
+         OS1nRDI7xWwJcPGHNLL7xJmYpNaRVHbKHInygT+/Cl05vTtVv65jEOZQRKSMkq0dxUpw
+         faJEvDTG949cw+cMHuuuhyom2Ae0LHqymAXsfygcRj940Nb7KOPHOLiiR/MPy36TyLt5
+         za9A==
+X-Gm-Message-State: AOAM531FJJI1lGOSdy3Lm+BQbX9oXMm+mhafUlhGRHxBHWaHV5c/aHZt
+        Lgfqmg8UWVTQo01UHMrfSRw=
+X-Google-Smtp-Source: ABdhPJwcmc9Q2MgE2ZQKYJ4L0bTTcx0DN7tCES0fryFDT4sZcvrDDjZg3ytj/g+yd4n4FKf5Cr6YmA==
+X-Received: by 2002:a17:906:4e8a:: with SMTP id v10mr762837eju.6.1617755559394;
+        Tue, 06 Apr 2021 17:32:39 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (host-79-23-201-105.retail.telecomitalia.it. [79.23.201.105])
+        by smtp.googlemail.com with ESMTPSA id j7sm7829644ejf.74.2021.04.06.17.32.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 17:29:31 -0700 (PDT)
-Date:   Tue, 6 Apr 2021 17:29:29 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
-Subject: Re: [PATCH net-next 09/12] ionic: add and enable tx and rx timestamp
- handling
-Message-ID: <20210407002929.GB30525@hoboy.vegasvil.org>
-References: <20210401175610.44431-1-snelson@pensando.io>
- <20210401175610.44431-10-snelson@pensando.io>
- <20210404234107.GD24720@hoboy.vegasvil.org>
- <6e0e4d73-f436-21c0-59fe-ee4f5c133f95@pensando.io>
- <20210405182042.GB29333@hoboy.vegasvil.org>
- <d9f49805-e1da-23ab-110f-75e3e514f2a1@pensando.io>
+        Tue, 06 Apr 2021 17:32:39 -0700 (PDT)
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/2] include: net: add dsa_cpu_ports function
+Date:   Tue,  6 Apr 2021 06:50:39 +0200
+Message-Id: <20210406045041.16283-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d9f49805-e1da-23ab-110f-75e3e514f2a1@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 04:06:09PM -0700, Shannon Nelson wrote:
-> Interesting... I doubt that our particular MAC and PHY will ever be
-> separate, but it makes sense to watch for this in the general case. I've got
-> an update coming for this.
+In preparation for the future when dsa will support multi cpu port,
+dsa_cpu_ports can be useful for switch that has multiple cpu port to
+retrieve the cpu mask for ACL and bridge table.
 
-Even if your HW can never support stacked MAC/PHY HW time stamping,
-still your driver should conform to the correct pattern.
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ include/net/dsa.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Why?  Because new driver authors copy/paste stuff they find in the tree.
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index d71b1acd9c3e..6d70a722d63f 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -458,6 +458,18 @@ static inline u32 dsa_cpu_ports(struct dsa_switch *ds)
+ 	return mask;
+ }
+ 
++static inline u32 dsa_cpu_ports(struct dsa_switch *ds)
++{
++	u32 mask = 0;
++	int p;
++
++	for (p = 0; p < ds->num_ports; p++)
++		if (dsa_is_cpu_port(ds, p))
++			mask |= BIT(p);
++
++	return mask;
++}
++
+ /* Return the local port used to reach an arbitrary switch device */
+ static inline unsigned int dsa_routing_port(struct dsa_switch *ds, int device)
+ {
+-- 
+2.30.2
 
-Thanks,
-Richard
