@@ -2,119 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0B5354C16
+	by mail.lfdr.de (Postfix) with ESMTP id E815C354C17
 	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 07:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242733AbhDFFJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 01:09:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57824 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230073AbhDFFJy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 01:09:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E04D2613B8;
-        Tue,  6 Apr 2021 05:09:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617685786;
-        bh=X92KQg3tXG2x2dhtuX1igH+EpubBIGXwmzFmddKebSI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YAkOjjj0GL3XRB09Ij60URoGO7NdIuDIosagpxtfZ9iVq8xjzpRqmg0/f2VeAwevd
-         gCLGwz21lbIWMUVSXSoaqFi0Iru0BxK0GRYMSdNgIrMHK9Yg3XdHCPbe/mFLACsA/X
-         UFvAfStd4Pc48XpaL+1vVCP+pCq8UiEBkUw/DIxk2rU7bNPyvyjyKgmWx+rw14jJw/
-         p73HiTP8ZGkD/NT+l86ADeas4d0UOfVxF9OY/sGrq+KRIXmDN6hnoJfqvKvFi3f0Bw
-         dXBW8ogvsD7qEJhmTiZTbVWnJi+ud6+yxx8O41YQGlllSDdvvG13vLa6u7yKwxk3MU
-         mcvvXPEGKgaVQ==
-Date:   Tue, 6 Apr 2021 08:09:43 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Honggang LI <honli@redhat.com>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Avihai Horon <avihaih@nvidia.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
-Message-ID: <YGvtFxv1az754/Q5@unreal>
-References: <20210405052404.213889-1-leon@kernel.org>
- <20210406023738.GB80908@dhcp-128-72.nay.redhat.com>
+        id S242749AbhDFFKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 01:10:17 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54240 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230073AbhDFFKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 01:10:16 -0400
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13654GEX165262;
+        Tue, 6 Apr 2021 01:10:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=2Z6yFg+IB/LQ/bk5GCuePZ+aDUr2YsWVutBwNj65EBA=;
+ b=i+8ANsnp2fEQmcKHhR9901pXeT5tEoA1i10GXf+ncmTdPmgn3v36k8I7cO+4ueN/QTdn
+ rYoM5REUFAvyHCC1KiGf8qDTIc8sNNRsQSjFq4YN7bbd51wKFtZ4kTI2K4NRDfc5QUZl
+ Ke+8lzH5s+sj6wabOg1I10fC1aP9ezf1YCSlsA6IYyl2G0PDjh8eSLx2BrEH3TfHmOEL
+ LOYLrFrum5u/ZeDmHAogFoAvQ6F71pg+58ayfZQMs3ZgCItUb/7ewxR59moezfpn8oxy
+ Aa1RyO3r8DZccdGtbVINkjaMmL2uCx1Kh/+5lSXCJ316+clTs/+ycsm0O5UoOOSLPQ2y 5A== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 37q604xkhb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 06 Apr 2021 01:10:07 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 13657xcO009139;
+        Tue, 6 Apr 2021 05:10:06 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma01wdc.us.ibm.com with ESMTP id 37q2q8wghr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 06 Apr 2021 05:10:06 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1365A6su19005780
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 6 Apr 2021 05:10:06 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 43241112069;
+        Tue,  6 Apr 2021 05:10:06 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C1CE1112064;
+        Tue,  6 Apr 2021 05:10:03 +0000 (GMT)
+Received: from [9.160.44.144] (unknown [9.160.44.144])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  6 Apr 2021 05:10:03 +0000 (GMT)
+Subject: Re: [PATCH] ibmvnic: Continue with reset if set link down failed
+To:     Dany Madden <drt@linux.ibm.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, ljp@linux.ibm.com,
+        ricklind@linux.ibm.com
+References: <20210406034752.12840-1-drt@linux.ibm.com>
+From:   Rick Lindsley <ricklind@linux.vnet.ibm.com>
+Message-ID: <6db4a1bd-adbe-52d3-6fa2-be71be12eb7b@linux.vnet.ibm.com>
+Date:   Mon, 5 Apr 2021 22:10:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210406023738.GB80908@dhcp-128-72.nay.redhat.com>
+In-Reply-To: <20210406034752.12840-1-drt@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: INtPiDdNN5LOH5cDGIFcxqejPx3EG5fH
+X-Proofpoint-GUID: INtPiDdNN5LOH5cDGIFcxqejPx3EG5fH
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-04-06_01:2021-04-01,2021-04-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ adultscore=0 suspectscore=0 spamscore=0 phishscore=0 mlxlogscore=999
+ impostorscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104030000 definitions=main-2104060033
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 10:37:38AM +0800, Honggang LI wrote:
-> On Mon, Apr 05, 2021 at 08:23:54AM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > From Avihai,
-> > 
-> > Relaxed Ordering is a PCIe mechanism that relaxes the strict ordering
-> > imposed on PCI transactions, and thus, can improve performance.
-> > 
-> > Until now, relaxed ordering could be set only by user space applications
-> > for user MRs. The following patch series enables relaxed ordering for the
-> > kernel ULPs as well. Relaxed ordering is an optional capability, and as
-> > such, it is ignored by vendors that don't support it.
-> > 
-> > The following test results show the performance improvement achieved
+On 4/5/21 8:47 PM, Dany Madden wrote:
+> When an adapter is going thru a reset, it maybe in an unstable state that
+> makes a request to set link down fail. In such a case, the adapter needs
+> to continue on with reset to bring itself back to a stable state.
 > 
-> Did you test this patchset with CPU does not support relaxed ordering?
+> Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
+> Signed-off-by: Dany Madden <drt@linux.ibm.com>
 
-I don't think so, the CPUs that don't support RO are Intel's fourth/fifth-generation
-and they are not interesting from performance point of view.
-
-> 
-> We observed significantly performance degradation when run perftest with
-> relaxed ordering enabled over old CPU.
-> 
-> https://github.com/linux-rdma/perftest/issues/116
-
-The perftest is slightly different, but you pointed to the valid point.
-We forgot to call pcie_relaxed_ordering_enabled() before setting RO bit
-and arguably this was needed to be done in perftest too.
-
-Thanks
-
-> 
-> thanks
-> 
+Reviewed-by: Rick Lindsley <ricklind@linux.ibm.com>
