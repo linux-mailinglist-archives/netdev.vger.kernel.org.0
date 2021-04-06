@@ -2,225 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6EF3550B1
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:19:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE7593550B5
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242740AbhDFKTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 06:19:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42521 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242768AbhDFKTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 06:19:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617704363;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+ufcdt/zJw9j/1FNSFVZxZoRU8kGYBv449O2z2yjeO8=;
-        b=XSU8yr9Mml8P/27nyc9gssDJxJBCllTwgF1ABdr48dSRN180Eh3mQT3AoCjcHVVjCl5Ugg
-        ANnpm54VfECC96lnOK5+dLHrj7Jakg2c9EjIlJigmKi+4OWPXys1XnN54/x11Z1LDUhWJZ
-        IPe2fulcTKtIArMw4To3yWdVCuZJxdM=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-507-Pss5qj5pMu6tnbRedWtZqg-1; Tue, 06 Apr 2021 06:19:21 -0400
-X-MC-Unique: Pss5qj5pMu6tnbRedWtZqg-1
-Received: by mail-ej1-f71.google.com with SMTP id li22so5282877ejb.18
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 03:19:21 -0700 (PDT)
+        id S241335AbhDFKUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 06:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237824AbhDFKUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 06:20:52 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8153C061756
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 03:20:44 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q26so7912544wrz.9
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 03:20:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bcefdudaPy/YI+OKTqE8aidgvlYBD0QZn69/G4d7ptU=;
+        b=k42kwbijED+nek4rwjT2eYPMSE6B3+1xLQvx9UTI9SshTJD3v84BfJVZEFjLOPYBJC
+         IoQsKOD6DzNmnJpfZugbl9hVRVqnO4EMHYW0cpbrd4FVtuNukCCmG/Cq88HkoeIw3pzI
+         vaCB3wm1DgJsZY2O/S29K3wLQjDsy0w0cjjqd4nVuREkjicEvtmJ//Uzqcvpa04KZKN/
+         HqYuYU3GuCAraZ9RiHdUW5OY3+eBHLXiMyZN2rIimKifq0GUh1bXH0CU1pjuxVFZi9yW
+         Pet5QfjwITn0I8KVgvkJ9JYNaoVtg2KMwG8JtpszWQ4htzP9kvQic1uGwKIxIBL0uo+2
+         Ub7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=+ufcdt/zJw9j/1FNSFVZxZoRU8kGYBv449O2z2yjeO8=;
-        b=pVfDtSt2gSih5XXNdujiz5zOaIM+2PfHcBzKweaWUFi2JbHHkDvdj1DZCDjFa1qhNF
-         Xjz5gMN0oS7MBwMiualgocjQsy53wDY9g9TLgyUFNMlOECS2I6qSBdB2E79G73yXJzJb
-         bDUPIhXU9/cU8Q9WD0vzFmz4kYHAjL7abuMVtjv79oPWpvcqB8pjBl9t1bofd2jsVmX9
-         G7hyf0cGL6pTYnIKYOlhhX6R+2gC5Kyb5/KKj3vS44GvEV68VrNHm7wEy4K2P0MT/Swc
-         PD8V4auiSC87Im+hjTGxpArj0PfQ31+GvQltZSnFoFTv5wpt7XPNNiJGgQZiqrjh6dbB
-         2Tdg==
-X-Gm-Message-State: AOAM532i2jcAEm+VrMoG3wutjO8xCL40YwI0OK14Z8RaStQAGnPdPT8l
-        Yz3L7QKjtDM7+/KI3re/QzrBvWU1CYY906UpBL300kr8JSMZFbdnVA3cWc3ItZ2ufQyozPJCoKW
-        cTWBeh86tF2yNQODZ
-X-Received: by 2002:a17:906:26c9:: with SMTP id u9mr32838247ejc.520.1617704360469;
-        Tue, 06 Apr 2021 03:19:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxKwe/Gl6HZeC04h+m57gvA5VMqo2tcnIH+2UED5/265g04nui6Cog7Q0uWkVz8QiZw6NE3pg==
-X-Received: by 2002:a17:906:26c9:: with SMTP id u9mr32838210ejc.520.1617704360075;
-        Tue, 06 Apr 2021 03:19:20 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id w13sm994838edx.15.2021.04.06.03.19.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bcefdudaPy/YI+OKTqE8aidgvlYBD0QZn69/G4d7ptU=;
+        b=kM5RxDSYz9olBQoYsXCM1phdykqGgATvxpL25wZh/NiPUMNLgNBJ8TKMWF50cqkTcs
+         Sro0NzVHjcgUKl8Tyye239K7/mBGlJQOEa+rHwMA3gsIHb3VwMyRAx6D+gmrbbB+ZeK0
+         66lb7KVmItEqsQvkVeh3alN94kXnHZ22/41aL+YT2zdcSjzRD0p84Rqg2JIvZTBJ8CIe
+         y+5qF3xAd9GClDo0m2s/+GKdFnmM5eIFN3arH5E1SycgwEjcJKCLDf9OZ8ThHE0FsBvb
+         D0MWN9Yxa6/I5/Kgk5YpqqUHFaUJPSS9g4yEoFslAAZuH9CerE18Qon1NTOeVbmXnsAa
+         2mUg==
+X-Gm-Message-State: AOAM530s7CW0zWJW7MTfat5tqKgTcLwh3PrjBVIWYTI9FJZ64PB+bdiU
+        FC5lWXC43G3lH6HWRSSrRrfu6A==
+X-Google-Smtp-Source: ABdhPJxJVkIpA89rUaR8Fw2m4JV6uB6QMclzVKcvrYWcfp4fzIMR43EdfrRODU2sw+7Mtf7KKjG/NA==
+X-Received: by 2002:adf:8b45:: with SMTP id v5mr33654146wra.398.1617704443479;
+        Tue, 06 Apr 2021 03:20:43 -0700 (PDT)
+Received: from localhost.localdomain (2.0.5.1.1.6.3.8.5.c.c.3.f.b.d.3.0.0.0.0.6.1.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:df16:0:3dbf:3cc5:8361:1502])
+        by smtp.gmail.com with ESMTPSA id u2sm32373544wrp.12.2021.04.06.03.20.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 03:19:19 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 02137180300; Tue,  6 Apr 2021 12:19:18 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Subject: Re: [PATCHv4 bpf-next 2/4] xdp: extend xdp_redirect_map with
- broadcast support
-In-Reply-To: <20210406063819.GF2900@Leo-laptop-t470s>
-References: <20210402121954.3568992-1-liuhangbin@gmail.com>
- <20210402121954.3568992-3-liuhangbin@gmail.com>
- <606baa5025735_d46462085b@john-XPS-13-9370.notmuch>
- <20210406063819.GF2900@Leo-laptop-t470s>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 06 Apr 2021 12:19:18 +0200
-Message-ID: <878s5v4swp.fsf@toke.dk>
+        Tue, 06 Apr 2021 03:20:43 -0700 (PDT)
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] net: tun: set tun->dev->addr_len during TUNSETLINK processing
+Date:   Tue,  6 Apr 2021 11:20:40 +0100
+Message-Id: <20210406102040.1122-1-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> writes:
+When changing type with TUNSETLINK ioctl command, set tun->dev->addr_len
+to match the appropriate type, using new tun_get_addr_len utility function
+which returns appropriate address length for given type. Fixes a
+KMSAN-found uninit-value bug reported by syzbot at:
+https://syzkaller.appspot.com/bug?id=0766d38c656abeace60621896d705743aeefed51
 
-> On Mon, Apr 05, 2021 at 05:24:48PM -0700, John Fastabend wrote:
->> Hangbin Liu wrote:
->> > This patch add two flags BPF_F_BROADCAST and BPF_F_EXCLUDE_INGRESS to extend
->> > xdp_redirect_map for broadcast support.
->> > 
->> > Keep the general data path in net/core/filter.c and the native data
->> > path in kernel/bpf/devmap.c so we can use direct calls to get better
->> > performace.
->> > 
->> > Here is the performance result by using xdp_redirect_{map, map_multi} in
->> > sample/bpf and send pkts via pktgen cmd:
->> > ./pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -t 10 -s 64
->> > 
->> > There are some drop back as we need to loop the map and get each interface.
->> > 
->> > Version          | Test                                | Generic | Native
->> > 5.12 rc2         | redirect_map        i40e->i40e      |    2.0M |  9.8M
->> > 5.12 rc2         | redirect_map        i40e->veth      |    1.8M | 12.0M
->> 
->> Are these are 10gbps i40e ports? Sorry if I asked this earlier, maybe
->> add a note in the commit if another respin is needed.
->
-> Yes, I will add it if there is an update.
->
->> > diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
->> > index 3980fb3bfb09..c8452c5f40f8 100644
->> > --- a/kernel/bpf/devmap.c
->> > +++ b/kernel/bpf/devmap.c
->> > @@ -198,6 +198,7 @@ static void dev_map_free(struct bpf_map *map)
->> >  	list_del_rcu(&dtab->list);
->> >  	spin_unlock(&dev_map_lock);
->> >  
->> > +	bpf_clear_redirect_map(map);
->> 
->> Is this a bugfix? If its needed here wouldn't we also need it in the
->> devmap case.
->
-> No, in ee75aef23afe ("bpf, xdp: Restructure redirect actions") this function
-> was removed. I added it back as we use ri->map again.
->
-> What devmap case you mean?
->
->> 
->> >  	synchronize_rcu();
->> >  
->> >  	/* Make sure prior __dev_map_entry_free() have completed. */
->> 
->> [...]
->> 
->> > +
->> > +static struct bpf_dtab_netdev *devmap_get_next_obj(struct xdp_buff *xdp,
->> > +						   struct bpf_map *map,
->> > +						   u32 *key, u32 *next_key,
->> > +						   int ex_ifindex)
->> > +{
->> > +	struct bpf_dtab_netdev *obj;
->> > +	struct net_device *dev;
->> > +	u32 index;
->> > +	int err;
->> > +
->> > +	err = devmap_get_next_key(map, key, next_key);
->> > +	if (err)
->> > +		return NULL;
->> > +
->> > +	/* When using dev map hash, we could restart the hashtab traversal
->> > +	 * in case the key has been updated/removed in the mean time.
->> > +	 * So we may end up potentially looping due to traversal restarts
->> > +	 * from first elem.
->> > +	 *
->> > +	 * Let's use map's max_entries to limit the loop number.
->> > +	 */
->> > +	for (index = 0; index < map->max_entries; index++) {
->> > +		obj = devmap_lookup_elem(map, *next_key);
->> > +		if (!obj || dst_dev_is_ingress(obj, ex_ifindex))
->> > +			goto find_next;
->> > +
->> > +		dev = obj->dev;
->> > +
->> > +		if (!dev->netdev_ops->ndo_xdp_xmit)
->> > +			goto find_next;
->> > +
->> > +		err = xdp_ok_fwd_dev(dev, xdp->data_end - xdp->data);
->> > +		if (unlikely(err))
->> > +			goto find_next;
->> > +
->> > +		return obj;
->> > +
->> > +find_next:
->> > +		key = next_key;
->> > +		err = devmap_get_next_key(map, key, next_key);
->> > +		if (err)
->> > +			break;
->> > +	}
->> 
->> I'm missing something. Either an elaborated commit message or comment
->> is probably needed. I've been looking at this block for 30 minutes and
->> can't see how we avoid sending duplicate frames on a single interface?
->> Can you check this code flow, 
->> 
->>   dev_map_enqueue_multi()
->>    for (;;) {
->>      next_obj = devmap_get_next_obj(...)
->>         for (index = 0; index < map->max_entries; index++) {
->>            obj = devmap_lookup_elem();
->>            if (!obj) goto find_next
->>            key = next_key;
->>            err = devmap_get_next_key() 
->>                   if (!key) goto find_first
->>                   for (i = 0; i < dtab->n_buckets; i++)
->>                      return *next <- now *next_key is point back
->>                                      at first entry
->>            // loop back through and find first obj and return that
->
-> 	 devmap_get_next_key() will loop to find the first one if there is no
-> 	 key or dev. In normal time it will stop after the latest one.
->>         }
->>       bq_enqueue(...) // enqueue original obj
->>       obj = next_obj;
->>       key = next_key; 
->>       ...  // we are going to enqueue first obj, but how do we know
->>            // this hasn't already been sent? Presumably if we have
->>            // a delete in the hash table in the middle of a multicast
->>            // operation this might happen?
->>    }
->
-> And yes, there is an corner case that if we removed a dev during multicast,
-> there is an possibility that restart from the first key. But given that
-> this is an unlikely case, and in normal internet there is also a possibility
-> of duplicate/lost packet. This should also be acceptable?
+Reported-by: syzbot+001516d86dbe88862cec@syzkaller.appspotmail.com
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+---
 
-In my mind this falls under "acceptable corner cases". I.e., if you're
-going to use the map for redirect and you expect to be updating it while
-you're doing so, don't use a hashmap. But if you will not be updating
-the map (or find the possible duplication acceptable), you can use the
-hashmap and gain the benefit of being able to index by ifindex.
+V2: Removed inline specifier from tun_get_addr_len function.
 
-But John does have a point that this is not obvious; so maybe it should
-be pointed out in the helper documentation?
+---
+ drivers/net/tun.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
--Toke
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 978ac0981d16..524a9f771b86 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -69,6 +69,14 @@
+ #include <linux/bpf.h>
+ #include <linux/bpf_trace.h>
+ #include <linux/mutex.h>
++#include <linux/ieee802154.h>
++#include <linux/if_ltalk.h>
++#include <uapi/linux/if_fddi.h>
++#include <uapi/linux/if_hippi.h>
++#include <uapi/linux/if_fc.h>
++#include <net/ax25.h>
++#include <net/rose.h>
++#include <net/6lowpan.h>
+ 
+ #include <linux/uaccess.h>
+ #include <linux/proc_fs.h>
+@@ -2925,6 +2933,45 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
+ 	return __tun_set_ebpf(tun, prog_p, prog);
+ }
+ 
++/* Return correct value for tun->dev->addr_len based on tun->dev->type. */
++static unsigned char tun_get_addr_len(unsigned short type)
++{
++	switch (type) {
++	case ARPHRD_IP6GRE:
++	case ARPHRD_TUNNEL6:
++		return sizeof(struct in6_addr);
++	case ARPHRD_IPGRE:
++	case ARPHRD_TUNNEL:
++	case ARPHRD_SIT:
++		return 4;
++	case ARPHRD_ETHER:
++		return ETH_ALEN;
++	case ARPHRD_IEEE802154:
++	case ARPHRD_IEEE802154_MONITOR:
++		return IEEE802154_EXTENDED_ADDR_LEN;
++	case ARPHRD_PHONET_PIPE:
++	case ARPHRD_PPP:
++	case ARPHRD_NONE:
++		return 0;
++	case ARPHRD_6LOWPAN:
++		return EUI64_ADDR_LEN;
++	case ARPHRD_FDDI:
++		return FDDI_K_ALEN;
++	case ARPHRD_HIPPI:
++		return HIPPI_ALEN;
++	case ARPHRD_IEEE802:
++		return FC_ALEN;
++	case ARPHRD_ROSE:
++		return ROSE_ADDR_LEN;
++	case ARPHRD_NETROM:
++		return AX25_ADDR_LEN;
++	case ARPHRD_LOCALTLK:
++		return LTALK_ALEN;
++	default:
++		return 0;
++	}
++}
++
+ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 			    unsigned long arg, int ifreq_len)
+ {
+@@ -3088,6 +3135,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
+ 				break;
+ 			}
+ 			tun->dev->type = (int) arg;
++			tun->dev->addr_len = tun_get_addr_len(tun->dev->type);
+ 			netif_info(tun, drv, tun->dev, "linktype set to %d\n",
+ 				   tun->dev->type);
+ 			call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE,
+-- 
+2.30.2
 
