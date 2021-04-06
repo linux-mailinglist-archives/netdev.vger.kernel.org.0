@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3485355E95
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 00:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93988355E96
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 00:12:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243670AbhDFWMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 18:12:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52520 "EHLO mail.kernel.org"
+        id S1344040AbhDFWMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 18:12:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52564 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243643AbhDFWMD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 18:12:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BB2AC613CF;
-        Tue,  6 Apr 2021 22:11:53 +0000 (UTC)
+        id S243590AbhDFWMF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 18:12:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71E92613D8;
+        Tue,  6 Apr 2021 22:11:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617747115;
-        bh=I4nxHoJrkAa+c0GD2PcJsIKsqldCGduF2pxnr5ItC2U=;
+        s=k20201202; t=1617747116;
+        bh=QVenI/d07vlVHlu/lMBdEZLfwmzLW+U7iS2lH8ZNXrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XftRFH48hYSkepWOYi14ORhUTc+SBFB1TQOraldzfPMahxAa5Yq70jmLENjhCqXOx
-         cypFM3QC84lnPjiYd/lcbdlxRVlBbjy4jwSn0NhQ77HqGEYWq6XRvU0tYFgeVodaTn
-         YY/fzv8v+lnQ1x28aJcGxJHC+8dYVqBWBXlZz4Clg99UbXNkqEQlMMJkmMruLDM+Zy
-         Q7oJKQvEQl1DMDjqH2X7bkLggGuCgngvpiKhZET/ipuazeUTVnQpdV6XXHqOo0xEZZ
-         A//CYpncjW7WmsN8NeFlJUmSGcwTa0wAZHx/EXw+ergNq+5jIphT48py73Fg329qHB
-         ZtIzd/jMCRziQ==
+        b=MCf4k6/TllSrzTwXyGvav/LpG7wyCp/iOjGBNtZJlxS/xIbFFjouNqtXjtJ2Xg9B0
+         cFbnsXiFd3sfzMD1kfuXlbpBZc+uPggwFbnPobbLY3Ha0MROEJVRJ0kUAkkMRQ5bdr
+         GAYGqLNPidMAWuNpX1V/egdDyfIzvLsFGf6lTtDKdI5hq2UfBl9zH1qgErxAA04jmL
+         xL7qNjqPsw4viqfgW6o21XHPzXxkxwwZpXisr0LKF78V0wmGSZQKZYD7LDtzSkeWZJ
+         D/BsokjFwImhrN37dUOzH1dInjloxMgY5U7wj5n7EmA2y3ZfWllI/H+KUItn4pGfOM
+         jbnyFmVGPuMLA==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v3 06/18] net: phy: marvell10g: add MACTYPE definitions for 88E21xx
-Date:   Wed,  7 Apr 2021 00:10:55 +0200
-Message-Id: <20210406221107.1004-7-kabel@kernel.org>
+Subject: [PATCH net-next v3 07/18] net: phy: marvell10g: support all rate matching modes
+Date:   Wed,  7 Apr 2021 00:10:56 +0200
+Message-Id: <20210406221107.1004-8-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210406221107.1004-1-kabel@kernel.org>
 References: <20210406221107.1004-1-kabel@kernel.org>
@@ -42,33 +42,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add all MACTYPE definitions for 88E2110, 88E2180, 88E2111 and 88E2181.
+Add support for all rate matching modes for 88X3310 (currently only
+10gbase-r is supported, but xaui and rxaui can also be used).
+
+Add support for rate matching for 88E2110 (on 88E2110 the MACTYPE
+register is at a different place).
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/phy/marvell10g.c | 104 +++++++++++++++++++++++++++++++----
+ 1 file changed, 93 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 7d9a45437b69..556c9b43860e 100644
+index 556c9b43860e..fc298e53f165 100644
 --- a/drivers/net/phy/marvell10g.c
 +++ b/drivers/net/phy/marvell10g.c
-@@ -35,6 +35,15 @@
- enum {
- 	MV_PMA_FW_VER0		= 0xc011,
- 	MV_PMA_FW_VER1		= 0xc012,
-+	MV_PMA_21X0_PORT_CTRL	= 0xc04a,
-+	MV_PMA_21X0_PORT_CTRL_SWRST				= BIT(15),
-+	MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK			= 0x7,
-+	MV_PMA_21X0_PORT_CTRL_MACTYPE_USXGMII			= 0x0,
-+	MV_PMA_2180_PORT_CTRL_MACTYPE_DXGMII			= 0x1,
-+	MV_PMA_2180_PORT_CTRL_MACTYPE_QXGMII			= 0x2,
-+	MV_PMA_21X0_PORT_CTRL_MACTYPE_5GBASER			= 0x4,
-+	MV_PMA_21X0_PORT_CTRL_MACTYPE_5GBASER_NO_SGMII_AN	= 0x5,
-+	MV_PMA_21X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH	= 0x6,
- 	MV_PMA_BOOT		= 0xc050,
- 	MV_PMA_BOOT_FATAL	= BIT(0),
+@@ -108,14 +108,26 @@ enum {
+ 	MV_V2_TEMP_UNKNOWN	= 0x9600, /* unknown function */
+ };
  
++struct mv3310_chip {
++	int (*get_mactype)(struct phy_device *phydev);
++	int (*init_interface)(struct phy_device *phydev, int mactype);
++};
++
+ struct mv3310_priv {
+ 	u32 firmware_ver;
+ 	bool rate_match;
++	phy_interface_t const_interface;
+ 
+ 	struct device *hwmon_dev;
+ 	char *hwmon_name;
+ };
+ 
++static inline const struct mv3310_chip *
++to_mv3310_chip(struct phy_device *phydev)
++{
++	return phydev->drv->driver_data;
++}
++
+ #ifdef CONFIG_HWMON
+ static umode_t mv3310_hwmon_is_visible(const void *data,
+ 				       enum hwmon_sensor_types type,
+@@ -470,11 +482,67 @@ static bool mv3310_has_pma_ngbaset_quirk(struct phy_device *phydev)
+ 		MV_PHY_ALASKA_NBT_QUIRK_MASK) == MV_PHY_ALASKA_NBT_QUIRK_REV;
+ }
+ 
+-static int mv3310_config_init(struct phy_device *phydev)
++static int mv2110_get_mactype(struct phy_device *phydev)
++{
++	int mactype;
++
++	mactype = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_21X0_PORT_CTRL);
++	if (mactype < 0)
++		return mactype;
++
++	return mactype & MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK;
++}
++
++static int mv3310_get_mactype(struct phy_device *phydev)
++{
++	int mactype;
++
++	mactype = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
++	if (mactype < 0)
++		return mactype;
++
++	return mactype & MV_V2_33X0_PORT_CTRL_MACTYPE_MASK;
++}
++
++static int mv2110_init_interface(struct phy_device *phydev, int mactype)
+ {
+ 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+-	int err;
+-	int val;
++
++	priv->rate_match = false;
++
++	if (mactype == MV_PMA_21X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH) {
++		priv->rate_match = true;
++		priv->const_interface = PHY_INTERFACE_MODE_10GBASER;
++	}
++
++	return 0;
++}
++
++static int mv3310_init_interface(struct phy_device *phydev, int mactype)
++{
++	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
++
++	priv->rate_match = false;
++
++	if (mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH ||
++	    mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH ||
++	    mactype == MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH)
++		priv->rate_match = true;
++
++	if (mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH)
++		priv->const_interface = PHY_INTERFACE_MODE_10GBASER;
++	else if (mactype == MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH)
++		priv->const_interface = PHY_INTERFACE_MODE_RXAUI;
++	else if (mactype == MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH)
++		priv->const_interface = PHY_INTERFACE_MODE_XAUI;
++
++	return 0;
++}
++
++static int mv3310_config_init(struct phy_device *phydev)
++{
++	const struct mv3310_chip *chip = to_mv3310_chip(phydev);
++	int err, mactype;
+ 
+ 	/* Check that the PHY interface type is compatible */
+ 	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
+@@ -493,11 +561,13 @@ static int mv3310_config_init(struct phy_device *phydev)
+ 	if (err)
+ 		return err;
+ 
+-	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
+-	if (val < 0)
+-		return val;
+-	priv->rate_match = ((val & MV_V2_33X0_PORT_CTRL_MACTYPE_MASK) ==
+-			MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH);
++	mactype = chip->get_mactype(phydev);
++	if (mactype < 0)
++		return mactype;
++
++	err = chip->init_interface(phydev, mactype);
++	if (err)
++		return err;
+ 
+ 	/* Enable EDPD mode - saving 600mW */
+ 	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
+@@ -607,12 +677,12 @@ static void mv3310_update_interface(struct phy_device *phydev)
+ {
+ 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+ 
+-	/* In "XFI with Rate Matching" mode the PHY interface is fixed at
+-	 * 10Gb. The PHY adapts the rate to actual wire speed with help of
++	/* In all of the "* with Rate Matching" modes the PHY interface is fixed
++	 * at 10Gb. The PHY adapts the rate to actual wire speed with help of
+ 	 * internal 16KB buffer.
+ 	 */
+ 	if (priv->rate_match) {
+-		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
++		phydev->interface = priv->const_interface;
+ 		return;
+ 	}
+ 
+@@ -788,11 +858,22 @@ static int mv3310_set_tunable(struct phy_device *phydev,
+ 	}
+ }
+ 
++static const struct mv3310_chip mv3310_type = {
++	.get_mactype = mv3310_get_mactype,
++	.init_interface = mv3310_init_interface,
++};
++
++static const struct mv3310_chip mv2110_type = {
++	.get_mactype = mv2110_get_mactype,
++	.init_interface = mv2110_init_interface,
++};
++
+ static struct phy_driver mv3310_drivers[] = {
+ 	{
+ 		.phy_id		= MARVELL_PHY_ID_88X3310,
+ 		.phy_id_mask	= MARVELL_PHY_ID_MASK,
+ 		.name		= "mv88x3310",
++		.driver_data	= &mv3310_type,
+ 		.get_features	= mv3310_get_features,
+ 		.config_init	= mv3310_config_init,
+ 		.probe		= mv3310_probe,
+@@ -810,6 +891,7 @@ static struct phy_driver mv3310_drivers[] = {
+ 		.phy_id		= MARVELL_PHY_ID_88E2110,
+ 		.phy_id_mask	= MARVELL_PHY_ID_MASK,
+ 		.name		= "mv88x2110",
++		.driver_data	= &mv2110_type,
+ 		.probe		= mv3310_probe,
+ 		.suspend	= mv3310_suspend,
+ 		.resume		= mv3310_resume,
 -- 
 2.26.2
 
