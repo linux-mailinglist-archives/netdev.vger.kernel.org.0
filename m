@@ -2,58 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4776E3558AE
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 18:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5213B3558B1
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 18:02:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242542AbhDFQCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 12:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231787AbhDFQCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 12:02:12 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706D0C06174A;
-        Tue,  6 Apr 2021 09:02:04 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id v26so16075968iox.11;
-        Tue, 06 Apr 2021 09:02:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y6td6U/wgXJy1PKxkTx+qADiVVwnBDVWbevDjru0nls=;
-        b=XvPpCjYxNmJmPbhWQwWWLjNrOfwWJekG5FGqReCq3HR7smTKgok8w/+146+n12sXYh
-         g1SrBLJkHm6800/a8NRq/X+CMSiz6G/JNNS8hv/BXu44w47pWOn4xjF227zQ2lkprOIh
-         eGWepOCNQdmUWzQmHnj7HDx92mhDsbhqkmNXhEA/G8FyxFn6hoH1IVrtQ7PnvK8DwgzB
-         PpYChXnoMFzZkwxfV3WUOwaNcPHs1chU+ro8WE+MMTT1XaElw/fgi6L1oS8RhBNtOjdF
-         OYxHMqvZRgAwps12+XvU/yKiF+SLtPa48N5qxjKKm0GQe2t7kykpeRwCrm/FaC3hYWj6
-         A/SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y6td6U/wgXJy1PKxkTx+qADiVVwnBDVWbevDjru0nls=;
-        b=SzFu7dNqvnWeg8Fhs3e+9gK+fpERM08uBEIozvp5jrcwMhhcgDLFjxhEZHz3sv3+OA
-         x3hHJ/eBjmL6M60YLr6QvQxM3GfNyHHpWUj/OzN2V4UZMKl0eFoWCVOLCLzPZXodR8bR
-         0hw2dtTJg7Po3I+vp77NHFCDKzG4kt9rulj9e/0StWbcgO4NUO5nyJbWuIDih++jx6Zz
-         wprdXd6cR9m6luynF5+McHRfSFbWBxvoBObhUb0HcYTFMBk4YAxR/EA1fVbVVmVAqKAX
-         xMeEi1sWA8VDafz5TGXTUxzvy1FszO2pyo6rUsT9IpJzhHqOpmrszn55u8FXkwhUdce8
-         33zg==
-X-Gm-Message-State: AOAM530xNQOdaY1OBLmFyjUc/GZ6rUJZLnzz/oVy3806Tev9QCPm+LsO
-        h+k/F0whamCeitgcjpwh1YMzS3CZXck/HjFR3nQ=
-X-Google-Smtp-Source: ABdhPJzrupn5Tqo/qGYiJFhgY4pom3bPfOsFnrJ4YLA/PGWrDxckk5HncixtyDHTPC1rXWyNlr2qX0SRG+OFMzNoklo=
-X-Received: by 2002:a05:6638:144e:: with SMTP id l14mr29148356jad.76.1617724924002;
- Tue, 06 Apr 2021 09:02:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210406141819.1025864-1-dqfext@gmail.com> <20210406141819.1025864-3-dqfext@gmail.com>
- <YGx+nyYkSY3Xu0Za@lunn.ch> <CALW65jYhBGmz8dy+9C_YCpJU5wa-KAwgrGjCSpa3nqUNT+xU+g@mail.gmail.com>
- <YGyC9liu9v+DFSHA@lunn.ch>
-In-Reply-To: <YGyC9liu9v+DFSHA@lunn.ch>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Wed, 7 Apr 2021 00:02:00 +0800
-Message-ID: <CALW65jaTfcJoMqZPfLjbYXd+JWvG8CciUiGRmQwc_bf2538kog@mail.gmail.com>
-Subject: Re: [RFC net-next 2/4] net: dsa: mt7530: add interrupt support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S237469AbhDFQCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 12:02:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36116 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232350AbhDFQCq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 12:02:46 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTo9t-00F91t-0O; Tue, 06 Apr 2021 18:02:29 +0200
+Date:   Tue, 6 Apr 2021 18:02:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -70,27 +35,61 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-kernel <linux-kernel@vger.kernel.org>,
         "moderated list:ARM/Mediatek SoC support" 
         <linux-mediatek@lists.infradead.org>,
-        linux-staging@lists.linux.dev,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Weijie Gao <weijie.gao@mediatek.com>,
+        linux-staging@lists.linux.dev, DTML <devicetree@vger.kernel.org>,
+        netdev@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>,
         Chuanhong Guo <gch981213@gmail.com>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>
-Content-Type: text/plain; charset="UTF-8"
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Subject: Re: [RFC net-next 1/4] net: phy: add MediaTek PHY driver
+Message-ID: <YGyGFOrXwEsqCW/z@lunn.ch>
+References: <20210406141819.1025864-1-dqfext@gmail.com>
+ <20210406141819.1025864-2-dqfext@gmail.com>
+ <CAAOTY_8snSTcguhyB9PJBWydqNaWZL3V4zXiYULVp5n48fN24w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAAOTY_8snSTcguhyB9PJBWydqNaWZL3V4zXiYULVp5n48fN24w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 6, 2021 at 11:49 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> O.K. So that makes it similar to the mv88e6xxx. With that driver, i
-> kept interrupt setup and mdio setup separate. I add the interrupt
-> controller first, and then do mdio setup, calling a helper to map the
-> PHY interrupts and assign them to bus->irq[].
->
-> That gives you a cleaner structure when you start using the other
-> interrupts.
+On Tue, Apr 06, 2021 at 11:47:08PM +0800, Chun-Kuang Hu wrote:
+> Hi, Qingfang:
+> 
+> DENG Qingfang <dqfext@gmail.com> 於 2021年4月6日 週二 下午10:19寫道：
+> >
+> > Add support for MediaTek PHYs found in MT7530 and MT7531 switches.
+> > The initialization procedure is from the vendor driver, but due to lack
+> > of documentation, the function of some register values remains unknown.
+> >
+> > Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> > ---
+> >  drivers/net/phy/Kconfig    |   5 ++
+> >  drivers/net/phy/Makefile   |   1 +
+> >  drivers/net/phy/mediatek.c | 109 +++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 115 insertions(+)
+> >  create mode 100644 drivers/net/phy/mediatek.c
+> >
+> > diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> > index a615b3660b05..edd858cec9ec 100644
+> > --- a/drivers/net/phy/Kconfig
+> > +++ b/drivers/net/phy/Kconfig
+> > @@ -207,6 +207,11 @@ config MARVELL_88X2222_PHY
+> >           Support for the Marvell 88X2222 Dual-port Multi-speed Ethernet
+> >           Transceiver.
+> >
+> > +config MEDIATEK_PHY
+> 
+> There are many Mediatek phy drivers in [1], so use a specific name.
 
-Okay. Will split the function in v2. Thanks.
+Those are generic PHY drivers, where as this patch is add a PHY
+driver. The naming used in this patch is consistent with other PHY
+drivers. So i'm happy with this patch in this respect.
 
->
->         Andrew
+PHY drivers have been around a lot longer than generic PHY drivers. So
+i would actually say the generic PHY driver naming should make it
+clear they are generic PHYs, not PHYs.
+
+But lets not bike shed about this too much.
+
+      Andrew
