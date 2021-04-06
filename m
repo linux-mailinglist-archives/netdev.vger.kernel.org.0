@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E35263553B9
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B3E3553C3
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343902AbhDFMWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 08:22:53 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:34434 "EHLO
+        id S1344206AbhDFMXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 08:23:23 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:34470 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343982AbhDFMWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 08:22:04 -0400
+        with ESMTP id S1343986AbhDFMWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 08:22:05 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 9F59463E59;
-        Tue,  6 Apr 2021 14:21:35 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 2C58163E5D;
+        Tue,  6 Apr 2021 14:21:36 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 20/28] netfilter: cttimeout: use net_generic infra
-Date:   Tue,  6 Apr 2021 14:21:25 +0200
-Message-Id: <20210406122133.1644-21-pablo@netfilter.org>
+Subject: [PATCH net-next 21/28] netfilter: nf_defrag_ipv6: use net_generic infra
+Date:   Tue,  6 Apr 2021 14:21:26 +0200
+Message-Id: <20210406122133.1644-22-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210406122133.1644-1-pablo@netfilter.org>
 References: <20210406122133.1644-1-pablo@netfilter.org>
@@ -31,184 +31,256 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-reduce size of struct net and make this self-contained.
-The member in struct net is kept to minimize changes to struct net
-layout, it will be removed in a separate patch.
+This allows followup patch to remove these members from struct net.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nfnetlink_cttimeout.c | 41 ++++++++++++++++++++++-------
- 1 file changed, 32 insertions(+), 9 deletions(-)
+ include/net/netfilter/ipv6/nf_defrag_ipv6.h |  6 ++
+ net/ipv6/netfilter/nf_conntrack_reasm.c     | 68 +++++++++++----------
+ net/ipv6/netfilter/nf_defrag_ipv6_hooks.c   | 15 +++--
+ 3 files changed, 52 insertions(+), 37 deletions(-)
 
-diff --git a/net/netfilter/nfnetlink_cttimeout.c b/net/netfilter/nfnetlink_cttimeout.c
-index de831a257512..46da5548d0b3 100644
---- a/net/netfilter/nfnetlink_cttimeout.c
-+++ b/net/netfilter/nfnetlink_cttimeout.c
-@@ -20,6 +20,7 @@
+diff --git a/include/net/netfilter/ipv6/nf_defrag_ipv6.h b/include/net/netfilter/ipv6/nf_defrag_ipv6.h
+index 6d31cd041143..ece923e2035b 100644
+--- a/include/net/netfilter/ipv6/nf_defrag_ipv6.h
++++ b/include/net/netfilter/ipv6/nf_defrag_ipv6.h
+@@ -13,4 +13,10 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user);
  
- #include <linux/netfilter.h>
- #include <net/netlink.h>
-+#include <net/netns/generic.h>
- #include <net/sock.h>
- #include <net/netfilter/nf_conntrack.h>
- #include <net/netfilter/nf_conntrack_core.h>
-@@ -30,6 +31,12 @@
- #include <linux/netfilter/nfnetlink.h>
- #include <linux/netfilter/nfnetlink_cttimeout.h>
+ struct inet_frags_ctl;
  
-+static unsigned int nfct_timeout_id __read_mostly;
-+
-+struct nfct_timeout_pernet {
-+	struct list_head	nfct_timeout_list;
++struct nft_ct_frag6_pernet {
++	struct ctl_table_header *nf_frag_frags_hdr;
++	struct fqdir	*fqdir;
++	unsigned int users;
 +};
 +
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
- MODULE_DESCRIPTION("cttimeout: Extended Netfilter Connection Tracking timeout tuning");
-@@ -42,6 +49,11 @@ static const struct nla_policy cttimeout_nla_policy[CTA_TIMEOUT_MAX+1] = {
- 	[CTA_TIMEOUT_DATA]	= { .type = NLA_NESTED },
- };
+ #endif /* _NF_DEFRAG_IPV6_H */
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index c129ad334eb3..a0108415275f 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -15,28 +15,13 @@
+ #include <linux/errno.h>
+ #include <linux/types.h>
+ #include <linux/string.h>
+-#include <linux/socket.h>
+-#include <linux/sockios.h>
+-#include <linux/jiffies.h>
+ #include <linux/net.h>
+-#include <linux/list.h>
+ #include <linux/netdevice.h>
+-#include <linux/in6.h>
+ #include <linux/ipv6.h>
+-#include <linux/icmpv6.h>
+-#include <linux/random.h>
+ #include <linux/slab.h>
  
-+static struct nfct_timeout_pernet *nfct_timeout_pernet(struct net *net)
+-#include <net/sock.h>
+-#include <net/snmp.h>
+ #include <net/ipv6_frag.h>
+ 
+-#include <net/protocol.h>
+-#include <net/transp_v6.h>
+-#include <net/rawv6.h>
+-#include <net/ndisc.h>
+-#include <net/addrconf.h>
+-#include <net/inet_ecn.h>
+ #include <net/netfilter/ipv6/nf_conntrack_ipv6.h>
+ #include <linux/sysctl.h>
+ #include <linux/netfilter.h>
+@@ -44,11 +29,18 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
++#include <net/netns/generic.h>
+ 
+ static const char nf_frags_cache_name[] = "nf-frags";
+ 
++unsigned int nf_frag_pernet_id __read_mostly;
+ static struct inet_frags nf_frags;
+ 
++static struct nft_ct_frag6_pernet *nf_frag_pernet(struct net *net)
 +{
-+	return net_generic(net, nfct_timeout_id);
++	return net_generic(net, nf_frag_pernet_id);
 +}
 +
- static int
- ctnl_timeout_parse_policy(void *timeout,
- 			  const struct nf_conntrack_l4proto *l4proto,
-@@ -77,6 +89,7 @@ static int cttimeout_new_timeout(struct net *net, struct sock *ctnl,
- 				 const struct nlattr * const cda[],
- 				 struct netlink_ext_ack *extack)
+ #ifdef CONFIG_SYSCTL
+ 
+ static struct ctl_table nf_ct_frag6_sysctl_table[] = {
+@@ -75,6 +67,7 @@ static struct ctl_table nf_ct_frag6_sysctl_table[] = {
+ 
+ static int nf_ct_frag6_sysctl_register(struct net *net)
  {
-+	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
- 	__u16 l3num;
- 	__u8 l4num;
- 	const struct nf_conntrack_l4proto *l4proto;
-@@ -94,7 +107,7 @@ static int cttimeout_new_timeout(struct net *net, struct sock *ctnl,
- 	l3num = ntohs(nla_get_be16(cda[CTA_TIMEOUT_L3PROTO]));
- 	l4num = nla_get_u8(cda[CTA_TIMEOUT_L4PROTO]);
++	struct nft_ct_frag6_pernet *nf_frag;
+ 	struct ctl_table *table;
+ 	struct ctl_table_header *hdr;
  
--	list_for_each_entry(timeout, &net->nfct_timeout_list, head) {
-+	list_for_each_entry(timeout, &pernet->nfct_timeout_list, head) {
- 		if (strncmp(timeout->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
- 			continue;
- 
-@@ -146,7 +159,7 @@ static int cttimeout_new_timeout(struct net *net, struct sock *ctnl,
- 	timeout->timeout.l3num = l3num;
- 	timeout->timeout.l4proto = l4proto;
- 	refcount_set(&timeout->refcnt, 1);
--	list_add_tail_rcu(&timeout->head, &net->nfct_timeout_list);
-+	list_add_tail_rcu(&timeout->head, &pernet->nfct_timeout_list);
- 
- 	return 0;
- err:
-@@ -201,6 +214,7 @@ ctnl_timeout_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
- static int
- ctnl_timeout_dump(struct sk_buff *skb, struct netlink_callback *cb)
- {
-+	struct nfct_timeout_pernet *pernet;
- 	struct net *net = sock_net(skb->sk);
- 	struct ctnl_timeout *cur, *last;
- 
-@@ -212,7 +226,8 @@ ctnl_timeout_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 		cb->args[1] = 0;
- 
- 	rcu_read_lock();
--	list_for_each_entry_rcu(cur, &net->nfct_timeout_list, head) {
-+	pernet = nfct_timeout_pernet(net);
-+	list_for_each_entry_rcu(cur, &pernet->nfct_timeout_list, head) {
- 		if (last) {
- 			if (cur != last)
- 				continue;
-@@ -239,6 +254,7 @@ static int cttimeout_get_timeout(struct net *net, struct sock *ctnl,
- 				 const struct nlattr * const cda[],
- 				 struct netlink_ext_ack *extack)
- {
-+	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
- 	int ret = -ENOENT;
- 	char *name;
- 	struct ctnl_timeout *cur;
-@@ -254,7 +270,7 @@ static int cttimeout_get_timeout(struct net *net, struct sock *ctnl,
- 		return -EINVAL;
- 	name = nla_data(cda[CTA_TIMEOUT_NAME]);
- 
--	list_for_each_entry(cur, &net->nfct_timeout_list, head) {
-+	list_for_each_entry(cur, &pernet->nfct_timeout_list, head) {
- 		struct sk_buff *skb2;
- 
- 		if (strncmp(cur->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
-@@ -310,12 +326,13 @@ static int cttimeout_del_timeout(struct net *net, struct sock *ctnl,
- 				 const struct nlattr * const cda[],
- 				 struct netlink_ext_ack *extack)
- {
-+	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
- 	struct ctnl_timeout *cur, *tmp;
- 	int ret = -ENOENT;
- 	char *name;
- 
- 	if (!cda[CTA_TIMEOUT_NAME]) {
--		list_for_each_entry_safe(cur, tmp, &net->nfct_timeout_list,
-+		list_for_each_entry_safe(cur, tmp, &pernet->nfct_timeout_list,
- 					 head)
- 			ctnl_timeout_try_del(net, cur);
- 
-@@ -323,7 +340,7 @@ static int cttimeout_del_timeout(struct net *net, struct sock *ctnl,
+@@ -86,18 +79,20 @@ static int nf_ct_frag6_sysctl_register(struct net *net)
+ 			goto err_alloc;
  	}
- 	name = nla_data(cda[CTA_TIMEOUT_NAME]);
  
--	list_for_each_entry(cur, &net->nfct_timeout_list, head) {
-+	list_for_each_entry(cur, &pernet->nfct_timeout_list, head) {
- 		if (strncmp(cur->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
- 			continue;
- 
-@@ -503,9 +520,10 @@ static int cttimeout_default_get(struct net *net, struct sock *ctnl,
- static struct nf_ct_timeout *ctnl_timeout_find_get(struct net *net,
- 						   const char *name)
- {
-+	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
- 	struct ctnl_timeout *timeout, *matching = NULL;
- 
--	list_for_each_entry_rcu(timeout, &net->nfct_timeout_list, head) {
-+	list_for_each_entry_rcu(timeout, &pernet->nfct_timeout_list, head) {
- 		if (strncmp(timeout->name, name, CTNL_TIMEOUT_NAME_MAX) != 0)
- 			continue;
- 
-@@ -563,19 +581,22 @@ MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_CTNETLINK_TIMEOUT);
- 
- static int __net_init cttimeout_net_init(struct net *net)
- {
--	INIT_LIST_HEAD(&net->nfct_timeout_list);
-+	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
+-	table[0].data	= &net->nf_frag.fqdir->timeout;
+-	table[1].data	= &net->nf_frag.fqdir->low_thresh;
+-	table[1].extra2	= &net->nf_frag.fqdir->high_thresh;
+-	table[2].data	= &net->nf_frag.fqdir->high_thresh;
+-	table[2].extra1	= &net->nf_frag.fqdir->low_thresh;
+-	table[2].extra2	= &init_net.nf_frag.fqdir->high_thresh;
++	nf_frag = nf_frag_pernet(net);
 +
-+	INIT_LIST_HEAD(&pernet->nfct_timeout_list);
++	table[0].data	= &nf_frag->fqdir->timeout;
++	table[1].data	= &nf_frag->fqdir->low_thresh;
++	table[1].extra2	= &nf_frag->fqdir->high_thresh;
++	table[2].data	= &nf_frag->fqdir->high_thresh;
++	table[2].extra1	= &nf_frag->fqdir->low_thresh;
++	table[2].extra2	= &nf_frag->fqdir->high_thresh;
  
+ 	hdr = register_net_sysctl(net, "net/netfilter", table);
+ 	if (hdr == NULL)
+ 		goto err_reg;
+ 
+-	net->nf_frag_frags_hdr = hdr;
++	nf_frag->nf_frag_frags_hdr = hdr;
  	return 0;
+ 
+ err_reg:
+@@ -109,10 +104,11 @@ static int nf_ct_frag6_sysctl_register(struct net *net)
+ 
+ static void __net_exit nf_ct_frags6_sysctl_unregister(struct net *net)
+ {
++	struct nft_ct_frag6_pernet *nf_frag = nf_frag_pernet(net);
+ 	struct ctl_table *table;
+ 
+-	table = net->nf_frag_frags_hdr->ctl_table_arg;
+-	unregister_net_sysctl_table(net->nf_frag_frags_hdr);
++	table = nf_frag->nf_frag_frags_hdr->ctl_table_arg;
++	unregister_net_sysctl_table(nf_frag->nf_frag_frags_hdr);
+ 	if (!net_eq(net, &init_net))
+ 		kfree(table);
+ }
+@@ -149,6 +145,7 @@ static void nf_ct_frag6_expire(struct timer_list *t)
+ static struct frag_queue *fq_find(struct net *net, __be32 id, u32 user,
+ 				  const struct ipv6hdr *hdr, int iif)
+ {
++	struct nft_ct_frag6_pernet *nf_frag = nf_frag_pernet(net);
+ 	struct frag_v6_compare_key key = {
+ 		.id = id,
+ 		.saddr = hdr->saddr,
+@@ -158,7 +155,7 @@ static struct frag_queue *fq_find(struct net *net, __be32 id, u32 user,
+ 	};
+ 	struct inet_frag_queue *q;
+ 
+-	q = inet_frag_find(net->nf_frag.fqdir, &key);
++	q = inet_frag_find(nf_frag->fqdir, &key);
+ 	if (!q)
+ 		return NULL;
+ 
+@@ -495,37 +492,44 @@ EXPORT_SYMBOL_GPL(nf_ct_frag6_gather);
+ 
+ static int nf_ct_net_init(struct net *net)
+ {
++	struct nft_ct_frag6_pernet *nf_frag  = nf_frag_pernet(net);
+ 	int res;
+ 
+-	res = fqdir_init(&net->nf_frag.fqdir, &nf_frags, net);
++	res = fqdir_init(&nf_frag->fqdir, &nf_frags, net);
+ 	if (res < 0)
+ 		return res;
+ 
+-	net->nf_frag.fqdir->high_thresh = IPV6_FRAG_HIGH_THRESH;
+-	net->nf_frag.fqdir->low_thresh = IPV6_FRAG_LOW_THRESH;
+-	net->nf_frag.fqdir->timeout = IPV6_FRAG_TIMEOUT;
++	nf_frag->fqdir->high_thresh = IPV6_FRAG_HIGH_THRESH;
++	nf_frag->fqdir->low_thresh = IPV6_FRAG_LOW_THRESH;
++	nf_frag->fqdir->timeout = IPV6_FRAG_TIMEOUT;
+ 
+ 	res = nf_ct_frag6_sysctl_register(net);
+ 	if (res < 0)
+-		fqdir_exit(net->nf_frag.fqdir);
++		fqdir_exit(nf_frag->fqdir);
+ 	return res;
  }
  
- static void __net_exit cttimeout_net_exit(struct net *net)
+ static void nf_ct_net_pre_exit(struct net *net)
  {
-+	struct nfct_timeout_pernet *pernet = nfct_timeout_pernet(net);
- 	struct ctnl_timeout *cur, *tmp;
+-	fqdir_pre_exit(net->nf_frag.fqdir);
++	struct nft_ct_frag6_pernet *nf_frag  = nf_frag_pernet(net);
++
++	fqdir_pre_exit(nf_frag->fqdir);
+ }
  
- 	nf_ct_unconfirmed_destroy(net);
- 	nf_ct_untimeout(net, NULL);
+ static void nf_ct_net_exit(struct net *net)
+ {
++	struct nft_ct_frag6_pernet *nf_frag  = nf_frag_pernet(net);
++
+ 	nf_ct_frags6_sysctl_unregister(net);
+-	fqdir_exit(net->nf_frag.fqdir);
++	fqdir_exit(nf_frag->fqdir);
+ }
  
--	list_for_each_entry_safe(cur, tmp, &net->nfct_timeout_list, head) {
-+	list_for_each_entry_safe(cur, tmp, &pernet->nfct_timeout_list, head) {
- 		list_del_rcu(&cur->head);
- 
- 		if (refcount_dec_and_test(&cur->refcnt))
-@@ -586,6 +607,8 @@ static void __net_exit cttimeout_net_exit(struct net *net)
- static struct pernet_operations cttimeout_ops = {
- 	.init	= cttimeout_net_init,
- 	.exit	= cttimeout_net_exit,
-+	.id     = &nfct_timeout_id,
-+	.size   = sizeof(struct nfct_timeout_pernet),
+ static struct pernet_operations nf_ct_net_ops = {
+ 	.init		= nf_ct_net_init,
+ 	.pre_exit	= nf_ct_net_pre_exit,
+ 	.exit		= nf_ct_net_exit,
++	.id		= &nf_frag_pernet_id,
++	.size		= sizeof(struct nft_ct_frag6_pernet),
  };
  
- static int __init cttimeout_init(void)
+ static const struct rhashtable_params nfct_rhash_params = {
+diff --git a/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c b/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c
+index 6646a87fb5dc..402dc4ca9504 100644
+--- a/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c
++++ b/net/ipv6/netfilter/nf_defrag_ipv6_hooks.c
+@@ -25,6 +25,8 @@
+ #include <net/netfilter/nf_conntrack_zones.h>
+ #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+ 
++extern unsigned int nf_frag_pernet_id;
++
+ static DEFINE_MUTEX(defrag6_mutex);
+ 
+ static enum ip6_defrag_users nf_ct6_defrag_user(unsigned int hooknum,
+@@ -89,10 +91,12 @@ static const struct nf_hook_ops ipv6_defrag_ops[] = {
+ 
+ static void __net_exit defrag6_net_exit(struct net *net)
+ {
+-	if (net->nf.defrag_ipv6) {
++	struct nft_ct_frag6_pernet *nf_frag = net_generic(net, nf_frag_pernet_id);
++
++	if (nf_frag->users) {
+ 		nf_unregister_net_hooks(net, ipv6_defrag_ops,
+ 					ARRAY_SIZE(ipv6_defrag_ops));
+-		net->nf.defrag_ipv6 = false;
++		nf_frag->users = 0;
+ 	}
+ }
+ 
+@@ -130,21 +134,22 @@ static void __exit nf_defrag_fini(void)
+ 
+ int nf_defrag_ipv6_enable(struct net *net)
+ {
++	struct nft_ct_frag6_pernet *nf_frag = net_generic(net, nf_frag_pernet_id);
+ 	int err = 0;
+ 
+ 	might_sleep();
+ 
+-	if (net->nf.defrag_ipv6)
++	if (nf_frag->users)
+ 		return 0;
+ 
+ 	mutex_lock(&defrag6_mutex);
+-	if (net->nf.defrag_ipv6)
++	if (nf_frag->users)
+ 		goto out_unlock;
+ 
+ 	err = nf_register_net_hooks(net, ipv6_defrag_ops,
+ 				    ARRAY_SIZE(ipv6_defrag_ops));
+ 	if (err == 0)
+-		net->nf.defrag_ipv6 = true;
++		nf_frag->users = 1;
+ 
+  out_unlock:
+ 	mutex_unlock(&defrag6_mutex);
 -- 
 2.30.2
 
