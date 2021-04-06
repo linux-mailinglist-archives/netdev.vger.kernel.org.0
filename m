@@ -2,37 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E363354C43
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 07:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B93354C4F
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 07:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243815AbhDFFYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 01:24:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60640 "EHLO mail.kernel.org"
+        id S243828AbhDFF1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 01:27:38 -0400
+Received: from verein.lst.de ([213.95.11.211]:52963 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233036AbhDFFY3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 01:24:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C791061246;
-        Tue,  6 Apr 2021 05:24:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617686662;
-        bh=8JS7ICrS7uuaOPO5yu1JQVUjSFQhPCTd44gGpGT7I58=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WP6roTKoemOABplgHbwEmALlcxPzQzk1VbK173QYlDO+W72Tqsl3QybZGH7mcYNPA
-         sIqDKBp3YOpMkHNnk/3JPYBD7mhhDoyIOwkSzz9U7Ybbo39TsDKDHXYcvhB1mk3sTs
-         EgFzyjGi6Bkf64w27QYc6W0VfNGWgAFhwkpES0d/uM5z9UuYVrxYbcZUHaFHoDjeNh
-         Tir4/ma0P28qer+50bxnn0mTHUSGy0Q9vNs7nA2JhgcI4/RzZhpmMHoiGnDb/s5PM1
-         XUvQLrP2qGOcaVDaSUONUlsCyMSYQHwX9xPpKcrNSnLiwCkC3VX6avNGwAUs1G12bh
-         8m1JEEsTKunpw==
-Date:   Tue, 6 Apr 2021 08:24:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Doug Ledford <dledford@redhat.com>,
+        id S232874AbhDFF1e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 01:27:34 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id A35D168BEB; Tue,  6 Apr 2021 07:27:17 +0200 (CEST)
+Date:   Tue, 6 Apr 2021 07:27:17 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bart Van Assche <bvanassche@acm.org>,
+        Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
         Avihai Horon <avihaih@nvidia.com>,
         Adit Ranadive <aditr@vmware.com>,
         Anna Schumaker <anna.schumaker@netapp.com>,
         Ariel Elior <aelior@marvell.com>,
-        Bart Van Assche <bvanassche@acm.org>,
         Bernard Metzler <bmt@zurich.ibm.com>,
         Chuck Lever <chuck.lever@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -69,34 +60,32 @@ Cc:     Doug Ledford <dledford@redhat.com>,
         Weihang Li <liweihang@huawei.com>,
         Yishai Hadas <yishaih@nvidia.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next 01/10] RDMA: Add access flags to ib_alloc_mr()
- and ib_mr_pool_init()
-Message-ID: <YGvwgrIR70oqNKUk@unreal>
-References: <20210405052404.213889-1-leon@kernel.org>
- <20210405052404.213889-2-leon@kernel.org>
- <20210405134618.GA22895@lst.de>
+Subject: Re: [PATCH rdma-next 01/10] RDMA: Add access flags to
+ ib_alloc_mr() and ib_mr_pool_init()
+Message-ID: <20210406052717.GA4835@lst.de>
+References: <20210405052404.213889-1-leon@kernel.org> <20210405052404.213889-2-leon@kernel.org> <c21edd64-396c-4c7c-86f8-79045321a528@acm.org> <YGvwUI022t/rJy5U@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210405134618.GA22895@lst.de>
+In-Reply-To: <YGvwUI022t/rJy5U@unreal>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 03:46:18PM +0200, Christoph Hellwig wrote:
-> On Mon, Apr 05, 2021 at 08:23:55AM +0300, Leon Romanovsky wrote:
-> > From: Avihai Horon <avihaih@nvidia.com>
-> > 
-> > Add access flags parameter to ib_alloc_mr() and to ib_mr_pool_init(),
-> > and refactor relevant code. This parameter is used to pass MR access
-> > flags during MR allocation.
-> > 
-> > In the following patches, the new access flags parameter will be used
-> > to enable Relaxed Ordering for ib_alloc_mr() and ib_mr_pool_init() users.
-> 
-> So this weirds up a new RELAXED_ORDERING flag without ever mentioning
-> that flag in the commit log, never mind what it actually does.
+On Tue, Apr 06, 2021 at 08:23:28AM +0300, Leon Romanovsky wrote:
+> The same proposal (enable unconditionally) was raised during
+> submission preparations and we decided to follow same pattern
+> as other verbs objects which receive flag parameter.
 
-We will improve commit messages.
+A flags argument can be added when it actually is needed.  Using it
+to pass an argument enabled by all ULPs just gets us back to the bad
+old days of complete crap APIs someone drew up on a whiteboard.
 
-Thanks
+I think we need to:
+
+ a) document the semantics
+ b) sort out any technical concerns
+ c) just enable the damn thing
+
+instead of requiring some form of cargo culting.
