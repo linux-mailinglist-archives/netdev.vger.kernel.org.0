@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBCC6355606
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 16:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60936355609
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 16:06:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344891AbhDFOFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 10:05:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38714 "EHLO mail.kernel.org"
+        id S236166AbhDFOGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 10:06:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38894 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344879AbhDFOFP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 10:05:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 525E56120E;
-        Tue,  6 Apr 2021 14:05:05 +0000 (UTC)
+        id S233554AbhDFOGI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 10:06:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 746B06139C;
+        Tue,  6 Apr 2021 14:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1617717906;
-        bh=lw4vTBvaD2dSp+I5hbwJFvQTjPmOaXrvQxrqmXgTIVo=;
+        s=korg; t=1617717960;
+        bh=qEX/6JcIH0tvPPBJ0/FFoBpj98iXPxdaCuo5ByOWTbU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h0bnLoci3nn5HDWPukyy+6INDZ9bbURogfPOtRQ1+besCutUHlJ2tWHgaWQaiEraQ
-         6ncUGupbBwfilL5xJcEC+qzZGzxEn0yadao2B3y7ebeacg6UGdOYxfGu410DLpeYUZ
-         LSeeODNJ2ZJcgn+y2VJtcmLHyRGCUr0Sawn7GaGs=
-Date:   Tue, 6 Apr 2021 16:05:03 +0200
+        b=gFYaUKc25ivU3lsCHPxdml6UB6rqURBPXl6bgdwev7/XrzmsZy8h9j5ShkstUVbJa
+         D65PWwl9DRiPj+PKOuzh8MVRdM9tdp45wcd58nFmMM3N3rykhFqQH/SA5Q8Wwyyicp
+         fF5PANEvHR7hLtadRncftDmPghckev8aXyFIDbjs=
+Date:   Tue, 6 Apr 2021 16:05:57 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Anirudh Rayabharam <mail@anirudhrb.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -35,7 +35,7 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] net: hso: fix null-ptr-deref during tty device
  unregistration
-Message-ID: <YGxqj1ow9F7kWi98@kroah.com>
+Message-ID: <YGxqxddOyyDM9ueu@kroah.com>
 References: <20210406124402.20930-1-mail@anirudhrb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -66,5 +66,39 @@ On Tue, Apr 06, 2021 at 06:13:59PM +0530, Anirudh Rayabharam wrote:
 > Tested-by: syzbot+c49fe6089f295a05e6f8@syzkaller.appspotmail.com
 > 
 > Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+> ---
+>  drivers/net/usb/hso.c | 32 ++++++++++++--------------------
+>  1 file changed, 12 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+> index 31d51346786a..295ca330e70c 100644
+> --- a/drivers/net/usb/hso.c
+> +++ b/drivers/net/usb/hso.c
+> @@ -611,7 +611,7 @@ static struct hso_serial *get_serial_by_index(unsigned index)
+>  	return serial;
+>  }
+>  
+> -static int get_free_serial_index(void)
+> +static int obtain_minor(struct hso_serial *serial)
+>  {
+>  	int index;
+>  	unsigned long flags;
+> @@ -619,8 +619,10 @@ static int get_free_serial_index(void)
+>  	spin_lock_irqsave(&serial_table_lock, flags);
+>  	for (index = 0; index < HSO_SERIAL_TTY_MINORS; index++) {
+>  		if (serial_table[index] == NULL) {
+> +			serial_table[index] = serial->parent;
+> +			serial->minor = index;
+>  			spin_unlock_irqrestore(&serial_table_lock, flags);
+> -			return index;
+> +			return 0;
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Minor note, you might want to convert this to use an idr structure in
+the future, this "loop and find a free minor" isn't really needed now
+that we have a data structure that does this all for us :)
+
+But that's not going to fix this issue, that's for future changes.
+
+thanks,
+
+greg k-h
