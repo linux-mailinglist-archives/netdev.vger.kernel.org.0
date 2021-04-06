@@ -2,76 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA803557BF
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 17:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BA6E3557D3
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 17:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345665AbhDFP2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 11:28:04 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55622 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbhDFP2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 11:28:02 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lTncN-0003uh-8U; Tue, 06 Apr 2021 17:27:51 +0200
-Received: from [85.7.101.30] (helo=pc-6.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lTncN-00050d-1N; Tue, 06 Apr 2021 17:27:51 +0200
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Subject: LPC 2021 Networking and BPF Track CFP
-Cc:     xdp-newbies@vger.kernel.org, iovisor-dev@lists.iovisor.org,
-        linux-wireless@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        lwn@lwn.net
-Message-ID: <6d225920-9ecc-ef24-2bf8-848ca86c7fb0@iogearbox.net>
-Date:   Tue, 6 Apr 2021 17:27:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S243632AbhDFPa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 11:30:56 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35988 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229790AbhDFPaz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 11:30:55 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTnf5-00F8jg-4x; Tue, 06 Apr 2021 17:30:39 +0200
+Date:   Tue, 6 Apr 2021 17:30:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Subject: Re: [RFC net-next 2/4] net: dsa: mt7530: add interrupt support
+Message-ID: <YGx+nyYkSY3Xu0Za@lunn.ch>
+References: <20210406141819.1025864-1-dqfext@gmail.com>
+ <20210406141819.1025864-3-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26132/Tue Apr  6 13:06:05 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210406141819.1025864-3-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are pleased to announce the Call for Proposals (CFP) for the Networking and
-BPF track at the 2021 edition of the Linux Plumbers Conference (LPC), which is
-planned to be held in Dublin, Ireland, on September 27th - 29th, 2021.
+On Tue, Apr 06, 2021 at 10:18:17PM +0800, DENG Qingfang wrote:
+> Add support for MT7530 interrupt controller to handle internal PHYs.
 
-Note that if an in-person conference should prove to be impossible due to the
-circumstances at that time, Linux Plumbers will switch to a virtual-only
-conference. CFP submitters should ideally be able to give their presentation
-in person, if circumstances permit, although presenting remotely will always
-be possible.
+Are the interrupts purely PHY interrupts? Or are there some switch
+operation interrupts, which are currently not used?
 
-This year's Networking and BPF track technical committee is comprised of:
+I'm just wondering if it is correct to so closely tie interrupts and
+MDIO together.
 
-   David S. Miller <davem@davemloft.net>
-   Jakub Kicinski <kuba@kernel.org>
-   Eric Dumazet <edumazet@google.com>
-   Alexei Starovoitov <ast@kernel.org>
-   Daniel Borkmann <daniel@iogearbox.net>
-   Andrii Nakryiko <andrii@kernel.org>
-
-We are seeking proposals of 40 minutes in length (including Q&A discussion),
-optionally accompanied by papers of 2 to 10 pages in length.
-
-Any kind of advanced Linux networking and/or BPF related topic will be considered.
-
-Please submit your proposals through the official LPC website at:
-
-   https://linuxplumbersconf.org/event/11/abstracts/
-
-Make sure to select "Networking & BPF Summit" in the Track pull-down menu.
-
-Proposals must be submitted by August 13th, and submitters will be notified of
-acceptance by August 16th.
-
-Final slides and papers (as PDF) are due on the first day of the conference.
+     Andrew
