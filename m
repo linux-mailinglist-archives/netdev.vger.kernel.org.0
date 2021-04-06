@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7EC3550DF
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 551D43550FC
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245094AbhDFK3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 06:29:39 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:29518 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245118AbhDFK3N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 06:29:13 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1617704946; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=J7orDIS84Fhl5iLzBY56ve+IpWWZFsF/yhfnYMTenVY=; b=P6qB3ZZNOr81IHXY6ZdMnkSJBzu9D9DV7YFC0UFAaCzypT8uV6oMPQR6ZYpZJraswX3qt/Ch
- 5DCUigfNGpYoWvMw79UNSj6h1GWElnUCJnz3DthWAqwPQ0qjlXKm9dwDbQh5Gy9tzlzR65jz
- PtSsAFuhQERFGm1TOGfsc6CCv04=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 606c37e32cc44d3aea67666d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 06 Apr 2021 10:28:51
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4C5BFC43468; Tue,  6 Apr 2021 10:28:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 27FD5C43464;
-        Tue,  6 Apr 2021 10:28:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 27FD5C43464
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Qiheng Lin <linqiheng@huawei.com>
-Cc:     <nbd@nbd.name>, <lorenzo.bianconi83@gmail.com>,
-        <ryder.lee@mediatek.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <matthias.bgg@gmail.com>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] mt76: mt7921: remove unneeded semicolon
-References: <20210406032051.7750-1-linqiheng@huawei.com>
-Date:   Tue, 06 Apr 2021 13:28:44 +0300
-In-Reply-To: <20210406032051.7750-1-linqiheng@huawei.com> (Qiheng Lin's
-        message of "Tue, 6 Apr 2021 11:20:51 +0800")
-Message-ID: <87eefnogf7.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S237740AbhDFKgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 06:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231375AbhDFKgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 06:36:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FCBC061756
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 03:36:11 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lTj46-0003p2-29
+        for netdev@vger.kernel.org; Tue, 06 Apr 2021 12:36:10 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 4375560864B
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 10:36:08 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9DECE608641;
+        Tue,  6 Apr 2021 10:36:07 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 721e6f1f;
+        Tue, 6 Apr 2021 10:36:07 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2021-04-06
+Date:   Tue,  6 Apr 2021 12:36:05 +0200
+Message-Id: <20210406103606.1847506-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Qiheng Lin <linqiheng@huawei.com> writes:
+Hello Jakub, hello David,
 
-> Eliminate the following coccicheck warning:
->  drivers/net/wireless/mediatek/mt76/mt7921/mac.c:1402:2-3: Unneeded semicolon
->
-> Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
+this is a pull request of 1 patch for net/master.
 
-mt76 patches go to the mt76 tree maintained by Felix, not to net-next.
+The patch is by me and fixes the SPI half duplex support in the
+mcp251x CAN driver.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+regards,
+Marc
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+---
+
+The following changes since commit 08c27f3322fec11950b8f1384aa0f3b11d028528:
+
+  batman-adv: initialize "struct batadv_tvlv_tt_vlan_data"->reserved field (2021-04-05 15:06:03 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.12-20210406
+
+for you to fetch changes up to 617085fca6375e2c1667d1fbfc6adc4034c85f04:
+
+  can: mcp251x: fix support for half duplex SPI host controllers (2021-04-06 12:31:21 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.12-20210406
+
+----------------------------------------------------------------
+Marc Kleine-Budde (1):
+      can: mcp251x: fix support for half duplex SPI host controllers
+
+ drivers/net/can/spi/mcp251x.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+
