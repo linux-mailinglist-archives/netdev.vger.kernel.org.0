@@ -2,94 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7236355F4D
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:18:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E50355F61
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244235AbhDFXSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 19:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236118AbhDFXSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 19:18:10 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B189C06174A
-        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 16:18:02 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id mj7-20020a17090b3687b029014d162a65b6so267255pjb.2
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 16:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=ZwPO/ECxWQJ/VIuOPmB5Uj2YCppB4Z6mlKudY4PZAx0=;
-        b=TVEGMnjFPZP20vDGM6n7GvpfDHash5aSUBiADv4gqv8bHfQOR3Xo1HHyVsp0phTsJk
-         jcCMEhKWhR+j6v2xS6JqaLZKX21aNd5ww6qa21rjaTiPJVhjx5HTeHUw62BGJA0fuzw+
-         Ami1nRmNSAUu566kQHRO2hdeun4AhN1sj/EUbovGsXGvmp8m00jmESAFoF3O9HE0sZcF
-         an77GnawBPDMfor9m7q8fuHMwxf3l3w65U7PsKqyffSINbVuRugBaxGoYkwaE2g0QszG
-         fOVY6GP+0fIMStPaTlVg6a1RsB5XkiXWAjUf57btkDBiDfcVTO1kyyBIkDuMfnNPpO05
-         kSuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ZwPO/ECxWQJ/VIuOPmB5Uj2YCppB4Z6mlKudY4PZAx0=;
-        b=ec9Cvr1XJkEDE+3h04ooK4OgNBJV2TiAIpPu2ZPatHtlBGJSz4eNw5ZQuW5vqkVXN6
-         L6T77S1FxILx9bf0U/282ZiVhmFWEw5r9dNFysyC3s1NrNx/Dnr2BTESWVBrCUEH07g+
-         7vplDFF10hQbGlfdW8LX5gBia6wIyas35edem1Cd917meC8TKem8+2Wb9UShCOFm7XBk
-         ekk8KIDH0BbuXjYkpTARaKBT22D7+mNoB6L2VjTcRcn2LvvNkohxLS+vppx4nMs+YPz1
-         fzEV7F875NCUGc9ntTE0pdZFCRBADGKcxy7CtFFQJPRDjhJ9ZBYr2Un7ZNC0R2FP6En1
-         jpHQ==
-X-Gm-Message-State: AOAM533EhsOyoeh3OWGJRSXfeEOo9DDODHDQ55brSSEdaZlE05ngEVJW
-        rYrRk7MhojvE2SktbctO1FfYgMakATYo5A==
-X-Google-Smtp-Source: ABdhPJzWGd0Qpk6F/VgR3FdCXNUp3ZRSlm8AlGc3eXZ7RFkK+TIhJnWMydw0Ikam4MN/HhpwKLKRBA==
-X-Received: by 2002:a17:902:e5d2:b029:e9:3900:558f with SMTP id u18-20020a170902e5d2b02900e93900558fmr528463plf.15.1617751081843;
-        Tue, 06 Apr 2021 16:18:01 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id d2sm18951201pgp.47.2021.04.06.16.18.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Apr 2021 16:18:01 -0700 (PDT)
-Subject: Re: [PATCH net-next 05/12] ionic: add hw timestamp support files
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
-References: <20210401175610.44431-1-snelson@pensando.io>
- <20210401175610.44431-6-snelson@pensando.io>
- <20210404230526.GB24720@hoboy.vegasvil.org>
- <9b5d20f4-df9f-e9e1-bc6d-d5531b87e8c4@pensando.io>
- <20210405181719.GA29333@hoboy.vegasvil.org>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <ac71c8ad-e947-9b16-978f-c320c709615e@pensando.io>
-Date:   Tue, 6 Apr 2021 16:18:00 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.0
+        id S244436AbhDFXUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:20:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35030 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236062AbhDFXUR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 19:20:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1858C6139B;
+        Tue,  6 Apr 2021 23:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617751209;
+        bh=AjndnmsjEsosY7XNbH6ECLzKNhQ2pS49QsXDN6ja4jM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Q+pURvIA/8pDmozvWo1Z58vY31lb7e1yI/nJjIPWrgRQIb4qq2FdOeGDa3g77cENm
+         5PtpfxYSNQVRlXyHSgydWfgOXh8plQsvG9Hl7YRzQSTIopQXAmHsw+efk6bzniYePW
+         i9MOVJ5L7hWefZb0xuws5VLaX2nI7C/d8WJ//SRS9ipzZL3zTQ6v+A7P9Ov1deIAkr
+         DWX8HHwUChwmm/+uKk1/aZs8a5Yt8rBORs/zOpMYy71soKtsqpvpFRrXkAZVNAbM86
+         Bxd/VAy7YLTwirR2gotpVMYZUvc8zgOdF5gkAw6oik1UHkh7e+8sx4ASrWdS0bkZXt
+         1LJrn+BMRQjxQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0546760A2A;
+        Tue,  6 Apr 2021 23:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210405181719.GA29333@hoboy.vegasvil.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Subject: Re: [PATCH] net: broadcom: bcm4908enet: Fix a double free in
+ bcm4908_enet_dma_alloc
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161775120901.12262.16738221988151973743.git-patchwork-notify@kernel.org>
+Date:   Tue, 06 Apr 2021 23:20:09 +0000
+References: <20210402174019.3679-1-lyl2019@mail.ustc.edu.cn>
+In-Reply-To: <20210402174019.3679-1-lyl2019@mail.ustc.edu.cn>
+To:     Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Cc:     rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/5/21 11:17 AM, Richard Cochran wrote:
-> On Mon, Apr 05, 2021 at 09:16:39AM -0700, Shannon Nelson wrote:
->> On 4/4/21 4:05 PM, Richard Cochran wrote:
->>> This check is unneeded, because the ioctl layer never passes NULL here.
->> Yes, the ioctl layer never calls this with NULL, but we call it from within
->> the driver when we spin operations back up after a FW reset.
-> So why not avoid the special case and pass a proper request?
+Hello:
 
-We do this because our firmware reset path is a special case that we 
-have to handle, and we do so by replaying the previous configuration 
-request.  Passing the NULL request gives the code the ability to watch 
-for this case while keeping the special case handling simple: the code 
-that drives the replay logic doesn't need to know the hwstamp details, 
-it just needs to signal the replay and let the hwstamp code keep track 
-of its own data and request history.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-I can update the comment to make that replay case more obvious.
+On Fri,  2 Apr 2021 10:40:19 -0700 you wrote:
+> In bcm4908_enet_dma_alloc, if callee bcm4908_dma_alloc_buf_descs() failed,
+> it will free the ring->cpu_addr by dma_free_coherent() and return error.
+> Then bcm4908_enet_dma_free() will be called, and free the same cpu_addr
+> by dma_free_coherent() again.
+> 
+> My patch set ring->cpu_addr to NULL after it is freed in
+> bcm4908_dma_alloc_buf_descs() to avoid the double free.
+> 
+> [...]
 
-sln
+Here is the summary with links:
+  - net: broadcom: bcm4908enet: Fix a double free in bcm4908_enet_dma_alloc
+    https://git.kernel.org/netdev/net/c/b25b343db052
 
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
