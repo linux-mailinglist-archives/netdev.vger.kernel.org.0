@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E81D0355F96
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2CA355F98
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344640AbhDFXkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 19:40:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37960 "EHLO mail.kernel.org"
+        id S1344671AbhDFXkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:40:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245131AbhDFXkS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S245171AbhDFXkS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Apr 2021 19:40:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id B41C6613C4;
+Received: by mail.kernel.org (Postfix) with ESMTPS id C2875613CB;
         Tue,  6 Apr 2021 23:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617752409;
-        bh=dbFKkZ5gn6qFJI78Zn7ZhdYFqFjyH8VNi5PbJS/lwuo=;
+        bh=BBDcA9mMD1hh/MHKONANE/he4s+s4XtD+s5/7mD1Ao8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Eju4ByvGb+C0MTGtJuZtVOQn7ysd8CxHCNJjxqXdsTHrLJb+NZe/ifDMnFK6aH7JJ
-         mqWD1iYT51w//zHUrvz2LDWePVn4PZdXai/0TVkAOFLWP73wuTZ37tewVJQ3Bxe7qS
-         Mazjqyu4ydE88UAVMWsA37nWNbTYCPSWpVEFJ6j9BjSb2YgcSbDtqrIa0LNCNh/IKP
-         duAeFHO9TXytkYXydSglMZqzPJ04moV2BZe+vvrg2qNKoeqoeyezxtbJjZyOD+cybi
-         zvISs8LaGGHhia7/OzPqD3fMIvO8c9ouikhE216tMbsjsd/YFlVsWD/O8dlvx9wZaE
-         5KzD4PMgTV1SQ==
+        b=iWis537+iQu3XimXPxGNo8lKq6ejoGPTLI8wL+sDYPAqnINurQGGfdiyQBRNhWUUC
+         f9rkXXM9n37vKqR1y+Ta46xVfkMNlu1cK+3weLYQ8nvkfHZV3vDXX5KREnjeFuIKLE
+         fFptdbR/sacJQuqzc9UjZvhV+E/gNS/LXls1mdNQeoZXI5+RbE2/1y/URGUb8F2pRp
+         1gmjGUyJrk06Ae1oiF8THFk58N3Q32HdYpDDhYXKlj63sfVUZAnawO4fW0u80HRywR
+         PN6PG/605SelmoJX3t05wJXaXtnidJL3+cq4s7QcWn8bCyc23i70gwxoRb8STqFGnP
+         9QyUofR2z6SOA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AF16E609FF;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B879760A50;
         Tue,  6 Apr 2021 23:40:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] pcnet32: Use pci_resource_len to validate PCI resource
+Subject: Re: [net] can: mcp251x: fix support for half duplex SPI host controllers
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161775240971.19905.4302192635272366867.git-patchwork-notify@kernel.org>
+Message-Id: <161775240975.19905.5284211796735654997.git-patchwork-notify@kernel.org>
 Date:   Tue, 06 Apr 2021 23:40:09 +0000
-References: <20210406042922.210327-1-linux@roeck-us.net>
-In-Reply-To: <20210406042922.210327-1-linux@roeck-us.net>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     pcnet32@frontier.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210406103606.1847506-2-mkl@pengutronix.de>
+In-Reply-To: <20210406103606.1847506-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        tharvey@gateworks.com, info@gerhard-bertelsmann.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,22 +47,22 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon,  5 Apr 2021 21:29:22 -0700 you wrote:
-> pci_resource_start() is not a good indicator to determine if a PCI
-> resource exists or not, since the resource may start at address 0.
-> This is seen when trying to instantiate the driver in qemu for riscv32
-> or riscv64.
+On Tue,  6 Apr 2021 12:36:06 +0200 you wrote:
+> Some SPI host controllers do not support full-duplex SPI transfers.
 > 
-> pci 0000:00:01.0: reg 0x10: [io  0x0000-0x001f]
-> pci 0000:00:01.0: reg 0x14: [mem 0x00000000-0x0000001f]
-> ...
-> pcnet32: card has no PCI IO resources, aborting
+> The function mcp251x_spi_trans() does a full duplex transfer. It is
+> used in several places in the driver, where a TX half duplex transfer
+> is sufficient.
+> 
+> To fix support for half duplex SPI host controllers, this patch
+> introduces a new function mcp251x_spi_write() and changes all callers
+> that do a TX half duplex transfer to use mcp251x_spi_write().
 > 
 > [...]
 
 Here is the summary with links:
-  - pcnet32: Use pci_resource_len to validate PCI resource
-    https://git.kernel.org/netdev/net/c/66c3f05ddc53
+  - [net] can: mcp251x: fix support for half duplex SPI host controllers
+    https://git.kernel.org/netdev/net/c/617085fca637
 
 You are awesome, thank you!
 --
