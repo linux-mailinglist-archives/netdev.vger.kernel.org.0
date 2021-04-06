@@ -2,148 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BDA7355BA7
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 20:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED9C2355BA9
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 20:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240233AbhDFSrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 14:47:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233898AbhDFSrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 14:47:21 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54084C06174A;
-        Tue,  6 Apr 2021 11:47:13 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id q6-20020a17090a4306b02900c42a012202so8120619pjg.5;
-        Tue, 06 Apr 2021 11:47:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=z2kgM1PgzZVysRB66hYtbHLBsINqrqoWRT3DjhTS0xY=;
-        b=RKtJ0f48IMtHg4M1XKsTMTeF3UH1QQBYLvLiaIY8/nn//dHujezEGqjYUL9C0uXTg5
-         vaquq6Fx/bQ8+NXp+JUv3ialZZCzs0kk0KqrMWSVFNE31FSFcNKjmbeQqs29XYLLrIZr
-         DJiSk/J3VLIXXanMbOgHaN7IVEyQUS+Ju2ykG7cRcQArFD+OhSgcVWpzPDqPFjzoGhAZ
-         /aeXbdmqFSaSd5kU901dCoVNn57N/mPDs9//fDf2h8HB3121jP+8diIucOJ3aApCE7R/
-         QvR5tjcmbyOhb1pqkClJ9FcD2Vbos3Dx33euuUW00XB2I4c+lMbI2MJrHrZK6Xo4aRW7
-         bQ3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=z2kgM1PgzZVysRB66hYtbHLBsINqrqoWRT3DjhTS0xY=;
-        b=BWyzPUKNLU+FN/wPqL+GN+qcLprIMCZHIv9ce3zEN8kmWXX8i83S6cCWEcWbo32Shh
-         8jC73PQVjYrEtbdWtQE93PRlccL8MT1WtTp89HJ/C6giG/wIpSrAoO2pOnHBzaE3gLop
-         DjVtjydJUYH6QCIBxfklbpj4k30B5018j+ih6ibIGjSZEMHPQILEMlYGGR9yXG63ENiF
-         xOWBWTV9qGKb3ot60A1fWBSb6ScR+qng+TNNSs1pvCqrwWEhDdZncSD7XIiS0amymz9I
-         7kC5yEe6+asHGOXMloBAZ9xccyRVqHShVfkoH3DVWBhVnyJC0TRDIF7l77NFw1ZDao1t
-         HXMA==
-X-Gm-Message-State: AOAM530DHoGRxVfPg0sb4DgoNZSjV/tffI+pN6SqpalAYQiDSx9Ogb4i
-        V7NxWFjJLHx+dcbSRJhx6ULWFNwNyiE=
-X-Google-Smtp-Source: ABdhPJz41rTIAkSvqZqbTCgZC5nQofm7exxiHGdM5suoYT1AwC4VDxOXtDovBfVhNtnnlyJ1WoBWlg==
-X-Received: by 2002:a17:902:c408:b029:e7:3242:5690 with SMTP id k8-20020a170902c408b02900e732425690mr30243330plk.85.1617734832728;
-        Tue, 06 Apr 2021 11:47:12 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n5sm19781957pfq.44.2021.04.06.11.47.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Apr 2021 11:47:12 -0700 (PDT)
-Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
- back
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "christian.melki@t2data.com" <christian.melki@t2data.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-References: <20210404100701.6366-1-qiangqing.zhang@nxp.com>
- <97e486f8-372a-896f-6549-67b8fb34e623@gmail.com>
- <ed600136-2222-a261-bf08-522cc20fc141@gmail.com>
- <ff5719b4-acd7-cd27-2f07-d8150e2690c8@t2data.com>
- <010f896e-befb-4238-5219-01969f3581e3@gmail.com>
- <DB8PR04MB6795CC9AA84D14BA98FB6598E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <0e6bd756-f46c-7caf-d45b-a19e7fb80b67@gmail.com>
- <DB8PR04MB6795D52C6FA54D17D43D1E99E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <b34ccbf5-18eb-681b-3336-4c93325c2a43@gmail.com>
- <1ceca7ac-ed6f-de73-6afb-34fd0a7e5db3@gmail.com>
- <98f856a8-4c1e-d681-3ea2-0eff6519ccc4@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8be0da0b-827a-7dc9-4c00-36348ca67793@gmail.com>
-Date:   Tue, 6 Apr 2021 11:47:09 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.9.0
+        id S244799AbhDFSsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 14:48:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47426 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240728AbhDFSsM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 14:48:12 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9456A61168;
+        Tue,  6 Apr 2021 18:48:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617734883;
+        bh=qLWeHLnTY3ZEk14P+6cEmbojbbUBjCyOF0hWAT+phu4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=P1TYoXRjS02Quo2dt97RJiqSiCC/C+rJ5OEk7dIEQAe511zeq9jvd0+LPHLTExF+C
+         KPwotqrOSmRySisGpYzRrTOcT6CYGYRihvSAxl3i1Ust2CM17UYu6A7+QhZyxJ7f/u
+         1Avqhungjq53xTWHnKttaOp5k6eGwYNoBptdCCDoy3UFeukoP54+Ecr/EcSgk1N2uf
+         8iVIMxELKlg/3j2EjF4dXAQVDA1OjnBH+bYaGECJzEWBpcBq0g5ePvlryUwoe37MwV
+         ReE7j9Lu9Xn+D1TA0oxATNfz3Beys0uidBng2OB61OWc9Y5VCOp/OCG6+74TKinG9S
+         fEWf2OqTy4uwA==
+Date:   Tue, 6 Apr 2021 11:48:02 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     linux-kernel@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
+Message-ID: <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
+References: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <98f856a8-4c1e-d681-3ea2-0eff6519ccc4@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/6/2021 11:43 AM, Heiner Kallweit wrote:
-> On 06.04.2021 20:32, Florian Fainelli wrote:
->>
->>
->> On 4/6/2021 4:42 AM, Heiner Kallweit wrote:
->>>
->>> Waiting for ANEG_COMPLETE to be set wouldn't be a good option. Aneg may never
->>> complete for different reasons, e.g. no physical link. And even if we use a
->>> timeout this may add unwanted delays.
->>>
->>>> Do you have any other insights that can help me further locate the issue? Thanks.
->>>>
->>>
->>> I think current MAC/PHY PM handling isn't perfect. Often we have the following
->>> scenario:
->>>
->>> *suspend*
->>> 1. PHY is suspended (mdio_bus_phy_suspend)
->>> 2. MAC suspend callback (typically involving phy_stop())
->>>
->>> *resume*
->>> 1. MAC resume callback (typically involving phy_start())
->>> 2. PHY is resumed (mdio_bus_phy_resume), incl. calling phy_init_hw()
->>>
->>> Calling phy_init_hw() after phy_start() doesn't look right.
->>> It seems to work in most cases, but there's a certain risk
->>> that phy_init_hw() overwrites something, e.g. the advertised
->>> modes.
->>> I think we have two valid scenarios:
->>>
->>> 1. phylib PM callbacks are used, then the MAC driver shouldn't
->>>    touch the PHY in its PM callbacks, especially not call
->>>    phy_stop/phy_start.
->>>
->>> 2. MAC PM callbacks take care also of the PHY. Then I think we would
->>>    need a flag at the phy_device telling it to make the PHY PM
->>>    callbacks a no-op.
->>
->> Maybe part of the problem is that the FEC is calling phy_{stop,start} in
->> its suspend/resume callbacks instead of phy_{suspend,resume} which would
->> play nice and tell the MDIO bus PM callbacks that the PHY has already
->> been suspended.
->>
-> This basically is what I just proposed to test.
-
-What you suggested to be tested is to let the MDIO bus PM callbacks deal
-with suspending the PHY, which is different from having the MAC do it
-explicitly, both would be interesting to try out.
-
+On Tue, 6 Apr 2021 14:36:19 +0200 Oleksandr Natalenko wrote:
+> Hello.
 > 
->> I am also suspicious about whether Wake-on-LAN actually works with the
->> FEC, you cannot wake from LAN if the PHY is stopped and powered down.
->>
-> phy_stop() calls phy_suspend() which checks for WoL. Therefore this
-> should not be a problem.
+> I've raised this here [1] first, but was suggested to engage igb devs,
+> so here we are.
+> 
+> I'm experiencing the following woes while using netconsole regularly:
+> 
+> ```
+> [22038.710800] ------------[ cut here ]------------
+> [22038.710801] igb_poll+0x0/0x1440 [igb] exceeded budget in poll
+> [22038.710802] WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155 netpoll_poll_dev+0x18a/0x1a0
+> [22038.710802] Modules linked in: ...
+> [22038.710835] CPU: 12 PID: 40362 Comm: systemd-sleep Not tainted 5.11.0-pf7 #1
+> [22038.710836] Hardware name: ASUS System Product Name/Pro WS X570-ACE, BIOS 3302 03/05/2021
+> [22038.710836] RIP: 0010:netpoll_poll_dev+0x18a/0x1a0
+> [22038.710837] Code: 6e ff 80 3d d2 9d f8 00 00 0f 85 5c ff ff ff 48 8b 73 28 48 c7 c7 0c b8 21 84 89 44 24 04 c6 05 b6 9d f8 00 01 e8 84 21 1c 00 <0f> 0b 8b 54 24 04 e9 36 ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00
+> [22038.710838] RSP: 0018:ffffb24106e37ba0 EFLAGS: 00010086
+> [22038.710838] RAX: 0000000000000000 RBX: ffff9599d2929c50 RCX: ffff959f8ed1ac30
+> [22038.710839] RDX: 0000000000000000 RSI: 0000000000000023 RDI: ffff959f8ed1ac28
+> [22038.710839] RBP: ffff9598981d4058 R08: 0000000000000019 R09: ffffb24206e3796d
+> [22038.710839] R10: ffffffffffffffff R11: ffffb24106e37968 R12: ffff959887e51ec8
+> [22038.710840] R13: 000000000000000c R14: 00000000ffffffff R15: ffff9599d2929c60
+> [22038.710840] FS:  00007f3ade370a40(0000) GS:ffff959f8ed00000(0000) knlGS:0000000000000000
+> [22038.710841] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [22038.710841] CR2: 0000000000000000 CR3: 00000003017b0000 CR4: 0000000000350ee0
+> [22038.710841] Call Trace:
+> [22038.710842]  netpoll_send_skb+0x185/0x240
+> [22038.710842]  write_msg+0xe5/0x100 [netconsole]
+> [22038.710842]  console_unlock+0x37d/0x640
+> [22038.710842]  ? __schedule+0x2e5/0xc90
+> [22038.710843]  suspend_devices_and_enter+0x2ac/0x7f0
+> [22038.710843]  pm_suspend.cold+0x321/0x36c
+> [22038.710843]  state_store+0xa6/0x140
+> [22038.710844]  kernfs_fop_write_iter+0x124/0x1b0
+> [22038.710844]  new_sync_write+0x16a/0x200
+> [22038.710844]  vfs_write+0x21c/0x2e0
+> [22038.710844]  __x64_sys_write+0x6d/0xf0
+> [22038.710845]  do_syscall_64+0x33/0x40
+> [22038.710845]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [22038.710845] RIP: 0033:0x7f3adece10f7
+> [22038.710846] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
+> [22038.710847] RSP: 002b:00007ffc51c555b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> [22038.710847] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007f3adece10f7
+> [22038.710848] RDX: 0000000000000004 RSI: 00007ffc51c556a0 RDI: 0000000000000004
+> [22038.710848] RBP: 00007ffc51c556a0 R08: 000055ea374302a0 R09: 00007f3aded770c0
+> [22038.710849] R10: 00007f3aded76fc0 R11: 0000000000000246 R12: 0000000000000004
+> [22038.710849] R13: 000055ea3742c430 R14: 0000000000000004 R15: 00007f3adedb3700
+> [22038.710849] ---[ end trace 6eae54fbf23807f8 ]---
+> ```
+> 
+> This one happened during suspend/resume cycle (on resume), followed by:
+> 
+> ```
+> [22038.868669] igb 0000:05:00.0 enp5s0: Reset adapter
+> [22040.998673] igb 0000:05:00.0 enp5s0: Reset adapter
+> [22043.819198] igb 0000:05:00.0 enp5s0: igb: enp5s0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+> ```
+> 
+> I've bumped into a similar issue in BZ 211911 [2] (see c#16),
+> and in c#17 it was suggested it was a separate unrelated issue,
+> hence I'm raising a new concern.
+> 
+> Please help in finding out why this woe happens and in fixing it.
+> 
+> Thanks.
+> 
+> [1] https://bugzilla.kernel.org/show_bug.cgi?id=212573
+> [2] https://bugzilla.kernel.org/show_bug.cgi?id=211911
 
-Indeed, and I had missed that phy_suspend() checks netdev->wol_enabled,
-thanks for reminding me.
--- 
-Florian
+Looks like igb_clean_tx_irq() should not return true if budget is 0,
+ever, otherwise we risk hitting the min(work, budget - 1) which may
+go negative.
+
+So something like this? 
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index c9e8c65a3cfe..7a237b5311ca 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -8028,7 +8028,7 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
+        unsigned int i = tx_ring->next_to_clean;
+ 
+        if (test_bit(__IGB_DOWN, &adapter->state))
+-               return true;
++               goto out;
+ 
+        tx_buffer = &tx_ring->tx_buffer_info[i];
+        tx_desc = IGB_TX_DESC(tx_ring, i);
+@@ -8157,7 +8157,7 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
+                                            tx_ring->queue_index);
+ 
+                        /* we are about to reset, no point in enabling stuff */
+-                       return true;
++                       goto out;
+                }
+        }
+ 
+@@ -8180,7 +8180,7 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
+                        u64_stats_update_end(&tx_ring->tx_syncp);
+                }
+        }
+-
++out:
+        return !!budget;
+ }
