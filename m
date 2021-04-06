@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 338CD354F4E
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 11:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 137A8354F48
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 10:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244733AbhDFJAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 05:00:07 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:15133 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244726AbhDFJAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 05:00:07 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FF1cT0Y2JzpVMc;
-        Tue,  6 Apr 2021 16:57:13 +0800 (CST)
-Received: from thunder-town.china.huawei.com (10.174.179.202) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 6 Apr 2021 16:59:47 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2 1/1] net/mlx5: Remove duplicated header file inclusion
-Date:   Tue, 6 Apr 2021 16:58:54 +0800
-Message-ID: <20210406085854.2424-2-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20210406085854.2424-1-thunder.leizhen@huawei.com>
-References: <20210406085854.2424-1-thunder.leizhen@huawei.com>
+        id S240559AbhDFJAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 05:00:01 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:49029 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240027AbhDFJAB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 05:00:01 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8D3C222235;
+        Tue,  6 Apr 2021 10:59:52 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1617699592;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jbwVJsNYcsSYWXReorOYmMOoVZ4sVmZ9fSelanLzWis=;
+        b=E9Aqv7RBETzefJJWhBOmDJpuL4LEfbgvQ7mqXsmegJZeDNSscz8rcg1/HHzT32tvBey5Ot
+        EGq3bRjeR54TD5n5ZTcbiX0JzAJCZ64+ihr4Ce1T8PwOaLrjG5ZEzykuSiEa5z8pP/SVqr
+        J20h5Qplf9hKQNoB+SMLZwo6yId7FHE=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.179.202]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 06 Apr 2021 10:59:52 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/2] of: net: fix of_get_mac_addr_nvmem() for PCI and DSA
+ nodes
+In-Reply-To: <YGuLjiozGIxsGYQy@lunn.ch>
+References: <20210405164643.21130-1-michael@walle.cc>
+ <20210405164643.21130-3-michael@walle.cc> <YGuCblk9vvmD0NiH@lunn.ch>
+ <2d6eef78762562bcbb732179b32f0fd9@walle.cc> <YGuLjiozGIxsGYQy@lunn.ch>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <1b7e58ba2ec798ddda77a9a3ab72338c@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete one of the header files "esw/indir_table.h" that are included
-twice, all included header files are then rearranged alphabetically.
+Am 2021-04-06 00:13, schrieb Andrew Lunn:
+> On Mon, Apr 05, 2021 at 11:46:04PM +0200, Michael Walle wrote:
+>> Hi Andrew,
+>> 
+>> Am 2021-04-05 23:34, schrieb Andrew Lunn:
+>> > > -static int of_get_mac_addr_nvmem(struct device_node *np, u8 addr)
+>> > > +static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
+>> > >  {
+>> > >  	struct platform_device *pdev = of_find_device_by_node(np);
+>> > > +	struct nvmem_cell *cell;
+>> > > +	const void *mac;
+>> > > +	size_t len;
+>> > >  	int ret;
+>> > >
+>> > > -	if (!pdev)
+>> > > -		return -ENODEV;
+>> > > +	/* Try lookup by device first, there might be a nvmem_cell_lookup
+>> > > +	 * associated with a given device.
+>> > > +	 */
+>> > > +	if (pdev) {
+>> > > +		ret = nvmem_get_mac_address(&pdev->dev, addr);
+>> > > +		put_device(&pdev->dev);
+>> > > +		return ret;
+>> > > +	}
+>> >
+>> > Can you think of any odd corner case where nvmem_get_mac_address()
+>> > would fail, but of_nvmem_cell_get(np, "mac-address") would work?
+>> 
+>> You mean, it might make sense to just return here when
+>> nvmem_get_mac_address() will succeed and fall back to the
+>> of_nvmem_cell_get() in case of an error?
+> 
+> I've not read the documentation for nvmem_get_mac_address(). I was
+> thinking we might want to return real errors, and -EPROBE_DEFER.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+I can't follow, nvmem_get_mac_address() should already return those.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 8694b83968b4c4f..e8307f5eae4cb6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -33,21 +33,20 @@
- #include <linux/etherdevice.h>
- #include <linux/idr.h>
- #include <linux/mlx5/driver.h>
-+#include <linux/mlx5/fs.h>
- #include <linux/mlx5/mlx5_ifc.h>
- #include <linux/mlx5/vport.h>
--#include <linux/mlx5/fs.h>
--#include "mlx5_core.h"
--#include "eswitch.h"
--#include "esw/indir_table.h"
-+#include "en.h"
-+#include "en_tc.h"
- #include "esw/acl/ofld.h"
- #include "esw/indir_table.h"
--#include "rdma.h"
--#include "en.h"
-+#include "eswitch.h"
- #include "fs_core.h"
- #include "lib/devcom.h"
- #include "lib/eq.h"
- #include "lib/fs_chains.h"
--#include "en_tc.h"
-+#include "mlx5_core.h"
-+#include "rdma.h"
- 
- /* There are two match-all miss flows, one for unicast dst mac and
-  * one for multicast.
--- 
-1.8.3
+> But maybe with -ENODEV we should try of_nvmem_cell_get()?
 
+And if this happens - that is nvmem_get_mac_address(&pdev->dev) returns
+-ENODEV - then of_nvmem_cell_get(np) will also return -ENODEV.
 
+Because pdev->dev.of_node == np and nvmem_get_mac_address(&pdev->dev)
+tries of_nvmem_cell_get(pdev->dev.of_node) first.
+
+> But i'm not sure if there are any real use cases? The only thing i can
+> think of is if np points to something deeper inside the device tree
+> than what pdev does?
+
+But then pdev will be NULL and nvmem_get_mac_address() won't be called
+at all, no?
+
+-michael
