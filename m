@@ -2,160 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FF4354AC7
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 04:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1266D354AEA
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 04:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240651AbhDFCOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 22:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232976AbhDFCOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 22:14:35 -0400
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7717CC06174A;
-        Mon,  5 Apr 2021 19:14:28 -0700 (PDT)
-Received: by mail-ua1-x92d.google.com with SMTP id u6so1107715uap.1;
-        Mon, 05 Apr 2021 19:14:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bo2lGDxVCGe9lNbS3u8q99z58ww2lLJ0dkDpvy52v0w=;
-        b=JvKwIZpYl1ZrZ/CWCEVT1AOF2mrWXUr06VkbH2ArfDp0TW+a/pVvBQTk+am3kLYI34
-         SPRDumS7uOBLEKVJEGdV3zWGCaLtrTumMoUbGatgWL/ru+5C8HLvJgZ9MQTxbnctON3J
-         ac6RdV3G76MTa4dm/MRHfhKz9jfEpVBcADojFeayjUBG0evBff+WgPkpZNcS+Kb3OIEU
-         PCMSb23pCKazUjexsjLATjAZsVnhLUV8jw8TUkgZUcJ/Rt94lpXNNKV4M+HQIoXUWn1t
-         plrYjfYIdZPsOv21ZBP7j5vHTj1cMUfRmiThn4zRZmosjLS8IlWtkpRYGOhX0DQNkvZV
-         W//A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bo2lGDxVCGe9lNbS3u8q99z58ww2lLJ0dkDpvy52v0w=;
-        b=XVKB/vCCbruZ7R60U5I/hNmwnDUTYMmhHqkcK8hFl0lsKL8WjuAzLzX/QOct9MXs9A
-         mFJPkNaAuTyJ/9mPl+ybbHRRQJWqbrmp5ywY42iAZk2biU9LQk9MXuQGdCRYx2P2MDfS
-         cX08REYFkPpEfg++kgByF95ffJZeAbSviD2SmceVJlAnCFsUsHOSoCcuUKqdZ131VCvB
-         WRrOnPdKIqNPUkBpHCuNEjf0aDesEQcEmFB7qrA8Hf5quyqLwgETD4oEX6YSlPGgVTZK
-         BT+qZR3JKG4a4hB2GEhsIbmlUUYYu7uwSIuC8NiwDEuzg4EPezDXBV1EiMu+yJwcaZhv
-         bjyw==
-X-Gm-Message-State: AOAM532h61Huwkf+1FX+X4AI8pH5seIqAVb0VlrvTBQPVrrzxRvwTs34
-        QhTWhrCbRdq4MYMHxynBdPxZ/AZy76u1E058hVQ=
-X-Google-Smtp-Source: ABdhPJxAzsq+e2cvHUhJ7oB4lJEPFAWLVTTzHqKcybnYLe57CJXw0rLxoH0FORpXXLfQ3ojfSSqy9fGG+NPw0t9e1xA=
-X-Received: by 2002:a9f:3fcf:: with SMTP id m15mr14688262uaj.55.1617675267029;
- Mon, 05 Apr 2021 19:14:27 -0700 (PDT)
+        id S243404AbhDFCiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 22:38:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60622 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232271AbhDFCiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 22:38:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617676673;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=J5Y7rI+FtGX0I4XVdEnNnyzKf98zHZb+U6KjZK4yGbc=;
+        b=VloZjShIsRprW0Lf7G4DxDkz/EbvC8QpPGufxQM0FthDC2azZGhPxXMxwg+DxqhPHpDDd2
+        H+kBBKe0jUNirBhFPG4OuZiLsIoGiT8YsZ2DEWU/t37Yy4PhnHnowxj+W/eCxN3QX+CRag
+        bVj9jUdOHSvUeQLg5A3hLM15Q5PC6QE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-425-SuhA5TQCNkCWqJin6rD1AA-1; Mon, 05 Apr 2021 22:37:51 -0400
+X-MC-Unique: SuhA5TQCNkCWqJin6rD1AA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 468601800D50;
+        Tue,  6 Apr 2021 02:37:45 +0000 (UTC)
+Received: from localhost (unknown [10.66.128.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1E86A690F5;
+        Tue,  6 Apr 2021 02:37:41 +0000 (UTC)
+Date:   Tue, 6 Apr 2021 10:37:38 +0800
+From:   Honggang LI <honli@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
+        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
+        samba-technical@lists.samba.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+Message-ID: <20210406023738.GB80908@dhcp-128-72.nay.redhat.com>
+References: <20210405052404.213889-1-leon@kernel.org>
 MIME-Version: 1.0
-References: <20210329123635.56915-1-qianjun.kernel@gmail.com> <20210330224406.5e195f3b8b971ff2a56c657d@linux-foundation.org>
-In-Reply-To: <20210330224406.5e195f3b8b971ff2a56c657d@linux-foundation.org>
-From:   jun qian <qianjun.kernel@gmail.com>
-Date:   Tue, 6 Apr 2021 10:14:16 +0800
-Message-ID: <CAKc596KE+mN1xOXppTOtJY7UDDLSb+zg2kwj=x8AzMN_Px2DuQ@mail.gmail.com>
-Subject: Re: [PATCH V2 1/1] mm:improve the performance during fork
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        Linux-MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210405052404.213889-1-leon@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Morton <akpm@linux-foundation.org> =E4=BA=8E2021=E5=B9=B43=E6=9C=883=
-1=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=881:44=E5=86=99=E9=81=93=EF=BC=
-=9A
->
-> On Mon, 29 Mar 2021 20:36:35 +0800 qianjun.kernel@gmail.com wrote:
->
-> > From: jun qian <qianjun.kernel@gmail.com>
-> >
-> > In our project, Many business delays come from fork, so
-> > we started looking for the reason why fork is time-consuming.
-> > I used the ftrace with function_graph to trace the fork, found
-> > that the vm_normal_page will be called tens of thousands and
-> > the execution time of this vm_normal_page function is only a
-> > few nanoseconds. And the vm_normal_page is not a inline function.
-> > So I think if the function is inline style, it maybe reduce the
-> > call time overhead.
-> >
-> > I did the following experiment:
-> >
-> > use the bpftrace tool to trace the fork time :
-> >
-> > bpftrace -e 'kprobe:_do_fork/comm=3D=3D"redis-server"/ {@st=3Dnsecs;} \
-> > kretprobe:_do_fork /comm=3D=3D"redis-server"/{printf("the fork time \
-> > is %d us\n", (nsecs-@st)/1000)}'
-> >
-> > no inline vm_normal_page:
-> > result:
-> > the fork time is 40743 us
-> > the fork time is 41746 us
-> > the fork time is 41336 us
-> > the fork time is 42417 us
-> > the fork time is 40612 us
-> > the fork time is 40930 us
-> > the fork time is 41910 us
-> >
-> > inline vm_normal_page:
-> > result:
-> > the fork time is 39276 us
-> > the fork time is 38974 us
-> > the fork time is 39436 us
-> > the fork time is 38815 us
-> > the fork time is 39878 us
-> > the fork time is 39176 us
-> >
-> > In the same test environment, we can get 3% to 4% of
-> > performance improvement.
-> >
-> > note:the test data is from the 4.18.0-193.6.3.el8_2.v1.1.x86_64,
-> > because my product use this version kernel to test the redis
-> > server, If you need to compare the latest version of the kernel
-> > test data, you can refer to the version 1 Patch.
-> >
-> > We need to compare the changes in the size of vmlinux:
-> >                   inline           non-inline       diff
-> > vmlinux size      9709248 bytes    9709824 bytes    -576 bytes
-> >
->
-> I get very different results with gcc-7.2.0:
->
-> q:/usr/src/25> size mm/memory.o
->    text    data     bss     dec     hex filename
->   74898    3375      64   78337   13201 mm/memory.o-before
->   75119    3363      64   78546   132d2 mm/memory.o-after
->
-> That's a somewhat significant increase in code size, and larger code
-> size has a worsened cache footprint.
->
-> Not that this is necessarily a bad thing for a function which is
-> tightly called many times in succession as is vm__normal_page()
->
-> > --- a/mm/memory.c
-> > +++ b/mm/memory.c
-> > @@ -592,7 +592,7 @@ static void print_bad_pte(struct vm_area_struct *vm=
-a, unsigned long addr,
-> >   * PFNMAP mappings in order to support COWable mappings.
-> >   *
-> >   */
-> > -struct page *vm_normal_page(struct vm_area_struct *vma, unsigned long =
-addr,
-> > +inline struct page *vm_normal_page(struct vm_area_struct *vma, unsigne=
-d long addr,
-> >                           pte_t pte)
-> >  {
-> >       unsigned long pfn =3D pte_pfn(pte);
->
-> I'm a bit surprised this made any difference - rumour has it that
-> modern gcc just ignores `inline' and makes up its own mind.  Which is
-> why we added __always_inline.
->
-the kernel code version: kernel-4.18.0-193.6.3.el8_2
-gcc version 8.4.1 20200928 (Red Hat 8.4.1-1) (GCC)
+On Mon, Apr 05, 2021 at 08:23:54AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> From Avihai,
+> 
+> Relaxed Ordering is a PCIe mechanism that relaxes the strict ordering
+> imposed on PCI transactions, and thus, can improve performance.
+> 
+> Until now, relaxed ordering could be set only by user space applications
+> for user MRs. The following patch series enables relaxed ordering for the
+> kernel ULPs as well. Relaxed ordering is an optional capability, and as
+> such, it is ignored by vendors that don't support it.
+> 
+> The following test results show the performance improvement achieved
 
-and I made it again, got the results, and later i will test in the
-latest version kernel with the new gcc.
+Did you test this patchset with CPU does not support relaxed ordering?
 
-757368576  vmlinux   inline
-757381440  vmlinux   no inline
+We observed significantly performance degradation when run perftest with
+relaxed ordering enabled over old CPU.
+
+https://github.com/linux-rdma/perftest/issues/116
+
+thanks
+
