@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2F835583B
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 17:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A94355843
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 17:39:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345903AbhDFPi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 11:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        id S244150AbhDFPjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 11:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345879AbhDFPiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 11:38:02 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87674C061760;
-        Tue,  6 Apr 2021 08:37:54 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id l9so7378258ils.6;
-        Tue, 06 Apr 2021 08:37:54 -0700 (PDT)
+        with ESMTP id S1345987AbhDFPjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 11:39:23 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD4BFC06174A;
+        Tue,  6 Apr 2021 08:39:15 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id x17so16043569iog.2;
+        Tue, 06 Apr 2021 08:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kbb3/w5YJGsBeXToKy9zRKXFO7bV5Vr6+2zCWM3GMJs=;
-        b=PX9wRzFR3GLxYS+v7WJWcQ8w6OA7XNBTFoiOUuDUWcScUAV1KX84PKIhp1MbImARj7
-         zfDeUZS/HuyypOgx2s7g8xK+mZiK7QvljysRj8KrtAEqwzl+4q3KnN/sPnzx7utgVxAl
-         jHa9z+z3tV7CBTnEwTXN7UQfBShvTFIlms9BxIs6YZZQUVYqHp/YauRctCOH94KI8Byv
-         HZbF58xrNEp1QK9sQbUqKZTGxsz5QSUlE31cnd57TfRo+ep4RRsM+6Pl3fy28G5GztVU
-         ysc3tAldc1zDgy6wn7bd+LAT3JZM3asHq4gcSdAKF2RzWOQrywSQ2ghQi27IxS3avXbx
-         rqug==
+        bh=dWxFzfKKOt+ryNUGtIA7HKn1wCE+QFswqU/+uqCUAzo=;
+        b=G9jof8Q6D3iqyUddjnM66ZIpqBpTUSY4OWVPX8B4ht0B5FcM9cGnncIhteSSSAr0gg
+         W5rBCFvuOHQrzdf+5g6y5T32ts5lLZbBdZgH9c0rnnMQvC0id5owFpSPczcltIl8ey7i
+         ajQkhLrsn5aEschOSp66HTvuDLnCd68+crEVnaqLn3ZT/BXRoXbVJHk2EuxwnGTgks8z
+         sg/rqazXZPXiGDrOEgW1PO+Aa256W77paqMIfiabrszEDIxpC5eMTVaT4z85klx1Wg7t
+         5zZdVf4ZcsCsBrXVwZwd4JNTGdVaTTFM0ixQK000QhzlxbUv1Kv/bvwsezy0Yg9nwk4k
+         tERg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kbb3/w5YJGsBeXToKy9zRKXFO7bV5Vr6+2zCWM3GMJs=;
-        b=Z5ECdo3PdvyRhMLfXbiWXCmAh4UPCDhYFyd39RUdfAugD5iwKDgdin2j6QepitCXIg
-         bQK1+WH7Ov4d97w/NNkslJpV4anMlIg1bXzYMZ93yJAvU8zElnCNDWA1rx85kwbo5qzm
-         G11k8e69GUxIlhQ73l4+lqzN87AF8F9844hVOwA1YrkqfKeSwBHaC3vrOsas+0nUTJsb
-         p1HvBKNDzMZCdGXvcGVe6MCgbKBd4CR0mT6GNDt2f6Ks0UOBcDx7R/PnhxkEXCv/C57n
-         qDULHDX/l3TKnDUMQiBRXixojUppDvBNZQYjVAk6NkB2N32pCgeSbR5Du7m2BSHbI2O7
-         AvgA==
-X-Gm-Message-State: AOAM530Eq45XLrI77QFA4PNfAmAWK7F1AKMzYLVFDZq4CkdwIoMGeVZj
-        /G7H9JXvEj6ffg8DWMDjqFb53lOg3DA9zRFHVuo=
-X-Google-Smtp-Source: ABdhPJx0Q0y2VRt3hOxfDO1mtz1BBR0nzU1O4AzOcEj955FhecKBLwpJD1/qIY06hhsRlAjlNDN8j2jSd8GUczZS4mA=
-X-Received: by 2002:a92:de0c:: with SMTP id x12mr1946080ilm.169.1617723474053;
- Tue, 06 Apr 2021 08:37:54 -0700 (PDT)
+        bh=dWxFzfKKOt+ryNUGtIA7HKn1wCE+QFswqU/+uqCUAzo=;
+        b=B3Ufh5edYd3tU02XHn55CasYm3HziywmJTmfGd54hebvMS94MexsAcbvLQNt+RAwJi
+         8XiKcxqMjrchDkMlTVOgJmlSF9qOIl3U2eCdXwWI7OZ3lVH9jz2u42lLTSIDpUpFUw5r
+         RVI8sCZQ9+1Vf5ZlnpKSzTMTckEStM3OQr7I3lLZydxI8TUKyU2Q9AJ4afc6qCPfppRn
+         ZxpqvVdw2HkKkVSlxKYME9BAd6bUqfQpAwdhbj7zYyc09lX9VK7zkXbmaIGMzN55lQqr
+         5GGnInCLg7gk8QQbb4yOLjsLRATB1ieZf4FzrMw5y34BHzzGWO/wlr7MOhGsGTdWHM1z
+         F2JQ==
+X-Gm-Message-State: AOAM531Rzfe60GQddeW8ycfEdh/J3EGfnGb7xio2LAxjMW2OhB+wSr4w
+        4brbi2lPrAnSCFwQplkWzVTJzP3wpQD7y3ZRbm8=
+X-Google-Smtp-Source: ABdhPJy3YG+5BM+JKU8AQNUYeKtb+jJMAndWgE0jQ+keqRMn1E2k/TmrjG0/9fN38Ubih2KJL/q8MeujGEdUnK9jZgo=
+X-Received: by 2002:a02:ccda:: with SMTP id k26mr2514289jaq.136.1617723555190;
+ Tue, 06 Apr 2021 08:39:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210406141819.1025864-1-dqfext@gmail.com> <20210406141819.1025864-2-dqfext@gmail.com>
- <YGx8c5Jt2D7fB0cO@lunn.ch>
-In-Reply-To: <YGx8c5Jt2D7fB0cO@lunn.ch>
+References: <20210406141819.1025864-1-dqfext@gmail.com> <20210406141819.1025864-3-dqfext@gmail.com>
+ <YGx+nyYkSY3Xu0Za@lunn.ch>
+In-Reply-To: <YGx+nyYkSY3Xu0Za@lunn.ch>
 From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Tue, 6 Apr 2021 23:37:51 +0800
-Message-ID: <CALW65jYGpTs+30k7vxfLpQaK1sqHf4r7zosSOxp4W5U+Eh-Wvg@mail.gmail.com>
-Subject: Re: [RFC net-next 1/4] net: phy: add MediaTek PHY driver
+Date:   Tue, 6 Apr 2021 23:39:12 +0800
+Message-ID: <CALW65jYhBGmz8dy+9C_YCpJU5wa-KAwgrGjCSpa3nqUNT+xU+g@mail.gmail.com>
+Subject: Re: [RFC net-next 2/4] net: dsa: mt7530: add interrupt support
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -80,40 +80,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 6, 2021 at 11:21 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Tue, Apr 6, 2021 at 11:30 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> On Tue, Apr 06, 2021 at 10:18:16PM +0800, DENG Qingfang wrote:
-> > Add support for MediaTek PHYs found in MT7530 and MT7531 switches.
+> On Tue, Apr 06, 2021 at 10:18:17PM +0800, DENG Qingfang wrote:
+> > Add support for MT7530 interrupt controller to handle internal PHYs.
 >
-> Do you know if this PHY is available standalone?
+> Are the interrupts purely PHY interrupts? Or are there some switch
+> operation interrupts, which are currently not used?
 
-Not that I know of.
-
->
-> > +static int mt7531_phy_config_init(struct phy_device *phydev)
-> > +{
-> > +     mtk_phy_config_init(phydev);
-> > +
-> > +     /* PHY link down power saving enable */
-> > +     phy_set_bits(phydev, 0x17, BIT(4));
-> > +     phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1, 0xc6, 0x300);
-> > +
-> > +     /* Set TX Pair delay selection */
-> > +     phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x13, 0x404);
-> > +     phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x14, 0x404);
->
-> This gets me worried about RGMII delays. We have had bad backwards
-> compatibility problems with PHY drivers which get RGMII delays wrong.
->
-> Since this is an internal PHY, i suggest you add a test to the
-> beginning of mt7531_phy_config_init():
->
->         if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
->                 return -EINVAL;
-
-Okay. Will add it to v2.
+There are other switch operations interrupts as well, such as VLAN
+member violation, switch ACL hit.
 
 >
-> We can then solve RGMII problems when somebody actually needs RGMII.
+> I'm just wondering if it is correct to so closely tie interrupts and
+> MDIO together.
 >
->    Andrew
+>      Andrew
