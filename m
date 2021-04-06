@@ -2,63 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B315354B2D
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 05:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9327E354B46
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 05:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240450AbhDFDVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 23:21:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:16342 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230364AbhDFDVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 23:21:24 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FDt6K1yfgz9wdL;
-        Tue,  6 Apr 2021 11:19:05 +0800 (CST)
-Received: from DESKTOP-EFRLNPK.china.huawei.com (10.174.176.196) by
- DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 6 Apr 2021 11:21:05 +0800
-From:   Qiheng Lin <linqiheng@huawei.com>
-To:     <nbd@nbd.name>, <lorenzo.bianconi83@gmail.com>,
-        <ryder.lee@mediatek.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Qiheng Lin <linqiheng@huawei.com>
-Subject: [PATCH net-next] mt76: mt7921: remove unneeded semicolon
-Date:   Tue, 6 Apr 2021 11:20:51 +0800
-Message-ID: <20210406032051.7750-1-linqiheng@huawei.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.174.176.196]
-X-CFilter-Loop: Reflected
+        id S242306AbhDFDhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 23:37:25 -0400
+Received: from m12-13.163.com ([220.181.12.13]:60041 "EHLO m12-13.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233556AbhDFDhZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 23:37:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=dIDU6J0odxG9RlqAj0
+        JO+hMmJN5ibrBl7SIKeXUpRbI=; b=BbpHXbiBYlVZuatcxDhEvf8w3qMWjvFtUL
+        WnsD7JteofleAHEdcNHlfar9OM71fDlOi389DR03Re1bsfERT07qXa0/gxGZLONQ
+        6E/xjNTI+9gRJEfaL7nIK9n/XW9HgS0ObQH9RgswO3GbsZs/E+tYfqfQtk/qmzsC
+        UoOvHvPXM=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp9 (Coremail) with SMTP id DcCowABXbrkUzGtgTKGNEg--.53507S2;
+        Tue, 06 Apr 2021 10:48:54 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     imitsyanko@quantenna.com, geomatsi@gmail.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
+        arend.vanspriel@broadcom.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH RESEND] qtnfmac: remove meaningless labels
+Date:   Tue,  6 Apr 2021 10:48:47 +0800
+Message-Id: <20210406024847.27620-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DcCowABXbrkUzGtgTKGNEg--.53507S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tr18Jr1DWw45KFyxAw48Xrb_yoW5JF1xpr
+        WrXa9Fkay8K3yvqas5ArZ5Zr1Yvw1xKFWxKrW8C3s5u3W0yr1rKa1Yva4YyrZ8JFW8Jryj
+        qFWvqF1Uu3ZY9a7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jlbyAUUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiLxZssVUMX1zr4QAAs0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eliminate the following coccicheck warning:
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c:1402:2-3: Unneeded semicolon
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
+some function's label meaningless, the return statement follows
+the goto statement, so just remove it.
+
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/quantenna/qtnfmac/cfg80211.c | 27 +++++------------------
+ 1 file changed, 6 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 3f9097481a5e..e56cde3a19ec 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1399,7 +1399,7 @@ void mt7921_mac_work(struct work_struct *work)
- 	if (++phy->sta_work_count == 10) {
- 		phy->sta_work_count = 0;
- 		mt7921_mac_sta_stats_work(phy);
--	};
-+	}
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c b/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
+index 504b4d0..84b15a6 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
+@@ -680,13 +680,10 @@ static int qtnf_set_default_key(struct wiphy *wiphy, struct net_device *dev,
+ 		eth_zero_addr(vif->bssid);
  
- 	mt7921_mutex_release(phy->dev);
+ 	ret = qtnf_cmd_send_connect(vif, sme);
+-	if (ret) {
++	if (ret)
+ 		pr_err("VIF%u.%u: failed to connect\n",
+ 		       vif->mac->macid, vif->vifid);
+-		goto out;
+-	}
+ 
+-out:
+ 	return ret;
+ }
+ 
+@@ -702,13 +699,10 @@ static int qtnf_set_default_key(struct wiphy *wiphy, struct net_device *dev,
+ 		pr_warn("unexpected bssid: %pM", auth->bssid);
+ 
+ 	ret = qtnf_cmd_send_external_auth(vif, auth);
+-	if (ret) {
++	if (ret)
+ 		pr_err("VIF%u.%u: failed to report external auth\n",
+ 		       vif->mac->macid, vif->vifid);
+-		goto out;
+-	}
+ 
+-out:
+ 	return ret;
+ }
+ 
+@@ -727,8 +721,7 @@ static int qtnf_set_default_key(struct wiphy *wiphy, struct net_device *dev,
+ 	}
+ 
+ 	if (vif->wdev.iftype != NL80211_IFTYPE_STATION) {
+-		ret = -EOPNOTSUPP;
+-		goto out;
++		return -EOPNOTSUPP;
+ 	}
+ 
+ 	ret = qtnf_cmd_send_disconnect(vif, reason_code);
+@@ -742,7 +735,6 @@ static int qtnf_set_default_key(struct wiphy *wiphy, struct net_device *dev,
+ 				      NULL, 0, true, GFP_KERNEL);
+ 	}
+ 
+-out:
+ 	return ret;
+ }
+ 
+@@ -935,13 +927,10 @@ static int qtnf_update_owe_info(struct wiphy *wiphy, struct net_device *dev,
+ 		return -EOPNOTSUPP;
+ 
+ 	ret = qtnf_cmd_send_update_owe(vif, owe_info);
+-	if (ret) {
++	if (ret)
+ 		pr_err("VIF%u.%u: failed to update owe info\n",
+ 		       vif->mac->macid, vif->vifid);
+-		goto out;
+-	}
+ 
+-out:
+ 	return ret;
+ }
+ 
+@@ -987,18 +976,14 @@ static int qtnf_resume(struct wiphy *wiphy)
+ 	vif = qtnf_mac_get_base_vif(mac);
+ 	if (!vif) {
+ 		pr_err("MAC%u: primary VIF is not configured\n", mac->macid);
+-		ret = -EFAULT;
+-		goto exit;
++		return -EFAULT;
+ 	}
+ 
+ 	ret = qtnf_cmd_send_wowlan_set(vif, NULL);
+-	if (ret) {
++	if (ret)
+ 		pr_err("MAC%u: failed to reset WoWLAN triggers\n",
+ 		       mac->macid);
+-		goto exit;
+-	}
+ 
+-exit:
+ 	return ret;
+ }
  
 -- 
-2.31.1
+1.9.1
+
 
