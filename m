@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F0E355F27
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 00:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E548355F2E
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234641AbhDFW7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 18:59:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59940 "EHLO mail.kernel.org"
+        id S233140AbhDFXBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:01:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60202 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232983AbhDFW7m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 18:59:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B980611EE;
-        Tue,  6 Apr 2021 22:59:33 +0000 (UTC)
+        id S232398AbhDFXBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 19:01:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 85251613BE;
+        Tue,  6 Apr 2021 23:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617749973;
-        bh=nRu36rewHiHvppJj3ayQMlyRrC8vxUGN/RLb5DH6vwE=;
+        s=k20201202; t=1617750073;
+        bh=MOxI+EZDMPVapGVH4Rll/KYW49AV3Fp1dCqdjUnzM1s=;
         h=From:To:Cc:Subject:Date:From;
-        b=Ha5KamI/9UPPJOKjCt/+yIl2hueqR9iO8pCD5tPh7rYXNnm2En+NCZsdziblFoewA
-         PhkkBDCrXaLTqIZmpKyQOrLioh7ekdiRfjt7wHq7huohdZgQjnMTMCIfsOBHjwwzIc
-         bIxZE30NRnCah0kHHcCg9QGc0vjY2+NWytd1JOfyJ3WtbJ3hLuDkr3cvRdItPhS6Lo
-         OyM9MKi5Bwj3PfLTXb3A9CmUXoEzMFgmiBQFnCzlwOOg+zxgZI4aF5XWG8EyTos3hX
-         4PpGPRIrw+gGv4uxLzwv7H5qzht07MaOB6/4d4IooLPQxneK5SkfnbdN+stzoW5cNb
-         YOCpVkAOtnP1Q==
+        b=D4YZ7I1WRf8xWoNB78eRxi2euRlGyyuvcA0Pg247MCyGbrrAcB+7L+2KXYI9jEm8/
+         JWJ6I+q+8yF53AdY8T0Eivvhr7CO7PBALM4XmwFHqKV2ExNvD3xSvCMY8lkkppulvk
+         TmlHxcKjhAyvbn715wQqVQo0WMsZy2UN+JlroNKSbO5VYHu3rvdBNBI6nDl+0I6Fb8
+         VXLugwZO63b6ipTFfzj0oVb1wjYUiAfwESAyxhEl6y1N7QFCXdE3CgNHwpILvUnvCp
+         uSmGsbOeULlK3Wpca+TCkyr9A6aPlz6jtavQRkksN7Qu4RZ2AkWbJFm3V7fUsn0ZZa
+         oMbSqkxuNyLQg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
-        mkubecek@suse.cz, andrew@lunn.ch, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] docs: ethtool: correct quotes
-Date:   Tue,  6 Apr 2021 15:59:31 -0700
-Message-Id: <20210406225931.1846872-1-kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, mkubecek@suse.cz,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] ethtool: fix kdoc attr name
+Date:   Tue,  6 Apr 2021 16:01:11 -0700
+Message-Id: <20210406230111.1847402-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -37,30 +37,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quotes to backticks. All commands use backticks since the names
-are constants.
+Add missing 't' in attrtype.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-Targeting net-next to avoid conflicts with upcoming patches.
+ net/ethtool/netlink.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- Documentation/networking/ethtool-netlink.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index dcb75c84c1ca..ce4a69f8308f 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -1433,7 +1433,7 @@ are netlink only.
-   ``ETHTOOL_PHY_STUNABLE``            n/a
-   ``ETHTOOL_GFECPARAM``               ``ETHTOOL_MSG_FEC_GET``
-   ``ETHTOOL_SFECPARAM``               ``ETHTOOL_MSG_FEC_SET``
--  n/a                                 ''ETHTOOL_MSG_CABLE_TEST_ACT''
--  n/a                                 ''ETHTOOL_MSG_CABLE_TEST_TDR_ACT''
-+  n/a                                 ``ETHTOOL_MSG_CABLE_TEST_ACT``
-+  n/a                                 ``ETHTOOL_MSG_CABLE_TEST_TDR_ACT``
-   n/a                                 ``ETHTOOL_MSG_TUNNEL_INFO_GET``
-   =================================== =====================================
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 785f7ee45930..181fda8a590e 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -36,9 +36,9 @@ static inline int ethnl_strz_size(const char *s)
+ 
+ /**
+  * ethnl_put_strz() - put string attribute with fixed size string
+- * @skb:     skb with the message
+- * @attrype: attribute type
+- * @s:       ETH_GSTRING_LEN sized string (may not be null terminated)
++ * @skb:      skb with the message
++ * @attrtype: attribute type
++ * @s:        ETH_GSTRING_LEN sized string (may not be null terminated)
+  *
+  * Puts an attribute with null terminated string from @s into the message.
+  *
 -- 
 2.30.2
 
