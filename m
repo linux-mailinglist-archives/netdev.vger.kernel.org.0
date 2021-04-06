@@ -2,103 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60936355609
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 16:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADCA1355645
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 16:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236166AbhDFOGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 10:06:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38894 "EHLO mail.kernel.org"
+        id S1344985AbhDFOQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 10:16:08 -0400
+Received: from verein.lst.de ([213.95.11.211]:54694 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233554AbhDFOGI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 10:06:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 746B06139C;
-        Tue,  6 Apr 2021 14:05:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1617717960;
-        bh=qEX/6JcIH0tvPPBJ0/FFoBpj98iXPxdaCuo5ByOWTbU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gFYaUKc25ivU3lsCHPxdml6UB6rqURBPXl6bgdwev7/XrzmsZy8h9j5ShkstUVbJa
-         D65PWwl9DRiPj+PKOuzh8MVRdM9tdp45wcd58nFmMM3N3rykhFqQH/SA5Q8Wwyyicp
-         fF5PANEvHR7hLtadRncftDmPghckev8aXyFIDbjs=
-Date:   Tue, 6 Apr 2021 16:05:57 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Anirudh Rayabharam <mail@anirudhrb.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S235455AbhDFOQG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 10:16:06 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id F328F68B02; Tue,  6 Apr 2021 16:15:52 +0200 (CEST)
+Date:   Tue, 6 Apr 2021 16:15:52 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Rustam Kovhaev <rkovhaev@gmail.com>,
-        syzbot+c49fe6089f295a05e6f8@syzkaller.appspotmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: hso: fix null-ptr-deref during tty device
- unregistration
-Message-ID: <YGxqxddOyyDM9ueu@kroah.com>
-References: <20210406124402.20930-1-mail@anirudhrb.com>
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
+        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
+        samba-technical@lists.samba.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next 01/10] RDMA: Add access flags to
+ ib_alloc_mr() and ib_mr_pool_init()
+Message-ID: <20210406141552.GA4936@lst.de>
+References: <20210405052404.213889-1-leon@kernel.org> <20210405052404.213889-2-leon@kernel.org> <c21edd64-396c-4c7c-86f8-79045321a528@acm.org> <YGvwUI022t/rJy5U@unreal> <20210406052717.GA4835@lst.de> <YGv4niuc31WnqpEJ@unreal> <20210406121312.GK7405@nvidia.com> <20210406123034.GA28930@lst.de> <20210406140437.GR7405@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210406124402.20930-1-mail@anirudhrb.com>
+In-Reply-To: <20210406140437.GR7405@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 06:13:59PM +0530, Anirudh Rayabharam wrote:
-> Multiple ttys try to claim the same the minor number causing a double
-> unregistration of the same device. The first unregistration succeeds
-> but the next one results in a null-ptr-deref.
+On Tue, Apr 06, 2021 at 11:04:37AM -0300, Jason Gunthorpe wrote:
+> It might be idiodic, but I have to keep the uverbs thing working
+> too.
 > 
-> The get_free_serial_index() function returns an available minor number
-> but doesn't assign it immediately. The assignment is done by the caller
-> later. But before this assignment, calls to get_free_serial_index()
-> would return the same minor number.
+> There is a lot of assumption baked in to all the drivers that
+> user/kernel is the same thing, we'd have to go in and break this.
 > 
-> Fix this by modifying get_free_serial_index to assign the minor number
-> immediately after one is found to be and rename it to obtain_minor()
-> to better reflect what it does. Similary, rename set_serial_by_index()
-> to release_minor() and modify it to free up the minor number of the
-> given hso_serial. Every obtain_minor() should have corresponding
-> release_minor() call.
-> 
-> Reported-by: syzbot+c49fe6089f295a05e6f8@syzkaller.appspotmail.com
-> Tested-by: syzbot+c49fe6089f295a05e6f8@syzkaller.appspotmail.com
-> 
-> Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
-> ---
->  drivers/net/usb/hso.c | 32 ++++++++++++--------------------
->  1 file changed, 12 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-> index 31d51346786a..295ca330e70c 100644
-> --- a/drivers/net/usb/hso.c
-> +++ b/drivers/net/usb/hso.c
-> @@ -611,7 +611,7 @@ static struct hso_serial *get_serial_by_index(unsigned index)
->  	return serial;
->  }
->  
-> -static int get_free_serial_index(void)
-> +static int obtain_minor(struct hso_serial *serial)
->  {
->  	int index;
->  	unsigned long flags;
-> @@ -619,8 +619,10 @@ static int get_free_serial_index(void)
->  	spin_lock_irqsave(&serial_table_lock, flags);
->  	for (index = 0; index < HSO_SERIAL_TTY_MINORS; index++) {
->  		if (serial_table[index] == NULL) {
-> +			serial_table[index] = serial->parent;
-> +			serial->minor = index;
->  			spin_unlock_irqrestore(&serial_table_lock, flags);
-> -			return index;
-> +			return 0;
+> Essentially #2 ends up as deleting IB_ACCESS_RELAXED_ORDERING kernel
+> side and instead doing some IB_ACCESS_DISABLE_RO in kernel,
+> translating uverbs IBV_ACCESS_* to this then finding and inverting all
+> the driver logic and also finding and unblocking all the places that
+> enforce valid access flags in the drivers. It is complicated enough
 
-Minor note, you might want to convert this to use an idr structure in
-the future, this "loop and find a free minor" isn't really needed now
-that we have a data structure that does this all for us :)
+Inverting the polarity of a flag at the uapi boundary is pretty
+trivial and we already do it all over the kernel.
 
-But that's not going to fix this issue, that's for future changes.
-
-thanks,
-
-greg k-h
+Do we actually ever need the strict ordering semantics in the kernel?
