@@ -2,111 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8AD3354B62
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 05:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90120354BBA
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 06:27:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243571AbhDFDtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 23:49:25 -0400
-Received: from ozlabs.org ([203.11.71.1]:39571 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233639AbhDFDtY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Apr 2021 23:49:24 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S242422AbhDFE1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 00:27:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21942 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238031AbhDFE1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 00:27:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617683254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b/AFYn8wyf126xH7Xvsc600hQ8aGmO5+JH2/S4X8qpE=;
+        b=ShCWr1jmdsucDsVh0edDk8IkfZrnpyk8d2B3mg7QQp9EVZNhJ8K9Bd4Wm/z0pJ7f2VYvZH
+        Ik4/r19ybQvKFzvl6SG0xddW969VbipAuBZkah5fW7KunaPqvuH1RGtvpVcpj7gcrWsyWg
+        2oOApunxhy5xXSKGI0VI9P3EzdDQUcI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-240--WbY4wkKMN2I-VutlISTYg-1; Tue, 06 Apr 2021 00:27:30 -0400
+X-MC-Unique: -WbY4wkKMN2I-VutlISTYg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FDtn65N4Wz9sSC;
-        Tue,  6 Apr 2021 13:49:13 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1617680955;
-        bh=2V41qytuS/O/lB46Y0+hixtZSve/HcH+r1+SdAlGDyw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=bWEpKd1FZXu/0BmAT35fkgGDNFerfySzMTlXhSa2aR2h5EWchEBlFjdonYv0Pu0z1
-         IqK2tWoENJaoZxbkwNkGJJCZQ6WQf+C/1waNyskqdADwjOOd6aGOY8tqM+dvYqJnG0
-         kc3uFMdWCaepdIUdClsVQ0SMNpYgnhWfTcnWRU5OK+pTO27iKETZK+IjQ5YB8zJTcg
-         7rwE8D0aKSIC4QlDvwRyd3ioGsmiuTMMWvBdn5sPu7NQ8KOJz+ngOEp3R9nK+Yz+zW
-         bAPuki2Hcw5elikCVp52nKb2Yju8i6aeZGFIQwwcfFbxW3Y7tDQbj73ieqvee46P+A
-         uZy+e4CDz9vQQ==
-Date:   Tue, 6 Apr 2021 13:49:12 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210406134912.6a37cdcd@canb.auug.org.au>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B5B7B835BD1;
+        Tue,  6 Apr 2021 04:27:26 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-96.pek2.redhat.com [10.72.13.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AD5906267C;
+        Tue,  6 Apr 2021 04:27:16 +0000 (UTC)
+Subject: Re: [PATCH net-next v3 3/8] virtio-net: xsk zero copy xmit setup
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        Dust Li <dust.li@linux.alibaba.com>
+References: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
+ <20210331071139.15473-4-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <97a147bc-f9b8-ce95-889d-274893fd0444@redhat.com>
+Date:   Tue, 6 Apr 2021 12:27:14 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/8sX8bvoQhgeb..HCd.THkED";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210331071139.15473-4-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/8sX8bvoQhgeb..HCd.THkED
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+ÔÚ 2021/3/31 ÏÂÎç3:11, Xuan Zhuo Ð´µÀ:
+> xsk is a high-performance packet receiving and sending technology.
+>
+> This patch implements the binding and unbinding operations of xsk and
+> the virtio-net queue for xsk zero copy xmit.
+>
+> The xsk zero copy xmit depends on tx napi. So if tx napi is not opened,
+> an error will be reported. And the entire operation is under the
+> protection of rtnl_lock
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+>   drivers/net/virtio_net.c | 66 ++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 66 insertions(+)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index bb4ea9dbc16b..4e25408a2b37 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -22,6 +22,7 @@
+>   #include <net/route.h>
+>   #include <net/xdp.h>
+>   #include <net/net_failover.h>
+> +#include <net/xdp_sock_drv.h>
+>   
+>   static int napi_weight = NAPI_POLL_WEIGHT;
+>   module_param(napi_weight, int, 0444);
+> @@ -133,6 +134,11 @@ struct send_queue {
+>   	struct virtnet_sq_stats stats;
+>   
+>   	struct napi_struct napi;
+> +
+> +	struct {
+> +		/* xsk pool */
+> +		struct xsk_buff_pool __rcu *pool;
+> +	} xsk;
+>   };
+>   
+>   /* Internal representation of a receive virtqueue */
+> @@ -2526,11 +2532,71 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>   	return err;
+>   }
+>   
+> +static int virtnet_xsk_pool_enable(struct net_device *dev,
+> +				   struct xsk_buff_pool *pool,
+> +				   u16 qid)
+> +{
+> +	struct virtnet_info *vi = netdev_priv(dev);
+> +	struct send_queue *sq;
+> +	int ret = -EBUSY;
 
-Today's linux-next merge of the net-next tree got a conflict in:
 
-  drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+I'd rather move this under the check of xsk.pool.
 
-between commit:
 
-  3ff3874fa0b2 ("net/mlx5e: Guarantee room for XSK wakeup NOP on async ICOS=
-Q")
+> +
+> +	if (qid >= vi->curr_queue_pairs)
+> +		return -EINVAL;
+> +
+> +	sq = &vi->sq[qid];
+> +
+> +	/* xsk zerocopy depend on the tx napi */
 
-from the net tree and commits:
 
-  c276aae8c19d ("net/mlx5: Move mlx5e hw resources into a sub object")
-  b3a131c2a160 ("net/mlx5e: Move params logic into its dedicated file")
+Need more comments to explain why tx NAPI is required here.
 
-from the net-next tree.
+And what's more important, tx NAPI could be enabled/disable via ethtool, 
+what if the NAPI is disabled after xsk is enabled?
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
 
---=20
-Cheers,
-Stephen Rothwell
+> +	if (!sq->napi.weight)
+> +		return -EPERM;
+> +
+> +	rcu_read_lock();
+> +	if (rcu_dereference(sq->xsk.pool))
+> +		goto end;
 
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 5db63b9f3b70,773449c1424b..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@@ -1090,8 -1040,7 +1040,8 @@@ static int mlx5e_alloc_icosq(struct mlx
-  	int err;
- =20
-  	sq->channel   =3D c;
-- 	sq->uar_map   =3D mdev->mlx5e_res.bfreg.map;
-+ 	sq->uar_map   =3D mdev->mlx5e_res.hw_objs.bfreg.map;
- +	sq->reserved_room =3D param->stop_room;
- =20
-  	param->wq.db_numa_node =3D cpu_to_node(c->cpu);
-  	err =3D mlx5_wq_cyc_create(mdev, &param->wq, sqc_wq, wq, &sq->wq_ctrl);
 
---Sig_/8sX8bvoQhgeb..HCd.THkED
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Under what condition can we reach here?
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBr2jgACgkQAVBC80lX
-0GyMqwf+JeRySGfwOKnE6szKkSCpgP3vQ2pxlsivZ4LzQYS1UHHWZCnIkYqtHaUh
-ozDRkBUNc3JqJXQC9X0rAjT7s+bgNz7YPmAK1h200bvZodvjv9QyhF8YK+jrUSNn
-dHwNd58nc6Gx1yNQuLyn4tb+1oZNyZs0me1CuVJnufb5elhQ+rcEEMDuyWam5vSF
-9jl5v5n9Zi+LuNKHlWtJBVVz7RNDz1122DaKYZ7SCn41SK4C53cDnYFmFDkyedsk
-P/4EpdG3moDpMaVQHGoeCsY6cIzND99nyxo4zYrFKRvXquNZ4+GD9nZE8yNQ4inz
-pZxNFXKvARNECeIeyiLeCIbDA2biMA==
-=Q8fT
------END PGP SIGNATURE-----
+> +
+> +	/* Here is already protected by rtnl_lock, so rcu_assign_pointer is
+> +	 * safe.
+> +	 */
+> +	rcu_assign_pointer(sq->xsk.pool, pool);
+> +	ret = 0;
+> +end:
+> +	rcu_read_unlock();
+> +
+> +	return ret;
+> +}
+> +
+> +static int virtnet_xsk_pool_disable(struct net_device *dev, u16 qid)
+> +{
+> +	struct virtnet_info *vi = netdev_priv(dev);
+> +	struct send_queue *sq;
+> +
+> +	if (qid >= vi->curr_queue_pairs)
+> +		return -EINVAL;
+> +
+> +	sq = &vi->sq[qid];
+> +
+> +	/* Here is already protected by rtnl_lock, so rcu_assign_pointer is
+> +	 * safe.
+> +	 */
+> +	rcu_assign_pointer(sq->xsk.pool, NULL);
+> +
+> +	synchronize_rcu(); /* Sync with the XSK wakeup and with NAPI. */
 
---Sig_/8sX8bvoQhgeb..HCd.THkED--
+
+Since rtnl is held here, I guess it's better to use synchornize_net().
+
+
+> +
+> +	return 0;
+> +}
+> +
+>   static int virtnet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
+>   {
+>   	switch (xdp->command) {
+>   	case XDP_SETUP_PROG:
+>   		return virtnet_xdp_set(dev, xdp->prog, xdp->extack);
+> +	case XDP_SETUP_XSK_POOL:
+> +		/* virtio net not use dma before call vring api */
+> +		xdp->xsk.check_dma = false;
+
+
+I think it's better not open code things like this. How about introduce 
+new parameters in xp_assign_dev()?
+
+
+> +		if (xdp->xsk.pool)
+> +			return virtnet_xsk_pool_enable(dev, xdp->xsk.pool,
+> +						       xdp->xsk.queue_id);
+> +		else
+> +			return virtnet_xsk_pool_disable(dev, xdp->xsk.queue_id);
+>   	default:
+>   		return -EINVAL;
+>   	}
+
+
+Thanks
+
