@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05D24355E94
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 00:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3485355E95
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 00:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243614AbhDFWMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 18:12:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52514 "EHLO mail.kernel.org"
+        id S243670AbhDFWMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 18:12:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52520 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243626AbhDFWMC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 18:12:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 170DF613E1;
-        Tue,  6 Apr 2021 22:11:51 +0000 (UTC)
+        id S243643AbhDFWMD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 18:12:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BB2AC613CF;
+        Tue,  6 Apr 2021 22:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617747113;
-        bh=eW67JIbT4Cz8LO2mBfJgUwc0Bo463M4DkT7UiRNnQMI=;
+        s=k20201202; t=1617747115;
+        bh=I4nxHoJrkAa+c0GD2PcJsIKsqldCGduF2pxnr5ItC2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZGE00XBarhZ0pFCeM/PuJB2+I62AhWQCcBXQlZ+9MP6JvuX8gxJNPNUpYZcE+t3Z0
-         jLnQcNl+WLjvEFe8R266VtiSIGYaHxzFLQdU5Z+Ojc8eFPF0V59z+V4AcRhOrEXXjN
-         g49bEPwcNH3pwfAqNPO3VXS795siaB8v+iQTnuyc42TOeBY2jXwXnyVJtAqS0VGOK8
-         fC7YqeWy735evq46W7hEj+pZdKIoS2KO9U41SD+3l47hVYGI8G4SYxcTA7Qil4qnwu
-         eE2OjU0wFNdyiYcBCwGRBFUYx7DHvadogQEq778N8JCayUASxnamLVCte0w6zzMow+
-         o3LJEoi0xzgdA==
+        b=XftRFH48hYSkepWOYi14ORhUTc+SBFB1TQOraldzfPMahxAa5Yq70jmLENjhCqXOx
+         cypFM3QC84lnPjiYd/lcbdlxRVlBbjy4jwSn0NhQ77HqGEYWq6XRvU0tYFgeVodaTn
+         YY/fzv8v+lnQ1x28aJcGxJHC+8dYVqBWBXlZz4Clg99UbXNkqEQlMMJkmMruLDM+Zy
+         Q7oJKQvEQl1DMDjqH2X7bkLggGuCgngvpiKhZET/ipuazeUTVnQpdV6XXHqOo0xEZZ
+         A//CYpncjW7WmsN8NeFlJUmSGcwTa0wAZHx/EXw+ergNq+5jIphT48py73Fg329qHB
+         ZtIzd/jMCRziQ==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v3 05/18] net: phy: marvell10g: add all MACTYPE definitions for 88X33x0
-Date:   Wed,  7 Apr 2021 00:10:54 +0200
-Message-Id: <20210406221107.1004-6-kabel@kernel.org>
+Subject: [PATCH net-next v3 06/18] net: phy: marvell10g: add MACTYPE definitions for 88E21xx
+Date:   Wed,  7 Apr 2021 00:10:55 +0200
+Message-Id: <20210406221107.1004-7-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210406221107.1004-1-kabel@kernel.org>
 References: <20210406221107.1004-1-kabel@kernel.org>
@@ -42,53 +42,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add all MACTYPE definitions for 88X3310, 88X3310P, 88X3340 and 88X3340P.
-
-In order to have consistent naming, rename
-MV_V2_33X0_PORT_CTRL_MACTYPE_RATE_MATCH to
-MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH.
+Add all MACTYPE definitions for 88E2110, 88E2180, 88E2111 and 88E2181.
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/phy/marvell10g.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ drivers/net/phy/marvell10g.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 7552a658a513..7d9a45437b69 100644
+index 7d9a45437b69..556c9b43860e 100644
 --- a/drivers/net/phy/marvell10g.c
 +++ b/drivers/net/phy/marvell10g.c
-@@ -78,10 +78,18 @@ enum {
+@@ -35,6 +35,15 @@
+ enum {
+ 	MV_PMA_FW_VER0		= 0xc011,
+ 	MV_PMA_FW_VER1		= 0xc012,
++	MV_PMA_21X0_PORT_CTRL	= 0xc04a,
++	MV_PMA_21X0_PORT_CTRL_SWRST				= BIT(15),
++	MV_PMA_21X0_PORT_CTRL_MACTYPE_MASK			= 0x7,
++	MV_PMA_21X0_PORT_CTRL_MACTYPE_USXGMII			= 0x0,
++	MV_PMA_2180_PORT_CTRL_MACTYPE_DXGMII			= 0x1,
++	MV_PMA_2180_PORT_CTRL_MACTYPE_QXGMII			= 0x2,
++	MV_PMA_21X0_PORT_CTRL_MACTYPE_5GBASER			= 0x4,
++	MV_PMA_21X0_PORT_CTRL_MACTYPE_5GBASER_NO_SGMII_AN	= 0x5,
++	MV_PMA_21X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH	= 0x6,
+ 	MV_PMA_BOOT		= 0xc050,
+ 	MV_PMA_BOOT_FATAL	= BIT(0),
  
- 	/* Vendor2 MMD registers */
- 	MV_V2_PORT_CTRL		= 0xf001,
--	MV_V2_PORT_CTRL_PWRDOWN			= BIT(11),
--	MV_V2_33X0_PORT_CTRL_SWRST		= BIT(15),
--	MV_V2_33X0_PORT_CTRL_MACTYPE_MASK	= 0x7,
--	MV_V2_33X0_PORT_CTRL_MACTYPE_RATE_MATCH	= 0x6,
-+	MV_V2_PORT_CTRL_PWRDOWN					= BIT(11),
-+	MV_V2_33X0_PORT_CTRL_SWRST				= BIT(15),
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_MASK			= 0x7,
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI			= 0x0,
-+	MV_V2_3310_PORT_CTRL_MACTYPE_XAUI_RATE_MATCH		= 0x1,
-+	MV_V2_3340_PORT_CTRL_MACTYPE_RXAUI_NO_SGMII_AN		= 0x1,
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_RXAUI_RATE_MATCH		= 0x2,
-+	MV_V2_3310_PORT_CTRL_MACTYPE_XAUI			= 0x3,
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER			= 0x4,
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_NO_SGMII_AN	= 0x5,
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH	= 0x6,
-+	MV_V2_33X0_PORT_CTRL_MACTYPE_USXGMII			= 0x7,
- 	/* Temperature control/read registers (88X3310 only) */
- 	MV_V2_TEMP_CTRL		= 0xf08a,
- 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
-@@ -480,7 +488,7 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	if (val < 0)
- 		return val;
- 	priv->rate_match = ((val & MV_V2_33X0_PORT_CTRL_MACTYPE_MASK) ==
--			MV_V2_33X0_PORT_CTRL_MACTYPE_RATE_MATCH);
-+			MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH);
- 
- 	/* Enable EDPD mode - saving 600mW */
- 	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
 -- 
 2.26.2
 
