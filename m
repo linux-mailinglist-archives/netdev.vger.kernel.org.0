@@ -2,142 +2,490 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0345D355B34
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 20:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A129D355B37
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 20:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238411AbhDFSVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 14:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S240530AbhDFSWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 14:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237779AbhDFSVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 14:21:53 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9139C06174A;
-        Tue,  6 Apr 2021 11:21:45 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id e186so16549232iof.7;
-        Tue, 06 Apr 2021 11:21:45 -0700 (PDT)
+        with ESMTP id S237779AbhDFSWM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 14:22:12 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962A8C06174A;
+        Tue,  6 Apr 2021 11:22:04 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id x15so6032678wrq.3;
+        Tue, 06 Apr 2021 11:22:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=DfWrBOpmRaS1WUDoipSTwJKeubZc4KftRAFyLRqczb8=;
-        b=Xifx8A33LzpKOSciTyErZOEBmEYk6qqkAVCUg7mBIAnw/gh0Wll0EmDB5QR5DAB0k6
-         Bnb4dr1/j5in4zvLNSnjPextFXCFOk6bv8sXHTo9JSEksX5R98IgLepHdcZhkU2M1XtB
-         9KYU95l/E/vMXXyq9T79gk4qcNz7pS2ZUOVtmRmq4Cb9RyhcUu8HM93sZXvpLU8rPjZi
-         pBEb6o13aUn8YaO8TvHrI/QwbQzYVr+1J1y5Pdp5zqhX4K7aymaxcZ9/hHEFGIn6QAbq
-         BndRClVGf6AkA6Tknzfuzqtg/bABMvY2xeomPs5OyCtm1Gw1PhOwYeOj1wO4m8SbhBIx
-         pq5w==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pzeT6LFKjY0KepKHp+4xM8OMGVtWjRStJfkFace+U6Y=;
+        b=j2pEL/C0yKQGLYFoR8ukhjfJbDw+WrOVpHV0iiZz12NKrceo+s7BbXnxwxUbzc+WRG
+         jwr54TkvQySFCRL5KbYejT81MsJ5/UhX5VvsgvqQ1+p5IcyW1udIgwF4LFtcSIAeIuIX
+         xDARVOGtvlqJpfVDSAj34L5a0Nak+iI/QrPR+A2IRQyXVPcKBkRvj6PfIHg69PKM1GVw
+         4o8M21bJ5Tggw4nNRyfOzDsIxYzqAAs6bJmCUaJGVqlbSf992dR/t71opRFsKS7xP1Cd
+         DHl6qTVwWb1jy8Cy3Rk67LEDPXSTUkYCk/Y4edjcHI04mCkvTlM871EX6agjfb2IcsPz
+         pM5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=DfWrBOpmRaS1WUDoipSTwJKeubZc4KftRAFyLRqczb8=;
-        b=oZEN1vPaVIlhb2oyTp5O+0HIYHfjOMoCKQNSNhAWOV8sQfPOftK0hUXx1cYoyvWXYs
-         JSi2gjrwkAd4VE1sjs8AAHWVFFzE7NqgDCo9msgd/C3z0psvwUWDEqjLlKVSABZ4kYBD
-         U6zcUNxpmfwX/KxBAjmc51zSL8Uc/DKKeX0JO1SwoELeUq1XSY0FqLThlwT+bSVemDoq
-         sr4HIRHBDcHIle1KPIsUhu7f9y4XAHTw5lcRQe0YXYHXn6Wzrjpb+EXR5JXezcI53tC2
-         o469BdrWrCbMJiyCSqdXNWlpNamSE6QEKiF2zqzWPdJltrPDwHnQA4095k8o8Gi6PXSv
-         2Hcw==
-X-Gm-Message-State: AOAM533HOzl6EGbJQKkWaDM5JXobtb0dfOR/wnNlyliblJQHitE5phT6
-        kmvQ12VVJgt2rEYaWtzPa4U=
-X-Google-Smtp-Source: ABdhPJzAeknTMWB3XYct3XWv3hqVLr9Ju9UkwadTFcK/A+auXvA1BL0Rh+/kNgdvQP32cbULbQJ2Pg==
-X-Received: by 2002:a02:3085:: with SMTP id q127mr29783003jaq.137.1617733305388;
-        Tue, 06 Apr 2021 11:21:45 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id e10sm13010549ile.23.2021.04.06.11.21.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 11:21:44 -0700 (PDT)
-Date:   Tue, 06 Apr 2021 11:21:37 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     syzbot <syzbot+320a3bc8d80f478c37e4@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, andrii@kernel.org, anton@tuxera.com,
-        ast@kernel.org, bp@alien8.de, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hpa@zytor.com,
-        jakub@cloudflare.com, jmattson@google.com,
-        john.fastabend@gmail.com, joro@8bytes.org, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lmb@cloudflare.com, mingo@redhat.com,
-        netdev@vger.kernel.org, pbonzini@redhat.com, rkovhaev@gmail.com,
-        seanjc@google.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        torvalds@linux-foundation.org, vkuznets@redhat.com,
-        wanpengli@tencent.com, x86@kernel.org, yhs@fb.com
-Message-ID: <606ca6b12f544_f0242081@john-XPS-13-9370.notmuch>
-In-Reply-To: <0000000000008872ff05bf40e4db@google.com>
-References: <0000000000008872ff05bf40e4db@google.com>
-Subject: RE: [syzbot] WARNING: suspicious RCU usage in tcp_bpf_update_proto
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pzeT6LFKjY0KepKHp+4xM8OMGVtWjRStJfkFace+U6Y=;
+        b=Qkw0lb6GPTbqptRRqkPKNfwhcEYhoir3d4fSpNx4Z0ALza8bSFnfipTog8ySUEJESc
+         53JjFYnVziBD41Qzfb42u/4eutb4UPmzxz9zYAbixIyDGdmuFQcLGFbbjUjn6XUJ2qE4
+         F6Y8mKsC7XjMrs37xGrPYWYoSmXO4cNoV2kOR3UgpRXJNH2eaDJd1AEUa9zvh64EwpjT
+         2ZjQLVXNMPh5r8gEzfEYqTUJ0SSD7ONzV5boGRoyxrXLctyMDqQilWh6OpOrcm/ke8EU
+         +IGtkF/QNwvSDj32DJG9O5iM5XyhuR1eYSwTPrjKh4/ppOzdX4eKQHz+NDxespz3TbMr
+         TPWg==
+X-Gm-Message-State: AOAM532exQDFbM4sJxnEOhQHZ7jtuULRChE05a0w8VbMyghKArJw3nvr
+        OjK0FRXPgjsLlpYOWRCOC7Q=
+X-Google-Smtp-Source: ABdhPJxkWtDdfRp/i2tHUCwny8I/MNsPUq7NGWHkBk5urZBqtKYSu4azcMnhFgNh4wdv6YRKOE9Ghg==
+X-Received: by 2002:adf:f144:: with SMTP id y4mr37090863wro.408.1617733323316;
+        Tue, 06 Apr 2021 11:22:03 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f1f:bb00:c412:abea:9d68:569f? (p200300ea8f1fbb00c412abea9d68569f.dip0.t-ipconnect.de. [2003:ea:8f1f:bb00:c412:abea:9d68:569f])
+        by smtp.googlemail.com with ESMTPSA id q10sm17955878wrx.35.2021.04.06.11.22.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Apr 2021 11:22:02 -0700 (PDT)
+Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
+ back
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "christian.melki@t2data.com" <christian.melki@t2data.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <20210404100701.6366-1-qiangqing.zhang@nxp.com>
+ <97e486f8-372a-896f-6549-67b8fb34e623@gmail.com>
+ <ed600136-2222-a261-bf08-522cc20fc141@gmail.com>
+ <ff5719b4-acd7-cd27-2f07-d8150e2690c8@t2data.com>
+ <010f896e-befb-4238-5219-01969f3581e3@gmail.com>
+ <DB8PR04MB6795CC9AA84D14BA98FB6598E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <0e6bd756-f46c-7caf-d45b-a19e7fb80b67@gmail.com>
+ <DB8PR04MB6795D52C6FA54D17D43D1E99E6769@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <b34ccbf5-18eb-681b-3336-4c93325c2a43@gmail.com>
+Message-ID: <a58f3259-d638-7506-1c07-660562d3527f@gmail.com>
+Date:   Tue, 6 Apr 2021 20:21:55 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
+MIME-Version: 1.0
+In-Reply-To: <b34ccbf5-18eb-681b-3336-4c93325c2a43@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot wrote:
-> Hello,
+On 06.04.2021 13:42, Heiner Kallweit wrote:
+> On 06.04.2021 12:07, Joakim Zhang wrote:
+>>
+>>> -----Original Message-----
+>>> From: Heiner Kallweit <hkallweit1@gmail.com>
+>>> Sent: 2021年4月6日 14:29
+>>> To: Joakim Zhang <qiangqing.zhang@nxp.com>; christian.melki@t2data.com;
+>>> andrew@lunn.ch; linux@armlinux.org.uk; davem@davemloft.net;
+>>> kuba@kernel.org
+>>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; dl-linux-imx
+>>> <linux-imx@nxp.com>
+>>> Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
+>>> back
+>>>
+>>> On 06.04.2021 04:07, Joakim Zhang wrote:
+>>>>
+>>>> Hi Heiner,
+>>>>
+>>>>> -----Original Message-----
+>>>>> From: Heiner Kallweit <hkallweit1@gmail.com>
+>>>>> Sent: 2021年4月5日 20:10
+>>>>> To: christian.melki@t2data.com; Joakim Zhang
+>>>>> <qiangqing.zhang@nxp.com>; andrew@lunn.ch; linux@armlinux.org.uk;
+>>>>> davem@davemloft.net; kuba@kernel.org
+>>>>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+>>>>> dl-linux-imx <linux-imx@nxp.com>
+>>>>> Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus
+>>>>> resume back
+>>>>>
+>>>>> On 05.04.2021 10:43, Christian Melki wrote:
+>>>>>> On 4/5/21 12:48 AM, Heiner Kallweit wrote:
+>>>>>>> On 04.04.2021 16:09, Heiner Kallweit wrote:
+>>>>>>>> On 04.04.2021 12:07, Joakim Zhang wrote:
+>>>>>>>>> commit 4c0d2e96ba055 ("net: phy: consider that suspend2ram may
+>>>>>>>>> cut off PHY power") invokes phy_init_hw() when MDIO bus resume,
+>>>>>>>>> it will soft reset PHY if PHY driver implements soft_reset callback.
+>>>>>>>>> commit 764d31cacfe4 ("net: phy: micrel: set soft_reset callback
+>>>>>>>>> to genphy_soft_reset for KSZ8081") adds soft_reset for KSZ8081.
+>>>>>>>>> After these two patches, I found i.MX6UL 14x14 EVK which
+>>>>>>>>> connected to KSZ8081RNB doesn't work any more when system
+>>> resume
+>>>>>>>>> back, MAC
+>>>>> driver is fec_main.c.
+>>>>>>>>>
+>>>>>>>>> It's obvious that initializing PHY hardware when MDIO bus resume
+>>>>>>>>> back would introduce some regression when PHY implements
+>>>>>>>>> soft_reset. When I
+>>>>>>>>
+>>>>>>>> Why is this obvious? Please elaborate on why a soft reset should
+>>>>>>>> break something.
+>>>>>>>>
+>>>>>>>>> am debugging, I found PHY works fine if MAC doesn't support
+>>>>>>>>> suspend/resume or phy_stop()/phy_start() doesn't been called
+>>>>>>>>> during suspend/resume. This let me realize, PHY state machine
+>>>>>>>>> phy_state_machine() could do something breaks the PHY.
+>>>>>>>>>
+>>>>>>>>> As we known, MAC resume first and then MDIO bus resume when
+>>>>>>>>> system resume back from suspend. When MAC resume, usually it will
+>>>>>>>>> invoke
+>>>>>>>>> phy_start() where to change PHY state to PHY_UP, then trigger the
+>>>>>>>>> stat> machine to run now. In phy_state_machine(), it will
+>>>>>>>>> start/config auto-nego, then change PHY state to PHY_NOLINK, what
+>>>>>>>>> to next is periodically check PHY link status. When MDIO bus
+>>>>>>>>> resume, it will initialize PHY hardware, including soft_reset,
+>>>>>>>>> what would soft_reset affect seems various from different PHYs.
+>>>>>>>>> For KSZ8081RNB, when it in PHY_NOLINK state and then perform a
+>>>>>>>>> soft reset,
+>>>>> it will never complete auto-nego.
+>>>>>>>>
+>>>>>>>> Why? That would need to be checked in detail. Maybe chip errata
+>>>>>>>> documentation provides a hint.
+>>>>>>>>
+>>>>>>>
+>>>>>>> The KSZ8081 spec says the following about bit BMCR_PDOWN:
+>>>>>>>
+>>>>>>> If software reset (Register 0.15) is used to exit power-down mode
+>>>>>>> (Register 0.11 = 1), two software reset writes (Register 0.15 = 1)
+>>>>>>> are required. The first write clears power-down mode; the second
+>>>>>>> write resets the chip and re-latches the pin strapping pin values.
+>>>>>>>
+>>>>>>> Maybe this causes the issue you see and genphy_soft_reset() isn't
+>>>>>>> appropriate for this PHY. Please re-test with the KSZ8081 soft
+>>>>>>> reset following the spec comment.
+>>>>>>>
+>>>>>>
+>>>>>> Interesting. Never expected that behavior.
+>>>>>> Thanks for catching it. Skimmed through the datasheets/erratas.
+>>>>>> This is what I found (micrel.c):
+>>>>>>
+>>>>>> 10/100:
+>>>>>> 8001 - Unaffected?
+>>>>>> 8021/8031 - Double reset after PDOWN.
+>>>>>> 8041 - Errata. PDOWN broken. Recommended do not use. Unclear if
+>>>>>> reset solves the issue since errata says no error after reset but is
+>>>>>> also claiming that only toggling PDOWN (may) or power will help.
+>>>>>> 8051 - Double reset after PDOWN.
+>>>>>> 8061 - Double reset after PDOWN.
+>>>>>> 8081 - Double reset after PDOWN.
+>>>>>> 8091 - Double reset after PDOWN.
+>>>>>>
+>>>>>> 10/100/1000:
+>>>>>> Nothing in gigabit afaics.
+>>>>>>
+>>>>>> Switches:
+>>>>>> 8862 - Not affected?
+>>>>>> 8863 - Errata. PDOWN broken. Reset will not help. Workaround exists.
+>>>>>> 8864 - Not affected?
+>>>>>> 8873 - Errata. PDOWN broken. Reset will not help. Workaround exists.
+>>>>>> 9477 - Errata. PDOWN broken. Will randomly cause link failure on
+>>>>>> adjacent links. Do not use.
+>>>>>>
+>>>>>> This certainly explains a lot.
+>>>>>>
+>>>>>>>>>
+>>>>>>>>> This patch changes PHY state to PHY_UP when MDIO bus resume back,
+>>>>>>>>> it should be reasonable after PHY hardware re-initialized. Also
+>>>>>>>>> give state machine a chance to start/config auto-nego again.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> If the MAC driver calls phy_stop() on suspend, then
+>>>>>>>> phydev->suspended is true and mdio_bus_phy_may_suspend() returns
+>>>>>>>> false. As a consequence
+>>>>>>>> phydev->suspended_by_mdio_bus is false and mdio_bus_phy_resume()
+>>>>>>>> skips the PHY hw initialization.
+>>>>>>>> Please also note that mdio_bus_phy_suspend() calls
+>>>>>>>> phy_stop_machine() that sets the state to PHY_UP.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Forgot that MDIO bus suspend is done before MAC driver suspend.
+>>>>>>> Therefore disregard this part for now.
+>>>>>>>
+>>>>>>>> Having said that the current argumentation isn't convincing. I'm
+>>>>>>>> not aware of such issues on other systems, therefore it's likely
+>>>>>>>> that something is system-dependent.
+>>>>>>>>
+>>>>>>>> Please check the exact call sequence on your system, maybe it
+>>>>>>>> provides a hint.
+>>>>>>>>
+>>>>>>>>> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+>>>>>>>>> ---
+>>>>>>>>>  drivers/net/phy/phy_device.c | 7 +++++++
+>>>>>>>>>  1 file changed, 7 insertions(+)
+>>>>>>>>>
+>>>>>>>>> diff --git a/drivers/net/phy/phy_device.c
+>>>>>>>>> b/drivers/net/phy/phy_device.c index cc38e326405a..312a6f662481
+>>>>>>>>> 100644
+>>>>>>>>> --- a/drivers/net/phy/phy_device.c
+>>>>>>>>> +++ b/drivers/net/phy/phy_device.c
+>>>>>>>>> @@ -306,6 +306,13 @@ static __maybe_unused int
+>>>>> mdio_bus_phy_resume(struct device *dev)
+>>>>>>>>>  	ret = phy_resume(phydev);
+>>>>>>>>>  	if (ret < 0)
+>>>>>>>>>  		return ret;
+>>>>>>>>> +
+>>>>>>>>> +	/* PHY state could be changed to PHY_NOLINK from MAC controller
+>>>>> resume
+>>>>>>>>> +	 * rounte with phy_start(), here change to PHY_UP after
+>>>>> re-initializing
+>>>>>>>>> +	 * PHY hardware, let PHY state machine to start/config
+>>>>>>>>> +auto-nego
+>>>>> again.
+>>>>>>>>> +	 */
+>>>>>>>>> +	phydev->state = PHY_UP;
+>>>>>>>>> +
+>>>>>>>>>  no_resume:
+>>>>>>>>>  	if (phydev->attached_dev && phydev->adjust_link)
+>>>>>>>>>  		phy_start_machine(phydev);
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>> This is a quick draft of the modified soft reset for KSZ8081.
+>>>>> Some tests would be appreciated.
+>>>>>
+>>>>
+>>>> I test this patch at my side, unfortunately, it still can't work.
+>>>>
+>>>> I have not found what soft reset would affect in 8081 spec, is there
+>>>> ang common Description for different PHYs?
+>>>>
+>>>
+>>> You can check the clause 22 spec: 802.3 22.2.4.1.1
+>>>
+>>> Apart from that you can check BMCR value and which modes your PHY
+>>> advertises after a soft reset. If the PHY indeed wouldn't restart aneg after a
+>>> soft reset, then it would be the only one with this behavior I know. And I'd
+>>> wonder why there aren't more such reports.
+>>
+>> Hi Heiner,
+>>
+>> We have reasons to believe it is a weird behavior of KSZ8081. I have another two PHYs at my side, AR8031 and RTL8211FD,
+>> they can work fine if soft_reset implemented.
+>>
+>> As commit message described, phy_start() would change PHY state to PHY_UP finally to PHY_NOLINK when MAC resume.
+>> After MDIO bus resume back, it will periodically check link status. I did below code change to dump all PHY registers. 
+>>
+>> --- a/drivers/net/phy/phy.c
+>> +++ b/drivers/net/phy/phy.c
+>> @@ -35,7 +35,7 @@
+>>  #include <net/genetlink.h>
+>>  #include <net/sock.h>
+>>
+>> -#define PHY_STATE_TIME HZ
+>> +#define PHY_STATE_TIME (10 * HZ)
+>>
+>>  #define PHY_STATE_STR(_state)                  \
+>>         case PHY_##_state:                      \
+>> @@ -738,6 +738,28 @@ static int phy_check_link_status(struct phy_device *phydev)
+>>         if (err)
+>>                 return err;
+>>
+>> +       printk("offset 0x00 data = %0x\n", phy_read(phydev, 0x00));
+>> +       printk("offset 0x01 data = %0x\n", phy_read(phydev, 0x01));
+>> +       printk("offset 0x02 data = %0x\n", phy_read(phydev, 0x02));
+>> +       printk("offset 0x03 data = %0x\n", phy_read(phydev, 0x03));
+>> +       printk("offset 0x04 data = %0x\n", phy_read(phydev, 0x04));
+>> +       printk("offset 0x05 data = %0x\n", phy_read(phydev, 0x05));
+>> +       printk("offset 0x06 data = %0x\n", phy_read(phydev, 0x06));
+>> +       printk("offset 0x07 data = %0x\n", phy_read(phydev, 0x07));
+>> +       printk("offset 0x08 data = %0x\n", phy_read(phydev, 0x08));
+>> +       printk("offset 0x09 data = %0x\n", phy_read(phydev, 0x09));
+>> +       printk("offset 0x10 data = %0x\n", phy_read(phydev, 0x10));
+>> +       printk("offset 0x11 data = %0x\n", phy_read(phydev, 0x11));
+>> +       printk("offset 0x15 data = %0x\n", phy_read(phydev, 0x15));
+>> +       printk("offset 0x16 data = %0x\n", phy_read(phydev, 0x16));
+>> +       printk("offset 0x17 data = %0x\n", phy_read(phydev, 0x17));
+>> +       printk("offset 0x18 data = %0x\n", phy_read(phydev, 0x18));
+>> +       printk("offset 0x1b data = %0x\n", phy_read(phydev, 0x1b));
+>> +       printk("offset 0x1c data = %0x\n", phy_read(phydev, 0x1c));
+>> +       printk("offset 0x1d data = %0x\n", phy_read(phydev, 0x1d));
+>> +       printk("offset 0x1e data = %0x\n", phy_read(phydev, 0x1e));
+>> +       printk("offset 0x1f data = %0x\n", phy_read(phydev, 0x1f));
+>> +       printk("\n\n");
+>>         if (phydev->link && phydev->state != PHY_RUNNING) {
+>>                 phy_check_downshift(phydev);
+>>                 phydev->state = PHY_RUNNING;
+>>
+>> After MDIO bus resume back, results as below:
+>>
+>> [  119.545383] offset 0x00 data = 1100
+>> [  119.549237] offset 0x01 data = 7849
+>> [  119.563125] offset 0x02 data = 22
+>> [  119.566810] offset 0x03 data = 1560
+>> [  119.570597] offset 0x04 data = 85e1
+>> [  119.588016] offset 0x05 data = 0
+>> [  119.592891] offset 0x06 data = 4
+>> [  119.596452] offset 0x07 data = 2001
+>> [  119.600233] offset 0x08 data = 0
+>> [  119.617864] offset 0x09 data = 0
+>> [  119.625990] offset 0x10 data = 0
+>> [  119.629576] offset 0x11 data = 0
+>> [  119.642735] offset 0x15 data = 0
+>> [  119.646332] offset 0x16 data = 202
+>> [  119.650030] offset 0x17 data = 5c02
+>> [  119.668054] offset 0x18 data = 801
+>> [  119.672997] offset 0x1b data = 0
+>> [  119.676565] offset 0x1c data = 0
+>> [  119.680084] offset 0x1d data = 0
+>> [  119.698031] offset 0x1e data = 20
+>> [  119.706246] offset 0x1f data = 8190
+>> [  119.709984]
+>> [  119.709984]
+>> [  120.182120] offset 0x00 data = 100
+>> [  120.185894] offset 0x01 data = 784d
+>> [  120.189681] offset 0x02 data = 22
+>> [  120.206319] offset 0x03 data = 1560
+>> [  120.210171] offset 0x04 data = 8061
+>> [  120.225353] offset 0x05 data = 0
+>> [  120.228948] offset 0x06 data = 4
+>> [  120.242936] offset 0x07 data = 2001
+>> [  120.246792] offset 0x08 data = 0
+>> [  120.250313] offset 0x09 data = 0
+>> [  120.266748] offset 0x10 data = 0
+>> [  120.270335] offset 0x11 data = 0
+>> [  120.284167] offset 0x15 data = 0
+>> [  120.287760] offset 0x16 data = 202
+>> [  120.301031] offset 0x17 data = 3c02
+>> [  120.313209] offset 0x18 data = 801
+>> [  120.316983] offset 0x1b data = 0
+>> [  120.320513] offset 0x1c data = 1
+>> [  120.336589] offset 0x1d data = 0
+>> [  120.340184] offset 0x1e data = 115
+>> [  120.355357] offset 0x1f data = 8190
+>> [  120.359112]
+>> [  120.359112]
+>> [  129.785396] offset 0x00 data = 1100
+>> [  129.789252] offset 0x01 data = 7849
+>> [  129.809951] offset 0x02 data = 22
+>> [  129.815018] offset 0x03 data = 1560
+>> [  129.818845] offset 0x04 data = 85e1
+>> [  129.835808] offset 0x05 data = 0
+>> [  129.839398] offset 0x06 data = 4
+>> [  129.854514] offset 0x07 data = 2001
+>> [  129.858371] offset 0x08 data = 0
+>> [  129.873357] offset 0x09 data = 0
+>> [  129.876954] offset 0x10 data = 0
+>> [  129.880472] offset 0x11 data = 0
+>> [  129.896450] offset 0x15 data = 0
+>> [  129.900038] offset 0x16 data = 202
+>> [  129.915041] offset 0x17 data = 5c02
+>> [  129.918889] offset 0x18 data = 801
+>> [  129.932735] offset 0x1b data = 0
+>> [  129.946830] offset 0x1c data = 0
+>> [  129.950424] offset 0x1d data = 0
+>> [  129.964585] offset 0x1e data = 0
+>> [  129.968192] offset 0x1f data = 8190
+>> [  129.972938]
+>> [  129.972938]
+>> [  130.425125] offset 0x00 data = 100
+>> [  130.428889] offset 0x01 data = 784d
+>> [  130.442671] offset 0x02 data = 22
+>> [  130.446360] offset 0x03 data = 1560
+>> [  130.450142] offset 0x04 data = 8061
+>> [  130.467207] offset 0x05 data = 0
+>> [  130.470789] offset 0x06 data = 4
+>> [  130.485071] offset 0x07 data = 2001
+>> [  130.488934] offset 0x08 data = 0
+>> [  130.504320] offset 0x09 data = 0
+>> [  130.507911] offset 0x10 data = 0
+>> [  130.520950] offset 0x11 data = 0
+>> [  130.532865] offset 0x15 data = 0
+>> [  130.536461] offset 0x16 data = 202
+>> [  130.540156] offset 0x17 data = 3c02
+>> [  130.557218] offset 0x18 data = 801
+>> [  130.560987] offset 0x1b data = 0
+>> [  130.575158] offset 0x1c data = 1
+>> [  130.578754] offset 0x1d data = 0
+>> [  130.593543] offset 0x1e data = 115
+>> [  130.597312] offset 0x1f data = 8190
+>>
+>> We can see that BMCR and BMSR changes from 0x1100,0x7849 to 0x100,0x784d (BMCR[12] bit and BMSR[2]), and loop it.
+>> Above process is auto-nego enabled, link is down, auto-nego is disabled, link is up. And auto-nego complete bit is always 0.
+>>
+>> PHY seems become unstable if soft reset after start/config auto-nego. I also want to fix it in micrel driver, but failed.
+>>
 > 
-> syzbot found the following issue on:
+> Waiting for ANEG_COMPLETE to be set wouldn't be a good option. Aneg may never
+> complete for different reasons, e.g. no physical link. And even if we use a
+> timeout this may add unwanted delays.
 > 
-> HEAD commit:    514e1150 net: x25: Queue received packets in the drivers i..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=112a8831d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=7eff0f22b8563a5f
-> dashboard link: https://syzkaller.appspot.com/bug?extid=320a3bc8d80f478c37e4
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1532d711d00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15f44c5ed00000
+>> Do you have any other insights that can help me further locate the issue? Thanks.
+>>
 > 
-> The issue was bisected to:
+> I think current MAC/PHY PM handling isn't perfect. Often we have the following
+> scenario:
 > 
-> commit 4dfe6bd94959222e18d512bdf15f6bf9edb9c27c
-> Author: Rustam Kovhaev <rkovhaev@gmail.com>
-> Date:   Wed Feb 24 20:00:30 2021 +0000
+> *suspend*
+> 1. PHY is suspended (mdio_bus_phy_suspend)
+> 2. MAC suspend callback (typically involving phy_stop())
 > 
->     ntfs: check for valid standard information attribute
+> *resume*
+> 1. MAC resume callback (typically involving phy_start())
+> 2. PHY is resumed (mdio_bus_phy_resume), incl. calling phy_init_hw()
 > 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16207a81d00000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=15207a81d00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11207a81d00000
+> Calling phy_init_hw() after phy_start() doesn't look right.
+> It seems to work in most cases, but there's a certain risk
+> that phy_init_hw() overwrites something, e.g. the advertised
+> modes.
+> I think we have two valid scenarios:
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+320a3bc8d80f478c37e4@syzkaller.appspotmail.com
-> Fixes: 4dfe6bd94959 ("ntfs: check for valid standard information attribute")
+> 1. phylib PM callbacks are used, then the MAC driver shouldn't
+>    touch the PHY in its PM callbacks, especially not call
+>    phy_stop/phy_start.
 > 
-> =============================
-> WARNING: suspicious RCU usage
-> 5.12.0-rc4-syzkaller #0 Not tainted
-> -----------------------------
-> include/linux/skmsg.h:286 suspicious rcu_dereference_check() usage!
+> 2. MAC PM callbacks take care also of the PHY. Then I think we would
+>    need a flag at the phy_device telling it to make the PHY PM
+>    callbacks a no-op.
 > 
-> other info that might help us debug this:
+> Andrew, Russell: What do you think?
 > 
+>> Best Regards,
+>> Joakim Zhang
+>>
+>> [...]
+>>
+> Heiner
 > 
-> rcu_scheduler_active = 2, debug_locks = 1
-> 1 lock held by syz-executor383/8454:
->  #0: ffff888013a99b48 (clock-AF_INET){++..}-{2:2}, at: sk_psock_drop+0x2c/0x460 net/core/skmsg.c:788
-> 
-> stack backtrace:
-> CPU: 1 PID: 8454 Comm: syz-executor383 Not tainted 5.12.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
->  sk_psock include/linux/skmsg.h:286 [inline]
->  tcp_bpf_update_proto+0x530/0x5f0 net/ipv4/tcp_bpf.c:504
->  sk_psock_restore_proto include/linux/skmsg.h:408 [inline]
->  sk_psock_drop+0xdf/0x460 net/core/skmsg.c:789
->  sk_psock_put include/linux/skmsg.h:446 [inline]
->  tcp_bpf_recvmsg+0x42d/0x480 net/ipv4/tcp_bpf.c:208
+
+Based on scenario 1 you can also try the following.
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 3db882322..cdf9160fc 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3805,7 +3805,6 @@ static int __maybe_unused fec_suspend(struct device *dev)
+ 	if (netif_running(ndev)) {
+ 		if (fep->wol_flag & FEC_WOL_FLAG_ENABLE)
+ 			fep->wol_flag |= FEC_WOL_FLAG_SLEEP_ON;
+-		phy_stop(ndev->phydev);
+ 		napi_disable(&fep->napi);
+ 		netif_tx_lock_bh(ndev);
+ 		netif_device_detach(ndev);
+@@ -3864,7 +3863,6 @@ static int __maybe_unused fec_resume(struct device *dev)
+ 		netif_device_attach(ndev);
+ 		netif_tx_unlock_bh(ndev);
+ 		napi_enable(&fep->napi);
+-		phy_start(ndev->phydev);
+ 	}
+ 	rtnl_unlock();
+ 
+-- 
+2.31.1
 
 
-The bisection is bogus, but we will get a fix for this ASAP. The real commit
-is,
-
-commit 8a59f9d1e3d4340659fdfee8879dc09a6f2546e1
-Author: Cong Wang <cong.wang@bytedance.com>
-Date:   Tue Mar 30 19:32:31 2021 -0700
-
-    sock: Introduce sk->sk_prot->psock_update_sk_prot()
-
-Thanks,
-John
