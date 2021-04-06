@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F01C3553C5
+	by mail.lfdr.de (Postfix) with ESMTP id AA4E43553C6
 	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:23:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344222AbhDFMXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 08:23:32 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:34448 "EHLO
+        id S1344226AbhDFMXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 08:23:33 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:34488 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343999AbhDFMWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 08:22:06 -0400
+        with ESMTP id S1344002AbhDFMWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 08:22:07 -0400
 Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id B83C163E64;
-        Tue,  6 Apr 2021 14:21:38 +0200 (CEST)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 39BEC63E65;
+        Tue,  6 Apr 2021 14:21:39 +0200 (CEST)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 26/28] netfilter: conntrack: move sysctl pointer to net_generic infra
-Date:   Tue,  6 Apr 2021 14:21:31 +0200
-Message-Id: <20210406122133.1644-27-pablo@netfilter.org>
+Subject: [PATCH net-next 27/28] netfilter: conntrack: move ecache dwork to net_generic infra
+Date:   Tue,  6 Apr 2021 14:21:32 +0200
+Message-Id: <20210406122133.1644-28-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210406122133.1644-1-pablo@netfilter.org>
 References: <20210406122133.1644-1-pablo@netfilter.org>
@@ -31,67 +31,202 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-No need to keep this in struct net, place it in the net_generic data.
-The sysctl pointer is removed from struct net in a followup patch.
+dwork struct is large (>128 byte) and not needed when conntrack module
+is not loaded.
+
+Place it in net_generic data instead.  The struct net dwork member is now
+obsolete and will be removed in a followup patch.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack.h    |  3 +++
- net/netfilter/nf_conntrack_standalone.c | 10 ++++++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ include/net/netfilter/nf_conntrack.h        |  4 +++
+ include/net/netfilter/nf_conntrack_ecache.h | 33 ++++++++-------------
+ net/netfilter/nf_conntrack_core.c           |  7 +++--
+ net/netfilter/nf_conntrack_ecache.c         | 31 +++++++++++++++----
+ 4 files changed, 47 insertions(+), 28 deletions(-)
 
 diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index 439379ca9ffa..ef405a134307 100644
+index ef405a134307..86d86c860ede 100644
 --- a/include/net/netfilter/nf_conntrack.h
 +++ b/include/net/netfilter/nf_conntrack.h
-@@ -47,6 +47,9 @@ struct nf_conntrack_net {
- 	unsigned int users4;
- 	unsigned int users6;
- 	unsigned int users_bridge;
-+#ifdef CONFIG_SYSCTL
-+	struct ctl_table_header	*sysctl_header;
+@@ -50,6 +50,10 @@ struct nf_conntrack_net {
+ #ifdef CONFIG_SYSCTL
+ 	struct ctl_table_header	*sysctl_header;
+ #endif
++#ifdef CONFIG_NF_CONNTRACK_EVENTS
++	struct delayed_work ecache_dwork;
++	struct netns_ct *ct_net;
 +#endif
  };
  
  #include <linux/types.h>
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 0ee702d374b0..3f2cc7b04b20 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -1027,6 +1027,7 @@ static void nf_conntrack_standalone_init_gre_sysctl(struct net *net,
+diff --git a/include/net/netfilter/nf_conntrack_ecache.h b/include/net/netfilter/nf_conntrack_ecache.h
+index eb81f9195e28..d00ba6048e44 100644
+--- a/include/net/netfilter/nf_conntrack_ecache.h
++++ b/include/net/netfilter/nf_conntrack_ecache.h
+@@ -171,12 +171,18 @@ void nf_ct_expect_event_report(enum ip_conntrack_expect_events event,
+ 			       struct nf_conntrack_expect *exp,
+ 			       u32 portid, int report);
  
- static int nf_conntrack_standalone_init_sysctl(struct net *net)
++void nf_conntrack_ecache_work(struct net *net, enum nf_ct_ecache_state state);
++
+ void nf_conntrack_ecache_pernet_init(struct net *net);
+ void nf_conntrack_ecache_pernet_fini(struct net *net);
+ 
+ int nf_conntrack_ecache_init(void);
+ void nf_conntrack_ecache_fini(void);
+ 
++static inline bool nf_conntrack_ecache_dwork_pending(const struct net *net)
++{
++	return net->ct.ecache_dwork_pending;
++}
+ #else /* CONFIG_NF_CONNTRACK_EVENTS */
+ 
+ static inline void nf_ct_expect_event_report(enum ip_conntrack_expect_events e,
+@@ -186,6 +192,11 @@ static inline void nf_ct_expect_event_report(enum ip_conntrack_expect_events e,
  {
-+	struct nf_conntrack_net *cnet = net_generic(net, nf_conntrack_net_id);
- 	struct nf_udp_net *un = nf_udp_pernet(net);
- 	struct ctl_table *table;
+ }
  
-@@ -1072,8 +1073,8 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
- 		table[NF_SYSCTL_CT_BUCKETS].mode = 0444;
++static inline void nf_conntrack_ecache_work(struct net *net,
++					    enum nf_ct_ecache_state s)
++{
++}
++
+ static inline void nf_conntrack_ecache_pernet_init(struct net *net)
+ {
+ }
+@@ -203,26 +214,6 @@ static inline void nf_conntrack_ecache_fini(void)
+ {
+ }
+ 
++static inline bool nf_conntrack_ecache_dwork_pending(const struct net *net) { return false; }
+ #endif /* CONFIG_NF_CONNTRACK_EVENTS */
+-
+-static inline void nf_conntrack_ecache_delayed_work(struct net *net)
+-{
+-#ifdef CONFIG_NF_CONNTRACK_EVENTS
+-	if (!delayed_work_pending(&net->ct.ecache_dwork)) {
+-		schedule_delayed_work(&net->ct.ecache_dwork, HZ);
+-		net->ct.ecache_dwork_pending = true;
+-	}
+-#endif
+-}
+-
+-static inline void nf_conntrack_ecache_work(struct net *net)
+-{
+-#ifdef CONFIG_NF_CONNTRACK_EVENTS
+-	if (net->ct.ecache_dwork_pending) {
+-		net->ct.ecache_dwork_pending = false;
+-		mod_delayed_work(system_wq, &net->ct.ecache_dwork, 0);
+-	}
+-#endif
+-}
+-
+ #endif /*_NF_CONNTRACK_ECACHE_H*/
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index ff0168736f6e..ace3e8265e0a 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -656,6 +656,7 @@ static void nf_ct_delete_from_lists(struct nf_conn *ct)
+ bool nf_ct_delete(struct nf_conn *ct, u32 portid, int report)
+ {
+ 	struct nf_conn_tstamp *tstamp;
++	struct net *net;
+ 
+ 	if (test_and_set_bit(IPS_DYING_BIT, &ct->status))
+ 		return false;
+@@ -670,11 +671,13 @@ bool nf_ct_delete(struct nf_conn *ct, u32 portid, int report)
+ 		 * be done by event cache worker on redelivery.
+ 		 */
+ 		nf_ct_delete_from_lists(ct);
+-		nf_conntrack_ecache_delayed_work(nf_ct_net(ct));
++		nf_conntrack_ecache_work(nf_ct_net(ct), NFCT_ECACHE_DESTROY_FAIL);
+ 		return false;
  	}
  
--	net->ct.sysctl_header = register_net_sysctl(net, "net/netfilter", table);
--	if (!net->ct.sysctl_header)
-+	cnet->sysctl_header = register_net_sysctl(net, "net/netfilter", table);
-+	if (!cnet->sysctl_header)
- 		goto out_unregister_netfilter;
+-	nf_conntrack_ecache_work(nf_ct_net(ct));
++	net = nf_ct_net(ct);
++	if (nf_conntrack_ecache_dwork_pending(net))
++		nf_conntrack_ecache_work(net, NFCT_ECACHE_DESTROY_SENT);
+ 	nf_ct_delete_from_lists(ct);
+ 	nf_ct_put(ct);
+ 	return true;
+diff --git a/net/netfilter/nf_conntrack_ecache.c b/net/netfilter/nf_conntrack_ecache.c
+index 7956c9f19899..759d87aef95f 100644
+--- a/net/netfilter/nf_conntrack_ecache.c
++++ b/net/netfilter/nf_conntrack_ecache.c
+@@ -27,6 +27,8 @@
+ #include <net/netfilter/nf_conntrack_ecache.h>
+ #include <net/netfilter/nf_conntrack_extend.h>
  
- 	return 0;
-@@ -1085,10 +1086,11 @@ static int nf_conntrack_standalone_init_sysctl(struct net *net)
++extern unsigned int nf_conntrack_net_id;
++
+ static DEFINE_MUTEX(nf_ct_ecache_mutex);
  
- static void nf_conntrack_standalone_fini_sysctl(struct net *net)
+ #define ECACHE_RETRY_WAIT (HZ/10)
+@@ -96,8 +98,8 @@ static enum retry_state ecache_work_evict_list(struct ct_pcpu *pcpu)
+ 
+ static void ecache_work(struct work_struct *work)
+ {
+-	struct netns_ct *ctnet =
+-		container_of(work, struct netns_ct, ecache_dwork.work);
++	struct nf_conntrack_net *cnet = container_of(work, struct nf_conntrack_net, ecache_dwork.work);
++	struct netns_ct *ctnet = cnet->ct_net;
+ 	int cpu, delay = -1;
+ 	struct ct_pcpu *pcpu;
+ 
+@@ -127,7 +129,7 @@ static void ecache_work(struct work_struct *work)
+ 
+ 	ctnet->ecache_dwork_pending = delay > 0;
+ 	if (delay >= 0)
+-		schedule_delayed_work(&ctnet->ecache_dwork, delay);
++		schedule_delayed_work(&cnet->ecache_dwork, delay);
+ }
+ 
+ int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,
+@@ -344,6 +346,20 @@ void nf_ct_expect_unregister_notifier(struct net *net,
+ }
+ EXPORT_SYMBOL_GPL(nf_ct_expect_unregister_notifier);
+ 
++void nf_conntrack_ecache_work(struct net *net, enum nf_ct_ecache_state state)
++{
++	struct nf_conntrack_net *cnet = net_generic(net, nf_conntrack_net_id);
++
++	if (state == NFCT_ECACHE_DESTROY_FAIL &&
++	    !delayed_work_pending(&cnet->ecache_dwork)) {
++		schedule_delayed_work(&cnet->ecache_dwork, HZ);
++		net->ct.ecache_dwork_pending = true;
++	} else if (state == NFCT_ECACHE_DESTROY_SENT) {
++		net->ct.ecache_dwork_pending = false;
++		mod_delayed_work(system_wq, &cnet->ecache_dwork, 0);
++	}
++}
++
+ #define NF_CT_EVENTS_DEFAULT 1
+ static int nf_ct_events __read_mostly = NF_CT_EVENTS_DEFAULT;
+ 
+@@ -355,13 +371,18 @@ static const struct nf_ct_ext_type event_extend = {
+ 
+ void nf_conntrack_ecache_pernet_init(struct net *net)
  {
 +	struct nf_conntrack_net *cnet = net_generic(net, nf_conntrack_net_id);
- 	struct ctl_table *table;
- 
--	table = net->ct.sysctl_header->ctl_table_arg;
--	unregister_net_sysctl_table(net->ct.sysctl_header);
-+	table = cnet->sysctl_header->ctl_table_arg;
-+	unregister_net_sysctl_table(cnet->sysctl_header);
- 	kfree(table);
++
+ 	net->ct.sysctl_events = nf_ct_events;
+-	INIT_DELAYED_WORK(&net->ct.ecache_dwork, ecache_work);
++	cnet->ct_net = &net->ct;
++	INIT_DELAYED_WORK(&cnet->ecache_dwork, ecache_work);
  }
- #else
+ 
+ void nf_conntrack_ecache_pernet_fini(struct net *net)
+ {
+-	cancel_delayed_work_sync(&net->ct.ecache_dwork);
++	struct nf_conntrack_net *cnet = net_generic(net, nf_conntrack_net_id);
++
++	cancel_delayed_work_sync(&cnet->ecache_dwork);
+ }
+ 
+ int nf_conntrack_ecache_init(void)
 -- 
 2.30.2
 
