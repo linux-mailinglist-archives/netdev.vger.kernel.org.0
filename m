@@ -2,65 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E548355F2E
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF47355F32
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:02:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233140AbhDFXBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 19:01:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60202 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232398AbhDFXBW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 19:01:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 85251613BE;
-        Tue,  6 Apr 2021 23:01:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617750073;
-        bh=MOxI+EZDMPVapGVH4Rll/KYW49AV3Fp1dCqdjUnzM1s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=D4YZ7I1WRf8xWoNB78eRxi2euRlGyyuvcA0Pg247MCyGbrrAcB+7L+2KXYI9jEm8/
-         JWJ6I+q+8yF53AdY8T0Eivvhr7CO7PBALM4XmwFHqKV2ExNvD3xSvCMY8lkkppulvk
-         TmlHxcKjhAyvbn715wQqVQo0WMsZy2UN+JlroNKSbO5VYHu3rvdBNBI6nDl+0I6Fb8
-         VXLugwZO63b6ipTFfzj0oVb1wjYUiAfwESAyxhEl6y1N7QFCXdE3CgNHwpILvUnvCp
-         uSmGsbOeULlK3Wpca+TCkyr9A6aPlz6jtavQRkksN7Qu4RZ2AkWbJFm3V7fUsn0ZZa
-         oMbSqkxuNyLQg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, mkubecek@suse.cz,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] ethtool: fix kdoc attr name
-Date:   Tue,  6 Apr 2021 16:01:11 -0700
-Message-Id: <20210406230111.1847402-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        id S237840AbhDFXCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:02:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232398AbhDFXCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 19:02:40 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA3AC06174A
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 16:02:32 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id k8so14872942iop.12
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 16:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rj2YYKWiwju3STdIjVvck7gwFTWKqKlbS/8vOJQzblA=;
+        b=LjPAMgX4jEAvs46Pjf+qHRP61100oZ9gBFh8LuXJOqZ/+4s8Zd7eKgheo4sK3oKHxp
+         sERChtROH5w8X7WVNvCbc9ajll7IY7lboMEg6i3jClONPUzB2iYndamvcV+rGEXvyM0V
+         /w8r4v1KClZJ774YmtCVlMsESIJiTR57hldq8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rj2YYKWiwju3STdIjVvck7gwFTWKqKlbS/8vOJQzblA=;
+        b=RsAIi2i3ONikjsk+AKTkk4bHsxVMAEVctPSaAw0TAyglfkr6Lancq1iGkduOye1RDw
+         zdc0lXiUVzgbKcbxpZXsq4beZHGQ0tevKHocAVVhC3EwAicyv7+yUVqR7W2iLgupbPnA
+         rCMzcbE354454O6sCGpsXB+ITWvQV810DHgk7q4X4+T1vsQNLOKI6hAV0nZSPMdKC5RH
+         Dla9jMQ2oMCuXgDi6VGfOi9Vjy+H6Cv228S6KDK8qU+Yr8+7+P6bj3V4wrtJ+KV7Kz0i
+         cPBDjlLB8jY94ErE/7SutedPpIRjIRgFJdhW8mXqiM1yKxVdBsucECcdj8+to5hTEh2s
+         A/GQ==
+X-Gm-Message-State: AOAM533EYfszLxUosqBt+/7jpxQTw6lcJhbJsoa8VSM9fblCam9u9jaQ
+        NO0lPHW6ExubTFLSExe5EmBLeg==
+X-Google-Smtp-Source: ABdhPJyIpJDK8H7I6Uevy94NM3CzpZpJax71iCAYlQWB3ZvcOLnBm9cU/gL+ZTjIV0swPVXh0JIGew==
+X-Received: by 2002:a05:6638:343:: with SMTP id x3mr522607jap.44.1617750151432;
+        Tue, 06 Apr 2021 16:02:31 -0700 (PDT)
+Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id z10sm13186097ilq.38.2021.04.06.16.02.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Apr 2021 16:02:30 -0700 (PDT)
+From:   Shuah Khan <skhan@linuxfoundation.org>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pavel@ucw.cz
+Subject: [PATCH] ath10k: Fix ath10k_wmi_tlv_op_pull_peer_stats_info() unlock without lock
+Date:   Tue,  6 Apr 2021 17:02:28 -0600
+Message-Id: <20210406230228.31301-1-skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing 't' in attrtype.
+ath10k_wmi_tlv_op_pull_peer_stats_info() could try to unlock RCU lock
+winthout locking it first when peer reason doesn't match the valid
+cases for this function.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Add a default case to return without unlocking.
+
+Fixes: 09078368d516 ("ath10k: hold RCU lock when calling ieee80211_find_sta_by_ifaddr()")
+Reported-by: Pavel Machek <pavel@ucw.cz>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 ---
- net/ethtool/netlink.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath10k/wmi-tlv.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index 785f7ee45930..181fda8a590e 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -36,9 +36,9 @@ static inline int ethnl_strz_size(const char *s)
+diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
+index d97b33f789e4..7efbe03fbca8 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
++++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
+@@ -592,6 +592,9 @@ static void ath10k_wmi_event_tdls_peer(struct ath10k *ar, struct sk_buff *skb)
+ 					GFP_ATOMIC
+ 					);
+ 		break;
++	default:
++		kfree(tb);
++		return;
+ 	}
  
- /**
-  * ethnl_put_strz() - put string attribute with fixed size string
-- * @skb:     skb with the message
-- * @attrype: attribute type
-- * @s:       ETH_GSTRING_LEN sized string (may not be null terminated)
-+ * @skb:      skb with the message
-+ * @attrtype: attribute type
-+ * @s:        ETH_GSTRING_LEN sized string (may not be null terminated)
-  *
-  * Puts an attribute with null terminated string from @s into the message.
-  *
+ exit:
 -- 
-2.30.2
+2.27.0
 
