@@ -2,307 +2,377 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0437F354CA6
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 08:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3EA354CAC
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 08:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237421AbhDFGSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 02:18:22 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24248 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236986AbhDFGSU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 02:18:20 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1366FQ5N022505;
-        Mon, 5 Apr 2021 23:17:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=03Tp/xLr4ihyugksM3v4eJOPvTuhVSrPYXmCiOvWKEM=;
- b=KGgRRJwZBuhAC2hwSK+/nUXX4imexwh9MIi+hAvH7l/pBw3tPrE8M2uD9lx3gCpE4Woy
- gg2W6FnUy8vT/7FXqGuSPg2J1NdQtI1Ue0QYZZVKIcDdx0s5NGUhCvizVEip7Prgr33l
- ChvwHaQV1mNvyOhKicZFaDTnsLH8lJdmOsk= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 37r5bcbhax-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 05 Apr 2021 23:17:59 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Apr 2021 23:17:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a8Pi0ERbLka+vG3ZlVjYPRgurR70JYXOLG8O5chM3StQbP3hae4jKmXxAj13UfashwWg5gAfcAcMlwF8j01dmgusnn6kJk5Qfbh4D+h/ujNzapAT4E0USynuVotdUo1CV3gtsQtUFlgE5irRGt8yr9tAzEG1S/CSy/WWuJcIp1Xe7n1DvS+HiL+QHlfZIHiV4ftDws+qMZvL9FGCG7iMQKQstfwN1JIfvY3Mc23f+VZL+v2q0G9LhUfWo+Eo32qm5aIDFkId0DLOd/sor6f34mjJaTfuFCH2WkYujCMf7uP9DruW7hkMd0BNwLAWz3pZnNjJuYEudI5ORRWK3Xz2TQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=03Tp/xLr4ihyugksM3v4eJOPvTuhVSrPYXmCiOvWKEM=;
- b=Jyn4hsqUE1wglkJOWAVPC/BOFIh9ztc/H++E0krddUsTlMSwgNgEU7er2c9Ac40t51AzhN6a0jyjN9yQexmCC6Zrxf2HBaQ61Sw+4rWolGcxsdCjIrUe+GdfCVDLVZxse9C747BWSsnvfhvqnhA2hE9BLO7iXsnM8ERl8ZV6h2U1lRBI9wmEmEstRhH9BrpN95EZTZ7DcjTxK4DnRMstp3DtDJsiqfaBnOxEooI6F4Sk4Btl67c238fYwFNtpZ+jdgZ17215+TaJ3P6LK0OtpLsnEiiUkpv3h6cEykEUfQwpRmBaQ5g4iWaM1QpN+9uvcGP61N04orEjpN/d1wN1zQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2821.namprd15.prod.outlook.com (2603:10b6:a03:15d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.29; Tue, 6 Apr
- 2021 06:17:55 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::1ce0:8b27:f740:6b60]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::1ce0:8b27:f740:6b60%4]) with mapi id 15.20.3933.039; Tue, 6 Apr 2021
- 06:17:55 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>,
-        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
-        "wangdongdong.6@bytedance.com" <wangdongdong.6@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Cong Wang" <cong.wang@bytedance.com>,
+        id S243947AbhDFGUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 02:20:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56636 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232350AbhDFGUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 02:20:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617689995;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/m246dyJ3V8Wedk98Dolw2OMcZJ+XtzpI0FZm5n9aWo=;
+        b=XNKZHY2yDjSibpZfnZHVPZ5slrSqvR5jxImqopkqNHaYuzYESYTzaUIt4rJ9eXfr8bh4/D
+        63Yl0x/j6N5JYKeBWNs3sn6bC5+XmFgoyCH6ciEU9GSgcHmI5b39yqZq1oHBKveLERgBLd
+        vRhRqBoGVG+pFn9Y7AwC4zgPh83CtME=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-344-xjGk_4KNM9midJH4DEUzWg-1; Tue, 06 Apr 2021 02:19:51 -0400
+X-MC-Unique: xjGk_4KNM9midJH4DEUzWg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 245671B18BC0;
+        Tue,  6 Apr 2021 06:19:48 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-13-150.pek2.redhat.com [10.72.13.150])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 35A6A5D9DC;
+        Tue,  6 Apr 2021 06:19:29 +0000 (UTC)
+Subject: Re: [PATCH net-next v3 4/8] virtio-net: xsk zero copy xmit implement
+ wakeup and xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
         Andrii Nakryiko <andrii@kernel.org>,
-        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [RFC Patch bpf-next] bpf: introduce bpf timer
-Thread-Topic: [RFC Patch bpf-next] bpf: introduce bpf timer
-Thread-Index: AQHXJq9GCj74A7YdlUumCh5fgR8tjaqfNeUAgAC1hACAAC9hgIABZM4AgAAGWACAABPLgIAACd2AgAAUn4CAACsBAIAEvAoAgAAV7QCAAASQAIAAUgmA
-Date:   Tue, 6 Apr 2021 06:17:55 +0000
-Message-ID: <45B3E744-000D-4958-89C0-A5E83959CD4A@fb.com>
-References: <20210401042635.19768-1-xiyou.wangcong@gmail.com>
- <B42B247A-4D0B-4DE9-B4D3-0C452472532D@fb.com>
- <CAM_iQpW-cuiYsPsu4mYZxZ1Oixffu2pV1TFg1c+eg9XT3wWwPQ@mail.gmail.com>
- <E0D5B076-A726-4845-8F12-640BAA853525@fb.com>
- <CAM_iQpWdO7efdcA2ovDsOF9XLhWJGgd6Be5qq0=xLphVBRE_Gw@mail.gmail.com>
- <93BBD473-7E1C-4A6E-8BB7-12E63D4799E8@fb.com>
- <CAM_iQpXEuxwQvT9FNqDa7y5kNpknA4xMNo_973ncy3iYaF-NTA@mail.gmail.com>
- <390A7E97-6A9A-48E4-A0B0-D1B9F5EB3308@fb.com>
- <CAM_iQpVZdju0KhTV1_jQYjad4p++hNAfikH5FsaOCZrcGFFDYA@mail.gmail.com>
- <93C90E13-4439-4467-811C-C6E410B1816D@fb.com>
- <CAM_iQpXrnXU85J=fa5+QjRqgo_evGfkfLU9_-aVdoyM_DJU2nA@mail.gmail.com>
- <DCAF6E05-7690-4B1D-B2AD-633B58E8985F@fb.com>
- <CAM_iQpW+=-RsxfYU_fWm+=9MSr6EzCvKwUayH3FyaPpopAtpWQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpW+=-RsxfYU_fWm+=9MSr6EzCvKwUayH3FyaPpopAtpWQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.60.0.2.21)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:57e2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ff56cd22-7220-49b3-dcbc-08d8f8c3b760
-x-ms-traffictypediagnostic: BYAPR15MB2821:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB28218C4EC9B27D8975311A11B3769@BYAPR15MB2821.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JoAovxOTX6vGBVArUIeyhv0NNYh6+A3QwTAxESfkl2klEow3YVYiSDG4glVporMPt6byEMUrwuZpr2yvsGsGBeI54VEG5u9xtSH/1MzYZRPYwAJZbjv9ov8G6sF8Nk73VLGBUTRl7yk6sDqd3EngsTlxB3UrpwXGRfnh3WJeLlbDKNMMtsQCTVxIclx/IkmjefUbDkot5GTbcBC26FThaQ0OClKsbdt3z8ikcF0xYYbWWXeqsCTzL7QQBnlIf1zKMU9dzuNs7GdnehQivxTIP/dHvXdRIjtG2aEjLx9usBfbiFApH4d2mLI5bvlM8uPF6q1koIG1rJ03pDgdMWe/Od1f07lNrGm0VMuj/0oNwIoi5kkgUTKXH5hUS0067+5v8+uqFriAr/WvTUmKM+zC8VxS0ROQXVIPtGJUpA6NCEnXHmUojq8G3qQgJSY/H5y0UVPfgHR7mlgSX07HTstSr6MtShFtMTFUyfHpEWhOqjFCnocNDA+S2SlttxN1TIR42NH651DZc+MEp3BXo9MvdtSoHR5d02xmZiyPlsDUFDR8qCeeDdNOc5t3kki0cPn2tgX6EYyOAiJEApYywuJgUJdXbgamNWqkoBqxmNVz1pizcCTTkCxkZV/Sh74At+crQ/GTci2kT+OHc1GLnOtBxoNntk4KvBaAqUiN8gdA0cJGzC7V2avsLJC9T7Ha2VjIaN9dLPHKxIq6fnVpRM1iow==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(39860400002)(136003)(346002)(396003)(8676002)(478600001)(54906003)(6486002)(66556008)(7416002)(4326008)(6512007)(36756003)(71200400001)(91956017)(64756008)(86362001)(53546011)(33656002)(66446008)(66946007)(2906002)(8936002)(6916009)(66476007)(316002)(83380400001)(186003)(6506007)(76116006)(5660300002)(38100700001)(2616005)(21314003)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?2ucPVBN7Qdt34TLOinjD8U3gsf4LK3GDJwF1wGsmPJB95a5PW5Q2orFx1m6M?=
- =?us-ascii?Q?4Hf2XE7yYwD5RRfkexmWYPiEts1dMFG3LOltgb1jPFVnpC6RR/QoUyAn7RxA?=
- =?us-ascii?Q?IgB+F957kPwAqHcYVj0b7CB9tSZYfW+0qHy7x1HyKpdZliIlA2OBQQN95HEp?=
- =?us-ascii?Q?K2hBB/OeunlzMGSr2PU1/Kb+zmy27cSubVv65qxh/HjI+zt6z/zCyxRGnrRo?=
- =?us-ascii?Q?YoMRssG/IFly0VlaECDviPilNjM55Tn3cWV/hnP8cN9vRXeYlbo5HAAyMcEc?=
- =?us-ascii?Q?dvQ2D1MkTFCaY2+od5FL43XLaM2zu6w/r67doVVwyfJR0Ekm1p1h8J1sk7Tj?=
- =?us-ascii?Q?1+AhpZ0nXx9objN0MNa5jCAQZnRGweIlUjG4il9yrbqgzB36z4P21rDAlYvv?=
- =?us-ascii?Q?bbfRaxh/EIbbtTQzBdz6ifHptnLotEV4crZozpCdoTr1FN25AFSqbRAeekE2?=
- =?us-ascii?Q?WcUeXi+o5rb55YayE7isN7gXG8pOoKspI/9+MUJzlGO7YZbwX2CLnCJB34Yr?=
- =?us-ascii?Q?lDizAbpw7CuTW/0VyGsnrx0X+gL1pQOKKaGo7YPsN/65/HqlHO+Jx23b6J90?=
- =?us-ascii?Q?kmELn4T+CRu1ToYEe48sxIkEgGMGz/PMpWzbKJat9UUkMhL0YbDuxsiR9HI9?=
- =?us-ascii?Q?DAaFbrRR3KeUKuVfWC7sKOQvid61It1HyAPiNxlLtnXpKz1XC4wstK+62Q85?=
- =?us-ascii?Q?LDMPwJ9ptvPF5uZTgmdAX5Z6nj836Rrohc6LXer7KFQgYFtJh3ISNqKBe4Uw?=
- =?us-ascii?Q?5oaz812E1Nw9ntdYOMlp0JDfZ5CN3yMlNkKS7vnDXcTFxEVIPWEKiIhFE4u1?=
- =?us-ascii?Q?huo51A5lXXREzDFCTOValsNmZ0+TGSLSaJ/zfEcyNOugxFWwWpqxeV/ahn3d?=
- =?us-ascii?Q?9W9d/PZoOAQ3d+bMjNIkteL8GSBw+bnSNdSrikmuLLPBA2aOHXa9unqiErso?=
- =?us-ascii?Q?bI5ZAtFTEGI5DpFJh4bENylahSxhyU64pLO/tvo+fsziRcLxKYgF8z9ICsWw?=
- =?us-ascii?Q?2aiLu2grnA4OdM4sPGNQSJpWNvIyj1gnt0cNK5x1yGtTOBXjonWu5CHgEDjX?=
- =?us-ascii?Q?rXOlYZiXnuPr8RrEaqtKHpdb/q30Hm9BtBONSxsaNlwi8Qc8aBKIPE1BCOkq?=
- =?us-ascii?Q?ARhh87baiwHNZRKH8DY+DdmfCt4jkiM5Tbiq/lXeXkDvAYCfAPyZCe1uttgl?=
- =?us-ascii?Q?j3iWGueYVEPtnj2zBM9W17R+aZ4KC5Cr+J+LojQ9aF2qKx69x7l50v16sche?=
- =?us-ascii?Q?b80ZEtwkVTEk8TWbVmCTFWR2pX4pknAv2ZmdJnlD/FpYYpxZJcKiqKHLdd9E?=
- =?us-ascii?Q?pHtpf09z+4DNZffk8BY3H5AuI+MrUGAolraJM6koh7G/UqCvH0DMIjJWY2PG?=
- =?us-ascii?Q?ZKIbaMQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <90AA39D273B8F644930E0728230BE183@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        Dust Li <dust.li@linux.alibaba.com>
+References: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
+ <20210331071139.15473-5-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3d54007e-71b0-bf91-3904-815653860cf3@redhat.com>
+Date:   Tue, 6 Apr 2021 14:19:28 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff56cd22-7220-49b3-dcbc-08d8f8c3b760
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2021 06:17:55.0675
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zmZoVUPE/kLcoLjLsrZnYwfWXVcZsVVH4oUplqpAUe5AbZYmbXBMHFjubM1jXHOl3JUJQxrXxw6E8OQSmRp3MA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2821
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: 6uqOv9HBtxyPT4jIkumTqTLvwSKOl23T
-X-Proofpoint-ORIG-GUID: 6uqOv9HBtxyPT4jIkumTqTLvwSKOl23T
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-04-06_01:2021-04-01,2021-04-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- adultscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 mlxscore=0 malwarescore=0 bulkscore=0 impostorscore=0
- spamscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104030000 definitions=main-2104060044
-X-FB-Internal: deliver
+In-Reply-To: <20210331071139.15473-5-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+ÔÚ 2021/3/31 ÏÂÎç3:11, Xuan Zhuo Ð´µÀ:
+> When the user calls sendto to consume the data in the xsk tx queue,
+> virtnet_xsk_wakeup will be called.
+>
+> In wakeup, it will try to send a part of the data directly, the quantity
+> is operated by the module parameter xsk_budget.
 
-> On Apr 5, 2021, at 6:24 PM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->=20
-> On Mon, Apr 5, 2021 at 6:08 PM Song Liu <songliubraving@fb.com> wrote:
->>=20
->>=20
->>=20
->>> On Apr 5, 2021, at 4:49 PM, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->>>=20
->>> On Fri, Apr 2, 2021 at 4:31 PM Song Liu <songliubraving@fb.com> wrote:
->>>>=20
->>>>=20
->>>>=20
->>>>> On Apr 2, 2021, at 1:57 PM, Cong Wang <xiyou.wangcong@gmail.com> wrot=
-e:
->>>>>=20
->>>>> Ideally I even prefer to create timers in kernel-space too, but as I =
-already
->>>>> explained, this seems impossible to me.
->>>>=20
->>>> Would hrtimer (include/linux/hrtimer.h) work?
->>>=20
->>> By impossible, I meant it is impossible (to me) to take a refcnt to the=
- callback
->>> prog if we create the timer in kernel-space. So, hrtimer is the same in=
- this
->>> perspective.
->>>=20
->>> Thanks.
->>=20
->> I guess I am not following 100%. Here is what I would propose:
->>=20
->> We only introduce a new program type BPF_PROG_TYPE_TIMER. No new map typ=
-e.
->> The new program will trigger based on a timer, and the program can someh=
-ow
->> control the period of the timer (for example, via return value).
->=20
-> Like we already discussed, with this approach the "timer" itself is not
-> visible to kernel, that is, only manageable in user-space. Or do you disa=
-gree?
 
-Do you mean we need mechanisms to control the timer, like stop the timer,=20
-trigger the timer immediately, etc.? And we need these mechanisms in kernel=
-?
-And by "in kernel-space" I assume you mean from BPF programs.=20
+Any reason that we can't use NAPI budget?
 
-If these are correct, how about something like:
 
-1. A new program BPF_PROG_TYPE_TIMER, which by default will trigger on a ti=
-mer.=20
-   Note that, the timer here is embedded in the program. So all the operati=
-ons
-   are on the program.=20
-2. Allow adding such BPF_PROG_TYPE_TIMER programs to a map of type=20
-   BPF_MAP_TYPE_PROG_ARRAY.=20
-3. Some new helpers that access the program via the BPF_MAP_TYPE_PROG_ARRAY=
- map.=20
-   Actually, maybe we can reuse existing bpf_tail_call().=20
+>   There are two purposes
+> for this realization:
+>
+> 1. Send part of the data quickly to reduce the transmission delay of the
+>     first packet
+> 2. Trigger tx interrupt, start napi to consume xsk tx data
+>
+> All sent xsk packets share the virtio-net header of xsk_hdr. If xsk
+> needs to support csum and other functions later, consider assigning xsk
+> hdr separately for each sent packet.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+>   drivers/net/virtio_net.c | 183 +++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 183 insertions(+)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 4e25408a2b37..c8a317a93ef7 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -28,9 +28,11 @@ static int napi_weight = NAPI_POLL_WEIGHT;
+>   module_param(napi_weight, int, 0444);
+>   
+>   static bool csum = true, gso = true, napi_tx = true;
+> +static int xsk_budget = 32;
+>   module_param(csum, bool, 0444);
+>   module_param(gso, bool, 0444);
+>   module_param(napi_tx, bool, 0644);
+> +module_param(xsk_budget, int, 0644);
+>   
+>   /* FIXME: MTU in config. */
+>   #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+> @@ -47,6 +49,8 @@ module_param(napi_tx, bool, 0644);
+>   
+>   #define VIRTIO_XDP_FLAG	BIT(0)
+>   
+> +static struct virtio_net_hdr_mrg_rxbuf xsk_hdr;
+> +
+>   /* RX packet size EWMA. The average packet size is used to determine the packet
+>    * buffer size when refilling RX rings. As the entire RX ring may be refilled
+>    * at once, the weight is chosen so that the EWMA will be insensitive to short-
+> @@ -138,6 +142,9 @@ struct send_queue {
+>   	struct {
+>   		/* xsk pool */
+>   		struct xsk_buff_pool __rcu *pool;
+> +
+> +		/* save the desc for next xmit, when xmit fail. */
+> +		struct xdp_desc last_desc;
+>   	} xsk;
+>   };
+>   
+> @@ -2532,6 +2539,179 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>   	return err;
+>   }
+>   
+> +static void virtnet_xsk_check_space(struct send_queue *sq)
+> +{
 
-The BPF program and map will look like:
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D 8< =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-struct data_elem {
-	__u64 expiration;
-	/* other data */
-};=20
+The name is confusing, the function does more than just checking the 
+space, it may stop the queue as well.
 
-struct {
-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-	__uint(max_entries, 256);
-	__type(key, __u32);
-	__type(value, struct data_elem);
-} data_map SEC(".maps");
 
-struct {
-	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-	__uint(max_entries, 256);
-	__type(key, __u32);
-	__type(value, __u64);
-} timer_prog_map SEC(".maps");
+> +	struct virtnet_info *vi = sq->vq->vdev->priv;
+> +	struct net_device *dev = vi->dev;
+> +	int qnum = sq - vi->sq;
+> +
+> +	/* If this sq is not the exclusive queue of the current cpu,
+> +	 * then it may be called by start_xmit, so check it running out
+> +	 * of space.
+> +	 */
 
-static __u64
-check_expired_elem(struct bpf_map *map, __u32 *key, __u64 *val,
-                 int *data)
-{
-	u64 expires =3D *val;
 
-	if (expires < bpf_jiffies64()) {
-		bpf_map_delete_elem(map, key);
-		*data++;
-	}
- return 0;
-}
+So the code can explain itself. We need a better comment to explain why 
+we need to differ the case of the raw buffer queue.
 
-SEC("timer")
-int clean_up_timer(void)
-{
-	int count;
 
-	bpf_for_each_map_elem(&data_map, check_expired_elem, &count, 0);
-	if (count)
- 		return 0; // not re-arm this timer
- 	else
- 		return 10; // reschedule this timer after 10 jiffies
-}
+> +	if (is_xdp_raw_buffer_queue(vi, qnum))
+> +		return;
+> +
+> +	/* Stop the queue to avoid getting packets that we are
+> +	 * then unable to transmit. Then wait the tx interrupt.
+> +	 */
+> +	if (sq->vq->num_free < 2 + MAX_SKB_FRAGS)
+> +		netif_stop_subqueue(dev, qnum);
+> +}
+> +
+> +static int virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_pool *pool,
+> +			    struct xdp_desc *desc)
+> +{
+> +	struct virtnet_info *vi;
+> +	struct page *page;
+> +	void *data;
+> +	u32 offset;
+> +	u64 addr;
+> +	int err;
+> +
+> +	vi = sq->vq->vdev->priv;
+> +	addr = desc->addr;
+> +	data = xsk_buff_raw_get_data(pool, addr);
+> +	offset = offset_in_page(data);
+> +
+> +	sg_init_table(sq->sg, 2);
+> +	sg_set_buf(sq->sg, &xsk_hdr, vi->hdr_len);
+> +	page = xsk_buff_xdp_get_page(pool, addr);
+> +	sg_set_page(sq->sg + 1, page, desc->len, offset);
+> +
+> +	err = virtqueue_add_outbuf(sq->vq, sq->sg, 2, NULL, GFP_ATOMIC);
+> +	if (unlikely(err))
+> +		sq->xsk.last_desc = *desc;
 
-SEC("tp_btf/XXX")
-int another_trigger(void)
-{
-	if (some_condition)
-		bpf_tail_call(NULL, &timer_prog_map, idx);
-	return 0;
-}
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D 8< =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+So I think it's better to make sure we had at least 2 slots to avoid 
+handling errors like this? (Especially consider the queue size is not 
+necessarily the power of 2 when packed virtqueue is used).
 
-Would something like this work for contract?
 
-Thanks,
-Song
+> +
+> +	return err;
+> +}
+> +
+> +static int virtnet_xsk_xmit_batch(struct send_queue *sq,
+> +				  struct xsk_buff_pool *pool,
+> +				  unsigned int budget,
+> +				  bool in_napi, int *done)
+> +{
+> +	struct xdp_desc desc;
+> +	int err, packet = 0;
+> +	int ret = -EAGAIN;
+> +
+> +	if (sq->xsk.last_desc.addr) {
 
->=20
->>=20
->> With this approach, the user simply can create multiple timer programs a=
-nd
->> hold the fd for them. And these programs trigger up to timer expiration.
->=20
-> Sure, this is precisely why I moved timer creation to user-space to solve
-> the refcnt issue. ;)
->=20
->>=20
->> Does this make sense?
->=20
-> Yes, except kernel-space code can't see it. If you look at the timeout ma=
-p
-> I had, you will see something like this:
->=20
-> val =3D lookup(map, key);
-> if (val && val->expires < now)
->   rearm_timer(&timer); // the timer periodically scans the hashmap
->=20
-> For conntrack, this is obviously in kernel-space. The point of the code i=
-s to
-> flush all expired items as soon as possible without doing explicit deleti=
-ons
-> which are obviously expensive for the fast path.
->=20
-> Thanks.
+
+Any reason that num_free is not checked here?
+
+
+> +		err = virtnet_xsk_xmit(sq, pool, &sq->xsk.last_desc);
+> +		if (unlikely(err))
+> +			return -EBUSY;
+> +
+> +		++packet;
+> +		--budget;
+> +		sq->xsk.last_desc.addr = 0;
+> +	}
+> +
+> +	while (budget-- > 0) {
+> +		if (sq->vq->num_free < 2 + MAX_SKB_FRAGS) {
+> +			ret = -EBUSY;
+> +			break;
+> +		}
+> +
+> +		if (!xsk_tx_peek_desc(pool, &desc)) {
+> +			/* done */
+> +			ret = 0;
+> +			break;
+> +		}
+> +
+> +		err = virtnet_xsk_xmit(sq, pool, &desc);
+> +		if (unlikely(err)) {
+> +			ret = -EBUSY;
+> +			break;
+> +		}
+> +
+> +		++packet;
+> +	}
+> +
+> +	if (packet) {
+> +		if (virtqueue_kick_prepare(sq->vq) &&
+> +		    virtqueue_notify(sq->vq)) {
+> +			u64_stats_update_begin(&sq->stats.syncp);
+> +			sq->stats.kicks += 1;
+> +			u64_stats_update_end(&sq->stats.syncp);
+> +		}
+> +
+> +		*done = packet;
+> +
+> +		xsk_tx_release(pool);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int virtnet_xsk_run(struct send_queue *sq, struct xsk_buff_pool *pool,
+> +			   int budget, bool in_napi)
+> +{
+> +	int done = 0;
+> +	int err;
+> +
+> +	free_old_xmit_skbs(sq, in_napi);
+> +
+> +	err = virtnet_xsk_xmit_batch(sq, pool, budget, in_napi, &done);
+> +	/* -EAGAIN: done == budget
+> +	 * -EBUSY: done < budget
+> +	 *  0    : done < budget
+> +	 */
+
+
+Please move them to the comment above virtnet_xsk_xmit_batch().
+
+And it looks to me there's no care for -EAGAIN, any reason for sticking 
+a dedicated variable like that?
+
+
+> +	if (err == -EBUSY) {
+> +		free_old_xmit_skbs(sq, in_napi);
+> +
+> +		/* If the space is enough, let napi run again. */
+> +		if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
+> +			done = budget;
+
+
+So I don't see how this can work in the case of event index where the 
+notification needs to be enabled explicitly.
+
+
+> +	}
+> +
+> +	virtnet_xsk_check_space(sq);
+> +
+> +	return done;
+> +}
+> +
+> +static int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 flag)
+> +{
+> +	struct virtnet_info *vi = netdev_priv(dev);
+> +	struct xsk_buff_pool *pool;
+> +	struct netdev_queue *txq;
+> +	struct send_queue *sq;
+> +
+> +	if (!netif_running(dev))
+> +		return -ENETDOWN;
+> +
+> +	if (qid >= vi->curr_queue_pairs)
+> +		return -EINVAL;
+> +
+> +	sq = &vi->sq[qid];
+> +
+> +	rcu_read_lock();
+> +
+> +	pool = rcu_dereference(sq->xsk.pool);
+> +	if (!pool)
+> +		goto end;
+> +
+> +	if (napi_if_scheduled_mark_missed(&sq->napi))
+> +		goto end;
+> +
+> +	txq = netdev_get_tx_queue(dev, qid);
+> +
+> +	__netif_tx_lock_bh(txq);
+> +
+> +	/* Send part of the packet directly to reduce the delay in sending the
+> +	 * packet, and this can actively trigger the tx interrupts.
+> +	 *
+> +	 * If no packet is sent out, the ring of the device is full. In this
+> +	 * case, we will still get a tx interrupt response. Then we will deal
+> +	 * with the subsequent packet sending work.
+> +	 */
+> +	virtnet_xsk_run(sq, pool, xsk_budget, false);
+
+
+So the return value is ignored, this means there's no way to report we 
+exhaust the budget. Is this intended?
+
+Thanks
+
+
+> +
+> +	__netif_tx_unlock_bh(txq);
+> +
+> +end:
+> +	rcu_read_unlock();
+> +	return 0;
+> +}
+> +
+>   static int virtnet_xsk_pool_enable(struct net_device *dev,
+>   				   struct xsk_buff_pool *pool,
+>   				   u16 qid)
+> @@ -2553,6 +2733,8 @@ static int virtnet_xsk_pool_enable(struct net_device *dev,
+>   	if (rcu_dereference(sq->xsk.pool))
+>   		goto end;
+>   
+> +	memset(&sq->xsk, 0, sizeof(sq->xsk));
+> +
+>   	/* Here is already protected by rtnl_lock, so rcu_assign_pointer is
+>   	 * safe.
+>   	 */
+> @@ -2656,6 +2838,7 @@ static const struct net_device_ops virtnet_netdev = {
+>   	.ndo_vlan_rx_kill_vid = virtnet_vlan_rx_kill_vid,
+>   	.ndo_bpf		= virtnet_xdp,
+>   	.ndo_xdp_xmit		= virtnet_xdp_xmit,
+> +	.ndo_xsk_wakeup         = virtnet_xsk_wakeup,
+>   	.ndo_features_check	= passthru_features_check,
+>   	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
+>   	.ndo_set_features	= virtnet_set_features,
 
