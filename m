@@ -2,138 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D03355077
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5277135507D
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241387AbhDFKFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 06:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240979AbhDFKFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 06:05:18 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E559C06174A
-        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 03:05:10 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id h7so10711644qtx.3
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 03:05:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=0x0f.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z/xnRTBuWqAi+huuq427+Hagp0Iffp9JP9RF/7XM+NU=;
-        b=UJV+f4JCGRpnFO+0A5snSP1faa/tfAYHD1UMXC0RCHyBptxVMDQDdjc1C7zHyTNwZr
-         SVG8E1bJaZ7MRf29V1mxrIrYxkPMFRpA6xcnyyNZviLt+tMlQaG5RXre/XdyIOD2pv0K
-         C4nTkcr5RzJjbEbD5VmVBujABGMgVEKUWckXY=
+        id S241197AbhDFKGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 06:06:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23756 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237192AbhDFKGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 06:06:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617703588;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HMmoJ8lzD0jdeUc9n0Wk+eKCrv0ig+3eGAmzp2n3I2E=;
+        b=INDUQlMMCnNy7zUZKn1tS4/9uI+hySXS/W1TKZPDnDRdOmzXcXrAV531tyXZyVtRRgZDXf
+        xaKMsuda9LgWWeXxUAk5CMFkpWLiRMILR+eI9M0dBpPV3jMKuT0wnu6zEkXzkdgvvoLNDQ
+        5yN+o7ZQLICmWqCpO5sqfVdX3Xx1RzM=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-1-2y4NEO3JPQSrKkeIXew5-w-1; Tue, 06 Apr 2021 06:06:27 -0400
+X-MC-Unique: 2y4NEO3JPQSrKkeIXew5-w-1
+Received: by mail-ej1-f71.google.com with SMTP id l1so1184747eji.9
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 03:06:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z/xnRTBuWqAi+huuq427+Hagp0Iffp9JP9RF/7XM+NU=;
-        b=HOikb5MY2j/IzSzHTKwwLnLWUL84SVJ6pxj44tdCx59enbrPQA9q+DBrbfJX1/v6d/
-         05qU8Ttq887Rspud4YR+5aOgmez/0KdYMBsrZgGFUZYWU3o28WV8M96pF1QKy6h7VgPy
-         qGnjYsH+OmVTGjbDPE3UBImXUB+VqvEdw4xxsBvBZarzEW0iDHet2q5BbvebkqeBFQ/O
-         o5ZMQc+RhyzjVnSJvwgjuj+Bh/E1h9jwEwAxnd+5+VjqqMmzpU6KsZfwDdKGJi92SC1m
-         qionFIsBOiqsWKEzeiGFUkI8WJ2zCR2h/YUDQeGVwNH79x8iVuCRJou5Ga+58ZNfkqON
-         1rrg==
-X-Gm-Message-State: AOAM5323ciA371IoaZATSMSIcF2cyLF94vuDb9ApYzTryHVNLYm9I+rj
-        LGyyn8+q/H5VO3TZlzJ5NB9L80Dv1avnb2twR5tvYg==
-X-Google-Smtp-Source: ABdhPJx+QxskeGybHZaP9XU5W/U0bdEC8s+rFcCwE80+g6Yk10+tEUew6P1i8uT989jXxH5blrDdLWBbuPy/6RqqbFI=
-X-Received: by 2002:ac8:5313:: with SMTP id t19mr26582977qtn.148.1617703509526;
- Tue, 06 Apr 2021 03:05:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=HMmoJ8lzD0jdeUc9n0Wk+eKCrv0ig+3eGAmzp2n3I2E=;
+        b=o8wOx6yR8u5X2E05g8edzqJb2YOk+/QCu2tJRpCxktXmnN/sCC5qo9xsa/pe52rtQI
+         YWxmc5yB45iFZV9f/IdUc6Dlkcl8cbCpcOw747rGl2YzLgNQNRDz0F8HDHX1sfg8DtwL
+         TibuNIR4mGs99xmxr3pe4+FXJpJjfD/XDOALAxtDElw1jvEP5/v3PNWVAeQlW82hR+4t
+         Jg3FdCGn+7+7GKpoIzqBi2umuTVO0L6+F4QXhiyqB+xPLtBsR4D4/NEmeW8SNocnIT5o
+         pjcdSsuqhLISyWKCcvzWwasdTWdXTXJfwLiud+hc5GjbpxuFCsEb/yHgSKnvBfE7T2lH
+         rZjw==
+X-Gm-Message-State: AOAM5331/BFlJyor+YIEOjsgTP8perwXBg9dRx5Suq0l3Lps1kjiSQ9B
+        JFx77bH7juoh06qwGEgLV2Cgn4xb78b4JxRis7wNV+tuqRqPtY1XSMSjAdOgqsRF3Xlox1pPOmV
+        7XZTgJo6Xoa7fZw3R
+X-Received: by 2002:a05:6402:1b1c:: with SMTP id by28mr12908388edb.62.1617703585782;
+        Tue, 06 Apr 2021 03:06:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwkFahB+GBVvfN5+4DjXC410VqB3rQQ1MthTGIdEaIgp48fePTzVnaVaxK/KzASTOExPeqmdA==
+X-Received: by 2002:a05:6402:1b1c:: with SMTP id by28mr12908347edb.62.1617703585534;
+        Tue, 06 Apr 2021 03:06:25 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id y24sm13732387eds.23.2021.04.06.03.06.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Apr 2021 03:06:24 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 5D5CF180300; Tue,  6 Apr 2021 12:06:24 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
+In-Reply-To: <CAEf4Bzaeu4apgEtwS_3q1iPuURjPXMs9H43cYUtJSmjPMU5M9A@mail.gmail.com>
+References: <20210325120020.236504-4-memxor@gmail.com>
+ <CAEf4Bzbz9OQ_vfqyenurPV7XRVpK=zcvktwH2Dvj-9kUGL1e7w@mail.gmail.com>
+ <20210328080648.oorx2no2j6zslejk@apollo>
+ <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
+ <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
+ <20210331094400.ldznoctli6fljz64@apollo>
+ <5d59b5ee-a21e-1860-e2e5-d03f89306fd8@iogearbox.net>
+ <20210402152743.dbadpgcmrgjt4eca@apollo>
+ <CAADnVQ+wqrEnOGd8E1yp+1WTAx8ZcAx3HUjJs6ipPd0eKmOrgA@mail.gmail.com>
+ <20210402190806.nhcgappm3iocvd3d@apollo>
+ <20210403174721.vg4wle327wvossgl@ast-mbp>
+ <CAEf4Bzaeu4apgEtwS_3q1iPuURjPXMs9H43cYUtJSmjPMU5M9A@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 06 Apr 2021 12:06:24 +0200
+Message-ID: <87blar4ti7.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20201209184740.16473-1-w@1wt.eu>
-In-Reply-To: <20201209184740.16473-1-w@1wt.eu>
-From:   Daniel Palmer <daniel@0x0f.com>
-Date:   Tue, 6 Apr 2021 19:04:58 +0900
-Message-ID: <CAFr9PX=Ky2QuXNH09DmegFV=e-4+ChdypSsJfV8svqxP7U-cpg@mail.gmail.com>
-Subject: Re: [PATCH] Revert "macb: support the two tx descriptors on at91rm9200"
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willy,
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-I've been messing with the SSD202D (sibling of the MSC313E) recently
-and the ethernet performance was awful.
-I remembered this revert and reverted it and it makes the ethernet
-work pretty well.
-
-So I would like to find some way of making this patch work and I did
-some digging..
-
-On Thu, 10 Dec 2020 at 03:47, Willy Tarreau <w@1wt.eu> wrote:
+> On Sat, Apr 3, 2021 at 10:47 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>>
+>> On Sat, Apr 03, 2021 at 12:38:06AM +0530, Kumar Kartikeya Dwivedi wrote:
+>> > On Sat, Apr 03, 2021 at 12:02:14AM IST, Alexei Starovoitov wrote:
+>> > > On Fri, Apr 2, 2021 at 8:27 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>> > > > [...]
+>> > >
+>> > > All of these things are messy because of tc legacy. bpf tried to follow tc style
+>> > > with cls and act distinction and it didn't quite work. cls with
+>> > > direct-action is the only
+>> > > thing that became mainstream while tc style attach wasn't really addressed.
+>> > > There were several incidents where tc had tens of thousands of progs attached
+>> > > because of this attach/query/index weirdness described above.
+>> > > I think the only way to address this properly is to introduce bpf_link style of
+>> > > attaching to tc. Such bpf_link would support ingress/egress only.
+>> > > direction-action will be implied. There won't be any index and query
+>> > > will be obvious.
+>> >
+>> > Note that we already have bpf_link support working (without support for pinning
+>> > ofcourse) in a limited way. The ifindex, protocol, parent_id, priority, handle,
+>> > chain_index tuple uniquely identifies a filter, so we stash this in the bpf_link
+>> > and are able to operate on the exact filter during release.
+>>
+>> Except they're not unique. The library can stash them, but something else
+>> doing detach via iproute2 or their own netlink calls will detach the prog.
+>> This other app can attach to the same spot a different prog and now
+>> bpf_link__destroy will be detaching somebody else prog.
+>>
+>> > > So I would like to propose to take this patch set a step further from
+>> > > what Daniel said:
+>> > > int bpf_tc_attach(prog_fd, ifindex, {INGRESS,EGRESS}):
+>> > > and make this proposed api to return FD.
+>> > > To detach from tc ingress/egress just close(fd).
+>> >
+>> > You mean adding an fd-based TC API to the kernel?
+>>
+>> yes.
 >
-> This reverts commit 0a4e9ce17ba77847e5a9f87eed3c0ba46e3f82eb.
+> I'm totally for bpf_link-based TC attachment.
 >
-> The code was developed and tested on an MSC313E SoC, which seems to be
-> half-way between the AT91RM9200 and the AT91SAM9260 in that it supports
-> both the 2-descriptors mode and a Tx ring.
+> But I think *also* having "legacy" netlink-based APIs will allow
+> applications to handle older kernels in a much nicer way without extra
+> dependency on iproute2. We have a similar situation with kprobe, where
+> currently libbpf only supports "modern" fd-based attachment, but users
+> periodically ask questions and struggle to figure out issues on older
+> kernels that don't support new APIs.
 
-The MSC313E and later seem to have a hidden "TX ring" with 4 descriptors.
-It looks like instead of implementing a ring in memory like the RX
-side has and all other macb variations they decided to put a 4 entry
-FIFO behind the TAR/TCR registers.
-You can load TAR/TCR normally so it is backwards compatible to the
-at91rm9200 but you can fill it with multiple frames to transmit
-without waiting for TX to end.
-There are some extra bits in TSR that seem to indicate how many frames
-are still waiting to be transmitted and the way BNQ works is a little
-different.
++1; I am OK with adding a new bpf_link-based way to attach TC programs,
+but we still need to support the netlink API in libbpf.
 
-> It turns out that after the code was merged I could notice that the
-> controller would sometimes lock up, and only when dealing with sustained
-> bidirectional transfers, in which case it would report a Tx overrun
-> condition right after having reported being ready, and will stop sending
-> even after the status is cleared (a down/up cycle fixes it though).
+> So I think we'd have to support legacy TC APIs, but I agree with
+> Alexei and Daniel that we should keep it to the simplest and most
+> straightforward API of supporting direction-action attachments and
+> setting up qdisc transparently (if I'm getting all the terminology
+> right, after reading Quentin's blog post). That coincidentally should
+> probably match how bpf_link-based TC API will look like, so all that
+> can be abstracted behind a single bpf_link__attach_tc() API as well,
+> right? That's the plan for dealing with kprobe right now, btw. Libbpf
+> will detect the best available API and transparently fall back (maybe
+> with some warning for awareness, due to inherent downsides of legacy
+> APIs: no auto-cleanup being the most prominent one).
 
-I can reproduce this with iperf3's bidirectional mode without fail.
+Yup, SGTM: Expose both in the low-level API (in bpf.c), and make the
+high-level API auto-detect. That way users can also still use the
+netlink attach function if they don't want the fd-based auto-close
+behaviour of bpf_link.
 
-I hacked up the driver a bit so that the TX path sends each frame 6
-times recording the TSR register before and after to see what is
-happening:
+-Toke
 
-# udhcpc
-udhcpc: started, v1.31.1
-[   12.944302] Doing phy power up
-[   13.147460] macb 1f2a2000.emac eth0: PHY
-[1f2a2000.emac-ffffffff:00] driver [msc313e phy] (irq=POLL)
-[   13.156655] macb 1f2a2000.emac eth0: configuring for phy/mii link mode
-udhcpc: sending discover
-[   15.205691] macb 1f2a2000.emac eth0: Link is Up - 100Mbps/Full -
-flow control off
-[   15.213358] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-[   15.245235] pre0 41001fb8, post0 30001fb0 -> IDLETSR clear
-[   15.249291] pre1 30001f90, post1 20001d90 -> FIFOIDLE1 clear
-[   15.253331] pre2 20001d90, post2 10001990 -> FIFOIDLE2 clear
-[   15.257385] pre3 10001990, post3 00001190 -> FIFOIDLE3 clear
-[   15.261435] pre4 00001190, post4 f0000191 -> FIFOIDLE4 clear, OVR set
-[   15.265485] pre5 f0000190, post5 f0000191 -> OVR set
-[   15.269535] pre6 f0000190, post6 e0000181 -> OVR set, BNQ clear
-
-There seems to be a FIFO empty counter in the top of the register but
-this is totally undocumented.
-There are two new status bits TBNQ and FBNQ at bits 7 and 8. I have no
-idea what they mean.
-Bits 9 through 12 are some new status bits that seem to show if a FIFO
-slot is inuse.
-I can't find any mention of these bits anywhere except the header of
-the vendor driver so I think these are specific to MStar's macb.
-
-The interesting part though is that BNQ does not get cleared until
-multiple frames have been pushed in and after OVR is set.
-I think this is what breaks your code when it runs on the MSC313E
-version of MACB.
-
-Anyhow. I'm working on a version of your patch that should work with
-both the at91rm9200 and the MSC313E.
-
-Thanks,
-
-Daniel
