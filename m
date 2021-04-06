@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 733D8355FAD
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:46:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D201355FAF
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240992AbhDFXqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 19:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbhDFXqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 19:46:08 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E29C06174A;
-        Tue,  6 Apr 2021 16:46:00 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 7E1244D2493AD;
-        Tue,  6 Apr 2021 16:45:59 -0700 (PDT)
-Date:   Tue, 06 Apr 2021 16:45:59 -0700 (PDT)
-Message-Id: <20210406.164559.1676626074998403447.davem@davemloft.net>
-To:     zhengyongjun3@huawei.com
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, kuba@kernel.org,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, hulkci@huawei.com
-Subject: Re: [PATCH net-next] net: tipc: Fix spelling errors in net/tipc
- module
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210406151909.298732-1-zhengyongjun3@huawei.com>
-References: <20210406151909.298732-1-zhengyongjun3@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 06 Apr 2021 16:45:59 -0700 (PDT)
+        id S244998AbhDFXrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:47:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36940 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231156AbhDFXri (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 19:47:38 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTvPs-00FDFw-Ju; Wed, 07 Apr 2021 01:47:28 +0200
+Date:   Wed, 7 Apr 2021 01:47:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
+Subject: Re: [PATCH net-next v3 13/18] net: phy: marvell10g: add separate
+ structure for 88X3340
+Message-ID: <YGzzEOtTKlL9Bs2i@lunn.ch>
+References: <20210406221107.1004-1-kabel@kernel.org>
+ <20210406221107.1004-14-kabel@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210406221107.1004-14-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
-Date: Tue, 6 Apr 2021 23:19:09 +0800
-
-> These patches fix a series of spelling errors in net/tipc module.
+On Wed, Apr 07, 2021 at 12:11:02AM +0200, Marek Behún wrote:
+> The 88X3340 contains 4 cores similar to 88X3310, but there is a
+> difference: it does not support xaui host mode. Instead the
+> corresponding MACTYPE means
+>   rxaui / 5gbase-r / 2500base-x / sgmii without AN
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> Signed-off-by: Marek Behún <kabel@kernel.org>
 
-This does not apply to net-next, please respin.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Thanks.
+    Andrew
