@@ -2,152 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D052035605B
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CEAC356083
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347496AbhDGAcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
+        id S245522AbhDGA5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236581AbhDGAcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 20:32:50 -0400
+        with ESMTP id S233962AbhDGA5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 20:57:41 -0400
 Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31861C06174A;
-        Tue,  6 Apr 2021 17:32:42 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id hq27so24702562ejc.9;
-        Tue, 06 Apr 2021 17:32:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D787CC06174A;
+        Tue,  6 Apr 2021 17:57:32 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id mh7so14840296ejb.12;
+        Tue, 06 Apr 2021 17:57:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GUQThEn8sqInS66KqVIDjGjd6mOI2+mllQKqLTHbLbY=;
-        b=WUy991V6eZ4bHhDcSFjCMAlrehBfw9k6T9nmp2sOJjXR0k4/jHcYsYvyCXtiFUrUCc
-         fpltRJI2Xc6AAVJy1CZGCxSpWt/tdKEDgT3FxrDPs1sVKvt/jU/XlknfeeualxtrPYOb
-         xC3tAjgJFq6kOhSu0p4wjJATYO4JCanE2vl4mSo3EjoNAw3nOGNdnxbpZzR+pRgjRrcw
-         SP7HFMfkbgYMMEea9CAqHXz/9q5+6kKz1pKrScdDtOUnjZqK3FnMPoPO2tM0Yoh1+CwQ
-         khz01Hqk8KDazBQscAV77XEZtJJmWtb2N2X9B6FASJHK5N5S4LIHHYfgMJbtYl9JdGth
-         ejBA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OECY3yig9AVogbfPFflyIgKwhgrAYh7uO4GURi6uSqE=;
+        b=ia4c3aHw7V5EWYaJ4KF9mGJXZ4zouKPc4J3o4xHGucNRberjEdxRHuv7GwDYgVUnTp
+         c3AxrOXBurS/47WCwTe+j8krI4r9Bxx0z9NXkxOZPckt4hqqhHYLICne1ceGPwe8fzWG
+         vAHLnpud3+DMSQ6S54UoTFT2fIhcgoORET/uq9DUgnaPfm5HrVd9I4PAEtefG5AHR/mk
+         XoZx7BBAsuLu2tb+Jlds6Cienaxr1ppo9uDfFMyBaBStzi7ljX+tSLq3Lrc81ILjAoy6
+         69AXb7sYxCIKpv+S+MRmFPw4bX+aRJYRJmMJHS9i0zH/xR9CeNF8STylvki9Eox2176M
+         reBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GUQThEn8sqInS66KqVIDjGjd6mOI2+mllQKqLTHbLbY=;
-        b=OxwhJ4dg6ZTJhYJb12garaaT77Uu/ELZBABTmIehgdGnH8Co+Cq56KDo2Ws6Su3SJo
-         QvmvPLozSXjGet0+9RbTg2ylpl/OqR+63vZTIBuI992fCmj23TpOVjXaavJjLSXCxqYb
-         PM1UUow88vdMIcEHN5EjpWeG7bhywiQBkY2iQ4lJie1smmcM0BOeGiavE5/3VfccnZpy
-         r6TfDx365n0qFkVLa6uAaAkxll7o2NGpdTOeWvOQj5VCZoBh3VgcngagKFj8KrIXT7Ad
-         b4XCf5qBo8Ar0hNYyyaNhLs2ukiGYN7O079HDCyv3tlX05dtPvWwTPcMoOhzURhWAUBN
-         iwiA==
-X-Gm-Message-State: AOAM53195kYv8b99eJ+IQTDSld1rplOMAos8kiasORESBfuikSkHcTKo
-        r99hfA9ohGGPTfH1BUxX+gKw/z0kFJI=
-X-Google-Smtp-Source: ABdhPJwyxLTf3N4eXJhyW/24P5R97qQTDnBMFC2a5oLJGobCwlAYkktMolHBOeTuUbvhu4MWmsOmyg==
-X-Received: by 2002:a17:906:a049:: with SMTP id bg9mr773877ejb.186.1617755560784;
-        Tue, 06 Apr 2021 17:32:40 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (host-79-23-201-105.retail.telecomitalia.it. [79.23.201.105])
-        by smtp.googlemail.com with ESMTPSA id j7sm7829644ejf.74.2021.04.06.17.32.39
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OECY3yig9AVogbfPFflyIgKwhgrAYh7uO4GURi6uSqE=;
+        b=sCwvgJDahjo0ZkmZ0N9nHWkJDPpPkhqT6Oyk6JD5ZV9CUL+Nuoss/oLmy3vI+FIOkC
+         6UJc58mOBJizX68wNChvhmcWi2ebp1T3ocBhnLvhkZoS8U9LQeXNqNyapzfhkjhYzPAY
+         mA5KbdGJlGF2U93DSqEKk16UkVqG5FjH+JQXHLghKb9UbBgOhCRE/FjvledV56tKljPp
+         qtftPcFWjpl3t5eQH3dmiao5Kbc9bl2rlVPESg8pgcocTre7x1yOqszuq0cRp7KjXmHq
+         pwSKof/6A5TNZqYK1fq5ijzi7Qw/eMtLwKGo9MHIvGcvpzuk8X/mY0ZyKsd+OzDJjvJp
+         Paew==
+X-Gm-Message-State: AOAM530ZenIBzpWn78v99n9H3ql02tsTC0B45VOwfKFqdVjH9p6Cuca7
+        sZYw0Qe+nTVTi/uqRlkWWZg=
+X-Google-Smtp-Source: ABdhPJwiAKeB9iAuJY4hsh5Sq5Tk7wEkpx/a5IX7LtMJxifF1qLRivLo6EOWuP6mCQ2k9/gfY116sg==
+X-Received: by 2002:a17:906:77c5:: with SMTP id m5mr781186ejn.201.1617757051479;
+        Tue, 06 Apr 2021 17:57:31 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (host-95-247-95-137.retail.telecomitalia.it. [95.247.95.137])
+        by smtp.gmail.com with ESMTPSA id l9sm6263855edw.68.2021.04.06.17.57.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 17:32:40 -0700 (PDT)
+        Tue, 06 Apr 2021 17:57:30 -0700 (PDT)
+Date:   Tue, 6 Apr 2021 07:16:08 +0200
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] drivers: net: dsa: qca8k: add support for multiple cpu port
-Date:   Tue,  6 Apr 2021 06:50:40 +0200
-Message-Id: <20210406045041.16283-2-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210406045041.16283-1-ansuelsmth@gmail.com>
+Subject: Re: [PATCH v2 2/2] drivers: net: dsa: qca8k: add support for
+ multiple cpu port
+Message-ID: <YGvumGtEJYYvTlc9@Ansuel-xps.localdomain>
 References: <20210406045041.16283-1-ansuelsmth@gmail.com>
+ <20210406045041.16283-2-ansuelsmth@gmail.com>
+ <YGz/nu117LDEhsou@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YGz/nu117LDEhsou@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qca8k 83xx switch have 2 cpu ports. Rework the driver to support
-multiple cpu port. All ports can access both cpu ports by default as
-they support the same features.
+On Wed, Apr 07, 2021 at 02:41:02AM +0200, Andrew Lunn wrote:
+> On Tue, Apr 06, 2021 at 06:50:40AM +0200, Ansuel Smith wrote:
+> > qca8k 83xx switch have 2 cpu ports. Rework the driver to support
+> > multiple cpu port. All ports can access both cpu ports by default as
+> > they support the same features.
+> 
+> Do you have more information about how this actually works. How does
+> the switch decide which port to use when sending a frame towards the
+> CPU? Is there some sort of load balancing?
+> 
+> How does Linux decide which CPU port to use towards the switch?
+> 
+>     Andrew
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 18 +++++++++---------
- drivers/net/dsa/qca8k.h |  2 --
- 2 files changed, 9 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index cdaf9f85a2cb..942d2a75f709 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -724,11 +724,6 @@ qca8k_setup(struct dsa_switch *ds)
- 	/* Enable MIB counters */
- 	qca8k_mib_init(priv);
- 
--	/* Enable QCA header mode on the cpu port */
--	qca8k_write(priv, QCA8K_REG_PORT_HDR_CTRL(QCA8K_CPU_PORT),
--		    QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_TX_S |
--		    QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_RX_S);
--
- 	/* Disable forwarding by default on all ports */
- 	for (i = 0; i < QCA8K_NUM_PORTS; i++)
- 		qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
-@@ -749,7 +744,12 @@ qca8k_setup(struct dsa_switch *ds)
- 	for (i = 0; i < QCA8K_NUM_PORTS; i++) {
- 		/* CPU port gets connected to all user ports of the switch */
- 		if (dsa_is_cpu_port(ds, i)) {
--			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(QCA8K_CPU_PORT),
-+			/* Enable QCA header mode on the cpu port */
-+			qca8k_write(priv, QCA8K_REG_PORT_HDR_CTRL(i),
-+				    QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_TX_S |
-+					QCA8K_PORT_HDR_CTRL_ALL << QCA8K_PORT_HDR_CTRL_RX_S);
-+
-+			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
- 				  QCA8K_PORT_LOOKUP_MEMBER, dsa_user_ports(ds));
- 		}
- 
-@@ -759,7 +759,7 @@ qca8k_setup(struct dsa_switch *ds)
- 
- 			qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(i),
- 				  QCA8K_PORT_LOOKUP_MEMBER,
--				  BIT(QCA8K_CPU_PORT));
-+				  dsa_cpu_ports(ds));
- 
- 			/* Enable ARP Auto-learning by default */
- 			qca8k_reg_set(priv, QCA8K_PORT_LOOKUP_CTRL(i),
-@@ -1140,7 +1140,7 @@ static int
- qca8k_port_bridge_join(struct dsa_switch *ds, int port, struct net_device *br)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--	int port_mask = BIT(QCA8K_CPU_PORT);
-+	int port_mask = dsa_cpu_ports(ds);
- 	int i;
- 
- 	for (i = 1; i < QCA8K_NUM_PORTS; i++) {
-@@ -1183,7 +1183,7 @@ qca8k_port_bridge_leave(struct dsa_switch *ds, int port, struct net_device *br)
- 	 * this port
- 	 */
- 	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
--		  QCA8K_PORT_LOOKUP_MEMBER, BIT(QCA8K_CPU_PORT));
-+		  QCA8K_PORT_LOOKUP_MEMBER, dsa_cpu_ports(ds));
- }
- 
- static int
-diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index 7ca4b93e0bb5..17bc643231c3 100644
---- a/drivers/net/dsa/qca8k.h
-+++ b/drivers/net/dsa/qca8k.h
-@@ -20,8 +20,6 @@
- 
- #define QCA8K_NUM_FDB_RECORDS				2048
- 
--#define QCA8K_CPU_PORT					0
--
- #define QCA8K_PORT_VID_DEF				1
- 
- /* Global control registers */
--- 
-2.30.2
+I could be very wrong, but in the current dsa code, only the very first
+cpu port is used and linux use only that to send data.
+In theory the switch send the frame to both CPU, I'm currently testing a
+multi-cpu patch for dsa and I can confirm that with the proposed code
+the packets are transmitted correctly and the 2 cpu ports are used.
+(The original code has one cpu dedicated to LAN ports and one cpu
+dedicated to the unique WAN port.) Anyway in the current implementation
+nothing will change. DSA code still supports one cpu and this change
+would only allow packet to be received and trasmitted from the second
+cpu.
 
