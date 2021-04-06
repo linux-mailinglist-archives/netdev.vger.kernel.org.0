@@ -2,109 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 390573554C5
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 15:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10DE73554B8
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 15:13:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242395AbhDFNQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 09:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbhDFNQl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 09:16:41 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435E9C06174A;
-        Tue,  6 Apr 2021 06:16:33 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id n8so3922988lfh.1;
-        Tue, 06 Apr 2021 06:16:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=oK0EvQq5supIkmdytebd79wfYwhuD8P3BwaCXG7Z7hI=;
-        b=JwlFh059EWXARC3pWryr8G4rNFVgyPGcRFcZR3fc1UgSmW+vYxbhtLzBO+4CJ6B11T
-         +nQxQB1ezl2f0aEoqMYI/rwPLzu5Iw9feXGZqkS5LCAUws+2QhLEZ8ORgEYpagBJqfsB
-         sUq3rnvJbBNT08uEY+s8kNnzOmibxNNxrRxeIbXStWNmc5HIEJl0f/nfoRRgPFCD9tuK
-         tYPDue4tqXb7ytfEbotfk6cbw98fMsYZtEItNYm+w5WNkHDKyHJu9dOsN8ZSSbN3tfo4
-         dVl8WfepjQsBc9LdtMpvvHqSfsP45sKKPoGOjBA1m0/rdBeyGGlm2pdKGF31XhEdG4Bf
-         o0Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=oK0EvQq5supIkmdytebd79wfYwhuD8P3BwaCXG7Z7hI=;
-        b=jAJIluhf9XnmHn/r2DpWyVp9cZhWtV9WVphqmGL5BfBzV/7pRtBrHlnv7aGs/RDtjU
-         eOb+uqlvF0/+YMu45ffTWxxGEIIc1jW5sRy1uI7BS+VO9Wr81Fr1pg7lhd2+0wIakqOS
-         u5qpJJUAPFv3j01MBuUT3zIekrqbAr+QoTaPWOZsxJ7lJ75Fg0de5Tz2nxxjedGmsiO8
-         913G1kuY3pZxNSvqtmZAAWl3+DLQwN+D+dUqNv6CADiK18wibAON5gmI7QymzQXiQ7XJ
-         zqCEg/w8fBVFruyz5hCO3kPw3oE82UJCDIPqilQQlznSEaqD1FJNGpVL6yRzIPMtfu+G
-         xfxw==
-X-Gm-Message-State: AOAM533lP8HRiWEyByAalQL3fzKRbt0mgKLKMVTD3Q20eO+iqcDAzMGG
-        nbV6+q7L50S40Lop6QhtRgyacp3nDsaEfL+E
-X-Google-Smtp-Source: ABdhPJzDhp+uGFjyYrbpEJDXoTUzaRZ6JV3//HVJvbSnqFgMDmHs32s/CEiY0zu/w/kQgWc+yhkd6A==
-X-Received: by 2002:a19:242:: with SMTP id 63mr3139544lfc.0.1617714991761;
-        Tue, 06 Apr 2021 06:16:31 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.229.149])
-        by smtp.gmail.com with ESMTPSA id x27sm2158024lfn.95.2021.04.06.06.16.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 06:16:31 -0700 (PDT)
-Message-ID: <f8af54cece4150b2a0ac7db4e73bfcda36da5555.camel@gmail.com>
-Subject: Re: [PATCH] net: fix shift-out-of-bounds in nl802154_new_interface
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        syzbot <syzbot+7bf7b22759195c9a21e9@syzkaller.appspotmail.com>
-Date:   Tue, 06 Apr 2021 16:16:29 +0300
-In-Reply-To: <CAB_54W7R-27cwOTUw1Db1+kbWTMTtRn0X2EW1_9nKuiAWpLFfA@mail.gmail.com>
-References: <20210405195744.19386-1-paskripkin@gmail.com>
-         <CAB_54W7R-27cwOTUw1Db1+kbWTMTtRn0X2EW1_9nKuiAWpLFfA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 
+        id S239386AbhDFNNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 09:13:18 -0400
+Received: from mga07.intel.com ([134.134.136.100]:40797 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229637AbhDFNNO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 09:13:14 -0400
+IronPort-SDR: w2XddTqzmG1uTbOmELe2LjSzt/L8gqwW8n5l/NvxklA7I+siYdADdjVAc1Gwa5JE+ZFrGpFbH5
+ SX7zMShdT0iw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="257046005"
+X-IronPort-AV: E=Sophos;i="5.81,309,1610438400"; 
+   d="scan'208";a="257046005"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 06:13:05 -0700
+IronPort-SDR: sOc5CsVpUc5Gnm5DJHgcvOj4bB0TSMgw6iKLZD682KIe74/Oxl0pDGU3pmJw986Vdad9JpfVZW
+ yJD7WOkaTNMw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,309,1610438400"; 
+   d="scan'208";a="414766179"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 06 Apr 2021 06:13:05 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
+        by linux.intel.com (Postfix) with ESMTP id 3347B5808ED;
+        Tue,  6 Apr 2021 06:13:04 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: [PATCH net v1 1/1] ethtool: fix incorrect datatype in set_eee ops
+Date:   Tue,  6 Apr 2021 21:17:30 +0800
+Message-Id: <20210406131730.25404-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-04-06 at 08:21 -0400, Alexander Aring wrote:
-> Hi,
-> 
-> On Mon, 5 Apr 2021 at 15:58, Pavel Skripkin <paskripkin@gmail.com>
-> wrote:
-> > 
-> > syzbot reported shift-out-of-bounds in nl802154_new_interface.
-> > The problem was in signed representation of enum nl802154_iftype
-> > 
-> > enum nl802154_iftype {
-> >         /* for backwards compatibility TODO */
-> >         NL802154_IFTYPE_UNSPEC = -1,
-> > ...
-> > 
-> > Since, enum has negative value in it, objects of this type
-> > will be represented as signed integer.
-> > 
-> >         type = nla_get_u32(info->attrs[NL802154_ATTR_IFTYPE]);
-> > 
-> > u32 will be casted to signed, which can cause negative value type.
-> > 
-> > Reported-by: syzbot+7bf7b22759195c9a21e9@syzkaller.appspotmail.com
-> > Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> 
-> Yes, this patch will fix the issue but we discussed that the problem
-> is deeper than such a fix. The real problem is that we are using a -1
-> value which doesn't fit into the u32 netlink value and it gets
-> converted back and forward which we should avoid.
-> 
+The member 'tx_lpi_timer' is defined with __u32 datatype in the ethtool
+header file. Hence, we should use ethnl_update_u32() in set_eee ops.
 
-OK, thanks for feedback!
+Fixes: fd77be7bd43c ("ethtool: set EEE settings with EEE_SET request")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Cc: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+ net/ethtool/eee.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> 
-> - Alex
-
-With regards,
-Pavel Skripkin
-
+diff --git a/net/ethtool/eee.c b/net/ethtool/eee.c
+index 901b7de941ab..e10bfcc07853 100644
+--- a/net/ethtool/eee.c
++++ b/net/ethtool/eee.c
+@@ -169,8 +169,8 @@ int ethnl_set_eee(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_update_bool32(&eee.eee_enabled, tb[ETHTOOL_A_EEE_ENABLED], &mod);
+ 	ethnl_update_bool32(&eee.tx_lpi_enabled,
+ 			    tb[ETHTOOL_A_EEE_TX_LPI_ENABLED], &mod);
+-	ethnl_update_bool32(&eee.tx_lpi_timer, tb[ETHTOOL_A_EEE_TX_LPI_TIMER],
+-			    &mod);
++	ethnl_update_u32(&eee.tx_lpi_timer, tb[ETHTOOL_A_EEE_TX_LPI_TIMER],
++			 &mod);
+ 	ret = 0;
+ 	if (!mod)
+ 		goto out_ops;
+-- 
+2.25.1
 
