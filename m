@@ -2,172 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0CB1355C0E
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 21:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D957B355C0C
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 21:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbhDFTOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 15:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231701AbhDFTOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 15:14:04 -0400
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20208C06174A
-        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 12:13:56 -0700 (PDT)
-Received: by mail-ot1-x32d.google.com with SMTP id v24-20020a9d69d80000b02901b9aec33371so15724984oto.2
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 12:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=1hVk2sl4TaItmGTJsMW8mVKUsfwm7LgBMu0kzq6GV3o=;
-        b=iw0BOla+AaXeIGqcxR0wdAuzV1yuPYBlqZ5IVyivcFvgt+gxvUdNYBPgEz/idp9xf0
-         zzOnNyHajpsXIhCGRefvOwCFZdeUUCC7ZQLWS7Tbu9TTALgj06Qy7YKZLkHC79YoXJv6
-         WL6wCaUfrwx5/HWF+vwymakH0b/D7VYP2IYG0ksiOVOikhZJ3P6r7WwcjXTNyUwGBOSm
-         Jfytvd6x6jMnW2T+acHwEBN8kc1d61jB9GnTpfIE3CvpvQ8OwcrcHdB8vo6WkUNNmEEx
-         X0bj6HZuKhrDSr8ye6ZCW0YEWit0/qMeOgWIq5hLEapWQPrz1kZqopa4emI+CZIO3rwL
-         9v3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=1hVk2sl4TaItmGTJsMW8mVKUsfwm7LgBMu0kzq6GV3o=;
-        b=cKWIgRtM25CgEZFMxWN/ldTnLv0fV/atfE+Z8kxxGad1Qlb1RWuqsTgvb+dVp6HrJT
-         8bjnGHvKRH255dEmY9PyWV9OK6New80gbmfolk2NWHEtDE7YNw2DemI0GwdcLOdHgyD6
-         6qI2nk7+w1Md25hP8LDjfSkBO5noWy3ypJ9D2Y1emeJH7hp2RnjsWHHS+lCDuk/mWJUi
-         TZMiuon2oSO/iPjDhyIsbtds1sshuTEDgiz/sByDD+h8JHTZKLcQhQ8ghw/VI40tmJBf
-         VVmsgQzytFbrLPVCK1PAypNE2BLLfySURJQYCR/lSEuhhVGoRMEx6tyV+w9wkYIFy1cx
-         d74A==
-X-Gm-Message-State: AOAM530hXyfB0rwRDuvV7BevojTMFNqkobZbdOQHE+sspMJuCBoYGgQC
-        0Vh+dwjTrIWw/vsx2awRQgSpSmwRTVwVIBecbgzAnItS1SsQ2g==
-X-Google-Smtp-Source: ABdhPJzDzNBhVR5T6iD24Vn2o4tpMFbZk25jBzlp6jQXUq+H51G0T91vmwCMzZXSYevtLRSimDfY4HBR1fP7+L+aLP0=
-X-Received: by 2002:a9d:3437:: with SMTP id v52mr27796848otb.55.1617736435200;
- Tue, 06 Apr 2021 12:13:55 -0700 (PDT)
+        id S239254AbhDFTOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 15:14:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:46246 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231701AbhDFTN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 15:13:58 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 877B1B322;
+        Tue,  6 Apr 2021 19:13:49 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 24EC060441; Tue,  6 Apr 2021 21:13:49 +0200 (CEST)
+Date:   Tue, 6 Apr 2021 21:13:49 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH net v1 1/1] ethtool: fix incorrect datatype in set_eee ops
+Message-ID: <20210406191349.zunf27ijfp7hoq33@lion.mk-sys.cz>
+References: <20210406131730.25404-1-vee.khee.wong@linux.intel.com>
 MIME-Version: 1.0
-From:   Tom Cook <tom.k.cook@gmail.com>
-Date:   Tue, 6 Apr 2021 20:13:44 +0100
-Message-ID: <CAFSh4UxWxtedFuyDK41+98o8A_p-cvcCGW9kobNwUfJPg_8dHg@mail.gmail.com>
-Subject: bind() and PACKET_MULTICAST
-To:     Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="6w7l2v7wakksdekp"
+Content-Disposition: inline
+In-Reply-To: <20210406131730.25404-1-vee.khee.wong@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Can someone please suggest why the code below doesn't do as expected?
-I expect it to bind an AF_PACKET socket to an interface and receive
-packets with ethertype 0x5eeb that arrive at multicast MAC address
-77:68:76:68:76:69 on that interface.  In practice, nothing arrives.
 
-If I comment out the call to bind(), it receives packets with
-ethertype 0x5eeb that are addressed to 77:68:76:68:76:69 and are
-received on any interface on the system, not just eth0.  (There are no
-packets with ethertype 0x5eeb sent to any other address, so this may
-be coincidence.)
+--6w7l2v7wakksdekp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-If I change either use of ether_type to be ETH_P_ALL instead (and
-re-instate the bind() call), then it receives all ethernet frames
-received on eth0.
+On Tue, Apr 06, 2021 at 09:17:30PM +0800, Wong Vee Khee wrote:
+> The member 'tx_lpi_timer' is defined with __u32 datatype in the ethtool
+> header file. Hence, we should use ethnl_update_u32() in set_eee ops.
 
-Is this a bug?  Or is it as expected and I have to use some other
-mechanism (BPF?) to filter the frames?
+To be precise, the correct reason is that unlike .eee_enabled and
+=2Etx_lpi_enabled, .tx_lpi_timer value is interpreted as a number, not
+a logical value (those two are also __u32). But I don't think it's
+necessary to resubmit.
 
-Thanks for any assistance,
-Tom
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 
-Code:
+> Fixes: fd77be7bd43c ("ethtool: set EEE settings with EEE_SET request")
+> Cc: <stable@vger.kernel.org> # 5.10.x
+> Cc: Michal Kubecek <mkubecek@suse.cz>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+> ---
+>  net/ethtool/eee.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/net/ethtool/eee.c b/net/ethtool/eee.c
+> index 901b7de941ab..e10bfcc07853 100644
+> --- a/net/ethtool/eee.c
+> +++ b/net/ethtool/eee.c
+> @@ -169,8 +169,8 @@ int ethnl_set_eee(struct sk_buff *skb, struct genl_in=
+fo *info)
+>  	ethnl_update_bool32(&eee.eee_enabled, tb[ETHTOOL_A_EEE_ENABLED], &mod);
+>  	ethnl_update_bool32(&eee.tx_lpi_enabled,
+>  			    tb[ETHTOOL_A_EEE_TX_LPI_ENABLED], &mod);
+> -	ethnl_update_bool32(&eee.tx_lpi_timer, tb[ETHTOOL_A_EEE_TX_LPI_TIMER],
+> -			    &mod);
+> +	ethnl_update_u32(&eee.tx_lpi_timer, tb[ETHTOOL_A_EEE_TX_LPI_TIMER],
+> +			 &mod);
+>  	ret =3D 0;
+>  	if (!mod)
+>  		goto out_ops;
+> --=20
+> 2.25.1
+>=20
 
-#include <arpa/inet.h>
-#include <linux/if_packet.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <net/ethernet.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+--6w7l2v7wakksdekp
+Content-Type: application/pgp-signature; name="signature.asc"
 
-const unsigned short eth_type = 0x5eeb;
+-----BEGIN PGP SIGNATURE-----
 
-int main() {
-    int fd = socket(AF_PACKET, SOCK_RAW, htons(eth_type));
-    if (fd < 0) {
-        perror("socket");
-        exit(1);
-    }
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmBssucACgkQ538sG/LR
+dpXYfwf/SCDVSaRSk5DvmwdjfFv0Gx5nwwa1jYT3hiuhBsVbksV8+k2yfBnFttFn
+bFoDVpFO1JdhncO6+a9X72NMDhA3TptYEk/ybYYurSYu9zn4ueHqBkhbAIEgJQtt
+xFoNxO1P2sjZcJsXvCb6oPtYlmm5+emwz3MQhCXZUrn10507vbjxO0Ymtex8vBBZ
+P9o/ZGSRxKQpRx1aCwaYNN1ZxQfR+ve9Frj7oTGAC3UZpS9eNdGX6DEOglO0wUah
+NWCxBK5rZlj1zEhlvKPTHtAG574fh/5QUJM5q4KOVbYBqOqj+cLpQneXMzZarcW8
+boutAigFcwKiWDG49xK48joljd+ABg==
+=Pa/l
+-----END PGP SIGNATURE-----
 
-    struct ifreq ifr;
-    const char * if_name = "eth0";
-    size_t if_name_len = strlen (if_name);
-    memcpy(ifr.ifr_name, if_name, if_name_len);
-    ioctl(fd, SIOCGIFINDEX, &ifr);
-    printf("Interface has index %d\n", ifr.ifr_ifindex);
-
-    struct sockaddr_ll addr = {0};
-    addr.sll_family = AF_PACKET;
-    addr.sll_ifindex = ifr.ifr_ifindex;
-    addr.sll_protocol = htons(eth_type);
-    addr.sll_pkttype = PACKET_MULTICAST;
-    if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        perror("bind");
-        exit(1);
-    }
-
-    unsigned char mcast[ETH_ALEN] = {0x77, 0x68, 0x76, 0x68, 0x76, 0x69};
-    struct packet_mreq mreq = {0};
-    mreq.mr_ifindex = ifr.ifr_ifindex;
-    mreq.mr_type = PACKET_MR_MULTICAST;
-    memcpy(mreq.mr_address, mcast, ETH_ALEN);
-    mreq.mr_alen = ETH_ALEN;
-    if(setsockopt(fd, SOL_SOCKET, PACKET_ADD_MEMBERSHIP, &mreq,
-sizeof(mreq)) < 0) {
-        perror("setsockopt");
-        exit(1);
-    }
-
-    char buf [2048];
-    struct sockaddr_ll src_addr;
-    socklen_t src_addr_len = sizeof(src_addr);
-    ssize_t count = recvfrom(fd, buf, sizeof(buf), 0, (struct
-sockaddr*)&src_addr, &src_addr_len);
-    if (count == -1) {
-        perror("recvfrom");
-        exit(1);
-    } else {
-        printf("Received frame.\n");
-        printf("Dest MAC: ");
-        for (int ii = 0; ii < 5; ii++) {
-            printf("%02hhx:", buf[ii]);
-        }
-        printf("%02hhx\n", buf[5]);
-        printf("Src MAC: ");
-        for (int ii = 6; ii < 11; ii++) {
-            printf("%02hhx:", buf[ii]);
-        }
-        printf("%02hhx\n", buf[11]);
-    }
-}
-
-And here is a short Python3 programme to generate such frames (install
-pyroute2 package and run as `sudo python3 test.py eth0`):
-
-import socket
-from pyroute2 import IPDB
-import sys
-import struct
-import binascii
-import time
-
-ip = IPDB()
-
-SMAC=bytes.fromhex(ip.interfaces[sys.argv[1]]['address'].replace(':', ''))
-DMAC=bytes.fromhex('776876687669')
-
-s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
-s.bind((sys.argv[1], 0x5eeb))
-#s.bind((sys.argv[1], 0))
-
-dgram = struct.pack("!6s6sHH", DMAC, SMAC, 0x5eeb, 0x7668)
-print(' '.join('{:02x}'.format(x) for x in dgram))
-
-while True:
-    s.send(dgram)
-    time.sleep(0.1)
+--6w7l2v7wakksdekp--
