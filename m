@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F36B355799
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 17:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA803557BF
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 17:27:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345589AbhDFPVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 11:21:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35960 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233393AbhDFPVt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 11:21:49 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lTnW7-00F8gN-Pt; Tue, 06 Apr 2021 17:21:23 +0200
-Date:   Tue, 6 Apr 2021 17:21:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Subject: Re: [RFC net-next 1/4] net: phy: add MediaTek PHY driver
-Message-ID: <YGx8c5Jt2D7fB0cO@lunn.ch>
-References: <20210406141819.1025864-1-dqfext@gmail.com>
- <20210406141819.1025864-2-dqfext@gmail.com>
+        id S1345665AbhDFP2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 11:28:04 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55622 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230366AbhDFP2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 11:28:02 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lTncN-0003uh-8U; Tue, 06 Apr 2021 17:27:51 +0200
+Received: from [85.7.101.30] (helo=pc-6.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lTncN-00050d-1N; Tue, 06 Apr 2021 17:27:51 +0200
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Subject: LPC 2021 Networking and BPF Track CFP
+Cc:     xdp-newbies@vger.kernel.org, iovisor-dev@lists.iovisor.org,
+        linux-wireless@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        lwn@lwn.net
+Message-ID: <6d225920-9ecc-ef24-2bf8-848ca86c7fb0@iogearbox.net>
+Date:   Tue, 6 Apr 2021 17:27:50 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210406141819.1025864-2-dqfext@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26132/Tue Apr  6 13:06:05 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 10:18:16PM +0800, DENG Qingfang wrote:
-> Add support for MediaTek PHYs found in MT7530 and MT7531 switches.
+We are pleased to announce the Call for Proposals (CFP) for the Networking and
+BPF track at the 2021 edition of the Linux Plumbers Conference (LPC), which is
+planned to be held in Dublin, Ireland, on September 27th - 29th, 2021.
 
-Do you know if this PHY is available standalone?
+Note that if an in-person conference should prove to be impossible due to the
+circumstances at that time, Linux Plumbers will switch to a virtual-only
+conference. CFP submitters should ideally be able to give their presentation
+in person, if circumstances permit, although presenting remotely will always
+be possible.
 
-> +static int mt7531_phy_config_init(struct phy_device *phydev)
-> +{
-> +	mtk_phy_config_init(phydev);
-> +
-> +	/* PHY link down power saving enable */
-> +	phy_set_bits(phydev, 0x17, BIT(4));
-> +	phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1, 0xc6, 0x300);
-> +
-> +	/* Set TX Pair delay selection */
-> +	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x13, 0x404);
-> +	phy_write_mmd(phydev, MDIO_MMD_VEND1, 0x14, 0x404);
+This year's Networking and BPF track technical committee is comprised of:
 
-This gets me worried about RGMII delays. We have had bad backwards
-compatibility problems with PHY drivers which get RGMII delays wrong.
+   David S. Miller <davem@davemloft.net>
+   Jakub Kicinski <kuba@kernel.org>
+   Eric Dumazet <edumazet@google.com>
+   Alexei Starovoitov <ast@kernel.org>
+   Daniel Borkmann <daniel@iogearbox.net>
+   Andrii Nakryiko <andrii@kernel.org>
 
-Since this is an internal PHY, i suggest you add a test to the
-beginning of mt7531_phy_config_init():
+We are seeking proposals of 40 minutes in length (including Q&A discussion),
+optionally accompanied by papers of 2 to 10 pages in length.
 
-	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
-		return -EINVAL;
+Any kind of advanced Linux networking and/or BPF related topic will be considered.
 
-We can then solve RGMII problems when somebody actually needs RGMII.
+Please submit your proposals through the official LPC website at:
 
-   Andrew
+   https://linuxplumbersconf.org/event/11/abstracts/
+
+Make sure to select "Networking & BPF Summit" in the Track pull-down menu.
+
+Proposals must be submitted by August 13th, and submitters will be notified of
+acceptance by August 16th.
+
+Final slides and papers (as PDF) are due on the first day of the conference.
