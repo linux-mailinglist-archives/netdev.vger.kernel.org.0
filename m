@@ -2,143 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B7DA355063
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 11:56:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315B7355074
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 12:02:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233748AbhDFJ43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 05:56:29 -0400
-Received: from mail-eopbgr20108.outbound.protection.outlook.com ([40.107.2.108]:23172
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233842AbhDFJ40 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 05:56:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UCP3NNuMM/STuhghwPH57RAGOQEbsgVUviGiKuWDtb9ddaijUw2BwI8PyRkMDJ4HKpPmaPkeWP1DOXUMX2WQgoS3C3DoizNt79+2WjaYDnG3jdwJzUPKODcTsc+3TZT3XTP4cIYow6y9mDAkBUxaA9OfM4gATipMEzCyhjFVB+2ntgbxc8Dyf4HeWvs5RaoGHIiRh4emZPnGJX1ZQ0K2//mc45rFXiaPR3x0HFCl4lchD0On6G8OINYaEul1g2i+vCMDzyaRmxu77g4femcHxRfa6spFrX/uHG1cKBhbQDfBioeHxGyVNvfJmUE3sKHsYItOLZCC5etVM3DeCVnOLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CrHC77jPg+JJ4pFsVEp+tTOjQFI1hKTuEbka1xlPnvw=;
- b=mbAUe/PftMs1zCBw7+IcA+8mrJcQZyHGpAY8rpQRJ07s4YH0Qfoht8xUYJwPJTlBooWP7zq05jIUBZCqQ+vfqSEuHAL/XO9eOvkVUiQTm5vsouIF6jRe1mtQmS6WACJIfVqRQqIfKj2DVkbdxknxce20DA7rHZqsDVfetykNxiYAO2jwMg3qB6A+D39NHAeUIbeXDFgfcH7+6xp4SPNzIyXV8jd3x6+1yJeJfF1wpDWixj/U5KkHJbqLGfMKTSGl+usipDSCZLcN4P8M13sqdlEV/XLL2OfhuAsjimXKFA1syiXzMoS/qawX1nHu++FT6SdMYMCGQ0Fd50u2KQpUNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CrHC77jPg+JJ4pFsVEp+tTOjQFI1hKTuEbka1xlPnvw=;
- b=hlsOV7EovGblSX2kINA7mgif/eCGD4Srupe+BJ5HhswZqSVmDHbc1xzgspiFlvEONXCC07gL3fRduOPHegM4eQlM0jlP1NXAZ+QOtfNi4AGRylIcX1P/eIdOjwMmTOE2wNIaZXP76CFjIHuZaPPdNRwy6z4P3edOhiDeO5sU7GY=
-Authentication-Results: geanix.com; dkim=none (message not signed)
- header.d=none;geanix.com; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM0PR10MB2770.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:130::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.32; Tue, 6 Apr
- 2021 09:56:17 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::edba:45:89f8:b31f]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::edba:45:89f8:b31f%7]) with mapi id 15.20.3999.032; Tue, 6 Apr 2021
- 09:56:17 +0000
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Esben Haabendal <esben@geanix.com>
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: gianfar driver and GFAR_MQ_POLLING
-Message-ID: <ff918224-ce0c-9bdf-c5f9-932cb5d31e0d@prevas.dk>
-Date:   Tue, 6 Apr 2021 11:56:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [80.208.71.248]
-X-ClientProxiedBy: AM5PR0701CA0051.eurprd07.prod.outlook.com
- (2603:10a6:203:2::13) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+        id S241293AbhDFKCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 06:02:51 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:31564 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233900AbhDFKCu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 06:02:50 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1617703363; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=AxkI4O0vgqQfFbvB7SnO+C+rk9AJjNc9XgX9InDdib0=; b=PhcyfVEChICBpVEkC5xAxYH7h0djhsfoi0m3U/dylXqCsUDkL8s+GB1a/q8MgJ8rSrApOCAn
+ MuU0hRCWCBJhv9HKPRGZnTm37JnvLUsFDEzM0n5ZTyHL0KsWwV0OSglUJzVOqLs6Qm2bjWAo
+ 4ymQUR7K7l7sFOAQlFUGagRWRPI=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 606c31478807bcde1d1b3a69 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 06 Apr 2021 10:00:39
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 19C47C43462; Tue,  6 Apr 2021 10:00:39 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id ED0D3C43461;
+        Tue,  6 Apr 2021 10:00:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ED0D3C43461
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
+References: <e2924d81-0e30-2dd0-292b-428fea199484@maciej.szmigiero.name>
+        <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
+Date:   Tue, 06 Apr 2021 13:00:33 +0300
+In-Reply-To: <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
+        (Maciej S. Szmigiero's message of "Sun, 4 Apr 2021 20:06:06 +0200")
+Message-ID: <87r1jnohq6.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.149] (80.208.71.248) by AM5PR0701CA0051.eurprd07.prod.outlook.com (2603:10a6:203:2::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.8 via Frontend Transport; Tue, 6 Apr 2021 09:56:16 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b6d42f6c-d97e-4259-0ecd-08d8f8e238a5
-X-MS-TrafficTypeDiagnostic: AM0PR10MB2770:
-X-Microsoft-Antispam-PRVS: <AM0PR10MB277002B9915810D8D60751D593769@AM0PR10MB2770.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: izzO0qvlRdjybxbpzyeUY8kou1LF4wa5xr0JIdahMklrVREh2OiolK8pcLbBdaPkPbGWdccoA4wVHO1dbmy96laJIaL+oMn/up9dkVLq4gaae7yipqBWBGzjkb9gfB3hYsXYrVBduZWixvDYypzg1lV7KuHgfeIGe7iL+N19DeB+x+4U8/igeax4KW96kOPCKqu/Qg3mVP3OB1nAYU5s45YMHmj1Vz9O6XIbMhbmnMet9V4M8E+mpiQodsUHeX1wgS2gFtuy62y81eWfDL0njAfFuZF1YxVTD0/peXqLGQpUHLsKoH1UWY8IfW6axnocQSs34d3s3932Sx/a4FBO3GCsAl4a9pIsPHhQtKXgyF0EqnBoxammwqt9yG5qgWMn7oDplNeAS4/ZCS1inzoYf9AepJAf+rdtX12jL1f/oPmRKTTIzmz2gaHsynHFDreyFJrkDMSoIo8+EaBMu6YoBG6UC3V0STv2nVQNlGib/6eLOsjueSi3tmv2WThNfCtrGStxHMX9GFUiyT/yiaE4DihzvjR65G1U6gsqKDwv67Z+rGxCTM0O6qsvRC7j68s2X1OkLdvRYcJPqbnxCFGCKhKJzkBQhvrMPldT2E9+nqOMDE6SJVVAZiayjM/eA/+SXtPQLmBWkHXemddDMiGHSdlkI2zKMHTK4U77fAa/wJhRp1Mc4JIUDG5HRu6eySG9YdbCXJSiaINN/HItdEY6L/pHi0jF0+J+LISiS/m7TqCi6U9sY5ojF1oAuFTEbkx1
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(136003)(376002)(39850400004)(346002)(366004)(31696002)(8976002)(26005)(38100700001)(8936002)(66946007)(316002)(16526019)(186003)(16576012)(5660300002)(54906003)(83380400001)(478600001)(44832011)(52116002)(6486002)(36756003)(66556008)(66476007)(2616005)(86362001)(2906002)(4744005)(6916009)(956004)(31686004)(8676002)(4326008)(38350700001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?37V723EYdqyaIgTUKtQzAskoJRxNcdrIeMlTgidbTTKJoIycD1FmW2Xn?=
- =?Windows-1252?Q?+uKA2yr5BV4IsaWij2ka49ifUjji4wg3hGQ4bGP5Ki06QD/czERw9cCe?=
- =?Windows-1252?Q?rABxjkswXe/NE6ZkdmlvmFy6nY57oNxEIi6GcM+d/dlU4bLKdiGqDoU3?=
- =?Windows-1252?Q?wMVZFqOU4/LooSlXcglfsTQMYJSOHEMf1wKtTviB/F/G3WdCE92z8a5V?=
- =?Windows-1252?Q?xf2H7k7jtTHkmFXsHuV17bAZR+4LiTA2K8UzV/AFKRSM3R1W+/gP4vmk?=
- =?Windows-1252?Q?nhuVJaAy6gFD0JHI9pxy2weSKJzPD6pk1EPO5tVXMpfORcUETu+L4Z6y?=
- =?Windows-1252?Q?z4mXvA2xtaNATT0tZ65d0+Vv8NnAqU0FDxbfngTw3Td5BnQDLcs1BIty?=
- =?Windows-1252?Q?asIuTlOtdhQxOFxHN6VHvzz6v0ETnhY55t1dfGt9/Kc5DYPsk+g7ED9j?=
- =?Windows-1252?Q?WzQZxXy9apyqkgB6SI5HJJAzlgmW9A59kV5BHrcP3cgBp/8hGOkw565P?=
- =?Windows-1252?Q?Ye9MN/ciBoDIgl9I8aV08C2kbWNQr/h8GNx1JX7KooOcrXj2FRb+BA72?=
- =?Windows-1252?Q?Oj3iAx2jPlil2Cn28jBraLlkjZ9Jhj3SK3i/datXcpYemAIueW3lwZzD?=
- =?Windows-1252?Q?0H2Dx46SNuxfagWDuW5gNTEVJCOPsFYrZIypV7M6a2GSh+RIHJYCuPwy?=
- =?Windows-1252?Q?oLk8mLIUC/fjgbiml8LOJYYlU4Rfih4kbryy1xEuQwkD+ZNHpxX4GNcR?=
- =?Windows-1252?Q?fvlrSZ9IzSRQjlt1rhfrG2vquyPogJD+NpFYcFWdTI+kcXeVmK5Dr0W0?=
- =?Windows-1252?Q?sWRZ1dwg4iCK9+PIy80Xzor4Ax/XoDxxKR3TevA/RUGB3u+g+mMix/R+?=
- =?Windows-1252?Q?cjHNc6uKLRKdUR1dNj/wqbIdYRURiw3sPiuejZWHMLBMXMUfFm/y5tL4?=
- =?Windows-1252?Q?l5HgqNygY8kuIceoqJ+bI+EzKtAKgCRAPjexz8hXu8hajynAvEdviu2h?=
- =?Windows-1252?Q?JsFJek+aIizjs/5Mai8oVAMkWVq3aNraFplkQ+o70RtkUMmTtCX05msJ?=
- =?Windows-1252?Q?1ZRTCaW0wCmhiDqlkgiLTQimqfyiXPatGo/aSbatsSDIUMK1X1mhpY1G?=
- =?Windows-1252?Q?7i8T9gtrv+bY6IAfTIYCs6BUTBA3HkFgorz4JFUT1WBU1Pr1wLSJPjr0?=
- =?Windows-1252?Q?0R1hVahafhQPYrCWZEbNR1vTL5RjGfuY/TkHDwLLt6rA85c8X2VaM8dE?=
- =?Windows-1252?Q?2Qcs3aP7mZ8akG9lN9+vOFqURFzV7w7ElgcO9dn3S2g0nzmURfO53nh2?=
- =?Windows-1252?Q?B5W0sVmUKs9HDhXkEnTRBHniivg/2o0QnHHuX6nVj2SaLs4HOU3LeeK+?=
- =?Windows-1252?Q?CkbNo01FlwD/Zv/Cut3rlRnWEXXyx9FybMsfuyk61/0bnL4wc/+nBITH?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6d42f6c-d97e-4259-0ecd-08d8f8e238a5
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2021 09:56:17.1342
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5spH7DUZ0nThcNh8JNMgmXks2GANyECXsPP5YgnpE4E2IdrFm9g8Z9Gm5CJ6kn9GpNm83M+ADL8czmDzVJ0HLv1vAoJZ3ldXCY3R+nD9nGk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2770
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+"Maciej S. Szmigiero" <mail@maciej.szmigiero.name> writes:
 
-I noticed that gfar_of_init() has
+> On 29.03.2021 00:54, Maciej S. Szmigiero wrote:
+>> Hi,
+>>
+>> It looks like rtlwifi/rtl8192cu AP mode is broken when a STA is using PS,
+>> since the driver does not update its beacon to account for TIM changes,
+>> so a station that is sleeping will never learn that it has packets
+>> buffered at the AP.
+>>
+>> Looking at the code, the rtl8192cu driver implements neither the set_tim()
+>> callback, nor does it explicitly update beacon data periodically, so it
+>> has no way to learn that it had changed.
+>>
+>> This results in the AP mode being virtually unusable with STAs that do
+>> PS and don't allow for it to be disabled (IoT devices, mobile phones,
+>> etc.).
+>>
+>> I think the easiest fix here would be to implement set_tim() for example
+>> the way rt2x00 driver does: queue a work or schedule a tasklet to update
+>> the beacon data on the device.
+>
+> Are there any plans to fix this?
+> The driver is listed as maintained by Ping-Ke.
 
-	if (of_device_is_compatible(np, "fsl,etsec2")) {
-		mode = MQ_MG_MODE;
-		poll_mode = GFAR_SQ_POLLING;
-	} else {
-		mode = SQ_SG_MODE;
-		poll_mode = GFAR_SQ_POLLING;
-	}
+Yeah, power save is hard and I'm not surprised that there are drivers
+with broken power save mode support. If there's no fix available we
+should stop supporting AP mode in the driver.
 
-i.e., poll_mode is always set to GFAR_SQ_POLLING, and I can't find
-anywhere that GFAR_MQ_POLLING is used (except for comments). So it seems
-that everything in the else branches of the "if (priv->poll_mode ==
-GFAR_SQ_POLLING)"s, including the gfar_poll_rx and gfar_poll_tx
-callbacks, is currently dead code.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-I'm wondering if this is deliberate, and if so, if the dead code
-could/should just be removed?
-
-FWIW, some quick testing naively doing
-
-        if (of_device_is_compatible(np, "fsl,etsec2")) {
-                mode = MQ_MG_MODE;
--               poll_mode = GFAR_SQ_POLLING;
-+               poll_mode = GFAR_MQ_POLLING;
-        } else {
-
-results in broken network - ping answers the first packet, but then
-nothing after that, and ssh is completely broken (and if ssh is
-attempted first, ping doesn't work at all). This is on a ls1021a-derived
-board.
-
-Rasmus
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
