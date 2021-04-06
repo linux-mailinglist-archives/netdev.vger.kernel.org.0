@@ -2,101 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1C4354B6B
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 05:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8AD3354B62
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 05:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239127AbhDFD41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Apr 2021 23:56:27 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:55838 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232757AbhDFD40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Apr 2021 23:56:26 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1363YRxZ060096;
-        Mon, 5 Apr 2021 23:56:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=QcLfeBJWp8LN7gQrPGsgrDkrUFm8BBwCnLaMr9GDx+Q=;
- b=irw+yEI9g3BnDo+h2hkZfjN4paKB5sLrvuLL0jl4gULL50+s8/y4HcGw59J3wTwFOVdi
- uBOe3o32T5nOVH0LgnlMWf5PKUi4fgJmPu1Zg9hrI8Iu3Z221eeIA9+Z1njD9cY+ihuB
- 2oKbqZQfP5NSJwVBal1SWECwwZY7xv69DFSs15zV6iyXpKRrpBu0A72oyDdlOqHTSJRI
- RU9wgf/2gwPckdsRSBmnxfe0gXpsmGhTVW2jThblqD0WqMUFXy79rgvWlX/QIP4eGFiJ
- KYPFFupxfmHNM2tTldA9oCJdomP4T4qAb75BhHJ4UK1OCtNuCAPlEref7Dp365Z0zCc4 Mw== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 37q5wac36g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 05 Apr 2021 23:56:15 -0400
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.43/8.16.0.43) with SMTP id 1363r5h1026041;
-        Tue, 6 Apr 2021 03:56:15 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma01wdc.us.ibm.com with ESMTP id 37q2q8w5fe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 06 Apr 2021 03:56:15 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1363uEiY25231800
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 6 Apr 2021 03:56:14 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 40ECEC605A;
-        Tue,  6 Apr 2021 03:56:14 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EC34DC6057;
-        Tue,  6 Apr 2021 03:56:13 +0000 (GMT)
-Received: from linux-i8xm.aus.stglabs.ibm.com (unknown [9.40.195.200])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue,  6 Apr 2021 03:56:13 +0000 (GMT)
-From:   Dany Madden <drt@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, ljp@linux.ibm.com,
-        ricklind@linux.ibm.com, Dany Madden <drt@linux.ibm.com>
-Subject: [PATCH] ibmvnic: Continue with reset if set link down failed
-Date:   Mon,  5 Apr 2021 22:47:52 -0500
-Message-Id: <20210406034752.12840-1-drt@linux.ibm.com>
-X-Mailer: git-send-email 2.26.2
+        id S243571AbhDFDtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Apr 2021 23:49:25 -0400
+Received: from ozlabs.org ([203.11.71.1]:39571 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233639AbhDFDtY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Apr 2021 23:49:24 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FDtn65N4Wz9sSC;
+        Tue,  6 Apr 2021 13:49:13 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1617680955;
+        bh=2V41qytuS/O/lB46Y0+hixtZSve/HcH+r1+SdAlGDyw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=bWEpKd1FZXu/0BmAT35fkgGDNFerfySzMTlXhSa2aR2h5EWchEBlFjdonYv0Pu0z1
+         IqK2tWoENJaoZxbkwNkGJJCZQ6WQf+C/1waNyskqdADwjOOd6aGOY8tqM+dvYqJnG0
+         kc3uFMdWCaepdIUdClsVQ0SMNpYgnhWfTcnWRU5OK+pTO27iKETZK+IjQ5YB8zJTcg
+         7rwE8D0aKSIC4QlDvwRyd3ioGsmiuTMMWvBdn5sPu7NQ8KOJz+ngOEp3R9nK+Yz+zW
+         bAPuki2Hcw5elikCVp52nKb2Yju8i6aeZGFIQwwcfFbxW3Y7tDQbj73ieqvee46P+A
+         uZy+e4CDz9vQQ==
+Date:   Tue, 6 Apr 2021 13:49:12 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20210406134912.6a37cdcd@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: wHY0QH_Ohj_KrpBRBo5xXK7WxAVTz4XI
-X-Proofpoint-ORIG-GUID: wHY0QH_Ohj_KrpBRBo5xXK7WxAVTz4XI
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-04-05_21:2021-04-01,2021-04-05 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
- mlxlogscore=999 clxscore=1011 impostorscore=0 priorityscore=1501
- adultscore=0 malwarescore=0 spamscore=0 lowpriorityscore=0 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104030000 definitions=main-2104060021
+Content-Type: multipart/signed; boundary="Sig_/8sX8bvoQhgeb..HCd.THkED";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an adapter is going thru a reset, it maybe in an unstable state that
-makes a request to set link down fail. In such a case, the adapter needs
-to continue on with reset to bring itself back to a stable state.
+--Sig_/8sX8bvoQhgeb..HCd.THkED
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Hi all,
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 9c6438d3b3a5..e4f01a7099a0 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1976,8 +1976,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 			rtnl_unlock();
- 			rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
- 			rtnl_lock();
--			if (rc)
--				goto out;
-+			if (rc) {
-+				netdev_dbg(netdev,
-+					   "Setting link down failed rc=%d. Continue anyway\n", rc);
-+			}
- 
- 			if (adapter->state == VNIC_OPEN) {
- 				/* When we dropped rtnl, ibmvnic_open() got
--- 
-2.26.2
+Today's linux-next merge of the net-next tree got a conflict in:
 
+  drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+
+between commit:
+
+  3ff3874fa0b2 ("net/mlx5e: Guarantee room for XSK wakeup NOP on async ICOS=
+Q")
+
+from the net tree and commits:
+
+  c276aae8c19d ("net/mlx5: Move mlx5e hw resources into a sub object")
+  b3a131c2a160 ("net/mlx5e: Move params logic into its dedicated file")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 5db63b9f3b70,773449c1424b..000000000000
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@@ -1090,8 -1040,7 +1040,8 @@@ static int mlx5e_alloc_icosq(struct mlx
+  	int err;
+ =20
+  	sq->channel   =3D c;
+- 	sq->uar_map   =3D mdev->mlx5e_res.bfreg.map;
++ 	sq->uar_map   =3D mdev->mlx5e_res.hw_objs.bfreg.map;
+ +	sq->reserved_room =3D param->stop_room;
+ =20
+  	param->wq.db_numa_node =3D cpu_to_node(c->cpu);
+  	err =3D mlx5_wq_cyc_create(mdev, &param->wq, sqc_wq, wq, &sq->wq_ctrl);
+
+--Sig_/8sX8bvoQhgeb..HCd.THkED
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBr2jgACgkQAVBC80lX
+0GyMqwf+JeRySGfwOKnE6szKkSCpgP3vQ2pxlsivZ4LzQYS1UHHWZCnIkYqtHaUh
+ozDRkBUNc3JqJXQC9X0rAjT7s+bgNz7YPmAK1h200bvZodvjv9QyhF8YK+jrUSNn
+dHwNd58nc6Gx1yNQuLyn4tb+1oZNyZs0me1CuVJnufb5elhQ+rcEEMDuyWam5vSF
+9jl5v5n9Zi+LuNKHlWtJBVVz7RNDz1122DaKYZ7SCn41SK4C53cDnYFmFDkyedsk
+P/4EpdG3moDpMaVQHGoeCsY6cIzND99nyxo4zYrFKRvXquNZ4+GD9nZE8yNQ4inz
+pZxNFXKvARNECeIeyiLeCIbDA2biMA==
+=Q8fT
+-----END PGP SIGNATURE-----
+
+--Sig_/8sX8bvoQhgeb..HCd.THkED--
