@@ -2,67 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC45355CFE
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 22:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87FD1355D0D
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 22:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245473AbhDFUgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 16:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbhDFUgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 16:36:38 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CD1C06174A
-        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 13:36:29 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id z8so17988678ljm.12
-        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 13:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ClgKaemO6CR2nmThdjhxA3Eyp3J9eGd9egneqIPbMOY=;
-        b=SeL0u6zQO7kIIiznxno8NT01CvIHgCvunazxpaAXC61Esn3n5byHyd2eIqbGLRNjeZ
-         RgRMb7AyXjZlsaiO87nwK4/0xiZui+lWb4Byj/xaHg6RnljF5nOTRKIRhe2A65Em4Bac
-         2ncEut0oxaHaXX3RrC+lW/Nbpk4Yn1n4Sh7mHd9PD7Hd9NgXLMQn0MaU5aVdg6zDw7wx
-         yzCkckIWBh+/h90YLnHRWjLXm/cHidry479MMjsypybt7S0+XDssSvIAXWaaiGR+YwQ4
-         swgfVxgtupCnSkGOSInN7f9798HYhQGCCyiFuhw6yE8FossSRhtLaUOJvyRyFB/nn2bl
-         305Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ClgKaemO6CR2nmThdjhxA3Eyp3J9eGd9egneqIPbMOY=;
-        b=p8eu0QRFJFuQItTIiru/T/qbmsM9OJz3un7sJZfkfuOUDvIVVhlGnvbDl3LTE6y08j
-         gL74ohV50vZr7zgSw0e8qWgK/3TL7bX7FrjuarRC5FNB/Ba2U6cBbHwfU+41JOwGJsxT
-         45hmOSgHT+3Nq/2gh31Ved9KQMTjF1xTp7h+k2o/R+qawdsficNS0fBLdV2cMBxXkS5k
-         QeqrMdTKKuMMPK9Nfyh2m6KPXnfzjbPq7n5BFcf7G/mbbPOYZT+dtL8XG3Ef/L4ITJkB
-         uOONV2uqP4f/glWSpg2HUu7cItTQgS7HbXHhRxNVB2S04vcalxbKO4h0E7f2n8rk33rd
-         1RFA==
-X-Gm-Message-State: AOAM5314JE/VfLa5n4wc5AW68bxZJdsJSd/aFxqh2roxzW+Ejm9jJbYJ
-        Ss8tuWhuf/khh9B1Zo1q7I9vsd6Hz2yLvLif9pU=
-X-Google-Smtp-Source: ABdhPJyGNKlBLyvEONf6J+5tzldoJlNwSGbAtQ9z5/RX1QXevqRmnrh1QNTuKQc37FsBzhcRt4OdekdS42+Zrfv+ooc=
-X-Received: by 2002:a2e:7c14:: with SMTP id x20mr20536155ljc.146.1617741387821;
- Tue, 06 Apr 2021 13:36:27 -0700 (PDT)
+        id S1347185AbhDFUoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 16:44:16 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:55614 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347223AbhDFUoK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 16:44:10 -0400
+Received: from [IPv6:2003:e9:d71d:a9d1:9fa1:9dd5:9888:d937] (p200300e9d71da9d19fa19dd59888d937.dip0.t-ipconnect.de [IPv6:2003:e9:d71d:a9d1:9fa1:9dd5:9888:d937])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 71BA9C00BF;
+        Tue,  6 Apr 2021 22:43:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1617741839;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tlgBoaL+vctmwHsEHYSEqQ5I9wqONxWSV632d4u05iE=;
+        b=TIYmRswcDPiMSc3Dgwig5xnQGuPkG/h7cM78u4XkaDyMOba6gt5XBr5wSd3Yn9vgNKo8M4
+        tEdX8yeb6RzTmt2twp3zKECeVHDxbBi2UVwLAYDvGSBIKz+ZdMv6DjekjVSYeVAtmQftgo
+        6FJxYc8qBnkgFLQQRKGiRRfakOY36yYBAAP5LJzWoRoAYLjpDfiuZLaFDxlTnN8qtHsQix
+        FiK5BRgisTmVAMOiNgjbo9/Xn1ewAWLb8uUV9xSY+0bLJfjs7n3i4648d9jx3ABcgjxpdJ
+        UryqJHFHcpqYEKmjE3nQeo7aQvHpokZ0JOibP7ybKscBelXpKiHsiRRk8mh4vA==
+Subject: Re: [PATCH v2] net: mac802154: Fix general protection fault
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        syzbot+9ec037722d2603a9f52e@syzkaller.appspotmail.com
+References: <CAB_54W7v1Dk9KjytfO8hAGfiqPJ6qO0SdgwDQ-s4ybA2yvuoCg@mail.gmail.com>
+ <20210304152125.1052825-1-paskripkin@gmail.com>
+ <CAB_54W6BmSuRo5pwGEH_Xug3Fo5cBMjmMAGjd3aaWJaGZpSsHQ@mail.gmail.com>
+ <9435f1052a2c785b49757a1d3713733c7e9cee0e.camel@gmail.com>
+ <CAB_54W6Js5JD126Bduf1FjDLpOiCYmLX+MZzqP9dVupSUDO8tw@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <151ad0e0-3502-e0a0-1651-8d1778e48de1@datenfreihafen.org>
+Date:   Tue, 6 Apr 2021 22:43:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Received: by 2002:ab3:6edb:0:0:0:0:0 with HTTP; Tue, 6 Apr 2021 13:36:27 -0700 (PDT)
-Reply-To: cm9783684@gmail.com
-From:   Mrs Madina Abdoulaziz <123456432d543@gmail.com>
-Date:   Tue, 6 Apr 2021 22:36:27 +0200
-Message-ID: <CAGwDaqhUf+UPHDxe-XD+DhF6rwfYD9ft=8mWOuknMA5yPW0Xqw@mail.gmail.com>
-Subject: Hello,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAB_54W6Js5JD126Bduf1FjDLpOiCYmLX+MZzqP9dVupSUDO8tw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello.
 
-I have a personal Project in which i need your assistance I would like
-to be sure of your willingness, trustworthiness and commitment to
-execute this transaction with me. I seek your partnership in
-transferring  this fund {$US6,000,000}. If interested
-(cm9783684@gmail.com ) for more details about the fund.
+On 05.04.21 13:50, Alexander Aring wrote:
+> Hi,
+> 
+> On Mon, 5 Apr 2021 at 01:45, Pavel Skripkin <paskripkin@gmail.com> wrote:
+>>
+>> Hi!
+>>
+> ...
+>>>
+>>
+>> I forgot to check the patch with ./scripts/checkpatch.pl :(
+>>
+>>> Dumb question: What is the meaning of it?
+>>
+>> This is for gerrit code review. This is required to push changes to
+>> gerrit public mirror. I'm using it to check patches with syzbot. Change
+>> ids are useless outside gerrit, so it shouldn't be here.
+>>
+>> Btw, should I sent v2 or this is already fixed?
+> 
+> Otherwise the patch looks good. May Stefan can fix this.
+> 
+> Acked-by: Alexander Aring <aahringo@redhat.com>
 
-, thank you.
+I removed the Change-ID locally here.
 
-Mrs madina
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
+
+regards
+Stefan Schmidt
