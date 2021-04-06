@@ -2,127 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1690355A19
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 19:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5FC0355A45
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 19:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346822AbhDFRPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 13:15:46 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:43209 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233879AbhDFRPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 13:15:45 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 7BA8217B0;
-        Tue,  6 Apr 2021 13:15:36 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 06 Apr 2021 13:15:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alyssa.is; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=GoEiTLDY1pXs2g41QovrQQVMUjO
-        q/1wsknOQcAbJGMg=; b=dZoK/1JN98g9M5gQzlQ2obMOdZpjgAooh+FFgcJjkC1
-        GTXoDOtdJnr44hXM/Jp/exirSmOo3F3x4yyQrCiJjnfW3WIW4JMRBieXBERHDEA3
-        mJLeJA4V6dRX2IR4TDeyzk3MwCO59Posj+xjTnvZNzcxBztQXpb5ocujoHpEYQLr
-        5R38keAl8mt9quawB6BuQi4u8D2mke9QP3dsScGhjoMhdSqYNhdvV7enqwxo3U2v
-        IbVUUFvWLGmnspivEPRtjnx+oWUM+cXXsVfwZpkmcLo4BHHoajtFYrfHt9P4qpB3
-        G8mUIvWvqkxI50ByF/8OOIXP4yhOVk/pjo1z1c9wQOQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=GoEiTL
-        DY1pXs2g41QovrQQVMUjOq/1wsknOQcAbJGMg=; b=qimvT3SNuBHdNuaDmVDG62
-        FrR0YrHzIEY/Fgif6oCcklCY+kb27xpMqdqwf7O3Bq8f4J8EAEY+/LtzkAIYsQaO
-        YR7RtwX+6qzIzjuKb8/Zc5U70vfJ/1SaACJPAs2c+zPGQ6+fsND2iW5hi3jiRZ3L
-        kdunQk+MxTV9IymipC8D2Fnz9Gg9b7AVVzDgkEvtcyrpDezHXJJbzPKXgQx9DiOS
-        sXo9yrlrqC0jC1G2SH6G780PsCD0X6D3ZYZlMmae9/5Bi0OEpSFdzrTZZtFExVEm
-        +zN5sRJFaryaT+trF/9PHFUWtpPUjCPTvYJTHMgfWCek5teUiNgmeABRONORxJiA
-        ==
-X-ME-Sender: <xms:N5dsYG6lQv-6UPj15aXC60R8hNA1cIzzm5EKtyWnnSLd-pXqFa4zLQ>
-    <xme:N5dsYP2EynTkCdCg2KhopmAdpHRurWu-n-H2KqABKSzOkj7PjQZChGVTgLzmi_nNN
-    vgFbxHWMm1y8ndxyA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudejhedgheekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtddtredttddvnecuhfhrohhmpeetlhihshhs
-    rgcutfhoshhsuceohhhisegrlhihshhsrgdrihhsqeenucggtffrrghtthgvrhhnpeeuff
-    egffdtvdffiedttefggfehtdfgudfhfffgteefgfdugeegveffieffudduvdenucfkphep
-    keegrddukedurddvgeejrdduuddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomhepqhihlhhishhssegvvhgvrdhqhihlihhsshdrnhgvth
-X-ME-Proxy: <xmx:N5dsYBAM87wkrmK9ZT-U6RRf0LLpyn3mSJUvpJbPESIdVz5pA9Z7oA>
-    <xmx:N5dsYIHX2iuRwd9uC-CQxopYD82HZzs5TJOpbCa-92qguMHg3kELCA>
-    <xmx:N5dsYDpMsW8_MF-VRwoIm54j5bQgXp7cENXAlo0cXKA_K6F65XAwnQ>
-    <xmx:OJdsYFGBHBi4WivbdVblNZ85nBegBn36YxdaeDn0_QKdnJiI02-G0Q>
-Received: from eve.qyliss.net (p54b5f76f.dip0.t-ipconnect.de [84.181.247.111])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 7940D1080063;
-        Tue,  6 Apr 2021 13:15:35 -0400 (EDT)
-Received: by eve.qyliss.net (Postfix, from userid 1000)
-        id 53AD425D; Tue,  6 Apr 2021 17:15:32 +0000 (UTC)
-Date:   Tue, 6 Apr 2021 17:15:32 +0000
-From:   Alyssa Ross <hi@alyssa.is>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [iproute2] finding the name of a TAP created with %d
-Message-ID: <20210406171532.dlcvtm5wzmuemhwk@eve.qyliss.net>
-References: <20210406134240.wwumpnrzfjbttnmd@eve.qyliss.net>
- <20210406092231.667138c2@hermes.local>
+        id S1346922AbhDFR0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 13:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232562AbhDFR0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 13:26:40 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D33C06174A;
+        Tue,  6 Apr 2021 10:26:32 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id a76so4541263wme.0;
+        Tue, 06 Apr 2021 10:26:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=l2/DDXuF1+UJKEzekjcIbjpsXi5IY5979dhiBTUUxbE=;
+        b=XiBqqzgK89mbNj19h6IecSmWVJJawESApqacalMTNPaCsBtnreXtSwgyaFGSVrcUOC
+         2ssn4nmRz1YBlgCBAmZBUDZlqrlKPm0sCY01oJ4fMgEqPD3wQYDl1c1ZVwCkLhZ2TwQS
+         7v0c9uqCjMbvzzrJbz4ByI0hjGkYwixjDQA8SqJdbM1uYSGdK8tFX6v4HpCf5+kc0SNv
+         CuxEdQiDEfMuAJCk/i/avuLMvvLlkz7p1UZswc1pZAKpC9Xo18aElhyNT7PSWotpjoM3
+         yodbkVDbqCRVMmKe7VR7uBWX41jlMdttd8PnxIPgOH+PaQSdenY5OdAn4wq8eXnj8/8Q
+         kM3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=l2/DDXuF1+UJKEzekjcIbjpsXi5IY5979dhiBTUUxbE=;
+        b=TufvN8viPbG064n1LQAfRJl9nXWGFzCZq41hEdSApuS4C0hL8Dhl3EdNM9WRuIYJla
+         pZxhEDP59HGLlEzZh0Z43sR64Nl8R1PNKBQJFCLVG6nmS+wgNNaailK6a13XWPjsGKXJ
+         AC5DagCCqsTJPZGcJEmYFtZV1ySu/dJlkFCH9p8Lx2dCH7VMaGajyfWkQvqWNzSUaova
+         msvHBgyBHti16v/TcOspj4y4R9WHBvRne33zL+s5oRjHqJRZ3eWDbI/lRUnIVPkGhlT5
+         DnnwefQMDdkMxN0ZEYAB2q5nGpMRUBPVDF7Qi0ZWzUQKWegDYvtKdHdh4Ro11zGgaQhC
+         ElWw==
+X-Gm-Message-State: AOAM5323OdSQNM4EcgpuDE7MkWMQ0Gle4L1lBLB1gthMuwO3JTcof/oT
+        v2k3bvfXwdikdtLqPN41g0ZazvwhL9w=
+X-Google-Smtp-Source: ABdhPJxrUI0tY+zcjCcYikXxT6vSF5p4TvLUBIItXIa+0CjyHRagPQpIzyIozklEra4MmzkGupOucw==
+X-Received: by 2002:a7b:c219:: with SMTP id x25mr5163419wmi.163.1617729991118;
+        Tue, 06 Apr 2021 10:26:31 -0700 (PDT)
+Received: from [192.168.1.101] ([37.170.65.138])
+        by smtp.gmail.com with ESMTPSA id m15sm32011333wrp.96.2021.04.06.10.26.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Apr 2021 10:26:30 -0700 (PDT)
+Subject: Re: [PATCH] net: tun: set tun->dev->addr_len during TUNSETLINK
+ processing
+To:     Phillip Potter <phil@philpotter.co.uk>, davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210405113555.9419-1-phil@philpotter.co.uk>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ba1f5946-d1ef-ee4f-4ce1-15af2b324181@gmail.com>
+Date:   Tue, 6 Apr 2021 19:26:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="thdf7qlvao4ltylx"
-Content-Disposition: inline
-In-Reply-To: <20210406092231.667138c2@hermes.local>
+In-Reply-To: <20210405113555.9419-1-phil@philpotter.co.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---thdf7qlvao4ltylx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Tue, Apr 06, 2021 at 09:22:31AM -0700, Stephen Hemminger wrote:
-> On Tue, 6 Apr 2021 13:42:40 +0000
-> Alyssa Ross <hi@alyssa.is> wrote:
->
-> > If I do
-> >
-> > 	ip tuntap add name tap%d mode tap
-> >
-> > then a TAP device with a name like "tap0", "tap1", etc. will be created.
-> > But there's no way for me to find out which name was chosen for the
-> > device created by that command.
->
-> Use a follow on ip link show or look in sysfs.
->
-> > Perhaps ip should print the name of tuntap devices after they're
-> > created?
->
-> You can already do that with followon command, or use batch to put two commands together.
+On 4/5/21 1:35 PM, Phillip Potter wrote:
+> When changing type with TUNSETLINK ioctl command, set tun->dev->addr_len
+> to match the appropriate type, using new tun_get_addr_len utility function
+> which returns appropriate address length for given type. Fixes a
+> KMSAN-found uninit-value bug reported by syzbot at:
+> https://syzkaller.appspot.com/bug?id=0766d38c656abeace60621896d705743aeefed51
+> 
+> Reported-by: syzbot+001516d86dbe88862cec@syzkaller.appspotmail.com
+> Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> ---
 
-I don't think that's reliable, is it?  What happens if I create one
-device, but by the time I do ip link show another one has been created?
-There's no way to know for sure that the last device was created by the
-command I ran.
+Please give credits to people who helped.
 
-As I understand it, the only way to avoid a race like that for sure
-would be to look at the ifr_name returned by the kernel from TUNSETIFF.
+You could have :
 
---thdf7qlvao4ltylx
-Content-Type: application/pgp-signature; name="signature.asc"
+Suggested-by: Eric Dumazet <edumazet@google.com>
 
------BEGIN PGP SIGNATURE-----
+Or
+Diagnosed-by: Eric Dumazet <edumazet@google.com>
 
-iQIzBAABCAAdFiEEH9wgcxqlHM/ARR3h+dvtSFmyccAFAmBslzIACgkQ+dvtSFmy
-ccA3xg//fFwhfmpJBUvabETcNZv9GDGdN7FXHwEXVXcnOOg8Xozt88vsgCADOq0O
-JCNswzCPdWDbjAuPiK1+zIcKKJ/mKufATrG2Yei3LUZTlFr+nebuWbj7bZ2MpI1R
-putZJT++llDG+nA4k14Llhn98EF0v11beAIzqBD8cfrxI8Sbno2jMmVMNCr7zotY
-3EizTEQ3teq+jJUSXMr+6PRKGOJIzjMERv75u3wOKiPozQCf2qiwEvtZtEl/bJ4I
-oguKRPBH1SxQIAzv9hz0Dp+PPI8Jl9k90sZwfwalPNPuBisqzX46eHMiu3CLi1if
-r3BSYan2vLHkR8rIo5dLQUgdKanfTl7zG++rPH8tW9bndtNL4blM7/jlQMsyhsT5
-/Ek9KxkM8BB8pp8tjH/hthOoUUZ2nETh29ee+c75KMnpOF0/pUsRB0IBNODGcQzH
-+YVnh6QgN6BIqSXKCS1lhMC8CxZfj0S6KsnRH5Mq75O+xHbcyEx0DSGm396bdfSh
-jOEWrVR5SN7kWpL5q8MaZVywvggr44UVC25lh4ei7YtIdaeZUhDK6aeJVshrewEs
-k9Jb3Zg2fMXaqsjCDwv0e3em2QravIHICYx6DBYxeupvVAKsMx7auMMsqDM4fxU4
-ZuevwN+m3ieNnJKKH/Vy9EhamPPO6U9b6bCVFhb1ZZUw1WBu3l4=
-=l//D
------END PGP SIGNATURE-----
+Or at least CCed me :/
 
---thdf7qlvao4ltylx--
