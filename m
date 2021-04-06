@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9A1355F8A
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D71355F8C
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:39:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242852AbhDFXil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 19:38:41 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36890 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233184AbhDFXil (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 19:38:41 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lTvHC-00FD9K-Dh; Wed, 07 Apr 2021 01:38:30 +0200
-Date:   Wed, 7 Apr 2021 01:38:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
-Subject: Re: [PATCH net-next v3 09/18] include: bitmap: add macro for bitmap
- initialization
-Message-ID: <YGzw9keA5yZc09bZ@lunn.ch>
-References: <20210406221107.1004-1-kabel@kernel.org>
- <20210406221107.1004-10-kabel@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210406221107.1004-10-kabel@kernel.org>
+        id S236233AbhDFXjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232767AbhDFXjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 19:39:43 -0400
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CAAC06174A;
+        Tue,  6 Apr 2021 16:39:34 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 98B924D2493A4;
+        Tue,  6 Apr 2021 16:39:26 -0700 (PDT)
+Date:   Tue, 06 Apr 2021 16:39:21 -0700 (PDT)
+Message-Id: <20210406.163921.1678926610292877597.davem@davemloft.net>
+To:     mail@anirudhrb.com
+Cc:     kuba@kernel.org, oneukum@suse.com, kernel@esmil.dk,
+        geert@linux-m68k.org, zhengyongjun3@huawei.com, rkovhaev@gmail.com,
+        gregkh@linuxfoundation.org,
+        syzbot+c49fe6089f295a05e6f8@syzkaller.appspotmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hso: fix null-ptr-deref during tty device
+ unregistration
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20210406124402.20930-1-mail@anirudhrb.com>
+References: <20210406124402.20930-1-mail@anirudhrb.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 06 Apr 2021 16:39:27 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 12:10:58AM +0200, Marek Behún wrote:
-> Use the new variadic-macro.h library to implement macro
-> INITIALIZE_BITMAP(nbits, ...), which can be used for compile time bitmap
-> initialization in the form
->   static DECLARE_BITMAP(bm, 100) = INITIALIZE_BITMAP(100, 7, 9, 66, 98);
-> 
-> The macro uses the BUILD_BUG_ON_ZERO mechanism to ensure a compile-time
-> error if an argument is out of range.
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> ---
->  include/linux/bitmap.h | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
-> 
-> diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-> index 70a932470b2d..a9e74d3420bf 100644
-> --- a/include/linux/bitmap.h
-> +++ b/include/linux/bitmap.h
-> @@ -8,6 +8,7 @@
->  #include <linux/bitops.h>
->  #include <linux/string.h>
->  #include <linux/kernel.h>
-> +#include <linux/variadic-macro.h>
->  
->  /*
->   * bitmaps provide bit arrays that consume one or more unsigned
-> @@ -114,6 +115,29 @@
->   * contain all bit positions from 0 to 'bits' - 1.
->   */
->  
-> +/**
-> + * DOC: initialize bitmap
-> + * The INITIALIZE_BITMAP(bits, args...) macro expands to a designated
-> + * initializer for bitmap of length 'bits', setting each bit specified
-> + * in 'args...'.
-> + */
-
-Doesn't the /** mean this is kernel doc? The rest does not seem to
-follow kdoc. Does this compile cleanly with W=1?
-
-       Andrew
+RnJvbTogQW5pcnVkaCBSYXlhYmhhcmFtIDxtYWlsQGFuaXJ1ZGhyYi5jb20+DQpEYXRlOiBUdWUs
+ICA2IEFwciAyMDIxIDE4OjEzOjU5ICswNTMwDQoNCj4gTXVsdGlwbGUgdHR5cyB0cnkgdG8gY2xh
+aW0gdGhlIHNhbWUgdGhlIG1pbm9yIG51bWJlciBjYXVzaW5nIGEgZG91YmxlDQo+IHVucmVnaXN0
+cmF0aW9uIG9mIHRoZSBzYW1lIGRldmljZS4gVGhlIGZpcnN0IHVucmVnaXN0cmF0aW9uIHN1Y2Nl
+ZWRzDQo+IGJ1dCB0aGUgbmV4dCBvbmUgcmVzdWx0cyBpbiBhIG51bGwtcHRyLWRlcmVmLg0KPiAN
+Cj4gVGhlIGdldF9mcmVlX3NlcmlhbF9pbmRleCgpIGZ1bmN0aW9uIHJldHVybnMgYW4gYXZhaWxh
+YmxlIG1pbm9yIG51bWJlcg0KPiBidXQgZG9lc24ndCBhc3NpZ24gaXQgaW1tZWRpYXRlbHkuIFRo
+ZSBhc3NpZ25tZW50IGlzIGRvbmUgYnkgdGhlIGNhbGxlcg0KPiBsYXRlci4gQnV0IGJlZm9yZSB0
+aGlzIGFzc2lnbm1lbnQsIGNhbGxzIHRvIGdldF9mcmVlX3NlcmlhbF9pbmRleCgpDQo+IHdvdWxk
+IHJldHVybiB0aGUgc2FtZSBtaW5vciBudW1iZXIuDQo+IA0KPiBGaXggdGhpcyBieSBtb2RpZnlp
+bmcgZ2V0X2ZyZWVfc2VyaWFsX2luZGV4IHRvIGFzc2lnbiB0aGUgbWlub3IgbnVtYmVyDQo+IGlt
+bWVkaWF0ZWx5IGFmdGVyIG9uZSBpcyBmb3VuZCB0byBiZSBhbmQgcmVuYW1lIGl0IHRvIG9idGFp
+bl9taW5vcigpDQo+IHRvIGJldHRlciByZWZsZWN0IHdoYXQgaXQgZG9lcy4gU2ltaWxhcnksIHJl
+bmFtZSBzZXRfc2VyaWFsX2J5X2luZGV4KCkNCj4gdG8gcmVsZWFzZV9taW5vcigpIGFuZCBtb2Rp
+ZnkgaXQgdG8gZnJlZSB1cCB0aGUgbWlub3IgbnVtYmVyIG9mIHRoZQ0KPiBnaXZlbiBoc29fc2Vy
+aWFsLiBFdmVyeSBvYnRhaW5fbWlub3IoKSBzaG91bGQgaGF2ZSBjb3JyZXNwb25kaW5nDQo+IHJl
+bGVhc2VfbWlub3IoKSBjYWxsLg0KPiANCj4gUmVwb3J0ZWQtYnk6IHN5emJvdCtjNDlmZTYwODlm
+Mjk1YTA1ZTZmOEBzeXprYWxsZXIuYXBwc3BvdG1haWwuY29tDQo+IFRlc3RlZC1ieTogc3l6Ym90
+K2M0OWZlNjA4OWYyOTVhMDVlNmY4QHN5emthbGxlci5hcHBzcG90bWFpbC5jb20NCj4gDQo+IFNp
+Z25lZC1vZmYtYnk6IEFuaXJ1ZGggUmF5YWJoYXJhbSA8bWFpbEBhbmlydWRocmIuY29tPg0KDQpU
+aGlzIGFkZHMgYSBuZXcgYnVpbGQgd2FybmluZzoNCg0KICBDQyBbTV0gIGRyaXZlcnMvbmV0L3Vz
+Yi9oc28ubw0KZHJpdmVycy9uZXQvdXNiL2hzby5jOiBJbiBmdW5jdGlvbiChaHNvX3NlcmlhbF9j
+b21tb25fY3JlYXRlojoNCmRyaXZlcnMvbmV0L3VzYi9oc28uYzoyMjU2OjY6IHdhcm5pbmc6IHVu
+dXNlZCB2YXJpYWJsZSChbWlub3KiIFstV3VudXNlZC12YXJpYWJsZV0NCg0KUGxlYXNlIGZpeCB0
+aGlzIGFuZCBhZGQgYW4gYXBwcm9wcmlhdGUgRml4ZXM6IHRhZywgdGhhbmsgeW91Lg0K
