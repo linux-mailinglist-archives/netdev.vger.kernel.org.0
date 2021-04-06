@@ -2,133 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49ADA354DEE
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 09:35:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB03354E19
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 09:43:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235106AbhDFHfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 03:35:37 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56006 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234686AbhDFHfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 03:35:36 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1617694527;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VrVbOO4b9Ber4GqFXFXFHTaJP3U7jex5+rXuxCcYIqM=;
-        b=Lqrhzhb6R6U+HOL8yjGURFnJ7Xpz4sB6udEzV4q+yRVPpBkRw2u1lc1vvsVK2KBUXaQFbG
-        WWCKwvylSVhBq10KIZ+ajYfi0JwI9MEJVH0E+PU1cd4DhQLoKdam1YwUOX0b/iz7JaoG19
-        6OAhmEoMFsLl8jnlxO9s+3vXm7vkSJcBGXrXgkx5D1yO3UCYmnPhOJNvZHuGjtefwgfE0g
-        /+7Yeoqbgvk8ZkZY+xL2aCcdjhSJ6jQeRrMuvHEvogSZYw/TnaHu78CgqgEAEiIUFX2CH0
-        zI/S+RgDsJFkj0yUlDQb6gyO0NdZpE4G/Rir28hdlBrOg7yuTjH0SRdw23f38A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1617694527;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VrVbOO4b9Ber4GqFXFXFHTaJP3U7jex5+rXuxCcYIqM=;
-        b=OCCTwL3vILBxyHwz4HmHL+lRUS5q5YcYFdc8oJJt6ppAPEHXOo5lfoByIRRC08KZytyZJj
-        8oGZX1pVfi6URUAw==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Murali Karicheri <m-karicheri2@ti.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH net v3] net: hsr: Reset MAC header for Tx path
-Date:   Tue,  6 Apr 2021 09:35:09 +0200
-Message-Id: <20210406073509.13734-1-kurt@linutronix.de>
+        id S234338AbhDFHnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 03:43:07 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50503 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232478AbhDFHnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 03:43:04 -0400
+Received: from mail-wm1-f70.google.com ([209.85.128.70])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1lTgMR-0004Xu-Sv
+        for netdev@vger.kernel.org; Tue, 06 Apr 2021 07:42:55 +0000
+Received: by mail-wm1-f70.google.com with SMTP id a3so105504wmm.0
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 00:42:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=un5YlHzl0BXO6eaQ9eW4dvRNdp9xfJ5KIDYh8hbqnBI=;
+        b=EyAigrh9mmRth6TpUFthJUs9Dg32YPl6shswdFDa6nJ5BG9O9+AkGH7T/hkYW4/nEZ
+         QBtXxJyvVmg0BFZ7jTnfH61IaTuNx1nykT182nQqnX3GsrPNnUBzuq7kqiwxJFLjI2GH
+         vgfvddFbIfNUGHnuSdPflDd+48mngOdJV3WlVjb/4RvR+cxS9YqlYrzPAgZLuKNmMbhJ
+         sDn9s3NfoMq8GUzY8QApsOR8JSsM34IQEZabCTxP3Zv/PC3pMK0c/nbdO/bHtJWULV+P
+         iV9Z6JSOQQ/NGYxnhChyIqheSTvK+vbvrPL1YEuZdFKs4M5f+OWA10+bb0EutJRwP5zY
+         P0Yw==
+X-Gm-Message-State: AOAM533IzszxuE+fcs/PR3YLD0YDcAWCWH0DLwN6b/JcS86jX8oN67cU
+        o9Yk6cYAez8CSuNkg3MVe3f8+uc0KecLjGeq6f6S/zbkwVprk7OhchF3lJhRgOtjLJF3KbNoD0n
+        Cn9IkqGuJOneJCVAxZ4DAs7xJX88r9H4LjQ==
+X-Received: by 2002:a05:6000:1acb:: with SMTP id i11mr33901262wry.68.1617694975691;
+        Tue, 06 Apr 2021 00:42:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwBgJ29Q8kLgm96eyYaDgv9lrgSX6WAUdxiyLTBZQLm0lIymW7kzWKpwg8SwRxbvqmYyS/tzQ==
+X-Received: by 2002:a05:6000:1acb:: with SMTP id i11mr33901245wry.68.1617694975481;
+        Tue, 06 Apr 2021 00:42:55 -0700 (PDT)
+Received: from [192.168.1.115] (xdsl-188-155-192-147.adslplus.ch. [188.155.192.147])
+        by smtp.gmail.com with ESMTPSA id s5sm15349625wrw.2.2021.04.06.00.42.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Apr 2021 00:42:54 -0700 (PDT)
+Subject: Re: [PATCH v2] nfc: s3fwrn5: remove unnecessary label
+To:     samirweng1979 <samirweng1979@163.com>, k.opasiak@samsung.com
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+References: <20210406015954.10988-1-samirweng1979@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <07a98473-1e85-cd28-3854-063a73592155@canonical.com>
+Date:   Tue, 6 Apr 2021 09:42:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210406015954.10988-1-samirweng1979@163.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reset MAC header in HSR Tx path. This is needed, because direct packet
-transmission, e.g. by specifying PACKET_QDISC_BYPASS does not reset the MAC
-header.
+On 06/04/2021 03:59, samirweng1979 wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
+> 
+> In function s3fwrn5_nci_post_setup, the variable ret is assigned then
+> goto out label, which just return ret, so we use return to replace it.
+> Other goto sentences are similar, we use return sentences to replace
+> goto sentences and delete out label.
+> 
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+> ---
+>  drivers/nfc/s3fwrn5/core.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
 
-This has been observed using the following setup:
 
-|$ ip link add name hsr0 type hsr slave1 lan0 slave2 lan1 supervision 45 version 1
-|$ ifconfig hsr0 up
-|$ ./test hsr0
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-The test binary is using mmap'ed sockets and is specifying the
-PACKET_QDISC_BYPASS socket option.
 
-This patch resolves the following warning on a non-patched kernel:
-
-|[  112.725394] ------------[ cut here ]------------
-|[  112.731418] WARNING: CPU: 1 PID: 257 at net/hsr/hsr_forward.c:560 hsr_forward_skb+0x484/0x568
-|[  112.739962] net/hsr/hsr_forward.c:560: Malformed frame (port_src hsr0)
-
-The warning can be safely removed, because the other call sites of
-hsr_forward_skb() make sure that the skb is prepared correctly.
-
-Fixes: d346a3fae3ff ("packet: introduce PACKET_QDISC_BYPASS socket option")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
-
-Changes since v2:
-
- * Move skb_reset_mac_header() to hsr_dev_xmit()
- * Remove HSR malformed frame warning
-
-Changes since v1:
-
- * Move skb_reset_mac_header() to __dev_direct_xmit()
- * Add Fixes tag
- * Target net tree
-
-Previous versions:
-
- * https://lkml.kernel.org/netdev/20210329071716.12235-1-kurt@linutronix.de/
- * https://lkml.kernel.org/netdev/20210326154835.21296-1-kurt@linutronix.de/
-
-net/hsr/hsr_device.c  | 1 +
- net/hsr/hsr_forward.c | 6 ------
- 2 files changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index 7444ec6e298e..bfcdc75fc01e 100644
---- a/net/hsr/hsr_device.c
-+++ b/net/hsr/hsr_device.c
-@@ -217,6 +217,7 @@ static netdev_tx_t hsr_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 	master = hsr_port_get_hsr(hsr, HSR_PT_MASTER);
- 	if (master) {
- 		skb->dev = master->dev;
-+		skb_reset_mac_header(skb);
- 		hsr_forward_skb(skb, master);
- 	} else {
- 		atomic_long_inc(&dev->tx_dropped);
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index ed82a470b6e1..b218e4594009 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -555,12 +555,6 @@ void hsr_forward_skb(struct sk_buff *skb, struct hsr_port *port)
- {
- 	struct hsr_frame_info frame;
- 
--	if (skb_mac_header(skb) != skb->data) {
--		WARN_ONCE(1, "%s:%d: Malformed frame (port_src %s)\n",
--			  __FILE__, __LINE__, port->dev->name);
--		goto out_drop;
--	}
--
- 	if (fill_frame_info(&frame, skb, port) < 0)
- 		goto out_drop;
- 
--- 
-2.20.1
-
+Best regards,
+Krzysztof
