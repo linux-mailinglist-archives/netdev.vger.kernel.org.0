@@ -2,114 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9303553C9
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC7C3553D6
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:28:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238115AbhDFMY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 08:24:28 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:5121 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbhDFMY0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 08:24:26 -0400
-Received: from DGGEML402-HUB.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FF6941R2VzYTBY;
-        Tue,  6 Apr 2021 20:22:16 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- DGGEML402-HUB.china.huawei.com (10.3.17.38) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Tue, 6 Apr 2021 20:24:14 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Tue, 6 Apr 2021
- 20:24:15 +0800
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-To:     Michal Kubecek <mkubecek@suse.cz>
-CC:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Hillf Danton <hdanton@sina.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kehuan Feng <kehuan.feng@gmail.com>,
-        "Jike Song" <albcamus@gmail.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        "David Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Josh Hunt <johunt@akamai.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
- <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
- <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
- <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
- <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
- <nycvar.YFH.7.76.2104022120050.12405@cbobk.fhfr.pm>
- <20210403003537.2032-1-hdanton@sina.com>
- <nycvar.YFH.7.76.2104031420470.12405@cbobk.fhfr.pm>
- <CAM_iQpU+YD9AcX_77kqmQkqKMuOtnRh5xoGcz9dRRJTe1OnpBQ@mail.gmail.com>
- <2b99fce1-c235-6083-bd39-cece1f4a0343@huawei.com>
- <20210406073115.3h6zehyteagav3f7@lion.mk-sys.cz>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <30b4e9a4-c0ad-8ac5-0bbb-f186f1caf7a7@huawei.com>
-Date:   Tue, 6 Apr 2021 20:24:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S242985AbhDFM2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 08:28:23 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:57649 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242186AbhDFM2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 08:28:19 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 270025C00A7;
+        Tue,  6 Apr 2021 08:28:11 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 06 Apr 2021 08:28:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=WMxkHsOkXPOUFEJO7
+        Gh+L9IlE2Vkv/ILIFs+Nf72TO0=; b=lQatyIUZGtwmwQ46nThWUgCAvUuGTFRXO
+        W6CWmqMIA44QzIDeTmm2aAzck1xVSJ9Rn8VR1gNAnm0Y2wmAzGYiGj7OuJblf4Sd
+        HoCfvOvb8E2Z34yYIHAsS6EdwayGB+9UfUKHDuK5M7xHmO5LGqzfh78QUv7PVj6f
+        7AeREOJWfQP3YjtZ+PtArtRAn8m7QlPOlqj5GS5CgdNvCw+3/BZu1brDD7X7GUMM
+        oJuvTYXDKFirepRcmz3XZn08XV1nHjIohv1avYPMNNQvG9M6oF+mJltFM9SEFS2Z
+        YmWvRtsO1qc3AsEFCrOfJ5PAJkfySikS6xTPx9/0qOpRjbW0r4jPQ==
+X-ME-Sender: <xms:2lNsYL10-MflSd6R7-4un696MdvEgvYEVz1QRfo23y4Bf1DdSuhZ5g>
+    <xme:2lNsYKGe3SnG3AGkhnr9OT9ofL3f03bveB859nrt3EBfypJjDmj7aqbt10sYub01B
+    mPELSqbFw8mu9g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudejgedggeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:2lNsYL6IrcFKzryB5folLxO7JicXPdjvEcoUR0eEmrqEmJdcc1mNIg>
+    <xmx:2lNsYA1ZyXeyk_boDV6-S8f4Q9wwAyMUtMTl1PBK5KjYgOpTT1jdWw>
+    <xmx:2lNsYOFc_IBvW67spbbLP17GuOz7Ga8EV0y1DJ8EQOxdaMPPeOV5pw>
+    <xmx:21NsYKC46vUexb7oPJLzcS90f31KDTn_qc85GI3Ubch0-EkFW_97_g>
+Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CCED424005B;
+        Tue,  6 Apr 2021 08:28:08 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        vadimp@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next] mlxsw: core: Remove critical trip points from thermal zones
+Date:   Tue,  6 Apr 2021 15:27:33 +0300
+Message-Id: <20210406122733.773304-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <20210406073115.3h6zehyteagav3f7@lion.mk-sys.cz>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme716-chm.china.huawei.com (10.1.199.112) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/4/6 15:31, Michal Kubecek wrote:
-> On Tue, Apr 06, 2021 at 10:46:29AM +0800, Yunsheng Lin wrote:
->> On 2021/4/6 9:49, Cong Wang wrote:
->>> On Sat, Apr 3, 2021 at 5:23 AM Jiri Kosina <jikos@kernel.org> wrote:
->>>>
->>>> I am still planning to have Yunsheng Lin's (CCing) fix [1] tested in the
->>>> coming days. If it works, then we can consider proceeding with it,
->>>> otherwise I am all for reverting the whole NOLOCK stuff.
->>>>
->>>> [1] https://lore.kernel.org/linux-can/1616641991-14847-1-git-send-email-linyunsheng@huawei.com/T/#u
->>>
->>> I personally prefer to just revert that bit, as it brings more troubles
->>> than gains. Even with Yunsheng's patch, there are still some issues.
->>> Essentially, I think the core qdisc scheduling code is not ready for
->>> lockless, just look at those NOLOCK checks in sch_generic.c. :-/
->>
->> I am also awared of the NOLOCK checks too:), and I am willing to
->> take care of it if that is possible.
->>
->> As the number of cores in a system is increasing, it is the trend
->> to become lockless, right? Even there is only one cpu involved, the
->> spinlock taking and releasing takes about 30ns on our arm64 system
->> when CONFIG_PREEMPT_VOLUNTARY is enable(ip forwarding testing).
-> 
-> I agree with the benefits but currently the situation is that we have
-> a race condition affecting the default qdisc which is being hit in
-> production and can cause serious trouble which is made worse by commit
-> 1f3279ae0c13 ("tcp: avoid retransmits of TCP packets hanging in host
-> queues") preventing the retransmits of the stuck packet being sent.
-> 
-> Perhaps rather than patching over current implementation which requires
-> more and more complicated hacks to work around the fact that we cannot
-> make the "queue is empty" check and leaving the critical section atomic,
-> it would make sense to reimplement it in a way which would allow us
-> making it atomic.
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-Yes, reimplementing that is also an option.
-But what if reimplemention also has the same problem if we do not find
-the root cause of this problem? I think it better to find the root cause
-of it first?
+Disable software thermal protection by removing critical trip points
+from all thermal zones.
 
-> 
-> Michal
-> 
-> 
-> .
-> 
+The software thermal protection is redundant given there are two layers
+of protection below it in firmware and hardware. The first layer is
+performed by firmware, the second, in case firmware was not able to
+perform protection, by hardware.
+The temperature threshold set for hardware protection is always higher
+than for firmware.
+
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 27 +++++--------------
+ 1 file changed, 6 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index bf85ce9835d7..37fb2e1fb278 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -19,7 +19,6 @@
+ #define MLXSW_THERMAL_ASIC_TEMP_NORM	75000	/* 75C */
+ #define MLXSW_THERMAL_ASIC_TEMP_HIGH	85000	/* 85C */
+ #define MLXSW_THERMAL_ASIC_TEMP_HOT	105000	/* 105C */
+-#define MLXSW_THERMAL_ASIC_TEMP_CRIT	140000	/* 140C */
+ #define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	/* 5C */
+ #define MLXSW_THERMAL_MODULE_TEMP_SHIFT	(MLXSW_THERMAL_HYSTERESIS_TEMP * 2)
+ #define MLXSW_THERMAL_ZONE_MAX_NAME	16
+@@ -45,7 +44,6 @@ enum mlxsw_thermal_trips {
+ 	MLXSW_THERMAL_TEMP_TRIP_NORM,
+ 	MLXSW_THERMAL_TEMP_TRIP_HIGH,
+ 	MLXSW_THERMAL_TEMP_TRIP_HOT,
+-	MLXSW_THERMAL_TEMP_TRIP_CRIT,
+ };
+ 
+ struct mlxsw_thermal_trip {
+@@ -75,16 +73,9 @@ static const struct mlxsw_thermal_trip default_thermal_trips[] = {
+ 	{	/* Warning */
+ 		.type		= THERMAL_TRIP_HOT,
+ 		.temp		= MLXSW_THERMAL_ASIC_TEMP_HOT,
+-		.hyst		= MLXSW_THERMAL_HYSTERESIS_TEMP,
+ 		.min_state	= MLXSW_THERMAL_MAX_STATE,
+ 		.max_state	= MLXSW_THERMAL_MAX_STATE,
+ 	},
+-	{	/* Critical - soft poweroff */
+-		.type		= THERMAL_TRIP_CRITICAL,
+-		.temp		= MLXSW_THERMAL_ASIC_TEMP_CRIT,
+-		.min_state	= MLXSW_THERMAL_MAX_STATE,
+-		.max_state	= MLXSW_THERMAL_MAX_STATE,
+-	}
+ };
+ 
+ #define MLXSW_THERMAL_NUM_TRIPS	ARRAY_SIZE(default_thermal_trips)
+@@ -154,7 +145,6 @@ mlxsw_thermal_module_trips_reset(struct mlxsw_thermal_module *tz)
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_NORM].temp = 0;
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_HIGH].temp = 0;
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_HOT].temp = 0;
+-	tz->trips[MLXSW_THERMAL_TEMP_TRIP_CRIT].temp = 0;
+ }
+ 
+ static int
+@@ -183,11 +173,10 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
+ 	}
+ 
+ 	/* According to the system thermal requirements, the thermal zones are
+-	 * defined with four trip points. The critical and emergency
++	 * defined with three trip points. The critical and emergency
+ 	 * temperature thresholds, provided by QSFP module are set as "active"
+-	 * and "hot" trip points, "normal" and "critical" trip points are
+-	 * derived from "active" and "hot" by subtracting or adding double
+-	 * hysteresis value.
++	 * and "hot" trip points, "normal" trip point is derived from "active"
++	 * by subtracting double hysteresis value.
+ 	 */
+ 	if (crit_temp >= MLXSW_THERMAL_MODULE_TEMP_SHIFT)
+ 		tz->trips[MLXSW_THERMAL_TEMP_TRIP_NORM].temp = crit_temp -
+@@ -196,8 +185,6 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
+ 		tz->trips[MLXSW_THERMAL_TEMP_TRIP_NORM].temp = crit_temp;
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_HIGH].temp = crit_temp;
+ 	tz->trips[MLXSW_THERMAL_TEMP_TRIP_HOT].temp = emerg_temp;
+-	tz->trips[MLXSW_THERMAL_TEMP_TRIP_CRIT].temp = emerg_temp +
+-					MLXSW_THERMAL_MODULE_TEMP_SHIFT;
+ 
+ 	return 0;
+ }
+@@ -210,7 +197,7 @@ static void mlxsw_thermal_tz_score_update(struct mlxsw_thermal *thermal,
+ 	struct mlxsw_thermal_trip *trip = trips;
+ 	unsigned int score, delta, i, shift = 1;
+ 
+-	/* Calculate thermal zone score, if temperature is above the critical
++	/* Calculate thermal zone score, if temperature is above the hot
+ 	 * threshold score is set to MLXSW_THERMAL_TEMP_SCORE_MAX.
+ 	 */
+ 	score = MLXSW_THERMAL_TEMP_SCORE_MAX;
+@@ -333,8 +320,7 @@ static int mlxsw_thermal_set_trip_temp(struct thermal_zone_device *tzdev,
+ {
+ 	struct mlxsw_thermal *thermal = tzdev->devdata;
+ 
+-	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS ||
+-	    temp > MLXSW_THERMAL_ASIC_TEMP_CRIT)
++	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
+ 		return -EINVAL;
+ 
+ 	thermal->trips[trip].temp = temp;
+@@ -502,8 +488,7 @@ mlxsw_thermal_module_trip_temp_set(struct thermal_zone_device *tzdev,
+ {
+ 	struct mlxsw_thermal_module *tz = tzdev->devdata;
+ 
+-	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS ||
+-	    temp > tz->trips[MLXSW_THERMAL_TEMP_TRIP_CRIT].temp)
++	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
+ 		return -EINVAL;
+ 
+ 	tz->trips[trip].temp = temp;
+-- 
+2.30.2
 
