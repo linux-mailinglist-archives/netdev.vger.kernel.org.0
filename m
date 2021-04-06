@@ -2,123 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 821CB355BF4
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 21:05:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0CB1355C0E
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 21:14:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235467AbhDFTFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 15:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
+        id S239750AbhDFTOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 15:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbhDFTFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 15:05:50 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D668C06174A;
-        Tue,  6 Apr 2021 12:05:42 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id p10so2901350pld.0;
-        Tue, 06 Apr 2021 12:05:42 -0700 (PDT)
+        with ESMTP id S231701AbhDFTOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 15:14:04 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20208C06174A
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 12:13:56 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id v24-20020a9d69d80000b02901b9aec33371so15724984oto.2
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 12:13:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fR7uBE+KZgKRNGirNt0J9yqoqy113eytjrhGmdX8vhc=;
-        b=TojC3B0s7I3+/nfSWs80/9xaTunkHwnkKDBu0qMg6TLU4XRxHMsgSdErm3Rmk3JsJU
-         mryDZ+lYvgfSbnj2+2DV+tNy2hSnZzx9JSrwv05R4WdMAhs0ldJA89oJuEcMaEwRndqS
-         MYny9f2VB0fXOvTK4N4sVcpxeE/Rj7Ws45TRD7hgPxX5eQIYECZ56yD1nAnqoFnWWeL1
-         eGCWd7lCWR1nvBSe7EnoOCkg/OH0bhhpF9SykB/kkPf0+nJ7MSvuSYGOY7shixqk36UC
-         Dj+tJMc9KRxOBwmpf6HwkJQicZBtHFvS1JDVL1le3a1DwLNXmIHGHzqKgTLlur+jthEJ
-         5ZcA==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=1hVk2sl4TaItmGTJsMW8mVKUsfwm7LgBMu0kzq6GV3o=;
+        b=iw0BOla+AaXeIGqcxR0wdAuzV1yuPYBlqZ5IVyivcFvgt+gxvUdNYBPgEz/idp9xf0
+         zzOnNyHajpsXIhCGRefvOwCFZdeUUCC7ZQLWS7Tbu9TTALgj06Qy7YKZLkHC79YoXJv6
+         WL6wCaUfrwx5/HWF+vwymakH0b/D7VYP2IYG0ksiOVOikhZJ3P6r7WwcjXTNyUwGBOSm
+         Jfytvd6x6jMnW2T+acHwEBN8kc1d61jB9GnTpfIE3CvpvQ8OwcrcHdB8vo6WkUNNmEEx
+         X0bj6HZuKhrDSr8ye6ZCW0YEWit0/qMeOgWIq5hLEapWQPrz1kZqopa4emI+CZIO3rwL
+         9v3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fR7uBE+KZgKRNGirNt0J9yqoqy113eytjrhGmdX8vhc=;
-        b=aodHXExjcJa1UBJzDo74A5a/hp4E2KMQgyZEk3RbMjZY9B6LgkjAUEukUKobmzxN/W
-         ts7IqeeqeV4WvyBEEG9UrJKjf7Z/V03Jc3z7CDokOkdq/BRfT4xpoD7D1g5P5Tz+Pz9Y
-         ww0vLStlrsYKbr2nqPVFImX5PGYo4KAiGTdO6HdHwA0EcOyl1FdJWZzhTZUVfFuyT17S
-         neLTCOuYKZaZp0Jm9kO5KIUF6hjs5o/zJYNNOoAubOsJIQswLsW9TTwqJQq+awStiSC5
-         YPu91F1yu7UD6kIw3tqN5ODkkbJyUWyUTKlsl8U956lJHbB0QnPJ2UujkLgD/0heq6lK
-         cuAw==
-X-Gm-Message-State: AOAM530ZjUeiCZgK+I5WHVwkuvRvmoxzfiRc7XeJKwCmxBcWUNA+3VHZ
-        WIyVoo12X0eUuunamjxouCE=
-X-Google-Smtp-Source: ABdhPJwlP3QmABh4/nIwmiUI0ymstaWn3umCEZUef0OvuVGmL6HHCgt6yYD9gjyKppqKOMZS8rnNyw==
-X-Received: by 2002:a17:90a:f2cc:: with SMTP id gt12mr5723370pjb.136.1617735941762;
-        Tue, 06 Apr 2021 12:05:41 -0700 (PDT)
-Received: from localhost ([47.9.169.206])
-        by smtp.gmail.com with ESMTPSA id l10sm18453586pfc.125.2021.04.06.12.05.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 12:05:41 -0700 (PDT)
-Date:   Wed, 7 Apr 2021 00:35:38 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 3/5] libbpf: add low level TC-BPF API
-Message-ID: <20210406190538.fdqo7g2tzolgckpy@apollo>
-References: <20210325120020.236504-1-memxor@gmail.com>
- <20210325120020.236504-4-memxor@gmail.com>
- <CAEf4Bzbz9OQ_vfqyenurPV7XRVpK=zcvktwH2Dvj-9kUGL1e7w@mail.gmail.com>
- <20210328080648.oorx2no2j6zslejk@apollo>
- <CAEf4BzaMsixmrrgGv6Qr68Ytq8k9W+WP6m4Vdb1wDhDFBKStgw@mail.gmail.com>
- <48b99ccc-8ef6-4ba9-00f9-d7e71ae4fb5d@iogearbox.net>
- <20210331094400.ldznoctli6fljz64@apollo>
- <5d59b5ee-a21e-1860-e2e5-d03f89306fd8@iogearbox.net>
- <20210402152743.dbadpgcmrgjt4eca@apollo>
- <CAEf4Bzbk9t9Cx4DONzNu8reP+Fkdq8WA90syqesgQYgAQyCaLw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=1hVk2sl4TaItmGTJsMW8mVKUsfwm7LgBMu0kzq6GV3o=;
+        b=cKWIgRtM25CgEZFMxWN/ldTnLv0fV/atfE+Z8kxxGad1Qlb1RWuqsTgvb+dVp6HrJT
+         8bjnGHvKRH255dEmY9PyWV9OK6New80gbmfolk2NWHEtDE7YNw2DemI0GwdcLOdHgyD6
+         6qI2nk7+w1Md25hP8LDjfSkBO5noWy3ypJ9D2Y1emeJH7hp2RnjsWHHS+lCDuk/mWJUi
+         TZMiuon2oSO/iPjDhyIsbtds1sshuTEDgiz/sByDD+h8JHTZKLcQhQ8ghw/VI40tmJBf
+         VVmsgQzytFbrLPVCK1PAypNE2BLLfySURJQYCR/lSEuhhVGoRMEx6tyV+w9wkYIFy1cx
+         d74A==
+X-Gm-Message-State: AOAM530hXyfB0rwRDuvV7BevojTMFNqkobZbdOQHE+sspMJuCBoYGgQC
+        0Vh+dwjTrIWw/vsx2awRQgSpSmwRTVwVIBecbgzAnItS1SsQ2g==
+X-Google-Smtp-Source: ABdhPJzDzNBhVR5T6iD24Vn2o4tpMFbZk25jBzlp6jQXUq+H51G0T91vmwCMzZXSYevtLRSimDfY4HBR1fP7+L+aLP0=
+X-Received: by 2002:a9d:3437:: with SMTP id v52mr27796848otb.55.1617736435200;
+ Tue, 06 Apr 2021 12:13:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bzbk9t9Cx4DONzNu8reP+Fkdq8WA90syqesgQYgAQyCaLw@mail.gmail.com>
+From:   Tom Cook <tom.k.cook@gmail.com>
+Date:   Tue, 6 Apr 2021 20:13:44 +0100
+Message-ID: <CAFSh4UxWxtedFuyDK41+98o8A_p-cvcCGW9kobNwUfJPg_8dHg@mail.gmail.com>
+Subject: bind() and PACKET_MULTICAST
+To:     Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 10:51:09PM IST, Andrii Nakryiko wrote:
-> > [...]
->
-> if _block variant is just a special ifindex value, then it should be
-> fine for users to know such a detail (we can leave a comment
-> mentioning this specifically), especially given it's not a very
-> popular thing. Almost doubling amount of APIs just for this doesn't
-> make much sense, IMO.
->
+Can someone please suggest why the code below doesn't do as expected?
+I expect it to bind an AF_PACKET socket to an interface and receive
+packets with ethertype 0x5eeb that arrive at multicast MAC address
+77:68:76:68:76:69 on that interface.  In practice, nothing arrives.
 
-Ok.
+If I comment out the call to bind(), it receives packets with
+ethertype 0x5eeb that are addressed to 77:68:76:68:76:69 and are
+received on any interface on the system, not just eth0.  (There are no
+packets with ethertype 0x5eeb sent to any other address, so this may
+be coincidence.)
 
->
-> If we know that we need variant with options, I'd vote for having just
-> one bpf_tc_attach() API which always takes options. Passing NULL for
-> opts is simple, no need for two APIs, I think.
->
+If I change either use of ether_type to be ETH_P_ALL instead (and
+re-instate the bind() call), then it receives all ethernet frames
+received on eth0.
 
-Ack.
+Is this a bug?  Or is it as expected and I have to use some other
+mechanism (BPF?) to filter the frames?
 
->
-> Which parts of that id struct is the data that caller might not know
-> or can't know? Is it handle and chain_index? Or just one of them?
-> Or?... If there is something that has to be returned back, I'd keep
-> only that, instead of returning 6+ fields, most of which user should
-> already know.
->
+Thanks for any assistance,
+Tom
 
-The user will know ifindex and parent_id, and perhaps protocol (it would be
-ETH_P_ALL if they don't supply one by default). Other fields like handle,
-priority and chain_index can all be kernel assigned, so keeping those still
-makes sense. I'll change this in v2.
+Code:
 
---
-Kartikeya
+#include <arpa/inet.h>
+#include <linux/if_packet.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <net/ethernet.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+const unsigned short eth_type = 0x5eeb;
+
+int main() {
+    int fd = socket(AF_PACKET, SOCK_RAW, htons(eth_type));
+    if (fd < 0) {
+        perror("socket");
+        exit(1);
+    }
+
+    struct ifreq ifr;
+    const char * if_name = "eth0";
+    size_t if_name_len = strlen (if_name);
+    memcpy(ifr.ifr_name, if_name, if_name_len);
+    ioctl(fd, SIOCGIFINDEX, &ifr);
+    printf("Interface has index %d\n", ifr.ifr_ifindex);
+
+    struct sockaddr_ll addr = {0};
+    addr.sll_family = AF_PACKET;
+    addr.sll_ifindex = ifr.ifr_ifindex;
+    addr.sll_protocol = htons(eth_type);
+    addr.sll_pkttype = PACKET_MULTICAST;
+    if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+        perror("bind");
+        exit(1);
+    }
+
+    unsigned char mcast[ETH_ALEN] = {0x77, 0x68, 0x76, 0x68, 0x76, 0x69};
+    struct packet_mreq mreq = {0};
+    mreq.mr_ifindex = ifr.ifr_ifindex;
+    mreq.mr_type = PACKET_MR_MULTICAST;
+    memcpy(mreq.mr_address, mcast, ETH_ALEN);
+    mreq.mr_alen = ETH_ALEN;
+    if(setsockopt(fd, SOL_SOCKET, PACKET_ADD_MEMBERSHIP, &mreq,
+sizeof(mreq)) < 0) {
+        perror("setsockopt");
+        exit(1);
+    }
+
+    char buf [2048];
+    struct sockaddr_ll src_addr;
+    socklen_t src_addr_len = sizeof(src_addr);
+    ssize_t count = recvfrom(fd, buf, sizeof(buf), 0, (struct
+sockaddr*)&src_addr, &src_addr_len);
+    if (count == -1) {
+        perror("recvfrom");
+        exit(1);
+    } else {
+        printf("Received frame.\n");
+        printf("Dest MAC: ");
+        for (int ii = 0; ii < 5; ii++) {
+            printf("%02hhx:", buf[ii]);
+        }
+        printf("%02hhx\n", buf[5]);
+        printf("Src MAC: ");
+        for (int ii = 6; ii < 11; ii++) {
+            printf("%02hhx:", buf[ii]);
+        }
+        printf("%02hhx\n", buf[11]);
+    }
+}
+
+And here is a short Python3 programme to generate such frames (install
+pyroute2 package and run as `sudo python3 test.py eth0`):
+
+import socket
+from pyroute2 import IPDB
+import sys
+import struct
+import binascii
+import time
+
+ip = IPDB()
+
+SMAC=bytes.fromhex(ip.interfaces[sys.argv[1]]['address'].replace(':', ''))
+DMAC=bytes.fromhex('776876687669')
+
+s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
+s.bind((sys.argv[1], 0x5eeb))
+#s.bind((sys.argv[1], 0))
+
+dgram = struct.pack("!6s6sHH", DMAC, SMAC, 0x5eeb, 0x7668)
+print(' '.join('{:02x}'.format(x) for x in dgram))
+
+while True:
+    s.send(dgram)
+    time.sleep(0.1)
