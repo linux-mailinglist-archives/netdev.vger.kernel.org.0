@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A03354CEF
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 08:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D13354CEC
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 08:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244018AbhDFG3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 02:29:51 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:15603 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244029AbhDFG3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 02:29:10 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FDyGz5pjqz18HSL;
-        Tue,  6 Apr 2021 14:26:51 +0800 (CST)
-Received: from huawei.com (10.67.165.24) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.498.0; Tue, 6 Apr 2021
- 14:28:56 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-bluetooth@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net/Bluetooth - use the correct print format
-Date:   Tue, 6 Apr 2021 14:26:24 +0800
-Message-ID: <1617690384-48272-1-git-send-email-yekai13@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S244007AbhDFG3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 02:29:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44028 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237859AbhDFG26 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 02:28:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BE35D61165;
+        Tue,  6 Apr 2021 06:28:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617690530;
+        bh=6qxictHF+/YqQWcR0awtfiLtRYlib8mn/Dx9axjfKg4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i+8SC5R9QYYvQwgkzuDT4QnqR/LHddWxuZum0T0C3kxd6raLjcbfF1cvFl2Cec8Xm
+         KhScYX6h4r8XG5j8aUB+B2/jprzuuPXY9FqnyK2nKPB+vdLVfp9goj46Wy4uHK+0Ra
+         PZddOiDso6XZJeBYLq1uIw9rM48AGuy05sSGnzMZFNrnyCjZMGJCv51xn7hMBg++CF
+         +dca19jOJJKcipn2OWRYvnKC9ngkedpdr+ZBuojGR6Bu10dtubDRP/koLNLtLoA/lF
+         akfcfAruTov/1lG+Q+agKfPbZvwxlR1hCjO5x/uMyewyKscMUk4082lcCbzP0vJ/16
+         lfXW6Ibhc0a6A==
+Date:   Tue, 6 Apr 2021 09:28:46 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Tom Talpey <tom@talpey.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
+        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
+        samba-technical@lists.samba.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next 02/10] RDMA/core: Enable Relaxed Ordering in
+ __ib_alloc_pd()
+Message-ID: <YGv/nne+E5xXHsME@unreal>
+References: <20210405052404.213889-1-leon@kernel.org>
+ <20210405052404.213889-3-leon@kernel.org>
+ <befc60f3-d28a-5420-b381-0f408bd7cca9@talpey.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <befc60f3-d28a-5420-b381-0f408bd7cca9@talpey.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the correct print format. Printing an unsigned int value should use %u
-instead of %d. For details, please read document:
-Documentation/core-api/printk-formats.rst
+On Mon, Apr 05, 2021 at 02:01:16PM -0400, Tom Talpey wrote:
+> On 4/5/2021 1:23 AM, Leon Romanovsky wrote:
+> > From: Avihai Horon <avihaih@nvidia.com>
+> > 
+> > Enable Relaxed Ordering in __ib_alloc_pd() allocation of the
+> > local_dma_lkey.
+> > 
+> > This will take effect only for devices that don't pre-allocate the lkey
+> > but allocate it per PD allocation.
+> > 
+> > Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+> > Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >   drivers/infiniband/core/verbs.c              | 3 ++-
+> >   drivers/infiniband/hw/vmw_pvrdma/pvrdma_mr.c | 1 +
+> >   2 files changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+> > index a1782f8a6ca0..9b719f7d6fd5 100644
+> > --- a/drivers/infiniband/core/verbs.c
+> > +++ b/drivers/infiniband/core/verbs.c
+> > @@ -287,7 +287,8 @@ struct ib_pd *__ib_alloc_pd(struct ib_device *device, unsigned int flags,
+> >   	if (device->attrs.device_cap_flags & IB_DEVICE_LOCAL_DMA_LKEY)
+> >   		pd->local_dma_lkey = device->local_dma_lkey;
+> >   	else
+> > -		mr_access_flags |= IB_ACCESS_LOCAL_WRITE;
+> > +		mr_access_flags |=
+> > +			IB_ACCESS_LOCAL_WRITE | IB_ACCESS_RELAXED_ORDERING;
+> 
+> So, do local_dma_lkey's get relaxed ordering unconditionally?
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- net/bluetooth/l2cap_core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+Yes, in mlx5, this lkey is created on the fly.
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 7641fdf..2ed074d 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -492,14 +492,14 @@ static void l2cap_chan_destroy(struct kref *kref)
- 
- void l2cap_chan_hold(struct l2cap_chan *c)
- {
--	BT_DBG("chan %p orig refcnt %d", c, kref_read(&c->kref));
-+	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
- 
- 	kref_get(&c->kref);
- }
- 
- void l2cap_chan_put(struct l2cap_chan *c)
- {
--	BT_DBG("chan %p orig refcnt %d", c, kref_read(&c->kref));
-+	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
- 
- 	kref_put(&c->kref, l2cap_chan_destroy);
- }
-@@ -7263,7 +7263,7 @@ static int l2cap_stream_rx(struct l2cap_chan *chan, struct l2cap_ctrl *control,
- 	    L2CAP_TXSEQ_EXPECTED) {
- 		l2cap_pass_to_tx(chan, control);
- 
--		BT_DBG("buffer_seq %d->%d", chan->buffer_seq,
-+		BT_DBG("buffer_seq %u->%u", chan->buffer_seq,
- 		       __next_seq(chan, chan->buffer_seq));
- 
- 		chan->buffer_seq = __next_seq(chan, chan->buffer_seq);
-@@ -8366,7 +8366,7 @@ void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
- 	if (!conn)
- 		goto drop;
- 
--	BT_DBG("conn %p len %d flags 0x%x", conn, skb->len, flags);
-+	BT_DBG("conn %p len %u flags 0x%x", conn, skb->len, flags);
- 
- 	switch (flags) {
- 	case ACL_START:
-@@ -8396,10 +8396,10 @@ void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
- 			return;
- 		}
- 
--		BT_DBG("Start: total len %d, frag len %d", len, skb->len);
-+		BT_DBG("Start: total len %d, frag len %u", len, skb->len);
- 
- 		if (skb->len > len) {
--			BT_ERR("Frame is too long (len %d, expected len %d)",
-+			BT_ERR("Frame is too long (len %u, expected len %d)",
- 			       skb->len, len);
- 			l2cap_conn_unreliable(conn, ECOMM);
- 			goto drop;
-@@ -8412,7 +8412,7 @@ void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
- 		break;
- 
- 	case ACL_CONT:
--		BT_DBG("Cont: frag len %d (expecting %d)", skb->len, conn->rx_len);
-+		BT_DBG("Cont: frag len %u (expecting %u)", skb->len, conn->rx_len);
- 
- 		if (!conn->rx_skb) {
- 			BT_ERR("Unexpected continuation frame (len %d)", skb->len);
-@@ -8433,7 +8433,7 @@ void l2cap_recv_acldata(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
- 		}
- 
- 		if (skb->len > conn->rx_len) {
--			BT_ERR("Fragment is too long (len %d, expected %d)",
-+			BT_ERR("Fragment is too long (len %u, expected %u)",
- 			       skb->len, conn->rx_len);
- 			l2cap_recv_reset(conn);
- 			l2cap_conn_unreliable(conn, ECOMM);
--- 
-2.8.1
-
+Thanks
