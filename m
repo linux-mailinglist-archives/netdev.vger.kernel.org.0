@@ -2,91 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FFA33553E6
-	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 246E83553FD
+	for <lists+netdev@lfdr.de>; Tue,  6 Apr 2021 14:34:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343994AbhDFMa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 08:30:56 -0400
-Received: from verein.lst.de ([213.95.11.211]:54291 "EHLO verein.lst.de"
+        id S1344053AbhDFMe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 08:34:27 -0400
+Received: from mga03.intel.com ([134.134.136.65]:43398 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343946AbhDFMau (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 08:30:50 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 4387D68B02; Tue,  6 Apr 2021 14:30:35 +0200 (CEST)
-Date:   Tue, 6 Apr 2021 14:30:34 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Avihai Horon <avihaih@nvidia.com>,
-        Adit Ranadive <aditr@vmware.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Devesh Sharma <devesh.sharma@broadcom.com>,
-        Faisal Latif <faisal.latif@intel.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
+        id S1344050AbhDFMeZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 08:34:25 -0400
+IronPort-SDR: QXsjGTJ6z2/UzaechYyN4jGq4LDAUS/Znpd7fRhAO6BGLBUrUpYLOoNFGbqQQw4nwz98xH/A5M
+ puxqy7DbDkBA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="193095022"
+X-IronPort-AV: E=Sophos;i="5.81,309,1610438400"; 
+   d="scan'208";a="193095022"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 05:34:16 -0700
+IronPort-SDR: LFu5Mitpm//InF7yS6omjqR+EmE8KVBTozwQVYSyM8bRI4ShGnLFyZEXMqcV+OC2Wo6Utn5xSf
+ JPhLci5i5LvA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,309,1610438400"; 
+   d="scan'208";a="457871836"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga001.jf.intel.com with ESMTP; 06 Apr 2021 05:34:11 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id DCDDD5805A1;
+        Tue,  6 Apr 2021 05:34:08 -0700 (PDT)
+Date:   Tue, 6 Apr 2021 20:33:58 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jens Axboe <axboe@fb.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
-        linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        netdev@vger.kernel.org, Potnuri Bharat Teja <bharat@chelsio.com>,
-        rds-devel@oss.oracle.com, Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        VMware PV-Drivers <pv-drivers@vmware.com>,
-        Weihang Li <liweihang@huawei.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH rdma-next 01/10] RDMA: Add access flags to
- ib_alloc_mr() and ib_mr_pool_init()
-Message-ID: <20210406123034.GA28930@lst.de>
-References: <20210405052404.213889-1-leon@kernel.org> <20210405052404.213889-2-leon@kernel.org> <c21edd64-396c-4c7c-86f8-79045321a528@acm.org> <YGvwUI022t/rJy5U@unreal> <20210406052717.GA4835@lst.de> <YGv4niuc31WnqpEJ@unreal> <20210406121312.GK7405@nvidia.com>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH net-next v1 1/1] stmmac: intel: Drop duplicate ID in the
+ list of PCI device IDs
+Message-ID: <20210406123358.GA14588@linux.intel.com>
+References: <20210406101306.59162-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210406121312.GK7405@nvidia.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20210406101306.59162-1-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 06, 2021 at 09:13:12AM -0300, Jason Gunthorpe wrote:
-> So we broadly have two choice
->  1) Diverge the kernel and user interfaces and make the RDMA drivers
->     special case all the kernel stuff to force
->     ACCESS_RELAXED_ORDERING when they are building MRs and processing
->     FMR WQE's
->  2) Keep the two interfaces the same and push the
->     ACCESS_RELAXED_ORDERING to a couple of places in the ULPs so the
->     drivers see a consistent API
+On Tue, Apr 06, 2021 at 01:13:06PM +0300, Andy Shevchenko wrote:
+> The PCI device IDs are defined with a prefix PCI_DEVICE_ID.
+> There is no need to repeat the ID part at the end of each definition.
 > 
-> They are both poor choices, but I think #2 has a greater chance of
-> everyone doing their parts correctly.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-No, 1 is the only sensible choice.  The userspace verbs interface is
-a mess and should not inflict pain on the kernel in any way.  We've moved
-away from a lot of the idiotic "Verbs API" concepts with things like
-how we handle the global lkey, the new CQ API and the RDMA R/W
-abstraction and that massively helped the kernel ecosystem.
+Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+
+> ---
+>  .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 60 +++++++++----------
+>  1 file changed, 30 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> index 3d9a57043af2..7f0ce373a63d 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> @@ -1053,41 +1053,41 @@ static int __maybe_unused intel_eth_pci_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
+>  			 intel_eth_pci_resume);
+>  
+> -#define PCI_DEVICE_ID_INTEL_QUARK_ID			0x0937
+> -#define PCI_DEVICE_ID_INTEL_EHL_RGMII1G_ID		0x4b30
+> -#define PCI_DEVICE_ID_INTEL_EHL_SGMII1G_ID		0x4b31
+> -#define PCI_DEVICE_ID_INTEL_EHL_SGMII2G5_ID		0x4b32
+> +#define PCI_DEVICE_ID_INTEL_QUARK		0x0937
+> +#define PCI_DEVICE_ID_INTEL_EHL_RGMII1G		0x4b30
+> +#define PCI_DEVICE_ID_INTEL_EHL_SGMII1G		0x4b31
+> +#define PCI_DEVICE_ID_INTEL_EHL_SGMII2G5	0x4b32
+>  /* Intel(R) Programmable Services Engine (Intel(R) PSE) consist of 2 MAC
+>   * which are named PSE0 and PSE1
+>   */
+> -#define PCI_DEVICE_ID_INTEL_EHL_PSE0_RGMII1G_ID		0x4ba0
+> -#define PCI_DEVICE_ID_INTEL_EHL_PSE0_SGMII1G_ID		0x4ba1
+> -#define PCI_DEVICE_ID_INTEL_EHL_PSE0_SGMII2G5_ID	0x4ba2
+> -#define PCI_DEVICE_ID_INTEL_EHL_PSE1_RGMII1G_ID		0x4bb0
+> -#define PCI_DEVICE_ID_INTEL_EHL_PSE1_SGMII1G_ID		0x4bb1
+> -#define PCI_DEVICE_ID_INTEL_EHL_PSE1_SGMII2G5_ID	0x4bb2
+> -#define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_0_ID		0x43ac
+> -#define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_1_ID		0x43a2
+> -#define PCI_DEVICE_ID_INTEL_TGL_SGMII1G_ID		0xa0ac
+> -#define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_0_ID		0x7aac
+> -#define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_1_ID		0x7aad
+> +#define PCI_DEVICE_ID_INTEL_EHL_PSE0_RGMII1G	0x4ba0
+> +#define PCI_DEVICE_ID_INTEL_EHL_PSE0_SGMII1G	0x4ba1
+> +#define PCI_DEVICE_ID_INTEL_EHL_PSE0_SGMII2G5	0x4ba2
+> +#define PCI_DEVICE_ID_INTEL_EHL_PSE1_RGMII1G	0x4bb0
+> +#define PCI_DEVICE_ID_INTEL_EHL_PSE1_SGMII1G	0x4bb1
+> +#define PCI_DEVICE_ID_INTEL_EHL_PSE1_SGMII2G5	0x4bb2
+> +#define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_0	0x43ac
+> +#define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_1	0x43a2
+> +#define PCI_DEVICE_ID_INTEL_TGL_SGMII1G		0xa0ac
+> +#define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_0	0x7aac
+> +#define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_1	0x7aad
+>  
+>  static const struct pci_device_id intel_eth_pci_id_table[] = {
+> -	{ PCI_DEVICE_DATA(INTEL, QUARK_ID, &quark_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_RGMII1G_ID, &ehl_rgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII1G_ID, &ehl_sgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII2G5_ID, &ehl_sgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_RGMII1G_ID, &ehl_pse0_rgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII1G_ID, &ehl_pse0_sgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII2G5_ID, &ehl_pse0_sgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G_ID, &ehl_pse1_rgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID, &ehl_pse1_sgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID, &ehl_pse1_sgmii1g_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_phy0_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_0_ID, &tgl_sgmii1g_phy0_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1_ID, &tgl_sgmii1g_phy1_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0_ID, &adls_sgmii1g_phy0_info) },
+> -	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1_ID, &adls_sgmii1g_phy1_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, QUARK, &quark_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_RGMII1G, &ehl_rgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII1G, &ehl_sgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII2G5, &ehl_sgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_RGMII1G, &ehl_pse0_rgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII1G, &ehl_pse0_sgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII2G5, &ehl_pse0_sgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G, &ehl_pse1_rgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G, &ehl_pse1_sgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5, &ehl_pse1_sgmii1g_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G, &tgl_sgmii1g_phy0_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_0, &tgl_sgmii1g_phy0_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1, &tgl_sgmii1g_phy1_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0, &adls_sgmii1g_phy0_info) },
+> +	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1, &adls_sgmii1g_phy1_info) },
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
+> -- 
+> 2.30.2
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
