@@ -2,49 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C436355F82
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F59355F85
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 01:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236087AbhDFXdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 19:33:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36862 "EHLO vps0.lunn.ch"
+        id S237062AbhDFXgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 19:36:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232844AbhDFXdn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 19:33:43 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lTvCP-00FD4D-RJ; Wed, 07 Apr 2021 01:33:33 +0200
-Date:   Wed, 7 Apr 2021 01:33:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+        id S233184AbhDFXgh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 19:36:37 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1859D61158;
+        Tue,  6 Apr 2021 23:36:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617752188;
+        bh=5W2IY2YLOQt6wZ9wCo7y5bv0sMtrr1dB6/9VlLWSfLI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lSJnQtLosZsokRmNC2HdvgauyrsQCK0CjOhOd3Fnj+i3mDZZujTcmc3EAAXX4FiA7
+         l/KoTO2GZB0EjVGHvkG2xzjsoBnh7sxq1oaZrFDXG4plZjZQchvZs3SBXihPA9tCfA
+         QKi4Ua7SqvAyoI4U9leNGNa44LzFKM1800GUg0X74s0PxAOtit/IXkz79la/Lg18Pu
+         Da+R8wFwGxhoAl0WHMGpqyW1jpu2prJ4UiDG2IJ3mk1Pp9aDqzMByAipvo1GbhETly
+         oIzWTwa2eTeQwzyFPD8xTDJcU0Ye/QdXsOu9Zw3jDnHYtNp+C7xXKXwbDyhXJE726z
+         +rlyn/WOm18fQ==
+Date:   Wed, 7 Apr 2021 01:36:24 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
-Subject: Re: [PATCH net-next v3 07/18] net: phy: marvell10g: support all rate
- matching modes
-Message-ID: <YGzvzfLYMWLHA6b6@lunn.ch>
+Subject: Re: [PATCH net-next v3 07/18] net: phy: marvell10g: support all
+ rate matching modes
+Message-ID: <20210407013624.31cb7b0c@thinkpad>
+In-Reply-To: <YGzvFI+hLVp96HiP@lunn.ch>
 References: <20210406221107.1004-1-kabel@kernel.org>
- <20210406221107.1004-8-kabel@kernel.org>
+        <20210406221107.1004-8-kabel@kernel.org>
+        <YGzvFI+hLVp96HiP@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210406221107.1004-8-kabel@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 12:10:56AM +0200, Marek Behún wrote:
-> Add support for all rate matching modes for 88X3310 (currently only
-> 10gbase-r is supported, but xaui and rxaui can also be used).
+On Wed, 7 Apr 2021 01:30:28 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
+
+> > +static inline const struct mv3310_chip *
+> > +to_mv3310_chip(struct phy_device *phydev)
+> > +{
+> > +	return phydev->drv->driver_data;
+> > +}  
 > 
-> Add support for rate matching for 88E2110 (on 88E2110 the MACTYPE
-> register is at a different place).
+> No inline functions in C code please. Let the compiler decide.
+> 
+>    Andrew
 
-What is not clear to me is how rate matching mode gets enabled. What
-sets the mactype to one of these modes?
+Fixed in my repo. Will send changed for v4.
 
-It probably just needs an explanation here in the commit message.
-
-   Andrew
+Marek
