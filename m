@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2024335695D
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 12:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 310E63569CE
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 12:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350908AbhDGKWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 06:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235325AbhDGKWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 06:22:04 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD6DC061756;
-        Wed,  7 Apr 2021 03:21:54 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id y18so1232111wrn.6;
-        Wed, 07 Apr 2021 03:21:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TOHH117ABuxv/fg54mJTSdEtkwlXztH7OFpsYr64pZo=;
-        b=SCgdIm8yXjPeeFD27DTDxS8iDmWZws/M/VlUXGHTO3674wc/wE/LEQQ+ZgR/lyPpcy
-         wWUWWBwkTc2FSc6zB37ECkhibmKecemfXYiFkvTWPFYVfyVrNCL3Ggn8lZnGj74zXFOH
-         uSwRfcGSaTZ+ZM/zIcxZlMP1F6kGP8gxJ20I+oSJWMOkgDR2o4mF+Ua0vYnU2MqAKwAi
-         R91cpLkKbAHS6CwWR2UI+Rjq2ewf+qVGFBzmiXzMP5YuH1GYfCa0ycswF1yrmtX/H+O0
-         ++Uvh96Q1fFl4xP9UGFNeBpMYNVX7ng8J5/OpHcFV99xSE6IscU0OIF5e/YTOUKb+diu
-         0svA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TOHH117ABuxv/fg54mJTSdEtkwlXztH7OFpsYr64pZo=;
-        b=qRhn4tPzc25EpbnhWMWIn4G6wfFxaqjXY06enCnk1SA747zc/D2JhiTEsatWcglOYb
-         MSXDyPW35XhMVS+ezvtP4Vd9iJH2bUK6uU19y2caT17XMOoLMD+haI+D9tNgUlucEUlC
-         b641z1dGWB2PqtH3PyOhyYsyVRxp3v/gC2Oi3a+YbR/XD5VvxiAgChaKJR0dIxORxaQf
-         oZ9gU9PB+Mei/m91xan4nfGY98KxScVxSz2gAYOvO2H+tD+ilq3+m2J1PMdG4DD1UZu8
-         aEZTG7xMxd9gIuh03TbtazU2GoE9LJQh1/n7SYDkkxgWi1c+STdxS5uEmdETYxG+/Xow
-         N9CQ==
-X-Gm-Message-State: AOAM532RUp9o/8vwbLsJnJdDY80imUmd1DFtnlXftHNRdQjaqlz1dQ6E
-        02mRKuHeHjJNY7zMlaM2KLw=
-X-Google-Smtp-Source: ABdhPJyFNrTCOIESxU0dlbQtPw19NrYmg+6cJAxRE38e/TcR/fEf7LgvHgwkbGvp0HWz5gKmEZeFsg==
-X-Received: by 2002:a05:6000:18ab:: with SMTP id b11mr3404799wri.403.1617790913567;
-        Wed, 07 Apr 2021 03:21:53 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:15f8:68c8:25bd:c1f8? (p200300ea8f38460015f868c825bdc1f8.dip0.t-ipconnect.de. [2003:ea:8f38:4600:15f8:68c8:25bd:c1f8])
-        by smtp.googlemail.com with ESMTPSA id j1sm9217263wrq.90.2021.04.07.03.21.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Apr 2021 03:21:52 -0700 (PDT)
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        id S1351151AbhDGKin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 06:38:43 -0400
+Received: from mail-vi1eur05on2052.outbound.protection.outlook.com ([40.107.21.52]:44448
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1351092AbhDGKik (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 06:38:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NcQAhR/NJxHBnknSJVLJ/Rqi7KBau/GEgzwfXQ6ivUvTUQWHrTG/iv7l0v+pFJudlwauJ3Et0/za990O79RXNowNnnfSH6P1np6LCRFlQnrcDWG7oJj2qsxxeYhT3Ln/K7heuUA1aHVF0jZ/25PQ9T0EpcPBZqA1qQc+BayMPUA0kiguhPiHtUehPbSZXUTifHvD74I+cxRSfNQSgXLynxfrQ/ZLBIXj2cW2m1wBcNsgynVrUv+uHSGW003h7qfGQF4i6FMf0O/2wY1zbriv9oehSdGlNofG3jlTpntCQuShC9YvdXTgtoOF0pCO7IGmmmscycXhNyv0s8kHPq/McA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RJDSmjB33+sJt/Xq9lsqgyE3JcjiQsIPBoy7JSHVX7I=;
+ b=CwcHCqRKlhMJ/amMbgwoXOCeXv5rYMLG/zAKWEzG3h22Q8+00Jg3d7pQO5MrtF0jhpgN3KwaeCMMMxDedghjuibsNnLFnZ5QrA/0KQPumF+R7ecldMC3V6Fl7J8GYJrTt1mwpoSrg63nPNSC2o1GLFIzQwOXvR5JVqp7JnoVjcVCryWNHLgaklHWbmgECMSTuoKB3LUzzb04qMQhIBGd65aZgSmp9ooDaPGKgAzo+Wpy2nxp1wMnyxJ9Kn4meAdJ7XS+Vabvd7F32hx5lJC4FVj82iSqdC/GV6SUxVGBW8DfL5yj/36fxZ/uUXCClcrpSD1UUWNj+L9ZtDP/7Tu5Qw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RJDSmjB33+sJt/Xq9lsqgyE3JcjiQsIPBoy7JSHVX7I=;
+ b=q5K58k0nW4UxhrFU35tsd25XOatxwvvZjTaeHwuBZAURV6ymb2ziaGmhBl6caFyBbI/3WvclgUUOhxjfP5GbJ3oiNxcduoAV04A5l7n5trMfUgZ2iyGSpcz+FIZQzOutsldCy0NPwjjb6p8t11td4KpvdGbRtf/oku+Ks/IBSCc=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBBPR04MB8027.eurprd04.prod.outlook.com (2603:10a6:10:1e6::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Wed, 7 Apr
+ 2021 10:38:26 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9598:ace0:4417:d1d5%6]) with mapi id 15.20.4020.017; Wed, 7 Apr 2021
+ 10:38:26 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
         "christian.melki@t2data.com" <christian.melki@t2data.com>,
         "andrew@lunn.ch" <andrew@lunn.ch>,
         "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         dl-linux-imx <linux-imx@nxp.com>,
         Florian Fainelli <f.fainelli@gmail.com>
+Subject: RE: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
+ back
+Thread-Topic: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
+ back
+Thread-Index: AQHXKTprONOHGtpeU0eiVA3RKY2nOaqkZbwAgACRNACAAKY/gIAAOYWAgADmYJCAAEy0AIAAFnKQgABBIoCAAG+hgIAAdpUQgABglgCAAAhYwIAAJwRQgAAFpACAAALWYA==
+Date:   Wed, 7 Apr 2021 10:38:26 +0000
+Message-ID: <DB8PR04MB6795ABA4893C82D8A1BB5775E6759@DB8PR04MB6795.eurprd04.prod.outlook.com>
 References: <20210404100701.6366-1-qiangqing.zhang@nxp.com>
  <97e486f8-372a-896f-6549-67b8fb34e623@gmail.com>
  <ed600136-2222-a261-bf08-522cc20fc141@gmail.com>
@@ -72,611 +67,542 @@ References: <20210404100701.6366-1-qiangqing.zhang@nxp.com>
  <902bd022-a135-a481-1a7f-2781998b2ee8@gmail.com>
  <DB8PR04MB6795C3B549B984381B833AF9E6759@DB8PR04MB6795.eurprd04.prod.outlook.com>
  <DB8PR04MB6795C9E05E48361C0D462926E6759@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
- back
-Message-ID: <bc801f4d-19fb-11cb-d04d-21d59ab20b35@gmail.com>
-Date:   Wed, 7 Apr 2021 12:21:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
-MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB6795C9E05E48361C0D462926E6759@DB8PR04MB6795.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
+ <bc801f4d-19fb-11cb-d04d-21d59ab20b35@gmail.com>
+In-Reply-To: <bc801f4d-19fb-11cb-d04d-21d59ab20b35@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e36c71c2-54d2-4db7-ee98-08d8f9b146e9
+x-ms-traffictypediagnostic: DBBPR04MB8027:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBBPR04MB8027DC6D5C9B36DD09119265E6759@DBBPR04MB8027.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BTcykBXmkFatGclCRtuf1heqglkXjvNPLzHyKVGvskiI/86G0U26lrHMD9ST8wYtWuz/eXuD9FoUy4v/42NuvG4YrSjtnhRLglIS8Oqxuuk9fYACFcgXG+0BUjTK6m/XJg+lubQf1xJNFEU9/d9/d3T0CVag9TBdUXF0oD03T+j2QgDC3oqikVXIe3XodgF/0k8mbKyviDjFQqZ7TwiQ9BU+LriKxUHn71VhOzA6asO6R4omUIkGMfvX2ok7KAI6CwjQrpz99FVZ4v8/gSKFQLldiv9BXUtPHI78pACxYlf93pkBeZpu0l64E1m3EHHVvtXbN2TOgeZBq62cfHgHQVsWlQ1CXYv/MhkN8VRXWyFrUMgo+VSdzSVpt856mYeWsyrsaZDDYwuMnZLb4cXp3pLXXJG/hHnXrwvOeowL+1rvH/d+QHYca+2ovaS2esQE8cInQMmM2NH3ofbNWfKhVn8EJtLPwcHpwSKfnhmumeIHFPt9VnGH6LMJaA9HKXQR3p6dTjXCRUBncgBNe4zO2DFPBlXxRy4aCLgJZenpQEY8wjhV+w+07z2TWkZslWsM3wAQyr69Fbus2rXb/K/8OVhWLZOmSJFxxDRhSr+y6GIqddUu+Ne4jx8Lu3xYL221YVFpfXrtqaz8pJVgoHDJld2BP2cYKweVv6vpmYUXtCM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(7696005)(110136005)(66556008)(64756008)(66446008)(33656002)(478600001)(66946007)(55016002)(38100700001)(66476007)(186003)(9686003)(76116006)(83380400001)(52536014)(6506007)(316002)(86362001)(8676002)(5660300002)(71200400001)(30864003)(26005)(54906003)(8936002)(2906002)(53546011)(4326008)(559001)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?WVFvV2xac0xmb1hJOWEzMURadmcydVRiQjhjNVVMbGk1YXlKbTd2S2hNaEtW?=
+ =?utf-8?B?ejFvcmMxQ29oT2JrZzZLOGxXUlVNVm9sOUZNbzlyc1dzKyttNzlqUVRuU3BQ?=
+ =?utf-8?B?UnU3bjhvUGh6eTFxVlNIb1c4V0o1QUNWZFpETnFmRVRORFFvMmdaQUR4Tjg5?=
+ =?utf-8?B?UkthR3ZaYzJkRUtVYUlhaVpZa1Jyc3JyRGpwbjIvVnRwLzQvWkFkVmdGS3NN?=
+ =?utf-8?B?ZUZ6SS81d3Q0ZDdKWUgxUTgwM2NPK2NrbHpJOTBkMHJqcHBaa2RFZ3JqeXB3?=
+ =?utf-8?B?cmJYb0hwNE9ZRGN0emJYeW81WGxKYjB4V2V4UDBJeFdtb2ljNDNHb1ZmYU5i?=
+ =?utf-8?B?VWV6aWh4UzlkdEQzeHV2NDBCNDVqdSt2WmJ2NmIzTVJZMkVNNkU5cHNoWXNR?=
+ =?utf-8?B?aWg5Y0ZicXNEYSsrbWRRdTRUWlB3di80ZDZPcDBBSDY1Z0VYR2h4V3VqcGhX?=
+ =?utf-8?B?SEw0OUlJdnV5QXAwdUJIcVYydXViVkVsNGdqMWh6RjVwajNmYmFwcGJVK2xC?=
+ =?utf-8?B?NklHd3dwZmJYTXhOeWdlNW1NYnhIK0xFTWIxaUdkSGJDQWpoRklQVzh2SDJa?=
+ =?utf-8?B?ajNkd0E0VTNNN2FWeDNvY3BzdG5lK2xSMndmSE9SS2Fnd1RBNW9DWlB0VlFp?=
+ =?utf-8?B?RVFzdFFTYVNhbWlPaDR3ZTNBdjdidEw1SW4xd0FDVzJvbmhLQUx0djQvbHgr?=
+ =?utf-8?B?YnA4V2pCR2t5L3FhbjJkallkbnVWb0pOU1MvcFFpb2I1b1p2OUNSYTNlWXlp?=
+ =?utf-8?B?aHBDbU01eEhBZmNLY3lMTE5KbnBuMDZXcExyN3llTk1jZm1sMFBzY2tPajVi?=
+ =?utf-8?B?RHNidjJwV2hWelZmZWFwN1htdDE1UHczL0lnS3BpZElXMzQvM2kvQ01OT3hv?=
+ =?utf-8?B?MTJiampFQXBKaTJ4SHhYeWkvMmtOVzFKN0FCMkNaL1FSb1ZYTmJReUdVY1Vs?=
+ =?utf-8?B?NytxWHBYcmgxeUVyVVpTUFhIL01nWFZkSjNQZDN5eHN6UjgxWkk4Z1BmSzhw?=
+ =?utf-8?B?anI0Z0lEbTlmM0ZUWUwrVUZjT0JvODBVT1FhbVpjckNpMUliUGxPNXRmNjQ1?=
+ =?utf-8?B?UFo4NXYrRVkvTjlENVVsZiswVVllaEhCVmdCOGErK2NEZEVGbHhBWkZyMHMw?=
+ =?utf-8?B?VHpENmRncTBWbkUvWUhkWS9uWjNqNmprNTFFTTVnMVQyMDhkZ2hDa25UaE5Y?=
+ =?utf-8?B?ODlHM0pHOXRiS0lUMXppd0pMWmZ1ZU93bXFIOXNuRXRsc2tLSnRaeXdqcGZF?=
+ =?utf-8?B?U1FRSmVCNjgvNUdIMStjVllOakdQNURVTDdIZWRpZy9GOGQ3ZktxUUxRWUFh?=
+ =?utf-8?B?VXYzN01zTmVDeDJGSnQyQjlaOS90empNS1htSWNKSElGeGQ2WXIzSDN3VjZt?=
+ =?utf-8?B?M1Mva0JITmdmUUplYnFRMUp1N2V0UjdZQkZXZHVxOU1XMWVWMURwS21oMUFO?=
+ =?utf-8?B?M1B1ZXJrbzdqVWpQOGFqMW8xb09jb29sLytWNWNwN1hxU21QdFBwbmhKSDlQ?=
+ =?utf-8?B?NkQ2b0FYL1dvc3RsZlBqUmRWS1hndllPdlozSjFYYUFYOXlNMlhwZjFDd0Nj?=
+ =?utf-8?B?aEZXMFlLaDVpQWVMS0ticXZUcEp2MGsvZzJPUkFGL2oxcXZmNER1UUNVS1dU?=
+ =?utf-8?B?QytxenVvNmdkdzZ5U3pGdmo3SCtoTytEVlB4U1BITTVrVWwrOUgyMUhTTEYy?=
+ =?utf-8?B?OGxadkJaWVhOUml5YXAwTTNKVWRQKzNjY2hGNkVka3UvRC95Z3NXdzh4Ry9u?=
+ =?utf-8?Q?0o0VbDZQqqB/EArFR9JfUGkzY/ogl+0Q92P6TFm?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e36c71c2-54d2-4db7-ee98-08d8f9b146e9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2021 10:38:26.5456
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Wrt9uOH+lSXuhbsA/CfV5jC+xKOzC5eeYyfZlsYxxC4HA3s8dhFVKsRv8HScKlUpWWw3NiD2DhjUyBWQhBN1PQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB8027
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.04.2021 12:05, Joakim Zhang wrote:
-> 
-> Hi Heiner,
-> 
->> -----Original Message-----
->> From: Joakim Zhang <qiangqing.zhang@nxp.com>
->> Sent: 2021年4月7日 15:46
->> To: Heiner Kallweit <hkallweit1@gmail.com>; christian.melki@t2data.com;
->> andrew@lunn.ch; linux@armlinux.org.uk; davem@davemloft.net;
->> kuba@kernel.org
->> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; dl-linux-imx
->> <linux-imx@nxp.com>; Florian Fainelli <f.fainelli@gmail.com>
->> Subject: RE: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus resume
->> back
->>
->>
->> Hi Heiner,
->>
->>> -----Original Message-----
->>> From: Heiner Kallweit <hkallweit1@gmail.com>
->>> Sent: 2021年4月7日 15:12
->>> To: Joakim Zhang <qiangqing.zhang@nxp.com>;
->>> christian.melki@t2data.com; andrew@lunn.ch; linux@armlinux.org.uk;
->>> davem@davemloft.net; kuba@kernel.org
->>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; dl-linux-imx
->>> <linux-imx@nxp.com>; Florian Fainelli <f.fainelli@gmail.com>
->>> Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO bus
->>> resume back
->>>
->>> On 07.04.2021 03:43, Joakim Zhang wrote:
->>>>
->>>> Hi Heiner,
->>>>
->>>>> -----Original Message-----
->>>>> From: Heiner Kallweit <hkallweit1@gmail.com>
->>>>> Sent: 2021年4月7日 2:22
->>>>> To: Joakim Zhang <qiangqing.zhang@nxp.com>;
->>>>> christian.melki@t2data.com; andrew@lunn.ch; linux@armlinux.org.uk;
->>>>> davem@davemloft.net; kuba@kernel.org; Russell King - ARM Linux
->>>>> <linux@armlinux.org.uk>
->>>>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
->>>>> dl-linux-imx <linux-imx@nxp.com>; Florian Fainelli
->>>>> <f.fainelli@gmail.com>
->>>>> Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after MDIO
->>>>> bus resume back
->>>>>
->>>>> On 06.04.2021 13:42, Heiner Kallweit wrote:
->>>>>> On 06.04.2021 12:07, Joakim Zhang wrote:
->>>>>>>
->>>>>>>> -----Original Message-----
->>>>>>>> From: Heiner Kallweit <hkallweit1@gmail.com>
->>>>>>>> Sent: 2021年4月6日 14:29
->>>>>>>> To: Joakim Zhang <qiangqing.zhang@nxp.com>;
->>>>>>>> christian.melki@t2data.com; andrew@lunn.ch;
->>>>>>>> linux@armlinux.org.uk; davem@davemloft.net; kuba@kernel.org
->>>>>>>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
->>>>>>>> dl-linux-imx <linux-imx@nxp.com>
->>>>>>>> Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after
->>>>>>>> MDIO bus resume back
->>>>>>>>
->>>>>>>> On 06.04.2021 04:07, Joakim Zhang wrote:
->>>>>>>>>
->>>>>>>>> Hi Heiner,
->>>>>>>>>
->>>>>>>>>> -----Original Message-----
->>>>>>>>>> From: Heiner Kallweit <hkallweit1@gmail.com>
->>>>>>>>>> Sent: 2021年4月5日 20:10
->>>>>>>>>> To: christian.melki@t2data.com; Joakim Zhang
->>>>>>>>>> <qiangqing.zhang@nxp.com>; andrew@lunn.ch;
->>>>>>>>>> linux@armlinux.org.uk; davem@davemloft.net; kuba@kernel.org
->>>>>>>>>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
->>>>>>>>>> dl-linux-imx <linux-imx@nxp.com>
->>>>>>>>>> Subject: Re: [PATCH] net: phy: fix PHY possibly unwork after
->>>>>>>>>> MDIO bus resume back
->>>>>>>>>>
->>>>>>>>>> On 05.04.2021 10:43, Christian Melki wrote:
->>>>>>>>>>> On 4/5/21 12:48 AM, Heiner Kallweit wrote:
->>>>>>>>>>>> On 04.04.2021 16:09, Heiner Kallweit wrote:
->>>>>>>>>>>>> On 04.04.2021 12:07, Joakim Zhang wrote:
->>>>>>>>>>>>>> commit 4c0d2e96ba055 ("net: phy: consider that suspend2ram
->>>>> may
->>>>>>>>>>>>>> cut off PHY power") invokes phy_init_hw() when MDIO bus
->>>>>>>>>>>>>> resume, it will soft reset PHY if PHY driver implements
->>>>>>>>>>>>>> soft_reset
->>>>> callback.
->>>>>>>>>>>>>> commit 764d31cacfe4 ("net: phy: micrel: set soft_reset
->>>>>>>>>>>>>> callback to genphy_soft_reset for KSZ8081") adds
->>>>>>>>>>>>>> soft_reset for
->>>>> KSZ8081.
->>>>>>>>>>>>>> After these two patches, I found i.MX6UL 14x14 EVK which
->>>>>>>>>>>>>> connected to KSZ8081RNB doesn't work any more when
->> system
->>>>>>>> resume
->>>>>>>>>>>>>> back, MAC
->>>>>>>>>> driver is fec_main.c.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> It's obvious that initializing PHY hardware when MDIO bus
->>>>>>>>>>>>>> resume back would introduce some regression when PHY
->>>>>>>>>>>>>> implements soft_reset. When I
->>>>>>>>>>>>>
->>>>>>>>>>>>> Why is this obvious? Please elaborate on why a soft reset
->>>>>>>>>>>>> should break something.
->>>>>>>>>>>>>
->>>>>>>>>>>>>> am debugging, I found PHY works fine if MAC doesn't
->>>>>>>>>>>>>> support suspend/resume or phy_stop()/phy_start() doesn't
->>>>>>>>>>>>>> been called during suspend/resume. This let me realize,
->>>>>>>>>>>>>> PHY state machine
->>>>>>>>>>>>>> phy_state_machine() could do something breaks the PHY.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> As we known, MAC resume first and then MDIO bus resume
->>> when
->>>>>>>>>>>>>> system resume back from suspend. When MAC resume, usually
->>> it
->>>>>>>>>>>>>> will invoke
->>>>>>>>>>>>>> phy_start() where to change PHY state to PHY_UP, then
->>>>>>>>>>>>>> trigger the
->>>>>>>>>>>>>> stat> machine to run now. In phy_state_machine(), it will
->>>>>>>>>>>>>> start/config auto-nego, then change PHY state to
->>>>>>>>>>>>>> PHY_NOLINK, what to next is periodically check PHY link
->>>>>>>>>>>>>> status. When MDIO bus resume, it will initialize PHY
->>>>>>>>>>>>>> hardware, including soft_reset, what would soft_reset
->>>>>>>>>>>>>> affect seems various from
->>>>> different PHYs.
->>>>>>>>>>>>>> For KSZ8081RNB, when it in PHY_NOLINK state and then
->>>>>>>>>>>>>> perform a soft reset,
->>>>>>>>>> it will never complete auto-nego.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Why? That would need to be checked in detail. Maybe chip
->>>>>>>>>>>>> errata documentation provides a hint.
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> The KSZ8081 spec says the following about bit BMCR_PDOWN:
->>>>>>>>>>>>
->>>>>>>>>>>> If software reset (Register 0.15) is used to exit power-down
->>>>>>>>>>>> mode (Register 0.11 = 1), two software reset writes
->>>>>>>>>>>> (Register
->>>>>>>>>>>> 0.15 = 1) are required. The first write clears power-down
->>>>>>>>>>>> mode; the second write resets the chip and re-latches the
->>>>>>>>>>>> pin strapping pin
->>>>> values.
->>>>>>>>>>>>
->>>>>>>>>>>> Maybe this causes the issue you see and genphy_soft_reset()
->>>>>>>>>>>> isn't appropriate for this PHY. Please re-test with the
->>>>>>>>>>>> KSZ8081 soft reset following the spec comment.
->>>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> Interesting. Never expected that behavior.
->>>>>>>>>>> Thanks for catching it. Skimmed through the datasheets/erratas.
->>>>>>>>>>> This is what I found (micrel.c):
->>>>>>>>>>>
->>>>>>>>>>> 10/100:
->>>>>>>>>>> 8001 - Unaffected?
->>>>>>>>>>> 8021/8031 - Double reset after PDOWN.
->>>>>>>>>>> 8041 - Errata. PDOWN broken. Recommended do not use. Unclear
->>>>>>>>>>> if reset solves the issue since errata says no error after
->>>>>>>>>>> reset but is also claiming that only toggling PDOWN (may) or
->>>>>>>>>>> power will
->>> help.
->>>>>>>>>>> 8051 - Double reset after PDOWN.
->>>>>>>>>>> 8061 - Double reset after PDOWN.
->>>>>>>>>>> 8081 - Double reset after PDOWN.
->>>>>>>>>>> 8091 - Double reset after PDOWN.
->>>>>>>>>>>
->>>>>>>>>>> 10/100/1000:
->>>>>>>>>>> Nothing in gigabit afaics.
->>>>>>>>>>>
->>>>>>>>>>> Switches:
->>>>>>>>>>> 8862 - Not affected?
->>>>>>>>>>> 8863 - Errata. PDOWN broken. Reset will not help. Workaround
->>> exists.
->>>>>>>>>>> 8864 - Not affected?
->>>>>>>>>>> 8873 - Errata. PDOWN broken. Reset will not help. Workaround
->>> exists.
->>>>>>>>>>> 9477 - Errata. PDOWN broken. Will randomly cause link failure
->>>>>>>>>>> on adjacent links. Do not use.
->>>>>>>>>>>
->>>>>>>>>>> This certainly explains a lot.
->>>>>>>>>>>
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> This patch changes PHY state to PHY_UP when MDIO bus
->>> resume
->>>>>>>>>>>>>> back, it should be reasonable after PHY hardware
->>>>>>>>>>>>>> re-initialized. Also give state machine a chance to
->>>>>>>>>>>>>> start/config
->>>>> auto-nego again.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> If the MAC driver calls phy_stop() on suspend, then
->>>>>>>>>>>>> phydev->suspended is true and mdio_bus_phy_may_suspend()
->>>>>>>>>>>>> phydev->returns
->>>>>>>>>>>>> false. As a consequence
->>>>>>>>>>>>> phydev->suspended_by_mdio_bus is false and
->>>>>>>>>>>>> phydev->mdio_bus_phy_resume()
->>>>>>>>>>>>> skips the PHY hw initialization.
->>>>>>>>>>>>> Please also note that mdio_bus_phy_suspend() calls
->>>>>>>>>>>>> phy_stop_machine() that sets the state to PHY_UP.
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> Forgot that MDIO bus suspend is done before MAC driver
->> suspend.
->>>>>>>>>>>> Therefore disregard this part for now.
->>>>>>>>>>>>
->>>>>>>>>>>>> Having said that the current argumentation isn't convincing.
->>>>>>>>>>>>> I'm not aware of such issues on other systems, therefore
->>>>>>>>>>>>> it's likely that something is system-dependent.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Please check the exact call sequence on your system, maybe
->>>>>>>>>>>>> it provides a hint.
->>>>>>>>>>>>>
->>>>>>>>>>>>>> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
->>>>>>>>>>>>>> ---
->>>>>>>>>>>>>>  drivers/net/phy/phy_device.c | 7 +++++++
->>>>>>>>>>>>>>  1 file changed, 7 insertions(+)
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> diff --git a/drivers/net/phy/phy_device.c
->>>>>>>>>>>>>> b/drivers/net/phy/phy_device.c index
->>>>>>>>>>>>>> cc38e326405a..312a6f662481
->>>>>>>>>>>>>> 100644
->>>>>>>>>>>>>> --- a/drivers/net/phy/phy_device.c
->>>>>>>>>>>>>> +++ b/drivers/net/phy/phy_device.c
->>>>>>>>>>>>>> @@ -306,6 +306,13 @@ static __maybe_unused int
->>>>>>>>>> mdio_bus_phy_resume(struct device *dev)
->>>>>>>>>>>>>>  	ret = phy_resume(phydev);
->>>>>>>>>>>>>>  	if (ret < 0)
->>>>>>>>>>>>>>  		return ret;
->>>>>>>>>>>>>> +
->>>>>>>>>>>>>> +	/* PHY state could be changed to PHY_NOLINK from MAC
->>>>>>>>>>>>>> +controller
->>>>>>>>>> resume
->>>>>>>>>>>>>> +	 * rounte with phy_start(), here change to PHY_UP after
->>>>>>>>>> re-initializing
->>>>>>>>>>>>>> +	 * PHY hardware, let PHY state machine to start/config
->>>>>>>>>>>>>> +auto-nego
->>>>>>>>>> again.
->>>>>>>>>>>>>> +	 */
->>>>>>>>>>>>>> +	phydev->state = PHY_UP;
->>>>>>>>>>>>>> +
->>>>>>>>>>>>>>  no_resume:
->>>>>>>>>>>>>>  	if (phydev->attached_dev && phydev->adjust_link)
->>>>>>>>>>>>>>  		phy_start_machine(phydev);
->>>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> This is a quick draft of the modified soft reset for KSZ8081.
->>>>>>>>>> Some tests would be appreciated.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> I test this patch at my side, unfortunately, it still can't work.
->>>>>>>>>
->>>>>>>>> I have not found what soft reset would affect in 8081 spec, is
->>>>>>>>> there ang common Description for different PHYs?
->>>>>>>>>
->>>>>>>>
->>>>>>>> You can check the clause 22 spec: 802.3 22.2.4.1.1
->>>>>>>>
->>>>>>>> Apart from that you can check BMCR value and which modes your
->>>>>>>> PHY advertises after a soft reset. If the PHY indeed wouldn't
->>>>>>>> restart aneg after a soft reset, then it would be the only one
->>>>>>>> with this behavior I know. And I'd wonder why there aren't more such
->> reports.
->>>>>>>
->>>>>>> Hi Heiner,
->>>>>>>
->>>>>>> We have reasons to believe it is a weird behavior of KSZ8081. I
->>>>>>> have another two PHYs at my side, AR8031 and RTL8211FD, they can
->>>>>>> work fine if
->>>>> soft_reset implemented.
->>>>>>>
->>>>>>> As commit message described, phy_start() would change PHY state
->>>>>>> to
->>>>> PHY_UP finally to PHY_NOLINK when MAC resume.
->>>>>>> After MDIO bus resume back, it will periodically check link status.
->>>>>>> I did below
->>>>> code change to dump all PHY registers.
->>>>>>>
->>>>>>> --- a/drivers/net/phy/phy.c
->>>>>>> +++ b/drivers/net/phy/phy.c
->>>>>>> @@ -35,7 +35,7 @@
->>>>>>>  #include <net/genetlink.h>
->>>>>>>  #include <net/sock.h>
->>>>>>>
->>>>>>> -#define PHY_STATE_TIME HZ
->>>>>>> +#define PHY_STATE_TIME (10 * HZ)
->>>>>>>
->>>>>>>  #define PHY_STATE_STR(_state)                  \
->>>>>>>         case PHY_##_state:                      \
->>>>>>> @@ -738,6 +738,28 @@ static int phy_check_link_status(struct
->>>>>>> phy_device
->>>>> *phydev)
->>>>>>>         if (err)
->>>>>>>                 return err;
->>>>>>>
->>>>>>> +       printk("offset 0x00 data = %0x\n", phy_read(phydev, 0x00));
->>>>>>> +       printk("offset 0x01 data = %0x\n", phy_read(phydev, 0x01));
->>>>>>> +       printk("offset 0x02 data = %0x\n", phy_read(phydev, 0x02));
->>>>>>> +       printk("offset 0x03 data = %0x\n", phy_read(phydev, 0x03));
->>>>>>> +       printk("offset 0x04 data = %0x\n", phy_read(phydev, 0x04));
->>>>>>> +       printk("offset 0x05 data = %0x\n", phy_read(phydev, 0x05));
->>>>>>> +       printk("offset 0x06 data = %0x\n", phy_read(phydev, 0x06));
->>>>>>> +       printk("offset 0x07 data = %0x\n", phy_read(phydev, 0x07));
->>>>>>> +       printk("offset 0x08 data = %0x\n", phy_read(phydev, 0x08));
->>>>>>> +       printk("offset 0x09 data = %0x\n", phy_read(phydev, 0x09));
->>>>>>> +       printk("offset 0x10 data = %0x\n", phy_read(phydev, 0x10));
->>>>>>> +       printk("offset 0x11 data = %0x\n", phy_read(phydev, 0x11));
->>>>>>> +       printk("offset 0x15 data = %0x\n", phy_read(phydev, 0x15));
->>>>>>> +       printk("offset 0x16 data = %0x\n", phy_read(phydev, 0x16));
->>>>>>> +       printk("offset 0x17 data = %0x\n", phy_read(phydev, 0x17));
->>>>>>> +       printk("offset 0x18 data = %0x\n", phy_read(phydev, 0x18));
->>>>>>> +       printk("offset 0x1b data = %0x\n", phy_read(phydev, 0x1b));
->>>>>>> +       printk("offset 0x1c data = %0x\n", phy_read(phydev, 0x1c));
->>>>>>> +       printk("offset 0x1d data = %0x\n", phy_read(phydev, 0x1d));
->>>>>>> +       printk("offset 0x1e data = %0x\n", phy_read(phydev, 0x1e));
->>>>>>> +       printk("offset 0x1f data = %0x\n", phy_read(phydev, 0x1f));
->>>>>>> +       printk("\n\n");
->>>>>>>         if (phydev->link && phydev->state != PHY_RUNNING) {
->>>>>>>                 phy_check_downshift(phydev);
->>>>>>>                 phydev->state = PHY_RUNNING;
->>>>>>>
->>>>>>> After MDIO bus resume back, results as below:
->>>>>>>
->>>>>>> [  119.545383] offset 0x00 data = 1100 [  119.549237] offset 0x01
->>>>>>> data = 7849 [  119.563125] offset 0x02 data = 22 [  119.566810]
->>>>>>> offset 0x03 data = 1560 [  119.570597] offset 0x04 data = 85e1 [
->>>>>>> 119.588016] offset 0x05 data = 0 [  119.592891] offset 0x06 data
->>>>>>> =
->>>>>>> 4 [  119.596452] offset 0x07 data = 2001 [  119.600233] offset
->>>>>>> 0x08 data = 0 [  119.617864] offset 0x09 data = 0 [  119.625990]
->>>>>>> offset
->>>>>>> 0x10 data = 0 [  119.629576] offset 0x11 data = 0 [  119.642735]
->>>>>>> offset 0x15 data = 0 [  119.646332] offset 0x16 data = 202 [
->>>>>>> 119.650030] offset 0x17 data = 5c02 [  119.668054] offset 0x18
->>>>>>> data =
->>>>>>> 801 [  119.672997] offset 0x1b data = 0 [  119.676565] offset
->>>>>>> 0x1c data = 0 [  119.680084] offset 0x1d data = 0 [  119.698031]
->>>>>>> offset 0x1e data = 20 [  119.706246] offset 0x1f data = 8190 [
->>>>>>> 119.709984] [  119.709984] [  120.182120] offset 0x00 data = 100
->>>>>>> [ 120.185894] offset 0x01 data = 784d [  120.189681] offset 0x02
->>>>>>> data = 22 [ 120.206319] offset 0x03 data = 1560 [  120.210171]
->>>>>>> offset
->>>>>>> 0x04 data =
->>>>>>> 8061 [  120.225353] offset 0x05 data = 0 [  120.228948] offset
->>>>>>> 0x06 data = 4 [  120.242936] offset 0x07 data = 2001 [
->>>>>>> 120.246792] offset
->>>>>>> 0x08 data = 0 [  120.250313] offset 0x09 data = 0 [  120.266748]
->>>>>>> offset 0x10 data = 0 [  120.270335] offset 0x11 data = 0 [
->>>>>>> 120.284167] offset 0x15 data = 0 [  120.287760] offset 0x16 data
->>>>>>> =
->>>>>>> 202 [  120.301031] offset 0x17 data = 3c02 [  120.313209] offset
->>>>>>> 0x18 data = 801 [  120.316983] offset 0x1b data = 0 [
->>>>>>> 120.320513] offset 0x1c data = 1 [  120.336589] offset 0x1d data
->>>>>>> = 0 [ 120.340184] offset 0x1e data = 115 [  120.355357] offset
->>>>>>> 0x1f data = 8190 [ 120.359112] [  120.359112] [  129.785396]
->>>>>>> offset 0x00 data = 1100 [ 129.789252] offset 0x01 data = 7849 [
->>>>>>> 129.809951] offset
->>>>>>> 0x02 data =
->>>>>>> 22 [  129.815018] offset 0x03 data = 1560 [  129.818845] offset
->>>>>>> 0x04 data = 85e1 [  129.835808] offset 0x05 data = 0 [
->>>>>>> 129.839398] offset
->>>>>>> 0x06 data = 4 [  129.854514] offset 0x07 data = 2001 [
->>>>>>> 129.858371] offset 0x08 data = 0 [  129.873357] offset 0x09 data
->>>>>>> = 0 [ 129.876954] offset 0x10 data = 0 [  129.880472] offset 0x11
->>>>>>> data =
->>>>>>> 0 [  129.896450] offset 0x15 data = 0 [  129.900038] offset 0x16
->>>>>>> data =
->>>>>>> 202 [  129.915041] offset 0x17 data = 5c02 [  129.918889] offset
->>>>>>> 0x18 data = 801 [  129.932735] offset 0x1b data = 0 [
->>>>>>> 129.946830] offset 0x1c data = 0 [  129.950424] offset 0x1d data
->>>>>>> = 0 [ 129.964585] offset 0x1e data = 0 [  129.968192] offset 0x1f
->>>>>>> data =
->>>>>>> 8190 [ 129.972938] [  129.972938] [  130.425125] offset 0x00 data
->>>>>>> =
->>>>>>> 100 [ 130.428889] offset 0x01 data = 784d [  130.442671] offset
->>>>>>> 0x02 data =
->>>>>>> 22 [  130.446360] offset 0x03 data = 1560 [  130.450142] offset
->>>>>>> 0x04 data = 8061 [  130.467207] offset 0x05 data = 0 [
->>>>>>> 130.470789] offset
->>>>>>> 0x06 data = 4 [  130.485071] offset 0x07 data = 2001 [
->>>>>>> 130.488934] offset 0x08 data = 0 [  130.504320] offset 0x09 data
->>>>>>> = 0 [ 130.507911] offset 0x10 data = 0 [  130.520950] offset 0x11
->>>>>>> data =
->>>>>>> 0 [  130.532865] offset 0x15 data = 0 [  130.536461] offset 0x16
->>>>>>> data =
->>>>>>> 202 [  130.540156] offset 0x17 data = 3c02 [  130.557218] offset
->>>>>>> 0x18 data = 801 [  130.560987] offset 0x1b data = 0 [
->>>>>>> 130.575158] offset 0x1c data = 1 [  130.578754] offset 0x1d data
->>>>>>> = 0 [ 130.593543] offset 0x1e data = 115 [  130.597312] offset
->>>>>>> 0x1f data = 8190
->>>>>>>
->>>>>>> We can see that BMCR and BMSR changes from 0x1100,0x7849 to
->>>>> 0x100,0x784d (BMCR[12] bit and BMSR[2]), and loop it.
->>>>>>> Above process is auto-nego enabled, link is down, auto-nego is
->>>>>>> disabled, link
->>>>> is up. And auto-nego complete bit is always 0.
->>>>>>>
->>>>>>> PHY seems become unstable if soft reset after start/config
->>>>>>> auto-nego. I also
->>>>> want to fix it in micrel driver, but failed.
->>>>>>>
->>>>>>
->>>>>> Waiting for ANEG_COMPLETE to be set wouldn't be a good option.
->>>>>> Aneg may never complete for different reasons, e.g. no physical
->>>>>> link. And even if we use a timeout this may add unwanted delays.
->>>>>>
->>>>>>> Do you have any other insights that can help me further locate the
->> issue?
->>>>> Thanks.
->>>>>>>
->>>>>>
->>>>>> I think current MAC/PHY PM handling isn't perfect. Often we have
->>>>>> the following
->>>>>> scenario:
->>>>>>
->>>>>> *suspend*
->>>>>> 1. PHY is suspended (mdio_bus_phy_suspend) 2. MAC suspend callback
->>>>>> (typically involving phy_stop())
->>>>>>
->>>>>> *resume*
->>>>>> 1. MAC resume callback (typically involving phy_start()) 2. PHY is
->>>>>> resumed (mdio_bus_phy_resume), incl. calling phy_init_hw()
->>>>>>
->>>>>> Calling phy_init_hw() after phy_start() doesn't look right.
->>>>>> It seems to work in most cases, but there's a certain risk that
->>>>>> phy_init_hw() overwrites something, e.g. the advertised modes.
->>>>>> I think we have two valid scenarios:
->>>>>>
->>>>>> 1. phylib PM callbacks are used, then the MAC driver shouldn't
->>>>>>    touch the PHY in its PM callbacks, especially not call
->>>>>>    phy_stop/phy_start.
->>>>>>
->>>>>> 2. MAC PM callbacks take care also of the PHY. Then I think we would
->>>>>>    need a flag at the phy_device telling it to make the PHY PM
->>>>>>    callbacks a no-op.
->>>>>>
->>>>>> Andrew, Russell: What do you think?
->>>>>>
->>>>>>> Best Regards,
->>>>>>> Joakim Zhang
->>>>>>>
->>>>>>> [...]
->>>>>>>
->>>>>> Heiner
->>>>>>
->>>>>
->>>>> Based on scenario 1 you can also try the following.
->>>>>
->>>>> diff --git a/drivers/net/ethernet/freescale/fec_main.c
->>>>> b/drivers/net/ethernet/freescale/fec_main.c
->>>>> index 3db882322..cdf9160fc 100644
->>>>> --- a/drivers/net/ethernet/freescale/fec_main.c
->>>>> +++ b/drivers/net/ethernet/freescale/fec_main.c
->>>>> @@ -3805,7 +3805,6 @@ static int __maybe_unused fec_suspend(struct
->>>>> device *dev)
->>>>>  	if (netif_running(ndev)) {
->>>>>  		if (fep->wol_flag & FEC_WOL_FLAG_ENABLE)
->>>>>  			fep->wol_flag |= FEC_WOL_FLAG_SLEEP_ON;
->>>>> -		phy_stop(ndev->phydev);
->>>>>  		napi_disable(&fep->napi);
->>>>>  		netif_tx_lock_bh(ndev);
->>>>>  		netif_device_detach(ndev);
->>>>> @@ -3864,7 +3863,6 @@ static int __maybe_unused fec_resume(struct
->>>>> device *dev)
->>>>>  		netif_device_attach(ndev);
->>>>>  		netif_tx_unlock_bh(ndev);
->>>>>  		napi_enable(&fep->napi);
->>>>> -		phy_start(ndev->phydev);
->>>>>  	}
->>>>>  	rtnl_unlock();
->>>>
->>>> As I described in commit message:
->>>>
->>>> "When I am debugging, I found PHY works fine if MAC doesn't support
->>> suspend/resume or phy_stop()/phy_start() doesn't been called during
->>> suspend/resume. This let me realize, PHY state machine
->>> phy_state_machine() could do something breaks the PHY."
->>>>
->>>> So I have tried your above code change before, and it works. But it
->>>> is a very
->>> common phenomenon that MAC suspend/resume invokes phy_stop/start or
->>> phylink_stop/start, and it's been around for a long time.
->>>>
->>>> As the scenarios you list, it is indeed unreasonable to soft reset
->>>> or config PHY
->>> after calling phy_start_aneg() in state machine. PHY state should be
->>> PHY_UP after calling phy_init_hw(), It seems more reasonable.
->>>>
->>>> Best Regards,
->>>> Joakim Zhang
->>>>> --
->>>>> 2.31.1
->>>>>
->>>>
->>>
->>> Following is a draft patch for scenario 1:
->>> Make PHY PM a no-op if MAC manages PHY PM.
->>> Can you give it a try?
->>>
->>
->> It can work for my case. Thanks.
-> 
-> I have another question, if it is possible to change the suspend/resume sequence?
-> MAC should suspend before MDIO bus, and MDIO bus should resume before MAC. For some MACs, they need PHY feed clocks. It seems more reasonable.
-> 
-
-On the other hand we have cases where the PHY depends on the MAC.
-If the MAC suspends first, the MDIO bus (and therefore the PHY)
-may not be accessible any longer. Therefore it's not that easy. 
-
-This speaks for my proposal to be able to make the PHY PM ops no-ops.
-Then we can handle MAC + PHY PM in the MAC PM callbacks and consider
-any such dependency.
-
-I don't think we can change the PM ordering, AFAIK the PM core does it
-based on registration order of devices.
-
-
-> Best Regards,
-> Joakim Zhang
->> Best Regards,
->> Joakim Zhang
->>> diff --git a/drivers/net/phy/phy_device.c
->>> b/drivers/net/phy/phy_device.c index a009d1769..73d29fd5e 100644
->>> --- a/drivers/net/phy/phy_device.c
->>> +++ b/drivers/net/phy/phy_device.c
->>> @@ -273,6 +273,9 @@ static __maybe_unused int
->>> mdio_bus_phy_suspend(struct device *dev)  {
->>>  	struct phy_device *phydev = to_phy_device(dev);
->>>
->>> +	if (phydev->mac_managed_pm)
->>> +		return 0;
->>> +
->>>  	/* We must stop the state machine manually, otherwise it stops out of
->>>  	 * control, possibly with the phydev->lock held. Upon resume, netdev
->>>  	 * may call phy routines that try to grab the same lock, and that
->>> may @@
->>> -294,6 +297,9 @@ static __maybe_unused int mdio_bus_phy_resume(struct
->>> device *dev)
->>>  	struct phy_device *phydev = to_phy_device(dev);
->>>  	int ret;
->>>
->>> +	if (phydev->mac_managed_pm)
->>> +		return 0;
->>> +
->>>  	if (!phydev->suspended_by_mdio_bus)
->>>  		goto no_resume;
->>>
->>> diff --git a/include/linux/phy.h b/include/linux/phy.h index
->>> 8e2cf84b2..46702af18 100644
->>> --- a/include/linux/phy.h
->>> +++ b/include/linux/phy.h
->>> @@ -567,6 +567,7 @@ struct phy_device {
->>>  	unsigned loopback_enabled:1;
->>>  	unsigned downshifted_rate:1;
->>>  	unsigned is_on_sfp_module:1;
->>> +	unsigned mac_managed_pm:1;
->>>
->>>  	unsigned autoneg:1;
->>>  	/* The most recently read link state */
->>> --
->>> 2.31.1
->>>
->>>
->>>
->>> diff --git a/drivers/net/ethernet/freescale/fec_main.c
->>> b/drivers/net/ethernet/freescale/fec_main.c
->>> index 3db882322..70aea9c27 100644
->>> --- a/drivers/net/ethernet/freescale/fec_main.c
->>> +++ b/drivers/net/ethernet/freescale/fec_main.c
->>> @@ -2048,6 +2048,8 @@ static int fec_enet_mii_probe(struct net_device
->>> *ndev)
->>>  	fep->link = 0;
->>>  	fep->full_duplex = 0;
->>>
->>> +	phy_dev->mac_managed_pm = 1;
->>> +
->>>  	phy_attached_info(phy_dev);
->>>
->>>  	return 0;
->>> @@ -3864,6 +3866,7 @@ static int __maybe_unused fec_resume(struct
->>> device *dev)
->>>  		netif_device_attach(ndev);
->>>  		netif_tx_unlock_bh(ndev);
->>>  		napi_enable(&fep->napi);
->>> +		phy_init_hw(ndev->phydev);
->>>  		phy_start(ndev->phydev);
->>>  	}
->>>  	rtnl_unlock();
->>> --
->>> 2.31.1
-> 
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEhlaW5lciBLYWxsd2VpdCA8
+aGthbGx3ZWl0MUBnbWFpbC5jb20+DQo+IFNlbnQ6IDIwMjHlubQ05pyIN+aXpSAxODoyMg0KPiBU
+bzogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IGNocmlzdGlhbi5tZWxr
+aUB0MmRhdGEuY29tOw0KPiBhbmRyZXdAbHVubi5jaDsgbGludXhAYXJtbGludXgub3JnLnVrOyBk
+YXZlbUBkYXZlbWxvZnQubmV0Ow0KPiBrdWJhQGtlcm5lbC5vcmcNCj4gQ2M6IG5ldGRldkB2Z2Vy
+Lmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlteA0K
+PiA8bGludXgtaW14QG54cC5jb20+OyBGbG9yaWFuIEZhaW5lbGxpIDxmLmZhaW5lbGxpQGdtYWls
+LmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gbmV0OiBwaHk6IGZpeCBQSFkgcG9zc2libHkg
+dW53b3JrIGFmdGVyIE1ESU8gYnVzIHJlc3VtZQ0KPiBiYWNrDQo+IA0KPiBPbiAwNy4wNC4yMDIx
+IDEyOjA1LCBKb2FraW0gWmhhbmcgd3JvdGU6DQo+ID4NCj4gPiBIaSBIZWluZXIsDQo+ID4NCj4g
+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogSm9ha2ltIFpoYW5nIDxx
+aWFuZ3FpbmcuemhhbmdAbnhwLmNvbT4NCj4gPj4gU2VudDogMjAyMeW5tDTmnIg35pelIDE1OjQ2
+DQo+ID4+IFRvOiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2VpdDFAZ21haWwuY29tPjsNCj4gPj4g
+Y2hyaXN0aWFuLm1lbGtpQHQyZGF0YS5jb207IGFuZHJld0BsdW5uLmNoOyBsaW51eEBhcm1saW51
+eC5vcmcudWs7DQo+ID4+IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZw0KPiA+
+PiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9y
+ZzsNCj4gPj4gZGwtbGludXgtaW14IDxsaW51eC1pbXhAbnhwLmNvbT47IEZsb3JpYW4gRmFpbmVs
+bGkNCj4gPj4gPGYuZmFpbmVsbGlAZ21haWwuY29tPg0KPiA+PiBTdWJqZWN0OiBSRTogW1BBVENI
+XSBuZXQ6IHBoeTogZml4IFBIWSBwb3NzaWJseSB1bndvcmsgYWZ0ZXIgTURJTyBidXMNCj4gPj4g
+cmVzdW1lIGJhY2sNCj4gPj4NCj4gPj4NCj4gPj4gSGkgSGVpbmVyLA0KPiA+Pg0KPiA+Pj4gLS0t
+LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4+IEZyb206IEhlaW5lciBLYWxsd2VpdCA8aGth
+bGx3ZWl0MUBnbWFpbC5jb20+DQo+ID4+PiBTZW50OiAyMDIx5bm0NOaciDfml6UgMTU6MTINCj4g
+Pj4+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsNCj4gPj4+IGNo
+cmlzdGlhbi5tZWxraUB0MmRhdGEuY29tOyBhbmRyZXdAbHVubi5jaDsgbGludXhAYXJtbGludXgu
+b3JnLnVrOw0KPiA+Pj4gZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnDQo+ID4+
+PiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9y
+ZzsNCj4gPj4+IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBGbG9yaWFuIEZhaW5l
+bGxpDQo+ID4+PiA8Zi5mYWluZWxsaUBnbWFpbC5jb20+DQo+ID4+PiBTdWJqZWN0OiBSZTogW1BB
+VENIXSBuZXQ6IHBoeTogZml4IFBIWSBwb3NzaWJseSB1bndvcmsgYWZ0ZXIgTURJTw0KPiA+Pj4g
+YnVzIHJlc3VtZSBiYWNrDQo+ID4+Pg0KPiA+Pj4gT24gMDcuMDQuMjAyMSAwMzo0MywgSm9ha2lt
+IFpoYW5nIHdyb3RlOg0KPiA+Pj4+DQo+ID4+Pj4gSGkgSGVpbmVyLA0KPiA+Pj4+DQo+ID4+Pj4+
+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+Pj4+IEZyb206IEhlaW5lciBLYWxsd2Vp
+dCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+DQo+ID4+Pj4+IFNlbnQ6IDIwMjHlubQ05pyIN+aXpSAy
+OjIyDQo+ID4+Pj4+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsN
+Cj4gPj4+Pj4gY2hyaXN0aWFuLm1lbGtpQHQyZGF0YS5jb207IGFuZHJld0BsdW5uLmNoOyBsaW51
+eEBhcm1saW51eC5vcmcudWs7DQo+ID4+Pj4+IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2Vy
+bmVsLm9yZzsgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4DQo+ID4+Pj4+IDxsaW51eEBhcm1saW51
+eC5vcmcudWs+DQo+ID4+Pj4+IENjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJu
+ZWxAdmdlci5rZXJuZWwub3JnOw0KPiA+Pj4+PiBkbC1saW51eC1pbXggPGxpbnV4LWlteEBueHAu
+Y29tPjsgRmxvcmlhbiBGYWluZWxsaQ0KPiA+Pj4+PiA8Zi5mYWluZWxsaUBnbWFpbC5jb20+DQo+
+ID4+Pj4+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIG5ldDogcGh5OiBmaXggUEhZIHBvc3NpYmx5IHVu
+d29yayBhZnRlciBNRElPDQo+ID4+Pj4+IGJ1cyByZXN1bWUgYmFjaw0KPiA+Pj4+Pg0KPiA+Pj4+
+PiBPbiAwNi4wNC4yMDIxIDEzOjQyLCBIZWluZXIgS2FsbHdlaXQgd3JvdGU6DQo+ID4+Pj4+PiBP
+biAwNi4wNC4yMDIxIDEyOjA3LCBKb2FraW0gWmhhbmcgd3JvdGU6DQo+ID4+Pj4+Pj4NCj4gPj4+
+Pj4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4+Pj4+Pj4gRnJvbTogSGVpbmVy
+IEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gPj4+Pj4+Pj4gU2VudDogMjAyMeW5
+tDTmnIg25pelIDE0OjI5DQo+ID4+Pj4+Pj4+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56
+aGFuZ0BueHAuY29tPjsNCj4gPj4+Pj4+Pj4gY2hyaXN0aWFuLm1lbGtpQHQyZGF0YS5jb207IGFu
+ZHJld0BsdW5uLmNoOw0KPiA+Pj4+Pj4+PiBsaW51eEBhcm1saW51eC5vcmcudWs7IGRhdmVtQGRh
+dmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZw0KPiA+Pj4+Pj4+PiBDYzogbmV0ZGV2QHZnZXIu
+a2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsNCj4gPj4+Pj4+Pj4gZGwt
+bGludXgtaW14IDxsaW51eC1pbXhAbnhwLmNvbT4NCj4gPj4+Pj4+Pj4gU3ViamVjdDogUmU6IFtQ
+QVRDSF0gbmV0OiBwaHk6IGZpeCBQSFkgcG9zc2libHkgdW53b3JrIGFmdGVyDQo+ID4+Pj4+Pj4+
+IE1ESU8gYnVzIHJlc3VtZSBiYWNrDQo+ID4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+IE9uIDA2LjA0LjIw
+MjEgMDQ6MDcsIEpvYWtpbSBaaGFuZyB3cm90ZToNCj4gPj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+PiBI
+aSBIZWluZXIsDQo+ID4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+IC0tLS0tT3JpZ2luYWwgTWVzc2Fn
+ZS0tLS0tDQo+ID4+Pj4+Pj4+Pj4gRnJvbTogSGVpbmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdt
+YWlsLmNvbT4NCj4gPj4+Pj4+Pj4+PiBTZW50OiAyMDIx5bm0NOaciDXml6UgMjA6MTANCj4gPj4+
+Pj4+Pj4+PiBUbzogY2hyaXN0aWFuLm1lbGtpQHQyZGF0YS5jb207IEpvYWtpbSBaaGFuZw0KPiA+
+Pj4+Pj4+Pj4+IDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IGFuZHJld0BsdW5uLmNoOw0KPiA+
+Pj4+Pj4+Pj4+IGxpbnV4QGFybWxpbnV4Lm9yZy51azsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3Vi
+YUBrZXJuZWwub3JnDQo+ID4+Pj4+Pj4+Pj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxp
+bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+ID4+Pj4+Pj4+Pj4gZGwtbGludXgtaW14IDxs
+aW51eC1pbXhAbnhwLmNvbT4NCj4gPj4+Pj4+Pj4+PiBTdWJqZWN0OiBSZTogW1BBVENIXSBuZXQ6
+IHBoeTogZml4IFBIWSBwb3NzaWJseSB1bndvcmsgYWZ0ZXINCj4gPj4+Pj4+Pj4+PiBNRElPIGJ1
+cyByZXN1bWUgYmFjaw0KPiA+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4gT24gMDUuMDQuMjAyMSAx
+MDo0MywgQ2hyaXN0aWFuIE1lbGtpIHdyb3RlOg0KPiA+Pj4+Pj4+Pj4+PiBPbiA0LzUvMjEgMTI6
+NDggQU0sIEhlaW5lciBLYWxsd2VpdCB3cm90ZToNCj4gPj4+Pj4+Pj4+Pj4+IE9uIDA0LjA0LjIw
+MjEgMTY6MDksIEhlaW5lciBLYWxsd2VpdCB3cm90ZToNCj4gPj4+Pj4+Pj4+Pj4+PiBPbiAwNC4w
+NC4yMDIxIDEyOjA3LCBKb2FraW0gWmhhbmcgd3JvdGU6DQo+ID4+Pj4+Pj4+Pj4+Pj4+IGNvbW1p
+dCA0YzBkMmU5NmJhMDU1ICgibmV0OiBwaHk6IGNvbnNpZGVyIHRoYXQNCj4gPj4+Pj4+Pj4+Pj4+
+Pj4gc3VzcGVuZDJyYW0NCj4gPj4+Pj4gbWF5DQo+ID4+Pj4+Pj4+Pj4+Pj4+IGN1dCBvZmYgUEhZ
+IHBvd2VyIikgaW52b2tlcyBwaHlfaW5pdF9odygpIHdoZW4gTURJTyBidXMNCj4gPj4+Pj4+Pj4+
+Pj4+Pj4gcmVzdW1lLCBpdCB3aWxsIHNvZnQgcmVzZXQgUEhZIGlmIFBIWSBkcml2ZXIgaW1wbGVt
+ZW50cw0KPiA+Pj4+Pj4+Pj4+Pj4+PiBzb2Z0X3Jlc2V0DQo+ID4+Pj4+IGNhbGxiYWNrLg0KPiA+
+Pj4+Pj4+Pj4+Pj4+PiBjb21taXQgNzY0ZDMxY2FjZmU0ICgibmV0OiBwaHk6IG1pY3JlbDogc2V0
+IHNvZnRfcmVzZXQNCj4gPj4+Pj4+Pj4+Pj4+Pj4gY2FsbGJhY2sgdG8gZ2VucGh5X3NvZnRfcmVz
+ZXQgZm9yIEtTWjgwODEiKSBhZGRzDQo+ID4+Pj4+Pj4+Pj4+Pj4+IHNvZnRfcmVzZXQgZm9yDQo+
+ID4+Pj4+IEtTWjgwODEuDQo+ID4+Pj4+Pj4+Pj4+Pj4+IEFmdGVyIHRoZXNlIHR3byBwYXRjaGVz
+LCBJIGZvdW5kIGkuTVg2VUwgMTR4MTQgRVZLIHdoaWNoDQo+ID4+Pj4+Pj4+Pj4+Pj4+IGNvbm5l
+Y3RlZCB0byBLU1o4MDgxUk5CIGRvZXNuJ3Qgd29yayBhbnkgbW9yZSB3aGVuDQo+ID4+IHN5c3Rl
+bQ0KPiA+Pj4+Pj4+PiByZXN1bWUNCj4gPj4+Pj4+Pj4+Pj4+Pj4gYmFjaywgTUFDDQo+ID4+Pj4+
+Pj4+Pj4gZHJpdmVyIGlzIGZlY19tYWluLmMuDQo+ID4+Pj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+
+Pj4+Pj4+IEl0J3Mgb2J2aW91cyB0aGF0IGluaXRpYWxpemluZyBQSFkgaGFyZHdhcmUgd2hlbiBN
+RElPIGJ1cw0KPiA+Pj4+Pj4+Pj4+Pj4+PiByZXN1bWUgYmFjayB3b3VsZCBpbnRyb2R1Y2Ugc29t
+ZSByZWdyZXNzaW9uIHdoZW4gUEhZDQo+ID4+Pj4+Pj4+Pj4+Pj4+IGltcGxlbWVudHMgc29mdF9y
+ZXNldC4gV2hlbiBJDQo+ID4+Pj4+Pj4+Pj4+Pj4NCj4gPj4+Pj4+Pj4+Pj4+PiBXaHkgaXMgdGhp
+cyBvYnZpb3VzPyBQbGVhc2UgZWxhYm9yYXRlIG9uIHdoeSBhIHNvZnQgcmVzZXQNCj4gPj4+Pj4+
+Pj4+Pj4+PiBzaG91bGQgYnJlYWsgc29tZXRoaW5nLg0KPiA+Pj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+
+Pj4+Pj4+Pj4+IGFtIGRlYnVnZ2luZywgSSBmb3VuZCBQSFkgd29ya3MgZmluZSBpZiBNQUMgZG9l
+c24ndA0KPiA+Pj4+Pj4+Pj4+Pj4+PiBzdXBwb3J0IHN1c3BlbmQvcmVzdW1lIG9yIHBoeV9zdG9w
+KCkvcGh5X3N0YXJ0KCkgZG9lc24ndA0KPiA+Pj4+Pj4+Pj4+Pj4+PiBiZWVuIGNhbGxlZCBkdXJp
+bmcgc3VzcGVuZC9yZXN1bWUuIFRoaXMgbGV0IG1lIHJlYWxpemUsDQo+ID4+Pj4+Pj4+Pj4+Pj4+
+IFBIWSBzdGF0ZSBtYWNoaW5lDQo+ID4+Pj4+Pj4+Pj4+Pj4+IHBoeV9zdGF0ZV9tYWNoaW5lKCkg
+Y291bGQgZG8gc29tZXRoaW5nIGJyZWFrcyB0aGUgUEhZLg0KPiA+Pj4+Pj4+Pj4+Pj4+Pg0KPiA+
+Pj4+Pj4+Pj4+Pj4+PiBBcyB3ZSBrbm93biwgTUFDIHJlc3VtZSBmaXJzdCBhbmQgdGhlbiBNRElP
+IGJ1cyByZXN1bWUNCj4gPj4+IHdoZW4NCj4gPj4+Pj4+Pj4+Pj4+Pj4gc3lzdGVtIHJlc3VtZSBi
+YWNrIGZyb20gc3VzcGVuZC4gV2hlbiBNQUMgcmVzdW1lLA0KPiB1c3VhbGx5DQo+ID4+PiBpdA0K
+PiA+Pj4+Pj4+Pj4+Pj4+PiB3aWxsIGludm9rZQ0KPiA+Pj4+Pj4+Pj4+Pj4+PiBwaHlfc3RhcnQo
+KSB3aGVyZSB0byBjaGFuZ2UgUEhZIHN0YXRlIHRvIFBIWV9VUCwgdGhlbg0KPiA+Pj4+Pj4+Pj4+
+Pj4+PiB0cmlnZ2VyIHRoZQ0KPiA+Pj4+Pj4+Pj4+Pj4+PiBzdGF0PiBtYWNoaW5lIHRvIHJ1biBu
+b3cuIEluIHBoeV9zdGF0ZV9tYWNoaW5lKCksIGl0IHdpbGwNCj4gPj4+Pj4+Pj4+Pj4+Pj4gc3Rh
+cnQvY29uZmlnIGF1dG8tbmVnbywgdGhlbiBjaGFuZ2UgUEhZIHN0YXRlIHRvDQo+ID4+Pj4+Pj4+
+Pj4+Pj4+IFBIWV9OT0xJTkssIHdoYXQgdG8gbmV4dCBpcyBwZXJpb2RpY2FsbHkgY2hlY2sgUEhZ
+IGxpbmsNCj4gPj4+Pj4+Pj4+Pj4+Pj4gc3RhdHVzLiBXaGVuIE1ESU8gYnVzIHJlc3VtZSwgaXQg
+d2lsbCBpbml0aWFsaXplIFBIWQ0KPiA+Pj4+Pj4+Pj4+Pj4+PiBoYXJkd2FyZSwgaW5jbHVkaW5n
+IHNvZnRfcmVzZXQsIHdoYXQgd291bGQgc29mdF9yZXNldA0KPiA+Pj4+Pj4+Pj4+Pj4+PiBhZmZl
+Y3Qgc2VlbXMgdmFyaW91cyBmcm9tDQo+ID4+Pj4+IGRpZmZlcmVudCBQSFlzLg0KPiA+Pj4+Pj4+
+Pj4+Pj4+PiBGb3IgS1NaODA4MVJOQiwgd2hlbiBpdCBpbiBQSFlfTk9MSU5LIHN0YXRlIGFuZCB0
+aGVuDQo+ID4+Pj4+Pj4+Pj4+Pj4+IHBlcmZvcm0gYSBzb2Z0IHJlc2V0LA0KPiA+Pj4+Pj4+Pj4+
+IGl0IHdpbGwgbmV2ZXIgY29tcGxldGUgYXV0by1uZWdvLg0KPiA+Pj4+Pj4+Pj4+Pj4+DQo+ID4+
+Pj4+Pj4+Pj4+Pj4gV2h5PyBUaGF0IHdvdWxkIG5lZWQgdG8gYmUgY2hlY2tlZCBpbiBkZXRhaWwu
+IE1heWJlIGNoaXANCj4gPj4+Pj4+Pj4+Pj4+PiBlcnJhdGEgZG9jdW1lbnRhdGlvbiBwcm92aWRl
+cyBhIGhpbnQuDQo+ID4+Pj4+Pj4+Pj4+Pj4NCj4gPj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4+
+PiBUaGUgS1NaODA4MSBzcGVjIHNheXMgdGhlIGZvbGxvd2luZyBhYm91dCBiaXQgQk1DUl9QRE9X
+TjoNCj4gPj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4+PiBJZiBzb2Z0d2FyZSByZXNldCAoUmVn
+aXN0ZXIgMC4xNSkgaXMgdXNlZCB0byBleGl0DQo+ID4+Pj4+Pj4+Pj4+PiBwb3dlci1kb3duIG1v
+ZGUgKFJlZ2lzdGVyIDAuMTEgPSAxKSwgdHdvIHNvZnR3YXJlIHJlc2V0DQo+ID4+Pj4+Pj4+Pj4+
+PiB3cml0ZXMgKFJlZ2lzdGVyDQo+ID4+Pj4+Pj4+Pj4+PiAwLjE1ID0gMSkgYXJlIHJlcXVpcmVk
+LiBUaGUgZmlyc3Qgd3JpdGUgY2xlYXJzIHBvd2VyLWRvd24NCj4gPj4+Pj4+Pj4+Pj4+IG1vZGU7
+IHRoZSBzZWNvbmQgd3JpdGUgcmVzZXRzIHRoZSBjaGlwIGFuZCByZS1sYXRjaGVzIHRoZQ0KPiA+
+Pj4+Pj4+Pj4+Pj4gcGluIHN0cmFwcGluZyBwaW4NCj4gPj4+Pj4gdmFsdWVzLg0KPiA+Pj4+Pj4+
+Pj4+Pj4NCj4gPj4+Pj4+Pj4+Pj4+IE1heWJlIHRoaXMgY2F1c2VzIHRoZSBpc3N1ZSB5b3Ugc2Vl
+IGFuZCBnZW5waHlfc29mdF9yZXNldCgpDQo+ID4+Pj4+Pj4+Pj4+PiBpc24ndCBhcHByb3ByaWF0
+ZSBmb3IgdGhpcyBQSFkuIFBsZWFzZSByZS10ZXN0IHdpdGggdGhlDQo+ID4+Pj4+Pj4+Pj4+PiBL
+U1o4MDgxIHNvZnQgcmVzZXQgZm9sbG93aW5nIHRoZSBzcGVjIGNvbW1lbnQuDQo+ID4+Pj4+Pj4+
+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+PiBJbnRlcmVzdGluZy4gTmV2ZXIgZXhw
+ZWN0ZWQgdGhhdCBiZWhhdmlvci4NCj4gPj4+Pj4+Pj4+Pj4gVGhhbmtzIGZvciBjYXRjaGluZyBp
+dC4gU2tpbW1lZCB0aHJvdWdoIHRoZSBkYXRhc2hlZXRzL2VycmF0YXMuDQo+ID4+Pj4+Pj4+Pj4+
+IFRoaXMgaXMgd2hhdCBJIGZvdW5kIChtaWNyZWwuYyk6DQo+ID4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+
+Pj4+Pj4+IDEwLzEwMDoNCj4gPj4+Pj4+Pj4+Pj4gODAwMSAtIFVuYWZmZWN0ZWQ/DQo+ID4+Pj4+
+Pj4+Pj4+IDgwMjEvODAzMSAtIERvdWJsZSByZXNldCBhZnRlciBQRE9XTi4NCj4gPj4+Pj4+Pj4+
+Pj4gODA0MSAtIEVycmF0YS4gUERPV04gYnJva2VuLiBSZWNvbW1lbmRlZCBkbyBub3QgdXNlLg0K
+PiBVbmNsZWFyDQo+ID4+Pj4+Pj4+Pj4+IGlmIHJlc2V0IHNvbHZlcyB0aGUgaXNzdWUgc2luY2Ug
+ZXJyYXRhIHNheXMgbm8gZXJyb3IgYWZ0ZXINCj4gPj4+Pj4+Pj4+Pj4gcmVzZXQgYnV0IGlzIGFs
+c28gY2xhaW1pbmcgdGhhdCBvbmx5IHRvZ2dsaW5nIFBET1dOIChtYXkpIG9yDQo+ID4+Pj4+Pj4+
+Pj4+IHBvd2VyIHdpbGwNCj4gPj4+IGhlbHAuDQo+ID4+Pj4+Pj4+Pj4+IDgwNTEgLSBEb3VibGUg
+cmVzZXQgYWZ0ZXIgUERPV04uDQo+ID4+Pj4+Pj4+Pj4+IDgwNjEgLSBEb3VibGUgcmVzZXQgYWZ0
+ZXIgUERPV04uDQo+ID4+Pj4+Pj4+Pj4+IDgwODEgLSBEb3VibGUgcmVzZXQgYWZ0ZXIgUERPV04u
+DQo+ID4+Pj4+Pj4+Pj4+IDgwOTEgLSBEb3VibGUgcmVzZXQgYWZ0ZXIgUERPV04uDQo+ID4+Pj4+
+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4+IDEwLzEwMC8xMDAwOg0KPiA+Pj4+Pj4+Pj4+PiBOb3RoaW5n
+IGluIGdpZ2FiaXQgYWZhaWNzLg0KPiA+Pj4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+PiBTd2l0Y2hl
+czoNCj4gPj4+Pj4+Pj4+Pj4gODg2MiAtIE5vdCBhZmZlY3RlZD8NCj4gPj4+Pj4+Pj4+Pj4gODg2
+MyAtIEVycmF0YS4gUERPV04gYnJva2VuLiBSZXNldCB3aWxsIG5vdCBoZWxwLiBXb3JrYXJvdW5k
+DQo+ID4+PiBleGlzdHMuDQo+ID4+Pj4+Pj4+Pj4+IDg4NjQgLSBOb3QgYWZmZWN0ZWQ/DQo+ID4+
+Pj4+Pj4+Pj4+IDg4NzMgLSBFcnJhdGEuIFBET1dOIGJyb2tlbi4gUmVzZXQgd2lsbCBub3QgaGVs
+cC4gV29ya2Fyb3VuZA0KPiA+Pj4gZXhpc3RzLg0KPiA+Pj4+Pj4+Pj4+PiA5NDc3IC0gRXJyYXRh
+LiBQRE9XTiBicm9rZW4uIFdpbGwgcmFuZG9tbHkgY2F1c2UgbGluaw0KPiA+Pj4+Pj4+Pj4+PiBm
+YWlsdXJlIG9uIGFkamFjZW50IGxpbmtzLiBEbyBub3QgdXNlLg0KPiA+Pj4+Pj4+Pj4+Pg0KPiA+
+Pj4+Pj4+Pj4+PiBUaGlzIGNlcnRhaW5seSBleHBsYWlucyBhIGxvdC4NCj4gPj4+Pj4+Pj4+Pj4N
+Cj4gPj4+Pj4+Pj4+Pj4+Pj4NCj4gPj4+Pj4+Pj4+Pj4+Pj4gVGhpcyBwYXRjaCBjaGFuZ2VzIFBI
+WSBzdGF0ZSB0byBQSFlfVVAgd2hlbiBNRElPIGJ1cw0KPiA+Pj4gcmVzdW1lDQo+ID4+Pj4+Pj4+
+Pj4+Pj4+IGJhY2ssIGl0IHNob3VsZCBiZSByZWFzb25hYmxlIGFmdGVyIFBIWSBoYXJkd2FyZQ0K
+PiA+Pj4+Pj4+Pj4+Pj4+PiByZS1pbml0aWFsaXplZC4gQWxzbyBnaXZlIHN0YXRlIG1hY2hpbmUg
+YSBjaGFuY2UgdG8NCj4gPj4+Pj4+Pj4+Pj4+Pj4gc3RhcnQvY29uZmlnDQo+ID4+Pj4+IGF1dG8t
+bmVnbyBhZ2Fpbi4NCj4gPj4+Pj4+Pj4+Pj4+Pj4NCj4gPj4+Pj4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+
+Pj4+Pj4+IElmIHRoZSBNQUMgZHJpdmVyIGNhbGxzIHBoeV9zdG9wKCkgb24gc3VzcGVuZCwgdGhl
+bg0KPiA+Pj4+Pj4+Pj4+Pj4+IHBoeWRldi0+c3VzcGVuZGVkIGlzIHRydWUgYW5kIG1kaW9fYnVz
+X3BoeV9tYXlfc3VzcGVuZCgpDQo+ID4+Pj4+Pj4+Pj4+Pj4gcGh5ZGV2LT5yZXR1cm5zDQo+ID4+
+Pj4+Pj4+Pj4+Pj4gZmFsc2UuIEFzIGEgY29uc2VxdWVuY2UNCj4gPj4+Pj4+Pj4+Pj4+PiBwaHlk
+ZXYtPnN1c3BlbmRlZF9ieV9tZGlvX2J1cyBpcyBmYWxzZSBhbmQNCj4gPj4+Pj4+Pj4+Pj4+PiBw
+aHlkZXYtPm1kaW9fYnVzX3BoeV9yZXN1bWUoKQ0KPiA+Pj4+Pj4+Pj4+Pj4+IHNraXBzIHRoZSBQ
+SFkgaHcgaW5pdGlhbGl6YXRpb24uDQo+ID4+Pj4+Pj4+Pj4+Pj4gUGxlYXNlIGFsc28gbm90ZSB0
+aGF0IG1kaW9fYnVzX3BoeV9zdXNwZW5kKCkgY2FsbHMNCj4gPj4+Pj4+Pj4+Pj4+PiBwaHlfc3Rv
+cF9tYWNoaW5lKCkgdGhhdCBzZXRzIHRoZSBzdGF0ZSB0byBQSFlfVVAuDQo+ID4+Pj4+Pj4+Pj4+
+Pj4NCj4gPj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4+PiBGb3Jnb3QgdGhhdCBNRElPIGJ1cyBz
+dXNwZW5kIGlzIGRvbmUgYmVmb3JlIE1BQyBkcml2ZXINCj4gPj4gc3VzcGVuZC4NCj4gPj4+Pj4+
+Pj4+Pj4+IFRoZXJlZm9yZSBkaXNyZWdhcmQgdGhpcyBwYXJ0IGZvciBub3cuDQo+ID4+Pj4+Pj4+
+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+Pj4+IEhhdmluZyBzYWlkIHRoYXQgdGhlIGN1cnJlbnQgYXJndW1l
+bnRhdGlvbiBpc24ndCBjb252aW5jaW5nLg0KPiA+Pj4+Pj4+Pj4+Pj4+IEknbSBub3QgYXdhcmUg
+b2Ygc3VjaCBpc3N1ZXMgb24gb3RoZXIgc3lzdGVtcywgdGhlcmVmb3JlDQo+ID4+Pj4+Pj4+Pj4+
+Pj4gaXQncyBsaWtlbHkgdGhhdCBzb21ldGhpbmcgaXMgc3lzdGVtLWRlcGVuZGVudC4NCj4gPj4+
+Pj4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+Pj4+IFBsZWFzZSBjaGVjayB0aGUgZXhhY3QgY2FsbCBz
+ZXF1ZW5jZSBvbiB5b3VyIHN5c3RlbSwgbWF5YmUNCj4gPj4+Pj4+Pj4+Pj4+PiBpdCBwcm92aWRl
+cyBhIGhpbnQuDQo+ID4+Pj4+Pj4+Pj4+Pj4NCj4gPj4+Pj4+Pj4+Pj4+Pj4gU2lnbmVkLW9mZi1i
+eTogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT4NCj4gPj4+Pj4+Pj4+Pj4+
+Pj4gLS0tDQo+ID4+Pj4+Pj4+Pj4+Pj4+ICBkcml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jIHwg
+NyArKysrKysrDQo+ID4+Pj4+Pj4+Pj4+Pj4+ICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25z
+KCspDQo+ID4+Pj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4+Pj4+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL25ldC9waHkvcGh5X2RldmljZS5jDQo+ID4+Pj4+Pj4+Pj4+Pj4+IGIvZHJpdmVycy9uZXQv
+cGh5L3BoeV9kZXZpY2UuYyBpbmRleA0KPiA+Pj4+Pj4+Pj4+Pj4+PiBjYzM4ZTMyNjQwNWEuLjMx
+MmE2ZjY2MjQ4MQ0KPiA+Pj4+Pj4+Pj4+Pj4+PiAxMDA2NDQNCj4gPj4+Pj4+Pj4+Pj4+Pj4gLS0t
+IGEvZHJpdmVycy9uZXQvcGh5L3BoeV9kZXZpY2UuYw0KPiA+Pj4+Pj4+Pj4+Pj4+PiArKysgYi9k
+cml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jDQo+ID4+Pj4+Pj4+Pj4+Pj4+IEBAIC0zMDYsNiAr
+MzA2LDEzIEBAIHN0YXRpYyBfX21heWJlX3VudXNlZCBpbnQNCj4gPj4+Pj4+Pj4+PiBtZGlvX2J1
+c19waHlfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikNCj4gPj4+Pj4+Pj4+Pj4+Pj4gIAlyZXQg
+PSBwaHlfcmVzdW1lKHBoeWRldik7DQo+ID4+Pj4+Pj4+Pj4+Pj4+ICAJaWYgKHJldCA8IDApDQo+
+ID4+Pj4+Pj4+Pj4+Pj4+ICAJCXJldHVybiByZXQ7DQo+ID4+Pj4+Pj4+Pj4+Pj4+ICsNCj4gPj4+
+Pj4+Pj4+Pj4+Pj4gKwkvKiBQSFkgc3RhdGUgY291bGQgYmUgY2hhbmdlZCB0byBQSFlfTk9MSU5L
+IGZyb20gTUFDDQo+ID4+Pj4+Pj4+Pj4+Pj4+ICtjb250cm9sbGVyDQo+ID4+Pj4+Pj4+Pj4gcmVz
+dW1lDQo+ID4+Pj4+Pj4+Pj4+Pj4+ICsJICogcm91bnRlIHdpdGggcGh5X3N0YXJ0KCksIGhlcmUg
+Y2hhbmdlIHRvIFBIWV9VUCBhZnRlcg0KPiA+Pj4+Pj4+Pj4+IHJlLWluaXRpYWxpemluZw0KPiA+
+Pj4+Pj4+Pj4+Pj4+PiArCSAqIFBIWSBoYXJkd2FyZSwgbGV0IFBIWSBzdGF0ZSBtYWNoaW5lIHRv
+IHN0YXJ0L2NvbmZpZw0KPiA+Pj4+Pj4+Pj4+Pj4+PiArYXV0by1uZWdvDQo+ID4+Pj4+Pj4+Pj4g
+YWdhaW4uDQo+ID4+Pj4+Pj4+Pj4+Pj4+ICsJICovDQo+ID4+Pj4+Pj4+Pj4+Pj4+ICsJcGh5ZGV2
+LT5zdGF0ZSA9IFBIWV9VUDsNCj4gPj4+Pj4+Pj4+Pj4+Pj4gKw0KPiA+Pj4+Pj4+Pj4+Pj4+PiAg
+bm9fcmVzdW1lOg0KPiA+Pj4+Pj4+Pj4+Pj4+PiAgCWlmIChwaHlkZXYtPmF0dGFjaGVkX2RldiAm
+JiBwaHlkZXYtPmFkanVzdF9saW5rKQ0KPiA+Pj4+Pj4+Pj4+Pj4+PiAgCQlwaHlfc3RhcnRfbWFj
+aGluZShwaHlkZXYpOw0KPiA+Pj4+Pj4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+Pj4+DQo+ID4+Pj4+
+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+Pg0KPiA+Pj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+Pj4gVGhpcyBp
+cyBhIHF1aWNrIGRyYWZ0IG9mIHRoZSBtb2RpZmllZCBzb2Z0IHJlc2V0IGZvciBLU1o4MDgxLg0K
+PiA+Pj4+Pj4+Pj4+IFNvbWUgdGVzdHMgd291bGQgYmUgYXBwcmVjaWF0ZWQuDQo+ID4+Pj4+Pj4+
+Pj4NCj4gPj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+PiBJIHRlc3QgdGhpcyBwYXRjaCBhdCBteSBzaWRl
+LCB1bmZvcnR1bmF0ZWx5LCBpdCBzdGlsbCBjYW4ndCB3b3JrLg0KPiA+Pj4+Pj4+Pj4NCj4gPj4+
+Pj4+Pj4+IEkgaGF2ZSBub3QgZm91bmQgd2hhdCBzb2Z0IHJlc2V0IHdvdWxkIGFmZmVjdCBpbiA4
+MDgxIHNwZWMsIGlzDQo+ID4+Pj4+Pj4+PiB0aGVyZSBhbmcgY29tbW9uIERlc2NyaXB0aW9uIGZv
+ciBkaWZmZXJlbnQgUEhZcz8NCj4gPj4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+DQo+ID4+Pj4+Pj4+IFlv
+dSBjYW4gY2hlY2sgdGhlIGNsYXVzZSAyMiBzcGVjOiA4MDIuMyAyMi4yLjQuMS4xDQo+ID4+Pj4+
+Pj4+DQo+ID4+Pj4+Pj4+IEFwYXJ0IGZyb20gdGhhdCB5b3UgY2FuIGNoZWNrIEJNQ1IgdmFsdWUg
+YW5kIHdoaWNoIG1vZGVzIHlvdXINCj4gPj4+Pj4+Pj4gUEhZIGFkdmVydGlzZXMgYWZ0ZXIgYSBz
+b2Z0IHJlc2V0LiBJZiB0aGUgUEhZIGluZGVlZCB3b3VsZG4ndA0KPiA+Pj4+Pj4+PiByZXN0YXJ0
+IGFuZWcgYWZ0ZXIgYSBzb2Z0IHJlc2V0LCB0aGVuIGl0IHdvdWxkIGJlIHRoZSBvbmx5IG9uZQ0K
+PiA+Pj4+Pj4+PiB3aXRoIHRoaXMgYmVoYXZpb3IgSSBrbm93LiBBbmQgSSdkIHdvbmRlciB3aHkg
+dGhlcmUgYXJlbid0IG1vcmUNCj4gPj4+Pj4+Pj4gc3VjaA0KPiA+PiByZXBvcnRzLg0KPiA+Pj4+
+Pj4+DQo+ID4+Pj4+Pj4gSGkgSGVpbmVyLA0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gV2UgaGF2ZSBy
+ZWFzb25zIHRvIGJlbGlldmUgaXQgaXMgYSB3ZWlyZCBiZWhhdmlvciBvZiBLU1o4MDgxLiBJDQo+
+ID4+Pj4+Pj4gaGF2ZSBhbm90aGVyIHR3byBQSFlzIGF0IG15IHNpZGUsIEFSODAzMSBhbmQgUlRM
+ODIxMUZELCB0aGV5IGNhbg0KPiA+Pj4+Pj4+IHdvcmsgZmluZSBpZg0KPiA+Pj4+PiBzb2Z0X3Jl
+c2V0IGltcGxlbWVudGVkLg0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gQXMgY29tbWl0IG1lc3NhZ2Ug
+ZGVzY3JpYmVkLCBwaHlfc3RhcnQoKSB3b3VsZCBjaGFuZ2UgUEhZIHN0YXRlDQo+ID4+Pj4+Pj4g
+dG8NCj4gPj4+Pj4gUEhZX1VQIGZpbmFsbHkgdG8gUEhZX05PTElOSyB3aGVuIE1BQyByZXN1bWUu
+DQo+ID4+Pj4+Pj4gQWZ0ZXIgTURJTyBidXMgcmVzdW1lIGJhY2ssIGl0IHdpbGwgcGVyaW9kaWNh
+bGx5IGNoZWNrIGxpbmsgc3RhdHVzLg0KPiA+Pj4+Pj4+IEkgZGlkIGJlbG93DQo+ID4+Pj4+IGNv
+ZGUgY2hhbmdlIHRvIGR1bXAgYWxsIFBIWSByZWdpc3RlcnMuDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+
+PiAtLS0gYS9kcml2ZXJzL25ldC9waHkvcGh5LmMNCj4gPj4+Pj4+PiArKysgYi9kcml2ZXJzL25l
+dC9waHkvcGh5LmMNCj4gPj4+Pj4+PiBAQCAtMzUsNyArMzUsNyBAQA0KPiA+Pj4+Pj4+ICAjaW5j
+bHVkZSA8bmV0L2dlbmV0bGluay5oPg0KPiA+Pj4+Pj4+ICAjaW5jbHVkZSA8bmV0L3NvY2suaD4N
+Cj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+IC0jZGVmaW5lIFBIWV9TVEFURV9USU1FIEhaDQo+ID4+Pj4+
+Pj4gKyNkZWZpbmUgUEhZX1NUQVRFX1RJTUUgKDEwICogSFopDQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+
+PiAgI2RlZmluZSBQSFlfU1RBVEVfU1RSKF9zdGF0ZSkgICAgICAgICAgICAgICAgICBcDQo+ID4+
+Pj4+Pj4gICAgICAgICBjYXNlIFBIWV8jI19zdGF0ZTogICAgICAgICAgICAgICAgICAgICAgXA0K
+PiA+Pj4+Pj4+IEBAIC03MzgsNiArNzM4LDI4IEBAIHN0YXRpYyBpbnQgcGh5X2NoZWNrX2xpbmtf
+c3RhdHVzKHN0cnVjdA0KPiA+Pj4+Pj4+IHBoeV9kZXZpY2UNCj4gPj4+Pj4gKnBoeWRldikNCj4g
+Pj4+Pj4+PiAgICAgICAgIGlmIChlcnIpDQo+ID4+Pj4+Pj4gICAgICAgICAgICAgICAgIHJldHVy
+biBlcnI7DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiArICAgICAgIHByaW50aygib2Zmc2V0IDB4MDAg
+ZGF0YSA9ICUweFxuIiwgcGh5X3JlYWQocGh5ZGV2LCAweDAwKSk7DQo+ID4+Pj4+Pj4gKyAgICAg
+ICBwcmludGsoIm9mZnNldCAweDAxIGRhdGEgPSAlMHhcbiIsIHBoeV9yZWFkKHBoeWRldiwgMHgw
+MSkpOw0KPiA+Pj4+Pj4+ICsgICAgICAgcHJpbnRrKCJvZmZzZXQgMHgwMiBkYXRhID0gJTB4XG4i
+LCBwaHlfcmVhZChwaHlkZXYsIDB4MDIpKTsNCj4gPj4+Pj4+PiArICAgICAgIHByaW50aygib2Zm
+c2V0IDB4MDMgZGF0YSA9ICUweFxuIiwgcGh5X3JlYWQocGh5ZGV2LCAweDAzKSk7DQo+ID4+Pj4+
+Pj4gKyAgICAgICBwcmludGsoIm9mZnNldCAweDA0IGRhdGEgPSAlMHhcbiIsIHBoeV9yZWFkKHBo
+eWRldiwgMHgwNCkpOw0KPiA+Pj4+Pj4+ICsgICAgICAgcHJpbnRrKCJvZmZzZXQgMHgwNSBkYXRh
+ID0gJTB4XG4iLCBwaHlfcmVhZChwaHlkZXYsIDB4MDUpKTsNCj4gPj4+Pj4+PiArICAgICAgIHBy
+aW50aygib2Zmc2V0IDB4MDYgZGF0YSA9ICUweFxuIiwgcGh5X3JlYWQocGh5ZGV2LCAweDA2KSk7
+DQo+ID4+Pj4+Pj4gKyAgICAgICBwcmludGsoIm9mZnNldCAweDA3IGRhdGEgPSAlMHhcbiIsIHBo
+eV9yZWFkKHBoeWRldiwgMHgwNykpOw0KPiA+Pj4+Pj4+ICsgICAgICAgcHJpbnRrKCJvZmZzZXQg
+MHgwOCBkYXRhID0gJTB4XG4iLCBwaHlfcmVhZChwaHlkZXYsIDB4MDgpKTsNCj4gPj4+Pj4+PiAr
+ICAgICAgIHByaW50aygib2Zmc2V0IDB4MDkgZGF0YSA9ICUweFxuIiwgcGh5X3JlYWQocGh5ZGV2
+LCAweDA5KSk7DQo+ID4+Pj4+Pj4gKyAgICAgICBwcmludGsoIm9mZnNldCAweDEwIGRhdGEgPSAl
+MHhcbiIsIHBoeV9yZWFkKHBoeWRldiwgMHgxMCkpOw0KPiA+Pj4+Pj4+ICsgICAgICAgcHJpbnRr
+KCJvZmZzZXQgMHgxMSBkYXRhID0gJTB4XG4iLCBwaHlfcmVhZChwaHlkZXYsIDB4MTEpKTsNCj4g
+Pj4+Pj4+PiArICAgICAgIHByaW50aygib2Zmc2V0IDB4MTUgZGF0YSA9ICUweFxuIiwgcGh5X3Jl
+YWQocGh5ZGV2LCAweDE1KSk7DQo+ID4+Pj4+Pj4gKyAgICAgICBwcmludGsoIm9mZnNldCAweDE2
+IGRhdGEgPSAlMHhcbiIsIHBoeV9yZWFkKHBoeWRldiwgMHgxNikpOw0KPiA+Pj4+Pj4+ICsgICAg
+ICAgcHJpbnRrKCJvZmZzZXQgMHgxNyBkYXRhID0gJTB4XG4iLCBwaHlfcmVhZChwaHlkZXYsIDB4
+MTcpKTsNCj4gPj4+Pj4+PiArICAgICAgIHByaW50aygib2Zmc2V0IDB4MTggZGF0YSA9ICUweFxu
+IiwgcGh5X3JlYWQocGh5ZGV2LCAweDE4KSk7DQo+ID4+Pj4+Pj4gKyAgICAgICBwcmludGsoIm9m
+ZnNldCAweDFiIGRhdGEgPSAlMHhcbiIsIHBoeV9yZWFkKHBoeWRldiwgMHgxYikpOw0KPiA+Pj4+
+Pj4+ICsgICAgICAgcHJpbnRrKCJvZmZzZXQgMHgxYyBkYXRhID0gJTB4XG4iLCBwaHlfcmVhZChw
+aHlkZXYsIDB4MWMpKTsNCj4gPj4+Pj4+PiArICAgICAgIHByaW50aygib2Zmc2V0IDB4MWQgZGF0
+YSA9ICUweFxuIiwgcGh5X3JlYWQocGh5ZGV2LCAweDFkKSk7DQo+ID4+Pj4+Pj4gKyAgICAgICBw
+cmludGsoIm9mZnNldCAweDFlIGRhdGEgPSAlMHhcbiIsIHBoeV9yZWFkKHBoeWRldiwgMHgxZSkp
+Ow0KPiA+Pj4+Pj4+ICsgICAgICAgcHJpbnRrKCJvZmZzZXQgMHgxZiBkYXRhID0gJTB4XG4iLCBw
+aHlfcmVhZChwaHlkZXYsIDB4MWYpKTsNCj4gPj4+Pj4+PiArICAgICAgIHByaW50aygiXG5cbiIp
+Ow0KPiA+Pj4+Pj4+ICAgICAgICAgaWYgKHBoeWRldi0+bGluayAmJiBwaHlkZXYtPnN0YXRlICE9
+IFBIWV9SVU5OSU5HKSB7DQo+ID4+Pj4+Pj4gICAgICAgICAgICAgICAgIHBoeV9jaGVja19kb3du
+c2hpZnQocGh5ZGV2KTsNCj4gPj4+Pj4+PiAgICAgICAgICAgICAgICAgcGh5ZGV2LT5zdGF0ZSA9
+IFBIWV9SVU5OSU5HOw0KPiA+Pj4+Pj4+DQo+ID4+Pj4+Pj4gQWZ0ZXIgTURJTyBidXMgcmVzdW1l
+IGJhY2ssIHJlc3VsdHMgYXMgYmVsb3c6DQo+ID4+Pj4+Pj4NCj4gPj4+Pj4+PiBbICAxMTkuNTQ1
+MzgzXSBvZmZzZXQgMHgwMCBkYXRhID0gMTEwMCBbICAxMTkuNTQ5MjM3XSBvZmZzZXQNCj4gPj4+
+Pj4+PiAweDAxIGRhdGEgPSA3ODQ5IFsgIDExOS41NjMxMjVdIG9mZnNldCAweDAyIGRhdGEgPSAy
+MiBbDQo+ID4+Pj4+Pj4gMTE5LjU2NjgxMF0gb2Zmc2V0IDB4MDMgZGF0YSA9IDE1NjAgWyAgMTE5
+LjU3MDU5N10gb2Zmc2V0IDB4MDQNCj4gPj4+Pj4+PiBkYXRhID0gODVlMSBbIDExOS41ODgwMTZd
+IG9mZnNldCAweDA1IGRhdGEgPSAwIFsgIDExOS41OTI4OTFdDQo+ID4+Pj4+Pj4gb2Zmc2V0IDB4
+MDYgZGF0YSA9DQo+ID4+Pj4+Pj4gNCBbICAxMTkuNTk2NDUyXSBvZmZzZXQgMHgwNyBkYXRhID0g
+MjAwMSBbICAxMTkuNjAwMjMzXSBvZmZzZXQNCj4gPj4+Pj4+PiAweDA4IGRhdGEgPSAwIFsgIDEx
+OS42MTc4NjRdIG9mZnNldCAweDA5IGRhdGEgPSAwIFsgIDExOS42MjU5OTBdDQo+ID4+Pj4+Pj4g
+b2Zmc2V0DQo+ID4+Pj4+Pj4gMHgxMCBkYXRhID0gMCBbICAxMTkuNjI5NTc2XSBvZmZzZXQgMHgx
+MSBkYXRhID0gMCBbICAxMTkuNjQyNzM1XQ0KPiA+Pj4+Pj4+IG9mZnNldCAweDE1IGRhdGEgPSAw
+IFsgIDExOS42NDYzMzJdIG9mZnNldCAweDE2IGRhdGEgPSAyMDIgWw0KPiA+Pj4+Pj4+IDExOS42
+NTAwMzBdIG9mZnNldCAweDE3IGRhdGEgPSA1YzAyIFsgIDExOS42NjgwNTRdIG9mZnNldCAweDE4
+DQo+ID4+Pj4+Pj4gZGF0YSA9DQo+ID4+Pj4+Pj4gODAxIFsgIDExOS42NzI5OTddIG9mZnNldCAw
+eDFiIGRhdGEgPSAwIFsgIDExOS42NzY1NjVdIG9mZnNldA0KPiA+Pj4+Pj4+IDB4MWMgZGF0YSA9
+IDAgWyAgMTE5LjY4MDA4NF0gb2Zmc2V0IDB4MWQgZGF0YSA9IDAgWyAgMTE5LjY5ODAzMV0NCj4g
+Pj4+Pj4+PiBvZmZzZXQgMHgxZSBkYXRhID0gMjAgWyAgMTE5LjcwNjI0Nl0gb2Zmc2V0IDB4MWYg
+ZGF0YSA9IDgxOTAgWw0KPiA+Pj4+Pj4+IDExOS43MDk5ODRdIFsgIDExOS43MDk5ODRdIFsgIDEy
+MC4xODIxMjBdIG9mZnNldCAweDAwIGRhdGEgPSAxMDANCj4gPj4+Pj4+PiBbIDEyMC4xODU4OTRd
+IG9mZnNldCAweDAxIGRhdGEgPSA3ODRkIFsgIDEyMC4xODk2ODFdIG9mZnNldCAweDAyDQo+ID4+
+Pj4+Pj4gZGF0YSA9IDIyIFsgMTIwLjIwNjMxOV0gb2Zmc2V0IDB4MDMgZGF0YSA9IDE1NjAgWyAg
+MTIwLjIxMDE3MV0NCj4gPj4+Pj4+PiBvZmZzZXQNCj4gPj4+Pj4+PiAweDA0IGRhdGEgPQ0KPiA+
+Pj4+Pj4+IDgwNjEgWyAgMTIwLjIyNTM1M10gb2Zmc2V0IDB4MDUgZGF0YSA9IDAgWyAgMTIwLjIy
+ODk0OF0gb2Zmc2V0DQo+ID4+Pj4+Pj4gMHgwNiBkYXRhID0gNCBbICAxMjAuMjQyOTM2XSBvZmZz
+ZXQgMHgwNyBkYXRhID0gMjAwMSBbDQo+ID4+Pj4+Pj4gMTIwLjI0Njc5Ml0gb2Zmc2V0DQo+ID4+
+Pj4+Pj4gMHgwOCBkYXRhID0gMCBbICAxMjAuMjUwMzEzXSBvZmZzZXQgMHgwOSBkYXRhID0gMCBb
+ICAxMjAuMjY2NzQ4XQ0KPiA+Pj4+Pj4+IG9mZnNldCAweDEwIGRhdGEgPSAwIFsgIDEyMC4yNzAz
+MzVdIG9mZnNldCAweDExIGRhdGEgPSAwIFsNCj4gPj4+Pj4+PiAxMjAuMjg0MTY3XSBvZmZzZXQg
+MHgxNSBkYXRhID0gMCBbICAxMjAuMjg3NzYwXSBvZmZzZXQgMHgxNiBkYXRhDQo+ID4+Pj4+Pj4g
+PQ0KPiA+Pj4+Pj4+IDIwMiBbICAxMjAuMzAxMDMxXSBvZmZzZXQgMHgxNyBkYXRhID0gM2MwMiBb
+ICAxMjAuMzEzMjA5XSBvZmZzZXQNCj4gPj4+Pj4+PiAweDE4IGRhdGEgPSA4MDEgWyAgMTIwLjMx
+Njk4M10gb2Zmc2V0IDB4MWIgZGF0YSA9IDAgWw0KPiA+Pj4+Pj4+IDEyMC4zMjA1MTNdIG9mZnNl
+dCAweDFjIGRhdGEgPSAxIFsgIDEyMC4zMzY1ODldIG9mZnNldCAweDFkIGRhdGENCj4gPj4+Pj4+
+PiA9IDAgWyAxMjAuMzQwMTg0XSBvZmZzZXQgMHgxZSBkYXRhID0gMTE1IFsgIDEyMC4zNTUzNTdd
+IG9mZnNldA0KPiA+Pj4+Pj4+IDB4MWYgZGF0YSA9IDgxOTAgWyAxMjAuMzU5MTEyXSBbICAxMjAu
+MzU5MTEyXSBbICAxMjkuNzg1Mzk2XQ0KPiA+Pj4+Pj4+IG9mZnNldCAweDAwIGRhdGEgPSAxMTAw
+IFsgMTI5Ljc4OTI1Ml0gb2Zmc2V0IDB4MDEgZGF0YSA9IDc4NDkgWw0KPiA+Pj4+Pj4+IDEyOS44
+MDk5NTFdIG9mZnNldA0KPiA+Pj4+Pj4+IDB4MDIgZGF0YSA9DQo+ID4+Pj4+Pj4gMjIgWyAgMTI5
+LjgxNTAxOF0gb2Zmc2V0IDB4MDMgZGF0YSA9IDE1NjAgWyAgMTI5LjgxODg0NV0gb2Zmc2V0DQo+
+ID4+Pj4+Pj4gMHgwNCBkYXRhID0gODVlMSBbICAxMjkuODM1ODA4XSBvZmZzZXQgMHgwNSBkYXRh
+ID0gMCBbDQo+ID4+Pj4+Pj4gMTI5LjgzOTM5OF0gb2Zmc2V0DQo+ID4+Pj4+Pj4gMHgwNiBkYXRh
+ID0gNCBbICAxMjkuODU0NTE0XSBvZmZzZXQgMHgwNyBkYXRhID0gMjAwMSBbDQo+ID4+Pj4+Pj4g
+MTI5Ljg1ODM3MV0gb2Zmc2V0IDB4MDggZGF0YSA9IDAgWyAgMTI5Ljg3MzM1N10gb2Zmc2V0IDB4
+MDkgZGF0YQ0KPiA+Pj4+Pj4+ID0gMCBbIDEyOS44NzY5NTRdIG9mZnNldCAweDEwIGRhdGEgPSAw
+IFsgIDEyOS44ODA0NzJdIG9mZnNldA0KPiA+Pj4+Pj4+IDB4MTEgZGF0YSA9DQo+ID4+Pj4+Pj4g
+MCBbICAxMjkuODk2NDUwXSBvZmZzZXQgMHgxNSBkYXRhID0gMCBbICAxMjkuOTAwMDM4XSBvZmZz
+ZXQgMHgxNg0KPiA+Pj4+Pj4+IGRhdGEgPQ0KPiA+Pj4+Pj4+IDIwMiBbICAxMjkuOTE1MDQxXSBv
+ZmZzZXQgMHgxNyBkYXRhID0gNWMwMiBbICAxMjkuOTE4ODg5XSBvZmZzZXQNCj4gPj4+Pj4+PiAw
+eDE4IGRhdGEgPSA4MDEgWyAgMTI5LjkzMjczNV0gb2Zmc2V0IDB4MWIgZGF0YSA9IDAgWw0KPiA+
+Pj4+Pj4+IDEyOS45NDY4MzBdIG9mZnNldCAweDFjIGRhdGEgPSAwIFsgIDEyOS45NTA0MjRdIG9m
+ZnNldCAweDFkIGRhdGENCj4gPj4+Pj4+PiA9IDAgWyAxMjkuOTY0NTg1XSBvZmZzZXQgMHgxZSBk
+YXRhID0gMCBbICAxMjkuOTY4MTkyXSBvZmZzZXQNCj4gPj4+Pj4+PiAweDFmIGRhdGEgPQ0KPiA+
+Pj4+Pj4+IDgxOTAgWyAxMjkuOTcyOTM4XSBbICAxMjkuOTcyOTM4XSBbICAxMzAuNDI1MTI1XSBv
+ZmZzZXQgMHgwMA0KPiA+Pj4+Pj4+IGRhdGEgPQ0KPiA+Pj4+Pj4+IDEwMCBbIDEzMC40Mjg4ODld
+IG9mZnNldCAweDAxIGRhdGEgPSA3ODRkIFsgIDEzMC40NDI2NzFdIG9mZnNldA0KPiA+Pj4+Pj4+
+IDB4MDIgZGF0YSA9DQo+ID4+Pj4+Pj4gMjIgWyAgMTMwLjQ0NjM2MF0gb2Zmc2V0IDB4MDMgZGF0
+YSA9IDE1NjAgWyAgMTMwLjQ1MDE0Ml0gb2Zmc2V0DQo+ID4+Pj4+Pj4gMHgwNCBkYXRhID0gODA2
+MSBbICAxMzAuNDY3MjA3XSBvZmZzZXQgMHgwNSBkYXRhID0gMCBbDQo+ID4+Pj4+Pj4gMTMwLjQ3
+MDc4OV0gb2Zmc2V0DQo+ID4+Pj4+Pj4gMHgwNiBkYXRhID0gNCBbICAxMzAuNDg1MDcxXSBvZmZz
+ZXQgMHgwNyBkYXRhID0gMjAwMSBbDQo+ID4+Pj4+Pj4gMTMwLjQ4ODkzNF0gb2Zmc2V0IDB4MDgg
+ZGF0YSA9IDAgWyAgMTMwLjUwNDMyMF0gb2Zmc2V0IDB4MDkgZGF0YQ0KPiA+Pj4+Pj4+ID0gMCBb
+IDEzMC41MDc5MTFdIG9mZnNldCAweDEwIGRhdGEgPSAwIFsgIDEzMC41MjA5NTBdIG9mZnNldA0K
+PiA+Pj4+Pj4+IDB4MTEgZGF0YSA9DQo+ID4+Pj4+Pj4gMCBbICAxMzAuNTMyODY1XSBvZmZzZXQg
+MHgxNSBkYXRhID0gMCBbICAxMzAuNTM2NDYxXSBvZmZzZXQgMHgxNg0KPiA+Pj4+Pj4+IGRhdGEg
+PQ0KPiA+Pj4+Pj4+IDIwMiBbICAxMzAuNTQwMTU2XSBvZmZzZXQgMHgxNyBkYXRhID0gM2MwMiBb
+ICAxMzAuNTU3MjE4XSBvZmZzZXQNCj4gPj4+Pj4+PiAweDE4IGRhdGEgPSA4MDEgWyAgMTMwLjU2
+MDk4N10gb2Zmc2V0IDB4MWIgZGF0YSA9IDAgWw0KPiA+Pj4+Pj4+IDEzMC41NzUxNThdIG9mZnNl
+dCAweDFjIGRhdGEgPSAxIFsgIDEzMC41Nzg3NTRdIG9mZnNldCAweDFkIGRhdGENCj4gPj4+Pj4+
+PiA9IDAgWyAxMzAuNTkzNTQzXSBvZmZzZXQgMHgxZSBkYXRhID0gMTE1IFsgIDEzMC41OTczMTJd
+IG9mZnNldA0KPiA+Pj4+Pj4+IDB4MWYgZGF0YSA9IDgxOTANCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4+
+IFdlIGNhbiBzZWUgdGhhdCBCTUNSIGFuZCBCTVNSIGNoYW5nZXMgZnJvbSAweDExMDAsMHg3ODQ5
+IHRvDQo+ID4+Pj4+IDB4MTAwLDB4Nzg0ZCAoQk1DUlsxMl0gYml0IGFuZCBCTVNSWzJdKSwgYW5k
+IGxvb3AgaXQuDQo+ID4+Pj4+Pj4gQWJvdmUgcHJvY2VzcyBpcyBhdXRvLW5lZ28gZW5hYmxlZCwg
+bGluayBpcyBkb3duLCBhdXRvLW5lZ28gaXMNCj4gPj4+Pj4+PiBkaXNhYmxlZCwgbGluaw0KPiA+
+Pj4+PiBpcyB1cC4gQW5kIGF1dG8tbmVnbyBjb21wbGV0ZSBiaXQgaXMgYWx3YXlzIDAuDQo+ID4+
+Pj4+Pj4NCj4gPj4+Pj4+PiBQSFkgc2VlbXMgYmVjb21lIHVuc3RhYmxlIGlmIHNvZnQgcmVzZXQg
+YWZ0ZXIgc3RhcnQvY29uZmlnDQo+ID4+Pj4+Pj4gYXV0by1uZWdvLiBJIGFsc28NCj4gPj4+Pj4g
+d2FudCB0byBmaXggaXQgaW4gbWljcmVsIGRyaXZlciwgYnV0IGZhaWxlZC4NCj4gPj4+Pj4+Pg0K
+PiA+Pj4+Pj4NCj4gPj4+Pj4+IFdhaXRpbmcgZm9yIEFORUdfQ09NUExFVEUgdG8gYmUgc2V0IHdv
+dWxkbid0IGJlIGEgZ29vZCBvcHRpb24uDQo+ID4+Pj4+PiBBbmVnIG1heSBuZXZlciBjb21wbGV0
+ZSBmb3IgZGlmZmVyZW50IHJlYXNvbnMsIGUuZy4gbm8gcGh5c2ljYWwNCj4gPj4+Pj4+IGxpbmsu
+IEFuZCBldmVuIGlmIHdlIHVzZSBhIHRpbWVvdXQgdGhpcyBtYXkgYWRkIHVud2FudGVkIGRlbGF5
+cy4NCj4gPj4+Pj4+DQo+ID4+Pj4+Pj4gRG8geW91IGhhdmUgYW55IG90aGVyIGluc2lnaHRzIHRo
+YXQgY2FuIGhlbHAgbWUgZnVydGhlciBsb2NhdGUNCj4gPj4+Pj4+PiB0aGUNCj4gPj4gaXNzdWU/
+DQo+ID4+Pj4+IFRoYW5rcy4NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4NCj4gPj4+Pj4+IEkgdGhpbmsg
+Y3VycmVudCBNQUMvUEhZIFBNIGhhbmRsaW5nIGlzbid0IHBlcmZlY3QuIE9mdGVuIHdlIGhhdmUN
+Cj4gPj4+Pj4+IHRoZSBmb2xsb3dpbmcNCj4gPj4+Pj4+IHNjZW5hcmlvOg0KPiA+Pj4+Pj4NCj4g
+Pj4+Pj4+ICpzdXNwZW5kKg0KPiA+Pj4+Pj4gMS4gUEhZIGlzIHN1c3BlbmRlZCAobWRpb19idXNf
+cGh5X3N1c3BlbmQpIDIuIE1BQyBzdXNwZW5kDQo+ID4+Pj4+PiBjYWxsYmFjayAodHlwaWNhbGx5
+IGludm9sdmluZyBwaHlfc3RvcCgpKQ0KPiA+Pj4+Pj4NCj4gPj4+Pj4+ICpyZXN1bWUqDQo+ID4+
+Pj4+PiAxLiBNQUMgcmVzdW1lIGNhbGxiYWNrICh0eXBpY2FsbHkgaW52b2x2aW5nIHBoeV9zdGFy
+dCgpKSAyLiBQSFkNCj4gPj4+Pj4+IGlzIHJlc3VtZWQgKG1kaW9fYnVzX3BoeV9yZXN1bWUpLCBp
+bmNsLiBjYWxsaW5nIHBoeV9pbml0X2h3KCkNCj4gPj4+Pj4+DQo+ID4+Pj4+PiBDYWxsaW5nIHBo
+eV9pbml0X2h3KCkgYWZ0ZXIgcGh5X3N0YXJ0KCkgZG9lc24ndCBsb29rIHJpZ2h0Lg0KPiA+Pj4+
+Pj4gSXQgc2VlbXMgdG8gd29yayBpbiBtb3N0IGNhc2VzLCBidXQgdGhlcmUncyBhIGNlcnRhaW4g
+cmlzayB0aGF0DQo+ID4+Pj4+PiBwaHlfaW5pdF9odygpIG92ZXJ3cml0ZXMgc29tZXRoaW5nLCBl
+LmcuIHRoZSBhZHZlcnRpc2VkIG1vZGVzLg0KPiA+Pj4+Pj4gSSB0aGluayB3ZSBoYXZlIHR3byB2
+YWxpZCBzY2VuYXJpb3M6DQo+ID4+Pj4+Pg0KPiA+Pj4+Pj4gMS4gcGh5bGliIFBNIGNhbGxiYWNr
+cyBhcmUgdXNlZCwgdGhlbiB0aGUgTUFDIGRyaXZlciBzaG91bGRuJ3QNCj4gPj4+Pj4+ICAgIHRv
+dWNoIHRoZSBQSFkgaW4gaXRzIFBNIGNhbGxiYWNrcywgZXNwZWNpYWxseSBub3QgY2FsbA0KPiA+
+Pj4+Pj4gICAgcGh5X3N0b3AvcGh5X3N0YXJ0Lg0KPiA+Pj4+Pj4NCj4gPj4+Pj4+IDIuIE1BQyBQ
+TSBjYWxsYmFja3MgdGFrZSBjYXJlIGFsc28gb2YgdGhlIFBIWS4gVGhlbiBJIHRoaW5rIHdlIHdv
+dWxkDQo+ID4+Pj4+PiAgICBuZWVkIGEgZmxhZyBhdCB0aGUgcGh5X2RldmljZSB0ZWxsaW5nIGl0
+IHRvIG1ha2UgdGhlIFBIWSBQTQ0KPiA+Pj4+Pj4gICAgY2FsbGJhY2tzIGEgbm8tb3AuDQo+ID4+
+Pj4+Pg0KPiA+Pj4+Pj4gQW5kcmV3LCBSdXNzZWxsOiBXaGF0IGRvIHlvdSB0aGluaz8NCj4gPj4+
+Pj4+DQo+ID4+Pj4+Pj4gQmVzdCBSZWdhcmRzLA0KPiA+Pj4+Pj4+IEpvYWtpbSBaaGFuZw0KPiA+
+Pj4+Pj4+DQo+ID4+Pj4+Pj4gWy4uLl0NCj4gPj4+Pj4+Pg0KPiA+Pj4+Pj4gSGVpbmVyDQo+ID4+
+Pj4+Pg0KPiA+Pj4+Pg0KPiA+Pj4+PiBCYXNlZCBvbiBzY2VuYXJpbyAxIHlvdSBjYW4gYWxzbyB0
+cnkgdGhlIGZvbGxvd2luZy4NCj4gPj4+Pj4NCj4gPj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+bmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5jDQo+ID4+Pj4+IGIvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMNCj4gPj4+Pj4gaW5kZXggM2RiODgyMzIyLi5j
+ZGY5MTYwZmMgMTAwNjQ0DQo+ID4+Pj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVz
+Y2FsZS9mZWNfbWFpbi5jDQo+ID4+Pj4+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVz
+Y2FsZS9mZWNfbWFpbi5jDQo+ID4+Pj4+IEBAIC0zODA1LDcgKzM4MDUsNiBAQCBzdGF0aWMgaW50
+IF9fbWF5YmVfdW51c2VkDQo+IGZlY19zdXNwZW5kKHN0cnVjdA0KPiA+Pj4+PiBkZXZpY2UgKmRl
+dikNCj4gPj4+Pj4gIAlpZiAobmV0aWZfcnVubmluZyhuZGV2KSkgew0KPiA+Pj4+PiAgCQlpZiAo
+ZmVwLT53b2xfZmxhZyAmIEZFQ19XT0xfRkxBR19FTkFCTEUpDQo+ID4+Pj4+ICAJCQlmZXAtPndv
+bF9mbGFnIHw9IEZFQ19XT0xfRkxBR19TTEVFUF9PTjsNCj4gPj4+Pj4gLQkJcGh5X3N0b3AobmRl
+di0+cGh5ZGV2KTsNCj4gPj4+Pj4gIAkJbmFwaV9kaXNhYmxlKCZmZXAtPm5hcGkpOw0KPiA+Pj4+
+PiAgCQluZXRpZl90eF9sb2NrX2JoKG5kZXYpOw0KPiA+Pj4+PiAgCQluZXRpZl9kZXZpY2VfZGV0
+YWNoKG5kZXYpOw0KPiA+Pj4+PiBAQCAtMzg2NCw3ICszODYzLDYgQEAgc3RhdGljIGludCBfX21h
+eWJlX3VudXNlZA0KPiBmZWNfcmVzdW1lKHN0cnVjdA0KPiA+Pj4+PiBkZXZpY2UgKmRldikNCj4g
+Pj4+Pj4gIAkJbmV0aWZfZGV2aWNlX2F0dGFjaChuZGV2KTsNCj4gPj4+Pj4gIAkJbmV0aWZfdHhf
+dW5sb2NrX2JoKG5kZXYpOw0KPiA+Pj4+PiAgCQluYXBpX2VuYWJsZSgmZmVwLT5uYXBpKTsNCj4g
+Pj4+Pj4gLQkJcGh5X3N0YXJ0KG5kZXYtPnBoeWRldik7DQo+ID4+Pj4+ICAJfQ0KPiA+Pj4+PiAg
+CXJ0bmxfdW5sb2NrKCk7DQo+ID4+Pj4NCj4gPj4+PiBBcyBJIGRlc2NyaWJlZCBpbiBjb21taXQg
+bWVzc2FnZToNCj4gPj4+Pg0KPiA+Pj4+ICJXaGVuIEkgYW0gZGVidWdnaW5nLCBJIGZvdW5kIFBI
+WSB3b3JrcyBmaW5lIGlmIE1BQyBkb2Vzbid0IHN1cHBvcnQNCj4gPj4+IHN1c3BlbmQvcmVzdW1l
+IG9yIHBoeV9zdG9wKCkvcGh5X3N0YXJ0KCkgZG9lc24ndCBiZWVuIGNhbGxlZCBkdXJpbmcNCj4g
+Pj4+IHN1c3BlbmQvcmVzdW1lLiBUaGlzIGxldCBtZSByZWFsaXplLCBQSFkgc3RhdGUgbWFjaGlu
+ZQ0KPiA+Pj4gcGh5X3N0YXRlX21hY2hpbmUoKSBjb3VsZCBkbyBzb21ldGhpbmcgYnJlYWtzIHRo
+ZSBQSFkuIg0KPiA+Pj4+DQo+ID4+Pj4gU28gSSBoYXZlIHRyaWVkIHlvdXIgYWJvdmUgY29kZSBj
+aGFuZ2UgYmVmb3JlLCBhbmQgaXQgd29ya3MuIEJ1dCBpdA0KPiA+Pj4+IGlzIGEgdmVyeQ0KPiA+
+Pj4gY29tbW9uIHBoZW5vbWVub24gdGhhdCBNQUMgc3VzcGVuZC9yZXN1bWUgaW52b2tlcyBwaHlf
+c3RvcC9zdGFydA0KPiBvcg0KPiA+Pj4gcGh5bGlua19zdG9wL3N0YXJ0LCBhbmQgaXQncyBiZWVu
+IGFyb3VuZCBmb3IgYSBsb25nIHRpbWUuDQo+ID4+Pj4NCj4gPj4+PiBBcyB0aGUgc2NlbmFyaW9z
+IHlvdSBsaXN0LCBpdCBpcyBpbmRlZWQgdW5yZWFzb25hYmxlIHRvIHNvZnQgcmVzZXQNCj4gPj4+
+PiBvciBjb25maWcgUEhZDQo+ID4+PiBhZnRlciBjYWxsaW5nIHBoeV9zdGFydF9hbmVnKCkgaW4g
+c3RhdGUgbWFjaGluZS4gUEhZIHN0YXRlIHNob3VsZCBiZQ0KPiA+Pj4gUEhZX1VQIGFmdGVyIGNh
+bGxpbmcgcGh5X2luaXRfaHcoKSwgSXQgc2VlbXMgbW9yZSByZWFzb25hYmxlLg0KPiA+Pj4+DQo+
+ID4+Pj4gQmVzdCBSZWdhcmRzLA0KPiA+Pj4+IEpvYWtpbSBaaGFuZw0KPiA+Pj4+PiAtLQ0KPiA+
+Pj4+PiAyLjMxLjENCj4gPj4+Pj4NCj4gPj4+Pg0KPiA+Pj4NCj4gPj4+IEZvbGxvd2luZyBpcyBh
+IGRyYWZ0IHBhdGNoIGZvciBzY2VuYXJpbyAxOg0KPiA+Pj4gTWFrZSBQSFkgUE0gYSBuby1vcCBp
+ZiBNQUMgbWFuYWdlcyBQSFkgUE0uDQo+ID4+PiBDYW4geW91IGdpdmUgaXQgYSB0cnk/DQo+ID4+
+Pg0KPiA+Pg0KPiA+PiBJdCBjYW4gd29yayBmb3IgbXkgY2FzZS4gVGhhbmtzLg0KPiA+DQo+ID4g
+SSBoYXZlIGFub3RoZXIgcXVlc3Rpb24sIGlmIGl0IGlzIHBvc3NpYmxlIHRvIGNoYW5nZSB0aGUg
+c3VzcGVuZC9yZXN1bWUNCj4gc2VxdWVuY2U/DQo+ID4gTUFDIHNob3VsZCBzdXNwZW5kIGJlZm9y
+ZSBNRElPIGJ1cywgYW5kIE1ESU8gYnVzIHNob3VsZCByZXN1bWUgYmVmb3JlDQo+IE1BQy4gRm9y
+IHNvbWUgTUFDcywgdGhleSBuZWVkIFBIWSBmZWVkIGNsb2Nrcy4gSXQgc2VlbXMgbW9yZSByZWFz
+b25hYmxlLg0KPiA+DQo+IA0KPiBPbiB0aGUgb3RoZXIgaGFuZCB3ZSBoYXZlIGNhc2VzIHdoZXJl
+IHRoZSBQSFkgZGVwZW5kcyBvbiB0aGUgTUFDLg0KPiBJZiB0aGUgTUFDIHN1c3BlbmRzIGZpcnN0
+LCB0aGUgTURJTyBidXMgKGFuZCB0aGVyZWZvcmUgdGhlIFBIWSkgbWF5IG5vdCBiZQ0KPiBhY2Nl
+c3NpYmxlIGFueSBsb25nZXIuIFRoZXJlZm9yZSBpdCdzIG5vdCB0aGF0IGVhc3kuDQpZZXMsIHJp
+Z2h0Lg0KDQo+IFRoaXMgc3BlYWtzIGZvciBteSBwcm9wb3NhbCB0byBiZSBhYmxlIHRvIG1ha2Ug
+dGhlIFBIWSBQTSBvcHMgbm8tb3BzLg0KPiBUaGVuIHdlIGNhbiBoYW5kbGUgTUFDICsgUEhZIFBN
+IGluIHRoZSBNQUMgUE0gY2FsbGJhY2tzIGFuZCBjb25zaWRlciBhbnkNCj4gc3VjaCBkZXBlbmRl
+bmN5Lg0KWWVzLCB0aGlzIGNhbiBjb3ZlciBkaWZmZXJlbnQgY2FzZXMuDQoNCj4gSSBkb24ndCB0
+aGluayB3ZSBjYW4gY2hhbmdlIHRoZSBQTSBvcmRlcmluZywgQUZBSUsgdGhlIFBNIGNvcmUgZG9l
+cyBpdCBiYXNlZA0KPiBvbiByZWdpc3RyYXRpb24gb3JkZXIgb2YgZGV2aWNlcy4NCkxlYXJuIG1v
+cmUuIFRoYW5rcy4NCg0KRG8geW91IHBsYW4gdG8gc2VuZCBhIGZvcm1hbCBwYXRjaCBmb3IgdGhp
+cz8NCg0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5nDQo+IA0KPiA+IEJlc3QgUmVnYXJkcywN
+Cj4gPiBKb2FraW0gWmhhbmcNCj4gPj4gQmVzdCBSZWdhcmRzLA0KPiA+PiBKb2FraW0gWmhhbmcN
+Cj4gPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jDQo+ID4+PiBi
+L2RyaXZlcnMvbmV0L3BoeS9waHlfZGV2aWNlLmMgaW5kZXggYTAwOWQxNzY5Li43M2QyOWZkNWUg
+MTAwNjQ0DQo+ID4+PiAtLS0gYS9kcml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jDQo+ID4+PiAr
+KysgYi9kcml2ZXJzL25ldC9waHkvcGh5X2RldmljZS5jDQo+ID4+PiBAQCAtMjczLDYgKzI3Myw5
+IEBAIHN0YXRpYyBfX21heWJlX3VudXNlZCBpbnQNCj4gPj4+IG1kaW9fYnVzX3BoeV9zdXNwZW5k
+KHN0cnVjdCBkZXZpY2UgKmRldikgIHsNCj4gPj4+ICAJc3RydWN0IHBoeV9kZXZpY2UgKnBoeWRl
+diA9IHRvX3BoeV9kZXZpY2UoZGV2KTsNCj4gPj4+DQo+ID4+PiArCWlmIChwaHlkZXYtPm1hY19t
+YW5hZ2VkX3BtKQ0KPiA+Pj4gKwkJcmV0dXJuIDA7DQo+ID4+PiArDQo+ID4+PiAgCS8qIFdlIG11
+c3Qgc3RvcCB0aGUgc3RhdGUgbWFjaGluZSBtYW51YWxseSwgb3RoZXJ3aXNlIGl0IHN0b3BzIG91
+dA0KPiBvZg0KPiA+Pj4gIAkgKiBjb250cm9sLCBwb3NzaWJseSB3aXRoIHRoZSBwaHlkZXYtPmxv
+Y2sgaGVsZC4gVXBvbiByZXN1bWUsIG5ldGRldg0KPiA+Pj4gIAkgKiBtYXkgY2FsbCBwaHkgcm91
+dGluZXMgdGhhdCB0cnkgdG8gZ3JhYiB0aGUgc2FtZSBsb2NrLCBhbmQgdGhhdA0KPiA+Pj4gbWF5
+IEBADQo+ID4+PiAtMjk0LDYgKzI5Nyw5IEBAIHN0YXRpYyBfX21heWJlX3VudXNlZCBpbnQNCj4g
+Pj4+IG1kaW9fYnVzX3BoeV9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2KQ0KPiA+Pj4gIAlzdHJ1
+Y3QgcGh5X2RldmljZSAqcGh5ZGV2ID0gdG9fcGh5X2RldmljZShkZXYpOw0KPiA+Pj4gIAlpbnQg
+cmV0Ow0KPiA+Pj4NCj4gPj4+ICsJaWYgKHBoeWRldi0+bWFjX21hbmFnZWRfcG0pDQo+ID4+PiAr
+CQlyZXR1cm4gMDsNCj4gPj4+ICsNCj4gPj4+ICAJaWYgKCFwaHlkZXYtPnN1c3BlbmRlZF9ieV9t
+ZGlvX2J1cykNCj4gPj4+ICAJCWdvdG8gbm9fcmVzdW1lOw0KPiA+Pj4NCj4gPj4+IGRpZmYgLS1n
+aXQgYS9pbmNsdWRlL2xpbnV4L3BoeS5oIGIvaW5jbHVkZS9saW51eC9waHkuaCBpbmRleA0KPiA+
+Pj4gOGUyY2Y4NGIyLi40NjcwMmFmMTggMTAwNjQ0DQo+ID4+PiAtLS0gYS9pbmNsdWRlL2xpbnV4
+L3BoeS5oDQo+ID4+PiArKysgYi9pbmNsdWRlL2xpbnV4L3BoeS5oDQo+ID4+PiBAQCAtNTY3LDYg
+KzU2Nyw3IEBAIHN0cnVjdCBwaHlfZGV2aWNlIHsNCj4gPj4+ICAJdW5zaWduZWQgbG9vcGJhY2tf
+ZW5hYmxlZDoxOw0KPiA+Pj4gIAl1bnNpZ25lZCBkb3duc2hpZnRlZF9yYXRlOjE7DQo+ID4+PiAg
+CXVuc2lnbmVkIGlzX29uX3NmcF9tb2R1bGU6MTsNCj4gPj4+ICsJdW5zaWduZWQgbWFjX21hbmFn
+ZWRfcG06MTsNCj4gPj4+DQo+ID4+PiAgCXVuc2lnbmVkIGF1dG9uZWc6MTsNCj4gPj4+ICAJLyog
+VGhlIG1vc3QgcmVjZW50bHkgcmVhZCBsaW5rIHN0YXRlICovDQo+ID4+PiAtLQ0KPiA+Pj4gMi4z
+MS4xDQo+ID4+Pg0KPiA+Pj4NCj4gPj4+DQo+ID4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMNCj4gPj4+IGIvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMNCj4gPj4+IGluZGV4IDNkYjg4MjMyMi4uNzBhZWE5YzI3
+IDEwMDY0NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19t
+YWluLmMNCj4gPj4+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFp
+bi5jDQo+ID4+PiBAQCAtMjA0OCw2ICsyMDQ4LDggQEAgc3RhdGljIGludCBmZWNfZW5ldF9taWlf
+cHJvYmUoc3RydWN0DQo+ID4+PiBuZXRfZGV2aWNlDQo+ID4+PiAqbmRldikNCj4gPj4+ICAJZmVw
+LT5saW5rID0gMDsNCj4gPj4+ICAJZmVwLT5mdWxsX2R1cGxleCA9IDA7DQo+ID4+Pg0KPiA+Pj4g
+KwlwaHlfZGV2LT5tYWNfbWFuYWdlZF9wbSA9IDE7DQo+ID4+PiArDQo+ID4+PiAgCXBoeV9hdHRh
+Y2hlZF9pbmZvKHBoeV9kZXYpOw0KPiA+Pj4NCj4gPj4+ICAJcmV0dXJuIDA7DQo+ID4+PiBAQCAt
+Mzg2NCw2ICszODY2LDcgQEAgc3RhdGljIGludCBfX21heWJlX3VudXNlZCBmZWNfcmVzdW1lKHN0
+cnVjdA0KPiA+Pj4gZGV2aWNlICpkZXYpDQo+ID4+PiAgCQluZXRpZl9kZXZpY2VfYXR0YWNoKG5k
+ZXYpOw0KPiA+Pj4gIAkJbmV0aWZfdHhfdW5sb2NrX2JoKG5kZXYpOw0KPiA+Pj4gIAkJbmFwaV9l
+bmFibGUoJmZlcC0+bmFwaSk7DQo+ID4+PiArCQlwaHlfaW5pdF9odyhuZGV2LT5waHlkZXYpOw0K
+PiA+Pj4gIAkJcGh5X3N0YXJ0KG5kZXYtPnBoeWRldik7DQo+ID4+PiAgCX0NCj4gPj4+ICAJcnRu
+bF91bmxvY2soKTsNCj4gPj4+IC0tDQo+ID4+PiAyLjMxLjENCj4gPg0KDQo=
