@@ -2,87 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36EA735603E
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 991BC356040
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242039AbhDGAWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:22:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45494 "EHLO mail.kernel.org"
+        id S1347659AbhDGAYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:24:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46472 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232716AbhDGAWi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 20:22:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A0F6610FB;
-        Wed,  7 Apr 2021 00:22:28 +0000 (UTC)
+        id S236387AbhDGAYL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 20:24:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EFC46128D;
+        Wed,  7 Apr 2021 00:24:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617754949;
-        bh=fgQQmnSRkz2Eh1EzJk8ieEdsJScbxdVLraAzW2aZFVs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PWn/cMIP0e6GuSae/zGGG5e5M5aCF8tyYHwH8Iq2b/v4uDbmwm9I4YVkk9vnCaCuB
-         q0SC6PK53wG8XX0DfaZU47Gr4QWSxfhD+iK/BdfsfU6Q8V55Qk+G6h5zsl2E8/J7Wm
-         ZbZaXWqSdPha8OKNyCB2gz9U3iSXLtGJpKjhLX39hqo9VHsm+vOWxaw5SeB1A8JM0k
-         FSIeu6HW3rfXQ1v5WTqD9Ii83tQUDtrTLpfrNs40Eanje3SrqfnQ4hhVFrQXd/rFq/
-         5qUNCcLaTFYWzVh23jI0BA05hKRBB8PKtvvuzDHCicoaLCIApANQIQ+FDK0E6L/zzV
-         ACRCb0RwsHx6w==
-Date:   Wed, 7 Apr 2021 02:22:24 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
-Subject: Re: [PATCH net-next v3 04/18] net: phy: marvell10g: indicate
- 88X33x0 only port control registers
-Message-ID: <20210407022224.1301b382@thinkpad>
-In-Reply-To: <YGz4cIxizCjuEXNM@lunn.ch>
-References: <20210406221107.1004-1-kabel@kernel.org>
-        <20210406221107.1004-5-kabel@kernel.org>
-        <YGz4cIxizCjuEXNM@lunn.ch>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        s=k20201202; t=1617755042;
+        bh=l02fQtZslOfLQckk54FKs0twciBkXe1YUtQZOxaKqjg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SztRns4UUFmWarpHGNTHqH4sQmhiYAniOKTC5B3zSbqHEUJ/dXW8UTEBdhSWcX8Qa
+         CEaugvfubYaZJU6MC0Mmpm5S9hNRhUrSdEiaHY9Jybraohy9h3Ti1jMI7aYd3c7nf3
+         IO2506ZS4MRga9AioBgFDPTMuQ3m24Bd0uiSdSmseVJBCY3g4z/f8uoQ6TMEbL/x4n
+         oxozAIforqpDCaBw+ysVhmMGx7YQ5SyqHRCoRsn7l6iPFzZB88qBjnbrucququpF61
+         wVSb6khq3bTsJfmXCKhnboK7JoaFvw79n4YqJ5NzOtpUE/O9SooT29wd8/jGtppMup
+         /vrxVuNuSmpkw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        mkubecek@suse.cz, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] ethtool: document PHY tunable callbacks
+Date:   Tue,  6 Apr 2021 17:23:59 -0700
+Message-Id: <20210407002359.1860770-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Apr 2021 02:10:24 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+Add missing kdoc for phy tunable callbacks.
 
-> > @@ -479,8 +479,8 @@ static int mv3310_config_init(struct phy_device *phydev)
-> >  	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
-> >  	if (val < 0)
-> >  		return val;
-> > -	priv->rate_match = ((val & MV_V2_PORT_CTRL_MACTYPE_MASK) ==
-> > -			MV_V2_PORT_CTRL_MACTYPE_RATE_MATCH);
-> > +	priv->rate_match = ((val & MV_V2_33X0_PORT_CTRL_MACTYPE_MASK) ==
-> > +			MV_V2_33X0_PORT_CTRL_MACTYPE_RATE_MATCH);
-> >  
-> >  	/* Enable EDPD mode - saving 600mW */
-> >  	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
-> > --   
-> 
-> So it appears that mv3310_config_init() should not be used with the
-> mv88x2110. Did i miss somewhere where mv3310_drivers was changed so it
-> actually does not use it?
-> 
-> 	 Andrew
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+Targetting net-next to avoid conflict with upcoming patches.
+Should apply cleanly to both trees.
 
-This patch series makes it later so that mv3310_config_init() correctly
-initializes even 2210 (this is done in patch 07/18). The function then
-calls chip->get_mactype() and chip->init_interface() methods, which are
-different for 3310 than for 2110.
+ include/linux/ethtool.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I am thinking about whether all the functions which are same for all
-the chips should be renamed from
-  mv3310_*
-to
-  mv10g_*
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 3583f7fc075c..5c631a298994 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -410,6 +410,8 @@ struct ethtool_pause_stats {
+  * @get_ethtool_phy_stats: Return extended statistics about the PHY device.
+  *	This is only useful if the device maintains PHY statistics and
+  *	cannot use the standard PHY library helpers.
++ * @get_phy_tunable: Read the value of a PHY tunable.
++ * @set_phy_tunable: Set the value of a PHY tunable.
+  *
+  * All operations are optional (i.e. the function pointer may be set
+  * to %NULL) and callers must take this into account.  Callers must
+-- 
+2.30.2
 
-This would rename
-  mv3310_config_init
-to
-  mv10g_config_init
-which would be more correct.
-
-What do you think?
-
-Marek
