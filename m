@@ -2,74 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0CDE35785C
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 01:16:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 831D0357861
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 01:20:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbhDGXQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 19:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
+        id S229607AbhDGXUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 19:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhDGXQu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 19:16:50 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08B5C061760
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 16:16:39 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id z22-20020a17090a0156b029014d4056663fso336635pje.0
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 16:16:39 -0700 (PDT)
+        with ESMTP id S229505AbhDGXUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 19:20:24 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7E8C061760
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 16:20:12 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id ep1-20020a17090ae641b029014d48811e37so305257pjb.4
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 16:20:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4kmaSLK7yXae8Ac4uArBCjM2Q/PDIVGMpN3/bVpCiRw=;
-        b=VR1Z5iSGT13RXyQunwH3Qn2B/I8Ss9BwLNVx2ktLr2LupQBswGQekbo+NP9kBVVK/o
-         4YgEw49AWTOfbdZioJNlogg6huwXJ+JFNQSJSYTOLGwaBhD2saI4/iRSfawM3ooHWLjx
-         iX2QX6crh2rYqU2n37t0Rr2Q689CGLesu/CL6cQt9kt1F89ZO+nJ4WbbZOWJrqGFCNfG
-         ahiqRgsDr0sOnDRatUWfX9cz+9jrn1LqcT/ZA/JLPGFNESFPxRTT0C2z/oDM1CUwn+Yc
-         qrc778ls23p9IeB99Jn+zMR6kSxdyXMXQoRJRB2jaa5EE4pn73hhMgxcuKnGSiITmsy2
-         EwtQ==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=RDKvXTei1pem1yRM7hSwrZJnufPRKUPJqVbXBGTZUl8=;
+        b=LjR7WDEmSLh9gWtsO3+dYNK6a+qS4F6Gj/5UYjUDxLtxLOitzIQAhCa0Ef5LPKLsPd
+         qKEE+qIuCNQ5OSNvnM93mlJoKU7Mkhk9jbIJM/EZueBEUCiSL4yG6ZgwbxAJU3YyYOnM
+         fvb8zVklWcpo6wNvTZeuKP7zoRjnBPLhLJ5cMnB3tfaioyA1XSSlpNB65/ks/D/r8wfl
+         QSkgseeo7hThgEmUD7GeKk+hSEdK5ZQ0O85tTq+/7D1aiVQXVDXVozRAH+Bb7PN3JaNv
+         SXLiGiEwKy2Bta2endsMNZs7XNuvd4dyNVT/ETVlQDXULylKUVflGZTRqKOIwwP6MgrK
+         ruXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4kmaSLK7yXae8Ac4uArBCjM2Q/PDIVGMpN3/bVpCiRw=;
-        b=M+AZfZxWM8rVjri9pcsFaJTwiSFJeit70O+9V/04KrJ+uZw25ekvVG8mz5qZUpEuHM
-         OAYh1qcbpAvWxhid7Pu3XB2Ibv3U5Eeeltcy3hh96DzJZMJRAiOhB4o7dH2VoCra8YVU
-         0RgaDahtxeaDXAzLrei84HUkhWViMsuZgzYx1OwVAej/HmXA7ur4qejfVf53iGrUdMpc
-         dFE94XhDX7UeLGVlJFUACxs7SjAzrdiENV0cWQKQeT6XYTEGPf4QlRttfSWbutqjVsdk
-         3V7igLZu/ir4jmicH4pNMcaeASDb31804ru0NI6qBYs5jbQWLGTv1KIilETJcu6//usI
-         f/xg==
-X-Gm-Message-State: AOAM530FvR881J81EwYGhul3iHvP7vHB6g+WwhavDUzU9bzDWidUY+ed
-        HW53Sh6SpCZj5vzqA/gS6XBVbKTJwXwBSht+0E8=
-X-Google-Smtp-Source: ABdhPJxYg5d7i28h9O5DqyVW+EL9T4HxiCIuf8CDELqa8/ObKiX9iQH2brrjyCCZBd7al/WYXnoGc2rGo3G1Hx2nbSU=
-X-Received: by 2002:a17:902:c407:b029:e7:3568:9604 with SMTP id
- k7-20020a170902c407b02900e735689604mr4964814plk.31.1617837399604; Wed, 07 Apr
- 2021 16:16:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210407154643.1690050-1-vladbu@nvidia.com>
-In-Reply-To: <20210407154643.1690050-1-vladbu@nvidia.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 7 Apr 2021 16:16:28 -0700
-Message-ID: <CAM_iQpXPBa+BZPXVaNJ98vEZwBiMLVZuqWupDXO6PyBCp5mNJA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] Additional tests for action API
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RDKvXTei1pem1yRM7hSwrZJnufPRKUPJqVbXBGTZUl8=;
+        b=GjeXiGmydtoA3hoodcyHL0RdeoJPm1LSiVMKzi822xAUeMScsvpZrc+kSZwZi6wAsQ
+         orR0ZFyDiE7LiSQiEhBx/ar4vwRZMe8+NVhkGR/7VTkJqZKMgj6pl72ZqlLcK/pz7xTE
+         KGkDvN0qd2y+7bsHO/2PE0Mvfu6Vtb/biPaQt+qYzxewnPt16UGvof2fS7yEdagayPrJ
+         XfFPVsio4iMgXs5FimYybpbqUAkgAtyFMv+q6DPuRnyxMkclxGvkwsr5H/4IZa7cHgZT
+         iXMbqKUzo6l5gSniltSktQHjMPW6c3rgJWCLbohSL9ngIIN4Y9yuqj50IM6DTqsvNNiw
+         vv1A==
+X-Gm-Message-State: AOAM530UV3IDBoTnqA4Uu5m32lZbXGs55XsSSnxUhIRenVRnXF55lq14
+        7xhGoIzuEe4U+FRHXv+RoQnSUQROkvXELg==
+X-Google-Smtp-Source: ABdhPJzR+svvxB5AQwNgvy1M83myS8aCSh+62XrUfFWSdtjBoHXfL8nch+kXX6SyUuueBcZq2ODo0g==
+X-Received: by 2002:a17:902:b188:b029:e8:bd90:3f99 with SMTP id s8-20020a170902b188b02900e8bd903f99mr5057781plr.6.1617837612020;
+        Wed, 07 Apr 2021 16:20:12 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id g3sm21422171pfk.186.2021.04.07.16.20.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Apr 2021 16:20:11 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        richardcochran@gmail.com
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 0/8] ionic: hwstamp tweaks
+Date:   Wed,  7 Apr 2021 16:19:53 -0700
+Message-Id: <20210407232001.16670-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 7, 2021 at 8:46 AM Vlad Buslov <vladbu@nvidia.com> wrote:
->
-> Add two new tests for action create/change code.
+A few little changes after review comments and
+additional internal testing.
 
-Acked-by: Cong Wang <cong.wang@bytedance.com>
+Shannon Nelson (8):
+  ionic: fix up a couple of code style nits
+  ionic: remove unnecessary compat ifdef
+  ionic: check for valid tx_mode on SKBTX_HW_TSTAMP xmit
+  ionic: add SKBTX_IN_PROGRESS
+  ionic: re-start ptp after queues up
+  ionic: ignore EBUSY on queue start
+  ionic: add ts_config replay
+  ionic: extend ts_config set locking
 
-Thanks.
+ .../net/ethernet/pensando/ionic/ionic_lif.c   |  18 ++--
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   6 ++
+ .../net/ethernet/pensando/ionic/ionic_phc.c   | 102 +++++++++++-------
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |   3 +-
+ 4 files changed, 79 insertions(+), 50 deletions(-)
+
+-- 
+2.17.1
+
