@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11654356022
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:17:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A41D35601C
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:17:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347577AbhDGARX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:17:23 -0400
-Received: from mga09.intel.com ([134.134.136.24]:23778 "EHLO mga09.intel.com"
+        id S1347469AbhDGARN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:17:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37058 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347481AbhDGAQx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 20:16:53 -0400
-IronPort-SDR: 3zxEXS7qUP8698XYStxxr3fMd5uaGHF2vd17Zal8Ek4EUmpwdj/a28fm6/zRLpEU6I8buaQZIt
- HnH++I+T0soA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="193297266"
-X-IronPort-AV: E=Sophos;i="5.82,201,1613462400"; 
-   d="scan'208";a="193297266"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 17:16:11 -0700
-IronPort-SDR: +45XRN7k6CupY5dHVIK4Sktd0j7lIquZ7WKlJ8tGcWaD42bRlbPLIHNOfOtS2lVxuRv8NJajlt
- ASJXZJNGQx3Q==
-X-IronPort-AV: E=Sophos;i="5.82,201,1613462400"; 
-   d="scan'208";a="458105206"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.115.52])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 17:16:11 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 8/8] mptcp: drop all sub-options except ADD_ADDR when the echo bit is set
-Date:   Tue,  6 Apr 2021 17:16:04 -0700
-Message-Id: <20210407001604.85071-9-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210407001604.85071-1-mathew.j.martineau@linux.intel.com>
-References: <20210407001604.85071-1-mathew.j.martineau@linux.intel.com>
+        id S1347459AbhDGAQl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 20:16:41 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTvrx-00FDZF-Oq; Wed, 07 Apr 2021 02:16:29 +0200
+Date:   Wed, 7 Apr 2021 02:16:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] include: net: add dsa_cpu_ports function
+Message-ID: <YGz53WOsrZ0lVfyL@lunn.ch>
+References: <20210406034903.14329-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210406034903.14329-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+On Tue, Apr 06, 2021 at 05:49:03AM +0200, Ansuel Smith wrote:
+> In preparation for the future when dsa will support multi cpu port,
+> dsa_cpu_ports can be useful for switch that has multiple cpu port to
+> retrieve the cpu mask for ACL and bridge table.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  include/net/dsa.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 83a933e563fe..d71b1acd9c3e 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -446,6 +446,18 @@ static inline u32 dsa_user_ports(struct dsa_switch *ds)
+>  	return mask;
+>  }
+>  
+> +static inline u32 dsa_cpu_ports(struct dsa_switch *ds)
+> +{
+> +	u32 mask = 0;
+> +	int p;
+> +
+> +	for (p = 0; p < ds->num_ports; p++)
+> +		if (dsa_is_cpu_port(ds, p))
+> +			mask |= BIT(p);
+> +
+> +	return mask;
+> +}
 
-Current Linux carries echo-ed ADD_ADDR over pure TCP ACKs, so there is no
-need to add a DSS element that would fit only ADD_ADDR with IPv4 address.
-Drop the DSS from echo-ed ADD_ADDR, regardless of the IP version.
+Hi Ansuel
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/options.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+We don't add a function unless it has a user. Please call it from somewhere.
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index c7eb61d0564c..d51c3ad54d9a 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -624,7 +624,8 @@ static bool mptcp_established_options_add_addr(struct sock *sk, struct sk_buff *
- 	int len;
- 
- 	if ((mptcp_pm_should_add_signal_ipv6(msk) ||
--	     mptcp_pm_should_add_signal_port(msk)) &&
-+	     mptcp_pm_should_add_signal_port(msk) ||
-+	     mptcp_pm_should_add_signal_echo(msk)) &&
- 	    skb && skb_is_tcp_pure_ack(skb)) {
- 		pr_debug("drop other suboptions");
- 		opts->suboptions = 0;
--- 
-2.31.1
-
+   Andrew
