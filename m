@@ -2,173 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C52A3577EC
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A4933577F2
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbhDGWqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 18:46:47 -0400
-Received: from mail-bn8nam11on2086.outbound.protection.outlook.com ([40.107.236.86]:44128
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229449AbhDGWqp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 18:46:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EaPGl5um03xYKwtdLqA8odKVmTnZuA1vdD9q/tuK77yE6+ARbQqTQSwHkKdWcBLVqIjla9R1hbJpKexlH0jfvGMfOkzahZD7CuVHn1Xp2Ov+MJk49oae2a8CpZw2dTVHUlONi7bpe3VMYHPxSV2NsbQ3ag6kHo9cxyOELSbtcjXS09bNbwSiW3whunCK6ftR09gVWDZrVacFbOnXLyaQwwe3/O/mG9o08y/m0lEN2cxn97PCxWLjVMOSBvwft/sQfbclvdjrlJ1wnp8X3lv6eTeDDjLLrMKV/Keus2jbEJUN7EoWaIi2qXkG93ygk9hrUevoriIe/5iFpewKMOTDiQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XYyzsbKx861iDLBXh4zio3y7vfpHpKwE3Kf6P5s+whc=;
- b=LpKvml+vmX/1Z3zeYotUsOsKwnMMHUxS9GBUWZifAHBJSXfwMjG6O7jHEouk8a/uHNAtBrArkHVhif2p68U3LrY/skmQqp/Oxkn8yFBjZmjVXZE+evBclbmS3kkc80zLR4tztoJ2GGVbVesQp0pcnLnONBTEpqaAn9mvDB1Tqhp6xmVKB1sybzM7Hklfpia3rZNaqiH6QYZ8UjMPdhqHaRwWDUNvSpvwAzXtLuXG671kNSx6tPMjEvd4e9/1JRun+ikV6ty9OuyzuhwOtheLgPJBajK8ntV699KB8SFJCCA2zvYzpNku05oOM65PLkGA4ejKCwRsyhT16Yxd9G9l1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XYyzsbKx861iDLBXh4zio3y7vfpHpKwE3Kf6P5s+whc=;
- b=PaliDy7e1q9IEyx1C25vetvA2GW/NsyiQKJZIveVlYUGhR255Bn7qoorcmyV7f5wGpNOgOadcJZgaPVPtnP9oVUV64LfMOkAb1KdGeOOvJXdJGCNf/F/ZrV4N6sCiVBGHyI3KI9TnoprzPM9zXMO+OQlmXKyUnF3my7Zj/Czivk/npzHZXEFPZjGI8fuuQ6kVOWtn08E5Kn2/CO2EPNk3H1bcmz3nNxE0SwBJJDP4wyIIHMQM2YnQbYdGwVTP2ZOltuyLQZ4wDsRL4xSdPWHZZ7yu2zXKs4tjO1EJ9cU15iaxtMb2GmPmiEZMri/POND2l9zt6/dWNKN2wUY5dV6EQ==
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB2857.namprd12.prod.outlook.com (2603:10b6:5:184::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Wed, 7 Apr
- 2021 22:46:33 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3999.032; Wed, 7 Apr 2021
- 22:46:33 +0000
-Date:   Wed, 7 Apr 2021 19:46:31 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH v4 05/23] ice: Add devlink params support
-Message-ID: <20210407224631.GI282464@nvidia.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-6-shiraz.saleem@intel.com>
- <20210407145705.GA499950@nvidia.com>
- <e516fa3940984b0cb0134364b923fc8e@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e516fa3940984b0cb0134364b923fc8e@intel.com>
-X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: BL1PR13CA0372.namprd13.prod.outlook.com
- (2603:10b6:208:2c0::17) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S229607AbhDGWrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 18:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229459AbhDGWrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 18:47:52 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35CF5C061760;
+        Wed,  7 Apr 2021 15:47:42 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id g38so448035ybi.12;
+        Wed, 07 Apr 2021 15:47:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/Kxh1SV1ZSpa4FNRiwzB13IqpmSzhNm8YEkJv11EKe8=;
+        b=tc3FHhJvGT10Xqsvext8PxTxttgywVGxWCFVhq1QiQUWNAg2IxuAH6soW0fZtuMuiT
+         +MRToFBbR1ik7WEgMNIbzmtucwgm4HWMG7HBwxK3jxv2ZtrLfHva5de+C8ztRQuGDVxd
+         ZWAdZo7ZoCPUp2KNOOikmH0OlKme0y28YsIertRwDBpd/qHYrv9PBA14j4eDRk73VmcB
+         y4g7cZXAYGt7J/oi1IaS/FarKeeZwgKqLQvng9G0+8u9nGD8F7QCLjtTmGIziCUa+heT
+         dTnCQj8eHWQy4w1yAvtNk2z6fKKicz2HEhi+HsAkFhcQJ2Axp6D910kGP/k46xn1dqON
+         vKnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/Kxh1SV1ZSpa4FNRiwzB13IqpmSzhNm8YEkJv11EKe8=;
+        b=svGDcdQXphKwSxd9X8DnJXMJvhB1EuL8/3sAxeLf9NmUa3xs4aeWah8qP9UlbMw5N8
+         ER3uVPskKiLcJDv0AL8HZTlxboyVKwuisi2nmiXV6ZlJQBFg1mgkSduKTBHHrSkm10ih
+         af4khQpjWbsuEz35REYpNCjGxlHNYSxsxN1MALiES6ISvGP6j4h79dlS7nymUbjfOUXP
+         BSA7+PySy0NVfViyqf6Pj8vpDEAGtuAOk9FNoTV+PknGEMQ+JxpIJhUDSzeu2wHxleFX
+         Nmnc440dVcHWErY5iZxFGpGlNekvChkHWIfxb6YkmtagWnYVxSVjvImDW44oLgsXcMXo
+         2OcA==
+X-Gm-Message-State: AOAM532nnDJVp0yN98xQP2ErKSeOMbUU1Zs85Ao6n1mLzqBXxF/Jciv7
+        ZPREfJ2XNq27tTWanWSKhhCtlf4c7J2AlCWxgqw=
+X-Google-Smtp-Source: ABdhPJwvg/RtqIBRAlXu7XTf/+YgSy2PgQmO1wpp+uVI6PSTwbwWCSI2D9qPz9mnrMdTiTHTt0OJIp7QFCond0k6Nhg=
+X-Received: by 2002:a05:6902:6a3:: with SMTP id j3mr7486243ybt.403.1617835661574;
+ Wed, 07 Apr 2021 15:47:41 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0372.namprd13.prod.outlook.com (2603:10b6:208:2c0::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.11 via Frontend Transport; Wed, 7 Apr 2021 22:46:33 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lUGwR-002OIM-Us; Wed, 07 Apr 2021 19:46:31 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9c4e4f8e-a7e4-4111-9b32-08d8fa16fe00
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2857:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2857945E5BD4C17BB0E9BFBEC2759@DM6PR12MB2857.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EFuoQ2D2nKhKwZLYI3oDqwZnXSumcxuMOad72tknqRgQHd0Xe2/ep/jt3zBXmarWTdpPyelEiNkCMSlvWedfoiivpaZwqMlhfCjYs9igzfQLl2vUNa/uwRyQO5WU24csdoKe9n5B+4BffiVQdWQN2KeaKiVHZQ6CRTq5escefwUKR8U658uISOlpQT2+h8/WR8GEax0HDDp0UEyNHd82K25Vc8LLk6DSFr4zujvUn5TCn0cFq/OTtl7/eulGcUH3Cc9VUN5oVsu09n0zVD6//r1/HDXNbprgYYuTmy4DVS7uU78XMURCuybNz8Agfm1umUXIbIIdPL5fOTn7ziU8BjiOTJJlTDXnO3mwv3guucF0+2sU0YDNwebip7hjo8B4csw8NkbjLEPY5Z8Cw8354uGlCRui81MWkdPI4xZBcq6tLvX8FIGilS7pgsLggGYn1gmSDqGANT6riqSA/4Kni9lYaO3ySZz2x7EPuDwW/9pTb2ApfhmtFH8waP96rpRbhVIKuGbRV/y9eiUVZ4VZezSCQFNLr3RQA0J9Bbzaqcx2H/JQWsF6se2BNEcm1HLC0tz1dV4DwF3ZBpUKVMifsGxU/kUt0+kAHBwBP1xdCDgJu5BiKbtLjRo/scI8Mu9WSj7bnyMfTYjAZ76Njfe3/5kvfM52t+8qxCLu0FbtSGJM1qoLYLXYrJsKw6dZWf5w
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(136003)(366004)(39860400002)(316002)(2906002)(26005)(5660300002)(54906003)(186003)(9786002)(9746002)(8676002)(66946007)(478600001)(66556008)(8936002)(66476007)(6916009)(1076003)(2616005)(426003)(4326008)(83380400001)(36756003)(33656002)(86362001)(38100700001)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?pGkV9/MhysbndsHO19ssTb3plN9fSuhz3DR6j512QfUzp7REoLbKK7kfaG6r?=
- =?us-ascii?Q?Nh758lP5yANXOzlc4Dj17HNMryVdqdlAmmcx4TRt3zeEbaaTO4vauhHsQGwX?=
- =?us-ascii?Q?lNatqTnwrGlSQKwU+LSSw01zS5bmhCb/rbUcOTcQ5rQ4Ckl1UgQFf0UTMkM1?=
- =?us-ascii?Q?nQuvD81EGHdRceAuX4a9kJyOEuLBKOS+ElzoZJJMvc26y+YXygCktbuyriGy?=
- =?us-ascii?Q?AuM1ARjmMdPJwVm03OEXec4MwId35Et3YaWCvkOtRS5LxDlEmXk0ToI6MDvP?=
- =?us-ascii?Q?3hAZvtRFo1nopC1PIXdRwCxuYk4hb1wP0Rz7l3RZ6F6aj0mJJmLW9cuRXpDB?=
- =?us-ascii?Q?48XBDb1c6WNlUscwOzU1zq2/7ZcThAVr9Z4qfztAIwcLIAfw2m2bw/Der84Z?=
- =?us-ascii?Q?Lz2UK1eBMycPcaOiloVWCSaukvpiYT9ST0Zh9lcVxW8t6mL+uHfKkVQ3nAnd?=
- =?us-ascii?Q?TqV5Fe/8ugVdoUw0y48wPdGamHhLEQMXn1j9NabCQOGuDLYYwvT32ks4CiqF?=
- =?us-ascii?Q?J1JPj3iGtbnxlFChx8ULbq+JcC6MWgJbsMaZtraCR+AgdS9icjL47uVN3VfL?=
- =?us-ascii?Q?pymZC1gcNHKqii81jJ9aBrIsQ8qrT0P6QojvOCVDjEeb1HKnhKD562BR5UNJ?=
- =?us-ascii?Q?BF2mwlDKemy4Gwrr173/k4WCKbFp+ApQtuHYy+UNS1XX9ezW7n61VHhWVg6v?=
- =?us-ascii?Q?zfkePAL2Fyt8dAndMPOpjE9BN1rMOv5yTn4b/KmdAT/KZ7iSkhOv0E+Utc07?=
- =?us-ascii?Q?ldsRFbm7PZPyGUcrhdmeiq92YloPksuXIu5sWIBJksaPBeVwa7Vte5dzrfH7?=
- =?us-ascii?Q?00/7ZZJRh68pLjGO1rf3KK3BbYkrW2k8raKxQIB9kTmNU1je3D1InY5/DGpm?=
- =?us-ascii?Q?9MgEDg/GJ1XkArRV9beU81EFtC63RmgTprpauVq0v5S1ulpngUZ1/3x4yH71?=
- =?us-ascii?Q?A5BUGFuA/PR+PMWI7up9HpE2TeWipK+H3S16wCpQhyHasR5S5yk19R4b4ADx?=
- =?us-ascii?Q?Iixq9MCxYk1/WEfN6nT3TYJb52/uTFwoUPRFE1Br5yWhqJajDL3MNViEaET9?=
- =?us-ascii?Q?ZeG1QkDrNIwFHiLjyfQnrxBSNlRrPPBe+4t9/uq3Wm+6S28tUVueaTmFRHdx?=
- =?us-ascii?Q?rxij2Y0c/mR6HoT/hxskM5kw/er1caQcqcPfqOnNPX+nz7G3uPVSarXwVCmd?=
- =?us-ascii?Q?0UnY2VHa+38+5m4hmcsWD0SzX/xsMs5fmbhxIsxse+Vd+Hbz+3FhwPuI3cjC?=
- =?us-ascii?Q?j5u4B1au68F+4FXzQfKudBf3dbPf7LWMGGTG5r8wKZbp/1lWh1E1ysfFG66X?=
- =?us-ascii?Q?x42s0UZvCr/HKipJrpF6kRvPq1xNkgfz7/wz4YXjoJa9yQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c4e4f8e-a7e4-4111-9b32-08d8fa16fe00
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2021 22:46:33.2361
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +CK6gY/8f25JHE7AkboDis2byvzzLj2tOjYlk5wTzL80IFKlkzedAcpVMgUftZD7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2857
+References: <20210406212913.970917-1-jolsa@kernel.org> <20210406212913.970917-3-jolsa@kernel.org>
+In-Reply-To: <20210406212913.970917-3-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 7 Apr 2021 15:47:30 -0700
+Message-ID: <CAEf4Bzagf5H31H8uSuMiVDpE5a6tgDOsZkJdmMK0hGhVDADRHQ@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 2/5] selftests/bpf: Add re-attach test to fentry_test
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 08:58:25PM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [PATCH v4 05/23] ice: Add devlink params support
-> > 
-> > On Tue, Apr 06, 2021 at 04:01:07PM -0500, Shiraz Saleem wrote:
-> > > Add a new generic runtime devlink parameter 'rdma_protocol'
-> > > and use it in ice PCI driver. Configuration changes result in
-> > > unplugging the auxiliary RDMA device and re-plugging it with updated
-> > > values for irdma auxiiary driver to consume at
-> > > drv.probe()
-> > >
-> > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > >  .../networking/devlink/devlink-params.rst          |  6 ++
-> > >  Documentation/networking/devlink/ice.rst           | 13 +++
-> > >  drivers/net/ethernet/intel/ice/ice_devlink.c       | 92 +++++++++++++++++++++-
-> > >  drivers/net/ethernet/intel/ice/ice_devlink.h       |  5 ++
-> > >  drivers/net/ethernet/intel/ice/ice_main.c          |  2 +
-> > >  include/net/devlink.h                              |  4 +
-> > >  net/core/devlink.c                                 |  5 ++
-> > >  7 files changed, 125 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/Documentation/networking/devlink/devlink-params.rst
-> > > b/Documentation/networking/devlink/devlink-params.rst
-> > > index 54c9f10..0b454c3 100644
-> > > +++ b/Documentation/networking/devlink/devlink-params.rst
-> > > @@ -114,3 +114,9 @@ own name.
-> > >         will NACK any attempt of other host to reset the device. This parameter
-> > >         is useful for setups where a device is shared by different hosts, such
-> > >         as multi-host setup.
-> > > +   * - ``rdma_protocol``
-> > > +     - string
-> > > +     - Selects the RDMA protocol selected for multi-protocol devices.
-> > > +        - ``iwarp`` iWARP
-> > > +	- ``roce`` RoCE
-> > > +	- ``ib`` Infiniband
-> > 
-> > I'm still not sure this belongs in devlink.
-> 
-> I believe you suggested we use devlink for protocol switch.
+On Wed, Apr 7, 2021 at 4:21 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Adding the test to re-attach (detach/attach again) tracing
+> fentry programs, plus check that already linked program can't
+> be attached again.
+>
+> Fixing the number of check-ed results, which should be 8.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  .../selftests/bpf/prog_tests/fentry_test.c    | 48 +++++++++++++++----
+>  1 file changed, 38 insertions(+), 10 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/fentry_test.c b/tools/testing/selftests/bpf/prog_tests/fentry_test.c
+> index 04ebbf1cb390..1f7566e772e9 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/fentry_test.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/fentry_test.c
+> @@ -3,20 +3,24 @@
+>  #include <test_progs.h>
+>  #include "fentry_test.skel.h"
+>
+> -void test_fentry_test(void)
+> +static __u32 duration;
+> +
+> +static int fentry_test(struct fentry_test *fentry_skel)
+>  {
+> -       struct fentry_test *fentry_skel = NULL;
+> +       struct bpf_link *link;
+>         int err, prog_fd, i;
+> -       __u32 duration = 0, retval;
+>         __u64 *result;
+> -
+> -       fentry_skel = fentry_test__open_and_load();
+> -       if (CHECK(!fentry_skel, "fentry_skel_load", "fentry skeleton failed\n"))
+> -               goto cleanup;
+> +       __u32 retval;
+>
+>         err = fentry_test__attach(fentry_skel);
+>         if (CHECK(err, "fentry_attach", "fentry attach failed: %d\n", err))
+> -               goto cleanup;
+> +               return err;
+> +
+> +       /* Check that already linked program can't be attached again. */
+> +       link = bpf_program__attach(fentry_skel->progs.test1);
+> +       if (CHECK(!IS_ERR(link), "fentry_attach_link",
 
-Yes, devlink is the right place, but selecting a *single* protocol
-doesn't seem right, or general enough.
+if (!ASSERT_ERR_PTR(link, "fentry_attach_link")) ?
 
-Parav is talking about generic ways to customize the aux devices
-created and that would seem to serve the same function as this.
+> +                 "re-attach without detach should not succeed"))
+> +               return -1;
+>
+>         prog_fd = bpf_program__fd(fentry_skel->progs.test1);
+>         err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
+> @@ -26,12 +30,36 @@ void test_fentry_test(void)
+>               err, errno, retval, duration);
+>
+>         result = (__u64 *)fentry_skel->bss;
+> -       for (i = 0; i < 6; i++) {
+> +       for (i = 0; i < 8; i++) {
 
-> > I know Parav is looking at the general problem of how to customize what aux
-> > devices are created, that may be a better fit for this.
-> > 
-> > Can you remove the devlink parts to make progress?
-> 
-> It is important since otherwise the customer will have no way to use RoCEv2 on this device.
+how about using sizeof(*fentry_skel->bss) / sizeof(__u64) ?
 
-I'm not saying to not having it eventually, I'm just getting tired of
-looking at 23 patches. You can argue it out after
+>                 if (CHECK(result[i] != 1, "result",
+>                           "fentry_test%d failed err %lld\n", i + 1, result[i]))
+> -                       goto cleanup;
+> +                       return -1;
+>         }
+>
+> +       fentry_test__detach(fentry_skel);
+> +
+> +       /* zero results for re-attach test */
+> +       for (i = 0; i < 8; i++)
+> +               result[i] = 0;
+> +       return 0;
+> +}
+> +
+> +void test_fentry_test(void)
+> +{
+> +       struct fentry_test *fentry_skel = NULL;
+> +       int err;
+> +
+> +       fentry_skel = fentry_test__open_and_load();
+> +       if (CHECK(!fentry_skel, "fentry_skel_load", "fentry skeleton failed\n"))
+> +               goto cleanup;
+> +
+> +       err = fentry_test(fentry_skel);
+> +       if (CHECK(err, "fentry_test", "first attach failed\n"))
+> +               goto cleanup;
+> +
+> +       err = fentry_test(fentry_skel);
+> +       CHECK(err, "fentry_test", "second attach failed\n");
 
-I'm also half thinking of applying this under driver/staging or
-CONFIG_BROKEN or something just because I am getting sick of looking
-at it.
-
-Jason
+overall: please try to use ASSERT_xxx macros, they are easier to
+follow and require less typing
+> +
+>  cleanup:
+>         fentry_test__destroy(fentry_skel);
+>  }
+> --
+> 2.30.2
+>
