@@ -2,95 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B82BC357605
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2449435763E
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349436AbhDGU2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235408AbhDGU2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 16:28:30 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F07C061760;
-        Wed,  7 Apr 2021 13:28:20 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id h10so22386650edt.13;
-        Wed, 07 Apr 2021 13:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0MxUAskbmJY5Prgjp13oo7z/Vq83CplGpuyXsktRaUM=;
-        b=Cu7ArvKiHdUdPXByHlVDV8NLlKv9fZoNmwQW+TO9tGDXQRXhvOvPKzL+qhu75m+/zC
-         hSpgxIyTp1tIww7zL+uZJ9ciw9qr5TM4ofnQXLqm2bG80SgGUWLw5Kh4IleXW3aQmVuk
-         nSsjuKLyzO2kin413OrxSBNNAe3pqxQQIEhZicFxk9TBHrQFk/4AskKgwsLXfQ/KSAVy
-         r9t2WVcIxJlyGZNwzX+ftENJPdnpaCHjIy5NXerRFsHTkCkOef4Nwlnd1j9UluRabXeL
-         RWWZDmrqpA7lLTO1wTtclP9fJ2Ck4IilFwJWQeIIBfv/1FV7eMttS7JRchEzED3qs2vq
-         z3zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0MxUAskbmJY5Prgjp13oo7z/Vq83CplGpuyXsktRaUM=;
-        b=Pg66KUNij8EmOuNKwwlzpc691D44EX2D359zhQ0HPtD9rdAWGSJ0PB3oZrXQs6DkpB
-         E3Pyar4//ZGNRRXGDnYp3iQpQElc/QFWvl1ofpiYzGRgxKe+i/HJms+Ypv5qJ7OWbwrS
-         MOHktiutDcNwvQ4jhRQ1mdpsL5+9jgP+uODuWDBil2jZZ6MB1Shs6g5hK+W8E4xUvKHy
-         dCc6ycu6YL9wSHsLKXmnxUNhLY+p3y8V1WUhtp3AIU6JUjBE5DUNguRDD+ii+qoZ9781
-         +ED0RLYNedp20PmQSR8vwP0sydEsn36iicuSA0t+3sm31sKeHNFV/oXcSTfBUCZjJjQb
-         z3ZQ==
-X-Gm-Message-State: AOAM530r8/f7FxQZZbIaIDH98oJv/4bBdYk+o0l4mmcVk7aX5njI6umf
-        3ESvaZBbm4OTYRe+nQhuFtrBGdy2IDM9e2bJJ4o=
-X-Google-Smtp-Source: ABdhPJxlNJnoddl7LC8q09tsdRU3DkXF+KhfaPsB3GA6gvebHj5LPn2oTAJbAff5K7PgYPIEEm3vcDUdecUjQSG20qo=
-X-Received: by 2002:aa7:c957:: with SMTP id h23mr6639140edt.301.1617827299037;
- Wed, 07 Apr 2021 13:28:19 -0700 (PDT)
+        id S230501AbhDGUoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 16:44:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33456 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229586AbhDGUoU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 16:44:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C333610F8;
+        Wed,  7 Apr 2021 20:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617828250;
+        bh=URZWGy1mjmdEc1Pm5+FHNqN8L31ZZ67xIgdElygE9zU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LsxAIJeimiAJh4rOxUzh6oTYxvk2C0yebgRxE4Oi+Cbi0RzQL+V9Tb9DNlBbltzGJ
+         lZI7YEEQwrqZmaTwGT+HWS9Di9TjjbmP/E23fEG5gHRapm3Sv9wYtOSHErHTVMdQc3
+         bGht4qkI5qYpSoUo/2igFz6T9Ex2W3Pp19d6KZJ2OABQnrDXJqbrCt39Le4Nxwp6hT
+         lfBoiw1EFEGT1kkQfi7dri3pOg0v9/kSvZ9XeuyqoMJiAJoFp65btsaCfIYa3hnfA6
+         nxmfEFb3H7ZmZO8lcTO8dGTITxyTWbIznNkBi3CAQBTRa/fC7gZ0jCVMDLl65nf4tZ
+         Sa7T0l5cugKkQ==
+Date:   Wed, 7 Apr 2021 22:44:06 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH kbuild] Makefile.extrawarn: disable -Woverride-init in
+ W=1
+Message-ID: <20210407224406.5420258b@thinkpad>
+In-Reply-To: <CAK8P3a0_ruZSMv-kLMY7Jja7wq0K3aNNDviYqQPmN-3UayiHaQ@mail.gmail.com>
+References: <20210407002450.10015-1-kabel@kernel.org>
+        <CAK8P3a0_ruZSMv-kLMY7Jja7wq0K3aNNDviYqQPmN-3UayiHaQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20210406203508.476122-1-martin.blumenstingl@googlemail.com>
- <20210406203508.476122-2-martin.blumenstingl@googlemail.com>
- <YGz8FRBsj68xIbX/@lunn.ch> <CAFBinCD-jEUbyuuV=SLER8O1+PwhmiqHXFMaEX=h5mca=SDLgg@mail.gmail.com>
- <YG4Lku8sgwokW0NH@lunn.ch>
-In-Reply-To: <YG4Lku8sgwokW0NH@lunn.ch>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 7 Apr 2021 22:28:08 +0200
-Message-ID: <CAFBinCBE7BtEvDF044BeONCfCAaJOTYNkTTkhTJidaM97BQmYQ@mail.gmail.com>
-Subject: Re: [PATCH RFC net 1/2] net: dsa: lantiq_gswip: Don't use PHY auto polling
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, olteanv@gmail.com,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 7, 2021 at 9:44 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > For my own curiosity: is there a "recommended" way where to configure
-> > link up/down, speed, duplex and flow control? currently I have the
-> > logic in both, .phylink_mac_config and .phylink_mac_link_up.
->
-> You probably want to read the documentation in
->
-> include/linux/phylink.h
-it turns out that I should have scrolled down in that file.
-there's a perfect explanation in it about the various functions, just
-not at the top.
-thanks for the hint!
+On Wed, 7 Apr 2021 09:14:29 +0200
+Arnd Bergmann <arnd@arndb.de> wrote:
 
-For my own reference:
-[...] @state->link [...] are never guaranteed to be correct, and so
-any mac_config() implementation must never reference these fields.
-I am referencing state->link so I will fix that in v2
+> On Wed, Apr 7, 2021 at 2:24 AM Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+> >
+> > The -Wextra flag enables -Woverride-init in newer versions of GCC.
+> >
+> > This causes the compiler to warn when a value is written twice in a
+> > designated initializer, for example:
+> >   int x[1] =3D {
+> >     [0] =3D 3,
+> >     [0] =3D 3,
+> >   };
+> >
+> > Note that for clang, this was disabled from the beginning with
+> > -Wno-initializer-overrides in commit a1494304346a3 ("kbuild: add all
+> > Clang-specific flags unconditionally").
+> >
+> > This prevents us from implementing complex macros for compile-time
+> > initializers. =20
+>=20
+> I think this is generally a useful warning, and it has found a number
+> of real bugs. I would want this to be enabled in both gcc and clang
+> by default, and I have previously sent both bugfixes and patches to
+> disable it locally.
+>=20
+> > For example a macro of the form INITIALIZE_BITMAP(bits...) that can be
+> > used as
+> >   static DECLARE_BITMAP(bm, 64) =3D INITIALIZE_BITMAP(0, 1, 32, 33);
+> > can only be implemented by allowing a designated initializer to
+> > initialize the same members multiple times (because the compiler
+> > complains even if the multiple initializations initialize to the same
+> > value). =20
+>=20
+> We don't have this kind of macro at the moment, and this may just mean
+> you need to try harder to come up with a definition that only initializes
+> each member once if you want to add this.
+>=20
+> How do you currently define it?
+>=20
+>             Arnd
 
-[...] drivers may use @state->speed, @state->duplex and @state->pause
-to configure the MAC, but this is deprecated; such drivers should be
-converted to use mac_link_up
-so I will also drop these also from the gswip_phylink_mac_config implementation
+Arnd,
 
-If dropping the modifications to gswip_phylink_mac_config is my only change:
-do you want me to keep or drop your Reviewed-by in v2?
+since it is possible to create a macro which will expand N times if N
+is a preprocessor numeric constant, i.e.
+  EXPAND_N_TIMES(3, macro, args...)
+would expand to
+  macro(1, args...) macro(2, args...) macro(3, args...)
 
+But the first argument to this EXPAND_N_TIMES macro would have to be a
+number when preprocessing, so no expression via division, nor enums.
 
-Best regards,
-Martin
+Example:
+
+  The PHY_INTERFACE_MODE_* constants are defined via enum, and
+  the last is PHY_INTERFACE_MODE_MAX.
+
+  We could then implement bitmap initializers for PHY_INTERFACE_MODE
+  bitmap in the following way:
+
+  enum {
+    ...
+    PHY_INTERFACE_MODE_MAX
+  };
+
+  /* assume PHY_INTERFACE_MODE_MASK has value 50, so 2 longs on 32-bit
+   * and 1 long on 64-bit. These have to be direct constant, no expressions
+   * allowed. If more PHY_INTERFACE_MODE_* constants are added to the enum
+   * above, the following must be changed accordingly. The static_assert
+   * below guards against invalid value.
+   */
+
+  #define PHY_INTERFACE_BITMAP_LONGS_64  1
+  #define PHY_INTERFACE_BITMAP_LONGS_32  2
+
+  /* check if PHY_INTERFACE_BITMAP_LONGS_* have correct values */
+  static_assert(PHY_INTERFACE_BITMAP_LONGS_64 =3D=3D
+                DIV_ROUND_UP(PHY_INTERFACE_MODE_MASK, 64));
+  static_assert(PHY_INTERFACE_BITMAP_LONGS_32 =3D=3D
+                DIV_ROUND_UP(PHY_INTERFACE_MODE_MASK, 32));
+
+  #define DECLARE_PHY_INTERFACE_MASK(name) \
+    DECLARE_BITMAP(name, PHY_INTERFACE_MODE_MAX)
+
+  #define INIT_PHY_INTERFACE_MASK(...) \
+    INITIALIZE_BITMAP(PHY_INTERFACE_BITMAP_LONGS, ##__VA_ARGS__)
+
+What do you think?
+
+Marek
