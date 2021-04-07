@@ -2,98 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC11356B8F
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:53:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C746356B8D
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:53:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239133AbhDGLxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 07:53:49 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:39317 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238613AbhDGLxl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 07:53:41 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1617796412; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=ftOQviE1FSzzRGWmikfFzO6yxTTkoqf8WYw+BHbHQdY=; b=xBN4vUrabMc9cTlEyGWRhE8Q5XKyYRY70P1Ks0CD7j8P7QZ2j/ZxhWWUcr/yFtrUFJU+YARu
- n79jA21eEjUolDtDSCfalt3nYwTQay4xtD1dOgRf4hjZNp/2M1HtZ/0Ral3ssTA27BVQ1Xrs
- whj5AUPiBpME4m95MEe9eeJ5Hq8=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 606d9d3187ce1fbb56dc0491 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 07 Apr 2021 11:53:21
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EB861C43465; Wed,  7 Apr 2021 11:53:20 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 12D51C433C6;
-        Wed,  7 Apr 2021 11:53:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 12D51C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Dinghao Liu <dinghao.liu@zju.edu.cn>
-Cc:     kjlu@umn.edu, Jouni Malinen <j@w1.fi>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hostap: Fix memleak in prism2_config
-References: <20210329085246.24586-1-dinghao.liu@zju.edu.cn>
-Date:   Wed, 07 Apr 2021 14:53:15 +0300
-In-Reply-To: <20210329085246.24586-1-dinghao.liu@zju.edu.cn> (Dinghao Liu's
-        message of "Mon, 29 Mar 2021 16:52:43 +0800")
-Message-ID: <87tuoimhuc.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S237614AbhDGLxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 07:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230280AbhDGLxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 07:53:11 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FDCC061756
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 04:52:44 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id v70so18272620qkb.8
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 04:52:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=0x0f.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=55eowlIv9XaGPfPFjne3G8Mc95cycsZSFf0UWvAoo8Q=;
+        b=HGObjUV0ojWTlUgb1FRqBgSphdDS64pPHTTSjhKGi3lNXzbIH8zcs3/WuSSOea86pV
+         A13CKYUEjQzI9UskKmZyLPuepcm3n4DuDiRmgWEc8GhPyBBO1m9gRJOMdFJFI0yRMaHN
+         KgqvyBSR2YRf+FMTk6w+ilRcAVwzgGcWCRQqs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=55eowlIv9XaGPfPFjne3G8Mc95cycsZSFf0UWvAoo8Q=;
+        b=owHRt73y8QBH2LrPav3e/3HkekIMYMhOWnLcgoLptqvS+fhH9rL+087JneCJs/6c3w
+         ao2Asndgi6AcoPaMeYWTh0y53jCLDu4BU191yFMaPHD7saLYHpqfhqBlKvJR3S9FHGPE
+         dg6lBFCuwuGw9Gj2iMnIpYZCbzF6bUxGcPWBDbI+dRyxGgCYo5/X4LeKZbOqMBEWvSA+
+         9rjjaMAjHm67ifPN8J2qFAKX/dGgR4GhKPkz7jLUmkj9EHXNevLfZOJCic6e+PHHXpYu
+         F39QCZCpsv01oR5XvKv/OifHcP9Qb6LixlvKGU2xImkNzQZHXQYf8UhQTdHsB/t2ilzJ
+         19IA==
+X-Gm-Message-State: AOAM530eDGw4iecQOWj1EBgA3qeXaH01aQ3+4Z1xNnREkcx2nA9n+SNH
+        KtDCKp63HdfEBat3pYbT1n3/z8rl+H39OsOFuMofrg==
+X-Google-Smtp-Source: ABdhPJyjOipzONEMDRdvNH9XUQqPajnb0/9Yp7Dd63vRS547jAh352afy4V1ndxaYn9GPEj9ZlzPCnfUyLCaMflw7g0=
+X-Received: by 2002:ae9:f70a:: with SMTP id s10mr2771884qkg.468.1617796364069;
+ Wed, 07 Apr 2021 04:52:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201209184740.16473-1-w@1wt.eu> <CAFr9PX=Ky2QuXNH09DmegFV=e-4+ChdypSsJfV8svqxP7U-cpg@mail.gmail.com>
+ <20210407084207.GD22418@1wt.eu>
+In-Reply-To: <20210407084207.GD22418@1wt.eu>
+From:   Daniel Palmer <daniel@0x0f.com>
+Date:   Wed, 7 Apr 2021 20:54:02 +0900
+Message-ID: <CAFr9PXmNgWqHeZe-He0vhdGcRZtPwQa3Jrd-1vz5VBB9RixgLA@mail.gmail.com>
+Subject: Re: [PATCH] Revert "macb: support the two tx descriptors on at91rm9200"
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dinghao Liu <dinghao.liu@zju.edu.cn> writes:
+Hi Willy
 
-> When prism2_hw_config() fails, we just return an error code
-> without any resource release, which may lead to memleak.
+On Wed, 7 Apr 2021 at 17:42, Willy Tarreau <w@1wt.eu> wrote:
+> > There are two new status bits TBNQ and FBNQ at bits 7 and 8. I have no
+> > idea what they mean.
 >
-> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-> ---
->  drivers/net/wireless/intersil/hostap/hostap_cs.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Maybe they're related to tx queue empty / tx queue full. Just guessing.
+> Since all these bits tend not to be reset until written to, I got confused
+> a few times trying to understand what they indicated.
+
+In the vendor driver they have some weird logic that counts idle, bnq,
+and these 6 new bits,
+and if the count of set bits is bigger than 5 it's apparently OK to
+setup another frame to send.
+I guess it's some really optimized form of checking for the right
+flags but it's over my head. :D
+
+You have to check it's OK to send right before setting the frame
+address/length otherwise you will get an overflow eventually.
+So I think some of these bits are related to the state machine that is
+handling popping frames out of the FIFO and the bits might change
+between getting a TX complete interrupt and trying to queue another
+frame. i.e. you can have a situation where there seems to be a free
+slot in the irq handler but it's not actually safe to queue it when
+xmit is called, and if you do an overflow happens and the TX locks up.
+
+> > Anyhow. I'm working on a version of your patch that should work with
+> > both the at91rm9200 and the MSC313E.
 >
-> diff --git a/drivers/net/wireless/intersil/hostap/hostap_cs.c b/drivers/net/wireless/intersil/hostap/hostap_cs.c
-> index ec7db2badc40..7dc16ab50ad6 100644
-> --- a/drivers/net/wireless/intersil/hostap/hostap_cs.c
-> +++ b/drivers/net/wireless/intersil/hostap/hostap_cs.c
-> @@ -536,10 +536,10 @@ static int prism2_config(struct pcmcia_device *link)
->  	sandisk_enable_wireless(dev);
->  
->  	ret = prism2_hw_config(dev, 1);
-> -	if (!ret)
-> -		ret = hostap_hw_ready(dev);
-> +	if (ret)
-> +		goto failed;
->  
-> -	return ret;
-> +	return hostap_hw_ready(dev);;
+> Cool! Thanks for letting me know. If you need me to run some test, let
+> me know (just don't expect too short latency these days but I definitely
+> will test).
 
-Two semicolons.
+I got this working really well last night. 10+ hours with the iperf3
+bidir test and it's still going. Before TX locked up within a few
+seconds.
+Once I've cleaned it up a bit more I'll push it to my mstar tree. I
+don't think it can be mainlined yet as it's not usable without a bunch
+of other bits.
 
-But I'm not sure about this, can someone provide a Reviewed-by tag?
+Cheers,
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Daniel
