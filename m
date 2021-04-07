@@ -2,118 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 433F535604F
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE19356050
 	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245747AbhDGA2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:28:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47224 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245516AbhDGA2s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 20:28:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EE9DD613C6;
-        Wed,  7 Apr 2021 00:28:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617755320;
-        bh=hlhCHzpkhxsG7Vys0zeoplTxSnI85eVAIE4mIRQpDOM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nk/SXYWP1P4n90IxJYhYT1fgYqzdNf9TwCMLwlOU9yOipSIxH8LA6aO1OVu0uFPpA
-         wUJbgkJsEia8YLdrfZb1CUVP13X8IFX1VTFEMXrQwtAxAOsj+jM3ArjF9Tds2PegjB
-         Hu3M49WTS+6IkQDFGEMLNmbUnX63CdMAhCLSjjucwJrfh+XALZCCW+7yn6vPDvlqL8
-         4iX3O20MMYwo32LKombc/wPk9KX8TqnyetRdfPrVHlGN5sBE2rRRussXogniKxBahl
-         GtUNehdSit0ETKKZDCeeHnOTwL3Hw2QlS5VAzpn7t+33OKtxo4FJHbzOrrci1CQ0Td
-         w/XdLargtCpIA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        mkubecek@suse.cz, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 3/3] ethtool: fix kdoc in headers
-Date:   Tue,  6 Apr 2021 17:28:27 -0700
-Message-Id: <20210407002827.1861191-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210407002827.1861191-1-kuba@kernel.org>
-References: <20210407002827.1861191-1-kuba@kernel.org>
+        id S242052AbhDGA3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241974AbhDGA3m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 20:29:42 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EF8C06174A
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 17:29:32 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id t140so11661555pgb.13
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 17:29:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LLarwwKAs0HSVvbZ8ib9VIb2FoujGLWDIrjWhL74VOg=;
+        b=CRsuUXJyBFVH6f5rSu0H8wMN6kFOT6a2PfWbe7WECf5IcvP2JYmHsJSKiMGab+9+eu
+         nnMLZYessHIs2c7Z6xCpZO5SJV6dRjGDK3EDd1WN+4YjHNwdq8YHoNEUhJ5PbrP4MKwb
+         qJDjmtyTrCUrJZuItGS98XjLv5t0PsX6Tzg7NN6Uu0sa8WQxy7I5qloE5fj2sBM0iIXg
+         cyLHudco0eqv347i4rixKB3JCJr6gIpZjrp+JPOFe6r04BaVNgKWkBs2yRmH4HD0cdMd
+         A4dMSCxsvHn+ab05q1Rj16X6LX2RSjWqTQUtVPOO6CXpr2wKghDrXblWF8kG76+Gr+Qm
+         flCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LLarwwKAs0HSVvbZ8ib9VIb2FoujGLWDIrjWhL74VOg=;
+        b=EijVU4IaoNV9QdEqQbzXCLulwadDszCPygHP0GZ4617ldwMrSNejvAQ5mIIZaNrfST
+         gX78tAymurdaIae1mKUXbXiHIeVVMSo1uIzA2BA8ujKBppyTeXOPgDO/x2ZgwG1CQ4DY
+         mqrL3eGhDM1h7lSxz83065uBbMLPfwlGwdw3sxNMk85WgWydP1xInMrWa2i7lqtxZkcY
+         EJHzu8MaLBetDdHlO3kVkpJlcvv2Yn/fMNVe1krefOrz5zwWwlWEm4006JotA3nXrF9b
+         xVYnA/+JJJ+nEmtSUHF6MtWN4HP0zpfepME8A0Qulay2BeNx/8j3z0hwq5fzWQUADZDG
+         fk8A==
+X-Gm-Message-State: AOAM531agrbd2hr5WDNKj0pfLo7HOwga2Z06fLKsgWCBauKUYvgpiOtS
+        55Y8NW1airjXU8Pol8XIoQk=
+X-Google-Smtp-Source: ABdhPJzqG7wRLmULvsNg/b+TFko0JJNirZ8cl/94eqhBscnVtL4AtYnHBoD1eCO4jmtoIjEcsPK1eQ==
+X-Received: by 2002:a62:ee0c:0:b029:214:7a61:6523 with SMTP id e12-20020a62ee0c0000b02902147a616523mr686293pfi.59.1617755371999;
+        Tue, 06 Apr 2021 17:29:31 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id v1sm2885118pjv.0.2021.04.06.17.29.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Apr 2021 17:29:31 -0700 (PDT)
+Date:   Tue, 6 Apr 2021 17:29:29 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        drivers@pensando.io, Allen Hubbe <allenbh@pensando.io>
+Subject: Re: [PATCH net-next 09/12] ionic: add and enable tx and rx timestamp
+ handling
+Message-ID: <20210407002929.GB30525@hoboy.vegasvil.org>
+References: <20210401175610.44431-1-snelson@pensando.io>
+ <20210401175610.44431-10-snelson@pensando.io>
+ <20210404234107.GD24720@hoboy.vegasvil.org>
+ <6e0e4d73-f436-21c0-59fe-ee4f5c133f95@pensando.io>
+ <20210405182042.GB29333@hoboy.vegasvil.org>
+ <d9f49805-e1da-23ab-110f-75e3e514f2a1@pensando.io>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d9f49805-e1da-23ab-110f-75e3e514f2a1@pensando.io>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix remaining issues with kdoc in the ethtool headers.
+On Tue, Apr 06, 2021 at 04:06:09PM -0700, Shannon Nelson wrote:
+> Interesting... I doubt that our particular MAC and PHY will ever be
+> separate, but it makes sense to watch for this in the general case. I've got
+> an update coming for this.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- include/linux/ethtool.h      | 9 +++++++--
- include/uapi/linux/ethtool.h | 6 ++++++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+Even if your HW can never support stacked MAC/PHY HW time stamping,
+still your driver should conform to the correct pattern.
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index a2b1a21ee7fd..7c88dfff7420 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -290,6 +290,9 @@ struct ethtool_pause_stats {
-  *	do not attach ext_substate attribute to netlink message). If link_ext_state
-  *	and link_ext_substate are unknown, return -ENODATA. If not implemented,
-  *	link_ext_state and link_ext_substate will not be sent to userspace.
-+ * @get_eeprom_len: Read range of EEPROM addresses for validation of
-+ *	@get_eeprom and @set_eeprom requests.
-+ *	Returns 0 if device does not support EEPROM access.
-  * @get_eeprom: Read data from the device EEPROM.
-  *	Should fill in the magic field.  Don't need to check len for zero
-  *	or wraparound.  Fill in the data argument with the eeprom values
-@@ -382,6 +385,8 @@ struct ethtool_pause_stats {
-  * @get_module_eeprom: Get the eeprom information from the plug-in module
-  * @get_eee: Get Energy-Efficient (EEE) supported and status.
-  * @set_eee: Set EEE status (enable/disable) as well as LPI timers.
-+ * @get_tunable: Read the value of a driver / device tunable.
-+ * @set_tunable: Set the value of a driver / device tunable.
-  * @get_per_queue_coalesce: Get interrupt coalescing parameters per queue.
-  *	It must check that the given queue number is valid. If neither a RX nor
-  *	a TX queue has this number, return -EINVAL. If only a RX queue or a TX
-@@ -545,8 +550,8 @@ struct phy_tdr_config;
-  * @get_sset_count: Get number of strings that @get_strings will write.
-  * @get_strings: Return a set of strings that describe the requested objects
-  * @get_stats: Return extended statistics about the PHY device.
-- * @start_cable_test - Start a cable test
-- * @start_cable_test_tdr - Start a Time Domain Reflectometry cable test
-+ * @start_cable_test: Start a cable test
-+ * @start_cable_test_tdr: Start a Time Domain Reflectometry cable test
-  *
-  * All operations are optional (i.e. the function pointer may be set to %NULL)
-  * and callers must take this into account. Callers must hold the RTNL lock.
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index c9c18e88c215..5afea692a3f7 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -659,6 +659,7 @@ enum ethtool_link_ext_substate_cable_issue {
-  *	now deprecated
-  * @ETH_SS_FEATURES: Device feature names
-  * @ETH_SS_RSS_HASH_FUNCS: RSS hush function names
-+ * @ETH_SS_TUNABLES: tunable names
-  * @ETH_SS_PHY_STATS: Statistic names, for use with %ETHTOOL_GPHYSTATS
-  * @ETH_SS_PHY_TUNABLES: PHY tunable names
-  * @ETH_SS_LINK_MODES: link mode names
-@@ -668,6 +669,8 @@ enum ethtool_link_ext_substate_cable_issue {
-  * @ETH_SS_TS_TX_TYPES: timestamping Tx types
-  * @ETH_SS_TS_RX_FILTERS: timestamping Rx filters
-  * @ETH_SS_UDP_TUNNEL_TYPES: UDP tunnel types
-+ *
-+ * @ETH_SS_COUNT: number of defined string sets
-  */
- enum ethtool_stringset {
- 	ETH_SS_TEST		= 0,
-@@ -1962,8 +1965,11 @@ enum ethtool_reset_flags {
-  *	autonegotiation; 0 if unknown or not applicable.  Read-only.
-  * @transceiver: Used to distinguish different possible PHY types,
-  *	reported consistently by PHYLIB.  Read-only.
-+ * @master_slave_cfg: Master/slave port mode.
-+ * @master_slave_state: Master/slave port state.
-  * @reserved: Reserved for future use; see the note on reserved space.
-  * @reserved1: Reserved for future use; see the note on reserved space.
-+ * @link_mode_masks: Variable length bitmaps.
-  *
-  * If autonegotiation is disabled, the speed and @duplex represent the
-  * fixed link mode and are writable if the driver supports multiple
--- 
-2.30.2
+Why?  Because new driver authors copy/paste stuff they find in the tree.
 
+Thanks,
+Richard
