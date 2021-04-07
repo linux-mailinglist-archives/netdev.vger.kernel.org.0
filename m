@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C7FE35602C
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CDE0356007
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:16:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242161AbhDGASm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:18:42 -0400
-Received: from mga07.intel.com ([134.134.136.100]:29216 "EHLO mga07.intel.com"
+        id S1347461AbhDGAQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:16:39 -0400
+Received: from mga09.intel.com ([134.134.136.24]:23775 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239105AbhDGASk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 20:18:40 -0400
-IronPort-SDR: bpJm6W4AzDqjifraHNVwxkNzy37UU3AJZipLufHWJ4QIQRi/TnZZLtLMkwMPUz+yyutWHUrmFg
- 6Sbv3R7ZtbJA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="257170828"
+        id S1347456AbhDGAQU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 20:16:20 -0400
+IronPort-SDR: Pf69rLjsBkgRtxF9cMD2vX2leZi8zskc4a55tDYibLseIerEffqjWDMy8NnMHdH10WNPeaha/4
+ sHMwbpYYUmpA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9946"; a="193297247"
 X-IronPort-AV: E=Sophos;i="5.82,201,1613462400"; 
-   d="scan'208";a="257170828"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 17:16:21 -0700
-IronPort-SDR: mK+YUOAZ44d2EwHau5aYGSPjMwIoAUBMkqBUvE/rqOK92MG9c8JhNDOZExbHtJQHhkSVlOii/j
- Y/4JdsYKadtA==
+   d="scan'208";a="193297247"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 17:16:10 -0700
+IronPort-SDR: c0Tg82npxhOSKY4RKP9zNmlP5KGAoGGYCss0UJ0YNEYu/UH8QmiMV3QrLuQWQd2MJ+SAcPGDcJ
+ +/JMf7it1PKg==
 X-IronPort-AV: E=Sophos;i="5.82,201,1613462400"; 
-   d="scan'208";a="396441045"
-Received: from ssaleem-mobl.amr.corp.intel.com ([10.212.32.74])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 17:16:20 -0700
-From:   Shiraz Saleem <shiraz.saleem@intel.com>
-To:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
-        davem@davemloft.net
-Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        david.m.ertman@intel.com, anthony.l.nguyen@intel.com,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH v4 resend 23/23] RDMA/irdma: Update MAINTAINERS file
-Date:   Tue,  6 Apr 2021 19:15:02 -0500
-Message-Id: <20210407001502.1890-24-shiraz.saleem@intel.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20210407001502.1890-1-shiraz.saleem@intel.com>
-References: <20210407001502.1890-1-shiraz.saleem@intel.com>
+   d="scan'208";a="458105191"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.115.52])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2021 17:16:10 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/8] mptcp: Cleanup, a new test case, and header trimming
+Date:   Tue,  6 Apr 2021 17:15:56 -0700
+Message-Id: <20210407001604.85071-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add maintainer entry for irdma driver.
+Some more patches to include from the MPTCP tree:
 
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Patches 1-6 refactor an address-related data structure and reduce some
+duplicate code that handles IPv4 and IPv6 addresses.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 276cadf..f1a9752 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8957,6 +8957,14 @@ F:	drivers/net/ethernet/intel/*/
- F:	include/linux/avf/virtchnl.h
- F:	include/linux/net/intel/iidc.h
- 
-+INTEL ETHERNET PROTOCOL DRIVER FOR RDMA
-+M:	Mustafa Ismail <mustafa.ismail@intel.com>
-+M:	Shiraz Saleem <shiraz.saleem@intel.com>
-+L:	linux-rdma@vger.kernel.org
-+S:	Supported
-+F:	drivers/infiniband/hw/irdma/
-+F:	include/uapi/rdma/irdma-abi.h
-+
- INTEL FRAMEBUFFER DRIVER (excluding 810 and 815)
- M:	Maik Broemme <mbroemme@libmpq.org>
- L:	linux-fbdev@vger.kernel.org
+Patch 7 adds a test case for the MPTCP netlink interface, passing a
+specific ifindex to the kernel.
+
+Patch 8 drops extra header options from IPv4 address echo packets,
+improving consistency and testability between IPv4 and IPv6.
+
+Davide Caratti (1):
+  mptcp: drop all sub-options except ADD_ADDR when the echo bit is set
+
+Geliang Tang (7):
+  mptcp: move flags and ifindex out of mptcp_addr_info
+  mptcp: use mptcp_addr_info in mptcp_out_options
+  mptcp: drop OPTION_MPTCP_ADD_ADDR6
+  mptcp: use mptcp_addr_info in mptcp_options_received
+  mptcp: drop MPTCP_ADDR_IPVERSION_4/6
+  mptcp: unify add_addr(6)_generate_hmac
+  selftests: mptcp: add the net device name testcase
+
+ include/net/mptcp.h                           |  21 ++-
+ net/mptcp/options.c                           | 175 ++++++------------
+ net/mptcp/pm_netlink.c                        |  41 ++--
+ net/mptcp/protocol.h                          |  38 +---
+ net/mptcp/subflow.c                           |   7 +-
+ .../testing/selftests/net/mptcp/mptcp_join.sh |   8 +
+ 6 files changed, 115 insertions(+), 175 deletions(-)
+
+
+base-commit: be107538c5296fb888938ec3a32da21bb1733655
 -- 
-1.8.3.1
+2.31.1
 
