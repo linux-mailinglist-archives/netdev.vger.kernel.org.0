@@ -2,165 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 843313563A9
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 08:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FAB73563B6
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 08:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345070AbhDGGBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 02:01:05 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:51866 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244458AbhDGGBF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 02:01:05 -0400
-Received: from localhost (kaktus.kanapka.ml [151.237.229.131])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 4D913A1CFC0;
-        Wed,  7 Apr 2021 08:00:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1617775254;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sxV1i037uucR+w6S1VnY7e4FFDXBwkZMWCvMLi5veB8=;
-        b=K1Wc6KK4h0tjcKWAVqzFp7iTeCFkn85RQGuxRULRfhGntdPtkSBi5DbLLUUCqwueqdjtDk
-        KfYFux4cQ98QEt7iJ+EMyX5Stwn5PqZwGFn0atd0y3LMKmYMxfA4/hSerYMlNQtLvrMA8q
-        jeCI9U22UWtsVzlpM+Owt8TxUSG6eBA=
-Date:   Wed, 7 Apr 2021 08:00:53 +0200
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
-Message-ID: <20210407060053.wyo75mqwcva6w6ci@spock.localdomain>
-References: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
- <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1345384AbhDGGIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 02:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244571AbhDGGIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 02:08:16 -0400
+Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4BFC06174A;
+        Tue,  6 Apr 2021 23:08:07 -0700 (PDT)
+Received: from localhost ([127.0.0.1] helo=bute.mt.lv)
+        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <gatis@mikrotik.com>)
+        id 1lU1M8-0002QZ-Vv; Wed, 07 Apr 2021 09:08:01 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Wed, 07 Apr 2021 09:08:00 +0300
+From:   Gatis Peisenieks <gatis@mikrotik.com>
+To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
+        dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v5] atl1c: move tx cleanup processing out of
+ interrupt
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <381dad2133d3f51c2cd049af29a8f877@mikrotik.com>
+X-Sender: gatis@mikrotik.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Tx queue cleanup happens in interrupt handler on same core as rx queue
+processing. Both can take considerable amount of processing in high
+packet-per-second scenarios.
 
-On Tue, Apr 06, 2021 at 11:48:02AM -0700, Jakub Kicinski wrote:
-> On Tue, 6 Apr 2021 14:36:19 +0200 Oleksandr Natalenko wrote:
-> > Hello.
-> > 
-> > I've raised this here [1] first, but was suggested to engage igb devs,
-> > so here we are.
-> > 
-> > I'm experiencing the following woes while using netconsole regularly:
-> > 
-> > ```
-> > [22038.710800] ------------[ cut here ]------------
-> > [22038.710801] igb_poll+0x0/0x1440 [igb] exceeded budget in poll
-> > [22038.710802] WARNING: CPU: 12 PID: 40362 at net/core/netpoll.c:155 netpoll_poll_dev+0x18a/0x1a0
-> > [22038.710802] Modules linked in: ...
-> > [22038.710835] CPU: 12 PID: 40362 Comm: systemd-sleep Not tainted 5.11.0-pf7 #1
-> > [22038.710836] Hardware name: ASUS System Product Name/Pro WS X570-ACE, BIOS 3302 03/05/2021
-> > [22038.710836] RIP: 0010:netpoll_poll_dev+0x18a/0x1a0
-> > [22038.710837] Code: 6e ff 80 3d d2 9d f8 00 00 0f 85 5c ff ff ff 48 8b 73 28 48 c7 c7 0c b8 21 84 89 44 24 04 c6 05 b6 9d f8 00 01 e8 84 21 1c 00 <0f> 0b 8b 54 24 04 e9 36 ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00
-> > [22038.710838] RSP: 0018:ffffb24106e37ba0 EFLAGS: 00010086
-> > [22038.710838] RAX: 0000000000000000 RBX: ffff9599d2929c50 RCX: ffff959f8ed1ac30
-> > [22038.710839] RDX: 0000000000000000 RSI: 0000000000000023 RDI: ffff959f8ed1ac28
-> > [22038.710839] RBP: ffff9598981d4058 R08: 0000000000000019 R09: ffffb24206e3796d
-> > [22038.710839] R10: ffffffffffffffff R11: ffffb24106e37968 R12: ffff959887e51ec8
-> > [22038.710840] R13: 000000000000000c R14: 00000000ffffffff R15: ffff9599d2929c60
-> > [22038.710840] FS:  00007f3ade370a40(0000) GS:ffff959f8ed00000(0000) knlGS:0000000000000000
-> > [22038.710841] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [22038.710841] CR2: 0000000000000000 CR3: 00000003017b0000 CR4: 0000000000350ee0
-> > [22038.710841] Call Trace:
-> > [22038.710842]  netpoll_send_skb+0x185/0x240
-> > [22038.710842]  write_msg+0xe5/0x100 [netconsole]
-> > [22038.710842]  console_unlock+0x37d/0x640
-> > [22038.710842]  ? __schedule+0x2e5/0xc90
-> > [22038.710843]  suspend_devices_and_enter+0x2ac/0x7f0
-> > [22038.710843]  pm_suspend.cold+0x321/0x36c
-> > [22038.710843]  state_store+0xa6/0x140
-> > [22038.710844]  kernfs_fop_write_iter+0x124/0x1b0
-> > [22038.710844]  new_sync_write+0x16a/0x200
-> > [22038.710844]  vfs_write+0x21c/0x2e0
-> > [22038.710844]  __x64_sys_write+0x6d/0xf0
-> > [22038.710845]  do_syscall_64+0x33/0x40
-> > [22038.710845]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > [22038.710845] RIP: 0033:0x7f3adece10f7
-> > [22038.710846] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-> > [22038.710847] RSP: 002b:00007ffc51c555b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> > [22038.710847] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007f3adece10f7
-> > [22038.710848] RDX: 0000000000000004 RSI: 00007ffc51c556a0 RDI: 0000000000000004
-> > [22038.710848] RBP: 00007ffc51c556a0 R08: 000055ea374302a0 R09: 00007f3aded770c0
-> > [22038.710849] R10: 00007f3aded76fc0 R11: 0000000000000246 R12: 0000000000000004
-> > [22038.710849] R13: 000055ea3742c430 R14: 0000000000000004 R15: 00007f3adedb3700
-> > [22038.710849] ---[ end trace 6eae54fbf23807f8 ]---
-> > ```
-> > 
-> > This one happened during suspend/resume cycle (on resume), followed by:
-> > 
-> > ```
-> > [22038.868669] igb 0000:05:00.0 enp5s0: Reset adapter
-> > [22040.998673] igb 0000:05:00.0 enp5s0: Reset adapter
-> > [22043.819198] igb 0000:05:00.0 enp5s0: igb: enp5s0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-> > ```
-> > 
-> > I've bumped into a similar issue in BZ 211911 [2] (see c#16),
-> > and in c#17 it was suggested it was a separate unrelated issue,
-> > hence I'm raising a new concern.
-> > 
-> > Please help in finding out why this woe happens and in fixing it.
-> > 
-> > Thanks.
-> > 
-> > [1] https://bugzilla.kernel.org/show_bug.cgi?id=212573
-> > [2] https://bugzilla.kernel.org/show_bug.cgi?id=211911
-> 
-> Looks like igb_clean_tx_irq() should not return true if budget is 0,
-> ever, otherwise we risk hitting the min(work, budget - 1) which may
-> go negative.
-> 
-> So something like this? 
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index c9e8c65a3cfe..7a237b5311ca 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -8028,7 +8028,7 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
->         unsigned int i = tx_ring->next_to_clean;
->  
->         if (test_bit(__IGB_DOWN, &adapter->state))
-> -               return true;
-> +               goto out;
->  
->         tx_buffer = &tx_ring->tx_buffer_info[i];
->         tx_desc = IGB_TX_DESC(tx_ring, i);
-> @@ -8157,7 +8157,7 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
->                                             tx_ring->queue_index);
->  
->                         /* we are about to reset, no point in enabling stuff */
-> -                       return true;
-> +                       goto out;
->                 }
->         }
->  
-> @@ -8180,7 +8180,7 @@ static bool igb_clean_tx_irq(struct igb_q_vector *q_vector, int napi_budget)
->                         u64_stats_update_end(&tx_ring->tx_syncp);
->                 }
->         }
-> -
-> +out:
->         return !!budget;
->  }
+Sending big amounts of packets can stall the rx processing which is 
+unfair
+and also can lead to out-of-memory condition since __dev_kfree_skb_irq
+queues the skbs for later kfree in softirq which is not allowed to 
+happen
+with heavy load in interrupt handler.
 
-Thanks for the effort, but reportedly [1] it made no difference,
-unfortunately.
+This puts tx cleanup in its own napi and enables threaded napi to allow
+the rx/tx queue processing to happen on different cores.
 
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=212573#c8
+The ability to sustain equal amounts of tx/rx traffic increased:
+from 280Kpps to 1130Kpps on Threadripper 3960X with upcoming
+Mikrotik 10/25G NIC,
+from 520Kpps to 850Kpps on Intel i3-3320 with Mikrotik RB44Ge adapter.
 
+Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+---
+Reposting for net-next as requested by David Miller,
+
+v5:
+	- EXPORT_SYMBOL(dev_set_threaded) not needed, already there
+v4:
+	- made scripts/checkpatch.pl happy
+	- moved the new intr_mask_lock to be besides the intr_mask it
+	  protects so they are more likely to be on same cacheline
+v3:
+	- addressed comments from Eric Dumazet
+	- added EXPORT_SYMBOL for dev_set_threaded
+---
+  drivers/net/ethernet/atheros/atl1c/atl1c.h    |  2 +
+  .../net/ethernet/atheros/atl1c/atl1c_main.c   | 44 ++++++++++++++-----
+  2 files changed, 36 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h 
+b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+index a0562a90fb6d..28ae5c16831e 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
+@@ -367,6 +367,7 @@ struct atl1c_hw {
+  	u16 phy_id1;
+  	u16 phy_id2;
+
++	spinlock_t intr_mask_lock;	/* protect the intr_mask */
+  	u32 intr_mask;
+
+  	u8 preamble_len;
+@@ -506,6 +507,7 @@ struct atl1c_adapter {
+  	struct net_device   *netdev;
+  	struct pci_dev      *pdev;
+  	struct napi_struct  napi;
++	struct napi_struct  tx_napi;
+  	struct page         *rx_page;
+  	unsigned int	    rx_page_offset;
+  	unsigned int	    rx_frag_size;
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c 
+b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index d54375b255dc..1d17c24e6d75 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -813,6 +813,7 @@ static int atl1c_sw_init(struct atl1c_adapter 
+*adapter)
+  	atl1c_set_rxbufsize(adapter, adapter->netdev);
+  	atomic_set(&adapter->irq_sem, 1);
+  	spin_lock_init(&adapter->mdio_lock);
++	spin_lock_init(&adapter->hw.intr_mask_lock);
+  	set_bit(__AT_DOWN, &adapter->flags);
+
+  	return 0;
+@@ -1530,20 +1531,19 @@ static inline void atl1c_clear_phy_int(struct 
+atl1c_adapter *adapter)
+  	spin_unlock(&adapter->mdio_lock);
+  }
+
+-static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
+-				enum atl1c_trans_queue type)
++static int atl1c_clean_tx(struct napi_struct *napi, int budget)
+  {
+-	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
++	struct atl1c_adapter *adapter =
++		container_of(napi, struct atl1c_adapter, tx_napi);
++	struct atl1c_tpd_ring *tpd_ring = 
+&adapter->tpd_ring[atl1c_trans_normal];
+  	struct atl1c_buffer *buffer_info;
+  	struct pci_dev *pdev = adapter->pdev;
+  	u16 next_to_clean = atomic_read(&tpd_ring->next_to_clean);
+  	u16 hw_next_to_clean;
+-	u16 reg;
+  	unsigned int total_bytes = 0, total_packets = 0;
++	unsigned long flags;
+
+-	reg = type == atl1c_trans_high ? REG_TPD_PRI1_CIDX : 
+REG_TPD_PRI0_CIDX;
+-
+-	AT_READ_REGW(&adapter->hw, reg, &hw_next_to_clean);
++	AT_READ_REGW(&adapter->hw, REG_TPD_PRI0_CIDX, &hw_next_to_clean);
+
+  	while (next_to_clean != hw_next_to_clean) {
+  		buffer_info = &tpd_ring->buffer_info[next_to_clean];
+@@ -1564,7 +1564,15 @@ static bool atl1c_clean_tx_irq(struct 
+atl1c_adapter *adapter,
+  		netif_wake_queue(adapter->netdev);
+  	}
+
+-	return true;
++	if (total_packets < budget) {
++		napi_complete_done(napi, total_packets);
++		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
++		adapter->hw.intr_mask |= ISR_TX_PKT;
++		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
++		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
++		return total_packets;
++	}
++	return budget;
+  }
+
+  /**
+@@ -1599,13 +1607,22 @@ static irqreturn_t atl1c_intr(int irq, void 
+*data)
+  		AT_WRITE_REG(hw, REG_ISR, status | ISR_DIS_INT);
+  		if (status & ISR_RX_PKT) {
+  			if (likely(napi_schedule_prep(&adapter->napi))) {
++				spin_lock(&hw->intr_mask_lock);
+  				hw->intr_mask &= ~ISR_RX_PKT;
+  				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
++				spin_unlock(&hw->intr_mask_lock);
+  				__napi_schedule(&adapter->napi);
+  			}
+  		}
+-		if (status & ISR_TX_PKT)
+-			atl1c_clean_tx_irq(adapter, atl1c_trans_normal);
++		if (status & ISR_TX_PKT) {
++			if (napi_schedule_prep(&adapter->tx_napi)) {
++				spin_lock(&hw->intr_mask_lock);
++				hw->intr_mask &= ~ISR_TX_PKT;
++				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
++				spin_unlock(&hw->intr_mask_lock);
++				__napi_schedule(&adapter->tx_napi);
++			}
++		}
+
+  		handled = IRQ_HANDLED;
+  		/* check if PCIE PHY Link down */
+@@ -1876,6 +1893,7 @@ static int atl1c_clean(struct napi_struct *napi, 
+int budget)
+  	struct atl1c_adapter *adapter =
+  			container_of(napi, struct atl1c_adapter, napi);
+  	int work_done = 0;
++	unsigned long flags;
+
+  	/* Keep link state information with original netdev */
+  	if (!netif_carrier_ok(adapter->netdev))
+@@ -1886,8 +1904,10 @@ static int atl1c_clean(struct napi_struct *napi, 
+int budget)
+  	if (work_done < budget) {
+  quit_polling:
+  		napi_complete_done(napi, work_done);
++		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
+  		adapter->hw.intr_mask |= ISR_RX_PKT;
+  		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
++		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
+  	}
+  	return work_done;
+  }
+@@ -2325,6 +2345,7 @@ static int atl1c_up(struct atl1c_adapter *adapter)
+  	atl1c_check_link_status(adapter);
+  	clear_bit(__AT_DOWN, &adapter->flags);
+  	napi_enable(&adapter->napi);
++	napi_enable(&adapter->tx_napi);
+  	atl1c_irq_enable(adapter);
+  	netif_start_queue(netdev);
+  	return err;
+@@ -2345,6 +2366,7 @@ static void atl1c_down(struct atl1c_adapter 
+*adapter)
+  	set_bit(__AT_DOWN, &adapter->flags);
+  	netif_carrier_off(netdev);
+  	napi_disable(&adapter->napi);
++	napi_disable(&adapter->tx_napi);
+  	atl1c_irq_disable(adapter);
+  	atl1c_free_irq(adapter);
+  	/* disable ASPM if device inactive */
+@@ -2593,7 +2615,9 @@ static int atl1c_probe(struct pci_dev *pdev, const 
+struct pci_device_id *ent)
+  	adapter->mii.mdio_write = atl1c_mdio_write;
+  	adapter->mii.phy_id_mask = 0x1f;
+  	adapter->mii.reg_num_mask = MDIO_CTRL_REG_MASK;
++	dev_set_threaded(netdev, true);
+  	netif_napi_add(netdev, &adapter->napi, atl1c_clean, 64);
++	netif_napi_add(netdev, &adapter->tx_napi, atl1c_clean_tx, 64);
+  	timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
+  	/* setup the private structure */
+  	err = atl1c_sw_init(adapter);
 -- 
-  Oleksandr Natalenko (post-factum)
+2.31.1
