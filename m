@@ -2,119 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A14F3573DD
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8998A3573FA
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348379AbhDGSDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 14:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348357AbhDGSDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:03:49 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC327C061760
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 11:03:38 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id q26so19663040qkm.6
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 11:03:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=E7qDMlp+Kl/2efqWyQjBtNVcWaQNFkD10uOmOaV4wnE=;
-        b=mL142lxWpoGMt964mBfjH4VySqk9D6qhno904fW/+gYuc3HxhrTbQ/O4WQ4z45TRfe
-         mUHzLT5lWe4GfI662zmx9rXLSVkvi8ompkef92+FpEizuTDQkHnvRG2wcYaWYpNvufqh
-         ndE54pno9X8hooDGcUIXOR2aiCxml8ecT3TJNlzqBQXW8PVRbESlVLcVkAYj8HOejDXA
-         4J4vDFG9vN2socf30kP/mI40eQYABWVacgWEOyptx/6U8udoAwfo8WUBXzHexyWIXj1U
-         PCqIrRn8HK8LR2A5iyVW5Wgsp7KCoSWIpeUT6gXMn2pgAMzpaHWb7Qr0C0iYN0IpQbHQ
-         SPqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=E7qDMlp+Kl/2efqWyQjBtNVcWaQNFkD10uOmOaV4wnE=;
-        b=KrU87ICv+X3mDOCrDkBbAliILF8iXaGURI5QgkSFRopqQqAZYQVCZeYpkbZ3PX1IRP
-         snvrYM8+N3MBhjbYm4UXLMYw8VJqAVl0jUXFUwQXAQqb9K5srdgl2vu+/FzjMsttRYXl
-         nh6mnn+NSmbxNrASkDvVxjmobExZ2rkxt+ElINrWzlrg78ttWhNY4PDNf6BgvbAz63zJ
-         x9tqZKWYD4jK0L3SXCSE5I1eNjG7E8JFsLxIBg+uR5rnCwsUrS1I9ra1R8UtjYrEsKjW
-         1ugB+t1+7w6E0CaaBzSyoHTl5epMG95LCA1zBxYyE9Qml8Gl78MG9FVoNj7kVJsx2eMq
-         /Hyw==
-X-Gm-Message-State: AOAM532GrW+ZdLnu8GJ7PNSnoDFJjLoDvNA6TmArQnTM49Tg8rNG5lNc
-        tdLaaGLdytclbsYlWOmHpJCxkdBalqgR5E/3qVjZPg==
-X-Google-Smtp-Source: ABdhPJwn25Jc8C3JYO4/UNzNVsqh3MCm9Xt+iGUkLnK9jQWIA3c1T02aJCSbEUYhRqF1xPB8WtlsLLsoAGURwqCbVws=
-X-Received: by 2002:a37:6592:: with SMTP id z140mr4508154qkb.464.1617818618120;
- Wed, 07 Apr 2021 11:03:38 -0700 (PDT)
+        id S1348391AbhDGSKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 14:10:43 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:32878 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348221AbhDGSKj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 14:10:39 -0400
+X-Greylist: delayed 350 seconds by postgrey-1.27 at vger.kernel.org; Wed, 07 Apr 2021 14:10:38 EDT
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 137I49dc014753
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 7 Apr 2021 20:04:09 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [RFC net-next 0/1] seg6: Counters for SRv6 Behaviors 
+Date:   Wed,  7 Apr 2021 20:03:31 +0200
+Message-Id: <20210407180332.29775-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Date:   Wed, 7 Apr 2021 20:03:26 +0200
-Message-ID: <CAM1=_QQK3two9faxKbiw+73TiRZA=y2Upxcmv_Eaeu2uKd-oCQ@mail.gmail.com>
-Subject: Completing eBPF JIT support for MIPS32
-To:     linux-mips@vger.kernel.org
-Cc:     paulburton@kernel.org, itugrok@yahoo.com, daniel@iogearbox.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MIPS64 architecture has had an eBPF JIT for quite some time, but
-the kernel still lacks eBPF JIT support for MIPS32. In 2019 there was
-an effort extend the MIPS64 JIT to also support 32-bit MIPS ISAs,
-716850ab104d ("MIPS: eBPF: Initial eBPF support for MIPS32
-architecture."), but the work was never completed. What would be
-needed to bring eBPF JIT support to MIPS32?
+This patch provides counters for SRv6 Behaviors as defined in [1],
+section 6. For each SRv6 Behavior instance, counters defined in [1] are:
 
-According to Paul Burton, 36366e367ee9 ("MIPS: BPF: Restore MIPS32 cBPF JIT")
+ - the total number of packets that have been correctly processed;
+ - the total amount of traffic in bytes of all packets that have been
+   correctly processed;
 
-> The eBPF JIT has a number of problems on MIPS32:
->
-> - Most notably various code paths still result in emission of MIPS64
->   instructions which will cause reserved instruction exceptions & kernel
->   panics when run on MIPS32 CPUs.
->
-> - The eBPF JIT doesn't account for differences between the O32 ABI used
->   by MIPS32 kernels versus the N64 ABI used by MIPS64 kernels. Notably
->   arguments beyond the first 4 are passed on the stack in O32, and this
->   is entirely unhandled when JITing a BPF_CALL instruction. Stack space
->   must be reserved for arguments even if they all fit in registers, and
->   the callee is free to assume that stack space has been reserved for
->   its use - with the eBPF JIT this is not the case, so calling any
->   function can result in clobbering values on the stack & unpredictable
->   behaviour. Function arguments in eBPF are always 64-bit values which
->   is also entirely unhandled - the JIT still uses a single (32-bit)
->   register per argument. As a result all function arguments are always
->   passed incorrectly when JITing a BPF_CALL instruction, leading to
->   kernel crashes or strange behavior.
->
-> - The JIT attempts to bail our on use of ALU64 instructions or 64-bit
->   memory access instructions. The code doing this at the start of
->   build_one_insn() incorrectly checks whether BPF_OP() equals BPF_DW,
->   when it should really be checking BPF_SIZE() & only doing so when
->   BPF_CLASS() is one of BPF_{LD,LDX,ST,STX}. This results in false
->   positives that cause more bailouts than intended, and that in turns
->   hides some of the problems described above.
->
-> - The kernel's cBPF->eBPF translation makes heavy use of 64-bit eBPF
->   instructions that the MIPS32 eBPF JIT bails out on, leading to most
->   cBPF programs not being JITed at all.
+In addition, this patch introduces a new counter that counts the number of
+packets that have NOT been properly processed (i.e. errors) by an SRv6
+Behavior instance.
 
-I can see two different ways to proceed from here.
+Counters are not only interesting for network monitoring purposes (i.e.
+counting the number of packets processed by a given behavior) but they also
+provide a simple tool for checking whether a behavior instance is working
+as we expect or not.
+Counters can be useful for troubleshooting misconfigured SRv6 networks.
+Indeed, an SRv6 Behavior can silently drop packets for very different
+reasons (i.e. wrong SID configuration, interfaces set with SID addresses,
+etc) without any notification/message to the user.
 
-1) Continue the work on the 64-bit eBPF JIT and complete the MIPS32
-support there.
+Due to the nature of SRv6 networks, diagnostic tools such as ping and
+traceroute may be ineffective: paths used for reaching a given router can
+be totally different from the ones followed by probe packets. In addition,
+paths are often asymmetrical and this makes it even more difficult to keep
+up with the journey of the packets and to understand which behaviors are
+actually processing our traffic.
 
-2) Use the 32-bit cBPF JIT as a fresh start for a new 32-bit eBPF JIT
-implementation.
+When counters are enabled on an SRv6 Behavior instance, it is possible to
+verify if packets are actually processed by such behavior and what is the
+outcome of the processing. Therefore, the counters for SRv6 Behaviors offer
+an non-invasive observability point which can be leveraged for both traffic
+monitoring and troubleshooting purposes.
 
-It depends of course on how much effort it would be to fix the
-remaining issues with the current eBPF JIT. On the other hand, since
-eBPF is a 64-bit architecture I would expect the bytecode to translate
-nicely to a 64-bit target, and that a 32-bit JIT might differ a lot.
-For other targets there are often separate 64-bit and 32-bit JIT
-implementations. I also think the JIT support for MIPS32 should make
-it possible to replace the cBPF JIT. That means it cannot fall back to
-use the interpreter as I understand the current (32-bit)
-implementation does to a large extent. Perhaps it would then be
-cleaner to let the 32-bit version be separate implementation.
+[1] https://www.rfc-editor.org/rfc/rfc8986.html#name-counters
 
-Any thoughts and suggestions? What do you think would be the best way forward?
+Troubleshooting using SRv6 Behavior counters
+--------------------------------------------
+
+Let's make a brief example to see how helpful counters can be for SRv6
+networks. Let's consider a node where an SRv6 End Behavior receives an SRv6
+packet whose Segment Left (SL) is equal to 0. In this case, the End
+Behavior (which accepts only packets with SL >= 1) discards the packet and
+increases the error counter.
+This information can be leveraged by the network operator for
+troubleshooting. Indeed, the error counter is telling the user that the
+packet:
+
+  (i) arrived at the node;
+ (ii) the packet has been taken into account by the SRv6 End behavior;
+(iii) but an error has occurred during the processing.
+
+The error (iii) could be caused by different reasons, such as wrong route
+settings on the node or due to an invalid SID List carried by the SRv6
+packet. Anyway, the error counter is used to exclude that the packet did
+not arrive at the node or it has not been processed by the behavior at
+all.
+
+Turning on/off counters for SRv6 Behaviors
+------------------------------------------
+
+Each SRv6 Behavior instance can be configured, at the time of its creation,
+to make use of counters.
+This is done through iproute2 which allows the user to create an SRv6
+Behavior instance specifying the optional "count" attribute as shown in the
+following example:
+
+ $ ip -6 route add 2001:db8::1 encap seg6local action End count dev eth0
+
+per-behavior counters can be shown by adding "-s" to the iproute2 command
+line, i.e.:
+
+ $ ip -s -6 route show 2001:db8::1
+ 2001:db8::1 encap seg6local action End packets 0 bytes 0 errors 0 dev eth0
+
+
+####################################################
+
+
+Impact of counters for SRv6 Behaviors on performance
+====================================================
+
+To determine the performance impact due to the introduction of counters in
+the SRv6 Behavior subsystem, we have carried out extensive tests.
+
+We chose to test the throughput achieved by the SRv6 End.DX2 Behavior
+because, among all the other behaviors implemented so far, it reaches the
+highest throughput which is around 1.5 Mpps (per core at 2.4 GHz on a
+Xeon(R) CPU E5-2630 v3) on kernel 5.12-rc2 using packets of size ~ 100
+bytes.
+
+Three different tests were conducted in order to evaluate the overall
+throughput of the SRv6 End.DX2 Behavior in the following scenarios:
+
+ 1) vanilla kernel (without the SRv6 Behavior counters patch) and a single
+    instance of an SRv6 End.DX2 Behavior;
+ 2) patched kernel with SRv6 Behavior counters and a single instance of
+    an SRv6 End.DX2 Behavior with counters turned off;
+ 3) patched kernel with SRv6 Behavior counters and a single instance of
+    SRv6 End.DX2 Behavior with counters turned on.
+
+All tests were performed on a testbed deployed on the CloudLab facilities
+[2], a flexible infrastructure dedicated to scientific research on the
+future of Cloud Computing.
+
+
+Results of tests are shown in the following table:
+
+Scenario (1): average 1504764,81 pps (~1504,76 kpps); std. dev 3956,82 pps
+Scenario (2): average 1501469,78 pps (~1501,47 kpps); std. dev 2979,85 pps
+Scenario (3): average 1501315,13 pps (~1501,32 kpps); std. dev 2956,00 pps
+
+As can be observed, throughputs achieved in scenarios (2),(3) did not
+suffer any observable degradation compared to scenario (1).
+
+Comments, suggestions and improvements are very welcome!
 
 Thanks,
-Johan
+Andrea
+
+[2] https://www.cloudlab.us
+
+Andrea Mayer (1):
+  seg6: add counters support for SRv6 Behaviors
+
+ include/uapi/linux/seg6_local.h |   8 ++
+ net/ipv6/seg6_local.c           | 133 +++++++++++++++++++++++++++++++-
+ 2 files changed, 139 insertions(+), 2 deletions(-)
+
+-- 
+2.20.1
+
