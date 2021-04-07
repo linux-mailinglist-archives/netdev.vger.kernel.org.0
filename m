@@ -2,68 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A297356C74
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 14:45:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7549356CA4
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 14:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352333AbhDGMpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 08:45:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38052 "EHLO vps0.lunn.ch"
+        id S1352449AbhDGMve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 08:51:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53324 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352293AbhDGMpE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 08:45:04 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lU7Xz-00FJ58-BU; Wed, 07 Apr 2021 14:44:39 +0200
-Date:   Wed, 7 Apr 2021 14:44:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Voon, Weifeng" <weifeng.voon@intel.com>
-Cc:     "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+        id S230234AbhDGMvb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 08:51:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AB93461279;
+        Wed,  7 Apr 2021 12:51:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617799882;
+        bh=m4r6X7ZfydL60kYXm+rHrFPGoJaR2k9l7+B9drZZwHU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Eg/cjZglmOs+0VhFkHOsbQYekE4Y92vEuJBZOVSLDNZVQfAEP1v6sKbxxj2OdpXJF
+         0pZVBfLKcL6GDGHkWX+FLJ+Xr/nMDvmCJ2MUqjdOlIuDdSxbiX9+9H5gpBW0wWqc/8
+         okJfq9ghElwMauqW9owTQlMBIIG2C4oi+Fq/N26+ZHh4y2EZy7aAFTc3MOcAMTHDoV
+         SWwqaCpcAk2IxZojl2RWYV2abb6pcohUL4MVAzo8zpLvQnT7k9KYt9mZgzZtz58nuU
+         BSyTJA/Khnnm0eJmluiWbJil/6fkvj8wVQWGhM6hw21/fvp66BrKBamkWETivurx/0
+         nJY+4P1lqwslQ==
+Date:   Wed, 7 Apr 2021 15:51:18 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "qiangqing.zhang@nxp.com" <qiangqing.zhang@nxp.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Wei Liu <liuwe@microsoft.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v2 0/2] Enable 2.5Gbps speed for stmmac
-Message-ID: <YG2pN8uupbXP7xqU@lunn.ch>
-References: <20210405112953.26008-1-michael.wei.hong.sit@intel.com>
- <YGsMbBW9h4H1y/T8@lunn.ch>
- <CO1PR11MB5044B1F80C412E6F0CAFD5509D779@CO1PR11MB5044.namprd11.prod.outlook.com>
- <YGsgHWItHcLFV9Kg@lunn.ch>
- <SN6PR11MB313690E7953BF715A8F488D688769@SN6PR11MB3136.namprd11.prod.outlook.com>
- <YGy/N+cRLGTifJSN@lunn.ch>
- <SN6PR11MB3136E862F38D7C573759989188759@SN6PR11MB3136.namprd11.prod.outlook.com>
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Message-ID: <YG2qxjPJ4ruas1dI@unreal>
+References: <20210406232321.12104-1-decui@microsoft.com>
+ <YG1o4LXVllXfkUYO@unreal>
+ <MW2PR2101MB08923D4417E44C5750BFB964BF759@MW2PR2101MB0892.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SN6PR11MB3136E862F38D7C573759989188759@SN6PR11MB3136.namprd11.prod.outlook.com>
+In-Reply-To: <MW2PR2101MB08923D4417E44C5750BFB964BF759@MW2PR2101MB0892.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Intel mgbe is flexible to pair with any PHY. Only Aquantia/Marvell
-> multi-gige PHY can do rate adaption right?
+On Wed, Apr 07, 2021 at 08:40:13AM +0000, Dexuan Cui wrote:
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Wednesday, April 7, 2021 1:10 AM
+> > 
+> > <...>
+> > 
+> > > +int gdma_verify_vf_version(struct pci_dev *pdev)
+> > > +{
+> > > +	struct gdma_context *gc = pci_get_drvdata(pdev);
+> > > +	struct gdma_verify_ver_req req = { 0 };
+> > > +	struct gdma_verify_ver_resp resp = { 0 };
+> > > +	int err;
+> > > +
+> > > +	gdma_init_req_hdr(&req.hdr, GDMA_VERIFY_VF_DRIVER_VERSION,
+> > > +			  sizeof(req), sizeof(resp));
+> > > +
+> > > +	req.protocol_ver_min = GDMA_PROTOCOL_FIRST;
+> > > +	req.protocol_ver_max = GDMA_PROTOCOL_LAST;
+> > > +
+> > > +	err = gdma_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
+> > > +	if (err || resp.hdr.status) {
+> > > +		pr_err("VfVerifyVersionOutput: %d, status=0x%x\n", err,
+> > > +		       resp.hdr.status);
+> > > +		return -EPROTO;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +}
+> > 
+> > <...>
+> > > +	err = gdma_verify_vf_version(pdev);
+> > > +	if (err)
+> > > +		goto remove_irq;
+> > 
+> > Will this VF driver be used in the guest VM? What will prevent from users to
+> > change it?
+> > I think that such version negotiation scheme is not allowed.
+> 
+> Yes, the VF driver is expected to run in a Linux VM that runs on Azure.
+> 
+> Currently gdma_verify_vf_version() just tells the PF driver that the VF driver
+> is only able to support GDMA_PROTOCOL_V1, and want to use
+> GDMA_PROTOCOL_V1's message formats to talk to the PF driver later.
+> 
+> enum {
+>         GDMA_PROTOCOL_UNDEFINED = 0,
+>         GDMA_PROTOCOL_V1 = 1,
+>         GDMA_PROTOCOL_FIRST = GDMA_PROTOCOL_V1,
+>         GDMA_PROTOCOL_LAST = GDMA_PROTOCOL_V1,
+>         GDMA_PROTOCOL_VALUE_MAX
+> };
+> 
+> The PF driver is supposed to always support GDMA_PROTOCOL_V1, so I expect
+> here gdma_verify_vf_version() should succeed. If a user changes the Linux VF
+> driver and try to use a protocol version not supported by the PF driver, then
+> gdma_verify_vf_version() will fail; later, if the VF driver tries to talk to the PF
+> driver using an unsupported message format, the PF driver will return a failure.
 
-The Marvell/Marvell multi-gige PHY can also do rate
-adaptation. Marvell buying Aquantia made naming messy :-(
-I should probably use part numbers.
+The worry is not for the current code, but for the future one when you will
+support v2, v3 e.t.c. First, your code will look like a spaghetti and
+second, users will try and mix vX with "unsupported" commands just for the
+fun.
 
-> Hence, we still need to take care of others PHYs.
+Thanks
 
-Yes, it just makes working around the broken design harder if you want
-to get the most out of the hardware.
-
-   Andrew
+> 
+> Thanks,
+> -- Dexuan
