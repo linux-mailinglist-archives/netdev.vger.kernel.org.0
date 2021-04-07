@@ -2,55 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D5D3357464
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:32:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DDA35747A
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355342AbhDGScF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 14:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
+        id S237698AbhDGSnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 14:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbhDGScD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:32:03 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0864C06175F;
-        Wed,  7 Apr 2021 11:31:53 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id e188so10166049ybb.13;
-        Wed, 07 Apr 2021 11:31:53 -0700 (PDT)
+        with ESMTP id S233348AbhDGSnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:43:24 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041C5C061761
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 11:43:15 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id g24so14530807qts.6
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 11:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cilium-io.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Kn69rhRMMVrayDs5H+UzYud2Z7b87MPu6OYNo7BSq9A=;
-        b=Q2cgRQjRQoFVUE6O76KGZGQ0T10GT/8WWUQ4aLFIvZB1FdDAVI7p0zTOtKA3w5gmxC
-         GJ9+qEn9Pl6LOQDUOz/2AscK4HGX/1pzTtrWrclrliS9UWu2vetCXRLORs9r1/0BGOll
-         z4+IUGKVMpbbjvfjr/Cer+mqJQIqGPMQaVcF5Wyn9jFeVGrczf9AvISUdu3E3Z08gfCa
-         tqIR2B9NeRkhhNaVWenAAVcYue4UsqlMAHKD8aTXMxbjTHbTowFcZ9tqnt9JmYZmEz7E
-         /9dWXUufoX7o7RKzVcI7hhwlnKcS3T8x6l6I9Z/4vTJoPub06WYZ4jEsnzbDbBkuD1Tm
-         E7bw==
+        bh=lwseBhtjiF9OLa/jt/21tHXtZHL6eXnMpFccp0D93oY=;
+        b=uoMiJ2FEhGCc7gKHBuuZ8Lu3bgwTY9u5HJf2rqcNzrQRKfWvOYRaBsgCgYY5Df4qFm
+         arboEx9wv/v+Kccpy0SCr+AnEhg3JuAmS3Sr8yOXei9b13OuBNK0oEcEKzUb6/6uMyqc
+         VZLVOvQNk+P/VuJgSsN9RgJYn6YjdvmDTeISgIB4AVBhZkS2IpJJ7h4udOxe+vopBnqd
+         fblwQvTGkM+kGkq0PD83o05gaIl7Fjyve3bttBIj/wSFiHK0Q6Hy6fdQ+5ZcjccBu8x7
+         mWQ05BMG/SxhZXf0TQpYkHfOIQjM272nLSnDhTQA/pC/bXmLC7U6oKHHJ7l2yE75Fbvl
+         MZ1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Kn69rhRMMVrayDs5H+UzYud2Z7b87MPu6OYNo7BSq9A=;
-        b=tjp51UgVsUw9dveE7K+1oE+bd3Ctnq4pJWYA80F2s6HXG/IPD6zUI1wBC5aQ09xQ24
-         aLD50NVBF0W3F/VorcOvnLwIkztiN/jne3Yx12u/0sEQvqHKqTmktiD7nHPa3NsoxP65
-         /20f+ukdNa15M93YFwfoPnVJ1HMx/QrnvPkLVFsGUPGRZjdtNURNhdpL0JTJf4xhVUWx
-         lHgurknNNJ8op4EfRYXJqhWG9U7ORFdhNcA1tDZ8ZvY2iBxSA999yUS5tA3dZ4m9U4LV
-         b2A408wYtpDIbCDVr+ciAS6DqKHZ+EJPyVrm4E1sVOfX2d9uVeiorzisCFwp5CfQj4Bz
-         GHmA==
-X-Gm-Message-State: AOAM532eVSixlRrilev70gKpirjFw1UwiE5lI6tmv/ZWNOjEi6qHK1GH
-        kA1uc41GWFfz5BAHqpgFgXp2jQIqm+IdmCtEC1c=
-X-Google-Smtp-Source: ABdhPJwyD46iJ/cTYmc9rpHBrMJfjKJ5VR+417ZI8GKSj4oYvi0t0OHizfMM7YPKvVsq94rSk7oftNhfxDjL2qjXeCo=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr6307629ybo.230.1617820312912;
- Wed, 07 Apr 2021 11:31:52 -0700 (PDT)
+        bh=lwseBhtjiF9OLa/jt/21tHXtZHL6eXnMpFccp0D93oY=;
+        b=XbVJ3vhNrfZHGiYk+y0mc5yoAh0nowcehp15nHcVzFqjaCrQAqBaPFsGz4Pp01CTDb
+         4KwECcBwH0c+p4fzorRbsnhfput3J/0JUGrW/lqQKEZb4JgQXhlxXXgHSE35xlTLvcaH
+         DV67aDWTcfxQcjKJ8daBk3hcKBPXJjemy99LuZg/oTLweT1uEpfySbNhisauxjsNOw8f
+         BT9u1BvWA4CmPoQD6mZWAjwRhpHkpHyuO88Dl9UWzwhX0RpKe41piZq9L4D6oU+RO5n5
+         cVHDTM/DytevgFIyE8EDHz67OkD8ZiPSAm5XN+ZU7qA5xSRIZxneo+7LwVoPYzB8vhvq
+         2kyw==
+X-Gm-Message-State: AOAM530sDTRUZxZ+oImWK0vYcbKtbGDanCU1PHqrCRcl5eD0zD1TLs3o
+        d5dmEagqZUOwKRIlz0Apzp/A+dgwLGsE/N6568o=
+X-Google-Smtp-Source: ABdhPJzPUnxUh0Y3OTUxakdfQh5qa9BFLglLXJ1PfQIGwLP6bz3NPGfGbbi0iwj/kBP+pGi1mNxQrw==
+X-Received: by 2002:ac8:4d8b:: with SMTP id a11mr3958359qtw.302.1617820993800;
+        Wed, 07 Apr 2021 11:43:13 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id o125sm18807190qkf.87.2021.04.07.11.43.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Apr 2021 11:43:12 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id l9so6874343ybm.0;
+        Wed, 07 Apr 2021 11:43:12 -0700 (PDT)
+X-Received: by 2002:a25:2e4d:: with SMTP id b13mr5948575ybn.199.1617820992048;
+ Wed, 07 Apr 2021 11:43:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210406185400.377293-1-pctammela@mojatatu.com> <20210406185400.377293-3-pctammela@mojatatu.com>
-In-Reply-To: <20210406185400.377293-3-pctammela@mojatatu.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 7 Apr 2021 11:31:42 -0700
-Message-ID: <CAEf4BzYmj_ZPDq8Zi4dbntboJKRPU2TVopysBNrdd9foHTfLZw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/3] libbpf: selftests: refactor
- 'BPF_PERCPU_TYPE()' and 'bpf_percpu()' macros
+References: <20210406185806.377576-1-pctammela@mojatatu.com>
+In-Reply-To: <20210406185806.377576-1-pctammela@mojatatu.com>
+From:   Joe Stringer <joe@cilium.io>
+Date:   Wed, 7 Apr 2021 11:42:33 -0700
+X-Gmail-Original-Message-ID: <CAOftzPgmZSB7oWDLLoO-NEDq3s8LdLxSXdhoaB2feScuTP-JSA@mail.gmail.com>
+Message-ID: <CAOftzPgmZSB7oWDLLoO-NEDq3s8LdLxSXdhoaB2feScuTP-JSA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: clarify flags in ringbuf helpers
 To:     Pedro Tammela <pctammela@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -58,106 +66,43 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        David Verbeiren <david.verbeiren@tessares.net>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
         "open list:BPF (Safe dynamic programs and tools)" 
         <netdev@vger.kernel.org>,
         "open list:BPF (Safe dynamic programs and tools)" 
         <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
+        Pedro Tammela <pctammela@mojatatu.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 6, 2021 at 11:55 AM Pedro Tammela <pctammela@gmail.com> wrote:
+Hi Pedro,
+
+On Tue, Apr 6, 2021 at 11:58 AM Pedro Tammela <pctammela@gmail.com> wrote:
 >
-> This macro was refactored out of the bpf selftests.
+> In 'bpf_ringbuf_reserve()' we require the flag to '0' at the moment.
 >
-> Since percpu values are rounded up to '8' in the kernel, a careless
-> user in userspace might encounter unexpected values when parsing the
-> output of the batched operations.
-
-I wonder if a user has to be more careful, though? This
-BPF_PERCPU_TYPE, __bpf_percpu_align and bpf_percpu macros seem to
-create just another opaque layer. It actually seems detrimental to me.
-
-I'd rather emphasize in the documentation (e.g., in
-bpf_map_lookup_elem) that all per-cpu maps are aligning values at 8
-bytes, so user has to make sure that array of values provided to
-bpf_map_lookup_elem() has each element size rounded up to 8.
-
-In practice, I'd recommend users to always use __u64/__s64 when having
-primitive integers in a map (they are not saving anything by using
-int, it just creates an illusion of savings). Well, maybe on 32-bit
-arches they would save a bit of CPU, but not on typical 64-bit
-architectures. As for using structs as values, always mark them as
-__attribute__((aligned(8))).
-
-Basically, instead of obscuring the real use some more, let's clarify
-and maybe even provide some examples in documentation?
-
->
-> Now that both array and hash maps have support for batched ops in the
-> percpu variant, let's provide a convenient macro to declare percpu map
-> value types.
->
-> Updates the tests to a "reference" usage of the new macro.
+> For 'bpf_ringbuf_{discard,submit,output}' a flag of '0' might send a
+> notification to the process if needed.
 >
 > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 > ---
->  tools/lib/bpf/bpf.h                           | 10 ++++
->  tools/testing/selftests/bpf/bpf_util.h        |  7 ---
->  .../bpf/map_tests/htab_map_batch_ops.c        | 48 ++++++++++---------
->  .../selftests/bpf/prog_tests/map_init.c       |  5 +-
->  tools/testing/selftests/bpf/test_maps.c       | 16 ++++---
->  5 files changed, 46 insertions(+), 40 deletions(-)
+>  include/uapi/linux/bpf.h       | 7 +++++++
+>  tools/include/uapi/linux/bpf.h | 7 +++++++
+>  2 files changed, 14 insertions(+)
 >
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 49371eba98ba..8c5c7a893b87 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4061,12 +4061,15 @@ union bpf_attr {
+>   *             of new data availability is sent.
+>   *             If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, notification
+>   *             of new data availability is sent unconditionally.
+> + *             If **0** is specified in *flags*, notification
+> + *             of new data availability is sent if needed.
 
-[...]
-
-> @@ -400,11 +402,11 @@ static void test_arraymap(unsigned int task, void *data)
->  static void test_arraymap_percpu(unsigned int task, void *data)
->  {
->         unsigned int nr_cpus = bpf_num_possible_cpus();
-> -       BPF_DECLARE_PERCPU(long, values);
-> +       pcpu_map_value_t values[nr_cpus];
->         int key, next_key, fd, i;
->
->         fd = bpf_create_map(BPF_MAP_TYPE_PERCPU_ARRAY, sizeof(key),
-> -                           sizeof(bpf_percpu(values, 0)), 2, 0);
-> +                           sizeof(long), 2, 0);
->         if (fd < 0) {
->                 printf("Failed to create arraymap '%s'!\n", strerror(errno));
->                 exit(1);
-> @@ -459,7 +461,7 @@ static void test_arraymap_percpu(unsigned int task, void *data)
->  static void test_arraymap_percpu_many_keys(void)
->  {
->         unsigned int nr_cpus = bpf_num_possible_cpus();
-
-This just sets a bad example for anyone using selftests as an
-aspiration for their own code. bpf_num_possible_cpus() does exit(1)
-internally if libbpf_num_possible_cpus() returns error. No one should
-write real production code like that. So maybe let's provide a better
-example instead with error handling and malloc (or perhaps alloca)?
-
-> -       BPF_DECLARE_PERCPU(long, values);
-> +       pcpu_map_value_t values[nr_cpus];
->         /* nr_keys is not too large otherwise the test stresses percpu
->          * allocator more than anything else
->          */
-> @@ -467,7 +469,7 @@ static void test_arraymap_percpu_many_keys(void)
->         int key, fd, i;
->
->         fd = bpf_create_map(BPF_MAP_TYPE_PERCPU_ARRAY, sizeof(key),
-> -                           sizeof(bpf_percpu(values, 0)), nr_keys, 0);
-> +                           sizeof(long), nr_keys, 0);
->         if (fd < 0) {
->                 printf("Failed to create per-cpu arraymap '%s'!\n",
->                        strerror(errno));
-> --
-> 2.25.1
->
+Maybe a trivial question, but what does "if needed" mean? Does that
+mean "when the buffer is full"?
