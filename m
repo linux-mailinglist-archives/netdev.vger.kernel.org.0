@@ -2,162 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7929E3571E9
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E02DE357215
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245137AbhDGQK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 12:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
+        id S235009AbhDGQZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 12:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbhDGQKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 12:10:54 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED212C061760;
-        Wed,  7 Apr 2021 09:10:38 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 18A9F22236;
-        Wed,  7 Apr 2021 18:10:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1617811836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gjuAN9QqCnWD77UCettma95Ojaeyk86+8J2wmtLYYZo=;
-        b=i99BezLwmPOE6w4/hGL0FvjE3br7uwuw9VGO9aRg8uJTlzeGu8Ac4FIxGX9vOQ8oMVP/r/
-        vE3I00R508lGU6R1pfNebHfFNtH5wO92z1+kMGfRRoMcmLezfBux9iSvegup2fWrGU4qza
-        5flIWUW4ulzNHWTXNBqNWa8WPLM3Izs=
+        with ESMTP id S232387AbhDGQZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 12:25:50 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AC6C061756;
+        Wed,  7 Apr 2021 09:25:41 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id k25so13107793iob.6;
+        Wed, 07 Apr 2021 09:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pqiCYkner6ZTxNFtdDpH2AHRS2ZxI0TvEOALrDZMWM8=;
+        b=F8DAUtDvy2Y1CM+3PG+i6uVmIgwhb6Ap0hTHLqNtVUhEUxecdZsmGckJegT6PEBraX
+         t/wDjgdowWYbxXu25KGwNpCmkfCIbN76M+u7VigfkG1h9xazMD7FPIoN4dwtDk8o/Hkc
+         fwX9bOA8bOtdEWiWkiAu7Q6lEsPpj1dkHVrxVXaydz534llEwTaic6GAqqdGOY5hkvk0
+         Jp/amcMxs0brLDQqkLOWg2Qjqaigwl+S2R0Ew8hJFrtuTwP7tyDKmqbq5FvRgTsAq2hK
+         koR2cAnxjarSPDF9FDsDECysTSiepMTdlCMUcxSUdCJ7b9M4c1VlvI+68dopp2bdBj3t
+         ZUrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pqiCYkner6ZTxNFtdDpH2AHRS2ZxI0TvEOALrDZMWM8=;
+        b=ZOYmXW4CtYqiM3i8OY3mC7eeWf9H9JXvJuxMdX1MZ35cUgLxBtiMyfRZZ18Ygb/xBl
+         5bEnF4TmWrWt5940LYFi9qVONgWH7V/k7nFfiXbSZRXN8dea5xR1LNYDMqk6lU4jdAGp
+         bQdGnBvonPHjC86a9J5WxcaXnuNWS7yJzhK0f4r+ddQEMXc/UiWHrsLe5OSBTVJW1H9k
+         Q00Xiq94MrowKISwzgCwsism1Qavq/+bVBDv/eGxMm4oeWlQVnZLFzVR7WASbFx8RrwU
+         t0Y4YlZATbEgtibXhll7nljFdJP1xgWLGhgfjNIu83CIxe+a//rpotRnJDB0jzsHMG0E
+         zVxA==
+X-Gm-Message-State: AOAM531xjJbUbqmuov59cJn9Pq/6Bx/RiCnjOYlT6c66NLBLCkSXoIU2
+        KT4aFQBejw6mM0O5m05pfTuZaOwTp7teanW6N+9HaWdQAWs=
+X-Google-Smtp-Source: ABdhPJzmzLaJF4Sotf9VFZCX75ULTqB4tb9ZLVKroKizHCJhALSVb7AKGj+kS+HedLYZBjNhj5bzWEkFoxnaV9BDWYI=
+X-Received: by 2002:a6b:f909:: with SMTP id j9mr3208715iog.138.1617812740182;
+ Wed, 07 Apr 2021 09:25:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 07 Apr 2021 18:10:30 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     ath9k-devel@qca.qualcomm.com, UNGLinuxDriver@microchip.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-amlogic@lists.infradead.org, linux-oxnas@groups.io,
-        linux-omap@vger.kernel.org, linux-wireless@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-staging@lists.linux.dev
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Andreas Larsson <andreas@gaisler.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Joyce Ooi <joyce.ooi@intel.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Byungho An <bh74.an@samsung.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Wingman Kwok <w-kwok2@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?J=C3=A9r=C3=B4me?= =?UTF-8?Q?_Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 1/2] of: net: pass the dst buffer to
- of_get_mac_address()
-In-Reply-To: <20210406220921.24313-2-michael@walle.cc>
-References: <20210406220921.24313-1-michael@walle.cc>
- <20210406220921.24313-2-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <50f474611ecf0f5e61c9a14a24b28773@walle.cc>
-X-Sender: michael@walle.cc
+References: <20210406123619.rhvtr73xwwlbu2ll@spock.localdomain>
+ <20210406114734.0e00cb2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210407060053.wyo75mqwcva6w6ci@spock.localdomain> <20210407083748.56b9c261@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210407083748.56b9c261@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 7 Apr 2021 09:25:28 -0700
+Message-ID: <CAKgT0UfLLQycLsAZQ98ofBGYPwejA6zHbG6QsNrU92mizS7e0g@mail.gmail.com>
+Subject: Re: [igb] netconsole triggers warning in netpoll_poll_dev
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        linux-kernel@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-04-07 00:09, schrieb Michael Walle:
-[..]
-> diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
-> index bc0a27de69d4..2d5d5e59aea5 100644
-> --- a/drivers/of/of_net.c
-> +++ b/drivers/of/of_net.c
-> @@ -45,42 +45,35 @@ int of_get_phy_mode(struct device_node *np,
-> phy_interface_t *interface)
->  }
->  EXPORT_SYMBOL_GPL(of_get_phy_mode);
-> 
-> -static const void *of_get_mac_addr(struct device_node *np, const char 
-> *name)
-> +static int of_get_mac_addr(struct device_node *np, const char *name, 
-> u8 *addr)
->  {
->  	struct property *pp = of_find_property(np, name, NULL);
-> 
-> -	if (pp && pp->length == ETH_ALEN && is_valid_ether_addr(pp->value))
-> -		return pp->value;
-> -	return NULL;
-> +	if (pp && pp->length == ETH_ALEN && is_valid_ether_addr(pp->value)) {
-> +		ether_addr_copy(addr, pp->value);
+On Wed, Apr 7, 2021 at 8:37 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 7 Apr 2021 08:00:53 +0200 Oleksandr Natalenko wrote:
+> > Thanks for the effort, but reportedly [1] it made no difference,
+> > unfortunately.
+> >
+> > [1] https://bugzilla.kernel.org/show_bug.cgi?id=212573#c8
+>
+> The only other option I see is that somehow the NAPI has no rings.
+>
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index a45cd2b416c8..24568adc2fb1 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -7980,7 +7980,7 @@ static int igb_poll(struct napi_struct *napi, int budget)
+>         struct igb_q_vector *q_vector = container_of(napi,
+>                                                      struct igb_q_vector,
+>                                                      napi);
+> -       bool clean_complete = true;
+> +       bool clean_complete = q_vector->tx.ring || q_vector->rx.ring;
+>         int work_done = 0;
+>
+>  #ifdef CONFIG_IGB_DCA
 
-Mh, I guess this should rather be memcpy(addr, pp->value, ETH_ALEN) 
-because
-ether_addr_copy() needs 2 byte aligned source and destination buffers.
-
--michael
+It might make sense to just cast the work_done as a unsigned int, and
+then on the end of igb_poll use:
+  return min_t(unsigned int, work_done, budget - 1);
