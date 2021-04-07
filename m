@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0583562B2
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 06:51:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9547C3562B5
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 06:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344784AbhDGEvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 00:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        id S1344933AbhDGEva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 00:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245635AbhDGEvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 00:51:19 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989B4C06174A;
-        Tue,  6 Apr 2021 21:51:08 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id t22so4944799pgu.0;
-        Tue, 06 Apr 2021 21:51:08 -0700 (PDT)
+        with ESMTP id S1344432AbhDGEvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 00:51:24 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB719C06174A;
+        Tue,  6 Apr 2021 21:51:14 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id q6-20020a17090a4306b02900c42a012202so640965pjg.5;
+        Tue, 06 Apr 2021 21:51:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kob9kM8qKEEzCOzsXAg0KIs7vHQIWVRh0w9PgAne0+0=;
-        b=dXTMJsZg/GrMTU0c/AixIr4aU/BTqwR2QxgJV/NuQIgJcB0lxw9kDiw403clhmF4fO
-         2aOvAhOEp4uPWww5BxjpbNMunetyw2lgnAHILhPrl1cWpjdFi3zjawLn8xbUGDymzaKF
-         RwB+wxHe96459XPgigMcPLBBMNrn8cTytSM1Mcw0WSR1bDNzRzyusv/9PGniwBECy9DS
-         VC2KlWjgDdQmS/3rkaTaqkX05KHlcFaJZSiq61cFfIiDE7lMCRkQUToTz5eKGkBxnylh
-         Qbw1ARx7qE7XLqlE7ZVnWhRoD3o9wpyINNUIQQzzqpH60RFLWTE3iErbNcucGU8pgrya
-         ttOw==
+        bh=V+6L2oYqEs/QSzIuajaQppBr7eHY4K1Hd4WvlAlIz/c=;
+        b=UeAdH92teKX9nqcjZrk6pjPXGRY/rZBLvzZum7GHe0oWmKCSm4tAQ4eAOvRQAT5pgy
+         PF7nSdVhu89VA+F1sjXLLRN9YSm8CeaAXQm/HThDqjJ/5qxZTBR0FRr4iPTXGv44eaAh
+         mn32RaEya6zyckqOH+zEUfmh1v7kWe2tPpGev7txR5rly1tFsWI0fsbXkxy2kYwdtN6n
+         rJEZFeVZV7hA743py53NBrlmr/2FAbsMfrg0Y+ugHTzfLkphin/HBXO1pEkySxvaYL3O
+         Ma86/uJ93tkIAFC9A8krTtyTUfP5xZ9R/ZuHxTfrbv7ljpg4SB2C+Y4kOLzRpAWdVssR
+         rg8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kob9kM8qKEEzCOzsXAg0KIs7vHQIWVRh0w9PgAne0+0=;
-        b=rYKhB6sXd5904t/DwzM+Y2twjA4gFP76pcXAxl9umpts/jlDL1NFvxQj2PxpJ1DxXe
-         J9UhLqDG6azPoOQBjVRZTQ+/bEHGvru7adcz9IjNvbFVJZv3mDs7gcKHUlek6HGO6sBo
-         dr+O2iCkAp6+Ivx+6MN73TeRLFNJH1NuQXgcaO0WLiIL/mdtrMhZKg4pJAn6cfIhQYaQ
-         e57yY6kXK9FHPEvQsJJrpyo6wd6VtppjYsSahlmEp07NJF5372GGfOrUMd8KIA76eS2w
-         H1bUw/jrl5Mv2wGx75XSLme8B8kyWYu0ihgw8nYzohVdHqkrVFFtxvIvIG/7TV4gJzp5
-         UlOg==
-X-Gm-Message-State: AOAM532uzw7klmE/qqyG+IcQpMmL2G7Lf3ztawRtldNnKxoiroPmRb7+
-        r1wV82bZV/o4Ug7u1hLWoBk=
-X-Google-Smtp-Source: ABdhPJxHn4yrsH/2HhCjyRtJImSN9tdocViiuu22y/xFL0ocTxflw1/WU2qpIbwdS8dCJYJWpo/fmg==
-X-Received: by 2002:a63:5458:: with SMTP id e24mr1566769pgm.170.1617771068271;
-        Tue, 06 Apr 2021 21:51:08 -0700 (PDT)
+        bh=V+6L2oYqEs/QSzIuajaQppBr7eHY4K1Hd4WvlAlIz/c=;
+        b=cOArZdJ8Mv/IutBLmRZOYTS+RNNFXbwTeqw2wVjzHB0OdYNhHy8R9QsST+SXySpRGj
+         kuLIk04N2hmOn73UyyzvnCk0FNZMV11QltvDS8zohdH699H0jKhmlokqHkv6dtB11Vn3
+         jpIfJaUUTOxM3Xk2CPoxWrGZPOD9aDbLUaM9pLIcOPxwHB9AgoqBYQ76t7FKBmVWw8Ke
+         prReyYT3oFVVsoJy09Ep9irsA6rZiCKONlJaYdROwLVCpUr2Ag9oAc0giJU82IYGy/UZ
+         wu/zWIn1OrRBnGbEOVWPiurX3RqT3TzJLp56BoY8EibxXBb5CyQUFfplTve27Fv/60VF
+         HKMQ==
+X-Gm-Message-State: AOAM532LbanVhFbUfHC/u0tBcqCrAVuCGQUkQ3OW+PMfOdZXtbgHZ182
+        3WI1KSbz5zKIbNzC52TnSRw=
+X-Google-Smtp-Source: ABdhPJwwV7+KRnS4AYoBBARd+AzL4vj5vm1mLsxuvTDRCFHHfrgCqfllBL734AbDkmtPtKYUoSdcVA==
+X-Received: by 2002:a17:902:ea10:b029:e8:e2e9:d9a5 with SMTP id s16-20020a170902ea10b02900e8e2e9d9a5mr1414313plg.22.1617771074590;
+        Tue, 06 Apr 2021 21:51:14 -0700 (PDT)
 Received: from localhost.localdomain ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id n52sm882679pfv.13.2021.04.06.21.51.02
+        by smtp.gmail.com with ESMTPSA id n52sm882679pfv.13.2021.04.06.21.51.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Apr 2021 21:51:08 -0700 (PDT)
+        Tue, 06 Apr 2021 21:51:14 -0700 (PDT)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -69,9 +69,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Weijie Gao <weijie.gao@mediatek.com>,
         Chuanhong Guo <gch981213@gmail.com>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [RFC v2 net-next 3/4] dt-bindings: net: dsa: add MT7530 interrupt controller binding
-Date:   Wed,  7 Apr 2021 12:50:37 +0800
-Message-Id: <20210407045038.1436843-4-dqfext@gmail.com>
+Subject: [RFC v2 net-next 4/4] staging: mt7621-dts: enable MT7530 interrupt controller
+Date:   Wed,  7 Apr 2021 12:50:38 +0800
+Message-Id: <20210407045038.1436843-5-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210407045038.1436843-1-dqfext@gmail.com>
 References: <20210407045038.1436843-1-dqfext@gmail.com>
@@ -81,32 +81,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add device tree binding to support MT7530 interrupt controller.
+Enable MT7530 interrupt controller in the MT7621 SoC.
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
 RFC v1 -> RFC v2:
 - No changes.
 
- Documentation/devicetree/bindings/net/dsa/mt7530.txt | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/staging/mt7621-dts/mt7621.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/mt7530.txt b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
-index de04626a8e9d..26b34888eb62 100644
---- a/Documentation/devicetree/bindings/net/dsa/mt7530.txt
-+++ b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
-@@ -81,6 +81,11 @@ Optional properties:
- - gpio-controller: Boolean; if defined, MT7530's LED controller will run on
- 	GPIO mode.
- - #gpio-cells: Must be 2 if gpio-controller is defined.
-+- interrupt-controller: Boolean; Enables the internal interrupt controller.
-+
-+If interrupt-controller is defined, the following property is required.
-+
-+- interrupts: Parent interrupt for the interrupt controller.
+diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
+index 16fc94f65486..ebf8b0633e88 100644
+--- a/drivers/staging/mt7621-dts/mt7621.dtsi
++++ b/drivers/staging/mt7621-dts/mt7621.dtsi
+@@ -447,6 +447,9 @@ switch0: switch0@0 {
+ 				mediatek,mcm;
+ 				resets = <&rstctrl 2>;
+ 				reset-names = "mcm";
++				interrupt-controller;
++				interrupt-parent = <&gic>;
++				interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
  
- See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
- required, optional properties and how the integrated switch subnodes must
+ 				ports {
+ 					#address-cells = <1>;
 -- 
 2.25.1
 
