@@ -2,171 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67462356FEC
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 17:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1681E356FFB
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 17:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234119AbhDGPOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 11:14:16 -0400
-Received: from mail-bn8nam12on2086.outbound.protection.outlook.com ([40.107.237.86]:61536
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S1353427AbhDGPRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 11:17:06 -0400
+Received: from mail-dm6nam11on2100.outbound.protection.outlook.com ([40.107.223.100]:45793
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1353380AbhDGPOM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 11:14:12 -0400
+        id S232001AbhDGPRF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 11:17:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=giRIcVlPUr9sA4/QGOWPrJNyTZoN4LCDopV2ez1o66YXfyEj2CfkK6Cc6pE2GpDA+0PTtWeSjcD5lt2UuUwhz8XDM/qzDzADdu1SpkOkLfMHZ48oxGCX1sxrr9n/XqEkc5EMmf1AI0bYo4NRbd+pNforVteizM2F7snm4hMYGpkk3eOS8bFDs5picgHx/wNQbLd2Xl3uXxr8V6kPpMdltuHN+ERkx1YRHoh5JD/AxY8oOFOffSzKvb1COED+ZlKPlM0SX8wl4ycJPQT/BJu+8J7FUxKD2yE4kAVDjuzIBqBrbsFOCgzgSi3ZesDnxoybNIf092nMe8Y18oeVA3zDBA==
+ b=cMwaLmwGF5We2NYCDlnx9jQR4gPATjLb0swTjGkMafz5Zd4SqLUzIOKiZUui44kwKD35Wm1wvmOEp0cFVksZQTLzl1qnnpURROa+q4wGG0EaIdFLtB26lMObqP+r+c3bxNAcIstPY2TteLCjcvEbkM9UGKVpYVGbe6k4tXDWRTNkeWf6KVwH9idCQG2WUxdCvOhzjsZ5h/TG2qATnFDjtzCPFTbD3EIk0ZUlUKLlZF90qhmr6HHvPwdBD4jkay2fT6sXZ0CofHenYi6nT0ofmuMgpc+2xDt5NyJh2OsAGmLT5nUAxVXFuHdPAC5ZJO9yMi4TvymW7lTgSnKnnKsQ8w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tUv143bcuRi2EFMp1m5OFKn9N2xZ2jwz+laTpAeTINU=;
- b=ZyUkKKXGXjyN6wf1dwmC3BAQYwaQ+VZI4bHnW1KurFHU8lnbtOsFZRPB6oTYBe7ODQ1QAQuhVkgaNicDP0k1eGS03RA+tzlnuMcnyCLUCOyjoOwnvZFm4fPNz1RJflu98azWyNeHrfMA/JglRV6PCSfgsXMGazrK9quUt+YzN8lUa9kQW6fT0HUszy+7AtEfuI5C5OhYiAHX7uVOGENWfQxu8CsloJmt4+xT7b8xuFgMKyJ0+9j0J4XCLhWcQc3AQLwlj6ioCFEJW0EhcnVPIo/buZNmFaMOC6KQThAAEIk9uYHYnsiurptbnL1AA46mYfrR9cxtyvrndiX2ps17Og==
+ bh=Jn3t7GNHwxNK7HB81uJkmA6/dbFDeSl1b9ZMahOY4ok=;
+ b=fm7xbLyBBAwriIenVa/n8RpwdRTWNdr/plKYl5oi8q1VJp04jhW05Z36SzhQnyKWeMB1jtWP75MnKB9yfTpT53rnhKLFpRvjNdB/k9kgrK7EoFH54BX+7sg+rWgkSEL/A0qBNp34lauRhDb+YCeU0A3CpEd5Tyn5OqswSwu/G0c9lLHgdYCykTi2ymE6Kl8kETk60Gu2RMMajGesGj9KVG82wg7X5hCc4lYpCS20dOkBoR7zdsT+sGefLkmYCMcxGapeV066LZc5klsuk7iBZvnMVtYd9MU1skzgHao7H9ZHJ+xNuX8xnUMmE7ajCdsBrN7QJGQIiZ68yYnymcB40w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tUv143bcuRi2EFMp1m5OFKn9N2xZ2jwz+laTpAeTINU=;
- b=LoPck79pvmUQ6DI691u0Vnh8mFVZzv6ZZcxELyo71Kgu+Rfg/s0UkQHF8KBWVyBeqR0YDMd6H/PA5Ef0CTA/dKyuqIJ+V1J1ywymAfs6vSSbD3HWSgxNB6vvH/ueKpbipos7JCzRET70/Qi/ma0VpU6xkbKMH/39Q6G3q2ifwPoKoaE8NCiBhKlcYJp25iQiI1zX6cYkN284nQncx/HdsV8gT5ORKguo32wxev54HNh6f0Ui6OQXH7UlTsBH792feW0oPNRDNmbsIe1Gvpmf2PXQInxe+UordHTVXxqRmpKo8avMBExHI9fMn96OmfWnYPvsZflD7fbbgKqppzzvyA==
-Authentication-Results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4499.namprd12.prod.outlook.com (2603:10b6:5:2ab::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17; Wed, 7 Apr
- 2021 15:14:01 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3999.032; Wed, 7 Apr 2021
- 15:14:01 +0000
-Date:   Wed, 7 Apr 2021 12:13:59 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+ bh=Jn3t7GNHwxNK7HB81uJkmA6/dbFDeSl1b9ZMahOY4ok=;
+ b=erlJ7vscvn9xSt0t73611FTBU54fcXxr1ZzVPxW1FxSPclE/oTX+U/k3wEx9vqoKqrltfiTNnfM2BGJKyF1e5s8z6Qohha5Rf/bp4enLnr7DtCyXXpVKoXURkedeDXgFH0HV7VuqThe/hNQULQ5/CHpLy9TnkyRBTI0hM+tDluE=
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ (2603:10b6:207:30::18) by MN2PR21MB1391.namprd21.prod.outlook.com
+ (2603:10b6:208:203::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.4; Wed, 7 Apr
+ 2021 15:16:54 +0000
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::e015:f9cd:dece:f785]) by BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::e015:f9cd:dece:f785%3]) with mapi id 15.20.4042.006; Wed, 7 Apr 2021
+ 15:16:54 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Wei Liu <wei.liu@kernel.org>
+CC:     Dexuan Cui <decui@microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <liuwe@microsoft.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Subject: Re: [PATCH rdma-next 4/8] IB/core: Skip device which doesn't have
- necessary capabilities
-Message-ID: <20210407151359.GI7405@nvidia.com>
-References: <20210405055000.215792-1-leon@kernel.org>
- <20210405055000.215792-5-leon@kernel.org>
- <20210406154646.GW7405@nvidia.com>
- <BY5PR12MB4322E477DA2334233EAD5173DC759@BY5PR12MB4322.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BY5PR12MB4322E477DA2334233EAD5173DC759@BY5PR12MB4322.namprd12.prod.outlook.com>
-X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: MN2PR08CA0013.namprd08.prod.outlook.com
- (2603:10b6:208:239::18) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: RE: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Thread-Topic: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Thread-Index: AQHXKzvmwFT+jLn9hE+ope3TVVs2GqqpCiOAgAAUhFCAAAhhAIAAAeVA
+Date:   Wed, 7 Apr 2021 15:16:54 +0000
+Message-ID: <BL0PR2101MB093056EC7D9206C151119FEECA759@BL0PR2101MB0930.namprd21.prod.outlook.com>
+References: <20210406232321.12104-1-decui@microsoft.com>
+ <20210407131705.4rwttnj3zneolnh3@liuwe-devbox-debian-v2>
+ <DM5PR2101MB0934D037F5541B0FA449FA34CA759@DM5PR2101MB0934.namprd21.prod.outlook.com>
+ <20210407150030.wvwz6cebxjtjpgfv@liuwe-devbox-debian-v2>
+In-Reply-To: <20210407150030.wvwz6cebxjtjpgfv@liuwe-devbox-debian-v2>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=59edeabc-23bd-4ef9-a7b3-9f8481585db7;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-07T15:07:16Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 734bf35f-e514-43d4-ecd1-08d8f9d82da0
+x-ms-traffictypediagnostic: MN2PR21MB1391:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR21MB1391659F4D760F46FDB597A7CA759@MN2PR21MB1391.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: D6iUnED/cD0blURgTdeOZ+rJO0Pgo2wwaAyv3l1OCYtS8whApQikTNn3aD4HPeOIBlETX9qSFc0wituyTjgp1EyuC+s6/OMU8Y/Iw4fB8OTxXp+34NTiQW7Yk5T/tUNKAJ7cRrjczv0I3z9glnrZ5qgjI/c4F2UAyunarNAboIol+JPWH2juONed8asFshNFB9HsEmp2yEfhXtXfPWUExB662kC3q5l94xj7yEvp1CybYpkEqKfmk1zjzSQJGE+9NTdbpRgFDzx2q3dNRcrJA27yBO2aHaNZDP72MG1ieUJGpVrvftMTIuihOgQGg6uNY04mM11fit6ROxGMwpW1BfdlFwKLoHExtSZGbmSHIxkUsLCmabkURnzrSo2QSWJfuBODR4IieqckLw9deTuGSpxSCzkFsLoX9p1OkzeLyozWjBkqiwnav9UqKDioxLcXFM6xH8xFr/xiUdXVlg8uc7bk0UUAACsLpo8afhmQS+rnG6xo2gr37/23Aa0rwq1LFEsW6g9gdkdMCj0IQ88D6sLPGq98cfKq/PV9GZqdWLXooyzMd4tYmYBqGig+mVmPKNx1VPKpsOC5LIi+MuHfOU04TKLhsmUqWgRDl0gNG1Uj2GjDYFjmvnYygn2MxzoQ72gedmyFwtZ3BkJavKV8KPuaHOSxuucETbfRQyhKYg0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(136003)(346002)(396003)(366004)(47530400004)(82960400001)(478600001)(2906002)(82950400001)(53546011)(6506007)(10290500003)(8990500004)(4326008)(316002)(8676002)(64756008)(5660300002)(66946007)(66446008)(66556008)(66476007)(7696005)(38100700001)(71200400001)(76116006)(8936002)(186003)(33656002)(26005)(6916009)(83380400001)(9686003)(55016002)(52536014)(54906003)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?wH0gjzEiOFXHzW0WLGlrwgtllzHm/VRJLX5Thy60fjY7ekueuhBZuZHYE1Gh?=
+ =?us-ascii?Q?1jVmEkDkTY6d/aTBkJY6O0gBuFyJ6No3uCE8fXPqV5fYLU8YmuEJE4TJ/9Pf?=
+ =?us-ascii?Q?Ug4cIhcxcFC4g/1hfMdAYJ1v53CkjfU9OwubVBqr2MdWkE9TK4M0KcrS1RXy?=
+ =?us-ascii?Q?jucxqgFWd8hr4v1OPh6WQXPSmkKajr3fhD8UXIAWTzjlU3KZtgortVXpDOS8?=
+ =?us-ascii?Q?07ETw338QT72A1wJ+uEIsRF4FdqyQR++oG8J0n5rrivTny0eYm3Vc5Ts6gx2?=
+ =?us-ascii?Q?4JtfNdlPrEJZjBhysGO4m4ARUDOgHfGmWaGTMqaKN+iThNjkC1KExg11rB4t?=
+ =?us-ascii?Q?EMzRpK4VAyYOW9yu4HufL577RTuF01rojl+hk/9CBsQ2IZQ3D9OcJfCDNsim?=
+ =?us-ascii?Q?cQorgrqLJYycslt3UvUnUbPdn9xHET2tnDip5LZTgUoNde0d69bWPRhuZYuF?=
+ =?us-ascii?Q?NgwEqbwYNgfohDdWCeWAn1/ssB6Jmqfjnw3Oond+Lyk7e3G/CxuAsOzJnT4M?=
+ =?us-ascii?Q?nWUrHP/A6Z2zlc6FK9lD0clM2Wt4ENpIIFn22ct9KE8ZABHv5f8zY854d4A9?=
+ =?us-ascii?Q?x9/e4nu4TW7xV16NU51kYhaRTe4NoBTl9JBYLiUf5YrqiQefvDKizAffH4vp?=
+ =?us-ascii?Q?yqyL9Q+/ZuFVRnDrYmT8ODDUvlRG9LjJ2rQIyfqi0RioG8eNoENSmioBqSf+?=
+ =?us-ascii?Q?H1xD7JwLZZTvOyV3fDiKsUmr5tir+xFBn3j+GW2/Fe4WBDKiMsEm4ybmi4WL?=
+ =?us-ascii?Q?r/f2D4dcvSsNJCQKz/8iAllNyOBUTE3J6e1zB9vB4TCNueeKxdUOf8gz3ONX?=
+ =?us-ascii?Q?kSoLDVPL8VG9DkLCDEHqA0nnS8aXgoRN7tIps6t+V/RWG/zwVFrqmAhfERvE?=
+ =?us-ascii?Q?AAb6XKEBNRgOZE9SU8JdPdidV1LYVZQ9Z8ZfQHcHPrmx9MeH2rPbSWadezMG?=
+ =?us-ascii?Q?U8eg6BdBmhx6OXHzNpwZ/03fZJuWSkwQ4tr66yBUUoZh9ITAHFN1eIDtj4aH?=
+ =?us-ascii?Q?uuEj/Ia58J0lfjqyO19YuAHbHijVf2TuLfwe4y3THiEiDOlSGsVUEVoTdeBF?=
+ =?us-ascii?Q?YBBybgWMmX2/g+Fa+mi/QOf60z9REj77246GC/MKQYObc2v35rdjKvbgvFet?=
+ =?us-ascii?Q?/MjdmbGfi0Ogxz8yvhscY1vgfn2Le82ttHpkZ9O173YBzGd+vpwWznFfu639?=
+ =?us-ascii?Q?kesP+W8Cg2BW/kjxSSnnQ5FY8i46W+lkSXIaqdOC4BpUVNQ5VFvmrtkH2Erb?=
+ =?us-ascii?Q?PKaZ+zP05e4Aks6FeF6bVI4gRm9aoeasWpbF3KMNGAQKutSGwdui0Y890Bzg?=
+ =?us-ascii?Q?cRSvMzVD0o3ISTSrUoFrAZp4?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR08CA0013.namprd08.prod.outlook.com (2603:10b6:208:239::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Wed, 7 Apr 2021 15:14:00 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lU9sV-0026ae-34; Wed, 07 Apr 2021 12:13:59 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1af7bdc3-a69f-4c3f-a7ef-08d8f9d7c5fe
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4499:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4499C69ECDE7B0029A114D29C2759@DM6PR12MB4499.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3Zm9ZCS5bbQLaePwAK9vaFnqURNEZGH0uOSIEc/IglF5B8oBvgv3yq1wE5TXmm46d0G9coR4Ld6eFf0hvx9qdromg8KXeynK1/Vyudt/Ig6wO977CwZ44iRb9kcQIiadSgRDjgKHb3STfspN6/wnJHUt8BqBTZ5M61Z6Hm+dll7IVLUaW0V+6whmzsQ2OFi5NpIplZK/L59Ex5igfTPS8fvj2Ez6JUOAxWcacObtQikm3tJILaN2U8xnZD9U0IEm0gVNDUkhvd3OH7D8Q9ZA6NbbUZnSyCf41JggvnH28jpUcH2oz2TwBw65I2qL84D2stXg1Lp45xUGILAxSo1AT+DQLn9NVZplVJ/3JeTG4lixCRnDBlo99RT0a3WpgDlAYpqbat+MrnLwTCrem+NskQNAf5o9FDNv0fAZph8+wABev3/lXioIxOq1izJaglrSXTinTwm3PUeVA/liFrH6LTmT5JESCd6oAOf6osLYkdM7AsbaRKhAlLVStXJnT9WjdCWjc6nXduRMIaMvKxin5+iPmVW6Yn7ayrLdCiUnUn3LWcfRPenjIlX/V37jg+TdrXP+LsQpzhflEFsTOGICRmr2IcE+uSDFaQEJYc+EFvxse6jWRn4kfmrN1MYugVK6XxKaWWRjt550yF+yyxOBOKaAxEWn5WjakPqJFZ4p6pk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(39860400002)(136003)(346002)(86362001)(426003)(38100700001)(6636002)(4326008)(66476007)(66946007)(6862004)(66556008)(54906003)(26005)(37006003)(9746002)(9786002)(5660300002)(316002)(1076003)(2616005)(478600001)(33656002)(8936002)(7416002)(186003)(2906002)(36756003)(8676002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?XKSHEQTwLtDs32da/LiTDnJxBE4lgnO4EonJQhpzJBk/kyHYFiG/daD1j0DB?=
- =?us-ascii?Q?Vr6MYbwwGG41q9SKRCkRnb+Q9VDdsucEKRo6hb/dUptAtyi2lul+D6YrV6UE?=
- =?us-ascii?Q?0cqBn2fY+fsGkSHZQvbEo+HvFYpGCscK9PTwT3/1Jmcosk/hkN61v6wlbQb5?=
- =?us-ascii?Q?bCB5Hqul4SfYicVlufw2j4B1ehSoxGbG1JTHlV3uEiMDWSo/2k/ZFNmwGCk5?=
- =?us-ascii?Q?kvK/+qr3n2ekQp5fzAbLCkXSswM8vTuJt42USOoUv72fwjDV0Iat6TEq7tcd?=
- =?us-ascii?Q?6ykADWLNg6scp86kw+WvvP5T8wUlNeJa3h28P10eRBywKFvOBMTTfbma/9ff?=
- =?us-ascii?Q?OhZYaCpU3cFsAiZnrZSrwpNRxqn7YyWBEBB90MzPWFATgTPd4YgkG61n4UKT?=
- =?us-ascii?Q?DiZpTlCi2GGMQ9EOsxsrMxLdOKyR5ZjwoS1wmiA8ueVzE1F00y/n3YxA4rM3?=
- =?us-ascii?Q?LGyZ0Zwo8Gcde1IcrHM3xSHrCJ+xaMbFxR3r3WCGnxdWNbZIEQyNLAFOWq+y?=
- =?us-ascii?Q?aeNNunZMvAHpCFTXC4xBBlbkbPtYL6KifIznJpV7BUeMXko60csAyKxGDYv9?=
- =?us-ascii?Q?ZSryl0dszbqaLuBR4RnweJ7qDIF7sIXUVytszbwBHxpavhjQxXOS7dyQ8Vub?=
- =?us-ascii?Q?/PwZTQM92ixVBJXiVv89GOrQy18NCVGMKa4tuDVllT7yLYSmIwJ19OJ+HcOb?=
- =?us-ascii?Q?OrHy1XUnM4aS5pRD/WdVDPAm7+Pmavzikq4c9fCGj7b0p4rALt9PUZB9nObt?=
- =?us-ascii?Q?jzhJbJNtI/lVVXI+N4sGr4MOGX4ot0ZueNBy2HnsJ44vrLKnNQ+sm/MojHd1?=
- =?us-ascii?Q?y3NUuszyUE1A3r5l6nu4qmbUXyU/hkprXP8p3xsdfZ7t0vk02q5e2ItKZL3M?=
- =?us-ascii?Q?V0UVfzzXvSzAtuwAwFPp1iJdzaIhbyR2RNyxVrcgkDfoZvRb977lGvFr9EBU?=
- =?us-ascii?Q?A5R86xaaCKvomrM88ZBtKUnk8j65Ra/JOy52rzvDuR3IStTXf4NTkXqcj+k1?=
- =?us-ascii?Q?FLowxUoMo4zIv5piRA6SV3eYZ8gl4H1cpVcQ6D/a9kNpfYgcZ4y6Ag4s/NCV?=
- =?us-ascii?Q?GZRLCy0n5wXmBeJh7fReejrTPyMnaWqD9Cm7XNmb8C70zvzYloyXMUlmkYTO?=
- =?us-ascii?Q?d+7qqZ9eTRkVLNVrNMSc9EK/E+25diOQLCgdkXHy2Mo5I9RfVDtj7JSI0A81?=
- =?us-ascii?Q?Vg+uc8RBj7YPmblmCz2OsBbylMv4VfRfkSRc8oMj+GlG2t5udKQ104llVyb0?=
- =?us-ascii?Q?fqwC7pJjNotnxyD/salodOjahsxtRKJWlMOozeel4rsWhqfQB+yhkw+XebRC?=
- =?us-ascii?Q?pwbtdPutc+jz7L0mFCrnNb3/WEHgP2Py6otBifP1tEgCoQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1af7bdc3-a69f-4c3f-a7ef-08d8f9d7c5fe
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2021 15:14:00.9399
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 734bf35f-e514-43d4-ecd1-08d8f9d82da0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2021 15:16:54.4319
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YghhCiHUG1c3joIBV/guhiKo6ouV0GhZlCLvHPL8Dt3vpjzeKogzZDmMDYm6ZnRs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4499
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SjHNRlwiDjiWKC6RSIjWdpp100jApgtgkfwo+7SMj1RsJJW40WosivI/Hbu4I0uHQpMoJs71qWeMLZtNdmX5Vg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1391
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 03:06:35PM +0000, Parav Pandit wrote:
-> 
-> 
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, April 6, 2021 9:17 PM
-> > 
-> > On Mon, Apr 05, 2021 at 08:49:56AM +0300, Leon Romanovsky wrote:
-> > > @@ -2293,6 +2295,17 @@ static void ib_sa_event(struct ib_event_handler
-> > *handler,
-> > >  	}
-> > >  }
+
+
+> -----Original Message-----
+> From: Wei Liu <wei.liu@kernel.org>
+> Sent: Wednesday, April 7, 2021 11:01 AM
+> To: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: Wei Liu <wei.liu@kernel.org>; Dexuan Cui <decui@microsoft.com>;
+> davem@davemloft.net; kuba@kernel.org; KY Srinivasan
+> <kys@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.com>;
+> Wei Liu <liuwe@microsoft.com>; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; linux-hyperv@vger.kernel.org
+> Subject: Re: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+> Network Adapter (MANA)
+>=20
+> On Wed, Apr 07, 2021 at 02:34:01PM +0000, Haiyang Zhang wrote:
+> >
+> >
+> > > -----Original Message-----
+> > > From: Wei Liu <wei.liu@kernel.org>
+> > > Sent: Wednesday, April 7, 2021 9:17 AM
+> > > To: Dexuan Cui <decui@microsoft.com>
+> > > Cc: davem@davemloft.net; kuba@kernel.org; KY Srinivasan
+> > > <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>;
+> Stephen
+> > > Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Wei Liu
+> > > <liuwe@microsoft.com>; netdev@vger.kernel.org; linux-
+> > > kernel@vger.kernel.org; linux-hyperv@vger.kernel.org
+> > > Subject: Re: [PATCH net-next] net: mana: Add a driver for Microsoft
+> > > Azure Network Adapter (MANA)
 > > >
-> > > +static bool ib_sa_client_supported(struct ib_device *device) {
-> > > +	unsigned int i;
-> > > +
-> > > +	rdma_for_each_port(device, i) {
-> > > +		if (rdma_cap_ib_sa(device, i))
-> > > +			return true;
-> > > +	}
-> > > +	return false;
-> > > +}
-> > 
-> > This is already done though:
+> > > On Tue, Apr 06, 2021 at 04:23:21PM -0700, Dexuan Cui wrote:
+> > > [...]
+> > > > +config MICROSOFT_MANA
+> > > > +	tristate "Microsoft Azure Network Adapter (MANA) support"
+> > > > +	default m
+> > > > +	depends on PCI_MSI
+> > > > +	select PCI_HYPERV
+> > >
+> > > OOI which part of the code requires PCI_HYPERV?
+> > >
+> > > Asking because I can't immediately find code that looks to be
+> > > Hyper-V specific (searching for vmbus etc). This device looks like
+> > > any other PCI devices to me.
+> >
+> > It depends on the VF nic's PCI config space which is presented by the
+> pci_hyperv driver.
+>=20
+> I think all it matters is the PCI bus is able to handle the configuration=
+ space
+> access, right? Assuming there is an emulated PCI root complex which
+> exposes the config space to the driver, will this driver still work?
+>=20
+> I'm trying to understand how tightly coupled with Hyper-V PCI this driver=
+ is.
+> In an alternative universe, Microsft may suddenly decide to sell this
+> hardware and someone wants to passthrough an VF via VFIO. I don't see
+> how this driver wouldn't work, hence the original question.
+>=20
+> There is no need to change the code. I'm just curious about a tiny detail=
+ in
+> the implementation.
 
-> It is but, ib_sa_device() allocates ib_sa_device worth of struct for
-> each port without checking the rdma_cap_ib_sa().  This results into
-> allocating 40 * 512 = 20480 rounded of to power of 2 to 32K bytes of
-> memory for the rdma device with 512 ports.  Other modules are also
-> similarly wasting such memory.
+Currently, the PCI config space only comes from pci_hyperv, so we have this=
+=20
+dependency.
 
-If it returns EOPNOTUPP then the remove is never called so if it
-allocated memory and left it allocated then it is leaking memory.
+If the pci config space is presented from other ways in an "alternative uni=
+verse",=20
+we may need to add other dependencies. And yes, the VF should continue to w=
+ork:)
 
-If you are saying 32k bytes of temporary allocation matters during
-device startup then it needs benchmarks and a use case.
-
-> > The add_one function should return -EOPNOTSUPP if it doesn't want to run
-> > on this device and any supported checks should just be at the front - this is
-> > how things work right now
-
-> I am ok to fold this check at the beginning of add callback.  When
-> 512 to 1K RoCE devices are used, they do not have SA, CM, CMA etc
-> caps on and all the client needs to go through refcnt + xa + sem and
-> unroll them.  Is_supported() routine helps to cut down all of it. I
-> didn't calculate the usec saved with it.
-
-If that is the reason then explain in the cover letter and provide
-benchmarks
-
-Jason
+Thanks,
+- Haiyang
