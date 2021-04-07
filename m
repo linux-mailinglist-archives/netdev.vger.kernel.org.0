@@ -2,70 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCF0F357681
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 23:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69878357684
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 23:12:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbhDGVKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 17:10:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40952 "EHLO mail.kernel.org"
+        id S231944AbhDGVMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 17:12:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229469AbhDGVKT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 17:10:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 55A456121E;
-        Wed,  7 Apr 2021 21:10:09 +0000 (UTC)
+        id S229469AbhDGVMj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 17:12:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F939611CC;
+        Wed,  7 Apr 2021 21:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617829809;
-        bh=qUpWG+JR+Dljb5RXh4lK++1952pR3aASzw7TtTfx5tA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cgVIjMS0VeEPsAfBEfAK726EDod2XbEwcChYvB4AhUIDjq00kQoF4c6fTBwDvKbfi
-         LOTVpPLXB6JNaDP7QxNgHTyMH/Kz/0wU5H1v08hvox8Jh00gZ0CtJc4RCyalVLgHDf
-         hQfHagO6L4Ns0v1MHBbXIZUfjazejI53jX0Q/Epw8lv88mTiEOM7ASBYMh2J/nKgUO
-         DnEd+vqTVov0jUV0RyiZEgkn1nodLAwBFvl9ucXB6ZgOe/ad3J9fq2kb2sMylJGP0K
-         8NGPV91dFDUFqXXEGANIC9wSBZfycmkaQtfpCjyRd1hZhTk1kMDBC1AYDfISl6nlIB
-         +4SXu9p6XM6Rg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 44A8E60A71;
-        Wed,  7 Apr 2021 21:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1617829949;
+        bh=3ClaiXmoMxpwLarSFjiRGpAykEyCSoeO2i4RKoiLJjw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kOkMQRKbNoGZJir5IqZsa5DWckU2utpxegMfi2tXvaKN+tznLQ7b/vsTrWy04J+US
+         8wFdOOQgZs0I7yE2+Uvih6z0fTTKY7hiAFLghtdJjMCsAcxhMROLwnOFHyHNccZh61
+         Rj0HWfzalucRa9+8Nl+TPR85leQgELeDc6dmc9iXjx8U/Ipl08BNFUdLcAhFaZM4Gp
+         /sGicmeMgHkEFuegFgWMF6N9FI2Jwq/m54G/CBeQYa5rj5OWVwH/jpPUvCRqERbbpd
+         l9hD5iGXLX/ncCAgPsU6yc9xAr9sqklpN0xnquKMbyH5hbUQyITRFyoQqlHIFdehWC
+         18M//9JNefbKQ==
+Date:   Wed, 7 Apr 2021 14:12:27 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        linux-crypto@vger.kernel.org
+Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
+Message-ID: <YG4gO15Q2CzTwlO7@quark.localdomain>
+References: <20210407113920.3735505-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/rds: Avoid potential use after free in
- rds_send_remove_from_sock
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161782980927.12624.5215933274720336913.git-patchwork-notify@kernel.org>
-Date:   Wed, 07 Apr 2021 21:10:09 +0000
-References: <20210407000913.2207831-1-pakki001@umn.edu>
-In-Reply-To: <20210407000913.2207831-1-pakki001@umn.edu>
-To:     Aditya Pakki <pakki001@umn.edu>
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210407113920.3735505-1-liuhangbin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Tue,  6 Apr 2021 19:09:12 -0500 you wrote:
-> In case of rs failure in rds_send_remove_from_sock(), the 'rm' resource
-> is freed and later under spinlock, causing potential use-after-free.
-> Set the free pointer to NULL to avoid undefined behavior.
+On Wed, Apr 07, 2021 at 07:39:20PM +0800, Hangbin Liu wrote:
+> As the cryptos(BLAKE2S, Curve25519, CHACHA20POLY1305) in WireGuard are not
+> FIPS certified, the WireGuard module should be disabled in FIPS mode.
 > 
-> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
-> ---
->  net/rds/message.c | 1 +
->  net/rds/send.c    | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Here is the summary with links:
-  - net/rds: Avoid potential use after free in rds_send_remove_from_sock
-    https://git.kernel.org/netdev/net/c/0c85a7e87465
+I think you mean "FIPS allowed", not "FIPS certified"?  Even if it used FIPS
+allowed algorithms like AES, the Linux kernel doesn't come with any sort of FIPS
+certification out of the box.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Also, couldn't you just consider WireGuard to be outside your FIPS module
+boundary, which would remove it from the scope of the certification?
 
+And how do you handle all the other places in the kernel that use ChaCha20 and
+SipHash?  For example, drivers/char/random.c?
 
+- Eric
