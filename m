@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80B9D3575B3
+	by mail.lfdr.de (Postfix) with ESMTP id 7C8993575B2
 	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:15:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356024AbhDGUPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
+        id S1356025AbhDGUP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 16:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356006AbhDGUPS (ORCPT
+        with ESMTP id S1356005AbhDGUPS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 16:15:18 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35815C061761
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 13:15:07 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id mh7so19781298ejb.12
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 13:15:07 -0700 (PDT)
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323FAC061763
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 13:15:08 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id n2so23505211ejy.7
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 13:15:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZhwUHHf1fLLHLoihm5lm4dJpElq6zSNHVRafr10KZ/w=;
-        b=K0FsyKlhov+Wqbbcn52/d0o2QmTEgpPX+D1ypb+kt8ICVdKNqnPjMyAIzvTJ/YGlbK
-         KpVbJ/iks/jm/E9IBSQHXC8R8D79cP5uIQr4ZwdgUdN66EuXguyHgBbnG/xAgQ6hC6BA
-         VCfWaV5NS6lCkMIJ9stL5FiY0YUvV5TFA2elomGYbocZ7uzpHoAoXdRqPsGjgbBSBQqc
-         E9K8/jvkBELii/HNYGmqHKXZKkWMwDavooqj2ufoUW/0ibJifJ2ROTCTysfLck+9z1td
-         AJoyIvwQvoSjrxTzqMglQRXhqyXs5utDF7+wSWq/HcVLIwQpu7PSbmznttNpRMicT9KF
-         vHEw==
+        bh=GJGR2lOMPgsB29g63zztM9Xya0VPGAs0djUgnFKB4N0=;
+        b=ayMplVA1UziszesDpM9qZMtGTrFqg/faZ5181wQcRSTZKSCp5Q4DWJR2t7mVhxw2bS
+         V8jNz/gpEwvBinVW9WKXTLMGV+Y5qTHKeK1Roc1ms++AcHfqLabteJuRG8Ky6cDV2Rki
+         Q880JyACqocdCuzh5kCgDx9k+IFNfMCRN5extw1TVhqFDKY5RT4s9OcSm9uSeand9UiC
+         eDziHV7ll6R9g9aapnRLoGVmp/oubhFgiTxlLpbjaUtJ7Y7m1pQcUuLkD5N8Ce7uHV7r
+         vubHLUpYNaC5+RUvqlOD9i6C9Ov6wozf2pfQkfkK0mSPvVJ7QDXrbMcGg245gOrIBfub
+         hnpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZhwUHHf1fLLHLoihm5lm4dJpElq6zSNHVRafr10KZ/w=;
-        b=nmjs5mvWT1mCJ8KCd3TeBATLV/R9/w4u0B0p8yzLVHlzVtTQcYvTdSG6CwrEKaHWxV
-         fiOqQmdawBJUExl8NfCQAofOIIHs+Nd5BJiuN/O8VIzat23oB4B729lgSoK96PciHX57
-         V/6onIMxMlBfLx/NMpX/NvpilnImpttw+T28yBol5QfSKP6xswN0u+UTb1d9YsUw4eba
-         64BlduEtBgwMWfdnatwkTER+0zJBrFdxB10YmdNABbe8/i3i14xDO6tLt8aPKYYqMyHg
-         x1OYdjbmjDQZNMW00zhFqhshevP1N0pWwHPEvR18f0MyRqVQTsisc4mv7NVLNq+vd475
-         96CA==
-X-Gm-Message-State: AOAM530UlQftjLobH/cv7F8L5ZVc9bIrMYjtd+vj3w5T0ylOggXFJ7jO
-        LqyeYFJZe4yYTGPf1FkFRok=
-X-Google-Smtp-Source: ABdhPJyOSBCLGkwlP762MmKAOZqyqrOd0vDYBAbZ4MhpdXCHxzkiE47YsdAZezGGh0Afe86wZFct5g==
-X-Received: by 2002:a17:906:1115:: with SMTP id h21mr6104056eja.352.1617826505867;
-        Wed, 07 Apr 2021 13:15:05 -0700 (PDT)
+        bh=GJGR2lOMPgsB29g63zztM9Xya0VPGAs0djUgnFKB4N0=;
+        b=FMlH/3iCNr4xQUV5h2fnHxsi/HuSkYqHUmk56YuqRa4WHFdfOLRZMayzjKpzJ7V9hD
+         pePLq4j1Vp5nM0TRNE4IpD6ezJ2o9/5vP7vEIDSB72QpZ21TD2ZAoB5VTpq4vwWGEg0g
+         ULSdwtyiUwsPojKTHzL9LKcME0I7jiw/LGV19rCBy03CDAZvO7QPjAtwrH4Nm5canmYX
+         Y/mE65EXHtlARZhr9XqR28GEAOUaHZy2p2aKZzLIu3COmf3T9aCorGDVq7oV2NgXM1Bz
+         SdGcVeag1LYlx49WvFga03qh7ifJa2AhntwkzEBg4UlvoP6RU2Sb/DSFmkHdzbR2BiTy
+         +Jeg==
+X-Gm-Message-State: AOAM532WKWQTTZmy7ruvuQ0snoZZOuBFulUaY6ZSqiEzGH/8cV0pgL6K
+        D8OpaqnW0PKQmGJR6wBROD8=
+X-Google-Smtp-Source: ABdhPJzyPU1T7dl3VSgev4qfUlE1WfUKCAY6dAwoJesyGGJj23VBgeZrCRNUPEQ4NslLxzewcu21HQ==
+X-Received: by 2002:a17:906:32da:: with SMTP id k26mr5756199ejk.483.1617826506906;
+        Wed, 07 Apr 2021 13:15:06 -0700 (PDT)
 Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id r26sm4982892edc.43.2021.04.07.13.15.05
+        by smtp.gmail.com with ESMTPSA id r26sm4982892edc.43.2021.04.07.13.15.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Apr 2021 13:15:05 -0700 (PDT)
+        Wed, 07 Apr 2021 13:15:06 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net 1/3] net: dsa: sja1105: use the bridge pvid in best_effort_vlan_filtering mode
-Date:   Wed,  7 Apr 2021 23:14:50 +0300
-Message-Id: <20210407201452.1703261-2-olteanv@gmail.com>
+Subject: [PATCH net 2/3] net: dsa: sja1105: use 4095 as the private VLAN for untagged traffic
+Date:   Wed,  7 Apr 2021 23:14:51 +0300
+Message-Id: <20210407201452.1703261-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210407201452.1703261-1-olteanv@gmail.com>
 References: <20210407201452.1703261-1-olteanv@gmail.com>
@@ -68,166 +68,137 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The best-effort VLAN filtering mode is the sja1105 driver's attempt to
-allow frame tagging towards the CPU with a unique VLAN ID corresponding
-to the source port at the same time as allowing the bridge to freely
-alter the VLAN table. It works by making the switch classify all untagged
-ingress traffic to a secret pvid managed by net/dsa/tag_8021q.c.
-Also, VLAN-tagged frames are retagged to another secret VLAN managed by
-tag_8021q. Both these VLANs managed by tag_8021q are called "rx_vid".
-The retagged rx_vid has some bits which encode a "sub-VLAN", and the
-pvid-based rx_vid has those sub-VLAN bits set to zero. Software looks at
-the rx_vid and knows what port and original VLAN the packet came from.
+One thing became visible when writing the blamed commit, and that was
+that STP and PTP frames injected by net/dsa/tag_sja1105.c using the
+deferred xmit mechanism are always classified to the pvid of the CPU
+port, regardless of whatever VLAN there might be in these packets.
 
-There is a huge oversight in the setup created by the sja1105 driver for
-the best-effort VLAN filtering mode. That is:
+So a decision needed to be taken regarding the mechanism through which
+we should ensure that delivery of STP and PTP traffic is possible when
+we are in a VLAN awareness mode that involves tag_8021q. This is because
+tag_8021q is not concerned with managing the pvid of the CPU port, since
+as far as tag_8021q is concerned, no traffic should be sent as untagged
+from the CPU port. So we end up not actually having a pvid on the CPU
+port if we only listen to tag_8021q, and unless we do something about it.
+
+The decision taken at the time was to keep VLAN 1 in the list of
+priv->dsa_8021q_vlans, and make it a pvid of the CPU port. This ensures
+that STP and PTP frames can always be sent to the outside world.
+
+However there is a problem. If we do the following while we are in
+the best_effort_vlan_filtering=true mode:
 
 ip link add br0 type bridge vlan_filtering 1
 ip link set swp2 master br0
-ip link set swp4 master br0
-bridge vlan del dev swp4 vid 1
-bridge vlan add dev swp4 vid 1 pvid
+bridge vlan del dev swp2 vid 1
 
-Then we send an untagged packet from swp2 and expect the switch to
-forward it to swp4 and deliver it with VLAN 1 added. It is forwarded,
-except the packet is egress-untagged.
+Then untagged and pvid-tagged frames should be dropped. But we observe
+that they aren't, and this is because of the precaution we took that VID
+1 is always installed on all ports.
 
-This happens because of the way in which tag_8021q works (there is a
-detailed picture in net/dsa/tag_8021q.c, above dsa_8021q_setup_port).
-In the example above, the tag_8021q pvid of swp2 is 1026. This VLAN is
-added to all other switch ports, to allow untagged traffic forwarding.
-On all ports, the tag_8021q pvid of 1026 is installed as egress-untagged,
-in order to hide the existence of DSA tag_8021q from the user.
+So clearly VLAN 1 is not good for this purpose. What about VLAN 0?
+Well, VLAN 0 is managed by the 8021q module, and that module wants to
+ensure that 802.1p tagged frames are always received by a port, and are
+always transmitted as VLAN-tagged (with VLAN ID 0). Whereas we want our
+STP and PTP frames to be untagged if the stack sent them as untagged -
+we don't want the driver to just decide out of the blue that it adds
+VID 0 to some packets.
 
-This is fine, except when the real (bridge) pvid is egress-tagged, it
-isn't. The user _wants_ to see this VLAN in the outside world, and we
-can't really do that, because the sja1105 driver doesn't use that VLAN
-but another one which the user knows nothing about.
+So what to do?
 
-As a side note, this only happens for untagged traffic on the ingress
-port. If the packet arrives as pvid-tagged (i.e. tagged with VID 1)
-on a port with tag_8021q, then the packet is classified to VLAN ID 1
-(the bridge pvid) as opposed to the tag_8021q pvid. So we don't have
-the same problem.
+Well, there is one other VLAN that is reserved, and that is 4095:
+$ ip link add link swp2 name swp2.4095 type vlan id 4095
+Error: 8021q: Invalid VLAN id.
+$ bridge vlan add dev swp2 vid 4095
+Error: bridge: Vlan id is invalid.
 
-Consider the following more generic example:
+After we made this change, VLAN 1 is indeed forwarded and/or dropped
+according to the bridge VLAN table, there are no further alterations
+done by the sja1105 driver.
 
-Port             | sw0p0 sw0p1 sw0p2 sw0p3  |  sw1p0 sw1p1 sw1p2 sw1p3
-=================+==========================+==========================
-tag_8021q rx_vid | 1024  1025  1026  1027   |  1088  1089  1090  1091
-tag_8021q flags  | pvid  pvid  pvid  pvid   |  pvid  pvid  pvid  pvid
-                 | untag untag untag untag  |  untag untag untag untag
-Bridge VLAN      |  1     1     2     1     |    3     2     2     1
-Bridge flags     | pvid        pvid         |   pvid  pvid
-                 | untag untag              |
-
-What is not shown in the above table, because it would make it too
-bloated, is that:
-- VLAN 1024 is added to sw0p1, sw0p2, sw0p3, sw1p0, sw1p1, sw1p2, sw1p3
-  as egress-untagged but not pvid.
-- VLAN 1025 is added to sw0p0, sw0p2, sw0p3, sw1p0, sw1p1, sw1p2, sw1p3
-  as egress-untagged but not pvid
-- etc
-
-The following pattern emerges:
-A VLAN which is pvid on any port in the bridging domain (therefore has a
-tag_8021q rx_vid) and is egress-tagged on another (potentially the same)
-port will leak the tag_8021q VLAN. Every egress-tagged bridge VLAN that
-is a pvid on another port must have a retagging rule from the tag_8021q
-rx_vid to the bridge VLAN. In the above example, there needs to be a
-retagging rule on the egress of sw0p1 for traffic with the tag_8021q
-rx_vid 1024 (coming from sw0p0) towards VID 1. For sw0p3, we need to
-retag VLAN 1024. For sw0p2, we need to retag VID 1090, etc etc.
-
-So the data would indicate that, at the very least, we should retag the
-tag_8021q pvid back towards the original bridge pvid on the egress ports
-where this bridge VLAN is installed as egress-tagged. We could do that,
-except:
-- We only have 32 VLAN retagging entries in the sja1105, and we do use
-  them for other purposes too.
-- VLAN retagging works in hardware by making use of a special "loopback
-  port" which is limited to only 1Gbps of bandwidth. When using the
-  loopback port for traffic retagged towards the CPU that's fine because
-  the CPU port is gigabit anyway, but when we start involving it in the
-  autonomous forwarding data path we have a problem, because we'd
-  bottleneck it.
-
-So we take a step back and think a bit more about the problem.
-
-Due to the need to plug another hole - pvid-tagged traffic is not seen
-with a tag_8021q rx_vid by software, but with the bridge pvid, say 1 -
-sja1105_build_subvlans() already creates VLAN retagging entries towards
-the CPU even for the bridge pvid, not just for tagged VLANs.
-That is to say, even if we let the bridge pvid be the hardware's pvid in
-best-effort VLAN filtering mode, untagged and pvid-tagged packets will
-still arrive at the CPU as tagged with the tag_8021q rx_vid, because
-they will both hit the same retagging rule.
-
-But that actually means we don't _need_ the tag_8021q module to dictate
-a pvid value for us. We can rely on retagging just fine, and let the
-bridge dictate the pvid. This solves the problem in a much cleaner way:
-because the packets in the autonomous data path are now classified to
-the bridge pvid, the egress-tagged setting on the egress port works just
-fine.
-
-[ note that this means we can always rely on VLAN retagging towards the
-  CPU, and never on changing the port's pvid. And because the pvid is no
-  longer managed by tag_8021q, we can even go as far as enable
-  Independent VLAN Learning again. But I digress, that is an
-  optimization to make for net-next, this is just to fix a bug ]
-
-The commit I'm blaming is the one which introduced the problem, but the
-fix relies on a mechanism that was only added a few commits later:
-3f01c91aab92 ("net: dsa: sja1105: implement VLAN retagging for dsa_8021q
-sub-VLANs"). This is fine, since they all went into the same kernel
-release (v5.8).
-
-Fixes: 2cafa72e516f ("net: dsa: sja1105: add a new best_effort_vlan_filtering devlink parameter")
+Fixes: ec5ae61076d0 ("net: dsa: sja1105: save/restore VLANs using a delta commit method")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ drivers/net/dsa/sja1105/sja1105.h      |  1 +
+ drivers/net/dsa/sja1105/sja1105_main.c | 21 +++++++++------------
+ 2 files changed, 10 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index f9e87fb33da0..6957cb853a70 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -13,6 +13,7 @@
+ #include <linux/mutex.h>
+ #include "sja1105_static_config.h"
+ 
++#define SJA1105_DEFAULT_VLAN		(VLAN_N_VID - 1)
+ #define SJA1105_NUM_PORTS		5
+ #define SJA1105_NUM_TC			8
+ #define SJA1105ET_FDB_BIN_SIZE		4
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index d9c198ca0197..8b380ccd95cf 100644
+index 8b380ccd95cf..61133098f588 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2240,10 +2240,10 @@ static int sja1105_commit_pvid(struct sja1105_private *priv)
- 	struct list_head *vlan_list;
- 	int rc = 0;
+@@ -321,6 +321,13 @@ static int sja1105_init_l2_lookup_params(struct sja1105_private *priv)
+ 	return 0;
+ }
  
--	if (priv->vlan_state == SJA1105_VLAN_FILTERING_FULL)
--		vlan_list = &priv->bridge_vlans;
--	else
-+	if (priv->vlan_state == SJA1105_VLAN_UNAWARE)
- 		vlan_list = &priv->dsa_8021q_vlans;
-+	else
-+		vlan_list = &priv->bridge_vlans;
++/* Set up a default VLAN for untagged traffic injected from the CPU
++ * using management routes (e.g. STP, PTP) as opposed to tag_8021q.
++ * All DT-defined ports are members of this VLAN, and there are no
++ * restrictions on forwarding (since the CPU selects the destination).
++ * Frames from this VLAN will always be transmitted as untagged, and
++ * neither the bridge nor the 8021q module cannot create this VLAN ID.
++ */
+ static int sja1105_init_static_vlan(struct sja1105_private *priv)
+ {
+ 	struct sja1105_table *table;
+@@ -330,17 +337,13 @@ static int sja1105_init_static_vlan(struct sja1105_private *priv)
+ 		.vmemb_port = 0,
+ 		.vlan_bc = 0,
+ 		.tag_port = 0,
+-		.vlanid = 1,
++		.vlanid = SJA1105_DEFAULT_VLAN,
+ 	};
+ 	struct dsa_switch *ds = priv->ds;
+ 	int port;
  
- 	list_for_each_entry(v, vlan_list, list) {
- 		if (v->pvid) {
-@@ -2290,6 +2290,21 @@ sja1105_build_dsa_8021q_vlans(struct sja1105_private *priv,
- 	list_for_each_entry(v, &priv->dsa_8021q_vlans, list) {
- 		int match = v->vid;
+ 	table = &priv->static_config.tables[BLK_IDX_VLAN_LOOKUP];
  
-+		/* In best-effort VLAN filtering mode, the pvid of the port is
-+		 * no longer the tag_8021q rx_vid, but the bridge pvid is.
-+		 * The tag_8021q rx_vid is just used for retagging the bridge
-+		 * pvid towards the CPU. So let's install only the rx_vid
-+		 * values which are strictly required. This means that the
-+		 * rxvlan is still installed on the port on which tag_8021q
-+		 * thinks it must be pvid (the source port) - this is required
-+		 * by the retagging table - but not on the ports where this
-+		 * VLAN isn't a pvid (the destination ports).
-+		 */
-+		if (priv->vlan_state == SJA1105_VLAN_BEST_EFFORT &&
-+		    vid_is_dsa_8021q_rxvlan(v->vid) &&
-+		    dsa_8021q_rx_subvlan(v->vid) == 0 && !v->pvid)
-+			continue;
-+
- 		new_vlan[match].vlanid = v->vid;
- 		new_vlan[match].vmemb_port |= BIT(v->port);
- 		new_vlan[match].vlan_bc |= BIT(v->port);
+-	/* The static VLAN table will only contain the initial pvid of 1.
+-	 * All other VLANs are to be configured through dynamic entries,
+-	 * and kept in the static configuration table as backing memory.
+-	 */
+ 	if (table->entry_count) {
+ 		kfree(table->entries);
+ 		table->entry_count = 0;
+@@ -353,9 +356,6 @@ static int sja1105_init_static_vlan(struct sja1105_private *priv)
+ 
+ 	table->entry_count = 1;
+ 
+-	/* VLAN 1: all DT-defined ports are members; no restrictions on
+-	 * forwarding; always transmit as untagged.
+-	 */
+ 	for (port = 0; port < ds->num_ports; port++) {
+ 		struct sja1105_bridge_vlan *v;
+ 
+@@ -366,15 +366,12 @@ static int sja1105_init_static_vlan(struct sja1105_private *priv)
+ 		pvid.vlan_bc |= BIT(port);
+ 		pvid.tag_port &= ~BIT(port);
+ 
+-		/* Let traffic that don't need dsa_8021q (e.g. STP, PTP) be
+-		 * transmitted as untagged.
+-		 */
+ 		v = kzalloc(sizeof(*v), GFP_KERNEL);
+ 		if (!v)
+ 			return -ENOMEM;
+ 
+ 		v->port = port;
+-		v->vid = 1;
++		v->vid = SJA1105_DEFAULT_VLAN;
+ 		v->untagged = true;
+ 		if (dsa_is_cpu_port(ds, port))
+ 			v->pvid = true;
 -- 
 2.25.1
 
