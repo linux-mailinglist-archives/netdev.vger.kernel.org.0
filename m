@@ -2,87 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B50E356E66
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 16:21:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 150BB356E8E
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 16:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344399AbhDGOVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 10:21:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38236 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231183AbhDGOVf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 10:21:35 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lU93N-00FJmV-5Z; Wed, 07 Apr 2021 16:21:09 +0200
-Date:   Wed, 7 Apr 2021 16:21:09 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        id S1352869AbhDGO2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 10:28:21 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:43767 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348517AbhDGO2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 10:28:16 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lU9A2-0003X8-PI; Wed, 07 Apr 2021 14:28:02 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] net: stmmac: Add support for external
- trigger timestamping
-Message-ID: <YG2/1fbNNIsbafZp@lunn.ch>
-References: <20210407141537.2129-1-vee.khee.wong@linux.intel.com>
+        Eilon Greenstein <eilong@broadcom.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bnx2x: Fix potential infinite loop
+Date:   Wed,  7 Apr 2021 15:28:02 +0100
+Message-Id: <20210407142802.495539-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210407141537.2129-1-vee.khee.wong@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 10:15:37PM +0800, Wong Vee Khee wrote:
-> From: Tan Tee Min <tee.min.tan@intel.com>
-> 
-> The Synopsis MAC controller supports auxiliary snapshot feature that
-> allows user to store a snapshot of the system time based on an external
-> event.
-> 
-> This patch add supports to the above mentioned feature. Users will be
-> able to triggered capturing the time snapshot from user-space using
-> application such as testptp or any other applications that uses the
-> PTP_EXTTS_REQUEST ioctl request.
+From: Colin Ian King <colin.king@canonical.com>
 
-You forgot to Cc: the PTP maintainer.
+The for_each_tx_queue loop iterates with a u8 loop counter i and
+compares this with the loop upper limit of bp->num_queues that
+is an int type.  There is a potential infinite loop if bp->num_queues
+is larger than the u8 loop counter. Fix this by making the loop
+counter the same type as bp->num_queues.
 
-> @@ -159,6 +163,37 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
->  					     priv->systime_flags);
->  		spin_unlock_irqrestore(&priv->ptp_lock, flags);
->  		break;
-> +	case PTP_CLK_REQ_EXTTS:
-> +		priv->plat->ext_snapshot_en = on;
-> +		mutex_lock(&priv->aux_ts_lock);
-> +		acr_value = readl(ptpaddr + PTP_ACR);
-> +		acr_value &= ~PTP_ACR_MASK;
-> +		if (on) {
-> +			/* Enable External snapshot trigger */
-> +			acr_value |= priv->plat->ext_snapshot_num;
-> +			acr_value |= PTP_ACR_ATSFC;
-> +			pr_info("Auxiliary Snapshot %d enabled.\n",
-> +				priv->plat->ext_snapshot_num >>
-> +				PTP_ACR_ATSEN_SHIFT);
+Addresses-Coverity: ("Infinite loop")
+Fixes: ad5afc89365e ("bnx2x: Separate VF and PF logic")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-dev_dbg()?
-
-> +			/* Enable Timestamp Interrupt */
-> +			intr_value = readl(ioaddr + GMAC_INT_EN);
-> +			intr_value |= GMAC_INT_TSIE;
-> +			writel(intr_value, ioaddr + GMAC_INT_EN);
-> +
-> +		} else {
-> +			pr_info("Auxiliary Snapshot %d disabled.\n",
-> +				priv->plat->ext_snapshot_num >>
-> +				PTP_ACR_ATSEN_SHIFT);
-
-dev_dbg()?
-
-Do you really want to spam the kernel log with this?
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index 1a6ec1a12d53..edfbeb710ad4 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -2959,7 +2959,8 @@ int bnx2x_nic_load(struct bnx2x *bp, int load_mode)
+ 
+ int bnx2x_drain_tx_queues(struct bnx2x *bp)
+ {
+-	u8 rc = 0, cos, i;
++	u8 rc = 0, cos;
++	int i;
+ 
+ 	/* Wait until tx fastpath tasks complete */
+ 	for_each_tx_queue(bp, i) {
+-- 
+2.30.2
 
