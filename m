@@ -2,72 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD3D357747
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC9B357749
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234657AbhDGWAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 18:00:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49234 "EHLO mail.kernel.org"
+        id S234705AbhDGWAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 18:00:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229778AbhDGWAU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234337AbhDGWAU (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 7 Apr 2021 18:00:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 479F46115B;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 58C28611EE;
         Wed,  7 Apr 2021 22:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617832810;
-        bh=UThaC7RCv3pc3KfZy53Pw2iEN2Mu8e3d1NPA328me9U=;
+        bh=rWObaaR8yHycL/sGZT2kwmqBwrZybXZaPAdWE6IzaOg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NFlWepllqIzw0Ns6s6JZ6TQ/qMNlED9lg1CGGZEpwmB8GKMVnOIKsy59FbhhsnisR
-         NSdBXKE1m1i2y+ceWRZluUJT/nsYBXxTFsdPXrZ0c9U4YJKfDaPMdevFq4wlhYCz1v
-         AjqUQsnTzkHJIy+Khb3MNWSxGUmjc2yL40CXq2MnPk2pugBWjgCe1hnWIwY+TtPKFg
-         qntLajI2ggdHpgRnKtcc0noq1Iq7QRV9Dbb1F36DZYrCl7uRiG0AUu6MJwMHASH616
-         Qxo9WJe62/a34sQey0enx9ihdpeT6Gga4ALlSF4UpfiVoD6Dn/QVXQ0lfx2IGNmagx
-         rB2wcFHldmMkg==
+        b=NtcopKWkSeoXrwMwqtuN6+PbWIrbEpRPfvNn/THtxlpo5qv0Gwy+1JKSVYx2fLaBV
+         jbsbeTytTDu76EoX3bW9JT2t+9lRt+f8TXTy0Y5AHCe59BPzMgfCXN6bWw7gRHINRX
+         C2rXFVaYAzDT5TmVDSV8nBjZW6kSqrMaGqHSw0OkfP4Q6UinUYwi/vXqPSbUXjc5jB
+         i/xPnFbd6NNqZgRn2EfTqjTMo/0TOVWYNfpYVkfaNyQOgXwzpZ36fwVupDmal3H5Nn
+         0kPw7HuDaMFTMDP1PJomzlTka+uYXmw4+XiMuJF8mx+ylJVGhA0EyaIkkI3lqNHNun
+         rKKxX/LDEtAog==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3726F60A71;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4C3F360BE6;
         Wed,  7 Apr 2021 22:00:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net 1/5] net/mlx5: Fix HW spec violation configuring uplink
+Subject: Re: [PATCH v2] net: tipc: Fix spelling errors in net/tipc module
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161783281022.1764.17622121780034514784.git-patchwork-notify@kernel.org>
+Message-Id: <161783281030.1764.11775858542583523130.git-patchwork-notify@kernel.org>
 Date:   Wed, 07 Apr 2021 22:00:10 +0000
-References: <20210407040620.96841-2-saeed@kernel.org>
-In-Reply-To: <20210407040620.96841-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        tariqt@nvidia.com, elic@nvidia.com, roid@nvidia.com,
-        saeedm@nvidia.com
+References: <20210407015945.420908-1-zhengyongjun3@huawei.com>
+In-Reply-To: <20210407015945.420908-1-zhengyongjun3@huawei.com>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     jmaloy@redhat.com, ying.xue@windriver.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, hulkci@huawei.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue,  6 Apr 2021 21:06:16 -0700 you wrote:
-> From: Eli Cohen <elic@nvidia.com>
+On Wed, 7 Apr 2021 09:59:45 +0800 you wrote:
+> These patches fix a series of spelling errors in net/tipc module.
 > 
-> Make sure to modify uplink port to follow only if the uplink_follow
-> capability is set as required by the HW spec. Failure to do so causes
-> traffic to the uplink representor net device to cease after switching to
-> switchdev mode.
-> 
-> [...]
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> ---
+>  net/tipc/bearer.h | 6 +++---
+>  net/tipc/net.c    | 2 +-
+>  net/tipc/node.c   | 2 +-
+>  3 files changed, 5 insertions(+), 5 deletions(-)
 
 Here is the summary with links:
-  - [net,1/5] net/mlx5: Fix HW spec violation configuring uplink
-    https://git.kernel.org/netdev/net/c/1a73704c82ed
-  - [net,2/5] net/mlx5: Fix placement of log_max_flow_counter
-    https://git.kernel.org/netdev/net/c/a14587dfc5ad
-  - [net,3/5] net/mlx5: Fix PPLM register mapping
-    https://git.kernel.org/netdev/net/c/ce28f0fd670d
-  - [net,4/5] net/mlx5: Fix PBMC register mapping
-    https://git.kernel.org/netdev/net/c/534b1204ca46
-  - [net,5/5] net/mlx5: fix kfree mismatch in indir_table.c
-    https://git.kernel.org/netdev/net/c/d5f9b005c306
+  - [v2] net: tipc: Fix spelling errors in net/tipc module
+    https://git.kernel.org/netdev/net/c/a79ace4b3129
 
 You are awesome, thank you!
 --
