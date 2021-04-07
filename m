@@ -2,236 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FAB73563B6
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 08:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF5A356439
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 08:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345384AbhDGGIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 02:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
+        id S1349001AbhDGGmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 02:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244571AbhDGGIQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 02:08:16 -0400
-Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4BFC06174A;
-        Tue,  6 Apr 2021 23:08:07 -0700 (PDT)
-Received: from localhost ([127.0.0.1] helo=bute.mt.lv)
-        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <gatis@mikrotik.com>)
-        id 1lU1M8-0002QZ-Vv; Wed, 07 Apr 2021 09:08:01 +0300
+        with ESMTP id S231335AbhDGGmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 02:42:42 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45F9C06174A
+        for <netdev@vger.kernel.org>; Tue,  6 Apr 2021 23:42:33 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id j6-20020a17090adc86b02900cbfe6f2c96so774957pjv.1
+        for <netdev@vger.kernel.org>; Tue, 06 Apr 2021 23:42:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a52QycfeDfp+y7kVMROgePX6ilC1GDQEUPOD9zzL9NE=;
+        b=VxPWKgIYw14VxNeKuxLuQUcpLiObunLFFBSZsvsR8gxaaJCfWWe6ZNdbI8npJwJ+3Y
+         Tz6dPJ6efS9KOmN+Wo0K4fLerQdy64+7CBT7ppf7gvH3lXC+CT2JxbHl7FHgO6nvN3l9
+         lkfqCiUD11XPlNZJ3cnGmmAWzPORkVs4CUTukWplmNLKBwIZycpfhov/ncfTbedOEhiK
+         0pDQoAv5RaQ7koGi3qCko/8PiEq/qGzsL/W/WMW4VUYyqB1UfxiBIeXPayGgoo4dEopF
+         C50LcC4l1BcKJyzv8NHKGM8JUSjlhkic3THiK7408E2dzVWpdlGrqZQ8HCCffsM3qg9B
+         KsBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a52QycfeDfp+y7kVMROgePX6ilC1GDQEUPOD9zzL9NE=;
+        b=H88XGompa2ecr6Ickcc5IJz09NCpK2ZScfUfKNPP9hf2xp6icoH+Ah4jWlNVRpaWKo
+         tiC4MeV+Fq+8B3JM6o7t8uWPDpKLWLCoB/01j3yYaaiw01eyqcOrNJlWGZR/F/rx8vkg
+         yw6kpB4Ea+KDW/rCd1mmdPmVfr9t/DP3ZL/adFTALLHn519OqSFQ7eAgzc6AcLecTKoF
+         SXlcxpFAicONG0VjnRudlTr/Cgp0+Txhaw0AMNr7PW1tSqbJF7ws5ZU+Hc10xD8D/eYM
+         VgijUMf+ETPCD6xj5kXd/8FVRgb4bte9iYUgS41EPhic+10lIDrHncAphtceSdcDdwuL
+         GiEQ==
+X-Gm-Message-State: AOAM531ib+2nWZKmwj+QEFN2wIKcFAXS/GK9dzpMxRhOGDfLJYJB0P1N
+        jlgBcbEStz56IsOhOG3LuIs=
+X-Google-Smtp-Source: ABdhPJx1Vp0R81CCpdAC2+i5oG12qOcT717ot8X6GcpKfiuAAE5zhz9fEfmC1pagbOWu3I9oJGF5Jg==
+X-Received: by 2002:a17:902:8303:b029:e6:4ef3:4f17 with SMTP id bd3-20020a1709028303b02900e64ef34f17mr1774264plb.22.1617777753027;
+        Tue, 06 Apr 2021 23:42:33 -0700 (PDT)
+Received: from laptop.hsd1.wa.comcast.net ([2601:600:8500:5f14:d627:c51e:516e:a105])
+        by smtp.gmail.com with ESMTPSA id x18sm3803108pfi.105.2021.04.06.23.42.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Apr 2021 23:42:32 -0700 (PDT)
+From:   Andrei Vagin <avagin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andrei Vagin <avagin@gmail.com>
+Subject: [PATCH net-next] net: introduce nla_policy for IFLA_NEW_IFINDEX
+Date:   Tue,  6 Apr 2021 23:40:03 -0700
+Message-Id: <20210407064003.248047-1-avagin@gmail.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Date:   Wed, 07 Apr 2021 09:08:00 +0300
-From:   Gatis Peisenieks <gatis@mikrotik.com>
-To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
-        dchickles@marvell.com, tully@mikrotik.com, eric.dumazet@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v5] atl1c: move tx cleanup processing out of
- interrupt
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <381dad2133d3f51c2cd049af29a8f877@mikrotik.com>
-X-Sender: gatis@mikrotik.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tx queue cleanup happens in interrupt handler on same core as rx queue
-processing. Both can take considerable amount of processing in high
-packet-per-second scenarios.
+In this case, we don't need to check that new_ifindex is positive in
+validate_linkmsg.
 
-Sending big amounts of packets can stall the rx processing which is 
-unfair
-and also can lead to out-of-memory condition since __dev_kfree_skb_irq
-queues the skbs for later kfree in softirq which is not allowed to 
-happen
-with heavy load in interrupt handler.
-
-This puts tx cleanup in its own napi and enables threaded napi to allow
-the rx/tx queue processing to happen on different cores.
-
-The ability to sustain equal amounts of tx/rx traffic increased:
-from 280Kpps to 1130Kpps on Threadripper 3960X with upcoming
-Mikrotik 10/25G NIC,
-from 520Kpps to 850Kpps on Intel i3-3320 with Mikrotik RB44Ge adapter.
-
-Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+Fixes: eeb85a14ee34 ("net: Allow to specify ifindex when device is moved to another namespace")
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Andrei Vagin <avagin@gmail.com>
 ---
-Reposting for net-next as requested by David Miller,
+ net/core/rtnetlink.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-v5:
-	- EXPORT_SYMBOL(dev_set_threaded) not needed, already there
-v4:
-	- made scripts/checkpatch.pl happy
-	- moved the new intr_mask_lock to be besides the intr_mask it
-	  protects so they are more likely to be on same cacheline
-v3:
-	- addressed comments from Eric Dumazet
-	- added EXPORT_SYMBOL for dev_set_threaded
----
-  drivers/net/ethernet/atheros/atl1c/atl1c.h    |  2 +
-  .../net/ethernet/atheros/atl1c/atl1c_main.c   | 44 ++++++++++++++-----
-  2 files changed, 36 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c.h 
-b/drivers/net/ethernet/atheros/atl1c/atl1c.h
-index a0562a90fb6d..28ae5c16831e 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c.h
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c.h
-@@ -367,6 +367,7 @@ struct atl1c_hw {
-  	u16 phy_id1;
-  	u16 phy_id2;
-
-+	spinlock_t intr_mask_lock;	/* protect the intr_mask */
-  	u32 intr_mask;
-
-  	u8 preamble_len;
-@@ -506,6 +507,7 @@ struct atl1c_adapter {
-  	struct net_device   *netdev;
-  	struct pci_dev      *pdev;
-  	struct napi_struct  napi;
-+	struct napi_struct  tx_napi;
-  	struct page         *rx_page;
-  	unsigned int	    rx_page_offset;
-  	unsigned int	    rx_frag_size;
-diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c 
-b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-index d54375b255dc..1d17c24e6d75 100644
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -813,6 +813,7 @@ static int atl1c_sw_init(struct atl1c_adapter 
-*adapter)
-  	atl1c_set_rxbufsize(adapter, adapter->netdev);
-  	atomic_set(&adapter->irq_sem, 1);
-  	spin_lock_init(&adapter->mdio_lock);
-+	spin_lock_init(&adapter->hw.intr_mask_lock);
-  	set_bit(__AT_DOWN, &adapter->flags);
-
-  	return 0;
-@@ -1530,20 +1531,19 @@ static inline void atl1c_clear_phy_int(struct 
-atl1c_adapter *adapter)
-  	spin_unlock(&adapter->mdio_lock);
-  }
-
--static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
--				enum atl1c_trans_queue type)
-+static int atl1c_clean_tx(struct napi_struct *napi, int budget)
-  {
--	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
-+	struct atl1c_adapter *adapter =
-+		container_of(napi, struct atl1c_adapter, tx_napi);
-+	struct atl1c_tpd_ring *tpd_ring = 
-&adapter->tpd_ring[atl1c_trans_normal];
-  	struct atl1c_buffer *buffer_info;
-  	struct pci_dev *pdev = adapter->pdev;
-  	u16 next_to_clean = atomic_read(&tpd_ring->next_to_clean);
-  	u16 hw_next_to_clean;
--	u16 reg;
-  	unsigned int total_bytes = 0, total_packets = 0;
-+	unsigned long flags;
-
--	reg = type == atl1c_trans_high ? REG_TPD_PRI1_CIDX : 
-REG_TPD_PRI0_CIDX;
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index d51252afde0a..9108a7e6c0c0 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1877,6 +1877,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
+ 				    .len = ALTIFNAMSIZ - 1 },
+ 	[IFLA_PERM_ADDRESS]	= { .type = NLA_REJECT },
+ 	[IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
++	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
+ };
+ 
+ static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
+@@ -2266,9 +2267,6 @@ static int validate_linkmsg(struct net_device *dev, struct nlattr *tb[])
+ 			return -EINVAL;
+ 	}
+ 
+-	if (tb[IFLA_NEW_IFINDEX] && nla_get_s32(tb[IFLA_NEW_IFINDEX]) <= 0)
+-		return -EINVAL;
 -
--	AT_READ_REGW(&adapter->hw, reg, &hw_next_to_clean);
-+	AT_READ_REGW(&adapter->hw, REG_TPD_PRI0_CIDX, &hw_next_to_clean);
-
-  	while (next_to_clean != hw_next_to_clean) {
-  		buffer_info = &tpd_ring->buffer_info[next_to_clean];
-@@ -1564,7 +1564,15 @@ static bool atl1c_clean_tx_irq(struct 
-atl1c_adapter *adapter,
-  		netif_wake_queue(adapter->netdev);
-  	}
-
--	return true;
-+	if (total_packets < budget) {
-+		napi_complete_done(napi, total_packets);
-+		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
-+		adapter->hw.intr_mask |= ISR_TX_PKT;
-+		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
-+		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
-+		return total_packets;
-+	}
-+	return budget;
-  }
-
-  /**
-@@ -1599,13 +1607,22 @@ static irqreturn_t atl1c_intr(int irq, void 
-*data)
-  		AT_WRITE_REG(hw, REG_ISR, status | ISR_DIS_INT);
-  		if (status & ISR_RX_PKT) {
-  			if (likely(napi_schedule_prep(&adapter->napi))) {
-+				spin_lock(&hw->intr_mask_lock);
-  				hw->intr_mask &= ~ISR_RX_PKT;
-  				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
-+				spin_unlock(&hw->intr_mask_lock);
-  				__napi_schedule(&adapter->napi);
-  			}
-  		}
--		if (status & ISR_TX_PKT)
--			atl1c_clean_tx_irq(adapter, atl1c_trans_normal);
-+		if (status & ISR_TX_PKT) {
-+			if (napi_schedule_prep(&adapter->tx_napi)) {
-+				spin_lock(&hw->intr_mask_lock);
-+				hw->intr_mask &= ~ISR_TX_PKT;
-+				AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
-+				spin_unlock(&hw->intr_mask_lock);
-+				__napi_schedule(&adapter->tx_napi);
-+			}
-+		}
-
-  		handled = IRQ_HANDLED;
-  		/* check if PCIE PHY Link down */
-@@ -1876,6 +1893,7 @@ static int atl1c_clean(struct napi_struct *napi, 
-int budget)
-  	struct atl1c_adapter *adapter =
-  			container_of(napi, struct atl1c_adapter, napi);
-  	int work_done = 0;
-+	unsigned long flags;
-
-  	/* Keep link state information with original netdev */
-  	if (!netif_carrier_ok(adapter->netdev))
-@@ -1886,8 +1904,10 @@ static int atl1c_clean(struct napi_struct *napi, 
-int budget)
-  	if (work_done < budget) {
-  quit_polling:
-  		napi_complete_done(napi, work_done);
-+		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
-  		adapter->hw.intr_mask |= ISR_RX_PKT;
-  		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
-+		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
-  	}
-  	return work_done;
-  }
-@@ -2325,6 +2345,7 @@ static int atl1c_up(struct atl1c_adapter *adapter)
-  	atl1c_check_link_status(adapter);
-  	clear_bit(__AT_DOWN, &adapter->flags);
-  	napi_enable(&adapter->napi);
-+	napi_enable(&adapter->tx_napi);
-  	atl1c_irq_enable(adapter);
-  	netif_start_queue(netdev);
-  	return err;
-@@ -2345,6 +2366,7 @@ static void atl1c_down(struct atl1c_adapter 
-*adapter)
-  	set_bit(__AT_DOWN, &adapter->flags);
-  	netif_carrier_off(netdev);
-  	napi_disable(&adapter->napi);
-+	napi_disable(&adapter->tx_napi);
-  	atl1c_irq_disable(adapter);
-  	atl1c_free_irq(adapter);
-  	/* disable ASPM if device inactive */
-@@ -2593,7 +2615,9 @@ static int atl1c_probe(struct pci_dev *pdev, const 
-struct pci_device_id *ent)
-  	adapter->mii.mdio_write = atl1c_mdio_write;
-  	adapter->mii.phy_id_mask = 0x1f;
-  	adapter->mii.reg_num_mask = MDIO_CTRL_REG_MASK;
-+	dev_set_threaded(netdev, true);
-  	netif_napi_add(netdev, &adapter->napi, atl1c_clean, 64);
-+	netif_napi_add(netdev, &adapter->tx_napi, atl1c_clean_tx, 64);
-  	timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
-  	/* setup the private structure */
-  	err = atl1c_sw_init(adapter);
+ 	if (tb[IFLA_AF_SPEC]) {
+ 		struct nlattr *af;
+ 		int rem, err;
 -- 
-2.31.1
+2.29.2
+
