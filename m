@@ -2,79 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA553356B76
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D90EC356B86
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:47:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351887AbhDGLnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 07:43:19 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:24750 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236103AbhDGLnS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 07:43:18 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1617795789; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=6cE0lXvR26TFWenvq0+ejblQkOsFdPGRTeYd7qIvVUw=; b=kSV354WqJk7G7szj9bZbb5/Zbh7DeR1SfhCnVx7GmgJipxFDnNh5uSpxoi3neFYceWfli5uI
- +17YlM+cvYlfUwViTriYLNXqE6gaLVkKaG2YWH4TucrzeZacR+G9lCQltPG2GMZtCW5PU1nc
- lir5SswPP5nhZ3ObHkmmix64FgE=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 606d9acb8166b7eff7f6e451 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 07 Apr 2021 11:43:07
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 25F39C433CA; Wed,  7 Apr 2021 11:43:07 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6AA2FC433ED;
-        Wed,  7 Apr 2021 11:43:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6AA2FC433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kael_w@yeah.net
-Subject: Re: [PATCH] drivers: net: wireless: struct lbs_private is declared duplicately
-References: <20210325064154.854245-1-wanjiabing@vivo.com>
-Date:   Wed, 07 Apr 2021 14:43:02 +0300
-In-Reply-To: <20210325064154.854245-1-wanjiabing@vivo.com> (Wan Jiabing's
-        message of "Thu, 25 Mar 2021 14:41:51 +0800")
-Message-ID: <87y2dumibd.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1351917AbhDGLru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 07:47:50 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:54777 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351912AbhDGLrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 07:47:49 -0400
+X-Originating-IP: 90.65.108.55
+Received: from localhost (lfbn-lyo-1-1676-55.w90-65.abo.wanadoo.fr [90.65.108.55])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id BD36DE0006;
+        Wed,  7 Apr 2021 11:47:37 +0000 (UTC)
+Date:   Wed, 7 Apr 2021 13:47:37 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Daniel Palmer <daniel@0x0f.com>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: Re: [PATCH] Revert "macb: support the two tx descriptors on
+ at91rm9200"
+Message-ID: <YG2b2dgLY3U1f5jB@piout.net>
+References: <20201209184740.16473-1-w@1wt.eu>
+ <CAFr9PX=Ky2QuXNH09DmegFV=e-4+ChdypSsJfV8svqxP7U-cpg@mail.gmail.com>
+ <20210407084207.GD22418@1wt.eu>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210407084207.GD22418@1wt.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wan Jiabing <wanjiabing@vivo.com> writes:
+Hi,
 
-> struct lbs_private has been declared at 22nd line.
-> Remove the duplicate.
->
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/net/wireless/marvell/libertas/decl.h | 1 -
->  1 file changed, 1 deletion(-)
+On 07/04/2021 10:42:07+0200, Willy Tarreau wrote:
+> Hi Daniel,
+> 
+> On Tue, Apr 06, 2021 at 07:04:58PM +0900, Daniel Palmer wrote:
+> > Hi Willy,
+> > 
+> > I've been messing with the SSD202D (sibling of the MSC313E) recently
+> > and the ethernet performance was awful.
+> > I remembered this revert and reverted it and it makes the ethernet
+> > work pretty well.
+> 
+> OK, that's reassuring, at least they use the same IP blocks.
+> 
+> > [   15.213358] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> > [   15.245235] pre0 41001fb8, post0 30001fb0 -> IDLETSR clear
+> > [   15.249291] pre1 30001f90, post1 20001d90 -> FIFOIDLE1 clear
+> > [   15.253331] pre2 20001d90, post2 10001990 -> FIFOIDLE2 clear
+> > [   15.257385] pre3 10001990, post3 00001190 -> FIFOIDLE3 clear
+> > [   15.261435] pre4 00001190, post4 f0000191 -> FIFOIDLE4 clear, OVR set
+> > [   15.265485] pre5 f0000190, post5 f0000191 -> OVR set
+> > [   15.269535] pre6 f0000190, post6 e0000181 -> OVR set, BNQ clear
+> > 
+> > There seems to be a FIFO empty counter in the top of the register but
+> > this is totally undocumented.
+> 
+> Yes that's extremely visible. I did notice some apparently random
+> values at the top of the register as well without being able to
+> determine what they were for, because I was pretty much convinced I
+> was facing a 2-deep queue only. You had a good idea to force it to
+> duplicate packets :-)
+> 
+> > There are two new status bits TBNQ and FBNQ at bits 7 and 8. I have no
+> > idea what they mean.
+> 
+> Maybe they're related to tx queue empty / tx queue full. Just guessing.
+> Since all these bits tend not to be reset until written to, I got confused
+> a few times trying to understand what they indicated.
+> 
+> > Bits 9 through 12 are some new status bits that seem to show if a FIFO
+> > slot is inuse.
+> 
+> Maybe indeed.
+> 
+> > I can't find any mention of these bits anywhere except the header of
+> > the vendor driver so I think these are specific to MStar's macb.
+> > The interesting part though is that BNQ does not get cleared until
+> > multiple frames have been pushed in and after OVR is set.
+> > I think this is what breaks your code when it runs on the MSC313E
+> > version of MACB.
+> 
+> Yes that's very possible, because the behavior was inconsistent with
+> what was documented for older chips. Also BNQ changed its meaning on
+> more recent chips, so it may very well have yet another one here.
+> 
+> > Anyhow. I'm working on a version of your patch that should work with
+> > both the at91rm9200 and the MSC313E.
+> 
+> Cool! Thanks for letting me know. If you need me to run some test, let
+> me know (just don't expect too short latency these days but I definitely
+> will test).
+> 
 
-The prefix should be "libertas:", I can fix that during commit.
+Note that I have my rm9200ek home now and I could also run some tests.
+(I do hope it still boots a recent kernel).
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
