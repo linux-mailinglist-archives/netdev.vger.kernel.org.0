@@ -2,87 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D60835778D
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D74357789
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbhDGWUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 18:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbhDGWUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 18:20:39 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4149EC061760;
-        Wed,  7 Apr 2021 15:20:29 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id g20so282069qkk.1;
-        Wed, 07 Apr 2021 15:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ner43B1c7JahH39vGo3hPzauiEoC0Ok0VtKiG5WaEkY=;
-        b=U16K0peTEaFDRZyiGqG5dTqKXCkKnJRPaNxJmbe3Q1Sg+u+XdBREmoPk9D4QGlPs5S
-         eTTzVZabqfO+GDt9sCXNTUNN7zPqDYAwEn/+f1DLP5YiPjdgVRptDaBiPpYpOQLEQWeE
-         t7lF2JbRy5iYwmiS/bJfdY9wv3rjHc1YWXsBlgjnAnXwVhZWzIfsGph7UJ6fQc4MSqkm
-         v1pgLQlSm4eycU9hOmk4BInbijaFF+2qzoygqyipg1Ovqc4qsO3VU+eZKFmfHpWgy+yM
-         cFlr/DFB9mOdGNdSs6D1jITwediB2I33I9gGyJAwfQTLgdHMu4BcSJ57rpvOpM6FRZsG
-         1NYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ner43B1c7JahH39vGo3hPzauiEoC0Ok0VtKiG5WaEkY=;
-        b=rr07hpEmqb+ycSn2B85K+8nn7P3PZ62+D1qRcsV5A/ct7b09ZHIKGNDxD+n/Hf+ddJ
-         TXzDxaSvSlhCj4s0bR9TmEES4Q+prd4LnxgciPyc+sqxldhQp0M/7gMA7XxcSFlKCuuN
-         q0hyUCPyE2pd5biNkE0fqJisYNrIvl1V2OeoemD3E3MJVCGMq41YcEEdpJdWfPdwqHvT
-         D4Y2AEph0XKC5+goebxkHSqc7yUiEflWzxOr5NmF0X180lDMDWhSJuFacYviwYBQyQDE
-         L0l6iwrTWNTmeWbroAw2D1y7+joTaxkWSeVOssNk8VQ+pER8VL5cQ5tcV2fvAh+4gA2Q
-         cMVQ==
-X-Gm-Message-State: AOAM530CBEC82hQzy/+fiRWoCCWEHr8N6s2ZKXdsZXiaJj+zJQCGa5SG
-        BfpGwEB0yftlleIKkYJcWcK+9WvwsZu6cFUCecw=
-X-Google-Smtp-Source: ABdhPJz5jXn36tzwk6U6Xoaraom6QWYRZFMN4zt+7Lp6WMX1nDkSss9M6Q8P/BhBfqfEksawLeaydMgAaq178wnCKMg=
-X-Received: by 2002:a05:620a:527:: with SMTP id h7mr5602337qkh.108.1617834028553;
- Wed, 07 Apr 2021 15:20:28 -0700 (PDT)
+        id S230395AbhDGWUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 18:20:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53426 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229488AbhDGWUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 18:20:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id DF6B561246;
+        Wed,  7 Apr 2021 22:20:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617834028;
+        bh=zBZdi3R/7P1SW7EPPHTm2kIJ/zDMmOdDIoYpnYopv3k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hQNMpVwrW/qSrtH2wTqeQ8xVRJstBeEMmPG1MMxuJzT5ESSQLaxxDFLB5HeLpT9sk
+         4BE+Khm1swj2U/8KsD3PezHT24F4Mw7GNMrZIdykrE0x1odOgUG3oePTtjMVhmQLg1
+         zfDjo+1EazXEy5ufIciUf6fFvN+UPcder+qRGwBr2SSC22Lk4QxmjqQrP23zddEAGD
+         mIvnkYukreByGVuCES8e2p9O7CKuY1xMybh2MD/1N1nJi3fWHitev3Il59kjvDpxTI
+         cUFxG9lYgFmbYHD+h6mXMcD9T+y4S+QKS06YRv1JQ50VQs6rCFBltBW98dJOWXAKst
+         Hw8zyPL1HlBQA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D7A7260ACA;
+        Wed,  7 Apr 2021 22:20:28 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1617087773-7183-1-git-send-email-wangqing@vivo.com> <1617087773-7183-5-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1617087773-7183-5-git-send-email-wangqing@vivo.com>
-From:   Richard Weinberger <richard.weinberger@gmail.com>
-Date:   Thu, 8 Apr 2021 00:20:17 +0200
-Message-ID: <CAFLxGvy7vKJHAms-QAyhcUiv58GYQy+zy3AZ3hP_g+tmh-X4xg@mail.gmail.com>
-Subject: Re: [PATCH 4/6] fs/jffs2: Delete obsolete TODO file
-To:     Wang Qing <wangqing@vivo.com>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Salah Triki <salah.triki@gmail.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-mips@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-scsi@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-decnet-user@lists.sourceforge.net,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: ieee802154 for net 2021-04-07
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161783402887.11274.12898338956836762292.git-patchwork-notify@kernel.org>
+Date:   Wed, 07 Apr 2021 22:20:28 +0000
+References: <20210407145505.467867-1-stefan@datenfreihafen.org>
+In-Reply-To: <20210407145505.467867-1-stefan@datenfreihafen.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 30, 2021 at 9:07 AM Wang Qing <wangqing@vivo.com> wrote:
->
-> The TODO file here has not been updated for 14 years, and the function
-> development described in the file have been implemented or abandoned.
->
-> Its existence will mislead developers seeking to view outdated information.
+Hello:
 
-Did you check whether all items in this list are really outdated?
-Nobody shall ever blindly follow a TODO list without checking first which
-points are still valid or not.
-Removing that file does not magically solve the issues it describes.
+This pull request was applied to netdev/net.git (refs/heads/master):
 
--- 
-Thanks,
-//richard
+On Wed,  7 Apr 2021 16:55:05 +0200 you wrote:
+> Hello Dave, Jakub.
+> 
+> An update from ieee802154 for your *net* tree.
+> 
+> Most of these are coming from the flood of syzkaller reports
+> lately got for the ieee802154 subsystem. There are likely to
+> come more for this, but this is a good batch to get out for now.
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: ieee802154 for net 2021-04-07
+    https://git.kernel.org/netdev/net/c/5d1dbacde1a2
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
