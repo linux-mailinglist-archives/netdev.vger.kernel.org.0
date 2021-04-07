@@ -2,68 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D85356C36
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 14:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4A8356C6F
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 14:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352227AbhDGMfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 08:35:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38018 "EHLO vps0.lunn.ch"
+        id S1343552AbhDGMou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 08:44:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51828 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245543AbhDGMfg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 08:35:36 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lU7Ow-00FJ20-2B; Wed, 07 Apr 2021 14:35:18 +0200
-Date:   Wed, 7 Apr 2021 14:35:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        f.fainelli@gmail.com, netdev@vger.kernel.org, linux-imx@nxp.com,
-        Jisheng.Zhang@synaptics.com
-Subject: Re: [PATCH net] net: stmmac: fix MAC WoL unwork if PHY doesn't
- support WoL
-Message-ID: <YG2nBgdbc4fVQ0tF@lunn.ch>
-References: <20210407104404.5781-1-qiangqing.zhang@nxp.com>
+        id S231124AbhDGMop (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 08:44:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C8B56135D;
+        Wed,  7 Apr 2021 12:44:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617799476;
+        bh=gnFVVLuMw1XrbnmPwx8G5P4avuQB7mSzP86qLuRcJpI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fDHQQ7TReibjFn8nqWoRCdeBp7Hyv74wTwIPAD9uJluSwxREqP+raeQzUq5RjXSn9
+         Z7iT979kTKmAQKldAvnfc2bLBd2+xkSvz2dvkH3WgInsDtCc/vUJ6cybRu5YANGwAG
+         5OFPDjZ5i2I4SrRk1P3J1KpB8d0hcaUh10sZDdjyG56V1bKlI/dTEFOklGrVuAQdBV
+         RX54+FAg79buZ7q+xo0+Oy724te7w8g5IQn81f+yX8/HMfSP3hsb2ynBAFWTZyIOS7
+         3gdDo02ROadZvEkRPXe4nCnBaFX/tuSJpr1SNoD1nh1DzPDncKpqQbQdAHOhsWmnk8
+         usAO0dMdPfBvA==
+Date:   Wed, 7 Apr 2021 15:44:32 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Wei Liu <liuwe@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Message-ID: <YG2pMD9eIHsRetDJ@unreal>
+References: <20210406232321.12104-1-decui@microsoft.com>
+ <YG0F4HkslqZHtBya@lunn.ch>
+ <MW2PR2101MB089237C8CCFFF0C352CA658ABF759@MW2PR2101MB0892.namprd21.prod.outlook.com>
+ <YG1qF8lULn8lLJa/@unreal>
+ <MW2PR2101MB08923F19D070996429979E38BF759@MW2PR2101MB0892.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210407104404.5781-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <MW2PR2101MB08923F19D070996429979E38BF759@MW2PR2101MB0892.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 06:44:04PM +0800, Joakim Zhang wrote:
-> Both get and set WoL will check device_can_wakeup(), if MAC supports
-> PMT, it will set device wakeup capability. After commit 1d8e5b0f3f2c ("net:
-> stmmac: Support WOL with phy"), device wakeup capability will be
-> overwrite in stmmac_init_phy() according to phy's Wol feature. If phy
-> doesn't support WoL, then MAC will lose wakeup capability. To fix this
-> issue, only overwrite device wakeup capability when MAC doesn't support
-> PMT.
-> 
-> Fixes: commit 1d8e5b0f3f2c ("net: stmmac: Support WOL with phy")
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 208cae344ffa..f46d9c69168f 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -1103,7 +1103,9 @@ static int stmmac_init_phy(struct net_device *dev)
->  	}
+On Wed, Apr 07, 2021 at 08:28:45AM +0000, Dexuan Cui wrote:
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Wednesday, April 7, 2021 1:15 AM
+> > > ...
+> > > int gdma_test_eq(struct gdma_context *gc, struct gdma_queue *eq)
+> > > {
+> > >         struct gdma_generate_test_event_req req = { 0 };
+> > >         struct gdma_general_resp resp = { 0 };
+> > 
+> > BTW, you don't need to write { 0 }, the {} is enough.
 >  
->  	phylink_ethtool_get_wol(priv->phylink, &wol);
-> -	device_set_wakeup_capable(priv->device, !!wol.supported);
-> +
-> +	if (!priv->plat->pmt)
-> +		device_set_wakeup_capable(priv->device, !!wol.supported);
-  
-It seems like a better fix would be to call stmmac_get_wol(), That
-should set wol taking into account both pmt and phy.  But i would also
-say stmmac_get_wol() and stmmac_set_wol() are broken. They should
-combine capabilities, not be either pmt or phy.
+> Thanks for the suggestion! I'll use {0} in v2. 
 
-       Andrew
+You missed the point, "{ 0 }" change to be "{}" without 0.
+
+Thanks
