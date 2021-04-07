@@ -2,64 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 991BC356040
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 956A3356044
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347659AbhDGAYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:24:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46472 "EHLO mail.kernel.org"
+        id S236563AbhDGAZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:25:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46934 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236387AbhDGAYL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 20:24:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EFC46128D;
-        Wed,  7 Apr 2021 00:24:02 +0000 (UTC)
+        id S236278AbhDGAZg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 20:25:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 88CA86135D;
+        Wed,  7 Apr 2021 00:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617755042;
-        bh=l02fQtZslOfLQckk54FKs0twciBkXe1YUtQZOxaKqjg=;
+        s=k20201202; t=1617755127;
+        bh=ZZSSDKuw6U60/IUXxntLjQiuJTcF+qL7DzyhsvdkvJE=;
         h=From:To:Cc:Subject:Date:From;
-        b=SztRns4UUFmWarpHGNTHqH4sQmhiYAniOKTC5B3zSbqHEUJ/dXW8UTEBdhSWcX8Qa
-         CEaugvfubYaZJU6MC0Mmpm5S9hNRhUrSdEiaHY9Jybraohy9h3Ti1jMI7aYd3c7nf3
-         IO2506ZS4MRga9AioBgFDPTMuQ3m24Bd0uiSdSmseVJBCY3g4z/f8uoQ6TMEbL/x4n
-         oxozAIforqpDCaBw+ysVhmMGx7YQ5SyqHRCoRsn7l6iPFzZB88qBjnbrucququpF61
-         wVSb6khq3bTsJfmXCKhnboK7JoaFvw79n4YqJ5NzOtpUE/O9SooT29wd8/jGtppMup
-         /vrxVuNuSmpkw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        mkubecek@suse.cz, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] ethtool: document PHY tunable callbacks
-Date:   Tue,  6 Apr 2021 17:23:59 -0700
-Message-Id: <20210407002359.1860770-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        b=tO88TaR1IV5TWFmXkRY2MHhwc/VKlnvB6C0fJbErAASjkQ+EWnFr06TvxGp7Ds8E/
+         27qz4E5Nq1JQ5Wojh0Npo0nxwu2GCwgCtRm88kDuTgiWoJRygna8huB7tqiPZqEKvq
+         vJBydLpuZ8WDWuN2a86n9tx/4juy6ZRKJNVul/HVizfhCG32bGiDgCjhxFyIn+Gyk0
+         yZ/PYoengNzGLpCIgAuIKadBuUjOgLNEbp1JxB6a4oV8yHhzF2djnMULV/XpEfeD8Y
+         tqTioAkMDzIsQoDkcXxTTKqDVvBif7XP5PBEYc+QFq4XwKLyZIV0pZGnHArgO0iyzR
+         BKk9URX0hsezA==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: [PATCH kbuild] Makefile.extrawarn: disable -Woverride-init in W=1
+Date:   Wed,  7 Apr 2021 02:24:50 +0200
+Message-Id: <20210407002450.10015-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing kdoc for phy tunable callbacks.
+The -Wextra flag enables -Woverride-init in newer versions of GCC.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This causes the compiler to warn when a value is written twice in a
+designated initializer, for example:
+  int x[1] = {
+    [0] = 3,
+    [0] = 3,
+  };
+
+Note that for clang, this was disabled from the beginning with
+-Wno-initializer-overrides in commit a1494304346a3 ("kbuild: add all
+Clang-specific flags unconditionally").
+
+This prevents us from implementing complex macros for compile-time
+initializers.
+
+For example a macro of the form INITIALIZE_BITMAP(bits...) that can be
+used as
+  static DECLARE_BITMAP(bm, 64) = INITIALIZE_BITMAP(0, 1, 32, 33);
+can only be implemented by allowing a designated initializer to
+initialize the same members multiple times (because the compiler
+complains even if the multiple initializations initialize to the same
+value).
+
+Disable the -Woverride-init flag.
+
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Nathan Chancellor <natechancellor@gmail.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: netdev@vger.kernel.org
 ---
-Targetting net-next to avoid conflict with upcoming patches.
-Should apply cleanly to both trees.
+ scripts/Makefile.extrawarn | 1 +
+ 1 file changed, 1 insertion(+)
 
- include/linux/ethtool.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 3583f7fc075c..5c631a298994 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -410,6 +410,8 @@ struct ethtool_pause_stats {
-  * @get_ethtool_phy_stats: Return extended statistics about the PHY device.
-  *	This is only useful if the device maintains PHY statistics and
-  *	cannot use the standard PHY library helpers.
-+ * @get_phy_tunable: Read the value of a PHY tunable.
-+ * @set_phy_tunable: Set the value of a PHY tunable.
-  *
-  * All operations are optional (i.e. the function pointer may be set
-  * to %NULL) and callers must take this into account.  Callers must
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index d53825503874..cf7bc1eec5e3 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -36,6 +36,7 @@ KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
+ KBUILD_CFLAGS += -Wno-missing-field-initializers
+ KBUILD_CFLAGS += -Wno-sign-compare
+ KBUILD_CFLAGS += -Wno-type-limits
++KBUILD_CFLAGS += $(call cc-disable-warning, override-init)
+ 
+ KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
+ 
 -- 
-2.30.2
+2.26.2
 
