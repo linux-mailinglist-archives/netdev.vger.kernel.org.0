@@ -2,107 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4FF357642
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:46:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0595D35765B
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbhDGUqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhDGUqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 16:46:54 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A29C061760
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 13:46:44 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id x4so1461955edd.2
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 13:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DEH5OiHUMSSzVTDAIw0bSpWUsSOAFR/jjnwEIiOmzGQ=;
-        b=tTPQEZmVcB+YhdFxmar9Ue/0Hcrl7SMKiD8WgN8W22voF33kAEf4RWfG4qygMT3Es7
-         yDHahXTocp4jKWPG6JyZVcsbN9GHS4a9magdQKOXOeme8emVm4qehRu2FP5UbOCy7iO2
-         1LVeJkePhtkHp9GuUTvBrsZvQcXvLXIZ5DxPJNojnPnIkt19DSq5bTM4yjBJVJRajgmn
-         5CgLCnJaAKx5UH5oP0cL99bnZdbAkt6s/9RxMurEIHH1yxpZAyIcviHsOZ8XGgaQ97+P
-         dpA4q6RTQXnxmiqu+LnrC1WWTZV0fOsOn4w85RwmiAYWwE9+gHeWUDgJRjW2E5503dvR
-         Mo8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DEH5OiHUMSSzVTDAIw0bSpWUsSOAFR/jjnwEIiOmzGQ=;
-        b=YueUrNdJHe81FMhe3mCkzhMsdcP/hkYiQDBrfpFN1s/JYkEFBhdGLj9RFh2ZrWETEW
-         RPyImX7H5rZXKWzaMK9/aARXJl46ftXnOC4MZgr5RZtwqFpVwnQ1OFSLi+DTTcK2zj7a
-         k9kT75/Z28B1UgOaITrB7r+NKRA9RMHfSFc4WNqkHmWDK/htsJDWQP+y1zRKY/BBT1FQ
-         kL5RbJ4M7Avm+C45x7SUutqBWeQNc0BN2eJlYawY8ERZaaNquGCC0fLVTK4EAvn/tuGx
-         wmlj6d+yCRl92XBUEufnyLDAk32V8Na8pdhAkDErpA7YOuMNwlCzu1sDkUDj6f8jN6TR
-         S+Cg==
-X-Gm-Message-State: AOAM532WMZuAkI6qyB3fOP27tnFn1nhbLya9GBYcPe2UdrQJaMGVlpNd
-        su0VufIH7myLwc1EuKQIiFM=
-X-Google-Smtp-Source: ABdhPJzFZXzUKovpe+GVQGZjHIPJjSjEjccdq+FpuQHmI9l5hkasB582a/blsKO5YDq1qWH0s9i/Tw==
-X-Received: by 2002:a05:6402:1759:: with SMTP id v25mr6805944edx.177.1617828403102;
-        Wed, 07 Apr 2021 13:46:43 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id u1sm15991169edv.90.2021.04.07.13.46.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Apr 2021 13:46:42 -0700 (PDT)
-Date:   Wed, 7 Apr 2021 23:46:41 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net 0/3] Fixes for sja1105 best-effort VLAN filtering
-Message-ID: <20210407204641.ly6hnjgi4kjbn4co@skbuf>
-References: <20210407201452.1703261-1-olteanv@gmail.com>
+        id S231603AbhDGUxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 16:53:31 -0400
+Received: from vps-vb.mhejs.net ([37.28.154.113]:40426 "EHLO vps-vb.mhejs.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231520AbhDGUxa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 16:53:30 -0400
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.93.0.4)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1lUFAn-0007gx-8c; Wed, 07 Apr 2021 22:53:13 +0200
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Pkshih <pkshih@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
+References: <e2924d81-0e30-2dd0-292b-428fea199484@maciej.szmigiero.name>
+ <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
+ <87r1jnohq6.fsf@codeaurora.org>
+ <8e0434eb-d15f-065d-2ba7-b50c67877112@maciej.szmigiero.name>
+ <a2003668-5108-27b9-95cd-9e1d5d1aa94d@lwfinger.net>
+ <1617763692.9857.7.camel@realtek.com>
+ <1dc7e487-b97b-8584-47f7-37f3385c7bf9@lwfinger.net>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
+Message-ID: <15737dcf-95ac-1ce6-a681-94ff5db968e4@maciej.szmigiero.name>
+Date:   Wed, 7 Apr 2021 22:53:07 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210407201452.1703261-1-olteanv@gmail.com>
+In-Reply-To: <1dc7e487-b97b-8584-47f7-37f3385c7bf9@lwfinger.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 11:14:49PM +0300, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> This series addresses some user complaints regarding best-effort VLAN
-> filtering support on sja1105:
-> - switch not pushing VLAN tag on egress when it should
-> - switch not dropping traffic with unknown VLAN when it should
-> - switch not overwriting VLAN flags when it should
-> 
-> Those bugs are not the reason why it's called best-effort, so we should
-> fix them :)
-> 
-> Vladimir Oltean (3):
->   net: dsa: sja1105: use the bridge pvid in best_effort_vlan_filtering
->     mode
->   net: dsa: sja1105: use 4095 as the private VLAN for untagged traffic
->   net: dsa: sja1105: update existing VLANs from the bridge VLAN list
-> 
->  drivers/net/dsa/sja1105/sja1105.h      |  1 +
->  drivers/net/dsa/sja1105/sja1105_main.c | 61 ++++++++++++++++++--------
->  2 files changed, 43 insertions(+), 19 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+On 07.04.2021 06:21, Larry Finger wrote:
+> On 4/6/21 9:48 PM, Pkshih wrote:
+>> On Tue, 2021-04-06 at 11:25 -0500, Larry Finger wrote:
+>>> On 4/6/21 7:06 AM, Maciej S. Szmigiero wrote:
+>>>> On 06.04.2021 12:00, Kalle Valo wrote:
+>>>>> "Maciej S. Szmigiero" <mail@maciej.szmigiero.name> writes:
+>>>>>
+>>>>>> On 29.03.2021 00:54, Maciej S. Szmigiero wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> It looks like rtlwifi/rtl8192cu AP mode is broken when a STA is using PS,
+>>>>>>> since the driver does not update its beacon to account for TIM changes,
+>>>>>>> so a station that is sleeping will never learn that it has packets
+>>>>>>> buffered at the AP.
+>>>>>>>
+>>>>>>> Looking at the code, the rtl8192cu driver implements neither the set_tim()
+>>>>>>> callback, nor does it explicitly update beacon data periodically, so it
+>>>>>>> has no way to learn that it had changed.
+>>>>>>>
+>>>>>>> This results in the AP mode being virtually unusable with STAs that do
+>>>>>>> PS and don't allow for it to be disabled (IoT devices, mobile phones,
+>>>>>>> etc.).
+>>>>>>>
+>>>>>>> I think the easiest fix here would be to implement set_tim() for example
+>>>>>>> the way rt2x00 driver does: queue a work or schedule a tasklet to update
+>>>>>>> the beacon data on the device.
+>>>>>>
+>>>>>> Are there any plans to fix this?
+>>>>>> The driver is listed as maintained by Ping-Ke.
+>>>>>
+>>>>> Yeah, power save is hard and I'm not surprised that there are drivers
+>>>>> with broken power save mode support. If there's no fix available we
+>>>>> should stop supporting AP mode in the driver.
+>>>>>
+>>>> https://wireless.wiki.kernel.org/en/developers/documentation/mac80211/api
+>>>> clearly documents that "For AP mode, it must (...) react to the set_tim()
+>>>> callback or fetch each beacon from mac80211".
+>>>> The driver isn't doing either so no wonder the beacon it is sending
+>>>> isn't getting updated.
+>>>> As I have said above, it seems to me that all that needs to be done here
+>>>> is to queue a work in a set_tim() callback, then call
+>>>> send_beacon_frame() from rtlwifi/core.c from this work.
+>>>> But I don't know the exact device semantics, maybe it needs some other
+>>>> notification that the beacon has changed, too, or even tries to
+>>>> manage the TIM bitmap by itself.
+>>>> It would be a shame to lose the AP mode for such minor thing, though.
+>>>> I would play with this myself, but unfortunately I don't have time
+>>>> to work on this right now.
+>>>> That's where my question to Realtek comes: are there plans to actually
+>>>> fix this?
+>>>
+>>> Yes, I am working on this. My only question is "if you are such an expert on the
+>>> problem, why do you not fix it?"
+>>>
+>>> The example in rx200 is not particularly useful, and I have not found any other
+>>> examples.
+>>>
+>>
+>> Hi Larry,
+>>
+>> I have a draft patch that forks a work to do send_beacon_frame(), whose
+>> behavior like Maciej mentioned.
 
-Please don't apply these patches yet. I finished regression testing and
-it looks like patch 1 breaks PTP for some reason I'm afraid to even think
-of now - the RX timestamps are still collected but synchronization looks
-flat by around 1 ms.
+That's great, thanks!
 
-If my suspicion is right and the VLAN retagging affects PTP traffic too
-(which should hit a trap-to-host rule before that even takes place),
-then the MAC timestamp might be replaced with a timestamp taken on the
-internal loopback port, which would be pretty nasty. Or the strict
-delivery order guarantees towards the DSA master (first comes the PTP
-frame, then the meta frame holding the RX timestamp) might no longer be
-true if the original PTP frame is dropped in hardware because its
-VLAN-retagged replacement is sent to the CPU instead? I don't know. I'll
-do some more debugging tomorrow.
+>> I did test on RTL8821AE; it works well. But, it seems already work well even
+>> I don't apply this patch, and I'm still digging why.
+
+It looks like PCI rtlwifi hardware uses a tasklet (specifically,
+_rtl_pci_prepare_bcn_tasklet() in pci.c) to periodically transfer the
+current beacon to the NIC.
+
+This tasklet is scheduled on a RTL_IMR_BCNINT interrupt, which sounds
+like a beacon interval interrupt.
+
+>> I don't have a rtl8192cu dongle on hand, but I'll try to find one.
+> 
+> Maceij,
+> 
+> Does this patch fix the problem?
+
+The beacon seems to be updating now and STAs no longer get stuck in PS
+mode.
+Although sometimes (every 2-3 minutes with continuous 1s interval pings)
+there is around 5s delay in updating the transmitted beacon - don't know
+why, maybe the NIC hardware still has the old version in queue?
+
+I doubt, however that this set_tim() callback should be added for every
+rtlwifi device type.
+
+As I have said above, PCI devices seem to already have a mechanism in
+place to update their beacon each beacon interval.
+Your test that RTL8821AE works without this patch confirms that (at
+least for the rtl8821ae driver).
+
+It seems this callback is only necessarily for USB rtlwifi devices.
+Which currently means rtl8192cu only.
+
+Thanks,
+Maciej
