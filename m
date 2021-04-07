@@ -2,94 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7413560ED
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 03:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64031356178
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 04:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347814AbhDGBp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 21:45:59 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:15501 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347808AbhDGBp5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 21:45:57 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FFRxj1HP3zyNW7;
-        Wed,  7 Apr 2021 09:43:37 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 7 Apr 2021 09:45:37 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <jmaloy@redhat.com>, <ying.xue@windriver.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <tipc-discussion@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH v2] net: tipc: Fix spelling errors in net/tipc module
-Date:   Wed, 7 Apr 2021 09:59:45 +0800
-Message-ID: <20210407015945.420908-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S1348152AbhDGCtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 22:49:15 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:57131 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348132AbhDGCtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Apr 2021 22:49:13 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 1372mEZO1016005, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 1372mEZO1016005
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 7 Apr 2021 10:48:14 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 7 Apr 2021 10:48:13 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 7 Apr 2021 10:48:13 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::4591:e6f0:2e30:96c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::4591:e6f0:2e30:96c6%6]) with mapi id
+ 15.01.2106.013; Wed, 7 Apr 2021 10:48:13 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "mail@maciej.szmigiero.name" <mail@maciej.szmigiero.name>,
+        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
+Thread-Topic: rtlwifi/rtl8192cu AP mode broken with PS STA
+Thread-Index: AQHXKt1YTEWAFQOqV0euMAbEDkc/GKqnJvGAgACuHgA=
+Date:   Wed, 7 Apr 2021 02:48:13 +0000
+Message-ID: <1617763692.9857.7.camel@realtek.com>
+References: <e2924d81-0e30-2dd0-292b-428fea199484@maciej.szmigiero.name>
+         <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
+         <87r1jnohq6.fsf@codeaurora.org>
+         <8e0434eb-d15f-065d-2ba7-b50c67877112@maciej.szmigiero.name>
+         <a2003668-5108-27b9-95cd-9e1d5d1aa94d@lwfinger.net>
+In-Reply-To: <a2003668-5108-27b9-95cd-9e1d5d1aa94d@lwfinger.net>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.146]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzQvNiDkuIrljYggMDM6NTM6MDA=?=
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: multipart/mixed;
+        boundary="_002_161776369298577camelrealtekcom_"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-CFilter-Loop: Reflected
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/06/2021 06:26:14
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 162920 [Apr 05 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/06/2021 06:29:00
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 04/06/2021 06:26:14
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 162920 [Apr 05 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 442 442 b985cb57763b61d2a20abb585d5d4cc10c315b09
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 04/06/2021 06:29:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These patches fix a series of spelling errors in net/tipc module.
+--_002_161776369298577camelrealtekcom_
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <96D5660FCA0AFF43981FF5FA6C19CFED@realtek.com>
+Content-Transfer-Encoding: base64
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- net/tipc/bearer.h | 6 +++---
- net/tipc/net.c    | 2 +-
- net/tipc/node.c   | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+T24gVHVlLCAyMDIxLTA0LTA2IGF0IDExOjI1IC0wNTAwLCBMYXJyeSBGaW5nZXIgd3JvdGU6DQo+
+IE9uIDQvNi8yMSA3OjA2IEFNLCBNYWNpZWogUy4gU3ptaWdpZXJvIHdyb3RlOg0KPiA+IE9uIDA2
+LjA0LjIwMjEgMTI6MDAsIEthbGxlIFZhbG8gd3JvdGU6DQo+ID4+ICJNYWNpZWogUy4gU3ptaWdp
+ZXJvIiA8bWFpbEBtYWNpZWouc3ptaWdpZXJvLm5hbWU+IHdyaXRlczoNCj4gPj4NCj4gPj4+IE9u
+IDI5LjAzLjIwMjEgMDA6NTQsIE1hY2llaiBTLiBTem1pZ2llcm8gd3JvdGU6DQo+ID4+Pj4gSGks
+DQo+ID4+Pj4NCj4gPj4+PiBJdCBsb29rcyBsaWtlIHJ0bHdpZmkvcnRsODE5MmN1IEFQIG1vZGUg
+aXMgYnJva2VuIHdoZW4gYSBTVEEgaXMgdXNpbmcgUFMsDQo+ID4+Pj4gc2luY2UgdGhlIGRyaXZl
+ciBkb2VzIG5vdCB1cGRhdGUgaXRzIGJlYWNvbiB0byBhY2NvdW50IGZvciBUSU0gY2hhbmdlcywN
+Cj4gPj4+PiBzbyBhIHN0YXRpb24gdGhhdCBpcyBzbGVlcGluZyB3aWxsIG5ldmVyIGxlYXJuIHRo
+YXQgaXQgaGFzIHBhY2tldHMNCj4gPj4+PiBidWZmZXJlZCBhdCB0aGUgQVAuDQo+ID4+Pj4NCj4g
+Pj4+PiBMb29raW5nIGF0IHRoZSBjb2RlLCB0aGUgcnRsODE5MmN1IGRyaXZlciBpbXBsZW1lbnRz
+IG5laXRoZXIgdGhlIHNldF90aW0oKQ0KPiA+Pj4+IGNhbGxiYWNrLCBub3IgZG9lcyBpdCBleHBs
+aWNpdGx5IHVwZGF0ZSBiZWFjb24gZGF0YSBwZXJpb2RpY2FsbHksIHNvIGl0DQo+ID4+Pj4gaGFz
+IG5vIHdheSB0byBsZWFybiB0aGF0IGl0IGhhZCBjaGFuZ2VkLg0KPiA+Pj4+DQo+ID4+Pj4gVGhp
+cyByZXN1bHRzIGluIHRoZSBBUCBtb2RlIGJlaW5nIHZpcnR1YWxseSB1bnVzYWJsZSB3aXRoIFNU
+QXMgdGhhdCBkbw0KPiA+Pj4+IFBTIGFuZCBkb24ndCBhbGxvdyBmb3IgaXQgdG8gYmUgZGlzYWJs
+ZWQgKElvVCBkZXZpY2VzLCBtb2JpbGUgcGhvbmVzLA0KPiA+Pj4+IGV0Yy4pLg0KPiA+Pj4+DQo+
+ID4+Pj4gSSB0aGluayB0aGUgZWFzaWVzdCBmaXggaGVyZSB3b3VsZCBiZSB0byBpbXBsZW1lbnQg
+c2V0X3RpbSgpIGZvciBleGFtcGxlDQo+ID4+Pj4gdGhlIHdheSBydDJ4MDAgZHJpdmVyIGRvZXM6
+IHF1ZXVlIGEgd29yayBvciBzY2hlZHVsZSBhIHRhc2tsZXQgdG8gdXBkYXRlDQo+ID4+Pj4gdGhl
+IGJlYWNvbiBkYXRhIG9uIHRoZSBkZXZpY2UuDQo+ID4+Pg0KPiA+Pj4gQXJlIHRoZXJlIGFueSBw
+bGFucyB0byBmaXggdGhpcz8NCj4gPj4+IFRoZSBkcml2ZXIgaXMgbGlzdGVkIGFzIG1haW50YWlu
+ZWQgYnkgUGluZy1LZS4NCj4gPj4NCj4gPj4gWWVhaCwgcG93ZXIgc2F2ZSBpcyBoYXJkIGFuZCBJ
+J20gbm90IHN1cnByaXNlZCB0aGF0IHRoZXJlIGFyZSBkcml2ZXJzDQo+ID4+IHdpdGggYnJva2Vu
+IHBvd2VyIHNhdmUgbW9kZSBzdXBwb3J0LiBJZiB0aGVyZSdzIG5vIGZpeCBhdmFpbGFibGUgd2UN
+Cj4gPj4gc2hvdWxkIHN0b3Agc3VwcG9ydGluZyBBUCBtb2RlIGluIHRoZSBkcml2ZXIuDQo+ID4+
+DQo+ID7CoA0KPiA+IGh0dHBzOi8vd2lyZWxlc3Mud2lraS5rZXJuZWwub3JnL2VuL2RldmVsb3Bl
+cnMvZG9jdW1lbnRhdGlvbi9tYWM4MDIxMS9hcGkNCj4gPiBjbGVhcmx5IGRvY3VtZW50cyB0aGF0
+ICJGb3IgQVAgbW9kZSwgaXQgbXVzdCAoLi4uKSByZWFjdCB0byB0aGUgc2V0X3RpbSgpDQo+ID4g
+Y2FsbGJhY2sgb3IgZmV0Y2ggZWFjaCBiZWFjb24gZnJvbSBtYWM4MDIxMSIuDQo+ID7CoA0KPiA+
+IFRoZSBkcml2ZXIgaXNuJ3QgZG9pbmcgZWl0aGVyIHNvIG5vIHdvbmRlciB0aGUgYmVhY29uIGl0
+IGlzIHNlbmRpbmcNCj4gPiBpc24ndCBnZXR0aW5nIHVwZGF0ZWQuDQo+ID7CoA0KPiA+IEFzIEkg
+aGF2ZSBzYWlkIGFib3ZlLCBpdCBzZWVtcyB0byBtZSB0aGF0IGFsbCB0aGF0IG5lZWRzIHRvIGJl
+IGRvbmUgaGVyZQ0KPiA+IGlzIHRvIHF1ZXVlIGEgd29yayBpbiBhIHNldF90aW0oKSBjYWxsYmFj
+aywgdGhlbiBjYWxsDQo+ID4gc2VuZF9iZWFjb25fZnJhbWUoKSBmcm9tIHJ0bHdpZmkvY29yZS5j
+IGZyb20gdGhpcyB3b3JrLg0KPiA+wqANCj4gPiBCdXQgSSBkb24ndCBrbm93IHRoZSBleGFjdCBk
+ZXZpY2Ugc2VtYW50aWNzLCBtYXliZSBpdCBuZWVkcyBzb21lIG90aGVyDQo+ID4gbm90aWZpY2F0
+aW9uIHRoYXQgdGhlIGJlYWNvbiBoYXMgY2hhbmdlZCwgdG9vLCBvciBldmVuIHRyaWVzIHRvDQo+
+ID4gbWFuYWdlIHRoZSBUSU0gYml0bWFwIGJ5IGl0c2VsZi4NCj4gPsKgDQo+ID4gSXQgd291bGQg
+YmUgYSBzaGFtZSB0byBsb3NlIHRoZSBBUCBtb2RlIGZvciBzdWNoIG1pbm9yIHRoaW5nLCB0aG91
+Z2guDQo+ID7CoA0KPiA+IEkgd291bGQgcGxheSB3aXRoIHRoaXMgbXlzZWxmLCBidXQgdW5mb3J0
+dW5hdGVseSBJIGRvbid0IGhhdmUgdGltZQ0KPiA+IHRvIHdvcmsgb24gdGhpcyByaWdodCBub3cu
+DQo+ID7CoA0KPiA+IFRoYXQncyB3aGVyZSBteSBxdWVzdGlvbiB0byBSZWFsdGVrIGNvbWVzOiBh
+cmUgdGhlcmUgcGxhbnMgdG8gYWN0dWFsbHkNCj4gPiBmaXggdGhpcz8NCj4gDQo+IFllcywgSSBh
+bSB3b3JraW5nIG9uIHRoaXMuIE15IG9ubHkgcXVlc3Rpb24gaXMgImlmIHlvdSBhcmUgc3VjaCBh
+biBleHBlcnQgb24gdGhlwqANCj4gcHJvYmxlbSwgd2h5IGRvIHlvdSBub3QgZml4IGl0PyINCj4g
+DQo+IFRoZSBleGFtcGxlIGluIHJ4MjAwIGlzIG5vdCBwYXJ0aWN1bGFybHkgdXNlZnVsLCBhbmQg
+SSBoYXZlIG5vdCBmb3VuZCBhbnkgb3RoZXLCoA0KPiBleGFtcGxlcy4NCj4gDQoNCkhpIExhcnJ5
+LA0KDQpJIGhhdmUgYSBkcmFmdCBwYXRjaCB0aGF0IGZvcmtzIGEgd29yayB0byBkbyBzZW5kX2Jl
+YWNvbl9mcmFtZSgpLCB3aG9zZQ0KYmVoYXZpb3IgbGlrZSBNYWNpZWogbWVudGlvbmVkLg0KSSBk
+aWQgdGVzdCBvbiBSVEw4ODIxQUU7IGl0IHdvcmtzIHdlbGwuIEJ1dCwgaXQgc2VlbXMgYWxyZWFk
+eSB3b3JrIHdlbGwgZXZlbg0KSSBkb24ndCBhcHBseSB0aGlzIHBhdGNoLCBhbmQgSSdtIHN0aWxs
+IGRpZ2dpbmcgd2h5Lg0KDQpJIGRvbid0IGhhdmUgYcKgcnRsODE5MmN1IGRvbmdsZSBvbiBoYW5k
+LCBidXQgSSdsbCB0cnkgdG8gZmluZCBvbmUuDQoNCi0tLQ0KUGluZy1LZQ0KDQo=
 
-diff --git a/net/tipc/bearer.h b/net/tipc/bearer.h
-index 6bf4550aa1ac..57c6a1a719e2 100644
---- a/net/tipc/bearer.h
-+++ b/net/tipc/bearer.h
-@@ -154,9 +154,9 @@ struct tipc_media {
-  * care of initializing all other fields.
-  */
- struct tipc_bearer {
--	void __rcu *media_ptr;			/* initalized by media */
--	u32 mtu;				/* initalized by media */
--	struct tipc_media_addr addr;		/* initalized by media */
-+	void __rcu *media_ptr;			/* initialized by media */
-+	u32 mtu;				/* initialized by media */
-+	struct tipc_media_addr addr;		/* initialized by media */
- 	char name[TIPC_MAX_BEARER_NAME];
- 	struct tipc_media *media;
- 	struct tipc_media_addr bcast_addr;
-diff --git a/net/tipc/net.c b/net/tipc/net.c
-index a129f661bee3..faf6bf554514 100644
---- a/net/tipc/net.c
-+++ b/net/tipc/net.c
-@@ -89,7 +89,7 @@
-  *     - A spin lock to protect the registry of kernel/driver users (reg.c)
-  *     - A global spin_lock (tipc_port_lock), which only task is to ensure
-  *       consistency where more than one port is involved in an operation,
-- *       i.e., whe a port is part of a linked list of ports.
-+ *       i.e., when a port is part of a linked list of ports.
-  *       There are two such lists; 'port_list', which is used for management,
-  *       and 'wait_list', which is used to queue ports during congestion.
-  *
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 008670d1f43e..81430da244b9 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1734,7 +1734,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
- }
- 
- /* tipc_node_xmit_skb(): send single buffer to destination
-- * Buffers sent via this functon are generally TIPC_SYSTEM_IMPORTANCE
-+ * Buffers sent via this function are generally TIPC_SYSTEM_IMPORTANCE
-  * messages, which will not be rejected
-  * The only exception is datagram messages rerouted after secondary
-  * lookup, which are rare and safe to dispose of anyway.
--- 
-2.25.1
+--_002_161776369298577camelrealtekcom_
+Content-Type: text/x-patch;
+	name="0001-rtlwifi-implement-set_tim-by-update-beacon-content.patch"
+Content-Description: 0001-rtlwifi-implement-set_tim-by-update-beacon-content.patch
+Content-Disposition: attachment;
+	filename="0001-rtlwifi-implement-set_tim-by-update-beacon-content.patch";
+	size=5209; creation-date="Wed, 07 Apr 2021 02:48:13 GMT";
+	modification-date="Wed, 07 Apr 2021 02:48:13 GMT"
+Content-ID: <FCD7945F15CBD846865E32EF5E699E57@realtek.com>
+Content-Transfer-Encoding: base64
 
+RnJvbSA0NGJlODAyMzJhYTQ5NzM3YzAzNWVlNDY1NmQyMGEyMmY1NzNkMzNlIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4KRGF0
+ZTogVHVlLCA2IEFwciAyMDIxIDE5OjU1OjU5ICswODAwClN1YmplY3Q6IFtQQVRDSF0gcnRsd2lm
+aTogaW1wbGVtZW50IHNldF90aW0gYnkgdXBkYXRlIGJlYWNvbiBjb250ZW50CgpPbmNlIGJlYWNv
+biBjb250ZW50IGlzIGNoYW5nZWQsIHdlIHVwZGF0ZSB0aGUgY29udGVudCB0byB3aWZpIGNhcmQg
+YnkKc2VuZF9iZWFjb25fZnJhbWUoKS4KClNpZ25lZC1vZmYtYnk6IFBpbmctS2UgU2hpaCA8cGtz
+aGloQHJlYWx0ZWsuY29tPgotLS0KIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lm
+aS9jb3JlLmMgfCAzMCArKysrKysrKysrKysrKysrKysrKysKIGRyaXZlcnMvbmV0L3dpcmVsZXNz
+L3JlYWx0ZWsvcnRsd2lmaS9jb3JlLmggfCAgMSArCiBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFs
+dGVrL3J0bHdpZmkvcGNpLmMgIHwgIDMgKysrCiBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVr
+L3J0bHdpZmkvdXNiLmMgIHwgIDMgKysrCiBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0
+bHdpZmkvd2lmaS5oIHwgIDEgKwogNSBmaWxlcyBjaGFuZ2VkLCAzOCBpbnNlcnRpb25zKCspCgpk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL2NvcmUuYyBi
+L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9jb3JlLmMKaW5kZXggOTY1YmQ5
+NTg5MDQ1Li5jYTQ3YTcwZDlhODYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3Jl
+YWx0ZWsvcnRsd2lmaS9jb3JlLmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9y
+dGx3aWZpL2NvcmUuYwpAQCAtMTAxOCw2ICsxMDE4LDI1IEBAIHN0YXRpYyB2b2lkIHNlbmRfYmVh
+Y29uX2ZyYW1lKHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3LAogCX0KIH0KIAordm9pZCBydGxfdXBk
+YXRlX2JlYWNvbl93b3JrX2NhbGxiYWNrKHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yaykKK3sKKwlz
+dHJ1Y3QgcnRsX3dvcmtzICpydGx3b3JrcyA9CisJICAgIGNvbnRhaW5lcl9vZih3b3JrLCBzdHJ1
+Y3QgcnRsX3dvcmtzLCB1cGRhdGVfYmVhY29uX3dvcmspOworCXN0cnVjdCBpZWVlODAyMTFfaHcg
+Kmh3ID0gcnRsd29ya3MtPmh3OworCXN0cnVjdCBydGxfcHJpdiAqcnRscHJpdiA9IHJ0bF9wcml2
+KGh3KTsKKwlzdHJ1Y3QgaWVlZTgwMjExX3ZpZiAqdmlmID0gcnRscHJpdi0+bWFjODAyMTEudmlm
+OworCisJaWYgKCF2aWYpIHsKKwkJV0FSTl9PTkNFKHRydWUsICJubyB2aWYgdG8gdXBkYXRlIGJl
+YWNvblxuIik7CisJCXJldHVybjsKKwl9CisKKwltdXRleF9sb2NrKCZydGxwcml2LT5sb2Nrcy5j
+b25mX211dGV4KTsKKwlzZW5kX2JlYWNvbl9mcmFtZShodywgdmlmKTsKKwltdXRleF91bmxvY2so
+JnJ0bHByaXYtPmxvY2tzLmNvbmZfbXV0ZXgpOworfQorRVhQT1JUX1NZTUJPTF9HUEwocnRsX3Vw
+ZGF0ZV9iZWFjb25fd29ya19jYWxsYmFjayk7CisKIHN0YXRpYyB2b2lkIHJ0bF9vcF9ic3NfaW5m
+b19jaGFuZ2VkKHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3LAogCQkJCSAgICBzdHJ1Y3QgaWVlZTgw
+MjExX3ZpZiAqdmlmLAogCQkJCSAgICBzdHJ1Y3QgaWVlZTgwMjExX2Jzc19jb25mICpic3NfY29u
+ZiwKQEAgLTE3NDcsNiArMTc2NiwxNiBAQCBzdGF0aWMgdm9pZCBydGxfb3BfZmx1c2goc3RydWN0
+IGllZWU4MDIxMV9odyAqaHcsCiAJCXJ0bHByaXYtPmludGZfb3BzLT5mbHVzaChodywgcXVldWVz
+LCBkcm9wKTsKIH0KIAorc3RhdGljIGludCBydGxfb3Bfc2V0X3RpbShzdHJ1Y3QgaWVlZTgwMjEx
+X2h3ICpodywgc3RydWN0IGllZWU4MDIxMV9zdGEgKnN0YSwKKwkJCSAgYm9vbCBzZXQpCit7CisJ
+c3RydWN0IHJ0bF9wcml2ICpydGxwcml2ID0gcnRsX3ByaXYoaHcpOworCisJc2NoZWR1bGVfd29y
+aygmcnRscHJpdi0+d29ya3MudXBkYXRlX2JlYWNvbl93b3JrKTsKKworCXJldHVybiAwOworfQor
+CiAvKglEZXNjcmlwdGlvbjoKICAqCQlUaGlzIHJvdXRpbmUgZGVhbHMgd2l0aCB0aGUgUG93ZXIg
+Q29uZmlndXJhdGlvbiBDTUQKICAqCQkgcGFyc2luZyBmb3IgUlRMODcyMy9SVEw4MTg4RSBTZXJp
+ZXMgSUMuCkBAIC0xOTAzLDYgKzE5MzIsNyBAQCBjb25zdCBzdHJ1Y3QgaWVlZTgwMjExX29wcyBy
+dGxfb3BzID0gewogCS5zdGFfYWRkID0gcnRsX29wX3N0YV9hZGQsCiAJLnN0YV9yZW1vdmUgPSBy
+dGxfb3Bfc3RhX3JlbW92ZSwKIAkuZmx1c2ggPSBydGxfb3BfZmx1c2gsCisJLnNldF90aW0gPSBy
+dGxfb3Bfc2V0X3RpbSwKIH07CiBFWFBPUlRfU1lNQk9MX0dQTChydGxfb3BzKTsKIApkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL2NvcmUuaCBiL2RyaXZl
+cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9jb3JlLmgKaW5kZXggNzQ0N2ZmNDU2NzEw
+Li4zNDUxNjFiNDc0NDIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsv
+cnRsd2lmaS9jb3JlLmgKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZp
+L2NvcmUuaApAQCAtNjAsNSArNjAsNiBAQCB2b2lkIHJ0bF9iYl9kZWxheShzdHJ1Y3QgaWVlZTgw
+MjExX2h3ICpodywgdTMyIGFkZHIsIHUzMiBkYXRhKTsKIGJvb2wgcnRsX2NtZF9zZW5kX3BhY2tl
+dChzdHJ1Y3QgaWVlZTgwMjExX2h3ICpodywgc3RydWN0IHNrX2J1ZmYgKnNrYik7CiBib29sIHJ0
+bF9idGNfc3RhdHVzX2ZhbHNlKHZvaWQpOwogdm9pZCBydGxfZG1fZGlnaW5pdChzdHJ1Y3QgaWVl
+ZTgwMjExX2h3ICpodywgdTMyIGN1cl9pZ3ZhbCk7Cit2b2lkIHJ0bF91cGRhdGVfYmVhY29uX3dv
+cmtfY2FsbGJhY2soc3RydWN0IHdvcmtfc3RydWN0ICp3b3JrKTsKIAogI2VuZGlmCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcGNpLmMgYi9kcml2ZXJz
+L25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcGNpLmMKaW5kZXggMzc3NjQ5NWZkOWQwLi5j
+NzM2NTM1NDczN2UgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRs
+d2lmaS9wY2kuYworKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcGNp
+LmMKQEAgLTEyMDAsNiArMTIwMCw4IEBAIHN0YXRpYyB2b2lkIF9ydGxfcGNpX2luaXRfc3RydWN0
+KHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3LAogCQkgICAgIF9ydGxfcGNpX3ByZXBhcmVfYmNuX3Rh
+c2tsZXQpOwogCUlOSVRfV09SSygmcnRscHJpdi0+d29ya3MubHBzX2NoYW5nZV93b3JrLAogCQkg
+IHJ0bF9scHNfY2hhbmdlX3dvcmtfY2FsbGJhY2spOworCUlOSVRfV09SSygmcnRscHJpdi0+d29y
+a3MudXBkYXRlX2JlYWNvbl93b3JrLAorCQkgIHJ0bF91cGRhdGVfYmVhY29uX3dvcmtfY2FsbGJh
+Y2spOwogfQogCiBzdGF0aWMgaW50IF9ydGxfcGNpX2luaXRfdHhfcmluZyhzdHJ1Y3QgaWVlZTgw
+MjExX2h3ICpodywKQEAgLTE3NDIsNiArMTc0NCw3IEBAIHN0YXRpYyB2b2lkIHJ0bF9wY2lfZGVp
+bml0KHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3KQogCXN5bmNocm9uaXplX2lycShydGxwY2ktPnBk
+ZXYtPmlycSk7CiAJdGFza2xldF9raWxsKCZydGxwcml2LT53b3Jrcy5pcnFfdGFza2xldCk7CiAJ
+Y2FuY2VsX3dvcmtfc3luYygmcnRscHJpdi0+d29ya3MubHBzX2NoYW5nZV93b3JrKTsKKwljYW5j
+ZWxfd29ya19zeW5jKCZydGxwcml2LT53b3Jrcy51cGRhdGVfYmVhY29uX3dvcmspOwogCiAJZmx1
+c2hfd29ya3F1ZXVlKHJ0bHByaXYtPndvcmtzLnJ0bF93cSk7CiAJZGVzdHJveV93b3JrcXVldWUo
+cnRscHJpdi0+d29ya3MucnRsX3dxKTsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNz
+L3JlYWx0ZWsvcnRsd2lmaS91c2IuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRs
+d2lmaS91c2IuYwppbmRleCA2YzVlMjQyYjFiYzUuLmI1ZTFmOTQwMzk0OSAxMDA2NDQKLS0tIGEv
+ZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3VzYi5jCisrKyBiL2RyaXZlcnMv
+bmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS91c2IuYwpAQCAtODA1LDYgKzgwNSw3IEBAIHN0
+YXRpYyB2b2lkIHJ0bF91c2Jfc3RvcChzdHJ1Y3QgaWVlZTgwMjExX2h3ICpodykKIAogCXRhc2ts
+ZXRfa2lsbCgmcnRsdXNiLT5yeF93b3JrX3Rhc2tsZXQpOwogCWNhbmNlbF93b3JrX3N5bmMoJnJ0
+bHByaXYtPndvcmtzLmxwc19jaGFuZ2Vfd29yayk7CisJY2FuY2VsX3dvcmtfc3luYygmcnRscHJp
+di0+d29ya3MudXBkYXRlX2JlYWNvbl93b3JrKTsKIAogCWZsdXNoX3dvcmtxdWV1ZShydGxwcml2
+LT53b3Jrcy5ydGxfd3EpOwogCkBAIC0xMDMxLDYgKzEwMzIsOCBAQCBpbnQgcnRsX3VzYl9wcm9i
+ZShzdHJ1Y3QgdXNiX2ludGVyZmFjZSAqaW50ZiwKIAkJICBydGxfZmlsbF9oMmNfY21kX3dvcmtf
+Y2FsbGJhY2spOwogCUlOSVRfV09SSygmcnRscHJpdi0+d29ya3MubHBzX2NoYW5nZV93b3JrLAog
+CQkgIHJ0bF9scHNfY2hhbmdlX3dvcmtfY2FsbGJhY2spOworCUlOSVRfV09SSygmcnRscHJpdi0+
+d29ya3MudXBkYXRlX2JlYWNvbl93b3JrLAorCQkgIHJ0bF91cGRhdGVfYmVhY29uX3dvcmtfY2Fs
+bGJhY2spOwogCiAJcnRscHJpdi0+dXNiX2RhdGFfaW5kZXggPSAwOwogCWluaXRfY29tcGxldGlv
+bigmcnRscHJpdi0+ZmlybXdhcmVfbG9hZGluZ19jb21wbGV0ZSk7CmRpZmYgLS1naXQgYS9kcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvd2lmaS5oIGIvZHJpdmVycy9uZXQvd2ly
+ZWxlc3MvcmVhbHRlay9ydGx3aWZpL3dpZmkuaAppbmRleCBmZGNjZmQyOWZkNjEuLjgxNTIxMTdj
+MDNlZSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3dp
+ZmkuaAorKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvd2lmaS5oCkBA
+IC0yNDg3LDYgKzI0ODcsNyBAQCBzdHJ1Y3QgcnRsX3dvcmtzIHsKIAogCXN0cnVjdCB3b3JrX3N0
+cnVjdCBscHNfY2hhbmdlX3dvcms7CiAJc3RydWN0IHdvcmtfc3RydWN0IGZpbGxfaDJjX2NtZDsK
+KwlzdHJ1Y3Qgd29ya19zdHJ1Y3QgdXBkYXRlX2JlYWNvbl93b3JrOwogfTsKIAogc3RydWN0IHJ0
+bF9kZWJ1ZyB7Ci0tIAoyLjIxLjAKCg==
+
+--_002_161776369298577camelrealtekcom_--
