@@ -2,103 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C746356B8D
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E2E356BAD
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 14:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237614AbhDGLxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 07:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbhDGLxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 07:53:11 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FDCC061756
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 04:52:44 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id v70so18272620qkb.8
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 04:52:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=0x0f.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=55eowlIv9XaGPfPFjne3G8Mc95cycsZSFf0UWvAoo8Q=;
-        b=HGObjUV0ojWTlUgb1FRqBgSphdDS64pPHTTSjhKGi3lNXzbIH8zcs3/WuSSOea86pV
-         A13CKYUEjQzI9UskKmZyLPuepcm3n4DuDiRmgWEc8GhPyBBO1m9gRJOMdFJFI0yRMaHN
-         KgqvyBSR2YRf+FMTk6w+ilRcAVwzgGcWCRQqs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=55eowlIv9XaGPfPFjne3G8Mc95cycsZSFf0UWvAoo8Q=;
-        b=owHRt73y8QBH2LrPav3e/3HkekIMYMhOWnLcgoLptqvS+fhH9rL+087JneCJs/6c3w
-         ao2Asndgi6AcoPaMeYWTh0y53jCLDu4BU191yFMaPHD7saLYHpqfhqBlKvJR3S9FHGPE
-         dg6lBFCuwuGw9Gj2iMnIpYZCbzF6bUxGcPWBDbI+dRyxGgCYo5/X4LeKZbOqMBEWvSA+
-         9rjjaMAjHm67ifPN8J2qFAKX/dGgR4GhKPkz7jLUmkj9EHXNevLfZOJCic6e+PHHXpYu
-         F39QCZCpsv01oR5XvKv/OifHcP9Qb6LixlvKGU2xImkNzQZHXQYf8UhQTdHsB/t2ilzJ
-         19IA==
-X-Gm-Message-State: AOAM530eDGw4iecQOWj1EBgA3qeXaH01aQ3+4Z1xNnREkcx2nA9n+SNH
-        KtDCKp63HdfEBat3pYbT1n3/z8rl+H39OsOFuMofrg==
-X-Google-Smtp-Source: ABdhPJyjOipzONEMDRdvNH9XUQqPajnb0/9Yp7Dd63vRS547jAh352afy4V1ndxaYn9GPEj9ZlzPCnfUyLCaMflw7g0=
-X-Received: by 2002:ae9:f70a:: with SMTP id s10mr2771884qkg.468.1617796364069;
- Wed, 07 Apr 2021 04:52:44 -0700 (PDT)
+        id S1351966AbhDGMA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 08:00:58 -0400
+Received: from so254-9.mailgun.net ([198.61.254.9]:21857 "EHLO
+        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351956AbhDGMAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 08:00:53 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1617796844; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=dRkaKojvnawlYO3e1C9wxx79COw07pLsiCqaSEnReIk=; b=veu3quoti3INewFeTEH+d2XlX7KPy9fWyZsM8s0BRWXU4DS2itR9RnhVKCkynWAoJ5FuONMU
+ 5b6mp7zPV1HHgk4lJtZXePwZ4HH84/RCFjM/YugbhdbJH1AAMqe2OnQSO7xEQ5xe29sY/ceq
+ ndJD7wBsJKLnnBv7/NuYbzk34JA=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 606d9ed78166b7eff70a4f4e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 07 Apr 2021 12:00:23
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 0381BC43464; Wed,  7 Apr 2021 12:00:22 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 53876C433CA;
+        Wed,  7 Apr 2021 12:00:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 53876C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>
+Subject: Re: [PATCH v5 08/24] wfx: add bus_sdio.c
+References: <20210315132501.441681-1-Jerome.Pouiller@silabs.com>
+        <4503971.bAhddQ8uqO@pc-42>
+        <CAPDyKFoXgV3m-rMKfjqRj91PNjOGaWg6odWG-EGdFKkL+dGWoA@mail.gmail.com>
+        <5713463.b6Cmjs1FeV@pc-42>
+        <CAPDyKFrONrUvbVVVF9iy4P17jZ_Fq+1pGMmsqM6C1hOXOWQnBw@mail.gmail.com>
+Date:   Wed, 07 Apr 2021 15:00:17 +0300
+In-Reply-To: <CAPDyKFrONrUvbVVVF9iy4P17jZ_Fq+1pGMmsqM6C1hOXOWQnBw@mail.gmail.com>
+        (Ulf Hansson's message of "Tue, 23 Mar 2021 20:12:06 +0100")
+Message-ID: <87pmz6mhim.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20201209184740.16473-1-w@1wt.eu> <CAFr9PX=Ky2QuXNH09DmegFV=e-4+ChdypSsJfV8svqxP7U-cpg@mail.gmail.com>
- <20210407084207.GD22418@1wt.eu>
-In-Reply-To: <20210407084207.GD22418@1wt.eu>
-From:   Daniel Palmer <daniel@0x0f.com>
-Date:   Wed, 7 Apr 2021 20:54:02 +0900
-Message-ID: <CAFr9PXmNgWqHeZe-He0vhdGcRZtPwQa3Jrd-1vz5VBB9RixgLA@mail.gmail.com>
-Subject: Re: [PATCH] Revert "macb: support the two tx descriptors on at91rm9200"
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willy
+Ulf Hansson <ulf.hansson@linaro.org> writes:
 
-On Wed, 7 Apr 2021 at 17:42, Willy Tarreau <w@1wt.eu> wrote:
-> > There are two new status bits TBNQ and FBNQ at bits 7 and 8. I have no
-> > idea what they mean.
+>> If I follow what has been done in other drivers I would write something
+>> like:
+>>
+>>   static int wfx_sdio_suspend(struct device *dev)
+>>   {
+>>           struct sdio_func *func = dev_to_sdio_func(dev);
+>>           struct wfx_sdio_priv *bus = sdio_get_drvdata(func);
+>>
+>>           config_reg_write_bits(bus->core, CFG_IRQ_ENABLE_DATA, 0);
+>>           // Necessary to keep device firmware in RAM
+>>           return sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
 >
-> Maybe they're related to tx queue empty / tx queue full. Just guessing.
-> Since all these bits tend not to be reset until written to, I got confused
-> a few times trying to understand what they indicated.
-
-In the vendor driver they have some weird logic that counts idle, bnq,
-and these 6 new bits,
-and if the count of set bits is bigger than 5 it's apparently OK to
-setup another frame to send.
-I guess it's some really optimized form of checking for the right
-flags but it's over my head. :D
-
-You have to check it's OK to send right before setting the frame
-address/length otherwise you will get an overflow eventually.
-So I think some of these bits are related to the state machine that is
-handling popping frames out of the FIFO and the bits might change
-between getting a TX complete interrupt and trying to queue another
-frame. i.e. you can have a situation where there seems to be a free
-slot in the irq handler but it's not actually safe to queue it when
-xmit is called, and if you do an overflow happens and the TX locks up.
-
-> > Anyhow. I'm working on a version of your patch that should work with
-> > both the at91rm9200 and the MSC313E.
+> This will tell the mmc/sdio core to keep the SDIO card powered on
+> during system suspend. Thus, it doesn't need to re-initialize it at
+> system resume - and the firmware should not need to be re-programmed.
 >
-> Cool! Thanks for letting me know. If you need me to run some test, let
-> me know (just don't expect too short latency these days but I definitely
-> will test).
+> On the other hand, if you don't plan to support system wakeups, it
+> would probably be better to power off the card, to avoid wasting
+> energy while the system is suspended. I assume that means you need to
+> re-program the firmware as well. Normally, it's these kinds of things
+> that need to be managed from a ->resume() callback.
 
-I got this working really well last night. 10+ hours with the iperf3
-bidir test and it's still going. Before TX locked up within a few
-seconds.
-Once I've cleaned it up a bit more I'll push it to my mstar tree. I
-don't think it can be mainlined yet as it's not usable without a bunch
-of other bits.
+Many mac80211 drivers do so that the device is powered off during
+interface down (ifconfig wlan0 down), and as mac80211 does interface
+down automatically during suspend, suspend then works without extra
+handlers.
 
-Cheers,
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Daniel
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
