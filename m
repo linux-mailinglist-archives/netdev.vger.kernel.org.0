@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFC9E35726E
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60883357275
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235801AbhDGQyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 12:54:25 -0400
-Received: from mga06.intel.com ([134.134.136.31]:48896 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235015AbhDGQyX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 12:54:23 -0400
-IronPort-SDR: tS+sdjdNZ+57/MMjaKtrW4uarkxNth53tettdMSyErGOAtvuTC96jkMHJRtG+uA7hRbna6St1h
- Up/H1ORT3QaQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9947"; a="254689869"
-X-IronPort-AV: E=Sophos;i="5.82,203,1613462400"; 
-   d="scan'208";a="254689869"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2021 09:54:13 -0700
-IronPort-SDR: 2a8Kf6WaNd/0kxyeCZqP4ukkq0OmJunrLAZ3NAgBJ+INoMBdilDMdz2NV0XM/GzRMyIYk3jRsG
- wXeqclFq4xGg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,203,1613462400"; 
-   d="scan'208";a="530272883"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga004.jf.intel.com with ESMTP; 07 Apr 2021 09:54:13 -0700
-Received: from linux.intel.com (unknown [10.88.229.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 7BE2E5805A1;
-        Wed,  7 Apr 2021 09:54:10 -0700 (PDT)
-Date:   Thu, 8 Apr 2021 00:54:07 +0800
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] net: stmmac: Add support for external
- trigger timestamping
-Message-ID: <20210407165407.GA27820@linux.intel.com>
-References: <20210407141537.2129-1-vee.khee.wong@linux.intel.com>
- <YG2/1fbNNIsbafZp@lunn.ch>
+        id S1354397AbhDGQ4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 12:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347854AbhDGQ4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 12:56:00 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E87C061756;
+        Wed,  7 Apr 2021 09:55:50 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id t5-20020a1c77050000b029010e62cea9deso1577450wmi.0;
+        Wed, 07 Apr 2021 09:55:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=915V6CjwSLmhpqpygdvEsCqxze4gWRGuBke0G653l/A=;
+        b=DkdZvqQiiPo+VUt7vD5jo4mCHKSY5bswnzvU0NjnHyUJVXwb/ZWeE19Ml+2pk9rZ9t
+         8qX00lc+y54bzhEJee9JfXVhbKSQQL6qvXqLfJ5AtHX0MHptAj6n9RMS8f98RYW1s/qS
+         blG7fTu+U7ArD8QniPzLOczoL7vPsQv78+DhC6yetmJnBETLeO99T/n6OkPOm2NwjrqK
+         0nky7P3jG/TTl21J0qPdmJFL2uJTl9yhNxvLv0pG3g8IJxKS0LxxUzc4cBkHwlfrtqff
+         YdRL7AHbXtrlJwJcWnQv13MvCJv1/24vl06i7XEPshYJWLx82dneFTzGAeJeaQ3/3XuA
+         hLnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=915V6CjwSLmhpqpygdvEsCqxze4gWRGuBke0G653l/A=;
+        b=kxiOgvY/qtzbspERp99dCBSfnuwfBwh1FZ+DRxneFwf6NlrgxrPwxrtgFVBCCV4kZo
+         w3/bZvkNz8ToxxVfYP59IVA7TvLCzIB94XC7ahYLTogA1HjfeaVniKpW4c1OCUfYEUvC
+         poys0bERpy5ZatV06Kav08MmAWYGpVT3iJ+Tx8w3suSOzJWTWULO4WONnKhtN2hZZQa6
+         1L0HnXEg99n+aI+AY2CZaHI0HuSG6AzG9XvsNzhOwRBFsxdSQyN7mWR9Pw2/mi2jcDTV
+         A1u5PFqcjVh3Nt/3T5H+3Tn8YTxPafQXGIUYHL4EnGROM7itoZ+vZuxQ3EQZn4dfVPTb
+         uEbg==
+X-Gm-Message-State: AOAM532O1927MaydKT9Eh6KC+x7n06VKIxIK7zyrnI6uWIpQ53H39cFk
+        rbvS8mmSAfiKislbW3WueKb/ZPJjOeI=
+X-Google-Smtp-Source: ABdhPJy2i0PivtNtlBJljUSyafWje+oIqRtFM4Wf5rmQW7WFNhTT7M2KiPelZA8Eyb7cujGftmJX1w==
+X-Received: by 2002:a1c:f701:: with SMTP id v1mr4049207wmh.69.1617814549387;
+        Wed, 07 Apr 2021 09:55:49 -0700 (PDT)
+Received: from [192.168.1.101] ([37.172.15.210])
+        by smtp.gmail.com with ESMTPSA id c18sm14718985wrp.33.2021.04.07.09.55.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Apr 2021 09:55:48 -0700 (PDT)
+Subject: Re: [PATCH net v4] atl1c: move tx cleanup processing out of interrupt
+To:     Gatis Peisenieks <gatis@mikrotik.com>, chris.snook@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, hkallweit1@gmail.com,
+        jesse.brandeburg@intel.com, dchickles@marvell.com,
+        tully@mikrotik.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <c8327d4bb516dd4741878c64fa6485cd@mikrotik.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7c5dad3e-950d-8ec9-8b9d-bbce41fafaa4@gmail.com>
+Date:   Wed, 7 Apr 2021 18:55:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YG2/1fbNNIsbafZp@lunn.ch>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <c8327d4bb516dd4741878c64fa6485cd@mikrotik.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 04:21:09PM +0200, Andrew Lunn wrote:
-> On Wed, Apr 07, 2021 at 10:15:37PM +0800, Wong Vee Khee wrote:
-> > From: Tan Tee Min <tee.min.tan@intel.com>
-> > 
-> > The Synopsis MAC controller supports auxiliary snapshot feature that
-> > allows user to store a snapshot of the system time based on an external
-> > event.
-> > 
-> > This patch add supports to the above mentioned feature. Users will be
-> > able to triggered capturing the time snapshot from user-space using
-> > application such as testptp or any other applications that uses the
-> > PTP_EXTTS_REQUEST ioctl request.
-> 
-> You forgot to Cc: the PTP maintainer.
->
 
-Will Cc Richard Cochran on v2.
- 
-> > @@ -159,6 +163,37 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
-> >  					     priv->systime_flags);
-> >  		spin_unlock_irqrestore(&priv->ptp_lock, flags);
-> >  		break;
-> > +	case PTP_CLK_REQ_EXTTS:
-> > +		priv->plat->ext_snapshot_en = on;
-> > +		mutex_lock(&priv->aux_ts_lock);
-> > +		acr_value = readl(ptpaddr + PTP_ACR);
-> > +		acr_value &= ~PTP_ACR_MASK;
-> > +		if (on) {
-> > +			/* Enable External snapshot trigger */
-> > +			acr_value |= priv->plat->ext_snapshot_num;
-> > +			acr_value |= PTP_ACR_ATSFC;
-> > +			pr_info("Auxiliary Snapshot %d enabled.\n",
-> > +				priv->plat->ext_snapshot_num >>
-> > +				PTP_ACR_ATSEN_SHIFT);
-> 
-> dev_dbg()?
-> 
-> > +			/* Enable Timestamp Interrupt */
-> > +			intr_value = readl(ioaddr + GMAC_INT_EN);
-> > +			intr_value |= GMAC_INT_TSIE;
-> > +			writel(intr_value, ioaddr + GMAC_INT_EN);
-> > +
-> > +		} else {
-> > +			pr_info("Auxiliary Snapshot %d disabled.\n",
-> > +				priv->plat->ext_snapshot_num >>
-> > +				PTP_ACR_ATSEN_SHIFT);
-> 
-> dev_dbg()?
-> 
-> Do you really want to spam the kernel log with this?
->
 
-Thanks for the review.
-I will switch this to netdev_dbg().
- 
+On 4/6/21 4:49 PM, Gatis Peisenieks wrote:
+> Tx queue cleanup happens in interrupt handler on same core as rx queue
+> processing. Both can take considerable amount of processing in high
+> packet-per-second scenarios.
+> 
+> Sending big amounts of packets can stall the rx processing which is unfair
+> and also can lead to out-of-memory condition since __dev_kfree_skb_irq
+> queues the skbs for later kfree in softirq which is not allowed to happen
+> with heavy load in interrupt handler.
+> 
+
+[ ... ]
+
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 0f72ff5d34ba..489ac60b530c 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6789,6 +6789,7 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
+> 
+>      return err;
+>  }
+> +EXPORT_SYMBOL(dev_set_threaded);
+> 
+>  void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+>              int (*poll)(struct napi_struct *, int), int weight)
+
+This has already been done in net-next
+
+Please base your patch on top of net-next, this can not be backported to old
+versions anyway, without some amount of pain.
+
+
+
