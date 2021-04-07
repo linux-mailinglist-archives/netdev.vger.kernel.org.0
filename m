@@ -2,144 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 957353570C6
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 17:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83E64357109
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 17:51:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353773AbhDGPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 11:47:20 -0400
-Received: from mail-dm6nam12on2066.outbound.protection.outlook.com ([40.107.243.66]:2612
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1353752AbhDGPrL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 11:47:11 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A/Fx8MZhUK0LTCqheWtw73DueNGRK647C92lXrlfxOU/fs+cXWqjC5j+8+TqH+utPIrtTrYQNbduRbeQxmBP18qkpfd0pOVxJtwQyaZTXynxPwA5M8JqqP8McVGnAqX76k/pPKWOIUOP89/qiDE9Sdyt+vCOZpn3sd4G4p72Ux2oeqL0+u8ifGj6/mv7dcSWTvtfYXSdHyUwpKw32LknJiD+DyjOs+2o7Tg1ruc/kgjcvpBu5v88cO7pffco83GHxtbU3jHMzTk2e6vHXF/aMTtBP8gSXoGRxvtqikf+pTFotPjADbdkNkf1pTy3Pae5iSdqYq3STJL3mMxDcWwkJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lx7mwgv63X0PmOqcC32SIl3tWfloAfdePU0fXb5mG1w=;
- b=ZyNuD2NRqIsvjDTkMiFR2MAeKIzr5jxVPKFYBjPe5X1w9WAkFC38UdBDNPyAkxvXSVdxqoT9mERJLGKjNxDOULvdqnO01mDcTbzzqhPAthuXoMdESYf0gdHiBfjrao4IsKk0vJzTvIWBK/9R1aexiVZnJ6AzVLK+xA2vHxCYEFVLLBun/4PKgJMa9MTjAMZlgE0pKRdNFiefKAOdZzFop8iXXQ/IaV4qhOakaAtZwc403VM2byQQYrUMYL0XLKKLMSUohbQX09bikWUwokgc1xr2qUvr+kDVcq+mcovMSPl4FiwiWkR13Uk7zdUwMoWRJEvEgrONNkJk06JWZTZPUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lx7mwgv63X0PmOqcC32SIl3tWfloAfdePU0fXb5mG1w=;
- b=m30PaUYKD6NH3vuV0Pk9A2mTUmItFWVjK6BtE7FCSOot9t2tevlt8e1Bez0uo8Drjk/I6JF8gyymJID61oFyqo2s5snzg7oXvhnGGhA44hRKWQYNd18hDDW3wIfUK4Q3zH6bm8x+enhNzCs+ekxUJQ1QtYVD3JGvdXCiu0X6/vSNWMm2RyzGtUwh0sGYvig8p9xWr1M0w/87pK56sLvgaNxKU5+J/prTRe1daVsTZLlPXfIZSWPyqKv0ukAxIC5h+hoSljd46gMgHXLG8zPJK3MRVCGpmrB9li8gtRmsYQc8W/yTdYI5yOJYClU/zpxv8PiroLSZgm+xfkuVWfN3Tg==
-Received: from BN6PR1201CA0007.namprd12.prod.outlook.com
- (2603:10b6:405:4c::17) by DM6PR12MB3580.namprd12.prod.outlook.com
- (2603:10b6:5:11e::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.32; Wed, 7 Apr
- 2021 15:47:00 +0000
-Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:4c:cafe::bd) by BN6PR1201CA0007.outlook.office365.com
- (2603:10b6:405:4c::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend
- Transport; Wed, 7 Apr 2021 15:47:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Wed, 7 Apr 2021 15:47:00 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 7 Apr
- 2021 08:46:59 -0700
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 7 Apr 2021 15:46:56 +0000
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <memxor@gmail.com>, <xiyou.wangcong@gmail.com>,
-        <davem@davemloft.net>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
-        <kuba@kernel.org>, <toke@redhat.com>, <marcelo.leitner@gmail.com>,
-        <dcaratti@redhat.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next 2/2] tc-testing: add simple action test to verify batch change cleanup
-Date:   Wed, 7 Apr 2021 18:46:43 +0300
-Message-ID: <20210407154643.1690050-3-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210407154643.1690050-1-vladbu@nvidia.com>
-References: <20210407154643.1690050-1-vladbu@nvidia.com>
+        id S1353888AbhDGPv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 11:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353906AbhDGPvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 11:51:06 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32312C061762
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 08:50:56 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id y18so2398510wrn.6
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 08:50:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=c9Y2YmuYfYk+vxhlpHd4lEee0C9tAnOJNOVrTF0kYaQ=;
+        b=KWf+2UGGYWVH3HQsIYuWzxsnjD5sSEcwP0bIuKSfYPprj7vA9qJLnWHNkNCEQF57wP
+         7UihQ3PgQfWYiFp93VcapqORcIjN1ahMtRnwl9WK4dfiHxEX0c5pi/XmPi1JZprCrKyk
+         mRQpTprPAqb0OmXdEVJaZ32W+DWyZ6kWQud5MhPGn/b8E51FYrfZLQAJRnMr9SbuQ6dC
+         C9Vnhhw9f9fjvFDOJl8wx3RvJCZ6rG4L77ifZ6QVDC/hXQh2GyKlTpFe33a2+diLH1hk
+         l9AKR/9HkgcBdjIg1CKiTqjNigFVRe2IGoSEBov78B6/hNW0hCX3Nb4gGU3pncVJMy2/
+         ZkPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=c9Y2YmuYfYk+vxhlpHd4lEee0C9tAnOJNOVrTF0kYaQ=;
+        b=CBt92p4+zOLBj9kZfwqiPHGBdvJIfpCOrh0axOCBn59kFdq1ap6G1sdEIdXskLAI5+
+         DqQMdA2DeiCyiIGjQ1rTVAvogiczYHyoJcjLtKyfs3BdFoqHjENy+JjP/gK2KAyxl5iI
+         vmkYRwwBWb1U5V68D35N1D3JmuJt9j9JJcB0FmB2IvzKqpqEnNBW0pjqV2uKeN7OxMf7
+         X3H2OK/9H4eLrpu3YhobRTvrrvMSaWbQmmQtiVCLjFG31B5dIcZDIV7dpo3OPXsQ/jPf
+         11GC0MlLSA22BuKd/vywlzyGPcLCLko4eMZkIioD1DdnaRLiXE63znGF4fy3QhTrj2lf
+         4uiA==
+X-Gm-Message-State: AOAM533z8bi4z2o3PAyffwqvmcOah50C8a4JsDFy8yso5QxGnAZF2FW0
+        +H7T4MOYO6n517S0Bn9+JP0=
+X-Google-Smtp-Source: ABdhPJzy1dlsP3GyCU0U1ORAUNi0CRkBJK35woNEWdGIGrUnV2vPMm2DFuzFNI19b0wBYz6sMNdYSg==
+X-Received: by 2002:a5d:658c:: with SMTP id q12mr4286581wru.30.1617810654999;
+        Wed, 07 Apr 2021 08:50:54 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f38:4600:15f8:68c8:25bd:c1f8? (p200300ea8f38460015f868c825bdc1f8.dip0.t-ipconnect.de. [2003:ea:8f38:4600:15f8:68c8:25bd:c1f8])
+        by smtp.googlemail.com with ESMTPSA id m11sm40358910wri.44.2021.04.07.08.50.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Apr 2021 08:50:54 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Fugang Duan <fugang.duan@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/3] net: make PHY PM ops a no-op if MAC driver
+ manages PHY PM
+Message-ID: <9e695411-ab1d-34fe-8b90-3e8192ab84f6@gmail.com>
+Date:   Wed, 7 Apr 2021 17:50:46 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb9ed1ec-deac-4750-d308-08d8f9dc61e1
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3580:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB358017E185339926F2B15329A0759@DM6PR12MB3580.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:949;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4C65QyeYcgMSyfivT/ywiDp8ECrUDBcLTcRDUjdlh0wLde9txQwZsKd30R0/YlhWjwfNOiR3MTPRQP4nkQE9rLfq8XYbDd6vOBIgZ5yIQb2kUCywo2Yq0bm89Yj4otnv+6/ZFo2RH8LTAnAGaDXXgMb8l3HWHalVNkcWjXQN/jbnHNGG3fnSuHIK4MnUHfPS18MNmsi2CrRA9Jo6mhvZPTIg645EHS5lblBB24OdUU1rYv0fhgRPilgOvZCLe231W7L5U4mK6bHJojIdqGtz6WM7zvh/XWN9Q2/CgVjX+491bN6GAjcu7jKkOLP/ZDs8TIGOYnNenfbkLItO0LzfW6vfSZIY2KdHLi5QBafW9k/xF0ng7815/srRpaH+rqHGAHpIM210O5qJgvxgoEMpdHlkeVKpYGLfDfHiP8jhL+mbyO4rJQ5UYILpzxG7VGQ/oSEwy2gf1GC7D60b/EJASsDVbi8ck2DOB6nNvNbItw+ujUrEGTQDqNnYtuC5z+OUk6ILqIKh29NrPr+YV/FRjDOT0QS4MtIER2uQkkZPOz1Ggz8seurFIAhRZtLnXvaCZukawA11upPdC7kaZ5FWk/qYbdPAtjjPabSN/50SeLGoCd4BfJul6+TjhogRqZB5efMcq9LJPPQ2KsuYn7grj1NnwISU0AlicG04lXRp8QU=
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(136003)(376002)(396003)(39860400002)(36840700001)(46966006)(426003)(15650500001)(356005)(6916009)(478600001)(47076005)(1076003)(7636003)(8936002)(82310400003)(82740400003)(6666004)(2616005)(107886003)(8676002)(86362001)(54906003)(336012)(186003)(7696005)(70206006)(70586007)(36756003)(26005)(83380400001)(316002)(7416002)(36860700001)(4326008)(5660300002)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2021 15:47:00.1517
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb9ed1ec-deac-4750-d308-08d8f9dc61e1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3580
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Verify cleanup of failed actions batch change where second action in batch
-fails after successful init of first action.
+Resume callback of the PHY driver is called after the one for the MAC
+driver. The PHY driver resume callback calls phy_init_hw(), and this is
+potentially problematic if the MAC driver calls phy_start() in its resume
+callback. One issue was reported with the fec driver and a KSZ8081 PHY
+which seems to become unstable if a soft reset is triggered during aneg.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
----
- .../tc-testing/tc-tests/actions/simple.json   | 29 +++++++++++++++++++
- 1 file changed, 29 insertions(+)
+The new flag allows MAC drivers to indicate that they take care of
+suspending/resuming the PHY. Then the MAC PM callbacks can handle
+any dependency between MAC and PHY PM.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/simple.json b/tools/testing/selftests/tc-testing/tc-tests/actions/simple.json
-index d5bcbb919dcc..e0c5f060ccb9 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/simple.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/simple.json
-@@ -205,5 +205,34 @@
-         "teardown": [
-             "$TC actions flush action simple"
-         ]
-+    },
-+    {
-+        "id": "a68a",
-+        "name": "Verify cleanup of failed actions batch change",
-+        "category": [
-+            "actions",
-+            "simple"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action simple",
-+                0,
-+                1,
-+                255
-+            ],
-+            [
-+                "$TC actions change action simple sdata \"1\" index 1 action simple sdata \"2\" goto chain 42 index 2",
-+                255
-+            ],
-+            "$TC actions flush action simple"
-+        ],
-+        "cmdUnderTest": "$TC actions add action simple sdata \"1\" index 1",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action simple",
-+        "matchPattern": "action order [0-9]*: Simple <1>.*index 1 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action simple"
-+        ]
-     }
- ]
+Heiner Kallweit (3):
+  net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM
+  net: fec: use mac-managed PHY PM
+  r8169: use mac-managed PHY PM
+
+ drivers/net/ethernet/freescale/fec_main.c | 3 +++
+ drivers/net/ethernet/realtek/r8169_main.c | 3 +++
+ drivers/net/phy/phy_device.c              | 6 ++++++
+ include/linux/phy.h                       | 2 ++
+ 4 files changed, 14 insertions(+)
+
 -- 
-2.29.2
+2.31.1
 
