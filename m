@@ -2,107 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91DDA35747A
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC543357489
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237698AbhDGSnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 14:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
+        id S1355432AbhDGSuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 14:50:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233348AbhDGSnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:43:24 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041C5C061761
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 11:43:15 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id g24so14530807qts.6
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 11:43:14 -0700 (PDT)
+        with ESMTP id S1355401AbhDGSt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:49:56 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A8EC06175F;
+        Wed,  7 Apr 2021 11:49:46 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id w23so10857588edx.7;
+        Wed, 07 Apr 2021 11:49:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cilium-io.20150623.gappssmtp.com; s=20150623;
+        d=googlemail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lwseBhtjiF9OLa/jt/21tHXtZHL6eXnMpFccp0D93oY=;
-        b=uoMiJ2FEhGCc7gKHBuuZ8Lu3bgwTY9u5HJf2rqcNzrQRKfWvOYRaBsgCgYY5Df4qFm
-         arboEx9wv/v+Kccpy0SCr+AnEhg3JuAmS3Sr8yOXei9b13OuBNK0oEcEKzUb6/6uMyqc
-         VZLVOvQNk+P/VuJgSsN9RgJYn6YjdvmDTeISgIB4AVBhZkS2IpJJ7h4udOxe+vopBnqd
-         fblwQvTGkM+kGkq0PD83o05gaIl7Fjyve3bttBIj/wSFiHK0Q6Hy6fdQ+5ZcjccBu8x7
-         mWQ05BMG/SxhZXf0TQpYkHfOIQjM272nLSnDhTQA/pC/bXmLC7U6oKHHJ7l2yE75Fbvl
-         MZ1g==
+        bh=bCTcZ/9GQSf/Ljck8Jws7/donXio0A+2sc6pD50GSNA=;
+        b=XP/AqdezzDG31JGPQzW3CkebCLWh3Y+APZUHlyVf9kXuhFDZEJKoAtx+kz4ueYuGpz
+         HdWEw7QPLhETea36Riuy6ezER8WM43zLYbohIYC3hldh08uA986tHVL0RNLhFOTIYASk
+         KJwD+gl+U5EGBDBo/lvwVXwNzY0Zb0haAkcNgVebNHkxzcTRDL48VBnu5rDRboZOL9dJ
+         TAwHSCWmyk5wT5tsXQCGpCTpt1M4rTY7OeoUPZL+zBXGoriUxqFT+jXPZyxdLvmAZawH
+         wokJrk/kNRFNVWstBkE8x7TZ0NXkDHjBEQhIzkf5XPnqHQmX5loIuMccXNU/NUL9Ayc9
+         8tMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lwseBhtjiF9OLa/jt/21tHXtZHL6eXnMpFccp0D93oY=;
-        b=XbVJ3vhNrfZHGiYk+y0mc5yoAh0nowcehp15nHcVzFqjaCrQAqBaPFsGz4Pp01CTDb
-         4KwECcBwH0c+p4fzorRbsnhfput3J/0JUGrW/lqQKEZb4JgQXhlxXXgHSE35xlTLvcaH
-         DV67aDWTcfxQcjKJ8daBk3hcKBPXJjemy99LuZg/oTLweT1uEpfySbNhisauxjsNOw8f
-         BT9u1BvWA4CmPoQD6mZWAjwRhpHkpHyuO88Dl9UWzwhX0RpKe41piZq9L4D6oU+RO5n5
-         cVHDTM/DytevgFIyE8EDHz67OkD8ZiPSAm5XN+ZU7qA5xSRIZxneo+7LwVoPYzB8vhvq
-         2kyw==
-X-Gm-Message-State: AOAM530sDTRUZxZ+oImWK0vYcbKtbGDanCU1PHqrCRcl5eD0zD1TLs3o
-        d5dmEagqZUOwKRIlz0Apzp/A+dgwLGsE/N6568o=
-X-Google-Smtp-Source: ABdhPJzPUnxUh0Y3OTUxakdfQh5qa9BFLglLXJ1PfQIGwLP6bz3NPGfGbbi0iwj/kBP+pGi1mNxQrw==
-X-Received: by 2002:ac8:4d8b:: with SMTP id a11mr3958359qtw.302.1617820993800;
-        Wed, 07 Apr 2021 11:43:13 -0700 (PDT)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id o125sm18807190qkf.87.2021.04.07.11.43.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Apr 2021 11:43:12 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id l9so6874343ybm.0;
-        Wed, 07 Apr 2021 11:43:12 -0700 (PDT)
-X-Received: by 2002:a25:2e4d:: with SMTP id b13mr5948575ybn.199.1617820992048;
- Wed, 07 Apr 2021 11:43:12 -0700 (PDT)
+        bh=bCTcZ/9GQSf/Ljck8Jws7/donXio0A+2sc6pD50GSNA=;
+        b=ZEqYMNsH+5JjtzpoARRy1O3btIRJqIQARMkcx8L4vRzk729qdhCcViN39oIdnXg8rK
+         bKR2DnqOMUvYpYYzw5eGjQnaxKw+ZzSGtqnPVqMhAza1PblaugSdquiamsy2ncLOD3HG
+         ugeDXshg+nG/JV2r/WeCTwXBdv/RpbwxdNzp7zo0p37Iq+gpNoCGCwqtR3efaMZz3Mza
+         ogE7YXLI+cCxdUOzsyxkk1i5Zo/Rd9neufxUQ0lFYtQSPk6ws21R2YsN1JH6laE5iqrl
+         rLu/90kU6Q+ZB51uXu3QZ/z2joKrWV02NRzfsqTkZT4lgw8zVp56V4QBAEdXZF9KfY1P
+         g8Fw==
+X-Gm-Message-State: AOAM531aUQDNojp2nSISikba9hisQzSpGPf+azC6zAxZ84KyOzW/fEQr
+        pZcEWX4UGBRVmA4pOMyQJt0CKPopzhSytY2if7U=
+X-Google-Smtp-Source: ABdhPJzeUL/tk90gRs0bfMM7xCgePouT8xjiA55DrmKw+kHCLVKQNbJY2kqB7zNVJgG6s8BD5RIlqA5EYHueyb1TEBI=
+X-Received: by 2002:a05:6402:13ce:: with SMTP id a14mr6282012edx.365.1617821384781;
+ Wed, 07 Apr 2021 11:49:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210406185806.377576-1-pctammela@mojatatu.com>
-In-Reply-To: <20210406185806.377576-1-pctammela@mojatatu.com>
-From:   Joe Stringer <joe@cilium.io>
-Date:   Wed, 7 Apr 2021 11:42:33 -0700
-X-Gmail-Original-Message-ID: <CAOftzPgmZSB7oWDLLoO-NEDq3s8LdLxSXdhoaB2feScuTP-JSA@mail.gmail.com>
-Message-ID: <CAOftzPgmZSB7oWDLLoO-NEDq3s8LdLxSXdhoaB2feScuTP-JSA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: clarify flags in ringbuf helpers
-To:     Pedro Tammela <pctammela@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>
+References: <20210406203508.476122-1-martin.blumenstingl@googlemail.com>
+ <20210406203508.476122-3-martin.blumenstingl@googlemail.com>
+ <YGz9hMcgZ1sUkgLO@lunn.ch> <98ef4831-27eb-48d4-1421-c6496b174659@gmail.com>
+In-Reply-To: <98ef4831-27eb-48d4-1421-c6496b174659@gmail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Wed, 7 Apr 2021 20:49:33 +0200
+Message-ID: <CAFBinCCv7vSf1H1ONZYU+fo3kRvShYxzemE3-8DqKUzsFFOUPA@mail.gmail.com>
+Subject: Re: [PATCH RFC net 2/2] net: dsa: lantiq_gswip: Configure all
+ remaining GSWIP_MII_CFG bits
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>, vivien.didelot@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pedro,
+Hello,
 
-On Tue, Apr 6, 2021 at 11:58 AM Pedro Tammela <pctammela@gmail.com> wrote:
+On Wed, Apr 7, 2021 at 6:47 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
 >
-> In 'bpf_ringbuf_reserve()' we require the flag to '0' at the moment.
 >
-> For 'bpf_ringbuf_{discard,submit,output}' a flag of '0' might send a
-> notification to the process if needed.
 >
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> ---
->  include/uapi/linux/bpf.h       | 7 +++++++
->  tools/include/uapi/linux/bpf.h | 7 +++++++
->  2 files changed, 14 insertions(+)
+> On 4/6/2021 5:32 PM, Andrew Lunn wrote:
+> >>      case PHY_INTERFACE_MODE_RGMII:
+> >>      case PHY_INTERFACE_MODE_RGMII_ID:
+> >>      case PHY_INTERFACE_MODE_RGMII_RXID:
+> >>      case PHY_INTERFACE_MODE_RGMII_TXID:
+> >>              miicfg |= GSWIP_MII_CFG_MODE_RGMII;
+> >> +
+> >> +            if (phylink_autoneg_inband(mode))
+> >> +                    miicfg |= GSWIP_MII_CFG_RGMII_IBS;
+> >
+> > Is there any other MAC driver doing this? Are there any boards
+> > actually enabling it? Since it is so odd, if there is nothing using
+> > it, i would be tempted to leave this out.
 >
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 49371eba98ba..8c5c7a893b87 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -4061,12 +4061,15 @@ union bpf_attr {
->   *             of new data availability is sent.
->   *             If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, notification
->   *             of new data availability is sent unconditionally.
-> + *             If **0** is specified in *flags*, notification
-> + *             of new data availability is sent if needed.
+> Some PHYs (Broadcom namely) support suppressing the RGMII in-band
+> signaling towards the MAC, so if the MAC relies on that signaling to
+> configure itself based on what the PHY reports this may not work.
+point taken. in v2 we'll not set GSWIP_MII_CFG_RGMII_IBS unless
+there's someone who can actually test this.
+so far I don't know any hardware with Lantiq SoC that uses it
 
-Maybe a trivial question, but what does "if needed" mean? Does that
-mean "when the buffer is full"?
+
+Best regards,
+Martin
