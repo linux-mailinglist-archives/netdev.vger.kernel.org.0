@@ -2,130 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0C9357591
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 788033575B0
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:15:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243760AbhDGULJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38632 "EHLO
+        id S1356013AbhDGUPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 16:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232431AbhDGULG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 16:11:06 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14D8C06175F;
-        Wed,  7 Apr 2021 13:10:53 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id k8so18323444iop.12;
-        Wed, 07 Apr 2021 13:10:53 -0700 (PDT)
+        with ESMTP id S1356004AbhDGUPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 16:15:17 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC99C061760
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 13:15:06 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id n2so23505040ejy.7
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 13:15:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=h96VbcSoj8mKhx2i0v1sojDZC+erMxXsZoAnXTC1WKY=;
-        b=l8LKpdFlA2VRNJ9VdxaJK9DGI/Ub7HjuElhkVky7SyZdFgbyGCtVUeocZXxWWzH6Uq
-         dJn34V656hOu4piWNGVwPcYuqLxsj3qOxveQEJDsXQrz0VIRhFMl3bBRRGOkC1q28OJO
-         qLp78W867ZbzBQnssClDnwBUbdPkx4R9QWZ3URrSyC/YmKPxBpdpNGUeIpT1rxTYhzFC
-         0Ue9SMY+Ru3SUY0Gm7U8WhHkvHjUEWWWGFD6H5BszltXe3jukNidacmXaXJ0aph81S2D
-         XY3V7OdP0D1zd00dHZuvMi2FzfYBEY70YyK2a4zJYTIkYoLTHDx8iaVWEDmOePg5BNW/
-         MOBw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=83KBHma6fh8UBfgUixf3vjb3SGMdmrshYrqfmkk+l2k=;
+        b=huA25B0no4h4tfvdGiiSG3DQJTE0ybhQXjVFGHthZYjnn1PS4WNOg5uH7MKSAOSh0w
+         Bnqw1hGL9jG2Kz5MWBO5O0baAEuXv/ODdDevKfVuucYm/zXjP9vG+CAXZzCXUwHyIzgm
+         gmtqSMJfABpOXg39UFZYzFedRT/RKncI7kh8K4St3pUTvotbNYL13hAgbEaq4AvHXy7w
+         mDmhrgubSkqLZ/Oe3WioGz2wsGO5uP00Hjhw+8xF2o6v1jZaNLnQ4xZF883xU/DUFacw
+         z4P76BR0ULUX2xhMXtgpFKPmyzTWk1SZHm4VvmCHLSCgRqXUAVTM7viV7z7rsbyemlh/
+         zA3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=h96VbcSoj8mKhx2i0v1sojDZC+erMxXsZoAnXTC1WKY=;
-        b=ZVDW2eqQjM5wKDXHpr6LpXSdibmqYholWB1D2MqbJpnc5eXL0Tc2CkRwLNVfP+ii2Z
-         O3tFPcSlszKT/JO/cK4PVBeveZytuq2HaZ9JlhASQ1R/WJn9pe6dZIXYANUgt7wjHD56
-         /fCqfeRXQa7TOMR+3EKK3Qai0liXKmsAoKbJ5+ZQ2fVzIw/wVMD66akOz6NmUMshDne6
-         UWgxa2OiOOmg6Xb7yUthqizzcdZ3BDviyJDA8Hhiog4x7ut9e+6gBK0JF3r0+X68tBdb
-         rYUMz/inKEYZGCGN3sgz83k97w+VoEUADV7NJNpldhZbUbqrQHG8j99VXfSHmdtpGlcv
-         sxYw==
-X-Gm-Message-State: AOAM531UjRd27OjJESm4WohLqKAYbmZgyPcG7PD/27QBUPaIEtYW0ioi
-        GUUYGc2CyJTQsUDwhuSkBbbjo+tKLLkRGNmVEqg=
-X-Google-Smtp-Source: ABdhPJzNJNDnaBzh3jb+/hy9dLRNTHYIU+edNNiBw2/xjjUG9YXyN6JxNMmLf5dF88GpHi1ccfWeQR5HJ75vtMjDd0c=
-X-Received: by 2002:a6b:e509:: with SMTP id y9mr3963308ioc.191.1617826252754;
- Wed, 07 Apr 2021 13:10:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=83KBHma6fh8UBfgUixf3vjb3SGMdmrshYrqfmkk+l2k=;
+        b=ggHoKXdXi2uUZPkfAtookRVPuCk5oRaQ7RiMV65sKHgetflr9MEQfi033RHkv5TYgi
+         2XocEUvFT8hZ80cLnVZoC3SQ2hQOLNioUQFssLC1GyDaUz5ftOOM3FA/4q4T7WRw85NW
+         iSpNb9zLvGRDUYSyQhzuFKaSgnpy5MKRWDmkoLtHnVXGgJKXvs+IdTUPzv6BO/dNVyuo
+         gb9TcAj2lu7h3soaa6KVrKLNEW9oZsqKVjGrsysEs5yM9kkjNp4rxTh0fzg+68iBojBR
+         IrC4QeEnCuslZKJYMcwgv3fxlfaQPBq0/zRLpkvCl1sg7izcZah5DC8e0pzwrYCmqNBs
+         YJoQ==
+X-Gm-Message-State: AOAM5328X3GtxgHNQ2l7jHWizMmwjrMN2knaFzdVLdlHI005qfBNVH7w
+        JP13JkJxeDZtgD/ctt5u3xs=
+X-Google-Smtp-Source: ABdhPJwXd+b6naFrUjxuirT1W172w5ziX20cyCMu5uvrbXI8CpkL0+wNeuRG/m1fjx/UYOp3OfWcaA==
+X-Received: by 2002:a17:907:3393:: with SMTP id zj19mr5911780ejb.347.1617826504942;
+        Wed, 07 Apr 2021 13:15:04 -0700 (PDT)
+Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id r26sm4982892edc.43.2021.04.07.13.15.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Apr 2021 13:15:04 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net 0/3] Fixes for sja1105 best-effort VLAN filtering
+Date:   Wed,  7 Apr 2021 23:14:49 +0300
+Message-Id: <20210407201452.1703261-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210406185806.377576-1-pctammela@mojatatu.com>
- <CAOftzPgmZSB7oWDLLoO-NEDq3s8LdLxSXdhoaB2feScuTP-JSA@mail.gmail.com> <CAEf4BzaBJH-=iO-P6ZTj3zmycz0VESzBzpZkbVOVTvPaZ9OEaA@mail.gmail.com>
-In-Reply-To: <CAEf4BzaBJH-=iO-P6ZTj3zmycz0VESzBzpZkbVOVTvPaZ9OEaA@mail.gmail.com>
-From:   Pedro Tammela <pctammela@gmail.com>
-Date:   Wed, 7 Apr 2021 17:10:41 -0300
-Message-ID: <CAKY_9u0KV0dW2_xW9g67r9YWAh9UjVpTAsEVWs3xF2htzzVAYQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: clarify flags in ringbuf helpers
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Joe Stringer <joe@cilium.io>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
-        Pedro Tammela <pctammela@mojatatu.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em qua., 7 de abr. de 2021 =C3=A0s 16:58, Andrii Nakryiko
-<andrii.nakryiko@gmail.com> escreveu:
->
-> On Wed, Apr 7, 2021 at 11:43 AM Joe Stringer <joe@cilium.io> wrote:
-> >
-> > Hi Pedro,
-> >
-> > On Tue, Apr 6, 2021 at 11:58 AM Pedro Tammela <pctammela@gmail.com> wro=
-te:
-> > >
-> > > In 'bpf_ringbuf_reserve()' we require the flag to '0' at the moment.
-> > >
-> > > For 'bpf_ringbuf_{discard,submit,output}' a flag of '0' might send a
-> > > notification to the process if needed.
-> > >
-> > > Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> > > ---
-> > >  include/uapi/linux/bpf.h       | 7 +++++++
-> > >  tools/include/uapi/linux/bpf.h | 7 +++++++
-> > >  2 files changed, 14 insertions(+)
-> > >
-> > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > index 49371eba98ba..8c5c7a893b87 100644
-> > > --- a/include/uapi/linux/bpf.h
-> > > +++ b/include/uapi/linux/bpf.h
-> > > @@ -4061,12 +4061,15 @@ union bpf_attr {
-> > >   *             of new data availability is sent.
-> > >   *             If **BPF_RB_FORCE_WAKEUP** is specified in *flags*, n=
-otification
-> > >   *             of new data availability is sent unconditionally.
-> > > + *             If **0** is specified in *flags*, notification
-> > > + *             of new data availability is sent if needed.
-> >
-> > Maybe a trivial question, but what does "if needed" mean? Does that
-> > mean "when the buffer is full"?
->
-> I used to call it ns "adaptive notification", so maybe let's use that
-> term instead of "if needed"? It means that in kernel BPF ringbuf code
-> will check if the user-space consumer has caught up and consumed all
-> the available data. In that case user-space might be waiting
-> (sleeping) in epoll_wait() already and not processing samples
-> actively. That means that we have to send notification, otherwise
-> user-space might never wake up. But if the kernel sees that user-space
-> is still processing previous record (consumer position < producer
-> position), then we can bypass sending another notification, because
-> user-space consumer protocol dictates that it needs to consume all the
-> record until consumer position =3D=3D producer position. So no
-> notification is necessary for the newly submitted sample, as
-> user-space will eventually see it without notification.
->
-> Of course there is careful writes and memory ordering involved to make
-> sure that we never miss notification.
->
-> Does someone want to try to condense it into a succinct description? ;)
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-OK.
+This series addresses some user complaints regarding best-effort VLAN
+filtering support on sja1105:
+- switch not pushing VLAN tag on egress when it should
+- switch not dropping traffic with unknown VLAN when it should
+- switch not overwriting VLAN flags when it should
 
-I can try to condense this and perhaps add it as code in the comment?
+Those bugs are not the reason why it's called best-effort, so we should
+fix them :)
+
+Vladimir Oltean (3):
+  net: dsa: sja1105: use the bridge pvid in best_effort_vlan_filtering
+    mode
+  net: dsa: sja1105: use 4095 as the private VLAN for untagged traffic
+  net: dsa: sja1105: update existing VLANs from the bridge VLAN list
+
+ drivers/net/dsa/sja1105/sja1105.h      |  1 +
+ drivers/net/dsa/sja1105/sja1105_main.c | 61 ++++++++++++++++++--------
+ 2 files changed, 43 insertions(+), 19 deletions(-)
+
+-- 
+2.25.1
+
