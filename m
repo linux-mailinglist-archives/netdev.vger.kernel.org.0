@@ -2,95 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2519A35725A
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFC9E35726E
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347732AbhDGQrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 12:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245696AbhDGQrr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 12:47:47 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E79BC061756;
-        Wed,  7 Apr 2021 09:47:37 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id i4so1179278pjk.1;
-        Wed, 07 Apr 2021 09:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oGh9bkiyj6+EkWkOQAdYaOgpqM5cW8idh8bXV6aXyO0=;
-        b=FTFoS+IIVQZVCzbPWJKNuk9ooiaUnHASKGfJzfKbfXQMAecp/A3EwHonJ8kHmqDegt
-         13uQx3ef/b3aPrKx1T7TdEV4qKRljsmP7r5Xd2C6B9GUGzvQNmDjLWq2gb8/Zgf6k0dR
-         1nz/LWlz8h2dH4g71S9RzTSmdSWWGYuDQyO6SPpU8yGyP/UBSpxSN1ANvBWgxMqNqkmD
-         DZ8VAKWtpA1SSCajpphfxLzVBsUp9y/W+D+nBMBn/S6sMO3masT3leI5yXvdUOHM3jb4
-         rxEdmEchgi0/yhm26XU4jYGxrFVDSSZoqb3s2PfHwP/etqIy2atta7FC6rE5jbSfG6Ir
-         KMug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oGh9bkiyj6+EkWkOQAdYaOgpqM5cW8idh8bXV6aXyO0=;
-        b=VYDeMkV6VUfjUHyWvUnXuc8XaL0xSMVK/UbFUT2NxkkrwM4ve+iL9AWwWb1kKGFpww
-         kFWcN2dD45abbJG2wffGFtwG6lLLRysl35ToqcEVRp4ipJRf3j+8mHcP+tF7am6cPR9O
-         nWf+ej0j1wnGmRdHUI+2ytGOgD2QWcherKMR4YDw/aP6kfFS+7AG+9/hXc8JsSpja/RN
-         MMtGo18reC8OkXKLVIubNKaKm1erp1nN89ShLVgfT+25uib4S41zTtYEZjA0+wW+GXF3
-         7o7S4TuZXJLMiC58AEM/Tlj8m7scfFQTjsHJVtr2sPRJrOF40RWUIkNJSx+WIPyz7Vf5
-         gG3A==
-X-Gm-Message-State: AOAM531NpMTEmjSe6YSETRWIB+Jr6fQTIdIbUyMmL/GnIbp+z6476UMT
-        wcRqQ1eSuY85s8laV2tQFCd53C6T9kw=
-X-Google-Smtp-Source: ABdhPJy9yq4HYZgj7+0LjaaaE7HmIOIeHCQulpqZzEk/JyIm2fgHsu7LnIP5ESNi7bwQG/5ncclsHQ==
-X-Received: by 2002:a17:90b:3909:: with SMTP id ob9mr4233859pjb.181.1617814056539;
-        Wed, 07 Apr 2021 09:47:36 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w7sm17762242pff.208.2021.04.07.09.47.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Apr 2021 09:47:35 -0700 (PDT)
-Subject: Re: [PATCH RFC net 2/2] net: dsa: lantiq_gswip: Configure all
- remaining GSWIP_MII_CFG bits
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     hauke@hauke-m.de, vivien.didelot@gmail.com, olteanv@gmail.com,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20210406203508.476122-1-martin.blumenstingl@googlemail.com>
- <20210406203508.476122-3-martin.blumenstingl@googlemail.com>
- <YGz9hMcgZ1sUkgLO@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <98ef4831-27eb-48d4-1421-c6496b174659@gmail.com>
-Date:   Wed, 7 Apr 2021 09:47:32 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.9.0
+        id S235801AbhDGQyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 12:54:25 -0400
+Received: from mga06.intel.com ([134.134.136.31]:48896 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235015AbhDGQyX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 12:54:23 -0400
+IronPort-SDR: tS+sdjdNZ+57/MMjaKtrW4uarkxNth53tettdMSyErGOAtvuTC96jkMHJRtG+uA7hRbna6St1h
+ Up/H1ORT3QaQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9947"; a="254689869"
+X-IronPort-AV: E=Sophos;i="5.82,203,1613462400"; 
+   d="scan'208";a="254689869"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2021 09:54:13 -0700
+IronPort-SDR: 2a8Kf6WaNd/0kxyeCZqP4ukkq0OmJunrLAZ3NAgBJ+INoMBdilDMdz2NV0XM/GzRMyIYk3jRsG
+ wXeqclFq4xGg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,203,1613462400"; 
+   d="scan'208";a="530272883"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga004.jf.intel.com with ESMTP; 07 Apr 2021 09:54:13 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 7BE2E5805A1;
+        Wed,  7 Apr 2021 09:54:10 -0700 (PDT)
+Date:   Thu, 8 Apr 2021 00:54:07 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/1] net: stmmac: Add support for external
+ trigger timestamping
+Message-ID: <20210407165407.GA27820@linux.intel.com>
+References: <20210407141537.2129-1-vee.khee.wong@linux.intel.com>
+ <YG2/1fbNNIsbafZp@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <YGz9hMcgZ1sUkgLO@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YG2/1fbNNIsbafZp@lunn.ch>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/6/2021 5:32 PM, Andrew Lunn wrote:
->>  	case PHY_INTERFACE_MODE_RGMII:
->>  	case PHY_INTERFACE_MODE_RGMII_ID:
->>  	case PHY_INTERFACE_MODE_RGMII_RXID:
->>  	case PHY_INTERFACE_MODE_RGMII_TXID:
->>  		miicfg |= GSWIP_MII_CFG_MODE_RGMII;
->> +
->> +		if (phylink_autoneg_inband(mode))
->> +			miicfg |= GSWIP_MII_CFG_RGMII_IBS;
+On Wed, Apr 07, 2021 at 04:21:09PM +0200, Andrew Lunn wrote:
+> On Wed, Apr 07, 2021 at 10:15:37PM +0800, Wong Vee Khee wrote:
+> > From: Tan Tee Min <tee.min.tan@intel.com>
+> > 
+> > The Synopsis MAC controller supports auxiliary snapshot feature that
+> > allows user to store a snapshot of the system time based on an external
+> > event.
+> > 
+> > This patch add supports to the above mentioned feature. Users will be
+> > able to triggered capturing the time snapshot from user-space using
+> > application such as testptp or any other applications that uses the
+> > PTP_EXTTS_REQUEST ioctl request.
 > 
-> Is there any other MAC driver doing this? Are there any boards
-> actually enabling it? Since it is so odd, if there is nothing using
-> it, i would be tempted to leave this out.
+> You forgot to Cc: the PTP maintainer.
+>
 
-Some PHYs (Broadcom namely) support suppressing the RGMII in-band
-signaling towards the MAC, so if the MAC relies on that signaling to
-configure itself based on what the PHY reports this may not work.
--- 
-Florian
+Will Cc Richard Cochran on v2.
+ 
+> > @@ -159,6 +163,37 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
+> >  					     priv->systime_flags);
+> >  		spin_unlock_irqrestore(&priv->ptp_lock, flags);
+> >  		break;
+> > +	case PTP_CLK_REQ_EXTTS:
+> > +		priv->plat->ext_snapshot_en = on;
+> > +		mutex_lock(&priv->aux_ts_lock);
+> > +		acr_value = readl(ptpaddr + PTP_ACR);
+> > +		acr_value &= ~PTP_ACR_MASK;
+> > +		if (on) {
+> > +			/* Enable External snapshot trigger */
+> > +			acr_value |= priv->plat->ext_snapshot_num;
+> > +			acr_value |= PTP_ACR_ATSFC;
+> > +			pr_info("Auxiliary Snapshot %d enabled.\n",
+> > +				priv->plat->ext_snapshot_num >>
+> > +				PTP_ACR_ATSEN_SHIFT);
+> 
+> dev_dbg()?
+> 
+> > +			/* Enable Timestamp Interrupt */
+> > +			intr_value = readl(ioaddr + GMAC_INT_EN);
+> > +			intr_value |= GMAC_INT_TSIE;
+> > +			writel(intr_value, ioaddr + GMAC_INT_EN);
+> > +
+> > +		} else {
+> > +			pr_info("Auxiliary Snapshot %d disabled.\n",
+> > +				priv->plat->ext_snapshot_num >>
+> > +				PTP_ACR_ATSEN_SHIFT);
+> 
+> dev_dbg()?
+> 
+> Do you really want to spam the kernel log with this?
+>
+
+Thanks for the review.
+I will switch this to netdev_dbg().
+ 
