@@ -2,95 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC543357489
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E10D3574A3
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 20:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355432AbhDGSuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 14:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
+        id S1355490AbhDGS4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 14:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355401AbhDGSt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:49:56 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A8EC06175F;
-        Wed,  7 Apr 2021 11:49:46 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id w23so10857588edx.7;
-        Wed, 07 Apr 2021 11:49:45 -0700 (PDT)
+        with ESMTP id S1355476AbhDGS4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 14:56:20 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66835C061762
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 11:56:08 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id k23-20020a17090a5917b02901043e35ad4aso1799596pji.3
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 11:56:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bCTcZ/9GQSf/Ljck8Jws7/donXio0A+2sc6pD50GSNA=;
-        b=XP/AqdezzDG31JGPQzW3CkebCLWh3Y+APZUHlyVf9kXuhFDZEJKoAtx+kz4ueYuGpz
-         HdWEw7QPLhETea36Riuy6ezER8WM43zLYbohIYC3hldh08uA986tHVL0RNLhFOTIYASk
-         KJwD+gl+U5EGBDBo/lvwVXwNzY0Zb0haAkcNgVebNHkxzcTRDL48VBnu5rDRboZOL9dJ
-         TAwHSCWmyk5wT5tsXQCGpCTpt1M4rTY7OeoUPZL+zBXGoriUxqFT+jXPZyxdLvmAZawH
-         wokJrk/kNRFNVWstBkE8x7TZ0NXkDHjBEQhIzkf5XPnqHQmX5loIuMccXNU/NUL9Ayc9
-         8tMw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bUFX8OZjFldaYb/6zcLiSui0pTc7lp3Q3DWh7esaF8g=;
+        b=a1xRCOqlDFc7fMaWuNejJHG4Uwf7By9zy2OKAtPQ27xGklMzMvChcENop0/v+mOMEx
+         MW6+86rti2fEGc6b+oX4cnfwPSqf7GbCQ41o+BKscycaOnSgArho8f9BO6FrTo4gYnow
+         aM5rfU2N378Fjx1Amj6OkdpP5/Dtb0+r7QDOA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bCTcZ/9GQSf/Ljck8Jws7/donXio0A+2sc6pD50GSNA=;
-        b=ZEqYMNsH+5JjtzpoARRy1O3btIRJqIQARMkcx8L4vRzk729qdhCcViN39oIdnXg8rK
-         bKR2DnqOMUvYpYYzw5eGjQnaxKw+ZzSGtqnPVqMhAza1PblaugSdquiamsy2ncLOD3HG
-         ugeDXshg+nG/JV2r/WeCTwXBdv/RpbwxdNzp7zo0p37Iq+gpNoCGCwqtR3efaMZz3Mza
-         ogE7YXLI+cCxdUOzsyxkk1i5Zo/Rd9neufxUQ0lFYtQSPk6ws21R2YsN1JH6laE5iqrl
-         rLu/90kU6Q+ZB51uXu3QZ/z2joKrWV02NRzfsqTkZT4lgw8zVp56V4QBAEdXZF9KfY1P
-         g8Fw==
-X-Gm-Message-State: AOAM531aUQDNojp2nSISikba9hisQzSpGPf+azC6zAxZ84KyOzW/fEQr
-        pZcEWX4UGBRVmA4pOMyQJt0CKPopzhSytY2if7U=
-X-Google-Smtp-Source: ABdhPJzeUL/tk90gRs0bfMM7xCgePouT8xjiA55DrmKw+kHCLVKQNbJY2kqB7zNVJgG6s8BD5RIlqA5EYHueyb1TEBI=
-X-Received: by 2002:a05:6402:13ce:: with SMTP id a14mr6282012edx.365.1617821384781;
- Wed, 07 Apr 2021 11:49:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bUFX8OZjFldaYb/6zcLiSui0pTc7lp3Q3DWh7esaF8g=;
+        b=jTG+rAnfbSrzTn0LKtUrpdz6WESu29HxFYBgpqsAwbfx1RzJOZr0to5mHSTuS4jY7H
+         wp05lHEL0idPWI7B3KSbg1dYp9Ko+IuSvvC4u/i0rpiClRke3eFRi43xBkp3iPHL2mf8
+         FR6NI0DI88xMXaXK9WoPU9SZCYhizH6Lb8QUAzsVX3TJfPW4US9OdbdiPSZAAFLYcUBj
+         n3bqKHgvNggKkChmKAXmrQWNS1V8BWLR713kuyNOR8NBKvYPxs7fO3iSmF5GYKKwjPAQ
+         hEyh5DK+wG8VuSnj+mPAlglP5IHa2ZiH45QINiMAe/1jEarJzepzre/T4Cd30Imd6rIO
+         iEmg==
+X-Gm-Message-State: AOAM53312ZddRD16LCKBBR2ncA9wMXx18IXLSC0eBzmkD9+KunkSwaSy
+        U13BRV+L2UbsRewTTWfTqiNtdQ==
+X-Google-Smtp-Source: ABdhPJyqOjE2YRcwObcLLiGu2bq48+Q2tF9rRkC6ywJ1L+rDrieu6AYwkNRmg39F3ypuOEZU45TvvA==
+X-Received: by 2002:a17:90a:a389:: with SMTP id x9mr3803993pjp.232.1617821767869;
+        Wed, 07 Apr 2021 11:56:07 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id h19sm22438097pfc.172.2021.04.07.11.56.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Apr 2021 11:56:07 -0700 (PDT)
+Date:   Wed, 7 Apr 2021 11:56:06 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 1/2][next] wl3501_cs: Fix out-of-bounds warning in
+ wl3501_send_pkt
+Message-ID: <202104071154.49B15A3AB4@keescook>
+References: <cover.1617226663.git.gustavoars@kernel.org>
+ <e03d36114bcbcf814ad13deb7812b0b5c196dadb.1617226663.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-References: <20210406203508.476122-1-martin.blumenstingl@googlemail.com>
- <20210406203508.476122-3-martin.blumenstingl@googlemail.com>
- <YGz9hMcgZ1sUkgLO@lunn.ch> <98ef4831-27eb-48d4-1421-c6496b174659@gmail.com>
-In-Reply-To: <98ef4831-27eb-48d4-1421-c6496b174659@gmail.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 7 Apr 2021 20:49:33 +0200
-Message-ID: <CAFBinCCv7vSf1H1ONZYU+fo3kRvShYxzemE3-8DqKUzsFFOUPA@mail.gmail.com>
-Subject: Re: [PATCH RFC net 2/2] net: dsa: lantiq_gswip: Configure all
- remaining GSWIP_MII_CFG bits
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>, vivien.didelot@gmail.com,
-        olteanv@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e03d36114bcbcf814ad13deb7812b0b5c196dadb.1617226663.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Mar 31, 2021 at 04:44:29PM -0500, Gustavo A. R. Silva wrote:
+> Fix the following out-of-bounds warning by enclosing
+> structure members daddr and saddr into new struct addr:
+> 
+> arch/x86/include/asm/string_32.h:182:25: warning: '__builtin_memcpy' offset [18, 23] from the object at 'sig' is out of the bounds of referenced subobject 'daddr' with type 'u8[6]' {aka 'unsigned char[6]'} at offset 11 [-Warray-bounds]
+> 
+> Refactor the code, accordingly:
+> 
+> $ pahole -C wl3501_md_req drivers/net/wireless/wl3501_cs.o
+> struct wl3501_md_req {
+> 	u16                        next_blk;             /*     0     2 */
+> 	u8                         sig_id;               /*     2     1 */
+> 	u8                         routing;              /*     3     1 */
+> 	u16                        data;                 /*     4     2 */
+> 	u16                        size;                 /*     6     2 */
+> 	u8                         pri;                  /*     8     1 */
+> 	u8                         service_class;        /*     9     1 */
+> 	struct {
+> 		u8                 daddr[6];             /*    10     6 */
+> 		u8                 saddr[6];             /*    16     6 */
+> 	} addr;                                          /*    10    12 */
+> 
+> 	/* size: 22, cachelines: 1, members: 8 */
+> 	/* last cacheline: 22 bytes */
+> };
+> 
+> The problem is that the original code is trying to copy data into a
+> couple of arrays adjacent to each other in a single call to memcpy().
+> Now that a new struct _addr_ enclosing those two adjacent arrays
+> is introduced, memcpy() doesn't overrun the length of &sig.daddr[0],
+> because the address of the new struct object _addr_ is used as
+> destination, instead.
+> 
+> Also, this helps with the ongoing efforts to enable -Warray-bounds and
+> avoid confusing the compiler.
+> 
+> Link: https://github.com/KSPP/linux/issues/109
+> Reported-by: kernel test robot <lkp@intel.com>
+> Build-tested-by: kernel test robot <lkp@intel.com>
+> Link: https://lore.kernel.org/lkml/60641d9b.2eNLedOGSdcSoAV2%25lkp@intel.com/
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-On Wed, Apr 7, 2021 at 6:47 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 4/6/2021 5:32 PM, Andrew Lunn wrote:
-> >>      case PHY_INTERFACE_MODE_RGMII:
-> >>      case PHY_INTERFACE_MODE_RGMII_ID:
-> >>      case PHY_INTERFACE_MODE_RGMII_RXID:
-> >>      case PHY_INTERFACE_MODE_RGMII_TXID:
-> >>              miicfg |= GSWIP_MII_CFG_MODE_RGMII;
-> >> +
-> >> +            if (phylink_autoneg_inband(mode))
-> >> +                    miicfg |= GSWIP_MII_CFG_RGMII_IBS;
-> >
-> > Is there any other MAC driver doing this? Are there any boards
-> > actually enabling it? Since it is so odd, if there is nothing using
-> > it, i would be tempted to leave this out.
->
-> Some PHYs (Broadcom namely) support suppressing the RGMII in-band
-> signaling towards the MAC, so if the MAC relies on that signaling to
-> configure itself based on what the PHY reports this may not work.
-point taken. in v2 we'll not set GSWIP_MII_CFG_RGMII_IBS unless
-there's someone who can actually test this.
-so far I don't know any hardware with Lantiq SoC that uses it
+Thanks, this makes the code much easier for the compiler to validate
+at compile time. These cross-field memcpy()s are weird. I like the
+solution here.
 
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-Best regards,
-Martin
+-- 
+Kees Cook
