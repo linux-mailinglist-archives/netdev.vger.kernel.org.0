@@ -2,148 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8730C356619
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 10:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3151535661C
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 10:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237685AbhDGIJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 04:09:23 -0400
-Received: from mail-co1nam11on2112.outbound.protection.outlook.com ([40.107.220.112]:3936
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1344910AbhDGIJK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 04:09:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L79eFf7xBnIzL3qFAtJIBrchBg36d5GQu/slXehZz4wztwQXnSkin/2QPDEBhw0RI/JV6eDpwLJo8kzxTmWINO5V2ALPDxKFFhPDOT55+49f+CEHKcGYd88stvnvQe8ecmKzyB9iECcRKiscit/Io+IREbHgTGIwLQ2wxyyYMScxCJVYn0aNuPYPOiq043AXhb0Fp0Hp1YMbs6A4NEXw7btNIZvWDwrm+r+YCdRxUhCLBqPqOxK7ahYztwkZItUs1Ca1dGNkeJKr8AVJpB36127Sb3IOl6Pl+UZQf9i+QJ0l8Fkbf8k93Nr0CtmVu4aWgjBEdjAtuQHZhunnbj9TeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IA55JUbY+LRBv9WFGbrWnPTXaccjjGX7berkyVP/tfU=;
- b=F2B99wpOWqZ2Dyl3hAOTNNlEtKanfCGdfL5cPjW+pWL2znK2n0mzkERFQzR+m55eY3B6LpE6nPx61KHG0ij0YWy9J1L9+Q8Yt31Em3ov2+Bl3vtJSkIHxu7s7PY7VTYKRWvYN4jWZsHHvcrTfyApFJO1HAs+o5jaNbd8EJUSDAddoi8qqxP6/jB8Pz+GHVTWizttqeze5xxxG8v/00vszzHiCZMySW6KffCoDw3vOiPP2Gw7+2ViPgDMXDfoEiIUYuOPPVv5zvFL7H9RBkO7NVlrkoyqkMnEEQL9MipTeGwxcpGUz94wF47xI6F7jHD/DW6v9zxvjUoLh3qi9TGRhQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IA55JUbY+LRBv9WFGbrWnPTXaccjjGX7berkyVP/tfU=;
- b=Egx88NEmsG/0mHWZM0pgH30oB1iFJ3CLEwqkZiszFIeBvN43cuonMZKquOeqYGG28oL8RmQwVylATTuRoMJYdZYZWkJ7WaFbGIDbiiw9QBWxZr5T364CP/ZuK82Zs2vabO3Y8d7djEmqFk8FLRLMUeFafeS7YK2SKd34F6QgDWk=
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- (2603:10b6:302:10::24) by MWHPR21MB0751.namprd21.prod.outlook.com
- (2603:10b6:300:76::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.4; Wed, 7 Apr
- 2021 08:09:00 +0000
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d]) by MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d%6]) with mapi id 15.20.4042.006; Wed, 7 Apr 2021
- 08:09:00 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     kernel test robot <lkp@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: RE: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+        id S238251AbhDGIK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 04:10:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237818AbhDGIKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 04:10:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 865E86139C;
+        Wed,  7 Apr 2021 08:10:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617783012;
+        bh=LLv3HsHqxioPHLHPt0FtsjLo1qQsjXIdxq3Hj8vcjOs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Jab+GCrrT1PbACGOCAi6p9A+ENmFOoPOCrxkHzrhA8ccZgg1bz32mpUNlvW+/g73k
+         anUTt6Au0vhOjtvSS/zSPQEwJhN5qFkXdsZhzIOGZgFG7T1rIv4JQbZCMfoiPSAGaD
+         7vbq402GHsXdExqMXo2KNQZfVA8/JJrmkPwFWreFQo5oe7Yg1SR563NLAKgOE1n7ty
+         lc6Uu+nu7Be/LkVqPuS0futeFjkKNGy3DoR1hvly6quk9M2vgAuSospjGWKorjsofo
+         egh81ceF/sxekcxwXRdHXqWvZfv72+S2tO75F8SC5Jw8A+lErEQhByni1EfSEJeySY
+         qnboMaFQ8/KOQ==
+Date:   Wed, 7 Apr 2021 11:10:08 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        liuwe@microsoft.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
  Network Adapter (MANA)
-Thread-Topic: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Index: AQHXK02fK9CYzM87fki9gwnmLmNhk6qoskrw
-Date:   Wed, 7 Apr 2021 08:08:59 +0000
-Message-ID: <MW2PR2101MB08922BFEFEBFA44744C5795BBF759@MW2PR2101MB0892.namprd21.prod.outlook.com>
+Message-ID: <YG1o4LXVllXfkUYO@unreal>
 References: <20210406232321.12104-1-decui@microsoft.com>
- <202104070929.mWRaVyO2-lkp@intel.com>
-In-Reply-To: <202104070929.mWRaVyO2-lkp@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5bcc9357-5f5b-4cdf-9664-ec40a96c0fb3;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-07T08:03:09Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [2601:600:8b00:6b90:b462:5488:6830:14b3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f6cad607-0376-45fe-f73e-08d8f99c6660
-x-ms-traffictypediagnostic: MWHPR21MB0751:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR21MB0751E219CF01F7EA53453E92BF759@MWHPR21MB0751.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UBDiKD/HE6E3aWmk7QpqBC6+FoCcYsSBVaam0yKNVTbV1ZflbFc/vcnb8n9MogNId4tLvtlHvnHT8bZSdJneVXplerUdYx9cClvfArEP0QPhxy25fy8IRreSHNjhNSjKptZb4YJ1yF16DslkCIyMTjjlJ5kBAhrD4GDqMKZujaMKGhvDS3sDGIImcF5mhCjh6xSfUTx1oNshrDEXmRUrMRPuQJyHuE8OF51uU01ByvCX/Oju2X7hI41Sy2QWdX6fC6A6PUuc+Ru+7EAj06hS07GztruIEYLN/rqxWq4xIIgQiXuQWA7Q5Z5J98Dqj8qpGyqJaoidRrOrDWVgDMpbEZ0wqVyjaHB4WQl+58l4bt5imzxc0ikxbiZMaoERLz5zpOzHHjDw2lVNILLW+i1C9iDZZTOh0ftcgXTPLP4ThMM1QoUJLO5CuuASSER5WqwK78R5Tv/Ujf/rmT4ZavNVkgqsqqhmUM2Aw7SQyQm7kne738+Ey2aDQMColX0QJ2hIRaWBfVcwUyjosj53Swf98il4UUbbZUpJC7fUQI6c0+6CXO0SAEywhRxm6Ugo5qjntFuByiwTsvMhQAqQ5gary4L29IulEflH892hu/U3pL/hEmyYcDOIGhtpFIucOiJNInROhgeLWH/KsL2g+FgM6XFXQQAAyibcUkpb2VKRn9E=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB0892.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(366004)(376002)(346002)(47530400004)(5660300002)(4326008)(52536014)(71200400001)(4744005)(82950400001)(82960400001)(2906002)(8990500004)(8936002)(55016002)(6506007)(9686003)(83380400001)(186003)(110136005)(54906003)(38100700001)(33656002)(76116006)(86362001)(10290500003)(7696005)(64756008)(316002)(8676002)(478600001)(66556008)(66476007)(66446008)(66946007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?aTKgbeBAIZyes9kbx0qvTFgU4b2DYrIoiy+Pa75DUSY0v/xBguEIgshYDsUQ?=
- =?us-ascii?Q?LO6Z9pX40sd4fTDZXEymBXm2gpFQoipK9/CGcbZRNI9Ra/CQCzdQmC4ax/u/?=
- =?us-ascii?Q?g4gmeuhdKBzNOpznL29JopV7FUGHxPNbTWwoE8rSUCJp4c0z7XWuxbmiOiDB?=
- =?us-ascii?Q?x52xxquTE9CvCOUXF+HJhrdcc2QumX6i4qTTZhpAzq1SdQLmDlqfZOfJHnfg?=
- =?us-ascii?Q?X3zVx1gmhQWaaL0YVqRKy7baABmXdzIXtBPtwhVjTphbcGiABqb5m7JoQ7FT?=
- =?us-ascii?Q?PVlYxHmPqqHM8Xq59h89IS9ZxE90a/tUmAvG27Adjj+KbuQ4MEs/IgEJj9n3?=
- =?us-ascii?Q?+vqi0BO/2/pygeC5L2F8VSCbseTgO1IMAJ7BpEPp8BnnptdJdiUUQHUfRrtj?=
- =?us-ascii?Q?Z3hAKFaUxpL1MtPk4fLHp/y/p84bYypqwgWcVtfmEXDSFxcoDfNP5TTqqlap?=
- =?us-ascii?Q?OfNBoXZufbsbEBy6gnNz3pgaMwlLnKyJ0e9CBOwMCMe0OeOKmQjG0dum3yva?=
- =?us-ascii?Q?q85aTU8aQhuWvbHrSnOYJ05UmlA7kosozbA586d3e3Z6Cv0j7iGKEV76nk5Y?=
- =?us-ascii?Q?12G4nnUGC5aUNsMaETCvllWsRG8sGwMcof0sR9Wz1wTS2+L7D7X8szGXm9wm?=
- =?us-ascii?Q?m7hz1gM9veZ/QV3UbC/4WO1+i9FxUs+AxO0Ho7T5cPUZShEmd3IfzngJw972?=
- =?us-ascii?Q?H2FolmTlSs7mWe7g48xun5biMWfNyjk+nCH5cI1jsDu5+jehT+hZ4lGHZOhr?=
- =?us-ascii?Q?YPKV+M85T1QvFAPnI9wTkan3fTslzGDzSkBaZgBrAQ37yfpPbOYW999q7fQu?=
- =?us-ascii?Q?KjO7U1cxtTiCQcXWMCeI2IQP/Za3fTlGPCkXxQIXyAtD17mO0utWhjAjpUwh?=
- =?us-ascii?Q?7jvtZ+0qbYFL5e0Y73GPZMooDSR4veJTQmnKJenB+iIp/u+CKdHYsbD4S2Et?=
- =?us-ascii?Q?+EcjN+PYqoD5/8igtn+vAJcOME5LKGi6E/4tf6RUFW+pg6iDMDqBTQig0ZL4?=
- =?us-ascii?Q?T5fHTtsxerpAqNxMTtdGLkWcOKv7ayUzgU/Sxal831RovM3Qi/nGR4rp404o?=
- =?us-ascii?Q?2gsyv3aRwT8Uc3f4G4mGfd0z6maP8t2YTRriHXLE3209l0joZVOxi8dgCmvb?=
- =?us-ascii?Q?AOCtUaFj17Gw12ZpduJI2pfdWBFJtyDQIi92pqzkecbWRnKSMB4zhxEeu1gO?=
- =?us-ascii?Q?R5SDCXsgD13HcoGFQ8zYBkYeKn6OkAdZ72Wojl7ZgIfrJXm05mzNRaEZkiCl?=
- =?us-ascii?Q?XlwM/6/LqvUhYrKtwbRPsDBIY4L0sJzvVt/LdftpmHnjEwzs43VT8hmHOS7M?=
- =?us-ascii?Q?Kuhy6fANpQvFXRwiivIa+RxQDjIw5kJscXsqz8K88szFX1GZMUNzYoIB0OhM?=
- =?us-ascii?Q?MyXkMfS9PRp0CK+Iz9TB1gEY+hz3?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB0892.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f6cad607-0376-45fe-f73e-08d8f99c6660
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2021 08:08:59.9481
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pT2v45k7E5OlWnWTeYNEcPpd841CBnnmEFrg4N1qP9NK3IKA9iQS2oHO6VEpzFsa6ZnmuNAZfo9gI4aXk09F2Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0751
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210406232321.12104-1-decui@microsoft.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: kernel test robot <lkp@intel.com>
-> Sent: Tuesday, April 6, 2021 6:31 PM
-> ...
-> Hi Dexuan,=20
-> I love your patch! Perhaps something to improve:
->=20
-> All warnings (new ones prefixed by >>):
->=20
->    drivers/pci/controller/pci-hyperv.c: In function 'hv_irq_unmask':
->    drivers/pci/controller/pci-hyperv.c:1220:2: error: implicit declaratio=
-n of
-> function 'hv_set_msi_entry_from_desc'
-> [-Werror=3Dimplicit-function-declaration]
->     1220 |  hv_set_msi_entry_from_desc(&params->int_entry.msi_entry,
-> msi_desc);
+On Tue, Apr 06, 2021 at 04:23:21PM -0700, Dexuan Cui wrote:
+> Add a VF driver for Microsoft Azure Network Adapter (MANA) that will be
+> available in the future.
+> 
+> Co-developed-by: Haiyang Zhang <haiyangz@microsoft.com>
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+> ---
+>  MAINTAINERS                                   |    4 +-
+>  drivers/net/ethernet/Kconfig                  |    1 +
+>  drivers/net/ethernet/Makefile                 |    1 +
+>  drivers/net/ethernet/microsoft/Kconfig        |   29 +
+>  drivers/net/ethernet/microsoft/Makefile       |    5 +
+>  drivers/net/ethernet/microsoft/mana/Makefile  |    6 +
+>  drivers/net/ethernet/microsoft/mana/gdma.h    |  731 +++++++
+>  .../net/ethernet/microsoft/mana/gdma_main.c   | 1500 +++++++++++++
+>  .../net/ethernet/microsoft/mana/hw_channel.c  |  851 ++++++++
+>  .../net/ethernet/microsoft/mana/hw_channel.h  |  181 ++
+>  drivers/net/ethernet/microsoft/mana/mana.h    |  529 +++++
+>  drivers/net/ethernet/microsoft/mana/mana_en.c | 1861 +++++++++++++++++
+>  .../ethernet/microsoft/mana/mana_ethtool.c    |  276 +++
+>  .../net/ethernet/microsoft/mana/shm_channel.c |  290 +++
+>  .../net/ethernet/microsoft/mana/shm_channel.h |   19 +
+>  15 files changed, 6283 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/net/ethernet/microsoft/Kconfig
+>  create mode 100644 drivers/net/ethernet/microsoft/Makefile
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/Makefile
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/gdma.h
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/gdma_main.c
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/hw_channel.c
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/hw_channel.h
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/mana.h
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/mana_en.c
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/mana_ethtool.c
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/shm_channel.c
+>  create mode 100644 drivers/net/ethernet/microsoft/mana/shm_channel.h
 
-This build error looks strange, because the patch doesn't even touch the dr=
-iver
-drivers/pci/controller/pci-hyperv.c.
+<...>
 
-I'll try to repro the build failure, and the other 2 failures in 2 separate
-emails, and figure out what's happening.
+> +int gdma_verify_vf_version(struct pci_dev *pdev)
+> +{
+> +	struct gdma_context *gc = pci_get_drvdata(pdev);
+> +	struct gdma_verify_ver_req req = { 0 };
+> +	struct gdma_verify_ver_resp resp = { 0 };
+> +	int err;
+> +
+> +	gdma_init_req_hdr(&req.hdr, GDMA_VERIFY_VF_DRIVER_VERSION,
+> +			  sizeof(req), sizeof(resp));
+> +
+> +	req.protocol_ver_min = GDMA_PROTOCOL_FIRST;
+> +	req.protocol_ver_max = GDMA_PROTOCOL_LAST;
+> +
+> +	err = gdma_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
+> +	if (err || resp.hdr.status) {
+> +		pr_err("VfVerifyVersionOutput: %d, status=0x%x\n", err,
+> +		       resp.hdr.status);
+> +		return -EPROTO;
+> +	}
+> +
+> +	return 0;
+> +}
 
-PS, I tested building the patch in a fresh Ubuntu 20.04 VM and it was succe=
-ssful.
+<...>
 
-Thanks,
--- Dexuan
+> +static int gdma_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+> +{
+> +	struct gdma_context *gc;
+> +	void __iomem *bar0_va;
+> +	int bar = 0;
+> +	int err;
+> +
+> +	err = pci_enable_device(pdev);
+> +	if (err)
+> +		return -ENXIO;
+> +
+> +	pci_set_master(pdev);
+> +
+> +	err = pci_request_regions(pdev, "gdma");
+> +	if (err)
+> +		goto disable_dev;
+> +
+> +	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+> +	if (err)
+> +		goto release_region;
+> +
+> +	err = -ENOMEM;
+> +	gc = vzalloc(sizeof(*gc));
+> +	if (!gc)
+> +		goto release_region;
+> +
+> +	bar0_va = pci_iomap(pdev, bar, 0);
+> +	if (!bar0_va)
+> +		goto free_gc;
+> +
+> +	gc->bar0_va = bar0_va;
+> +	gc->pci_dev = pdev;
+> +
+> +	pci_set_drvdata(pdev, gc);
+> +
+> +	gdma_init_registers(pdev);
+> +
+> +	shm_channel_init(&gc->shm_channel, gc->shm_base);
+> +
+> +	err = gdma_setup_irqs(pdev);
+> +	if (err)
+> +		goto unmap_bar;
+> +
+> +	mutex_init(&gc->eq_test_event_mutex);
+> +
+> +	err = hwc_create_channel(gc);
+> +	if (err)
+> +		goto remove_irq;
+> +
+> +	err = gdma_verify_vf_version(pdev);
+> +	if (err)
+> +		goto remove_irq;
+
+Will this VF driver be used in the guest VM? What will prevent from users to change it? 
+I think that such version negotiation scheme is not allowed.
+
+Thanks
