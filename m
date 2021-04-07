@@ -2,137 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2449435763E
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC4FF357642
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:46:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbhDGUoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:44:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33456 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229586AbhDGUoU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 16:44:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C333610F8;
-        Wed,  7 Apr 2021 20:44:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617828250;
-        bh=URZWGy1mjmdEc1Pm5+FHNqN8L31ZZ67xIgdElygE9zU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LsxAIJeimiAJh4rOxUzh6oTYxvk2C0yebgRxE4Oi+Cbi0RzQL+V9Tb9DNlBbltzGJ
-         lZI7YEEQwrqZmaTwGT+HWS9Di9TjjbmP/E23fEG5gHRapm3Sv9wYtOSHErHTVMdQc3
-         bGht4qkI5qYpSoUo/2igFz6T9Ex2W3Pp19d6KZJ2OABQnrDXJqbrCt39Le4Nxwp6hT
-         lfBoiw1EFEGT1kkQfi7dri3pOg0v9/kSvZ9XeuyqoMJiAJoFp65btsaCfIYa3hnfA6
-         nxmfEFb3H7ZmZO8lcTO8dGTITxyTWbIznNkBi3CAQBTRa/fC7gZ0jCVMDLl65nf4tZ
-         Sa7T0l5cugKkQ==
-Date:   Wed, 7 Apr 2021 22:44:06 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        id S231167AbhDGUqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 16:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229586AbhDGUqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 16:46:54 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A29C061760
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 13:46:44 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id x4so1461955edd.2
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 13:46:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DEH5OiHUMSSzVTDAIw0bSpWUsSOAFR/jjnwEIiOmzGQ=;
+        b=tTPQEZmVcB+YhdFxmar9Ue/0Hcrl7SMKiD8WgN8W22voF33kAEf4RWfG4qygMT3Es7
+         yDHahXTocp4jKWPG6JyZVcsbN9GHS4a9magdQKOXOeme8emVm4qehRu2FP5UbOCy7iO2
+         1LVeJkePhtkHp9GuUTvBrsZvQcXvLXIZ5DxPJNojnPnIkt19DSq5bTM4yjBJVJRajgmn
+         5CgLCnJaAKx5UH5oP0cL99bnZdbAkt6s/9RxMurEIHH1yxpZAyIcviHsOZ8XGgaQ97+P
+         dpA4q6RTQXnxmiqu+LnrC1WWTZV0fOsOn4w85RwmiAYWwE9+gHeWUDgJRjW2E5503dvR
+         Mo8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DEH5OiHUMSSzVTDAIw0bSpWUsSOAFR/jjnwEIiOmzGQ=;
+        b=YueUrNdJHe81FMhe3mCkzhMsdcP/hkYiQDBrfpFN1s/JYkEFBhdGLj9RFh2ZrWETEW
+         RPyImX7H5rZXKWzaMK9/aARXJl46ftXnOC4MZgr5RZtwqFpVwnQ1OFSLi+DTTcK2zj7a
+         k9kT75/Z28B1UgOaITrB7r+NKRA9RMHfSFc4WNqkHmWDK/htsJDWQP+y1zRKY/BBT1FQ
+         kL5RbJ4M7Avm+C45x7SUutqBWeQNc0BN2eJlYawY8ERZaaNquGCC0fLVTK4EAvn/tuGx
+         wmlj6d+yCRl92XBUEufnyLDAk32V8Na8pdhAkDErpA7YOuMNwlCzu1sDkUDj6f8jN6TR
+         S+Cg==
+X-Gm-Message-State: AOAM532WMZuAkI6qyB3fOP27tnFn1nhbLya9GBYcPe2UdrQJaMGVlpNd
+        su0VufIH7myLwc1EuKQIiFM=
+X-Google-Smtp-Source: ABdhPJzFZXzUKovpe+GVQGZjHIPJjSjEjccdq+FpuQHmI9l5hkasB582a/blsKO5YDq1qWH0s9i/Tw==
+X-Received: by 2002:a05:6402:1759:: with SMTP id v25mr6805944edx.177.1617828403102;
+        Wed, 07 Apr 2021 13:46:43 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id u1sm15991169edv.90.2021.04.07.13.46.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Apr 2021 13:46:42 -0700 (PDT)
+Date:   Wed, 7 Apr 2021 23:46:41 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH kbuild] Makefile.extrawarn: disable -Woverride-init in
- W=1
-Message-ID: <20210407224406.5420258b@thinkpad>
-In-Reply-To: <CAK8P3a0_ruZSMv-kLMY7Jja7wq0K3aNNDviYqQPmN-3UayiHaQ@mail.gmail.com>
-References: <20210407002450.10015-1-kabel@kernel.org>
-        <CAK8P3a0_ruZSMv-kLMY7Jja7wq0K3aNNDviYqQPmN-3UayiHaQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net 0/3] Fixes for sja1105 best-effort VLAN filtering
+Message-ID: <20210407204641.ly6hnjgi4kjbn4co@skbuf>
+References: <20210407201452.1703261-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210407201452.1703261-1-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Apr 2021 09:14:29 +0200
-Arnd Bergmann <arnd@arndb.de> wrote:
+On Wed, Apr 07, 2021 at 11:14:49PM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This series addresses some user complaints regarding best-effort VLAN
+> filtering support on sja1105:
+> - switch not pushing VLAN tag on egress when it should
+> - switch not dropping traffic with unknown VLAN when it should
+> - switch not overwriting VLAN flags when it should
+> 
+> Those bugs are not the reason why it's called best-effort, so we should
+> fix them :)
+> 
+> Vladimir Oltean (3):
+>   net: dsa: sja1105: use the bridge pvid in best_effort_vlan_filtering
+>     mode
+>   net: dsa: sja1105: use 4095 as the private VLAN for untagged traffic
+>   net: dsa: sja1105: update existing VLANs from the bridge VLAN list
+> 
+>  drivers/net/dsa/sja1105/sja1105.h      |  1 +
+>  drivers/net/dsa/sja1105/sja1105_main.c | 61 ++++++++++++++++++--------
+>  2 files changed, 43 insertions(+), 19 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
 
-> On Wed, Apr 7, 2021 at 2:24 AM Marek Beh=C3=BAn <kabel@kernel.org> wrote:
-> >
-> > The -Wextra flag enables -Woverride-init in newer versions of GCC.
-> >
-> > This causes the compiler to warn when a value is written twice in a
-> > designated initializer, for example:
-> >   int x[1] =3D {
-> >     [0] =3D 3,
-> >     [0] =3D 3,
-> >   };
-> >
-> > Note that for clang, this was disabled from the beginning with
-> > -Wno-initializer-overrides in commit a1494304346a3 ("kbuild: add all
-> > Clang-specific flags unconditionally").
-> >
-> > This prevents us from implementing complex macros for compile-time
-> > initializers. =20
->=20
-> I think this is generally a useful warning, and it has found a number
-> of real bugs. I would want this to be enabled in both gcc and clang
-> by default, and I have previously sent both bugfixes and patches to
-> disable it locally.
->=20
-> > For example a macro of the form INITIALIZE_BITMAP(bits...) that can be
-> > used as
-> >   static DECLARE_BITMAP(bm, 64) =3D INITIALIZE_BITMAP(0, 1, 32, 33);
-> > can only be implemented by allowing a designated initializer to
-> > initialize the same members multiple times (because the compiler
-> > complains even if the multiple initializations initialize to the same
-> > value). =20
->=20
-> We don't have this kind of macro at the moment, and this may just mean
-> you need to try harder to come up with a definition that only initializes
-> each member once if you want to add this.
->=20
-> How do you currently define it?
->=20
->             Arnd
+Please don't apply these patches yet. I finished regression testing and
+it looks like patch 1 breaks PTP for some reason I'm afraid to even think
+of now - the RX timestamps are still collected but synchronization looks
+flat by around 1 ms.
 
-Arnd,
-
-since it is possible to create a macro which will expand N times if N
-is a preprocessor numeric constant, i.e.
-  EXPAND_N_TIMES(3, macro, args...)
-would expand to
-  macro(1, args...) macro(2, args...) macro(3, args...)
-
-But the first argument to this EXPAND_N_TIMES macro would have to be a
-number when preprocessing, so no expression via division, nor enums.
-
-Example:
-
-  The PHY_INTERFACE_MODE_* constants are defined via enum, and
-  the last is PHY_INTERFACE_MODE_MAX.
-
-  We could then implement bitmap initializers for PHY_INTERFACE_MODE
-  bitmap in the following way:
-
-  enum {
-    ...
-    PHY_INTERFACE_MODE_MAX
-  };
-
-  /* assume PHY_INTERFACE_MODE_MASK has value 50, so 2 longs on 32-bit
-   * and 1 long on 64-bit. These have to be direct constant, no expressions
-   * allowed. If more PHY_INTERFACE_MODE_* constants are added to the enum
-   * above, the following must be changed accordingly. The static_assert
-   * below guards against invalid value.
-   */
-
-  #define PHY_INTERFACE_BITMAP_LONGS_64  1
-  #define PHY_INTERFACE_BITMAP_LONGS_32  2
-
-  /* check if PHY_INTERFACE_BITMAP_LONGS_* have correct values */
-  static_assert(PHY_INTERFACE_BITMAP_LONGS_64 =3D=3D
-                DIV_ROUND_UP(PHY_INTERFACE_MODE_MASK, 64));
-  static_assert(PHY_INTERFACE_BITMAP_LONGS_32 =3D=3D
-                DIV_ROUND_UP(PHY_INTERFACE_MODE_MASK, 32));
-
-  #define DECLARE_PHY_INTERFACE_MASK(name) \
-    DECLARE_BITMAP(name, PHY_INTERFACE_MODE_MAX)
-
-  #define INIT_PHY_INTERFACE_MASK(...) \
-    INITIALIZE_BITMAP(PHY_INTERFACE_BITMAP_LONGS, ##__VA_ARGS__)
-
-What do you think?
-
-Marek
+If my suspicion is right and the VLAN retagging affects PTP traffic too
+(which should hit a trap-to-host rule before that even takes place),
+then the MAC timestamp might be replaced with a timestamp taken on the
+internal loopback port, which would be pretty nasty. Or the strict
+delivery order guarantees towards the DSA master (first comes the PTP
+frame, then the meta frame holding the RX timestamp) might no longer be
+true if the original PTP frame is dropped in hardware because its
+VLAN-retagged replacement is sent to the CPU instead? I don't know. I'll
+do some more debugging tomorrow.
