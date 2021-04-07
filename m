@@ -2,66 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7E1355FD5
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C384355FD9
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 02:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344887AbhDGAAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 20:00:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40660 "EHLO mail.kernel.org"
+        id S1344928AbhDGAB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 20:01:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37002 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235884AbhDGAAR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 20:00:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EC4A4613C0;
-        Wed,  7 Apr 2021 00:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617753609;
-        bh=FxdG5P1hn4py/Sr6fEL0/E/+WNIb9JmJTUvJF6IyG7E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uHeNY8yRGEi/x3DZzSeuExfRrLtEp4N8HhIJIdqTdHr9nTpdsVF0QpWfLNUXb52VG
-         jPfWkQvOLNjqLN2tx8quc1DeVDIGglVF5jLhvhWFM2unIpdBkRE1JXBPw1rQs2Re4m
-         IPtJZdyrGdttf4r2R5S8qCYed1V7rKLfIr80y8wIXjmChwqWiieXQgjqxvBmGUEol6
-         LBRFdDc9Am0RdqeHs7bH31+rtYdA0sQnBHGAyzY+kdpgrfoBRp+y3rVxuijkegZtjd
-         ZewXC33ecWJI2yfOPBr3K97nRtl7Q143C8QmzLCOxaNLKWKiu4zbrgtbsEyN5j1EL9
-         r+zBd60nhR3+g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DB81F60985;
-        Wed,  7 Apr 2021 00:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1344841AbhDGAB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 20:01:28 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lTvdH-00FDP2-BB; Wed, 07 Apr 2021 02:01:19 +0200
+Date:   Wed, 7 Apr 2021 02:01:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kuba@kernel.org
+Subject: Re: [PATCH net-next v3 16/18] net: phy: marvell10g: differentiate
+ 88E2110 vs 88E2111
+Message-ID: <YGz2TzbTL9jdPHhM@lunn.ch>
+References: <20210406221107.1004-1-kabel@kernel.org>
+ <20210406221107.1004-17-kabel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] docs: ethtool: fix some copy-paste errors
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161775360889.28852.9639455157119665991.git-patchwork-notify@kernel.org>
-Date:   Wed, 07 Apr 2021 00:00:08 +0000
-References: <20210406225815.1846660-1-kuba@kernel.org>
-In-Reply-To: <20210406225815.1846660-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, corbet@lwn.net,
-        linux-doc@vger.kernel.org, mkubecek@suse.cz
+In-Reply-To: <20210406221107.1004-17-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Tue,  6 Apr 2021 15:58:15 -0700 you wrote:
-> Fix incorrect documentation. Mostly referring to other objects,
-> likely because the text was copied and not adjusted.
+On Wed, Apr 07, 2021 at 12:11:05AM +0200, Marek Behún wrote:
+> 88E2111 is a variant of 88E2110 which does not support 5 gigabit speeds.
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  Documentation/networking/ethtool-netlink.rst | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+> Differentiate these variants via the match_phy_device() method, since
+> they have the same PHY ID.
+> 
+> Signed-off-by: Marek Behún <kabel@kernel.org>
 
-Here is the summary with links:
-  - [net] docs: ethtool: fix some copy-paste errors
-    https://git.kernel.org/netdev/net/c/5219d6012d46
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
