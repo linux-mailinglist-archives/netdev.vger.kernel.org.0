@@ -2,292 +2,416 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86F7D356864
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 11:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 627D435688D
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 11:57:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350297AbhDGJvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 05:51:21 -0400
-Received: from mail-dm6nam12on2073.outbound.protection.outlook.com ([40.107.243.73]:7008
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233688AbhDGJvT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 05:51:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i9jwRJbqjzJFyaQIm6rnGdNu9uSW5cZujzFl78nTxVt0e8XJV4yyP20ULTiutRyNSrBrkvLjwba4ARnxbw3UGLlwBg73kDTWc7HOZsjaMD2EPI/dLHHpGpmYY0n0MHjkEhjwjYPG+AoplVQP2v2gD9NtlUrNys4CNkyBAHu0iyYML+VoJ9UxIq9i0H3A9H7/3atMg4UM+qizI624mWva6/42PrhCxe2zrryJ1ku4pQvXD8zdrbhg6pr74bLG+c4HTPp1WGRAl8YWA1p3lNIZ3c6JTs2+R1qa0mGqJZsypQ1WluJf4zNUbcuybWlr5Tn12YUU/h5SF+kZpmuFkY/chQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YRWpIK66OgQvVB1gnjgunP2l4AVHQjRvR/tf1gCPcno=;
- b=hhr3fZtzst3eM0lOrJH+/SNIJK2HeuJSP8YI2qrEZb/hZFIUieRgOxHKo7YbHhEoneRK+/4MXBXHUHT1RRmXVdrQOng6UFAoyZTtMqRRZi4esQY+2D0y79UG2FBKcz6t/iFlKEjMuXHMSiYH4O2TIyUP2d68XbanAecetySQ7apWZ+JIqjfBZpuAIlTB/HYyus/K3sMgZEtGI3MQRSKn+hZKENdDhOEpqL3z3j0uFtwkGs9w7oECuQzGkejdtTTm9CO+R9N2mJm/hg46ThrB5WU1GHFAUPZxXqCB8dLeYaPOP/6AXSBXRd0kdSrexlwbwy+Let2u9R53sNosqtzDQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YRWpIK66OgQvVB1gnjgunP2l4AVHQjRvR/tf1gCPcno=;
- b=njaenx8XWESyusOCWJZmoPYd0Qd0doaJljU7IS69Zvo2TkYY72OESlBAXSR6Md2MKW98uRr0D5/KH67zIXoFADyhM8iIonjOwlKmCSkXCvDFjq3jT1ZA5rxph5mTv3TAl0tPp2D33uRD6NtAZJD7QtllbzMSMx0OgpHmS2OtCAQ=
-Received: from DM5PR05MB3452.namprd05.prod.outlook.com (2603:10b6:4:41::11) by
- DS7PR05MB7207.namprd05.prod.outlook.com (2603:10b6:5:2cb::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4020.8; Wed, 7 Apr 2021 09:51:08 +0000
-Received: from DM5PR05MB3452.namprd05.prod.outlook.com
- ([fe80::1025:e864:4f6:e517]) by DM5PR05MB3452.namprd05.prod.outlook.com
- ([fe80::1025:e864:4f6:e517%3]) with mapi id 15.20.4020.015; Wed, 7 Apr 2021
- 09:51:08 +0000
-From:   Jorgen Hansen <jhansen@vmware.com>
-To:     Jiang Wang <jiang.wang@bytedance.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
-        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        id S1350433AbhDGJ5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 05:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346426AbhDGJ5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 05:57:13 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D324C061756;
+        Wed,  7 Apr 2021 02:57:03 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id g15so12537910pfq.3;
+        Wed, 07 Apr 2021 02:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DDwy88lKL90j/yU0Sd9HPGxDv86aLgS4Tqux4KqcdnE=;
+        b=Y/R/9SjByJ+0xqpTL8g0nUTqacnfSyykojnWT2Cr3fzI801sUpPCbKl9rGEoBZBSqd
+         sRjJRV0dn65dvfF2zEk6rvxSrB/n20RloCY6JLMagGLxdGpf3pULxB5TvsCY0fJsctQi
+         oqaxDhXXEM920dp12hC6Khk9Rp6JqMCWKnYNZvhn5LUK1TVbmjwU0AtOsPeOMiiGOQT/
+         eqdIEm6bd9pEK10QXZg76lO/klcYfcVqp3ipMJkXwuhgHhl4rwzbovv02WdygFDgIOPE
+         OO5Z5HMZNnKv+x3bc/P0zBXKQgPo1qxQn9vQySzxCMvlHGD2ioBuJBSZLp57Jl6UswSJ
+         yp2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DDwy88lKL90j/yU0Sd9HPGxDv86aLgS4Tqux4KqcdnE=;
+        b=qW6mnfeWP2jr+9SPndC7GKdHtBfuc3lrQe1L4hxZXoOweaikLX9jDrkngNEnbM5bDk
+         leabsLN2HTCIVRDURZJ4jQtyU6KdPik64GSjoyxWfXN9EPc9Um9mbjtCMlzF3n67HnYI
+         sbfrI2Szv6jqINDdUwqjZYHwkrqFTgEDzywYQrvosoPRoUqUzToMIiJYxawK7wmmdGrJ
+         3WgAum+f7L2Hz42W7s9npd5UPwtO0gFKGiFfy8WarDZQLKrf8lui6TLOn2lMtyztt4QS
+         gfaPWwZh/E+6rQaPKZbpmE7yIQ/ywxqFmuwAe5mItulPu5QarSLM1o72sick1JdjZEIx
+         Dpxw==
+X-Gm-Message-State: AOAM531aOW6/dQrmMYYrf5IMRLgXLRiY0kDPAp9IBGMaspzwy/niA0Sz
+        AVLLml/9iOcEX0HeuHF8GzcvkeJGegzmA/R8kVw=
+X-Google-Smtp-Source: ABdhPJzezRN9jvp+TWWc/RCJHjNUuln+K4jW+EK/SB0WBqSm6eg3XJOQjxeaxhJgSeREhlC63UQ1Z+JJm87mrn7q0bY=
+X-Received: by 2002:a05:6a00:b54:b029:207:2a04:7b05 with SMTP id
+ p20-20020a056a000b54b02902072a047b05mr2155398pfo.12.1617789422854; Wed, 07
+ Apr 2021 02:57:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210331071139.15473-1-xuanzhuo@linux.alibaba.com>
+ <20210331071139.15473-5-xuanzhuo@linux.alibaba.com> <3d54007e-71b0-bf91-3904-815653860cf3@redhat.com>
+In-Reply-To: <3d54007e-71b0-bf91-3904-815653860cf3@redhat.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 7 Apr 2021 11:56:51 +0200
+Message-ID: <CAJ8uoz1Dc2sm55hFZ1aQ8O3JCaeLdDtm6Yipht2J6kU0qsQFHA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 4/8] virtio-net: xsk zero copy xmit implement
+ wakeup and xmit
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Network Development <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC] vsock: add multiple transports support for dgram
-Thread-Topic: [RFC] vsock: add multiple transports support for dgram
-Thread-Index: AQHXKxMuaYE5V9k8J0KyDrwo4UC2kKqo0JcA
-Date:   Wed, 7 Apr 2021 09:51:08 +0000
-Message-ID: <1D46A084-5B77-4803-8B5F-B2F36541DA10@vmware.com>
-References: <20210406183112.1150657-1-jiang.wang@bytedance.com>
-In-Reply-To: <20210406183112.1150657-1-jiang.wang@bytedance.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-authentication-results: bytedance.com; dkim=none (message not signed)
- header.d=none;bytedance.com; dmarc=none action=none header.from=vmware.com;
-x-originating-ip: [83.92.5.149]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e08a3fe6-75b0-4d82-297f-08d8f9aaab5c
-x-ms-traffictypediagnostic: DS7PR05MB7207:
-x-microsoft-antispam-prvs: <DS7PR05MB72076370E9C45444E39AF0A7DA759@DS7PR05MB7207.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ti62Z2va7klNxO/Ul1iMJR7cOxoSLfGyVqc1ls+gKRg67x6Xq3/48yI9K/ZWfyz09kPqp3Iu33QRBqlxaLFPvtn6R0mu5+duabsIOM47m9oGA/V06BdJbsmJlx/3a/Y7Ecgp5zAcFmpzuCdx8yG/EmkOziDmKuOtvyLCAg/ZFW9QEzE6VnvR1lMX1ke4IHyNgqZWHrgsQNB3eFLjCtdwI43MoG0SQep/KxSQdMz6ufv0u9kO5SNT0ld9GCue43Rk/IhRZcs1S7Pb+7DK4qE9DeIYDg3ZTCSaAJutd0tFqanfjapYLLZD0oZjRMyKOOcUsyRDIgh9UKbqwbKG2TksURTQcfmO2A5kwH4cdUo6NnT++rbK3AfYQvV2+1HOIGpSeUIPMo/cOorKhNXxBmLiKbou2eE74i1FWLKYh4hUigbtl39FVUCSQe/HHw9Q9hY8eJG9H7GE1G1zbwOQl6sZfOLzFz1RcgS3Qi5XI1z8e9B+X5aDx5OnhGDGGdTAkm6MdFRAi9eeZyeAJM4/z7Z9V4lfdth9BZQIvO0Od33uaq9oEBE2HPdKwjBOWK9fGSDeaIyKA9++zB1a1ZZ/SlGSW5GsPHw9Zvqhhz54Y0wxM59bRXxY09Usdc/tg6qdceOKJJwnL834JlCGEFhLlqSerwW6KZPGYLYuPOWwAULB79w4EyBg195Tsgezd0qg70mUQooMh3EmptfvshUvwNevoQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR05MB3452.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(346002)(39860400002)(136003)(366004)(6486002)(186003)(26005)(33656002)(53546011)(4326008)(6506007)(83380400001)(478600001)(6512007)(66446008)(86362001)(2906002)(66476007)(8936002)(8676002)(7416002)(2616005)(6916009)(36756003)(66556008)(76116006)(91956017)(54906003)(316002)(71200400001)(38100700001)(5660300002)(66946007)(64756008)(21314003)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?akpjd1RydU5kRkJOUXMvSjh5RmFUODdDSnpwRkdGeTVBWnZEdm9vMWMwd3FC?=
- =?utf-8?B?aXZZZitWaGJrN213YnBUdUoxRDFvMlhhMnRrdzl3MnBFNnNBSXFRdVFURlgz?=
- =?utf-8?B?ZzlYU0N1Mll5OGxUNUwxa1NXdzRrSUtEVjZTTmJZeU1FQjNLOWVMYmQvM3dp?=
- =?utf-8?B?UHJPaUZWZEY5QlEyTC9xdjQ1MGI1QWVFL1NhWEh4b0JZeW0vUkxMb1FjWSt0?=
- =?utf-8?B?Vnc1ZmcwSXBCSGczL0Z2RTN0cFh1elhRK0tCb2hWS1RsNjMybDJUK084V0N6?=
- =?utf-8?B?NG9MclFRSmVoaHlBS25tSngwTEVKT0xNcEQ5VmJHOEFiWVRBQlROd1NhemtT?=
- =?utf-8?B?NW5iWC9SWUlWb2hEVWkzaHFQaEc4SDRCUTJzVTQvcFpZY3h3ZWxLUnFRM1pu?=
- =?utf-8?B?UmMwRlhKSFRtVVJOUGRrQUtLaitJZlZNUU9scDRxdkhRZk5laXNwWlJCV0Zz?=
- =?utf-8?B?d1llbTZrZjZZeU5QR0lQcFB5SEs0RnNPUXdiOFRtekRNZ1RvUmMxc1RWVHd4?=
- =?utf-8?B?QTdMbVM1WFU0bTJkVkVvMHlFTFBFcjhVcEJCL2JaTmZxTEM2S0hwU1hodVh1?=
- =?utf-8?B?dzFFdDVBM01MMmNieWVVak9ra2ZQb2VYRzE1UE9OaTNMYU9DbVFvNklJSlBI?=
- =?utf-8?B?MG96Wjh4ZGt2WkNzU1FlTDNGV1ZtaDB2dDZldDRibERFbHNFMlhSc0J2cXNM?=
- =?utf-8?B?V2QwU0FLTnpsdUVyMDhydWpEMWNkZnEwcWpIVjIwV2FhWElkZnJQSFVhcDNi?=
- =?utf-8?B?Q0tvcEZJbkJHRHdCa2tkVi93dmtJQ0VDV1lBdEh4aGorNTJSQXV3MUNIdCt0?=
- =?utf-8?B?SHZEZyt4NDdPa1ltOVVoRWVpbkRsN0hrSzN4cGZXR2VlWjRyTnh2OE9IS3JL?=
- =?utf-8?B?YzJVZmFIWUhpSWJGODcycjBaMllWaWRaeUdDZ3hRK1dmRVFSdWV0eW16eGpZ?=
- =?utf-8?B?T0ZwaHcra2lIV2xVY05KSElpU3pJSmZOSmVldXpLTXVQcmwzS24rNE1YSXRF?=
- =?utf-8?B?bFBUM2UrZCt0ZlM0K2l0OGErcGhjd3c0dzFhNHh6Zk5GekF5dUVyV0Nmc3JN?=
- =?utf-8?B?VFRJVUdPdnFHSGg2L0xyZUNrakRFQWVxZU1zVm1FUXdJc3poNS9qRWY2SHdT?=
- =?utf-8?B?OE0rNHFtSmdqTkdPcVlYWUF5bU9ndmZlU1l3cGErWk00M2pFMi8rVlVjUk1U?=
- =?utf-8?B?UGJzOERYaFZUWE9EaDQ0RkhpQlRDUmJMNVo5UEs0L0owcmU5VDVzVFVxckhF?=
- =?utf-8?B?bEFvMXg0Qmx2dmo0NnR5b1ZScThGSEs4TVBrcWFMZU9TQVMyYnVMNGtJMlFJ?=
- =?utf-8?B?bVhXTEh5dU1NSmZyVXFDblltZVZXdnJwZTFVV1Y5M0RkbnpNN1B6MldUOCtU?=
- =?utf-8?B?VGZXdkREU2k0RG1xbmptTkwzYXJOOWpVOFdiMGZwc0QwY2k0UThvRXIvbzN5?=
- =?utf-8?B?b09NakRaOGJlZU5iVlFwcXVjQ05ORWUwdUhVeVQ2R1Faam9GODFoTUFxWW1V?=
- =?utf-8?B?UjdxSGQwS3hOM3NVZjNGeEwvSW1LRnE0SzZvK21rMFlrMGNkUHpISVhPZ0hI?=
- =?utf-8?B?YWhZYkllWEFTdmhud2h3ZTZiUHNUSjZzQ2FPS0ttTEppTm5hTFRydmVtSVI2?=
- =?utf-8?B?dHVLZVd1ZUs4NmlyMktZdnoxZUMvcXhGRVFZUHZTOWs4N05EZnUvUFRBRGk2?=
- =?utf-8?B?OFNyVlZnSUg4MTBKTVZaNVR1SHIreUZac3NRZVlRaWdsdVJGRjhmdExxYVBN?=
- =?utf-8?Q?Cnx9G6pguwLWHfs7pbcPsFuOgJmmXxzS0NUrlkl?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DA218BFF80922F4293BABB440B064D45@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR05MB3452.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e08a3fe6-75b0-4d82-297f-08d8f9aaab5c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2021 09:51:08.6586
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QUW05E/eyN3zk+2B44rx/fqHGKQ5HT+IpiWlUHu6EqbcBCLZyzOTW0PcU4UPAVJRegMDnEwCZqA3UjoaO1YElg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR05MB7207
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>, Dust Li <dust.li@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IE9uIDYgQXByIDIwMjEsIGF0IDIwOjMxLCBKaWFuZyBXYW5nIDxqaWFuZy53YW5nQGJ5dGVk
-YW5jZS5jb20+IHdyb3RlOg0KPiANCj4gRnJvbTogImppYW5nLndhbmciIDxqaWFuZy53YW5nQGJ5
-dGVkYW5jZS5jb20+DQo+IA0KPiBDdXJyZW50bHksIG9ubHkgVk1DSSBzdXBwb3J0cyBkZ3JhbSBz
-b2NrZXRzLiBUbyBzdXBwb3J0ZWQNCj4gbmVzdGVkIFZNIHVzZSBjYXNlLCB0aGlzIHBhdGNoIHJl
-bW92ZXMgdHJhbnNwb3J0X2RncmFtIGFuZA0KPiB1c2VzIHRyYW5zcG9ydF9nMmggYW5kIHRyYW5z
-cG9ydF9oMmcgZm9yIGRncmFtIHRvby4NCg0KQ291bGQgeW91IHByb3ZpZGUgc29tZSBiYWNrZ3Jv
-dW5kIGZvciBpbnRyb2R1Y2luZyB0aGlzIGNoYW5nZSAtIGFyZSB5b3UNCmxvb2tpbmcgYXQgaW50
-cm9kdWNpbmcgZGF0YWdyYW1zIGZvciBhIGRpZmZlcmVudCB0cmFuc3BvcnQ/IFZNQ0kgZGF0YWdy
-YW1zDQphbHJlYWR5IHN1cHBvcnQgdGhlIG5lc3RlZCB1c2UgY2FzZSwgYnV0IGlmIHdlIG5lZWQg
-dG8gc3VwcG9ydCBtdWx0aXBsZSBkYXRhZ3JhbQ0KdHJhbnNwb3J0cyB3ZSBuZWVkIHRvIHJld29y
-ayBob3cgd2UgYWRtaW5pc3RlciBwb3J0IGFzc2lnbm1lbnQgZm9yIGRhdGFncmFtcy4NCk9uZSBz
-cGVjaWZpYyBpc3N1ZSBpcyB0aGF0IHRoZSB2bWNpIHRyYW5zcG9ydCB3b27igJl0IHJlY2VpdmUg
-YW55IGRhdGFncmFtcyBmb3IgYQ0KcG9ydCB1bmxlc3MgdGhlIGRhdGFncmFtIHNvY2tldCBoYXMg
-YWxyZWFkeSBiZWVuIGFzc2lnbmVkIHRoZSB2bWNpIHRyYW5zcG9ydA0KYW5kIHRoZSBwb3J0IGJv
-dW5kIHRvIHRoZSB1bmRlcmx5aW5nIFZNQ0kgZGV2aWNlIChzZWUgYmVsb3cgZm9yIG1vcmUgZGV0
-YWlscykuDQoNCg0KPiBUaGUgdHJhbnNwb3J0IGlzIGFzc2dpbmVkIHdoZW4gc2VuZGluZyBldmVy
-eSBwYWNrZXQgYW5kDQo+IHJlY2VpdmluZyBldmVyeSBwYWNrZXQgb24gZGdyYW0gc29ja2V0cy4N
-Cg0KSXMgdGhlIGludGVudCB0aGF0IHRoZSBzYW1lIGRhdGFncmFtIHNvY2tldCBjYW4gYmUgdXNl
-ZCBmb3Igc2VuZGluZyBwYWNrZXRzIGJvdGgNCkluIHRoZSBob3N0IHRvIGd1ZXN0LCBhbmQgdGhl
-IGd1ZXN0IHRvIGRpcmVjdGlvbnM/IA0KDQpBbHNvLCBhcyBtZW50aW9uZWQgYWJvdmUgdGhlIHZT
-b2NrZXQgZGF0YWdyYW0gbmVlZHMgdG8gYmUgYm91bmQgdG8gYSBwb3J0IGluIHRoZQ0KVk1DSSB0
-cmFuc3BvcnQgYmVmb3JlIHdlIGNhbiByZWNlaXZlIGFueSBkYXRhZ3JhbXMgb24gdGhhdCBwb3J0
-LiBUaGlzIG1lYW5zIHRoYXQNCnZtY2lfdHJhbnNwb3J0X3JlY3ZfZGdyYW1fY2Igd29u4oCZdCBi
-ZSBjYWxsZWQgdW5sZXNzIGl0IGlzIGFscmVhZHkgYXNzb2NpYXRlZCB3aXRoDQphIHNvY2tldCBh
-cyB0aGUgdHJhbnNwb3J0LCBhbmQgdGhlcmVmb3JlIHdlIGNhbuKAmXQgZGVsYXkgdGhlIHRyYW5z
-cG9ydCBhc3NpZ25tZW50IHRvDQp0aGF0IHBvaW50Lg0KDQoNCj4gU2lnbmVkLW9mZi1ieTogSmlh
-bmcgV2FuZyA8amlhbmcud2FuZ0BieXRlZGFuY2UuY29tPg0KPiAtLS0NCj4gVGhpcyBwYXRjaCBp
-cyBub3QgdGVzdGVkLiBJIGRvbid0IGhhdmUgYSBWTVdhcmUgdGVzdGluZw0KPiBlbnZpcm9ubWVu
-dC4gQ291bGQgc29tZW9uZSBoZWxwIG1lIHRvIHRlc3QgaXQ/IA0KPiANCj4gaW5jbHVkZS9uZXQv
-YWZfdnNvY2suaCAgICAgICAgIHwgIDIgLS0NCj4gbmV0L3Ztd192c29jay9hZl92c29jay5jICAg
-ICAgIHwgNjMgKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IG5l
-dC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYyB8IDIwICsrKysrKysrKy0tLS0tDQo+IDMgZmls
-ZXMgY2hhbmdlZCwgNDUgaW5zZXJ0aW9ucygrKSwgNDAgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZm
-IC0tZ2l0IGEvaW5jbHVkZS9uZXQvYWZfdnNvY2suaCBiL2luY2x1ZGUvbmV0L2FmX3Zzb2NrLmgN
-Cj4gaW5kZXggYjFjNzE3Mjg2OTkzLi5hYmEyNDFlMGQyMDIgMTAwNjQ0DQo+IC0tLSBhL2luY2x1
-ZGUvbmV0L2FmX3Zzb2NrLmgNCj4gKysrIGIvaW5jbHVkZS9uZXQvYWZfdnNvY2suaA0KPiBAQCAt
-OTYsOCArOTYsNiBAQCBzdHJ1Y3QgdnNvY2tfdHJhbnNwb3J0X3NlbmRfbm90aWZ5X2RhdGEgew0K
-PiAjZGVmaW5lIFZTT0NLX1RSQU5TUE9SVF9GX0gyRwkJMHgwMDAwMDAwMQ0KPiAvKiBUcmFuc3Bv
-cnQgcHJvdmlkZXMgZ3Vlc3QtPmhvc3QgY29tbXVuaWNhdGlvbiAqLw0KPiAjZGVmaW5lIFZTT0NL
-X1RSQU5TUE9SVF9GX0cySAkJMHgwMDAwMDAwMg0KPiAtLyogVHJhbnNwb3J0IHByb3ZpZGVzIERH
-UkFNIGNvbW11bmljYXRpb24gKi8NCj4gLSNkZWZpbmUgVlNPQ0tfVFJBTlNQT1JUX0ZfREdSQU0J
-CTB4MDAwMDAwMDQNCj4gLyogVHJhbnNwb3J0IHByb3ZpZGVzIGxvY2FsIChsb29wYmFjaykgY29t
-bXVuaWNhdGlvbiAqLw0KPiAjZGVmaW5lIFZTT0NLX1RSQU5TUE9SVF9GX0xPQ0FMCQkweDAwMDAw
-MDA4DQo+IA0KPiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay9hZl92c29jay5jIGIvbmV0L3Zt
-d192c29jay9hZl92c29jay5jDQo+IGluZGV4IDkyYTcyZjBlMGQ5NC4uNzczOWFiMjUyMWExIDEw
-MDY0NA0KPiAtLS0gYS9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMNCj4gKysrIGIvbmV0L3Ztd192
-c29jay9hZl92c29jay5jDQo+IEBAIC00NDksOCArNDQ5LDYgQEAgaW50IHZzb2NrX2Fzc2lnbl90
-cmFuc3BvcnQoc3RydWN0IHZzb2NrX3NvY2sgKnZzaywgc3RydWN0IHZzb2NrX3NvY2sgKnBzaykN
-Cj4gDQo+IAlzd2l0Y2ggKHNrLT5za190eXBlKSB7DQo+IAljYXNlIFNPQ0tfREdSQU06DQo+IC0J
-CW5ld190cmFuc3BvcnQgPSB0cmFuc3BvcnRfZGdyYW07DQo+IC0JCWJyZWFrOw0KPiAJY2FzZSBT
-T0NLX1NUUkVBTToNCj4gCQlpZiAodnNvY2tfdXNlX2xvY2FsX3RyYW5zcG9ydChyZW1vdGVfY2lk
-KSkNCj4gCQkJbmV3X3RyYW5zcG9ydCA9IHRyYW5zcG9ydF9sb2NhbDsNCj4gQEAgLTEwOTYsNyAr
-MTA5NCw2IEBAIHN0YXRpYyBpbnQgdnNvY2tfZGdyYW1fc2VuZG1zZyhzdHJ1Y3Qgc29ja2V0ICpz
-b2NrLCBzdHJ1Y3QgbXNnaGRyICptc2csDQo+IAlzdHJ1Y3Qgc29jayAqc2s7DQo+IAlzdHJ1Y3Qg
-dnNvY2tfc29jayAqdnNrOw0KPiAJc3RydWN0IHNvY2thZGRyX3ZtICpyZW1vdGVfYWRkcjsNCj4g
-LQljb25zdCBzdHJ1Y3QgdnNvY2tfdHJhbnNwb3J0ICp0cmFuc3BvcnQ7DQo+IA0KPiAJaWYgKG1z
-Zy0+bXNnX2ZsYWdzICYgTVNHX09PQikNCj4gCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+IEBAIC0x
-MTA4LDI1ICsxMTA1LDMwIEBAIHN0YXRpYyBpbnQgdnNvY2tfZGdyYW1fc2VuZG1zZyhzdHJ1Y3Qg
-c29ja2V0ICpzb2NrLCBzdHJ1Y3QgbXNnaGRyICptc2csDQo+IA0KPiAJbG9ja19zb2NrKHNrKTsN
-Cj4gDQo+IC0JdHJhbnNwb3J0ID0gdnNrLT50cmFuc3BvcnQ7DQo+IC0NCj4gCWVyciA9IHZzb2Nr
-X2F1dG9fYmluZCh2c2spOw0KPiAJaWYgKGVycikNCj4gCQlnb3RvIG91dDsNCj4gDQo+IC0NCj4g
-CS8qIElmIHRoZSBwcm92aWRlZCBtZXNzYWdlIGNvbnRhaW5zIGFuIGFkZHJlc3MsIHVzZSB0aGF0
-LiAgT3RoZXJ3aXNlDQo+IAkgKiBmYWxsIGJhY2sgb24gdGhlIHNvY2tldCdzIHJlbW90ZSBoYW5k
-bGUgKGlmIGl0IGhhcyBiZWVuIGNvbm5lY3RlZCkuDQo+IAkgKi8NCj4gCWlmIChtc2ctPm1zZ19u
-YW1lICYmDQo+IAkgICAgdnNvY2tfYWRkcl9jYXN0KG1zZy0+bXNnX25hbWUsIG1zZy0+bXNnX25h
-bWVsZW4sDQo+IAkJCSAgICAmcmVtb3RlX2FkZHIpID09IDApIHsNCj4gKwkJdnNvY2tfYWRkcl9p
-bml0KCZ2c2stPnJlbW90ZV9hZGRyLCByZW1vdGVfYWRkci0+c3ZtX2NpZCwNCj4gKwkJCXJlbW90
-ZV9hZGRyLT5zdm1fcG9ydCk7DQo+ICsNCj4gKwkJZXJyID0gdnNvY2tfYXNzaWduX3RyYW5zcG9y
-dCh2c2ssIE5VTEwpOw0KPiArCQlpZiAoZXJyKSB7DQo+ICsJCQllcnIgPSAtRUlOVkFMOw0KPiAr
-CQkJZ290byBvdXQ7DQo+ICsJCX0NCj4gKw0KPiAJCS8qIEVuc3VyZSB0aGlzIGFkZHJlc3MgaXMg
-b2YgdGhlIHJpZ2h0IHR5cGUgYW5kIGlzIGEgdmFsaWQNCj4gCQkgKiBkZXN0aW5hdGlvbi4NCj4g
-CQkgKi8NCj4gLQ0KPiAJCWlmIChyZW1vdGVfYWRkci0+c3ZtX2NpZCA9PSBWTUFERFJfQ0lEX0FO
-WSkNCj4gLQkJCXJlbW90ZV9hZGRyLT5zdm1fY2lkID0gdHJhbnNwb3J0LT5nZXRfbG9jYWxfY2lk
-KCk7DQo+ICsJCQlyZW1vdGVfYWRkci0+c3ZtX2NpZCA9IHZzay0+dHJhbnNwb3J0LT5nZXRfbG9j
-YWxfY2lkKCk7DQo+IA0KPiAJCWlmICghdnNvY2tfYWRkcl9ib3VuZChyZW1vdGVfYWRkcikpIHsN
-Cj4gCQkJZXJyID0gLUVJTlZBTDsNCj4gQEAgLTExMzYsNyArMTEzOCw3IEBAIHN0YXRpYyBpbnQg
-dnNvY2tfZGdyYW1fc2VuZG1zZyhzdHJ1Y3Qgc29ja2V0ICpzb2NrLCBzdHJ1Y3QgbXNnaGRyICpt
-c2csDQo+IAkJcmVtb3RlX2FkZHIgPSAmdnNrLT5yZW1vdGVfYWRkcjsNCj4gDQo+IAkJaWYgKHJl
-bW90ZV9hZGRyLT5zdm1fY2lkID09IFZNQUREUl9DSURfQU5ZKQ0KPiAtCQkJcmVtb3RlX2FkZHIt
-PnN2bV9jaWQgPSB0cmFuc3BvcnQtPmdldF9sb2NhbF9jaWQoKTsNCj4gKwkJCXJlbW90ZV9hZGRy
-LT5zdm1fY2lkID0gdnNrLT50cmFuc3BvcnQtPmdldF9sb2NhbF9jaWQoKTsNCj4gDQo+IAkJLyog
-WFhYIFNob3VsZCBjb25uZWN0KCkgb3IgdGhpcyBmdW5jdGlvbiBlbnN1cmUgcmVtb3RlX2FkZHIg
-aXMNCj4gCQkgKiBib3VuZD8NCj4gQEAgLTExNTAsMTMgKzExNTIsMTMgQEAgc3RhdGljIGludCB2
-c29ja19kZ3JhbV9zZW5kbXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBtc2doZHIgKm1z
-ZywNCj4gCQlnb3RvIG91dDsNCj4gCX0NCj4gDQo+IC0JaWYgKCF0cmFuc3BvcnQtPmRncmFtX2Fs
-bG93KHJlbW90ZV9hZGRyLT5zdm1fY2lkLA0KPiArCWlmICghdnNrLT50cmFuc3BvcnQtPmRncmFt
-X2FsbG93KHJlbW90ZV9hZGRyLT5zdm1fY2lkLA0KPiAJCQkJICAgIHJlbW90ZV9hZGRyLT5zdm1f
-cG9ydCkpIHsNCj4gCQllcnIgPSAtRUlOVkFMOw0KPiAJCWdvdG8gb3V0Ow0KPiAJfQ0KPiANCj4g
-LQllcnIgPSB0cmFuc3BvcnQtPmRncmFtX2VucXVldWUodnNrLCByZW1vdGVfYWRkciwgbXNnLCBs
-ZW4pOw0KPiArCWVyciA9IHZzay0+dHJhbnNwb3J0LT5kZ3JhbV9lbnF1ZXVlKHZzaywgcmVtb3Rl
-X2FkZHIsIG1zZywgbGVuKTsNCj4gDQo+IG91dDoNCj4gCXJlbGVhc2Vfc29jayhzayk7DQo+IEBA
-IC0xMTkxLDEzICsxMTkzLDIwIEBAIHN0YXRpYyBpbnQgdnNvY2tfZGdyYW1fY29ubmVjdChzdHJ1
-Y3Qgc29ja2V0ICpzb2NrLA0KPiAJaWYgKGVycikNCj4gCQlnb3RvIG91dDsNCj4gDQo+ICsJbWVt
-Y3B5KCZ2c2stPnJlbW90ZV9hZGRyLCByZW1vdGVfYWRkciwgc2l6ZW9mKHZzay0+cmVtb3RlX2Fk
-ZHIpKTsNCj4gKw0KPiArCWVyciA9IHZzb2NrX2Fzc2lnbl90cmFuc3BvcnQodnNrLCBOVUxMKTsN
-Cj4gKwlpZiAoZXJyKSB7DQo+ICsJCWVyciA9IC1FSU5WQUw7DQo+ICsJCWdvdG8gb3V0Ow0KPiAr
-CX0NCj4gKw0KPiAJaWYgKCF2c2stPnRyYW5zcG9ydC0+ZGdyYW1fYWxsb3cocmVtb3RlX2FkZHIt
-PnN2bV9jaWQsDQo+IAkJCQkJIHJlbW90ZV9hZGRyLT5zdm1fcG9ydCkpIHsNCj4gCQllcnIgPSAt
-RUlOVkFMOw0KPiAJCWdvdG8gb3V0Ow0KPiAJfQ0KPiANCj4gLQltZW1jcHkoJnZzay0+cmVtb3Rl
-X2FkZHIsIHJlbW90ZV9hZGRyLCBzaXplb2YodnNrLT5yZW1vdGVfYWRkcikpOw0KPiAJc29jay0+
-c3RhdGUgPSBTU19DT05ORUNURUQ7DQo+IA0KPiBvdXQ6DQo+IEBAIC0xMjA5LDYgKzEyMTgsMTYg
-QEAgc3RhdGljIGludCB2c29ja19kZ3JhbV9yZWN2bXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0
-cnVjdCBtc2doZHIgKm1zZywNCj4gCQkJICAgICAgIHNpemVfdCBsZW4sIGludCBmbGFncykNCj4g
-ew0KPiAJc3RydWN0IHZzb2NrX3NvY2sgKnZzayA9IHZzb2NrX3NrKHNvY2stPnNrKTsNCj4gKwls
-b25nIHRpbWVvOw0KPiArDQo+ICsJdGltZW8gPSBzb2NrX3JjdnRpbWVvKHNvY2stPnNrLCBmbGFn
-cyAmIE1TR19ET05UV0FJVCk7DQo+ICsJZG8gew0KPiArCQlpZiAodnNrLT50cmFuc3BvcnQpDQo+
-ICsJCQlicmVhazsNCj4gKwl9IHdoaWxlICh0aW1lbyAmJiAhdnNrLT50cmFuc3BvcnQpOw0KPiAr
-DQo+ICsJaWYgKCF2c2stPnRyYW5zcG9ydCkNCj4gKwkJcmV0dXJuIC1FQUdBSU47DQo+IA0KPiAJ
-cmV0dXJuIHZzay0+dHJhbnNwb3J0LT5kZ3JhbV9kZXF1ZXVlKHZzaywgbXNnLCBsZW4sIGZsYWdz
-KTsNCj4gfQ0KPiBAQCAtMjA1NSwxNCArMjA3NCw2IEBAIHN0YXRpYyBpbnQgdnNvY2tfY3JlYXRl
-KHN0cnVjdCBuZXQgKm5ldCwgc3RydWN0IHNvY2tldCAqc29jaywNCj4gDQo+IAl2c2sgPSB2c29j
-a19zayhzayk7DQo+IA0KPiAtCWlmIChzb2NrLT50eXBlID09IFNPQ0tfREdSQU0pIHsNCj4gLQkJ
-cmV0ID0gdnNvY2tfYXNzaWduX3RyYW5zcG9ydCh2c2ssIE5VTEwpOw0KPiAtCQlpZiAocmV0IDwg
-MCkgew0KPiAtCQkJc29ja19wdXQoc2spOw0KPiAtCQkJcmV0dXJuIHJldDsNCj4gLQkJfQ0KPiAt
-CX0NCj4gLQ0KPiAJdnNvY2tfaW5zZXJ0X3VuYm91bmQodnNrKTsNCj4gDQo+IAlyZXR1cm4gMDsN
-Cj4gQEAgLTIxODIsNyArMjE5Myw3IEBAIEVYUE9SVF9TWU1CT0xfR1BMKHZzb2NrX2NvcmVfZ2V0
-X3RyYW5zcG9ydCk7DQo+IA0KPiBpbnQgdnNvY2tfY29yZV9yZWdpc3Rlcihjb25zdCBzdHJ1Y3Qg
-dnNvY2tfdHJhbnNwb3J0ICp0LCBpbnQgZmVhdHVyZXMpDQo+IHsNCj4gLQljb25zdCBzdHJ1Y3Qg
-dnNvY2tfdHJhbnNwb3J0ICp0X2gyZywgKnRfZzJoLCAqdF9kZ3JhbSwgKnRfbG9jYWw7DQo+ICsJ
-Y29uc3Qgc3RydWN0IHZzb2NrX3RyYW5zcG9ydCAqdF9oMmcsICp0X2cyaCwgKnRfbG9jYWw7DQo+
-IAlpbnQgZXJyID0gbXV0ZXhfbG9ja19pbnRlcnJ1cHRpYmxlKCZ2c29ja19yZWdpc3Rlcl9tdXRl
-eCk7DQo+IA0KPiAJaWYgKGVycikNCj4gQEAgLTIxOTAsNyArMjIwMSw2IEBAIGludCB2c29ja19j
-b3JlX3JlZ2lzdGVyKGNvbnN0IHN0cnVjdCB2c29ja190cmFuc3BvcnQgKnQsIGludCBmZWF0dXJl
-cykNCj4gDQo+IAl0X2gyZyA9IHRyYW5zcG9ydF9oMmc7DQo+IAl0X2cyaCA9IHRyYW5zcG9ydF9n
-Mmg7DQo+IC0JdF9kZ3JhbSA9IHRyYW5zcG9ydF9kZ3JhbTsNCj4gCXRfbG9jYWwgPSB0cmFuc3Bv
-cnRfbG9jYWw7DQo+IA0KPiAJaWYgKGZlYXR1cmVzICYgVlNPQ0tfVFJBTlNQT1JUX0ZfSDJHKSB7
-DQo+IEBAIC0yMjA5LDE0ICsyMjE5LDYgQEAgaW50IHZzb2NrX2NvcmVfcmVnaXN0ZXIoY29uc3Qg
-c3RydWN0IHZzb2NrX3RyYW5zcG9ydCAqdCwgaW50IGZlYXR1cmVzKQ0KPiAJCXRfZzJoID0gdDsN
-Cj4gCX0NCj4gDQo+IC0JaWYgKGZlYXR1cmVzICYgVlNPQ0tfVFJBTlNQT1JUX0ZfREdSQU0pIHsN
-Cj4gLQkJaWYgKHRfZGdyYW0pIHsNCj4gLQkJCWVyciA9IC1FQlVTWTsNCj4gLQkJCWdvdG8gZXJy
-X2J1c3k7DQo+IC0JCX0NCj4gLQkJdF9kZ3JhbSA9IHQ7DQo+IC0JfQ0KPiAtDQo+IAlpZiAoZmVh
-dHVyZXMgJiBWU09DS19UUkFOU1BPUlRfRl9MT0NBTCkgew0KPiAJCWlmICh0X2xvY2FsKSB7DQo+
-IAkJCWVyciA9IC1FQlVTWTsNCj4gQEAgLTIyMjcsNyArMjIyOSw2IEBAIGludCB2c29ja19jb3Jl
-X3JlZ2lzdGVyKGNvbnN0IHN0cnVjdCB2c29ja190cmFuc3BvcnQgKnQsIGludCBmZWF0dXJlcykN
-Cj4gDQo+IAl0cmFuc3BvcnRfaDJnID0gdF9oMmc7DQo+IAl0cmFuc3BvcnRfZzJoID0gdF9nMmg7
-DQo+IC0JdHJhbnNwb3J0X2RncmFtID0gdF9kZ3JhbTsNCj4gCXRyYW5zcG9ydF9sb2NhbCA9IHRf
-bG9jYWw7DQo+IA0KPiBlcnJfYnVzeToNCj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdm1j
-aV90cmFuc3BvcnQuYyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPiBpbmRleCA4
-YjY1MzIzMjA3ZGIuLjQyZWEyYTFjOTJjZSAxMDA2NDQNCj4gLS0tIGEvbmV0L3Ztd192c29jay92
-bWNpX3RyYW5zcG9ydC5jDQo+ICsrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0K
-PiBAQCAtNjEzLDYgKzYxMyw3IEBAIHN0YXRpYyBpbnQgdm1jaV90cmFuc3BvcnRfcmVjdl9kZ3Jh
-bV9jYih2b2lkICpkYXRhLCBzdHJ1Y3Qgdm1jaV9kYXRhZ3JhbSAqZGcpDQo+IAlzaXplX3Qgc2l6
-ZTsNCj4gCXN0cnVjdCBza19idWZmICpza2I7DQo+IAlzdHJ1Y3QgdnNvY2tfc29jayAqdnNrOw0K
-PiArCWludCBlcnI7DQo+IA0KPiAJc2sgPSAoc3RydWN0IHNvY2sgKilkYXRhOw0KPiANCj4gQEAg
-LTYyOSw2ICs2MzAsMTcgQEAgc3RhdGljIGludCB2bWNpX3RyYW5zcG9ydF9yZWN2X2RncmFtX2Ni
-KHZvaWQgKmRhdGEsIHN0cnVjdCB2bWNpX2RhdGFncmFtICpkZykNCj4gCWlmICghdm1jaV90cmFu
-c3BvcnRfYWxsb3dfZGdyYW0odnNrLCBkZy0+c3JjLmNvbnRleHQpKQ0KPiAJCXJldHVybiBWTUNJ
-X0VSUk9SX05PX0FDQ0VTUzsNCj4gDQo+ICsJdnNvY2tfYWRkcl9pbml0KCZ2c2stPnJlbW90ZV9h
-ZGRyLCBkZy0+c3JjLmNvbnRleHQsDQo+ICsJCQkJZGctPnNyYy5yZXNvdXJjZSk7DQo+ICsNCj4g
-KwliaF9sb2NrX3NvY2soc2spOw0KPiArCWlmICghc29ja19vd25lZF9ieV91c2VyKHNrKSkgew0K
-PiArCQllcnIgPSB2c29ja19hc3NpZ25fdHJhbnNwb3J0KHZzaywgTlVMTCk7DQo+ICsJCWlmIChl
-cnIpDQo+ICsJCQlyZXR1cm4gZXJyOw0KPiArCX0NCj4gKwliaF91bmxvY2tfc29jayhzayk7DQo+
-ICsNCj4gCXNpemUgPSBWTUNJX0RHX1NJWkUoZGcpOw0KPiANCj4gCS8qIEF0dGFjaCB0aGUgcGFj
-a2V0IHRvIHRoZSBzb2NrZXQncyByZWNlaXZlIHF1ZXVlIGFzIGFuIHNrX2J1ZmYuICovDQo+IEBA
-IC0yMDkzLDEzICsyMTA1LDcgQEAgc3RhdGljIGludCBfX2luaXQgdm1jaV90cmFuc3BvcnRfaW5p
-dCh2b2lkKQ0KPiAJCWdvdG8gZXJyX2Rlc3Ryb3lfc3RyZWFtX2hhbmRsZTsNCj4gCX0NCj4gDQo+
-IC0JLyogUmVnaXN0ZXIgb25seSB3aXRoIGRncmFtIGZlYXR1cmUsIG90aGVyIGZlYXR1cmVzIChI
-MkcsIEcySCkgd2lsbCBiZQ0KPiAtCSAqIHJlZ2lzdGVyZWQgd2hlbiB0aGUgZmlyc3QgaG9zdCBv
-ciBndWVzdCBiZWNvbWVzIGFjdGl2ZS4NCj4gLQkgKi8NCj4gLQllcnIgPSB2c29ja19jb3JlX3Jl
-Z2lzdGVyKCZ2bWNpX3RyYW5zcG9ydCwgVlNPQ0tfVFJBTlNQT1JUX0ZfREdSQU0pOw0KPiAtCWlm
-IChlcnIgPCAwKQ0KPiAtCQlnb3RvIGVycl91bnN1YnNjcmliZTsNCj4gLQ0KPiArCS8qIEgyRywg
-RzJIIHdpbGwgYmUgcmVnaXN0ZXJlZCB3aGVuIHRoZSBmaXJzdCBob3N0IG9yIGd1ZXN0IGJlY29t
-ZXMgYWN0aXZlLiAqLw0KPiAJZXJyID0gdm1jaV9yZWdpc3Rlcl92c29ja19jYWxsYmFjayh2bWNp
-X3Zzb2NrX3RyYW5zcG9ydF9jYik7DQo+IAlpZiAoZXJyIDwgMCkNCj4gCQlnb3RvIGVycl91bnJl
-Z2lzdGVyOw0KPiAtLSANCj4gMi4xMS4wDQo+IA0KDQo=
+On Tue, Apr 6, 2021 at 3:33 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/3/31 =E4=B8=8B=E5=8D=883:11, Xuan Zhuo =E5=86=99=E9=81=93:
+> > When the user calls sendto to consume the data in the xsk tx queue,
+> > virtnet_xsk_wakeup will be called.
+> >
+> > In wakeup, it will try to send a part of the data directly, the quantit=
+y
+> > is operated by the module parameter xsk_budget.
+>
+>
+> Any reason that we can't use NAPI budget?
+
+I think we should use NAPI budget here and skip this module parameter.
+If a user would like to control the number of packets processed, then
+the preferred busy_poll mode [1] can be used. In that patch series, a
+new setsockopt option was introduced called SO_BUSY_POLL_BUDGET. With
+it you can set the napi budget value without the need of a module
+parameter.
+
+[1]: https://lore.kernel.org/bpf/20201119083024.119566-1-bjorn.topel@gmail.=
+com/T/
+
+>
+> >   There are two purposes
+> > for this realization:
+> >
+> > 1. Send part of the data quickly to reduce the transmission delay of th=
+e
+> >     first packet
+> > 2. Trigger tx interrupt, start napi to consume xsk tx data
+> >
+> > All sent xsk packets share the virtio-net header of xsk_hdr. If xsk
+> > needs to support csum and other functions later, consider assigning xsk
+> > hdr separately for each sent packet.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> > ---
+> >   drivers/net/virtio_net.c | 183 ++++++++++++++++++++++++++++++++++++++=
++
+> >   1 file changed, 183 insertions(+)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 4e25408a2b37..c8a317a93ef7 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -28,9 +28,11 @@ static int napi_weight =3D NAPI_POLL_WEIGHT;
+> >   module_param(napi_weight, int, 0444);
+> >
+> >   static bool csum =3D true, gso =3D true, napi_tx =3D true;
+> > +static int xsk_budget =3D 32;
+> >   module_param(csum, bool, 0444);
+> >   module_param(gso, bool, 0444);
+> >   module_param(napi_tx, bool, 0644);
+> > +module_param(xsk_budget, int, 0644);
+> >
+> >   /* FIXME: MTU in config. */
+> >   #define GOOD_PACKET_LEN (ETH_HLEN + VLAN_HLEN + ETH_DATA_LEN)
+> > @@ -47,6 +49,8 @@ module_param(napi_tx, bool, 0644);
+> >
+> >   #define VIRTIO_XDP_FLAG     BIT(0)
+> >
+> > +static struct virtio_net_hdr_mrg_rxbuf xsk_hdr;
+> > +
+> >   /* RX packet size EWMA. The average packet size is used to determine =
+the packet
+> >    * buffer size when refilling RX rings. As the entire RX ring may be =
+refilled
+> >    * at once, the weight is chosen so that the EWMA will be insensitive=
+ to short-
+> > @@ -138,6 +142,9 @@ struct send_queue {
+> >       struct {
+> >               /* xsk pool */
+> >               struct xsk_buff_pool __rcu *pool;
+> > +
+> > +             /* save the desc for next xmit, when xmit fail. */
+> > +             struct xdp_desc last_desc;
+> >       } xsk;
+> >   };
+> >
+> > @@ -2532,6 +2539,179 @@ static int virtnet_xdp_set(struct net_device *d=
+ev, struct bpf_prog *prog,
+> >       return err;
+> >   }
+> >
+> > +static void virtnet_xsk_check_space(struct send_queue *sq)
+> > +{
+>
+>
+> The name is confusing, the function does more than just checking the
+> space, it may stop the queue as well.
+>
+>
+> > +     struct virtnet_info *vi =3D sq->vq->vdev->priv;
+> > +     struct net_device *dev =3D vi->dev;
+> > +     int qnum =3D sq - vi->sq;
+> > +
+> > +     /* If this sq is not the exclusive queue of the current cpu,
+> > +      * then it may be called by start_xmit, so check it running out
+> > +      * of space.
+> > +      */
+>
+>
+> So the code can explain itself. We need a better comment to explain why
+> we need to differ the case of the raw buffer queue.
+>
+>
+> > +     if (is_xdp_raw_buffer_queue(vi, qnum))
+> > +             return;
+> > +
+> > +     /* Stop the queue to avoid getting packets that we are
+> > +      * then unable to transmit. Then wait the tx interrupt.
+> > +      */
+> > +     if (sq->vq->num_free < 2 + MAX_SKB_FRAGS)
+> > +             netif_stop_subqueue(dev, qnum);
+> > +}
+> > +
+> > +static int virtnet_xsk_xmit(struct send_queue *sq, struct xsk_buff_poo=
+l *pool,
+> > +                         struct xdp_desc *desc)
+> > +{
+> > +     struct virtnet_info *vi;
+> > +     struct page *page;
+> > +     void *data;
+> > +     u32 offset;
+> > +     u64 addr;
+> > +     int err;
+> > +
+> > +     vi =3D sq->vq->vdev->priv;
+> > +     addr =3D desc->addr;
+> > +     data =3D xsk_buff_raw_get_data(pool, addr);
+> > +     offset =3D offset_in_page(data);
+> > +
+> > +     sg_init_table(sq->sg, 2);
+> > +     sg_set_buf(sq->sg, &xsk_hdr, vi->hdr_len);
+> > +     page =3D xsk_buff_xdp_get_page(pool, addr);
+> > +     sg_set_page(sq->sg + 1, page, desc->len, offset);
+> > +
+> > +     err =3D virtqueue_add_outbuf(sq->vq, sq->sg, 2, NULL, GFP_ATOMIC)=
+;
+> > +     if (unlikely(err))
+> > +             sq->xsk.last_desc =3D *desc;
+>
+>
+> So I think it's better to make sure we had at least 2 slots to avoid
+> handling errors like this? (Especially consider the queue size is not
+> necessarily the power of 2 when packed virtqueue is used).
+>
+>
+> > +
+> > +     return err;
+> > +}
+> > +
+> > +static int virtnet_xsk_xmit_batch(struct send_queue *sq,
+> > +                               struct xsk_buff_pool *pool,
+> > +                               unsigned int budget,
+> > +                               bool in_napi, int *done)
+> > +{
+> > +     struct xdp_desc desc;
+> > +     int err, packet =3D 0;
+> > +     int ret =3D -EAGAIN;
+> > +
+> > +     if (sq->xsk.last_desc.addr) {
+>
+>
+> Any reason that num_free is not checked here?
+>
+>
+> > +             err =3D virtnet_xsk_xmit(sq, pool, &sq->xsk.last_desc);
+> > +             if (unlikely(err))
+> > +                     return -EBUSY;
+> > +
+> > +             ++packet;
+> > +             --budget;
+> > +             sq->xsk.last_desc.addr =3D 0;
+> > +     }
+> > +
+> > +     while (budget-- > 0) {
+> > +             if (sq->vq->num_free < 2 + MAX_SKB_FRAGS) {
+> > +                     ret =3D -EBUSY;
+> > +                     break;
+> > +             }
+> > +
+> > +             if (!xsk_tx_peek_desc(pool, &desc)) {
+> > +                     /* done */
+> > +                     ret =3D 0;
+> > +                     break;
+> > +             }
+> > +
+> > +             err =3D virtnet_xsk_xmit(sq, pool, &desc);
+> > +             if (unlikely(err)) {
+> > +                     ret =3D -EBUSY;
+> > +                     break;
+> > +             }
+> > +
+> > +             ++packet;
+> > +     }
+> > +
+> > +     if (packet) {
+> > +             if (virtqueue_kick_prepare(sq->vq) &&
+> > +                 virtqueue_notify(sq->vq)) {
+> > +                     u64_stats_update_begin(&sq->stats.syncp);
+> > +                     sq->stats.kicks +=3D 1;
+> > +                     u64_stats_update_end(&sq->stats.syncp);
+> > +             }
+> > +
+> > +             *done =3D packet;
+> > +
+> > +             xsk_tx_release(pool);
+> > +     }
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int virtnet_xsk_run(struct send_queue *sq, struct xsk_buff_pool=
+ *pool,
+> > +                        int budget, bool in_napi)
+> > +{
+> > +     int done =3D 0;
+> > +     int err;
+> > +
+> > +     free_old_xmit_skbs(sq, in_napi);
+> > +
+> > +     err =3D virtnet_xsk_xmit_batch(sq, pool, budget, in_napi, &done);
+> > +     /* -EAGAIN: done =3D=3D budget
+> > +      * -EBUSY: done < budget
+> > +      *  0    : done < budget
+> > +      */
+>
+>
+> Please move them to the comment above virtnet_xsk_xmit_batch().
+>
+> And it looks to me there's no care for -EAGAIN, any reason for sticking
+> a dedicated variable like that?
+>
+>
+> > +     if (err =3D=3D -EBUSY) {
+> > +             free_old_xmit_skbs(sq, in_napi);
+> > +
+> > +             /* If the space is enough, let napi run again. */
+> > +             if (sq->vq->num_free >=3D 2 + MAX_SKB_FRAGS)
+> > +                     done =3D budget;
+>
+>
+> So I don't see how this can work in the case of event index where the
+> notification needs to be enabled explicitly.
+>
+>
+> > +     }
+> > +
+> > +     virtnet_xsk_check_space(sq);
+> > +
+> > +     return done;
+> > +}
+> > +
+> > +static int virtnet_xsk_wakeup(struct net_device *dev, u32 qid, u32 fla=
+g)
+> > +{
+> > +     struct virtnet_info *vi =3D netdev_priv(dev);
+> > +     struct xsk_buff_pool *pool;
+> > +     struct netdev_queue *txq;
+> > +     struct send_queue *sq;
+> > +
+> > +     if (!netif_running(dev))
+> > +             return -ENETDOWN;
+> > +
+> > +     if (qid >=3D vi->curr_queue_pairs)
+> > +             return -EINVAL;
+> > +
+> > +     sq =3D &vi->sq[qid];
+> > +
+> > +     rcu_read_lock();
+> > +
+> > +     pool =3D rcu_dereference(sq->xsk.pool);
+> > +     if (!pool)
+> > +             goto end;
+> > +
+> > +     if (napi_if_scheduled_mark_missed(&sq->napi))
+> > +             goto end;
+> > +
+> > +     txq =3D netdev_get_tx_queue(dev, qid);
+> > +
+> > +     __netif_tx_lock_bh(txq);
+> > +
+> > +     /* Send part of the packet directly to reduce the delay in sendin=
+g the
+> > +      * packet, and this can actively trigger the tx interrupts.
+> > +      *
+> > +      * If no packet is sent out, the ring of the device is full. In t=
+his
+> > +      * case, we will still get a tx interrupt response. Then we will =
+deal
+> > +      * with the subsequent packet sending work.
+> > +      */
+> > +     virtnet_xsk_run(sq, pool, xsk_budget, false);
+>
+>
+> So the return value is ignored, this means there's no way to report we
+> exhaust the budget. Is this intended?
+>
+> Thanks
+>
+>
+> > +
+> > +     __netif_tx_unlock_bh(txq);
+> > +
+> > +end:
+> > +     rcu_read_unlock();
+> > +     return 0;
+> > +}
+> > +
+> >   static int virtnet_xsk_pool_enable(struct net_device *dev,
+> >                                  struct xsk_buff_pool *pool,
+> >                                  u16 qid)
+> > @@ -2553,6 +2733,8 @@ static int virtnet_xsk_pool_enable(struct net_dev=
+ice *dev,
+> >       if (rcu_dereference(sq->xsk.pool))
+> >               goto end;
+> >
+> > +     memset(&sq->xsk, 0, sizeof(sq->xsk));
+> > +
+> >       /* Here is already protected by rtnl_lock, so rcu_assign_pointer =
+is
+> >        * safe.
+> >        */
+> > @@ -2656,6 +2838,7 @@ static const struct net_device_ops virtnet_netdev=
+ =3D {
+> >       .ndo_vlan_rx_kill_vid =3D virtnet_vlan_rx_kill_vid,
+> >       .ndo_bpf                =3D virtnet_xdp,
+> >       .ndo_xdp_xmit           =3D virtnet_xdp_xmit,
+> > +     .ndo_xsk_wakeup         =3D virtnet_xsk_wakeup,
+> >       .ndo_features_check     =3D passthru_features_check,
+> >       .ndo_get_phys_port_name =3D virtnet_get_phys_port_name,
+> >       .ndo_set_features       =3D virtnet_set_features,
+>
