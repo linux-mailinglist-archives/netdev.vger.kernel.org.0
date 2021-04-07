@@ -2,945 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C15E5356EB7
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 16:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46DAE356EC9
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 16:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352948AbhDGOc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 10:32:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50506 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233196AbhDGOc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 10:32:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617805938;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tWfxdUaZEFalBZPg5mT0zS/mYrgXIMoaY2vqsllm0rY=;
-        b=LxDHjUgeGh0qv8mB2tamWx4K81XKsQnJOBcWev0CfKJ5IODLFb18ffgDYsgX9Pt3VEcU4F
-        GTjS8DkKEylzA+dGUGqR884cgsI786yAUI9/9ytmMQ+2oI7xiDvCCzzxT02O4rU6tAdo5x
-        msayV3yksrKc0JAOrWjtKsfkyowyLyw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-158-krDA9td9NXSAy-Y-N6eGaw-1; Wed, 07 Apr 2021 10:32:14 -0400
-X-MC-Unique: krDA9td9NXSAy-Y-N6eGaw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7AF90107ACC7;
-        Wed,  7 Apr 2021 14:32:12 +0000 (UTC)
-Received: from [10.10.110.46] (unknown [10.10.110.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7CA581DB;
-        Wed,  7 Apr 2021 14:32:09 +0000 (UTC)
-Message-ID: <ddc8cd0fd3212ccbba399b03a059bcf40abbc117.camel@redhat.com>
-Subject: Re: [PATCH net-next v9 1/2] net: Add a WWAN subsystem
-From:   Dan Williams <dcbw@redhat.com>
-To:     Loic Poulain <loic.poulain@linaro.org>, gregkh@linuxfoundation.org,
-        kuba@kernel.org, davem@davemloft.net
-Cc:     linux-arm-msm@vger.kernel.org, aleksander@aleksander.es,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org
-Date:   Wed, 07 Apr 2021 09:32:08 -0500
-In-Reply-To: <1617616369-27305-1-git-send-email-loic.poulain@linaro.org>
-References: <1617616369-27305-1-git-send-email-loic.poulain@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S1353065AbhDGOeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 10:34:19 -0400
+Received: from mail-bn7nam10on2103.outbound.protection.outlook.com ([40.107.92.103]:44833
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1353027AbhDGOeN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 10:34:13 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IlBwyUHUWaoN51aIu4y3jP/BAwaBoZc349g4MKx8JuAanVu532cYzdskJt0JDdnWWSL3YCRgNnOKP15skU0A0WUuOiU5aQ79JFX8IjF79EQgA1NodRmNjX9VQPg9L50zSfs91DuV6RvvsMfoii5OA9Ae0nLZhxAXHf7mI6TDg+VOMe0sZrvme0tK1RhX6qw+P7Mmy9gPel3mEpzJap9qYgJudDWq2gMjxBZjL2cR4xTz8rBPXn6jEh2UCjkJKE7wD7JcS4SzPNtkuoz7+bz4ighWkpRD1TBhJfv1MtkLb8Uh8SaqeHKZ+olKNfuIRWS7tGSn96tm/r8AGNPnHrtyuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VMamaem/IDNfk3TwWhF54R/U0KUT9Q8Lc2PCygCGK6k=;
+ b=dYbu0aLgVv/9zjXfCHZbSaVWgicAgnqrZoja6fZx/fXM1PBs+qJghFmCgka0IhbpuRTLOxEhf2GTsH68w3ihSB/MRG8Ittsr8X+7z76/zhnvYghOcp94Uwzc+pOEx4FWPtwx0ffOavu1eE5dGW07sFVQIgBVTXiroTfMq4287a0kTdMY6JQEZ8++uelRtpgJQ7IlY0vXC3dyweB6yfgtU666GsA/Os4+q+QxWIN57xZf+XawvERf/jdb+gG/8xYGCrXOvCerGYHJ1po4gNX1kK2RyOWbvs8cNEqNXRg4u7fmD/2jmlm2w5jhBAOBRD3IyN/jwoVq87IQzOu9/kMy3Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VMamaem/IDNfk3TwWhF54R/U0KUT9Q8Lc2PCygCGK6k=;
+ b=QTSWNCEgEzeAn4NT4r1BJn6RiHq7RbZI8M1kpa6iumtYJ54dexRu1RXqWuJ8rG/h8JK5oxpMayTDBn7pRci5lzg7lCnPHpZCKu22qh+1BPC04cRAG7aIGzINweJgKX2FlC8rhy6A6dpFlb+SGCuhVuoa8qjUFDtyF9F4fqzc4Ww=
+Received: from DM5PR2101MB0934.namprd21.prod.outlook.com (2603:10b6:4:a5::36)
+ by DM6PR21MB1691.namprd21.prod.outlook.com (2603:10b6:5:bf::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.4; Wed, 7 Apr
+ 2021 14:34:01 +0000
+Received: from DM5PR2101MB0934.namprd21.prod.outlook.com
+ ([fe80::3180:1d96:7f57:333d]) by DM5PR2101MB0934.namprd21.prod.outlook.com
+ ([fe80::3180:1d96:7f57:333d%9]) with mapi id 15.20.4042.004; Wed, 7 Apr 2021
+ 14:34:01 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <liuwe@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: RE: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Thread-Topic: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Thread-Index: AQHXKzvmwFT+jLn9hE+ope3TVVs2GqqpCiOAgAAUhFA=
+Date:   Wed, 7 Apr 2021 14:34:01 +0000
+Message-ID: <DM5PR2101MB0934D037F5541B0FA449FA34CA759@DM5PR2101MB0934.namprd21.prod.outlook.com>
+References: <20210406232321.12104-1-decui@microsoft.com>
+ <20210407131705.4rwttnj3zneolnh3@liuwe-devbox-debian-v2>
+In-Reply-To: <20210407131705.4rwttnj3zneolnh3@liuwe-devbox-debian-v2>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=31817d09-7cc5-417e-a00a-b0d0d1664361;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-07T14:30:30Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 40622f46-5a7d-4289-5493-08d8f9d23004
+x-ms-traffictypediagnostic: DM6PR21MB1691:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR21MB16912036B68FDF70C4BB1AE9CA759@DM6PR21MB1691.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IUkoaWdJCPw3cEZan4UZ27EqJrIfEYpZRQbfvGxcrWjA9jYnw0iU7FnxWijJpRa0DMmjayki2hPKmkfrxQknQHhl+8bvIp0vrhYQrbuQA1pVl3f+OaH9QTlvj22X/n+/KJReZnSkNCUlCgMN7d/qi9QFQkGek5zup+xmHoDIFDDuIwv1D5Uu4Y/RTBxtUKhUa3r8rI1t3/9rLY9omm5ar4bhdtLIJCs0uictwF693MVF0dr79dqqZGG0OFmB0tOeqtZS36ezX27FpSueJsO/9DzH90mSf/gOhJukcdayMa3/b4lVzV7xd6agBbDeGAB+OqcSmZ8D42c87V2VNHebBBTPcC72F1faxAnbyrD+bojKGe6yQLWk+ikzb5hWTm2W0RB0WM8IfkYBtW9ZW37vnQXMyRglqMPQu4WCwz+BXYm6IaF0vqfTgcbl/aHsib8UKMeI0NHEZ3649to7LOItw+aSOmh1rpzqtMWanESbeg6kfCsM6UvB197GWfMqfBkrZjO7sgOo/6C6EvsDEGbUm3hNrSjKQXsOhbgQVpkxRW7T5OvzJVE14L9VETaY1nA73Ol1naFZagp6sl5y9VaZGg8+1sV9cY4kz3ytP7p6qv6I3gwKOR5dI/JAJ46MfT+MwGNAjEhwtv9Ps0VT4COv9KUTcTmwrvQk5Q9eskdab1A=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR2101MB0934.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(39860400002)(346002)(396003)(366004)(47530400004)(4744005)(33656002)(9686003)(55016002)(53546011)(5660300002)(2906002)(52536014)(6506007)(8990500004)(83380400001)(38100700001)(110136005)(4326008)(7696005)(478600001)(82960400001)(66476007)(71200400001)(66946007)(76116006)(316002)(86362001)(8676002)(6636002)(54906003)(186003)(8936002)(82950400001)(66556008)(66446008)(64756008)(10290500003)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?YLFc47/hLsYQOOat71A7+cr4w0ORkl7T3AjFcE0+jmFL/VW1Ij6qLokb9zyS?=
+ =?us-ascii?Q?hqGuOf+HJesSCtf02CTu8k2QrWSaI5/8CT5OfxtjkdIYCrnqJSj7R1lLFqU9?=
+ =?us-ascii?Q?IBDobeVASy53dknXKJTyt2MgbjdqnQVF9ter3mrPUPa8g3qCcoU/Vw8qYtDZ?=
+ =?us-ascii?Q?/27eC9gvp+w8tvdbBoxSAyTUYSqBxuJSb0YyKGowV06QFlSM+o7vlRn/3UCc?=
+ =?us-ascii?Q?yKC8NxSDFRaMYJzKvxkvTlgOkhUh3V5Gf3cvhsE+v1oT+x4uiUcHLjNuDj7Q?=
+ =?us-ascii?Q?iySOJGOBphx52pYTlIhIUccISNDLKCUcQZ50R8KJTv+7vpX4eF5A/3ufqiir?=
+ =?us-ascii?Q?KfEyiDPNjxRu35fGFHX0ibw7HhBsLWWXNL3yP//CyhCqB5OIRY/ZMTxMynxw?=
+ =?us-ascii?Q?Zd0FJiwBEGzaDc4M+jrpCSpYxR8VZ6ePd5qciIKjnlzzlh/BdOXQ8P/AWulR?=
+ =?us-ascii?Q?A2Pck/deWrN3AasVjfulCK1vtiZ6xeRdP4bDCIj6l56cOcrL37v0Q82+wu5X?=
+ =?us-ascii?Q?xJZXGVetC9SWMa5qEzQi1vttYSA1KX5e/W8c2SoTTX9RkAJaoPzjztCZ6/C0?=
+ =?us-ascii?Q?7/oRWuGzSBjoJAhHgapDNBw8+Ayt7XJ6Z06TyHHqx8KEpbRovs4T4DqTDAog?=
+ =?us-ascii?Q?CGzSJUjarpqS6EGMZ1TmL8BSSaY3q9aPK6Lch8vF+OMFnvfY1tyhdy2xZmQ/?=
+ =?us-ascii?Q?LHhb3W1e3IRfHqwYiqBAF1DGILPOWZkyxEpprhLreZYpe+QCRjCviM7h01Yn?=
+ =?us-ascii?Q?osl3Ca5ST3RmkjoplSwxHCnP6FkYe28HK+JXCBh5kDDyz2YLEu4y83HGFhk6?=
+ =?us-ascii?Q?31JmLG0y0XqiC7QGxHvIfWr4xK1QRcsEu9AgYqGNA9IljH+gytSVycuRoQi3?=
+ =?us-ascii?Q?nYo0mu3kWd0bx0SvZbJRe5Xz4NtVgtBnQ2CH2THL4zW1w82cgS8G7mR3mgHi?=
+ =?us-ascii?Q?1/dIxs9TynknkKt8u4KTTWtW1bBsvsjp551XbzIlB6hkkiw3lZzXZS/2lt9Y?=
+ =?us-ascii?Q?SeexErJHWWK7G0SVvopr+pxpmmZDKDH7Is66OXXE69p+o9em78/467hCPviK?=
+ =?us-ascii?Q?VCplJkGwiTsGwKSdnGlVyiEo/4cmEzB4e1cLzCcKwnPx790TYHoeLXLd9PuK?=
+ =?us-ascii?Q?Cg+XvnvwabEMyMxGeiN4bPAdofCITUVLPYlBPob94Jww5V5RMTImQGI+gARH?=
+ =?us-ascii?Q?BSp7ASMnFCosAzsLW3iDgYI2SkMAA/e0l7Zi2QUxywbDkk/MHq+sFIVixpc2?=
+ =?us-ascii?Q?CEJgWsBSprr8uOKWTbvXh2nFe/j0aA7ExCI4lb29rQ8d1jq4uPujK2+hECbO?=
+ =?us-ascii?Q?DAMlyuFCs52ORcGB+XVu5F8x?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR2101MB0934.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40622f46-5a7d-4289-5493-08d8f9d23004
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2021 14:34:01.5814
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ozE/ynUXdnzriN/YloPbHA4sB4WhutCdy5vALgPaumHfx5zua8Tcm/V5D9ijH0RlqxSqu1I+ZlBCkIEWipRkOw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1691
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-04-05 at 11:52 +0200, Loic Poulain wrote:
-> This change introduces initial support for a WWAN framework. Given
-> the
-> complexity and heterogeneity of existing WWAN hardwares and
-> interfaces,
-> there is no strict definition of what a WWAN device is and how it
-> should
-> be represented. It's often a collection of multiple devices that
-> perform
-> the global WWAN feature (netdev, tty, chardev, etc).
-
-Great to see the continued work on this.
-
-Were you intending to follow-up with functionality to group netdevs
-with the control ports?  From my quick look at v9 here it only deals
-with MHI control ports (diag, QMI, AT, etc) which is great, but not the
-full story.
-
-I think that was a big part of the discussion around Johannes' earlier
-series since it's often protocol-specific to tie a particular netdev
-with a given control port, but that's something that's really necessary
-for a good abstract userspace.
-
-Thoughts here? I'd love to see that functionality too.
-
-Thanks!
-Dan
-
-> One usual way to expose modem controls and configuration is via high
-> level protocols such as the well known AT command protocol, MBIM or
-> QMI. The USB modems started to expose them as character devices, and
-> user daemons such as ModemManager learnt to use them.
-> 
-> This initial version adds the concept of WWAN port, which is a
-> logical
-> pipe to a modem control protocol. The protocols are rawly exposed to
-> user via character device, allowing straigthforward support in
-> existing
-> tools (ModemManager, ofono...). The WWAN core takes care of the
-> generic
-> part, including character device management, and relies on port
-> driver
-> operations to receive/submit protocol data.
-> 
-> Since the different devices exposing protocols for a same WWAN
-> hardware
-> do not necessarily know about each others (e.g. two different USB
-> interfaces, PCI/MHI channel devices...) and can be created/removed in
-> different orders, the WWAN core ensures that all WAN ports
-> contributing
-> to the 'whole' WWAN feature are grouped under the same virtual WWAN
-> device, relying on the provided parent device (e.g. mhi controller,
-> USB device). It's a 'trick' I copied from Johannes's earlier WWAN
-> subsystem proposal.
-> 
-> This initial version is purposely minimalist, it's essentially moving
-> the generic part of the previously proposed mhi_wwan_ctrl driver
-> inside
-> a common WWAN framework, but the implementation is open and flexible
-> enough to allow extension for further drivers.
-> 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->  v2: not part of the series
->  v3: not part of the series
->  v4: Introduce WWAN framework/subsystem
->  v5: Specify WWAN_CORE module name in Kconfig
->  v6: - Move to unified wwan_core.c file
->      - Make wwan_port a device
->      - Get rid of useless various dev lists (use wwan class)
->      - Get rid of useless wwan dev usage counter and mutex
->      - do not expose wwan_create_device, it's indirectly called via
-> create_port
->      - Increase minor count to the whole available minor range
->      - private_data as wwan_create_port parameter
->  v7: Fix change log (mixed up 1/2 and 2/2)
->  v8: - Move fops implementation in wwan_core
-> (open/read/write/poll/release)
->      - Create wwan_port_ops
->      - Add wwan_port_rx, wwan_port_txoff and wwan_port_txon functions
->      - Fix code comments
->      - skb based TX/RX
->  v9: - Move wwan_port definition to wwan_core.c (private)
->      - Fix checkpatch + cocci(ERR_CAST) issues
->      - Reword commit message
-> 
->  drivers/net/Kconfig          |   2 +
->  drivers/net/Makefile         |   1 +
->  drivers/net/wwan/Kconfig     |  23 ++
->  drivers/net/wwan/Makefile    |   7 +
->  drivers/net/wwan/wwan_core.c | 552
-> +++++++++++++++++++++++++++++++++++++++++++
->  include/linux/wwan.h         | 111 +++++++++
->  6 files changed, 696 insertions(+)
->  create mode 100644 drivers/net/wwan/Kconfig
->  create mode 100644 drivers/net/wwan/Makefile
->  create mode 100644 drivers/net/wwan/wwan_core.c
->  create mode 100644 include/linux/wwan.h
-> 
-> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-> index 5895905..74dc8e24 100644
-> --- a/drivers/net/Kconfig
-> +++ b/drivers/net/Kconfig
-> @@ -502,6 +502,8 @@ source "drivers/net/wan/Kconfig"
->  
->  source "drivers/net/ieee802154/Kconfig"
->  
-> +source "drivers/net/wwan/Kconfig"
-> +
->  config XEN_NETDEV_FRONTEND
->         tristate "Xen network device frontend driver"
->         depends on XEN
-> diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-> index 040e20b..7ffd2d0 100644
-> --- a/drivers/net/Makefile
-> +++ b/drivers/net/Makefile
-> @@ -68,6 +68,7 @@ obj-$(CONFIG_SUNGEM_PHY) += sungem_phy.o
->  obj-$(CONFIG_WAN) += wan/
->  obj-$(CONFIG_WLAN) += wireless/
->  obj-$(CONFIG_IEEE802154) += ieee802154/
-> +obj-$(CONFIG_WWAN) += wwan/
->  
->  obj-$(CONFIG_VMXNET3) += vmxnet3/
->  obj-$(CONFIG_XEN_NETDEV_FRONTEND) += xen-netfront.o
-> diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-> new file mode 100644
-> index 0000000..fc3f3a1
-> --- /dev/null
-> +++ b/drivers/net/wwan/Kconfig
-> @@ -0,0 +1,23 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +#
-> +# Wireless WAN device configuration
-> +#
-> +
-> +menuconfig WWAN
-> +       bool "Wireless WAN"
-> +       help
-> +         This section contains Wireless WAN configuration for WWAN
-> framework
-> +         and drivers.
-> +
-> +if WWAN
-> +
-> +config WWAN_CORE
-> +       tristate "WWAN Driver Core"
-> +       help
-> +         Say Y here if you want to use the WWAN driver core. This
-> driver
-> +         provides a common framework for WWAN drivers.
-> +
-> +         To compile this driver as a module, choose M here: the
-> module will be
-> +         called wwan.
-> +
-> +endif # WWAN
-> diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
-> new file mode 100644
-> index 0000000..934590b
-> --- /dev/null
-> +++ b/drivers/net/wwan/Makefile
-> @@ -0,0 +1,7 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +#
-> +# Makefile for the Linux WWAN device drivers.
-> +#
-> +
-> +obj-$(CONFIG_WWAN_CORE) += wwan.o
-> +wwan-objs += wwan_core.o
-> diff --git a/drivers/net/wwan/wwan_core.c
-> b/drivers/net/wwan/wwan_core.c
-> new file mode 100644
-> index 0000000..b618b79
-> --- /dev/null
-> +++ b/drivers/net/wwan/wwan_core.c
-> @@ -0,0 +1,552 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-> +
-> +#include <linux/err.h>
-> +#include <linux/errno.h>
-> +#include <linux/fs.h>
-> +#include <linux/init.h>
-> +#include <linux/idr.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/poll.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/slab.h>
-> +#include <linux/types.h>
-> +#include <linux/wwan.h>
-> +
-> +#define WWAN_MAX_MINORS 256 /* 256 minors allowed with
-> register_chrdev() */
-> +
-> +static DEFINE_MUTEX(wwan_register_lock); /* WWAN device
-> create|remove lock */
-> +static DEFINE_IDA(minors); /* minors for WWAN port chardevs */
-> +static DEFINE_IDA(wwan_dev_ids); /* for unique WWAN device IDs */
-> +static struct class *wwan_class;
-> +static int wwan_major;
-> +
-> +#define to_wwan_dev(d) container_of(d, struct wwan_device, dev)
-> +#define to_wwan_port(d) container_of(d, struct wwan_port, dev)
-> +
-> +/* WWAN port flags */
-> +#define WWAN_PORT_TX_OFF       BIT(0)
-> +
-> +/**
-> + * struct wwan_device - The structure that defines a WWAN device
-> + *
-> + * @id: WWAN device unique ID.
-> + * @dev: Underlying device.
-> + * @port_id: Current available port ID to pick.
-> + */
-> +struct wwan_device {
-> +       unsigned int id;
-> +       struct device dev;
-> +       atomic_t port_id;
-> +};
-> +
-> +/**
-> + * struct wwan_port - The structure that defines a WWAN port
-> + * @type: Port type
-> + * @start_count: Port start counter
-> + * @flags: Store port state and capabilities
-> + * @ops: Pointer to WWAN port operations
-> + * @ops_lock: Protect port ops
-> + * @dev: Underlying device
-> + * @rxq: Buffer inbound queue
-> + * @waitqueue: The waitqueue for port fops (read/write/poll)
-> + */
-> +struct wwan_port {
-> +       enum wwan_port_type type;
-> +       unsigned int start_count;
-> +       unsigned long flags;
-> +       const struct wwan_port_ops *ops;
-> +       struct mutex ops_lock; /* Serialize ops + protect against
-> removal */
-> +       struct device dev;
-> +       struct sk_buff_head rxq;
-> +       wait_queue_head_t waitqueue;
-> +};
-> +
-> +static void wwan_dev_destroy(struct device *dev)
-> +{
-> +       struct wwan_device *wwandev = to_wwan_dev(dev);
-> +
-> +       ida_free(&wwan_dev_ids, wwandev->id);
-> +       kfree(wwandev);
-> +}
-> +
-> +static const struct device_type wwan_dev_type = {
-> +       .name    = "wwan_dev",
-> +       .release = wwan_dev_destroy,
-> +};
-> +
-> +static int wwan_dev_parent_match(struct device *dev, const void
-> *parent)
-> +{
-> +       return (dev->type == &wwan_dev_type && dev->parent ==
-> parent);
-> +}
-> +
-> +static struct wwan_device *wwan_dev_get_by_parent(struct device
-> *parent)
-> +{
-> +       struct device *dev;
-> +
-> +       dev = class_find_device(wwan_class, NULL, parent,
-> wwan_dev_parent_match);
-> +       if (!dev)
-> +               return ERR_PTR(-ENODEV);
-> +
-> +       return to_wwan_dev(dev);
-> +}
-> +
-> +/* This function allocates and registers a new WWAN device OR if a
-> WWAN device
-> + * already exist for the given parent, it gets a reference and
-> return it.
-> + * This function is not exported (for now), it is called indirectly
-> via
-> + * wwan_create_port().
-> + */
-> +static struct wwan_device *wwan_create_dev(struct device *parent)
-> +{
-> +       struct wwan_device *wwandev;
-> +       int err, id;
-> +
-> +       /* The 'find-alloc-register' operation must be protected
-> against
-> +        * concurrent execution, a WWAN device is possibly shared
-> between
-> +        * multiple callers or concurrently unregistered from
-> wwan_remove_dev().
-> +        */
-> +       mutex_lock(&wwan_register_lock);
-> +
-> +       /* If wwandev already exists, return it */
-> +       wwandev = wwan_dev_get_by_parent(parent);
-> +       if (!IS_ERR(wwandev))
-> +               goto done_unlock;
-> +
-> +       id = ida_alloc(&wwan_dev_ids, GFP_KERNEL);
-> +       if (id < 0)
-> +               goto done_unlock;
-> +
-> +       wwandev = kzalloc(sizeof(*wwandev), GFP_KERNEL);
-> +       if (!wwandev) {
-> +               ida_free(&wwan_dev_ids, id);
-> +               goto done_unlock;
-> +       }
-> +
-> +       wwandev->dev.parent = parent;
-> +       wwandev->dev.class = wwan_class;
-> +       wwandev->dev.type = &wwan_dev_type;
-> +       wwandev->id = id;
-> +       dev_set_name(&wwandev->dev, "wwan%d", wwandev->id);
-> +
-> +       err = device_register(&wwandev->dev);
-> +       if (err) {
-> +               put_device(&wwandev->dev);
-> +               wwandev = NULL;
-> +       }
-> +
-> +done_unlock:
-> +       mutex_unlock(&wwan_register_lock);
-> +
-> +       return wwandev;
-> +}
-> +
-> +static int is_wwan_child(struct device *dev, void *data)
-> +{
-> +       return dev->class == wwan_class;
-> +}
-> +
-> +static void wwan_remove_dev(struct wwan_device *wwandev)
-> +{
-> +       int ret;
-> +
-> +       /* Prevent concurrent picking from wwan_create_dev */
-> +       mutex_lock(&wwan_register_lock);
-> +
-> +       /* WWAN device is created and registered (get+add) along with
-> its first
-> +        * child port, and subsequent port registrations only grab a
-> reference
-> +        * (get). The WWAN device must then be unregistered (del+put)
-> along with
-> +        * its latest port, and reference simply dropped (put)
-> otherwise.
-> +        */
-> +       ret = device_for_each_child(&wwandev->dev, NULL,
-> is_wwan_child);
-> +       if (!ret)
-> +               device_unregister(&wwandev->dev);
-> +       else
-> +               put_device(&wwandev->dev);
-> +
-> +       mutex_unlock(&wwan_register_lock);
-> +}
-> +
-> +/* ------- WWAN port management ------- */
-> +
-> +static void wwan_port_destroy(struct device *dev)
-> +{
-> +       struct wwan_port *port = to_wwan_port(dev);
-> +
-> +       ida_free(&minors, MINOR(port->dev.devt));
-> +       skb_queue_purge(&port->rxq);
-> +       mutex_destroy(&port->ops_lock);
-> +       kfree(port);
-> +}
-> +
-> +static const struct device_type wwan_port_dev_type = {
-> +       .name = "wwan_port",
-> +       .release = wwan_port_destroy,
-> +};
-> +
-> +static int wwan_port_minor_match(struct device *dev, const void
-> *minor)
-> +{
-> +       return (dev->type == &wwan_port_dev_type &&
-> +               MINOR(dev->devt) == *(unsigned int *)minor);
-> +}
-> +
-> +static struct wwan_port *wwan_port_get_by_minor(unsigned int minor)
-> +{
-> +       struct device *dev;
-> +
-> +       dev = class_find_device(wwan_class, NULL, &minor,
-> wwan_port_minor_match);
-> +       if (!dev)
-> +               return ERR_PTR(-ENODEV);
-> +
-> +       return to_wwan_port(dev);
-> +}
-> +
-> +/* Keep aligned with wwan_port_type enum */
-> +static const char * const wwan_port_type_str[] = {
-> +       "AT",
-> +       "MBIM",
-> +       "QMI",
-> +       "QCDM",
-> +       "FIREHOSE"
-> +};
-> +
-> +struct wwan_port *wwan_create_port(struct device *parent,
-> +                                  enum wwan_port_type type,
-> +                                  const struct wwan_port_ops *ops,
-> +                                  void *drvdata)
-> +{
-> +       struct wwan_device *wwandev;
-> +       struct wwan_port *port;
-> +       int minor, err = -ENOMEM;
-> +
-> +       if (type >= WWAN_PORT_MAX || !ops)
-> +               return ERR_PTR(-EINVAL);
-> +
-> +       /* A port is always a child of a WWAN device, retrieve
-> (allocate or
-> +        * pick) the WWAN device based on the provided parent device.
-> +        */
-> +       wwandev = wwan_create_dev(parent);
-> +       if (IS_ERR(wwandev))
-> +               return ERR_CAST(wwandev);
-> +
-> +       /* A port is exposed as character device, get a minor */
-> +       minor = ida_alloc_range(&minors, 0, WWAN_MAX_MINORS - 1,
-> GFP_KERNEL);
-> +       if (minor < 0)
-> +               goto error_wwandev_remove;
-> +
-> +       port = kzalloc(sizeof(*port), GFP_KERNEL);
-> +       if (!port) {
-> +               ida_free(&minors, minor);
-> +               goto error_wwandev_remove;
-> +       }
-> +
-> +       port->type = type;
-> +       port->ops = ops;
-> +       mutex_init(&port->ops_lock);
-> +       skb_queue_head_init(&port->rxq);
-> +       init_waitqueue_head(&port->waitqueue);
-> +
-> +       port->dev.parent = &wwandev->dev;
-> +       port->dev.class = wwan_class;
-> +       port->dev.type = &wwan_port_dev_type;
-> +       port->dev.devt = MKDEV(wwan_major, minor);
-> +       dev_set_drvdata(&port->dev, drvdata);
-> +
-> +       /* create unique name based on wwan device id, port index and
-> type */
-> +       dev_set_name(&port->dev, "wwan%up%u%s", wwandev->id,
-> +                    atomic_inc_return(&wwandev->port_id),
-> +                    wwan_port_type_str[port->type]);
-> +
-> +       err = device_register(&port->dev);
-> +       if (err)
-> +               goto error_put_device;
-> +
-> +       return port;
-> +
-> +error_put_device:
-> +       put_device(&port->dev);
-> +error_wwandev_remove:
-> +       wwan_remove_dev(wwandev);
-> +
-> +       return ERR_PTR(err);
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_create_port);
-> +
-> +void wwan_remove_port(struct wwan_port *port)
-> +{
-> +       struct wwan_device *wwandev = to_wwan_dev(port->dev.parent);
-> +
-> +       mutex_lock(&port->ops_lock);
-> +       if (port->start_count)
-> +               port->ops->stop(port);
-> +       port->ops = NULL; /* Prevent any new port operations (e.g.
-> from fops) */
-> +       mutex_unlock(&port->ops_lock);
-> +
-> +       wake_up_interruptible(&port->waitqueue);
-> +
-> +       skb_queue_purge(&port->rxq);
-> +       dev_set_drvdata(&port->dev, NULL);
-> +       device_unregister(&port->dev);
-> +
-> +       /* Release related wwan device */
-> +       wwan_remove_dev(wwandev);
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_remove_port);
-> +
-> +void wwan_port_rx(struct wwan_port *port, struct sk_buff *skb)
-> +{
-> +       skb_queue_tail(&port->rxq, skb);
-> +       wake_up_interruptible(&port->waitqueue);
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_port_rx);
-> +
-> +void wwan_port_txon(struct wwan_port *port)
-> +{
-> +       clear_bit(WWAN_PORT_TX_OFF, &port->flags);
-> +       wake_up_interruptible(&port->waitqueue);
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_port_txon);
-> +
-> +void wwan_port_txoff(struct wwan_port *port)
-> +{
-> +       set_bit(WWAN_PORT_TX_OFF, &port->flags);
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_port_txoff);
-> +
-> +void *wwan_port_get_drvdata(struct wwan_port *port)
-> +{
-> +       return dev_get_drvdata(&port->dev);
-> +}
-> +EXPORT_SYMBOL_GPL(wwan_port_get_drvdata);
-> +
-> +static int wwan_port_op_start(struct wwan_port *port)
-> +{
-> +       int ret = 0;
-> +
-> +       mutex_lock(&port->ops_lock);
-> +       if (!port->ops) { /* Port got unplugged */
-> +               ret = -ENODEV;
-> +               goto out_unlock;
-> +       }
-> +
-> +       /* If port is already started, don't start again */
-> +       if (!port->start_count)
-> +               ret = port->ops->start(port);
-> +
-> +       if (!ret)
-> +               port->start_count++;
-> +
-> +out_unlock:
-> +       mutex_unlock(&port->ops_lock);
-> +
-> +       return ret;
-> +}
-> +
-> +static void wwan_port_op_stop(struct wwan_port *port)
-> +{
-> +       mutex_lock(&port->ops_lock);
-> +       port->start_count--;
-> +       if (port->ops && !port->start_count)
-> +               port->ops->stop(port);
-> +       mutex_unlock(&port->ops_lock);
-> +}
-> +
-> +static int wwan_port_op_tx(struct wwan_port *port, struct sk_buff
-> *skb)
-> +{
-> +       int ret;
-> +
-> +       mutex_lock(&port->ops_lock);
-> +       if (!port->ops) { /* Port got unplugged */
-> +               ret = -ENODEV;
-> +               goto out_unlock;
-> +       }
-> +
-> +       ret = port->ops->tx(port, skb);
-> +
-> +out_unlock:
-> +       mutex_unlock(&port->ops_lock);
-> +
-> +       return ret;
-> +}
-> +
-> +static bool is_read_blocked(struct wwan_port *port)
-> +{
-> +       return skb_queue_empty(&port->rxq) && port->ops;
-> +}
-> +
-> +static bool is_write_blocked(struct wwan_port *port)
-> +{
-> +       return test_bit(WWAN_PORT_TX_OFF, &port->flags) && port->ops;
-> +}
-> +
-> +static int wwan_wait_rx(struct wwan_port *port, bool nonblock)
-> +{
-> +       if (!is_read_blocked(port))
-> +               return 0;
-> +
-> +       if (nonblock)
-> +               return -EAGAIN;
-> +
-> +       if (wait_event_interruptible(port->waitqueue,
-> !is_read_blocked(port)))
-> +               return -ERESTARTSYS;
-> +
-> +       return 0;
-> +}
-> +
-> +static int wwan_wait_tx(struct wwan_port *port, bool nonblock)
-> +{
-> +       if (!is_write_blocked(port))
-> +               return 0;
-> +
-> +       if (nonblock)
-> +               return -EAGAIN;
-> +
-> +       if (wait_event_interruptible(port->waitqueue,
-> !is_write_blocked(port)))
-> +               return -ERESTARTSYS;
-> +
-> +       return 0;
-> +}
-> +
-> +static int wwan_port_fops_open(struct inode *inode, struct file
-> *file)
-> +{
-> +       struct wwan_port *port;
-> +       int err = 0;
-> +
-> +       port = wwan_port_get_by_minor(iminor(inode));
-> +       if (IS_ERR(port))
-> +               return PTR_ERR(port);
-> +
-> +       file->private_data = port;
-> +       stream_open(inode, file);
-> +
-> +       err = wwan_port_op_start(port);
-> +       if (err)
-> +               put_device(&port->dev);
-> +
-> +       return err;
-> +}
-> +
-> +static int wwan_port_fops_release(struct inode *inode, struct file
-> *filp)
-> +{
-> +       struct wwan_port *port = filp->private_data;
-> +
-> +       wwan_port_op_stop(port);
-> +       put_device(&port->dev);
-> +
-> +       return 0;
-> +}
-> +
-> +static ssize_t wwan_port_fops_read(struct file *filp, char __user
-> *buf,
-> +                                  size_t count, loff_t *ppos)
-> +{
-> +       struct wwan_port *port = filp->private_data;
-> +       struct sk_buff *skb;
-> +       size_t copied;
-> +       int ret;
-> +
-> +       ret = wwan_wait_rx(port, !!(filp->f_flags & O_NONBLOCK));
-> +       if (ret)
-> +               return ret;
-> +
-> +       skb = skb_dequeue(&port->rxq);
-> +       if (!skb)
-> +               return -EIO;
-> +
-> +       copied = min_t(size_t, count, skb->len);
-> +       if (copy_to_user(buf, skb->data, copied)) {
-> +               kfree_skb(skb);
-> +               return -EFAULT;
-> +       }
-> +       skb_pull(skb, copied);
-> +
-> +       /* skb is not fully consumed, keep it in the queue */
-> +       if (skb->len)
-> +               skb_queue_head(&port->rxq, skb);
-> +       else
-> +               consume_skb(skb);
-> +
-> +       return copied;
-> +}
-> +
-> +static ssize_t wwan_port_fops_write(struct file *filp, const char
-> __user *buf,
-> +                                   size_t count, loff_t *offp)
-> +{
-> +       struct wwan_port *port = filp->private_data;
-> +       struct sk_buff *skb;
-> +       int ret;
-> +
-> +       ret = wwan_wait_tx(port, !!(filp->f_flags & O_NONBLOCK));
-> +       if (ret)
-> +               return ret;
-> +
-> +       skb = alloc_skb(count, GFP_KERNEL);
-> +       if (!skb)
-> +               return -ENOMEM;
-> +
-> +       if (copy_from_user(skb_put(skb, count), buf, count)) {
-> +               kfree_skb(skb);
-> +               return -EFAULT;
-> +       }
-> +
-> +       ret = wwan_port_op_tx(port, skb);
-> +       if (ret) {
-> +               kfree_skb(skb);
-> +               return ret;
-> +       }
-> +
-> +       return count;
-> +}
-> +
-> +static __poll_t wwan_port_fops_poll(struct file *filp, poll_table
-> *wait)
-> +{
-> +       struct wwan_port *port = filp->private_data;
-> +       __poll_t mask = 0;
-> +
-> +       poll_wait(filp, &port->waitqueue, wait);
-> +
-> +       if (!is_write_blocked(port))
-> +               mask |= EPOLLOUT | EPOLLWRNORM;
-> +       if (!is_read_blocked(port))
-> +               mask |= EPOLLIN | EPOLLRDNORM;
-> +
-> +       return mask;
-> +}
-> +
-> +static const struct file_operations wwan_port_fops = {
-> +       .owner = THIS_MODULE,
-> +       .open = wwan_port_fops_open,
-> +       .release = wwan_port_fops_release,
-> +       .read = wwan_port_fops_read,
-> +       .write = wwan_port_fops_write,
-> +       .poll = wwan_port_fops_poll,
-> +       .llseek = noop_llseek,
-> +};
-> +
-> +static int __init wwan_init(void)
-> +{
-> +       wwan_class = class_create(THIS_MODULE, "wwan");
-> +       if (IS_ERR(wwan_class))
-> +               return PTR_ERR(wwan_class);
-> +
-> +       /* chrdev used for wwan ports */
-> +       wwan_major = register_chrdev(0, "wwan_port",
-> &wwan_port_fops);
-> +       if (wwan_major < 0) {
-> +               class_destroy(wwan_class);
-> +               return wwan_major;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static void __exit wwan_exit(void)
-> +{
-> +       unregister_chrdev(wwan_major, "wwan_port");
-> +       class_destroy(wwan_class);
-> +}
-> +
-> +module_init(wwan_init);
-> +module_exit(wwan_exit);
-> +
-> +MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
-> +MODULE_DESCRIPTION("WWAN core");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/wwan.h b/include/linux/wwan.h
-> new file mode 100644
-> index 0000000..f3f3f94
-> --- /dev/null
-> +++ b/include/linux/wwan.h
-> @@ -0,0 +1,111 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
-> +
-> +#ifndef __WWAN_H
-> +#define __WWAN_H
-> +
-> +#include <linux/device.h>
-> +#include <linux/kernel.h>
-> +#include <linux/skbuff.h>
-> +
-> +/**
-> + * enum wwan_port_type - WWAN port types
-> + * @WWAN_PORT_AT: AT commands
-> + * @WWAN_PORT_MBIM: Mobile Broadband Interface Model control
-> + * @WWAN_PORT_QMI: Qcom modem/MSM interface for modem control
-> + * @WWAN_PORT_QCDM: Qcom Modem diagnostic interface
-> + * @WWAN_PORT_FIREHOSE: XML based command protocol
-> + * @WWAN_PORT_MAX
-> + */
-> +enum wwan_port_type {
-> +       WWAN_PORT_AT,
-> +       WWAN_PORT_MBIM,
-> +       WWAN_PORT_QMI,
-> +       WWAN_PORT_QCDM,
-> +       WWAN_PORT_FIREHOSE,
-> +       WWAN_PORT_MAX,
-> +};
-> +
-> +struct wwan_port;
-> +
-> +/** struct wwan_port_ops - The WWAN port operations
-> + * @start: The routine for starting the WWAN port device.
-> + * @stop: The routine for stopping the WWAN port device.
-> + * @tx: The routine that sends WWAN port protocol data to the
-> device.
-> + *
-> + * The wwan_port_ops structure contains a list of low-level
-> operations
-> + * that control a WWAN port device. All functions are mandatory.
-> + */
-> +struct wwan_port_ops {
-> +       int (*start)(struct wwan_port *port);
-> +       void (*stop)(struct wwan_port *port);
-> +       int (*tx)(struct wwan_port *port, struct sk_buff *skb);
-> +};
-> +
-> +/**
-> + * wwan_create_port - Add a new WWAN port
-> + * @parent: Device to use as parent and shared by all WWAN ports
-> + * @type: WWAN port type
-> + * @ops: WWAN port operations
-> + * @drvdata: Pointer to caller driver data
-> + *
-> + * Allocate and register a new WWAN port. The port will be
-> automatically exposed
-> + * to user as a character device and attached to the right virtual
-> WWAN device,
-> + * based on the parent pointer. The parent pointer is the device
-> shared by all
-> + * components of a same WWAN modem (e.g. USB dev, PCI dev, MHI
-> controller...).
-> + *
-> + * drvdata will be placed in the WWAN port device driver data and
-> can be
-> + * retrieved with wwan_port_get_drvdata().
-> + *
-> + * This function must be balanced with a call to wwan_remove_port().
-> + *
-> + * Returns a valid pointer to wwan_port on success or PTR_ERR on
-> failure
-> + */
-> +struct wwan_port *wwan_create_port(struct device *parent,
-> +                                  enum wwan_port_type type,
-> +                                  const struct wwan_port_ops *ops,
-> +                                  void *drvdata);
-> +
-> +/**
-> + * wwan_remove_port - Remove a WWAN port
-> + * @port: WWAN port to remove
-> + *
-> + * Remove a previously created port.
-> + */
-> +void wwan_remove_port(struct wwan_port *port);
-> +
-> +/**
-> + * wwan_port_rx - Receive data from the WWAN port
-> + * @port: WWAN port for which data is received
-> + * @skb: Pointer to the rx buffer
-> + *
-> + * A port driver calls this function upon data reception (MBIM,
-> AT...).
-> + */
-> +void wwan_port_rx(struct wwan_port *port, struct sk_buff *skb);
-> +
-> +/**
-> + * wwan_port_txoff - Stop TX on WWAN port
-> + * @port: WWAN port for which TX must be stopped
-> + *
-> + * Used for TX flow control, a port driver calls this function to
-> indicate TX
-> + * is temporary unavailable (e.g. due to ring buffer fullness).
-> + */
-> +void wwan_port_txoff(struct wwan_port *port);
-> +
-> +
-> +/**
-> + * wwan_port_txon - Restart TX on WWAN port
-> + * @port: WWAN port for which TX must be restarted
-> + *
-> + * Used for TX flow control, a port driver calls this function to
-> indicate TX
-> + * is available again.
-> + */
-> +void wwan_port_txon(struct wwan_port *port);
-> +
-> +/**
-> + * wwan_port_get_drvdata - Retrieve driver data from a WWAN port
-> + * @port: Related WWAN port
-> + */
-> +void *wwan_port_get_drvdata(struct wwan_port *port);
-> +
-> +#endif /* __WWAN_H */
 
 
+> -----Original Message-----
+> From: Wei Liu <wei.liu@kernel.org>
+> Sent: Wednesday, April 7, 2021 9:17 AM
+> To: Dexuan Cui <decui@microsoft.com>
+> Cc: davem@davemloft.net; kuba@kernel.org; KY Srinivasan
+> <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>; Stephen
+> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Wei Liu
+> <liuwe@microsoft.com>; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; linux-hyperv@vger.kernel.org
+> Subject: Re: [PATCH net-next] net: mana: Add a driver for Microsoft Azure
+> Network Adapter (MANA)
+>=20
+> On Tue, Apr 06, 2021 at 04:23:21PM -0700, Dexuan Cui wrote:
+> [...]
+> > +config MICROSOFT_MANA
+> > +	tristate "Microsoft Azure Network Adapter (MANA) support"
+> > +	default m
+> > +	depends on PCI_MSI
+> > +	select PCI_HYPERV
+>=20
+> OOI which part of the code requires PCI_HYPERV?
+>=20
+> Asking because I can't immediately find code that looks to be Hyper-V
+> specific (searching for vmbus etc). This device looks like any other PCI =
+devices
+> to me.
+
+It depends on the VF nic's PCI config space which is presented by the pci_h=
+yperv driver.
+
+Thanks,
+- Haiyang
