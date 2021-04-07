@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDDB3562BF
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3613562C0
 	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 06:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348561AbhDGEzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 00:55:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60574 "EHLO mail.kernel.org"
+        id S1348584AbhDGEzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 00:55:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348536AbhDGEyr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 00:54:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AF213613D1;
-        Wed,  7 Apr 2021 04:54:38 +0000 (UTC)
+        id S1348538AbhDGEys (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 00:54:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 37322613D3;
+        Wed,  7 Apr 2021 04:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617771279;
-        bh=O/6FsqBeBB6aLqnxQkEhDiRFkZ+FUk0nQAIkK9pKJOU=;
+        bh=ZUae4fTld7F1uRUr44/G4y0dB+pjNTdVChERbGv5kzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YU5MRhNBFqdv7EG9wr0VQ8u1+eUW9tZiHdXzJH8wi7eYdfA6pA+k6FlilGcLozNL/
-         BywGoV84EJAWDnuUOKOW/eQNzOGNnx77akjsp4Vt1EVssTsxZF8mw0xjZWII0GXU5X
-         bnnErQrYvaKSAAyHZranwJgXfXCMS7ChUuc2Dng69LgVpTMwkgpavvRZTp7VACOSLK
-         wKiHzWOFzhyoDjZS+gKHvR9Pb9D80awG+CVlpynk+8TzQYU/8FPPodq9/cjbwHgzF5
-         5E+jFNiC+f8X3dQm7R0wsHEWaWVbcybU1P79aGmDXCXps1PZrgjpsH9Z6M8448aMDE
-         FgbdyHt/zEP5Q==
+        b=gQE7+DY+0Ca/1rjMy2+n3r6Os2Tfd3f2omic23Yjb3tVpCG8bUejHUWnrCH4AUF7V
+         58bXHCXg3xLZX0umssdmtP0qJqJQJ8QBFXo7/XDxSddNRERnLGnRcRYPwVN9Vk+3L0
+         3paAP330c9r7bXrhVBktxZViKeN5l2r5ZuYTo5zpk0ugmpabiEBEO82tZ8ZSYgjcSR
+         kRkqp4lD5VpSo3YhCS2/jsSRwt7PyBNh0tg4wZS5aU7MaQqTe2oj8B8HoXrThnNtRT
+         bKoiAFDkVtvpOSG7/e/wufK3Hkej+zC/IHfVSh3Q9qOTkJexYKnHGoio+anuL1Q3qy
+         LTGZWFFyYEXww==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Chris Mi <cmi@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 08/13] net/mlx5e: TC, Add sampler termination table API
-Date:   Tue,  6 Apr 2021 21:54:16 -0700
-Message-Id: <20210407045421.148987-9-saeed@kernel.org>
+Subject: [net-next 09/13] net/mlx5e: TC, Add sampler object API
+Date:   Tue,  6 Apr 2021 21:54:17 -0700
+Message-Id: <20210407045421.148987-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210407045421.148987-1-saeed@kernel.org>
 References: <20210407045421.148987-1-saeed@kernel.org>
@@ -43,241 +43,192 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Chris Mi <cmi@nvidia.com>
 
-Sampled packets are sent to software using termination tables. There
-is only one rule in that table that is to forward sampled packets to
-the e-switch management vport.
+In order to offload sample action, HW introduces sampler object. The
+sampler object samples packets according to the provided sample ratio.
+Sampled packets are duplicated. One copy is processed by a termination
+table, named the sample table, which sends the packet up to software.
+The second copy is processed by the default table.
 
-Create a sampler termination table and rule for each eswitch.
+Instantiate sampler object. Re-use identical sampler object for
+the same sample ratio, sample table and default table as a prestep for
+offloading tc sample actions.
 
 Signed-off-by: Chris Mi <cmi@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/Kconfig   | 12 +++
- .../net/ethernet/mellanox/mlx5/core/Makefile  |  1 +
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |  1 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 11 +++
- .../ethernet/mellanox/mlx5/core/esw/sample.c  | 96 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/esw/sample.h  |  8 ++
- 6 files changed, 129 insertions(+)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
+ .../ethernet/mellanox/mlx5/core/esw/sample.c  | 131 ++++++++++++++++++
+ 1 file changed, 131 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-index 9d623e38d783..461a43f338e6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -104,6 +104,18 @@ config MLX5_TC_CT
- 
- 	  If unsure, set to Y
- 
-+config MLX5_TC_SAMPLE
-+	bool "MLX5 TC sample offload support"
-+	depends on MLX5_CLS_ACT
-+	default y
-+	help
-+	  Say Y here if you want to support offloading sample rules via tc
-+	  sample action.
-+	  If set to N, will not be able to configure tc rules with sample
-+	  action.
-+
-+	  If unsure, set to Y
-+
- config MLX5_CORE_EN_DCB
- 	bool "Data Center Bridging (DCB) Support"
- 	default y
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 5bedc2c4d26f..8bde58379ac6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -55,6 +55,7 @@ mlx5_core-$(CONFIG_MLX5_ESWITCH)   += esw/acl/helper.o \
- 				      esw/acl/egress_lgcy.o esw/acl/egress_ofld.o \
- 				      esw/acl/ingress_lgcy.o esw/acl/ingress_ofld.o \
- 				      esw/devlink_port.o esw/vporttbl.o
-+mlx5_core-$(CONFIG_MLX5_TC_SAMPLE) += esw/sample.o
- 
- mlx5_core-$(CONFIG_MLX5_MPFS)      += lib/mpfs.o
- mlx5_core-$(CONFIG_VXLAN)          += lib/vxlan.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-index 931fa619cb01..22585015c7a7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -89,6 +89,7 @@ struct mlx5_rep_uplink_priv {
- 	struct mapping_ctx *tunnel_enc_opts_mapping;
- 
- 	struct mlx5_tc_ct_priv *ct_priv;
-+	struct mlx5_esw_psample *esw_psample;
- 
- 	/* support eswitch vports bonding */
- 	struct mlx5e_rep_bond *bond;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 85782d12ffb2..1a403112defd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -66,6 +66,7 @@
- #include "en/mod_hdr.h"
- #include "en/tc_priv.h"
- #include "en/tc_tun_encap.h"
-+#include "esw/sample.h"
- #include "lib/devcom.h"
- #include "lib/geneve.h"
- #include "lib/fs_chains.h"
-@@ -4876,6 +4877,10 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- 					       &esw->offloads.mod_hdr,
- 					       MLX5_FLOW_NAMESPACE_FDB);
- 
-+#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
-+	uplink_priv->esw_psample = mlx5_esw_sample_init(netdev_priv(priv->netdev));
-+#endif
-+
- 	mapping = mapping_create(sizeof(struct tunnel_match_key),
- 				 TUNNEL_INFO_BITS_MASK, true);
- 	if (IS_ERR(mapping)) {
-@@ -4913,6 +4918,9 @@ int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
- err_enc_opts_mapping:
- 	mapping_destroy(uplink_priv->tunnel_mapping);
- err_tun_mapping:
-+#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
-+	mlx5_esw_sample_cleanup(uplink_priv->esw_psample);
-+#endif
- 	mlx5_tc_ct_clean(uplink_priv->ct_priv);
- 	netdev_warn(priv->netdev,
- 		    "Failed to initialize tc (eswitch), err: %d", err);
-@@ -4931,6 +4939,9 @@ void mlx5e_tc_esw_cleanup(struct rhashtable *tc_ht)
- 	mapping_destroy(uplink_priv->tunnel_enc_opts_mapping);
- 	mapping_destroy(uplink_priv->tunnel_mapping);
- 
-+#if IS_ENABLED(CONFIG_MLX5_TC_SAMPLE)
-+	mlx5_esw_sample_cleanup(uplink_priv->esw_psample);
-+#endif
- 	mlx5_tc_ct_clean(uplink_priv->ct_priv);
- }
- 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
-new file mode 100644
-index 000000000000..9bd996e8d28a
---- /dev/null
+index 9bd996e8d28a..37e33670bb24 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#include "esw/sample.h"
-+#include "eswitch.h"
-+
-+struct mlx5_esw_psample {
-+	struct mlx5e_priv *priv;
-+	struct mlx5_flow_table *termtbl;
-+	struct mlx5_flow_handle *termtbl_rule;
+@@ -3,11 +3,28 @@
+ 
+ #include "esw/sample.h"
+ #include "eswitch.h"
++#include "en_tc.h"
++#include "fs_core.h"
+ 
+ struct mlx5_esw_psample {
+ 	struct mlx5e_priv *priv;
+ 	struct mlx5_flow_table *termtbl;
+ 	struct mlx5_flow_handle *termtbl_rule;
++	DECLARE_HASHTABLE(hashtbl, 8);
++	struct mutex ht_lock; /* protect hashtbl */
 +};
 +
++struct mlx5_sampler {
++	struct hlist_node hlist;
++	u32 sampler_id;
++	u32 sample_ratio;
++	u32 sample_table_id;
++	u32 default_table_id;
++	int count;
++};
++
++struct mlx5_sample_flow {
++	struct mlx5_sampler *sampler;
+ };
+ 
+ static int
+@@ -64,6 +81,117 @@ sampler_termtbl_destroy(struct mlx5_esw_psample *esw_psample)
+ 	mlx5_destroy_flow_table(esw_psample->termtbl);
+ }
+ 
 +static int
-+sampler_termtbl_create(struct mlx5_esw_psample *esw_psample)
++sampler_obj_create(struct mlx5_core_dev *mdev, struct mlx5_sampler *sampler)
 +{
-+	struct mlx5_core_dev *dev = esw_psample->priv->mdev;
-+	struct mlx5_eswitch *esw = dev->priv.eswitch;
-+	struct mlx5_flow_table_attr ft_attr = {};
-+	struct mlx5_flow_destination dest = {};
-+	struct mlx5_flow_namespace *root_ns;
-+	struct mlx5_flow_act act = {};
++	u32 in[MLX5_ST_SZ_DW(create_sampler_obj_in)] = {};
++	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
++	u64 general_obj_types;
++	void *obj;
 +	int err;
 +
-+	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(dev, termination_table))  {
-+		mlx5_core_warn(dev, "termination table is not supported\n");
++	general_obj_types = MLX5_CAP_GEN_64(mdev, general_obj_types);
++	if (!(general_obj_types & MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER))
 +		return -EOPNOTSUPP;
-+	}
-+
-+	root_ns = mlx5_get_flow_namespace(dev, MLX5_FLOW_NAMESPACE_FDB);
-+	if (!root_ns) {
-+		mlx5_core_warn(dev, "failed to get FDB flow namespace\n");
++	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(mdev, ignore_flow_level))
 +		return -EOPNOTSUPP;
-+	}
 +
-+	ft_attr.flags = MLX5_FLOW_TABLE_TERMINATION | MLX5_FLOW_TABLE_UNMANAGED;
-+	ft_attr.autogroup.max_num_groups = 1;
-+	ft_attr.prio = FDB_SLOW_PATH;
-+	ft_attr.max_fte = 1;
-+	ft_attr.level = 1;
-+	esw_psample->termtbl = mlx5_create_auto_grouped_flow_table(root_ns, &ft_attr);
-+	if (IS_ERR(esw_psample->termtbl)) {
-+		err = PTR_ERR(esw_psample->termtbl);
-+		mlx5_core_warn(dev, "failed to create termtbl, err: %d\n", err);
-+		return err;
-+	}
++	obj = MLX5_ADDR_OF(create_sampler_obj_in, in, sampler_object);
++	MLX5_SET(sampler_obj, obj, table_type, FS_FT_FDB);
++	MLX5_SET(sampler_obj, obj, ignore_flow_level, 1);
++	MLX5_SET(sampler_obj, obj, level, 1);
++	MLX5_SET(sampler_obj, obj, sample_ratio, sampler->sample_ratio);
++	MLX5_SET(sampler_obj, obj, sample_table_id, sampler->sample_table_id);
++	MLX5_SET(sampler_obj, obj, default_table_id, sampler->default_table_id);
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_SAMPLER);
 +
-+	act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
-+	dest.vport.num = esw->manager_vport;
-+	esw_psample->termtbl_rule = mlx5_add_flow_rules(esw_psample->termtbl, NULL, &act, &dest, 1);
-+	if (IS_ERR(esw_psample->termtbl_rule)) {
-+		err = PTR_ERR(esw_psample->termtbl_rule);
-+		mlx5_core_warn(dev, "failed to create termtbl rule, err: %d\n", err);
-+		mlx5_destroy_flow_table(esw_psample->termtbl);
-+		return err;
-+	}
++	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
++	if (!err)
++		sampler->sampler_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
 +
-+	return 0;
++	return err;
 +}
 +
 +static void
-+sampler_termtbl_destroy(struct mlx5_esw_psample *esw_psample)
++sampler_obj_destroy(struct mlx5_core_dev *mdev, u32 sampler_id)
 +{
-+	mlx5_del_flow_rules(esw_psample->termtbl_rule);
-+	mlx5_destroy_flow_table(esw_psample->termtbl);
++	u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
++	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
++
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_SAMPLER);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, sampler_id);
++
++	mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
 +}
 +
-+struct mlx5_esw_psample *
-+mlx5_esw_sample_init(struct mlx5e_priv *priv)
++static u32
++sampler_hash(u32 sample_ratio, u32 default_table_id)
 +{
-+	struct mlx5_esw_psample *esw_psample;
++	return jhash_2words(sample_ratio, default_table_id, 0);
++}
++
++static int
++sampler_cmp(u32 sample_ratio1, u32 default_table_id1, u32 sample_ratio2, u32 default_table_id2)
++{
++	return sample_ratio1 != sample_ratio2 || default_table_id1 != default_table_id2;
++}
++
++static struct mlx5_sampler *
++sampler_get(struct mlx5_esw_psample *esw_psample, u32 sample_ratio, u32 default_table_id)
++{
++	struct mlx5_sampler *sampler;
++	u32 hash_key;
 +	int err;
 +
-+	esw_psample = kzalloc(sizeof(*esw_psample), GFP_KERNEL);
-+	if (!esw_psample)
-+		return ERR_PTR(-ENOMEM);
-+	esw_psample->priv = priv;
-+	err = sampler_termtbl_create(esw_psample);
++	mutex_lock(&esw_psample->ht_lock);
++	hash_key = sampler_hash(sample_ratio, default_table_id);
++	hash_for_each_possible(esw_psample->hashtbl, sampler, hlist, hash_key)
++		if (!sampler_cmp(sampler->sample_ratio, sampler->default_table_id,
++				 sample_ratio, default_table_id))
++			goto add_ref;
++
++	sampler = kzalloc(sizeof(*sampler), GFP_KERNEL);
++	if (!sampler) {
++		err = -ENOMEM;
++		goto err_alloc;
++	}
++
++	sampler->sample_table_id = esw_psample->termtbl->id;
++	sampler->default_table_id = default_table_id;
++	sampler->sample_ratio = sample_ratio;
++
++	err = sampler_obj_create(esw_psample->priv->mdev, sampler);
 +	if (err)
-+		goto err_termtbl;
++		goto err_create;
 +
-+	return esw_psample;
++	hash_add(esw_psample->hashtbl, &sampler->hlist, hash_key);
 +
-+err_termtbl:
-+	kfree(esw_psample);
++add_ref:
++	sampler->count++;
++	mutex_unlock(&esw_psample->ht_lock);
++	return sampler;
++
++err_create:
++	kfree(sampler);
++err_alloc:
++	mutex_unlock(&esw_psample->ht_lock);
 +	return ERR_PTR(err);
 +}
 +
-+void
-+mlx5_esw_sample_cleanup(struct mlx5_esw_psample *esw_psample)
++static void
++sampler_put(struct mlx5_esw_psample *esw_psample, struct mlx5_sampler *sampler)
 +{
-+	if (IS_ERR_OR_NULL(esw_psample))
-+		return;
-+
-+	sampler_termtbl_destroy(esw_psample);
-+	kfree(esw_psample);
++	mutex_lock(&esw_psample->ht_lock);
++	if (--sampler->count == 0) {
++		hash_del(&sampler->hlist);
++		sampler_obj_destroy(esw_psample->priv->mdev, sampler->sampler_id);
++		kfree(sampler);
++	}
++	mutex_unlock(&esw_psample->ht_lock);
 +}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.h
-index 35a5e6dddcd0..e42e3cb01c8c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.h
-@@ -4,10 +4,18 @@
- #ifndef __MLX5_EN_TC_SAMPLE_H__
- #define __MLX5_EN_TC_SAMPLE_H__
++
+ struct mlx5_esw_psample *
+ mlx5_esw_sample_init(struct mlx5e_priv *priv)
+ {
+@@ -78,6 +206,8 @@ mlx5_esw_sample_init(struct mlx5e_priv *priv)
+ 	if (err)
+ 		goto err_termtbl;
  
-+#include "en.h"
++	mutex_init(&esw_psample->ht_lock);
 +
- struct mlx5_sample_attr {
- 	u32 group_num;
- 	u32 rate;
- 	u32 trunc_size;
- };
+ 	return esw_psample;
  
-+struct mlx5_esw_psample *
-+mlx5_esw_sample_init(struct mlx5e_priv *priv);
-+
-+void
-+mlx5_esw_sample_cleanup(struct mlx5_esw_psample *esw_psample);
-+
- #endif /* __MLX5_EN_TC_SAMPLE_H__ */
+ err_termtbl:
+@@ -91,6 +221,7 @@ mlx5_esw_sample_cleanup(struct mlx5_esw_psample *esw_psample)
+ 	if (IS_ERR_OR_NULL(esw_psample))
+ 		return;
+ 
++	mutex_destroy(&esw_psample->ht_lock);
+ 	sampler_termtbl_destroy(esw_psample);
+ 	kfree(esw_psample);
+ }
 -- 
 2.30.2
 
