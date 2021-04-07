@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3613562C0
+	by mail.lfdr.de (Postfix) with ESMTP id C6AAE3562C1
 	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 06:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348584AbhDGEzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 00:55:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60588 "EHLO mail.kernel.org"
+        id S1348590AbhDGEzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 00:55:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60612 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348538AbhDGEys (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1348549AbhDGEys (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 7 Apr 2021 00:54:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 37322613D3;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AD50A613D4;
         Wed,  7 Apr 2021 04:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617771279;
-        bh=ZUae4fTld7F1uRUr44/G4y0dB+pjNTdVChERbGv5kzI=;
+        s=k20201202; t=1617771280;
+        bh=uwyIpI7rQTW8ipw4KSBPMycLPvZiSgauhx9/cKqbAXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gQE7+DY+0Ca/1rjMy2+n3r6Os2Tfd3f2omic23Yjb3tVpCG8bUejHUWnrCH4AUF7V
-         58bXHCXg3xLZX0umssdmtP0qJqJQJ8QBFXo7/XDxSddNRERnLGnRcRYPwVN9Vk+3L0
-         3paAP330c9r7bXrhVBktxZViKeN5l2r5ZuYTo5zpk0ugmpabiEBEO82tZ8ZSYgjcSR
-         kRkqp4lD5VpSo3YhCS2/jsSRwt7PyBNh0tg4wZS5aU7MaQqTe2oj8B8HoXrThnNtRT
-         bKoiAFDkVtvpOSG7/e/wufK3Hkej+zC/IHfVSh3Q9qOTkJexYKnHGoio+anuL1Q3qy
-         LTGZWFFyYEXww==
+        b=MixXnWNBfZsVhyMG0jRy04z7pTUoe/2w0ew9i5rUuQuWaUsFjE0yhYSGFZmk41Ep2
+         /mk3dy5kWSBigDth2d2xbOHCtvZ1ckhhewjVjV+IMvxLGlJ8e+tjAJdhHgs7f4ZrlW
+         BeuqB0y30HOKBhEmcBrDvkd5umKgfNQGfMdaakIocW+JpXEGexWva2EJejNg4tbwVV
+         9yHm+RTTRPbfNnsQKMz6OeE3Xm+ulG3TWPxrCO2phjbKbY2lePoGuTytMCGmcyuKSE
+         mamESwl/zZlUBIzhTo2xoxDtdEs6N2yazT7Uu8VK4i0PQM70yNiyDSh2j6X/C5Z5cO
+         8CEC4RoUzvd7g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Chris Mi <cmi@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Mark Bloch <mbloch@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 09/13] net/mlx5e: TC, Add sampler object API
-Date:   Tue,  6 Apr 2021 21:54:17 -0700
-Message-Id: <20210407045421.148987-10-saeed@kernel.org>
+Subject: [net-next 10/13] net/mlx5e: TC, Add sampler restore handle API
+Date:   Tue,  6 Apr 2021 21:54:18 -0700
+Message-Id: <20210407045421.148987-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210407045421.148987-1-saeed@kernel.org>
 References: <20210407045421.148987-1-saeed@kernel.org>
@@ -43,192 +43,178 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Chris Mi <cmi@nvidia.com>
 
-In order to offload sample action, HW introduces sampler object. The
-sampler object samples packets according to the provided sample ratio.
-Sampled packets are duplicated. One copy is processed by a termination
-table, named the sample table, which sends the packet up to software.
-The second copy is processed by the default table.
+Use common object pool to create an object ID to map sample parameters.
+Allocate a modify header action to write the object ID to reg_c0 lower
+16 bits. Create a restore rule to pass the object ID to software. So
+software can identify sampled packets via the object ID and send it to
+userspace.
 
-Instantiate sampler object. Re-use identical sampler object for
-the same sample ratio, sample table and default table as a prestep for
-offloading tc sample actions.
+Aggregate the modify header action, restore rule and object ID to a
+sample restore handle. Re-use identical sample restore handle for
+the same object ID.
 
 Signed-off-by: Chris Mi <cmi@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/esw/sample.c  | 131 ++++++++++++++++++
- 1 file changed, 131 insertions(+)
+ .../ethernet/mellanox/mlx5/core/esw/sample.c  | 108 ++++++++++++++++++
+ 1 file changed, 108 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
-index 9bd996e8d28a..37e33670bb24 100644
+index 37e33670bb24..79a0e49b2799 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/sample.c
-@@ -3,11 +3,28 @@
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ /* Copyright (c) 2021 Mellanox Technologies. */
  
++#include <linux/skbuff.h>
++#include <net/psample.h>
  #include "esw/sample.h"
  #include "eswitch.h"
-+#include "en_tc.h"
-+#include "fs_core.h"
- 
- struct mlx5_esw_psample {
- 	struct mlx5e_priv *priv;
- 	struct mlx5_flow_table *termtbl;
+ #include "en_tc.h"
+@@ -12,6 +14,8 @@ struct mlx5_esw_psample {
  	struct mlx5_flow_handle *termtbl_rule;
-+	DECLARE_HASHTABLE(hashtbl, 8);
-+	struct mutex ht_lock; /* protect hashtbl */
+ 	DECLARE_HASHTABLE(hashtbl, 8);
+ 	struct mutex ht_lock; /* protect hashtbl */
++	DECLARE_HASHTABLE(restore_hashtbl, 8);
++	struct mutex restore_lock; /* protect restore_hashtbl */
+ };
+ 
+ struct mlx5_sampler {
+@@ -25,6 +29,15 @@ struct mlx5_sampler {
+ 
+ struct mlx5_sample_flow {
+ 	struct mlx5_sampler *sampler;
++	struct mlx5_sample_restore *restore;
 +};
 +
-+struct mlx5_sampler {
++struct mlx5_sample_restore {
 +	struct hlist_node hlist;
-+	u32 sampler_id;
-+	u32 sample_ratio;
-+	u32 sample_table_id;
-+	u32 default_table_id;
++	struct mlx5_modify_hdr *modify_hdr;
++	struct mlx5_flow_handle *rule;
++	u32 obj_id;
 +	int count;
-+};
-+
-+struct mlx5_sample_flow {
-+	struct mlx5_sampler *sampler;
  };
  
  static int
-@@ -64,6 +81,117 @@ sampler_termtbl_destroy(struct mlx5_esw_psample *esw_psample)
- 	mlx5_destroy_flow_table(esw_psample->termtbl);
+@@ -192,6 +205,99 @@ sampler_put(struct mlx5_esw_psample *esw_psample, struct mlx5_sampler *sampler)
+ 	mutex_unlock(&esw_psample->ht_lock);
  }
  
-+static int
-+sampler_obj_create(struct mlx5_core_dev *mdev, struct mlx5_sampler *sampler)
++static struct mlx5_modify_hdr *
++sample_metadata_rule_get(struct mlx5_core_dev *mdev, u32 obj_id)
 +{
-+	u32 in[MLX5_ST_SZ_DW(create_sampler_obj_in)] = {};
-+	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-+	u64 general_obj_types;
-+	void *obj;
++	struct mlx5e_tc_mod_hdr_acts mod_acts = {};
++	struct mlx5_modify_hdr *modify_hdr;
 +	int err;
 +
-+	general_obj_types = MLX5_CAP_GEN_64(mdev, general_obj_types);
-+	if (!(general_obj_types & MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER))
-+		return -EOPNOTSUPP;
-+	if (!MLX5_CAP_ESW_FLOWTABLE_FDB(mdev, ignore_flow_level))
-+		return -EOPNOTSUPP;
++	err = mlx5e_tc_match_to_reg_set(mdev, &mod_acts, MLX5_FLOW_NAMESPACE_FDB,
++					CHAIN_TO_REG, obj_id);
++	if (err)
++		goto err_set_regc0;
 +
-+	obj = MLX5_ADDR_OF(create_sampler_obj_in, in, sampler_object);
-+	MLX5_SET(sampler_obj, obj, table_type, FS_FT_FDB);
-+	MLX5_SET(sampler_obj, obj, ignore_flow_level, 1);
-+	MLX5_SET(sampler_obj, obj, level, 1);
-+	MLX5_SET(sampler_obj, obj, sample_ratio, sampler->sample_ratio);
-+	MLX5_SET(sampler_obj, obj, sample_table_id, sampler->sample_table_id);
-+	MLX5_SET(sampler_obj, obj, default_table_id, sampler->default_table_id);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_SAMPLER);
++	modify_hdr = mlx5_modify_header_alloc(mdev, MLX5_FLOW_NAMESPACE_FDB,
++					      mod_acts.num_actions,
++					      mod_acts.actions);
++	if (IS_ERR(modify_hdr)) {
++		err = PTR_ERR(modify_hdr);
++		goto err_modify_hdr;
++	}
 +
-+	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	if (!err)
-+		sampler->sampler_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
++	dealloc_mod_hdr_actions(&mod_acts);
++	return modify_hdr;
 +
-+	return err;
++err_modify_hdr:
++	dealloc_mod_hdr_actions(&mod_acts);
++err_set_regc0:
++	return ERR_PTR(err);
 +}
 +
-+static void
-+sampler_obj_destroy(struct mlx5_core_dev *mdev, u32 sampler_id)
++static struct mlx5_sample_restore *
++sample_restore_get(struct mlx5_esw_psample *esw_psample, u32 obj_id)
 +{
-+	u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
-+	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-+
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_SAMPLER);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, sampler_id);
-+
-+	mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+}
-+
-+static u32
-+sampler_hash(u32 sample_ratio, u32 default_table_id)
-+{
-+	return jhash_2words(sample_ratio, default_table_id, 0);
-+}
-+
-+static int
-+sampler_cmp(u32 sample_ratio1, u32 default_table_id1, u32 sample_ratio2, u32 default_table_id2)
-+{
-+	return sample_ratio1 != sample_ratio2 || default_table_id1 != default_table_id2;
-+}
-+
-+static struct mlx5_sampler *
-+sampler_get(struct mlx5_esw_psample *esw_psample, u32 sample_ratio, u32 default_table_id)
-+{
-+	struct mlx5_sampler *sampler;
-+	u32 hash_key;
++	struct mlx5_core_dev *mdev = esw_psample->priv->mdev;
++	struct mlx5_eswitch *esw = mdev->priv.eswitch;
++	struct mlx5_sample_restore *restore;
++	struct mlx5_modify_hdr *modify_hdr;
 +	int err;
 +
-+	mutex_lock(&esw_psample->ht_lock);
-+	hash_key = sampler_hash(sample_ratio, default_table_id);
-+	hash_for_each_possible(esw_psample->hashtbl, sampler, hlist, hash_key)
-+		if (!sampler_cmp(sampler->sample_ratio, sampler->default_table_id,
-+				 sample_ratio, default_table_id))
++	mutex_lock(&esw_psample->restore_lock);
++	hash_for_each_possible(esw_psample->restore_hashtbl, restore, hlist, obj_id)
++		if (restore->obj_id == obj_id)
 +			goto add_ref;
 +
-+	sampler = kzalloc(sizeof(*sampler), GFP_KERNEL);
-+	if (!sampler) {
++	restore = kzalloc(sizeof(*restore), GFP_KERNEL);
++	if (!restore) {
 +		err = -ENOMEM;
 +		goto err_alloc;
 +	}
++	restore->obj_id = obj_id;
 +
-+	sampler->sample_table_id = esw_psample->termtbl->id;
-+	sampler->default_table_id = default_table_id;
-+	sampler->sample_ratio = sample_ratio;
++	modify_hdr = sample_metadata_rule_get(mdev, obj_id);
++	if (IS_ERR(modify_hdr)) {
++		err = PTR_ERR(modify_hdr);
++		goto err_modify_hdr;
++	}
++	restore->modify_hdr = modify_hdr;
 +
-+	err = sampler_obj_create(esw_psample->priv->mdev, sampler);
-+	if (err)
-+		goto err_create;
++	restore->rule = esw_add_restore_rule(esw, obj_id);
++	if (IS_ERR(restore->rule)) {
++		err = PTR_ERR(restore->rule);
++		goto err_restore;
++	}
 +
-+	hash_add(esw_psample->hashtbl, &sampler->hlist, hash_key);
-+
++	hash_add(esw_psample->restore_hashtbl, &restore->hlist, obj_id);
 +add_ref:
-+	sampler->count++;
-+	mutex_unlock(&esw_psample->ht_lock);
-+	return sampler;
++	restore->count++;
++	mutex_unlock(&esw_psample->restore_lock);
++	return restore;
 +
-+err_create:
-+	kfree(sampler);
++err_restore:
++	mlx5_modify_header_dealloc(mdev, restore->modify_hdr);
++err_modify_hdr:
++	kfree(restore);
 +err_alloc:
-+	mutex_unlock(&esw_psample->ht_lock);
++	mutex_unlock(&esw_psample->restore_lock);
 +	return ERR_PTR(err);
 +}
 +
 +static void
-+sampler_put(struct mlx5_esw_psample *esw_psample, struct mlx5_sampler *sampler)
++sample_restore_put(struct mlx5_esw_psample *esw_psample, struct mlx5_sample_restore *restore)
 +{
-+	mutex_lock(&esw_psample->ht_lock);
-+	if (--sampler->count == 0) {
-+		hash_del(&sampler->hlist);
-+		sampler_obj_destroy(esw_psample->priv->mdev, sampler->sampler_id);
-+		kfree(sampler);
++	mutex_lock(&esw_psample->restore_lock);
++	if (--restore->count == 0)
++		hash_del(&restore->hlist);
++	mutex_unlock(&esw_psample->restore_lock);
++
++	if (!restore->count) {
++		mlx5_del_flow_rules(restore->rule);
++		mlx5_modify_header_dealloc(esw_psample->priv->mdev, restore->modify_hdr);
++		kfree(restore);
 +	}
-+	mutex_unlock(&esw_psample->ht_lock);
 +}
 +
  struct mlx5_esw_psample *
  mlx5_esw_sample_init(struct mlx5e_priv *priv)
  {
-@@ -78,6 +206,8 @@ mlx5_esw_sample_init(struct mlx5e_priv *priv)
- 	if (err)
+@@ -207,6 +313,7 @@ mlx5_esw_sample_init(struct mlx5e_priv *priv)
  		goto err_termtbl;
  
-+	mutex_init(&esw_psample->ht_lock);
-+
+ 	mutex_init(&esw_psample->ht_lock);
++	mutex_init(&esw_psample->restore_lock);
+ 
  	return esw_psample;
  
- err_termtbl:
-@@ -91,6 +221,7 @@ mlx5_esw_sample_cleanup(struct mlx5_esw_psample *esw_psample)
+@@ -221,6 +328,7 @@ mlx5_esw_sample_cleanup(struct mlx5_esw_psample *esw_psample)
  	if (IS_ERR_OR_NULL(esw_psample))
  		return;
  
-+	mutex_destroy(&esw_psample->ht_lock);
++	mutex_destroy(&esw_psample->restore_lock);
+ 	mutex_destroy(&esw_psample->ht_lock);
  	sampler_termtbl_destroy(esw_psample);
  	kfree(esw_psample);
- }
 -- 
 2.30.2
 
