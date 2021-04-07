@@ -2,164 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667AF357801
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:52:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FF05357806
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 00:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbhDGWwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 18:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45760 "EHLO
+        id S229600AbhDGWz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 18:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbhDGWwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 18:52:10 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B06DC061760;
-        Wed,  7 Apr 2021 15:51:58 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id n12so479297ybf.8;
-        Wed, 07 Apr 2021 15:51:58 -0700 (PDT)
+        with ESMTP id S229449AbhDGWz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 18:55:56 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33262C061760;
+        Wed,  7 Apr 2021 15:55:46 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 91-20020a9d08640000b0290237d9c40382so399699oty.12;
+        Wed, 07 Apr 2021 15:55:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AvCKY6kTchBpneTfI6T8YSNqQ2pwQt7sPTsRbmVyKsQ=;
-        b=eyZCciAP8Zi0ZyxpTsjxY174TWzXbN/AXWPk2DX0CCp861EEIpI/AwcjIaAjPaHxUz
-         DFqXUkP7LYutjkuXS3iNgN//7V2jBpJ4/qtQ80+HY2ccL+IyBOahikdi89uhdyQWdL8U
-         UfmLIP+3CnuGPE3gMiOJgg+/NjcUbJMH+wrNnRRpSzMGm5Da3ylN8Ia87tfjaOAhQj+l
-         mrtfjvXK+OYQn1GcPTM5ZcS1kD1Yzptj62FpzzCpIEmXGvYPOhi6NdFdzk6vrkRedkDi
-         6WxHIP7Fzp8oWQzdhQ2g8xxn9MtzC2qFVwwbMHotrUS3yiBeNs4GREdcBKpijmRytwnf
-         SCGg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zJJBRBmoNh7AVevPubo0Tlu6DWii+4e8891pEEDBHjI=;
+        b=tYauJZsY/gR3rIUod4Y0oKs0ALsaWOKRQ/SVZ7eFqKJptKQns6rV+TMnmCxDCSgR0H
+         wuBShPAAsZ+dybrCY9cNbTsyvDfhhF3dNKfo4gWE9xw9ni4Y5LTj9eFeFDSM44Aq+jyU
+         H9fPWaWDqDANyHBpHTon8b8RDhsmT4jFZpNMt4c7q/AbzfW6bwtxZM0IhhnF/wNLrGHL
+         1UekFF0WctXYmnmziZN/kBHmEG4UP2LQmV0+LUDOmUIHy316lvT14QsoXUewotjznTYz
+         Bc86xajkEV+AewzsPoza9BQHW4EtlUc4sXS/eyX1QkPoVJoDO8DmYbXRyGyvqYHKBOOq
+         aWmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AvCKY6kTchBpneTfI6T8YSNqQ2pwQt7sPTsRbmVyKsQ=;
-        b=SQKTVQ7t/t5W9oZ9O7o3apeKVuVo8FKvwvqu0Y1k6YH+DD90h+qTthiV/Gqspf6Jew
-         TWg6fhSUGAgGRnk5rSaUG4PCJny5QLzxbxprqcmjYDTWEcAyTFgH3MelMdt5ZGA4D98X
-         4/mfTu/YT+DH+1y6tfHyNc2MiIPMD/FfPpEuGnphFBQdDP9JPz2I8uThTAUpjNSmuWSl
-         iyWopMS5o9OxaqgwPqcv0U1vXculUq0gDoiNqKCCQT6apTKiEYdsggKmkuXyb9I4F4C3
-         mLqLEALVFgWoy9B9Yo6kAgXB+R9Cu9VjL8OyekiUpfoWUrhOtZ8AXOsvtkVvBHUpWlCJ
-         +8fg==
-X-Gm-Message-State: AOAM533GvyN+/t3B0L4dDx7vF9dFAKAZroohgWuhU7Z/tA11YFOtdIL9
-        1er1mPJHJBvhRGorJGZ0jCg9CmVFN3P+p0bancs=
-X-Google-Smtp-Source: ABdhPJxixVwRidcUNcHPCAAeSqkpmvx5eKrWQeT9MHNhVmCPEuf0GVk8+Agj9bBRJh7y9cMLiCz/GBg6RGCYFEos8fc=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr7633465ybo.230.1617835917777;
- Wed, 07 Apr 2021 15:51:57 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zJJBRBmoNh7AVevPubo0Tlu6DWii+4e8891pEEDBHjI=;
+        b=qAA4TzOynEBVrOtYhEGTdmNo1tNoRCtQQjiGR0Q28ms07BNFL0Zta0iPvaRRPcbq90
+         vHzQSUBNM1XI5QERR1Lkp48rrh3Bj6WBEG3HzYPHftrg+4x2c2hQ9Ep9CZ8O2ev/kuUt
+         UDfxZPFhfZtslJE8CRKsIIVp19ayYEZSokPaNngu/xww4tIkQjVEym5OSis91CcdMSK2
+         AcClJkYqRTFC0HyqoefDVeFwOPKR5wjTPpbqiTA76XQeGeIyhycDzFNPayMw8nSXFonH
+         3SlsZgVwo961xRZFNfOd1Lhq+8Kr7Imhc3hZjZsBy+NFBpKnKPN33fGMLDDLsHA793Og
+         GFGA==
+X-Gm-Message-State: AOAM530LKnrdgFrQFyihY88vbnzR3FzfUvVtKpdQ/IC79hw8+ZsBUQFK
+        LU6ApjCLoW+vlG4KmDnRW1o=
+X-Google-Smtp-Source: ABdhPJysmR1+19ZGEMyK6LNwk3NCDthz5dXudt+ttQYbA3zcKzmGwlqSOOqSPfEQULFC6h0oxGXShw==
+X-Received: by 2002:a9d:1c7:: with SMTP id e65mr4879178ote.259.1617836145665;
+        Wed, 07 Apr 2021 15:55:45 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.56])
+        by smtp.googlemail.com with ESMTPSA id 3sm5156627ood.46.2021.04.07.15.55.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Apr 2021 15:55:44 -0700 (PDT)
+Subject: Re: [RFC net-next 1/1] seg6: add counters support for SRv6 Behaviors
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20210407180332.29775-1-andrea.mayer@uniroma2.it>
+ <20210407180332.29775-2-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <26222d31-2a27-c250-97e2-9220c098d836@gmail.com>
+Date:   Wed, 7 Apr 2021 16:55:41 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-References: <20210406212913.970917-1-jolsa@kernel.org> <20210406212913.970917-4-jolsa@kernel.org>
-In-Reply-To: <20210406212913.970917-4-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 7 Apr 2021 15:51:46 -0700
-Message-ID: <CAEf4BzaHCkRm0nFLtWxOJCY5sAAEGYWvLZC+BAjhv4RijAp9oQ@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf-next 3/5] selftests/bpf: Add re-attach test to fexit_test
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210407180332.29775-2-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 7, 2021 at 4:21 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> Adding the test to re-attach (detach/attach again) tracing
-> fexit programs, plus check that already linked program can't
-> be attached again.
->
-> Fixing the number of check-ed results, which should be 8.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  .../selftests/bpf/prog_tests/fexit_test.c     | 48 +++++++++++++++----
->  1 file changed, 38 insertions(+), 10 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_test.c b/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-> index 78d7a2765c27..579e620e6612 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-> @@ -3,20 +3,24 @@
->  #include <test_progs.h>
->  #include "fexit_test.skel.h"
->
-> -void test_fexit_test(void)
-> +static __u32 duration;
+On 4/7/21 12:03 PM, Andrea Mayer wrote:
+> diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
+> index 3b39ef1dbb46..ae5e3fd12b73 100644
+> --- a/include/uapi/linux/seg6_local.h
+> +++ b/include/uapi/linux/seg6_local.h
+> @@ -27,6 +27,7 @@ enum {
+>  	SEG6_LOCAL_OIF,
+>  	SEG6_LOCAL_BPF,
+>  	SEG6_LOCAL_VRFTABLE,
+> +	SEG6_LOCAL_COUNTERS,
+>  	__SEG6_LOCAL_MAX,
+>  };
+>  #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
+> @@ -78,4 +79,11 @@ enum {
+>  
+>  #define SEG6_LOCAL_BPF_PROG_MAX (__SEG6_LOCAL_BPF_PROG_MAX - 1)
+>  
+> +/* SRv6 Behavior counters */
+> +struct seg6_local_counters {
+> +	__u64 rx_packets;
+> +	__u64 rx_bytes;
+> +	__u64 rx_errors;
+> +};
 > +
-> +static int fexit_test(struct fexit_test *fexit_skel)
->  {
-> -       struct fexit_test *fexit_skel = NULL;
-> +       struct bpf_link *link;
->         int err, prog_fd, i;
-> -       __u32 duration = 0, retval;
->         __u64 *result;
-> -
-> -       fexit_skel = fexit_test__open_and_load();
-> -       if (CHECK(!fexit_skel, "fexit_skel_load", "fexit skeleton failed\n"))
-> -               goto cleanup;
-> +       __u32 retval;
->
->         err = fexit_test__attach(fexit_skel);
->         if (CHECK(err, "fexit_attach", "fexit attach failed: %d\n", err))
-> -               goto cleanup;
-> +               return err;
-> +
-> +       /* Check that already linked program can't be attached again. */
-> +       link = bpf_program__attach(fexit_skel->progs.test1);
-> +       if (CHECK(!IS_ERR(link), "fexit_attach_link",
-> +                 "re-attach without detach should not succeed"))
-> +               return -1;
->
->         prog_fd = bpf_program__fd(fexit_skel->progs.test1);
->         err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> @@ -26,12 +30,36 @@ void test_fexit_test(void)
->               err, errno, retval, duration);
->
->         result = (__u64 *)fexit_skel->bss;
-> -       for (i = 0; i < 6; i++) {
-> +       for (i = 0; i < 8; i++) {
->                 if (CHECK(result[i] != 1, "result",
->                           "fexit_test%d failed err %lld\n", i + 1, result[i]))
-> -                       goto cleanup;
-> +                       return -1;
->         }
->
-> +       fexit_test__detach(fexit_skel);
-> +
-> +       /* zero results for re-attach test */
-> +       for (i = 0; i < 8; i++)
-> +               result[i] = 0;
+>  #endif
 
-memset(fexit_skel->bss, 0, sizeof(*fexit_skel->bss)) ? ;)
+It's highly likely that more stats would get added over time. It would
+be good to document that here for interested parties and then make sure
+iproute2 can handle different sized stats structs. e.g., commit support
+to your repo, then add a new one (e.g, rx_drops) and verify the
+combinations handle it. e.g., old kernel - new iproute2, new kernel -
+old iproute, old - old and new-new.
 
-and see my nits in previous patch about ASSERT over CHECK
-
-
-> +       return 0;
-> +}
-> +
-> +void test_fexit_test(void)
-> +{
-> +       struct fexit_test *fexit_skel = NULL;
-> +       int err;
-> +
-> +       fexit_skel = fexit_test__open_and_load();
-> +       if (CHECK(!fexit_skel, "fexit_skel_load", "fexit skeleton failed\n"))
-> +               goto cleanup;
-> +
-> +       err = fexit_test(fexit_skel);
-> +       if (CHECK(err, "fexit_test", "first attach failed\n"))
-> +               goto cleanup;
-> +
-> +       err = fexit_test(fexit_skel);
-> +       CHECK(err, "fexit_test", "second attach failed\n");
-> +
->  cleanup:
->         fexit_test__destroy(fexit_skel);
->  }
-> --
-> 2.30.2
->
