@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B03DF3575D5
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48AAF3575D6
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:24:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236611AbhDGUX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:23:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55620 "EHLO mail.kernel.org"
+        id S1356083AbhDGUYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 16:24:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55632 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356084AbhDGUXq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1356085AbhDGUXq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 7 Apr 2021 16:23:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 99C166100A;
-        Wed,  7 Apr 2021 20:23:33 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2C95A611C1;
+        Wed,  7 Apr 2021 20:23:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617827014;
-        bh=3pp/V5WqRTMXmzvQNlzMjpnEPlUPC9IV8V62zXrSulY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Kg8xD3hkBCF+xv9xm0Jn+erl+1G8ArTyI0sKP0YNDJJtmsFic/oHI4noAH/dFln7E
-         CkkQv89OERcQiRc5B72m1OVmGm5vmPtVd34eQTaoDTW/A6FQIbgsbIJP9pxKtzZWq1
-         dLIExhdxAJz/AP+4qCY4JiJrLxkDBVznfXYIM8/pjv45DA3hIvJMviOTEM3FrZVr6p
-         Fe4LgPhsJZzZF9ClGI24qLxrTVGwMsoUWHfzI66lkUTFarBhHo6fFBZOc6VjhLyXVC
-         AMG0kh44TvIF1Pn1GPaIAZPMOBMfvbM0/2Xrfh5LsoWhcbwSTUsy1W9aknsW1t7vzA
-         O6+1pzGnmqMrw==
+        s=k20201202; t=1617827016;
+        bh=6wldpr+hTsALr9hUbIjmafvYQKRQa6/aGrR0cxZwLH4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NL2f8AvFXFQ1mA0A2K02qxD8qaiN0t5immrPsjijPUvKNq49F35GwUvIzh44bDIN9
+         a/LKDMroPDHLjsGkyrayQioFwKkAilJ6Cg0PwAvZ39rzyfgnrQEfHKT9JNEwwuMVk7
+         kWu+Fjh/dj40zborKwJe3T9Nb7MK1zZCIOQBy5mJtY6xt87BsOgcLH95PeltqhqSXe
+         UWYXKOfAf5Lg37tathrPf3Yz1qI2ktPHuKYGFhmMDjjOkiB26/pM79aluuy7nFJ6OZ
+         YYE8eOn2d1XFfLkje0kvUXZYUqo2mGEeRiwoVqcGgpQDHnEZEL3NkG34IJNyrjJ4dG
+         OgUtTZjJbcToQ==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>
 Cc:     "David S . Miller" <davem@davemloft.net>, kuba@kernel.org,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v4 00/16] net: phy: marvell10g updates
-Date:   Wed,  7 Apr 2021 22:22:38 +0200
-Message-Id: <20210407202254.29417-1-kabel@kernel.org>
+Subject: [PATCH net-next v4 01/16] net: phy: marvell10g: rename register
+Date:   Wed,  7 Apr 2021 22:22:39 +0200
+Message-Id: <20210407202254.29417-2-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210407202254.29417-1-kabel@kernel.org>
+References: <20210407202254.29417-1-kabel@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -39,59 +41,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here are some updates for marvell10g PHY driver.
+The MV_V2_PORT_MAC_TYPE_* is part of the CTRL register. Rename to
+MV_V2_PORT_CTRL_MACTYPE_*.
 
-I am still working on some more changes for this driver, but I would
-like to have at least something reviewed / applied.
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/phy/marvell10g.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Changes since v3:
-- added Andrew's Reviewed-by tags
-- removed patches adding variadic-macro library and bitmap
-  initialization macro - it causes warning that we are not currently
-  able to fix easily. Instead the supported_interfaces bitmap is now
-  initialized via a chip specific method
-- added explanation of mactype initialization to commit message of patch
-  07/16
-- fixed repeated word in commit message of second to last patch
-
-Changes since v2:
-- code refactored to use an additional structure mv3310_chip describing
-  mv3310 specific properties / operations for PHYs supported by this
-  driver
-- added separate phy_driver structures for 88X3340 and 88E2111
-- removed 88E2180 specific code (dual-port and quad-port SXGMII modes
-  are ignored for now)
-
-Changes since v1:
-- added various MACTYPEs support also for 88E21XX
-- differentiate between specific models with same PHY_ID
-- better check for compatible interface
-- print exact model
-
-Marek Behún (16):
-  net: phy: marvell10g: rename register
-  net: phy: marvell10g: fix typo
-  net: phy: marvell10g: allow 5gbase-r and usxgmii
-  net: phy: marvell10g: indicate 88X33x0 only port control registers
-  net: phy: marvell10g: add all MACTYPE definitions for 88X33x0
-  net: phy: marvell10g: add MACTYPE definitions for 88E21xx
-  net: phy: marvell10g: support all rate matching modes
-  net: phy: marvell10g: check for correct supported interface mode
-  net: phy: marvell10g: store temperature read method in chip strucutre
-  net: phy: marvell10g: support other MACTYPEs
-  net: phy: marvell10g: add separate structure for 88X3340
-  net: phy: marvell10g: fix driver name for mv88e2110
-  net: phy: add constants for 2.5G and 5G speed in PCS speed register
-  net: phy: marvell10g: differentiate 88E2110 vs 88E2111
-  net: phy: marvell10g: change module description
-  MAINTAINERS: add myself as maintainer of marvell10g driver
-
- MAINTAINERS                  |   1 +
- drivers/net/phy/marvell10g.c | 384 +++++++++++++++++++++++++++++------
- include/linux/marvell_phy.h  |   6 +-
- include/uapi/linux/mdio.h    |   2 +
- 4 files changed, 333 insertions(+), 60 deletions(-)
-
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 74b64e52ffa2..9b514124af0d 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -80,8 +80,8 @@ enum {
+ 	MV_V2_PORT_CTRL		= 0xf001,
+ 	MV_V2_PORT_CTRL_SWRST	= BIT(15),
+ 	MV_V2_PORT_CTRL_PWRDOWN = BIT(11),
+-	MV_V2_PORT_MAC_TYPE_MASK = 0x7,
+-	MV_V2_PORT_MAC_TYPE_RATE_MATCH = 0x6,
++	MV_V2_PORT_CTRL_MACTYPE_MASK = 0x7,
++	MV_V2_PORT_CTRL_MACTYPE_RATE_MATCH = 0x6,
+ 	/* Temperature control/read registers (88X3310 only) */
+ 	MV_V2_TEMP_CTRL		= 0xf08a,
+ 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
+@@ -477,8 +477,8 @@ static int mv3310_config_init(struct phy_device *phydev)
+ 	val = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL);
+ 	if (val < 0)
+ 		return val;
+-	priv->rate_match = ((val & MV_V2_PORT_MAC_TYPE_MASK) ==
+-			MV_V2_PORT_MAC_TYPE_RATE_MATCH);
++	priv->rate_match = ((val & MV_V2_PORT_CTRL_MACTYPE_MASK) ==
++			MV_V2_PORT_CTRL_MACTYPE_RATE_MATCH);
+ 
+ 	/* Enable EDPD mode - saving 600mW */
+ 	return mv3310_set_edpd(phydev, ETHTOOL_PHY_EDPD_DFLT_TX_MSECS);
 -- 
 2.26.2
 
