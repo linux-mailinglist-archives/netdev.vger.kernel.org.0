@@ -2,195 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F5C9357140
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7929E3571E9
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 18:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243271AbhDGP7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 11:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
+        id S245137AbhDGQK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 12:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354126AbhDGP7f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 11:59:35 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28202C061756
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 08:59:25 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id t24so5968087pjw.4
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 08:59:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DpB/I3hsJfInErSI6XP+V1fS0jFYk2FPtdF9VIzTjVE=;
-        b=YB74zvd0ir0HBGori7A27meYl5U372zwMJSF6jnlcqEOc2D5DiGZN4kAJftKcsLvUo
-         4MZ5BVXZLVsb9X+HTD3ggoi957Pkw+KAOC7a/MrK8pRl+d3H94dtbMEJTV9hbGx7Y7ny
-         0j6ddOVuJvaEJNRQ4AoWNqhsvhd9OQxPXznqSo6HHH3qHC9RM/aB2xvYfZWbWqcj0VWp
-         TEr3MLpmX/eq2y0Zre/SNnGvUFcrOrZQaIYVFfBF5tkyu7pgkOYXbeIRf3rL+K8hyQSs
-         5gUBiPM0O/yjuN7mXG+tKgNSWeU0IBmoObzNEC86P4nd/RFv5uvdcJkF4lqBgGpEEqCa
-         HxJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DpB/I3hsJfInErSI6XP+V1fS0jFYk2FPtdF9VIzTjVE=;
-        b=Xlsgei4GJYQv1eOjSkBERQc5PipC20ciKviviyqnC3hop/cIuHMZm+if7XKhHWni2k
-         PwOX81s5zRFf7ycQDKMc7YNM67DfLeluCaHawAsWBoj6pbcBmP3EC49k2ji0zt/pdhnc
-         00RjQnI6oXJORIe+a16+ayOtKmM4gLMnGnQyH1go6mvnrO9WvY2IkdgQgpGUlckot2+d
-         4dxYFedlf37CzMuGn2mFN1IzSKNylEilJjxpRtqq9SheJ6kV0rJnSMiMJg7tu+GlzngK
-         koPw4FguIBQUWqrRZcAjRWCJRV9iKCN3ioDFKYAKv4z7BLNaotoyaGP9Uwh8r4AFEGVj
-         r71w==
-X-Gm-Message-State: AOAM532/oTOcXNXYvmbBkhAyTrwbcwuTQgR6BF2UpBjOim6rweOrIyUr
-        LcQ15Vzi5TcGr0hk5kMY1aVQjMA/ECT8dw==
-X-Google-Smtp-Source: ABdhPJxnfmLdBBviLwpfn6Pnd+26Kh/ybe66bpZTcZJFbrLFmNgqMLLvVaWwPahFVU25m78JAKjn9Q==
-X-Received: by 2002:a17:90a:3d01:: with SMTP id h1mr4040063pjc.124.1617811164141;
-        Wed, 07 Apr 2021 08:59:24 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
-        by smtp.gmail.com with ESMTPSA id b186sm22352046pfb.170.2021.04.07.08.59.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Apr 2021 08:59:23 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Hongren Zheng <li@zenithal.me>
-Subject: [PATCH v2] ipv6: report errors for iftoken via netlink extack
-Date:   Wed,  7 Apr 2021 08:59:12 -0700
-Message-Id: <20210407155912.19602-1-sthemmin@microsoft.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S232069AbhDGQKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 12:10:54 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED212C061760;
+        Wed,  7 Apr 2021 09:10:38 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 18A9F22236;
+        Wed,  7 Apr 2021 18:10:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1617811836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gjuAN9QqCnWD77UCettma95Ojaeyk86+8J2wmtLYYZo=;
+        b=i99BezLwmPOE6w4/hGL0FvjE3br7uwuw9VGO9aRg8uJTlzeGu8Ac4FIxGX9vOQ8oMVP/r/
+        vE3I00R508lGU6R1pfNebHfFNtH5wO92z1+kMGfRRoMcmLezfBux9iSvegup2fWrGU4qza
+        5flIWUW4ulzNHWTXNBqNWa8WPLM3Izs=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 07 Apr 2021 18:10:30 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     ath9k-devel@qca.qualcomm.com, UNGLinuxDriver@microchip.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-amlogic@lists.infradead.org, linux-oxnas@groups.io,
+        linux-omap@vger.kernel.org, linux-wireless@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-staging@lists.linux.dev
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Andreas Larsson <andreas@gaisler.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Joyce Ooi <joyce.ooi@intel.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Byungho An <bh74.an@samsung.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Wingman Kwok <w-kwok2@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?J=C3=A9r=C3=B4me?= =?UTF-8?Q?_Pouiller?= 
+        <jerome.pouiller@silabs.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next v3 1/2] of: net: pass the dst buffer to
+ of_get_mac_address()
+In-Reply-To: <20210406220921.24313-2-michael@walle.cc>
+References: <20210406220921.24313-1-michael@walle.cc>
+ <20210406220921.24313-2-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <50f474611ecf0f5e61c9a14a24b28773@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
+Am 2021-04-07 00:09, schrieb Michael Walle:
+[..]
+> diff --git a/drivers/of/of_net.c b/drivers/of/of_net.c
+> index bc0a27de69d4..2d5d5e59aea5 100644
+> --- a/drivers/of/of_net.c
+> +++ b/drivers/of/of_net.c
+> @@ -45,42 +45,35 @@ int of_get_phy_mode(struct device_node *np,
+> phy_interface_t *interface)
+>  }
+>  EXPORT_SYMBOL_GPL(of_get_phy_mode);
+> 
+> -static const void *of_get_mac_addr(struct device_node *np, const char 
+> *name)
+> +static int of_get_mac_addr(struct device_node *np, const char *name, 
+> u8 *addr)
+>  {
+>  	struct property *pp = of_find_property(np, name, NULL);
+> 
+> -	if (pp && pp->length == ETH_ALEN && is_valid_ether_addr(pp->value))
+> -		return pp->value;
+> -	return NULL;
+> +	if (pp && pp->length == ETH_ALEN && is_valid_ether_addr(pp->value)) {
+> +		ether_addr_copy(addr, pp->value);
 
-Setting iftoken can fail for several different reasons but there
-and there was no report to user as to the cause. Add netlink
-extended errors to the processing of the request.
+Mh, I guess this should rather be memcpy(addr, pp->value, ETH_ALEN) 
+because
+ether_addr_copy() needs 2 byte aligned source and destination buffers.
 
-This requires adding additional argument through rtnl_af_ops
-set_link_af callback.
-
-Reported-by: Hongren Zheng <li@zenithal.me>
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
-v2 - fix typo that broke build
-
- include/net/rtnetlink.h |  4 ++--
- net/core/rtnetlink.c    |  2 +-
- net/ipv4/devinet.c      |  3 ++-
- net/ipv6/addrconf.c     | 32 ++++++++++++++++++++++++++------
- 4 files changed, 31 insertions(+), 10 deletions(-)
-
-diff --git a/include/net/rtnetlink.h b/include/net/rtnetlink.h
-index 4da61c950e93..479f60ef54c0 100644
---- a/include/net/rtnetlink.h
-+++ b/include/net/rtnetlink.h
-@@ -147,8 +147,8 @@ struct rtnl_af_ops {
- 	int			(*validate_link_af)(const struct net_device *dev,
- 						    const struct nlattr *attr);
- 	int			(*set_link_af)(struct net_device *dev,
--					       const struct nlattr *attr);
--
-+					       const struct nlattr *attr,
-+					       struct netlink_ext_ack *extack);
- 	int			(*fill_stats_af)(struct sk_buff *skb,
- 						 const struct net_device *dev);
- 	size_t			(*get_stats_af_size)(const struct net_device *dev);
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index d51252afde0a..641c2bd0e221 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2874,7 +2874,7 @@ static int do_setlink(const struct sk_buff *skb,
- 
- 			BUG_ON(!(af_ops = rtnl_af_lookup(nla_type(af))));
- 
--			err = af_ops->set_link_af(dev, af);
-+			err = af_ops->set_link_af(dev, af, extack);
- 			if (err < 0) {
- 				rcu_read_unlock();
- 				goto errout;
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 75f67994fc85..2e35f68da40a 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -1978,7 +1978,8 @@ static int inet_validate_link_af(const struct net_device *dev,
- 	return 0;
- }
- 
--static int inet_set_link_af(struct net_device *dev, const struct nlattr *nla)
-+static int inet_set_link_af(struct net_device *dev, const struct nlattr *nla,
-+			    struct netlink_ext_ack *extack)
- {
- 	struct in_device *in_dev = __in_dev_get_rcu(dev);
- 	struct nlattr *a, *tb[IFLA_INET_MAX+1];
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 120073ffb666..dbb5bb9269bb 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5672,7 +5672,8 @@ static int inet6_fill_link_af(struct sk_buff *skb, const struct net_device *dev,
- 	return 0;
- }
- 
--static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token)
-+static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token,
-+			     struct netlink_ext_ack *extack)
- {
- 	struct inet6_ifaddr *ifp;
- 	struct net_device *dev = idev->dev;
-@@ -5683,12 +5684,29 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token)
- 
- 	if (!token)
- 		return -EINVAL;
--	if (dev->flags & (IFF_LOOPBACK | IFF_NOARP))
-+
-+	if (dev->flags & IFF_LOOPBACK) {
-+		NL_SET_ERR_MSG_MOD(extack, "Device is loopback");
- 		return -EINVAL;
--	if (!ipv6_accept_ra(idev))
-+	}
-+
-+	if (dev->flags & IFF_NOARP) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Device does not do neighbour discovery");
-+		return -EINVAL;
-+	}
-+
-+	if (!ipv6_accept_ra(idev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Router advertisement is disabled on device");
- 		return -EINVAL;
--	if (idev->cnf.rtr_solicits == 0)
-+	}
-+
-+	if (idev->cnf.rtr_solicits == 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Router solicitation is disabled on device");
- 		return -EINVAL;
-+	}
- 
- 	write_lock_bh(&idev->lock);
- 
-@@ -5796,7 +5814,8 @@ static int inet6_validate_link_af(const struct net_device *dev,
- 	return 0;
- }
- 
--static int inet6_set_link_af(struct net_device *dev, const struct nlattr *nla)
-+static int inet6_set_link_af(struct net_device *dev, const struct nlattr *nla,
-+			     struct netlink_ext_ack *extack)
- {
- 	struct inet6_dev *idev = __in6_dev_get(dev);
- 	struct nlattr *tb[IFLA_INET6_MAX + 1];
-@@ -5809,7 +5828,8 @@ static int inet6_set_link_af(struct net_device *dev, const struct nlattr *nla)
- 		BUG();
- 
- 	if (tb[IFLA_INET6_TOKEN]) {
--		err = inet6_set_iftoken(idev, nla_data(tb[IFLA_INET6_TOKEN]));
-+		err = inet6_set_iftoken(idev, nla_data(tb[IFLA_INET6_TOKEN]),
-+					extack);
- 		if (err)
- 			return err;
- 	}
--- 
-2.30.2
-
+-michael
