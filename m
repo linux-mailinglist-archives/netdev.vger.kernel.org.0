@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA51F356223
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 05:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C16356233
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 05:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348435AbhDGDuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Apr 2021 23:50:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50776 "EHLO mail.kernel.org"
+        id S1348424AbhDGDvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Apr 2021 23:51:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348457AbhDGDuF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Apr 2021 23:50:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ED77A61245;
-        Wed,  7 Apr 2021 03:49:55 +0000 (UTC)
+        id S1348470AbhDGDui (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Apr 2021 23:50:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 367006139E;
+        Wed,  7 Apr 2021 03:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617767396;
-        bh=3yPZvyfKsvop+5Gmiujbfk7NPCkDAXBYVU2vefEFYQo=;
+        s=k20201202; t=1617767422;
+        bh=+hV6StB2m1WzLoc3aZpUAwuN3oAopFY5hUem98F9tOU=;
         h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ipYxTt0FiNQw05eYtHLNJgNAQuT7f/N2I9+GKUFdVSHtU+z6xO39CYuDewaIvfzJ6
-         gSFHN40w7kvHZOYdYu4r6WAakXKxe8KSt4xQYBTwBh/crCtZ9Ibp9JQ+/+0pgZAaJo
-         qxFqh4/JFPpU0qgrzwsI9rEOOOWCA7KuD3X5eYSB/0Zy8VGKfKR1chxSI6kQb9rrDo
-         WYt5kz0JdZtqsi4qPx9Z7vA+XuuQMDqexwPMD6hv8V10rZgY8VqWgH5z8mTjq1XPL1
-         BNGHrRHOP9TZEq1nU0/uXAuq297UfEDZPmt2FTTqTzmJmTaH/UELMnB6F1tGF2yAnj
-         bz78sIBQr5gVw==
-Message-ID: <6b7d173f940ecf02ba1f8c8d636b91329be4a5c1.camel@kernel.org>
-Subject: Re: [PATCH] net/mlx5: fix kfree mismatch in indir_table.c
+        b=pOTizx6PgwdxmN/qgW3gkF+2z8ALTpmVTL28KHbk+8VJaqtE0VoIWrXhUVXvDFUHn
+         KlL+mdTPBTJ3v/eOO7sslhRQyU8bPzkeY5nrrs5yx52Up+IykF6ekcEsqxGUjFF9MT
+         jiVl7/a9Qki6+Ui8X7t8VNEK+56Xw/p7eQHqax/FW7cnhDIHJCeg3lx5jVh1h+1gu0
+         M30s54Vji76zWFiK/wFAkz7It7Lu2c393QXEkLm5e6z5pRBexamG1fdpfYeiFod95H
+         sy8yuMEHIDGMcnlm5JsH8cDUPFCTuSJkw1n5Dm4WZIOp5GwxjS5ednD9rMf48r/LAq
+         AW34aGj+InajQ==
+Message-ID: <2dc3c870b5070ee6aa0f79394403ec3e342a45d2.camel@kernel.org>
+Subject: Re: [PATCH net-next 0/3] net/mlx5: Fix some coding-style issues
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Xiaoming Ni <nixiaoming@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, vladbu@nvidia.com,
-        dlinkin@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        roid@nvidia.com, dan.carpenter@oracle.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, xiaoqian9@huawei.com
-Date:   Tue, 06 Apr 2021 20:49:55 -0700
-In-Reply-To: <YGqYfcCMWTW8fN7U@unreal>
-References: <20210405025339.86176-1-nixiaoming@huawei.com>
-         <YGqYfcCMWTW8fN7U@unreal>
+To:     Weihang Li <liweihang@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, leon@kernel.org, linuxarm@huawei.com
+Date:   Tue, 06 Apr 2021 20:50:21 -0700
+In-Reply-To: <1617282463-47124-1-git-send-email-liweihang@huawei.com>
+References: <1617282463-47124-1-git-send-email-liweihang@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
@@ -44,24 +40,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-04-05 at 07:56 +0300, Leon Romanovsky wrote:
-> On Mon, Apr 05, 2021 at 10:53:39AM +0800, Xiaoming Ni wrote:
-> > Memory allocated by kvzalloc() should be freed by kvfree().
-> > 
-> > Fixes: 34ca65352ddf2 ("net/mlx5: E-Switch, Indirect table
-> > infrastructur")
-> > Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
-> > ---
-> >  .../net/ethernet/mellanox/mlx5/core/esw/indir_table.c  | 10 +++++-
-> > ----
-> >  1 file changed, 5 insertions(+), 5 deletions(-)
-> > 
+On Thu, 2021-04-01 at 21:07 +0800, Weihang Li wrote:
+> Just make some cleanups according to the coding style of kernel.
 > 
-> Thanks,
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+> Wenpeng Liang (3):
+>   net/mlx5: Add a blank line after declarations.
+>   net/mlx5: Remove return statement exist at the end of void function
+>   net/mlx5: Replace spaces with tab at the start of a line
+> 
 
-Applied to net-mlx5.
 
-Thanks,
-Saeed.
+Applied to net-next-mlx5, Thanks!
 
