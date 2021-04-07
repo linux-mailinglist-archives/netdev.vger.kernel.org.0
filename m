@@ -2,146 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0595D35765B
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CFF7357662
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231603AbhDGUxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 16:53:31 -0400
-Received: from vps-vb.mhejs.net ([37.28.154.113]:40426 "EHLO vps-vb.mhejs.net"
+        id S231665AbhDGU6A convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 7 Apr 2021 16:58:00 -0400
+Received: from mga11.intel.com ([192.55.52.93]:7384 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231520AbhDGUxa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 16:53:30 -0400
-Received: from MUA
-        by vps-vb.mhejs.net with esmtps (TLS1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.93.0.4)
-        (envelope-from <mail@maciej.szmigiero.name>)
-        id 1lUFAn-0007gx-8c; Wed, 07 Apr 2021 22:53:13 +0200
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Pkshih <pkshih@realtek.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        id S230280AbhDGU6A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 16:58:00 -0400
+IronPort-SDR: UFx+9ZdaqXgsBrEeXM8TdBR33wamgRdPIp0y7SrIUp4GsuRatU3n+dMBxx8+edze4IN1m75NMh
+ icZ157R7luhA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9947"; a="190191507"
+X-IronPort-AV: E=Sophos;i="5.82,204,1613462400"; 
+   d="scan'208";a="190191507"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2021 13:57:49 -0700
+IronPort-SDR: fVLd8J2vn5ntl6ZMv1okATtVh8G56197l5s7VNnm6Bzb/CcJf55MM7Ij/2iU3KF44nfE/lc1wT
+ 3p0Gu9Ay499A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,204,1613462400"; 
+   d="scan'208";a="421866929"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga008.jf.intel.com with ESMTP; 07 Apr 2021 13:57:48 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 7 Apr 2021 13:57:48 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 7 Apr 2021 13:57:47 -0700
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
+ Wed, 7 Apr 2021 13:57:47 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>
-References: <e2924d81-0e30-2dd0-292b-428fea199484@maciej.szmigiero.name>
- <846f6166-c570-01fc-6bbc-3e3b44e51327@maciej.szmigiero.name>
- <87r1jnohq6.fsf@codeaurora.org>
- <8e0434eb-d15f-065d-2ba7-b50c67877112@maciej.szmigiero.name>
- <a2003668-5108-27b9-95cd-9e1d5d1aa94d@lwfinger.net>
- <1617763692.9857.7.camel@realtek.com>
- <1dc7e487-b97b-8584-47f7-37f3385c7bf9@lwfinger.net>
-From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Subject: Re: rtlwifi/rtl8192cu AP mode broken with PS STA
-Message-ID: <15737dcf-95ac-1ce6-a681-94ff5db968e4@maciej.szmigiero.name>
-Date:   Wed, 7 Apr 2021 22:53:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
-MIME-Version: 1.0
-In-Reply-To: <1dc7e487-b97b-8584-47f7-37f3385c7bf9@lwfinger.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: RE: [PATCH v4 resend 21/23] RDMA/irdma: Add ABI definitions
+Thread-Topic: [PATCH v4 resend 21/23] RDMA/irdma: Add ABI definitions
+Thread-Index: AQHXK0M5OCiQP5QpKUub4mrB8DCt/6qpotaA///Na3A=
+Date:   Wed, 7 Apr 2021 20:57:47 +0000
+Message-ID: <7bdafebdab4a423a8c6fecd0684fedbb@intel.com>
+References: <20210407001502.1890-1-shiraz.saleem@intel.com>
+ <20210407001502.1890-22-shiraz.saleem@intel.com>
+ <20210407152349.GA502118@nvidia.com>
+In-Reply-To: <20210407152349.GA502118@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.04.2021 06:21, Larry Finger wrote:
-> On 4/6/21 9:48 PM, Pkshih wrote:
->> On Tue, 2021-04-06 at 11:25 -0500, Larry Finger wrote:
->>> On 4/6/21 7:06 AM, Maciej S. Szmigiero wrote:
->>>> On 06.04.2021 12:00, Kalle Valo wrote:
->>>>> "Maciej S. Szmigiero" <mail@maciej.szmigiero.name> writes:
->>>>>
->>>>>> On 29.03.2021 00:54, Maciej S. Szmigiero wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> It looks like rtlwifi/rtl8192cu AP mode is broken when a STA is using PS,
->>>>>>> since the driver does not update its beacon to account for TIM changes,
->>>>>>> so a station that is sleeping will never learn that it has packets
->>>>>>> buffered at the AP.
->>>>>>>
->>>>>>> Looking at the code, the rtl8192cu driver implements neither the set_tim()
->>>>>>> callback, nor does it explicitly update beacon data periodically, so it
->>>>>>> has no way to learn that it had changed.
->>>>>>>
->>>>>>> This results in the AP mode being virtually unusable with STAs that do
->>>>>>> PS and don't allow for it to be disabled (IoT devices, mobile phones,
->>>>>>> etc.).
->>>>>>>
->>>>>>> I think the easiest fix here would be to implement set_tim() for example
->>>>>>> the way rt2x00 driver does: queue a work or schedule a tasklet to update
->>>>>>> the beacon data on the device.
->>>>>>
->>>>>> Are there any plans to fix this?
->>>>>> The driver is listed as maintained by Ping-Ke.
->>>>>
->>>>> Yeah, power save is hard and I'm not surprised that there are drivers
->>>>> with broken power save mode support. If there's no fix available we
->>>>> should stop supporting AP mode in the driver.
->>>>>
->>>> https://wireless.wiki.kernel.org/en/developers/documentation/mac80211/api
->>>> clearly documents that "For AP mode, it must (...) react to the set_tim()
->>>> callback or fetch each beacon from mac80211".
->>>> The driver isn't doing either so no wonder the beacon it is sending
->>>> isn't getting updated.
->>>> As I have said above, it seems to me that all that needs to be done here
->>>> is to queue a work in a set_tim() callback, then call
->>>> send_beacon_frame() from rtlwifi/core.c from this work.
->>>> But I don't know the exact device semantics, maybe it needs some other
->>>> notification that the beacon has changed, too, or even tries to
->>>> manage the TIM bitmap by itself.
->>>> It would be a shame to lose the AP mode for such minor thing, though.
->>>> I would play with this myself, but unfortunately I don't have time
->>>> to work on this right now.
->>>> That's where my question to Realtek comes: are there plans to actually
->>>> fix this?
->>>
->>> Yes, I am working on this. My only question is "if you are such an expert on the
->>> problem, why do you not fix it?"
->>>
->>> The example in rx200 is not particularly useful, and I have not found any other
->>> examples.
->>>
->>
->> Hi Larry,
->>
->> I have a draft patch that forks a work to do send_beacon_frame(), whose
->> behavior like Maciej mentioned.
-
-That's great, thanks!
-
->> I did test on RTL8821AE; it works well. But, it seems already work well even
->> I don't apply this patch, and I'm still digging why.
-
-It looks like PCI rtlwifi hardware uses a tasklet (specifically,
-_rtl_pci_prepare_bcn_tasklet() in pci.c) to periodically transfer the
-current beacon to the NIC.
-
-This tasklet is scheduled on a RTL_IMR_BCNINT interrupt, which sounds
-like a beacon interval interrupt.
-
->> I don't have a rtl8192cu dongle on hand, but I'll try to find one.
+> Subject: Re: [PATCH v4 resend 21/23] RDMA/irdma: Add ABI definitions
 > 
-> Maceij,
+> On Tue, Apr 06, 2021 at 07:15:00PM -0500, Shiraz Saleem wrote:
+> > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> >
+> > Add ABI definitions for irdma.
+> >
+> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > include/uapi/rdma/irdma-abi.h | 116
+> > ++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 116 insertions(+)
+> >  create mode 100644 include/uapi/rdma/irdma-abi.h
+> >
+> > diff --git a/include/uapi/rdma/irdma-abi.h
+> > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
+> > 0000000..d994b0b
+> > +++ b/include/uapi/rdma/irdma-abi.h
+> > @@ -0,0 +1,116 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR
+> > +Linux-OpenIB) */
+> > +/*
+> > + * Copyright (c) 2006 - 2021 Intel Corporation.  All rights reserved.
+> > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
+> > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
+> > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
+> > + */
+> > +
+> > +#ifndef IRDMA_ABI_H
+> > +#define IRDMA_ABI_H
+> > +
+> > +#include <linux/types.h>
+> > +
+> > +/* irdma must support legacy GEN_1 i40iw kernel
+> > + * and user-space whose last ABI ver is 5  */ #define IRDMA_ABI_VER 5
+> > +
+> > +enum irdma_memreg_type {
+> > +	IW_MEMREG_TYPE_MEM  = 0,
+> > +	IW_MEMREG_TYPE_QP   = 1,
+> > +	IW_MEMREG_TYPE_CQ   = 2,
+> > +	IW_MEMREG_TYPE_RSVD = 3,
+> > +	IW_MEMREG_TYPE_MW   = 4,
+> > +};
+> > +
+> > +struct irdma_alloc_ucontext_req {
+> > +	__u32 rsvd32;
+> > +	__u8 userspace_ver;
+> > +	__u8 rsvd8[3];
+> > +};
+> > +
+> > +struct irdma_alloc_ucontext_resp {
+> > +	__u32 max_pds;
+> > +	__u32 max_qps;
+> > +	__u32 wq_size; /* size of the WQs (SQ+RQ) in the mmaped area */
+> > +	__u8 kernel_ver;
+> > +	__u8 rsvd[3];
 > 
-> Does this patch fix the problem?
+> So this reserved is to align and for compat with i40iw
+> 
+> > +	__aligned_u64 feature_flags;
+> > +	__aligned_u64 db_mmap_key;
+> > +	__u32 max_hw_wq_frags;
+> > +	__u32 max_hw_read_sges;
+> > +	__u32 max_hw_inline;
+> > +	__u32 max_hw_rq_quanta;
+> > +	__u32 max_hw_wq_quanta;
+> > +	__u32 min_hw_cq_size;
+> > +	__u32 max_hw_cq_size;
+> > +	__u32 rsvd1[7];
+> 
+> But what is this for?
+> 
+> > +	__u16 max_hw_sq_chunk;
+> > +	__u16 rsvd2[11];
+> 
+> And this?
+> 
+> Reserved should only be used for alignment reasons.
 
-The beacon seems to be updating now and STAs no longer get stuck in PS
-mode.
-Although sometimes (every 2-3 minutes with continuous 1s interval pings)
-there is around 5s delay in updating the transmitted beacon - don't know
-why, maybe the NIC hardware still has the old version in queue?
+Understood.
 
-I doubt, however that this set_tim() callback should be added for every
-rtlwifi device type.
+> 
+> You saw the other explosive thread with Intel about this topic, right?
+> 
+> > +struct irdma_mem_reg_req {
+> > +	__u16 reg_type; /* Memory, QP or CQ */
+> 
+> Comment is better to clarify this is an enum irdma_memreg_type, especially since
+> it seems to be wrong?
+> 
+> Why is that enum prefixed with IW_?
+> 
 
-As I have said above, PCI devices seem to already have a mechanism in
-place to update their beacon each beacon interval.
-Your test that RTL8821AE works without this patch confirms that (at
-least for the rtl8821ae driver).
-
-It seems this callback is only necessarily for USB rtlwifi devices.
-Which currently means rtl8192cu only.
-
-Thanks,
-Maciej
+Will fix.
