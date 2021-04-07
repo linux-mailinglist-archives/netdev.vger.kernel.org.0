@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13566356B6F
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59214356B72
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 13:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351875AbhDGLkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 07:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234582AbhDGLkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 07:40:00 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B941C061756;
-        Wed,  7 Apr 2021 04:39:51 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso1154759pjh.2;
-        Wed, 07 Apr 2021 04:39:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HirO+Q0OBJEy9dZvyn9vrel+cDU947PTKIKG1x5aZyY=;
-        b=DeVZjEOrLpyIKfXVzFf3QrEuuRj74/eNunk4N0dbceNCcnRJcbjhzz6oui8K8uvH7I
-         In30n6uMnyckuGKjYnrP+X+iBRAX+iVGmROCHCXU7kejM+Zd+x6fwcuHMkDMqWr3LrlY
-         L9JROlGzg4DVYkU9623xx/KqrMeTzj72TpBdmDt6oEelC4uDGq/Do1M4ADSZ7wXNKY9u
-         AYDI1lBRzAw/D5g7hWwBpJNwXEbr/TsDtjrplQGRMMWp3F2inKcdk5Jws9b6IRqg5b3E
-         MfZkYxlNadtPYR4/9Z8J7Isrx4aRU3JYjruMBZwNjvxe4reE70tMfbwTNgMRNxuQhKmU
-         6FRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HirO+Q0OBJEy9dZvyn9vrel+cDU947PTKIKG1x5aZyY=;
-        b=ICsQe3SZhdGjohcz9kKyucb3UKII4pabzr191q7HRY1i8NSFOqO5H1ErOiBT8CC+Uc
-         0VdCapuLzsWH5vIBwuX6YX2eFXHPbzpCf+/SBdLuJeWxY3/74QhF0yeeokg8ERYd9Imm
-         agcN3QW7/KMRNq4dQNzW/3Hia2Q9jB3+WKmYs4TAMb7coQOKSvcOf9X6xiU+oWEZ7iFr
-         sFPHsIQjrjQdnOcinKBJ0OkYPBL8WL4y5n0bY221ZVosJu1Onz/KD5XPSWTSc6XHE6sg
-         oJ6Vn/bl8Y8n2c7L88mxvo57QrgR55X2dLgx2pcJSm8Kv1kY3mIZnzzW+3knRkWwVo1E
-         I3qQ==
-X-Gm-Message-State: AOAM533r2W2OTJuIOU9MXrxzw+E/NztRaUKHVoUU/JiiTJ5hmDmRCuU3
-        0JxYtKQNnZy/8ylN8IyowDOT65sTca2dJQ==
-X-Google-Smtp-Source: ABdhPJww07QLcE+H4zAn69VAwEZGYO7CfiGLNi1L3tPaJivFoSjfT0HKveDMQ+Zk7cmpR1XmooAtxA==
-X-Received: by 2002:a17:902:9f94:b029:e9:68a3:8551 with SMTP id g20-20020a1709029f94b02900e968a38551mr1673693plq.35.1617795590482;
-        Wed, 07 Apr 2021 04:39:50 -0700 (PDT)
-Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a13sm20854321pgm.43.2021.04.07.04.39.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Apr 2021 04:39:50 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        id S1351881AbhDGLmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 07:42:21 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:40202 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234728AbhDGLmU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 07:42:20 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1617795731; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=2bEXU07KJTPWcpqZSC9pNhP9GNRo/qR1ochtvmF+2FY=; b=qjwCYKnbh1gLux8GpYqW90qUNEqb2EO6f1Z8R7AjzTsLdBnLY9OmQaD93eiWMWS4T3dburXx
+ RM090KoEdYJglp5oh6Rcfd/wjjR6qK/P5JtKLIQBGhuPacGpHBYqHwxeh5Nxl+/YyIjd4mVi
+ jAOQO/97k1YE7kD5lqFelNvCvrc=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 606d9a8bc06dd10a2dadfe60 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 07 Apr 2021 11:42:03
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id DEC5FC433C6; Wed,  7 Apr 2021 11:42:02 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9AE15C433C6;
+        Wed,  7 Apr 2021 11:41:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9AE15C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        linux-crypto@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
-Date:   Wed,  7 Apr 2021 19:39:20 +0800
-Message-Id: <20210407113920.3735505-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.26.3
+        Luciano Coelho <coelho@ti.com>, Arik Nemtsov <arik@wizery.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] wlcore: fix overlapping snprintf arguments in debugfs
+References: <20210323125723.1961432-1-arnd@kernel.org>
+Date:   Wed, 07 Apr 2021 14:41:57 +0300
+In-Reply-To: <20210323125723.1961432-1-arnd@kernel.org> (Arnd Bergmann's
+        message of "Tue, 23 Mar 2021 13:57:14 +0100")
+Message-ID: <8735w2nwxm.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the cryptos(BLAKE2S, Curve25519, CHACHA20POLY1305) in WireGuard are not
-FIPS certified, the WireGuard module should be disabled in FIPS mode.
+Arnd Bergmann <arnd@kernel.org> writes:
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- drivers/net/wireguard/main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> gcc complains about undefined behavior in calling snprintf()
+> with the same buffer as input and output:
+>
+> drivers/net/wireless/ti/wl18xx/debugfs.c: In function
+> 'diversity_num_of_packets_per_ant_read':
+> drivers/net/wireless/ti/wl18xx/../wlcore/debugfs.h:86:3: error:
+> 'snprintf' argument 4 overlaps destination object 'buf'
+> [-Werror=restrict]
+>    86 |   snprintf(buf, sizeof(buf), "%s[%d] = %d\n",  \
+>       |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    87 |     buf, i, stats->sub.name[i]);   \
+>       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ti/wl18xx/debugfs.c:24:2: note: in expansion of
+> macro 'DEBUGFS_FWSTATS_FILE_ARRAY'
+>    24 |  DEBUGFS_FWSTATS_FILE_ARRAY(a, b, c, wl18xx_acx_statistics)
+>       |  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/wireless/ti/wl18xx/debugfs.c:159:1: note: in expansion of macro 'WL18XX_DEBUGFS_FWSTATS_FILE_ARRAY'
+>   159 | WL18XX_DEBUGFS_FWSTATS_FILE_ARRAY(diversity, num_of_packets_per_ant,
+>
+> There are probably other ways of handling the debugfs file, without
+> using on-stack buffers, but a simple workaround here is to remember the
+> current position in the buffer and just keep printing in there.
+>
+> Fixes: bcca1bbdd412 ("wlcore: add debugfs macro to help print fw statistics arrays")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/wireless/ti/wlcore/boot.c    | 13 ++++++++-----
+>  drivers/net/wireless/ti/wlcore/debugfs.h |  7 ++++---
 
-diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index 7a7d5f1a80fc..8a9aaea7623c 100644
---- a/drivers/net/wireguard/main.c
-+++ b/drivers/net/wireguard/main.c
-@@ -12,6 +12,7 @@
- 
- #include <uapi/linux/wireguard.h>
- 
-+#include <linux/fips.h>
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/genetlink.h>
-@@ -21,6 +22,9 @@ static int __init mod_init(void)
- {
- 	int ret;
- 
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- #ifdef DEBUG
- 	if (!wg_allowedips_selftest() || !wg_packet_counter_selftest() ||
- 	    !wg_ratelimiter_selftest())
+This should go to wireless-drivers-next, not net-next.
+
 -- 
-2.26.3
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
