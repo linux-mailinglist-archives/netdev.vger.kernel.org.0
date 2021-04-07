@@ -2,117 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 464BA357667
-	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 22:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF0F357681
+	for <lists+netdev@lfdr.de>; Wed,  7 Apr 2021 23:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbhDGU7D convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 7 Apr 2021 16:59:03 -0400
-Received: from mga03.intel.com ([134.134.136.65]:61743 "EHLO mga03.intel.com"
+        id S231919AbhDGVKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 17:10:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40952 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231707AbhDGU7C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 16:59:02 -0400
-IronPort-SDR: iZnFphsfkZZNeN3BGAvJ/9/xGVr2Vw7k313MWCxgtLria1aKYrRwlxgYOvQwHCpsnEkcdwMylW
- Ig+BoxtMEoFw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9947"; a="193440584"
-X-IronPort-AV: E=Sophos;i="5.82,204,1613462400"; 
-   d="scan'208";a="193440584"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2021 13:58:50 -0700
-IronPort-SDR: jZf5jgVsUDNG49mh7O1Bo4E7i/D592hw+KaqL4kbfq4XrqFf1REUIoM8VaXO3IVHeGZ+YcFu/s
- +7ESFNCxvlSw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,204,1613462400"; 
-   d="scan'208";a="421867343"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga008.jf.intel.com with ESMTP; 07 Apr 2021 13:58:50 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 7 Apr 2021 13:58:50 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 7 Apr 2021 13:58:49 -0700
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
- Wed, 7 Apr 2021 13:58:49 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Subject: RE: [PATCH v4 01/23] iidc: Introduce iidc.h
-Thread-Topic: [PATCH v4 01/23] iidc: Introduce iidc.h
-Thread-Index: AQHXKygiEMWtUC1Uo0mj4KR4ZXyZX6qpqNQA///J7iA=
-Date:   Wed, 7 Apr 2021 20:58:49 +0000
-Message-ID: <1e61169b83ac458aa9357298ecfab846@intel.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-2-shiraz.saleem@intel.com>
- <20210407154430.GA502757@nvidia.com>
-In-Reply-To: <20210407154430.GA502757@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S229469AbhDGVKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Apr 2021 17:10:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 55A456121E;
+        Wed,  7 Apr 2021 21:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617829809;
+        bh=qUpWG+JR+Dljb5RXh4lK++1952pR3aASzw7TtTfx5tA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cgVIjMS0VeEPsAfBEfAK726EDod2XbEwcChYvB4AhUIDjq00kQoF4c6fTBwDvKbfi
+         LOTVpPLXB6JNaDP7QxNgHTyMH/Kz/0wU5H1v08hvox8Jh00gZ0CtJc4RCyalVLgHDf
+         hQfHagO6L4Ns0v1MHBbXIZUfjazejI53jX0Q/Epw8lv88mTiEOM7ASBYMh2J/nKgUO
+         DnEd+vqTVov0jUV0RyiZEgkn1nodLAwBFvl9ucXB6ZgOe/ad3J9fq2kb2sMylJGP0K
+         8NGPV91dFDUFqXXEGANIC9wSBZfycmkaQtfpCjyRd1hZhTk1kMDBC1AYDfISl6nlIB
+         +4SXu9p6XM6Rg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 44A8E60A71;
+        Wed,  7 Apr 2021 21:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net/rds: Avoid potential use after free in
+ rds_send_remove_from_sock
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161782980927.12624.5215933274720336913.git-patchwork-notify@kernel.org>
+Date:   Wed, 07 Apr 2021 21:10:09 +0000
+References: <20210407000913.2207831-1-pakki001@umn.edu>
+In-Reply-To: <20210407000913.2207831-1-pakki001@umn.edu>
+To:     Aditya Pakki <pakki001@umn.edu>
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v4 01/23] iidc: Introduce iidc.h
-> 
-> On Tue, Apr 06, 2021 at 04:01:03PM -0500, Shiraz Saleem wrote:
-> 
-> > +/* Following APIs are implemented by core PCI driver */ struct
-> > +iidc_core_ops {
-> > +	/* APIs to allocate resources such as VEB, VSI, Doorbell queues,
-> > +	 * completion queues, Tx/Rx queues, etc...
-> > +	 */
-> > +	int (*alloc_res)(struct iidc_core_dev_info *cdev_info,
-> > +			 struct iidc_res *res,
-> > +			 int partial_acceptable);
-> > +	int (*free_res)(struct iidc_core_dev_info *cdev_info,
-> > +			struct iidc_res *res);
-> > +
-> > +	int (*request_reset)(struct iidc_core_dev_info *cdev_info,
-> > +			     enum iidc_reset_type reset_type);
-> > +
-> > +	int (*update_vport_filter)(struct iidc_core_dev_info *cdev_info,
-> > +				   u16 vport_id, bool enable);
-> > +	int (*vc_send)(struct iidc_core_dev_info *cdev_info, u32 vf_id, u8 *msg,
-> > +		       u16 len);
-> > +};
-> 
-> What is this? There is only one implementation:
-> 
-> static const struct iidc_core_ops ops = {
-> 	.alloc_res			= ice_cdev_info_alloc_res,
-> 	.free_res			= ice_cdev_info_free_res,
-> 	.request_reset			= ice_cdev_info_request_reset,
-> 	.update_vport_filter		= ice_cdev_info_update_vsi_filter,
-> 	.vc_send			= ice_cdev_info_vc_send,
-> };
-> 
-> So export and call the functions directly.
+Hello:
 
-No. Then we end up requiring ice to be loaded even when just want to use irdma with x722 [whose ethernet driver is "i40e"].
-This will not allow us to be a unified RDMA driver.
+This patch was applied to netdev/net.git (refs/heads/master):
 
+On Tue,  6 Apr 2021 19:09:12 -0500 you wrote:
+> In case of rs failure in rds_send_remove_from_sock(), the 'rm' resource
+> is freed and later under spinlock, causing potential use-after-free.
+> Set the free pointer to NULL to avoid undefined behavior.
 > 
-> We just had this very same discussion with Broadcom.
+> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+> ---
+>  net/rds/message.c | 1 +
+>  net/rds/send.c    | 2 +-
+>  2 files changed, 2 insertions(+), 1 deletion(-)
 
-Yes, but they only have a single ethernet driver today I presume.
+Here is the summary with links:
+  - net/rds: Avoid potential use after free in rds_send_remove_from_sock
+    https://git.kernel.org/netdev/net/c/0c85a7e87465
 
-Here we have a single RDMA driver and 2 ethernet drivers, i40e and ice.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Shiraz
+
