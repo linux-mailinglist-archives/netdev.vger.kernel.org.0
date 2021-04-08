@@ -2,167 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC75D358276
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 13:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D52735827C
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 13:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231235AbhDHLwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 07:52:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32126 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230467AbhDHLwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 07:52:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617882745;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MWJaHVEJz9Bs+VHn+Aq32G9w7AQs9UnfAKmIch1UF70=;
-        b=L85kIoXRP/zgHcOqsHyzqIFsnhuuQnqY7qo5qm7t7FCOBadI2PcaqazEOFHf/vK1GP00fx
-        Y/f7hTiU05kaA9bbu7touBc435fX8sCKYzpobNIdrVIFkG+l1/BUdyUM/7rASoFQMD0YmG
-        zpeP6Winjda+g8kH5TMnkUgOUS5W8Zk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-437-x3yUfOVaO6GXPJgjiI0okA-1; Thu, 08 Apr 2021 07:52:23 -0400
-X-MC-Unique: x3yUfOVaO6GXPJgjiI0okA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A9F90BBEE6;
-        Thu,  8 Apr 2021 11:52:21 +0000 (UTC)
-Received: from krava (unknown [10.40.195.201])
-        by smtp.corp.redhat.com (Postfix) with SMTP id E5FF45C1C5;
-        Thu,  8 Apr 2021 11:52:18 +0000 (UTC)
-Date:   Thu, 8 Apr 2021 13:52:18 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCHv2 bpf-next 2/5] selftests/bpf: Add re-attach test to
- fentry_test
-Message-ID: <YG7uckNf7skULOCN@krava>
-References: <20210406212913.970917-1-jolsa@kernel.org>
- <20210406212913.970917-3-jolsa@kernel.org>
- <CAEf4Bzagf5H31H8uSuMiVDpE5a6tgDOsZkJdmMK0hGhVDADRHQ@mail.gmail.com>
-MIME-Version: 1.0
+        id S231195AbhDHLyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 07:54:02 -0400
+Received: from mail-bn7nam10on2048.outbound.protection.outlook.com ([40.107.92.48]:41729
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229751AbhDHLyB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 07:54:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aDZ3bL86WxDx9aAH51JdDxnGYhE9Bf0rxYcKnWuUCFUW9cmxVh3Xn5gb1nnCnzIJLLMZTrn2tb2OoGNynTSxKyQ0zgAYHV8eHG/+uONnNiY3YeixVH9ONbU4mOajfSCZeS1cl0xKxPXd01H2MV2xqF3XZqgqsQbiRuof1Fw1K4jW6b5j5qNT1uYwFxv9xSE7ZBZYtK+OsWe/vxcmhbh737lZMlXiw4mx2auTroe+jNJ0naPCG8CQc9ZoTq5TbKn7Jd3kile52KUYRn+E9WSll09MyQPn/rtrXTYBl2n7fANpSgeq7vRHacgJqSE4QxlGXunjPZ1oss8svdQ79dgt0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gZxz5mfZye2LkAAm9Sb9z8UHXB1uZ8/aU5EtLeROlSc=;
+ b=G/le8AQADJkCJMf5puCV4EwpqSg9yB/Fc870EejClo/eNZwXj1rjTZfUlCcZvlpOBl3UChfV4VHShmZk+hwbOdr0dH/CCqKeg56xmJUxNRBVog/0nhbVtgedjP1jAU3jusYcGUaHNr+WrhyK5T0m1lCpUXgSzxyIAl3tdmmixXo2XClhKYNMtYXHMULlDrVmvxvzN7fK2lOierWhIudrLQahSUu5x8xxfmnSu8rKihpjFnWA1Lpt+pR8Rv764iMukLhmOvlRzPJvR0iSxbyMJV1nsLpFT0fNi5X0G/q7zxMrdKlNFHc9W1q29UpLJNOIZDNlGRKhIPHTud4Js5k13Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gZxz5mfZye2LkAAm9Sb9z8UHXB1uZ8/aU5EtLeROlSc=;
+ b=Aqe1KpxYdEBxEkHD+cCC7DlHdJYCcmpHUZF17lwyWTDbeMPtPUnCkB+QLWWx5fU5Z0EUp0uUuSSbka6rLHlod50FaVi3y++3fqfrj6qxDr5zliZHqPF+eW3jUTFE/tFHyNg9NdHABWRiRXh3WJnIUYys1b+PrjBgDqEnHgDtDgzNCBi11SibFgytMy5ieIo1fYu+NGF2mx0+gl1Rf51rjwfqOThJpPLyAOKH73Hs0W6f42XlKNWIBHs29JijH4atoo41/pb6jvdt4/avhXyN/wEPu0ovItpTLHzj9QnbqxqZPWtTY60lGq4KdYPptu1IVTY2ewd6Uettkb+cHfYFGQ==
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3116.namprd12.prod.outlook.com (2603:10b6:5:38::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Thu, 8 Apr
+ 2021 11:53:48 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3999.032; Thu, 8 Apr 2021
+ 11:53:48 +0000
+Date:   Thu, 8 Apr 2021 08:53:47 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Devesh Sharma <devesh.sharma@broadcom.com>,
+        Doug Ledford <dledford@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Subject: Re: [PATCH rdma-next v2 0/5] Get rid of custom made module dependency
+Message-ID: <20210408115347.GO7405@nvidia.com>
+References: <20210401065715.565226-1-leon@kernel.org>
+ <CANjDDBiuw_VNepewLAtYE58Eg2JEsvGbpxttWyjV6DYMQdY5Zw@mail.gmail.com>
+ <YGhUjarXh+BEK1pW@unreal>
+ <CANjDDBiC-8pL+-ma1c0n8vjMaorm-CasV_D+_8q2LGy-AYuTVg@mail.gmail.com>
+ <YG7srVMi8IEjuLfF@unreal>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4Bzagf5H31H8uSuMiVDpE5a6tgDOsZkJdmMK0hGhVDADRHQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <YG7srVMi8IEjuLfF@unreal>
+X-Originating-IP: [142.162.115.133]
+X-ClientProxiedBy: BL0PR02CA0090.namprd02.prod.outlook.com
+ (2603:10b6:208:51::31) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR02CA0090.namprd02.prod.outlook.com (2603:10b6:208:51::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Thu, 8 Apr 2021 11:53:48 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lUTEJ-002hCG-0f; Thu, 08 Apr 2021 08:53:47 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7c80727b-f3b3-4d7f-d96e-08d8fa84f87f
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3116:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3116BDF2962CBD5FDE0D61FFC2749@DM6PR12MB3116.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QMJYQpNj31l7wsyT0dE+LvlifrLnbzKws++pdUJxvo95Xyh7uOGhFtu0B4ttrZHnEvrFMTh5nvHoWoSl1ziX0vpJx1XFLlfOzc/0nKvpt7VV7JlyLgd4gyB6nEp3Jk6ych9mgE9U/QPO/zJFOeZNabmIbhK6ZEYPE58r05HLGZIwdXNFa7/ATFW407VgIdShkC8QQV1w7C0VZ3dzdvgTsLEcyGc+aodlAH7JbTKyGp8t644I1rTUilHkhpDUKMwAv8gE6ZqvuoYBYb+q6AtEwmOy+ghxlHIe4OR3h8KR5zt+4RE3/Z7/7g2m6EI5VzMUMGaXlpZ/Y56J8b4eRv8PL3MH53GbkyJQXV9UGZMTiczx7LCiGBvN5vNVqa4JWkAcw4OvB8Nix5sbOTzCxTbno7f+cKGg8D0XnSu5WY/sUV9lXbNaEPa4a75sZliYShy5OAGDl1fo6rSxa6TFUwbAwoGWtx9/yYHaqjbU00fXuTo4d8EtTT5hP/uQAu4rZGkObHNr9qii3iGNeL1xnO6hrzWlacT05MeKoJS6wIWVsvLH5Dtdex45KcmenTYIrcDReyqv2e3HstxZ5IaIzRQsvfuSi0FYlYNEfD6ggKQecXsl7dOvGQjixRWwOYKNqBZSb+H01QJtTBZwq0rSMNWaaH1bbL+//iEsc0wkE0vay7CIsABaIGuUrPnOLEncYSnG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(136003)(376002)(366004)(396003)(66556008)(38100700001)(1076003)(4744005)(2616005)(66946007)(66476007)(5660300002)(26005)(186003)(2906002)(86362001)(478600001)(7416002)(8676002)(36756003)(33656002)(316002)(8936002)(9786002)(9746002)(6916009)(54906003)(426003)(4326008)(26583001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?YLZ1bhQtTEuJratyN/AZc8TT+uUBe0Lpn7SWa7TAolCvcqPn9rx+zUCJKPis?=
+ =?us-ascii?Q?5SM7CoBawtbuc75kI32WMjGGeCgLDOTRv5orUiH+xkWg7VzjynmJyyVtyG0Z?=
+ =?us-ascii?Q?D1nbMJrWDn4TSNdntKPBs+9S15GDgWy76bRslt+8YqCF23RzDh5zwpGZazJ5?=
+ =?us-ascii?Q?jx36vojX4bzUujwn+ltUUIPPb7WdJTap+ULXH/ZXHkB2Oz36pq3gHbeva1NK?=
+ =?us-ascii?Q?U009ACCkIudQadOvRBJcJmmtrokV+BbYDNDoZhZqy0CpblGsOiYu+ca00I79?=
+ =?us-ascii?Q?yqtUTBLNOeTjLVRZ5UUdjGbpYMVLvP3JWHgQSf45N+XuwgBvfcf3/dqoyEHA?=
+ =?us-ascii?Q?mcsw/aOU7aOVpcKLosRoQZkVqWSZKUHpxzavsSRlJxkyGqLNh19aog/XCZWE?=
+ =?us-ascii?Q?Yshe+A9MP/64gokz/vIev5g768WLgxx9DjGS8RyPiWG6PajHC3+Y7K47+z8u?=
+ =?us-ascii?Q?KcQ1ULp3u7BNw6reJNikDO6y3xgl9BYoBeY+4qvru7EjOWEsT1vR3eAYoXiZ?=
+ =?us-ascii?Q?RDMKZGXJVXn7aT3hztc7UgwHTTylM74ufL3TjrA7AHe6LdH44T7mBlSx5IQ3?=
+ =?us-ascii?Q?luJuDTkc4wSP+ifdfwmc6849T1dk3jqGZ+Ap0sif+2j72DmGr9OD2V1J+Pp7?=
+ =?us-ascii?Q?DCarxmhPsLSj1S/o4t18Xeyab9pNkyRzzIxDUF1vFTGWXhoqYFGfJpbfKI6l?=
+ =?us-ascii?Q?oK8oBwC/Q/0JABbIKKa7+XbtX+P8YhPMsYIPMRvNiJboDdLG9dQ8QNCOsEeH?=
+ =?us-ascii?Q?9BK8z6/DVmaw2h3e1swTFdYf12fNiev1gvs7EcAnh1TgQR3SBeg8apQg8ti4?=
+ =?us-ascii?Q?+nrTBZnbqmn73VpDcTRrq5RK2pJrawg/lGEv1mI4NXDxmJeFgBxs7ls0e3si?=
+ =?us-ascii?Q?gGlPkSR7I9GrNg1ZKRB9UoD52XG+egAloElrpv4CwgsHgdoyhBcBuSsUty2W?=
+ =?us-ascii?Q?FA1xARTgNREA1MyH6ZWMTDAmPq+u5WYUXc5Y5chX0ikim7XLWQA24Bozdme0?=
+ =?us-ascii?Q?wawOiKIFbR5VR7sEiPM3Q/oMHOzv7yWEUFWXXeWQ/9LCSm878o03IOx7CVN4?=
+ =?us-ascii?Q?dHAYws95i8Apw0Hb3A/Z97MMPTTf5Ydshg9Bc4PwQLOXzoqvMnysVaj8OfyN?=
+ =?us-ascii?Q?GAY2zqJVLX+G3OwxLF4oySDnIIpN8ifVCk7YTnYxruOb3v6ueECFCDa9roeR?=
+ =?us-ascii?Q?gXC9Jn8WJ93uTULyge2we8vN6HpfnfwiVdUfKZvDsySCXOmv0U3N/F1OYzXM?=
+ =?us-ascii?Q?9kdsQHx2Rw5TcF0sBOw8zKYhwEtv6v8wGVpASQrrw5fNbbpiPgeE1Pp0U3vm?=
+ =?us-ascii?Q?KDPuLYuTQj0YKNFgqJ3uoISJlyHCi5Err9yYyW16/dz4Jw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c80727b-f3b3-4d7f-d96e-08d8fa84f87f
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 11:53:48.5799
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PXrRDh2e7EU5up4jSyHt+MW5RE2XgLi0ENS/zQKj08hPfG/CO+SJEnufMER0VqSL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3116
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 03:47:30PM -0700, Andrii Nakryiko wrote:
-> On Wed, Apr 7, 2021 at 4:21 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Adding the test to re-attach (detach/attach again) tracing
-> > fentry programs, plus check that already linked program can't
-> > be attached again.
-> >
-> > Fixing the number of check-ed results, which should be 8.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  .../selftests/bpf/prog_tests/fentry_test.c    | 48 +++++++++++++++----
-> >  1 file changed, 38 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/fentry_test.c b/tools/testing/selftests/bpf/prog_tests/fentry_test.c
-> > index 04ebbf1cb390..1f7566e772e9 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/fentry_test.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/fentry_test.c
-> > @@ -3,20 +3,24 @@
-> >  #include <test_progs.h>
-> >  #include "fentry_test.skel.h"
-> >
-> > -void test_fentry_test(void)
-> > +static __u32 duration;
-> > +
-> > +static int fentry_test(struct fentry_test *fentry_skel)
-> >  {
-> > -       struct fentry_test *fentry_skel = NULL;
-> > +       struct bpf_link *link;
-> >         int err, prog_fd, i;
-> > -       __u32 duration = 0, retval;
-> >         __u64 *result;
-> > -
-> > -       fentry_skel = fentry_test__open_and_load();
-> > -       if (CHECK(!fentry_skel, "fentry_skel_load", "fentry skeleton failed\n"))
-> > -               goto cleanup;
-> > +       __u32 retval;
-> >
-> >         err = fentry_test__attach(fentry_skel);
-> >         if (CHECK(err, "fentry_attach", "fentry attach failed: %d\n", err))
-> > -               goto cleanup;
-> > +               return err;
-> > +
-> > +       /* Check that already linked program can't be attached again. */
-> > +       link = bpf_program__attach(fentry_skel->progs.test1);
-> > +       if (CHECK(!IS_ERR(link), "fentry_attach_link",
+On Thu, Apr 08, 2021 at 02:44:45PM +0300, Leon Romanovsky wrote:
+
+> > In my internal testing, I am seeing a crash using the 3rd patch. I am
+> > spending a few cycles on debugging it. expect my input in a day or so.
 > 
-> if (!ASSERT_ERR_PTR(link, "fentry_attach_link")) ?
+> Can you please post the kernel crash report here?
+> I don't see how function rename in patch #3 can cause to the crash.
 
-ok
+I looked too, I'm also quite surprised that 1,2,3 alone have a
+bug.. Is there some condition where ulp_probe can be null?
 
-> 
-> > +                 "re-attach without detach should not succeed"))
-> > +               return -1;
-> >
-> >         prog_fd = bpf_program__fd(fentry_skel->progs.test1);
-> >         err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
-> > @@ -26,12 +30,36 @@ void test_fentry_test(void)
-> >               err, errno, retval, duration);
-> >
-> >         result = (__u64 *)fentry_skel->bss;
-> > -       for (i = 0; i < 6; i++) {
-> > +       for (i = 0; i < 8; i++) {
-> 
-> how about using sizeof(*fentry_skel->bss) / sizeof(__u64) ?
+Ugh the is_bnxt_re_dev() is horribly gross too
 
-ok
-
-> 
-> >                 if (CHECK(result[i] != 1, "result",
-> >                           "fentry_test%d failed err %lld\n", i + 1, result[i]))
-> > -                       goto cleanup;
-> > +                       return -1;
-> >         }
-> >
-> > +       fentry_test__detach(fentry_skel);
-> > +
-> > +       /* zero results for re-attach test */
-> > +       for (i = 0; i < 8; i++)
-> > +               result[i] = 0;
-> > +       return 0;
-> > +}
-> > +
-> > +void test_fentry_test(void)
-> > +{
-> > +       struct fentry_test *fentry_skel = NULL;
-> > +       int err;
-> > +
-> > +       fentry_skel = fentry_test__open_and_load();
-> > +       if (CHECK(!fentry_skel, "fentry_skel_load", "fentry skeleton failed\n"))
-> > +               goto cleanup;
-> > +
-> > +       err = fentry_test(fentry_skel);
-> > +       if (CHECK(err, "fentry_test", "first attach failed\n"))
-> > +               goto cleanup;
-> > +
-> > +       err = fentry_test(fentry_skel);
-> > +       CHECK(err, "fentry_test", "second attach failed\n");
-> 
-> overall: please try to use ASSERT_xxx macros, they are easier to
-> follow and require less typing
-
-ok, will check
-
-thanks,
-jirka
-
+Jason
