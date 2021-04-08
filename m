@@ -2,242 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ADD5358B9C
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 19:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EA8B358BA3
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 19:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbhDHRp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 13:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
+        id S232730AbhDHRqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 13:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbhDHRpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 13:45:24 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99897C061760
-        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 10:45:12 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1lUYiM-0000kx-RV; Thu, 08 Apr 2021 19:45:10 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next] net: dccp: use net_generic storage
-Date:   Thu,  8 Apr 2021 19:45:02 +0200
-Message-Id: <20210408174502.1625-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.3
+        with ESMTP id S232281AbhDHRqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 13:46:14 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED69C061760;
+        Thu,  8 Apr 2021 10:46:03 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id y124-20020a1c32820000b029010c93864955so3363411wmy.5;
+        Thu, 08 Apr 2021 10:46:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lCKkqJ3NXKH56GSbHHisuie/Wy5x1/t4fNfwvCfwRS0=;
+        b=tKdFqMXTz/ZUAylhcf0dX7Pd99h2N0h825fUOAXTdmTBgyq9zQaJMOiW5ZjEftllPn
+         nCg8TKa0ArEFhK0lrR5BkPtD4rLYfKvtBoZ9MsHQ+bk1TfktmiGzqo+9PgK1NHi7NmZN
+         G+ivzRd8xEKGHZjiYOfmorYT8XvXjRNUgP6ubU63330VT2M38wAzdEikpqZW/ehtMu/0
+         9cnfjUesi+rFbHG8jqyn7O4sAcpmmseVEWs3IzVUWF7a7Z6ma8F9HfOUMiN9qsCFr+lT
+         /J5sP0zdHIQl9ZFlCFhPYtGznp0yYdRliZYEN58amVsvZ++q4Vwi0iH9KAd68lsYLXJ8
+         jsvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lCKkqJ3NXKH56GSbHHisuie/Wy5x1/t4fNfwvCfwRS0=;
+        b=CQSFmKI4VDPzD2pWjSFQ4O1djwoj6GXss6yGSPpHJEU7VZBZaRegohOzbFRh9w5vvZ
+         FC0wOSB/k0B6hwQwbiVl0Q4/U4T2uz3/SUCNPXcRyJhY34ri9VJL4LA19c7bgycYN2V/
+         xbV07P0e2xF7kmXUKYpNdK9Xgt2oYplNdGDGSxHtfL51l6dFo0d0+iVdg46iSyFBcOW4
+         GLpI3Wmr5XCRddlglWF98hJ/nhG5aQTEsi5X25RWcrG/vOdwLhjh/PeCu3MOupRzefI9
+         UD4QwbsGot9BKS5wJljyRA2CtVwbYbVJPpzO0KedSceoXa1oGF+/lrEyKJfLNQi6VurW
+         BNlQ==
+X-Gm-Message-State: AOAM530nrw1Cq+NqOF1UceZjrn8XR1mD94ryW/GFiAdzU1FoBbcArGaC
+        wwqXx60HuOxHg6/yxoOocak7CpGwD9/MbVLHNk0=
+X-Google-Smtp-Source: ABdhPJxt3RfEZyGirw0ccTfdkUoOCkzCIp1zP8H80nQNbWIftSkhcWXsjOeEaug+viJNJAHmjXxTH6TEzHXPHnICnbE=
+X-Received: by 2002:a05:600c:230e:: with SMTP id 14mr10077693wmo.150.1617903961136;
+ Thu, 08 Apr 2021 10:46:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210408172353.21143-1-TheSven73@gmail.com> <CAFSKS=O4Yp6gknSyo1TtTO3KJ+FwC6wOAfNkbBaNtL0RLGGsxw@mail.gmail.com>
+In-Reply-To: <CAFSKS=O4Yp6gknSyo1TtTO3KJ+FwC6wOAfNkbBaNtL0RLGGsxw@mail.gmail.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Thu, 8 Apr 2021 13:45:50 -0400
+Message-ID: <CAGngYiVg+XXScqTyUQP-H=dvLq84y31uATy4DDzzBvF1OWxm5g@mail.gmail.com>
+Subject: Re: [PATCH net v1] Revert "lan743x: trim all 4 bytes of the FCS; not
+ just 2"
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DCCP is virtually never used, so no need to use space in struct net for it.
+Hi George,
 
-Put the pernet ipv4/v6 socket in the dccp ipv4/ipv6 modules instead.
+On Thu, Apr 8, 2021 at 1:36 PM George McCollister
+<george.mccollister@gmail.com> wrote:
+>
+> Can you explain the difference in behavior with what I was observing
+> on the LAN7431?
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/net/net_namespace.h |  4 ----
- include/net/netns/dccp.h    | 12 ------------
- net/dccp/ipv4.c             | 24 ++++++++++++++++++++----
- net/dccp/ipv6.c             | 24 ++++++++++++++++++++----
- 4 files changed, 40 insertions(+), 24 deletions(-)
- delete mode 100644 include/net/netns/dccp.h
+I'm not using DSA in my application, so I cannot test or replicate
+what you were observing. It would be great if we could work together
+and settle on a solution that is acceptable to both of us.
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 3802c8322ab0..fa5887143f0d 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -22,7 +22,6 @@
- #include <net/netns/nexthop.h>
- #include <net/netns/ieee802154_6lowpan.h>
- #include <net/netns/sctp.h>
--#include <net/netns/dccp.h>
- #include <net/netns/netfilter.h>
- #include <net/netns/x_tables.h>
- #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-@@ -130,9 +129,6 @@ struct net {
- #if defined(CONFIG_IP_SCTP) || defined(CONFIG_IP_SCTP_MODULE)
- 	struct netns_sctp	sctp;
- #endif
--#if defined(CONFIG_IP_DCCP) || defined(CONFIG_IP_DCCP_MODULE)
--	struct netns_dccp	dccp;
--#endif
- #ifdef CONFIG_NETFILTER
- 	struct netns_nf		nf;
- 	struct netns_xt		xt;
-diff --git a/include/net/netns/dccp.h b/include/net/netns/dccp.h
-deleted file mode 100644
-index cdbc4f5b8390..000000000000
---- a/include/net/netns/dccp.h
-+++ /dev/null
-@@ -1,12 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--#ifndef __NETNS_DCCP_H__
--#define __NETNS_DCCP_H__
--
--struct sock;
--
--struct netns_dccp {
--	struct sock *v4_ctl_sk;
--	struct sock *v6_ctl_sk;
--};
--
--#endif
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index 2455b0c0e486..ffc601a3b329 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -23,14 +23,21 @@
- #include <net/tcp_states.h>
- #include <net/xfrm.h>
- #include <net/secure_seq.h>
-+#include <net/netns/generic.h>
- 
- #include "ackvec.h"
- #include "ccid.h"
- #include "dccp.h"
- #include "feat.h"
- 
-+struct dccp_v4_pernet {
-+	struct sock *v4_ctl_sk;
-+};
-+
-+static unsigned int dccp_v4_pernet_id __read_mostly;
-+
- /*
-- * The per-net dccp.v4_ctl_sk socket is used for responding to
-+ * The per-net v4_ctl_sk socket is used for responding to
-  * the Out-of-the-blue (OOTB) packets. A control sock will be created
-  * for this socket at the initialization time.
-  */
-@@ -513,7 +520,8 @@ static void dccp_v4_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
- 	struct sk_buff *skb;
- 	struct dst_entry *dst;
- 	struct net *net = dev_net(skb_dst(rxskb)->dev);
--	struct sock *ctl_sk = net->dccp.v4_ctl_sk;
-+	struct dccp_v4_pernet *pn;
-+	struct sock *ctl_sk;
- 
- 	/* Never send a reset in response to a reset. */
- 	if (dccp_hdr(rxskb)->dccph_type == DCCP_PKT_RESET)
-@@ -522,6 +530,8 @@ static void dccp_v4_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
- 	if (skb_rtable(rxskb)->rt_type != RTN_LOCAL)
- 		return;
- 
-+	pn = net_generic(net, dccp_v4_pernet_id);
-+	ctl_sk = pn->v4_ctl_sk;
- 	dst = dccp_v4_route_skb(net, ctl_sk, rxskb);
- 	if (dst == NULL)
- 		return;
-@@ -1005,16 +1015,20 @@ static struct inet_protosw dccp_v4_protosw = {
- 
- static int __net_init dccp_v4_init_net(struct net *net)
- {
-+	struct dccp_v4_pernet *pn = net_generic(net, dccp_v4_pernet_id);
-+
- 	if (dccp_hashinfo.bhash == NULL)
- 		return -ESOCKTNOSUPPORT;
- 
--	return inet_ctl_sock_create(&net->dccp.v4_ctl_sk, PF_INET,
-+	return inet_ctl_sock_create(&pn->v4_ctl_sk, PF_INET,
- 				    SOCK_DCCP, IPPROTO_DCCP, net);
- }
- 
- static void __net_exit dccp_v4_exit_net(struct net *net)
- {
--	inet_ctl_sock_destroy(net->dccp.v4_ctl_sk);
-+	struct dccp_v4_pernet *pn = net_generic(net, dccp_v4_pernet_id);
-+
-+	inet_ctl_sock_destroy(pn->v4_ctl_sk);
- }
- 
- static void __net_exit dccp_v4_exit_batch(struct list_head *net_exit_list)
-@@ -1026,6 +1040,8 @@ static struct pernet_operations dccp_v4_ops = {
- 	.init	= dccp_v4_init_net,
- 	.exit	= dccp_v4_exit_net,
- 	.exit_batch = dccp_v4_exit_batch,
-+	.id	= &dccp_v4_pernet_id,
-+	.size   = sizeof(struct dccp_v4_pernet),
- };
- 
- static int __init dccp_v4_init(void)
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 2be5c69824f9..6f5304db5a67 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -27,13 +27,20 @@
- #include <net/ip6_checksum.h>
- #include <net/xfrm.h>
- #include <net/secure_seq.h>
-+#include <net/netns/generic.h>
- #include <net/sock.h>
- 
- #include "dccp.h"
- #include "ipv6.h"
- #include "feat.h"
- 
--/* The per-net dccp.v6_ctl_sk is used for sending RSTs and ACKs */
-+struct dccp_v6_pernet {
-+	struct sock *v6_ctl_sk;
-+};
-+
-+static unsigned int dccp_v6_pernet_id __read_mostly;
-+
-+/* The per-net v6_ctl_sk is used for sending RSTs and ACKs */
- 
- static const struct inet_connection_sock_af_ops dccp_ipv6_mapped;
- static const struct inet_connection_sock_af_ops dccp_ipv6_af_ops;
-@@ -254,7 +261,8 @@ static void dccp_v6_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
- 	struct sk_buff *skb;
- 	struct flowi6 fl6;
- 	struct net *net = dev_net(skb_dst(rxskb)->dev);
--	struct sock *ctl_sk = net->dccp.v6_ctl_sk;
-+	struct dccp_v6_pernet *pn;
-+	struct sock *ctl_sk;
- 	struct dst_entry *dst;
- 
- 	if (dccp_hdr(rxskb)->dccph_type == DCCP_PKT_RESET)
-@@ -263,6 +271,8 @@ static void dccp_v6_ctl_send_reset(const struct sock *sk, struct sk_buff *rxskb)
- 	if (!ipv6_unicast_destination(rxskb))
- 		return;
- 
-+	pn = net_generic(net, dccp_v6_pernet_id);
-+	ctl_sk = pn->v6_ctl_sk;
- 	skb = dccp_ctl_make_reset(ctl_sk, rxskb);
- 	if (skb == NULL)
- 		return;
-@@ -1089,16 +1099,20 @@ static struct inet_protosw dccp_v6_protosw = {
- 
- static int __net_init dccp_v6_init_net(struct net *net)
- {
-+	struct dccp_v6_pernet *pn = net_generic(net, dccp_v6_pernet_id);
-+
- 	if (dccp_hashinfo.bhash == NULL)
- 		return -ESOCKTNOSUPPORT;
- 
--	return inet_ctl_sock_create(&net->dccp.v6_ctl_sk, PF_INET6,
-+	return inet_ctl_sock_create(&pn->v6_ctl_sk, PF_INET6,
- 				    SOCK_DCCP, IPPROTO_DCCP, net);
- }
- 
- static void __net_exit dccp_v6_exit_net(struct net *net)
- {
--	inet_ctl_sock_destroy(net->dccp.v6_ctl_sk);
-+	struct dccp_v6_pernet *pn = net_generic(net, dccp_v6_pernet_id);
-+
-+	inet_ctl_sock_destroy(pn->v6_ctl_sk);
- }
- 
- static void __net_exit dccp_v6_exit_batch(struct list_head *net_exit_list)
-@@ -1110,6 +1124,8 @@ static struct pernet_operations dccp_v6_ops = {
- 	.init   = dccp_v6_init_net,
- 	.exit   = dccp_v6_exit_net,
- 	.exit_batch = dccp_v6_exit_batch,
-+	.id	= &dccp_v6_pernet_id,
-+	.size   = sizeof(struct dccp_v6_pernet),
- };
- 
- static int __init dccp_v6_init(void)
--- 
-2.26.3
+> I'll retest but if this is reverted I'm going to start
+> seeing 2 extra bytes on the end of frames and it's going to break DSA
+> with the LAN7431 again.
+>
 
+Seen from my point of view, your patch is a regression. But perhaps my
+patch set is a regression for you? Catch 22...
+
+Would you be able to identify which patch broke your DSA behaviour?
+Was it one of mine? Perhaps we can start from there.
+
+Sven
