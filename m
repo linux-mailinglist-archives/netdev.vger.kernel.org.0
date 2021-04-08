@@ -2,112 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C669A357AA2
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3497B357AA8
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbhDHDG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 23:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
+        id S229685AbhDHDLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 23:11:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbhDHDGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:06:25 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECFCC061760;
-        Wed,  7 Apr 2021 20:06:14 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id h7so402906qtx.3;
-        Wed, 07 Apr 2021 20:06:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kV0fkH+tuk7thGUnaNovelgFzYfqN5NPv9y1kh3GkuU=;
-        b=t0gt8oBYwmZcXDBhth+EapAgjSpD0d6ChTyncfMWP5brgOXnnr1bvv6GDzMXmGYb9h
-         j1gmX3xyA22wKhpLI2lKPkjz5joSakLN6EV5YUf3ICkmbXfvcgOTSbOqvkpXGwtMtIDJ
-         +C6RqtbHRBC9UjXlZkA2+XEwpd3QasOPFiFKqIv2E0jBvr+00YLoh2kEP5+hEG8nQr1t
-         hho4pK6KOfyFNUXkRxj8UkCFfwZpE5oXT20usWn5plI2IQJfmBCEhjKSnMA9Su6ap173
-         L4zvtBtfihGgUb3Tgk4yVAVoPRrCDTdfAhkZHlnBfJBtn1X0okLYc1jBYRSEmI99LZjK
-         vmUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kV0fkH+tuk7thGUnaNovelgFzYfqN5NPv9y1kh3GkuU=;
-        b=kbDjHtLJ77gHcAI5EXQ9tf5e7WLn4AYXJYE+FZSq7vYWHjn3v8aaMHHJhqNWJXaQWI
-         l2dTtGl9Ff2kVd5W7U6n3QteTNkwuCObViacIoQq0iZgEWRkWWehbVo2ErKCijQd/EpS
-         NYqsIR4+Do0xaGTDE3R/u6FJwGlIoFefQmcWU/ZQlVfsCFY2roBX358psXSnZys9q+Au
-         C9sBDWPinkZOos008HhEvNJ1JM4Ij2Z4VyK+AtJTtYf0vxgdd0VjuL9sWgjjS9730yjf
-         jLQ6m5TxcsCO7hFWfXcUDJq3in24SquLlT0ZXR1lUvhG26GvNR2GLgPPHpNBrz1uoD6h
-         of8A==
-X-Gm-Message-State: AOAM5330iaab8xzQLk8wFKapaUngwWfTPolWzh4O9OaW6ksMIA/Txv9g
-        RLErtYDNFVaWLb3is5lNXkPft28vPDrAKA==
-X-Google-Smtp-Source: ABdhPJys3egiMmXF300pe9M1d0Q0W/W9K0ikKJjb1MlhpvtiUvJKa9ZFdP5h1MuzohYby99iZJ0s0g==
-X-Received: by 2002:ac8:7d42:: with SMTP id h2mr5554717qtb.182.1617851174086;
-        Wed, 07 Apr 2021 20:06:14 -0700 (PDT)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:9119:981:e03d:47f0])
-        by smtp.gmail.com with ESMTPSA id z6sm29026qkc.73.2021.04.07.20.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Apr 2021 20:06:13 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com,
-        John Fastabend <john.fastabend@gmail.com>,
+        with ESMTP id S229510AbhDHDLc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:11:32 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3636C061760;
+        Wed,  7 Apr 2021 20:11:21 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FG5rR0XTcz9sVt;
+        Thu,  8 Apr 2021 13:11:18 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1617851479;
+        bh=XRZd5e7aM4sYuw8uXFm5nELypDN8Dj4CBomZlTo5WBQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=umdV4Dt0iJQwP9m+JF3U7IByKWWUiAQlqSlq3OhvMeRnXMnTbqWLP0T7tBBsQwADS
+         BcP3tDn7p8kKCNnOBaRRwMxYp40CzlakMURDXC+7rKfD5vU0GEA9isKIJkMMwOi6rZ
+         /AK7kFlmBMT3aMAdr6swzaKB8htFRpP+IEfpVaHdWeaPh7Zd/PHJHvdu/9tmDSs8me
+         Ma8dmtg9pgVjPoI14EqaeknYpVEAv5ZWAzJt3ocnfuIHzTKrKG61eTQ3LBTB8QLSDC
+         KwdONqukPHmGY3tTWROm+/FRVWXj+1EuL6MVR/WTFbkDWP2hSMWzIbTwXXw9lAq+EH
+         UG5GcSNPCQJRQ==
+Date:   Thu, 8 Apr 2021 13:11:17 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next] sock_map: fix a potential use-after-free in sock_map_close()
-Date:   Wed,  7 Apr 2021 20:05:56 -0700
-Message-Id: <20210408030556.45134-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the bpf tree
+Message-ID: <20210408131117.7f2f3a29@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/YAP01BDqZX8g.n8__N40P_p";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+--Sig_/YAP01BDqZX8g.n8__N40P_p
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The last refcnt of the psock can be gone right after
-sock_map_remove_links(), so sk_psock_stop() could trigger a UAF.
-The reason why I placed sk_psock_stop() there is to avoid RCU read
-critical section, and more importantly, some callee of
-sock_map_remove_links() is supposed to be called with RCU read lock,
-we can not simply get rid of RCU read lock here. Therefore, the only
-choice we have is to grab an additional refcnt with sk_psock_get()
-and put it back after sk_psock_stop().
+Hi all,
 
-Reported-by: syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com
-Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jakub Sitnicki <jakub@cloudflare.com>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/core/sock_map.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Today's linux-next merge of the net-next tree got a conflict in:
 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index f473c51cbc4b..6f1b82b8ad49 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -1521,7 +1521,7 @@ void sock_map_close(struct sock *sk, long timeout)
- 
- 	lock_sock(sk);
- 	rcu_read_lock();
--	psock = sk_psock(sk);
-+	psock = sk_psock_get(sk);
- 	if (unlikely(!psock)) {
- 		rcu_read_unlock();
- 		release_sock(sk);
-@@ -1532,6 +1532,7 @@ void sock_map_close(struct sock *sk, long timeout)
- 	sock_map_remove_links(sk, psock);
- 	rcu_read_unlock();
- 	sk_psock_stop(psock, true);
-+	sk_psock_put(sk, psock);
- 	release_sock(sk);
- 	saved_close(sk, timeout);
- }
--- 
-2.25.1
+  net/core/skmsg.c
 
+between commit:
+
+  144748eb0c44 ("bpf, sockmap: Fix incorrect fwd_alloc accounting")
+
+from the bpf tree and commit:
+
+  e3526bb92a20 ("skmsg: Move sk_redir from TCP_SKB_CB to skb")
+
+from the net-next tree.
+
+I fixed it up (I think - see below) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/core/skmsg.c
+index 5def3a2e85be,92a83c02562a..000000000000
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@@ -806,12 -900,17 +900,13 @@@ int sk_psock_tls_strp_read(struct sk_ps
+  	int ret =3D __SK_PASS;
+ =20
+  	rcu_read_lock();
+- 	prog =3D READ_ONCE(psock->progs.skb_verdict);
++ 	prog =3D READ_ONCE(psock->progs.stream_verdict);
+  	if (likely(prog)) {
+ -		/* We skip full set_owner_r here because if we do a SK_PASS
+ -		 * or SK_DROP we can skip skb memory accounting and use the
+ -		 * TLS context.
+ -		 */
+  		skb->sk =3D psock->sk;
+- 		tcp_skb_bpf_redirect_clear(skb);
+- 		ret =3D sk_psock_bpf_run(psock, prog, skb);
+- 		ret =3D sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
++ 		skb_dst_drop(skb);
++ 		skb_bpf_redirect_clear(skb);
++ 		ret =3D bpf_prog_run_pin_on_cpu(prog, skb);
++ 		ret =3D sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+  		skb->sk =3D NULL;
+  	}
+  	sk_psock_tls_verdict_apply(skb, psock->sk, ret);
+@@@ -876,13 -995,13 +991,14 @@@ static void sk_psock_strp_read(struct s
+  		kfree_skb(skb);
+  		goto out;
+  	}
+- 	prog =3D READ_ONCE(psock->progs.skb_verdict);
+ -	skb_set_owner_r(skb, sk);
++ 	prog =3D READ_ONCE(psock->progs.stream_verdict);
+  	if (likely(prog)) {
+ +		skb->sk =3D sk;
+- 		tcp_skb_bpf_redirect_clear(skb);
+- 		ret =3D sk_psock_bpf_run(psock, prog, skb);
+- 		ret =3D sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
++ 		skb_dst_drop(skb);
++ 		skb_bpf_redirect_clear(skb);
++ 		ret =3D bpf_prog_run_pin_on_cpu(prog, skb);
++ 		ret =3D sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ +		skb->sk =3D NULL;
+  	}
+  	sk_psock_verdict_apply(psock, skb, ret);
+  out:
+@@@ -953,13 -1115,15 +1112,16 @@@ static int sk_psock_verdict_recv(read_d
+  		kfree_skb(skb);
+  		goto out;
+  	}
+- 	prog =3D READ_ONCE(psock->progs.skb_verdict);
+ -	skb_set_owner_r(skb, sk);
++ 	prog =3D READ_ONCE(psock->progs.stream_verdict);
++ 	if (!prog)
++ 		prog =3D READ_ONCE(psock->progs.skb_verdict);
+  	if (likely(prog)) {
+ +		skb->sk =3D sk;
+- 		tcp_skb_bpf_redirect_clear(skb);
+- 		ret =3D sk_psock_bpf_run(psock, prog, skb);
+- 		ret =3D sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
++ 		skb_dst_drop(skb);
++ 		skb_bpf_redirect_clear(skb);
++ 		ret =3D bpf_prog_run_pin_on_cpu(prog, skb);
++ 		ret =3D sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+ +		skb->sk =3D NULL;
+  	}
+  	sk_psock_verdict_apply(psock, skb, ret);
+  out:
+
+--Sig_/YAP01BDqZX8g.n8__N40P_p
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBudFUACgkQAVBC80lX
+0GzNiwf8Du4CRrC2d/nEEZUR8gEaBrd8EWeWQOsV5kAzE84/sh8t4sTxEqUQsLfv
+iakS0u4IFrEQidjptTyoU08Zv7rWXTqqsMjGMI6W2ju7W/4eapwKWogmaRkKh4Q6
+jTNQE1liobzyZiXGSPs5LHhNUxaFsdX2+RTymmdcEUUkOvU5hnPnaG/+FvFF9/0f
+oiuCT6SMLUcMSKC6V4Zjat+TgbuAhRkS0HCx8GPtB3JoUjdvm0X7VoGrWLc0UYTQ
+dNnKbE2yLykX1xqU/CQ8KQvX0k3F32EHaHNhOBgzDsBhobrqxjkRDKV1CNRRT0cv
+U1BhWbnfD8Bwn36MgFTu/3OItkqOOg==
+=szah
+-----END PGP SIGNATURE-----
+
+--Sig_/YAP01BDqZX8g.n8__N40P_p--
