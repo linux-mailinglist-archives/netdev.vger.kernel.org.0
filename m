@@ -2,78 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F587358F90
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 00:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 650C9358F95
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 00:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232387AbhDHWAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 18:00:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38670 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232158AbhDHWAV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 18:00:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D9FF7610D1;
-        Thu,  8 Apr 2021 22:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617919209;
-        bh=t0ziCL2xGc97kPnTSsOYozxuSzgJR92i5ZnA2Pli4DU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TlsES/sr6qMJCDgZHrtNh5tsFvGaRTUhwQ2vCMd7o4Ph2XXEp9SROpa+jlC8XpBtZ
-         qVmjdk4XwnJBUS6WLExSkEGVGO0GBh99E1gbRZ0nEERe9YlpRuOqWBXIE64eAZLwoQ
-         T/goJa+1zVmKv6W9VqJVwO1RccY7aE3fgNpUBOpzyJhtYlnKXDeSj+JA5Qnca5rFov
-         X4m+Ua6cZkBFdf3BTnwbtCDs7LshZEG/+dF1xEwECyztO0yHwb4k1YSgXQHWp7DKIW
-         8GBgpBxbTmj0Tu73i/OT8e49HUhtt1mX3qgNciaGNpwF+v6QKKb3eMvVEfJa0+ZHro
-         dpgx9FuGhTgPQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CA061609B6;
-        Thu,  8 Apr 2021 22:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232704AbhDHWBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 18:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232265AbhDHWBt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 18:01:49 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F33C061761;
+        Thu,  8 Apr 2021 15:01:37 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id a76so1928593wme.0;
+        Thu, 08 Apr 2021 15:01:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=1k2oFebJMetFk2MF03n3BhfJ/Z6puGCIo7fh0K3MdcY=;
+        b=PRkaV10clS+sLFEZRt0+mqBC/zm4SqmmBE9Gqa81Fz0xckmRM+MJuOI2M525VQlPg1
+         D5ThmRBHKWpYoIIiGkgzco8KJcvyMvcQhWi8lgTawXnBb9X4vbWGi+Y9vf8atwhaj5Ce
+         oFAcr1MFJG5lO0AX4iRggn7HIDdTiy8mGxoDh05Fc4HUGzghplJf7iXLMSwakD6v8iUk
+         B9EVN7msrL3jru4b556NUvx41K9Xfo0LdNBQiwJ9avVKkMZyfu4+jAQHMS+EOWDLKzKu
+         I4Oiud+uTZ6fvFUCUzU5NhlcOcMRebMxa6lIohFsp8fzpu80DzrK6aSyMO1SHYKujZY1
+         6DUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=1k2oFebJMetFk2MF03n3BhfJ/Z6puGCIo7fh0K3MdcY=;
+        b=ox0DLYGIulOlNlVs3qBUO4xkNyO+l+LckU3+jFFFV2nRF8w0zCYekGLkZA0f9KfTIy
+         yizGVZQWzd8ZRJqYNmoU2XF90D97b6lRi0SDX51uwJ+Wfb4Gud3PY1vkfi1QojbJzIji
+         X1+lU/s/POy8zsBKXYbLp3L+8x0en5rMrYMQY6Bu5+GtWtbx9wPxYvWhiIrcPxVKhpiZ
+         NMvQ4JX6RgQIelw3WlFRVk7I7n5xseb1lldg63wVkAdgdgg+auTLM/04IllZvJb8va4s
+         nO31ZmQNmr/Y/sS/hDEOZtkGjfVFSFPHp1k9mZUql9QAdBW5WDh/5gjLbthP9u/mWS0J
+         k5lw==
+X-Gm-Message-State: AOAM530IGM9gC3WYkeaykLvERzyoSUrvxwVQ+EcojL74Qnk47y7CZPmw
+        EClZvTUsC+DJAn5VcNaDt0E=
+X-Google-Smtp-Source: ABdhPJxf8t72/YsLezTsQMLohaoXiiyiWCTcZkEGUe9xPH/SLdEmI4+zc7XajgVWPcBaL1ImutIVrQ==
+X-Received: by 2002:a1c:4c0c:: with SMTP id z12mr10800685wmf.38.1617919295698;
+        Thu, 08 Apr 2021 15:01:35 -0700 (PDT)
+Received: from LEGION ([39.46.7.73])
+        by smtp.gmail.com with ESMTPSA id o7sm1041687wrs.16.2021.04.08.15.01.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Apr 2021 15:01:35 -0700 (PDT)
+Date:   Fri, 9 Apr 2021 03:01:29 +0500
+From:   Muhammad Usama Anjum <musamaanjum@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [IPv4/IPv6]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     musamaanjum@gmail.com, kernel-janitors@vger.kernel.org,
+        colin.king@canonical.com, dan.carpenter@oracle.com,
+        stable@vger.kernel.org
+Subject: [PATCH] net: ipv6: check for validity before dereferencing
+ cfg->fc_nlinfo.nlh
+Message-ID: <20210408220129.GA3111136@LEGION>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/6][pull request] Intel Wired LAN Driver Updates
- 2021-04-08
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161791920982.30481.6177451047983591215.git-patchwork-notify@kernel.org>
-Date:   Thu, 08 Apr 2021 22:00:09 +0000
-References: <20210408173537.3519606-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210408173537.3519606-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+nlh is being checked for validtity two times when it is dereferenced in
+this function. Check for validity again when updating the flags through
+nlh pointer to make the dereferencing safe.
 
-This series was applied to netdev/net.git (refs/heads/master):
+CC: <stable@vger.kernel.org>
+Addresses-Coverity: ("NULL pointer dereference")
+Signed-off-by: Muhammad Usama Anjum <musamaanjum@gmail.com>
+---
+ net/ipv6/route.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-On Thu,  8 Apr 2021 10:35:31 -0700 you wrote:
-> This series contains updates to i40e and ice drivers.
-> 
-> Grzegorz fixes the ordering of parameters to i40e_aq_get_phy_register()
-> which is causing incorrect information to be reported.
-> 
-> Arkadiusz fixes various sparse issues reported on the i40e driver.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,1/6] i40e: Fix parameters in aq_get_phy_register()
-    https://git.kernel.org/netdev/net/c/b2d0efc4be7e
-  - [net,2/6] i40e: Fix sparse errors in i40e_txrx.c
-    https://git.kernel.org/netdev/net/c/12738ac4754e
-  - [net,3/6] i40e: Fix sparse error: uninitialized symbol 'ring'
-    https://git.kernel.org/netdev/net/c/d6d04ee6d2c9
-  - [net,4/6] i40e: Fix sparse error: 'vsi->netdev' could be null
-    https://git.kernel.org/netdev/net/c/6b5674fe6b9b
-  - [net,5/6] i40e: Fix sparse warning: missing error code 'err'
-    https://git.kernel.org/netdev/net/c/8a1e918d833c
-  - [net,6/6] ice: fix memory leak of aRFS after resuming from suspend
-    https://git.kernel.org/netdev/net/c/1831da7ea5bd
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 28801ae80548..a22822bdbf39 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5206,9 +5206,11 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
+ 		 * nexthops have been replaced by first new, the rest should
+ 		 * be added to it.
+ 		 */
+-		cfg->fc_nlinfo.nlh->nlmsg_flags &= ~(NLM_F_EXCL |
+-						     NLM_F_REPLACE);
+-		cfg->fc_nlinfo.nlh->nlmsg_flags |= NLM_F_CREATE;
++		if (cfg->fc_nlinfo.nlh) {
++			cfg->fc_nlinfo.nlh->nlmsg_flags &= ~(NLM_F_EXCL |
++							     NLM_F_REPLACE);
++			cfg->fc_nlinfo.nlh->nlmsg_flags |= NLM_F_CREATE;
++		}
+ 		nhn++;
+ 	}
+ 
+-- 
+2.25.1
 
