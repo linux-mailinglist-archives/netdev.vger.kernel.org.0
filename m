@@ -2,134 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A28357AD6
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBAE357AEA
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbhDHDkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 23:40:12 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:16031 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbhDHDkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:40:10 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FG6QH73XTzNtq5;
-        Thu,  8 Apr 2021 11:37:11 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 8 Apr 2021 11:39:48 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, <linuxarm@huawei.com>,
-        Jiaran Zhang <zhangjiaran@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 2/2] net: hns3: add suspend and resume pm_ops
-Date:   Thu, 8 Apr 2021 11:40:05 +0800
-Message-ID: <1617853205-32760-3-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1617853205-32760-1-git-send-email-tanhuazhong@huawei.com>
-References: <1617853205-32760-1-git-send-email-tanhuazhong@huawei.com>
+        id S229523AbhDHDu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 23:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229469AbhDHDu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:50:56 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB34C061760
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 20:50:45 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id r193so738247ior.9
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 20:50:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QSQwh6FEfQXgkuwm6nqm6CMdCCSMi5maBHIb9ncUYxw=;
+        b=zMXiEZz6V4TELas2KtY6Aaj/g/mcC4L/oN3+6ft9h7yJQCVInuundESFeMpTI6VrJ9
+         dmLo468jWhWxfySioaql1JGlhvk82bfjSGVH0eA13M/k4fuutw+FuNfjVBkz76rlk/wc
+         lSEh+JMHsxkbxcZM3g55ZC9HZPCeV2DnyPEcaGRaThRqfVsHFdJ7LAg5OpRkckMZNtFE
+         DE8EREciU0+ZuU5eSombKU0c5IT7q14J58deHK/E9ucOvni2b39gM3QqCHbejmOOSk4H
+         YbAvrbauqqZ+3UU1uU2b/K5DyNHVbzlOAMrCIt9O5NjC6VSjPHJcMKHJ4o1kHmbLOGVs
+         4S/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QSQwh6FEfQXgkuwm6nqm6CMdCCSMi5maBHIb9ncUYxw=;
+        b=bQ9osAPs11nJZpO5Z8xbcNgbzs/5xqiR2f9dzEUMGymVdABNy1QUW+7oCHmZu888/m
+         JKTIaQ/oUlIl5lsD1fb7Y3Qf1Sp9yEKamfTcK9eD/jmfwmY8x6yojtIDRb10fy80eRFU
+         6ixmuYVLv8RArOLuXVsk5EPIssqbPuG/mxjveWC+2oBW8dLDn+BukxJcA+K+PE7MWBVI
+         8LV08m47lpPneQxQauJUVAC6QYk6CIpWDY8zqAFsJ2gGL8ION8F8YrpnY58wcwstDPVC
+         rXt/nhV3UK7Eg3rRVd9iw7etMzzoObK9mBaox67twyo9soMDcAHbrxZ1eDX54hMo0OFI
+         rHnw==
+X-Gm-Message-State: AOAM530jCWT77CjabD1Rfa3Amiok5YcLntlsFdcelIKiwcOXEpQPBmVW
+        zDVaizadX+B9lDIbjkXR8g0I6RX++myGMEo3vE46PA==
+X-Google-Smtp-Source: ABdhPJwTZQsVjIvnv/Fy62zB6KFa6XbHe8bhrSuSeJAmHilUDdo/fWDu3XEqO0YNif2WKp/p5fSwwANNOBfEBZdTg3c=
+X-Received: by 2002:a02:230d:: with SMTP id u13mr6929339jau.53.1617853844692;
+ Wed, 07 Apr 2021 20:50:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+References: <20210408130200.32ec9d1e@canb.auug.org.au>
+In-Reply-To: <20210408130200.32ec9d1e@canb.auug.org.au>
+From:   "Cong Wang ." <cong.wang@bytedance.com>
+Date:   Wed, 7 Apr 2021 20:50:33 -0700
+Message-ID: <CAA68J_ZYfJdVQS4_sWB2RVowXO1UVPQVzoNmdFN4P96kKV3KEA@mail.gmail.com>
+Subject: Re: [External] linux-next: manual merge of the net-next tree with the
+ bpf tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiaran Zhang <zhangjiaran@huawei.com>
+On Wed, Apr 7, 2021 at 8:02 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> Today's linux-next merge of the net-next tree got a conflict in:
+>
+>   include/linux/skmsg.h
+>
+> between commit:
+>
+>   1c84b33101c8 ("bpf, sockmap: Fix sk->prot unhash op reset")
+>
+> from the bpf tree and commit:
+>
+>   8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
+>
+> from the net-next tree.
+>
+> I didn't know how to fixed it up so I just used the latter version or
+> today - a better solution would be appreciated. This is now fixed as
+> far as linux-next is concerned, but any non trivial conflicts should be
+> mentioned to your upstream maintainer when your tree is submitted for
+> merging.  You may also want to consider cooperating with the maintainer
+> of the conflicting tree to minimise any particularly complex conflicts.
 
-To implement the system suspend/resume functions, the NIC driver needs
-to support:
-1. When the system enters the suspend mode, the driver needs to
-implement the suspend callback function of the NIC device. The driver
-needs to mute the device, stop all RX/TX activities of the device, and
-unmap the interrupt.
-2. When the system enters the resume mode, the driver needs to
-implement the resume callback function of the NIC device and restore
-the device to the state before suspension.
+The right way to resolve this is to move the lines added in commit
+1c84b33101c8 to the similar place in tcp_bpf_update_proto().
 
-When the system enters the suspend and resume mode, the NIC driver
-actually executes the PF function reset process.
-
-When the PFs are suspending/resuming, VFs also enter the suspend/resume
-state because the PFs trigger the VFs to reset, therefore no operation
-is required when the VF pci_driver is suspending or resuming.
-
-Signed-off-by: Jiaran Zhang <zhangjiaran@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 29 ++++++++++++++++++++++
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  2 ++
- 2 files changed, 31 insertions(+)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 67fc5aa..25afe5a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2365,6 +2365,32 @@ static void hns3_shutdown(struct pci_dev *pdev)
- 		pci_set_power_state(pdev, PCI_D3hot);
- }
- 
-+static int __maybe_unused hns3_suspend(struct device *dev)
-+{
-+	struct hnae3_ae_dev *ae_dev = dev_get_drvdata(dev);
-+
-+	if (hns3_is_phys_func(ae_dev->pdev)) {
-+		dev_info(dev, "Begin to suspend.\n");
-+		if (ae_dev && ae_dev->ops && ae_dev->ops->reset_prepare)
-+			ae_dev->ops->reset_prepare(ae_dev, HNAE3_FUNC_RESET);
-+	}
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused hns3_resume(struct device *dev)
-+{
-+	struct hnae3_ae_dev *ae_dev = dev_get_drvdata(dev);
-+
-+	if (hns3_is_phys_func(ae_dev->pdev)) {
-+		dev_info(dev, "Begin to resume.\n");
-+		if (ae_dev && ae_dev->ops && ae_dev->ops->reset_done)
-+			ae_dev->ops->reset_done(ae_dev);
-+	}
-+
-+	return 0;
-+}
-+
- static pci_ers_result_t hns3_error_detected(struct pci_dev *pdev,
- 					    pci_channel_state_t state)
- {
-@@ -2443,12 +2469,15 @@ static const struct pci_error_handlers hns3_err_handler = {
- 	.reset_done	= hns3_reset_done,
- };
- 
-+static SIMPLE_DEV_PM_OPS(hns3_pm_ops, hns3_suspend, hns3_resume);
-+
- static struct pci_driver hns3_driver = {
- 	.name     = hns3_driver_name,
- 	.id_table = hns3_pci_tbl,
- 	.probe    = hns3_probe,
- 	.remove   = hns3_remove,
- 	.shutdown = hns3_shutdown,
-+	.driver.pm  = &hns3_pm_ops,
- 	.sriov_configure = hns3_pci_sriov_configure,
- 	.err_handler    = &hns3_err_handler,
- };
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 47c95dc..c446b63 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -11094,6 +11094,8 @@ static void hclge_reset_prepare_general(struct hnae3_ae_dev *ae_dev,
- 
- 	if (hdev->reset_type == HNAE3_FLR_RESET)
- 		hdev->rst_stats.flr_rst_cnt++;
-+	else if (hdev->reset_type == HNAE3_FUNC_RESET)
-+		hdev->rst_stats.pf_rst_cnt++;
- }
- 
- static void hclge_reset_done(struct hnae3_ae_dev *ae_dev)
--- 
-2.7.4
-
+Thanks.
