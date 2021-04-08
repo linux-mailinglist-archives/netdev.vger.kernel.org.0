@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F67358956
+	by mail.lfdr.de (Postfix) with ESMTP id 79FD9358955
 	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 18:12:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232087AbhDHQL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 12:11:56 -0400
-Received: from mga07.intel.com ([134.134.136.100]:15196 "EHLO mga07.intel.com"
+        id S232131AbhDHQLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 12:11:55 -0400
+Received: from mga07.intel.com ([134.134.136.100]:15195 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231908AbhDHQLv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231909AbhDHQLv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 8 Apr 2021 12:11:51 -0400
-IronPort-SDR: N/BDx+ZHatm3ryvOOYC7PJSxxmWmyAB5oWRLhEMMcJhwE+ZvoERShOKk7ZeKLSbBdXn9rPVvB6
- Ey56HoC5afaw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9948"; a="257557981"
+IronPort-SDR: O7Lhk1HytjUU1tJV8fBOxRWjvCmjBGpAcreSqiBSk9rrqhWq2f3O8o8elNJiiJjnLFitz8rMdi
+ 39dnXWMTatBg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9948"; a="257557986"
 X-IronPort-AV: E=Sophos;i="5.82,206,1613462400"; 
-   d="scan'208";a="257557981"
+   d="scan'208";a="257557986"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2021 09:11:39 -0700
-IronPort-SDR: T/GiMOLBysanJooAj2kHdz3JenS2MDsxgHMOm3xs0oLu7YlMoDWChPaWEjncc7Tr5oGb9p4/0J
- Rnf5QmxzJSJw==
+IronPort-SDR: e2wqLRhCyyWAeUoBIZaGQIXR75EtknllFWB7LdMViE81AR+h3A3+5+LkHytQZSZRpJMYhHHbKO
+ OIsJdIghDRpQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,206,1613462400"; 
-   d="scan'208";a="415841398"
+   d="scan'208";a="415841403"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Apr 2021 09:11:38 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 08 Apr 2021 09:11:39 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         netdev@vger.kernel.org, sassmann@redhat.com,
         anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 03/15] ice: Align macro names to the specification
-Date:   Thu,  8 Apr 2021 09:13:09 -0700
-Message-Id: <20210408161321.3218024-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 04/15] ice: Ignore EMODE return for opcode 0x0605
+Date:   Thu,  8 Apr 2021 09:13:10 -0700
+Message-Id: <20210408161321.3218024-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210408161321.3218024-1-anthony.l.nguyen@intel.com>
 References: <20210408161321.3218024-1-anthony.l.nguyen@intel.com>
@@ -45,209 +45,218 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-For get PHY abilities AQ, the specification defines "report modes"
-as "with media", "without media" and "active configuration". For
-clarity, rename macros to align with the specification.
+When link is owned by manageability, the driver is not allowed to fiddle
+with link. FW returns ICE_AQ_RC_EMODE if the driver attempts to do so.
+This patch adds a new function ice_set_link which abstracts the call to
+ice_aq_set_link_restart_an and provides a clean way to turn on/off link.
+
+While making this change, I also spotted that an int variable was being
+used to hold both an ice_status return code and the Linux errno return
+code. This pattern more often than not results in the driver inadvertently
+returning ice_status back to kernel which is a major boo-boo. Clean it up.
 
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_adminq_cmd.h | 10 +++++-----
- drivers/net/ethernet/intel/ice/ice_common.c     | 13 +++++++------
- drivers/net/ethernet/intel/ice/ice_ethtool.c    | 12 ++++++------
- drivers/net/ethernet/intel/ice/ice_main.c       | 12 ++++++------
- 4 files changed, 24 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 17 ++------
+ drivers/net/ethernet/intel/ice/ice_lib.c     | 37 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_lib.h     |  2 +
+ drivers/net/ethernet/intel/ice/ice_main.c    | 41 ++++++++------------
+ 4 files changed, 59 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index b9491ef5f21c..3f3d51bf0019 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -882,11 +882,11 @@ struct ice_aqc_get_phy_caps {
- 	 * 01b - Report topology capabilities
- 	 * 10b - Report SW configured
- 	 */
--#define ICE_AQC_REPORT_MODE_S		1
--#define ICE_AQC_REPORT_MODE_M		(3 << ICE_AQC_REPORT_MODE_S)
--#define ICE_AQC_REPORT_NVM_CAP		0
--#define ICE_AQC_REPORT_TOPO_CAP		BIT(1)
--#define ICE_AQC_REPORT_SW_CFG		BIT(2)
-+#define ICE_AQC_REPORT_MODE_S			1
-+#define ICE_AQC_REPORT_MODE_M			(3 << ICE_AQC_REPORT_MODE_S)
-+#define ICE_AQC_REPORT_TOPO_CAP_NO_MEDIA	0
-+#define ICE_AQC_REPORT_TOPO_CAP_MEDIA		BIT(1)
-+#define ICE_AQC_REPORT_ACTIVE_CFG		BIT(2)
- 	__le32 reserved1;
- 	__le32 addr_high;
- 	__le32 addr_low;
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index bde19e30394d..509dce475bff 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -191,7 +191,7 @@ ice_aq_get_phy_caps(struct ice_port_info *pi, bool qual_mods, u8 report_mode,
- 	ice_debug(hw, ICE_DBG_LINK, "   module_type[2] = 0x%x\n",
- 		  pcaps->module_type[2]);
- 
--	if (!status && report_mode == ICE_AQC_REPORT_TOPO_CAP) {
-+	if (!status && report_mode == ICE_AQC_REPORT_TOPO_CAP_MEDIA) {
- 		pi->phy.phy_type_low = le64_to_cpu(pcaps->phy_type_low);
- 		pi->phy.phy_type_high = le64_to_cpu(pcaps->phy_type_high);
- 		memcpy(pi->phy.link_info.module_type, &pcaps->module_type,
-@@ -922,7 +922,8 @@ enum ice_status ice_init_hw(struct ice_hw *hw)
- 
- 	/* Initialize port_info struct with PHY capabilities */
- 	status = ice_aq_get_phy_caps(hw->port_info, false,
--				     ICE_AQC_REPORT_TOPO_CAP, pcaps, NULL);
-+				     ICE_AQC_REPORT_TOPO_CAP_MEDIA, pcaps,
-+				     NULL);
- 	devm_kfree(ice_hw_to_dev(hw), pcaps);
- 	if (status)
- 		dev_warn(ice_hw_to_dev(hw), "Get PHY capabilities failed status = %d, continuing anyway\n",
-@@ -2734,7 +2735,7 @@ enum ice_status ice_update_link_info(struct ice_port_info *pi)
- 		if (!pcaps)
- 			return ICE_ERR_NO_MEMORY;
- 
--		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP,
-+		status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
- 					     pcaps, NULL);
- 
- 		devm_kfree(ice_hw_to_dev(hw), pcaps);
-@@ -2894,8 +2895,8 @@ ice_set_fc(struct ice_port_info *pi, u8 *aq_failures, bool ena_auto_link_update)
- 		return ICE_ERR_NO_MEMORY;
- 
- 	/* Get the current PHY config */
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG, pcaps,
--				     NULL);
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG,
-+				     pcaps, NULL);
- 	if (status) {
- 		*aq_failures = ICE_SET_FC_AQ_FAIL_GET;
- 		goto out;
-@@ -3041,7 +3042,7 @@ ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
- 	if (!pcaps)
- 		return ICE_ERR_NO_MEMORY;
- 
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA, pcaps,
- 				     NULL);
- 	if (status)
- 		goto out;
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 15152e63f204..84e42e598c85 100644
+index 84e42e598c85..0db31a89658a 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -1060,7 +1060,7 @@ ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
- 	if (!caps)
- 		return -ENOMEM;
+@@ -1095,24 +1095,15 @@ static int ice_nway_reset(struct net_device *netdev)
+ {
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+-	struct ice_port_info *pi;
+-	enum ice_status status;
++	int err;
  
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
- 				     caps, NULL);
- 	if (status) {
- 		err = -EAGAIN;
-@@ -2000,7 +2000,7 @@ ice_get_link_ksettings(struct net_device *netdev,
- 		return -ENOMEM;
+-	pi = vsi->port_info;
+ 	/* If VSI state is up, then restart autoneg with link up */
+ 	if (!test_bit(__ICE_DOWN, vsi->back->state))
+-		status = ice_aq_set_link_restart_an(pi, true, NULL);
++		err = ice_set_link(vsi, true);
+ 	else
+-		status = ice_aq_set_link_restart_an(pi, false, NULL);
++		err = ice_set_link(vsi, false);
  
- 	status = ice_aq_get_phy_caps(vsi->port_info, false,
--				     ICE_AQC_REPORT_SW_CFG, caps, NULL);
-+				     ICE_AQC_REPORT_ACTIVE_CFG, caps, NULL);
- 	if (status) {
- 		err = -EIO;
- 		goto done;
-@@ -2037,7 +2037,7 @@ ice_get_link_ksettings(struct net_device *netdev,
- 		ethtool_link_ksettings_add_link_mode(ks, advertising, FEC_RS);
+-	if (status) {
+-		netdev_info(netdev, "link restart failed, err %s aq_err %s\n",
+-			    ice_stat_str(status),
+-			    ice_aq_str(pi->hw->adminq.sq_last_status));
+-		return -EIO;
+-	}
+-
+-	return 0;
++	return err;
+ }
  
- 	status = ice_aq_get_phy_caps(vsi->port_info, false,
--				     ICE_AQC_REPORT_TOPO_CAP, caps, NULL);
-+				     ICE_AQC_REPORT_TOPO_CAP_MEDIA, caps, NULL);
- 	if (status) {
- 		err = -EIO;
- 		goto done;
-@@ -2243,7 +2243,7 @@ ice_set_link_ksettings(struct net_device *netdev,
- 		return -ENOMEM;
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 6041ca2830de..5edc0da8b8c3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -3423,3 +3423,40 @@ int ice_clear_dflt_vsi(struct ice_sw *sw)
  
- 	/* Get the PHY capabilities based on media */
--	status = ice_aq_get_phy_caps(p, false, ICE_AQC_REPORT_TOPO_CAP,
-+	status = ice_aq_get_phy_caps(p, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA,
- 				     abilities, NULL);
- 	if (status) {
- 		err = -EAGAIN;
-@@ -2972,7 +2972,7 @@ ice_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
- 		return;
+ 	return 0;
+ }
++
++/**
++ * ice_set_link - turn on/off physical link
++ * @vsi: VSI to modify physical link on
++ * @ena: turn on/off physical link
++ */
++int ice_set_link(struct ice_vsi *vsi, bool ena)
++{
++	struct device *dev = ice_pf_to_dev(vsi->back);
++	struct ice_port_info *pi = vsi->port_info;
++	struct ice_hw *hw = pi->hw;
++	enum ice_status status;
++
++	if (vsi->type != ICE_VSI_PF)
++		return -EINVAL;
++
++	status = ice_aq_set_link_restart_an(pi, ena, NULL);
++
++	/* if link is owned by manageability, FW will return ICE_AQ_RC_EMODE.
++	 * this is not a fatal error, so print a warning message and return
++	 * a success code. Return an error if FW returns an error code other
++	 * than ICE_AQ_RC_EMODE
++	 */
++	if (status == ICE_ERR_AQ_ERROR) {
++		if (hw->adminq.sq_last_status == ICE_AQ_RC_EMODE)
++			dev_warn(dev, "can't set link to %s, err %s aq_err %s. not fatal, continuing\n",
++				 (ena ? "ON" : "OFF"), ice_stat_str(status),
++				 ice_aq_str(hw->adminq.sq_last_status));
++	} else if (status) {
++		dev_err(dev, "can't set link to %s, err %s aq_err %s\n",
++			(ena ? "ON" : "OFF"), ice_stat_str(status),
++			ice_aq_str(hw->adminq.sq_last_status));
++		return -EIO;
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
+index 3da17895a2b1..462c3ab7abad 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_lib.h
+@@ -45,6 +45,8 @@ int ice_cfg_vlan_pruning(struct ice_vsi *vsi, bool ena, bool vlan_promisc);
  
- 	/* Get current PHY config */
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
- 				     NULL);
- 	if (status)
- 		goto out;
-@@ -3039,7 +3039,7 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
- 		return -ENOMEM;
+ void ice_cfg_sw_lldp(struct ice_vsi *vsi, bool tx, bool create);
  
- 	/* Get current PHY config */
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
- 				     NULL);
- 	if (status) {
- 		kfree(pcaps);
++int ice_set_link(struct ice_vsi *vsi, bool ena);
++
+ #ifdef CONFIG_DCB
+ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc);
+ #endif /* CONFIG_DCB */
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index b3c1cadecf21..4379bbece4d9 100644
+index 4379bbece4d9..b976de4b5e6f 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -720,7 +720,7 @@ void ice_print_link_msg(struct ice_vsi *vsi, bool isup)
+@@ -873,10 +873,10 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_phy_info *phy_info;
++	enum ice_status status;
+ 	struct ice_vsi *vsi;
+ 	u16 old_link_speed;
+ 	bool old_link;
+-	int result;
+ 
+ 	phy_info = &pi->phy;
+ 	phy_info->link_info_old = phy_info->link_info;
+@@ -887,10 +887,11 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
+ 	/* update the link info structures and re-enable link events,
+ 	 * don't bail on failure due to other book keeping needed
+ 	 */
+-	result = ice_update_link_info(pi);
+-	if (result)
+-		dev_dbg(dev, "Failed to update link status and re-enable link events for port %d\n",
+-			pi->lport);
++	status = ice_update_link_info(pi);
++	if (status)
++		dev_dbg(dev, "Failed to update link status on port %d, err %s aq_err %s\n",
++			pi->lport, ice_stat_str(status),
++			ice_aq_str(pi->hw->adminq.sq_last_status));
+ 
+ 	/* Check if the link state is up after updating link info, and treat
+ 	 * this event as an UP event since the link is actually UP now.
+@@ -906,18 +907,12 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
+ 	if (!test_bit(ICE_FLAG_NO_MEDIA, pf->flags) &&
+ 	    !(pi->phy.link_info.link_info & ICE_AQ_MEDIA_AVAILABLE)) {
+ 		set_bit(ICE_FLAG_NO_MEDIA, pf->flags);
+-
+-		result = ice_aq_set_link_restart_an(pi, false, NULL);
+-		if (result) {
+-			dev_dbg(dev, "Failed to set link down, VSI %d error %d\n",
+-				vsi->vsi_num, result);
+-			return result;
+-		}
++		ice_set_link(vsi, false);
  	}
  
- 	status = ice_aq_get_phy_caps(vsi->port_info, false,
--				     ICE_AQC_REPORT_SW_CFG, caps, NULL);
-+				     ICE_AQC_REPORT_ACTIVE_CFG, caps, NULL);
- 	if (status)
- 		netdev_info(vsi->netdev, "Get phy capability failed.\n");
+ 	/* if the old link up/down and speed is the same as the new */
+ 	if (link_up == old_link && link_speed == old_link_speed)
+-		return result;
++		return 0;
  
-@@ -1631,7 +1631,7 @@ static int ice_force_phys_link_state(struct ice_vsi *vsi, bool link_up)
- 	if (!pcaps)
- 		return -ENOMEM;
+ 	if (ice_is_dcb_active(pf)) {
+ 		if (test_bit(ICE_FLAG_DCB_ENA, pf->flags))
+@@ -931,7 +926,7 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
  
--	retcode = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG, pcaps,
-+	retcode = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
- 				      NULL);
- 	if (retcode) {
- 		dev_err(dev, "Failed to get phy capabilities, VSI %d error %d\n",
-@@ -1691,7 +1691,7 @@ static int ice_init_nvm_phy_type(struct ice_port_info *pi)
- 	if (!pcaps)
- 		return -ENOMEM;
+ 	ice_vc_notify_link_state(pf);
  
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_NVM_CAP, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_NO_MEDIA, pcaps,
- 				     NULL);
+-	return result;
++	return 0;
+ }
  
- 	if (status) {
-@@ -1807,7 +1807,7 @@ static int ice_init_phy_user_cfg(struct ice_port_info *pi)
- 	if (!pcaps)
- 		return -ENOMEM;
+ /**
+@@ -6678,6 +6673,7 @@ int ice_open(struct net_device *netdev)
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+ 	struct ice_port_info *pi;
++	enum ice_status status;
+ 	int err;
  
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA, pcaps,
- 				     NULL);
- 	if (status) {
- 		dev_err(ice_pf_to_dev(pf), "Get PHY capability failed.\n");
-@@ -1886,7 +1886,7 @@ static int ice_configure_phy(struct ice_vsi *vsi)
- 		return -ENOMEM;
+ 	if (test_bit(__ICE_NEEDS_RESTART, pf->state)) {
+@@ -6688,11 +6684,11 @@ int ice_open(struct net_device *netdev)
+ 	netif_carrier_off(netdev);
  
- 	/* Get current PHY config */
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_SW_CFG, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
- 				     NULL);
- 	if (status) {
- 		dev_err(dev, "Failed to get PHY configuration, VSI %d error %s\n",
-@@ -1904,7 +1904,7 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+ 	pi = vsi->port_info;
+-	err = ice_update_link_info(pi);
+-	if (err) {
+-		netdev_err(netdev, "Failed to get link info, error %d\n",
+-			   err);
+-		return err;
++	status = ice_update_link_info(pi);
++	if (status) {
++		netdev_err(netdev, "Failed to get link info, error %s\n",
++			   ice_stat_str(status));
++		return -EIO;
+ 	}
  
- 	/* Use PHY topology as baseline for configuration */
- 	memset(pcaps, 0, sizeof(*pcaps));
--	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP, pcaps,
-+	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_TOPO_CAP_MEDIA, pcaps,
- 				     NULL);
- 	if (status) {
- 		dev_err(dev, "Failed to get PHY topology, VSI %d error %s\n",
+ 	/* Set PHY if there is media, otherwise, turn off PHY */
+@@ -6715,12 +6711,7 @@ int ice_open(struct net_device *netdev)
+ 		}
+ 	} else {
+ 		set_bit(ICE_FLAG_NO_MEDIA, pf->flags);
+-		err = ice_aq_set_link_restart_an(pi, false, NULL);
+-		if (err) {
+-			netdev_err(netdev, "Failed to set PHY state, VSI %d error %d\n",
+-				   vsi->vsi_num, err);
+-			return err;
+-		}
++		ice_set_link(vsi, false);
+ 	}
+ 
+ 	err = ice_vsi_open(vsi);
 -- 
 2.26.2
 
