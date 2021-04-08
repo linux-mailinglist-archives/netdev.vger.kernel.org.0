@@ -2,116 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B410358B70
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 19:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78561358B7C
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 19:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232400AbhDHRe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 13:34:26 -0400
-Received: from mga18.intel.com ([134.134.136.126]:25284 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232476AbhDHReL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 13:34:11 -0400
-IronPort-SDR: E6Q27bUrG31XNlbmeLh1+IyidbXjQFiY37nb36QhkUKraS7TeU4Msrra4iqVdp9XA0KEd8NYDG
- ms6VL5BC8KbQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9948"; a="181132912"
-X-IronPort-AV: E=Sophos;i="5.82,207,1613462400"; 
-   d="scan'208";a="181132912"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2021 10:33:58 -0700
-IronPort-SDR: 9rvuxObR1ybD13ojoVplS1avqSKrWUynwSzWho289Gfoh7Y7C5mrlmEndywgXoGk6D5YWBe6Wx
- uaCRBbUMWgqg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,207,1613462400"; 
-   d="scan'208";a="422343459"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga008.jf.intel.com with ESMTP; 08 Apr 2021 10:33:57 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Yongxin Liu <yongxin.liu@windriver.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        brett.creeley@intel.com, Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net 6/6] ice: fix memory leak of aRFS after resuming from suspend
-Date:   Thu,  8 Apr 2021 10:35:37 -0700
-Message-Id: <20210408173537.3519606-7-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210408173537.3519606-1-anthony.l.nguyen@intel.com>
-References: <20210408173537.3519606-1-anthony.l.nguyen@intel.com>
+        id S232574AbhDHRhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 13:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232374AbhDHRhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 13:37:09 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44534C061760;
+        Thu,  8 Apr 2021 10:36:58 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id w70so3053793oie.0;
+        Thu, 08 Apr 2021 10:36:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9A7WE4oNJYMOtIeZ4f1kRgh1llUM0leZ6aBbZlOQsEY=;
+        b=qlHnLwUvHXlaPTOE5gLf2vh569G7Ws5cqIyuSqc8hW2Ixy3lsQNhGWCqE0dSr95qUW
+         4BUV6LRdrAJCLQ2HvbD4vQQbFn264j2Y7+ZXo3EWj5T3IOTTfwl2Uja/cAqkZKD3l/NT
+         f250f9u6+dKGLFqvG0ZegZWxCV+86FujawYB0UDaUoATUVQr6dzvMs4CLuc+ZnYnsFG/
+         wHrKzpwt+gd8AicVU099/PA0rPxZb4WnH05LUUlAGxX7ActL3tX59xip+D4i6+SZIhV6
+         xO64OXJ+gNUQ49bCqFZjqHIfWKpziKhJHPVMDwCCzuicSDd8SNWEEhN6Sg7Z+NH2fMtS
+         lOUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9A7WE4oNJYMOtIeZ4f1kRgh1llUM0leZ6aBbZlOQsEY=;
+        b=lcoPfoOp5MHA+ydpdoGctN5yi6qA6EE5+EtWIVZiTBdAJYEc+vQK2pbuqepYTV/kWT
+         NQN6crpZmFhhuwvSrC05f0GchQjABpxryGvc/rfYzI8iUw0cbkkBSVss+0fTUWd9OTE4
+         1nov/Dcbujk8I4e6glTKTltazIP/jlKZpV8CtC0zO8+935kSVyehOp33GezHaerv1ZYE
+         VHAYwEkMehH4955LBBAzuAOc0VW8eFBU+sB/3LTJK+KsIUUlVsViYXrAkyqd5Js2QAMM
+         2OFGw6Ib9uBQkSpFMXKE9MHSq2mhaeSERjADH17S0F8DGyhoZCOMP7qBifQxwOhvUyIR
+         SaKQ==
+X-Gm-Message-State: AOAM531xRMmJfr+aizqSfnhqk6ypRjoslZwauOJe6DUqo0xyj3bky6ZE
+        Dip9GDX9GELjSM6rVngMnFPrXOLApew5fmxpPJa5yaLzHA==
+X-Google-Smtp-Source: ABdhPJxTVtVpRXLoBvJcXq+Xtif9ClFSbu6H0JvFQFlIABCgnWYdOPXu0bOqo9Ks9ZmjapvPDC4t0VhDdkSlFGqpmkI=
+X-Received: by 2002:aca:fc41:: with SMTP id a62mr7102824oii.92.1617903417601;
+ Thu, 08 Apr 2021 10:36:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210408172353.21143-1-TheSven73@gmail.com>
+In-Reply-To: <20210408172353.21143-1-TheSven73@gmail.com>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Thu, 8 Apr 2021 12:36:45 -0500
+Message-ID: <CAFSKS=O4Yp6gknSyo1TtTO3KJ+FwC6wOAfNkbBaNtL0RLGGsxw@mail.gmail.com>
+Subject: Re: [PATCH net v1] Revert "lan743x: trim all 4 bytes of the FCS; not
+ just 2"
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yongxin Liu <yongxin.liu@windriver.com>
+On Thu, Apr 8, 2021 at 12:23 PM Sven Van Asbroeck <thesven73@gmail.com> wrote:
+>
+> From: Sven Van Asbroeck <thesven73@gmail.com>
+>
+> This reverts commit 3e21a10fdea3c2e4e4d1b72cb9d720256461af40.
+>
+> The reverted patch completely breaks all network connectivity on the
+> lan7430. tcpdump indicates missing bytes when receiving ping
+> packets from an external host:
 
-In ice_suspend(), ice_clear_interrupt_scheme() is called, and then
-irq_free_descs() will be eventually called to free irq and its descriptor.
+Can you explain the difference in behavior with what I was observing
+on the LAN7431? I'll retest but if this is reverted I'm going to start
+seeing 2 extra bytes on the end of frames and it's going to break DSA
+with the LAN7431 again.
 
-In ice_resume(), ice_init_interrupt_scheme() is called to allocate new
-irqs. However, in ice_rebuild_arfs(), struct irq_glue and struct cpu_rmap
-maybe cannot be freed, if the irqs that released in ice_suspend() were
-reassigned to other devices, which makes irq descriptor's affinity_notify
-lost.
+>
+> host$ ping $lan7430_ip
+> lan7430$ tcpdump -v
+> IP truncated-ip - 2 bytes missing! (tos 0x0, ttl 64, id 21715,
+>     offset 0, flags [DF], proto ICMP (1), length 84)
+>
+> Fixes: 3e21a10fdea3 ("lan743x: trim all 4 bytes of the FCS; not just 2")
+> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+> ---
+>
+> To: Bryan Whitehead <bryan.whitehead@microchip.com>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: Jakub Kicinski <kuba@kernel.org>
+> To: George McCollister <george.mccollister@gmail.com>
+> Cc: UNGLinuxDriver@microchip.com
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+>
+>  drivers/net/ethernet/microchip/lan743x_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> index 1c3e204d727c..dbdfabff3b00 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> @@ -2040,7 +2040,7 @@ lan743x_rx_trim_skb(struct sk_buff *skb, int frame_length)
+>                 dev_kfree_skb_irq(skb);
+>                 return NULL;
+>         }
+> -       frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 4);
+> +       frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 2);
+>         if (skb->len > frame_length) {
+>                 skb->tail -= skb->len - frame_length;
+>                 skb->len = frame_length;
+> --
+> 2.17.1
+>
 
-So call ice_free_cpu_rx_rmap() before ice_clear_interrupt_scheme(), which
-can make sure all irq_glue and cpu_rmap can be correctly released before
-corresponding irq and descriptor are released.
-
-Fix the following memory leak.
-
-unreferenced object 0xffff95bd951afc00 (size 512):
-  comm "kworker/0:1", pid 134, jiffies 4294684283 (age 13051.958s)
-  hex dump (first 32 bytes):
-    18 00 00 00 18 00 18 00 70 fc 1a 95 bd 95 ff ff  ........p.......
-    00 00 ff ff 01 00 ff ff 02 00 ff ff 03 00 ff ff  ................
-  backtrace:
-    [<0000000072e4b914>] __kmalloc+0x336/0x540
-    [<0000000054642a87>] alloc_cpu_rmap+0x3b/0xb0
-    [<00000000f220deec>] ice_set_cpu_rx_rmap+0x6a/0x110 [ice]
-    [<000000002370a632>] ice_probe+0x941/0x1180 [ice]
-    [<00000000d692edba>] local_pci_probe+0x47/0xa0
-    [<00000000503934f0>] work_for_cpu_fn+0x1a/0x30
-    [<00000000555a9e4a>] process_one_work+0x1dd/0x410
-    [<000000002c4b414a>] worker_thread+0x221/0x3f0
-    [<00000000bb2b556b>] kthread+0x14c/0x170
-    [<00000000ad2cf1cd>] ret_from_fork+0x1f/0x30
-unreferenced object 0xffff95bd81b0a2a0 (size 96):
-  comm "kworker/0:1", pid 134, jiffies 4294684283 (age 13051.958s)
-  hex dump (first 32 bytes):
-    38 00 00 00 01 00 00 00 e0 ff ff ff 0f 00 00 00  8...............
-    b0 a2 b0 81 bd 95 ff ff b0 a2 b0 81 bd 95 ff ff  ................
-  backtrace:
-    [<00000000582dd5c5>] kmem_cache_alloc_trace+0x31f/0x4c0
-    [<000000002659850d>] irq_cpu_rmap_add+0x25/0xe0
-    [<00000000495a3055>] ice_set_cpu_rx_rmap+0xb4/0x110 [ice]
-    [<000000002370a632>] ice_probe+0x941/0x1180 [ice]
-    [<00000000d692edba>] local_pci_probe+0x47/0xa0
-    [<00000000503934f0>] work_for_cpu_fn+0x1a/0x30
-    [<00000000555a9e4a>] process_one_work+0x1dd/0x410
-    [<000000002c4b414a>] worker_thread+0x221/0x3f0
-    [<00000000bb2b556b>] kthread+0x14c/0x170
-    [<00000000ad2cf1cd>] ret_from_fork+0x1f/0x30
-
-Fixes: 769c500dcc1e ("ice: Add advanced power mgmt for WoL")
-Signed-off-by: Yongxin Liu <yongxin.liu@windriver.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 9f1adff85be7..d821c687f239 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4564,6 +4564,7 @@ static int __maybe_unused ice_suspend(struct device *dev)
- 			continue;
- 		ice_vsi_free_q_vectors(pf->vsi[v]);
- 	}
-+	ice_free_cpu_rx_rmap(ice_get_main_vsi(pf));
- 	ice_clear_interrupt_scheme(pf);
- 
- 	pci_save_state(pdev);
--- 
-2.26.2
-
+Regards,
+George
