@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBAE357AEA
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:50:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C4F357AEE
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbhDHDu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 23:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        id S229606AbhDHDyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 23:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbhDHDu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:50:56 -0400
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB34C061760
-        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 20:50:45 -0700 (PDT)
-Received: by mail-io1-xd2e.google.com with SMTP id r193so738247ior.9
-        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 20:50:45 -0700 (PDT)
+        with ESMTP id S229469AbhDHDyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:54:05 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6C8C061760
+        for <netdev@vger.kernel.org>; Wed,  7 Apr 2021 20:53:55 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id d10so615589ils.5
+        for <netdev@vger.kernel.org>; Wed, 07 Apr 2021 20:53:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QSQwh6FEfQXgkuwm6nqm6CMdCCSMi5maBHIb9ncUYxw=;
-        b=zMXiEZz6V4TELas2KtY6Aaj/g/mcC4L/oN3+6ft9h7yJQCVInuundESFeMpTI6VrJ9
-         dmLo468jWhWxfySioaql1JGlhvk82bfjSGVH0eA13M/k4fuutw+FuNfjVBkz76rlk/wc
-         lSEh+JMHsxkbxcZM3g55ZC9HZPCeV2DnyPEcaGRaThRqfVsHFdJ7LAg5OpRkckMZNtFE
-         DE8EREciU0+ZuU5eSombKU0c5IT7q14J58deHK/E9ucOvni2b39gM3QqCHbejmOOSk4H
-         YbAvrbauqqZ+3UU1uU2b/K5DyNHVbzlOAMrCIt9O5NjC6VSjPHJcMKHJ4o1kHmbLOGVs
-         4S/g==
+        bh=2W7012bsIfpRy+MP9eZql6DB7ScoxohiHSmP5niLDlE=;
+        b=ciN+HMG0IjEpS0j9JpuVYLetEtRmmzUYWqlcPKsKvlQSwwOZKulO6xvWMgmkBdKKHR
+         dQZOSQC99RJxUGh+qCCFFvF42MQb95PWYbYrOs/Ql8pNYJBDIjbU0LODxO8o0sM070Qk
+         tsv8Ypabqkz+j9zB3BqRiLAnfOmOYkU07v6zmUkYo2f8YOTgDh/CBjMFO7Y7zeymY2sN
+         0XwCOx5FuGjpmQbU+mql4LlrQ+mcFA/mc41H2wD7MimNm8rr290VgDczN216c60AcC1U
+         T9RNH2pFOG7UuRpfgbLX9t6DPS3D8hoKJ5rMVNp426pxCkbZqHwuvKksUc5X9zaY0Jli
+         CfuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QSQwh6FEfQXgkuwm6nqm6CMdCCSMi5maBHIb9ncUYxw=;
-        b=bQ9osAPs11nJZpO5Z8xbcNgbzs/5xqiR2f9dzEUMGymVdABNy1QUW+7oCHmZu888/m
-         JKTIaQ/oUlIl5lsD1fb7Y3Qf1Sp9yEKamfTcK9eD/jmfwmY8x6yojtIDRb10fy80eRFU
-         6ixmuYVLv8RArOLuXVsk5EPIssqbPuG/mxjveWC+2oBW8dLDn+BukxJcA+K+PE7MWBVI
-         8LV08m47lpPneQxQauJUVAC6QYk6CIpWDY8zqAFsJ2gGL8ION8F8YrpnY58wcwstDPVC
-         rXt/nhV3UK7Eg3rRVd9iw7etMzzoObK9mBaox67twyo9soMDcAHbrxZ1eDX54hMo0OFI
-         rHnw==
-X-Gm-Message-State: AOAM530jCWT77CjabD1Rfa3Amiok5YcLntlsFdcelIKiwcOXEpQPBmVW
-        zDVaizadX+B9lDIbjkXR8g0I6RX++myGMEo3vE46PA==
-X-Google-Smtp-Source: ABdhPJwTZQsVjIvnv/Fy62zB6KFa6XbHe8bhrSuSeJAmHilUDdo/fWDu3XEqO0YNif2WKp/p5fSwwANNOBfEBZdTg3c=
-X-Received: by 2002:a02:230d:: with SMTP id u13mr6929339jau.53.1617853844692;
- Wed, 07 Apr 2021 20:50:44 -0700 (PDT)
+        bh=2W7012bsIfpRy+MP9eZql6DB7ScoxohiHSmP5niLDlE=;
+        b=DFkhamHhHTMBXxhLeU766DJL2ZV0Cfqxmpf2AzamIMrz08kJgRa87+E5P8m5wNN6Hy
+         e3MCxc0G3M7ujHtD4VMtCYztR7imTdokyXkOu6odzsSmLMQ6qdG4XDwXFxJRIgq0EQN+
+         DDUfeRvq7/FGzcW1SycnUJRP7KpY6e2I1KSUkuW22ijg6hvn100o1EayAn0IAwgJc8AD
+         UD4Dsj7lCa9GasU6KxGvSX0SSmpLjmZnkqUvutRqGKZL8h94fw+5TQxNxJO3o/huTkQ/
+         XUYs0TzYYcJ+Rr5V7R8JQynu321kX+0/OvjzPCZXLb7Adv7WiH+Kg5gdpdqp6LbKcMI+
+         3t0A==
+X-Gm-Message-State: AOAM531d/Dc4MR+CGa5YEI/bJtjn5gGW0C9UzbghGo7LUJUziybeY1yr
+        ypJNDloSUGB9rM01rDQFu6iF0hEoCfpny62eQ9bG4A==
+X-Google-Smtp-Source: ABdhPJx//CkLH61Xww8j3pQhhGFZ0Z/pvJq9S3j4VGvVBlyYQOY64PQR0KUIq7YPJnKRcK4hQjw+ZlacPbmdLQlap9Y=
+X-Received: by 2002:a05:6e02:1546:: with SMTP id j6mr4969555ilu.299.1617854034862;
+ Wed, 07 Apr 2021 20:53:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210408130200.32ec9d1e@canb.auug.org.au>
-In-Reply-To: <20210408130200.32ec9d1e@canb.auug.org.au>
+References: <20210408131117.7f2f3a29@canb.auug.org.au>
+In-Reply-To: <20210408131117.7f2f3a29@canb.auug.org.au>
 From:   "Cong Wang ." <cong.wang@bytedance.com>
-Date:   Wed, 7 Apr 2021 20:50:33 -0700
-Message-ID: <CAA68J_ZYfJdVQS4_sWB2RVowXO1UVPQVzoNmdFN4P96kKV3KEA@mail.gmail.com>
+Date:   Wed, 7 Apr 2021 20:53:44 -0700
+Message-ID: <CAA68J_ahKn3eD+QxYDUkJvLCbOzY13isBgLtwwSUwBw=S8YusA@mail.gmail.com>
 Subject: Re: [External] linux-next: manual merge of the net-next tree with the
  bpf tree
 To:     Stephen Rothwell <sfr@canb.auug.org.au>
@@ -64,32 +64,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 7, 2021 at 8:02 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Wed, Apr 7, 2021 at 8:11 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 >
 > Hi all,
 >
 > Today's linux-next merge of the net-next tree got a conflict in:
 >
->   include/linux/skmsg.h
+>   net/core/skmsg.c
 >
 > between commit:
 >
->   1c84b33101c8 ("bpf, sockmap: Fix sk->prot unhash op reset")
+>   144748eb0c44 ("bpf, sockmap: Fix incorrect fwd_alloc accounting")
 >
 > from the bpf tree and commit:
 >
->   8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
+>   e3526bb92a20 ("skmsg: Move sk_redir from TCP_SKB_CB to skb")
 >
 > from the net-next tree.
 >
-> I didn't know how to fixed it up so I just used the latter version or
-> today - a better solution would be appreciated. This is now fixed as
-> far as linux-next is concerned, but any non trivial conflicts should be
-> mentioned to your upstream maintainer when your tree is submitted for
-> merging.  You may also want to consider cooperating with the maintainer
-> of the conflicting tree to minimise any particularly complex conflicts.
+> I fixed it up (I think - see below) and can carry the fix as
+> necessary. This is now fixed as far as linux-next is concerned, but any
+> non trivial conflicts should be mentioned to your upstream maintainer
+> when your tree is submitted for merging.  You may also want to consider
+> cooperating with the maintainer of the conflicting tree to minimise any
+> particularly complex conflicts.
 
-The right way to resolve this is to move the lines added in commit
-1c84b33101c8 to the similar place in tcp_bpf_update_proto().
+Looks good from my quick glance.
 
-Thanks.
+Thanks!
