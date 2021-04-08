@@ -2,93 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC060357AAF
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB85357AC0
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 05:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbhDHDUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Apr 2021 23:20:12 -0400
-Received: from ozlabs.org ([203.11.71.1]:38775 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229510AbhDHDUL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Apr 2021 23:20:11 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S229831AbhDHD0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Apr 2021 23:26:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40984 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229844AbhDHD02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Apr 2021 23:26:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617852377;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gqqfJQKIdte55u7kG25HpIFh+raZcUjLo8p4M5prlro=;
+        b=QxMSTgxRhWqUIInRgytFve11ls1/ZxEqoYZfFBBGPyB4azgzjNVUW1Xu29F9ukvvi/LM5e
+        EQmqIDQwn+EWyNy6gGg76qBMi9KtmEhc7uMjJwF+zVQn/vVlip+Ov0sl+AqfRm+r8SxdYa
+        40/LxWim+LKOkUsYT455UkJ9PRpDvQM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-248-3pXw21HFO6KHRixokR3V1g-1; Wed, 07 Apr 2021 23:26:10 -0400
+X-MC-Unique: 3pXw21HFO6KHRixokR3V1g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4FG62R37YTz9sVt;
-        Thu,  8 Apr 2021 13:19:59 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1617851999;
-        bh=V8UNQ4tLA/CI+huHa9ZOaaXjFej4UyWnGkN/d/pnZrw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=qbEH7xGgNiolT+M3+8zj10jLZBYLU6WvUSgSqX+nAE24c0YgpGfsr5iNmavr4XVbi
-         Q5axEGHncmd6guGFVdCAHe/pdIUlndyWAviC874ZewH1xqMspjQtzzb3tq/vTJN0Ys
-         lNXCF6FIz+lMze0d1bieylG8oXxxaOK4arm/PK7rUf5dzTj2YeOkh1Q3InnXpYPB7u
-         R5Ki3NXa/H/IUgaKfOur7iAksHC8PDrc0pIenBRlk9UEqPOylFq5ZvKJj1BJTtiEpN
-         Gp24zZMImqaJoq9RqPkFwfqxXly36rCq41mSKVxWqcsVXaUjUGuZxtHIex3xxo3bc9
-         MZiFC1ks7aZHA==
-Date:   Thu, 8 Apr 2021 13:19:58 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Hoang Huu Le <hoang.h.le@dektech.com.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210408131958.0779430e@canb.auug.org.au>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E777B1006C83;
+        Thu,  8 Apr 2021 03:26:07 +0000 (UTC)
+Received: from wangxiaodeMacBook-Air.local (ovpn-12-194.pek2.redhat.com [10.72.12.194])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 60B555CC3E;
+        Thu,  8 Apr 2021 03:25:51 +0000 (UTC)
+Subject: Re: [PATCH v6 08/10] vduse: Implement an MMU-based IOMMU driver
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        hch@infradead.org, christian.brauner@canonical.com,
+        rdunlap@infradead.org, willy@infradead.org,
+        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
+        corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+References: <20210331080519.172-1-xieyongji@bytedance.com>
+ <20210331080519.172-9-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <30862242-293b-f42f-d8ce-2c31a52e3697@redhat.com>
+Date:   Thu, 8 Apr 2021 11:25:49 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/hDgq.2bVmj7h6NrpDWl5KcW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210331080519.172-9-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/hDgq.2bVmj7h6NrpDWl5KcW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+ÔÚ 2021/3/31 ÏÂÎç4:05, Xie Yongji Ð´µÀ:
+> This implements an MMU-based IOMMU driver to support mapping
+> kernel dma buffer into userspace. The basic idea behind it is
+> treating MMU (VA->PA) as IOMMU (IOVA->PA). The driver will set
+> up MMU mapping instead of IOMMU mapping for the DMA transfer so
+> that the userspace process is able to use its virtual address to
+> access the dma buffer in kernel.
+>
+> And to avoid security issue, a bounce-buffering mechanism is
+> introduced to prevent userspace accessing the original buffer
+> directly.
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
-Today's linux-next merge of the net-next tree got a conflict in:
 
-  net/tipc/crypto.c
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-between commit:
+With some nits:
 
-  2a2403ca3add ("tipc: increment the tmp aead refcnt before attaching it")
 
-from the net tree and commit:
+> ---
+>   drivers/vdpa/vdpa_user/iova_domain.c | 521 +++++++++++++++++++++++++++++++++++
+>   drivers/vdpa/vdpa_user/iova_domain.h |  70 +++++
+>   2 files changed, 591 insertions(+)
+>   create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
+>   create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
 
-  97bc84bbd4de ("tipc: clean up warnings detected by sparse")
 
-from the net-next tree.
+[...]
 
-I fixed it up (I used the former version) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
 
---=20
-Cheers,
-Stephen Rothwell
+> +static void vduse_domain_bounce(struct vduse_iova_domain *domain,
+> +				dma_addr_t iova, size_t size,
+> +				enum dma_data_direction dir)
+> +{
+> +	struct vduse_bounce_map *map;
+> +	unsigned int offset;
+> +	void *addr;
+> +	size_t sz;
+> +
+> +	while (size) {
+> +		map = &domain->bounce_maps[iova >> PAGE_SHIFT];
+> +		offset = offset_in_page(iova);
+> +		sz = min_t(size_t, PAGE_SIZE - offset, size);
+> +
+> +		if (WARN_ON(!map->bounce_page ||
+> +			    map->orig_phys == INVALID_PHYS_ADDR))
+> +			return;
+> +
+> +		addr = page_address(map->bounce_page) + offset;
+> +		do_bounce(map->orig_phys + offset, addr, sz, dir);
+> +		size -= sz;
+> +		iova += sz;
+> +	}
+> +}
+> +
+> +static struct page *
+> +vduse_domain_get_mapping_page(struct vduse_iova_domain *domain, u64 iova)
 
---Sig_/hDgq.2bVmj7h6NrpDWl5KcW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
+It's better to rename this as "vduse_domain_get_coherent_page?".
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmBudl4ACgkQAVBC80lX
-0GzZrwf/eE2FCS+7UwykVmjPoYU6Y0vL+CsYBDp8J3Lv+jYgYTvATTAAigFF3x+f
-IetG6fMYO3Vl689SnHwWfA5IX27n4Gh+4+dgvN6tixtHNhol/gcyStIafaw+9TOL
-NF5PtZMACY604IgS8INMAutdahOPhDByULlwsOw/Mwy3JVEAZPGg5KN5b3PwYeky
-eRkThAWP7ZmPbt2zw7JOyuoJg7BN1kzN2YQF3y+ZRNgxFojnjTO7iCGSRoGxx59G
-+7rKzXgARlAQxqiZaABvmk1qLLP8oC6aa6c5ZLNT/pxBAqJ40M0H+BhY2+LV9ams
-zjcIAclDcxC+OKF9rzjzm1Cesi38Ww==
-=0PE3
------END PGP SIGNATURE-----
 
---Sig_/hDgq.2bVmj7h6NrpDWl5KcW--
+> +{
+> +	u64 start = iova & PAGE_MASK;
+> +	u64 last = start + PAGE_SIZE - 1;
+> +	struct vhost_iotlb_map *map;
+> +	struct page *page = NULL;
+> +
+> +	spin_lock(&domain->iotlb_lock);
+> +	map = vhost_iotlb_itree_first(domain->iotlb, start, last);
+> +	if (!map)
+> +		goto out;
+> +
+> +	page = pfn_to_page((map->addr + iova - map->start) >> PAGE_SHIFT);
+> +	get_page(page);
+> +out:
+> +	spin_unlock(&domain->iotlb_lock);
+> +
+> +	return page;
+> +}
+> +
+
+
+[...]
+
+
+> +
+> +static dma_addr_t
+> +vduse_domain_alloc_iova(struct iova_domain *iovad,
+> +			unsigned long size, unsigned long limit)
+> +{
+> +	unsigned long shift = iova_shift(iovad);
+> +	unsigned long iova_len = iova_align(iovad, size) >> shift;
+> +	unsigned long iova_pfn;
+> +
+> +	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+> +		iova_len = roundup_pow_of_two(iova_len);
+
+
+Let's add a comment as what has been done in dma-iommu.c?
+
+(In the future, it looks to me it's better to move them to 
+alloc_iova_fast()).
+
+Thanks
+
+
