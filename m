@@ -2,114 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3AD0357E64
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 10:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34E99357EA7
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 11:03:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbhDHIsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 04:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
+        id S230291AbhDHJDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 05:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhDHIsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 04:48:12 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCBDC061760
-        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 01:48:01 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id p12so913592pgj.10
-        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 01:48:01 -0700 (PDT)
+        with ESMTP id S229603AbhDHJDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 05:03:09 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD03C061760
+        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 02:02:58 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id x15so1278884wrq.3
+        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 02:02:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/PMASeFAUbBI5JwV4L0k1lOX7888tIM9XHNKvH1RoPM=;
-        b=DGNyFvJNtCpXW5Bjt2K1X1fr0tN3IHOLkCmGwmhQl5vLaqgacthwvenRB6aGv/AAeQ
-         dUwql030rW4wIcVziIulvYiKbW40KunNuP3H5KxX0okrqVpKvITCe7SXjDaDAkjOEnXy
-         BEmVDDDTn5S+YlBPZIjx9agDX1FUYGV0AVbS3lejwSFGBq2vL5EpfmP34A9nrF8xsu/K
-         Dr1bTO1Zf/YLL8ACA1Y5V3eptwi/X0gocInmLAEjijbe6WWBn8Qvm/q4bcEdfCfc7mMA
-         KjmgyGfXyZco6XZUC26jFDkRRHBjNTxelYFZ1Oez0RWaQLP6kiMzr/LbemQ88jCbYRqG
-         nAng==
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=77cHg8LuhM3IDi6HJrJagIBM1vf3FkR2J5qESmxOhBs=;
+        b=LPIT6lZVssaojzziKtsyTEd20YwVUp0BOKnu2CA+NobnegY3G4ET+6zJgi+XvOYmj0
+         nhove0vbI8t4V7B4WFN46P2kGi4RgH5BZ0AduT7zU8/h01edTKd+FWoofRyjeDh7dV4W
+         hzCbnITJarTduHS8mXGj5gZr51Cr9bSNnWEnycSBxXTSchCpAjJD27YVyiH6+07nypOT
+         vYgDSFGvPTnpI8Ww1RGdPz76GGy37UduH+A/2oiU4LUolg8RnOoZBj/Dfejh20x7Rh6H
+         vZQu7B6KBbU2+OjNLNIUq4VMaeqYEFCIZWfSDVCv8PaqXfT4SVqB2pxMql2bNJ3htXK0
+         MAMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/PMASeFAUbBI5JwV4L0k1lOX7888tIM9XHNKvH1RoPM=;
-        b=gCcFUxmD8rvfDSmc8G9zRFeUgLD1ktuHi/yqrgZ21sXXqDH/GjJvL9izv8IN40TH3+
-         ezbRFozK+8XsXfLRHqYDULN1SEWMgjoSfNBuGGJqDHkTRRnjAgLKWiQBqsplMTWRl1Nd
-         HO5+IVC8JMPiZnd6izFCf2BPZ+VHuXLKNnvQ3KVXCh2xcwLMWEIxYZTKh3BQ0E6tbMVA
-         4b/U5bWVsHean/h87JUsM2+DLRIpKzx9XRgRt44q/2VA5FXIh8PyqWYsQfPh8aMxoOvW
-         PD2alHXVEm7Ns1eVfbzwo0FYg40Mr3IeXzxfA9FApCrWluJMPS2gdZNCFDQu8dT3oePh
-         eRxQ==
-X-Gm-Message-State: AOAM532BjPceTixqpavQajinXVCJ6CTEYviOrnwOKKWggdcc3/vxikfw
-        G2hLVREj3vNjeAeGa2Ud1wwdEtV+WKqUp+kfjye2LH8B9DzSeQ==
-X-Google-Smtp-Source: ABdhPJxiutvnYlEKjdNdSYTwUE01MVBkq0+GFUlPeMifn5KRIHOroysMx2hSbJbYXz3P2FVZwY3uIsC8Pl5tKTZj1d4=
-X-Received: by 2002:a63:f903:: with SMTP id h3mr6882846pgi.443.1617871681332;
- Thu, 08 Apr 2021 01:48:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <1617616369-27305-1-git-send-email-loic.poulain@linaro.org> <ddc8cd0fd3212ccbba399b03a059bcf40abbc117.camel@redhat.com>
-In-Reply-To: <ddc8cd0fd3212ccbba399b03a059bcf40abbc117.camel@redhat.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Thu, 8 Apr 2021 10:56:11 +0200
-Message-ID: <CAMZdPi_6hCYpiyf4=x1FdA2KHnVg6LFWnfEhCd8PMQP_yFXqCw@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 1/2] net: Add a WWAN subsystem
-To:     Dan Williams <dcbw@redhat.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=77cHg8LuhM3IDi6HJrJagIBM1vf3FkR2J5qESmxOhBs=;
+        b=P7xynadloOfMmTS+HzCciUtAac5tSRWIvXDu0V0MnMdL8ayAuUozQmpQOJvEAsct9X
+         mg65xb42AUqsfBsVq3vSc/rPdlM1PI7YBu5sXBT22oan9AW3SVv03itpRefbLNfFo2oK
+         cbN+KqYEiS2/w/QoD0PUbRcvAPxy2m5oHKhbJF27R9ntMxPJ36+D1QF343gkUlBuccHo
+         8BRPElBJksBeIp0G3vmccgEQnYbm4lnUy4wog6+9/2EnI592q7QRKkvKxvjz0zjzYwA6
+         A79Cw8+yH7nXC3ll8sL2hK4vq2kZp0WH9GmeEPNmV40ByaIrXToszLOO3psnXnQMLqYe
+         f6CQ==
+X-Gm-Message-State: AOAM530YSKyfeFyovxsdxpYgr8tWwP4NBB+XtgRmS71Yh7Z3nZ+am0b0
+        uUNSNjY4UwuejCMeFiKh8zBjRu71VGg=
+X-Google-Smtp-Source: ABdhPJztewboEb0cWbQd0mqhEI+5fA0MWS47XumsaXKs+SHyJAJUWdJ2IXA1jKtana10pjwk6JPllw==
+X-Received: by 2002:adf:e387:: with SMTP id e7mr9386380wrm.44.1617872576495;
+        Thu, 08 Apr 2021 02:02:56 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f38:4600:6dfe:cdb3:c4f9:2744? (p200300ea8f3846006dfecdb3c4f92744.dip0.t-ipconnect.de. [2003:ea:8f38:4600:6dfe:cdb3:c4f9:2744])
+        by smtp.googlemail.com with ESMTPSA id w10sm17417590wrv.95.2021.04.08.02.02.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Apr 2021 02:02:55 -0700 (PDT)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        open list <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Fugang Duan <fugang.duan@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <9e695411-ab1d-34fe-8b90-3e8192ab84f6@gmail.com>
+ <DB8PR04MB6795C5587FB2FF7DB1B40160E6749@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 0/3] net: make PHY PM ops a no-op if MAC driver
+ manages PHY PM
+Message-ID: <4defd59a-7c09-1227-ad85-c40b81f39087@gmail.com>
+Date:   Thu, 8 Apr 2021 11:02:50 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
+MIME-Version: 1.0
+In-Reply-To: <DB8PR04MB6795C5587FB2FF7DB1B40160E6749@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+On 08.04.2021 07:42, Joakim Zhang wrote:
+> 
+> Hi Heiner,
+> 
+> Why not target this patch set to net repo as a bug fixes? Others may also suffer from this.
+> 
+Reason is that the patch includes new functionality that usually
+doesn't get backported. I'd like to see whether your case remains
+the only one or whether there will be more similar reports.
+In this case we had to think about a fix that doesn't need new
+functionality or check whether backporting the new functionality
+would be acceptable.
 
-On Wed, 7 Apr 2021 at 16:32, Dan Williams <dcbw@redhat.com> wrote:
->
-> On Mon, 2021-04-05 at 11:52 +0200, Loic Poulain wrote:
-> > This change introduces initial support for a WWAN framework. Given
-> > the
-> > complexity and heterogeneity of existing WWAN hardwares and
-> > interfaces,
-> > there is no strict definition of what a WWAN device is and how it
-> > should
-> > be represented. It's often a collection of multiple devices that
-> > perform
-> > the global WWAN feature (netdev, tty, chardev, etc).
->
-> Great to see the continued work on this.
->
-> Were you intending to follow-up with functionality to group netdevs
-> with the control ports?  From my quick look at v9 here it only deals
-> with MHI control ports (diag, QMI, AT, etc) which is great, but not the
-> full story.
->
-> I think that was a big part of the discussion around Johannes' earlier
-> series since it's often protocol-specific to tie a particular netdev
-> with a given control port, but that's something that's really necessary
-> for a good abstract userspace.
->
-> Thoughts here? I'd love to see that functionality too.
+> Best Regards,
+> Joakim Zhang
+> 
+Heiner
 
-Yes, though it's not in the scope for this initial series*, I plan to add that.
+>> -----Original Message-----
+>> From: Heiner Kallweit <hkallweit1@gmail.com>
+>> Sent: 2021年4月7日 23:51
+>> To: Andrew Lunn <andrew@lunn.ch>; Russell King - ARM Linux
+>> <linux@armlinux.org.uk>; Jakub Kicinski <kuba@kernel.org>; David Miller
+>> <davem@davemloft.net>; Fugang Duan <fugang.duan@nxp.com>
+>> Cc: netdev@vger.kernel.org; Joakim Zhang <qiangqing.zhang@nxp.com>
+>> Subject: [PATCH net-next 0/3] net: make PHY PM ops a no-op if MAC driver
+>> manages PHY PM
+>>
+>> Resume callback of the PHY driver is called after the one for the MAC driver.
+>> The PHY driver resume callback calls phy_init_hw(), and this is potentially
+>> problematic if the MAC driver calls phy_start() in its resume callback. One issue
+>> was reported with the fec driver and a KSZ8081 PHY which seems to become
+>> unstable if a soft reset is triggered during aneg.
+>>
+>> The new flag allows MAC drivers to indicate that they take care of
+>> suspending/resuming the PHY. Then the MAC PM callbacks can handle any
+>> dependency between MAC and PHY PM.
+>>
+>> Heiner Kallweit (3):
+>>   net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM
+>>   net: fec: use mac-managed PHY PM
+>>   r8169: use mac-managed PHY PM
+>>
+>>  drivers/net/ethernet/freescale/fec_main.c | 3 +++
+>> drivers/net/ethernet/realtek/r8169_main.c | 3 +++
+>>  drivers/net/phy/phy_device.c              | 6 ++++++
+>>  include/linux/phy.h                       | 2 ++
+>>  4 files changed, 14 insertions(+)
+>>
+>> --
+>> 2.31.1
+> 
 
-I was thinking about introducing a wwan_register_ndev or
-wwan_attach_ndev. Most of the time, netdev does not have reference to
-related existing (or future) control ports (they are different
-drivers), so we may need something like a 'context_id' for both ndev
-and control ports that can be used for linking them when necessary.
-Then, this relation could be represented as e.g a sysfs link to ndev
-device(s)... That's just a possible approach, I'll be happy to discuss
-this further.
-
-* Note: Userspace tools like ModemManager are able to link control
-ports and netdev by looking at the sysfs hierarchy, it's fine for
-simple connection management, but probably not enough for 'multi PDN'
-support for which devices may have multiple netdev and ports
-targetting different 'PDN contexts'...
-
-Regards,
-Loic
