@@ -2,90 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E305358E07
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 22:06:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DD4358E04
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 22:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232243AbhDHUGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 16:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
+        id S231975AbhDHUGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 16:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232196AbhDHUGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 16:06:16 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52BAAC061762
-        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 13:06:01 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id s16-20020a0568301490b02901b83efc84a0so3502797otq.10
-        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 13:06:01 -0700 (PDT)
+        with ESMTP id S231451AbhDHUGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 16:06:10 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F36CC061760
+        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 13:05:59 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id m3so3897891edv.5
+        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 13:05:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tMNaMbTulZVWFzBX43p/fXwF2BC09PvT07FCozD76VU=;
-        b=wTQsR+4POzo16nXanctMMf2DY1pekJQorxnW8aa+rOq7fwPpmiyovyCeKhrHO0vpX/
-         7DQdwXurJvdQj+IkuBbgJAbDaLZV/QKWsUWQLYRsShywUzf1cY0J7fqpXZL0lmoJzRAG
-         tbW5zQC/IzJzksdHFL7gl5QH+uB4UrDJGlFfH9z3PrCQJb0hfA//fONntwDGLDc0NDME
-         +KGGwqrXbKmD0LFcYRYXWe/AwPsCTGSRRLTLQLwM/w8gfkMwZPOSp0MYxcDObVc7nPUu
-         ZazRA3CZOPqVHZOsfZH6IEC24WNXoOk60V7nBxRc1BJ6j2aKmAcbDBN4615xdM/jetri
-         c8Ng==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=fTFWwMjCpocca3MO7P1jty1ObtUAP01oxLMOZnGcpik=;
+        b=nFYKNsnIem03nimDFEFAtURKZW/y4UOrHKD1jjzPAlbcYSAFGVSsR2wSIcmEvIzQ1k
+         HBLau6iH/9YyFpE/TT5jBb14tU/AeNREbcSzi6kNG8S4skDA1awiGzpRwmShg0tr7c4b
+         IS5Cssq8MHgFfx+FNzPUgY4bOnvQ8EZGBCeryhjsHIRf+mXsdIJFUDsFf58+xzxPDnpf
+         Gwf+YyBNvGxJobjSXqclzQ00T1rOoXzwrXwNryPfMZam+zG+f4ufntj8aM+D3ei6hhDi
+         pe1ytnG4PL9HE9fe2uWJ5okhP7TyLVyIvnjqz5a7OhOrDtHnamfunm4NUBUKPHcrPu8U
+         0lvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tMNaMbTulZVWFzBX43p/fXwF2BC09PvT07FCozD76VU=;
-        b=UOTgoUKJJzjPl5r6GCpvwQrdUD/5u4usrrtHlO8Qmq9eTmwYCB8DlRfXbGljTbh3qP
-         Hrt7zf6OFQ3MbSrCvPKekYqlXnfE+FT8nizKM7ZBqwCyk6aCnWJVOmiOuDuNtJz0xzJZ
-         BCXNwAzD41/uOQcw5ruT5j7FyTFdlv6og3UUj4b0GM/yu6oVgZAt+i4sCNY5O1bbyqNX
-         nGfP/4EFoW1hljznDXXUmgpd6xKJP5WQEu7W+w9+4yXz9tZxKOzkz+RG/SG9y3TWpU9q
-         QIZO7RnLmlK+Jw4kutji7m4oydRuvkJ8ERhzEsJVUSzKqxpc0xbzpMUEpym/71SAWCcI
-         Xiug==
-X-Gm-Message-State: AOAM533vSBgRHIrBcOdOprHYDeOGie8Zf98fD8f2hZQspKCGCr7UUzBz
-        um6m4Xa/H9W8um9kJFlu0kTFcLS/a2WyCzc4bzHQTg==
-X-Google-Smtp-Source: ABdhPJyRKoCsX4sQ1CWsl/fOPRNr5iqIQ90bMlXwepNyYKYjPrwT0TgnjRxObEps047wJcjvKBb30Zd/x9HMMK+beJM=
-X-Received: by 2002:a05:6830:210e:: with SMTP id i14mr9235389otc.229.1617912360590;
- Thu, 08 Apr 2021 13:06:00 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=fTFWwMjCpocca3MO7P1jty1ObtUAP01oxLMOZnGcpik=;
+        b=ionqzfGc8gKQMifaEoUBg5Zl6u+e3yU7Q6on/9rOBJB5tIf1kdK5PNs8ugKYbdye4S
+         cyYEq90g6IPLX4S2H0nStvKo5zuCZgLtdku8XSTzjaCxwn3EkWobDQO7dyxXsE9JWKFc
+         Uz3VE0+nNA7PwOOBwppYuO2XGGm+SP/d23a/BD0PQpw76BjjBqwJQtfAX79WzLFpsJjZ
+         BBZNpqvd/9++LqwYKgg/2VodDY6HQyqCm4yloy6+4Dhm14QNi2jyx7Hr2Qua/3QuO43N
+         o1WbOFX9g36fBx5j9zzCPaChKhKPjhjNbkskdkQyIuY/qFE59L4LWGvdq8/YOQFTX+b4
+         ZukQ==
+X-Gm-Message-State: AOAM530QBCbK16zE/EPoX3kzwUZSVimwmJ995d4YE2b0OOt56TRgKlz/
+        1KSWynxwCWtLrWG+f1GaUWLURG8cpj5r9bnJJqs=
+X-Google-Smtp-Source: ABdhPJzZ83kUnEap7vgsC+pvasVv4C9ORqS95CuXpwMbTSOZ7yVSpcuqJNwqNig0kSjvO/sJM4nHVubp5lHlcIx8N0w=
+X-Received: by 2002:a05:6402:2552:: with SMTP id l18mr13708413edb.71.1617912357663;
+ Thu, 08 Apr 2021 13:05:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <1617616369-27305-1-git-send-email-loic.poulain@linaro.org>
- <ddc8cd0fd3212ccbba399b03a059bcf40abbc117.camel@redhat.com> <CAMZdPi_6hCYpiyf4=x1FdA2KHnVg6LFWnfEhCd8PMQP_yFXqCw@mail.gmail.com>
-In-Reply-To: <CAMZdPi_6hCYpiyf4=x1FdA2KHnVg6LFWnfEhCd8PMQP_yFXqCw@mail.gmail.com>
-From:   Aleksander Morgado <aleksander@aleksander.es>
-Date:   Thu, 8 Apr 2021 22:05:49 +0200
-Message-ID: <CAAP7ucL8Gc_w=BxFFY50XStJWghmdTWo2W2fdzdJjD3cfuWRRg@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 1/2] net: Add a WWAN subsystem
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Dan Williams <dcbw@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Received: by 2002:a17:906:454b:0:0:0:0 with HTTP; Thu, 8 Apr 2021 13:05:57
+ -0700 (PDT)
+Reply-To: mrs.chantal166@gmail.com
+From:   Mrs Chantal <chantalmrs63@gmail.com>
+Date:   Thu, 8 Apr 2021 20:05:57 +0000
+Message-ID: <CAASsLd-h5quTCYp7rTgTMpDVTTzqBN-an5hCrky9cjMEWrm3kQ@mail.gmail.com>
+Subject: Dear Friend
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey,
+Dear Friend
+You have been compensated with the sum of 4.3 million dollars in this
+united nation the payment will be issue into atm visa card and send to
+you from the santander bank we need your address and your whatsapp
+number
 
->
-> * Note: Userspace tools like ModemManager are able to link control
-> ports and netdev by looking at the sysfs hierarchy, it's fine for
-> simple connection management, but probably not enough for 'multi PDN'
-> support for which devices may have multiple netdev and ports
-> targetting different 'PDN contexts'...
->
+Fill the followings with your details;
 
-ModemManager is happy with those devices exposing multiple netdevs
-(even connecting different net ports to different contexts/bearers and
-such), as long as we can bind all those ports together to the same
-"modem device". The sysfs hierarchy has been enough for now for that
-purpose; or better said, without the sysfs hierarchy it would not have
-worked properly. E.g. there are some drivers out there allowing to
-instantiate virtual net ports from a master net port; without proper
-links in sysfs to link those virtual net ports to the master net port,
-the setup would be extremely unstable.
-
--- 
-Aleksander
-https://aleksander.es
+1. Your Name:
+2. Country :
+3. Age and Sex:
+4. Occupation :
+5. Mobile Telephone:
+6. Delivery Address:
+7. Id Card Identification
