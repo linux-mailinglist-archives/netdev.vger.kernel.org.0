@@ -2,101 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 650C9358F95
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 00:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E92358F98
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 00:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232704AbhDHWBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 18:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38540 "EHLO
+        id S232563AbhDHWCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 18:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232265AbhDHWBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 18:01:49 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F33C061761;
-        Thu,  8 Apr 2021 15:01:37 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id a76so1928593wme.0;
-        Thu, 08 Apr 2021 15:01:37 -0700 (PDT)
+        with ESMTP id S232158AbhDHWCc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 18:02:32 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2558C061760
+        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 15:02:20 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id k23-20020a17090a5917b02901043e35ad4aso3940574pji.3
+        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 15:02:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=1k2oFebJMetFk2MF03n3BhfJ/Z6puGCIo7fh0K3MdcY=;
-        b=PRkaV10clS+sLFEZRt0+mqBC/zm4SqmmBE9Gqa81Fz0xckmRM+MJuOI2M525VQlPg1
-         D5ThmRBHKWpYoIIiGkgzco8KJcvyMvcQhWi8lgTawXnBb9X4vbWGi+Y9vf8atwhaj5Ce
-         oFAcr1MFJG5lO0AX4iRggn7HIDdTiy8mGxoDh05Fc4HUGzghplJf7iXLMSwakD6v8iUk
-         B9EVN7msrL3jru4b556NUvx41K9Xfo0LdNBQiwJ9avVKkMZyfu4+jAQHMS+EOWDLKzKu
-         I4Oiud+uTZ6fvFUCUzU5NhlcOcMRebMxa6lIohFsp8fzpu80DzrK6aSyMO1SHYKujZY1
-         6DUg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PQGXKvls8BXlcmzc3nfFhBPDBs91KZDEjwiXpeAbl+Q=;
+        b=tbFTmVBZ3mDake5d/W3swnnlRND7CNjOYcKTu8W5BE7komS9nsSop+lavMEzRU7qCa
+         ylPumScT/Vrg/bZI4GiBwpxJevyO32PHEjjXwhfACcf9lpKkNFxrI5wVKGH1JLfBLcAK
+         v8dSFkaJ0nQZh9kpQMjXH7bM0ldFkxVg+mRZhUMZ9Ks8yBES07F6Sqn1ddtOjDxENIJe
+         GqLTYlmTwpVCHhIwDinz9hjIzPrwr85S9Mj+ycu8Lk7bgajGN6DGyxH2++CkHGN1+Y5m
+         NGpZpCobyy+NHBdcRBR25kyghGezGP3dvI7t+ZBFVpHFLbKk323aGT/UUTHPp31nhVlR
+         aivw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=1k2oFebJMetFk2MF03n3BhfJ/Z6puGCIo7fh0K3MdcY=;
-        b=ox0DLYGIulOlNlVs3qBUO4xkNyO+l+LckU3+jFFFV2nRF8w0zCYekGLkZA0f9KfTIy
-         yizGVZQWzd8ZRJqYNmoU2XF90D97b6lRi0SDX51uwJ+Wfb4Gud3PY1vkfi1QojbJzIji
-         X1+lU/s/POy8zsBKXYbLp3L+8x0en5rMrYMQY6Bu5+GtWtbx9wPxYvWhiIrcPxVKhpiZ
-         NMvQ4JX6RgQIelw3WlFRVk7I7n5xseb1lldg63wVkAdgdgg+auTLM/04IllZvJb8va4s
-         nO31ZmQNmr/Y/sS/hDEOZtkGjfVFSFPHp1k9mZUql9QAdBW5WDh/5gjLbthP9u/mWS0J
-         k5lw==
-X-Gm-Message-State: AOAM530IGM9gC3WYkeaykLvERzyoSUrvxwVQ+EcojL74Qnk47y7CZPmw
-        EClZvTUsC+DJAn5VcNaDt0E=
-X-Google-Smtp-Source: ABdhPJxf8t72/YsLezTsQMLohaoXiiyiWCTcZkEGUe9xPH/SLdEmI4+zc7XajgVWPcBaL1ImutIVrQ==
-X-Received: by 2002:a1c:4c0c:: with SMTP id z12mr10800685wmf.38.1617919295698;
-        Thu, 08 Apr 2021 15:01:35 -0700 (PDT)
-Received: from LEGION ([39.46.7.73])
-        by smtp.gmail.com with ESMTPSA id o7sm1041687wrs.16.2021.04.08.15.01.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Apr 2021 15:01:35 -0700 (PDT)
-Date:   Fri, 9 Apr 2021 03:01:29 +0500
-From:   Muhammad Usama Anjum <musamaanjum@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [IPv4/IPv6]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     musamaanjum@gmail.com, kernel-janitors@vger.kernel.org,
-        colin.king@canonical.com, dan.carpenter@oracle.com,
-        stable@vger.kernel.org
-Subject: [PATCH] net: ipv6: check for validity before dereferencing
- cfg->fc_nlinfo.nlh
-Message-ID: <20210408220129.GA3111136@LEGION>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PQGXKvls8BXlcmzc3nfFhBPDBs91KZDEjwiXpeAbl+Q=;
+        b=t/VGfaWidnln5dzztF4AgWk3w3P2wRpoo/WilQxjkakmftgPpy3YzXdLdxDocFXFnL
+         96UrMokidc/96163P/UFd04yhBKZzG3VOiDFSf+9dDm4ULlPhWmUfgEvMvpoLsaD+CIz
+         986i8RqoBouc/2ZVsRKJ1wy572hHoIkvAHkZj8qcc1+tAjcvXPd68BO6Ay/1afujqHRw
+         bsC9Rc2qXbYB3xoZzoo0GOiDXlJffBErwydZNubm9tNVRFxYnQPKDwGqFWfr+vBH/5MO
+         EiRs3OjRkQjx4hk6miDgIQjVMjTQsknsNIrgW45gaSm/mhzDZld/LrrrePNoO0NYj5bz
+         wApA==
+X-Gm-Message-State: AOAM531z6NS24P+d/QcbOrGi+4WkUnzVf5nBmpvle0IBk2q8/numeAqp
+        j3XZKjiYUEd2ZhCegjB0KuGnnXKq9zAQH36cPzM=
+X-Google-Smtp-Source: ABdhPJxrq8WOoy286Kph2yZ4BuxY4xTLgFqUX3Fx40W2xLfN6lwxwWrNEsRu6NlEUbs/1dPwNS7OQ9234VaUcQJIrJc=
+X-Received: by 2002:a17:902:8347:b029:e7:4a2d:6589 with SMTP id
+ z7-20020a1709028347b02900e74a2d6589mr10079993pln.64.1617919340562; Thu, 08
+ Apr 2021 15:02:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20210407153604.1680079-1-vladbu@nvidia.com>
+In-Reply-To: <20210407153604.1680079-1-vladbu@nvidia.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 8 Apr 2021 15:02:09 -0700
+Message-ID: <CAM_iQpUmaQ2w7pd7xn4deHu6sYb8wRO62mN_97nN6Kwte7t3LQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 0/3] Action initalization fixes
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nlh is being checked for validtity two times when it is dereferenced in
-this function. Check for validity again when updating the flags through
-nlh pointer to make the dereferencing safe.
+On Wed, Apr 7, 2021 at 8:36 AM Vlad Buslov <vladbu@nvidia.com> wrote:
+>
+> This series fixes reference counting of action instances and modules in
+> several parts of action init code. The first patch reverts previous fix
+> that didn't properly account for rollback from a failure in the middle of
+> the loop in tcf_action_init() which is properly fixed by the following
+> patch.
 
-CC: <stable@vger.kernel.org>
-Addresses-Coverity: ("NULL pointer dereference")
-Signed-off-by: Muhammad Usama Anjum <musamaanjum@gmail.com>
----
- net/ipv6/route.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+I still hate the init_res[] array, but I have no easy and better way to fix
+it either, so:
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 28801ae80548..a22822bdbf39 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5206,9 +5206,11 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
- 		 * nexthops have been replaced by first new, the rest should
- 		 * be added to it.
- 		 */
--		cfg->fc_nlinfo.nlh->nlmsg_flags &= ~(NLM_F_EXCL |
--						     NLM_F_REPLACE);
--		cfg->fc_nlinfo.nlh->nlmsg_flags |= NLM_F_CREATE;
-+		if (cfg->fc_nlinfo.nlh) {
-+			cfg->fc_nlinfo.nlh->nlmsg_flags &= ~(NLM_F_EXCL |
-+							     NLM_F_REPLACE);
-+			cfg->fc_nlinfo.nlh->nlmsg_flags |= NLM_F_CREATE;
-+		}
- 		nhn++;
- 	}
- 
--- 
-2.25.1
+Acked-by: Cong Wang <cong.wang@bytedance.com>
 
+For the long term, we probably want to split the action ->init() into
+two: ->init() and ->change(), like TC filters, which hopefully could
+ease the complexity of tcf_action_init_1().
+
+Thanks.
