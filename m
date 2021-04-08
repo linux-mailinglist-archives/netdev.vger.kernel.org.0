@@ -2,135 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C181F358010
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 11:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97732358051
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 12:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbhDHJ52 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Apr 2021 05:57:28 -0400
-Received: from smtp.asem.it ([151.1.184.197]:58903 "EHLO smtp.asem.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231451AbhDHJ52 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 05:57:28 -0400
-Received: from webmail.asem.it
-        by asem.it (smtp.asem.it)
-        (SecurityGateway 8.0.0)
-        with ESMTP id 387cdbc5c84c4bbc94fbe1691073a758.MSG
-        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 11:57:15 +0200S
-Received: from ASAS044.asem.intra (172.16.16.44) by ASAS044.asem.intra
- (172.16.16.44) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 8 Apr
- 2021 11:57:12 +0200
-Received: from ASAS044.asem.intra ([::1]) by ASAS044.asem.intra ([::1]) with
- mapi id 15.01.2176.009; Thu, 8 Apr 2021 11:57:12 +0200
-From:   Flavio Suligoi <f.suligoi@asem.it>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
+        id S229686AbhDHKKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 06:10:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23013 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229517AbhDHKKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 06:10:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617876627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UTr/e7iTYGD0N+XocUt6MT1hNOKxHbIF/br9tzGgYJQ=;
+        b=fXGLbVfRyQkC9QwrD9nBPVq7UFI6pKtCYxumgyow/TY9V7yJ6n1DwQg7LJGXQwEMPjYvpZ
+        U2NOPM6Ep0BA3HznqCIdMUcLhMwYUayuqQEgk0Pw+8Kzfq0+kDG7YQrsr1DhEvK72YxWEd
+        L/+LbrULaW/Gfp4UlPm7WU6qiy35AjI=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-542-RCXYQuxiOdSsNRWlHRt_JQ-1; Thu, 08 Apr 2021 06:10:24 -0400
+X-MC-Unique: RCXYQuxiOdSsNRWlHRt_JQ-1
+Received: by mail-ed1-f69.google.com with SMTP id r19so787312edv.3
+        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 03:10:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UTr/e7iTYGD0N+XocUt6MT1hNOKxHbIF/br9tzGgYJQ=;
+        b=dSHwzI+rtocE83CuVcTMuUpGY+KifwkBPLpLV9zG95I1Ksjoof3qEhdoAKehMRiMO3
+         /e4QFpmvTAJR7i1iq/R2cjCgCwOTGzF3GY17pWJjFRNFSEyqQuQZP6cY3WWQ5LKC+lBv
+         BjtIMImx3KTzvNDE5oeku1VutbwKMBn/wvZtfB9yLQdC0nrn0IBxi1o8yJlNrJmwAC70
+         Y49o3gC1MwAQmrSdH7GoM11Ljy90zOG2j/jMRT8vTxJnITqnJJ1Nmvgfn0UhfwzRbRlg
+         Ym1lCPcWG9BWitLVG32oME0uu6NB3H4AZEByv1OFAIzpsPNoI3AIBJhlOAWccn1n+E3v
+         n1eA==
+X-Gm-Message-State: AOAM533aG+ADuXWT6/6ep+Z2XsfCu4/otFVsJZIzKmy4jnVixjidfaHC
+        5f4AR4d5909dkSgU+c+82hm6I6u/y7kS8oCPRqSNwBuGIkDYbhJo8qxlV5MAhyTZ4gUFOus7OfO
+        HuzJ8zeG919daGBmP
+X-Received: by 2002:a17:906:54e:: with SMTP id k14mr7648297eja.149.1617876623785;
+        Thu, 08 Apr 2021 03:10:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwpnJjQy2rZdlAboIQBscmKQmo84RgWlmjXkcCNGPz1zcfUSVUF8HWkzTgefk3L069TwaB2mw==
+X-Received: by 2002:a17:906:54e:: with SMTP id k14mr7648271eja.149.1617876623571;
+        Thu, 08 Apr 2021 03:10:23 -0700 (PDT)
+Received: from localhost ([151.66.38.94])
+        by smtp.gmail.com with ESMTPSA id gq9sm14287766ejb.62.2021.04.08.03.10.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Apr 2021 03:10:23 -0700 (PDT)
+Date:   Thu, 8 Apr 2021 12:10:19 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Song Liu <song@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v2 0/5] net: pch: fix and a few cleanups
-Thread-Topic: [PATCH net-next v2 0/5] net: pch: fix and a few cleanups
-Thread-Index: AQHXIZ1I+hIGDbheQ0mjeo1QOr5hoqqa90yAgAE1elCACw/7AIADMTcA
-Date:   Thu, 8 Apr 2021 09:57:12 +0000
-Message-ID: <fe865a23dfd04b7daab5d8325f5eaba2@asem.it>
-References: <20210325173412.82911-1-andriy.shevchenko@linux.intel.com>
- <YGHuhbe/+9cjPdFH@smile.fi.intel.com>
- <92353220370542c7acdabbd269269d80@asem.it>
- <YGw5xFdczcKGqW1v@smile.fi.intel.com>
-In-Reply-To: <YGw5xFdczcKGqW1v@smile.fi.intel.com>
-Accept-Language: it-IT, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.17.208]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH bpf-next] cpumap: bulk skb using netif_receive_skb_list
+Message-ID: <YG7Wi/vFK+XFBUcQ@lore-desk>
+References: <e01b1a562c523f64049fa45da6c031b0749ca412.1617267115.git.lorenzo@kernel.org>
+ <CAPhsuW4QTOgC+fDYRZnVwWtt3NTS9D+56mpP04Kh3tHrkD7G1A@mail.gmail.com>
+ <YGX5j7RDQIXlh69L@lore-desk>
+ <CAPhsuW7ih9ULA=aq0G7Ka+15KfSWgyuLXD_BxTUcRhn8++UNoQ@mail.gmail.com>
 MIME-Version: 1.0
-X-SGHeloLookup-Result: pass smtp.helo=webmail.asem.it (ip=172.16.16.44)
-X-SGSPF-Result: none (smtp.asem.it)
-X-SGOP-RefID: str=0001.0A782F27.606ED379.0033,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0 (_st=1 _vt=0 _iwf=0)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="Yqa6TSx8vTqTsFV8"
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW7ih9ULA=aq0G7Ka+15KfSWgyuLXD_BxTUcRhn8++UNoQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andy,
 
-> > > On Thu, Mar 25, 2021 at 07:34:07PM +0200, Andy Shevchenko wrote:
-> > > > The series provides one fix (patch 1) for GPIO to be able to wait for
-> > > > the GPIO driver to appear. This is separated from the conversion to
-> > > > the GPIO descriptors (patch 2) in order to have a possibility for
-> > > > backporting. Patches 3 and 4 fix a minor warnings from Sparse while
-> > > > moving to a new APIs. Patch 5 is MODULE_VERSION() clean up.
-> > > >
-> > > > Tested on Intel Minnowboard (v1).
-> > >
-> > > Anything should I do here?
+--Yqa6TSx8vTqTsFV8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> On Thu, Apr 1, 2021 at 9:49 AM Lorenzo Bianconi <lorenzo@kernel.org> wrot=
+e:
 > >
-> > it's ok for me
-> 
-> Thanks!
-> Who may apply them?
+> > > On Thu, Apr 1, 2021 at 1:57 AM Lorenzo Bianconi <lorenzo@kernel.org> =
+wrote:
+> > > >
+> >
+> > [...]
+> >
+> > > > -                       /* Inject into network stack */
+> > > > -                       ret =3D netif_receive_skb_core(skb);
+> > > > -                       if (ret =3D=3D NET_RX_DROP)
+> > > > -                               drops++;
+> > >
+> > > I guess we stop tracking "drops" with this patch?
+> > >
+> > > Thanks,
+> > > Song
+> >
+> > Hi Song,
+> >
+> > we do not report the packets dropped by the stack but we still count th=
+e drops
+> > in the cpumap. If you think they are really important I guess we can ch=
+ange
+> > return value of netif_receive_skb_list returning the dropped packets or
+> > similar. What do you think?
+>=20
+> I think we shouldn't silently change the behavior of the tracepoint below:
+>=20
+> trace_xdp_cpumap_kthread(rcpu->map_id, n, drops, sched, &stats);
+>=20
+> Returning dropped packets from netif_receive_skb_list() sounds good to me.
 
-I used your patches on kernel net-next 5.12.0-rc2, on a board with an
-Intel(R) Atom(TM) CPU E640   @ 1.00GHz and an EG20T PCH.
-I used the built-in OKI gigabit ethernet controller:
+Hi Song,
 
-02:00.1 Ethernet controller: Intel Corporation Platform Controller Hub EG20T Gigabit Ethernet Controller (rev 02)
-	Kernel driver in use: pch_gbe
+I reviewed the netif_receive_skb_list() and I guess the code needed to count
+number of dropped frames is a bit intrusive and we need to add some checks
+in the hot path.
+Moreover the dropped frames are already accounted in the networking stack
+(e.g. mib counters for the ip traffic).
+Since drop counter is just exported in a tracepoint in cpu_map_kthread_run,
+I guess we can just not count dropped packets in the networking stack here
+and rely on the mib counters. What do you think?
 
-with a simple iperf test and all works fine:
+@Jesper: since you added the original code, what do you think about it?
 
-ht-700 ~ # iperf -c 192.168.200.1
-------------------------------------------------------------
-Client connecting to 192.168.200.1, TCP port 5001
-TCP window size: 45.0 KByte (default)
-------------------------------------------------------------
-[  3] local 192.168.200.159 port 38638 connected with 192.168.200.1 port 5001
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0-10.0 sec   178 MBytes   149 Mbits/sec
-ht-700 ~ # iperf -c 192.168.200.1
-------------------------------------------------------------
-Client connecting to 192.168.200.1, TCP port 5001
-TCP window size: 45.0 KByte (default)
-------------------------------------------------------------
-[  3] local 192.168.200.159 port 38640 connected with 192.168.200.1 port 5001
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0-10.0 sec   178 MBytes   149 Mbits/sec
-ht-700 ~ # iperf -c 192.168.200.1 -u
-------------------------------------------------------------
-Client connecting to 192.168.200.1, UDP port 5001
-Sending 1470 byte datagrams
-UDP buffer size:  208 KByte (default)
-------------------------------------------------------------
-[  3] local 192.168.200.159 port 58364 connected with 192.168.200.1 port 5001
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0-10.0 sec  1.25 MBytes  1.05 Mbits/sec
-[  3] Sent 893 datagrams
-ht-700 ~ # iperf -c 192.168.200.1 -u
-------------------------------------------------------------
-Client connecting to 192.168.200.1, UDP port 5001
-Sending 1470 byte datagrams
-UDP buffer size:  208 KByte (default)
-------------------------------------------------------------
-[  3] local 192.168.200.159 port 32778 connected with 192.168.200.1 port 5001
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0-10.0 sec  1.25 MBytes  1.05 Mbits/sec
-[  3] Sent 893 datagrams
-ht-700 ~ # uname -a
-Linux ht-700 5.12.0-rc2-watchdog+ #12 SMP Thu Apr 8 11:08:49 CEST 2021 x86_64 x86_64 x86_64 GNU/Linux
-ht-700 ~ # 
+Regards,
+Lorenzo
 
-I hope this can help you.
+>=20
+> Thanks,
+> Song
+>=20
 
-> 
+--Yqa6TSx8vTqTsFV8
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Tested-by: Flavio Suligoi <f.suligoi@asem.it>
+-----BEGIN PGP SIGNATURE-----
 
-> --
-> With Best Regards,
-> Andy Shevchenko
-> 
-Best regards,
-Flavio Suligoi
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYG7WiAAKCRA6cBh0uS2t
+rBYDAP0RCcYqwIC/AtBhEVkKZUoTdEjAGWpOeyNHj2d0LpEoFgEAny0pzyMyPYxZ
+tutnWMeXubA5rheq8FbzRU/YzxKHLgU=
+=PC/0
+-----END PGP SIGNATURE-----
+
+--Yqa6TSx8vTqTsFV8--
 
