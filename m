@@ -2,98 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A433584E1
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 15:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE40358504
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 15:43:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbhDHNjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 09:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        id S231724AbhDHNnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 09:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231195AbhDHNjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 09:39:48 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A25DC061760;
-        Thu,  8 Apr 2021 06:39:37 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id v8so1057170plz.10;
-        Thu, 08 Apr 2021 06:39:37 -0700 (PDT)
+        with ESMTP id S230467AbhDHNnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 09:43:40 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07394C061760
+        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 06:43:28 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id q26so2161857qkm.6
+        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 06:43:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=TCMbN67zPDSJit9fceiv1PfmTEjOqEWhzynX3KI/avE=;
-        b=jRyttuUGcY4GZfechVDgRZbItEfjCp+wTRhw/JLjWNbW5tMWnJnNiCSl30uxdD7NAP
-         iap15PciQEgaptwGq6a9LZHl6FwvHjBuxV11eSBE1SYMVJTURXLUM90APvtm+I2/a9bb
-         ECdms8Unpp6t2gwEcqBhczZ0fOH/UEm3sDPuuk/bRs2bIv+W5U6ctEMwWZ+2WNvC5q6u
-         /AmRimnoRGNt2fzRDvmkeIlScwZ+GpBz5Mu0oeSgH/du1nZ+9SMPubKox1EPtKkVCX5j
-         IfJBtdHrxHTN8vovP3elBlrEOaS9VSYXOUX0sq66jH0LcWBU/i7KZ2Q/kvWfQh7l7mwp
-         RDGg==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4Yjf1Zg11Qg54blA/eFQI8A3y3BgYDcMxe6bbo03brc=;
+        b=SvsCllA3+Bxyp4Jk/uGBfq9xEg7BN04oCF8G6KNLqccoUi5aDkLAhDjji+QdT6xguu
+         sEXnrF8EBtqogEQlA8fUa+Ek/zDj6M0nvnsDhPHdz5e0rr2horGWrsNFzG7PcxE9cgSK
+         Q/ux1oSqZBLuv3mbF6qgjXqdkKg9jMa5gVWSqcXN4S6rMF/tviHrfL+Er73gl/eG+7yF
+         vWGuBXzoY/5VWjDepfnRDTsAqTOgJ4kAj8byIDH3iOs9B+Q19iMeROc//aGa8iKz0DBw
+         jI9Gyx+j3Cty/9rJkE/FfnpaNnIU/xiGTlrafpru9OnM1JH6IMHfeG40APmflQXafiXN
+         agRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=TCMbN67zPDSJit9fceiv1PfmTEjOqEWhzynX3KI/avE=;
-        b=YhEeZwTUHSaqlV4ndCy1wXivoBLHIv6DDpMClH0gM25VYgqs70jFBqF7H0td40kMky
-         s5EPr8U5QB7+OzBa18TJFWcQxR708Erzc0Vg7K9Q5g9W0ROlMju5xURynH6gpaXWyJ1F
-         1Wd/GAqPjnGerQ3JA28JB4kvLGn6MhqQeNOD6gTe3efMgOVJ/tPwbaUdPLiCKFEPNPYg
-         Sa+a/IUUmcj7/b/Qy5eAIv/srRZ3XpZIbciK1itWG9/1R+81p6r56xx6GOZHBm6eqAO0
-         zjRL7foDgWN6190TfHN0/HVGpJqYmmG/qmruwWsZ6QEFuDIrfmX/79+YoSxJMZdKXPOc
-         IQLw==
-X-Gm-Message-State: AOAM532K/i1kgD4U3oMRk6yoiYtI5nr7PNHIefOLiJbaxHBOqVeEsW6G
-        rhlVoUriQEf61uET7aW5/D8=
-X-Google-Smtp-Source: ABdhPJy70kpaVS41I820D4qY4DsG5eb1qU2Lbp5RoOF36A00i1qu2pEiNZ5kUlw5ovXQU/pWlsTHwg==
-X-Received: by 2002:a17:90a:1b25:: with SMTP id q34mr8523162pjq.230.1617889176437;
-        Thu, 08 Apr 2021 06:39:36 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id a191sm25002410pfa.115.2021.04.08.06.39.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Apr 2021 06:39:35 -0700 (PDT)
-Date:   Thu, 8 Apr 2021 16:39:22 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
-        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com
-Subject: Re: [PATCH v8 bpf-next 02/14] xdp: add xdp_shared_info data structure
-Message-ID: <20210408133922.qa7stbwue44nfvcv@skbuf>
-References: <cover.1617885385.git.lorenzo@kernel.org>
- <b204c5d4514134e1b2de9c1959da71514d1f1340.1617885385.git.lorenzo@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4Yjf1Zg11Qg54blA/eFQI8A3y3BgYDcMxe6bbo03brc=;
+        b=K7le24eEnCkY2rw80/DaqTbbSg+vYCU12qMvnbhWglTfr/zfQcTzqR88oVlVBjpez9
+         Kt+zjcC5v7d3ZT8bKTOp5BqzXNp2ppQs6XFnDLijH6tX9pIi95UtVvw5NKWH4oAWQJd+
+         DHO5V2Z0JSTV0ooNHrwIDmV4CfQPsjBFPJUWEDBqEGbegmGSJ3/ktc65oTOJ+HS+Plr2
+         LKwJFqzqHi1Ph09M5de1Slbw150yCFKQukQlWnmo94IRTbivSuydjI8Gei1nIHN8sM5B
+         4Yc247LuuMeeznoYqIx80+cd+wpPCkgxhp3l9g8uhOmZvbIdd/j1pbEdsuDIph4Nl8Zv
+         OyWg==
+X-Gm-Message-State: AOAM532c4sTayfq3p+ODBO8j1aKV3YVbNgUXAKQ/mrqcKVca6DSIjsVm
+        zIsgJyvg4F0AHud2aRHKWTYE9A==
+X-Google-Smtp-Source: ABdhPJz1tUntW5Rlvw+YCXZAgFh8XNpzVdjjYfOfl5nbnEcMPoCasIT1s7ENqOls2k6EPvhs02Jeww==
+X-Received: by 2002:a05:620a:22b5:: with SMTP id p21mr8811999qkh.196.1617889407347;
+        Thu, 08 Apr 2021 06:43:27 -0700 (PDT)
+Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-22-184-144-36-31.dsl.bell.ca. [184.144.36.31])
+        by smtp.googlemail.com with ESMTPSA id m25sm18821050qtq.59.2021.04.08.06.43.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Apr 2021 06:43:26 -0700 (PDT)
+Subject: Re: [PATCH net v2 2/3] net: sched: fix action overwrite reference
+ counting
+To:     Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgense?= =?UTF-8?Q?n?= 
+        <toke@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+References: <20210407153604.1680079-1-vladbu@nvidia.com>
+ <20210407153604.1680079-3-vladbu@nvidia.com>
+ <CAM_iQpXEGs-Sq-SjNrewEyQJ7p2-KUxL5-eUvWs0XTKGoh7BsQ@mail.gmail.com>
+ <ygnhsg419pw7.fsf@nvidia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <c84d6349-ec97-9ee7-12d7-544677c4ec8f@mojatatu.com>
+Date:   Thu, 8 Apr 2021 09:43:25 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b204c5d4514134e1b2de9c1959da71514d1f1340.1617885385.git.lorenzo@kernel.org>
+In-Reply-To: <ygnhsg419pw7.fsf@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
-
-On Thu, Apr 08, 2021 at 02:50:54PM +0200, Lorenzo Bianconi wrote:
-> Introduce xdp_shared_info data structure to contain info about
-> "non-linear" xdp frame. xdp_shared_info will alias skb_shared_info
-> allowing to keep most of the frags in the same cache-line.
-> Introduce some xdp_shared_info helpers aligned to skb_frag* ones
+On 2021-04-08 3:50 a.m., Vlad Buslov wrote:
 > 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
+> On Thu 08 Apr 2021 at 02:50, Cong Wang <xiyou.wangcong@gmail.com> wrote:
 
-Would you mind updating all drivers that use skb_shared_info, such as
-enetc, and not just mvneta? At the moment I get some build warnings:
+> Origins of setting ovr based on NLM_F_REPLACE are lost since this code
+> goes back to Linus' Linux-2.6.12-rc2 commit. Jamal, do you know if this
+> is the expected behavior or just something unintended?
 
-drivers/net/ethernet/freescale/enetc/enetc.c: In function ‘enetc_xdp_frame_to_xdp_tx_swbd’:
-drivers/net/ethernet/freescale/enetc/enetc.c:888:9: error: assignment to ‘struct skb_shared_info *’ from incompatible pointer type ‘struct xdp_shared_info *’ [-Werror=incompatible-pointer-types]
-  888 |  shinfo = xdp_get_shared_info_from_frame(xdp_frame);
-      |         ^
-drivers/net/ethernet/freescale/enetc/enetc.c: In function ‘enetc_map_rx_buff_to_xdp’:
-drivers/net/ethernet/freescale/enetc/enetc.c:975:9: error: assignment to ‘struct skb_shared_info *’ from incompatible pointer type ‘struct xdp_shared_info *’ [-Werror=incompatible-pointer-types]
-  975 |  shinfo = xdp_get_shared_info_from_buff(xdp_buff);
-      |         ^
-drivers/net/ethernet/freescale/enetc/enetc.c: In function ‘enetc_add_rx_buff_to_xdp’:
-drivers/net/ethernet/freescale/enetc/enetc.c:982:35: error: initialization of ‘struct skb_shared_info *’ from incompatible pointer type ‘struct xdp_shared_info *’ [-Werror=incompatible-pointer-types]
-  982 |  struct skb_shared_info *shinfo = xdp_get_shared_info_from_buff(xdp_buff);
-      |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Seems our emails crossed path. The problem with ovr is the ambiguity
+of whether we are saying both CREATE and REPLACE or just one or the
+other. We could improve the kernel side by just passing the flags
+to each action. Note it is too late to fix iproute2 without some
+backward compat flag; but it may not be too late for someone writting
+a new application in user space.
+
+cheers,
+jamal
