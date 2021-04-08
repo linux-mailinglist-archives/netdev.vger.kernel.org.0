@@ -2,133 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35407358D40
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 21:07:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E5B358D4F
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 21:13:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233008AbhDHTHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 15:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232804AbhDHTHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 15:07:12 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7E2C061760;
-        Thu,  8 Apr 2021 12:07:00 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id x15so3270195wrq.3;
-        Thu, 08 Apr 2021 12:07:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Exzdpqp3JyGRVNvIfqFzNBMPcWfx1NoduJ3Nxq4TiKA=;
-        b=B/K3c2tQI7mxtYTE4VufIi2709olz3kY8axk8bJVSHRylEznUptfvtxBbOKsI8u9sa
-         0RqfyEUV99O6qoZ8KqF/nXLjRJXnIametrn5c8+qA99hiaLT8Ukj+W4VVGtAS7s0/Rdh
-         iEZx8l2pD5AqQWbBA+3skkmPYPLOZH8oWD0PucofNk7RIfp6TGRA6rF4a0ETjSZzcFgg
-         TqNmQpkEsWvDUiMopAyHCHsobG/DYmHgd8hCg39lzO0R71KxtSALLjevESgp6FwVyPa8
-         W2zgTo1lCkSSYTzoOreAHCHXWQFFdHkjEXbEgENUm67KgAFXlLKmsajgTAl++0CZPUD9
-         s37Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Exzdpqp3JyGRVNvIfqFzNBMPcWfx1NoduJ3Nxq4TiKA=;
-        b=gAOY5xXn+xhOpeuK8CL+SSxSwMZLttblw7GJfPtzgq8Up0sUL10jx7+CG9jyIO//Cj
-         L9wPSvdefyAJw0XynjELdIrsQ9TQZVcVhvg40B4d9Zm4ZHu7iabXR/lz/HNjvGSW7Jak
-         +PV5nfyhpjZUtqtlhex7nnLn1xM0WqgWk0Y/TkTCUgYZWFrJC+f/GuPHtlRqjWEXmx4H
-         5ZINrIC9kHBzhlt5iwPePRO8aH0v8/sYdCwzgYcMDpzC9BZ9Pagv2nnMSzWyd0rhlwOS
-         ci5u3Ec5FNf1zXYdtsVpxvLmn/+e3mLYU0Je+9j7/H/PF2Zh2VLHAbjvLccWQnSSYL3+
-         7FTw==
-X-Gm-Message-State: AOAM530kQHEsGv4wID7P3Cdci+X5hnR+yCUYqCr9T4pd1BQG0ZVVrG3A
-        51B+4zcfE3sMnyj5foSQF1SSdRsa2vNV0g==
-X-Google-Smtp-Source: ABdhPJyiZDI4fHPPI7J6KQ6/9rzw3IvPYZnqX1CEWjf75QBxuJPoW4x1744ktBMFBuj+EiHLpZGevw==
-X-Received: by 2002:a5d:6852:: with SMTP id o18mr13842852wrw.173.1617908818720;
-        Thu, 08 Apr 2021 12:06:58 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:6dfe:cdb3:c4f9:2744? (p200300ea8f3846006dfecdb3c4f92744.dip0.t-ipconnect.de. [2003:ea:8f38:4600:6dfe:cdb3:c4f9:2744])
-        by smtp.googlemail.com with ESMTPSA id c18sm300097wrp.33.2021.04.08.12.06.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Apr 2021 12:06:58 -0700 (PDT)
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     George McCollister <george.mccollister@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20210408172353.21143-1-TheSven73@gmail.com>
- <CAFSKS=O4Yp6gknSyo1TtTO3KJ+FwC6wOAfNkbBaNtL0RLGGsxw@mail.gmail.com>
- <CAGngYiVg+XXScqTyUQP-H=dvLq84y31uATy4DDzzBvF1OWxm5g@mail.gmail.com>
- <CAFSKS=P3Skh4ddB0K_wUxVtQ5K9RtGgSYo1U070TP9TYrBerDQ@mail.gmail.com>
- <820ed30b-90f4-2cba-7197-6c6136d2e04e@gmail.com>
- <CAGngYiU=v16Z3NHC0FyxcZqEJejKz5wn2hjLubQZKJKHg_qYhw@mail.gmail.com>
- <CAGngYiXH8WsK347ekOZau+oLtKa4RFF8RCc5dAoSsKFvZAFbTw@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net v1] Revert "lan743x: trim all 4 bytes of the FCS; not
- just 2"
-Message-ID: <da81fa46-fbbd-7694-6212-d7eb2c03ac94@gmail.com>
-Date:   Thu, 8 Apr 2021 21:06:53 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S233020AbhDHTN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 15:13:29 -0400
+Received: from smtp21.cstnet.cn ([159.226.251.21]:37334 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232804AbhDHTN2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 15:13:28 -0400
+Received: from localhost.localdomain (unknown [124.16.141.242])
+        by APP-01 (Coremail) with SMTP id qwCowABnf7egVW9gQsQWAA--.23405S2;
+        Fri, 09 Apr 2021 03:12:41 +0800 (CST)
+From:   Jianmin Wang <jianmin@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org
+Cc:     davem@davemloft.net, dzickus@redhat.com,
+        herbert@gondor.apana.org.au, jianmin@iscas.ac.cn,
+        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
+        omosnace@redhat.com, smueller@chronox.de, stable@vger.kernel.org,
+        steffen.klassert@secunet.com
+Subject: Re: Re: [PATCH] backports: crypto user - make NETLINK_CRYPTO work 
+Date:   Thu,  8 Apr 2021 19:11:48 +0000
+Message-Id: <20210408191148.51259-1-jianmin@iscas.ac.cn>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <YGs3Voq0codXCHbA@kroah.com>
+References: <YGs3Voq0codXCHbA@kroah.com>
 MIME-Version: 1.0
-In-Reply-To: <CAGngYiXH8WsK347ekOZau+oLtKa4RFF8RCc5dAoSsKFvZAFbTw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowABnf7egVW9gQsQWAA--.23405S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxXFyDCrWxZr1kCF4DXFykAFb_yoW5AF4xpF
+        yfKr4ayF45J3yxA3yxZr1Fq3sYg3yftr15G397W3y8ZF4UtryFvrZFvw15uryUGrs5WayY
+        yFWUKw1fWw4DArDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
+        4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_WwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF
+        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
+        VjvjDU0xZFpf9x0JUfnYwUUUUU=
+X-Originating-IP: [124.16.141.242]
+X-CM-SenderInfo: xmld0z1lq6x2xfdvhtffof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.04.2021 20:35, Sven Van Asbroeck wrote:
-> Hi George,
+On Mon, Apr 05, 2021 at 16:14 UTC, Greg KH wrote:
+> On Mon, Apr 05, 2021 at 01:55:15PM +0000, Jianmin Wang wrote:
+> > There is same problem found in linux 4.19.y as upstream commit. The 
+> > changes of crypto_user_* and cryptouser.h files from upstream patch are merged into 
+> > crypto/crypto_user.c for backporting.
+> > 
+> > Upstream commit:
+> >     commit 91b05a7e7d8033a90a64f5fc0e3808db423e420a
+> >     Author: Ondrej Mosnacek <omosnace@redhat.com>
+> >     Date:   Tue,  9 Jul 2019 13:11:24 +0200
+> > 
+> >     Currently, NETLINK_CRYPTO works only in the init network namespace. It
+> >     doesn't make much sense to cut it out of the other network namespaces,
+> >     so do the minor plumbing work necessary to make it work in any network
+> >     namespace. Code inspired by net/core/sock_diag.c.
+> > 
+> >     Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+> >     Signed-off-by: default avatarHerbert Xu <herbert@gondor.apana.org.au>
+> > 
+> > Signed-off-by: Jianmin Wang <jianmin@iscas.ac.cn>
+> > ---
+> >  crypto/crypto_user.c        | 37 +++++++++++++++++++++++++------------
+> >  include/net/net_namespace.h |  3 +++
+> >  2 files changed, 28 insertions(+), 12 deletions(-)
 > 
-> On Thu, Apr 8, 2021 at 2:26 PM Sven Van Asbroeck <thesven73@gmail.com> wrote:
->>
->> George, I will send a patch for you to try shortly. Except if you're
->> already ahead :)
-> 
-> Would this work for you? It does for me.
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c
-> b/drivers/net/ethernet/microchip/lan743x_main.c
-> index dbdfabff3b00..7b6794aa8ea9 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> @@ -885,8 +885,8 @@ static int lan743x_mac_set_mtu(struct
-> lan743x_adapter *adapter, int new_mtu)
->         }
-> 
->         mac_rx &= ~(MAC_RX_MAX_SIZE_MASK_);
-> -       mac_rx |= (((new_mtu + ETH_HLEN + 4) << MAC_RX_MAX_SIZE_SHIFT_) &
-> -                 MAC_RX_MAX_SIZE_MASK_);
-> +       mac_rx |= (((new_mtu + ETH_HLEN + ETH_FCS_LEN)
-> +                 << MAC_RX_MAX_SIZE_SHIFT_) & MAC_RX_MAX_SIZE_MASK_);
->         lan743x_csr_write(adapter, MAC_RX, mac_rx);
-> 
->         if (enabled) {
-> @@ -1944,7 +1944,7 @@ static int lan743x_rx_init_ring_element(struct
-> lan743x_rx *rx, int index)
->         struct sk_buff *skb;
->         dma_addr_t dma_ptr;
-> 
-> -       buffer_length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
-> +       buffer_length = netdev->mtu + ETH_HLEN + ETH_FCS_LEN + RX_HEAD_PADDING;
+> How does this change fit with the stable kernel rules?  It looks to be a
+> new feature, if you need this, why not just use a newer kernel version?
+> What is preventing you from doing that?
 > 
 
-A completely unrelated question:
-How about VLAN packets with a 802.1Q tag? Should VLAN_ETH_HLEN be used?
+This problem was found when we deployed new services on our container cluster, 
+while the new services need to invoke libkcapi in the container environment.
 
+We have verified that the problem doesn't exist on newer kernel version. 
+However, due to many services and the cluster running on many server machines 
+whose host os are long-term linux distribution with linux 4.19 kernel, it will 
+cost too much to migrate them to newer os with newer kernel version. This is 
+why we need to fix the problem on linux 4.19.
 
->         descriptor = &rx->ring_cpu_ptr[index];
->         buffer_info = &rx->buffer_info[index];
-> @@ -2040,7 +2040,7 @@ lan743x_rx_trim_skb(struct sk_buff *skb, int frame_length)
->                 dev_kfree_skb_irq(skb);
->                 return NULL;
->         }
-> -       frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 2);
-> +       frame_length = max_t(int, 0, frame_length - ETH_FCS_LEN);
->         if (skb->len > frame_length) {
->                 skb->tail -= skb->len - frame_length;
->                 skb->len = frame_length;
-> 
+Only when we run docker with param --net=host, the libkcapi can be invoked 
+properly. Otherwise, almost all test cases in smuellerDD/libkcapi [1] will 
+failed with same error as below:
+
+    libkcapi - Error: Netlink error: sendmsg failed
+    libkcapi - Error: Netlink error: sendmsg failed
+    libkcapi - Error: NETLINK_CRYPTO: cannot obtain cipher information for 
+      hmac(sha1) (is required crypto_user.c patch missing? see documentation)
+
+The cause is same as statement in upstream commit 91b05a7e, which is that 
+NETLINK_CRYPTO works only in the init network namespace.
+
+In my opinion, there are still many linux distribution running with linux 4.19 
+or similar version, such as Debian 10 with linux 4.19, CentOS 8 with linux 4.18
+and also their derivatives. If other people want to use libkcapi in container 
+environment, they will also be bothered by this problem. [2]
+
+So I think this patch meet two rules in stable kernel rules: It must fix a real
+bug that bothers people and the upstream commit 91b05a7e exists in Linus's tree
+from linux 5.4.
+
+Thanks for your review and reply.
+
+--
+Email: Jianmin Wang <jianmin@iscas.ac.cn>
 
