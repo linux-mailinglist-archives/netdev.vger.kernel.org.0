@@ -2,183 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55932357DCD
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 10:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 783AB357E4B
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 10:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbhDHIKN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Apr 2021 04:10:13 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:48821 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhDHIKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 04:10:12 -0400
-Received: from marcel-macbook.holtmann.net (p4ff9f418.dip0.t-ipconnect.de [79.249.244.24])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 07DD9CECEF;
-        Thu,  8 Apr 2021 10:17:43 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH v2] Bluetooth: Add ncmd=0 recovery handling
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210407193611.v2.1.I14da3750a343d8d48921fffb7c6561337b6e6082@changeid>
-Date:   Thu, 8 Apr 2021 10:09:59 +0200
-Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <617F9F1B-E389-4843-9B70-5B2F477FA1F0@holtmann.org>
-References: <20210407193611.v2.1.I14da3750a343d8d48921fffb7c6561337b6e6082@changeid>
-To:     Manish Mandlik <mmandlik@google.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        id S229766AbhDHIkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 04:40:23 -0400
+Received: from m12-17.163.com ([220.181.12.17]:47392 "EHLO m12-17.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229539AbhDHIkS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 04:40:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=b5q0B
+        ZMIyUtm8Qp3wgZ+qzq/qLDIUjP2PDeENPRELsw=; b=ZrbJUwZMftq90yYHB1mzP
+        5KOgVo5ZvA2u8LdWAYKVvFznEtV4CTUY+FcE5JUQt+v1MhfO1ekuSxMleX4HrspN
+        K2OMtm+vQOTnjzs+l9IXSx4POOF7UJfWuKhLAthf7MM9Jrh4Dt2WC7fyu5e9sWgV
+        1wywoZ4BJEq9zZ9ZiWEQWI=
+Received: from localhost.localdomain (unknown [119.137.53.45])
+        by smtp13 (Coremail) with SMTP id EcCowADHypKrwG5gvlcHuQ--.54958S2;
+        Thu, 08 Apr 2021 16:37:01 +0800 (CST)
+From:   =?UTF-8?q?=C2=A0Zhongjun=20Tan?= <hbut_tan@163.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org, jmorris@namei.org,
+        serge@hallyn.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, keescook@chromium.org,
+        ebiederm@xmission.com, gregkh@linuxfoundation.org,
+        dhowells@redhat.com, kpsingh@google.com,
+        christian.brauner@ubuntu.com, zohar@linux.ibm.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        Zhongjun Tan <tanzhongjun@yulong.com>
+Subject: [PATCH] selinux:Delete selinux_xfrm_policy_lookup()  useless argument
+Date:   Thu,  8 Apr 2021 16:36:50 +0800
+Message-Id: <20210408083650.1910-1-hbut_tan@163.com>
+X-Mailer: git-send-email 2.30.0.windows.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowADHypKrwG5gvlcHuQ--.54958S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxtFWrWr43GrW7CrWkCrW5trb_yoW7GF48pF
+        4DGFyUKr4UXa4UuFn7JFnruFnIg3yYka9rJrWkCw15tasrJr1rWws5JryakryFyrWUJFyI
+        9w13CrZ5Gw45trDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jz_M3UUUUU=
+X-Originating-IP: [119.137.53.45]
+X-CM-SenderInfo: xkex3sxwdqqiywtou0bp/1tbiWBxsxluHwM93sQABs6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
+From: Zhongjun Tan <tanzhongjun@yulong.com>
 
-> During command status or command complete event, the controller may set
-> ncmd=0 indicating that it is not accepting any more commands. In such a
-> case, host holds off sending any more commands to the controller. If the
-> controller doesn't recover from such condition, host will wait forever,
-> until the user decides that the Bluetooth is broken and may power cycles
-> the Bluetooth.
-> 
-> This patch triggers the hardware error to reset the controller and
-> driver when it gets into such state as there is no other wat out.
-> 
-> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Signed-off-by: Manish Mandlik <mmandlik@google.com>
-> ---
-> 
-> Changes in v2:
-> - Emit the hardware error when ncmd=0 occurs
-> 
-> include/net/bluetooth/hci.h      |  1 +
-> include/net/bluetooth/hci_core.h |  1 +
-> net/bluetooth/hci_core.c         | 15 +++++++++++++++
-> net/bluetooth/hci_event.c        | 10 ++++++++++
-> 4 files changed, 27 insertions(+)
-> 
-> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> index ea4ae551c426..c4b0650fb9ae 100644
-> --- a/include/net/bluetooth/hci.h
-> +++ b/include/net/bluetooth/hci.h
-> @@ -339,6 +339,7 @@ enum {
-> #define HCI_PAIRING_TIMEOUT	msecs_to_jiffies(60000)	/* 60 seconds */
-> #define HCI_INIT_TIMEOUT	msecs_to_jiffies(10000)	/* 10 seconds */
-> #define HCI_CMD_TIMEOUT		msecs_to_jiffies(2000)	/* 2 seconds */
-> +#define HCI_NCMD_TIMEOUT	msecs_to_jiffies(4000)	/* 4 seconds */
-> #define HCI_ACL_TX_TIMEOUT	msecs_to_jiffies(45000)	/* 45 seconds */
-> #define HCI_AUTO_OFF_TIMEOUT	msecs_to_jiffies(2000)	/* 2 seconds */
-> #define HCI_POWER_OFF_TIMEOUT	msecs_to_jiffies(5000)	/* 5 seconds */
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index ebdd4afe30d2..f14692b39fd5 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -470,6 +470,7 @@ struct hci_dev {
-> 	struct delayed_work	service_cache;
-> 
-> 	struct delayed_work	cmd_timer;
-> +	struct delayed_work	ncmd_timer;
-> 
-> 	struct work_struct	rx_work;
-> 	struct work_struct	cmd_work;
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index b0d9c36acc03..c102a8763cb5 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -2769,6 +2769,20 @@ static void hci_cmd_timeout(struct work_struct *work)
-> 	queue_work(hdev->workqueue, &hdev->cmd_work);
-> }
-> 
-> +/* HCI ncmd timer function */
-> +static void hci_ncmd_timeout(struct work_struct *work)
-> +{
-> +	struct hci_dev *hdev = container_of(work, struct hci_dev,
-> +					    ncmd_timer.work);
-> +
-> +	bt_dev_err(hdev, "Controller not accepting commands anymore: ncmd = 0");
-> +
-> +	/* This is an irrecoverable state. Inject hw error event to reset
-> +	 * the device and driver.
-> +	 */
-> +	hci_reset_dev(hdev);
+Delete selinux selinux_xfrm_policy_lookup() useless argument.
 
-	/* This is an irrecoverable state, inject hardware error event */
-	hci_reset_dev(hdev);
+Signed-off-by: Zhongjun Tan <tanzhongjun@yulong.com>
+---
+ include/linux/lsm_hook_defs.h   | 3 +--
+ include/linux/security.h        | 4 ++--
+ net/xfrm/xfrm_policy.c          | 6 ++----
+ security/security.c             | 4 ++--
+ security/selinux/include/xfrm.h | 2 +-
+ security/selinux/xfrm.c         | 2 +-
+ 6 files changed, 9 insertions(+), 12 deletions(-)
 
-Since you will not be resetting the driver here. You just tell the core stack to reset itself and with HCI_Reset hopefully bring the hardware back to life. Or if the ncmd=0 is a hardware bug, just start sending a new command.
-
-> +}
-> +
-> struct oob_data *hci_find_remote_oob_data(struct hci_dev *hdev,
-> 					  bdaddr_t *bdaddr, u8 bdaddr_type)
-> {
-> @@ -3831,6 +3845,7 @@ struct hci_dev *hci_alloc_dev(void)
-> 	init_waitqueue_head(&hdev->suspend_wait_q);
-> 
-> 	INIT_DELAYED_WORK(&hdev->cmd_timer, hci_cmd_timeout);
-> +	INIT_DELAYED_WORK(&hdev->ncmd_timer, hci_ncmd_timeout);
-> 
-> 	hci_request_setup(hdev);
-> 
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index cf2f4a0abdbd..114a9170d809 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -3635,6 +3635,11 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, struct sk_buff *skb,
-> 	if (*opcode != HCI_OP_NOP)
-> 		cancel_delayed_work(&hdev->cmd_timer);
-> 
-> +	if (!ev->ncmd &&!test_bit(HCI_RESET, &hdev->flags))
-> +		schedule_delayed_work(&hdev->ncmd_timer, HCI_NCMD_TIMEOUT);
-> +	else
-> +		cancel_delayed_work(&hdev->ncmd_timer);
-> +
-> 	if (ev->ncmd && !test_bit(HCI_RESET, &hdev->flags))
-> 		atomic_set(&hdev->cmd_cnt, 1);
-> 
-
-	if (!test_bit(HCI_RESET, &hdev->flags)) {
-		if (ev->ncmd) {
-			cancel_delayed_work(&hdev->ncmd_timer);
-			atomic_set(&hdev->cmd_cnt, 1);
-		} else {
-			schedule_delayed_work(&hdev->ncmd_timer,
-					      HCI_NCMD_TIMEOUT);
-		}
-	}
-
-I think doing it this way is a bit cleaner and avoid the check of !ncmd and !HCI_RESET twice.
-
-And I wonder if there isn’t a cancel_delayed_work missing in hci_dev_do_close or some related location when we are shutting down.
-
-What do we do when this happens during HCI_INIT. I think if ncmd_timer triggers during HCI_INIT, then hci_up needs to be aborted and no hardware error event to be injected.
-
-In addition since you are now calling hci_reset_dev also from the core stack (perviously, it was just up to the drivers to do that), I would add an extra error.
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index fd12f1652bdf..1c9ef5608930 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -4073,6 +4073,8 @@ int hci_reset_dev(struct hci_dev *hdev)
-        hci_skb_pkt_type(skb) = HCI_EVENT_PKT;
-        skb_put_data(skb, hw_err, 3);
- 
-+       bt_dev_err(hdev, "Injecting HCI hardware error event");
-+
-        /* Send Hardware Error to upper stack */
-        return hci_recv_frame(hdev, skb);
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index 04c0179..2adeea4 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -358,8 +358,7 @@
+ 	 struct xfrm_sec_ctx *polsec, u32 secid)
+ LSM_HOOK(void, LSM_RET_VOID, xfrm_state_free_security, struct xfrm_state *x)
+ LSM_HOOK(int, 0, xfrm_state_delete_security, struct xfrm_state *x)
+-LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid,
+-	 u8 dir)
++LSM_HOOK(int, 0, xfrm_policy_lookup, struct xfrm_sec_ctx *ctx, u32 fl_secid)
+ LSM_HOOK(int, 1, xfrm_state_pol_flow_match, struct xfrm_state *x,
+ 	 struct xfrm_policy *xp, const struct flowi_common *flic)
+ LSM_HOOK(int, 0, xfrm_decode_session, struct sk_buff *skb, u32 *secid,
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 06f7c50..24eda04 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1681,7 +1681,7 @@ int security_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 				      struct xfrm_sec_ctx *polsec, u32 secid);
+ int security_xfrm_state_delete(struct xfrm_state *x);
+ void security_xfrm_state_free(struct xfrm_state *x);
+-int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
++int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid);
+ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				       struct xfrm_policy *xp,
+ 				       const struct flowi_common *flic);
+@@ -1732,7 +1732,7 @@ static inline int security_xfrm_state_delete(struct xfrm_state *x)
+ 	return 0;
  }
+ 
+-static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
++static inline int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid)
+ {
+ 	return 0;
+ }
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 156347f..d5d934e 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1902,8 +1902,7 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
+ 
+ 	match = xfrm_selector_match(sel, fl, family);
+ 	if (match)
+-		ret = security_xfrm_policy_lookup(pol->security, fl->flowi_secid,
+-						  dir);
++		ret = security_xfrm_policy_lookup(pol->security, fl->flowi_secid);
+ 	return ret;
+ }
+ 
+@@ -2181,8 +2180,7 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
+ 				goto out;
+ 			}
+ 			err = security_xfrm_policy_lookup(pol->security,
+-						      fl->flowi_secid,
+-						      dir);
++						      fl->flowi_secid);
+ 			if (!err) {
+ 				if (!xfrm_pol_hold_rcu(pol))
+ 					goto again;
+diff --git a/security/security.c b/security/security.c
+index b38155b..0c1c979 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2466,9 +2466,9 @@ void security_xfrm_state_free(struct xfrm_state *x)
+ 	call_void_hook(xfrm_state_free_security, x);
+ }
+ 
+-int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
++int security_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid)
+ {
+-	return call_int_hook(xfrm_policy_lookup, 0, ctx, fl_secid, dir);
++	return call_int_hook(xfrm_policy_lookup, 0, ctx, fl_secid);
+ }
+ 
+ int security_xfrm_state_pol_flow_match(struct xfrm_state *x,
+diff --git a/security/selinux/include/xfrm.h b/security/selinux/include/xfrm.h
+index 0a6f34a..7415940 100644
+--- a/security/selinux/include/xfrm.h
++++ b/security/selinux/include/xfrm.h
+@@ -23,7 +23,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 				     struct xfrm_sec_ctx *polsec, u32 secid);
+ void selinux_xfrm_state_free(struct xfrm_state *x);
+ int selinux_xfrm_state_delete(struct xfrm_state *x);
+-int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir);
++int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid);
+ int selinux_xfrm_state_pol_flow_match(struct xfrm_state *x,
+ 				      struct xfrm_policy *xp,
+ 				      const struct flowi_common *flic);
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 634f3db..be83e5c 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -150,7 +150,7 @@ static int selinux_xfrm_delete(struct xfrm_sec_ctx *ctx)
+  * LSM hook implementation that authorizes that a flow can use a xfrm policy
+  * rule.
+  */
+-int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid, u8 dir)
++int selinux_xfrm_policy_lookup(struct xfrm_sec_ctx *ctx, u32 fl_secid)
+ {
+ 	int rc;
+ 
+-- 
+1.9.1
 
-This has the advantage that if you take a btmon trace, you know this event is injected. Or more precisely eventually will be able to know since we haven’t merged my patches yet that will redirect bt_dev_{err,warn,..} into btmon as well.
-
-Regards
-
-Marcel
 
