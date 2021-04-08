@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFCB13584E6
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 15:40:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B763584E7
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 15:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231770AbhDHNkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 09:40:13 -0400
-Received: from mail-mw2nam10on2066.outbound.protection.outlook.com ([40.107.94.66]:21857
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S231766AbhDHNkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 09:40:14 -0400
+Received: from mail-mw2nam12on2085.outbound.protection.outlook.com ([40.107.244.85]:26816
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231724AbhDHNkL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 09:40:11 -0400
+        id S231765AbhDHNkM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 09:40:12 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fHQIQOlEV2d7KqeVs4tZzHmBn4fwB7Pxa//M24AVTKy00Nqs894suPZVZ0BHH/A1D3h7gnFSkgU0JMAzJldv9cZndf3unKxH0wCBXyGLQpk5NTyxqsu9Pjh7ZmnDwjcNjWPjPluJKVHhSU+m3k8jrsO9uKKLPKnk4ueFnXEnzlth12Yd9zzRJiojVi8zft0DC8iLJQos+VzNS/rOQromwi6xUTcSk7QoAHEwO36FXLb4aZ1Du8A9B+Jf1BXKLsI901I4C1O8oddGmUaPGV7op1870WJaehVFRZ74qmpV9rVvQNrq9mPcNctGsMTmT3m88cc9nK4ZYZr5VOjbQy/edw==
+ b=Wq+2qBH9Kj1ev6Awf+/O4AWIn7YLiy8Zpi1Xt9GxWkOHuc5V95BrXB1s3qmSHtUKL8k+lIaBxVkIk6caa3fK3KNYlRRdjbxe+PxMnaIt+Dle3ej5GqRNnAMwrZJJrRBUTSxtwo0y5xx4MB2Bkw9glOb/rpPvFJPN8gnyWpAzuAbISEgF/VL5yLP7LVzl9pTpgFuUcXXPoD9ERsNDi2NAXwgJXsbrbg6AVzzu+e/iM/aewzCdllhDhELAnxcCNWY3lopGe2KM+Fvpsp1Oip9Sq6qj2r1fa2tNdAVimGV2ldVQ8QzwKl1XJfrGEj3VBBsWdbTp3dDS/g+61hRcp/D4MQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=la2R0eoUoRXLwKeFSIx6tOfIZefdkQrcWANFgkxO3J8=;
- b=PsPKcFHmWKptZ/TYUOgLdjMQQApg6JKKPy3s9FAb9mXY1YWS7499yjN7rjpJKk+ZG34Ov/eXWNZXmQK67eQCpTrDX9I1Iq4BKexvDNty8wqZ1pTRnetC9LtVKy6Ox1YCBjMpo0M98x/q1Yk50OCXdCydgLU5tpCI5Lz2+zQL4DMAQhp7/S8ikUYCCuPf2vSmNtebJV3A+y1ldj5IBW0jQN7isxCR4qrO1CmLYfIIY5P9vHVXBXu5anIZ6AxDn3bYgECT/ZwGENcwvPHrOjdhcRYyle6xakrhvmE3BqyJrEjm5mOr1chP/tADeDl+DmLde7XsUP7dG3NKegOyCVFzyg==
+ bh=n44fdZ1pttfQWhuy4c3KI2VhfuQZkvMOeKftof3cSfg=;
+ b=A3Q6qK7+iEVhDPpZS0kUbyzidWHZoO1By4LDHEiK9d23SlDUmnvs3qW0UW/vcFTa3RpC/G48wgnmhmnPD36JyiUoCibNmIvx4qlQ09GAWKCRxinOIMODHpM5HhuqBdiYs1RBoTSdgJjZAIMJLnAFo4YoiiFul7QdGFtnfM8wBW8zYTd7YMHPVOvxvo6TaMmTki9PiTknTjgVaA2tLTSAcVY0WuTZw29C7yg6IarKw/g96fMz6J9aBPJ/ho+uxVguGvm9Osw9L3g6b/Dwcf4Lj8BrV2JrPc1qdde4cRNCip4kFIU05Koza0sf9m2eEzOg6YsD09t1qfw/04kzCij6kA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=la2R0eoUoRXLwKeFSIx6tOfIZefdkQrcWANFgkxO3J8=;
- b=ZyTcZt4CPEBb5ns7PH75lUOm57Yss0NFqGnqTX84a1A1Ps9p9aZs+iBkPxvdksh9lI7DQY9yQ0dIWFzYVca+uByIAwHLQ10hDUDkVDi/VLXzyB7nt5F/9qjs+GawXIEAvfd73jLSf+RsPGGgcEAJEWswx2o6jgpg5lPP9ApxILnpIsBXF1Xk+fdJlE76aexiGeucf7cDjaDIHK+TTX3SJscFtodeAHiJppPw5AxuuOo1OVHAH79wXh0p/7KKv6pe2Dx8P8AXrb9S9m1t7PhpQyEkbZkDaq4QlO/BRx65NNiNCaWH4Qrr2sPyB44nft2DapMRZBzoH91aNh72AMjsLQ==
-Received: from BN9PR03CA0472.namprd03.prod.outlook.com (2603:10b6:408:139::27)
- by BN8PR12MB3426.namprd12.prod.outlook.com (2603:10b6:408:4a::14) with
+ bh=n44fdZ1pttfQWhuy4c3KI2VhfuQZkvMOeKftof3cSfg=;
+ b=XmgaP7Trozqmoic31VWU9G5lAg7VNm5C9tm2fnOf3OO81yugnTsLT7RxwsAai0t9rzU7NR2/IQef94Ctuj2u5AqLl4u52RfbVAaNbCurdQs+iLaKHSR15YqBVatvhRpGhMOYOucH5CkP9RRFqqHfMyprPh8PR1IPYJF87rZmgDWqMHQlTSxhJVZ0iDZuQqAmSGAFfK+5X/8QZpit3moYLjlQWOlPPgIzswNhVey2kQ9jqGIRWzEt5V+bGgoLT+cqfv/71N8m2AGEjRX/OcGQ6rcK+c0zAzrL6sxja+0dE5M3SeM/7ZPIeF2Rous7659YB6LBk6DwzS4et4ELbKxWBQ==
+Received: from BN6PR11CA0002.namprd11.prod.outlook.com (2603:10b6:405:2::12)
+ by DM6PR12MB3580.namprd12.prod.outlook.com (2603:10b6:5:11e::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.32; Thu, 8 Apr
- 2021 13:39:56 +0000
-Received: from BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:139:cafe::33) by BN9PR03CA0472.outlook.office365.com
- (2603:10b6:408:139::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend
- Transport; Thu, 8 Apr 2021 13:39:56 +0000
+ 2021 13:40:00 +0000
+Received: from BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:2:cafe::fb) by BN6PR11CA0002.outlook.office365.com
+ (2603:10b6:405:2::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend
+ Transport; Thu, 8 Apr 2021 13:40:00 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
@@ -45,12 +45,12 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT010.mail.protection.outlook.com (10.13.177.53) with Microsoft SMTP
+ BN8NAM11FT011.mail.protection.outlook.com (10.13.176.140) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Thu, 8 Apr 2021 13:39:56 +0000
+ 15.20.4020.17 via Frontend Transport; Thu, 8 Apr 2021 13:39:59 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 8 Apr
- 2021 13:39:53 +0000
+ 2021 13:39:56 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
@@ -59,9 +59,9 @@ CC:     Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net-next 1/7] net: sched: Add a trap-and-forward action
-Date:   Thu, 8 Apr 2021 15:38:23 +0200
-Message-ID: <20210408133829.2135103-2-petrm@nvidia.com>
+Subject: [PATCH net-next 2/7] net: sched: Make the action trap_fwd offloadable
+Date:   Thu, 8 Apr 2021 15:38:24 +0200
+Message-ID: <20210408133829.2135103-3-petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210408133829.2135103-1-petrm@nvidia.com>
 References: <20210408133829.2135103-1-petrm@nvidia.com>
@@ -73,158 +73,81 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1c6ec263-6845-4bab-2b92-08d8fa93cc54
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3426:
-X-Microsoft-Antispam-PRVS: <BN8PR12MB3426EEB2BF9FAB3EEF34CAEDD6749@BN8PR12MB3426.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Office365-Filtering-Correlation-Id: 572ba4ea-c8ee-4c94-357e-08d8fa93ce4b
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3580:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3580561F2506D1B91158E7FFD6749@DM6PR12MB3580.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bUmv0ilR2QoxytMwjejxzl5WVgWIh2aFyV24R/kGtBBbWulF2qHlWsBDE3HZvDQ5ypMT1kW4Gk4UdR214WhDFAjMo9s1VJwBsw9eQq+z7pJk6i2ykRIIUGcnHJNBtgypj1YXiOmDz2Q56eW+Xc/6e5xKQ3b7xwVuxvf5VyC7hhw5c4h7HNnW4O8CT+liZ0GuY8bGr3DbDsCoRJNb+tYg7PlnutiGPGHZKx5WE92AFVHjDynzMpK+wZNu2GTZT1t3JGR29WN/G0ESTejEn+jEKw0D9qFmELW+sSGK4LzwOFUXH/8I3ChXJJ90QehPopsi2klXW5t19IQMR53CRrrUxA35qac5cvykM9QQv5Aj4OWxKWAxitUESF+VLkePcSmQHHqevEGXKqySeYJjgissQPgkP5vrHdq+Uflwmd9Z0HN2hXcOtRtycSNlQ08Mwxwa4yYJSDRaFX03zzeEl3mSIfMxej3Wi6DgZfT2aEsGUc9jDgkypyN0leR7P7wV9RJ0illxixfPDYeMm1unBhE4HOc2TbvVn1XNQRSnxkcRaPlSmuXpiv/pWgjn+v3gsf8Wh2V1SkF6SkSFij7u0RnberUZOLnvUZXQF2w7aojcCqKTnhVvPgfk2v+wtGq9T6VsugTnj4hDF8neymr1yYjqycdRzWgawMYRiqx+HxX9UiU=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(39860400002)(396003)(136003)(36840700001)(46966006)(2616005)(6916009)(4326008)(478600001)(36860700001)(16526019)(2906002)(186003)(26005)(8936002)(8676002)(336012)(426003)(5660300002)(82740400003)(86362001)(70206006)(1076003)(70586007)(83380400001)(356005)(36756003)(7636003)(82310400003)(6666004)(47076005)(36906005)(54906003)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: QB0Ik3mFvuWbd3o5fRiG4zL3kiIYEQy0+42hE4alKt8Y5GOfhOzZH27shsjweoQlYacD/yrLQBHzg9F1om/+gIpF+JQxUi+SndpRxquqozCXR8a5qQ1mozS837Dh7U9tU07Tc7GfiEDdqPBhLksjCUxNhEoe5aIHS/tXB/GwClqVQjuDGpV/xkakIF/JfgAk2HhJLKeCONcg5lAk/mvIPzB0wsyhK2+n2xwI8q4Ssw4q5DdpNSU/FAnQIBtmoBk9n/Xywr4Z8eGQYYbIMe9cSRnTQPZZFScUtugNuDd4v1G56rJABhNoctvtWfaPwnnXtOa3dSocpT3LqbnmZiDjGJD6Cy8LB+IXAWiEZdhsH5oI+6ve867hqTdE7PVyEDYgWr85GexH+Akmf9wtNXJRFI5VzEYdfSN3XJ75VmfmOXHpmWmDUJvO1z/9JiXVmb+CI46qTGzYr+Aiznabx3UH/VWjGBzZPHL4y7Vi28X4eZx/AimzBbcjBi6cEmEeCpn8rZXQNaaIeIlsjPWnb0JjaSubzcLi3AKncleFwS1tQGX1i9SKzv7eXjHyieA8UT2kPfu4AKyLva7bBVn1/dCbAoeFBfw3Slrs/YxMPqSQShFGRti89/cUFhiS9eaCExFRcyNp6nKLcNG0u6ESMF8Ubg==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(346002)(376002)(396003)(136003)(36840700001)(46966006)(26005)(16526019)(336012)(54906003)(36756003)(70206006)(70586007)(186003)(2906002)(36860700001)(316002)(4326008)(5660300002)(47076005)(36906005)(356005)(478600001)(8676002)(86362001)(2616005)(82310400003)(7636003)(8936002)(1076003)(6666004)(82740400003)(6916009)(426003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 13:39:56.6380
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 13:39:59.9308
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c6ec263-6845-4bab-2b92-08d8fa93cc54
+X-MS-Exchange-CrossTenant-Network-Message-Id: 572ba4ea-c8ee-4c94-357e-08d8fa93ce4b
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT011.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3426
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3580
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TC action "trap" is used to instruct the HW datapath to drop the
-matched packet and transfer it for processing in the SW pipeline. If
-instead it is desirable to forward the packet and transferring a _copy_ to
-the SW pipeline, there is no practical way to achieve that.
-
-To that end add a new generic action, trap_fwd. In the software pipeline,
-it is equivalent to an OK. When offloading, it should forward the packet to
-the host, but unlike trap it should not drop the packet.
+Add the new flow action and related support so that drivers can offload the
+trap_fwd action.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- include/uapi/linux/pkt_cls.h       |  6 +++++-
- net/core/dev.c                     |  2 ++
- net/sched/act_bpf.c                | 13 +++++++++++--
- net/sched/cls_bpf.c                |  1 +
- net/sched/sch_dsmark.c             |  1 +
- tools/include/uapi/linux/pkt_cls.h |  6 +++++-
- 6 files changed, 25 insertions(+), 4 deletions(-)
+ include/net/flow_offload.h   | 1 +
+ include/net/tc_act/tc_gact.h | 5 +++++
+ net/sched/cls_api.c          | 2 ++
+ 3 files changed, 8 insertions(+)
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 025c40fef93d..a1bbccb88e67 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -72,7 +72,11 @@ enum {
- 				   * the skb and act like everything
- 				   * is alright.
- 				   */
--#define TC_ACT_VALUE_MAX	TC_ACT_TRAP
-+#define TC_ACT_TRAP_FWD		9 /* For hw path, this means "send a copy
-+				   * of the packet to the cpu". For sw
-+				   * datapath, this is like TC_ACT_OK.
-+				   */
-+#define TC_ACT_VALUE_MAX	TC_ACT_TRAP_FWD
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index dc5c1e69cd9f..5f35523f12b5 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -121,6 +121,7 @@ enum flow_action_id {
+ 	FLOW_ACTION_ACCEPT		= 0,
+ 	FLOW_ACTION_DROP,
+ 	FLOW_ACTION_TRAP,
++	FLOW_ACTION_TRAP_FWD,
+ 	FLOW_ACTION_GOTO,
+ 	FLOW_ACTION_REDIRECT,
+ 	FLOW_ACTION_MIRRED,
+diff --git a/include/net/tc_act/tc_gact.h b/include/net/tc_act/tc_gact.h
+index eb8f01c819e6..df9e0a19c826 100644
+--- a/include/net/tc_act/tc_gact.h
++++ b/include/net/tc_act/tc_gact.h
+@@ -49,6 +49,11 @@ static inline bool is_tcf_gact_trap(const struct tc_action *a)
+ 	return __is_tcf_gact_act(a, TC_ACT_TRAP, false);
+ }
  
- /* There is a special kind of actions called "extended actions",
-  * which need a value parameter. These have a local opcode located in
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 9d1a8fac793f..f0b8c16dbf12 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3975,6 +3975,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
- 	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
- 	case TC_ACT_OK:
- 	case TC_ACT_RECLASSIFY:
-+	case TC_ACT_TRAP_FWD:
- 		skb->tc_index = TC_H_MIN(cl_res.classid);
- 		break;
- 	case TC_ACT_SHOT:
-@@ -5083,6 +5084,7 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
- 				     &cl_res, false)) {
- 	case TC_ACT_OK:
- 	case TC_ACT_RECLASSIFY:
-+	case TC_ACT_TRAP_FWD:
- 		skb->tc_index = TC_H_MIN(cl_res.classid);
- 		break;
- 	case TC_ACT_SHOT:
-diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
-index e48e980c3b93..be2a51c6f84e 100644
---- a/net/sched/act_bpf.c
-+++ b/net/sched/act_bpf.c
-@@ -54,8 +54,16 @@ static int tcf_bpf_act(struct sk_buff *skb, const struct tc_action *act,
- 		bpf_compute_data_pointers(skb);
- 		filter_res = BPF_PROG_RUN(filter, skb);
- 	}
--	if (skb_sk_is_prefetched(skb) && filter_res != TC_ACT_OK)
--		skb_orphan(skb);
-+	if (skb_sk_is_prefetched(skb)) {
-+		switch (filter_res) {
-+		case TC_ACT_OK:
-+		case TC_ACT_TRAP_FWD:
-+			break;
-+		default:
-+			skb_orphan(skb);
-+			break;
-+		}
-+	}
- 	rcu_read_unlock();
- 
- 	/* A BPF program may overwrite the default action opcode.
-@@ -72,6 +80,7 @@ static int tcf_bpf_act(struct sk_buff *skb, const struct tc_action *act,
- 	case TC_ACT_PIPE:
- 	case TC_ACT_RECLASSIFY:
- 	case TC_ACT_OK:
-+	case TC_ACT_TRAP_FWD:
- 	case TC_ACT_REDIRECT:
- 		action = filter_res;
- 		break;
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index 6e3e63db0e01..5fd96cf2dca7 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -69,6 +69,7 @@ static int cls_bpf_exec_opcode(int code)
- 	case TC_ACT_SHOT:
- 	case TC_ACT_STOLEN:
- 	case TC_ACT_TRAP:
-+	case TC_ACT_TRAP_FWD:
- 	case TC_ACT_REDIRECT:
- 	case TC_ACT_UNSPEC:
- 		return code;
-diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
-index cd2748e2d4a2..054a06bd9dc8 100644
---- a/net/sched/sch_dsmark.c
-+++ b/net/sched/sch_dsmark.c
-@@ -258,6 +258,7 @@ static int dsmark_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 			goto drop;
- #endif
- 		case TC_ACT_OK:
-+		case TC_ACT_TRAP_FWD:
- 			skb->tc_index = TC_H_MIN(res.classid);
- 			break;
- 
-diff --git a/tools/include/uapi/linux/pkt_cls.h b/tools/include/uapi/linux/pkt_cls.h
-index 12153771396a..ccfa424dfeaf 100644
---- a/tools/include/uapi/linux/pkt_cls.h
-+++ b/tools/include/uapi/linux/pkt_cls.h
-@@ -45,7 +45,11 @@ enum {
- 				   * the skb and act like everything
- 				   * is alright.
- 				   */
--#define TC_ACT_VALUE_MAX	TC_ACT_TRAP
-+#define TC_ACT_TRAP_FWD		9 /* For hw path, this means "send a copy
-+				   * of the packet to the cpu". For sw
-+				   * datapath, this is like TC_ACT_OK.
-+				   */
-+#define TC_ACT_VALUE_MAX	TC_ACT_TRAP_FWD
- 
- /* There is a special kind of actions called "extended actions",
-  * which need a value parameter. These have a local opcode located in
++static inline bool is_tcf_gact_trap_fwd(const struct tc_action *a)
++{
++	return __is_tcf_gact_act(a, TC_ACT_TRAP_FWD, false);
++}
++
+ static inline bool is_tcf_gact_goto_chain(const struct tc_action *a)
+ {
+ 	return __is_tcf_gact_act(a, TC_ACT_GOTO_CHAIN, true);
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index d3db70865d66..95e37eb50173 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3582,6 +3582,8 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			entry->id = FLOW_ACTION_DROP;
+ 		} else if (is_tcf_gact_trap(act)) {
+ 			entry->id = FLOW_ACTION_TRAP;
++		} else if (is_tcf_gact_trap_fwd(act)) {
++			entry->id = FLOW_ACTION_TRAP_FWD;
+ 		} else if (is_tcf_gact_goto_chain(act)) {
+ 			entry->id = FLOW_ACTION_GOTO;
+ 			entry->chain_index = tcf_gact_goto_chain_index(act);
 -- 
 2.26.2
 
