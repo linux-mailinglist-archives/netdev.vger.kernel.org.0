@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 783AB357E4B
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 10:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83C55357E73
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 10:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbhDHIkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 04:40:23 -0400
-Received: from m12-17.163.com ([220.181.12.17]:47392 "EHLO m12-17.163.com"
+        id S230296AbhDHIxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 04:53:00 -0400
+Received: from m12-18.163.com ([220.181.12.18]:44653 "EHLO m12-18.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229539AbhDHIkS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 04:40:18 -0400
+        id S230211AbhDHIw6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 04:52:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
         s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=b5q0B
-        ZMIyUtm8Qp3wgZ+qzq/qLDIUjP2PDeENPRELsw=; b=ZrbJUwZMftq90yYHB1mzP
-        5KOgVo5ZvA2u8LdWAYKVvFznEtV4CTUY+FcE5JUQt+v1MhfO1ekuSxMleX4HrspN
-        K2OMtm+vQOTnjzs+l9IXSx4POOF7UJfWuKhLAthf7MM9Jrh4Dt2WC7fyu5e9sWgV
-        1wywoZ4BJEq9zZ9ZiWEQWI=
-Received: from localhost.localdomain (unknown [119.137.53.45])
-        by smtp13 (Coremail) with SMTP id EcCowADHypKrwG5gvlcHuQ--.54958S2;
-        Thu, 08 Apr 2021 16:37:01 +0800 (CST)
+        ZMIyUtm8Qp3wgZ+qzq/qLDIUjP2PDeENPRELsw=; b=DEdP/EzlUA5ZoAoIlJuCj
+        39Yj192OWfV8hUeOL4awyibgYFocOqYkSr3lxF/FIBjtQVSK6YgaEADByJIMcqeB
+        zr4BjUTV+lf5DNJ6uqW3BgmOjrwadQKykzdOfg83QiKNT6BW+9or9fWD2SDRg+YC
+        24htsy+fFxqf17q1kNfbPw=
+Received: from localhost.localdomain (unknown [183.46.69.82])
+        by smtp14 (Coremail) with SMTP id EsCowACHhfORw25giuVlcw--.64621S2;
+        Thu, 08 Apr 2021 16:49:25 +0800 (CST)
 From:   =?UTF-8?q?=C2=A0Zhongjun=20Tan?= <hbut_tan@163.com>
 To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
         davem@davemloft.net, kuba@kernel.org, jmorris@namei.org,
-        serge@hallyn.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, keescook@chromium.org,
-        ebiederm@xmission.com, gregkh@linuxfoundation.org,
-        dhowells@redhat.com, kpsingh@google.com,
-        christian.brauner@ubuntu.com, zohar@linux.ibm.com
+        serge@hallyn.com, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        keescook@chromium.org, ebiederm@xmission.com,
+        gregkh@linuxfoundation.org, dhowells@redhat.com,
+        kpsingh@google.com, christian.brauner@ubuntu.com,
+        zohar@linux.ibm.com
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
         Zhongjun Tan <tanzhongjun@yulong.com>
 Subject: [PATCH] selinux:Delete selinux_xfrm_policy_lookup()  useless argument
-Date:   Thu,  8 Apr 2021 16:36:50 +0800
-Message-Id: <20210408083650.1910-1-hbut_tan@163.com>
+Date:   Thu,  8 Apr 2021 16:49:07 +0800
+Message-Id: <20210408084907.841-1-hbut_tan@163.com>
 X-Mailer: git-send-email 2.30.0.windows.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowADHypKrwG5gvlcHuQ--.54958S2
+X-CM-TRANSID: EsCowACHhfORw25giuVlcw--.64621S2
 X-Coremail-Antispam: 1Uf129KBjvJXoWxtFWrWr43GrW7CrWkCrW5trb_yoW7GF48pF
         4DGFyUKr4UXa4UuFn7JFnruFnIg3yYka9rJrWkCw15tasrJr1rWws5JryakryFyrWUJFyI
-        9w13CrZ5Gw45trDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jz_M3UUUUU=
-X-Originating-IP: [119.137.53.45]
-X-CM-SenderInfo: xkex3sxwdqqiywtou0bp/1tbiWBxsxluHwM93sQABs6
+        9w13CrZ5Gw45trDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jGZXrUUUUU=
+X-Originating-IP: [183.46.69.82]
+X-CM-SenderInfo: xkex3sxwdqqiywtou0bp/xtbBohVuxlaD-h7daQAAse
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
