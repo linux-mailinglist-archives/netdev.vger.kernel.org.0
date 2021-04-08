@@ -2,72 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61DD4358E04
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 22:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF856358E39
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 22:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbhDHUGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 16:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbhDHUGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 16:06:10 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F36CC061760
-        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 13:05:59 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id m3so3897891edv.5
-        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 13:05:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=fTFWwMjCpocca3MO7P1jty1ObtUAP01oxLMOZnGcpik=;
-        b=nFYKNsnIem03nimDFEFAtURKZW/y4UOrHKD1jjzPAlbcYSAFGVSsR2wSIcmEvIzQ1k
-         HBLau6iH/9YyFpE/TT5jBb14tU/AeNREbcSzi6kNG8S4skDA1awiGzpRwmShg0tr7c4b
-         IS5Cssq8MHgFfx+FNzPUgY4bOnvQ8EZGBCeryhjsHIRf+mXsdIJFUDsFf58+xzxPDnpf
-         Gwf+YyBNvGxJobjSXqclzQ00T1rOoXzwrXwNryPfMZam+zG+f4ufntj8aM+D3ei6hhDi
-         pe1ytnG4PL9HE9fe2uWJ5okhP7TyLVyIvnjqz5a7OhOrDtHnamfunm4NUBUKPHcrPu8U
-         0lvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=fTFWwMjCpocca3MO7P1jty1ObtUAP01oxLMOZnGcpik=;
-        b=ionqzfGc8gKQMifaEoUBg5Zl6u+e3yU7Q6on/9rOBJB5tIf1kdK5PNs8ugKYbdye4S
-         cyYEq90g6IPLX4S2H0nStvKo5zuCZgLtdku8XSTzjaCxwn3EkWobDQO7dyxXsE9JWKFc
-         Uz3VE0+nNA7PwOOBwppYuO2XGGm+SP/d23a/BD0PQpw76BjjBqwJQtfAX79WzLFpsJjZ
-         BBZNpqvd/9++LqwYKgg/2VodDY6HQyqCm4yloy6+4Dhm14QNi2jyx7Hr2Qua/3QuO43N
-         o1WbOFX9g36fBx5j9zzCPaChKhKPjhjNbkskdkQyIuY/qFE59L4LWGvdq8/YOQFTX+b4
-         ZukQ==
-X-Gm-Message-State: AOAM530QBCbK16zE/EPoX3kzwUZSVimwmJ995d4YE2b0OOt56TRgKlz/
-        1KSWynxwCWtLrWG+f1GaUWLURG8cpj5r9bnJJqs=
-X-Google-Smtp-Source: ABdhPJzZ83kUnEap7vgsC+pvasVv4C9ORqS95CuXpwMbTSOZ7yVSpcuqJNwqNig0kSjvO/sJM4nHVubp5lHlcIx8N0w=
-X-Received: by 2002:a05:6402:2552:: with SMTP id l18mr13708413edb.71.1617912357663;
- Thu, 08 Apr 2021 13:05:57 -0700 (PDT)
+        id S232261AbhDHUUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 16:20:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47666 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231676AbhDHUUY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 16:20:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6C01F610CF;
+        Thu,  8 Apr 2021 20:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617913212;
+        bh=Z5NPhE1GYFRdPh9DAc8sDrpHPz7u/KUs/IsqU2zf15U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XxrHcxGKdnHLLPD2C1hsgzVGGPc0nVrIfGOcFjuXXYGJi7kPD7gcWiEZZrwDEdoto
+         hhWteraseZelaDQDrmvBZVoSM2lnFRJqyDvl7t0+sBeK4W2XclDi8wJjhGEv5ryUK7
+         m7UzUepbyUMLaoM+g1OA1ZXRuvKFyQ3riCsExRKG7sFEC12DRlbpkD0insFtJGTX97
+         KGV5dP9C6Rs9McvMugjek29jzQODbEdaYO1lUP/mjNUBwPYOhpXN8Keek41AEYyD84
+         CF8uK3ekRY0YUWflrPmJ0FgL9I9uCDnc2yntt8g6UHCvB/LKoqDJ1aym+CYti97Uve
+         e7Zy2UgSOpKIA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 618EE60A71;
+        Thu,  8 Apr 2021 20:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a17:906:454b:0:0:0:0 with HTTP; Thu, 8 Apr 2021 13:05:57
- -0700 (PDT)
-Reply-To: mrs.chantal166@gmail.com
-From:   Mrs Chantal <chantalmrs63@gmail.com>
-Date:   Thu, 8 Apr 2021 20:05:57 +0000
-Message-ID: <CAASsLd-h5quTCYp7rTgTMpDVTTzqBN-an5hCrky9cjMEWrm3kQ@mail.gmail.com>
-Subject: Dear Friend
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 00/16] net: phy: marvell10g updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161791321239.18816.4767764835394602820.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Apr 2021 20:20:12 +0000
+References: <20210407202254.29417-1-kabel@kernel.org>
+In-Reply-To: <20210407202254.29417-1-kabel@kernel.org>
+To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, rmk+kernel@armlinux.org.uk, andrew@lunn.ch,
+        davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend
-You have been compensated with the sum of 4.3 million dollars in this
-united nation the payment will be issue into atm visa card and send to
-you from the santander bank we need your address and your whatsapp
-number
+Hello:
 
-Fill the followings with your details;
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-1. Your Name:
-2. Country :
-3. Age and Sex:
-4. Occupation :
-5. Mobile Telephone:
-6. Delivery Address:
-7. Id Card Identification
+On Wed,  7 Apr 2021 22:22:38 +0200 you wrote:
+> Here are some updates for marvell10g PHY driver.
+> 
+> I am still working on some more changes for this driver, but I would
+> like to have at least something reviewed / applied.
+> 
+> Changes since v3:
+> - added Andrew's Reviewed-by tags
+> - removed patches adding variadic-macro library and bitmap
+>   initialization macro - it causes warning that we are not currently
+>   able to fix easily. Instead the supported_interfaces bitmap is now
+>   initialized via a chip specific method
+> - added explanation of mactype initialization to commit message of patch
+>   07/16
+> - fixed repeated word in commit message of second to last patch
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v4,01/16] net: phy: marvell10g: rename register
+    https://git.kernel.org/netdev/net-next/c/bd79d9aa6145
+  - [net-next,v4,02/16] net: phy: marvell10g: fix typo
+    https://git.kernel.org/netdev/net-next/c/283828142fad
+  - [net-next,v4,03/16] net: phy: marvell10g: allow 5gbase-r and usxgmii
+    https://git.kernel.org/netdev/net-next/c/0d3755428d69
+  - [net-next,v4,04/16] net: phy: marvell10g: indicate 88X33x0 only port control registers
+    https://git.kernel.org/netdev/net-next/c/9893f3169016
+  - [net-next,v4,05/16] net: phy: marvell10g: add all MACTYPE definitions for 88X33x0
+    https://git.kernel.org/netdev/net-next/c/f8ee45fcbc5a
+  - [net-next,v4,06/16] net: phy: marvell10g: add MACTYPE definitions for 88E21xx
+    https://git.kernel.org/netdev/net-next/c/9ab0fbd0ffce
+  - [net-next,v4,07/16] net: phy: marvell10g: support all rate matching modes
+    https://git.kernel.org/netdev/net-next/c/97bbe3bd6922
+  - [net-next,v4,08/16] net: phy: marvell10g: check for correct supported interface mode
+    https://git.kernel.org/netdev/net-next/c/261a74c64bb6
+  - [net-next,v4,09/16] net: phy: marvell10g: store temperature read method in chip strucutre
+    https://git.kernel.org/netdev/net-next/c/884d9a6758a1
+  - [net-next,v4,10/16] net: phy: marvell10g: support other MACTYPEs
+    https://git.kernel.org/netdev/net-next/c/ccbf2891de98
+  - [net-next,v4,11/16] net: phy: marvell10g: add separate structure for 88X3340
+    https://git.kernel.org/netdev/net-next/c/9885d016ffa9
+  - [net-next,v4,12/16] net: phy: marvell10g: fix driver name for mv88e2110
+    https://git.kernel.org/netdev/net-next/c/c89f27d4d239
+  - [net-next,v4,13/16] net: phy: add constants for 2.5G and 5G speed in PCS speed register
+    https://git.kernel.org/netdev/net-next/c/53f111cbfac6
+  - [net-next,v4,14/16] net: phy: marvell10g: differentiate 88E2110 vs 88E2111
+    https://git.kernel.org/netdev/net-next/c/0fca947cbb27
+  - [net-next,v4,15/16] net: phy: marvell10g: change module description
+    https://git.kernel.org/netdev/net-next/c/c7dce05e63eb
+  - [net-next,v4,16/16] MAINTAINERS: add myself as maintainer of marvell10g driver
+    https://git.kernel.org/netdev/net-next/c/9187b6cfe7fc
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
