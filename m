@@ -2,168 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE355357D99
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 09:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE27357DC9
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 10:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbhDHHuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 03:50:20 -0400
-Received: from mail-dm6nam10on2046.outbound.protection.outlook.com ([40.107.93.46]:43360
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229505AbhDHHuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 03:50:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jUS+K2bvNe8n5K2g2o6/if7R2pZhvQKYV5+0I/FFV49B1m8kbmgcsarq3S8vrAcAk5mjBqrzlnokJq7B/zLfz42iBfmSI4EG2JqvZhe2GMfKmHVwu2VY5l5W8c1fBhySUqrdS07diLez/ihwP4aOQfKTldNhNW1EXNj/CZTwW2dsV4GhWAlxDZKzl4HkNVmGHtfcs5XXdDRW+5MnC6mAPloMBsVBJv8iheKDnisKS96rLrMjBDOKKzZAiikBODqnIFgWafVOwUXXBn4exmBMJqGHp9N5VQSLr/VPtqbMle//Ew8OeHaikrwxdvV55UX3H3bzQCSr4RpjnNs+pbkKvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Rna7lMMUo99qerhq5Ydgkz1Z3VLFTTz23wle0FltYIY=;
- b=oggG1iWZaFQMEGZJG/4d95qgyImZN6sli0xENk//5ULec//IrqcUrMZDWL6BPb0AYJ+QDvML3it7hRdEwRrfacqWPVEke9LTiGMOV1JEBLNekYIJJdm3n8r79K7bX2vtyRwVCzY8HAavdJngyi7JW7yEt17z2BjIJ7bJy/XluIwC/jDRWh8EFsp6j1t0ynG/GG6gilGdjuiZDtqgQssZ7X+tdGw1b2kn7NwgqBGkxN4Imw96MTjqVkWjrijmZJSeVLg8c/ugYwWWraAFdtBBlArQsEmzZ6CvxNwV8+OvktqVakOPEujpobWolvsTq7Qt8lsafTBFjMFX7MyqjLVOFw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Rna7lMMUo99qerhq5Ydgkz1Z3VLFTTz23wle0FltYIY=;
- b=nacIKEl06Es4dj6XiobBBLnwv+W+1m6lhcHpVZbIEFbpUVNFiDIGZZlM94pc4ftj/omCrR0hWz8fc5J+ehbbCi7T8mNjx84SWwRVKoONyRRs4e5omjV3pBfvtDMCaAz6PABYofVodS8FyPQUBzIfcobVOEnmHz/qSCvGfTY9CyD2iW0jo1NvuJAvozgslPOhByEtoqmrIf6uoyG9IQzSNTwPw/MKD1Hh03l7/ojpwkKWcZRIpgUxB1aJUxU6mHCRInOP+nLt7Icgugsq4NknQ6sgRyRxMqhBvTPD3HZssr1S9p843S/Lh8klzH0NpbDRO4o/A6uvrgA/UqKNL467Xg==
-Received: from MWHPR15CA0027.namprd15.prod.outlook.com (2603:10b6:300:ad::13)
- by MN2PR12MB3279.namprd12.prod.outlook.com (2603:10b6:208:105::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.29; Thu, 8 Apr
- 2021 07:50:07 +0000
-Received: from CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:ad:cafe::c0) by MWHPR15CA0027.outlook.office365.com
- (2603:10b6:300:ad::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend
- Transport; Thu, 8 Apr 2021 07:50:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT065.mail.protection.outlook.com (10.13.174.62) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Thu, 8 Apr 2021 07:50:07 +0000
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 8 Apr 2021 07:50:02 +0000
-References: <20210407153604.1680079-1-vladbu@nvidia.com>
- <20210407153604.1680079-3-vladbu@nvidia.com>
- <CAM_iQpXEGs-Sq-SjNrewEyQJ7p2-KUxL5-eUvWs0XTKGoh7BsQ@mail.gmail.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        "Marcelo Ricardo Leitner" <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Subject: Re: [PATCH net v2 2/3] net: sched: fix action overwrite reference
- counting
-In-Reply-To: <CAM_iQpXEGs-Sq-SjNrewEyQJ7p2-KUxL5-eUvWs0XTKGoh7BsQ@mail.gmail.com>
-Date:   Thu, 8 Apr 2021 10:50:00 +0300
-Message-ID: <ygnhsg419pw7.fsf@nvidia.com>
+        id S229751AbhDHIJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 04:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229686AbhDHIJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 04:09:41 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F5BC061760
+        for <netdev@vger.kernel.org>; Thu,  8 Apr 2021 01:09:29 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id w18so1350153edc.0
+        for <netdev@vger.kernel.org>; Thu, 08 Apr 2021 01:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=j2HelfyDv0B9WCGbpY62g0IA7XA6d7qbEBxA9DU2nD0=;
+        b=mqxWErVM9oTuMzJRJA5DXx9POY5vTN5mdVXTI3nqS7U6ccJKnahOIsVEkMVt51mh0v
+         TptkGqoTlGZ6Tyup41NgPmy6isjsfC+vCqp8Lp95mseug2rScVkQJoZdz7lQlEJdk7/j
+         y6JsUIZZ0Uw0RFJN4czpWrSK4Ot5DdCDZ0FT6GH+usrvqPPoiEHbLVhRJRAdmWpzOUvV
+         npuNbLLZFvmXo1LLCJDn5qpGxbAwGRKHtzTYjZAC/dM0yM8KUv9qhfreUM3M+RRrXGD7
+         kE3Uct370kO5N8p804YduIkv6KRbSfpbN2xSNAJGiPMqp3TLvcp0pM6zG1Aex7cAyOjf
+         qWPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=j2HelfyDv0B9WCGbpY62g0IA7XA6d7qbEBxA9DU2nD0=;
+        b=msTbeSHrD+L3m2zil1i4mm1+CEPD2vimYJbcusj4c6qgKa9KhVOoSnaG7x395Rwb65
+         wed6d2JPPgpLH+G0WfwOXdozRPHoH/A2z2uYTbEP1Btgxndg98orKbzq5O72EQeQSKGV
+         uYEsV4ss1OCeBEUR09DxfmToyzj6IxQaHoqZTw0919F7WhsBPKoVOLEjG+zrIXLsvgR2
+         6NvWuDIPLL804gc/nrVM1Kchsq99VEhO90WOYc5Yh5hG94vMOINh7rZUyd25OWQarJWV
+         AQEZoVir40unmIVteBKja+MJze1J3UQj2edKAvivu6hO93wwDNWxoa3gVBacNlo5iiEq
+         LA4Q==
+X-Gm-Message-State: AOAM5334laZyBRu8rdFsYu5xahvmzm4zMHEFrowC3S33fNPK8AzMLrql
+        8AaJLPGfMxU479p8fUZqhhOp0N6KMEQ3ftSP9kng
+X-Google-Smtp-Source: ABdhPJwXiAzLfojL6u8jjCURZWBzUGV4pnwYa4X4D38+BLrV0Nz3PyKq599ThjBv8dW8JKXQIOfBLoEMu2zAYvNqGms=
+X-Received: by 2002:a05:6402:278c:: with SMTP id b12mr2809345ede.145.1617869368228;
+ Thu, 08 Apr 2021 01:09:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a503e581-c6d2-43ae-1716-08d8fa62eda4
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3279:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB32793BBEE79CC6CBA35025F7A0749@MN2PR12MB3279.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DrjNrXgWtBAL7agxFseFrzocZROO28aK5zmsyWC+85McM+1b53b664Et7ElemVEgkUrELqnkL1ZKkXe7ZXVA6u2p6aysit3s/OgDE+AJWOrXHWMv3pkiAy7/oaTKQCv2HzH7OC8izCiucb2U5Yn5vykYBEcuROO5JlvB/8c0Z/fBm5839hN/kWtSF3VfCDtLra5ZXwXD1t/W84JrnjSoCxJitHDrQePdlc5fOkiA+8jFOipd+Wx8C09Wbhp7lUk3QoGs39zoduJ3L9+fD2hrIg3BP8CQXkverNtadaN4qVvK5k2ThH/Xn5gOXWkVWu92ROPzAMbsAgM2iM7BGsYYPPZrzjM4lu8fMuiC15e89xHepPSYir5h3inhNr3Y/vpBetwAZpxP4DC9cjoGoBLOIh6ixPWKy5H81eEm4eFw2c8pk/sj+OVtlrKOSqF7HXHsVpEEcnWgbDc+tdbmdqSumyR3EUwimW4X5K20SzlQZc0YvePUg2g3bwe6JadvStmPpehtfdva5ghy4tGVRQum4LEwInlOlB/pTyZq5IrraoeoqgOae/UG8Ddsz8YkcaDF5yPZOtPsjDyu6MLZK2akfA739MC0fPpBfXba0gmqrZ5Xz/RJFmjg8va1oT9hlts/UtoaUENn/61lfpoQ7rbmG6Jo7K6XUetF2IO7EgEiZXM=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(46966006)(36840700001)(86362001)(4326008)(82310400003)(53546011)(316002)(70206006)(70586007)(426003)(47076005)(26005)(7416002)(8676002)(2616005)(7636003)(36860700001)(7696005)(8936002)(83380400001)(2906002)(478600001)(36756003)(82740400003)(54906003)(36906005)(110136005)(5660300002)(356005)(16526019)(186003)(336012);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 07:50:07.2438
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a503e581-c6d2-43ae-1716-08d8fa62eda4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3279
+References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-11-xieyongji@bytedance.com>
+ <b3d97ee2-5c8c-2568-20ab-7e9ce51c4e72@redhat.com>
+In-Reply-To: <b3d97ee2-5c8c-2568-20ab-7e9ce51c4e72@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 8 Apr 2021 16:09:17 +0800
+Message-ID: <CACycT3t5NSRdsMVOfeYVKN6hV5-xVAnSKOhqQRTj=oCvc1PRvA@mail.gmail.com>
+Subject: Re: Re: [PATCH v6 10/10] Documentation: Add documentation for VDUSE
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu 08 Apr 2021 at 02:50, Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> On Wed, Apr 7, 2021 at 8:36 AM Vlad Buslov <vladbu@nvidia.com> wrote:
->>
->> Action init code increments reference counter when it changes an action.
->> This is the desired behavior for cls API which needs to obtain action
->> reference for every classifier that points to action. However, act API just
->> needs to change the action and releases the reference before returning.
->> This sequence breaks when the requested action doesn't exist, which causes
->> act API init code to create new action with specified index, but action is
->> still released before returning and is deleted (unless it was referenced
->> concurrently by cls API).
->>
->> Reproduction:
->>
->> $ sudo tc actions ls action gact
->> $ sudo tc actions change action gact drop index 1
->> $ sudo tc actions ls action gact
->>
+On Thu, Apr 8, 2021 at 3:18 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> I didn't know 'change' could actually create an action when
-> it does not exist. So it sets NLM_F_REPLACE, how could it
-> replace a non-existing one? Is this the right behavior or is it too
-> late to change even if it is not?
-
-Origins of setting ovr based on NLM_F_REPLACE are lost since this code
-goes back to Linus' Linux-2.6.12-rc2 commit. Jamal, do you know if this
-is the expected behavior or just something unintended?
-
 >
->> Extend tcf_action_init() to accept 'init_res' array and initialize it with
->> action->ops->init() result. In tcf_action_add() remove pointers to created
->> actions from actions array before passing it to tcf_action_put_many().
+> =E5=9C=A8 2021/3/31 =E4=B8=8B=E5=8D=884:05, Xie Yongji =E5=86=99=E9=81=93=
+:
+> > VDUSE (vDPA Device in Userspace) is a framework to support
+> > implementing software-emulated vDPA devices in userspace. This
+> > document is intended to clarify the VDUSE design and usage.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > ---
+> >   Documentation/userspace-api/index.rst |   1 +
+> >   Documentation/userspace-api/vduse.rst | 212 +++++++++++++++++++++++++=
++++++++++
+> >   2 files changed, 213 insertions(+)
+> >   create mode 100644 Documentation/userspace-api/vduse.rst
+> >
+> > diff --git a/Documentation/userspace-api/index.rst b/Documentation/user=
+space-api/index.rst
+> > index acd2cc2a538d..f63119130898 100644
+> > --- a/Documentation/userspace-api/index.rst
+> > +++ b/Documentation/userspace-api/index.rst
+> > @@ -24,6 +24,7 @@ place where this information is gathered.
+> >      ioctl/index
+> >      iommu
+> >      media/index
+> > +   vduse
+> >
+> >   .. only::  subproject and html
+> >
+> > diff --git a/Documentation/userspace-api/vduse.rst b/Documentation/user=
+space-api/vduse.rst
+> > new file mode 100644
+> > index 000000000000..8c4e2b2df8bb
+> > --- /dev/null
+> > +++ b/Documentation/userspace-api/vduse.rst
+> > @@ -0,0 +1,212 @@
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +VDUSE - "vDPA Device in Userspace"
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +
+> > +vDPA (virtio data path acceleration) device is a device that uses a
+> > +datapath which complies with the virtio specifications with vendor
+> > +specific control path. vDPA devices can be both physically located on
+> > +the hardware or emulated by software. VDUSE is a framework that makes =
+it
+> > +possible to implement software-emulated vDPA devices in userspace.
+> > +
+> > +How VDUSE works
+> > +------------
+> > +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
+> > +the character device (/dev/vduse/control). Then a device file with the
+> > +specified name (/dev/vduse/$NAME) will appear, which can be used to
+> > +implement the userspace vDPA device's control path and data path.
+> > +
+> > +To implement control path, a message-based communication protocol and =
+some
+> > +types of control messages are introduced in the VDUSE framework:
+> > +
+> > +- VDUSE_SET_VQ_ADDR: Set the vring address of virtqueue.
+> > +
+> > +- VDUSE_SET_VQ_NUM: Set the size of virtqueue
+> > +
+> > +- VDUSE_SET_VQ_READY: Set ready status of virtqueue
+> > +
+> > +- VDUSE_GET_VQ_READY: Get ready status of virtqueue
+> > +
+> > +- VDUSE_SET_VQ_STATE: Set the state for virtqueue
+> > +
+> > +- VDUSE_GET_VQ_STATE: Get the state for virtqueue
+> > +
+> > +- VDUSE_SET_FEATURES: Set virtio features supported by the driver
+> > +
+> > +- VDUSE_GET_FEATURES: Get virtio features supported by the device
+> > +
+> > +- VDUSE_SET_STATUS: Set the device status
+> > +
+> > +- VDUSE_GET_STATUS: Get the device status
+> > +
+> > +- VDUSE_SET_CONFIG: Write to device specific configuration space
+> > +
+> > +- VDUSE_GET_CONFIG: Read from device specific configuration space
+> > +
+> > +- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping in=
+ device IOTLB
+> > +
+> > +Those control messages are mostly based on the vdpa_config_ops in
+> > +include/linux/vdpa.h which defines a unified interface to control
+> > +different types of vdpa device. Userspace needs to read()/write()
+> > +on the VDUSE device file to receive/reply those control messages
+> > +from/to VDUSE kernel module as follows:
+> > +
+> > +.. code-block:: c
+> > +
+> > +     static int vduse_message_handler(int dev_fd)
+> > +     {
+> > +             int len;
+> > +             struct vduse_dev_request req;
+> > +             struct vduse_dev_response resp;
+> > +
+> > +             len =3D read(dev_fd, &req, sizeof(req));
+> > +             if (len !=3D sizeof(req))
+> > +                     return -1;
+> > +
+> > +             resp.request_id =3D req.request_id;
+> > +
+> > +             switch (req.type) {
+> > +
+> > +             /* handle different types of message */
+> > +
+> > +             }
+> > +
+> > +             len =3D write(dev_fd, &resp, sizeof(resp));
+> > +             if (len !=3D sizeof(resp))
+> > +                     return -1;
+> > +
+> > +             return 0;
+> > +     }
+> > +
+> > +In the data path, vDPA device's iova regions will be mapped into users=
+pace
+> > +with the help of VDUSE_IOTLB_GET_FD ioctl on the VDUSE device file:
+> > +
+> > +- VDUSE_IOTLB_GET_FD: get the file descriptor to the first overlapped =
+iova region.
+> > +  Userspace can access this iova region by passing fd and correspondin=
+g size, offset,
+> > +  perm to mmap(). For example:
+> > +
+> > +.. code-block:: c
+> > +
+> > +     static int perm_to_prot(uint8_t perm)
+> > +     {
+> > +             int prot =3D 0;
+> > +
+> > +             switch (perm) {
+> > +             case VDUSE_ACCESS_WO:
+> > +                     prot |=3D PROT_WRITE;
+> > +                     break;
+> > +             case VDUSE_ACCESS_RO:
+> > +                     prot |=3D PROT_READ;
+> > +                     break;
+> > +             case VDUSE_ACCESS_RW:
+> > +                     prot |=3D PROT_READ | PROT_WRITE;
+> > +                     break;
+> > +             }
+> > +
+> > +             return prot;
+> > +     }
+> > +
+> > +     static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *len)
+> > +     {
+> > +             int fd;
+> > +             void *addr;
+> > +             size_t size;
+> > +             struct vduse_iotlb_entry entry;
+> > +
+> > +             entry.start =3D iova;
+> > +             entry.last =3D iova + 1;
+> > +             fd =3D ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
+> > +             if (fd < 0)
+> > +                     return NULL;
+> > +
+> > +             size =3D entry.last - entry.start + 1;
+> > +             *len =3D entry.last - iova + 1;
+> > +             addr =3D mmap(0, size, perm_to_prot(entry.perm), MAP_SHAR=
+ED,
+> > +                         fd, entry.offset);
+> > +             close(fd);
+> > +             if (addr =3D=3D MAP_FAILED)
+> > +                     return NULL;
+> > +
+> > +             /* do something to cache this iova region */
+> > +
+> > +             return addr + iova - entry.start;
+> > +     }
+> > +
+> > +Besides, the following ioctls on the VDUSE device file are provided to=
+ support
+> > +interrupt injection and setting up eventfd for virtqueue kicks:
+> > +
+> > +- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd is=
+ used
+> > +  by VDUSE kernel module to notify userspace to consume the vring.
+> > +
+> > +- VDUSE_INJECT_VQ_IRQ: inject an interrupt for specific virtqueue
+> > +
+> > +- VDUSE_INJECT_CONFIG_IRQ: inject a config interrupt
+> > +
+> > +Register VDUSE device on vDPA bus
+> > +---------------------------------
+> > +In order to make the VDUSE device work, administrator needs to use the=
+ management
+> > +API (netlink) to register it on vDPA bus. Some sample codes are show b=
+elow:
+> > +
+> > +.. code-block:: c
+> > +
+> > +     static int netlink_add_vduse(const char *name, int device_id)
+> > +     {
+> > +             struct nl_sock *nlsock;
+> > +             struct nl_msg *msg;
+> > +             int famid;
+> > +
+> > +             nlsock =3D nl_socket_alloc();
+> > +             if (!nlsock)
+> > +                     return -ENOMEM;
+> > +
+> > +             if (genl_connect(nlsock))
+> > +                     goto free_sock;
+> > +
+> > +             famid =3D genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
+> > +             if (famid < 0)
+> > +                     goto close_sock;
+> > +
+> > +             msg =3D nlmsg_alloc();
+> > +             if (!msg)
+> > +                     goto close_sock;
+> > +
+> > +             if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0=
+, 0,
+> > +                 VDPA_CMD_DEV_NEW, 0))
+> > +                     goto nla_put_failure;
+> > +
+> > +             NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
+> > +             NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
+> > +             NLA_PUT_U32(msg, VDPA_ATTR_DEV_ID, device_id);
+> > +
+> > +             if (nl_send_sync(nlsock, msg))
+> > +                     goto close_sock;
+> > +
+> > +             nl_close(nlsock);
+> > +             nl_socket_free(nlsock);
+> > +
+> > +             return 0;
+> > +     nla_put_failure:
+> > +             nlmsg_free(msg);
+> > +     close_sock:
+> > +             nl_close(nlsock);
+> > +     free_sock:
+> > +             nl_socket_free(nlsock);
+> > +             return -1;
+> > +     }
 >
-> In my last comments, I actually meant whether we can avoid this
-> 'init_res[]' array. Since here you want to check whether an action
-> returned by tcf_action_init_1() is a new one or an existing one, how
-> about checking its refcnt? Something like:
 >
->   act = tcf_action_init_1(...);
->   if (IS_ERR(act)) {
->     err = PTR_ERR(act);
->     goto err;
->   }
->   if (refcount_read(&act->tcfa_refcnt) == 1) {
->     // we know this is a newly allocated one
->   }
+> Let's also explain this can be done via vdpa tool in iproute2 as well.
 >
-> Thanks.
 
-Hmm, I don't think this would work in general case. Consider following
-cases:
+Sure.
 
-1. Action existed during init as filter action(refcnt=1), init overwrote
-it setting refcnt=2, by the time we got to checking tcfa_refcnt filter
-has been deleted (refcnt=1) so code will incorrectly assume that it has
-created the action.
-
-2. We need this check in tcf_action_add() to release the refcnt in case
-of overwriting existing actions, but by that time actions are already
-accessible though idr, so even in case when new action has been created
-(refcnt=1) it could already been referenced by concurrently created
-filter (refcnt=2).
-
-Regards,
-Vlad
-
+Thanks,
+Yongji
