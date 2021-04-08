@@ -2,153 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6D0358CCE
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 20:39:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63822358CD1
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 20:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232929AbhDHSjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 14:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
+        id S232827AbhDHSk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 14:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232862AbhDHSjF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 14:39:05 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ABEEC061760;
-        Thu,  8 Apr 2021 11:38:54 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id m3so3625556edv.5;
-        Thu, 08 Apr 2021 11:38:53 -0700 (PDT)
+        with ESMTP id S231676AbhDHSk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 14:40:27 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5681AC061760;
+        Thu,  8 Apr 2021 11:40:16 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id j7so1511483plx.2;
+        Thu, 08 Apr 2021 11:40:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=czCdUgUKYE195RMgtc10Qp0uf7frLXf3Xd3lvhOg2uw=;
-        b=KwEKBSAKM6HHd76b94vG7Pg/JzJpmOum0Kfl+EnEoRKAf9TqBTQTfinSbSUtOuzLqD
-         ZTsTJObuQnucCSiSawb5dE31KIQdWlTmkVSUmI6ZKopfRtghd5r8csk35X3Z23iS0eFR
-         7JPIP8doUDS2ox+ilfYQng9hK/bS0w1Ss9s7uNIowNzQgTW5M9vGIiJm0mSHekJzTIpb
-         QamCt7RXv8yNwhcHj8ZnfdJDv9dW8v3pGvu+Q0/wS33+weoFWcMDA3HERJ6GEGO+L2DT
-         CmJxKzveb5qoJvbKNpVA3mZZD0v7ygPR7zt6W7c9RldsU0Zbfwlmw55hDB7QGyYz7SuV
-         kqpw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+czUxKMob0q1NuQM/0W/hXG96+CBBE2T8+lqVvX/Kdg=;
+        b=UNXS02lIOu7nQkfGca0Clv3eY84A93/TxCN6k8WDIvU1bfwJgTJvCMbGB9peYVnQ6z
+         VM2IwhtCTYx4poWPgdjgplKkZPxAyvRL4SW5acs+o77/kzU3mwzAUEIqFM9FYQYckR0q
+         v0C7yybhR27xo3AYvXi2ZaftZSu/RztBZ2ulSwLHsbtfFzUNOxA3hnwIoH0ZoWdEJWSY
+         Dm8kcOfivcocM8UGQgp/7FliTxlc3DfoxlxhHWbObVUtG0q78fTU9LX9YNC+SeRwTYd1
+         bMptPKkbl2kUCp8pQW4SCOs/8E6HmBHPn4Ygn38c3yUII/qyjbJbOwkHFnWuEcV7ab1K
+         CDGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=czCdUgUKYE195RMgtc10Qp0uf7frLXf3Xd3lvhOg2uw=;
-        b=WJDBBesVFWyluvj3CNwj3jNh2MZIeDTf5B6OOXWe5IvY6pT7V6s2OSnEJNzvheg9x0
-         9o7SpY7D4j5E2qFoEqtwvCaYTzo+AtAm0aYudHfg4NGFfsG2U+0bXJXoXved8Y8coA8b
-         5HN9K6zgvjok4IXWWy1Z4GepZ6Yg9JCVoZE10zBppPqxfjuH9RrHMqG6fsCN+pZTyB3u
-         ojG463zwtVofDGBopXQ3lyBmz9TYyEVqtRHxBqXxFZQLgKgVuRqN2a9Qiq/OUVSCOUB7
-         XMB8BVPQNFMuN8/Oq/+AWogaFyJTzbSZN63Uf0fUMoE+IysgEcWkRYHU9vP05cwaAFO4
-         PnqA==
-X-Gm-Message-State: AOAM531QK+bShpDUNhBSRBCEyRgQoru4DnETyGhNyVKppTSwVQQSHCdM
-        0irfrvyQRTODA25OZYyU+ca2KzfBzEU=
-X-Google-Smtp-Source: ABdhPJxuOj4EnYJs8L3ScOS8DLZbtsR14mAVrT8Uz3NN1XObVjpiUYlbtv0ec6xsFUF81VWl97ugKQ==
-X-Received: by 2002:a05:6402:1bdc:: with SMTP id ch28mr13203322edb.202.1617907132765;
-        Thu, 08 Apr 2021 11:38:52 -0700 (PDT)
-Received: from localhost.localdomain (p200300f1370e7400428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:370e:7400:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id yh6sm92125ejb.37.2021.04.08.11.38.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+czUxKMob0q1NuQM/0W/hXG96+CBBE2T8+lqVvX/Kdg=;
+        b=SnW2b6oISe7ISzna4myi+QaKW4ikQHAuXO9m8AMr0KdHWLrJ2RfSXxr1yS3NVS96Pn
+         bG4P2D0n8yIISauzb7nSbmSdXqaYLgzvCUeEvhyqOxRn05VvAJnXkcaNKWNTatIVqPBp
+         /dwZYPknwU/6xtRktwFTtEZuGQ6MQbbhnxnK3JnHwKhNwbiAuDLxB19DDXX0lGb9Hz41
+         lp6357LGeY4OUzh6lE7yfl+OJq3j71frIXOtSMU08XyB2v93m3fh4E9HPPVwrG8HJINA
+         o1VbeaQ6PILs1UX/PZUxXa+Xuc3PIFlww3/qQXdvJV9s0WBVvhH73K2kB9YOhh0q5s9T
+         96YA==
+X-Gm-Message-State: AOAM532d2oSMLGTnwHlPLKn3BmLbEpzf7tf2sahT5Zfq15rUj9xjF3xe
+        du9UWAlE0WIqnT4dT39IOGQ=
+X-Google-Smtp-Source: ABdhPJzwmJduHOAsbSzv4XfI9AUWbvTaD3Yg04nS07A2BivUOK7IkPmwadDWO0yIKtWikDwjjgF1NA==
+X-Received: by 2002:a17:90b:1c0e:: with SMTP id oc14mr9730255pjb.188.1617907215863;
+        Thu, 08 Apr 2021 11:40:15 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id w134sm175649pfd.173.2021.04.08.11.40.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Apr 2021 11:38:52 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     hauke@hauke-m.de, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        stable@vger.kernel.org
-Subject: [PATCH net v2 2/2] net: dsa: lantiq_gswip: Configure all remaining GSWIP_MII_CFG bits
-Date:   Thu,  8 Apr 2021 20:38:28 +0200
-Message-Id: <20210408183828.1907807-3-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210408183828.1907807-1-martin.blumenstingl@googlemail.com>
-References: <20210408183828.1907807-1-martin.blumenstingl@googlemail.com>
+        Thu, 08 Apr 2021 11:40:15 -0700 (PDT)
+Date:   Thu, 8 Apr 2021 21:40:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com
+Subject: Re: [PATCH v8 bpf-next 05/14] net: mvneta: add multi buffer support
+ to XDP_TX
+Message-ID: <20210408184002.k2om3nrittvh7z45@skbuf>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+ <9cd3048c42f686bd0f84378b7212d5e9f4a97abd.1617885385.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9cd3048c42f686bd0f84378b7212d5e9f4a97abd.1617885385.git.lorenzo@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are a few more bits in the GSWIP_MII_CFG register for which we
-did rely on the boot-loader (or the hardware defaults) to set them up
-properly.
+On Thu, Apr 08, 2021 at 02:50:57PM +0200, Lorenzo Bianconi wrote:
+> Introduce the capability to map non-linear xdp buffer running
+> mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 94 +++++++++++++++++----------
+>  1 file changed, 58 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 94e29cce693a..e95d8df0fcdb 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -1860,8 +1860,8 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
+>  			bytes_compl += buf->skb->len;
+>  			pkts_compl++;
+>  			dev_kfree_skb_any(buf->skb);
+> -		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
+> -			   buf->type == MVNETA_TYPE_XDP_NDO) {
+> +		} else if ((buf->type == MVNETA_TYPE_XDP_TX ||
+> +			    buf->type == MVNETA_TYPE_XDP_NDO) && buf->xdpf) {
+>  			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
+>  				xdp_return_frame_rx_napi(buf->xdpf);
+>  			else
+> @@ -2057,45 +2057,67 @@ mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  
+>  static int
+>  mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
+> -			struct xdp_frame *xdpf, bool dma_map)
+> +			struct xdp_frame *xdpf, int *nxmit_byte, bool dma_map)
+>  {
+> -	struct mvneta_tx_desc *tx_desc;
+> -	struct mvneta_tx_buf *buf;
+> -	dma_addr_t dma_addr;
+> +	struct mvneta_tx_desc *tx_desc = NULL;
+> +	struct xdp_shared_info *xdp_sinfo;
+> +	struct page *page;
+> +	int i, num_frames;
+> +
+> +	xdp_sinfo = xdp_get_shared_info_from_frame(xdpf);
+> +	num_frames = xdpf->mb ? xdp_sinfo->nr_frags + 1 : 1;
+>  
+> -	if (txq->count >= txq->tx_stop_threshold)
+> +	if (txq->count + num_frames >= txq->size)
+>  		return MVNETA_XDP_DROPPED;
+>  
+> -	tx_desc = mvneta_txq_next_desc_get(txq);
+> +	for (i = 0; i < num_frames; i++) {
 
-For some external RMII PHYs we need to select the GSWIP_MII_CFG_RMII_CLK
-bit and also we should un-set it for non-RMII PHYs. The
-GSWIP_MII_CFG_RMII_CLK bit is ignored for other PHY connection modes.
+I get the feeling this is more like num_bufs than num_frames.
 
-The GSWIP IP also supports in-band auto-negotiation for RGMII PHYs when
-the GSWIP_MII_CFG_RGMII_IBS bit is set. Clear this bit always as there's
-no known hardware which uses this (so it is not tested yet).
+> +		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
+> +		skb_frag_t *frag = i ? &xdp_sinfo->frags[i - 1] : NULL;
+> +		int len = i ? xdp_get_frag_size(frag) : xdpf->len;
+> +		dma_addr_t dma_addr;
+>  
+> -	buf = &txq->buf[txq->txq_put_index];
+> -	if (dma_map) {
+> -		/* ndo_xdp_xmit */
+> -		dma_addr = dma_map_single(pp->dev->dev.parent, xdpf->data,
+> -					  xdpf->len, DMA_TO_DEVICE);
+> -		if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
+> -			mvneta_txq_desc_put(txq);
+> -			return MVNETA_XDP_DROPPED;
+> +		tx_desc = mvneta_txq_next_desc_get(txq);
+> +		if (dma_map) {
+> +			/* ndo_xdp_xmit */
+> +			void *data;
+> +
+> +			data = frag ? xdp_get_frag_address(frag) : xdpf->data;
+> +			dma_addr = dma_map_single(pp->dev->dev.parent, data,
+> +						  len, DMA_TO_DEVICE);
+> +			if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
+> +				for (; i >= 0; i--)
+> +					mvneta_txq_desc_put(txq);
 
-Clear the xMII isolation bit when set at initialization time if it was
-previously set by the bootloader. Not doing so could lead to no traffic
-(neither RX nor TX) on a port with this bit set.
+Don't you need to unmap the previous buffers too?
 
-While here, also add the GSWIP_MII_CFG_RESET bit. We don't need to
-manage it because this bit is self-clearning when set. We still add it
-here to get a better overview of the GSWIP_MII_CFG register.
-
-Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-Cc: stable@vger.kernel.org
-Suggested-by: Hauke Mehrtens <hauke@hauke-m.de>
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/dsa/lantiq_gswip.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 126d4ea868ba..bf5c62e5c0b0 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -93,8 +93,12 @@
- 
- /* GSWIP MII Registers */
- #define GSWIP_MII_CFGp(p)		(0x2 * (p))
-+#define  GSWIP_MII_CFG_RESET		BIT(15)
- #define  GSWIP_MII_CFG_EN		BIT(14)
-+#define  GSWIP_MII_CFG_ISOLATE		BIT(13)
- #define  GSWIP_MII_CFG_LDCLKDIS		BIT(12)
-+#define  GSWIP_MII_CFG_RGMII_IBS	BIT(8)
-+#define  GSWIP_MII_CFG_RMII_CLK		BIT(7)
- #define  GSWIP_MII_CFG_MODE_MIIP	0x0
- #define  GSWIP_MII_CFG_MODE_MIIM	0x1
- #define  GSWIP_MII_CFG_MODE_RMIIP	0x2
-@@ -821,9 +825,11 @@ static int gswip_setup(struct dsa_switch *ds)
- 	/* Configure the MDIO Clock 2.5 MHz */
- 	gswip_mdio_mask(priv, 0xff, 0x09, GSWIP_MDIO_MDC_CFG1);
- 
--	/* Disable the xMII link */
-+	/* Disable the xMII interface and clear it's isolation bit */
- 	for (i = 0; i < priv->hw_info->max_ports; i++)
--		gswip_mii_mask_cfg(priv, GSWIP_MII_CFG_EN, 0, i);
-+		gswip_mii_mask_cfg(priv,
-+				   GSWIP_MII_CFG_EN | GSWIP_MII_CFG_ISOLATE,
-+				   0, i);
- 
- 	/* enable special tag insertion on cpu port */
- 	gswip_switch_mask(priv, 0, GSWIP_FDMA_PCTRL_STEN,
-@@ -1597,6 +1603,9 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
- 		miicfg |= GSWIP_MII_CFG_MODE_RMIIM;
-+
-+		/* Configure the RMII clock as output: */
-+		miicfg |= GSWIP_MII_CFG_RMII_CLK;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
-@@ -1609,7 +1618,11 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
- 			"Unsupported interface: %d\n", state->interface);
- 		return;
- 	}
--	gswip_mii_mask_cfg(priv, GSWIP_MII_CFG_MODE_MASK, miicfg, port);
-+
-+	gswip_mii_mask_cfg(priv,
-+			   GSWIP_MII_CFG_MODE_MASK | GSWIP_MII_CFG_RMII_CLK |
-+			   GSWIP_MII_CFG_RGMII_IBS | GSWIP_MII_CFG_LDCLKDIS,
-+			   miicfg, port);
- 
- 	switch (state->interface) {
- 	case PHY_INTERFACE_MODE_RGMII_ID:
--- 
-2.31.1
-
+> +				return MVNETA_XDP_DROPPED;
+> +			}
+> +			buf->type = MVNETA_TYPE_XDP_NDO;
+> +		} else {
+> +			page = frag ? xdp_get_frag_page(frag)
+> +				    : virt_to_page(xdpf->data);
+> +			dma_addr = page_pool_get_dma_addr(page);
+> +			if (frag)
+> +				dma_addr += xdp_get_frag_offset(frag);
+> +			else
+> +				dma_addr += sizeof(*xdpf) + xdpf->headroom;
+> +			dma_sync_single_for_device(pp->dev->dev.parent,
+> +						   dma_addr, len,
+> +						   DMA_BIDIRECTIONAL);
+> +			buf->type = MVNETA_TYPE_XDP_TX;
+>  		}
+> -		buf->type = MVNETA_TYPE_XDP_NDO;
+> -	} else {
+> -		struct page *page = virt_to_page(xdpf->data);
+> +		buf->xdpf = i ? NULL : xdpf;
+>  
+> -		dma_addr = page_pool_get_dma_addr(page) +
+> -			   sizeof(*xdpf) + xdpf->headroom;
+> -		dma_sync_single_for_device(pp->dev->dev.parent, dma_addr,
+> -					   xdpf->len, DMA_BIDIRECTIONAL);
+> -		buf->type = MVNETA_TYPE_XDP_TX;
+> +		tx_desc->command = !i ? MVNETA_TXD_F_DESC : 0;
+> +		tx_desc->buf_phys_addr = dma_addr;
+> +		tx_desc->data_size = len;
+> +		*nxmit_byte += len;
+> +
+> +		mvneta_txq_inc_put(txq);
+>  	}
+> -	buf->xdpf = xdpf;
+>  
+> -	tx_desc->command = MVNETA_TXD_FLZ_DESC;
+> -	tx_desc->buf_phys_addr = dma_addr;
+> -	tx_desc->data_size = xdpf->len;
+> +	/*last descriptor */
+> +	tx_desc->command |= MVNETA_TXD_L_DESC | MVNETA_TXD_Z_PAD;
+>  
+> -	mvneta_txq_inc_put(txq);
+> -	txq->pending++;
+> -	txq->count++;
+> +	txq->pending += num_frames;
+> +	txq->count += num_frames;
+>  
+>  	return MVNETA_XDP_TX;
+>  }
+> @@ -2106,8 +2128,8 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
+>  	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+>  	struct mvneta_tx_queue *txq;
+>  	struct netdev_queue *nq;
+> +	int cpu, nxmit_byte = 0;
+>  	struct xdp_frame *xdpf;
+> -	int cpu;
+>  	u32 ret;
+>  
+>  	xdpf = xdp_convert_buff_to_frame(xdp);
+> @@ -2119,10 +2141,10 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
+>  	nq = netdev_get_tx_queue(pp->dev, txq->id);
+>  
+>  	__netif_tx_lock(nq, cpu);
+> -	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, false);
+> +	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, &nxmit_byte, false);
+>  	if (ret == MVNETA_XDP_TX) {
+>  		u64_stats_update_begin(&stats->syncp);
+> -		stats->es.ps.tx_bytes += xdpf->len;
+> +		stats->es.ps.tx_bytes += nxmit_byte;
+>  		stats->es.ps.tx_packets++;
+>  		stats->es.ps.xdp_tx++;
+>  		u64_stats_update_end(&stats->syncp);
+> @@ -2161,11 +2183,11 @@ mvneta_xdp_xmit(struct net_device *dev, int num_frame,
+>  
+>  	__netif_tx_lock(nq, cpu);
+>  	for (i = 0; i < num_frame; i++) {
+> -		ret = mvneta_xdp_submit_frame(pp, txq, frames[i], true);
+> +		ret = mvneta_xdp_submit_frame(pp, txq, frames[i], &nxmit_byte,
+> +					      true);
+>  		if (ret != MVNETA_XDP_TX)
+>  			break;
+>  
+> -		nxmit_byte += frames[i]->len;
+>  		nxmit++;
+>  	}
+>  
+> -- 
+> 2.30.2
+> 
