@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 392D335895C
+	by mail.lfdr.de (Postfix) with ESMTP id 85A4135895D
 	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 18:12:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbhDHQMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 12:12:07 -0400
+        id S232279AbhDHQMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 12:12:10 -0400
 Received: from mga04.intel.com ([192.55.52.120]:26214 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232053AbhDHQLx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 12:11:53 -0400
-IronPort-SDR: 6cW/mmxE4O5OONIxfOY0GNykuL3VRTEv6xA15Yz9BZGCvYQ2Bif+U1e0t1ryMuRqnDNPiR5Hvc
- XL+WVJoLFMnQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9948"; a="191424030"
+        id S232118AbhDHQLz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 12:11:55 -0400
+IronPort-SDR: pvBTnrjGmrdM7jAlyHnb33brdGZh/jJEH1/wg31C+aUt1gQ/iLZxcyBTMDmCb05zchLt4K6V42
+ upMfbCHzWPiA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9948"; a="191424034"
 X-IronPort-AV: E=Sophos;i="5.82,206,1613462400"; 
-   d="scan'208";a="191424030"
+   d="scan'208";a="191424034"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2021 09:11:42 -0700
-IronPort-SDR: ugDJJo4pzLgEl9o7OiTFZFxS99M1h3n8yaOoA6Gl27G6cYXAtf9EVyGB83EooT04AaD3xqC+OD
- wqVMnZ2iHoEQ==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2021 09:11:43 -0700
+IronPort-SDR: hjWRWvToMZ5DG2CO2Ej8cmoo8k4CZpPaujRjxDv3PxhtHYuGcSv1OpvlnTYZJdjySIiWfbqijT
+ Jzp+Ky8uatjQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,206,1613462400"; 
-   d="scan'208";a="415841444"
+   d="scan'208";a="415841450"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga008.fm.intel.com with ESMTP; 08 Apr 2021 09:11:42 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -31,9 +31,9 @@ Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         netdev@vger.kernel.org, sassmann@redhat.com,
         anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 12/15] ice: Use local variable instead of pointer derefs
-Date:   Thu,  8 Apr 2021 09:13:18 -0700
-Message-Id: <20210408161321.3218024-13-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 13/15] ice: Remove rx_gro_dropped stat
+Date:   Thu,  8 Apr 2021 09:13:19 -0700
+Message-Id: <20210408161321.3218024-14-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210408161321.3218024-1-anthony.l.nguyen@intel.com>
 References: <20210408161321.3218024-1-anthony.l.nguyen@intel.com>
@@ -45,98 +45,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Replace multiple instances of vsi->back and pi->phy with equivalent
-local variables
+Tracking of the rx_gro_dropped statistic was removed in
+commit f73fc40327c0 ("ice: drop dead code in ice_receive_skb()").
+Remove the associated variables and its reporting to ethtool stats.
 
 Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 27 ++++++++++-------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h         | 1 -
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 1 -
+ drivers/net/ethernet/intel/ice/ice_main.c    | 4 +---
+ drivers/net/ethernet/intel/ice/ice_txrx.h    | 1 -
+ 4 files changed, 1 insertion(+), 6 deletions(-)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 02badaaf818c..721afa0f0a88 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -265,7 +265,6 @@ struct ice_vsi {
+ 	u32 tx_busy;
+ 	u32 rx_buf_failed;
+ 	u32 rx_page_failed;
+-	u32 rx_gro_dropped;
+ 	u16 num_q_vectors;
+ 	u16 base_vector;		/* IRQ base for OS reserved vectors */
+ 	enum ice_vsi_type type;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 4ca8d5880cfc..51d3a929ecfd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -60,7 +60,6 @@ static const struct ice_stats ice_gstrings_vsi_stats[] = {
+ 	ICE_VSI_STAT("rx_unknown_protocol", eth_stats.rx_unknown_protocol),
+ 	ICE_VSI_STAT("rx_alloc_fail", rx_buf_failed),
+ 	ICE_VSI_STAT("rx_pg_alloc_fail", rx_page_failed),
+-	ICE_VSI_STAT("rx_gro_dropped", rx_gro_dropped),
+ 	ICE_VSI_STAT("tx_errors", eth_stats.tx_errors),
+ 	ICE_VSI_STAT("tx_linearize", tx_linearize),
+ 	ICE_VSI_STAT("tx_busy", tx_busy),
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index c81eb27e83a6..73dd272acbf9 100644
+index 73dd272acbf9..3c73ee4a6c0c 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -1857,27 +1857,24 @@ static int ice_init_phy_user_cfg(struct ice_port_info *pi)
- static int ice_configure_phy(struct ice_vsi *vsi)
- {
- 	struct device *dev = ice_pf_to_dev(vsi->back);
-+	struct ice_port_info *pi = vsi->port_info;
- 	struct ice_aqc_get_phy_caps_data *pcaps;
- 	struct ice_aqc_set_phy_cfg_data *cfg;
--	struct ice_port_info *pi;
-+	struct ice_phy_info *phy = &pi->phy;
-+	struct ice_pf *pf = vsi->back;
- 	enum ice_status status;
- 	int err = 0;
+@@ -5354,7 +5354,6 @@ static void ice_update_vsi_ring_stats(struct ice_vsi *vsi)
+ 	vsi->tx_linearize = 0;
+ 	vsi->rx_buf_failed = 0;
+ 	vsi->rx_page_failed = 0;
+-	vsi->rx_gro_dropped = 0;
  
--	pi = vsi->port_info;
--	if (!pi)
--		return -EINVAL;
--
- 	/* Ensure we have media as we cannot configure a medialess port */
--	if (!(pi->phy.link_info.link_info & ICE_AQ_MEDIA_AVAILABLE))
-+	if (!(phy->link_info.link_info & ICE_AQ_MEDIA_AVAILABLE))
- 		return -EPERM;
+ 	rcu_read_lock();
  
- 	ice_print_topo_conflict(vsi);
- 
--	if (vsi->port_info->phy.link_info.topo_media_conflict ==
--	    ICE_AQ_LINK_TOPO_UNSUPP_MEDIA)
-+	if (phy->link_info.topo_media_conflict == ICE_AQ_LINK_TOPO_UNSUPP_MEDIA)
- 		return -EPERM;
- 
--	if (test_bit(ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA, vsi->back->flags))
-+	if (test_bit(ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA, pf->flags))
- 		return ice_force_phys_link_state(vsi, true);
- 
- 	pcaps = kzalloc(sizeof(*pcaps), GFP_KERNEL);
-@@ -1898,7 +1895,7 @@ static int ice_configure_phy(struct ice_vsi *vsi)
- 	 * there's nothing to do
- 	 */
- 	if (pcaps->caps & ICE_AQC_PHY_EN_LINK &&
--	    ice_phy_caps_equals_cfg(pcaps, &pi->phy.curr_user_phy_cfg))
-+	    ice_phy_caps_equals_cfg(pcaps, &phy->curr_user_phy_cfg))
- 		goto done;
- 
- 	/* Use PHY topology as baseline for configuration */
-@@ -1929,8 +1926,8 @@ static int ice_configure_phy(struct ice_vsi *vsi)
- 	 */
- 	if (test_and_clear_bit(__ICE_LINK_DEFAULT_OVERRIDE_PENDING,
- 			       vsi->back->state)) {
--		cfg->phy_type_low = pi->phy.curr_user_phy_cfg.phy_type_low;
--		cfg->phy_type_high = pi->phy.curr_user_phy_cfg.phy_type_high;
-+		cfg->phy_type_low = phy->curr_user_phy_cfg.phy_type_low;
-+		cfg->phy_type_high = phy->curr_user_phy_cfg.phy_type_high;
- 	} else {
- 		u64 phy_low = 0, phy_high = 0;
- 
-@@ -1948,7 +1945,7 @@ static int ice_configure_phy(struct ice_vsi *vsi)
+@@ -5369,7 +5368,6 @@ static void ice_update_vsi_ring_stats(struct ice_vsi *vsi)
+ 		vsi_stats->rx_bytes += bytes;
+ 		vsi->rx_buf_failed += ring->rx_stats.alloc_buf_failed;
+ 		vsi->rx_page_failed += ring->rx_stats.alloc_page_failed;
+-		vsi->rx_gro_dropped += ring->rx_stats.gro_dropped;
  	}
  
- 	/* FEC */
--	ice_cfg_phy_fec(pi, cfg, pi->phy.curr_user_fec_req);
-+	ice_cfg_phy_fec(pi, cfg, phy->curr_user_fec_req);
+ 	/* update XDP Tx rings counters */
+@@ -5401,7 +5399,7 @@ void ice_update_vsi_stats(struct ice_vsi *vsi)
+ 	ice_update_eth_stats(vsi);
  
- 	/* Can't provide what was requested; use PHY capabilities */
- 	if (cfg->link_fec_opt !=
-@@ -1960,12 +1957,12 @@ static int ice_configure_phy(struct ice_vsi *vsi)
- 	/* Flow Control - always supported; no need to check against
- 	 * capabilities
- 	 */
--	ice_cfg_phy_fc(pi, cfg, pi->phy.curr_user_fc_req);
-+	ice_cfg_phy_fc(pi, cfg, phy->curr_user_fc_req);
+ 	cur_ns->tx_errors = cur_es->tx_errors;
+-	cur_ns->rx_dropped = cur_es->rx_discards + vsi->rx_gro_dropped;
++	cur_ns->rx_dropped = cur_es->rx_discards;
+ 	cur_ns->tx_dropped = cur_es->tx_discards;
+ 	cur_ns->multicast = cur_es->rx_multicast;
  
- 	/* Enable link and link update */
- 	cfg->caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT | ICE_AQ_PHY_ENA_LINK;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+index ffe0d271dec7..701552d88bea 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.h
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+@@ -192,7 +192,6 @@ struct ice_rxq_stats {
+ 	u64 non_eop_descs;
+ 	u64 alloc_page_failed;
+ 	u64 alloc_buf_failed;
+-	u64 gro_dropped; /* GRO returned dropped */
+ };
  
--	status = ice_aq_set_phy_cfg(&vsi->back->hw, pi, cfg, NULL);
-+	status = ice_aq_set_phy_cfg(&pf->hw, pi, cfg, NULL);
- 	if (status) {
- 		dev_err(dev, "Failed to set phy config, VSI %d error %s\n",
- 			vsi->vsi_num, ice_stat_str(status));
+ enum ice_ring_state_t {
 -- 
 2.26.2
 
