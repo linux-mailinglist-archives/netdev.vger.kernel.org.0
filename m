@@ -2,118 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E5B358D4F
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 21:13:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECBDD358D57
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 21:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233020AbhDHTN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 15:13:29 -0400
-Received: from smtp21.cstnet.cn ([159.226.251.21]:37334 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232804AbhDHTN2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 15:13:28 -0400
-Received: from localhost.localdomain (unknown [124.16.141.242])
-        by APP-01 (Coremail) with SMTP id qwCowABnf7egVW9gQsQWAA--.23405S2;
-        Fri, 09 Apr 2021 03:12:41 +0800 (CST)
-From:   Jianmin Wang <jianmin@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     davem@davemloft.net, dzickus@redhat.com,
-        herbert@gondor.apana.org.au, jianmin@iscas.ac.cn,
-        linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        omosnace@redhat.com, smueller@chronox.de, stable@vger.kernel.org,
-        steffen.klassert@secunet.com
-Subject: Re: Re: [PATCH] backports: crypto user - make NETLINK_CRYPTO work 
-Date:   Thu,  8 Apr 2021 19:11:48 +0000
-Message-Id: <20210408191148.51259-1-jianmin@iscas.ac.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <YGs3Voq0codXCHbA@kroah.com>
-References: <YGs3Voq0codXCHbA@kroah.com>
+        id S232457AbhDHTQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 15:16:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231451AbhDHTQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 15:16:13 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF00C061760;
+        Thu,  8 Apr 2021 12:16:02 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id w10so2091200pgh.5;
+        Thu, 08 Apr 2021 12:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5Epf1D6+7n7NuoJHYOA6+19Kynu8l8Y+5ZIlz5BptAo=;
+        b=BFhTOc5plf1L1j7y+GLKg/l9QZQaSZIKkc4aPTFmXxyXEtu/K47QqM8w85/uE+lUWG
+         reYx5ZZegb8AX/LPcWophMYpv9v/P2NhIaJhmubXxznWkhg3T04KslwvR7P3oxhsU6AP
+         IVab9VpcG3rm0GwH/UetoE005jnD/G5xB8csHt90lbZSuYi/fN41OHvuDJqCj5+Z2KH8
+         tE2DJmSJ6uywAK2m6JgAzU61z/A7/5812GJTRSy7zf0C6ROIPbo8POp4ZsrTjkDcv9wQ
+         njxAatNGvVwf28slSNO8pNYOTLc2T+CmnoQjsFUW8jmIbE8nj2yOGayKkHQ6/3GX3Jlm
+         7zXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5Epf1D6+7n7NuoJHYOA6+19Kynu8l8Y+5ZIlz5BptAo=;
+        b=M6TeKZ2CK2j0XYFO++9YFNjgmsvC8r1Y6I6ZBd8geEOdN2lopW/v8nLRtrgDU1uFE6
+         P1+PSKcaXwaq6K6Ka05BcqQ9FmnNEllaSGF6TXGbBH7jPYEMWYDRk4A8Y6/5Obxj/1zU
+         dAZN1J9h6Pred2ISSPS/NcW5UWOd/Ok3btFlOLO86+eJQ79okios5hKAZBmIfH8VjWtT
+         b0+aHBT4TTWdEBXQx5bI4qVnC8AZmooZXklOgr7eGBk3ngEFrpRpTqoYDhuxSSSxS6SC
+         k4hQvOOy1UNuMQbhbAy9TazN3FjBp2cBgbiDOEcVcpDKk8KkUwdw4rIlXh+aHP5+pUFQ
+         10rw==
+X-Gm-Message-State: AOAM531UIx10/LeGhcY0X9wAhkQCmsxkEEcLZo3Cafk55z4EaJ/xcq4+
+        NA8KkkqVW0D9ndP3hQn6XHs=
+X-Google-Smtp-Source: ABdhPJzrh0S8dEaRLQx5/KiHrTR9HWJp3yOf7gDCPy4TDZDLW7eGoFoY7tlkDPRgX57fyFCRTBZcEg==
+X-Received: by 2002:a62:7f4a:0:b029:23f:3271:60fe with SMTP id a71-20020a627f4a0000b029023f327160femr9179415pfd.10.1617909361778;
+        Thu, 08 Apr 2021 12:16:01 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id h19sm215712pfc.172.2021.04.08.12.15.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Apr 2021 12:16:00 -0700 (PDT)
+Date:   Thu, 8 Apr 2021 22:15:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com
+Subject: Re: [PATCH v8 bpf-next 08/14] bpf: add multi-buff support to the
+ bpf_xdp_adjust_tail() API
+Message-ID: <20210408191547.zlriol6gm2tdhhxi@skbuf>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+ <427bd05d147a247fc30fd438be94b5d51845b05f.1617885385.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowABnf7egVW9gQsQWAA--.23405S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxXFyDCrWxZr1kCF4DXFykAFb_yoW5AF4xpF
-        yfKr4ayF45J3yxA3yxZr1Fq3sYg3yftr15G397W3y8ZF4UtryFvrZFvw15uryUGrs5WayY
-        yFWUKw1fWw4DArDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
-        4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_WwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF
-        0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxh
-        VjvjDU0xZFpf9x0JUfnYwUUUUU=
-X-Originating-IP: [124.16.141.242]
-X-CM-SenderInfo: xmld0z1lq6x2xfdvhtffof0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <427bd05d147a247fc30fd438be94b5d51845b05f.1617885385.git.lorenzo@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 05, 2021 at 16:14 UTC, Greg KH wrote:
-> On Mon, Apr 05, 2021 at 01:55:15PM +0000, Jianmin Wang wrote:
-> > There is same problem found in linux 4.19.y as upstream commit. The 
-> > changes of crypto_user_* and cryptouser.h files from upstream patch are merged into 
-> > crypto/crypto_user.c for backporting.
-> > 
-> > Upstream commit:
-> >     commit 91b05a7e7d8033a90a64f5fc0e3808db423e420a
-> >     Author: Ondrej Mosnacek <omosnace@redhat.com>
-> >     Date:   Tue,  9 Jul 2019 13:11:24 +0200
-> > 
-> >     Currently, NETLINK_CRYPTO works only in the init network namespace. It
-> >     doesn't make much sense to cut it out of the other network namespaces,
-> >     so do the minor plumbing work necessary to make it work in any network
-> >     namespace. Code inspired by net/core/sock_diag.c.
-> > 
-> >     Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-> >     Signed-off-by: default avatarHerbert Xu <herbert@gondor.apana.org.au>
-> > 
-> > Signed-off-by: Jianmin Wang <jianmin@iscas.ac.cn>
-> > ---
-> >  crypto/crypto_user.c        | 37 +++++++++++++++++++++++++------------
-> >  include/net/net_namespace.h |  3 +++
-> >  2 files changed, 28 insertions(+), 12 deletions(-)
+On Thu, Apr 08, 2021 at 02:51:00PM +0200, Lorenzo Bianconi wrote:
+> From: Eelco Chaudron <echaudro@redhat.com>
 > 
-> How does this change fit with the stable kernel rules?  It looks to be a
-> new feature, if you need this, why not just use a newer kernel version?
-> What is preventing you from doing that?
+> This change adds support for tail growing and shrinking for XDP multi-buff.
 > 
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/xdp.h |  5 ++++
+>  net/core/filter.c | 63 +++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 68 insertions(+)
+> 
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index c8eb7cf4ebed..55751cf2badf 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -159,6 +159,11 @@ static inline void xdp_set_frag_size(skb_frag_t *frag, u32 size)
+>  	frag->bv_len = size;
+>  }
+>  
+> +static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *frag)
+> +{
+> +	return PAGE_SIZE - xdp_get_frag_size(frag) - xdp_get_frag_offset(frag);
+> +}
+> +
 
-This problem was found when we deployed new services on our container cluster, 
-while the new services need to invoke libkcapi in the container environment.
+This is an interesting requirement. Must an XDP frame fragment be a full
+PAGE_SIZE? enetc does not fulfill it, and I suspect that none of the
+drivers with a "shared page" memory model will.
 
-We have verified that the problem doesn't exist on newer kernel version. 
-However, due to many services and the cluster running on many server machines 
-whose host os are long-term linux distribution with linux 4.19 kernel, it will 
-cost too much to migrate them to newer os with newer kernel version. This is 
-why we need to fix the problem on linux 4.19.
+>  struct xdp_frame {
+>  	void *data;
+>  	u16 len;
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index cae56d08a670..c4eb1392f88e 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3855,11 +3855,74 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+>  	.arg2_type	= ARG_ANYTHING,
+>  };
+>  
+> +static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
+> +{
+> +	struct xdp_shared_info *xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
+> +
+> +	if (unlikely(xdp_sinfo->nr_frags == 0))
+> +		return -EINVAL;
 
-Only when we run docker with param --net=host, the libkcapi can be invoked 
-properly. Otherwise, almost all test cases in smuellerDD/libkcapi [1] will 
-failed with same error as below:
+This function is called if xdp->mb is true, but we check whether
+nr_frags != 0? Is this condition possible?
 
-    libkcapi - Error: Netlink error: sendmsg failed
-    libkcapi - Error: Netlink error: sendmsg failed
-    libkcapi - Error: NETLINK_CRYPTO: cannot obtain cipher information for 
-      hmac(sha1) (is required crypto_user.c patch missing? see documentation)
+> +	if (offset >= 0) {
+> +		skb_frag_t *frag = &xdp_sinfo->frags[xdp_sinfo->nr_frags - 1];
+> +		int size;
+> +
+> +		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
+> +			return -EINVAL;
+> +
+> +		size = xdp_get_frag_size(frag);
+> +		memset(xdp_get_frag_address(frag) + size, 0, offset);
+> +		xdp_set_frag_size(frag, size + offset);
+> +		xdp_sinfo->data_length += offset;
+> +	} else {
+> +		int i, frags_to_free = 0;
+> +
+> +		offset = abs(offset);
+> +
+> +		if (unlikely(offset > ((int)(xdp->data_end - xdp->data) +
+> +				       xdp_sinfo->data_length -
+> +				       ETH_HLEN)))
 
-The cause is same as statement in upstream commit 91b05a7e, which is that 
-NETLINK_CRYPTO works only in the init network namespace.
+I think code alignment should be to xdp->data_end, not to (int).
 
-In my opinion, there are still many linux distribution running with linux 4.19 
-or similar version, such as Debian 10 with linux 4.19, CentOS 8 with linux 4.18
-and also their derivatives. If other people want to use libkcapi in container 
-environment, they will also be bothered by this problem. [2]
+Also: should we have some sort of helper for calculating the total
+length of an xdp_frame (head + frags)? Maybe it's just me, but I find it
+slightly confusing that xdp_sinfo->data_length does not account for
+everything.
 
-So I think this patch meet two rules in stable kernel rules: It must fix a real
-bug that bothers people and the upstream commit 91b05a7e exists in Linus's tree
-from linux 5.4.
+> +			return -EINVAL;
+> +
+> +		for (i = xdp_sinfo->nr_frags - 1; i >= 0 && offset > 0; i--) {
+> +			skb_frag_t *frag = &xdp_sinfo->frags[i];
+> +			int size = xdp_get_frag_size(frag);
+> +			int shrink = min_t(int, offset, size);
+> +
+> +			offset -= shrink;
+> +			if (likely(size - shrink > 0)) {
+> +				/* When updating the final fragment we have
+> +				 * to adjust the data_length in line.
+> +				 */
+> +				xdp_sinfo->data_length -= shrink;
+> +				xdp_set_frag_size(frag, size - shrink);
+> +				break;
+> +			}
+> +
+> +			/* When we free the fragments,
+> +			 * xdp_return_frags_from_buff() will take care
+> +			 * of updating the xdp share info data_length.
 
-Thanks for your review and reply.
+s/xdp share info data_length/data_length from xdp_shared_info/
 
---
-Email: Jianmin Wang <jianmin@iscas.ac.cn>
+> +			 */
+> +			frags_to_free++;
+> +		}
+> +
+> +		if (unlikely(frags_to_free))
+> +			xdp_return_num_frags_from_buff(xdp, frags_to_free);
+> +
+> +		if (unlikely(offset > 0))
+> +			xdp->data_end -= offset;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+>  {
+>  	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
+>  	void *data_end = xdp->data_end + offset;
+>  
+> +	if (unlikely(xdp->mb))
+> +		return bpf_xdp_mb_adjust_tail(xdp, offset);
+> +
+>  	/* Notice that xdp_data_hard_end have reserved some tailroom */
+>  	if (unlikely(data_end > data_hard_end))
+>  		return -EINVAL;
+> -- 
+> 2.30.2
+> 
 
