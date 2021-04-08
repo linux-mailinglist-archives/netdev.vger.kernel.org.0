@@ -2,85 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F625358768
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 16:47:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7783587AF
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 17:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231742AbhDHOra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 10:47:30 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49972 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231557AbhDHOr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 10:47:29 -0400
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lUVw4-0002Nd-UJ; Thu, 08 Apr 2021 16:47:15 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-04-08
-Date:   Thu,  8 Apr 2021 16:46:42 +0200
-Message-Id: <20210408144642.29822-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S231851AbhDHPAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 11:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231480AbhDHPAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 11:00:34 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E837C061760;
+        Thu,  8 Apr 2021 08:00:21 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id g8so4510889lfv.12;
+        Thu, 08 Apr 2021 08:00:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FjPNKJFXnPLlIkn9ofe/hgNOiX4jHuRRHt6hgl/CzlA=;
+        b=XbZQ46kuRoE8CvvYGZdRG7dg/QOplHjo7etUJYk4YVHrjZT3NA85gaoysHXoEEMscI
+         5eIzjIauhjJHRn+s2BeO6XCW/EP6IrCLfCsVbyDyrXM3rg0uFrSBSAYOLHTlOhNwux0B
+         5eVE73WtGFAuKNOUnbvg+u0JYoB+0Ah4UenNLHTLYmBzLjXeaOAQoLGOeGQQ422RsPfi
+         Hcvu7QB8tkyboyurVK1mjBv9DEqucCDuu3igcXiJ5GZTW3T3cGJBdDcU5FUP7f+mphm0
+         ZmsLpKKnyHiHsSH38Cud7G2mu5HWtCsI3f0l5qzwjUrfneucL4Bg2uatzY8F+tp45Sp0
+         aX+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FjPNKJFXnPLlIkn9ofe/hgNOiX4jHuRRHt6hgl/CzlA=;
+        b=MAL/oW8NWWo108A9x3GJWpL+e4mbbNvnLwHUs+wRL4UFTNogMlEALiJdT9V5PgIqXB
+         DJlZNeSyQbvtWTx+zmophv28RzWpOWS4FMS6O4YgM4aGeXHh3SJJZM90UOCHtTA63PXm
+         JSsvh7htJIHVT+Iowguu9cvyV0OaNkdCOSg/gBRZcQCxoZap7ijD0nXdUyS6sfIPI9/g
+         9exnBY2vB6Dr3YpBLxZc3mp62WMgnVIgTRItbuAr0gwQ4ke8MZn0uoz1i+EW1mLQzYpW
+         nzEwQ/angVyEJ0yH2I+T23/mpqxj1LFYo3v90ToJF1amGpH1XGsi7a6kOemPiEZ5F6PW
+         XUzQ==
+X-Gm-Message-State: AOAM532MtSo3NMqaJwAlwb6oslJwvm8rbc88IR9cBoTvp034GGmIUGlZ
+        ambn0NmuUBXVbjNOQFZRHHCEObESieFq74wQXjY=
+X-Google-Smtp-Source: ABdhPJzjEAtp7tSnx5kIvHtgEJeseYxS+FKQnHvpnDHWEm/cOFqXyqTMKAR3dgjC0R3Fe6+Hrb+V8yEVk7P8pi+tQOc=
+X-Received: by 2002:a05:6512:2295:: with SMTP id f21mr2490389lfu.166.1617894019468;
+ Thu, 08 Apr 2021 08:00:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26134/Thu Apr  8 13:08:38 2021)
+References: <20210408123919.2528516-1-dqfext@gmail.com> <20210408140255.Horde.Pl-DXtrqmiH9imsWjDqblfM@www.vdorst.com>
+In-Reply-To: <20210408140255.Horde.Pl-DXtrqmiH9imsWjDqblfM@www.vdorst.com>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Thu, 8 Apr 2021 23:00:08 +0800
+Message-ID: <CALW65jZujSCk16RX_xgcg+NGrc9yyFQOQ9Y-z3qz-Qv1TvUQLg@mail.gmail.com>
+Subject: Re: [RFC v3 net-next 0/4] MT7530 interrupt support
+To:     =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-staging@lists.linux.dev,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+Hi Ren=C3=A9,
 
-The following pull-request contains BPF updates for your *net* tree.
+On Thu, Apr 8, 2021 at 10:02 PM Ren=C3=A9 van Dorst <opensource@vdorst.com>=
+ wrote:
+>
+> Tested on Ubiquiti ER-X-SFP (MT7621) with 1 external phy which uses irq=
+=3DPOLL.
+>
 
-We've added 4 non-merge commits during the last 2 day(s) which contain
-a total of 4 files changed, 31 insertions(+), 10 deletions(-).
+I wonder if the external PHY's IRQ can be registered in the devicetree.
+Change MT7530_NUM_PHYS to 6, and add the following to ER-X-SFP dts PHY node=
+:
 
-The main changes are:
-
-1) Validate and reject invalid JIT branch displacements, from Piotr Krysiuk.
-
-2) Fix incorrect unhash restore as well as fwd_alloc memory accounting in
-   sock map, from John Fastabend.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Cong Wang, Daniel Borkmann, Lorenz Bauer
-
-----------------------------------------------------------------
-
-The following changes since commit 2a2403ca3add03f542f6b34bef9f74649969b06d:
-
-  tipc: increment the tmp aead refcnt before attaching it (2021-04-06 16:25:34 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 26f55a59dc65ff77cd1c4b37991e26497fc68049:
-
-  bpf, x86: Validate computation of branch displacements for x86-32 (2021-04-08 16:24:53 +0200)
-
-----------------------------------------------------------------
-John Fastabend (2):
-      bpf, sockmap: Fix sk->prot unhash op reset
-      bpf, sockmap: Fix incorrect fwd_alloc accounting
-
-Piotr Krysiuk (2):
-      bpf, x86: Validate computation of branch displacements for x86-64
-      bpf, x86: Validate computation of branch displacements for x86-32
-
- arch/x86/net/bpf_jit_comp.c   | 11 ++++++++++-
- arch/x86/net/bpf_jit_comp32.c | 11 ++++++++++-
- include/linux/skmsg.h         |  7 ++++++-
- net/core/skmsg.c              | 12 +++++-------
- 4 files changed, 31 insertions(+), 10 deletions(-)
+interrupt-parent =3D <&switch0>;
+interrupts =3D <5>;
