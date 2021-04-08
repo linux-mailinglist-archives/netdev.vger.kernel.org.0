@@ -2,113 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F11935837E
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 14:40:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 568403583AA
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 14:51:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231638AbhDHMkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 08:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231597AbhDHMkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 08:40:11 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E6AC061760;
-        Thu,  8 Apr 2021 05:40:00 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id kk2-20020a17090b4a02b02900c777aa746fso1284283pjb.3;
-        Thu, 08 Apr 2021 05:40:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SmFnhaRyZGKmhh6YeRu24XJccjOmUgsYe3aUSqwEOJM=;
-        b=sdrEyJmGy8XW5Tzk4vxJNZ8GlNfQeQ8WXFXrGGIx/uGcosQHu/5191zepwOkcbLF+i
-         AOruGbLsMv4y19ByxfOYte2JeWh0dGSamkX9OMk8nWIeaZLsN5y4xBY3ZsfEtEuvCF/q
-         Z1eDnT73strNZt2ZmehAlPjFXSQ3acTrOAFqi7oz67pNod5+7/cqpJes4zjp6yULS9wc
-         0mDf9lWINdxUfp/4HMwcR9bZAh1KWSidqFYKdlxGGSsZ2sruUIgWn1j9WE3mjSsgrmiA
-         Xj4fOscrKjbMUbKyNdHkRyCs25myAKjiQ2RmU2uJpemu1q3gXFyYUGGkOISY9k50vINO
-         OT0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SmFnhaRyZGKmhh6YeRu24XJccjOmUgsYe3aUSqwEOJM=;
-        b=OWycVq64eKH3zjCdt+n3JGzHsP1r0h2Fh/Ywuqt6xNQuY1vEonGlMDARpTuhyy/Wgv
-         sfulKly3d1B+04TZpPXg7GhD2oz+0gFuF4lfsZeRM9Ai4NiCOTi+L5LKiuiDq6/TV3VC
-         AP1pPNUo8ZBcDsEgjT02zbavNRPnUlpg7M2g5qpbV2BcnRETibxAFbDzHW+nlO7uqtqA
-         tDRbN6RiHf9opPplKWB/gxYs0Rg6kpuA3ElWr36AX6H/yVzXnqLhhkx6jQbgvuBCOrG6
-         Yskhv7GRK9onLqzUJr3tYhYL4axEJy61aocsq+5ADC5zMbaPUCgW1yGciFm3/S38vRjc
-         ARlw==
-X-Gm-Message-State: AOAM530JOdCSlqsIQPvHfFZd6oYzRATkhr4sDWMG432305NEZ6AiJeUN
-        cyNjVKnc2zQ3HIRjVNkXXoc=
-X-Google-Smtp-Source: ABdhPJwek5HN1INa68+/CiKVytrivW+Z1sTojuAw8HeUS+/ee91/803ebFNmLRdXTFarQLbaJDtvbg==
-X-Received: by 2002:a17:903:185:b029:e9:9253:5328 with SMTP id z5-20020a1709030185b02900e992535328mr2507786plg.58.1617885600491;
-        Thu, 08 Apr 2021 05:40:00 -0700 (PDT)
-Received: from localhost.localdomain ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id e65sm25831311pfe.9.2021.04.08.05.39.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Apr 2021 05:39:59 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Weijie Gao <weijie.gao@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [RFC v3 net-next 4/4] staging: mt7621-dts: enable MT7530 interrupt controller
-Date:   Thu,  8 Apr 2021 20:39:19 +0800
-Message-Id: <20210408123919.2528516-5-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210408123919.2528516-1-dqfext@gmail.com>
-References: <20210408123919.2528516-1-dqfext@gmail.com>
+        id S231474AbhDHMvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 08:51:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230412AbhDHMve (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 08:51:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D7ED61106;
+        Thu,  8 Apr 2021 12:51:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617886283;
+        bh=IFsWqI+cB5EMl9pSJyy9aWP80EiZi4fZy3Uw0UAbwZ8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dlYq1LH3nrDft7Tu+Ygv2J2pQw5uQM/AJZ3c51uwXk28UVBvR5q3+mJm7K+VPLysP
+         Z5SrRizWcVJlzRJwD7g1tv+ZgQ8nuiFsUgBvYkJfQ1zbyr/j037seELqO2zRj57X3p
+         oKOccEHAcsYzU1AyLftMZ0FCzwFJIAeGtC5mZUAXm5m1ciaw1W2kFqrdC2+vqMtlFd
+         ZxSCYpBF0PKqEvOX3ay1vuMvOIMeQlHOnmTfopIfBj6vVTNvqt81RUz9UQYcaUCM3+
+         s0A1h+8JG/AOINuDkcH3WeZ0EthetR5+klXYCKuKtkGk5eW57v1TPnmXXIJdyFnfnd
+         UScm3s2d1FiWQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com
+Subject: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer support
+Date:   Thu,  8 Apr 2021 14:50:52 +0200
+Message-Id: <cover.1617885385.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable MT7530 interrupt controller in the MT7621 SoC.
+This series introduce XDP multi-buffer support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
 
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-RFC v2 -> RFC v3:
-- No changes.
+For now, to keep the design simple and to maintain performance, the XDP
+BPF-prog (still) only have access to the first-buffer. It is left for
+later (another patchset) to add payload access across multiple buffers.
+This patchset should still allow for these future extensions. The goal
+is to lift the XDP MTU restriction that comes with XDP, but maintain
+same performance as before.
 
- drivers/staging/mt7621-dts/mt7621.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+The main idea for the new multi-buffer layout is to reuse the same
+layout used for non-linear SKB. We introduced a "xdp_shared_info" data
+structure at the end of the first buffer to link together subsequent buffers.
+xdp_shared_info will alias skb_shared_info allowing to keep most of the frags
+in the same cache-line (while with skb_shared_info only the first fragment will
+be placed in the first "shared_info" cache-line). Moreover we introduced some
+xdp_shared_info helpers aligned to skb_frag* ones.
+Converting xdp_frame to SKB and deliver it to the network stack is shown in
+patch 07/14. Building the SKB, the xdp_shared_info structure will be converted
+in a skb_shared_info one.
 
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/drivers/staging/mt7621-dts/mt7621.dtsi
-index 16fc94f65486..ebf8b0633e88 100644
---- a/drivers/staging/mt7621-dts/mt7621.dtsi
-+++ b/drivers/staging/mt7621-dts/mt7621.dtsi
-@@ -447,6 +447,9 @@ switch0: switch0@0 {
- 				mediatek,mcm;
- 				resets = <&rstctrl 2>;
- 				reset-names = "mcm";
-+				interrupt-controller;
-+				interrupt-parent = <&gic>;
-+				interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
- 
- 				ports {
- 					#address-cells = <1>;
+A multi-buffer bit (mb) has been introduced in xdp_{buff,frame} structure
+to notify the bpf/network layer if this is a xdp multi-buffer frame (mb = 1)
+or not (mb = 0).
+The mb bit will be set by a xdp multi-buffer capable driver only for
+non-linear frames maintaining the capability to receive linear frames
+without any extra cost since the xdp_shared_info structure at the end
+of the first buffer will be initialized only if mb is set.
+
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO
+
+A new frame_length field has been introduce in XDP ctx in order to notify the
+eBPF layer about the total frame size (linear + paged parts).
+
+bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take into
+account xdp multi-buff frames.
+
+More info about the main idea behind this approach can be found here [1][2].
+
+Changes since v7:
+- rebase on top of bpf-next
+- fix sparse warnings
+- improve comments for frame_length in include/net/xdp.h
+
+Changes since v6:
+- the main difference respect to previous versions is the new approach proposed
+  by Eelco to pass full length of the packet to eBPF layer in XDP context
+- reintroduce multi-buff support to eBPF kself-tests
+- reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+- introduce multi-buffer support to bpf_xdp_copy helper
+- rebase on top of bpf-next
+
+Changes since v5:
+- rebase on top of bpf-next
+- initialize mb bit in xdp_init_buff() and drop per-driver initialization
+- drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+- postpone introduction of frame_length field in XDP ctx to another series
+- minor changes
+
+Changes since v4:
+- rebase ontop of bpf-next
+- introduce xdp_shared_info to build xdp multi-buff instead of using the
+  skb_shared_info struct
+- introduce frame_length in xdp ctx
+- drop previous bpf helpers
+- fix bpf_xdp_adjust_tail for xdp multi-buff
+- introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+- fix xdp_return_frame_bulk for xdp multi-buff
+
+Changes since v3:
+- rebase ontop of bpf-next
+- add patch 10/13 to copy back paged data from a xdp multi-buff frame to
+  userspace buffer for xdp multi-buff selftests
+
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frags_count
+- introduce xdp multi-buff support to cpumaps
+
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
+
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
+
+[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+
+Eelco Chaudron (4):
+  bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+  bpd: add multi-buffer support to xdp copy helpers
+  bpf: add new frame_length field to the XDP ctx
+  bpf: update xdp_adjust_tail selftest to include multi-buffer
+
+Lorenzo Bianconi (10):
+  xdp: introduce mb in xdp_buff/xdp_frame
+  xdp: add xdp_shared_info data structure
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  net: mvneta: enable jumbo frames for XDP
+  net: xdp: add multi-buff support to xdp_build_skb_from_fram
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+  bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+    signature
+
+ drivers/net/ethernet/marvell/mvneta.c         | 182 ++++++++++--------
+ include/linux/filter.h                        |   7 +
+ include/net/xdp.h                             | 105 +++++++++-
+ include/uapi/linux/bpf.h                      |   1 +
+ net/bpf/test_run.c                            | 109 +++++++++--
+ net/core/filter.c                             | 134 ++++++++++++-
+ net/core/xdp.c                                | 103 +++++++++-
+ tools/include/uapi/linux/bpf.h                |   1 +
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 105 ++++++++++
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 127 ++++++++----
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  17 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   3 +-
+ 13 files changed, 767 insertions(+), 159 deletions(-)
+
 -- 
-2.25.1
+2.30.2
 
