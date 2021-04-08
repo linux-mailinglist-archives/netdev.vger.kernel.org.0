@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A2D7358CE4
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 20:48:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9471F358CE7
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 20:49:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbhDHSsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 14:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
+        id S232887AbhDHSth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 14:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232768AbhDHSsv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 14:48:51 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0601C061760;
-        Thu,  8 Apr 2021 11:48:39 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id z22-20020a17090a0156b029014d4056663fso1930098pje.0;
-        Thu, 08 Apr 2021 11:48:39 -0700 (PDT)
+        with ESMTP id S231676AbhDHStg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 14:49:36 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32A6BC061760;
+        Thu,  8 Apr 2021 11:49:25 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id g10so1510135plt.8;
+        Thu, 08 Apr 2021 11:49:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QkZRHIeVAtMclnbf69iEmwFuxNIgUD1wl1hPkUbv0+4=;
-        b=JeL4/htdYtHE3hOWpnmiUh0UNlkkuVLE1e4Nu/UNDrd5gzGAqHyXZsdqEpS1R3ICyb
-         Y7ZgnktRRTqzIqywZMaaAY9wV+OPW+D6HYf9u96znmAheJZMQgEAJiQsfqYjWkNSiSbj
-         YfDh97J7OenVx+II2koVQ5kMRJM70stbUjbfriwxYmgLcKcD/S7Dz1MfsmB+whZKN8k5
-         Cm9kwKOvNyen/5XyB7FUUfEbNmU5njNXuGFGcm6tlcoYys6J28kCp7DUA3J+gHj5QAV8
-         QJc5KhkDPEdWx+667JE3251j7Kwv+6xMGPOU8Y0Gbsyqt4fSAAcAULjj0iWcZ9asxxXd
-         RP8Q==
+        bh=iaZA9uccUhevRcQXh1gy8pD/RdVdtZQych5CAmgXTRw=;
+        b=piIlDdMykZWRNqBj+SejOLbpkS//URH6CnbJ87LsCyZG15F2iCsmANew1vP9Xyd/ts
+         2vAld14Jflhbah7+bgN5Kw1MefEAr73Z6/bQTjVWNYv4B1GNoL2J/KH/uK4fbIS7H2uv
+         8n68AIc7mWbfp6XmZX3o2vrxKm4QqNBVIyUHFqKf4AtqUkH2Vv6XNHKZi7cpMJmDGsXk
+         fm5V0Rf+J91w1LFABu5PIKEs1AfFdwFJqGVvrG6RsrRCZssvJhAN+xJ9OUes5lxuvPLP
+         7IykOUOWIVPPGZbfvRsKe3mzgc+OYwjzR4vOkQSD92l+Wi4BkjqM4SbE6omsrWzzoaRk
+         88bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=QkZRHIeVAtMclnbf69iEmwFuxNIgUD1wl1hPkUbv0+4=;
-        b=TDx+Z60MznK8Nd2WJVWO8ABISBCvt7YFFpHn4FIOm4UpJcaduzHpbvULztMNN9jOcQ
-         /Xf7Md5wHYnC3PhKNsZjcgvJNS/oaB9kzNdySG8f1DE4RYNCqr1UUZQQLwVQZak77f7z
-         nxV9uxGgzdIMQCRHblag9r+DhvS2mO2bs61DKmXGxWcTZeouCznAPfyAk4ntAkA5/3W9
-         jCaWJtAn61nqCKcwO/s34DN30fFkmehgzfqrAUBif72Q7gXQiN+gv8DDjQ5CeD0KKkGx
-         oShLDzCrNm13i47WPIzl3Si8mBNUUYHyBjnfsgZEbm2F+aGun99afXCdVfYjKvubgSSk
-         RyoQ==
-X-Gm-Message-State: AOAM533qU10QQDKyQ3sqD58ihSsIKTkgV7t1WFd1dEVeil6ZDjHcE5c8
-        B6K5MzpOwPfH+Go248T/bj3gmixaE9I=
-X-Google-Smtp-Source: ABdhPJz6nMDs7woEDIGKCe65uJ5cWjQgSxzD8EB0fAZgtitxpsgQckjPSrXph54VDnfYBJOXfqHPuA==
-X-Received: by 2002:a17:90b:1b0c:: with SMTP id nu12mr9996958pjb.129.1617907718784;
-        Thu, 08 Apr 2021 11:48:38 -0700 (PDT)
+        bh=iaZA9uccUhevRcQXh1gy8pD/RdVdtZQych5CAmgXTRw=;
+        b=DQ5YDp3y9vCWIP3I0Sbv3t/gWzZbvxU1lTukxeeZCu34ASoOU1zXd1abMpmUKvsDHI
+         S98fGghBy7T+cR6+yof6mJLq0tqqkjxH9EVh4ZJeBlNyOGzSMpsfvrQhEu9auT8VFyE3
+         qs/3vch9NZU7rzlfoB4dZYg0Z6rqEpWVQutdkVGClamDJ3SlveNicZYHbeAtbshHOsoX
+         excwJA7Z8qXj3C/B/oyoCxhSFUsqQnMQuGUAw4iMtRpXNYbeVqitU2YsWIpgE9UaXXOK
+         ZilsaAE/2VS8xSuxQMlvgCDgCZ4nyohx/kf+qIkzNj/Zgg7Ir+uKukLBxnROXmKkTKEq
+         AEmA==
+X-Gm-Message-State: AOAM530XdHiavwUV7xnqOIJNasKnIpyhsoEK8R+rijXkAKl1q9Q4F3UF
+        tBdhdfAdc3CFGE/52YVVli2Fi1JIEoA=
+X-Google-Smtp-Source: ABdhPJz3VROIBwGEDOUQzf0UiQQ1EdfYV2EMhPwucdJKLC8iIMeYog8glMZikMgkbmoeCG/h3cGNhA==
+X-Received: by 2002:a17:90a:df15:: with SMTP id gp21mr10013340pjb.127.1617907764302;
+        Thu, 08 Apr 2021 11:49:24 -0700 (PDT)
 Received: from [10.230.29.202] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l1sm122385pgt.29.2021.04.08.11.48.36
+        by smtp.gmail.com with ESMTPSA id g12sm133641pjd.57.2021.04.08.11.49.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Apr 2021 11:48:38 -0700 (PDT)
-Subject: Re: [PATCH net v2 1/2] net: dsa: lantiq_gswip: Don't use PHY auto
- polling
+        Thu, 08 Apr 2021 11:49:23 -0700 (PDT)
+Subject: Re: [PATCH net v2 2/2] net: dsa: lantiq_gswip: Configure all
+ remaining GSWIP_MII_CFG bits
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
         olteanv@gmail.com, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
         linux-kernel@vger.kernel.org, stable@vger.kernel.org
 References: <20210408183828.1907807-1-martin.blumenstingl@googlemail.com>
- <20210408183828.1907807-2-martin.blumenstingl@googlemail.com>
+ <20210408183828.1907807-3-martin.blumenstingl@googlemail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8be6a8c9-67d3-b1ed-7d1e-e594ba73ae13@gmail.com>
-Date:   Thu, 8 Apr 2021 11:48:33 -0700
+Message-ID: <19b78806-ff51-567c-5121-674db706682f@gmail.com>
+Date:   Thu, 8 Apr 2021 11:49:15 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <20210408183828.1907807-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20210408183828.1907807-3-martin.blumenstingl@googlemail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,64 +74,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/8/2021 11:38 AM, Martin Blumenstingl wrote:
-> PHY auto polling on the GSWIP hardware can be used so link changes
-> (speed, link up/down, etc.) can be detected automatically. Internally
-> GSWIP reads the PHY's registers for this functionality. Based on this
-> automatic detection GSWIP can also automatically re-configure it's port
-> settings. Unfortunately this auto polling (and configuration) mechanism
-> seems to cause various issues observed by different people on different
-> devices:
-> - FritzBox 7360v2: the two Gbit/s ports (connected to the two internal
->   PHY11G instances) are working fine but the two Fast Ethernet ports
->   (using an AR8030 RMII PHY) are completely dead (neither RX nor TX are
->   received). It turns out that the AR8030 PHY sets the BMSR_ESTATEN bit
->   as well as the ESTATUS_1000_TFULL and ESTATUS_1000_XFULL bits. This
->   makes the PHY auto polling state machine (rightfully?) think that the
->   established link speed (when the other side is Gbit/s capable) is
->   1Gbit/s.
-> - None of the Ethernet ports on the Zyxel P-2812HNU-F1 (two are
->   connected to the internal PHY11G GPHYs while the other three are
->   external RGMII PHYs) are working. Neither RX nor TX traffic was
->   observed. It is not clear which part of the PHY auto polling state-
->   machine caused this.
-> - FritzBox 7412 (only one LAN port which is connected to one of the
->   internal GPHYs running in PHY22F / Fast Ethernet mode) was seeing
->   random disconnects (link down events could be seen). Sometimes all
->   traffic would stop after such disconnect. It is not clear which part
->   of the PHY auto polling state-machine cauased this.
-> - TP-Link TD-W9980 (two ports are connected to the internal GPHYs
->   running in PHY11G / Gbit/s mode, the other two are external RGMII
->   PHYs) was affected by similar issues as the FritzBox 7412 just without
->   the "link down" events
+> There are a few more bits in the GSWIP_MII_CFG register for which we
+> did rely on the boot-loader (or the hardware defaults) to set them up
+> properly.
 > 
-> Switch to software based configuration instead of PHY auto polling (and
-> letting the GSWIP hardware configure the ports automatically) for the
-> following link parameters:
-> - link up/down
-> - link speed
-> - full/half duplex
-> - flow control (RX / TX pause)
+> For some external RMII PHYs we need to select the GSWIP_MII_CFG_RMII_CLK
+> bit and also we should un-set it for non-RMII PHYs. The
+> GSWIP_MII_CFG_RMII_CLK bit is ignored for other PHY connection modes.
 > 
-> After a big round of manual testing by various people (who helped test
-> this on OpenWrt) it turns out that this fixes all reported issues.
+> The GSWIP IP also supports in-band auto-negotiation for RGMII PHYs when
+> the GSWIP_MII_CFG_RGMII_IBS bit is set. Clear this bit always as there's
+> no known hardware which uses this (so it is not tested yet).
 > 
-> Additionally it can be considered more future proof because any
-> "quirk" which is implemented for a PHY on the driver side can now be
-> used with the GSWIP hardware as well because Linux is in control of the
-> link parameters.
+> Clear the xMII isolation bit when set at initialization time if it was
+> previously set by the bootloader. Not doing so could lead to no traffic
+> (neither RX nor TX) on a port with this bit set.
 > 
-> As a nice side-effect this also solves a problem where fixed-links were
-> not supported previously because we were relying on the PHY auto polling
-> mechanism, which cannot work for fixed-links as there's no PHY from
-> where it can read the registers. Configuring the link settings on the
-> GSWIP ports means that we now use the settings from device-tree also for
-> ports with fixed-links.
+> While here, also add the GSWIP_MII_CFG_RESET bit. We don't need to
+> manage it because this bit is self-clearning when set. We still add it
+> here to get a better overview of the GSWIP_MII_CFG register.
 > 
 > Fixes: 14fceff4771e51 ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-> Fixes: 3e6fdeb28f4c33 ("net: dsa: lantiq_gswip: Let GSWIP automatically set the xMII clock")
 > Cc: stable@vger.kernel.org
+> Suggested-by: Hauke Mehrtens <hauke@hauke-m.de>
 > Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
