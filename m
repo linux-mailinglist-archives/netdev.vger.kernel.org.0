@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5843583C1
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 14:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3BB3583C6
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 14:52:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbhDHMwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 08:52:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57658 "EHLO mail.kernel.org"
+        id S231724AbhDHMwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 08:52:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57772 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231668AbhDHMwF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 08:52:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 84F1261131;
-        Thu,  8 Apr 2021 12:51:50 +0000 (UTC)
+        id S231700AbhDHMwJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 08:52:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CB03461159;
+        Thu,  8 Apr 2021 12:51:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617886313;
-        bh=tDqB0Ey7DwyVDYXMPU2eRxTOZD4Z/gsFYf6a8/8/tlo=;
+        s=k20201202; t=1617886318;
+        bh=I6iHHaFwpIYFd/YaMiULJLSAXqjyBOLD91wu/IgsYcw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eYfxkWFfNoumpu/x13hSgsKE+moyh+TEWz1GQ7b39RfAuiSig3qCw7lDAprdH6Dj+
-         QFVI0BSX+a2HJo+4caKKSsq6CBddpEPKB6Bftoh0tfIHmkqBNnrrMf0QTfIh8Bntf5
-         O/BSz1TIUnR2pAcHC778x3H7nfZoqzsG4VzTmFrnpgspBU/KGvVmpOP4b6C9lN4z3c
-         MzjoR9qccTQfJH9IlDas6g8dTo1uxCAUmi8K6tjM4GrKOmt6ToRxpd25GBzxQxEioP
-         2Q0Yof0KGcfFYXuvjbPW8fTapEHS86Jh8EkqzQh2/qlr/dSeQNWtnUlgOSw5Lmzsdt
-         Xh4IbS36B1kIQ==
+        b=BuwLC4O4JPEil+rCw23kdV0HiNJLHzQqEK38P3zfxfSWuLPDwBE/ccdy3LGdfp8Bg
+         HTotGxFO5pMT6PEnhPq2/Gu5GSVyyXb0dmFLiB3O6wBKxzMu1Xa4Fa8hhZq+R9uak6
+         R/UbecE3/aB4n0uJFRs3ZllX7Bln4kU2NoWFGj4jB1e5TgwgC3LPmRTOIOc97mPgK7
+         U2GNiuGcHr6PuewB/qE/4UXcglFoL2dHo9dgpXNY0rszgNTDN1k+FwFqpwtaxBKevR
+         1OEOzX70Li7BTVk+Z34sZL3xOMtOgBZ2q0AteIMZBzYD636itzzfgohJOKJFStLiSF
+         6WcFgzXbPjRwA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com
-Subject: [PATCH v8 bpf-next 07/14] net: xdp: add multi-buff support to xdp_build_skb_from_fram
-Date:   Thu,  8 Apr 2021 14:50:59 +0200
-Message-Id: <2ffe99be4545b01436f23405177c618916d84a19.1617885385.git.lorenzo@kernel.org>
+Subject: [PATCH v8 bpf-next 08/14] bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+Date:   Thu,  8 Apr 2021 14:51:00 +0200
+Message-Id: <427bd05d147a247fc30fd438be94b5d51845b05f.1617885385.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1617885385.git.lorenzo@kernel.org>
 References: <cover.1617885385.git.lorenzo@kernel.org>
@@ -43,62 +43,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp multi-buff support to
-__xdp_build_skb_from_frame/xdp_build_skb_from_fram utility
-routines.
+From: Eelco Chaudron <echaudro@redhat.com>
 
+This change adds support for tail growing and shrinking for XDP multi-buff.
+
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- net/core/xdp.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ include/net/xdp.h |  5 ++++
+ net/core/filter.c | 63 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+)
 
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 430f516259d9..7388bc6d680b 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -603,9 +603,21 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev)
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index c8eb7cf4ebed..55751cf2badf 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -159,6 +159,11 @@ static inline void xdp_set_frag_size(skb_frag_t *frag, u32 size)
+ 	frag->bv_len = size;
+ }
+ 
++static inline unsigned int xdp_get_frag_tailroom(const skb_frag_t *frag)
++{
++	return PAGE_SIZE - xdp_get_frag_size(frag) - xdp_get_frag_offset(frag);
++}
++
+ struct xdp_frame {
+ 	void *data;
+ 	u16 len;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index cae56d08a670..c4eb1392f88e 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3855,11 +3855,74 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+ 	.arg2_type	= ARG_ANYTHING,
+ };
+ 
++static int bpf_xdp_mb_adjust_tail(struct xdp_buff *xdp, int offset)
++{
++	struct xdp_shared_info *xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
++
++	if (unlikely(xdp_sinfo->nr_frags == 0))
++		return -EINVAL;
++
++	if (offset >= 0) {
++		skb_frag_t *frag = &xdp_sinfo->frags[xdp_sinfo->nr_frags - 1];
++		int size;
++
++		if (unlikely(offset > xdp_get_frag_tailroom(frag)))
++			return -EINVAL;
++
++		size = xdp_get_frag_size(frag);
++		memset(xdp_get_frag_address(frag) + size, 0, offset);
++		xdp_set_frag_size(frag, size + offset);
++		xdp_sinfo->data_length += offset;
++	} else {
++		int i, frags_to_free = 0;
++
++		offset = abs(offset);
++
++		if (unlikely(offset > ((int)(xdp->data_end - xdp->data) +
++				       xdp_sinfo->data_length -
++				       ETH_HLEN)))
++			return -EINVAL;
++
++		for (i = xdp_sinfo->nr_frags - 1; i >= 0 && offset > 0; i--) {
++			skb_frag_t *frag = &xdp_sinfo->frags[i];
++			int size = xdp_get_frag_size(frag);
++			int shrink = min_t(int, offset, size);
++
++			offset -= shrink;
++			if (likely(size - shrink > 0)) {
++				/* When updating the final fragment we have
++				 * to adjust the data_length in line.
++				 */
++				xdp_sinfo->data_length -= shrink;
++				xdp_set_frag_size(frag, size - shrink);
++				break;
++			}
++
++			/* When we free the fragments,
++			 * xdp_return_frags_from_buff() will take care
++			 * of updating the xdp share info data_length.
++			 */
++			frags_to_free++;
++		}
++
++		if (unlikely(frags_to_free))
++			xdp_return_num_frags_from_buff(xdp, frags_to_free);
++
++		if (unlikely(offset > 0))
++			xdp->data_end -= offset;
++	}
++
++	return 0;
++}
++
+ BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
  {
-+	skb_frag_t frag_list[MAX_SKB_FRAGS];
- 	unsigned int headroom, frame_size;
-+	int i, num_frags = 0;
- 	void *hard_start;
+ 	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
+ 	void *data_end = xdp->data_end + offset;
  
-+	/* XDP multi-buff frame */
-+	if (unlikely(xdpf->mb)) {
-+		struct xdp_shared_info *xdp_sinfo;
++	if (unlikely(xdp->mb))
++		return bpf_xdp_mb_adjust_tail(xdp, offset);
 +
-+		xdp_sinfo = xdp_get_shared_info_from_frame(xdpf);
-+		num_frags = xdp_sinfo->nr_frags;
-+		memcpy(frag_list, xdp_sinfo->frags,
-+		       sizeof(skb_frag_t) * num_frags);
-+	}
-+
- 	/* Part of headroom was reserved to xdpf */
- 	headroom = sizeof(*xdpf) + xdpf->headroom;
- 
-@@ -624,6 +636,20 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	if (xdpf->metasize)
- 		skb_metadata_set(skb, xdpf->metasize);
- 
-+	/* Single-buff XDP frame */
-+	if (likely(!num_frags))
-+		goto out;
-+
-+	for (i = 0; i < num_frags; i++) {
-+		struct page *page = xdp_get_frag_page(&frag_list[i]);
-+
-+		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-+				page, xdp_get_frag_offset(&frag_list[i]),
-+				xdp_get_frag_size(&frag_list[i]),
-+				xdpf->frame_sz);
-+	}
-+
-+out:
- 	/* Essential SKB info: protocol and skb->dev */
- 	skb->protocol = eth_type_trans(skb, dev);
- 
+ 	/* Notice that xdp_data_hard_end have reserved some tailroom */
+ 	if (unlikely(data_end > data_hard_end))
+ 		return -EINVAL;
 -- 
 2.30.2
 
