@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44DAE358C06
-	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 20:17:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 770BF358C0E
+	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 20:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232801AbhDHSR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 14:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        id S232785AbhDHSUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 14:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbhDHSR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 14:17:26 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8777CC061760;
-        Thu,  8 Apr 2021 11:17:14 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id c17so2451878pfn.6;
-        Thu, 08 Apr 2021 11:17:14 -0700 (PDT)
+        with ESMTP id S231676AbhDHSUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 14:20:01 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479CFC061760;
+        Thu,  8 Apr 2021 11:19:50 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id f29so1983595pgm.8;
+        Thu, 08 Apr 2021 11:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=zRT9DhQ3IT2xhVUi7pk4OyIrhDNRZiy4Zp2TymZk+JU=;
-        b=pNx5ONycw/duKKcJaEB2so5CPgjizmV6MWApgVvbsUuk0Gs0USzYv0ViAky1RF7Tvb
-         4ZCJE0SBgBcCe1cwCQRbfcqEAT9m9CQKoi699SZsM3nViItKG7hTas4FXqvl1oimIC6K
-         aLFGeviuxAzdTZbmlgZKGOS05IIWE7txM7fiTBU8nc6QmTNZZUBtAvKaPl2Rh8ax0gNH
-         QcNhgglfBClWtQMtO2P5GNl7B75o2hXCa6Cch+b7u+kqasK5HUTqfMJu1IvN1alYWtKe
-         1RvTnUJ+9N2ZjmqZuFopa13dFT9CXwLRbr9SsE/tOikCWXCXQoZTgkSa/C0FTgneVbIF
-         qHew==
+        bh=WuSxwpB0IM2uQ+Nd25InakLD6+VQTAcqOWVZsOD+S4s=;
+        b=jm0c+q0QFnC1DeIz2yx3Xgyx6hIZFdKkYUBJ3ofLauaZ5IFS/v4HTA9vG4CXR7fOCn
+         tCYpWWwiVq4aFkegkX7ae2mz1A4BMn6NpXtrUNsLMDJblRqOXoQxt+dys4jSg6ome+dH
+         ecP7ZE5JS5HKybMSNl2zMyirDejcOzR6t0eZs1VJsdRkG+VxdiEyRYGjxEiHQNmS1czE
+         1XWAqJpDtP7FysQI4psIvRnyv/r00AypwKmRIcuQuRQ99S4JNjyr/otL1ZP/N1TZ8GPN
+         INrAZ+rZGYJn+nUtYg4BvuKoWTT5F6PWKE2tEOTI4UMydH/lzQIkOsd2NHQL7ZouUbj3
+         51ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=zRT9DhQ3IT2xhVUi7pk4OyIrhDNRZiy4Zp2TymZk+JU=;
-        b=mYrhIaexo9/b7fPXE7n7pdT51m6OEjHKZin+9+SXlruC8qH5lATc4t4GSlW01Ml3gF
-         x3YEFNymqYFg6h8xLpDyxPq4dlTvuT5GO9gR7lMK6wPsBy4cZiAzXn/vfeErqhGU0soZ
-         5RNV+GNxKWuQfpyV4/RWzOiWlLAc572HgXO92kG99ZtssAIEEGUEt2g4MZ/Lqh1WWM7i
-         HFwTpUJdKb4VpBDmoscVTytFbp2yGfw1F/9Usu5EVr0xW13rAigl6vqdvriO3ylgTV7X
-         fGHFvEKTs5cXsXTiLq0HOO4SLb/4WRdjrqLZ6p1NwEV42YW+LleE+PXsnWmiqfIm94h8
-         JeFg==
-X-Gm-Message-State: AOAM533QEJxLjueKf/sfAczPyDWO5e4HIbbZMBx23H6l2sReBEGrTAbQ
-        7ztnd+0O7Fx2lhejKNDpctc=
-X-Google-Smtp-Source: ABdhPJxtv+applMNT5t3ZdgbpL2Wr8HwV2YNiDb8xS2EIiSuyR5e4EzAkE4Wp26wex9O3pWfjONGJg==
-X-Received: by 2002:a65:610f:: with SMTP id z15mr9346775pgu.360.1617905834030;
-        Thu, 08 Apr 2021 11:17:14 -0700 (PDT)
+        bh=WuSxwpB0IM2uQ+Nd25InakLD6+VQTAcqOWVZsOD+S4s=;
+        b=PkkO5LZLAk0sHetRx+AZXtF/eSPX0O0G3lk0q2BHxVewZNZcFMfvq5lHyEu92Su/jw
+         h3ISDRkSRZp/JwbqmBcDeR4rGukBG9BBpKNXYjnmtCJgCcfHKk4DblEUc2DvLiEpPgIw
+         7Fu7MixLP3Odaw7bMqm0UwwmMtwtMa3tCS+4sHGqHrYCnRu7HHTUSMKECJ5R/b6/zoBy
+         BrZ2qnXfKXSLLXnIWdIcupj78FmDg1HhxH+pN3pctl0MMZ3lkdRNY3pdr2okmQ9YxQls
+         JHrdPGo/Lv31GOuwDcwGGn9fVwHGIB4aMTvVelocN+tSz7pQRLPyfU5G4wW5BwG7hbTy
+         RGLg==
+X-Gm-Message-State: AOAM530ZpUiEXqJI30s5CBx+otogXH08lquNVgVxK2XZy1/lp+vGFJCt
+        y044xVp8AoBX5k8+JK6NftU=
+X-Google-Smtp-Source: ABdhPJyL3MVeGzjB8nHILTFc9wphco1StdgsIwvzDe84YgIRgnAJfm7hZ0eG9UsA8R3pU0Tl3oMdwQ==
+X-Received: by 2002:a62:528e:0:b029:1f5:c5ee:a487 with SMTP id g136-20020a62528e0000b02901f5c5eea487mr8553924pfb.7.1617905989756;
+        Thu, 08 Apr 2021 11:19:49 -0700 (PDT)
 Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id c5sm140003pfp.183.2021.04.08.11.17.04
+        by smtp.gmail.com with ESMTPSA id o9sm148275pfh.217.2021.04.08.11.19.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Apr 2021 11:17:13 -0700 (PDT)
-Date:   Thu, 8 Apr 2021 21:17:00 +0300
+        Thu, 08 Apr 2021 11:19:49 -0700 (PDT)
+Date:   Thu, 8 Apr 2021 21:19:35 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
@@ -57,85 +57,127 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com
-Subject: Re: [PATCH v8 bpf-next 01/14] xdp: introduce mb in xdp_buff/xdp_frame
-Message-ID: <20210408181700.vlay72gyxzknfc7m@skbuf>
+Subject: Re: [PATCH v8 bpf-next 03/14] net: mvneta: update mb bit before
+ passing the xdp buffer to eBPF layer
+Message-ID: <20210408181935.hrouvsh6hroof4jl@skbuf>
 References: <cover.1617885385.git.lorenzo@kernel.org>
- <eef58418ab78408f4a5fbd3d3b0071f30ece2ccd.1617885385.git.lorenzo@kernel.org>
+ <7a56776d5e2053755854dd668bb08a5e369ef722.1617885385.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <eef58418ab78408f4a5fbd3d3b0071f30ece2ccd.1617885385.git.lorenzo@kernel.org>
+In-Reply-To: <7a56776d5e2053755854dd668bb08a5e369ef722.1617885385.git.lorenzo@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 08, 2021 at 02:50:53PM +0200, Lorenzo Bianconi wrote:
-> Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer data structure
-> in order to specify if this is a linear buffer (mb = 0) or a multi-buffer
-> frame (mb = 1). In the latter case the shared_info area at the end of the
-> first buffer will be properly initialized to link together subsequent
-> buffers.
+On Thu, Apr 08, 2021 at 02:50:55PM +0200, Lorenzo Bianconi wrote:
+> Update multi-buffer bit (mb) in xdp_buff to notify XDP/eBPF layer and
+> XDP remote drivers if this is a "non-linear" XDP buffer. Access
+> xdp_shared_info only if xdp_buff mb is set.
 > 
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  include/net/xdp.h | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
+>  drivers/net/ethernet/marvell/mvneta.c | 26 ++++++++++++++++++++------
+>  1 file changed, 20 insertions(+), 6 deletions(-)
 > 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index a5bc214a49d9..842580a61563 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -73,7 +73,10 @@ struct xdp_buff {
->  	void *data_hard_start;
->  	struct xdp_rxq_info *rxq;
->  	struct xdp_txq_info *txq;
-> -	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
-> +	u32 frame_sz:31; /* frame size to deduce data_hard_end/reserved
-> +			  * tailroom
-> +			  */
-
-This comment would have fit just fine on one line:
-
-	/* frame size to deduce data_hard_end/reserved tailroom */
-
-> +	u32 mb:1; /* xdp non-linear buffer */
->  };
->  
->  static __always_inline void
-> @@ -81,6 +84,7 @@ xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index a52e132fd2cf..94e29cce693a 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -2041,12 +2041,16 @@ mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
 >  {
->  	xdp->frame_sz = frame_sz;
->  	xdp->rxq = rxq;
-> +	xdp->mb = 0;
+>  	int i;
+>  
+> +	if (likely(!xdp->mb))
+> +		goto out;
+> +
+
+Is there any particular reason for this extra check?
+
+>  	for (i = 0; i < xdp_sinfo->nr_frags; i++) {
+>  		skb_frag_t *frag = &xdp_sinfo->frags[i];
+>  
+>  		page_pool_put_full_page(rxq->page_pool,
+>  					xdp_get_frag_page(frag), true);
+>  	}
+> +out:
+>  	page_pool_put_page(rxq->page_pool, virt_to_head_page(xdp->data),
+>  			   sync_len, true);
+>  }
+> @@ -2246,7 +2250,6 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+>  {
+>  	unsigned char *data = page_address(page);
+>  	int data_len = -MVNETA_MH_SIZE, len;
+> -	struct xdp_shared_info *xdp_sinfo;
+>  	struct net_device *dev = pp->dev;
+>  	enum dma_data_direction dma_dir;
+>  
+> @@ -2270,9 +2273,6 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+>  	prefetch(data);
+>  	xdp_prepare_buff(xdp, data, pp->rx_offset_correction + MVNETA_MH_SIZE,
+>  			 data_len, false);
+> -
+> -	xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
+> -	xdp_sinfo->nr_frags = 0;
 >  }
 >  
->  static __always_inline void
-> @@ -116,7 +120,8 @@ struct xdp_frame {
->  	u16 len;
->  	u16 headroom;
->  	u32 metasize:8;
-> -	u32 frame_sz:24;
-> +	u32 frame_sz:23;
-> +	u32 mb:1; /* xdp non-linear frame */
->  	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
->  	 * while mem info is valid on remote CPU.
->  	 */
-> @@ -179,6 +184,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
->  	xdp->data_end = frame->data + frame->len;
->  	xdp->data_meta = frame->data - frame->metasize;
->  	xdp->frame_sz = frame->frame_sz;
-> +	xdp->mb = frame->mb;
->  }
+>  static void
+> @@ -2307,12 +2307,18 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+>  		xdp_set_frag_size(frag, data_len);
+>  		xdp_set_frag_page(frag, page);
 >  
->  static inline
-> @@ -205,6 +211,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
->  	xdp_frame->headroom = headroom - sizeof(*xdp_frame);
->  	xdp_frame->metasize = metasize;
->  	xdp_frame->frame_sz = xdp->frame_sz;
-> +	xdp_frame->mb = xdp->mb;
+> +		if (!xdp->mb) {
+> +			xdp_sinfo->data_length = *size;
+> +			xdp->mb = 1;
+> +		}
+>  		/* last fragment */
+>  		if (len == *size) {
+>  			struct xdp_shared_info *sinfo;
 >  
->  	return 0;
->  }
+>  			sinfo = xdp_get_shared_info_from_buff(xdp);
+>  			sinfo->nr_frags = xdp_sinfo->nr_frags;
+> +			sinfo->data_length = xdp_sinfo->data_length;
+> +
+>  			memcpy(sinfo->frags, xdp_sinfo->frags,
+>  			       sinfo->nr_frags * sizeof(skb_frag_t));
+>  		}
+> @@ -2327,11 +2333,15 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  		      struct xdp_buff *xdp, u32 desc_status)
+>  {
+>  	struct xdp_shared_info *xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
+> -	int i, num_frags = xdp_sinfo->nr_frags;
+>  	skb_frag_t frag_list[MAX_SKB_FRAGS];
+> +	int i, num_frags = 0;
+>  	struct sk_buff *skb;
+>  
+> -	memcpy(frag_list, xdp_sinfo->frags, sizeof(skb_frag_t) * num_frags);
+> +	if (unlikely(xdp->mb)) {
+> +		num_frags = xdp_sinfo->nr_frags;
+> +		memcpy(frag_list, xdp_sinfo->frags,
+> +		       sizeof(skb_frag_t) * num_frags);
+> +	}
+>  
+>  	skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
+>  	if (!skb)
+> @@ -2343,6 +2353,9 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  	skb_put(skb, xdp->data_end - xdp->data);
+>  	mvneta_rx_csum(pp, desc_status, skb);
+>  
+> +	if (likely(!xdp->mb))
+> +		return skb;
+> +
+>  	for (i = 0; i < num_frags; i++) {
+>  		struct page *page = xdp_get_frag_page(&frag_list[i]);
+>  
+> @@ -2404,6 +2417,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+>  			frame_sz = size - ETH_FCS_LEN;
+>  			desc_status = rx_status;
+>  
+> +			xdp_buf.mb = 0;
+>  			mvneta_swbm_rx_frame(pp, rx_desc, rxq, &xdp_buf,
+>  					     &size, page);
+>  		} else {
 > -- 
 > 2.30.2
 > 
+
