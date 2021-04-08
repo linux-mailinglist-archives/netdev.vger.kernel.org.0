@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CED03584ED
+	by mail.lfdr.de (Postfix) with ESMTP id A911F3584EE
 	for <lists+netdev@lfdr.de>; Thu,  8 Apr 2021 15:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231674AbhDHNk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 09:40:28 -0400
-Received: from mail-mw2nam10on2055.outbound.protection.outlook.com ([40.107.94.55]:53088
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S231811AbhDHNkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 09:40:31 -0400
+Received: from mail-dm6nam12on2054.outbound.protection.outlook.com ([40.107.243.54]:5014
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231777AbhDHNkX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 09:40:23 -0400
+        id S231767AbhDHNk0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 09:40:26 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZZ2L9EwvxwLCSNWSYg1EuMhr0zXImqgca1D9xlapTY2yHx91eEMn7OfmlrRMP4nxXX5q8WXMp6evUHgD48hCuV+oiZBM0PDDMaWTpe0molztXTFOfzdxDpPs10VmXu/jhkVhPM0d5wUuoyDezbczjsXNoIVyF1bLWRwN3kTA37OR+qFSwXkNZTdeiDTBl7GxMBAXhhUblqFnGovzF09LKRCg4FDLJ/ZfQkauPkcUBT/CicJjVEsKnhzFR7iSvtRkesfJZdUFnG4CMny2WWOy0/HDR9HIRtIg7yBKVOYnGUUnavM6wtnKdiPAipnDTYhyVlfqaU8UodS+CEofSakxPQ==
+ b=VNHNz2m8OT3svbiJlmR2mhsVypLqNQca9awGcgYjqeONDL9I3BOYDSCt0oUaXZSTVi3LwBXGcNUNV5aRVsezjDc9LJnOyBmKnOTCL/0to70vZf8oRtExDRjdfRsWsfiCAXmL+ZDly0REGb1cdDyzDWZHnXF2cGBRQaDLx+V67nH//2ss32NjUnGrKYV2N1OxXiK/1NCVAmBsVLRJA/ElPG0nlBx1jhbxG2d1nuBdEUdQmHjNJDwz+9XEGN/Q9kmNqbIlcUGJF8cTjLeLHvVyBylG60pFLmcgMn640YuCcFY1mjt6Ar9s+PQoWjmMkxbf9QEpc5yMrtza/xaDBock4w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XJzRTCnK2XO6I6rO2bfGCuK7ecwpCL7fmVVPDBY2aKc=;
- b=f4H6taHqDth/all2twyK6bW+7ZDlYBxf8rb71MKr1Y0mSo38H2Sa6QmHtvvMJ4IsqQGmkWZmcmIExaxVD+U7qJs82MX9rj+BqqRIkQEGQAS4nBc/4f6DNyzNMI2DKxED49Ay1yswstrQxVLgbmK9yHD9QoZ5MTrPyqf7lkdCabMppKEwRTet8Pxitj57zNmV5+LfK0e+vHtCidL1SQ4V4ETGtU2BabSAAk3HTqq5jTJZup8KgH48aXygXM41cen1FmiFn9yw7TtL7vZl3Ea39XVs4Lg5j8QYmIDbFMZNRqrjpBAQgEsf9OukyePsfqq9SuOwtj0oynH2PYHJiZJNAQ==
+ bh=I+QU0NrVZaIIzHWl/S46NG+dZyFfqLtgB+gKxaidfuM=;
+ b=PBu5f/dPOJDLYXHWKC5lSurJCPWk171PzUIwWti/qZk6w0V7XBWspxa9vzB2wQSFc15WT5lEIwMP4exvOEF5qqsjdjCzjyc7JEz0kWnCU1/0f7hnPMMnShz8NM+V8v/rB0slHTDgv8Y2Y9c+9KvL85J4KXc2yMOcC2RKXjWIjIMXCyBUZpOfRavK3tkax+kHjFOyvYxd/pAIc++jDLYjfYe3IDs27TcJOVI3/WisrW4rFLPFlrbEvZgsGEsurRp/5P5EDS4eIMVqvJWa8IgyysQKwAWSx56bwYB2wOJYWP01xw+Cx5Qd0iMcyBPEYGnSfymUeRy4CGI3ntyj2/3cHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -26,18 +26,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XJzRTCnK2XO6I6rO2bfGCuK7ecwpCL7fmVVPDBY2aKc=;
- b=H3Pwu2CJn2iBRnv5mC660CPb1gYv5N2f8xFsHNxONsbFtQ/Jp7mXk3zyMdnTNtOWJWAt0+VPRPLe5Ca8eDo0ZJovXRITczbbJxAWENvVgOYZ/6Ynl/22UpSwnw185l2SXRa/bpdnEZ2fQn5XvmRacSUUItO3kbK6UPwzBUAUFA0C2OGehr8IIBgln+wpuuFeJZ42/U6dF4FoWTbIFBuAvcUlzBWZ0hy4QGiWbp8ifAjgvWczKPURqQYoJlZnosOzBqcglwhuedyq6ZYYgQr661h23ZexTwFuIpiNzFfLPFdMKYKpQRREufz1lTpBgS9ZTIwuHUl/7jbqXAqA4Zx1fw==
-Received: from BN6PR19CA0073.namprd19.prod.outlook.com (2603:10b6:404:133::11)
- by CH2PR12MB4022.namprd12.prod.outlook.com (2603:10b6:610:22::13) with
+ bh=I+QU0NrVZaIIzHWl/S46NG+dZyFfqLtgB+gKxaidfuM=;
+ b=WtHMpDWkcp5uVQ4Js083wKgK7/kjFVZNfKGme96GQvS4t8mwdUPoTXvP5qyhMAKwEXrkaYMeYk8Y6SZma6xd1B5ZVMigSraukaGZJIW8HdlPur8Dmz749jvGy8RpL/q7YqZ5gPjqZCoqA0HiKkMDRzJ7vc4emzJ9XPUNyt6xM1d5oADr3CVqAlpyTjf5HOBQb5l4Gznodgw7AGOfDazcvIgSsie30sJP4/VhMVrYRhhyGJIKRXzhe6cTS9q9vHodk0o1XkKnwFnS1SZg0FaeC8l47wTh4kOosdEAqDeZhmgcUOzuuAPm1oSOrWMb4uZVEJIydbMsjLuXmH9Aabm9dw==
+Received: from BN6PR19CA0051.namprd19.prod.outlook.com (2603:10b6:404:e3::13)
+ by BL0PR12MB2403.namprd12.prod.outlook.com (2603:10b6:207:40::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.32; Thu, 8 Apr
- 2021 13:40:09 +0000
-Received: from BN8NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:133:cafe::f0) by BN6PR19CA0073.outlook.office365.com
- (2603:10b6:404:133::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend
- Transport; Thu, 8 Apr 2021 13:40:09 +0000
+ 2021 13:40:13 +0000
+Received: from BN8NAM11FT006.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:e3:cafe::b2) by BN6PR19CA0051.outlook.office365.com
+ (2603:10b6:404:e3::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.21 via Frontend
+ Transport; Thu, 8 Apr 2021 13:40:13 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
  header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
@@ -45,12 +45,12 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT028.mail.protection.outlook.com (10.13.176.225) with Microsoft SMTP
+ BN8NAM11FT006.mail.protection.outlook.com (10.13.177.21) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Thu, 8 Apr 2021 13:40:09 +0000
+ 15.20.4020.17 via Frontend Transport; Thu, 8 Apr 2021 13:40:13 +0000
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 8 Apr
- 2021 13:40:06 +0000
+ 2021 13:40:09 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
@@ -59,9 +59,9 @@ CC:     Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net-next 5/7] mlxsw: Offload trap_fwd
-Date:   Thu, 8 Apr 2021 15:38:27 +0200
-Message-ID: <20210408133829.2135103-6-petrm@nvidia.com>
+Subject: [PATCH net-next 6/7] selftests: forwarding: Add a test for TC trapping behavior
+Date:   Thu, 8 Apr 2021 15:38:28 +0200
+Message-ID: <20210408133829.2135103-7-petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.3
 In-Reply-To: <20210408133829.2135103-1-petrm@nvidia.com>
 References: <20210408133829.2135103-1-petrm@nvidia.com>
@@ -73,195 +73,216 @@ X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c5dd9da5-d849-43e8-d898-08d8fa93d405
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4022:
-X-Microsoft-Antispam-PRVS: <CH2PR12MB40224202DCB6F638372D6731D6749@CH2PR12MB4022.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:628;
+X-MS-Office365-Filtering-Correlation-Id: a244aca8-4419-477f-dbf8-08d8fa93d637
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2403:
+X-Microsoft-Antispam-PRVS: <BL0PR12MB240354EBF47D9E37D6B98ABAD6749@BL0PR12MB2403.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZG0oZ/5NgC0+Zp9Va4PzZ3l9q8PvC31T+vWMs34tPn2rh2hliHrQif0qFfi1T2uftv/CagWkyVY9V6Zgmmn8Xnv0ItjqzVmHmUNkl/I6YrJcnFD4T3j4tTUci4eUEUVJMHKXLjI7ek8g+8cacVTZqvVmMqr/I2iBaCV3w6KpJ6KQA0zy81SJ4G+B427VB5LXMeXfcHagvkKct+1yPFRuVs168Fx3UJEy7mSGEa6T+FeTKxkgwSl5H44/ivOByTAoOcKmqhSZwvb9OVesbY7CnPyLUphY0IBoXDQD0Kq05wROEsBWQSt48RVMHcqt5y4kfZ6Mz+/ZBuzioKfyE+rQeVhHfUP08PVIL6lfKF9Ejv5s4z2ozoqZ4TBFEpVthW2PJKc2CY6GEHEudLBhz8WLyD7IB9MI4gV88eM9uAd2z87+COYclmNe5mRbbs3DLtg6nKBqNvIzluh5BPPolFEyrwSu8/+c+2udj0eY76DiryJd+Gb3slpcMlrWlIH8cNyegQXboFGpxbuRMgXtel72qO9iA5aK84Zv/HIH0UgWkbexdmPCB7cti1+Kd0PxOs6CsOpeDu4XbYGMEQ6+PSuAmGhWv0QQP3JmMfu8TQOqz4lB8cnotXwqBdInRWFxL07rFHLXMRDpdHKxKc+n21SzSA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(396003)(39860400002)(376002)(136003)(46966006)(36840700001)(5660300002)(7636003)(356005)(426003)(2616005)(36756003)(6916009)(82740400003)(83380400001)(16526019)(4326008)(70586007)(36906005)(316002)(6666004)(336012)(2906002)(1076003)(47076005)(36860700001)(26005)(82310400003)(86362001)(70206006)(8676002)(54906003)(8936002)(186003)(478600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: WYppZ1lUPss7hhbws4vKptoPHBEglDKY/b1sKH+TImYV7aUdFvHMDqN7SIkxk/gJgyzhJHMG9nXZN/xRRBJ5EyT4QxXkleZefjrkc4MVOakzQp4I6toU6w74RXbeU3I70s13xKt77r+CkNyDAjIWjWOlIR2iWWN1G+XAZbaUN4vj0WZimHZYctlz3d+sAMoOIBRTvresZTyZdii9CiNVGR3azRPY52Vg7jk7hV9BDfGDuEd5yiPSfyd7AWnOibnfdor9hD0Y4j6JozqjKXRUbinWWaGKhTDUdAp3Q3lBpK5vBMObG3FRWjgK9Jn2NssdLKDqRv7Xek8UvdIk0IaxYiwGhW0DlwQbWE23Zyibn8y6liP7BrghqdLS/l2UMXt1kQ2W88NUYqLotI2Q6oCpqqZSuIl5B8RrUCaLZCY/si8bq79aTQmojjsgZ4dvmuRD7u/36AXHVfiOPocoI00wNqSgoaSVDv1V8HciCM4bHm4V8yqtmGKYQTZc3RmWP56s0H5qmAldsjYqJfw1ThDUJaHIa1fpbTE1VeZiTUxQe87pQ2b632o8C7AOSgQww/1xiAeFZCM9CuphHZkq4nNWAZtkoe3ELepSkq6lNNG2+q+k7SUmWgzsph3ZUOAMysPD/7UhoxiiUZUCfgLlZaZeLQ==
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(39860400002)(136003)(396003)(46966006)(36840700001)(316002)(2906002)(47076005)(36906005)(36756003)(36860700001)(186003)(4326008)(6666004)(1076003)(8676002)(82310400003)(8936002)(16526019)(54906003)(70206006)(83380400001)(70586007)(336012)(2616005)(6916009)(7636003)(356005)(26005)(86362001)(5660300002)(478600001)(82740400003)(426003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 13:40:09.5215
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 13:40:13.2207
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5dd9da5-d849-43e8-d898-08d8fa93d405
+X-MS-Exchange-CrossTenant-Network-Message-Id: a244aca8-4419-477f-dbf8-08d8fa93d637
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT028.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT006.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4022
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2403
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Offload the TC action trap_fwd. This is offloaded as a TRAP_ACTION with
-forward_action of FORWARD (as opposed to NOP for the trap action). Unlike
-trap, trap_fwd needs to be in an "goto"-typed action set, not "next"-typed
-one.
-
-Trap_fwd'd traffic is marked with offload_fwd_mark and offload_l3_fwd_mark
-to prevent second forwarding in the SW datapath.
+Test that trapped packets are forwarded through the SW datapath, whereas
+trap_fwd'd ones are not (but are forwarded through HW datapath). For
+completeness' sake, also test that "pass" (i.e. lack of trapping) simply
+forwards the packets in the HW datapath.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../mellanox/mlxsw/core_acl_flex_actions.c    | 23 +++++++++++++++----
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    |  6 +++++
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |  7 ++++++
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  8 +++++++
- drivers/net/ethernet/mellanox/mlxsw/trap.h    |  2 ++
- 6 files changed, 43 insertions(+), 4 deletions(-)
+ .../selftests/net/forwarding/tc_trap.sh       | 170 ++++++++++++++++++
+ 1 file changed, 170 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_trap.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-index faa90cc31376..d7d7e688139f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-@@ -94,7 +94,8 @@ struct mlxsw_afa_set {
- 		      * kvdl_index is valid).
- 		      */
- 	   has_trap:1,
--	   has_police:1;
-+	   has_police:1,
-+	   has_trap_fwd:1;
- 	unsigned int ref_count;
- 	struct mlxsw_afa_set *next; /* Pointer to the next set. */
- 	struct mlxsw_afa_set *prev; /* Pointer to the previous set,
-@@ -263,14 +264,23 @@ static void mlxsw_afa_set_goto_set(struct mlxsw_afa_set *set,
- 	mlxsw_afa_set_goto_next_binding_set(actions, group_id);
- }
- 
--static void mlxsw_afa_set_next_set(struct mlxsw_afa_set *set,
-+static int mlxsw_afa_set_next_set(struct mlxsw_afa_set *set,
- 				  u32 next_set_kvdl_index,
- 				  struct netlink_ext_ack *extack)
- {
- 	char *actions = set->ht_key.enc_actions;
- 
-+	/* If the forwarding action is not drop, the next/goto record must not
-+	 * be a next, it must be a goto.
-+	 */
-+	if (set->has_trap_fwd) {
-+		NL_SET_ERR_MSG_MOD(extack, "Only goto permissible after a trap_fwd action");
-+		return -EINVAL;
-+	}
+diff --git a/tools/testing/selftests/net/forwarding/tc_trap.sh b/tools/testing/selftests/net/forwarding/tc_trap.sh
+new file mode 100755
+index 000000000000..56336cea45a2
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/tc_trap.sh
+@@ -0,0 +1,170 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- 	mlxsw_afa_set_type_set(actions, MLXSW_AFA_SET_TYPE_NEXT);
- 	mlxsw_afa_set_next_action_set_ptr_set(actions, next_set_kvdl_index);
-+	return 0;
- }
- 
- static struct mlxsw_afa_set *mlxsw_afa_set_create(bool is_first)
-@@ -461,6 +471,7 @@ int mlxsw_afa_block_commit(struct mlxsw_afa_block *block,
- {
- 	struct mlxsw_afa_set *set = block->cur_set;
- 	struct mlxsw_afa_set *prev_set;
-+	int err;
- 
- 	block->cur_set = NULL;
- 	block->finished = true;
-@@ -481,8 +492,10 @@ int mlxsw_afa_block_commit(struct mlxsw_afa_block *block,
- 			return PTR_ERR(set);
- 		if (prev_set) {
- 			prev_set->next = set;
--			mlxsw_afa_set_next_set(prev_set, set->kvdl_index,
--					       extack);
-+			err = mlxsw_afa_set_next_set(prev_set, set->kvdl_index,
-+						     extack);
-+			if (err)
-+				return err;
- 			set = prev_set;
- 		}
- 	} while (prev_set);
-@@ -1346,6 +1359,8 @@ int mlxsw_afa_block_append_trap_and_forward(struct mlxsw_afa_block *block,
- 
- 	if (IS_ERR(act))
- 		return PTR_ERR(act);
++# In the following simple routing scenario, put SW datapath packet probes on
++# $swp1, $swp2 and $h2. Always expect packets to arrive at $h2. Depending on
++# whether, in the HW datapath, $swp1 lets packets pass, traps them, or
++# traps_forwards them, $swp1 and $swp2 probes are expected to give different
++# results.
++#
++# +----------------------+                             +----------------------+
++# | H1                   |                             |                   H2 |
++# |    + $h1             |                             |            $h2 +     |
++# |    | 192.0.2.1/28    |                             |  192.0.2.18/28 |     |
++# +----|-----------------+                             +----------------|-----+
++#      |                                                                |
++# +----|----------------------------------------------------------------|-----+
++# | SW |                                                                |     |
++# |    + $swp1                                                    $swp2 +     |
++# |      192.0.2.2/28                                     192.0.2.17/28       |
++# +---------------------------------------------------------------------------+
 +
-+	block->cur_set->has_trap_fwd = true;
- 	mlxsw_afa_trap_pack(act, MLXSW_AFA_TRAP_TRAP_ACTION_TRAP,
- 			    MLXSW_AFA_TRAP_FORWARD_ACTION_FORWARD, trap_id);
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index d74fc7ff8083..6067a049dcf2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -940,6 +940,7 @@ int mlxsw_sp_acl_rulei_act_drop(struct mlxsw_sp_acl_rule_info *rulei,
- 				const struct flow_action_cookie *fa_cookie,
- 				struct netlink_ext_ack *extack);
- int mlxsw_sp_acl_rulei_act_trap(struct mlxsw_sp_acl_rule_info *rulei);
-+int mlxsw_sp_acl_rulei_act_trap_fwd(struct mlxsw_sp_acl_rule_info *rulei);
- int mlxsw_sp_acl_rulei_act_mirror(struct mlxsw_sp *mlxsw_sp,
- 				  struct mlxsw_sp_acl_rule_info *rulei,
- 				  struct mlxsw_sp_flow_block *block,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index b9c4c1feba6d..6f7913424bd9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -401,6 +401,12 @@ int mlxsw_sp_acl_rulei_act_trap(struct mlxsw_sp_acl_rule_info *rulei)
- 					   MLXSW_TRAP_ID_ACL0);
- }
- 
-+int mlxsw_sp_acl_rulei_act_trap_fwd(struct mlxsw_sp_acl_rule_info *rulei)
++
++ALL_TESTS="
++	no_trap_test
++	trap_fwd_test
++	trap_test
++"
++
++NUM_NETIFS=4
++source lib.sh
++source tc_common.sh
++
++h1_create()
 +{
-+	return mlxsw_afa_block_append_trap_and_forward(rulei->act_block,
-+						       MLXSW_TRAP_ID_ACL3);
++	simple_if_init $h1 192.0.2.1/28
++	ip route add vrf v$h1 192.0.2.16/28 via 192.0.2.2
 +}
 +
- int mlxsw_sp_acl_rulei_act_fwd(struct mlxsw_sp *mlxsw_sp,
- 			       struct mlxsw_sp_acl_rule_info *rulei,
- 			       struct net_device *out_dev,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 936788f741dd..1f52ea7ba202 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -86,6 +86,13 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 				return err;
- 			}
- 			break;
-+		case FLOW_ACTION_TRAP_FWD:
-+			err = mlxsw_sp_acl_rulei_act_trap_fwd(rulei);
-+			if (err) {
-+				NL_SET_ERR_MSG_MOD(extack, "Cannot append trap_fwd action");
-+				return err;
-+			}
-+			break;
- 		case FLOW_ACTION_GOTO: {
- 			u32 chain_index = act->chain_index;
- 			struct mlxsw_sp_acl_ruleset *ruleset;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 26d01adbedad..504fb7440a1f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -1154,6 +1154,14 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 					     false),
- 		},
- 	},
-+	{
-+		.trap = MLXSW_SP_TRAP_CONTROL(FLOW_ACTION_TRAP_FWD,
-+					      ACL_TRAP, MIRROR),
-+		.listeners_arr = {
-+			MLXSW_SP_RXL_L3_MARK(ACL3, FLOW_LOGGING, MIRROR_TO_CPU,
-+					     false),
-+		},
-+	},
- 	{
- 		.trap = MLXSW_SP_TRAP_DROP(BLACKHOLE_NEXTHOP, L3_DROPS),
- 		.listeners_arr = {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-index 9e070ab3ed76..5271d7ad092a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
-@@ -108,6 +108,8 @@ enum {
- 	MLXSW_TRAP_ID_ACL2 = 0x1C2,
- 	MLXSW_TRAP_ID_DISCARD_INGRESS_ACL = 0x1C3,
- 	MLXSW_TRAP_ID_DISCARD_EGRESS_ACL = 0x1C4,
-+	/* Packets trapped due to FLOW_ACTION_TRAP_FWD. */
-+	MLXSW_TRAP_ID_ACL3 = 0x1C5,
- 	MLXSW_TRAP_ID_MIRROR_SESSION0 = 0x220,
- 	MLXSW_TRAP_ID_MIRROR_SESSION1 = 0x221,
- 	MLXSW_TRAP_ID_MIRROR_SESSION2 = 0x222,
++h1_destroy()
++{
++	ip route del vrf v$h1 192.0.2.16/28 via 192.0.2.2
++	simple_if_fini $h1 192.0.2.1/28
++}
++
++h2_create()
++{
++	simple_if_init $h2 192.0.2.18/28
++	ip route add vrf v$h2 192.0.2.0/28 via 192.0.2.17
++	tc qdisc add dev $h2 clsact
++}
++
++h2_destroy()
++{
++	tc qdisc del dev $h2 clsact
++	ip route del vrf v$h2 192.0.2.0/28 via 192.0.2.17
++	simple_if_fini $h2 192.0.2.18/28
++}
++
++switch_create()
++{
++	simple_if_init $swp1 192.0.2.2/28
++	__simple_if_init $swp2 v$swp1 192.0.2.17/28
++
++	tc qdisc add dev $swp1 clsact
++	tc qdisc add dev $swp2 clsact
++}
++
++switch_destroy()
++{
++	tc qdisc del dev $swp2 clsact
++	tc qdisc del dev $swp1 clsact
++
++	__simple_if_fini $swp2 192.0.2.17/28
++	simple_if_fini $swp1 192.0.2.2/28
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	swp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	vrf_prepare
++	forwarding_enable
++
++	h1_create
++	h2_create
++	switch_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	switch_destroy
++	h2_destroy
++	h1_destroy
++
++	forwarding_restore
++	vrf_cleanup
++}
++
++__test()
++{
++	local action=$1; shift
++	local ingress_should_fail=$1; shift
++	local egress_should_fail=$1; shift
++
++	tc filter add dev $swp1 ingress protocol ip pref 2 handle 101 \
++		flower skip_sw dst_ip 192.0.2.18 action $action
++	tc filter add dev $swp1 ingress protocol ip pref 1 handle 102 \
++		flower skip_hw dst_ip 192.0.2.18 action pass
++	tc filter add dev $swp2 egress protocol ip pref 1 handle 103 \
++		flower skip_hw dst_ip 192.0.2.18 action pass
++	tc filter add dev $h2 ingress protocol ip pref 1 handle 104 \
++		flower dst_ip 192.0.2.18 action drop
++
++	RET=0
++
++	$MZ $h1 -c 1 -p 64 -a $(mac_get $h1) -b $(mac_get $swp1) \
++		-A 192.0.2.1 -B 192.0.2.18 -q -t ip
++
++	tc_check_packets "dev $swp1 ingress" 102 1
++	check_err_fail $ingress_should_fail $? "ingress should_fail $ingress_should_fail"
++
++	tc_check_packets "dev $swp2 egress" 103 1
++	check_err_fail $egress_should_fail $? "egress should_fail $egress_should_fail"
++
++	tc_check_packets "dev $h2 ingress" 104 1
++	check_err $? "Did not see the packet on host"
++
++	log_test "$action test"
++
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 104 flower
++	tc filter del dev $swp2 egress protocol ip pref 1 handle 103 flower
++	tc filter del dev $swp1 ingress protocol ip pref 1 handle 102 flower
++	tc filter del dev $swp1 ingress protocol ip pref 2 handle 101 flower
++}
++
++no_trap_test()
++{
++	__test pass 1 1
++}
++
++trap_fwd_test()
++{
++	__test trap_fwd 0 1
++}
++
++trap_test()
++{
++	__test trap 0 0
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++if ! tc_offload_check; then
++	check_err 1 "Could not test offloaded functionality"
++	log_test "offloaded tc_trap test"
++	exit
++fi
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.26.2
 
