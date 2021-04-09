@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 826A535A7F7
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 22:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8654A35A7FA
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 22:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234344AbhDIUke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 16:40:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37471 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231946AbhDIUkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 16:40:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618000819;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q193xZr1BMYRCl6sJseS6djVgHOxLnB/RXmKWcvH1Ro=;
-        b=RICn4UlyJws681foM51ayuyHoY92Yq/WlHkF9axS57L85V1gqZy7I9yVTMXmXQ/7f91t2P
-        GYqLjTY4VKerT8rFr6fLQCALHoC5xBdJZVBgS9RY6AsqWKJ6pvZHUMOoL21CoBNTCM0/pK
-        UJLdp1ouOGlKCxPJ97tKQMux5w9P+jk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-455-tXkxNBTDO2CqPBZqDhxCrg-1; Fri, 09 Apr 2021 16:40:15 -0400
-X-MC-Unique: tXkxNBTDO2CqPBZqDhxCrg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1978A107ACCD;
-        Fri,  9 Apr 2021 20:40:13 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D29B16EF50;
-        Fri,  9 Apr 2021 20:40:06 +0000 (UTC)
-Date:   Fri, 9 Apr 2021 22:40:05 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     brouer@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v2 3/5] page_pool: Allow drivers to hint on SKB
- recycling
-Message-ID: <20210409224005.6dc6dcd6@carbon>
-In-Reply-To: <YHCknwlzJHPFXm2j@apalos.home>
-References: <20210402181733.32250-1-mcroce@linux.microsoft.com>
-        <20210402181733.32250-4-mcroce@linux.microsoft.com>
-        <20210409115648.169523fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YHCknwlzJHPFXm2j@apalos.home>
+        id S234416AbhDIUko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 16:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234357AbhDIUkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 16:40:41 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F128C061764
+        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 13:40:28 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id d12so3098328iod.12
+        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 13:40:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kyEt1ksQ+JQPinifGRtvPHx9UK2YlW1JCIGqjukG2tI=;
+        b=sHcIVLC1w2ibtu6NZ4brRofUXy78o2puktCiOlwg1UnwtL+5Tm1Rs7FG437vw3GC7I
+         EUW/0JhXaoJ0TRTKWtR755vpYm0R4X2pOY3m0BRusCprKfIT/11h2wV7dft86cobpKWx
+         V49I6nK189ua/IfhV4svmkVq7OvVAoDF0jWXY5focgnugz4Al8e3tCDwxwGF0NPt8zND
+         p6WVsIFUWN2uu+HlSeM8xPuQXCnu64d8yxoMx4JRDs+CzrBSGF3TqAB1cLonPUtNCBfN
+         Z7Fsg5AHMaS7V0bZyer7Dh1jwrlHX0jRtUuK1Fv+0Xww2uEv6+lqqLOBKHOBAzjdl3SA
+         AJ5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kyEt1ksQ+JQPinifGRtvPHx9UK2YlW1JCIGqjukG2tI=;
+        b=kSJ0GB44I5Zx4RRakHfR/uDfJzZA8xKoz06B1DhWUh2hYPXHI98L/LcM90/AsTWMdQ
+         hCah4GCO/1sL6iFYKRbFz1o8yKT7sPvtRtts9NXON6AEQckf8eJNgkbcJmYeHL6kcqGv
+         Tk+7ecCc1H1tHWwxCgjBlV5Q2NiHyfomy3bfdpI9Yadd7Dq827DokNB6YLnzYuvQwbbJ
+         ya0wOnXCdMt7T+4+mPAfpw2kxwuo5wBIRmgGhcsvfvJW7HSvzd4CJnz3Jyd1NClQXHgh
+         k31Pta1NQokM+kEJW2NvlzyYfliI6ilVPUzNAu2u0uyBWeSf8pZedAm6AVXoLTNOXDDJ
+         7yJA==
+X-Gm-Message-State: AOAM531zJW+SmqVmZgPHCK3an60hfHKQ7d1Dgnwht83ophu8iAnE2OP+
+        Zd2TVjHIUZIXlpCPigeVTRoHEQ==
+X-Google-Smtp-Source: ABdhPJxJv6/aw1y/Gn66AfvT3KOZbNbU1Cs4ktQd8VlYobTFNdQkkc1IUELXGGpZDNKaAS3rUtTwlw==
+X-Received: by 2002:a6b:500c:: with SMTP id e12mr12277326iob.190.1618000827805;
+        Fri, 09 Apr 2021 13:40:27 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id b9sm1667212ilc.28.2021.04.09.13.40.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Apr 2021 13:40:27 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        elder@kernel.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: ipa: support two more platforms
+Date:   Fri,  9 Apr 2021 15:40:20 -0500
+Message-Id: <20210409204024.1255938-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Apr 2021 22:01:51 +0300
-Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+This series adds IPA support for two more Qualcomm SoCs.
 
-> On Fri, Apr 09, 2021 at 11:56:48AM -0700, Jakub Kicinski wrote:
-> > On Fri,  2 Apr 2021 20:17:31 +0200 Matteo Croce wrote:  
-> > > Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > Co-developed-by: Matteo Croce <mcroce@microsoft.com>
-> > > Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>  
-> > 
-> > Checkpatch says we need sign-offs from all authors.
-> > Especially you since you're posting.  
-> 
-> Yes it does, we forgot that.  Let me take a chance on this one. 
-> The patch is changing the default skb return path and while we've done enough
-> testing, I would really prefer this going in on a future -rc1 (assuming we even
-> consider merging it), allowing enough time to have wider tests.
+The first patch updates the DT binding to add compatible strings.
 
-You can have my:
+The second temporarily disables checksum offload support for IPA
+version 4.5 and above.  Changes are required to the RMNet driver
+to support the "inline" checksum offload used for IPA v4.5+, and
+once those are present this capability will be enabled for IPA.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+The third and fourth patches add configuration data for IPA versions
+4.5 (used for the SDX55 SoC) and 4.11 (used for the SD7280 SoC).
 
-But as Ilias suggested in IRC lets send a V3, and Cc the MM-people, as
-this also dig into their area.
+					-Alex
+
+Alex Elder (4):
+  dt-bindings: net: qcom,ipa: add some compatible strings
+  net: ipa: disable checksum offload for IPA v4.5+
+  net: ipa: add IPA v4.5 configuration data
+  net: ipa: add IPA v4.11 configuration data
+
+ .../devicetree/bindings/net/qcom,ipa.yaml     |   6 +-
+ drivers/net/ipa/Makefile                      |   3 +-
+ drivers/net/ipa/ipa_data-v4.11.c              | 382 +++++++++++++++
+ drivers/net/ipa/ipa_data-v4.5.c               | 437 ++++++++++++++++++
+ drivers/net/ipa/ipa_data.h                    |   2 +
+ drivers/net/ipa/ipa_endpoint.c                |  16 +
+ drivers/net/ipa/ipa_main.c                    |   8 +
+ drivers/net/ipa/ipa_mem.h                     |   6 +-
+ 8 files changed, 855 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/net/ipa/ipa_data-v4.11.c
+ create mode 100644 drivers/net/ipa/ipa_data-v4.5.c
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.27.0
 
