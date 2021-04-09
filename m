@@ -2,62 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 464B335A779
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:59:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9ED35A78C
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 22:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234397AbhDIT7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 15:59:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37212 "EHLO mail.kernel.org"
+        id S234789AbhDIUAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 16:00:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234361AbhDIT7i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 15:59:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 42BDE611AF;
-        Fri,  9 Apr 2021 19:59:25 +0000 (UTC)
+        id S234545AbhDIUAv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 16:00:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id CA0D1610F7;
+        Fri,  9 Apr 2021 20:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617998365;
-        bh=pJ7c657VoLqpI/8XU9Khru6I80F9QWhd7I0r2ySUqlk=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=cJWeYJoKPIy4RKvyJx9JgZ8w1qYfKvC1Q958gU8xF3kj/fUn0wFcO0s/Fipan2Q4b
-         4yRubMzJezjPgcFKtGwpc1FALJ2fA40H4B3DDNPxzOpH8ypp1uxXbqsawkJIpaQiHc
-         uNUnz/paxQFMm83uIluqDIcgUfQgQ7LAzsL40QHoisOKluUcosYwBKNLLmj5OFAWQY
-         thrISi3HSXEVkwACnhUtqIg7lvvWXyuL0fLSXXpuCgLoVfWHg2y9IvpW5HmNO+Euet
-         x8pB2pUUqQ9Y1lbIoscnu+Pe7WbqMN9Dk0D+VUUljvVZzYtDoMmViDmKPs1enmS4cS
-         M3Ciirdi9InfQ==
+        s=k20201202; t=1617998437;
+        bh=5GOsJGNIQOU/Km0eb1zrsnUs1UIHbxOflqi7W93KoMY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Z8OjJlDIgTO9sc1y5OyRJWfKVCRoOBLFj+kJ2iRCHZEvHLpVeU0AHB0Qius7AdAMA
+         gsKj9yHmmmVhvZEZXV8iEIcfEn8oliUk4/XZPvGlAtycJlNBGglCRjO0DFPbUw9aIj
+         SnLgUTdoIN5EyJlnxtNYL+A6fnGFXfn3vXsl++o0IZmTH1b8JkaCau6GVtz/7XtFM8
+         gcL12BXoZV6hVQ+GTFunVVTMpRyXPQKmt7SYv87+rrMqRSWDm3/qVEYQoMerIJHvlO
+         flbr8C9m+LGrJW1nxyMPq+Kku394fOx7ijb0pUSOg/hQdPDYvPqBASU/KOepkFS1EL
+         GdhTPZYSfzggg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3D25D60A71;
-        Fri,  9 Apr 2021 19:59:25 +0000 (UTC)
-Subject: Re: [GIT PULL] vdpa/mlx5: last minute fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20210409124816-mutt-send-email-mst@kernel.org>
-References: <20210409124816-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20210409124816-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: bc04d93ea30a0a8eb2a2648b848cef35d1f6f798
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 189fefc7a4f0401d0f799de96b772319a6541fc1
-Message-Id: <161799836524.7895.6127535602829010878.pr-tracker-bot@kernel.org>
-Date:   Fri, 09 Apr 2021 19:59:25 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, jasowang@redhat.com, mst@redhat.com,
-        si-wei.liu@oracle.com
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BD0E060A71;
+        Fri,  9 Apr 2021 20:00:37 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: hns3: Trivial spell fix in hns3 driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161799843776.9153.13095418822431780218.git-patchwork-notify@kernel.org>
+Date:   Fri, 09 Apr 2021 20:00:37 +0000
+References: <20210409074223.32480-1-salil.mehta@huawei.com>
+In-Reply-To: <20210409074223.32480-1-salil.mehta@huawei.com>
+To:     Salil Mehta <salil.mehta@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+        linuxarm@openeuler.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Fri, 9 Apr 2021 12:48:16 -0400:
+Hello:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+This patch was applied to netdev/net.git (refs/heads/master):
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/189fefc7a4f0401d0f799de96b772319a6541fc1
+On Fri, 9 Apr 2021 08:42:23 +0100 you wrote:
+> Some trivial spelling mistakes which caught my eye during the
+> review of the code.
+> 
+> Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+> ---
+>  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 2 +-
+>  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
-Thank you!
+Here is the summary with links:
+  - [net] net: hns3: Trivial spell fix in hns3 driver
+    https://git.kernel.org/netdev/net/c/cd7e963d2f08
 
--- 
+You are awesome, thank you!
+--
 Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
