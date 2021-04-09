@@ -2,156 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9722135A4FE
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 19:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1593335A51D
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 19:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234392AbhDIR4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 13:56:35 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:33511 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233332AbhDIR4e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 13:56:34 -0400
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth-2019-1.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 139Htp74014136;
-        Fri, 9 Apr 2021 19:55:57 +0200
-Received: from lubuntu-18.04 (unknown [160.80.103.126])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id A5D921200A8;
-        Fri,  9 Apr 2021 19:55:46 +0200 (CEST)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1617990947; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pni0KvBbEd9KTaOWkuAW37WojjxsQ6NNGlUAutGZc7c=;
-        b=M9P7KmqNMt1w5lUBFckAsIZkfaw1R//JwL01Pn4CZ9d2516zOPULHUUPPxsZREVx8Fhpo4
-        LQoF1OYMSp0madDg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1617990947; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pni0KvBbEd9KTaOWkuAW37WojjxsQ6NNGlUAutGZc7c=;
-        b=FQJrs19RAr+0OSkd71Wqabf8tQmFALZZw7KuuQNayEem2TNWZ72ae/HyDvLLPmi7xR+bg4
-        f/7Z3OVsmkBwWSZ1xMIslhPx8RwCJcVdFKDVY87etuUkiDWv0JFjxK0mr7ODajWCm/bQW+
-        j8JdMNVZI8oKLN8qFR9tf835JAXUqV6wkMB3F7wdxItJWcLoUrPTbxzdhSZpKKZUmHVxbd
-        qPMSuYrsfP7P5qQqg2Uxf+tTpT+zIJGjft2YiOD4GuLd0QAAzqmSdF2bQjRaKxtnb0pcl2
-        UkMDUiZ/Tn7hp7xH8uURXYjVTVhmD9WQii9PbTgSSLcxg5KWjMTst56O5IdzkQ==
-Date:   Fri, 9 Apr 2021 19:55:46 +0200
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: Re: [RFC net-next 1/1] seg6: add counters support for SRv6
- Behaviors
-Message-Id: <20210409195546.d528ca172b7360c9ac4d1dd3@uniroma2.it>
-In-Reply-To: <26222d31-2a27-c250-97e2-9220c098d836@gmail.com>
-References: <20210407180332.29775-1-andrea.mayer@uniroma2.it>
-        <20210407180332.29775-2-andrea.mayer@uniroma2.it>
-        <26222d31-2a27-c250-97e2-9220c098d836@gmail.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        id S234484AbhDIR6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 13:58:32 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:33417 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234383AbhDIR6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 13:58:32 -0400
+Received: by mail-il1-f198.google.com with SMTP id a2so3999008ilq.0
+        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 10:58:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=zjuLShoOJ9Ne+PRJM/8fkmqQZG9THBny186JcJESo9Y=;
+        b=jWAc+uUoC51is+nEqE5VgmLyBk/SK17ZHs6lYHOw0bCU3iCcx1M3M+vM2UdAoLqQwa
+         FdGCJz6wzCxAqlMtvI8u/YGhuJwBzpVVtwLwCLXwLmorr8hUFvTBNrX5L/3RBBmtpUEN
+         k/I9TG+iJsf2aqbKX4MLwbGU/rZ1yOhRVGQOZ7Qkbwjexe2MQXFxZNw7bzDeKUSpBdry
+         4vaSggQKACoCdNdj1NswcqM7m4J5cRKU44OYbZOyJmLWOhv7SYTC5POwMxfFC42zMhEs
+         vKuvcX83icSnPk6Llf03jJlsvtEp6DqmkG3edBToDKkqo0Mm8ZpJklmRoXsmv5XhPmk2
+         U8Fw==
+X-Gm-Message-State: AOAM532HXM7aUz2XrKO6cUbyiZ2+d4WpkhmrfFIpBc6qpGhnw+E69X/j
+        lWzFxPqtUUejs7dXKBEZ9N69JVgpJZI4MUpqjjrv9OIFsab4
+X-Google-Smtp-Source: ABdhPJxo4qUor1He6liaGw+24llwAaoVro/IETpD0iVMXKU5p4Bm/U61C3RbFafzPccSl3ESIT7jja4HRfP0mFJn+vOqADLHiE2T
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:1a47:: with SMTP id u7mr11962473ilv.65.1617991098898;
+ Fri, 09 Apr 2021 10:58:18 -0700 (PDT)
+Date:   Fri, 09 Apr 2021 10:58:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b31fe105bf8de885@google.com>
+Subject: [syzbot] kernel BUG in llc_sap_action_send_xid_c
+From:   syzbot <syzbot+5e5a981ad7cc54c4b2b4@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Apr 2021 16:55:41 -0600
-David Ahern <dsahern@gmail.com> wrote:
+Hello,
 
-> On 4/7/21 12:03 PM, Andrea Mayer wrote:
-> > diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-> > index 3b39ef1dbb46..ae5e3fd12b73 100644
-> > --- a/include/uapi/linux/seg6_local.h
-> > +++ b/include/uapi/linux/seg6_local.h
-> > @@ -27,6 +27,7 @@ enum {
-> >  	SEG6_LOCAL_OIF,
-> >  	SEG6_LOCAL_BPF,
-> >  	SEG6_LOCAL_VRFTABLE,
-> > +	SEG6_LOCAL_COUNTERS,
-> >  	__SEG6_LOCAL_MAX,
-> >  };
-> >  #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-> > @@ -78,4 +79,11 @@ enum {
-> >  
-> >  #define SEG6_LOCAL_BPF_PROG_MAX (__SEG6_LOCAL_BPF_PROG_MAX - 1)
-> >  
-> > +/* SRv6 Behavior counters */
-> > +struct seg6_local_counters {
-> > +	__u64 rx_packets;
-> > +	__u64 rx_bytes;
-> > +	__u64 rx_errors;
-> > +};
-> > +
-> >  #endif
-> 
-> It's highly likely that more stats would get added over time. It would
-> be good to document that here for interested parties and then make sure
-> iproute2 can handle different sized stats structs. e.g., commit support
-> to your repo, then add a new one (e.g, rx_drops) and verify the
-> combinations handle it. e.g., old kernel - new iproute2, new kernel -
-> old iproute, old - old and new-new.
-> 
+syzbot found the following issue on:
 
-Hi David,
-thanks for your review.
+HEAD commit:    864db232 net: ipv6: check for validity before dereferencin..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=16377d16d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=daeff30c2474a60f
+dashboard link: https://syzkaller.appspot.com/bug?extid=5e5a981ad7cc54c4b2b4
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=154f8e9ad00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16fe2fbed00000
 
-I totally agree with you: we may want to add other counters in the future, even
-if they are not considered in RFC8986.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5e5a981ad7cc54c4b2b4@syzkaller.appspotmail.com
 
-With that in mind, the shared struct seg6_local_counters is not the best way to
-go if we want to add other counters (because it will be difficult to manage
-different sized structures when considering different kernel/iproute2 versions).
+skbuff: skb_over_panic: text:ffffffff8717de50 len:692 put:3 head:ffff888025f6f000 data:ffff888025f6f00e tail:0x2c2 end:0x2c0 dev:bond0
+------------[ cut here ]------------
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 8372 Comm: syz-executor543 Not tainted 5.12.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:109
+Code: f8 4c 8b 4c 24 10 8b 4b 70 41 56 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 40 b2 65 8a ff 74 24 10 ff 74 24 20 e8 e7 c0 c4 ff <0f> 0b e8 d2 e0 75 f8 4c 8b 64 24 18 e8 c8 87 b9 f8 48 c7 c1 80 be
+RSP: 0018:ffffc9000132f7b8 EFLAGS: 00010282
+RAX: 0000000000000086 RBX: ffff888012a91140 RCX: 0000000000000000
+RDX: ffff888021d6d4c0 RSI: ffffffff815c4d75 RDI: fffff52000265ee9
+RBP: ffffffff8a65bec0 R08: 0000000000000086 R09: 0000000000000000
+R10: ffffffff815bdb0e R11: 0000000000000000 R12: ffffffff8717de50
+R13: 0000000000000003 R14: ffff88801aa24000 R15: 00000000000002c0
+FS:  0000000001d53300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055acdca69398 CR3: 0000000020a7b000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ skb_over_panic net/core/skbuff.c:114 [inline]
+ skb_put.cold+0x24/0x24 net/core/skbuff.c:1914
+ llc_pdu_init_as_xid_cmd include/net/llc_pdu.h:377 [inline]
+ llc_sap_action_send_xid_c+0x240/0x380 net/llc/llc_s_ac.c:84
+ llc_exec_sap_trans_actions net/llc/llc_sap.c:153 [inline]
+ llc_sap_next_state net/llc/llc_sap.c:182 [inline]
+ llc_sap_state_process+0x22a/0x4f0 net/llc/llc_sap.c:209
+ llc_ui_sendmsg+0x9ee/0x1040 net/llc/af_llc.c:964
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x331/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmmsg+0x195/0x470 net/socket.c:2490
+ __do_sys_sendmmsg net/socket.c:2519 [inline]
+ __se_sys_sendmmsg net/socket.c:2516 [inline]
+ __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2516
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43f329
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc10253fb8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f329
+RDX: 0000000000000006 RSI: 0000000020005bc0 RDI: 0000000000000003
+RBP: 0000000000403310 R08: 0000000000400488 R09: 0000000000400488
+R10: 0000000004000000 R11: 0000000000000246 R12: 00000000004033a0
+R13: 0000000000000000 R14: 00000000004ad018 R15: 0000000000400488
+Modules linked in:
+---[ end trace 4d95aeb9a24efeaa ]---
+RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:109
+Code: f8 4c 8b 4c 24 10 8b 4b 70 41 56 45 89 e8 4c 89 e2 41 57 48 89 ee 48 c7 c7 40 b2 65 8a ff 74 24 10 ff 74 24 20 e8 e7 c0 c4 ff <0f> 0b e8 d2 e0 75 f8 4c 8b 64 24 18 e8 c8 87 b9 f8 48 c7 c1 80 be
+RSP: 0018:ffffc9000132f7b8 EFLAGS: 00010282
+RAX: 0000000000000086 RBX: ffff888012a91140 RCX: 0000000000000000
+RDX: ffff888021d6d4c0 RSI: ffffffff815c4d75 RDI: fffff52000265ee9
+RBP: ffffffff8a65bec0 R08: 0000000000000086 R09: 0000000000000000
+R10: ffffffff815bdb0e R11: 0000000000000000 R12: ffffffff8717de50
+R13: 0000000000000003 R14: ffff88801aa24000 R15: 00000000000002c0
+FS:  0000000001d53300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055acdca69398 CR3: 0000000020a7b000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-To make it easier adding new counters, instead of sharing the struct
-seg6_local_counters, I would use netlink nested attributes to exchange counters
-individually. In this way, only recognized (nested) attributes can be processed
-by both the kernel and iproute2.
 
-For example:
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-enum {
-       SEG6_LOCAL_CNT_UNSPEC,
-       SEG6_LOCAL_CNT_PAD,             /* padding for 64 bits values */
-       SEG6_LOCAL_CNT_RX_PACKETS,
-       SEG6_LOCAL_CNT_RX_BYTES,
-       SEG6_LOCAL_CNT_RX_ERRORS,
-       __SEG6_LOCAL_CNT_MAX,
-};
-#define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
-
-updating the policy for SEG6_LOCAL_COUNTERS to NLA_NESTED.
-
-Then, I create a new policy for counters which handles each supported
-counter separately.
-
-static const struct
-nla_policy seg6_local_counters_policy[SEG6_LOCAL_CNT_MAX + 1] = {
-       [SEG6_LOCAL_CNT_RX_PACKETS]     = { .type = NLA_U64 },
-       [SEG6_LOCAL_CNT_RX_BYTES]       = { .type = NLA_U64 },
-       [SEG6_LOCAL_CNT_RX_ERRORS]      = { .type = NLA_U64 },
-};
-
-At the end, I update the parse_nla_counters(), put_nla_counters(), etc
-according to the changes, i.e:
- - nla_parse_nested() in parse_nla_counters();
- - nla_nest_{start/end}() and for each supported counter nla_put_u64_64bit()
-   in put_nla_counters().
-
-On the iproute2 side, we have to update the code to reflect the changes
-discussed above. 
-
-I plan to issue an RFC v2 in a few days.
-
-Andrea
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
