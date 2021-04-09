@@ -2,132 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 678FD3590FC
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 02:41:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0044E359100
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 02:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233141AbhDIAjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 20:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232996AbhDIAjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 20:39:22 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD707C061760;
-        Thu,  8 Apr 2021 17:39:10 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id u8so2962319qtq.12;
-        Thu, 08 Apr 2021 17:39:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=OvFnHWl8/4Gx0jlI2rHNT0cAkiLDkU+mFrazaADwN18=;
-        b=JBZtwNsEfIwjHe5297rgjYqVHfpF0YZC0D3V7g4PPOea6/+RtR4APk9xOnSnalyyLn
-         7bHYHPDFY+AzHIheWawwullU/JSjrvSWEzHdFQ3iQirGf6/AzhClMsMbqXIRQvclb9hl
-         4UIZqXE6fIXz6llMYGGubgRBx9P/udBISzAOTRGh6fQgQCiw/Ttp786+Ay4NwswxiHQ7
-         TLo3qEmaRCA6hC/I11cTA5WTs1zcpnBBzZgVuJ0S1O8pchYh2UoA22XPCtHlqK8r+x03
-         e9A4xy8f+5HFq1ki7FZVjx0to3nVIFG4+9HR5rKyfkEiTipta727mdcJedxQqmaaOEPl
-         eV0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=OvFnHWl8/4Gx0jlI2rHNT0cAkiLDkU+mFrazaADwN18=;
-        b=XBAtU5vhiUnoyU6fVnltVze+m1tfHowhf9AAR0O4BgFg96ZgNOJ20Td3TkXmVmFbAH
-         xLoiJUkw3eAnK3YzomlcAcMMpEgVDW1PsHWPm30z9DOs9FVdJF1ntstqFGpeuAzhAxvK
-         dtFBt+Rb2xeue2MaS3x46K3cPlMbKATZtJ2loulKA9qGrRiRX8Mvk6H+K8CGW8YnGi2b
-         aDVyVlydRBfyEqjXfT0xc6aAiEYr8Qd8Al+ac3enkjI+1E8wrtpyWBAwQQF/0H7TlPVZ
-         gGnH0PKBdicEnysPHokTNNieCndCvuINsdrT0+8j71kdrBH16/w+JxGuOWK3WueOEzzP
-         fjow==
-X-Gm-Message-State: AOAM533kA372PgWQQ4ng+muemxEGC+gVvqSk4R3LNxbNbes62NZUKHJl
-        h2cNaeKlr2224wSiIhEMh/E=
-X-Google-Smtp-Source: ABdhPJzkeKXFzOvud5n5WrTedvzKVK/dvgDboBn4SoZixRuf6/pMOJWaID5PesTPaHOXYsWfZYbe3A==
-X-Received: by 2002:a05:622a:1103:: with SMTP id e3mr10594081qty.346.1617928749337;
-        Thu, 08 Apr 2021 17:39:09 -0700 (PDT)
-Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id f12sm819766qti.63.2021.04.08.17.39.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Apr 2021 17:39:09 -0700 (PDT)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        George McCollister <george.mccollister@gmail.com>
-Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v1] lan743x: fix ethernet frame cutoff issue
-Date:   Thu,  8 Apr 2021 20:39:04 -0400
-Message-Id: <20210409003904.8957-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S233085AbhDIAlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 20:41:40 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:60892 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232426AbhDIAli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 20:41:38 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 4C7D24D249441;
+        Thu,  8 Apr 2021 17:41:26 -0700 (PDT)
+Date:   Thu, 08 Apr 2021 17:41:22 -0700 (PDT)
+Message-Id: <20210408.174122.1793350393067698495.davem@davemloft.net>
+To:     decui@microsoft.com
+Cc:     kuba@kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, liuwe@microsoft.com,
+        netdev@vger.kernel.org, leon@kernel.org, andrew@lunn.ch,
+        bernd@petrovitsch.priv.at, rdunlap@infradead.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH v3 net-next] net: mana: Add a driver for Microsoft
+ Azure Network Adapter (MANA)
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <MW2PR2101MB0892B82CBCF2450D4A82DD50BF739@MW2PR2101MB0892.namprd21.prod.outlook.com>
+References: <20210408225840.26304-1-decui@microsoft.com>
+        <20210408.164618.597563844564989065.davem@davemloft.net>
+        <MW2PR2101MB0892B82CBCF2450D4A82DD50BF739@MW2PR2101MB0892.namprd21.prod.outlook.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 08 Apr 2021 17:41:26 -0700 (PDT)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Van Asbroeck <thesven73@gmail.com>
+From: Dexuan Cui <decui@microsoft.com>
+Date: Fri, 9 Apr 2021 00:24:51 +0000
 
-The ethernet frame length is calculated incorrectly. Depending on
-the value of RX_HEAD_PADDING, this may result in ethernet frames
-that are too short (cut off at the end), or too long (garbage added
-to the end).
+>> From: David Miller <davem@davemloft.net>
+>> Sent: Thursday, April 8, 2021 4:46 PM
+>> ...
+>> > +struct gdma_msg_hdr {
+>> > +	u32 hdr_type;
+>> > +	u32 msg_type;
+>> > +	u16 msg_version;
+>> > +	u16 hwc_msg_id;
+>> > +	u32 msg_size;
+>> > +} __packed;
+>> > +
+>> > +struct gdma_dev_id {
+>> > +	union {
+>> > +		struct {
+>> > +			u16 type;
+>> > +			u16 instance;
+>> > +		};
+>> > +
+>> > +		u32 as_uint32;
+>> > +	};
+>> > +} __packed;
+>> 
+>> Please don't  use __packed unless absolutely necessary.  It generates
+>> suboptimal code (byte at a time
+>> accesses etc.) and for many of these you don't even need it.
+> 
+> In the driver code, all the structs/unions marked by __packed are used to
+> talk with the hardware, so I think __packed is necessary here?
 
-Fix by calculating the ethernet frame length correctly. For added
-clarity, use the ETH_FCS_LEN constant in the calculation.
+It actually isan't in many cases, check with and without the __packed directive
+and see if anything chasnges.
 
-Many thanks to Heiner Kallweit for suggesting this solution. 
+> Do you think if it's better if we remove all the __packed, and add
+> static_assert(sizeof(struct XXX) == YYY) instead? e.g.
+> 
+> @@ -105,7 +105,8 @@ struct gdma_msg_hdr {
+>         u16 msg_version;
+>         u16 hwc_msg_id;
+>         u32 msg_size;
+> -} __packed;
+> +};
+> +static_assert(sizeof(struct gdma_msg_hdr) == 16);
 
-Fixes: 3e21a10fdea3 ("lan743x: trim all 4 bytes of the FCS; not just 2")
-Link: https://lore.kernel.org/lkml/20210408172353.21143-1-TheSven73@gmail.com/
-Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
----
+This won't make sure the structure member offsets are what you expect.
 
-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 864db232dc70
+I think you'll have to go through the structures one-by-one by hand to
+figure out which ones really require the __packed attribute and which do not.
 
-To: Bryan Whitehead <bryan.whitehead@microchip.com>
-To: "David S. Miller" <davem@davemloft.net>
-To: Jakub Kicinski <kuba@kernel.org>
-To: George McCollister <george.mccollister@gmail.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: UNGLinuxDriver@microchip.com
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
- drivers/net/ethernet/microchip/lan743x_main.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 1c3e204d727c..7b6794aa8ea9 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -885,8 +885,8 @@ static int lan743x_mac_set_mtu(struct lan743x_adapter *adapter, int new_mtu)
- 	}
- 
- 	mac_rx &= ~(MAC_RX_MAX_SIZE_MASK_);
--	mac_rx |= (((new_mtu + ETH_HLEN + 4) << MAC_RX_MAX_SIZE_SHIFT_) &
--		  MAC_RX_MAX_SIZE_MASK_);
-+	mac_rx |= (((new_mtu + ETH_HLEN + ETH_FCS_LEN)
-+		  << MAC_RX_MAX_SIZE_SHIFT_) & MAC_RX_MAX_SIZE_MASK_);
- 	lan743x_csr_write(adapter, MAC_RX, mac_rx);
- 
- 	if (enabled) {
-@@ -1944,7 +1944,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
- 	struct sk_buff *skb;
- 	dma_addr_t dma_ptr;
- 
--	buffer_length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
-+	buffer_length = netdev->mtu + ETH_HLEN + ETH_FCS_LEN + RX_HEAD_PADDING;
- 
- 	descriptor = &rx->ring_cpu_ptr[index];
- 	buffer_info = &rx->buffer_info[index];
-@@ -2040,7 +2040,7 @@ lan743x_rx_trim_skb(struct sk_buff *skb, int frame_length)
- 		dev_kfree_skb_irq(skb);
- 		return NULL;
- 	}
--	frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 4);
-+	frame_length = max_t(int, 0, frame_length - ETH_FCS_LEN);
- 	if (skb->len > frame_length) {
- 		skb->tail -= skb->len - frame_length;
- 		skb->len = frame_length;
--- 
-2.17.1
-
+Thank you.
