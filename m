@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D9ED35A78C
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 22:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6031D35A78E
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 22:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234789AbhDIUAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 16:00:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38260 "EHLO mail.kernel.org"
+        id S234848AbhDIUAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 16:00:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234545AbhDIUAv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234602AbhDIUAv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 9 Apr 2021 16:00:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id CA0D1610F7;
+Received: by mail.kernel.org (Postfix) with ESMTPS id D1C5E61104;
         Fri,  9 Apr 2021 20:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1617998437;
-        bh=5GOsJGNIQOU/Km0eb1zrsnUs1UIHbxOflqi7W93KoMY=;
+        bh=mgXTe2IacdEbAxHoFNMRWirgq258MSYKecORZt/Gmd4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z8OjJlDIgTO9sc1y5OyRJWfKVCRoOBLFj+kJ2iRCHZEvHLpVeU0AHB0Qius7AdAMA
-         gsKj9yHmmmVhvZEZXV8iEIcfEn8oliUk4/XZPvGlAtycJlNBGglCRjO0DFPbUw9aIj
-         SnLgUTdoIN5EyJlnxtNYL+A6fnGFXfn3vXsl++o0IZmTH1b8JkaCau6GVtz/7XtFM8
-         gcL12BXoZV6hVQ+GTFunVVTMpRyXPQKmt7SYv87+rrMqRSWDm3/qVEYQoMerIJHvlO
-         flbr8C9m+LGrJW1nxyMPq+Kku394fOx7ijb0pUSOg/hQdPDYvPqBASU/KOepkFS1EL
-         GdhTPZYSfzggg==
+        b=ZdYAveyrUUnRrTHoCb3652APjC69w/uvgtWaSXi2Dy/Lx65kuPxO8B3EzMAsL+DwW
+         Qy4Emart51lq7SZB+62XDRx+SxBUhA0QmtND9t23CfviubNbcn/VMasi92O6Qonerf
+         lBFcHXy9tgOWJrGDwR7ZB3cFbRhUOL7/8ZoIIH07Odbs/qUkaXeiOYoxdcmHUDlgu+
+         LXBnzxdsT5SDe4CnkrzqFJGjw07ezTW9Nmoz2+kTa/WFYgx0pZ6TyHsITjwbZRdQOA
+         1qym4lzYbyMi0RfkXSrN10lUcllQB6LWtPG3CZACepBBptHZh6L+vl+iHJM210lmFM
+         2ZhUO/P62tLqw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BD0E060A71;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C7B6260C08;
         Fri,  9 Apr 2021 20:00:37 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: hns3: Trivial spell fix in hns3 driver
+Subject: Re: [PATCH net v1] lan743x: fix ethernet frame cutoff issue
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161799843776.9153.13095418822431780218.git-patchwork-notify@kernel.org>
+Message-Id: <161799843781.9153.1286906568340511297.git-patchwork-notify@kernel.org>
 Date:   Fri, 09 Apr 2021 20:00:37 +0000
-References: <20210409074223.32480-1-salil.mehta@huawei.com>
-In-Reply-To: <20210409074223.32480-1-salil.mehta@huawei.com>
-To:     Salil Mehta <salil.mehta@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
-        linuxarm@openeuler.org
+References: <20210409003904.8957-1-TheSven73@gmail.com>
+In-Reply-To: <20210409003904.8957-1-TheSven73@gmail.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     bryan.whitehead@microchip.com, davem@davemloft.net,
+        kuba@kernel.org, george.mccollister@gmail.com,
+        hkallweit1@gmail.com, andrew@lunn.ch, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,19 +48,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 9 Apr 2021 08:42:23 +0100 you wrote:
-> Some trivial spelling mistakes which caught my eye during the
-> review of the code.
+On Thu,  8 Apr 2021 20:39:04 -0400 you wrote:
+> From: Sven Van Asbroeck <thesven73@gmail.com>
 > 
-> Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
-> ---
->  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 2 +-
->  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
+> The ethernet frame length is calculated incorrectly. Depending on
+> the value of RX_HEAD_PADDING, this may result in ethernet frames
+> that are too short (cut off at the end), or too long (garbage added
+> to the end).
+> 
+> [...]
 
 Here is the summary with links:
-  - [net] net: hns3: Trivial spell fix in hns3 driver
-    https://git.kernel.org/netdev/net/c/cd7e963d2f08
+  - [net,v1] lan743x: fix ethernet frame cutoff issue
+    https://git.kernel.org/netdev/net/c/3bc41d6d2721
 
 You are awesome, thank you!
 --
