@@ -2,112 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAD6535A856
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 23:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A59E35A85A
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 23:29:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234539AbhDIV21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 17:28:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60682 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234333AbhDIV20 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 17:28:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 169A560233;
-        Fri,  9 Apr 2021 21:28:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618003693;
-        bh=eNa3jc5i+fR9c4G8fW1ZCGp7CEh5VBx8MxhELkQp05g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U1bG8r3if69oR3SMG/Fd+zACaJvsGa4Bu4azB2GKC7/qidHlA2JWQU7fZ1VVhnVzG
-         ETkvqZGbqZT0Eu9zruNz+9Q94aeVz40EGtLU5id521aQH2HLoF0ce3wkerC68vHYZv
-         rU8ofCqhYsxqXDwkhhnHySnLoD0k+p4g7OZ4pN3OCcAYdsjdoBAYNvVBQFaFL5f1C3
-         rnXL3lTA/w4aIk4n7AB/GI6KyE9YEYUEPavA7pG6HdTyNPqXYba+UTn5wpVUTicVUD
-         dBRm0M2w7eTvW4IavEk/jAbsKfO3SwPFrFYtEJn0WLPux+9s5Tq2vgXsbutgyFCRAF
-         3MicEq9gbPpXw==
-Date:   Fri, 9 Apr 2021 14:28:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matteo Croce <mcroce@linux.microsoft.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Julia Lawall <julia.lawall@inria.fr>
-Subject: Re: [PATCH net-next 2/3] net: use skb_for_each_frag() helper where
- possible
-Message-ID: <20210409142808.11b479ea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAFnufp0fGEBHnuerrMVLaGUgAP3NYpiEMyW3R-AwDeG=R0sgHQ@mail.gmail.com>
-References: <20210409180605.78599-1-mcroce@linux.microsoft.com>
-        <20210409180605.78599-3-mcroce@linux.microsoft.com>
-        <20210409115455.49e24450@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAFnufp0fGEBHnuerrMVLaGUgAP3NYpiEMyW3R-AwDeG=R0sgHQ@mail.gmail.com>
+        id S234701AbhDIV3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 17:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234079AbhDIV3j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 17:29:39 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259A2C061762
+        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 14:29:26 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id w23so8130671edx.7
+        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 14:29:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NbQ5OHJkQq3lcaaXlPsMo0yBnZzKrdANPlIvFKQVD7w=;
+        b=Tjmqcs9+FudGnc8Gxs0HDi9jxakoIntJZLn/exZ39I+UP8L3PAbcaX1IYabMCqDimB
+         g+E+ZMOeqWPeKsjz+d6rWmFdRBh7UrTIwOaeIdBoqLUFtRem8PBE6BQpnCgOFEKmhUbB
+         LkQu2sTYkx9f5Bpazo9AjBGSY7qyTAlTeDiUfexUD1uSeAxZlhOHjxuSO0b/o3qM4IlG
+         Mlly32AUJkD2XkqnEMkm1UaeukUMBaK2MRDwZ+ypaaTbAP2M2WoZecp5lrP2c46+sb7G
+         B9CwyeuPUm0Jh55WuKB+PrbEL+XXEW8ntuLTevOg9bZD/EgmlEHJ4QVTuxt0h2A5y60G
+         02Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NbQ5OHJkQq3lcaaXlPsMo0yBnZzKrdANPlIvFKQVD7w=;
+        b=GPc4BwY7Abmo8Dh0muPn69qKTtY1ct4tobLdKadeTJUJKDskPDaAlvPUZrGlvlXgwP
+         0Z15zUcaPosV5ok5Yl3sfCf2pQY20qxfJRzYHzF05PybpQ7bbipogEiZVikpCLIICR1s
+         8uHNh+3S7dLMDtfFcF4Qytnw8/m/5s70iuTLSB7/vED3BoJO+eUcnfTY4aGjujbN4+uJ
+         w9tUJpzcVM+EUKk7JfBACqqOHnH0X95XH+njP5bE+dzIwFGEHaBXah6KESzVtge85Xj6
+         nPz8pxtThvchRSblGtAdWXCjPEUox+2dzGdcV/xJsWiBA5Jh0QPXJRmX1RAFZwX2mGfm
+         b+JQ==
+X-Gm-Message-State: AOAM5313SKUOdICqfZSXRYhvlmPYKsqxlGFTir3VMtYH9g8V3a1hgW2d
+        DUormlTEbybC8vtynVRGh78=
+X-Google-Smtp-Source: ABdhPJyhMZ0ktl8KuPv9dAuLttqNq4xk5Z7NCNsH6TeIB3DQNX5eGrIOVTyd7lbH5K/7A17nEjHCiw==
+X-Received: by 2002:a05:6402:518:: with SMTP id m24mr16036554edv.170.1618003764964;
+        Fri, 09 Apr 2021 14:29:24 -0700 (PDT)
+Received: from [192.168.0.108] ([82.137.32.50])
+        by smtp.gmail.com with ESMTPSA id f10sm1998383edd.29.2021.04.09.14.29.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Apr 2021 14:29:24 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: enetc: fix TX ring interrupt storm
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Alex Marginean <alexandru.marginean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20210409192759.3895104-1-olteanv@gmail.com>
+From:   Claudiu Manoil <claudiu.manoil@gmail.com>
+Message-ID: <734e7b08-9f2e-587f-1e47-35be6a191364@gmail.com>
+Date:   Sat, 10 Apr 2021 00:29:23 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210409192759.3895104-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Apr 2021 22:44:50 +0200 Matteo Croce wrote:
-> > What pops to mind (although quite nit picky) is the question if the
-> > assembly changes much between driver which used to cache nr_frags and
-> > now always going skb_shinfo(skb)->nr_frags? It's a relatively common
-> > pattern.  
+On 09.04.2021 22:27, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Since skb_shinfo() is a macro and skb_end_pointer() a static inline,
-> it should be the same, but I was curious to check so, this is a diff
-> between the following snippet before and afer the macro:
+> The blamed commit introduced a bit in the TX software buffer descriptor
+> structure for determining whether a BD is final or not; we rearm the TX
+> interrupt vector for every frame (hence final BD) transmitted.
 > 
-> int frags = skb_shinfo(skb)->nr_frags;
-> int i;
-> for (i = 0; i < frags; i++)
->     kfree(skb->frags[i]);
+> But there is a problem with the patch: it replaced a condition whose
+> expression is a bool which was evaluated at the beginning of the "while"
+> loop with a bool expression that is evaluated on the spot: tx_swbd->is_eof.
 > 
->  1 file changed, 8 insertions(+), 7 deletions(-)
+> The problem with the latter expression is that the tx_swbd has already
+> been incremented at that stage, so the tx_swbd->is_eof check is in fact
+> with the _next_ software BD. Which is _not_ final.
 > 
-> --- ins1.s 2021-04-09 22:35:59.384523865 +0200
-> +++ ins2.s 2021-04-09 22:36:08.132594737 +0200
-> @@ -1,26 +1,27 @@
->  iter:
->          movsx   rax, DWORD PTR [rdi+16]
->          mov     rdx, QWORD PTR [rdi+8]
->          mov     eax, DWORD PTR [rdx+rax]
->          test    eax, eax
->          jle     .L6
->          push    rbp
-> -        sub     eax, 1
-> +        mov     rbp, rdi
->          push    rbx
-> -        lea     rbp, [rdi+32+rax*8]
-> -        lea     rbx, [rdi+24]
-> +        xor     ebx, ebx
->          sub     rsp, 8
->  .L3:
-> -        mov     rdi, QWORD PTR [rbx]
-> -        add     rbx, 8
-> +        mov     rdi, QWORD PTR [rbp+24+rbx*8]
-> +        add     rbx, 1
->          call    kfree
-> -        cmp     rbx, rbp
-> -        jne     .L3
-> +        movsx   rax, DWORD PTR [rbp+16]
-> +        mov     rdx, QWORD PTR [rbp+8]
-> +        cmp     DWORD PTR [rdx+rax], ebx
-> +        jg      .L3
->          add     rsp, 8
->          xor     eax, eax
->          pop     rbx
->          pop     rbp
->          ret
->  .L6:
->          xor     eax, eax
->      for (i = 0; i < frags; i++)    ret
+> The effect is that the CPU is in 100% load with ksoftirqd because it
+> does not acknowledge the TX interrupt, so the handler keeps getting
+> called again and again.
 > 
+> The fix is to restore the code structure, and keep the local bool is_eof
+> variable, just to assign it the tx_swbd->is_eof value instead of
+> !!tx_swbd->skb.
+> 
+> Fixes: d504498d2eb3 ("net: enetc: add a dedicated is_eof bit in the TX software BD")
+> Reported-by: Alex Marginean <alexandru.marginean@nxp.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-So looks like before compiler generated:
-
-	end = &frags[nfrags]
-	for (ptr = &frag[0]; ptr < end; ptr++)
-
-and now it has to use the actual value of i, read nfrags in the loop
-each time and compare it to i.
-
-That makes sense, since it can't prove kfree() doesn't change nr_frags.
-
-IDK if we care, but at least commit message should mention this.
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
