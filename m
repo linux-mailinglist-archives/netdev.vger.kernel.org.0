@@ -2,95 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D94E53598F2
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 11:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4603B35990F
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 11:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbhDIJOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 05:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        id S231756AbhDIJX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 05:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbhDIJOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 05:14:37 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F01C061760;
-        Fri,  9 Apr 2021 02:14:23 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id ha17so2584828pjb.2;
-        Fri, 09 Apr 2021 02:14:23 -0700 (PDT)
+        with ESMTP id S230181AbhDIJX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 05:23:56 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAC4C061760
+        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 02:23:44 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id k128so2547346wmk.4
+        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 02:23:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Zyn0v8VHNSt10C0c79WNCNslEHbK5LS2BgYTYzoSTto=;
-        b=Z+EM58uTFZB0WfxWBoZgXm1rV+wqH+MD265vRZGRvBt2lnPXxfpv3Irp+y6P2S+hNc
-         MagwcwFP06i2OCwTga7ui4HZh30VjiAMYfo5VGidkItC6EY6hm87PxVxQPq8Et1x/sDd
-         CXO65t56bJSN+9VeJOfCHforq2+J7qsG4i2MmZyrvpTHDvYdCtMG1No8KSMHzW0iY6qw
-         w6haF4uaIRc2eiQrwwuqsPiiuGigQaLwSK90Nxxy8ApM26Y5aOKS0Y7imjhJ9QyBdLNg
-         bvBUDi2SH8tF3Sc0pi5KlaCyphSHlsLXK4BozKHbYa/JlV+aIOkxnKx7gHIYV3RhzlSZ
-         vglA==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CYGii3KpbI+wAidKrh1T1fkKg4KL4AvLPK+xCKFmuS4=;
+        b=kyg8EbB4zCO1AVFluym+QpBfYqeP6xiPF5vwv24NrkWbuW0VaIObyuDDNbLpq0aiZC
+         VCOk/NDZg8TKQ/Y60Lv3r+rMcc3K0epFWHf5DzL7wzHOIa3aaKzFc/hTwCdJ0eOpwuyb
+         2DT3mAo9amQ3SaQwkAJ8K194NbwcW4rulhzxwMwgyt9YIwmRdec+xCPCV0gXd31CCGL8
+         nVR1jUc2kgGKyPO9qzItj4YEZK5yEjWfzJddglgdAlthJhka6f6T03Qh/pka4QSK9n9K
+         tp9DXOzbjh8OM60fea31PgIFcJlXNBsVEYq+WhLg43i1CpO3mmjGfk6nGnopxU/gbQMZ
+         k8QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Zyn0v8VHNSt10C0c79WNCNslEHbK5LS2BgYTYzoSTto=;
-        b=fFqsbF5DNFcu6Pxz4jhcvan/Jx/wy+lT5GYw3PIMvrmsOVXO3240ByV8moOVC2iRVY
-         BvKsAM3Hb5BqH/9pLCDvZkCgicdYHea587pgsmguGpZHaR+uz4P6iiSntSwVLWzWTmC7
-         d5gVAMeE+O2HAl9zr/NKLPlfG3Ip6cKWxmrddyHQXikSWoSoSPx/aG1TgPlvYR+viTRy
-         jae07rz1kH2bT3oDknyVzjwji+RdsEpnv42QeP7hHF5c9iYgwZL7Sv/FYJNNrOSKPLXF
-         vSp6fRpTIRj3UAhBXwKiL/moc0ZRceJztWpyE7emGT1XqjAUkSwl0PsWcNfnJTAhMygr
-         cF1w==
-X-Gm-Message-State: AOAM531XHb84SzBj18RRATTPdX/zJgL/jFO9cezQEVVH/Ww7Ey0ppndz
-        yAPaZJxP/sxXesVXtX6lNx9Bf+WRURXegSq05LKQ87EjCuc=
-X-Google-Smtp-Source: ABdhPJy/AA3ulhim/XIxjIBhMsExnGf3HeSEWrdBkUtJl31Do2iOAecRggS+i3hLQ9XkgQB+NDJ5CgzU69yLHtaeEMw=
-X-Received: by 2002:a17:902:848a:b029:e9:914b:7421 with SMTP id
- c10-20020a170902848ab02900e9914b7421mr7011078plo.78.1617959663079; Fri, 09
- Apr 2021 02:14:23 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CYGii3KpbI+wAidKrh1T1fkKg4KL4AvLPK+xCKFmuS4=;
+        b=pFy6HSaEEdUPbxC2t3btZR7N1HNqy5Vp802eHPgcuqieKU4gITgv9HPYX17Xra0sTO
+         oi5YH+OhznOXZVW2Jnldaqanp+/U1E2uH7Smlq8vfxI6ULgJL5QJbKnMHmvvzVp1hb2I
+         OAB7Yc6bBvsQbmNjZNHuLJZj9jdbZLd1jPjlHQhfsRp0TtFMC25j6V69UDFa8vsAjnxo
+         vxw1henfyVyUOltMvLlZ+tvoGAPBRXKe2Jp+hu3cNZ9e4EeVbXxxUbulTQtyGG7qjlNj
+         L02UCvR0RdiFgQ0R7+8N0CzH05Lvba9shY5wDNfJOYYEta3kR8X/nU3eu89WoZ8ScKR0
+         vUVA==
+X-Gm-Message-State: AOAM531JbBLXaYOjUfX/OQWE9Ofv87cL6Yrat+fKKXZkIYCh/DEeRQJc
+        EqQh9U5BVtW4xi19I4V7H+o=
+X-Google-Smtp-Source: ABdhPJyfYVGtUOHEJ+xvB+FrtBKHN+sNO+wcFo4cOhKerAR3Ru6Tod76r95mizJb9M9sF154dV9fng==
+X-Received: by 2002:a7b:c74e:: with SMTP id w14mr13003753wmk.88.1617960222726;
+        Fri, 09 Apr 2021 02:23:42 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f38:4600:61aa:4c4d:8bbf:6852? (p200300ea8f38460061aa4c4d8bbf6852.dip0.t-ipconnect.de. [2003:ea:8f38:4600:61aa:4c4d:8bbf:6852])
+        by smtp.googlemail.com with ESMTPSA id l24sm3132372wmc.4.2021.04.09.02.23.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Apr 2021 02:23:42 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/3] net: make PHY PM ops a no-op if MAC driver
+ manages PHY PM
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <9e695411-ab1d-34fe-8b90-3e8192ab84f6@gmail.com>
+Message-ID: <dc45261a-403d-260c-fae6-1956f873ebbc@gmail.com>
+Date:   Fri, 9 Apr 2021 11:23:33 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-References: <CAJht_ENNvG=VrD_Z4w+G=4_TCD0Rv--CQAkFUrHWTh4Cz_NT2Q@mail.gmail.com>
- <20210409073046.GI3697@techsingularity.net> <CAJht_EPXS3wVoNyaD6edqLPKvDTG2vg4qxiGuWBgWpFsNhB-4g@mail.gmail.com>
- <20210409084436.GK3697@techsingularity.net>
-In-Reply-To: <20210409084436.GK3697@techsingularity.net>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 9 Apr 2021 02:14:12 -0700
-Message-ID: <CAJht_EPrdujG_0QHM1vc2yrgwwKMQiFzUAK2pgR4dS4z9-Xknw@mail.gmail.com>
-Subject: Re: Problem in pfmemalloc skb handling in net/core/dev.c
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Mel Gorman <mgorman@suse.de>, jslaby@suse.cz,
-        Neil Brown <neilb@suse.de>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Mike Christie <michaelc@cs.wisc.edu>,
-        Eric B Munson <emunson@mgebm.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Sebastian Andrzej Siewior <sebastian@breakpoint.cc>,
-        Christoph Lameter <cl@linux.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9e695411-ab1d-34fe-8b90-3e8192ab84f6@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 9, 2021 at 1:44 AM Mel Gorman <mgorman@techsingularity.net> wrote:
->
-> That would imply that the tap was communicating with a swap device to
-> allocate a pfmemalloc skb which shouldn't happen. Furthermore, it would
-> require the swap device to be deactivated while pfmemalloc skbs still
-> existed. Have you encountered this problem?
+On 07.04.2021 17:50, Heiner Kallweit wrote:
+> Resume callback of the PHY driver is called after the one for the MAC
+> driver. The PHY driver resume callback calls phy_init_hw(), and this is
+> potentially problematic if the MAC driver calls phy_start() in its resume
+> callback. One issue was reported with the fec driver and a KSZ8081 PHY
+> which seems to become unstable if a soft reset is triggered during aneg.
+> 
+> The new flag allows MAC drivers to indicate that they take care of
+> suspending/resuming the PHY. Then the MAC PM callbacks can handle
+> any dependency between MAC and PHY PM.
+> 
+> Heiner Kallweit (3):
+>   net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM
+>   net: fec: use mac-managed PHY PM
+>   r8169: use mac-managed PHY PM
+> 
+>  drivers/net/ethernet/freescale/fec_main.c | 3 +++
+>  drivers/net/ethernet/realtek/r8169_main.c | 3 +++
+>  drivers/net/phy/phy_device.c              | 6 ++++++
+>  include/linux/phy.h                       | 2 ++
+>  4 files changed, 14 insertions(+)
+> 
 
-I'm not a user of swap devices or pfmemalloc skbs. I just want to make
-sure the protocols that I'm developing (not IP or IPv6) won't get
-pfmemalloc skbs when receiving, because those protocols cannot handle
-them.
+This series has status "Needs ACK". For which part an ACK is needed?
 
-According to the code, it seems always possible to get a pfmemalloc
-skb when a network driver calls "__netdev_alloc_skb". The skb will
-then be queued in per-CPU backlog queues when the driver calls
-"netif_rx". There seems to be nothing preventing "sk_memalloc_socks()"
-from becoming "false" after the skb is allocated and before it is
-handled by "__netif_receive_skb".
+Regarding the fec driver:
+The mail to Fugang, the current fec maintainer, bounced and Joakim
+confirmed that he left NXP. Joakim will take over, see
+https://patchwork.kernel.org/project/netdevbpf/patch/20210409091145.27488-1-qiangqing.zhang@nxp.com/
+Joakim also tested the patch.
 
-Do you mean that at the time "sk_memalloc_socks()" changes from "true"
-to "false", there would be no in-flight skbs currently being received,
-and all network communications have been paused?
+Heiner
