@@ -2,421 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B46359270
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 05:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F79135937A
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 05:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233129AbhDIDDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 23:03:50 -0400
-Received: from mail.zx2c4.com ([104.131.123.232]:49234 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233109AbhDIDDt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 23:03:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1617937411;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7dh6luOjZQLh1aBy5+G8C9A6OrurtWSDGVgjtVnLptQ=;
-        b=cLLBUvMl0IOmHBQKnlo7YKRTbmOvO00u7fgKLpQnaKgB+xYM/T8FVjtZi3ywrm3wa044tw
-        1JQhs0jDiq1c2E1n6s7o2bKVFWpVANLVfBJAX/VsmsI4hKoqKiJ4qcg/5yelcK4Eshm9f0
-        xs6FDlX5rPSg8gANvb1dE5Cz0us88SY=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 78f4a530 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 9 Apr 2021 03:03:31 +0000 (UTC)
-Date:   Thu, 8 Apr 2021 21:03:29 -0600
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Simo Sorce <simo@redhat.com>, Netdev <netdev@vger.kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
-Message-ID: <YG/EAePSEeYdonA0@zx2c4.com>
-References: <20210407113920.3735505-1-liuhangbin@gmail.com>
- <CAHmME9p40M5oHDZXnFDXfO4-JuJ7bUB5BnsccGV1pksguz73sg@mail.gmail.com>
- <c47d99b9d0efeea4e6cd238c2affc0fbe296b53c.camel@redhat.com>
- <CAHmME9pRSOANrdvegLm9x8VTNWKcMtoymYrgStuSx+nsu=jpwA@mail.gmail.com>
- <20210409024143.GL2900@Leo-laptop-t470s>
- <CAHmME9oqK9iXRn3wxAB-MZvX3k_hMbtjHF_V9UY96u6NLcczAw@mail.gmail.com>
- <20210409024907.GN2900@Leo-laptop-t470s>
+        id S233147AbhDID6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 23:58:32 -0400
+Received: from mail-dm6nam10on2098.outbound.protection.outlook.com ([40.107.93.98]:4032
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232941AbhDID6b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Apr 2021 23:58:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fIAPULx9F6z2J2/Ak6kxNhZszAvo+Zg9yN5TZLLF/AZt6uTgrlSos7Joa+qSGwzWN0jCkm5aVks1vgcNkPgPCIPIzInHNLIs0TDm9/IM/AH1KWEzfVvj2HJYy7aJCOmB5W72LA4lyyZP8DwOt1nr/AzBealrZyxCI5fjbkzydrMsmbVlZAR2/wKZMXZbNJ6toyY+5dDu1AwjUWHpTMCh72PQPza/5TrWJ/pvubvuKulkGIQcYmnRZvcvRiPse6O1v8Rzd45CVM5vToD3W9z01cA+kDpy8FNdJv6UPUj7GN5UxAPMMCb+mjkG6LDuZj4QagqK+e4YLrzHReCJj1+BDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a1CJLTivzUJdg5y0pAZKF6H0VJPzmOyk1dAxlnwqqvk=;
+ b=NK5aUg9g9I1iljra8yMYME6qW8WJlc2eLPI9fYrqqpOBiRcXWLM5K2sFli5+9EvrfKFmVKFg7YAQtzJDGb6m6xkVUpSx3r+bMplsbgUf1Wfv9af5PXoJAQ5cBKHUDlNheUzj0JF5jWVHs+3tHxmRx9Wbts+m2+CA3g2MasQikALVTGZUY40boq2YVPJ1fCywtzktyfXGIqbB9y+sivjoEWL4TntbLFj/jY5+B0FgaqSH1qiTgrB9bCsmIVcCRpDkSmCo0w7DIam6ToMfIwGDu5tlD48zZW9zngG6UUpbYstWw4laPd9XuTnVwfrD/CpRZfT28vB2GAgFc9nl5CQSnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a1CJLTivzUJdg5y0pAZKF6H0VJPzmOyk1dAxlnwqqvk=;
+ b=HSGwRMP3KlXP7sKMo3C7GmJU/gP6p4fX9PPdPKuVKD7FmZ2tSyJ+WUi7Vv1StSoiMj3E5soNs6AcJcKuJmoAcw/xFGLL7BGin8ni8hf+yj12bSXBUwgQ6tnN4HRrpzwIZqQofrvmkb75gD51HUwm4fbYRmBLh7t+b2xrkL8zMZg=
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com (52.132.20.146) by
+ BL0PR2101MB1332.namprd21.prod.outlook.com (20.177.244.146) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4042.4; Fri, 9 Apr 2021 03:58:17 +0000
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::e015:f9cd:dece:f785]) by BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::e015:f9cd:dece:f785%3]) with mapi id 15.20.4042.006; Fri, 9 Apr 2021
+ 03:58:17 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     David Miller <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Wei Liu <liuwe@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: RE: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Thread-Topic: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Thread-Index: AQHXLMrI7wVTXonSwkuA82YgYLN/76qrSScAgAAKxoCAAASdAIAANLMw
+Date:   Fri, 9 Apr 2021 03:58:17 +0000
+Message-ID: <BL0PR2101MB0930523DB18C6F1C1CA00A89CA739@BL0PR2101MB0930.namprd21.prod.outlook.com>
+References: <20210408225840.26304-1-decui@microsoft.com>
+        <20210408.164618.597563844564989065.davem@davemloft.net>
+        <MW2PR2101MB0892B82CBCF2450D4A82DD50BF739@MW2PR2101MB0892.namprd21.prod.outlook.com>
+ <20210408.174122.1793350393067698495.davem@davemloft.net>
+In-Reply-To: <20210408.174122.1793350393067698495.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=b3876ea6-8413-47d3-a6a4-0fb00574380d;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-09T03:49:59Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none
+ header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4263779f-dc6d-43ed-32ce-08d8fb0bb4eb
+x-ms-traffictypediagnostic: BL0PR2101MB1332:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BL0PR2101MB13328C6772CCEDCF99F0BF5CCA739@BL0PR2101MB1332.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VY3wUsnYcraOMwRosLXAtP+FVTPpRI9ASy9iej4wBCSIqL5U/boygSnB5Wbp5B3MQ8+DrH8POjPzz2D2WBBqJYKLaV3M5TO5/b0R7lcjcAnaXKOfPUU3yygW4QBAfpFXyb1+2xO8Ah36bNmxdpTMrM8UJ9E8akg/9xEIIk5a8WtO2vdwC/Y9Uq9LDPKpyTe++9/1JmRjPOfiY6pSwsGnG1/fSseHHZgzXmepd1d3D0zqd0UWyapCY8iOqhxVpdUa6/y+O6sR0ZaVulGnmveb7XGGOz7PE6HUuVmMfaVhFCxs8JEiEKL6oc0SZN7bumQxJmMho/8KOqNXnYU3uVVcrUvzAe+1yZGxQ6Zj+al/Pjvdx3DB8hUHdPb5br6zmiba729WTIX0QlMIlHUUXwZmbrFi7y7KuNV2MuDK9Akun2jNVp8UN0lYilkpNjmndHSxvdmbr6nnfhUoJlNpyuzemM2w4yd9THMj93e/1UcX6uPwOIAYKMBqVWI4fDfn/wiLGbMXQXG5UrEHrKjFjt3BnAGXmQ4csviXUR0WVGbeIIV9n9DJpMxhQ5kw4pxBBsaPSfW5TPqbekuBLVJsCRLOZhwDaIX2OhDvHM54XCWOUdmquRiyrybBzovjE8hVa8Q3ppgBr0cIisz7gm5tXa+aNrtO1hBx1mFMNBLqZIdwYZDQcqyM1HOPoPKC71D+7IKN
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(346002)(39860400002)(366004)(47530400004)(54906003)(53546011)(110136005)(186003)(7696005)(26005)(6506007)(2906002)(38100700001)(316002)(86362001)(8990500004)(82950400001)(82960400001)(52536014)(478600001)(83380400001)(64756008)(66946007)(66446008)(66556008)(66476007)(5660300002)(76116006)(4326008)(55016002)(8936002)(8676002)(71200400001)(6636002)(7416002)(9686003)(33656002)(10290500003)(21314003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?WqCjmg7wUeX4v/0BaFVobp4PsVih+BczbNPp8//Mm4J6LtawYOZxGk+R0XPk?=
+ =?us-ascii?Q?Kg0P48/ZmpsB1hWyzbKOacRJ99gW9iL9kCzxmSC4E7lRdARRT05fPnI+iH6v?=
+ =?us-ascii?Q?W4gAkpf+74ks/IxbDnk7gRjwGi4VuC7mzXlgYDcFVg9XnH7hrtCEZp8Vn5aq?=
+ =?us-ascii?Q?n/uHnUw5ReL89vlGmfF0/GZG3dG057kM/RrOBuY/HvDYSHV/dlyd6DPYjyvc?=
+ =?us-ascii?Q?pXAwyiPxwhidwXwGaji4Karz3845lptO2JBJoqT7P7iPkdxOalOFIpRoiJc3?=
+ =?us-ascii?Q?cnR1wbDXXy4yba9EFEdq1kTZ5FwzVM9vYhdYcj5mfLGObJ9UtJrtCPO0Miaj?=
+ =?us-ascii?Q?tuB3IHpOprGBpJC9aFQLJ/Tyjoz8MR0/PSCjjSS0osT1jX7TxlRqmakGCsg5?=
+ =?us-ascii?Q?+ms6Xv6HQvDe05jJN4KuCCArzkESA7VGXeQidiHb+Nao56lt25OBkSzVF0Lf?=
+ =?us-ascii?Q?y3RKcfKKLqqMkQH+s5+PeoH8BX05BaiDybTU+BG0Orwy4q3GlsAoTgxUuJOl?=
+ =?us-ascii?Q?HJAa988QdPydmEaZo0Am2aQwAv4j3vrWqIv4RA9WYnWCzPEQ6aGtcrfoq1JW?=
+ =?us-ascii?Q?PNTj+e5qAZKAg8/+prnfXpVf8dcl+xlJgaWHmpy3HfnMam3wE8QyrcDJRUfh?=
+ =?us-ascii?Q?E9WW+f4eaFhT7bteNi0+BoefI1XPvij85QiWNX2H4TscnZdKrnS9X9BFfMUe?=
+ =?us-ascii?Q?sjfcYayLt3EQTKxwE0mGZOARG8uSJDXwx6a6/4gy3c0qzo2NXLkydq70tUHN?=
+ =?us-ascii?Q?Nj8xb5zLhdOdETxiRm4rqgVpvJpE8T5gno++EgvI3E5CK06fUeGH+oFCHsAX?=
+ =?us-ascii?Q?j6jCSE1g4my1X5l4ZWiybXjd0A9qlahb7STXqBRBYXD3io8mPRIJ4tcch1hM?=
+ =?us-ascii?Q?g572nQt9ahd+Pm+KfB4cklnNjzuVBKA9+BXMiNiADgKgJ0nzRmc6Itv7U4Uw?=
+ =?us-ascii?Q?z9TeJW4SjExTXf94DaPuHOCO0vnPf0kMlnYrJz3+92u4C0nmAl/9dFaIKSN0?=
+ =?us-ascii?Q?qzy1Mn5VLCTL4Olwj8T9UDAzdAwxid0W8PdIswzkNKG6Dob17zPTsDbnzZk8?=
+ =?us-ascii?Q?Y1tXgiDymjnCDQj0uHSilnATIsp+X91cRAlpv2k+5gbAYj+0xctPmsch/l3L?=
+ =?us-ascii?Q?hQOPIXTRR3PA4CzvnQl/L9L9BOOlrsb8CBY8WevpAeLx/k9XrRPbEB4Lx9vw?=
+ =?us-ascii?Q?Gbe7Ms2ntgwOL7aMdt6Rr8ZUoiM3nkUb5iLBHHHGs/3Wcp+BHmcmbpfaPxo3?=
+ =?us-ascii?Q?Rpfg94L4j53v6nXtOVZ20WIsKutuV4BE2vRq3xt7BEKeOShqI/e0cPs8e9Wn?=
+ =?us-ascii?Q?J1FkTR/MgSjk+WhkO3yLL44V?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210409024907.GN2900@Leo-laptop-t470s>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4263779f-dc6d-43ed-32ce-08d8fb0bb4eb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2021 03:58:17.0540
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7SE9lAOyaLoIfNjFe1ffS2VU4OKqAJK7sTe/eTOMn+kbwWF9wqKLWt7UIAvg2WnFPMVNl3IBlovImpHeLiriLA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1332
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 09, 2021 at 10:49:07AM +0800, Hangbin Liu wrote:
-> On Thu, Apr 08, 2021 at 08:44:35PM -0600, Jason A. Donenfeld wrote:
-> > Since it's just a normal module library, you can simply do this in the
-> > module_init function, rather than deep within registration
-> > abstractions.
-> 
-> I did a try but looks it's not that simple. Not sure if it's because wireguard
-> calls the library directly. Need to check more...
 
-Something like the below should work...
 
-diff --git a/arch/arm/crypto/chacha-glue.c b/arch/arm/crypto/chacha-glue.c
-index a408f4bcfd62..47212f9421c1 100644
---- a/arch/arm/crypto/chacha-glue.c
-+++ b/arch/arm/crypto/chacha-glue.c
-@@ -14,6 +14,7 @@
- #include <linux/jump_label.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Thursday, April 8, 2021 8:41 PM
+> To: Dexuan Cui <decui@microsoft.com>
+> Cc: kuba@kernel.org; KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
+> <haiyangz@microsoft.com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; wei.liu@kernel.org; Wei Liu
+> <liuwe@microsoft.com>; netdev@vger.kernel.org; leon@kernel.org;
+> andrew@lunn.ch; bernd@petrovitsch.priv.at; rdunlap@infradead.org; linux-
+> kernel@vger.kernel.org; linux-hyperv@vger.kernel.org
+> Subject: Re: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Az=
+ure
+> Network Adapter (MANA)
+>=20
+> From: Dexuan Cui <decui@microsoft.com>
+> Date: Fri, 9 Apr 2021 00:24:51 +0000
+>=20
+> >> From: David Miller <davem@davemloft.net>
+> >> Sent: Thursday, April 8, 2021 4:46 PM
+> >> ...
+> >> > +struct gdma_msg_hdr {
+> >> > +	u32 hdr_type;
+> >> > +	u32 msg_type;
+> >> > +	u16 msg_version;
+> >> > +	u16 hwc_msg_id;
+> >> > +	u32 msg_size;
+> >> > +} __packed;
+> >> > +
+> >> > +struct gdma_dev_id {
+> >> > +	union {
+> >> > +		struct {
+> >> > +			u16 type;
+> >> > +			u16 instance;
+> >> > +		};
+> >> > +
+> >> > +		u32 as_uint32;
+> >> > +	};
+> >> > +} __packed;
+> >>
+> >> Please don't  use __packed unless absolutely necessary.  It generates
+> >> suboptimal code (byte at a time
+> >> accesses etc.) and for many of these you don't even need it.
+> >
+> > In the driver code, all the structs/unions marked by __packed are used =
+to
+> > talk with the hardware, so I think __packed is necessary here?
+>=20
+> It actually isan't in many cases, check with and without the __packed
+> directive
+> and see if anything chasnges.
+>=20
+> > Do you think if it's better if we remove all the __packed, and add
+> > static_assert(sizeof(struct XXX) =3D=3D YYY) instead? e.g.
+> >
+> > @@ -105,7 +105,8 @@ struct gdma_msg_hdr {
+> >         u16 msg_version;
+> >         u16 hwc_msg_id;
+> >         u32 msg_size;
+> > -} __packed;
+> > +};
+> > +static_assert(sizeof(struct gdma_msg_hdr) =3D=3D 16);
+>=20
+> This won't make sure the structure member offsets are what you expect.
+>=20
+> I think you'll have to go through the structures one-by-one by hand to
+> figure out which ones really require the __packed attribute and which do =
+not.
 
- #include <asm/cputype.h>
- #include <asm/hwcap.h>
-@@ -297,6 +298,9 @@ static int __init chacha_simd_mod_init(void)
- {
- 	int err = 0;
+For the structs containing variables with the same sizes, or already size a=
+ligned=20
+variables, we knew the __packed has no effect. And for these structs, it do=
+esn't=20
+cause performance impact either, correct?=20
 
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (IS_REACHABLE(CONFIG_CRYPTO_BLKCIPHER)) {
- 		err = crypto_register_skciphers(arm_algs, ARRAY_SIZE(arm_algs));
- 		if (err)
-diff --git a/arch/arm/crypto/curve25519-glue.c b/arch/arm/crypto/curve25519-glue.c
-index 31eb75b6002f..d03f810fdaf3 100644
---- a/arch/arm/crypto/curve25519-glue.c
-+++ b/arch/arm/crypto/curve25519-glue.c
-@@ -14,6 +14,7 @@
- #include <crypto/internal/simd.h>
- #include <linux/types.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
- #include <linux/init.h>
- #include <linux/jump_label.h>
- #include <linux/scatterlist.h>
-@@ -114,6 +115,9 @@ static struct kpp_alg curve25519_alg = {
+But in the future, if different sized variables are added, the __packed may=
+=20
+become necessary again. To prevent anyone accidently forget to add __packed=
+=20
+when adding new variables to these structs, can we keep the __packed for al=
+l=20
+messages going through the "wire"?
 
- static int __init mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (elf_hwcap & HWCAP_NEON) {
- 		static_branch_enable(&have_neon);
- 		return IS_REACHABLE(CONFIG_CRYPTO_KPP) ?
-diff --git a/arch/arm/crypto/poly1305-glue.c b/arch/arm/crypto/poly1305-glue.c
-index 3023c1acfa19..30d6c6de7a27 100644
---- a/arch/arm/crypto/poly1305-glue.c
-+++ b/arch/arm/crypto/poly1305-glue.c
-@@ -17,6 +17,7 @@
- #include <linux/crypto.h>
- #include <linux/jump_label.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- void poly1305_init_arm(void *state, const u8 *key);
- void poly1305_blocks_arm(void *state, const u8 *src, u32 len, u32 hibit);
-@@ -240,6 +241,9 @@ static struct shash_alg arm_poly1305_algs[] = {{
-
- static int __init arm_poly1305_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (IS_ENABLED(CONFIG_KERNEL_MODE_NEON) &&
- 	    (elf_hwcap & HWCAP_NEON))
- 		static_branch_enable(&have_neon);
-diff --git a/arch/arm64/crypto/chacha-neon-glue.c b/arch/arm64/crypto/chacha-neon-glue.c
-index 1d9824c4ae43..1696993326b5 100644
---- a/arch/arm64/crypto/chacha-neon-glue.c
-+++ b/arch/arm64/crypto/chacha-neon-glue.c
-@@ -26,6 +26,7 @@
- #include <linux/jump_label.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- #include <asm/hwcap.h>
- #include <asm/neon.h>
-@@ -214,6 +215,9 @@ static struct skcipher_alg algs[] = {
-
- static int __init chacha_simd_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!cpu_have_named_feature(ASIMD))
- 		return 0;
-
-diff --git a/arch/arm64/crypto/poly1305-glue.c b/arch/arm64/crypto/poly1305-glue.c
-index f33ada70c4ed..ac257a52be4d 100644
---- a/arch/arm64/crypto/poly1305-glue.c
-+++ b/arch/arm64/crypto/poly1305-glue.c
-@@ -17,6 +17,7 @@
- #include <linux/crypto.h>
- #include <linux/jump_label.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- asmlinkage void poly1305_init_arm64(void *state, const u8 *key);
- asmlinkage void poly1305_blocks(void *state, const u8 *src, u32 len, u32 hibit);
-@@ -208,6 +209,9 @@ static struct shash_alg neon_poly1305_alg = {
-
- static int __init neon_poly1305_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!cpu_have_named_feature(ASIMD))
- 		return 0;
-
-diff --git a/arch/mips/crypto/chacha-glue.c b/arch/mips/crypto/chacha-glue.c
-index 90896029d0cd..31f8294f2a31 100644
---- a/arch/mips/crypto/chacha-glue.c
-+++ b/arch/mips/crypto/chacha-glue.c
-@@ -12,6 +12,7 @@
- #include <crypto/internal/skcipher.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- asmlinkage void chacha_crypt_arch(u32 *state, u8 *dst, const u8 *src,
- 				  unsigned int bytes, int nrounds);
-@@ -128,6 +129,9 @@ static struct skcipher_alg algs[] = {
-
- static int __init chacha_simd_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	return IS_REACHABLE(CONFIG_CRYPTO_BLKCIPHER) ?
- 		crypto_register_skciphers(algs, ARRAY_SIZE(algs)) : 0;
- }
-diff --git a/arch/mips/crypto/poly1305-glue.c b/arch/mips/crypto/poly1305-glue.c
-index fc881b46d911..f5edec10cef8 100644
---- a/arch/mips/crypto/poly1305-glue.c
-+++ b/arch/mips/crypto/poly1305-glue.c
-@@ -12,6 +12,7 @@
- #include <linux/cpufeature.h>
- #include <linux/crypto.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- asmlinkage void poly1305_init_mips(void *state, const u8 *key);
- asmlinkage void poly1305_blocks_mips(void *state, const u8 *src, u32 len, u32 hibit);
-@@ -173,6 +174,9 @@ static struct shash_alg mips_poly1305_alg = {
-
- static int __init mips_poly1305_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	return IS_REACHABLE(CONFIG_CRYPTO_HASH) ?
- 		crypto_register_shash(&mips_poly1305_alg) : 0;
- }
-diff --git a/arch/x86/crypto/blake2s-glue.c b/arch/x86/crypto/blake2s-glue.c
-index 94ac5bdd9f6f..968762fcc8b2 100644
---- a/arch/x86/crypto/blake2s-glue.c
-+++ b/arch/x86/crypto/blake2s-glue.c
-@@ -11,6 +11,7 @@
- #include <linux/jump_label.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- #include <asm/cpufeature.h>
- #include <asm/fpu/api.h>
-@@ -194,6 +195,9 @@ static struct shash_alg blake2s_algs[] = {{
-
- static int __init blake2s_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!boot_cpu_has(X86_FEATURE_SSSE3))
- 		return 0;
-
-diff --git a/arch/x86/crypto/chacha_glue.c b/arch/x86/crypto/chacha_glue.c
-index 4c4dc64398cb..15e6cd084598 100644
---- a/arch/x86/crypto/chacha_glue.c
-+++ b/arch/x86/crypto/chacha_glue.c
-@@ -12,6 +12,7 @@
- #include <crypto/internal/skcipher.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
- #include <asm/simd.h>
-
- asmlinkage void chacha_block_xor_ssse3(u32 *state, u8 *dst, const u8 *src,
-@@ -278,6 +279,9 @@ static struct skcipher_alg algs[] = {
-
- static int __init chacha_simd_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!boot_cpu_has(X86_FEATURE_SSSE3))
- 		return 0;
-
-diff --git a/arch/x86/crypto/curve25519-x86_64.c b/arch/x86/crypto/curve25519-x86_64.c
-index a9edb6f8a0ba..b840c7e49aa1 100644
---- a/arch/x86/crypto/curve25519-x86_64.c
-+++ b/arch/x86/crypto/curve25519-x86_64.c
-@@ -11,6 +11,7 @@
- #include <linux/jump_label.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- #include <asm/cpufeature.h>
- #include <asm/processor.h>
-@@ -1488,6 +1489,9 @@ static struct kpp_alg curve25519_alg = {
-
- static int __init curve25519_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (boot_cpu_has(X86_FEATURE_BMI2) && boot_cpu_has(X86_FEATURE_ADX))
- 		static_branch_enable(&curve25519_use_bmi2_adx);
- 	else
-diff --git a/arch/x86/crypto/poly1305_glue.c b/arch/x86/crypto/poly1305_glue.c
-index b69e362730d0..eb1940c74c7b 100644
---- a/arch/x86/crypto/poly1305_glue.c
-+++ b/arch/x86/crypto/poly1305_glue.c
-@@ -11,6 +11,7 @@
- #include <linux/jump_label.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
- #include <asm/intel-family.h>
- #include <asm/simd.h>
-
-@@ -258,6 +259,9 @@ static struct shash_alg alg = {
-
- static int __init poly1305_simd_mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (IS_ENABLED(CONFIG_AS_AVX) && boot_cpu_has(X86_FEATURE_AVX) &&
- 	    cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL))
- 		static_branch_enable(&poly1305_use_avx);
-diff --git a/lib/crypto/blake2s.c b/lib/crypto/blake2s.c
-index 41025a30c524..8d244eeb277e 100644
---- a/lib/crypto/blake2s.c
-+++ b/lib/crypto/blake2s.c
-@@ -15,6 +15,7 @@
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/bug.h>
-+#include <linux/fips.h>
- #include <asm/unaligned.h>
-
- bool blake2s_selftest(void);
-@@ -109,6 +110,9 @@ EXPORT_SYMBOL(blake2s256_hmac);
-
- static int __init mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
- 	    WARN_ON(!blake2s_selftest()))
- 		return -ENODEV;
-diff --git a/lib/crypto/chacha.c b/lib/crypto/chacha.c
-index 65ead6b0c7e0..4f0087717faf 100644
---- a/lib/crypto/chacha.c
-+++ b/lib/crypto/chacha.c
-@@ -11,6 +11,9 @@
- #include <linux/bitops.h>
- #include <linux/string.h>
- #include <linux/cryptohash.h>
-+#include <linux/fips.h>
-+#include <linux/errno.h>
-+#include <linux/module.h>
- #include <asm/unaligned.h>
- #include <crypto/chacha.h>
-
-@@ -113,3 +116,12 @@ void hchacha_block_generic(const u32 *state, u32 *stream, int nrounds)
- 	memcpy(&stream[4], &x[12], 16);
- }
- EXPORT_SYMBOL(hchacha_block_generic);
-+
-+static int __init mod_init(void)
-+{
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+	return 0;
-+}
-+
-+module_init(mod_init);
-diff --git a/lib/crypto/chacha20poly1305.c b/lib/crypto/chacha20poly1305.c
-index 1fec56e5dd51..d19278c5813d 100644
---- a/lib/crypto/chacha20poly1305.c
-+++ b/lib/crypto/chacha20poly1305.c
-@@ -18,6 +18,7 @@
- #include <linux/init.h>
- #include <linux/mm.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
-
- #define CHACHA_KEY_WORDS	(CHACHA_KEY_SIZE / sizeof(u32))
-
-@@ -358,6 +359,9 @@ EXPORT_SYMBOL(chacha20poly1305_decrypt_sg_inplace);
-
- static int __init mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
- 	    WARN_ON(!chacha20poly1305_selftest()))
- 		return -ENODEV;
-diff --git a/lib/crypto/curve25519.c b/lib/crypto/curve25519.c
-index 288a62cd29b2..f759d49b0b57 100644
---- a/lib/crypto/curve25519.c
-+++ b/lib/crypto/curve25519.c
-@@ -12,11 +12,15 @@
- #include <crypto/curve25519.h>
- #include <linux/module.h>
- #include <linux/init.h>
-+#include <linux/fips.h>
-
- bool curve25519_selftest(void);
-
- static int __init mod_init(void)
- {
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
- 	    WARN_ON(!curve25519_selftest()))
- 		return -ENODEV;
-diff --git a/lib/crypto/poly1305.c b/lib/crypto/poly1305.c
-index 9d2d14df0fee..ae4255957d31 100644
---- a/lib/crypto/poly1305.c
-+++ b/lib/crypto/poly1305.c
-@@ -10,6 +10,7 @@
- #include <crypto/internal/poly1305.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/fips.h>
- #include <asm/unaligned.h>
-
- void poly1305_init_generic(struct poly1305_desc_ctx *desc, const u8 *key)
-@@ -73,5 +74,14 @@ void poly1305_final_generic(struct poly1305_desc_ctx *desc, u8 *dst)
- }
- EXPORT_SYMBOL_GPL(poly1305_final_generic);
-
-+static int __init mod_init(void)
-+{
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+	return 0;
-+}
-+
-+module_init(mod_init);
-+
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Martin Willi <martin@strongswan.org>");
+Thanks,
+- Haiyang
 
 
