@@ -2,72 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0641A35A689
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A541935A6C9
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234884AbhDITCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 15:02:10 -0400
-Received: from mga04.intel.com ([192.55.52.120]:13022 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234841AbhDITB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 15:01:56 -0400
-IronPort-SDR: CIdPli3v3gEgTF7LjQtzC/nM41iDLoJ5qBVUr4v8qC7u8Tq09DockBcXm5REtXzyM6FsE4j1WO
- Pd3zjfQYE2XA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9949"; a="191674941"
-X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
-   d="scan'208";a="191674941"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2021 12:01:33 -0700
-IronPort-SDR: B/HaYuA89s/h18HD2bwkjsCAFSv3A8DAjS1JqB7E2XKkeuVIKL20vfhktwsnsysjE1gwpFlzY8
- QMYb0SpX78WQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
-   d="scan'208";a="449181599"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 Apr 2021 12:01:33 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH net-next 4/4] net: ethernet: intel: Fix a typo in the file ixgbe_dcb_nl.c
-Date:   Fri,  9 Apr 2021 12:03:14 -0700
-Message-Id: <20210409190314.946192-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210409190314.946192-1-anthony.l.nguyen@intel.com>
-References: <20210409190314.946192-1-anthony.l.nguyen@intel.com>
+        id S234960AbhDITNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 15:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234692AbhDITNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 15:13:21 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BC0C061762;
+        Fri,  9 Apr 2021 12:13:08 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id q5so4847760pfh.10;
+        Fri, 09 Apr 2021 12:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D0A/Cc8hdMaD+El6MEJZ9FzF6kVCbUYdGbS7BSYWv4w=;
+        b=Zom8TnsCmt9waqDyDmehlMdo3U/FtzgiQHC1r1S7grbrvnJuz8G5m2PNhFdOm1QPc7
+         dJ8h4uGx3FD+mYPEGLbRcZgUUBH+FtQEwXG7PjHXrDFU4IovGHCj1YNEqmbA2QS9xcpv
+         cg7S5oF59hLwyXRR84MfO9THrcHMIjm6db/EK6wdM4fcMwcl6nkVVwHsvfKFGpCp0v50
+         az4YNuig+5iK0DhFCHu9Ll83O8wKwOmQIUKYVQs2+/Bb+1GgjgxkjTXKUL9trdwceAI8
+         Y+7ZA6/8SuZYmolCpOCCZAA5GE6cqFLul0rwYrS3iprAuk794crgpHY3vFL2Tb75A2XR
+         JZRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D0A/Cc8hdMaD+El6MEJZ9FzF6kVCbUYdGbS7BSYWv4w=;
+        b=QJKq5EF8GpQH27va8/COkFctP2K/H6ScNge+MpqrovF5eNFdcjSxcyXBbHl+0OR4xf
+         Fuo7lT5s0Q+RpbWOpwtMYFDbjroJt2x8HqS5tVRVd0MlHRzM7UM+Lg20BWeTPeBfT1wJ
+         nBb0C/qgbimIHoOVzYyfcr30654dT/XoTMeWEs+rBpQkgHynql8ChJKlpAC5oyt53esQ
+         OHo8TODbKvrKmO0iJRka0gKyLYf8RYMh5vx6bSLArnZ+i+JmdqXhYfIjdnuXgEzVh2hC
+         YKL65iyaHggNGarnWC2T/FEzunkZD6eI3EoxujVeH3IXrrrkI8Z1J7LoWAz8f5sziwJ4
+         OUOg==
+X-Gm-Message-State: AOAM531GMYQRD3+KXwkmtsxWXLQQ5Nb5gH3YAKxOXmfr5Rbp3AfVNEBl
+        coGvbs8rzNwSSuJmqZTURn3eJnXJtITehOsNKvE=
+X-Google-Smtp-Source: ABdhPJy7X8xEM0mRN216J13+4z5ETcTQ82rtD13krpuxydWpZkgJfC//7QPJuvw7BKq2lXMejWyUIb5z9RE1nXzeb+A=
+X-Received: by 2002:a63:fd44:: with SMTP id m4mr14939217pgj.233.1617995587894;
+ Fri, 09 Apr 2021 12:13:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAJht_ENNvG=VrD_Z4w+G=4_TCD0Rv--CQAkFUrHWTh4Cz_NT2Q@mail.gmail.com>
+ <20210409073046.GI3697@techsingularity.net> <CAJht_EPXS3wVoNyaD6edqLPKvDTG2vg4qxiGuWBgWpFsNhB-4g@mail.gmail.com>
+ <20210409084436.GK3697@techsingularity.net> <CAJht_EPrdujG_0QHM1vc2yrgwwKMQiFzUAK2pgR4dS4z9-Xknw@mail.gmail.com>
+ <87ab3d13-f95d-07c5-fc6a-fb33e32685e5@gmail.com> <CAJht_EOmcOdKGKnoUQDJD-=mnHOK0MKiV0+4Epty5H5DMED-qw@mail.gmail.com>
+ <3c79924f-3603-b259-935a-2e913dc3afcd@gmail.com>
+In-Reply-To: <3c79924f-3603-b259-935a-2e913dc3afcd@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Fri, 9 Apr 2021 12:12:57 -0700
+Message-ID: <CAJht_EN_N=H8xwVkTT7WiwmdRTeD-L+tM3Z6hu86ebbT_JpBDw@mail.gmail.com>
+Subject: Re: Problem in pfmemalloc skb handling in net/core/dev.c
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Mel Gorman <mgorman@techsingularity.net>,
+        Mel Gorman <mgorman@suse.de>, jslaby@suse.cz,
+        Neil Brown <neilb@suse.de>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Mike Christie <michaelc@cs.wisc.edu>,
+        Eric B Munson <emunson@mgebm.net>,
+        Sebastian Andrzej Siewior <sebastian@breakpoint.cc>,
+        Christoph Lameter <cl@linux.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+On Fri, Apr 9, 2021 at 4:50 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 4/9/21 12:14 PM, Xie He wrote:
+>
+> Then simply copy the needed logic.
 
-s/Reprogam/Reprogram/
+No, there's no such thing as "sockets" in some of the protocols. There
+is simply no way to copy "the needed logic".
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > Also, I think this is a problem in net/core/dev.c, there are a lot of
+> > old protocols that are not aware of pfmemalloc skbs. I don't think
+> > it's a good idea to fix them one by one.
+> >
+>
+> I think you are mistaken.
+>
+> There is no problem in net/core/dev.c really, it uses
+> skb_pfmemalloc_protocol()
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c
-index c00332d2e02a..72e6ebffea33 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_dcb_nl.c
-@@ -361,7 +361,7 @@ static u8 ixgbe_dcbnl_set_all(struct net_device *netdev)
- 	}
- 
- #ifdef IXGBE_FCOE
--	/* Reprogam FCoE hardware offloads when the traffic class
-+	/* Reprogram FCoE hardware offloads when the traffic class
- 	 * FCoE is using changes. This happens if the APP info
- 	 * changes or the up2tc mapping is updated.
- 	 */
--- 
-2.26.2
+This is exactly what I'm talking about. "skb_pfmemalloc_protocol"
+cannot guarantee pfmemalloc skbs are not delivered to unrelated
+protocols, because "__netif_receive_skb" will sometimes treat
+pfmemalloc skbs as normal skbs.
 
+> pfmemalloc is best effort really.
+>
+> If a layer store packets in many long living queues, it has to drop pfmemalloc packets,
+> unless these packets are used for swapping.
+
+Yes, the code of "net/core/dev.c" has exactly this problem. It doesn't
+drop pfmemalloc skbs in some situations, and instead deliver them to
+unrelated protocols, which clearly have nothing to do with swapping.
+
+I'm not sure if you understand what I'm saying. Please look at the
+code of "__netif_receive_skb" and see what will happen when
+"sk_memalloc_socks()" is false and "skb_pfmemalloc(skb)" is true.
