@@ -2,142 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B822335A0C6
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 16:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81AE735A0CF
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 16:14:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233917AbhDIOMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 10:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbhDIOMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 10:12:50 -0400
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B4AC061760;
-        Fri,  9 Apr 2021 07:12:35 -0700 (PDT)
-Received: by mail-oo1-xc34.google.com with SMTP id j20-20020a4ad6d40000b02901b66fe8acd6so1363281oot.7;
-        Fri, 09 Apr 2021 07:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CpQHn57amOsWI+OpdDVdAxOV6I/PlLrCLOlZZkn9GPQ=;
-        b=Z9p3LiByZ1X3mW6GEFc4/tI0qTERGziUmU3r1/OPk2Hjpuvtjit34CjRkn+nmUXr7K
-         GEHDqFLRvxAdvzYmeY+csxyEhOT8bFKY7DFzhkweUsOczq91sieLrYXdMaYzvaO7EusF
-         V8sB0ztN/9OSYbNb9+YXv0rIO9w/s9JZGulSbPJu+LO5eyVmzhAzF9nHYgpYY+z257DZ
-         BwoNYQJYk0NTenMAV+y7v45mTcXBJW0Muj+4itN7cfmj/CvWenVpr2oRazX/5GEMw71D
-         vnglR8XUT5ZXuwKUz7Cjj0Wx9ENLDkIcL3m3M8r++kPi/l/BcglDQnoQ/3mNc+0uAvFa
-         4JBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CpQHn57amOsWI+OpdDVdAxOV6I/PlLrCLOlZZkn9GPQ=;
-        b=pl2mYxxmBJ8aJrp1aD+CTResciCcTG9EVypHUTBoIvn/Ra3roxa5N87cIb/x+z0/+9
-         /tYqpTc2Z0i8mGuMKbV1gcSv7vYmfhpyNp6N1PFVIaDcU0p7hI1BYeQLjvZDP9gvVXmC
-         TmecDPQFqJePIoQ53arX1kQaiF5gAxKJLWBwyd336G8gGRUknXFl904x3zZJMUI7yHL3
-         zeEO8kd5pUrMvZlVZx+Y+SwxIy+YHrorDesI7Vk+JmIQRIWBdGdbcdAJRVL1hRV5raKy
-         OjLzmFSkN2MMeqy7Yc99/qU3g3aLKH+Mae0Yri6X+xwN7BN28RqpWf7jCZ3ycoVqImCX
-         nN3A==
-X-Gm-Message-State: AOAM532Wcs3E+LKQaDrXE4Yo8V72OHyHhH+sjZHMNS+ZyF0eFIjKk0//
-        yOYm1u4vapvjLjFqIk6yV5HDbqWx3IHRxYw0jn6WLVRdn0x/
-X-Google-Smtp-Source: ABdhPJxyt0ic1lHvV025CibhRWK/pckqHEKp+vtB/lJCEj95Xv8JAXzGeVZiqbY9iB2w0y8IR09DTqPd80/86CZ+AtI=
-X-Received: by 2002:a4a:d0ce:: with SMTP id u14mr12099539oor.36.1617977555254;
- Fri, 09 Apr 2021 07:12:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210409003904.8957-1-TheSven73@gmail.com>
-In-Reply-To: <20210409003904.8957-1-TheSven73@gmail.com>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Fri, 9 Apr 2021 09:12:23 -0500
-Message-ID: <CAFSKS=OQ0wv7mWVcZrDdrP_1WKZ+sGPZWyNMV6snc7SWRi-o5A@mail.gmail.com>
-Subject: Re: [PATCH net v1] lan743x: fix ethernet frame cutoff issue
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
+        id S233577AbhDIOO1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Apr 2021 10:14:27 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:45734 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232286AbhDIOO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 10:14:26 -0400
+Received: from marcel-macbook.holtmann.net (p5b3d235a.dip0.t-ipconnect.de [91.61.35.90])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 316B2CECC3;
+        Fri,  9 Apr 2021 16:21:53 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
+Subject: Re: [PATCH v1] Bluetooth: Return whether a connection is outbound
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20210402105437.v1.1.Id5ee0a2edda8f0902498aaeb1b6c78d062579b75@changeid>
+Date:   Fri, 9 Apr 2021 16:14:09 +0200
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <4E147FE8-F1B6-4EE9-9D7F-FE5656EAB2BE@holtmann.org>
+References: <20210402105437.v1.1.Id5ee0a2edda8f0902498aaeb1b6c78d062579b75@changeid>
+To:     Yu Liu <yudiliu@google.com>
+X-Mailer: Apple Mail (2.3654.60.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 8, 2021 at 7:39 PM Sven Van Asbroeck <thesven73@gmail.com> wrote:
->
-> From: Sven Van Asbroeck <thesven73@gmail.com>
->
-> The ethernet frame length is calculated incorrectly. Depending on
-> the value of RX_HEAD_PADDING, this may result in ethernet frames
-> that are too short (cut off at the end), or too long (garbage added
-> to the end).
->
-> Fix by calculating the ethernet frame length correctly. For added
-> clarity, use the ETH_FCS_LEN constant in the calculation.
->
-> Many thanks to Heiner Kallweit for suggesting this solution.
->
-> Fixes: 3e21a10fdea3 ("lan743x: trim all 4 bytes of the FCS; not just 2")
-> Link: https://lore.kernel.org/lkml/20210408172353.21143-1-TheSven73@gmail.com/
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+Hi Yu,
 
-I'm glad everyone was able to work together to get this fixed properly
-without any figure pointing or mud slinging! Kudos everyone.
-
-Reviewed-by: George McCollister <george.mccollister@gmail.com>
-Tested-By: George McCollister <george.mccollister@gmail.com>
-
+> When an MGMT_EV_DEVICE_CONNECTED event is reported back to the user
+> space we will set the flags to tell if the established connection is
+> outbound or not. This is useful for the user space to log better metrics
+> and error messages.
+> 
+> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> Reviewed-by: Alain Michaud <alainm@chromium.org>
+> Signed-off-by: Yu Liu <yudiliu@google.com>
 > ---
->
-> Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 864db232dc70
->
-> To: Bryan Whitehead <bryan.whitehead@microchip.com>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: Jakub Kicinski <kuba@kernel.org>
-> To: George McCollister <george.mccollister@gmail.com>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: UNGLinuxDriver@microchip.com
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
->
->  drivers/net/ethernet/microchip/lan743x_main.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> index 1c3e204d727c..7b6794aa8ea9 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> @@ -885,8 +885,8 @@ static int lan743x_mac_set_mtu(struct lan743x_adapter *adapter, int new_mtu)
->         }
->
->         mac_rx &= ~(MAC_RX_MAX_SIZE_MASK_);
-> -       mac_rx |= (((new_mtu + ETH_HLEN + 4) << MAC_RX_MAX_SIZE_SHIFT_) &
-> -                 MAC_RX_MAX_SIZE_MASK_);
-> +       mac_rx |= (((new_mtu + ETH_HLEN + ETH_FCS_LEN)
-> +                 << MAC_RX_MAX_SIZE_SHIFT_) & MAC_RX_MAX_SIZE_MASK_);
->         lan743x_csr_write(adapter, MAC_RX, mac_rx);
->
->         if (enabled) {
-> @@ -1944,7 +1944,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
->         struct sk_buff *skb;
->         dma_addr_t dma_ptr;
->
-> -       buffer_length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
-> +       buffer_length = netdev->mtu + ETH_HLEN + ETH_FCS_LEN + RX_HEAD_PADDING;
->
->         descriptor = &rx->ring_cpu_ptr[index];
->         buffer_info = &rx->buffer_info[index];
-> @@ -2040,7 +2040,7 @@ lan743x_rx_trim_skb(struct sk_buff *skb, int frame_length)
->                 dev_kfree_skb_irq(skb);
->                 return NULL;
->         }
-> -       frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 4);
-> +       frame_length = max_t(int, 0, frame_length - ETH_FCS_LEN);
->         if (skb->len > frame_length) {
->                 skb->tail -= skb->len - frame_length;
->                 skb->len = frame_length;
-> --
-> 2.17.1
->
+> 
+> Changes in v1:
+> - Initial change
+> 
+> include/net/bluetooth/mgmt.h | 2 ++
+> net/bluetooth/mgmt.c         | 5 +++++
+> 2 files changed, 7 insertions(+)
+> 
+> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+> index a7cffb069565..7cc724386b00 100644
+> --- a/include/net/bluetooth/mgmt.h
+> +++ b/include/net/bluetooth/mgmt.h
+> @@ -885,6 +885,8 @@ struct mgmt_ev_new_long_term_key {
+> 	struct mgmt_ltk_info key;
+> } __packed;
+> 
+> +#define MGMT_DEV_CONN_INITIATED_CONNECTION 0x08
+> +
+
+I would just add this to MGMT_DEV_FOUND_INITIATED_CONN 0x08. And yes, I realize that this is a bit weird, but then all values are in one place.
+
+> #define MGMT_EV_DEVICE_CONNECTED	0x000B
+> struct mgmt_ev_device_connected {
+> 	struct mgmt_addr_info addr;
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index 09e099c419f2..77213e67e8e4 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -8774,6 +8774,11 @@ void mgmt_device_connected(struct hci_dev *hdev, struct hci_conn *conn,
+> 	bacpy(&ev->addr.bdaddr, &conn->dst);
+> 	ev->addr.type = link_to_bdaddr(conn->type, conn->dst_type);
+
+So the prototype of mgmt_device_connected needs to be changed to remove the flags parameter. It is not used at all.
+
+> 
+> +	if (conn->out)
+> +		flags |= MGMT_DEV_CONN_INITIATED_CONNECTION;
+> +	else
+> +		flags &= ~MGMT_DEV_CONN_INITIATED_CONNECTION;
+> +
+
+And then this should be just this:
+
+	if (conn->out)
+		flags |= MGMT_DEV_CONN_INITIATED_CONNECTION;
+
+> 	ev->flags = __cpu_to_le32(flags);
+> 
+> 	/* We must ensure that the EIR Data fields are ordered and
+
+Regards
+
+Marcel
+
