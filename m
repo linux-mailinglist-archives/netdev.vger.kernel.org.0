@@ -2,350 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849C535A089
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 16:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B822335A0C6
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 16:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbhDIOAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 10:00:32 -0400
-Received: from void.so ([95.85.17.176]:48737 "EHLO void.so"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233528AbhDIOA3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 10:00:29 -0400
-X-Greylist: delayed 381 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Apr 2021 10:00:29 EDT
-Received: from void.so (localhost [127.0.0.1])
-        by void.so (Postfix) with ESMTP id A203A1C2AB6
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 16:53:52 +0300 (MSK)
-Received: from void.so ([127.0.0.1])
-        by void.so (void.so [127.0.0.1]) (amavisd-new, port 10024) with LMTP
-        id hHHP6UNAozuc for <netdev@vger.kernel.org>;
-        Fri,  9 Apr 2021 16:53:51 +0300 (MSK)
-Received: from rnd (unknown [91.244.183.205])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by void.so (Postfix) with ESMTPSA id 458381C2A8F
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 16:53:51 +0300 (MSK)
-Date:   Fri, 9 Apr 2021 16:52:05 +0300
-From:   Balaev Pavel <balaevpa@infotecs.ru>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] net: multipath routing: configurable seed
-Message-ID: <YHBcBRXLuFsHudyg@rnd>
+        id S233917AbhDIOMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 10:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231402AbhDIOMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 10:12:50 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B4AC061760;
+        Fri,  9 Apr 2021 07:12:35 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id j20-20020a4ad6d40000b02901b66fe8acd6so1363281oot.7;
+        Fri, 09 Apr 2021 07:12:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CpQHn57amOsWI+OpdDVdAxOV6I/PlLrCLOlZZkn9GPQ=;
+        b=Z9p3LiByZ1X3mW6GEFc4/tI0qTERGziUmU3r1/OPk2Hjpuvtjit34CjRkn+nmUXr7K
+         GEHDqFLRvxAdvzYmeY+csxyEhOT8bFKY7DFzhkweUsOczq91sieLrYXdMaYzvaO7EusF
+         V8sB0ztN/9OSYbNb9+YXv0rIO9w/s9JZGulSbPJu+LO5eyVmzhAzF9nHYgpYY+z257DZ
+         BwoNYQJYk0NTenMAV+y7v45mTcXBJW0Muj+4itN7cfmj/CvWenVpr2oRazX/5GEMw71D
+         vnglR8XUT5ZXuwKUz7Cjj0Wx9ENLDkIcL3m3M8r++kPi/l/BcglDQnoQ/3mNc+0uAvFa
+         4JBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CpQHn57amOsWI+OpdDVdAxOV6I/PlLrCLOlZZkn9GPQ=;
+        b=pl2mYxxmBJ8aJrp1aD+CTResciCcTG9EVypHUTBoIvn/Ra3roxa5N87cIb/x+z0/+9
+         /tYqpTc2Z0i8mGuMKbV1gcSv7vYmfhpyNp6N1PFVIaDcU0p7hI1BYeQLjvZDP9gvVXmC
+         TmecDPQFqJePIoQ53arX1kQaiF5gAxKJLWBwyd336G8gGRUknXFl904x3zZJMUI7yHL3
+         zeEO8kd5pUrMvZlVZx+Y+SwxIy+YHrorDesI7Vk+JmIQRIWBdGdbcdAJRVL1hRV5raKy
+         OjLzmFSkN2MMeqy7Yc99/qU3g3aLKH+Mae0Yri6X+xwN7BN28RqpWf7jCZ3ycoVqImCX
+         nN3A==
+X-Gm-Message-State: AOAM532Wcs3E+LKQaDrXE4Yo8V72OHyHhH+sjZHMNS+ZyF0eFIjKk0//
+        yOYm1u4vapvjLjFqIk6yV5HDbqWx3IHRxYw0jn6WLVRdn0x/
+X-Google-Smtp-Source: ABdhPJxyt0ic1lHvV025CibhRWK/pckqHEKp+vtB/lJCEj95Xv8JAXzGeVZiqbY9iB2w0y8IR09DTqPd80/86CZ+AtI=
+X-Received: by 2002:a4a:d0ce:: with SMTP id u14mr12099539oor.36.1617977555254;
+ Fri, 09 Apr 2021 07:12:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20210409003904.8957-1-TheSven73@gmail.com>
+In-Reply-To: <20210409003904.8957-1-TheSven73@gmail.com>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Fri, 9 Apr 2021 09:12:23 -0500
+Message-ID: <CAFSKS=OQ0wv7mWVcZrDdrP_1WKZ+sGPZWyNMV6snc7SWRi-o5A@mail.gmail.com>
+Subject: Re: [PATCH net v1] lan743x: fix ethernet frame cutoff issue
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, this patch adds ability for user to set seed value for
-multipath routing hashes. Now kernel uses random seed value:
-this is done to prevent hash-flooding DoS attacks,
-but it breaks some scenario, f.e:
+On Thu, Apr 8, 2021 at 7:39 PM Sven Van Asbroeck <thesven73@gmail.com> wrote:
+>
+> From: Sven Van Asbroeck <thesven73@gmail.com>
+>
+> The ethernet frame length is calculated incorrectly. Depending on
+> the value of RX_HEAD_PADDING, this may result in ethernet frames
+> that are too short (cut off at the end), or too long (garbage added
+> to the end).
+>
+> Fix by calculating the ethernet frame length correctly. For added
+> clarity, use the ETH_FCS_LEN constant in the calculation.
+>
+> Many thanks to Heiner Kallweit for suggesting this solution.
+>
+> Fixes: 3e21a10fdea3 ("lan743x: trim all 4 bytes of the FCS; not just 2")
+> Link: https://lore.kernel.org/lkml/20210408172353.21143-1-TheSven73@gmail.com/
+> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 
-+-------+        +------+        +--------+
-|       |-eth0---| FW0  |---eth0-|        |
-|       |        +------+        |        |
-|  GW0  |ECMP                ECMP|  GW1   |
-|       |        +------+        |        |
-|       |-eth1---| FW1  |---eth1-|        |
-+-------+        +------+        +--------+
+I'm glad everyone was able to work together to get this fixed properly
+without any figure pointing or mud slinging! Kudos everyone.
 
-In this scenario two ECMP routers used as traffic balancers between
-two firewalls. So if return path of one flow will not be the same,
-such flow will be dropped, because keep-state rules was created on
-other firewall.
+Reviewed-by: George McCollister <george.mccollister@gmail.com>
+Tested-By: George McCollister <george.mccollister@gmail.com>
 
-This patch add sysctl variable: net.ipv4.fib_multipath_hash_seed.
-User can set the same seed value on GW0 and GW1 and traffic will
-be mirror-balanced. By default random value is used.
-
-Signed-off-by: Balaev Pavel <balaevpa@infotecs.ru>
----
- Documentation/networking/ip-sysctl.rst |  14 ++++
- include/net/flow_dissector.h           |   4 +
- include/net/netns/ipv4.h               |  20 +++++
- net/core/flow_dissector.c              |   9 +++
- net/ipv4/af_inet.c                     |   5 ++
- net/ipv4/route.c                       |  10 ++-
- net/ipv4/sysctl_net_ipv4.c             | 104 +++++++++++++++++++++++++
- 7 files changed, 165 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 9701906f6..d1a67e6fe 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -100,6 +100,20 @@ fib_multipath_hash_policy - INTEGER
- 	- 1 - Layer 4
- 	- 2 - Layer 3 or inner Layer 3 if present
- 
-+fib_multipath_hash_seed - STRING
-+	Controls seed value for multipath route hashes. By default
-+	random value is used. Only valid for kernels built with
-+	CONFIG_IP_ROUTE_MULTIPATH enabled.
-+
-+	Valid format: two hex values set off with comma or "random"
-+	keyword.
-+
-+	Example to generate the seed value::
-+
-+		RAND=$(openssl rand -hex 16) && echo "${RAND:0:16},${RAND:16:16}"
-+
-+	Default: "random"
-+
- fib_sync_mem - UNSIGNED INTEGER
- 	Amount of dirty memory from fib entries that can be backlogged before
- 	synchronize_rcu is forced.
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index ffd386ea0..2bd4e28de 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -348,6 +348,10 @@ static inline bool flow_keys_have_l4(const struct flow_keys *keys)
- }
- 
- u32 flow_hash_from_keys(struct flow_keys *keys);
-+#ifdef CONFIG_IP_ROUTE_MULTIPATH
-+u32 flow_multipath_hash_from_keys(struct flow_keys *keys,
-+			   const siphash_key_t *seed);
-+#endif /* CONFIG_IP_ROUTE_MULTIPATH */
- void skb_flow_get_icmp_tci(const struct sk_buff *skb,
- 			   struct flow_dissector_key_icmp *key_icmp,
- 			   const void *data, int thoff, int hlen);
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 87e161249..70a01817e 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -11,6 +11,14 @@
- #include <linux/rcupdate.h>
- #include <linux/siphash.h>
- 
-+#ifdef CONFIG_IP_ROUTE_MULTIPATH
-+/* Multipath seed key context */
-+struct multipath_seed_ctx {
-+	siphash_key_t	seed;
-+	struct rcu_head	rcu;
-+};
-+#endif
-+
- struct ctl_table_header;
- struct ipv4_devconf;
- struct fib_rules_ops;
-@@ -222,6 +230,9 @@ struct netns_ipv4 {
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- 	u8 sysctl_fib_multipath_use_neigh;
- 	u8 sysctl_fib_multipath_hash_policy;
-+	int sysctl_fib_multipath_hash_seed;
-+	struct multipath_seed_ctx __rcu *fib_multipath_hash_seed_ctx;
-+	spinlock_t fib_multipath_hash_seed_ctx_lock;
- #endif
- 
- 	struct fib_notifier_ops	*notifier_ops;
-@@ -233,4 +244,13 @@ struct netns_ipv4 {
- 	atomic_t	rt_genid;
- 	siphash_key_t	ip_id_key;
- };
-+
-+#ifdef CONFIG_IP_ROUTE_MULTIPATH
-+/* Caller needs to wrap with rcu_read_(un)lock() */
-+static inline
-+struct multipath_seed_ctx *fib_multipath_seed_get_ctx(const struct netns_ipv4 *ipv4)
-+{
-+	return rcu_dereference(ipv4->fib_multipath_hash_seed_ctx);
-+}
-+#endif
- #endif
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 5985029e4..457dfdab8 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1560,6 +1560,15 @@ u32 flow_hash_from_keys(struct flow_keys *keys)
- }
- EXPORT_SYMBOL(flow_hash_from_keys);
- 
-+#ifdef CONFIG_IP_ROUTE_MULTIPATH
-+u32 flow_multipath_hash_from_keys(struct flow_keys *keys,
-+					const siphash_key_t *seed)
-+{
-+	return __flow_hash_from_keys(keys, seed);
-+}
-+EXPORT_SYMBOL(flow_multipath_hash_from_keys);
-+#endif /* CONFIG_IP_ROUTE_MULTIPATH */
-+
- static inline u32 ___skb_get_hash(const struct sk_buff *skb,
- 				  struct flow_keys *keys,
- 				  const siphash_key_t *keyval)
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index f17870ee5..fd4c68966 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1874,6 +1874,11 @@ static __net_init int inet_init_net(struct net *net)
- 
- 	net->ipv4.sysctl_fib_notify_on_flag_change = 0;
- 
-+#ifdef CONFIG_IP_ROUTE_MULTIPATH
-+	net->ipv4.fib_multipath_hash_seed_ctx = NULL;
-+	spin_lock_init(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
-+#endif
-+
- 	return 0;
- }
- 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index f6787c55f..d939100cb 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1912,6 +1912,7 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- {
- 	u32 multipath_hash = fl4 ? fl4->flowi4_multipath_hash : 0;
- 	struct flow_keys hash_keys;
-+	struct multipath_seed_ctx *seed_ctx;
- 	u32 mhash;
- 
- 	switch (net->ipv4.sysctl_fib_multipath_hash_policy) {
-@@ -1989,7 +1990,14 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 		}
- 		break;
- 	}
--	mhash = flow_hash_from_keys(&hash_keys);
-+
-+	rcu_read_lock();
-+	seed_ctx = fib_multipath_seed_get_ctx(&net->ipv4);
-+	if (seed_ctx)
-+		mhash = flow_multipath_hash_from_keys(&hash_keys, &seed_ctx->seed);
-+	else
-+		mhash = flow_hash_from_keys(&hash_keys);
-+	rcu_read_unlock();
- 
- 	if (multipath_hash)
- 		mhash = jhash_2words(mhash, multipath_hash, 0);
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index a09e466ce..0b1ae3930 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -447,6 +447,8 @@ static int proc_tcp_available_ulp(struct ctl_table *ctl,
- }
- 
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
-+#define FIB_MULTIPATH_SEED_KEY_LENGTH sizeof(siphash_key_t)
-+#define FIB_MULTIPATH_SEED_RANDOM "random"
- static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
- 					  void *buffer, size_t *lenp,
- 					  loff_t *ppos)
-@@ -461,6 +463,100 @@ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
- 
- 	return ret;
- }
-+
-+static void fib_multipath_seed_ctx_free(struct rcu_head *head)
-+{
-+	struct multipath_seed_ctx *ctx =
-+	    container_of(head, struct multipath_seed_ctx, rcu);
-+
-+	kfree_sensitive(ctx);
-+}
-+
-+static int proc_fib_multipath_hash_seed(struct ctl_table *table, int write,
-+					  void *buffer, size_t *lenp,
-+					  loff_t *ppos)
-+{
-+	struct net *net = container_of(table->data, struct net,
-+	    ipv4.sysctl_fib_multipath_hash_seed);
-+	/* maxlen to print the keys in hex (*2) and a comma in between keys. */
-+	struct ctl_table tbl = {
-+		.maxlen = ((FIB_MULTIPATH_SEED_KEY_LENGTH * 2) + 2)
-+	};
-+	siphash_key_t user_key;
-+	__le64 key[2];
-+	int ret;
-+	struct multipath_seed_ctx *ctx;
-+
-+	tbl.data = kmalloc(tbl.maxlen, GFP_KERNEL);
-+
-+	if (!tbl.data)
-+		return -ENOMEM;
-+
-+	rcu_read_lock();
-+	ctx = rcu_dereference(net->ipv4.fib_multipath_hash_seed_ctx);
-+	if (ctx) {
-+		put_unaligned_le64(ctx->seed.key[0], &key[0]);
-+		put_unaligned_le64(ctx->seed.key[1], &key[1]);
-+		user_key.key[0] = le64_to_cpu(key[0]);
-+		user_key.key[1] = le64_to_cpu(key[1]);
-+
-+		snprintf(tbl.data, tbl.maxlen, "%016llx,%016llx",
-+				user_key.key[0], user_key.key[1]);
-+	} else {
-+		snprintf(tbl.data, tbl.maxlen, "%s", FIB_MULTIPATH_SEED_RANDOM);
-+	}
-+	rcu_read_unlock();
-+
-+	ret = proc_dostring(&tbl, write, buffer, lenp, ppos);
-+
-+	if (write && ret == 0) {
-+		struct multipath_seed_ctx *new_ctx, *old_ctx;
-+
-+		if (!strcmp(tbl.data, FIB_MULTIPATH_SEED_RANDOM)) {
-+			spin_lock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
-+			old_ctx = rcu_dereference_protected(net->ipv4.fib_multipath_hash_seed_ctx,
-+					lockdep_is_held(&net->ipv4.fib_multipath_hash_seed_ctx_lock));
-+			RCU_INIT_POINTER(net->ipv4.fib_multipath_hash_seed_ctx, NULL);
-+			spin_unlock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
-+			if (old_ctx)
-+				call_rcu(&old_ctx->rcu, fib_multipath_seed_ctx_free);
-+
-+			pr_debug("multipath hash seed set to random value\n");
-+			goto out;
-+		}
-+
-+		if (sscanf(tbl.data, "%llx,%llx", user_key.key, user_key.key + 1) != 2) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
-+
-+		key[0] = cpu_to_le64(user_key.key[0]);
-+		key[1] = cpu_to_le64(user_key.key[1]);
-+		pr_debug("multipath hash seed set to 0x%llx,0x%llx\n",
-+				user_key.key[0], user_key.key[1]);
-+
-+		new_ctx = kmalloc(sizeof(*new_ctx), GFP_KERNEL);
-+		if (!new_ctx) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
-+
-+		new_ctx->seed.key[0] = key[0];
-+		new_ctx->seed.key[1] = key[1];
-+
-+		spin_lock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
-+		old_ctx = rcu_dereference_protected(net->ipv4.fib_multipath_hash_seed_ctx,
-+				lockdep_is_held(&net->ipv4.fib_multipath_hash_seed_ctx_lock));
-+		rcu_assign_pointer(net->ipv4.fib_multipath_hash_seed_ctx, new_ctx);
-+		spin_unlock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
-+		if (old_ctx)
-+			call_rcu(&old_ctx->rcu, fib_multipath_seed_ctx_free);
-+	}
-+
-+out:
-+	kfree(tbl.data);
-+	return ret;
-+}
- #endif
- 
- static struct ctl_table ipv4_table[] = {
-@@ -1052,6 +1148,14 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= &two,
- 	},
-+	{
-+		.procname	= "fib_multipath_hash_seed",
-+		.data		= &init_net.ipv4.sysctl_fib_multipath_hash_seed,
-+		/* maxlen to print the keys in hex (*2) and a comma in between keys. */
-+		.maxlen		= (FIB_MULTIPATH_SEED_KEY_LENGTH * 2) + 2,
-+		.mode		= 0600,
-+		.proc_handler	= proc_fib_multipath_hash_seed,
-+	},
- #endif
- 	{
- 		.procname	= "ip_unprivileged_port_start",
--- 
-2.31.1
-
+> ---
+>
+> Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 864db232dc70
+>
+> To: Bryan Whitehead <bryan.whitehead@microchip.com>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: Jakub Kicinski <kuba@kernel.org>
+> To: George McCollister <george.mccollister@gmail.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: UNGLinuxDriver@microchip.com
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+>
+>  drivers/net/ethernet/microchip/lan743x_main.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> index 1c3e204d727c..7b6794aa8ea9 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> @@ -885,8 +885,8 @@ static int lan743x_mac_set_mtu(struct lan743x_adapter *adapter, int new_mtu)
+>         }
+>
+>         mac_rx &= ~(MAC_RX_MAX_SIZE_MASK_);
+> -       mac_rx |= (((new_mtu + ETH_HLEN + 4) << MAC_RX_MAX_SIZE_SHIFT_) &
+> -                 MAC_RX_MAX_SIZE_MASK_);
+> +       mac_rx |= (((new_mtu + ETH_HLEN + ETH_FCS_LEN)
+> +                 << MAC_RX_MAX_SIZE_SHIFT_) & MAC_RX_MAX_SIZE_MASK_);
+>         lan743x_csr_write(adapter, MAC_RX, mac_rx);
+>
+>         if (enabled) {
+> @@ -1944,7 +1944,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
+>         struct sk_buff *skb;
+>         dma_addr_t dma_ptr;
+>
+> -       buffer_length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
+> +       buffer_length = netdev->mtu + ETH_HLEN + ETH_FCS_LEN + RX_HEAD_PADDING;
+>
+>         descriptor = &rx->ring_cpu_ptr[index];
+>         buffer_info = &rx->buffer_info[index];
+> @@ -2040,7 +2040,7 @@ lan743x_rx_trim_skb(struct sk_buff *skb, int frame_length)
+>                 dev_kfree_skb_irq(skb);
+>                 return NULL;
+>         }
+> -       frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 4);
+> +       frame_length = max_t(int, 0, frame_length - ETH_FCS_LEN);
+>         if (skb->len > frame_length) {
+>                 skb->tail -= skb->len - frame_length;
+>                 skb->len = frame_length;
+> --
+> 2.17.1
+>
