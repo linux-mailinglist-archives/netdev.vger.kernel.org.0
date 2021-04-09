@@ -2,193 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFC8C35A762
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C38CB35A743
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbhDITqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 15:46:53 -0400
-Received: from mout.gmx.net ([212.227.17.20]:39269 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233883AbhDITql (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 15:46:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1617997367;
-        bh=iNspAAUXd0TGc9idWuqJezj9FgSbVIrdnHkC34OI6ys=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=ldsXgBGJ3GSKvmbTxvP1itO26Qt3rKVAXa7HCeRwn7x6vvwIVyKAuuWMT/9Mbs/eq
-         eUjUvdYyHT2oPnald/g3Raad9aGgTRMlgrGQZ1cKX9WKZtuOkezCA/ZBkxeKHYWicC
-         dFguhZZAb4murEW3qrRROxlPjGsI5cEXZ4497eEg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.181.63]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1My36N-1lmD5l41nT-00zVNp; Fri, 09
- Apr 2021 21:42:47 +0200
-Subject: Re: [PATCH v2 1/1] kernel.h: Split out panic and oops helpers
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Wei Liu <wei.liu@kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Corey Minyard <cminyard@mvista.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        "Jason J. Herne" <jjherne@linux.ibm.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Joe Perches <joe@perches.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Olof Johansson <olof@lixom.net>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Wang Wenhu <wenhu.wang@vivo.com>,
-        Marek Czerski <ma.czerski@gmail.com>,
-        Hongbo Yao <yaohongbo@huawei.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-clk@vger.kernel.org, linux-edac@vger.kernel.org,
-        coresight@lists.linaro.org, linux-leds@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-staging@lists.linux.dev, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, linux-arch@vger.kernel.org,
-        kexec@lists.infradead.org, rcu@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>, Alex Elder <elder@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Jens Frederich <jfrederich@gmail.com>,
-        Daniel Drake <dsd@laptop.org>,
-        Jon Nettleton <jon.nettleton@gmail.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20210409100250.25922-1-andriy.shevchenko@linux.intel.com>
-From:   Helge Deller <deller@gmx.de>
-Message-ID: <cef5d4ba-9d91-7249-3ba4-c7f1c89ab119@gmx.de>
-Date:   Fri, 9 Apr 2021 21:41:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20210409100250.25922-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:A9ZHNG4WxpUBFm/OLrSjy4wmvepyAKfJ/9J0GMwZPVvou+WL0jt
- juhLu46u1kS+URbP+8+Pw+p7oQ3JpIMBAMo3AEr85dJ6auKoY3YWnT5NDC8TMlGFgRljwyK
- +Z8x/lMp3a1Sj6G+ejcETzf/1wuAwQ3HVr+B/sOgfO9g9aKIA+KstHHg98r0RbXaN5gO1f1
- c2FCqtclGkoW83386bLAQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QTiAIr1d9DU=:ouDY+zoQbxd0AYwIoqdq7+
- aGg5cjuhFxN4dPlhbUVe4gHa8V6O/ob8/GYNsz48eMGoWdTSBWNdigEx/P3CeG5ajt1K/D1wj
- ZsuimGcNU/JIwDEC4hAa9wiKwplSRt9GyqnNpMymPpOincerI2QNIINtkESpmD/MQtIZKWIBd
- LzLZQt5g5JHyD7KSRX3CSO3kxsUbUK397UnmPrlbBzZiG2Ki8L87whx1HhStGiOawVNU3NX1U
- 1qJ/Q2KXhaSRyDrR5JobMbpVJ16dZyIPC+nB+S5uAuxAgE/sFmpim0FlFwngs3hHA1Ua7nKDx
- vaviKH0ZdVtdmwFCmPWXldfwgaGRXmcVHieN8y3Cf4AES1arvvUXfDdU8TlIFPlMWolAfy75b
- aF6Vq+x5W46hFMRh+gkaDVvXSN0IJLemCnzysIaYGHy5hfBua6u7o+npWjwJ1MLna90v6WJqp
- qtsmLRv7qq9JD3rE3mLnbgCeyikpDMiwYezxJc5y085Nda4MocVjIUyHwfrItCcTJy+6nK+32
- QtS5ysQPbZtg/0BLTkwmTgg1C9wyCqJwqSPkJHKs0fedY3Cg4AmlYSUFZ+l1+yWlahYNrwIjD
- 1LvXS6jFdPgrwM0Bw5zEn5iTaVsN3Dpg/BK7RBEnkSXG2EhjbG0P5JyU6ZQFlyoWZsOBl1Dnp
- 9RlHsz3O6/vJl501tNpFzFkE9v1fbjuJiCnsWIZVHwcbxwgsYWs1VvePFQoqRLQUoGWk7YlQ8
- Mycnfd16TOkM/BTklN35/8ZoVz9X6VjMTLQhDSDUL5LeX75GwKdRnpVjwg+mpqmINujIEDZVj
- bRIcfuM8kM4QXmEUEjmqZoVNDqdo0531mNm3kN19X3Wj5I9ywhlJarAEaPUOs1zKkdzPb4HdC
- +5ul9M6a4WBWbT5U1mKmQOeT0D6MCEGVKv+v/aWQ+A07Sxs9cad/sxt/XXniiusfDTtv1wpHL
- 48xz68wHDUi6JHhewqK39v9CUwOqs24U/FOrqR6QogsoMdeib8LB3HQXiJzJhPuxnfQKT5n0E
- 2KocVJOLOCpFD00uImKyPG4urooQInY0CgXuaTbgwb2QXtNz/HWsnU7bcGH95t//ETUS0YST/
- HIEC4Jt3JrZiU2K24JZ5uAUtc1tWcvMl+zNPO7uqbferwivk7BjAs0A1bkS3994pg0p9gu7e6
- IGlScHPk65VIaL0560ZSSQDJOn/n987RThMli+dnKucI6xieqz82byl0Okk5UU49D7L5Y=
+        id S234255AbhDITnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 15:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233883AbhDITnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 15:43:04 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E410AC061762;
+        Fri,  9 Apr 2021 12:42:49 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id d12so2946436iod.12;
+        Fri, 09 Apr 2021 12:42:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=unhXl+pc6TQKlLmCDsXgLF+ApdAzewtHVr0DGc7OWBg=;
+        b=f2hdiychRjsOn8HFQsEHRpn3J3u72FP6ZBQllbbc2iP/kknhSxeI9kU50NbkEAtK6S
+         9dXyu1iujuvWy5Mfcrvp+snXJJlKT98hXmCC6fcZzJS/0N5Vb8RHXFoV5mnNWlxZCgPH
+         Em9WMUsNrkmbq+IVihoEo7tObIJAWFFziw/mUgMRiKxr/L8gyWTbHbX4Py20mf1Bazh+
+         5GgFoWIhoArd0QVx9hN/iiJSqd+PSUrOZx0B4+Sz5NyDBBx3+HoLHww7fAqYiOeq9huj
+         4yvNd2Zo8dM4NzmU2x2pLCv35lDbcYGwF7C3dzy7695rCMW5U6OL9BB6teJcNIU13BPs
+         S3wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=unhXl+pc6TQKlLmCDsXgLF+ApdAzewtHVr0DGc7OWBg=;
+        b=oFMmFeKYfD2c2eqMM8a5NyUEwelptxd7bhtuApQmWccpMZd6T2atrXd6QMur53ar84
+         N8/kaRN9jjFYcPa24PycdGSL/VWz+97ZPNUpEUG5wNK3OrUNvwMJLzbH2y7c8DP+hs0G
+         w+mphId4dnxYlEVkKP7t5lWVQhzvYr0NE4NKGAqIyw5hGVji+q35SkLAGnSvzO9vuy8m
+         Z/7vqnns4C6aA9bmurjYf/bXoe5xSl36Jnzf206EalCV/Ba6lF++5sH4Uwk0SktFbbDS
+         8tSU+8iKmJJcgKlqJeFxkTwBW/cLbr1HqPnejuCaR8GGsSuM/65O+uMAXKPGbekPEUwr
+         XT4A==
+X-Gm-Message-State: AOAM5322fh/oVKaQ8p8tRVLxZU0Y25yYEIptYY7HmYLTgqvzmwfbpICc
+        TzX7PWwTvldmkF6y+Yc5D5lKHNsnFqI=
+X-Google-Smtp-Source: ABdhPJy1Zh8Y8VDtLj006N7EOtGQhnfi3RnrzGgPPX50UHKI1MZgrKsoDWfZrWJpTqIdGB602nz4Kw==
+X-Received: by 2002:a02:cac9:: with SMTP id f9mr9172453jap.85.1617997369397;
+        Fri, 09 Apr 2021 12:42:49 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id 11sm1582398iln.74.2021.04.09.12.42.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Apr 2021 12:42:49 -0700 (PDT)
+Date:   Fri, 09 Apr 2021 12:42:41 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        syzbot <syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <6070ae3185d63_4526f20878@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpXqfAXPoesdXskH7BaE206zc5QDEsfjFnfSRck2FH+wLg@mail.gmail.com>
+References: <20210408030556.45134-1-xiyou.wangcong@gmail.com>
+ <606f9f2b26b1a_c8b9208a4@john-XPS-13-9370.notmuch>
+ <CAM_iQpXqfAXPoesdXskH7BaE206zc5QDEsfjFnfSRck2FH+wLg@mail.gmail.com>
+Subject: Re: [Patch bpf-next] sock_map: fix a potential use-after-free in
+ sock_map_close()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/9/21 12:02 PM, Andy Shevchenko wrote:
-> kernel.h is being used as a dump for all kinds of stuff for a long time.
-> Here is the attempt to start cleaning it up by splitting out panic and
-> oops helpers.
->
-> There are several purposes of doing this:
-> - dropping dependency in bug.h
-> - dropping a loop by moving out panic_notifier.h
-> - unload kernel.h from something which has its own domain
->
-> At the same time convert users tree-wide to use new headers, although
-> for the time being include new header back to kernel.h to avoid twisted
-> indirected includes for existing users.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-> Acked-by: Corey Minyard <cminyard@mvista.com>
-> Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> Acked-by: Kees Cook <keescook@chromium.org>
-> Acked-by: Wei Liu <wei.liu@kernel.org>
-> Acked-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cong Wang wrote:
+> On Thu, Apr 8, 2021 at 5:26 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> >
+> > Cong Wang wrote:
+> > > From: Cong Wang <cong.wang@bytedance.com>
+> > >
+> > > The last refcnt of the psock can be gone right after
+> > > sock_map_remove_links(), so sk_psock_stop() could trigger a UAF.
+> > > The reason why I placed sk_psock_stop() there is to avoid RCU read
+> > > critical section, and more importantly, some callee of
+> > > sock_map_remove_links() is supposed to be called with RCU read lock,
+> > > we can not simply get rid of RCU read lock here. Therefore, the only
+> > > choice we have is to grab an additional refcnt with sk_psock_get()
+> > > and put it back after sk_psock_stop().
+> > >
+> > > Reported-by: syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com
+> > > Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+> > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > > Cc: Lorenz Bauer <lmb@cloudflare.com>
+> > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > > ---
+> > >  net/core/sock_map.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> > > index f473c51cbc4b..6f1b82b8ad49 100644
+> > > --- a/net/core/sock_map.c
+> > > +++ b/net/core/sock_map.c
+> > > @@ -1521,7 +1521,7 @@ void sock_map_close(struct sock *sk, long timeout)
+> > >
+> > >       lock_sock(sk);
+> > >       rcu_read_lock();
+> >
+> > It looks like we can drop the rcu_read_lock()/unlock() section then if we
+> > take a reference on the psock? Before it was there to ensure we didn't
+> > lose the psock from some other context, but with a reference held this
+> > can not happen.
+> 
+> Some callees under sock_map_remove_links() still assert RCU read
+> lock, so we can not simply drop the RCU read lock here. Some
+> additional efforts are needed to take care of those assertions, which
+> can be a separate patch.
+> 
+> Thanks.
 
-Acked-by: Helge Deller <deller@gmx.de> # parisc
+OK at least this case exists,
 
-Helge
+ sock_map_close
+  sock_map_remove_links
+   sock_map_unlink
+    sock_hash_delete_from_link
+      WARN_ON_ONCE(!rcu_read_lock_held()); 
+
+also calls into sock_map_unref through similar path use sk_psock(sk)
+depending on rcu critical section.
+
+Its certainly non-trivial to remove. I don't really like taking a ref
+here but seems necessary for now.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
