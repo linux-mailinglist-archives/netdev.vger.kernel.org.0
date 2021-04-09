@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9D435A8D2
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 00:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65ED335A8D6
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 00:44:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235303AbhDIWjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 18:39:18 -0400
-Received: from mail-ed1-f41.google.com ([209.85.208.41]:41489 "EHLO
-        mail-ed1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235136AbhDIWjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 18:39:17 -0400
-Received: by mail-ed1-f41.google.com with SMTP id z1so8279428edb.8;
-        Fri, 09 Apr 2021 15:39:03 -0700 (PDT)
+        id S235052AbhDIWjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 18:39:32 -0400
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:46799 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235120AbhDIWjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 18:39:31 -0400
+Received: by mail-ed1-f47.google.com with SMTP id h10so8244989edt.13;
+        Fri, 09 Apr 2021 15:39:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Er0JvX9LJJW9NGmHRaC1luhAateCi8wCBUT1RypacVs=;
-        b=Zq6UaHcrjA9JuLjufPve5IAivuptlLA6dAdz27FiKZiT53/6EG9sZIiqz+PZh+kt9I
-         ag+c7oXGNKEr7ep0rzn74HAG2kE5z0ftNR/Vu75aWfmq0wK2qqrAxXzBnrewfDprQ5Mk
-         fszSUcbxT6FCGY8W4Vj4w2qez5ONT+KlcczsXkwhTRXFfcUe0sRlssVSrmXa4XOIo3Xc
-         Mz+wj8m/lZPV+0F0BzW7Or9djpfEzDTiFTMu9H+bKPGiTplnrfWkTxuH3BlvCGBp54IY
-         6N+UeoBgC7oMVb15oQe5nPWBrLp26lFVNNVGOhjU34Uwiryl/bnSbRqeEuYE/pHyJxR8
-         GWBg==
-X-Gm-Message-State: AOAM533+79MK5WdPgFBmX0UkeAVW2BLJtqpLtH9PMi9AkUGtfRRznIeS
-        RVJuo0T8h9QCTM2rYnRJ1LFPHs7T5Jl6sw==
-X-Google-Smtp-Source: ABdhPJx0lYQv0DdUHe0Jz5hRW0kEEFLIUK/JhjuqYezEVGOYBCZ8/iqaXjrdy1Ul5TN1Nx8oZbZygg==
-X-Received: by 2002:aa7:d397:: with SMTP id x23mr19978020edq.256.1618007942469;
-        Fri, 09 Apr 2021 15:39:02 -0700 (PDT)
+        bh=Hfpx7yH1JMhtuw/p34rqv49BJ0OaG3mtjrffrkk1xkI=;
+        b=U8bmuEQER8Mm1nx479pjhE3j02V0vqFZAE6NFIoBID/xb05O3ESl9NfYZIH9+Q4ire
+         sG+76lM1fGvXRFhfbqEIwbn0t0gj9VGJIoGmXbn6SOXd806B2zkkbOOcGyhWC8VCuNTj
+         MhSMPdjsQOQQDcpsbqUs9CiKJZnV8sBb38DK+BzaLKsNZX9d9hlmHymOmbvE9PO7gJqh
+         ADu3HN+GPE80AzU4BrUIlEIq3PhTB0/AoeIxjIlDIn2HkqmE1X3N/OWNIwomxU1g2evO
+         icAsMJiD5j6Vlz9qAXfpq838mqKby3CGHiP0dX9gWCXHz+0Hq3bmzaDgCw0QfUHGl1gE
+         WgCA==
+X-Gm-Message-State: AOAM530i6NcMxGxDvWZ9tMw/Ns7PwzWVvN5GhQ2ss8TYqC5r6SqX7pHA
+        F39D+TPFyaaEJ5taoKnNTCNhILHS05M6dw==
+X-Google-Smtp-Source: ABdhPJz5JORSKeWDpQgyWZS0/602VxwB/8eehkCneeNRCOvKRKPhoJLWpkp3+nG3FTnrzj9BVIHxxg==
+X-Received: by 2002:a05:6402:3495:: with SMTP id v21mr19447203edc.117.1618007956846;
+        Fri, 09 Apr 2021 15:39:16 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-93-66-21-119.cust.vodafonedsl.it. [93.66.21.119])
-        by smtp.gmail.com with ESMTPSA id s20sm2108726edu.93.2021.04.09.15.39.00
+        by smtp.gmail.com with ESMTPSA id s20sm2108726edu.93.2021.04.09.15.39.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 15:39:02 -0700 (PDT)
+        Fri, 09 Apr 2021 15:39:16 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org, linux-mm@kvack.org
 Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
@@ -80,9 +80,9 @@ Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next v3 4/5] mvpp2: recycle buffers
-Date:   Sat, 10 Apr 2021 00:38:00 +0200
-Message-Id: <20210409223801.104657-5-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next v3 5/5] mvneta: recycle buffers
+Date:   Sat, 10 Apr 2021 00:38:01 +0200
+Message-Id: <20210409223801.104657-6-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210409223801.104657-1-mcroce@linux.microsoft.com>
 References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
@@ -95,109 +95,70 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Matteo Croce <mcroce@microsoft.com>
 
 Use the new recycling API for page_pool.
-In a drop rate test, the packet rate is more than doubled,
-from 962 Kpps to 2047 Kpps.
+In a drop rate test, the packet rate increased di 10%,
+from 269 Kpps to 296 Kpps.
 
 perf top on a stock system shows:
 
 Overhead  Shared Object     Symbol
-  30.67%  [kernel]          [k] page_pool_release_page
-   8.37%  [kernel]          [k] get_page_from_freelist
-   7.34%  [kernel]          [k] free_unref_page
-   6.47%  [mvpp2]           [k] mvpp2_rx
-   4.69%  [kernel]          [k] eth_type_trans
-   4.55%  [kernel]          [k] __netif_receive_skb_core
-   4.40%  [kernel]          [k] build_skb
-   4.29%  [kernel]          [k] kmem_cache_free
-   4.00%  [kernel]          [k] kmem_cache_alloc
-   3.81%  [kernel]          [k] dev_gro_receive
-
-With packet rate stable at 962 Kpps:
-
-tx: 0 bps 0 pps rx: 477.4 Mbps 962.6 Kpps
-tx: 0 bps 0 pps rx: 477.6 Mbps 962.8 Kpps
-tx: 0 bps 0 pps rx: 477.6 Mbps 962.9 Kpps
-tx: 0 bps 0 pps rx: 477.2 Mbps 962.1 Kpps
-tx: 0 bps 0 pps rx: 477.5 Mbps 962.7 Kpps
+  21.78%  [kernel]          [k] __pi___inval_dcache_area
+  21.66%  [mvneta]          [k] mvneta_rx_swbm
+   7.00%  [kernel]          [k] kmem_cache_alloc
+   6.05%  [kernel]          [k] eth_type_trans
+   4.44%  [kernel]          [k] kmem_cache_free.part.0
+   3.80%  [kernel]          [k] __netif_receive_skb_core
+   3.68%  [kernel]          [k] dev_gro_receive
+   3.65%  [kernel]          [k] get_page_from_freelist
+   3.43%  [kernel]          [k] page_pool_release_page
+   3.35%  [kernel]          [k] free_unref_page
 
 And this is the same output with recycling enabled:
 
 Overhead  Shared Object     Symbol
-  12.75%  [mvpp2]           [k] mvpp2_rx
-   9.56%  [kernel]          [k] __netif_receive_skb_core
-   9.29%  [kernel]          [k] build_skb
-   9.27%  [kernel]          [k] eth_type_trans
-   8.39%  [kernel]          [k] kmem_cache_alloc
-   7.85%  [kernel]          [k] kmem_cache_free
-   7.36%  [kernel]          [k] page_pool_put_page
-   6.45%  [kernel]          [k] dev_gro_receive
-   4.72%  [kernel]          [k] __xdp_return
-   3.06%  [kernel]          [k] page_pool_refill_alloc_cache
+  24.10%  [kernel]          [k] __pi___inval_dcache_area
+  23.02%  [mvneta]          [k] mvneta_rx_swbm
+   7.19%  [kernel]          [k] kmem_cache_alloc
+   6.50%  [kernel]          [k] eth_type_trans
+   4.93%  [kernel]          [k] __netif_receive_skb_core
+   4.77%  [kernel]          [k] kmem_cache_free.part.0
+   3.93%  [kernel]          [k] dev_gro_receive
+   3.03%  [kernel]          [k] build_skb
+   2.91%  [kernel]          [k] page_pool_put_page
+   2.85%  [kernel]          [k] __xdp_return
 
-With packet rate above 2000 Kpps:
-
-tx: 0 bps 0 pps rx: 1015 Mbps 2046 Kpps
-tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
-tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
-tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
-tx: 0 bps 0 pps rx: 1015 Mbps 2047 Kpps
-
-The major performance increase is explained by the fact that the most CPU
-consuming functions (page_pool_release_page, get_page_from_freelist
-and free_unref_page) are no longer called on a per packet basis.
-
-The test was done by sending to the macchiatobin 64 byte ethernet frames
-with an invalid ethertype, so the packets are dropped early in the RX path.
+The test was done with mausezahn on the TX side with 64 byte raw
+ethernet frames.
 
 Signed-off-by: Matteo Croce <mcroce@microsoft.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index ec706d614cac..633b39cfef65 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3847,6 +3847,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 	struct mvpp2_pcpu_stats ps = {};
- 	enum dma_data_direction dma_dir;
- 	struct bpf_prog *xdp_prog;
-+	struct xdp_rxq_info *rxqi;
- 	struct xdp_buff xdp;
- 	int rx_received;
- 	int rx_done = 0;
-@@ -3912,15 +3913,15 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		else
- 			frag_size = bm_pool->frag_size;
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index f20dfd1d7a6b..f88c189b60a4 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -2331,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 	if (!skb)
+ 		return ERR_PTR(-ENOMEM);
  
--		if (xdp_prog) {
--			struct xdp_rxq_info *xdp_rxq;
-+		if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
-+			rxqi = &rxq->xdp_rxq_short;
-+		else
-+			rxqi = &rxq->xdp_rxq_long;
+-	page_pool_release_page(rxq->page_pool, virt_to_page(xdp->data));
++	skb_mark_for_recycle(skb, virt_to_page(xdp->data), &xdp->rxq->mem);
  
--			if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
--				xdp_rxq = &rxq->xdp_rxq_short;
--			else
--				xdp_rxq = &rxq->xdp_rxq_long;
-+		if (xdp_prog) {
-+			xdp.rxq = rxqi;
+ 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	skb_put(skb, xdp->data_end - xdp->data);
+@@ -2343,7 +2343,10 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+ 				skb_frag_page(frag), skb_frag_off(frag),
+ 				skb_frag_size(frag), PAGE_SIZE);
+-		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
++		/* We don't need to reset pp_recycle here. It's already set, so
++		 * just mark fragments for recycling.
++		 */
++		page_pool_store_mem_info(skb_frag_page(frag), &xdp->rxq->mem);
+ 	}
  
--			xdp_init_buff(&xdp, PAGE_SIZE, xdp_rxq);
-+			xdp_init_buff(&xdp, PAGE_SIZE, rxqi);
- 			xdp_prepare_buff(&xdp, data,
- 					 MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM,
- 					 rx_bytes, false);
-@@ -3964,7 +3965,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		}
- 
- 		if (pp)
--			page_pool_release_page(pp, virt_to_page(data));
-+			skb_mark_for_recycle(skb, virt_to_page(data), &rxqi->mem);
- 		else
- 			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
- 					       bm_pool->buf_size, DMA_FROM_DEVICE,
+ 	return skb;
 -- 
 2.30.2
 
