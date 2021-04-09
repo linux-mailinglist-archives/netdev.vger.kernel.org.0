@@ -2,128 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0712359C94
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 13:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECF4359C99
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 13:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233725AbhDILDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 07:03:43 -0400
-Received: from mail-bn8nam12on2046.outbound.protection.outlook.com ([40.107.237.46]:60800
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232469AbhDILDl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 07:03:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LaFTdQSNUrQ4sTuLMCjlohQFfnZpPYQMLCPRD5ywsuVVO850V9YhVWmrRHkv2MS7Bj/S6o0n1JxW8e6bJlbvvcCOlDakAH+Saj8XctUvyrP/vbjnolqgyxXjamfjTp733vRqTBg1xYp8HpNZnJ5qjLYU6LhMPyUI47DbudCbXffyPXTGBOKNZLPGZPJA8FTl+g55Aptj3nKkn6kuGfvvMNgMTMeLlbNAphV3ZmxB/1z5u5eqZOUMfZm8igcR+7lfBseGAQwoVHwddBtp1AZlCvcvJdXh2gB/fpatdllz3494RLQqvJNKI3OwOllQcy57DsA+hdrAjVcRp0mf9Sjy5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yCVVnDoAy553y49SyfCfvqdAzVLDyMcwMwBBeyjlY2w=;
- b=mZcydkdga4fYmq09pBZ46KxUx3vJFbFEhSq1wqvlHYi5a97Wjdc750fbYSJRsaf/zIOLlfSc6tNsoSIZbkkMyrxaLIu0eNY2kw/bko4gB0Db4bl4ble0kZnlubaGsXCxn+l8EGafKggNcjE1g4Ao4IdKGt5ECtmUwkVUeesxEte7v6vJGlGBoc/C061/TXP0ZMP6GfR96GuXMGfsHLmXy7RF50Ro4cjTZjw0xRbIQf3NpLXNv3mYNqd65kmPD2PcaJ8CN1mHgQ/914rSqqpzu60pOPVoRJ6s+ABcEoN2uVpx+Oo+79O1GboLr//cidXLT0x5tM3VfKi0csaiz8Y3dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yCVVnDoAy553y49SyfCfvqdAzVLDyMcwMwBBeyjlY2w=;
- b=VcgVg2wCsn4NVaeOec/NnXHRK6CiHonFomB/oJs5nyJ5NoIG0MVdu30Az0uxNIZ28k0wv1Pkt72hUqTn7ZX9A3i9LCnyAu5RcG9HZjfJ0zU0eFtVaLZplljxFVFtopi3QBRTxmEIGEYX2a+tnVsmhf/xl1PhNxfXaBv4RDoIhZTDAt1kilIhsHj4VSY32rBOR3E57uc/SmFiE8WBy5h8RfFfErKGAOMx1m/3I3wYiunvyXhteYU2VRtsXzeJxYuqNN6K1uK5nURkeB2bd7L2hJjTkjF1BRgnTnkbkmEiDCmy+Fd5TPu0MYpsNQB+QW72BSVk5XWMag+y4bF/892eIw==
-Received: from BN9PR03CA0306.namprd03.prod.outlook.com (2603:10b6:408:112::11)
- by MN2PR12MB3837.namprd12.prod.outlook.com (2603:10b6:208:166::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Fri, 9 Apr
- 2021 11:03:27 +0000
-Received: from BN8NAM11FT062.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:112:cafe::6b) by BN9PR03CA0306.outlook.office365.com
- (2603:10b6:408:112::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend
- Transport; Fri, 9 Apr 2021 11:03:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT062.mail.protection.outlook.com (10.13.177.34) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Fri, 9 Apr 2021 11:03:27 +0000
-Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Apr 2021 11:03:23
- +0000
-References: <20210408133829.2135103-1-petrm@nvidia.com>
- <20210408133829.2135103-2-petrm@nvidia.com>
- <b60df78a-1aba-ba27-6508-4c67b0496020@mojatatu.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S233799AbhDILFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 07:05:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49125 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233564AbhDILFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 07:05:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617966292;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cQ5YCLMA9Sp8TLm77Zn6ayHZDzA5IAQduvlhAiz00f4=;
+        b=EByO9Q70k4pTQFd6n1C7w1cEiZWnlaT8afCHiEvRKKqYKFjGR9TjM/kgeYYX0/H/U4Dt94
+        3XmfCmfQv/E4CnmCiDqhx4XAGGIKWQbWTA9qBCGG5Ry70K6s/XWWSENWDePRXogT+l/7x+
+        AwN60c2Xvsj10mzM+MFYPH0wLdNkeS0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-525-kDr1D6e_NvWF-TcAwFQ_aQ-1; Fri, 09 Apr 2021 07:04:51 -0400
+X-MC-Unique: kDr1D6e_NvWF-TcAwFQ_aQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B18510054F6;
+        Fri,  9 Apr 2021 11:04:49 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-115-50.ams2.redhat.com [10.36.115.50])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0100010023BE;
+        Fri,  9 Apr 2021 11:04:47 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Subject: Re: [PATCH net-next 1/7] net: sched: Add a trap-and-forward action
-In-Reply-To: <b60df78a-1aba-ba27-6508-4c67b0496020@mojatatu.com>
-Date:   Fri, 9 Apr 2021 13:03:19 +0200
-Message-ID: <877dlb67pk.fsf@nvidia.com>
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: [PATCH net-next 0/4] veth: allow GRO even without XDP
+Date:   Fri,  9 Apr 2021 13:04:36 +0200
+Message-Id: <cover.1617965243.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ccb7432c-dee4-481a-eb76-08d8fb471a25
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3837:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3837F0AB54B8CB79EE347C17D6739@MN2PR12MB3837.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uYDaRcEH+l+x8f0f+hk5sWS9WfxrIAZ1nwC3+3gprvxrrlkkdzXM/LAAMY53bYC+pyLbX7q0SBitvmthQZNzHeIPx7ezkxfiakYKIQmB3oyehDSrUSVhaoTsswVSyUqYC0WvRZ0xJ8satmcyS33opZOeV2n9qwH6Nc2JuqF8Yu+C1N/MgtimEcP2a+1SLlsTuSeFrfQ5EOev9XIWZAdbeztT5ZDRD/IgabVLBAdUsNX1eTwQp/SIaX/qyBFUNW5WsRsRm0Xsq2DfQSyfpwr696aprQy7Y6e6rDQeYctzAKdbRMudKj8LNFgE4Sy9fI3d7XqMuuvV+CqgHMZJTYyqvCOaOEBCaubPjq7TFi01G05sjUTvNoVgyYXHqZ0EQXDkDBbx9RYmwSUPMRP/B905KKhT6jYjFnD4p502600T1jMh73z+MHvDAPh6Wypjx3SuWL2GSQUDzZGOXpCY46GtH0BfeRQcEhFkPDeqdPs0WBZS2nTXPYFtYNUPu26dWeTOolm1XtZjan4qfpTS77r1neosCq7Qf+mwx4bphNBoH7sPTr4DtPgjS8LilLdbC5AdGxJ9ttUOeMsVHiheSAedm1LK2yV/Eq5IjU648vuHsdiQXmZbx2vzX7eYUGxuMgBCPiqpRbAGHu63I+JBYuEDrhdSesqhSvIRjGDBWH3zvq5bt/jz1qY2x9SykaOjl6lQmdshK7BBa3E1n+uCTx4PC+ZFpTHYopdEIrigvqr62os=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(396003)(346002)(136003)(39860400002)(36840700001)(46966006)(47076005)(8676002)(356005)(316002)(36860700001)(6916009)(26005)(8936002)(478600001)(70586007)(36756003)(70206006)(36906005)(186003)(16526019)(2616005)(5660300002)(54906003)(86362001)(7636003)(336012)(966005)(426003)(6666004)(2906002)(4326008)(82740400003)(82310400003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 11:03:27.1238
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ccb7432c-dee4-481a-eb76-08d8fb471a25
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT062.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3837
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series allows the user-space to enable GRO/NAPI on a veth
+device even without attaching an XDP program.
 
-Jamal Hadi Salim <jhs@mojatatu.com> writes:
+It does not change the default veth behavior (no NAPI, no GRO),
+except that the GRO feature bit on top of this series will be
+effectively off by default on veth devices. Note that currently
+the GRO bit is on by default, but GRO never takes place in
+absence of XDP.
 
-> I am concerned about adding new opcodes which only make sense if you
-> offload (or make sense only if you are running in s/w).
->
-> Those opcodes are intended to be generic abstractions so the dispatcher
-> can decide what to do next. Adding things that are specific only
-> to scenarios of hardware offload removes that opaqueness.
-> I must have missed the discussion on ACT_TRAP because it is the
-> same issue there i.e shouldnt be an opcode. For details see:
-> https://people.netfilter.org/pablo/netdev0.1/papers/Linux-Traffic-Control-Classifier-Action-Subsystem-Architecture.pdf
+On top of this series, setting the GRO feature bit enables NAPI
+and allows the GRO to take place. The TSO features on the peer
+device are preserved.
 
-Trap has been in since 4.13, so 2017ish. It's done and dusted at this
-point.
+The main goal is improving UDP forwarding performances for
+containers in a typical virtual network setup:
 
-> IMO:
-> It seems to me there are two actions here encapsulated in one.
-> The first is to "trap" and the second is to "drop".
->
-> This is no different semantically than say "mirror and drop"
-> offload being enunciated by "skip_sw".
->
-> Does the spectrum not support multiple actions?
-> e.g with a policy like:
->  match blah action trap action drop skip_sw
+(container) veth -> veth peer -> bridge/ovs -> vxlan -> NIC
 
-Trap drops implicitly. We need a "trap, but don't drop". Expressed in
-terms of existing actions it would be "mirred egress redirect dev
-$cpu_port". But how to express $cpu_port except again by a HW-specific
-magic token I don't know.
+Enabling the NAPI threaded mode, GRO the NETIF_F_GRO_UDP_FWD
+feature on the veth peer improves the UDP stream performance
+with not void netfilter configuration by 2x factor with no
+measurable overhead for TCP traffic: some heuristic ensures
+that TCP will not go through the additional NAPI/GRO layer.
+
+Some self-tests are added to check the expected behavior in
+the default configuration, with XDP and with plain GRO enabled.
+
+Paolo Abeni (4):
+  veth: use skb_orphan_partial instead of skb_orphan
+  veth: allow enabling NAPI even without XDP
+  veth: refine napi usage
+  self-tests: add veth tests
+
+ drivers/net/veth.c                   | 152 ++++++++++++++++++++---
+ tools/testing/selftests/net/Makefile |   1 +
+ tools/testing/selftests/net/veth.sh  | 177 +++++++++++++++++++++++++++
+ 3 files changed, 316 insertions(+), 14 deletions(-)
+ create mode 100755 tools/testing/selftests/net/veth.sh
+
+-- 
+2.26.2
+
