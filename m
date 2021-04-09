@@ -2,92 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7A835A1FC
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 17:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCD035A21C
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 17:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbhDIP2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 11:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbhDIP2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 11:28:41 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D832C061760
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 08:28:28 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id l9so7059720ybm.0
-        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 08:28:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Zleea9l7WU5nIFs3y2MAhyxIzowCXZxmN6tPXtz4+GU=;
-        b=uDST1pGQuNqyx6jV9FiXrLG2RPRQN8fEfAonoR43DleWUKCgca4VnykgQXhYlwmnwN
-         fkXV5ZasQrIWbvqLHSrRKxBZc5TS/9pal8WP515XrZcxLVGFfuXASejohYs/8ezovynL
-         NXZSDiD3+3Vsx7Dh9mA/dvALk+Rontzi/lqqWHP/oCxCTth9AJVYz2E4TaMPIvgoXBLM
-         z0Rw8rk8l77Ov5FNc/s4K+VV1VYct4g2WIQ4V36bKv46kYuzfZ0s2lx09l8AwmbDttn9
-         Of53ukjr2+io0UWT7U3TaVe9VXMjLPvQrWNN919d5KZYig7JAmd8RR+R8ppCBRxUNAK5
-         vPeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Zleea9l7WU5nIFs3y2MAhyxIzowCXZxmN6tPXtz4+GU=;
-        b=USyP1RdqjWMyaLSWvcTyEXRfFY7LSNpWDfIQfs6JeEb/BvMsmln4XhZ3p7lzHtBENq
-         JQh7F9CrGbslPUAvFj50zH6Unpo+fJm0R3Jp8Vsoms70AICuuvCH5oaLHzd+51r+C58s
-         tIB39r7W98szL8JnA6gM9wi3kOYYWL+rEz41TGPYBjZYOPv/lX9tKV68ckx1fS8xcJj4
-         IPj6shJGOmXYwC6VIDyTFGY4UpWjV8NaZ3HJ1BDvvZpIHugPsFGk0kV28lcwRtvTeEfm
-         c3v8LmwoLESqWacqsWJfpXiYne3pE0Jb40CHRo9gjFzaSeDkf++Uclx5iZXOinZcDNbP
-         eKJg==
-X-Gm-Message-State: AOAM5313DUjTEVYVVEn5fzbfm+DLMhEGWyp7lpB9RhBv4qcAERwH5+Tw
-        0aoeiqNJ0OdhBhRh6cC4Ra1alI5bOFEM9asRLeBQQQ==
-X-Google-Smtp-Source: ABdhPJz/u3U5RtgDiRggbBkzSaY3oxYCqQKocUp7KlVwu62BbqqNoqyh+QlbG0g5lfjNEawgx9bxyCXdvhqoxwq0O4M=
-X-Received: by 2002:a25:b906:: with SMTP id x6mr18343864ybj.504.1617982106774;
- Fri, 09 Apr 2021 08:28:26 -0700 (PDT)
+        id S232855AbhDIPhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 11:37:54 -0400
+Received: from 5.mo66.mail-out.ovh.net ([46.105.34.232]:44208 "EHLO
+        5.mo66.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229665AbhDIPhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 11:37:54 -0400
+X-Greylist: delayed 4207 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Apr 2021 11:37:53 EDT
+Received: from ex2.mail.ovh.net (unknown [10.108.16.196])
+        by mo66.mail-out.ovh.net (Postfix) with ESMTPS id A55E71BF22D;
+        Fri,  9 Apr 2021 12:50:00 +0200 (CEST)
+Received: from lnx01.mybll.net (84.167.156.165) by EX10.indiv2.local
+ (172.16.2.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2106.2; Fri, 9 Apr
+ 2021 12:49:59 +0200
+From:   Christian Poessinger <christian@poessinger.com>
+To:     <stephen@networkplumber.org>
+CC:     <christian@poessinger.com>, <netdev@vger.kernel.org>,
+        <u9012063@gmail.com>
+Subject: [PATCH] erspan/erspan6: fix JSON output
+Date:   Fri, 9 Apr 2021 12:49:47 +0200
+Message-ID: <20210409104947.36827-1-christian@poessinger.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210406162802.9041-1-stephen@networkplumber.org>
+References: <20210406162802.9041-1-stephen@networkplumber.org>
 MIME-Version: 1.0
-References: <883923fa22745a9589e8610962b7dc59df09fb1f.1617981844.git.pabeni@redhat.com>
-In-Reply-To: <883923fa22745a9589e8610962b7dc59df09fb1f.1617981844.git.pabeni@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 9 Apr 2021 17:28:15 +0200
-Message-ID: <CANn89i+gc6nL05VukOFLTW5KQqhFjx1YxD77x-Db=-uDAhNJ2Q@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: fix hangup on napi_disable for threaded napi
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [84.167.156.165]
+X-ClientProxiedBy: CAS11.indiv2.local (172.16.1.11) To EX10.indiv2.local
+ (172.16.2.10)
+X-Ovh-Tracer-Id: 3555591908993438190
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: 0
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduledrudekuddgfeegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvffufffkofgjfhgggfgtihesthekredtredttdenucfhrhhomhepvehhrhhishhtihgrnhcurfhovghsshhinhhgvghruceotghhrhhishhtihgrnhesphhovghsshhinhhgvghrrdgtohhmqeenucggtffrrghtthgvrhhnpeejheeuhfffgeeigfeugeefhfdtffeigeffieefkeejtddtjedtfeegveekhfefudenucfkpheptddrtddrtddrtddpkeegrdduieejrdduheeirdduieehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepvgigvddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegthhhrihhsthhirghnsehpohgvshhsihhnghgvrhdrtghomhdprhgtphhtthhopehuledtuddvtdeifeesghhmrghilhdrtghomh
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 9, 2021 at 5:25 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> napi_disable() is subject to an hangup, when the threaded
-> mode is enabled and the napi is under heavy traffic.
->
-> If the relevant napi has been scheduled and the napi_disable()
-> kicks in before the next napi_threaded_wait() completes - so
-> that the latter quits due to the napi_disable_pending() condition,
-> the existing code leaves the NAPI_STATE_SCHED bit set and the
-> napi_disable() loop waiting for such bit will hang.
->
-> This patch addresses the issue by dropping the NAPI_STATE_DISABLE
-> bit test in napi_thread_wait(). The later napi_threaded_poll()
-> iteration will take care of clearing the NAPI_STATE_SCHED.
->
-> This also addresses a related problem reported by Jakub:
-> before this patch a napi_disable()/napi_enable() pair killed
-> the napi thread, effectively disabling the threaded mode.
-> On the patched kernel napi_disable() simply stops scheduling
-> the relevant thread.
->
-> v1 -> v2:
->   - let the main napi_thread_poll() loop clear the SCHED bit
->
-> Reported-by: Jakub Kicinski <kuba@kernel.org>
-> Fixes: 29863d41bb6e ("net: implement threaded-able napi poll loop support")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
+The format for erspan/erspan6 output is not valid JSON, as on version 2 a
+valueless key was presented. The direction should be value and erspan_dir
+should be the key.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Fixes: 289763626721 ("erspan: add erspan version II support")
+Cc: u9012063@gmail.com
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Reported-by: Christian Poessinger <christian@poessinger.com>
+Signed-off-by: Christian Poessinger <christian@poessinger.com>
+---
+ ip/link_gre.c  | 4 ++--
+ ip/link_gre6.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Thanks !
+diff --git a/ip/link_gre.c b/ip/link_gre.c
+index 0461e5d0..6d4a8be8 100644
+--- a/ip/link_gre.c
++++ b/ip/link_gre.c
+@@ -536,10 +536,10 @@ static void gre_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 
+ 		if (erspan_dir == 0)
+ 			print_string(PRINT_ANY, "erspan_dir",
+-				     "erspan_dir ingress ", NULL);
++				     "erspan_dir %s ", "ingress");
+ 		else
+ 			print_string(PRINT_ANY, "erspan_dir",
+-				     "erspan_dir egress ", NULL);
++				     "erspan_dir %s ", "egress");
+ 	}
+ 
+ 	if (tb[IFLA_GRE_ERSPAN_HWID]) {
+diff --git a/ip/link_gre6.c b/ip/link_gre6.c
+index 9d270f4b..f33598af 100644
+--- a/ip/link_gre6.c
++++ b/ip/link_gre6.c
+@@ -594,10 +594,10 @@ static void gre_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 
+ 		if (erspan_dir == 0)
+ 			print_string(PRINT_ANY, "erspan_dir",
+-				     "erspan_dir ingress ", NULL);
++				     "erspan_dir %s ", "ingress");
+ 		else
+ 			print_string(PRINT_ANY, "erspan_dir",
+-				     "erspan_dir egress ", NULL);
++				     "erspan_dir %s ", "egress");
+ 	}
+ 
+ 	if (tb[IFLA_GRE_ERSPAN_HWID]) {
+-- 
+2.20.1
+
