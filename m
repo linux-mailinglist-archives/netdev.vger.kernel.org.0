@@ -2,110 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC58935A606
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 20:46:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F3035A617
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 20:50:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234552AbhDISqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 14:46:23 -0400
-Received: from mail-ot1-f44.google.com ([209.85.210.44]:36563 "EHLO
-        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233332AbhDISqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 14:46:22 -0400
-Received: by mail-ot1-f44.google.com with SMTP id g8-20020a9d6c480000b02901b65ca2432cso6632386otq.3;
-        Fri, 09 Apr 2021 11:46:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=z6eFqLMY5P4m+a9liLyXugoPHOz8+XlR7w752+mzNUo=;
-        b=bxJbcnhAkgEEUf2DSVJHsNFZ7sKiC68JEW8NsY9CEj/6UjRQQkdIb7/VVdWKOgYWE8
-         SU9rQxSn6wQYewRG55C/caUdAcURxY6FK8oRZkFInS8+pNa6Xl1uFbZFv3BQwUk27YEO
-         6ao6OdV3Jm48MtMFLx7aZNmKw3SK75cAQfzV8wdv4k3hc6xe74clW9+N+7VQIJuZluAK
-         j9IdsVYm09+LUWO63QYSyaKNVolG+ABhMie21HyQEuGHpFJDwqFRXMUw9PuOn2bWZFFx
-         2MX2/jyY0unAGECLqMIWAfAaGanmQ/8HoRY+2GUu1jTuikh02sOSE872RdiNjLcD3j1R
-         AppQ==
-X-Gm-Message-State: AOAM533zuxaLMliA62GpycPcayokt4QtmOIlJD89bA5i56Z3SsMj0Y/Y
-        kqYaPi8jNaoA046OPdZUwA==
-X-Google-Smtp-Source: ABdhPJzC3gLQPb72Xi9Q9xBqOy7Spb8r25dVX5tVkbGh2PuyEEwC+CaphV3fhpD/E82uO+mZ1P2RTw==
-X-Received: by 2002:a05:6830:3115:: with SMTP id b21mr13166754ots.318.1617993969010;
-        Fri, 09 Apr 2021 11:46:09 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id t14sm762150otj.50.2021.04.09.11.46.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 11:46:08 -0700 (PDT)
-Received: (nullmailer pid 3943480 invoked by uid 1000);
-        Fri, 09 Apr 2021 18:46:06 -0000
-Date:   Fri, 9 Apr 2021 13:46:06 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Shawn Guo <shawn.guo@linaro.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: Re: [PATCH 1/2] dt-binding: bcm43xx-fmac: add optional brcm,ccode-map
-Message-ID: <20210409184606.GA3937918@robh.at.kernel.org>
-References: <20210408113022.18180-1-shawn.guo@linaro.org>
- <20210408113022.18180-2-shawn.guo@linaro.org>
+        id S234624AbhDISuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 14:50:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55106 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233332AbhDISuP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 14:50:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4619C6113A;
+        Fri,  9 Apr 2021 18:50:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617994202;
+        bh=6G8Fk2gp9v3C/TfK5xuPhAjKD+l6qS9JG78lcgHh6AE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=h5QpkV0VkZws/30Y20LekV0TxsZ9ytrZrpK2Vgm+IaRp0x/NQv53ojicI0fZggBqx
+         VpqQbTHDRrasblKxS8R4y1va7xMStUMioheV0esl+/gosXVODB//XauplmmRPw5HPA
+         kUGrXiYXQzRbUvKyReLp83Lqlw92zL1BszIAT8zXbmjsekk1HfQmQLUVUEjNlRRIIn
+         eMZiOWsF9E3+5p6EJ0PlPVW4rf2HeNooxtlO7qXaZ1wRVaycpKL2V4+hb79oAqdl5U
+         7Pr8XKSIU8g/6T3kRUBxEzCSfNinreDdE2V+1ll16O56ZblsA0fE4No0JQBZo0rvTV
+         Ol14DNxEWI+kw==
+Date:   Fri, 9 Apr 2021 11:50:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Balaev Pavel <balaevpa@infotecs.ru>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] net: multipath routing: configurable seed
+Message-ID: <20210409114847.02435bb4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YHBcBRXLuFsHudyg@rnd>
+References: <YHBcBRXLuFsHudyg@rnd>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210408113022.18180-2-shawn.guo@linaro.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 08, 2021 at 07:30:21PM +0800, Shawn Guo wrote:
-> Add optional brcm,ccode-map property to support translation from ISO3166
-> country code to brcmfmac firmware country code and revision.
+On Fri, 9 Apr 2021 16:52:05 +0300 Balaev Pavel wrote:
+> Hello, this patch adds ability for user to set seed value for
+
+nit: please drop the 'Hello' and use imperative form to describe 
+the commit.
+
+> multipath routing hashes. Now kernel uses random seed value:
+> this is done to prevent hash-flooding DoS attacks,
+> but it breaks some scenario, f.e:
 > 
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> ---
->  .../devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt | 7 +++++++
->  1 file changed, 7 insertions(+)
-
-Can you convert this to schema first.
-
+> +-------+        +------+        +--------+
+> |       |-eth0---| FW0  |---eth0-|        |
+> |       |        +------+        |        |
+> |  GW0  |ECMP                ECMP|  GW1   |
+> |       |        +------+        |        |
+> |       |-eth1---| FW1  |---eth1-|        |
+> +-------+        +------+        +--------+
 > 
-> diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt b/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt
-> index cffb2d6876e3..a65ac4384c04 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt
-> +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt
-> @@ -15,6 +15,12 @@ Optional properties:
->  	When not specified the device will use in-band SDIO interrupts.
->   - interrupt-names : name of the out-of-band interrupt, which must be set
->  	to "host-wake".
-> + - brcm,ccode-map : multiple strings for translating ISO3166 country code to
-> +	brcmfmac firmware country code and revision.  Each string must be in
-> +	format "AA-BB-num" where:
-> +	  AA is the ISO3166 country code which must be 2 characters.
-> +	  BB is the firmware country code which must be 2 characters.
-> +	  num is the revision number which must fit into signed integer.
-
-Signed? So "AA-BB--num"?
-
-You should be able to do something like:
-
-items:
-  pattern: '^[A-Z][A-Z]-[A-Z][A-Z]-[0-9]+$'
-
->  
->  Example:
->  
-> @@ -34,5 +40,6 @@ mmc3: mmc@1c12000 {
->  		interrupt-parent = <&pio>;
->  		interrupts = <10 8>; /* PH10 / EINT10 */
->  		interrupt-names = "host-wake";
-> +		brcm,ccode-map = "JP-JP-78", "US-Q2-86";
->  	};
->  };
-> -- 
-> 2.17.1
+> In this scenario two ECMP routers used as traffic balancers between
+> two firewalls. So if return path of one flow will not be the same,
+> such flow will be dropped, because keep-state rules was created on
+> other firewall.
 > 
+> This patch add sysctl variable: net.ipv4.fib_multipath_hash_seed.
+> User can set the same seed value on GW0 and GW1 and traffic will
+> be mirror-balanced. By default random value is used.
+> 
+> Signed-off-by: Balaev Pavel <balaevpa@infotecs.ru>
+
+Please try to find relevant reviewers and put them on CC.
+Try to find people who have worked on this code in the past.
+
+This patch seems to add new sparse warnings:
+
+net/ipv4/sysctl_net_ipv4.c:544:38: warning: incorrect type in assignment (different base types)
+net/ipv4/sysctl_net_ipv4.c:544:38:    expected unsigned long long
+net/ipv4/sysctl_net_ipv4.c:544:38:    got restricted __le64
+net/ipv4/sysctl_net_ipv4.c:545:38: warning: incorrect type in assignment (different base types)
+net/ipv4/sysctl_net_ipv4.c:545:38:    expected unsigned long long
+net/ipv4/sysctl_net_ipv4.c:545:38:    got restricted __le64
+
+> {
+> 	u32 multipath_hash = fl4 ? fl4->flowi4_multipath_hash : 0;
+> 	struct flow_keys hash_keys;
+> +	struct multipath_seed_ctx *seed_ctx;
+
+Please order variable declaration lines longest to shortest.
