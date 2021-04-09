@@ -2,124 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3919D35A5E2
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 20:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84E3635A5E5
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 20:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234416AbhDISf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 14:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbhDISfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 14:35:55 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A87C061762;
-        Fri,  9 Apr 2021 11:35:42 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id g17so7382347ejp.8;
-        Fri, 09 Apr 2021 11:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wCzL0kRpul2aIZagRqoaFybMwk+kbvcnmS45HwsEuWI=;
-        b=DV1Xmm5Px/RNyljSLJjH5arF+1c/arFd/CaUqvTo5pPDVKKqG//3MpVcGbh61+cXPP
-         nHSBhUK37n24QFyLplMkMT67/QFUCe+2g/y566qSj/d7XhPhRLYmkT09FdCxv3EtnCku
-         pePPl7SE0pcfimaFI9IoDz66x2vddhHMK0BWYFpBOhFOHmgZToANfjt2TX4/kHYyXxrB
-         EqLy2nMoDQCf8fJGUmHTTf11+8pcUS3D5yninSFaNoO9TtdZ+7xKiC1RXRN4bed/XPJW
-         33lQUsxsrk/qi2ikf9wUE6vrm3+W9evEiJDDnIOfxOVeSpTvi91FT8aG4Mr3wJUrQUcl
-         j6Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wCzL0kRpul2aIZagRqoaFybMwk+kbvcnmS45HwsEuWI=;
-        b=nfvqL2VoknT3WBqiRZyZ3YQqwJcIIEPWAWvLURugvxdpfc93fWZy7t87zyyg/1IwWH
-         F14Io2Ih/ffvbEINmYS5uFShoB7Pqi6sVhF52YEqIt2N+9h97gscvFK6UzKw1vgb+7kA
-         wZjNj66yEw7qmnK8eljGmkP4NR4vTE6kfl4Up5eKVNGF9/m44guuFVOW03LUs4QMGUg2
-         5xr0/NXi+wmOdXGg6Tk1jLW1MBp9M36G2OcNExl3+LSHtUSqM37nbYXfA8hNsjANiVqA
-         4n4hMPCiOyrtdN6LVAhSXAzse9BefpciOQ+10rbTXntOKmBNq95WoOPh7xZTFrWv6x8Q
-         QdJQ==
-X-Gm-Message-State: AOAM530RxzRy15NkYfOrRsGaLge26JzhVlTw/fzGT9fUCIlU6Q2YPA9w
-        ayQfSf99eHpP3T0nCGRdUyU=
-X-Google-Smtp-Source: ABdhPJxGvq1X7eRZmuwdi00jojf2a93AtAAyUZMzN/mIf+0TNZg6cEByhX5c+ossghWE34SgLjxSeA==
-X-Received: by 2002:a17:907:2069:: with SMTP id qp9mr17818476ejb.175.1617993340743;
-        Fri, 09 Apr 2021 11:35:40 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (host-79-34-220-97.business.telecomitalia.it. [79.34.220.97])
-        by smtp.gmail.com with ESMTPSA id w22sm1889362edl.92.2021.04.09.11.35.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 11:35:40 -0700 (PDT)
-Date:   Fri, 9 Apr 2021 12:25:29 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] drivers: net: dsa: qca8k: add support for
- multiple cpu port
-Message-ID: <YHArmTHe4k6/9yzy@Ansuel-xps.localdomain>
-References: <20210406045041.16283-1-ansuelsmth@gmail.com>
- <20210406045041.16283-2-ansuelsmth@gmail.com>
- <YGz/nu117LDEhsou@lunn.ch>
- <YGvumGtEJYYvTlc9@Ansuel-xps.localdomain>
- <b8182434-b7b0-ef59-ef15-f84687df94df@gmail.com>
+        id S234393AbhDIShS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 14:37:18 -0400
+Received: from mail.zx2c4.com ([104.131.123.232]:46534 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234273AbhDIShQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 14:37:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1617993421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oSVNwotPAPQJjl+GLbQuN3wvO2qB5A32VRDgEWPG81Q=;
+        b=R5t3fUIg90+qupBtku5bsLYEV+nt2qW7JuUuvNzAi10GKENgHZH60f6G9A5no/Qn997+4j
+        L37xAjd5OE/qhzc6lyIsHOYM983Z8t8qC8jQkCqcgfhQh+Ndu11lowdW33s6UJTOOEWbe5
+        OMHykg3GgyzG+vJPNPucNV8w7uDkpZU=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 54dfcd07 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 9 Apr 2021 18:37:00 +0000 (UTC)
+Received: by mail-yb1-f181.google.com with SMTP id o10so7585626ybb.10;
+        Fri, 09 Apr 2021 11:37:00 -0700 (PDT)
+X-Gm-Message-State: AOAM530TPfRltU9mXOJRECx5A1Rf02xiz3/eHYv5Rmbjs6tnyQPJbagr
+        dMTvAKcvaVDMf04Eza6s5wyjaUFTKUamPqx9BeI=
+X-Google-Smtp-Source: ABdhPJwk/MDUyxGAQVPcrk6s9phmYdpLpHbR9mLNDuiVI3g/Quu5obxcIhQdk/3kuJv59Ei2bU2uQFJjsQfvGTOFZ2M=
+X-Received: by 2002:a25:ad0f:: with SMTP id y15mr17665460ybi.306.1617993420125;
+ Fri, 09 Apr 2021 11:37:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b8182434-b7b0-ef59-ef15-f84687df94df@gmail.com>
+References: <20210407113920.3735505-1-liuhangbin@gmail.com>
+ <CAHmME9p40M5oHDZXnFDXfO4-JuJ7bUB5BnsccGV1pksguz73sg@mail.gmail.com>
+ <c47d99b9d0efeea4e6cd238c2affc0fbe296b53c.camel@redhat.com>
+ <CAHmME9pRSOANrdvegLm9x8VTNWKcMtoymYrgStuSx+nsu=jpwA@mail.gmail.com>
+ <20210409024143.GL2900@Leo-laptop-t470s> <CAHmME9oqK9iXRn3wxAB-MZvX3k_hMbtjHF_V9UY96u6NLcczAw@mail.gmail.com>
+ <20210409024907.GN2900@Leo-laptop-t470s> <YG/EAePSEeYdonA0@zx2c4.com>
+ <CAMj1kXG-e_NtLkAdLYp70x5ft_Q1Bn9rmdXs4awt7FEd5PQ4+Q@mail.gmail.com> <0ef180dea02996fc5f4660405f2333220e8ae4c4.camel@redhat.com>
+In-Reply-To: <0ef180dea02996fc5f4660405f2333220e8ae4c4.camel@redhat.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 9 Apr 2021 12:36:49 -0600
+X-Gmail-Original-Message-ID: <CAHmME9opMi_2_cOS66U6jJvYZ=WJWv4E-mjYr20YaL=zzJxv+Q@mail.gmail.com>
+Message-ID: <CAHmME9opMi_2_cOS66U6jJvYZ=WJWv4E-mjYr20YaL=zzJxv+Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
+To:     Simo Sorce <simo@redhat.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 09, 2021 at 11:15:37AM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 4/5/2021 10:16 PM, Ansuel Smith wrote:
-> > On Wed, Apr 07, 2021 at 02:41:02AM +0200, Andrew Lunn wrote:
-> >> On Tue, Apr 06, 2021 at 06:50:40AM +0200, Ansuel Smith wrote:
-> >>> qca8k 83xx switch have 2 cpu ports. Rework the driver to support
-> >>> multiple cpu port. All ports can access both cpu ports by default as
-> >>> they support the same features.
-> >>
-> >> Do you have more information about how this actually works. How does
-> >> the switch decide which port to use when sending a frame towards the
-> >> CPU? Is there some sort of load balancing?
-> >>
-> >> How does Linux decide which CPU port to use towards the switch?
-> >>
-> >>     Andrew
-> > 
-> > I could be very wrong, but in the current dsa code, only the very first
-> > cpu port is used and linux use only that to send data.
-> 
-> That is correct, the first CPU port that is detected by the parsing
-> logic gets used.
-> 
-> > In theory the switch send the frame to both CPU, I'm currently testing a
-> > multi-cpu patch for dsa and I can confirm that with the proposed code
-> > the packets are transmitted correctly and the 2 cpu ports are used.
-> > (The original code has one cpu dedicated to LAN ports and one cpu
-> > dedicated to the unique WAN port.) Anyway in the current implementation
-> > nothing will change. DSA code still supports one cpu and this change
-> > would only allow packet to be received and trasmitted from the second
-> > cpu.
-> 
-> That use case seems to be the most common which makes sense since it
-> allows for true Gigabit routing between WAN and LAN by utilizing both
-> CPUs's Ethernet controllers.
-> 
-> How do you currently assign a port of a switch with a particular CPU
-> port this is presumably done through a separate patch that you have not
-> submitted?
-> -- 
-> Florian
+On Fri, Apr 9, 2021 at 6:47 AM Simo Sorce <simo@redhat.com> wrote:
+> >   depends on m || !CRYPTO_FIPS
+> >
+> > but I am a bit concerned that the rather intricate kconfig
+> > dependencies between the generic and arch-optimized versions of those
+> > drivers get complicated even further.
+>
+> Actually this is the opposite direction we are planning to go for
+> future fips certifications.
+>
+> Due to requirements about crypto module naming and versioning in the
+> new FIPS-140-3 standard we are planning to always build all the CRYPTO
+> as bultin (and maybe even forbid loading additional crypto modules in
+> FIPS mode). This is clearly just a vendor choice and has no bearing on
+> what upstream ultimately will do, but just throwing it here as a data
+> point.
 
-I reworked an old patch that added multi-cpu support to dsa.
-CPUs are assigned in a round-robin way and they can be set with an
-additional iproute command. (I read some of the comments in that RFC
-series and I'm planning to introduce some type of function where the
-switch driver can declare a preferred CPU port). Anyway this series is
-just to try to upstream the changes that doesn't require major revision,
-since they can be included even without the multi-cpu patch.
+I'm wondering: do you intend to apply similar patches to all the other
+uses of "non-FIPS-certified" crypto in the kernel? I've already
+brought up big_key.c, for example. Also if you're intent on adding
+this check to WireGuard, because it tunnels packets without using
+FIPS-certified crypto primitives, do you also plan on adding this
+check to other network tunnels that don't tunnel packets using
+FIPS-certified crypto primitives? For example, GRE, VXLAN, GENEVE? I'd
+be inclined to take this patch more seriously if it was exhaustive and
+coherent for your use case. The targeted hit on WireGuard seems
+incoherent as a standalone patch, making it hard to even evaluate. So
+I think either you should send an exhaustive patch series that forbids
+all use of non-FIPS crypto anywhere in the kernel (another example:
+net/core/secure_seq.c) in addition to all tunneling modules that don't
+use FIPS-certified crypto, or figure out how to disable the lib/crypto
+primitives that you want to be disabled in "fips mode". With a
+coherent patchset for either of these, we can then evaluate it.
 
+Jason
