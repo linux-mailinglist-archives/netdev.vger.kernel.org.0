@@ -2,102 +2,332 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B7735A3EF
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 18:48:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB5C35A402
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 18:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233977AbhDIQsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 12:48:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48833 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232395AbhDIQsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 12:48:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617986904;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Chg6IKEuKKojYi7mhUKaMLERMRmxIjzmO/LXSZ+TUHU=;
-        b=fWN7UcRXuIoI7jmib68jpV0YbctgHeJetl4QJTvh+iuysD3Vt1leS4AQs3VFt6iNwioB14
-        SXlFTqrbXGt6vVeU/AbbKPJ64SwHo44xtmZzRifZxB9j4oLRBnAFzJR6VWGO/A9J0f3Qdy
-        yWG9eIdYEE8NdZWVVTK1kZsBDHMKLT0=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-113-yABDH4QuP2uNk47F9zUpGQ-1; Fri, 09 Apr 2021 12:48:20 -0400
-X-MC-Unique: yABDH4QuP2uNk47F9zUpGQ-1
-Received: by mail-wm1-f69.google.com with SMTP id c81-20020a1c9a540000b0290127367b3942so553613wme.0
-        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 09:48:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Chg6IKEuKKojYi7mhUKaMLERMRmxIjzmO/LXSZ+TUHU=;
-        b=Af2C1dkY4EGFgfwZjZlQ0Rzm5bLReCHGxzddknRpPZGrkwm/+G4h4ckdw/o3EzORZ6
-         Zna9bLCaIyYy+sqVxHiKVD8EyIz4UpSbgY5fHOCawd1fULHUenn2Ew28LHZtm9+GTUPu
-         u2tlIwJQ9o9ZjpSdlXkq1TWZscYmqE2Lxm6R66Ub708Q4ccHzHZgO5SHhudqenKh3xrK
-         iEf1vfy3LhRbzlBtHlVq7mXfBXlCnWWY52PSxc+zr4s9DnOA4ki4LQVkk6f2iZmG/kyA
-         lOM/3B859X92FggWlEel5kJQ+A/Ap9Yo7r+QGNpdSp/A7CjS/HnC1GUMOVNIqMf0xtgh
-         wHWA==
-X-Gm-Message-State: AOAM532rfrFQkuvS5r3AkVWSesiU8jdaiTyuuBwYhzBZIVYl1G0iVLea
-        84FdDs/azWZJG77PcCJMv62ePFX/qhWsr6uwbcLYda/0l+FsOPeJNhDIcc9SCq8xp/IFrbXU4UA
-        coJXTEO7Cr4yHKhJU
-X-Received: by 2002:a1c:9a16:: with SMTP id c22mr7681446wme.7.1617986899513;
-        Fri, 09 Apr 2021 09:48:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw2SClI5Njn6xjA2MPYxm2kpYJCEchwrX/9+aQChXy3FOe+I3afHnDGXz6jYj0V+5m4e1Tm6w==
-X-Received: by 2002:a1c:9a16:: with SMTP id c22mr7681431wme.7.1617986899273;
-        Fri, 09 Apr 2021 09:48:19 -0700 (PDT)
-Received: from redhat.com ([2a10:800e:f0d3:0:b69b:9fb8:3947:5636])
-        by smtp.gmail.com with ESMTPSA id o25sm6618101wmh.1.2021.04.09.09.48.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 09:48:18 -0700 (PDT)
-Date:   Fri, 9 Apr 2021 12:48:16 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, jasowang@redhat.com, mst@redhat.com,
-        si-wei.liu@oracle.com
-Subject: [GIT PULL] vdpa/mlx5: last minute fixes
-Message-ID: <20210409124816-mutt-send-email-mst@kernel.org>
+        id S234209AbhDIQv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 12:51:28 -0400
+Received: from mga01.intel.com ([192.55.52.88]:10579 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234067AbhDIQv1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 12:51:27 -0400
+IronPort-SDR: X1E5NPj7yT17qHTXiyJSoSO1vwcM2rC+9DJCJiqTw3t1EHx9s0TA001ezYF/6Y/ziuungouj0q
+ sUbUk6XJ1Hgg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9949"; a="214236617"
+X-IronPort-AV: E=Sophos;i="5.82,209,1613462400"; 
+   d="scan'208";a="214236617"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2021 09:51:14 -0700
+IronPort-SDR: 7tKbdxLViKPA83RM8pfR8pjkGZ4Fd50GU8QHWDDSlil/YQKV+ax/+tbutzjR8omPHFWaU8aPkI
+ g+jazIJis65w==
+X-IronPort-AV: E=Sophos;i="5.82,209,1613462400"; 
+   d="scan'208";a="422809504"
+Received: from samudral-mobl.amr.corp.intel.com (HELO [10.212.251.215]) ([10.212.251.215])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2021 09:51:13 -0700
+Subject: Re: [RFC] net: core: devlink: add port_params_ops for devlink port
+ parameters altering
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        netdev@vger.kernel.org
+Cc:     jiri@nvidia.com, davem@davemloft.net, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, idosch@idosch.org, vadym.kochan@plvision.eu,
+        Parav Pandit <parav@nvidia.com>
+References: <20210409162247.4293-1-oleksandr.mazur@plvision.eu>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <ce46643a-99ad-54e8-b5ed-b85ca35ecbcb@intel.com>
+Date:   Fri, 9 Apr 2021 09:51:13 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+In-Reply-To: <20210409162247.4293-1-oleksandr.mazur@plvision.eu>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit e49d033bddf5b565044e2abe4241353959bc9120:
+On 4/9/2021 9:22 AM, Oleksandr Mazur wrote:
+> I'd like to discuss a possibility of handling devlink port parameters
+> with devlink port pointer supplied.
+>
+> Current design makes it impossible to distinguish which port's parameter
+> should get altered (set) or retrieved (get) whenever there's a single
+> parameter registered within a few ports.
 
-  Linux 5.12-rc6 (2021-04-04 14:15:36 -0700)
+I also noticed this issue recently when trying to add port parameters and
+I have a patch that handles this in a different way. The ops in devlink_param
+struct can be updated to include port_index as an argument
 
-are available in the Git repository at:
+devlink: Fix devlink_param function pointers
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+devlink_param function pointers are used to register device parameters
+as well as port parameters. So we need port_index also as an argument
+to enable port specific parameters.
 
-for you to fetch changes up to bc04d93ea30a0a8eb2a2648b848cef35d1f6f798:
+Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 
-  vdpa/mlx5: Fix suspend/resume index restoration (2021-04-09 12:08:28 -0400)
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 57251d12b0fc..bf55acdf98ae 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -469,12 +469,12 @@ struct devlink_param {
+         bool generic;
+         enum devlink_param_type type;
+         unsigned long supported_cmodes;
+-       int (*get)(struct devlink *devlink, u32 id,
+-                  struct devlink_param_gset_ctx *ctx);
+-       int (*set)(struct devlink *devlink, u32 id,
+-                  struct devlink_param_gset_ctx *ctx);
+-       int (*validate)(struct devlink *devlink, u32 id,
+-                       union devlink_param_value val,
++       int (*get)(struct devlink *devlink, unsigned int port_index,
++                  u32 id, struct devlink_param_gset_ctx *ctx);
++       int (*set)(struct devlink *devlink, unsigned int port_index,
++                  u32 id, struct devlink_param_gset_ctx *ctx);
++       int (*validate)(struct devlink *devlink, unsigned int port_index,
++                       u32 id, union devlink_param_value val,
+                         struct netlink_ext_ack *extack);
+  };
 
-----------------------------------------------------------------
-vdpa/mlx5: last minute fixes
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 151f60af0c4a..65a819ead3d9 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -3826,21 +3826,23 @@ devlink_param_cmode_is_supported(const struct devlink_param *param,
+  }
 
-These all look like something we are better off having
-than not ...
+  static int devlink_param_get(struct devlink *devlink,
++                            unsigned int port_index,
+                              const struct devlink_param *param,
+                              struct devlink_param_gset_ctx *ctx)
+  {
+         if (!param->get)
+                 return -EOPNOTSUPP;
+-       return param->get(devlink, param->id, ctx);
++       return param->get(devlink, port_index, param->id, ctx);
+  }
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+  static int devlink_param_set(struct devlink *devlink,
++                            unsigned int port_index,
+                              const struct devlink_param *param,
+                              struct devlink_param_gset_ctx *ctx)
+  {
+         if (!param->set)
+                 return -EOPNOTSUPP;
+-       return param->set(devlink, param->id, ctx);
++       return param->set(devlink, port_index, param->id, ctx);
+  }
 
-----------------------------------------------------------------
-Eli Cohen (4):
-      vdpa/mlx5: Use the correct dma device when registering memory
-      vdpa/mlx5: Retrieve BAR address suitable any function
-      vdpa/mlx5: Fix wrong use of bit numbers
-      vdpa/mlx5: Fix suspend/resume index restoration
+  static int
+@@ -3941,7 +3943,8 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+                         if (!param_item->published)
+                                 continue;
+                         ctx.cmode = i;
+-                       err = devlink_param_get(devlink, param, &ctx);
++                       err = devlink_param_get(devlink, port_index, param,
++                                               &ctx);
+                         if (err)
+                                 return err;
+                         param_value[i] = ctx.val;
+@@ -4216,7 +4219,8 @@ static int __devlink_nl_cmd_param_set_doit(struct devlink *devlink,
+         if (err)
+                 return err;
+         if (param->validate) {
+-               err = param->validate(devlink, param->id, value, info->extack);
++               err = param->validate(devlink, port_index, param->id, value,
++                                     info->extack);
+                 if (err)
+                         return err;
+         }
+@@ -4238,7 +4242,7 @@ static int __devlink_nl_cmd_param_set_doit(struct devlink *devlink,
+                         return -EOPNOTSUPP;
+                 ctx.val = value;
+                 ctx.cmode = cmode;
+-               err = devlink_param_set(devlink, param, &ctx);
++               err = devlink_param_set(devlink, port_index, param, &ctx);
+                 if (err)
+                         return err;
+         }
 
-Si-Wei Liu (1):
-      vdpa/mlx5: should exclude header length and fcs from mtu
-
- drivers/vdpa/mlx5/core/mlx5_vdpa.h |  4 ++++
- drivers/vdpa/mlx5/core/mr.c        |  9 +++++++--
- drivers/vdpa/mlx5/core/resources.c |  3 ++-
- drivers/vdpa/mlx5/net/mlx5_vnet.c  | 40 +++++++++++++++++++++++---------------
- 4 files changed, 37 insertions(+), 19 deletions(-)
+>
+> This patch aims to show how this can be changed:
+>    - introduce structure port_params_ops that has callbacks for get/set/validate;
+>    - if devlink has registered port_params_ops, then upon every devlink
+>      port parameter get/set call invoke port parameters callback
+>
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> ---
+>   drivers/net/netdevsim/dev.c       | 46 +++++++++++++++++++++++++++++++
+>   drivers/net/netdevsim/netdevsim.h |  1 +
+>   include/net/devlink.h             | 11 ++++++++
+>   net/core/devlink.c                | 16 ++++++++++-
+>   4 files changed, 73 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+> index 6189a4c0d39e..4f9a3104ca46 100644
+> --- a/drivers/net/netdevsim/dev.c
+> +++ b/drivers/net/netdevsim/dev.c
+> @@ -39,6 +39,11 @@ static struct dentry *nsim_dev_ddir;
+>   
+>   #define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
+>   
+> +static int nsim_dev_port_param_set(struct devlink_port *port, u32 id,
+> +				   struct devlink_param_gset_ctx *ctx);
+> +static int nsim_dev_port_param_get(struct devlink_port *port, u32 id,
+> +				   struct devlink_param_gset_ctx *ctx);
+> +
+>   static int
+>   nsim_dev_take_snapshot(struct devlink *devlink,
+>   		       const struct devlink_region_ops *ops,
+> @@ -339,6 +344,7 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+>   enum nsim_devlink_param_id {
+>   	NSIM_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
+>   	NSIM_DEVLINK_PARAM_ID_TEST1,
+> +	NSIM_DEVLINK_PARAM_ID_TEST2,
+>   };
+>   
+>   static const struct devlink_param nsim_devlink_params[] = {
+> @@ -349,6 +355,10 @@ static const struct devlink_param nsim_devlink_params[] = {
+>   			     "test1", DEVLINK_PARAM_TYPE_BOOL,
+>   			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+>   			     NULL, NULL, NULL),
+> +	DEVLINK_PARAM_DRIVER(NSIM_DEVLINK_PARAM_ID_TEST2,
+> +			     "test1", DEVLINK_PARAM_TYPE_U32,
+> +			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
+> +			     NULL, NULL, NULL),
+>   };
+>   
+>   static void nsim_devlink_set_params_init_values(struct nsim_dev *nsim_dev,
+> @@ -892,6 +902,11 @@ nsim_dev_devlink_trap_policer_counter_get(struct devlink *devlink,
+>   	return 0;
+>   }
+>   
+> +static const struct devlink_port_param_ops nsim_dev_port_param_ops = {
+> +	.get = nsim_dev_port_param_get,
+> +	.set = nsim_dev_port_param_set,
+> +};
+> +
+>   static const struct devlink_ops nsim_dev_devlink_ops = {
+>   	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
+>   					 DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
+> @@ -905,6 +920,7 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
+>   	.trap_group_set = nsim_dev_devlink_trap_group_set,
+>   	.trap_policer_set = nsim_dev_devlink_trap_policer_set,
+>   	.trap_policer_counter_get = nsim_dev_devlink_trap_policer_counter_get,
+> +	.port_param_ops = &nsim_dev_port_param_ops,
+>   };
+>   
+>   #define NSIM_DEV_MAX_MACS_DEFAULT 32
+> @@ -1239,6 +1255,36 @@ int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
+>   	return err;
+>   }
+>   
+> +static int nsim_dev_port_param_get(struct devlink_port *port, u32 id,
+> +				   struct devlink_param_gset_ctx *ctx)
+> +{
+> +	struct nsim_dev *nsim_dev = devlink_priv(port->devlink);
+> +	struct nsim_dev_port *nsim_port =
+> +		__nsim_dev_port_lookup(nsim_dev, port->index);
+> +
+> +	if (id == NSIM_DEVLINK_PARAM_ID_TEST2) {
+> +		ctx->val.vu32 = nsim_port->test_parameter_value;
+> +		return 0;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int nsim_dev_port_param_set(struct devlink_port *port, u32 id,
+> +				   struct devlink_param_gset_ctx *ctx)
+> +{
+> +	struct nsim_dev *nsim_dev = devlink_priv(port->devlink);
+> +	struct nsim_dev_port *nsim_port =
+> +		__nsim_dev_port_lookup(nsim_dev, port->index);
+> +
+> +	if (id == NSIM_DEVLINK_PARAM_ID_TEST2) {
+> +		nsim_port->test_parameter_value = ctx->val.vu32;
+> +		return 0;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+>   int nsim_dev_init(void)
+>   {
+>   	nsim_dev_ddir = debugfs_create_dir(DRV_NAME, NULL);
+> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+> index 7ff24e03577b..4f5fc491c8d6 100644
+> --- a/drivers/net/netdevsim/netdevsim.h
+> +++ b/drivers/net/netdevsim/netdevsim.h
+> @@ -203,6 +203,7 @@ struct nsim_dev_port {
+>   	unsigned int port_index;
+>   	struct dentry *ddir;
+>   	struct netdevsim *ns;
+> +	u32 test_parameter_value;
+>   };
+>   
+>   struct nsim_dev {
+> diff --git a/include/net/devlink.h b/include/net/devlink.h
+> index 853420db5d32..85a7b9970496 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -1189,6 +1189,16 @@ enum devlink_trap_group_generic_id {
+>   		.min_burst = _min_burst,				      \
+>   	}
+>   
+> +struct devlink_port_param_ops {
+> +	int (*get)(struct devlink_port *port, u32 id,
+> +		   struct devlink_param_gset_ctx *ctx);
+> +	int (*set)(struct devlink_port *port, u32 id,
+> +		   struct devlink_param_gset_ctx *ctx);
+> +	int (*validate)(struct devlink_port *port, u32 id,
+> +			union devlink_param_value val,
+> +			struct netlink_ext_ack *extack);
+> +};
+> +
+>   struct devlink_ops {
+>   	/**
+>   	 * @supported_flash_update_params:
+> @@ -1451,6 +1461,7 @@ struct devlink_ops {
+>   				 struct devlink_port *port,
+>   				 enum devlink_port_fn_state state,
+>   				 struct netlink_ext_ack *extack);
+> +	struct devlink_port_param_ops *port_param_ops;
+>   };
+>   
+>   static inline void *devlink_priv(struct devlink *devlink)
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 737b61c2976e..20f3545f4e7b 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -3918,6 +3918,7 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+>   				 enum devlink_command cmd,
+>   				 u32 portid, u32 seq, int flags)
+>   {
+> +	struct devlink_port *dl_port;
+>   	union devlink_param_value param_value[DEVLINK_PARAM_CMODE_MAX + 1];
+>   	bool param_value_set[DEVLINK_PARAM_CMODE_MAX + 1] = {};
+>   	const struct devlink_param *param = param_item->param;
+> @@ -3941,7 +3942,20 @@ static int devlink_nl_param_fill(struct sk_buff *msg, struct devlink *devlink,
+>   			if (!param_item->published)
+>   				continue;
+>   			ctx.cmode = i;
+> -			err = devlink_param_get(devlink, param, &ctx);
+> +			if ((cmd == DEVLINK_CMD_PORT_PARAM_GET ||
+> +			    cmd == DEVLINK_CMD_PORT_PARAM_NEW ||
+> +			    cmd == DEVLINK_CMD_PORT_PARAM_DEL) &&
+> +			    devlink->ops->port_param_ops) {
+> +
+> +				dl_port = devlink_port_get_by_index(devlink,
+> +								    port_index);
+> +				err = devlink->ops->port_param_ops->get(dl_port,
+> +									param->id,
+> +									&ctx);
+> +			} else {
+> +				err = devlink_param_get(devlink, param, &ctx);
+> +			}
+> +
+>   			if (err)
+>   				return err;
+>   			param_value[i] = ctx.val;
 
