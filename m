@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B96635A8C2
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 00:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA9B135A8C6
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 00:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235061AbhDIWiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 18:38:23 -0400
-Received: from mail-ej1-f52.google.com ([209.85.218.52]:44600 "EHLO
-        mail-ej1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234602AbhDIWiW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 18:38:22 -0400
-Received: by mail-ej1-f52.google.com with SMTP id e14so10965640ejz.11;
-        Fri, 09 Apr 2021 15:38:08 -0700 (PDT)
+        id S235105AbhDIWih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 18:38:37 -0400
+Received: from mail-ed1-f54.google.com ([209.85.208.54]:33571 "EHLO
+        mail-ed1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234602AbhDIWih (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 18:38:37 -0400
+Received: by mail-ed1-f54.google.com with SMTP id w18so8341047edc.0;
+        Fri, 09 Apr 2021 15:38:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RQaj4GV0Jq3ffxY/eFd7Oq4i8/CAPwtBW6FzUex6oGs=;
-        b=Yb6NVkMJNita1PGzV5CCuUAwzPKKoTcDsweDvWicPgK5MvjWToqprZ0FjJkHtvSlxO
-         hye5PNpTW3Z1Itu3ifvn/jqOIdYRI8Tcz4SCiV2pdZJg/r4Yo5f6hfnzwrJ9LLIXv7r1
-         4cpRUx0pUxP0csi0ooBNLTkNg9nTc0ZcSyKam3/H1s1dylvm1SBnctl6CPFnPb/IUWQw
-         eugYp4U26rsz4/nNnfyvS109hQhhPJm7Mk2Yx1j+9IavpavYJJyfMNf3nYxuMp8bj8GK
-         0RbFjHZq0QbJBH3ZPYdCmkbYGIoBAoppTt5ykg5R8hWMmG+5yB494WjgZebU1IHMzdjM
-         jMSw==
-X-Gm-Message-State: AOAM533W78O8hPX7mCE4TqF/SZVxlCeO+zWMnJXjENG9XDA511ajlrPy
-        w35XLckbukF3c31nQS6ZqluqvukE89yfpw==
-X-Google-Smtp-Source: ABdhPJx4JIcTBS5XaTVR5i9muuS54gLr6k4CxbJYfTE18J+nrM5vNX7CvYmgumecUrk1XBF+7DSXBw==
-X-Received: by 2002:a17:907:33cb:: with SMTP id zk11mr1145396ejb.231.1618007887368;
-        Fri, 09 Apr 2021 15:38:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NBKBwFnLR6KheF+0+jTnrdx81GBF+PEZpOcMgLUdP0I=;
+        b=QNcDKWg3i3l0fzCFlmYy+3oSUs7xyv3i8GSFrsXg7YaGpUxHqKgh2ztO/FJHSpxRld
+         RWmXl0qgtyDjAhfHLJCSdzUnQXyPp5tjw5ufJ7NFKiO3KKFwdH8C1NdZznZYPBcGINz6
+         FU1cYQpWY0nBLXjJb79rgLXYFr1KQQKCBxNFE5GyMuupfLmupENS2gZNyRqOZPLVhLi2
+         J4LCwIV5o/StbIfRRLs+WKWJEJffn5daUScMsyZI+s46oG3ZJ+xRtJIzzfrqmViEAD4c
+         un5ae6IA3tp8a+TWGI5SH1Y1qa+Zw9vNHkm4eofpP4SqFU//7A9HsFYqZ8Uz52w8+63v
+         yNaw==
+X-Gm-Message-State: AOAM530gq5sgiBYsek14KDwLVWXfg7F77YCi8kN8DRnWdwPrxjfNx2f2
+        gQBFJmj88iNAdUvxWiDeNG3f7wH5ermszQ==
+X-Google-Smtp-Source: ABdhPJwtnHH8zpJEzm27S9Tc0XAdPpGrPGHLvRaejF34zvtOUNDL6mxmVFoz2jOa3QSgVZRWgp5IlQ==
+X-Received: by 2002:a05:6402:51cd:: with SMTP id r13mr19553933edd.116.1618007902253;
+        Fri, 09 Apr 2021 15:38:22 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-93-66-21-119.cust.vodafonedsl.it. [93.66.21.119])
-        by smtp.gmail.com with ESMTPSA id s20sm2108726edu.93.2021.04.09.15.38.05
+        by smtp.gmail.com with ESMTPSA id s20sm2108726edu.93.2021.04.09.15.38.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 15:38:06 -0700 (PDT)
+        Fri, 09 Apr 2021 15:38:21 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org, linux-mm@kvack.org
 Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
@@ -80,77 +80,79 @@ Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next v3 0/5] page_pool: recycle buffers
-Date:   Sat, 10 Apr 2021 00:37:56 +0200
-Message-Id: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next v3 1/5] xdp: reduce size of struct xdp_mem_info
+Date:   Sat, 10 Apr 2021 00:37:57 +0200
+Message-Id: <20210409223801.104657-2-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-This is a respin of [1]
+It is possible to compress/reduce the size of struct xdp_mem_info.
+This change reduce struct xdp_mem_info from 8 bytes to 4 bytes.
 
-This  patchset shows the plans for allowing page_pool to handle and
-maintain DMA map/unmap of the pages it serves to the driver.  For this
-to work a return hook in the network core is introduced.
+The member xdp_mem_info.id can be reduced to u16, as the mem_id_ht
+rhashtable in net/core/xdp.c is already limited by MEM_ID_MAX=0xFFFE
+which can safely fit in u16.
 
-The overall purpose is to simplify drivers, by providing a page
-allocation API that does recycling, such that each driver doesn't have
-to reinvent its own recycling scheme.  Using page_pool in a driver
-does not require implementing XDP support, but it makes it trivially
-easy to do so.  Instead of allocating buffers specifically for SKBs
-we now allocate a generic buffer and either wrap it on an SKB
-(via build_skb) or create an XDP frame.
-The recycling code leverages the XDP recycle APIs.
+The member xdp_mem_info.type could be reduced more than u16, as it stores
+the enum xdp_mem_type, but due to alignment it is only reduced to u16.
 
-The Marvell mvpp2 and mvneta drivers are used in this patchset to
-demonstrate how to use the API, and tested on a MacchiatoBIN
-and EspressoBIN boards respectively.
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ include/net/xdp.h | 4 ++--
+ net/core/xdp.c    | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-Please let this going in on a future -rc1 so to allow enough time
-to have wider tests.
-
-[1] https://lore.kernel.org/netdev/154413868810.21735.572808840657728172.stgit@firesoul/
-
-v2 -> v3:
-- added missing SOBs
-- CCed the MM people
-
-v1 -> v2:
-- fix a commit message
-- avoid setting pp_recycle multiple times on mvneta
-- squash two patches to avoid breaking bisect
-
-Ilias Apalodimas (1):
-  page_pool: Allow drivers to hint on SKB recycling
-
-Jesper Dangaard Brouer (1):
-  xdp: reduce size of struct xdp_mem_info
-
-Matteo Croce (3):
-  mm: add a signature in struct page
-  mvpp2: recycle buffers
-  mvneta: recycle buffers
-
- .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c |  2 +-
- drivers/net/ethernet/marvell/mvneta.c         |  7 ++-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 17 +++----
- drivers/net/ethernet/marvell/sky2.c           |  2 +-
- drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
- include/linux/mm_types.h                      |  1 +
- include/linux/skbuff.h                        | 35 ++++++++++++--
- include/net/page_pool.h                       | 15 ++++++
- include/net/xdp.h                             |  5 +-
- net/core/page_pool.c                          | 47 +++++++++++++++++++
- net/core/skbuff.c                             | 20 +++++++-
- net/core/xdp.c                                | 14 ++++--
- net/tls/tls_device.c                          |  2 +-
- 13 files changed, 142 insertions(+), 27 deletions(-)
-
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index a5bc214a49d9..c35864d59113 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -48,8 +48,8 @@ enum xdp_mem_type {
+ #define XDP_XMIT_FLAGS_MASK	XDP_XMIT_FLUSH
+ 
+ struct xdp_mem_info {
+-	u32 type; /* enum xdp_mem_type, but known size type */
+-	u32 id;
++	u16 type; /* enum xdp_mem_type, but known size type */
++	u16 id;
+ };
+ 
+ struct page_pool;
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 05354976c1fc..3dd47ed83778 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -35,11 +35,11 @@ static struct rhashtable *mem_id_ht;
+ 
+ static u32 xdp_mem_id_hashfn(const void *data, u32 len, u32 seed)
+ {
+-	const u32 *k = data;
+-	const u32 key = *k;
++	const u16 *k = data;
++	const u16 key = *k;
+ 
+ 	BUILD_BUG_ON(sizeof_field(struct xdp_mem_allocator, mem.id)
+-		     != sizeof(u32));
++		     != sizeof(u16));
+ 
+ 	/* Use cyclic increasing ID as direct hash key */
+ 	return key;
+@@ -49,7 +49,7 @@ static int xdp_mem_id_cmp(struct rhashtable_compare_arg *arg,
+ 			  const void *ptr)
+ {
+ 	const struct xdp_mem_allocator *xa = ptr;
+-	u32 mem_id = *(u32 *)arg->key;
++	u16 mem_id = *(u16 *)arg->key;
+ 
+ 	return xa->mem.id != mem_id;
+ }
 -- 
 2.30.2
 
