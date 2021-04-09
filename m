@@ -2,136 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 479AB35A74C
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3742235A772
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbhDITpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 15:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233883AbhDITpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 15:45:13 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB462C061763;
-        Fri,  9 Apr 2021 12:44:59 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id c15so5687517ilj.1;
-        Fri, 09 Apr 2021 12:44:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=ILKO2BUOCLqlGNaUtFDszjRt1SnqMhsCCWI06F3bjyk=;
-        b=pQ4QCwsGKRwX1SAKvUsD5e92sktfxacpzJaVWVsg7zQLcgJnUMMSe0t+cjkIBTW6tn
-         0zEBHMVa+EKwc2ORtpGRAyr19FSD/DJjyvF5mqGv/JNOXri4rg2BcI4P8EH83YzS4OPP
-         l+i9xKF4RZDCjUwbg5fJxRZDpO0O+9kCkiHa78B7ridDzonL+EGKttXolKns0quz+M89
-         d6X1GC93ES2esliDAcsq2czE89uM3fQV2tjUUMCpZ1EWWIGdNGsdA7nvmDzv3OHtT5rh
-         HFYbFYqnUYM9cMNm3oTw6KsbvwMeq43K2VDx955DnDn2x4PhpjhdGMmpU089C6VC9kBu
-         lIVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=ILKO2BUOCLqlGNaUtFDszjRt1SnqMhsCCWI06F3bjyk=;
-        b=M+v8UsyOXu3jy8y9gEl+IUBeU7iCut0q+lbcY6HV2WIxRUovfINd2msJ4QNSTp9XtP
-         r82Z+v+Qp5oY/uvi8Q1Zh0Bfk3HiWZWdVLCKSYzF217lLNH+da/fhnAiezpshgP7MmWu
-         0negMlkAoQsSla7EBp9C1Q6OCCaPtEmOWa3d2meOlNxgnxN4YMeQYsGu3Gbot1J+fCxT
-         TlfN30SyYuy2R6o12YKC09fq7FxfDlmZemaroOzws7fNhgD3HkKIpODCTYeP/CiAjg0F
-         LKNJQROMT0zWIZhtxtmkzI/PDruxm6kv6qCNOjWrEoa1e7XuA6rGtkyn7nZ5CblPahRA
-         VJ1w==
-X-Gm-Message-State: AOAM530sE/dV+T+VOWJZmIF4Hp4zc+rPoFgW22gciqA3ps3Qzk+OFEif
-        S0720qQwvptuEjelgGHW2D8O/nZbLLJcOA==
-X-Google-Smtp-Source: ABdhPJw+QANABliZ7wrqd0rUsdbLBevDDtEyXTktEHe76D8xqfvOHBdMFGkx4i7+lNljiXJKlK9p2g==
-X-Received: by 2002:a05:6e02:12b4:: with SMTP id f20mr10979557ilr.212.1617997499309;
-        Fri, 09 Apr 2021 12:44:59 -0700 (PDT)
-Received: from localhost ([172.242.244.146])
-        by smtp.gmail.com with ESMTPSA id i12sm1549192ila.1.2021.04.09.12.44.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 12:44:58 -0700 (PDT)
-Date:   Fri, 09 Apr 2021 12:44:53 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     syzbot <syzbot+b54a1ce86ba4a623b7f0@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        borisp@nvidia.com, bp@alien8.de, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, hpa@zytor.com,
-        jmattson@google.com, john.fastabend@gmail.com, joro@8bytes.org,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, masahiroy@kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, pbonzini@redhat.com, peterz@infradead.org,
-        rafael.j.wysocki@intel.com, rostedt@goodmis.org, seanjc@google.com,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, vkuznets@redhat.com, wanpengli@tencent.com,
-        will@kernel.org, x86@kernel.org, yhs@fb.com
-Message-ID: <6070aeb52e91d_4526f208de@john-XPS-13-9370.notmuch>
-In-Reply-To: <0000000000007b81f905bf8bf7ac@google.com>
-References: <0000000000007b81f905bf8bf7ac@google.com>
-Subject: RE: [syzbot] WARNING: refcount bug in sk_psock_get
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S234334AbhDIT4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 15:56:21 -0400
+Received: from mga17.intel.com ([192.55.52.151]:50145 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232855AbhDIT4T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 15:56:19 -0400
+IronPort-SDR: f8NeKMoWKkhaBu64Ry/gk0kdlZUQJlX6O+LeOgvzTbGnrqfMltLSTc/FjKAQIdsHGO8Lq9PxoV
+ hUYLh45NyRRw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9949"; a="173914106"
+X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
+   d="scan'208";a="173914106"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2021 12:56:06 -0700
+IronPort-SDR: p6/J3OJBIl0xALXHjFvy4Sf1fpbDVPvoOxc6SISYNpBSzGpeAAnehg7efw6SAZH/n+HWLXMOfo
+ mx6U1FinrCgg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
+   d="scan'208";a="416402280"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Apr 2021 12:56:06 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 9 Apr 2021 12:56:05 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Fri, 9 Apr 2021 12:56:05 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.170)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Fri, 9 Apr 2021 12:56:05 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jI2oL1AmW9xpqn47LAz4lzlMZfSAM6SgCVzLG2Fh+6LS/tL/oTS/s6gFk4c+I+AotcXkxcjxE3Yjr1uVD45iwhVF1Dg+9EH7TyYPtWM2adPVLlK6VEaA40LLbVdSluSgEmMrFtFINjm8FQWNwLfBCftcD2EsiQ7nrE3p68YJ5iNYev+HmZJ6tth4Pkb7e/RzPf5xmvLB7ClS4w3U7zPW6sqWRMRYik0j9LtROV2QouYOSa8skbiJWzJnDMJuWPMaT91oX3/HPiXRfKX9vE3f4t+wI0MrRT3XHDb8EjbW/9CKmibWAqTR4wvHXUBNL5Gu6K1x2uu3AlW6ph87S9qcSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qwIBPQ+TCBFSmsJLlGgzkwTA1BbNvJp0ERKigPDRSTc=;
+ b=VTOj62U6I/mqeiKcPuLJ/UOiyUkA/kU/9Fx8VEowD40W3jDhHpo7WgJme9I0b0wNkgoyyU8VXCzTJuqSdQcim4Y1eMOgjFNmVgM389MIZsn1E+Bd29zv24F5qTi7QrTDwLntk66fo9JgQWzYnPgukZFP1l0iDllatoweAkmX7wCAxdVqYKD+fKkDr9xPOh6toWJm8t/RFyHHJca3fPBYn7eRg1DaEup0859n6YUyou3grtHDMokUhl7lgU8u3nlIJekY73tHT2zHksorEBEEO4hHnlDkCLLZOtDDsuGJpgiX9IJ+3bEjUhWAzmpbyKYJ5/Iwf3aWXXb/QaKVnvOAHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qwIBPQ+TCBFSmsJLlGgzkwTA1BbNvJp0ERKigPDRSTc=;
+ b=D6LDuDaTXNnjNf7DycFimWNuHHBLtjPiqsUocZDdSF40qXyGH3QYg6wHKx/2XwdTn5k0V3CM6wDfrtK40D+TNLCM/2qs3/58sDwYFHGSGpdLGkYg6mD+gGR3Db2K/zKqmJn4oL+A3XfFzIZxbGUFPuH9uWNFxq008UbO1DU4LAU=
+Received: from MW3PR11MB4748.namprd11.prod.outlook.com (2603:10b6:303:2e::9)
+ by CO1PR11MB5026.namprd11.prod.outlook.com (2603:10b6:303:9c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17; Fri, 9 Apr
+ 2021 19:56:03 +0000
+Received: from MW3PR11MB4748.namprd11.prod.outlook.com
+ ([fe80::a995:ea7a:29cf:d212]) by MW3PR11MB4748.namprd11.prod.outlook.com
+ ([fe80::a995:ea7a:29cf:d212%5]) with mapi id 15.20.4020.018; Fri, 9 Apr 2021
+ 19:56:03 +0000
+From:   "Switzer, David" <david.switzer@intel.com>
+To:     Yongxin Liu <yongxin.liu@windriver.com>,
+        "vaibhavgupta40@gmail.com" <vaibhavgupta40@gmail.com>,
+        "andrewx.bowers@intel.com" <andrewx.bowers@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Subject: RE: [PATCH net] ixgbe: fix unbalanced device enable/disable in
+ suspend/resume
+Thread-Topic: [PATCH net] ixgbe: fix unbalanced device enable/disable in
+ suspend/resume
+Thread-Index: AQHXHuuFTZRBCqPfykeVpmQB3jgFbaqstsPA
+Date:   Fri, 9 Apr 2021 19:56:03 +0000
+Message-ID: <MW3PR11MB47481E32E6F0701CDA1BAD20EB739@MW3PR11MB4748.namprd11.prod.outlook.com>
+References: <20210322071448.12023-1-yongxin.liu@windriver.com>
+In-Reply-To: <20210322071448.12023-1-yongxin.liu@windriver.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: windriver.com; dkim=none (message not signed)
+ header.d=none;windriver.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [50.38.40.205]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f4f68e3c-3717-4b69-a87d-08d8fb9181a9
+x-ms-traffictypediagnostic: CO1PR11MB5026:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CO1PR11MB5026DE5CDE9095289BB2F41FEB739@CO1PR11MB5026.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:169;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GDj4b6by13Wz4ImBqNgzW3RPn2X5p30icauJkdV8C0UHi4USXo37ieLgNCyBONtrxa7LLBvFIZEEfUZ9TIJqEo/4i8R4t58U4Dl5s+Z+LebJCj4fW+Tg6Fkke2ZY/OYS9Nf0JfueoA5XuO6Sy663KCtWWqK2ZB2zQS9zqRFv12ZUQig+tVm9DN6r+W2adEAOtd5JcC4tqTp+k/EgbMUoxxLZWzSDxAGjjaYLzczOJayS1c3I+LeItp4+WCcD7D+439owptrb4wbJQ3NuBuuaqnnDenv/pFpVKcoFTV2a19uZNruO8cwB9CT6wfuN51AhDSj066WaCyWcOMAYEH/yT9ft+Dh9+GB2QxTtYPeN2Q1gVKx+2z9lN6vrhxvzgCTgMm9zEScui6GtiXsrU9Phl8WkM1xmoqNz7dJfHMlFnXHypHf8U99aNdmy6z7jSdmdhoq0ChoHOTuODHj1mSDlklVAPZcd5rBNn+0epdARJVHt0uO+B2K4vTmdaNrsfframxL65Yqhmc7VCKUbnV45MUyXOMtDDY0EdP+dwdrd6P6sA3GOLMQdCK/h1rJsG0hnSiJRmqYeVRD/PQkMtQ7MhBESI41SqE45ARKwzBZPEmMhXLxzRL3iWhTiVy1oJBgah7e+6upGQUWXrZcjHQCpr45ceCyfTz6w90Jtk5Ceupw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4748.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(396003)(136003)(39860400002)(366004)(52536014)(9686003)(2906002)(83380400001)(64756008)(6506007)(54906003)(66946007)(71200400001)(38100700001)(66476007)(76116006)(66446008)(55016002)(66556008)(5660300002)(33656002)(6636002)(15650500001)(186003)(86362001)(478600001)(8676002)(8936002)(4326008)(7696005)(110136005)(26005)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?kDK4CaFISRYK57PevkBbYHFdHWQMhjCJIxspA1s0RkV7aZGaDZnYPjzNWHqJ?=
+ =?us-ascii?Q?2AK1z5yRpAwf43XGhxlVA/6jZDVsqQCk5dRKGq3G4T3YgLh4LW6gCyslte6Z?=
+ =?us-ascii?Q?yKM3rxNpcshyoMTqxCpxZo+BMykdLCFMfa56mzZzdH6QA+KF9aopCmNdgnQc?=
+ =?us-ascii?Q?QLQlji/SuNCvpKmIMR5iR1bMSMM9wBf5uqarHVqFWSwE/KudPzbpASkUCqiD?=
+ =?us-ascii?Q?qD10JyVCaQzAJS4BOlaVGii16s0fzikRdxaP+KeB5GRl+TpS/IT2rxjlQNTk?=
+ =?us-ascii?Q?WXZrNoZpVuTpkd+fK+leXPH+vIvZRJ9b9g3JBGgIR4idkj9XUCGKJbIhn6mq?=
+ =?us-ascii?Q?qEW9VMChYVWu3Nfmz5u4RrSJRSyX3jvD8EUwNzMoixwtceiQVZrglb5E/0EA?=
+ =?us-ascii?Q?uB2d0R7izA7Lz1B5fJkAQZIo72WML2TFR5p3z0xeXtPR3e8obRJgOib3/dVB?=
+ =?us-ascii?Q?Ho4lPamj9u0DIo0J4qW+03j+SaSxGu0lGes+MC1xGLqNrkS2qIXdgWNIj1IZ?=
+ =?us-ascii?Q?XZA4CqFTOTM2Z4uKzYCylNwWRvZ5W28i2Y1WuaK3UE9zTN+jKUOGRG3axEUH?=
+ =?us-ascii?Q?TcHVjxF2VjD3t69vsiv2eZgadvOhcf3GypOebTPNem13x6MPigQv59A6QeBy?=
+ =?us-ascii?Q?hbixyUjeGcvAs7FS0kqF6nuXv/rnAdDlIQ7vyLx9nR81yuZFNQRjyRqtT2PW?=
+ =?us-ascii?Q?vz1B4vF52d7zfhnSHQZuYqGgpgHrcDvy18OB5O+MjiqaGubNolUhmDUcixll?=
+ =?us-ascii?Q?v4j1a0PG0JT9tXSum9ohvtugIQRQ2Obhmpch4nsMPKLYn92ASDj5C/YyWskX?=
+ =?us-ascii?Q?c5+9D1hD4s0V23wntFvHM4sCbrFrysrgBgcPHLdfrznVv24uuXgJD+YkaB5E?=
+ =?us-ascii?Q?pZh4VbQYkxAIlHqmne58BaXG2XdW89NK20JAdFV4C+lTCR62wKOq5zVzgoDS?=
+ =?us-ascii?Q?/K/GKwnlm7H14nPRkFmgLk4WpntnEd/QCsVKfdj+PxugOexlqg8iGPNB2Uav?=
+ =?us-ascii?Q?SKgiC5KoHMc1QpsksOvoI+k8zbDdnNsMFewNJuL3ZlhHiRVIutsOE31zeHIT?=
+ =?us-ascii?Q?iBLzQss+sETE0StmLRaTfzq8AELRDIoYJiKIMSA2yJ5Xqkshda8gRq796qvT?=
+ =?us-ascii?Q?6wYPG1xbfa+dvXBawFKY7jMmkTF0Ig3PTtjCmAtx/GBQ71KAAL6RCwjkrVc4?=
+ =?us-ascii?Q?bIalaSMiOqxKh9jJcAhdogPsovGtDUdeXnCKdQ0BWWJTMzmOy7FRiQ9oKaM0?=
+ =?us-ascii?Q?QwyP22F/ExR6Xk3Rmx/VFO96c9Cq5IIFw6pzsjmAO/2bkahDaydOP0/pwHOY?=
+ =?us-ascii?Q?Jss=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4748.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4f68e3c-3717-4b69-a87d-08d8fb9181a9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2021 19:56:03.5999
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jEgaZPKYj7+pcWy+sos5LA/v90TvYuByHxJGIrc/Hmy02UDUqebvJULQrQ/d/T8/YDq13HMnvda0FIr2EYdV9g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5026
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    9c54130c Add linux-next specific files for 20210406
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=17d8d7aad00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=d125958c3995ddcd
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b54a1ce86ba4a623b7f0
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1729797ed00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1190f46ad00000
-> 
-> The issue was bisected to:
-> 
-> commit 997acaf6b4b59c6a9c259740312a69ea549cc684
-> Author: Mark Rutland <mark.rutland@arm.com>
-> Date:   Mon Jan 11 15:37:07 2021 +0000
-> 
->     lockdep: report broken irq restoration
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11a6cc96d00000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13a6cc96d00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15a6cc96d00000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+b54a1ce86ba4a623b7f0@syzkaller.appspotmail.com
-> Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
-> 
-> ------------[ cut here ]------------
-> refcount_t: saturated; leaking memory.
-> WARNING: CPU: 1 PID: 8414 at lib/refcount.c:19 refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
-> Modules linked in:
-> CPU: 1 PID: 8414 Comm: syz-executor793 Not tainted 5.12.0-rc6-next-20210406-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:refcount_warn_saturate+0xf4/0x1e0 lib/refcount.c:19
-> Code: 1d 69 0c e6 09 31 ff 89 de e8 c8 b4 a6 fd 84 db 75 ab e8 0f ae a6 fd 48 c7 c7 e0 52 c2 89 c6 05 49 0c e6 09 01 e8 91 0f 00 05 <0f> 0b eb 8f e8 f3 ad a6 fd 0f b6 1d 33 0c e6 09 31 ff 89 de e8 93
-> RSP: 0018:ffffc90000eef388 EFLAGS: 00010282
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> RDX: ffff88801bbdd580 RSI: ffffffff815c2e05 RDI: fffff520001dde63
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> R10: ffffffff815bcc6e R11: 0000000000000000 R12: 1ffff920001dde74
-> R13: 0000000090200301 R14: ffff888026e00000 R15: ffffc90000eef3c0
-> FS:  0000000001422300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000020000000 CR3: 0000000012b3b000 CR4: 00000000001506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  __refcount_add_not_zero include/linux/refcount.h:163 [inline]
->  __refcount_inc_not_zero include/linux/refcount.h:227 [inline]
->  refcount_inc_not_zero include/linux/refcount.h:245 [inline]
->  sk_psock_get+0x3b0/0x400 include/linux/skmsg.h:435
->  bpf_exec_tx_verdict+0x11e/0x11a0 net/tls/tls_sw.c:799
->  tls_sw_sendmsg+0xa41/0x1800 net/tls/tls_sw.c:1013
->  inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:821
 
-[...]
+>-----Original Message-----
+>From: Yongxin Liu <yongxin.liu@windriver.com>
+>Sent: Monday, March 22, 2021 12:15 AM
+>To: vaibhavgupta40@gmail.com; andrewx.bowers@intel.com; Nguyen, Anthony
+>L <anthony.l.nguyen@intel.com>
+>Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+>davem@davemloft.net; Brandeburg, Jesse <jesse.brandeburg@intel.com>; intel=
+-
+>wired-lan@lists.osuosl.org; kuba@kernel.org
+>Subject: [PATCH net] ixgbe: fix unbalanced device enable/disable in
+>suspend/resume
+>
+>pci_disable_device() called in __ixgbe_shutdown() decreases
+>dev->enable_cnt by 1. pci_enable_device_mem() which increases enable_cnt
+>dev->by 1, was removed from ixgbe_resume() in commit
+>6f82b2558735 ("ixgbe: use generic power management"). This caused
+>unbalanced increase/decrease. So add pci_enable_device_mem() back.
+>
+>Fix the following call trace.
+>
+>  ixgbe 0000:17:00.1: disabling already-disabled device
+>  Call Trace:
+>   __ixgbe_shutdown+0x10a/0x1e0 [ixgbe]
+>   ixgbe_suspend+0x32/0x70 [ixgbe]
+>   pci_pm_suspend+0x87/0x160
+>   ? pci_pm_freeze+0xd0/0xd0
+>   dpm_run_callback+0x42/0x170
+>   __device_suspend+0x114/0x460
+>   async_suspend+0x1f/0xa0
+>   async_run_entry_fn+0x3c/0xf0
+>   process_one_work+0x1dd/0x410
+>   worker_thread+0x34/0x3f0
+>   ? cancel_delayed_work+0x90/0x90
+>   kthread+0x14c/0x170
+>   ? kthread_park+0x90/0x90
+>   ret_from_fork+0x1f/0x30
+>
+>Fixes: 6f82b2558735 ("ixgbe: use generic power management")
+>Signed-off-by: Yongxin Liu <yongxin.liu@windriver.com>
+>---
+> drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 5 +++++
+> 1 file changed, 5 insertions(+)
+>
+Tested-by: Dave Switzer <david.switzer@intel.com>
 
-This is likely a problem with latest round of sockmap patches I'll
-tke a look.
