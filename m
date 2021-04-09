@@ -2,162 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 279FC35A1D4
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 17:18:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A45A735A1DB
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 17:20:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234066AbhDIPSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 11:18:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29729 "EHLO
+        id S234127AbhDIPUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 11:20:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:42823 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233970AbhDIPSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 11:18:18 -0400
+        by vger.kernel.org with ESMTP id S234131AbhDIPUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 11:20:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1617981485;
+        s=mimecast20190719; t=1617981621;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lzkhCVK52hr31xmspSzO3ZwZPmZ41f+SKZiEeiUdlTY=;
-        b=giOVrJcMCJrr8U1pWQ3ZQ//nb3v/RG4iTBFLi86RnP6z0E4R/FGJetuVbhrzllFSzAlJGr
-        0RN7nBPIrPVhu/jPOylhRU+RMriCUliTZPPmVkN2WcNfwRip8DlB8jVv6nD4cbCCPKKvhH
-        aFy+FXGt66DUg6CqpW8id/PyiHfI7tI=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-508-7Id3aXVnMM21llCBOIKPRA-1; Fri, 09 Apr 2021 11:18:03 -0400
-X-MC-Unique: 7Id3aXVnMM21llCBOIKPRA-1
-Received: by mail-ed1-f69.google.com with SMTP id r6so2825546edh.7
-        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 08:18:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=lzkhCVK52hr31xmspSzO3ZwZPmZ41f+SKZiEeiUdlTY=;
-        b=HsgZLAst5KCTqy76mzMBPJw4HridFPNaDqqpt1zGI5WprQYKaxH0tEcDjGRNAHKZq+
-         NZQlktl9/IMAUrOz0jLAH3ZMl8UoCf7qrt1dBmEovmZD3L55DmP39fFQ2gQHV8FfOIbC
-         KSZmr8+dGkt9p27KTtTO1VnxM/uPWA/5ehHnNPG6IWPCKPmakan13ZLh1Z6//G2kEw6W
-         n6jE6jN7w6Ao/7FKflg6iHu8RuJjdidEgq8Cu08VGS0rEMLZxNXBQQrP3dCPRmCRiKgb
-         3PXyTTkUiVoAAL8WD5JVoUwDTrKuo4vKCujc6gfFmjQVENtmYkNJivK3VrURklXft7Rg
-         6ptQ==
-X-Gm-Message-State: AOAM5337Nx6JpJVVkDz+51/c4QawxZeVw7Pizqw+lm/GXTKIgV4e6Owv
-        cGopYJB4IcoblA8fo1YXkT4dZFTzXmMCUZO6mnwJpdF9zkkyRR/S0mDkCdKDYTmNh88//NwXrKt
-        /Xvc6moaobjEc1sEw
-X-Received: by 2002:a05:6402:506:: with SMTP id m6mr17451111edv.157.1617981482754;
-        Fri, 09 Apr 2021 08:18:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJymS62nOm80UnwppTePIk0gQ2wTDphixuxwtNg89hpfO/rpWJ8D8x8IT5eqPoHhWdY+2VAj+w==
-X-Received: by 2002:a05:6402:506:: with SMTP id m6mr17451096edv.157.1617981482585;
-        Fri, 09 Apr 2021 08:18:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id n3sm1348901ejj.113.2021.04.09.08.18.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 08:18:02 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 496E91802F9; Fri,  9 Apr 2021 17:18:01 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+        bh=D/rFstnykHQeNclhdi0h7ql02LzRcMRsUQS50PPEytI=;
+        b=isnIfqpss58GzLo4bH4TaTN4lug73RF+CJecVbRlJON/UAhgVn+x33s7TDulBnuTrUgP4I
+        XTnHG9HHLkhl6PyGNMsd3vJzReJC0KzCC4Np0dlnLEmSndNaCG30i5KcUfUDoF/JlE6SgM
+        skwaTHAEZOwQZKJxb1+dwFukQ7j6T10=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-590-HJQJufhZOtSp3IFW5dsO7w-1; Fri, 09 Apr 2021 11:20:20 -0400
+X-MC-Unique: HJQJufhZOtSp3IFW5dsO7w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F37A1802B5B;
+        Fri,  9 Apr 2021 15:20:18 +0000 (UTC)
+Received: from ovpn-115-50.ams2.redhat.com (ovpn-115-50.ams2.redhat.com [10.36.115.50])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6CD9360D79;
+        Fri,  9 Apr 2021 15:20:13 +0000 (UTC)
+Message-ID: <d9b5f599380d32a28026d5a758cc46edf2ba23d8.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/4] veth: allow enabling NAPI even without XDP
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Toshiaki Makita <toshiaki.makita1@gmail.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: Re: [PATCH net-next 3/4] veth: refine napi usage
-In-Reply-To: <f40fd90aa5077896121b368027fa8c70e505a358.camel@redhat.com>
+Date:   Fri, 09 Apr 2021 17:20:12 +0200
+In-Reply-To: <87v98vtsgg.fsf@toke.dk>
 References: <cover.1617965243.git.pabeni@redhat.com>
- <b241da0e8aa31773472591e219ada3632a84dfbb.1617965243.git.pabeni@redhat.com>
- <87y2drtsic.fsf@toke.dk>
- <f40fd90aa5077896121b368027fa8c70e505a358.camel@redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 09 Apr 2021 17:18:01 +0200
-Message-ID: <87sg3ztrkm.fsf@toke.dk>
+         <dbc26ec87852a112126c83ae546f367841ec554d.1617965243.git.pabeni@redhat.com>
+         <87v98vtsgg.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paolo Abeni <pabeni@redhat.com> writes:
+On Fri, 2021-04-09 at 16:58 +0200, Toke Høiland-Jørgensen wrote:
+> Paolo Abeni <pabeni@redhat.com> writes:
+> 
+> > Currently the veth device has the GRO feature bit set, even if
+> > no GRO aggregation is possible with the default configuration,
+> > as the veth device does not hook into the GRO engine.
+> > 
+> > Flipping the GRO feature bit from user-space is a no-op, unless
+> > XDP is enabled. In such scenario GRO could actually take place, but
+> > TSO is forced to off on the peer device.
+> > 
+> > This change allow user-space to really control the GRO feature, with
+> > no need for an XDP program.
+> > 
+> > The GRO feature bit is now cleared by default - so that there are no
+> > user-visible behavior changes with the default configuration.
+> > 
+> > When the GRO bit is set, the per-queue NAPI instances are initialized
+> > and registered. On xmit, when napi instances are available, we try
+> > to use them.
+> 
+> Am I mistaken in thinking that this also makes XDP redirect into a veth
+> work without having to load an XDP program on the peer device? That's
+> been a long-outstanding thing we've been meaning to fix, so that would
+> be awesome! :)
 
-> hello,
->
-> On Fri, 2021-04-09 at 16:57 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Paolo Abeni <pabeni@redhat.com> writes:
->>=20
->> > After the previous patch, when enabling GRO, locally generated
->> > TCP traffic experiences some measurable overhead, as it traverses
->> > the GRO engine without any chance of aggregation.
->> >=20
->> > This change refine the NAPI receive path admission test, to avoid
->> > unnecessary GRO overhead in most scenarios, when GRO is enabled
->> > on a veth peer.
->> >=20
->> > Only skbs that are eligible for aggregation enter the GRO layer,
->> > the others will go through the traditional receive path.
->> >=20
->> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
->> > ---
->> >  drivers/net/veth.c | 23 ++++++++++++++++++++++-
->> >  1 file changed, 22 insertions(+), 1 deletion(-)
->> >=20
->> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
->> > index ca44e82d1edeb..85f90f33d437e 100644
->> > --- a/drivers/net/veth.c
->> > +++ b/drivers/net/veth.c
->> > @@ -282,6 +282,25 @@ static int veth_forward_skb(struct net_device *de=
-v, struct sk_buff *skb,
->> >  		netif_rx(skb);
->> >  }
->> >=20=20
->> > +/* return true if the specified skb has chances of GRO aggregation
->> > + * Don't strive for accuracy, but try to avoid GRO overhead in the mo=
-st
->> > + * common scenarios.
->> > + * When XDP is enabled, all traffic is considered eligible, as the xm=
-it
->> > + * device has TSO off.
->> > + * When TSO is enabled on the xmit device, we are likely interested o=
-nly
->> > + * in UDP aggregation, explicitly check for that if the skb is suspec=
-ted
->> > + * - the sock_wfree destructor is used by UDP, ICMP and XDP sockets -
->> > + * to belong to locally generated UDP traffic.
->> > + */
->> > +static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
->> > +					 const struct net_device *rcv,
->> > +					 const struct sk_buff *skb)
->> > +{
->> > +	return !(dev->features & NETIF_F_ALL_TSO) ||
->> > +		(skb->destructor =3D=3D sock_wfree &&
->> > +		 rcv->features & (NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD));
->> > +}
->> > +
->> >  static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *=
-dev)
->> >  {
->> >  	struct veth_priv *rcv_priv, *priv =3D netdev_priv(dev);
->> > @@ -305,8 +324,10 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb,=
- struct net_device *dev)
->> >=20=20
->> >  		/* The napi pointer is available when an XDP program is
->> >  		 * attached or when GRO is enabled
->> > +		 * Don't bother with napi/GRO if the skb can't be aggregated
->> >  		 */
->> > -		use_napi =3D rcu_access_pointer(rq->napi);
->> > +		use_napi =3D rcu_access_pointer(rq->napi) &&
->> > +			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
->> >  		skb_record_rx_queue(skb, rxq);
->> >  	}
->>=20
->> You just changed the 'xdp_rcv' check to this use_napi, and now you're
->> conditioning it on GRO eligibility, so doesn't this break XDP if that
->> was the reason NAPI was turned on in the first place?
->
-> Thank you for the feedback.
->
-> If XDP is enabled, TSO is forced of on 'dev'
-> and veth_skb_is_eligible_for_gro() returns true, so napi/GRO is always
-> used - there is no functional change when XDP is enabled.
+I have not experimented that, and I admit gross ignorance WRT this
+argument, but AFAICS the needed bits to get XDP redirect working on
+veth are the ptr_ring initialization and the napi instance available.
 
-Ah, right, so it says right there in the comment; sorry for missing
-that! :)
+With this patch both are in place when GRO is enabled, so I guess XPD
+redirect should work, too (modulo bugs for untested scenario).
 
--Toke
+Thanks!
+
+Paolo
 
