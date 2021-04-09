@@ -2,124 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C03359641
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 09:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 244DF359628
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 09:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbhDIHUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 03:20:37 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:31259 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231675AbhDIHUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 03:20:36 -0400
-X-Greylist: delayed 536 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Apr 2021 03:20:36 EDT
-ARC-Seal: i=1; a=rsa-sha256; t=1617952102; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=od1vyhFW61SKsfyryISOtz3sQDNdFyJHp8ZmjFBwsPN6WRQIjj5c0YZ1cSQIioMZlM
-    7eN1UMr1+onaviJrXJSt8eJ48uWgGIyB+iWc0XQF8Z7vzJAfRPge9ZDF26zx23W0JXJT
-    DiHDJYBlX7nCLuYkkdIoYQXf3IKcWGhlau3nQNYgFB03KlWBdMwy16p5YO+Whmq1y9D6
-    2W6cbD6yw7hr9k1epA4HG1aMcMuGqDN3woayP9FPBqsb6dlwDLW8u8+Vw8B4+O4cFSpe
-    GO+X9EOCtrAlOOYw8Xq+DsqbLAmYiDuSFhGLQ1tC4+5+e6+I/86VI1RH26pGQbcHiUOg
-    C0eA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1617952102;
-    s=strato-dkim-0002; d=strato.com;
-    h=References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=Bg6gn2LOvwTZ42howqjgccJ3uIiQX7ptCiz4jhSxmsA=;
-    b=WP1jGw5mZVdj+254EruxVNcjGvPkUIztWcfOP1xxyWCWSsOmmMvDV2JRcKE0hLI18o
-    qsA/q2QDVQl+Y+X/KyDQPyQG3rV8kHK+GY/knOjv4b4FHNaHvwkeDLw8w6j8B/EbWbgH
-    aejz6sFhVHxsKVLlwxd5tURxBYMetypMoAEn36zYsolWNVy6+GX5sRYrNy0g5F5/E1rt
-    j6OZFAs1DjblymWl2s/u/btsvfHco8crRhmxYhLk/+wuSzd7PHGqBRjpk6ljHjhItswF
-    osAqRQgJKK/0P/ZEhuOuRDaMoe5TAIoTdXud7CsKdcvdSu9iDXltKa9NsNLZ1ZHXupG+
-    HGlw==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1617952102;
-    s=strato-dkim-0002; d=chronox.de;
-    h=References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=Bg6gn2LOvwTZ42howqjgccJ3uIiQX7ptCiz4jhSxmsA=;
-    b=EZ/4R+OCZU8lp+IC9v/0CvzdQsI+6FPgJShMPFpwhsMdpMJbgXYTINwnvS9qr/ndhc
-    /NtzppttEnEyZO3kQSSPjuOGuoMpRVBtFk4tXrjDph8svc3ZYiLy/yK3gNaDoewXRrkM
-    +RH1tte6mx6/0POaFi7GdZLD15BjdqExstMurGSyywmEshewIdn68eaMUaNE7oYcvvCY
-    BjFXJnHfUu9/A7SEk6b5PNgu0pBqAMQqB+C0CfMLp0O1czhlJy2NjloGJV02DT/FFh+2
-    iycUug6C3HrJ3sa42/N0hhOECyvnAcv/M/nA5IRIGP09VnjOgx12EkPR+My4C8jgrjyW
-    7oQA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNzyCzy1Sfr67uExK884EC0GFGHavJSpCkMFYXg=="
-X-RZG-CLASS-ID: mo00
-Received: from tauon.chronox.de
-    by smtp.strato.de (RZmta 47.24.0 DYNA|AUTH)
-    with ESMTPSA id R06d2dx3978LC2i
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 9 Apr 2021 09:08:21 +0200 (CEST)
-Message-ID: <7c2b6eff291b2d326e96c3a5f9cd70aa4ef92df3.camel@chronox.de>
-Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
-From:   Stephan Mueller <smueller@chronox.de>
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>
-Cc:     netdev@vger.kernel.org, "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        linux-crypto@vger.kernel.org
-Date:   Fri, 09 Apr 2021 09:08:20 +0200
-In-Reply-To: <20210409021121.GK2900@Leo-laptop-t470s>
-References: <20210407113920.3735505-1-liuhangbin@gmail.com>
-         <YG4gO15Q2CzTwlO7@quark.localdomain>
-         <20210408010640.GH2900@Leo-laptop-t470s>
-         <20210408115808.GJ2900@Leo-laptop-t470s> <YG8dJpEEWP3PxUIm@sol.localdomain>
-         <20210409021121.GK2900@Leo-laptop-t470s>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S229498AbhDIHQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 03:16:45 -0400
+Received: from mail-eopbgr80054.outbound.protection.outlook.com ([40.107.8.54]:21304
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229455AbhDIHQo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 03:16:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gytKETOLxmoyd8twnmRqFFpIOgIhWucKQHTsxmquTH9naAiXPXB+rThQ1IyaRQ4rXFdv9lpbWf/RmZayWQAYS9r6gHWJrob68DQssjpWeV1GGyPloUiupOjD25TuXVu/dIPc4nuwnd8MSwzIudBXu0i4nr2YekeX8LzVYtCFLM9aytn07IUPX3UWuXkvrqaeBvBFxg+p4fhCPTtGjzJLXDlpey1Ux1Gjp/j8F5RaNWk2iMLvFehrNxtqqeKvH0YI3dwQDxHbMItBf+sVr6xbX/ZC5wvChxRutfLBQ3zPwsI5E2yeNypn9vUERqZePrXPTZItTzbGA6+Op/Iz4v3D9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tc0b3zudrdWnQHpEexfTTJISxZwIfzWWabB9wiWEWmo=;
+ b=M1gPY/2tLzC3ePJBvvJQ4AJ/wUn56Dm/BJAOg7obM4APOzgUvkghBX85rCU4J3uP9jRjAobLP5KfBqX5swrgvxKKAhYcLwy8Sc8ZPZAOV22CBcFlfDqkfOUO5Kgim9JU4EexlT92WdlkjNJ4ARJuKuwyr8kpQQiM3qrZneHwSqPQexdjDF6IBGOEBYKt1TJCI/GbI50GBKrKI/iJ/WN4Yq6mOo74oE1d7JIn0wNYuWagXWcjEJ9ZWxozSLjWDNPZgGfOkUL99/Drt+oFq3IWTjnTh/iKckQZo89c3VBKHPI0ZHO5q/BmrNQQVeMg0L/mwAPahGR4vUi2llHtX8momQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tc0b3zudrdWnQHpEexfTTJISxZwIfzWWabB9wiWEWmo=;
+ b=eQdw50hjLIUEzU02YYUwqEfcLvACgszNDzrXWmuJ0HiAggbDURpkPMWBFQ1oYgo6oaeYbFIBoww2TiVvnukwkpYca6zXz//M8ERv5u+HwhIWnBzYM5wAahMwN9PS3ksfA+UqSo8G0P0CvqZ4900qm/+UEK0Q0AOUZk22UzKklkA=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM9PR04MB7682.eurprd04.prod.outlook.com (2603:10a6:20b:2db::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Fri, 9 Apr
+ 2021 07:16:30 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::1552:3518:1306:f73]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::1552:3518:1306:f73%6]) with mapi id 15.20.4020.016; Fri, 9 Apr 2021
+ 07:16:30 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next] enetc: Use generic rule to map Tx rings to interrupt vectors
+Date:   Fri,  9 Apr 2021 10:16:13 +0300
+Message-Id: <20210409071613.28912-1-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [83.217.231.2]
+X-ClientProxiedBy: AM0PR06CA0087.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::28) To AM0PR04MB6754.eurprd04.prod.outlook.com
+ (2603:10a6:208:170::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv15141.swis.ro-buh01.nxp.com (83.217.231.2) by AM0PR06CA0087.eurprd06.prod.outlook.com (2603:10a6:208:fa::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Fri, 9 Apr 2021 07:16:29 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1ee8800d-d51a-4832-f87e-08d8fb276546
+X-MS-TrafficTypeDiagnostic: AM9PR04MB7682:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM9PR04MB7682883D7E963C03843CF71796739@AM9PR04MB7682.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Noy8Dyi1UNmMnwLDKm6jVWCdX3LchyEguzfrc2hUWoQMLmHTCQ8SSE3k1uVKaaYy/1P0fzqWfdcAy44uuHbIlBxCIqflhiKtjPKmqqwi4qSe0Z4sBwwY9IQnX2XUdwJfs5KkZ3zNaii01ERz37F8iyuIWsFYMeTJTinL9Sk30Saopx62BMHtYeN15efDJuHyszWRn/GRphVbxPYoSyvgqnlyL3oVLnhQwYBFRoT5atOR07cYjlE1HEHb7FyWDr5c3Puor937MpAvdgy7MFrj3+cFjd9EFtA51KW+OEWY+RI7Kb2H+Qr6Had41REGVBiT63lV0MQPaaS6gNFF84+uU7b8HebvsVZIDjwtTj7rKcjIFQLPyUB1OZA3SM79eR6LiN1Sm0dy/JdtrPQXJ8A4fUjOWVf2lSZtu9FKuIb8GFQCRmZmX4eKJI2X/CA+OSsXSH3GQlhllPDHc0PyvWFU7c68BglpNqtXh3EtUZdKpezD/KQSJWFpUF9VHsKJdF0Vtgqv3RR358V/v7UL+xKMYrPc2qhK7tOVeygJqxPfiHG+5Z6mThGFBRe4BvMaVYPBSL1MWfh2mpSmckvUIvJ33Cvz//jeX6FRfMmiBEIbdnY4+Sc28u5g7uSbAMMhD+tUrPG8CiUbI6OebVvsIB6LrHox096rk0/H36uBG0SL2kr6eL8C5PU3hl+wPrfQ8UzglB4fO5dSaoOnHF+mAOxRIw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(366004)(346002)(136003)(376002)(6486002)(6916009)(38350700001)(5660300002)(8676002)(4326008)(8936002)(7696005)(52116002)(16526019)(54906003)(186003)(44832011)(38100700001)(2616005)(956004)(1076003)(66946007)(478600001)(316002)(83380400001)(66476007)(86362001)(26005)(36756003)(6666004)(66556008)(2906002)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?XirS+UaiP39Zk9+v4gDL/WZsANHfXllBlHm9mQx6ryCKgzSFU8kG+KCvhtcu?=
+ =?us-ascii?Q?Y18r40LKEWfsNubWzTlJf0YjoYnyoJN82ZJs2BfxpdSX6WjJ4oFkhTMwXtae?=
+ =?us-ascii?Q?AyL6exuhnXr1KeBY+FDtBCxpw5P7WJ53aUuk+ME+f52RbfiKLq48rLIKAUZW?=
+ =?us-ascii?Q?v5DFdPZmmASRvicE6D3RHEZp2ja1vsjIFBHshwZMrwfSDGyE2lmj9sdp/NlR?=
+ =?us-ascii?Q?900K3bRYIRFefZ+xSEQD0mCkOYc5Xg7lD/cjjMvrEeGE/8Jkggzn8Y3NRl1f?=
+ =?us-ascii?Q?0oq5dO2k72RNCwcTZWyTjJlN3JV+KlR09tx/Q4fmIc+v+p/hd0MoIVViRCps?=
+ =?us-ascii?Q?Ir5DFM7gzkr56FF3ZZR4ALQxNeaAAFVLmKnFLIyrsmDrhkZEQSeUnzVZ+FRN?=
+ =?us-ascii?Q?+ZIS79Qt8q5HMbMIjzjVN/72pr13F4QYpzWIyrZ0/QcOApkD1hN0+IsEkKiv?=
+ =?us-ascii?Q?qBUIkAMwdxd99WsHpLJLVEnOtMzd2s3uLAlsdeWgCp5/pH18YDHeKNH/Xeyb?=
+ =?us-ascii?Q?Dizqs4IKk09PrC6Ju2tK1ETK0/KLwXqFKQ54DGXtJW/dPpWxYmqTENGRGDR4?=
+ =?us-ascii?Q?SD7x8GOjve1VfnkDmaK0ne+3XHvGDth5s9z7nf/tbjLWeWORrhp18uhpqpYY?=
+ =?us-ascii?Q?RN8/hNmLJRPd2H4fh0FO3qr/VvXgqT9QhUDP3Ra39oziJDrQlK/4u+uV2DEt?=
+ =?us-ascii?Q?PXE81fR1p96yYcson7QxgL1xR0OATZKJmVQOoGJvy5ZqB3nqFRCaZlDAxdZt?=
+ =?us-ascii?Q?qc8vPCbPvwaJqiEkeHo35RJd66LhI3SNpE+doGJ/U7uresTVpLqsynLtbRMB?=
+ =?us-ascii?Q?omv+DN+QupiXC+or4Mh8btkkCJJIUSTvv/cdpTglmdtj5CVdIma2E3Z72l5P?=
+ =?us-ascii?Q?eT1O93aER5JbOCnaXlbwMUlZxwMIdOikD1vMNQwPnwMzRjbfXCJAo+rPwmxq?=
+ =?us-ascii?Q?eHiCrNRZucO2cvcXKK7+IDZ+VL9TCrvJL8cdbzs0hlnJL4bgFNF6oTv0rsZ4?=
+ =?us-ascii?Q?JucQ0cVOUpDrbXCBzavAYdpVFbs8dnKS7aeQc2N1IZyA6q8e/Nunq2m1mDwp?=
+ =?us-ascii?Q?ujtP6/ySKbTZZHAEAG3dnTx0LGIRISeMBuB9p6mnOtcCGXIBqSh7l0u/HIdV?=
+ =?us-ascii?Q?iL710GH3+GEGB97mcEh9bJG+Shmtwjd5Bf6ng1qzbZkB1PO6QQb+oUVE3ln7?=
+ =?us-ascii?Q?P4hSd8faasQtLGYCW/7JM6awRYunhGtZHd+/siKb4Huu0kY5Q6jnVgWNdFiQ?=
+ =?us-ascii?Q?00WyolFZZsOA3rcsAqdaS8wL+NC4bUcsYFjlu9YHoiT6H8lk7kED8JTnqU8G?=
+ =?us-ascii?Q?yq9xK57UDh82S9fJYRwfEsLJ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ee8800d-d51a-4832-f87e-08d8fb276546
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 07:16:29.9488
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v6EKRvzaUjvlC1BdQKBm3ckJ+dlKyp1yBkoLKo+UnPvV3CbCg9vb6tlTHXdvZm5UwSi1AphiJIBpL5YOubv7Fw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB7682
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Freitag, dem 09.04.2021 um 10:11 +0800 schrieb Hangbin Liu:
-> On Thu, Apr 08, 2021 at 08:11:34AM -0700, Eric Biggers wrote:
-> > On Thu, Apr 08, 2021 at 07:58:08PM +0800, Hangbin Liu wrote:
-> > > On Thu, Apr 08, 2021 at 09:06:52AM +0800, Hangbin Liu wrote:
-> > > > > Also, couldn't you just consider WireGuard to be outside your FIPS
-> > > > > module
-> > > > > boundary, which would remove it from the scope of the certification?
-> > > > > 
-> > > > > And how do you handle all the other places in the kernel that use
-> > > > > ChaCha20 and
-> > > > > SipHash?  For example, drivers/char/random.c?
-> > > > 
-> > > > Good question, I will check it and reply to you later.
-> > > 
-> > > I just read the code. The drivers/char/random.c do has some fips
-> > > specific
-> > > parts(seems not related to crypto). After commit e192be9d9a30 ("random:
-> > > replace
-> > > non-blocking pool with a Chacha20-based CRNG") we moved part of chacha
-> > > code to
-> > > lib/chacha20.c and make that code out of control.
-> > > 
-> > So you are saying that you removed drivers/char/random.c and
-> > lib/chacha20.c from
-> > your FIPS module boundary?  Why not do the same for WireGuard?
-> 
-> No, I mean this looks like a bug (using not allowed crypto in FIPS mode) and
-> we should fix it.
+Even if the current mapping is correct for the 1 CPU and 2 CPU cases
+(currently enetc is included in SoCs with up to 2 CPUs only), better
+use a generic rule for the mapping to cover all possible cases.
+The number of CPUs is the same as the number of interrupt vectors:
 
-The entirety of random.c is not compliant to FIPS rules. ChaCha20 is the least
-of the problems. SP800-90B is the challenge. This is one of the motivation of
-the design and architecture of the LRNG allowing different types of crypto and
-have a different approach to post-process the data.
+Per device Tx rings -
+device_tx_ring[idx], where idx = 0..n_rings_total-1
 
-https://github.com/smuellerDD/lrng
+Per interrupt vector Tx rings -
+int_vector[i].ring[j], where i = 0..n_int_vects-1
+			     j = 0..n_rings_per_v-1
 
-Ciao
-Stephan
-> 
-> Thanks
-> Hangbin
+Mapping rule -
+n_rings_per_v = n_rings_total / n_int_vects
+for i = 0..n_int_vects - 1:
+	for j = 0..n_rings_per_v - 1:
+		idx = n_int_vects * j + i
+		int_vector[i].ring[j] <- device_tx_ring[idx]
 
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 57049ae97201..1646aaa68bd1 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -2343,11 +2343,7 @@ int enetc_alloc_msix(struct enetc_ndev_priv *priv)
+ 			int idx;
+ 
+ 			/* default tx ring mapping policy */
+-			if (priv->bdr_int_num == ENETC_MAX_BDR_INT)
+-				idx = 2 * j + i; /* 2 CPUs */
+-			else
+-				idx = j + i * v_tx_rings; /* default */
+-
++			idx = priv->bdr_int_num * j + i;
+ 			__set_bit(idx, &v->tx_rings_map);
+ 			bdr = &v->tx_ring[j];
+ 			bdr->index = idx;
+-- 
+2.25.1
 
