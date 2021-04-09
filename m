@@ -2,66 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D0B5359846
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 10:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89C0B35988A
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 11:03:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbhDIIuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 04:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbhDIIuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 04:50:02 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E54C061760
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 01:49:50 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id n12so5745199ybf.8
-        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 01:49:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=63VEXxgaDo8U4e31A8tBKOCYQ0j4Hnymi+cQaeTPY08=;
-        b=JCPtRLXxsByUKkiDzeqh15QUUx4asaDd6xNXOE27gjiZ8K9OuZCmLFYdjtpIDxb3Tb
-         EknqF6FoKM8xkO2fe+14kEE+dc1NradXI61Tr4kx93GkhE5pzDQWcDznbKMuI+0n6FD4
-         Rgq50oJJl8ZYqGssIrTf1wFUdpOYno2Z/i7TlVGMMYXtvkiz5tzjR8/q7YQtD1TidQIB
-         gbN792UZbS8fN4QMfn/abbatW2HsL7LUzdQLAXucC5FAgezmQ563E024jklKMi7+w1un
-         rXzaPs2PvEKz9pHFA5A4ZFFeOOCXaq+TDVdjxHY6zuL9z4ZwFzvbhAAEM8JlSdvGaQc2
-         C4ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=63VEXxgaDo8U4e31A8tBKOCYQ0j4Hnymi+cQaeTPY08=;
-        b=psXqnW4rC9ZnWjzvuU8UnLhEOl3mYWm6wX9VvmVKDhEQl1rjckyLPBbRoOxmX2/4GQ
-         SSY/1I0/3BEjbCXf9MNRwzb6uZYot7NlWmyw5Oh6DS00eLnUoKXlF3qu0zJJrKyhfsTw
-         JgXP4VXOIt0dd52XVLiCD4r+vPPd1boS24ZXWbRGrBLER0kqh/Qa8n6CibjiwYqkYHKk
-         OdhUkRM9XzeOTCCVEv9osnIk/fT+bOQ4QHdo4RfXTRsQQNStRbmVGUzcD3nGwFHIqSpL
-         zzD5wXXvuqHXSMy4DkmyXj34aZyc7jXS77emkohUoh1uiVflgi+uxaHr+5N8cRJ5IZTZ
-         tV1w==
-X-Gm-Message-State: AOAM530fGVvBZrzrkiwWFUMhhCQFSpzPDIbZeozzaU29o5Jd3Po+odqY
-        wAQZKKBjMWk/hwL08GTB9FzHJJ3UvKdVqPTPcHw=
-X-Google-Smtp-Source: ABdhPJz8uP/J24ybzDhIM83ul+Kw1H7OToZDWMZa0Zhk4tc4aYTnl7I+xCgdSX/G3/d44HHwhvH2X2wGtoSvHZLpcY8=
-X-Received: by 2002:a5b:341:: with SMTP id q1mr17390387ybp.386.1617958189355;
- Fri, 09 Apr 2021 01:49:49 -0700 (PDT)
+        id S232197AbhDIJDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 05:03:33 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:36540 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231127AbhDIJDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 05:03:30 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lUn2p-0002Js-BC; Fri, 09 Apr 2021 09:03:15 +0000
+Subject: Re: [PATCH][next] mlxsw: spectrum_router: remove redundant
+ initialization of variable force
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        petrm@nvidia.com
+References: <20210327223334.24655-1-colin.king@canonical.com>
+ <YGF+D6fXNIbNVzff@shredder.lan>
+From:   Colin Ian King <colin.king@canonical.com>
+Message-ID: <af12da04-aaef-c40e-682c-88fe683448dc@canonical.com>
+Date:   Fri, 9 Apr 2021 10:03:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Received: by 2002:a05:7110:6cd:b029:5b:5c36:c5f7 with HTTP; Fri, 9 Apr 2021
- 01:49:48 -0700 (PDT)
-Reply-To: cosme.mossou@gmail.com
-From:   "Mr. Cosme Amossou" <lithurtony77@gmail.com>
-Date:   Fri, 9 Apr 2021 16:49:48 +0800
-Message-ID: <CAD+c8pN16cQ_6YSwWOxOOkgC9juiv4NN1VW0N6QWw0m7YTyKCA@mail.gmail.com>
-Subject: Greetings
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YGF+D6fXNIbNVzff@shredder.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings;
+On 29/03/2021 08:13, Ido Schimmel wrote:
+> On Sat, Mar 27, 2021 at 10:33:34PM +0000, Colin King wrote:
+>> From: Colin Ian King <colin.king@canonical.com>
+>>
+>> The variable force is being initialized with a value that is
+>> never read and it is being updated later with a new value. The
+>> initialization is redundant and can be removed.
+>>
+>> Addresses-Coverity: ("Unused value")
+>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>> ---
+>>  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+>> index 6ccaa194733b..ff240e3c29f7 100644
+>> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+>> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+>> @@ -5059,7 +5059,7 @@ mlxsw_sp_nexthop_obj_bucket_adj_update(struct mlxsw_sp *mlxsw_sp,
+>>  {
+>>  	u16 bucket_index = info->nh_res_bucket->bucket_index;
+>>  	struct netlink_ext_ack *extack = info->extack;
+>> -	bool force = info->nh_res_bucket->force;
+>> +	bool force;
+> 
+> Actually, there is a bug to be fixed here:
+> 
+> ```
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+> index 6ccaa194733b..41259c0004d1 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+> @@ -5068,8 +5068,9 @@ mlxsw_sp_nexthop_obj_bucket_adj_update(struct mlxsw_sp *mlxsw_sp,
+>         /* No point in trying an atomic replacement if the idle timer interval
+>          * is smaller than the interval in which we query and clear activity.
+>          */
+> -       force = info->nh_res_bucket->idle_timer_ms <
+> -               MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL;
+> +       if (!force && info->nh_res_bucket->idle_timer_ms <
+> +           MLXSW_SP_NH_GRP_ACTIVITY_UPDATE_INTERVAL)
+> +               force = true;
+>  
+>         adj_index = nh->nhgi->adj_index + bucket_index;
+>         err = mlxsw_sp_nexthop_update(mlxsw_sp, adj_index, nh, force, ratr_pl);
+> ```
+> 
+> We should only fallback to a non-atomic replacement when the current
+> replacement is atomic and the idle timer is too short.
+> 
+> We currently ignore the value of 'force'. This means that a non-atomic
+> replacement ('force' is true) can be made atomic if idle timer is larger
+> than 1 second.
+> 
+> Colin, do you mind if I submit it formally as a fix later this week? I
+> want to run it through our usual process. Will mention you in
+> Reported-by, obviously.
 
-I sent you an email a couple of days ago and haven't heard from you.
+Sure. Good idea.
 
-Please confirm if you received my email?
+> 
+>>  	char ratr_pl_new[MLXSW_REG_RATR_LEN];
+>>  	char ratr_pl[MLXSW_REG_RATR_LEN];
+>>  	u32 adj_index;
+>> -- 
+>> 2.30.2
+>>
 
-Yours Sincerely,
-Mr. Cosme Amossou (Lawyer)
-E-mail:cosme@cabinetcosme.com
