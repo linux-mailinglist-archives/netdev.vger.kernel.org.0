@@ -2,64 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F83359E67
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 14:11:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15225359E95
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 14:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232469AbhDIML4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 08:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbhDIMLx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 08:11:53 -0400
-Received: from forward101p.mail.yandex.net (forward101p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D210FC061760
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 05:11:40 -0700 (PDT)
-Received: from sas1-892da86383b1.qloud-c.yandex.net (sas1-892da86383b1.qloud-c.yandex.net [IPv6:2a02:6b8:c08:78a8:0:640:892d:a863])
-        by forward101p.mail.yandex.net (Yandex) with ESMTP id 809E43281805;
-        Fri,  9 Apr 2021 15:11:36 +0300 (MSK)
-Received: from sas1-f4dc5f2fc86f.qloud-c.yandex.net (sas1-f4dc5f2fc86f.qloud-c.yandex.net [2a02:6b8:c08:cb28:0:640:f4dc:5f2f])
-        by sas1-892da86383b1.qloud-c.yandex.net (mxback/Yandex) with ESMTP id nW4Xx3ouN3-BaJCNsND;
-        Fri, 09 Apr 2021 15:11:36 +0300
-Authentication-Results: sas1-892da86383b1.qloud-c.yandex.net; dkim=pass
-Received: by sas1-f4dc5f2fc86f.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id mw0DzMN0sO-BZKCvKsP;
-        Fri, 09 Apr 2021 15:11:35 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Subject: Re: [BUG / question] in routing rules, some options (e.g. ipproto,
- sport) cause rules to be ignored in presence of packet marks
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <babb2ebf-862a-d05f-305a-e894e88f601e@yandex.pl>
- <YGI99fyA6MYKixuB@shredder.lan>
-From:   Michal Soltys <msoltyspl@yandex.pl>
-Message-ID: <24ebb842-cb3a-e1a2-c83d-44b4a5757200@yandex.pl>
-Date:   Fri, 9 Apr 2021 14:11:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        id S233508AbhDIMZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 08:25:10 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:39788 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233532AbhDIMZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 08:25:05 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 139CFVCA194305;
+        Fri, 9 Apr 2021 12:24:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=shOFeNA3XyLf4escMxhfFFDEAj60p8yZvOwPN7oekG4=;
+ b=BJ5YVBD17B7On02iZ8h74Dvidjx2fzHXsIkZgVZS11U4EXptQPhdEx/+2JI4SUFdgdzM
+ Nocgw/Gx9oqwxAKOEzvg4gtCSIUyP4AgqqD9dj2cuTHMvzHbpvP8lb/tKpmlJY8dIGee
+ 55FrB9dMCu37BDtWs7IRNkv93PJu9D2CvKy35JfIuB/Yx0rmmO9hM1ZV9mFEb20hGR0r
+ jWKna3AiV+RIMvI+97HThlMadbDATbgmgZFMI2coaFz8k6fJSvfIPpA0JWAodiIZo6eG
+ oiA3+UxIXW4Rjz2YqBZorZV8mFXq75f1hKvAB+xcAt6/C700ft8kzORVB+ZW5C1iWOM0 ug== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2130.oracle.com with ESMTP id 37rvaw97v7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 09 Apr 2021 12:24:39 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 139CFPeF123902;
+        Fri, 9 Apr 2021 12:24:38 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 37rvb6j50a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 09 Apr 2021 12:24:38 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 139COaDW023441;
+        Fri, 9 Apr 2021 12:24:36 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 09 Apr 2021 12:24:35 +0000
+Date:   Fri, 9 Apr 2021 15:24:28 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: enetc: fix array underflow in error handling
+ code
+Message-ID: <YHBHfCY/yv3EnM9z@mwanda>
 MIME-Version: 1.0
-In-Reply-To: <YGI99fyA6MYKixuB@shredder.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9948 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
+ malwarescore=0 mlxscore=0 suspectscore=0 adultscore=0 spamscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104090092
+X-Proofpoint-ORIG-GUID: SRbG0EicQFwAAbCbrKgVWRoIEiMXkaOs
+X-Proofpoint-GUID: SRbG0EicQFwAAbCbrKgVWRoIEiMXkaOs
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9948 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 priorityscore=1501
+ suspectscore=0 phishscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
+ mlxscore=0 bulkscore=0 impostorscore=0 adultscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104090092
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/29/21 10:52 PM, Ido Schimmel wrote:
-> 
-> ip_route_me_harder() does not set source / destination port in the
-> flow key, so it explains why fib rules that use them are not hit after
-> mangling the packet. These keys were added in 4.17, but I
-> don't think this use case every worked. You have a different experience?
-> 
+This loop will try to unmap enetc_unmap_tx_buff[-1] and crash.
 
-So all the more recent additions to routing rules - src port, dst port, 
-uid range and ipproto - are not functioning correctly with the second 
-routing check.
+Fixes: 9d2b68cc108d ("net: enetc: add support for XDP_REDIRECT")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Are there plans to eventually fix that ?
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 57049ae97201..d86395775ed0 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -895,7 +895,7 @@ static int enetc_xdp_frame_to_xdp_tx_swbd(struct enetc_bdr *tx_ring,
+ 		dma = dma_map_single(tx_ring->dev, data, len, DMA_TO_DEVICE);
+ 		if (unlikely(dma_mapping_error(tx_ring->dev, dma))) {
+ 			/* Undo the DMA mapping for all fragments */
+-			while (n-- >= 0)
++			while (--n >= 0)
+ 				enetc_unmap_tx_buff(tx_ring, &xdp_tx_arr[n]);
+ 
+ 			netdev_err(tx_ring->ndev, "DMA map error\n");
+-- 
+2.30.2
 
-While I just adjusted/rearranged my stuff to not rely on those, it 
-should probably be at least documented otherwise (presumably in ip-rule 
-manpage and perhaps in `ip rule help` as well).
