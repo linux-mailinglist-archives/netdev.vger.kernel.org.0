@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B54B359FB2
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 15:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4E0359FC7
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 15:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbhDINU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 09:20:28 -0400
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:56731 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231599AbhDINU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 09:20:27 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id E1F3915FE;
-        Fri,  9 Apr 2021 09:20:11 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 09 Apr 2021 09:20:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=nzp5Pd
-        h/0ynkTRT1VPOlAEHLzGzff0yir9USSOK1q4I=; b=TRopwb6QhHZz299KF+/pfF
-        YR0szWCim9TZDn3GWiBCKSz0HRlN7TzBmlkhdy+VMnXxU6UwD4eMqhtc4RtchuFH
-        qokX3AyzPJtjPi4KUyF3qL5nze7wN65agqXxPdugsM1OhMyibQ+SAj9bMkRN95vn
-        h3xjNprlGn4B80sKpiZAxbiUNcnj+H2O0Sb9yYv0HRndKwpMhzOQld098bjZvdQi
-        tqguYFJwdE8CNhqPHe5J8vlbTftAvgRkrJ3SdBnwcYuKR0bQ/BdndxJv61EFhYCf
-        pnjWfn+sHd2jeOFQtCb+nTXNvlBJVyt2TbQyfdOx+Xn1Oe0w17aYljRDwT9p3b2g
-        ==
-X-ME-Sender: <xms:i1RwYMJiZ3UYgW9ThwcQutIU5ZB_VxUuTQrCjz9q_dBlDNX0JOJtYQ>
-    <xme:i1RwYD7cYQ9l4bx_qDxfSIYS9S4cjCKu2syfs-0NkkBwAPjsJqPlbs-PLBLr7_gGG
-    lQUdBWYvGed82E>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekuddgieegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrddukeejnecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:i1RwYPz1E7Dy4wCzbWramXc7Q70YbYI9T5Iu7sz2pO32D5IlVXIQLQ>
-    <xmx:i1RwYHalYT7_ORBbnreaWW4O21giYNjEdqk7-nPKlkZp9SbGXtHehA>
-    <xmx:i1RwYBSB1pRB4wY_2sNsLO7KlnQROYcQGpDDc-r3xAWB1Gbi2BpN5Q>
-    <xmx:i1RwYN7KFbEoWKwFVx4mhdDN_cbTrtAbONHQonYExzbell9SIaXXcw>
-Received: from localhost (igld-84-229-153-187.inter.net.il [84.229.153.187])
-        by mail.messagingengine.com (Postfix) with ESMTPA id AC901240054;
-        Fri,  9 Apr 2021 09:20:10 -0400 (EDT)
-Date:   Fri, 9 Apr 2021 16:20:06 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Michal Soltys <msoltyspl@yandex.pl>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [BUG / question] in routing rules, some options (e.g. ipproto,
- sport) cause rules to be ignored in presence of packet marks
-Message-ID: <YHBUhq8M7hr3lVLA@shredder.lan>
-References: <babb2ebf-862a-d05f-305a-e894e88f601e@yandex.pl>
- <YGI99fyA6MYKixuB@shredder.lan>
- <24ebb842-cb3a-e1a2-c83d-44b4a5757200@yandex.pl>
- <20210409130241.GB22648@breakpoint.cc>
+        id S233593AbhDIN1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 09:27:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60658 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232286AbhDIN1W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 09:27:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 16A8461105;
+        Fri,  9 Apr 2021 13:27:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1617974829;
+        bh=nKeHRuV5ymkEE4MF/NvZwM3D4+Kpkmi60AA4GEp/lxc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KZKMEUfRgF+cTTCGQSVZvtyf7Mk+1WDaNgzOGt4vZlr+tvIH/S7FlxdZMN2BRO4vu
+         iaykpC0N/jH72qcco8nqGaBmXYOqLMGUrORGfKnCRyf3cMv0HNSvxoexVMWmpmq0PZ
+         F9JyM8CsNjogKdYEwaCZ6aqoLvM8v5ej6S7DJHOo=
+Date:   Fri, 9 Apr 2021 15:27:07 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Koen Vandeputte <koen.vandeputte@citymesh.com>,
+        linux-can@vger.kernel.org, wg@grandegger.com,
+        netdev@vger.kernel.org, qiangqing.zhang@nxp.com
+Subject: Re: flexcan introduced a DIV/0 in kernel
+Message-ID: <YHBWKzZyuUhMr0fj@kroah.com>
+References: <5bdfcccb-0b02-e46b-eefe-7df215cc9d02@citymesh.com>
+ <27f66de1-42bc-38d9-8a1c-7062eb359958@pengutronix.de>
+ <f7ba143a-58c8-811a-876e-d494c4681537@citymesh.com>
+ <20210409131001.7r36v2vd3zmceloj@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210409130241.GB22648@breakpoint.cc>
+In-Reply-To: <20210409131001.7r36v2vd3zmceloj@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 09, 2021 at 03:02:41PM +0200, Florian Westphal wrote:
-> Michal Soltys <msoltyspl@yandex.pl> wrote:
-> > On 3/29/21 10:52 PM, Ido Schimmel wrote:
-> > > 
-> > > ip_route_me_harder() does not set source / destination port in the
-> > > flow key, so it explains why fib rules that use them are not hit after
-> > > mangling the packet. These keys were added in 4.17, but I
-> > > don't think this use case every worked. You have a different experience?
-> > > 
+On Fri, Apr 09, 2021 at 03:10:01PM +0200, Marc Kleine-Budde wrote:
+> On 09.04.2021 14:55:59, Koen Vandeputte wrote:
 > > 
-> > So all the more recent additions to routing rules - src port, dst port, uid
-> > range and ipproto - are not functioning correctly with the second routing
-> > check.
-> >
-> > Are there plans to eventually fix that ?
+> > On 09.04.21 13:21, Marc Kleine-Budde wrote:
+> > > On 4/9/21 12:18 PM, Koen Vandeputte wrote:
+> > > > Hi All,
+> > > > 
+> > > > I just updated kernel 4.14 within OpenWRT from 4.14.224 to 4.14.229
+> > > > Booting it shows the splat below on each run. [1]
+> > > > 
+> > > > 
+> > > > It seems there are 2 patches regarding flexcan which were introduced in
+> > > > 4.14.226
+> > > > 
+> > > > --> ce59ffca5c49 ("can: flexcan: enable RX FIFO after FRZ/HALT valid")
+> > > > --> bb7c9039a396 ("can: flexcan: assert FRZ bit in flexcan_chip_freeze()")
+> > > > 
+> > > > Reverting these fixes the splat.
+> > > This patch should fix the problem:
+> > > 
+> > > 47c5e474bc1e can: flexcan: flexcan_chip_freeze(): fix chip freeze for missing
+> > > bitrate
+> > > 
+> > > Greg, can you pick this up for v4.14?
+> > > 
+> > > regards,
+> > > Marc
+> > > 
+> > Checking kernels 4.4 & 4.9 shows that this fix is also missing over there.
 > > 
-> > While I just adjusted/rearranged my stuff to not rely on those, it should
-> > probably be at least documented otherwise (presumably in ip-rule manpage and
-> > perhaps in `ip rule help` as well).
+> > Marc,
+> > Can you confirm that it's also required for these?
 > 
-> Fixing this would be better.
+> ACK, the fix is needed for v4.4.265 and v4.9.265.
 
-Yep.
+Now queued up there too, thanks!
 
-> As Ido implies it should be enough to fully populate the flow keys in
-> ip(6)_route_me_harder.
-
-Will try to patch this.
+greg k-h
