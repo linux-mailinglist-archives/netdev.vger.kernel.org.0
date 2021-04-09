@@ -2,465 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97B4B359515
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 08:02:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BBB935956B
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 08:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233228AbhDIGCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 02:02:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59218 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229715AbhDIGCm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 02:02:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C568610F7;
-        Fri,  9 Apr 2021 06:02:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617948150;
-        bh=tjC1M4FSjU4PnSHMugev1DHKlbLsFUyJiWJBcNCPfQQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XoavPogUfBtZlGMAsaxSmKiWGlFHnGgzvJj02VCGqSn86sWdXqSWRnP7tEJrRvBuj
-         QodPf3N88NM6AZ9zsk03B9Yri0cvTBAld0ge9rVxi6YImFQ+DlkQ3rDFLpPP8hwpbE
-         utHdELo0B7qtqsA6aolaJJH8wdmzUeuMsLmLTX4yNbW7B5jLKRfmB4K+AArtDmarf8
-         Ahpjp64D1s20XQStw0SwqEGh/Z4yYv9bUaxCTWN5he35KDnk9D2cHak24Zlyb+ymxL
-         ZdFFGRV+aVorz6CrCfobJqzhxovaO4SyM8QlCjfPgJC7P7kpmzEkQmLKCB/RRctKDd
-         HVO3Ex4tYm0bQ==
-Received: by mail-oi1-f172.google.com with SMTP id n8so4678234oie.10;
-        Thu, 08 Apr 2021 23:02:30 -0700 (PDT)
-X-Gm-Message-State: AOAM5300u+dM7QwtQZaRF0V8PNUxfjABX73zserHvOzi9/NqR8H9pfuh
-        ug7yZ88lxlNuC5XJOdfPKx3bf/MMlrT6jX/t2ho=
-X-Google-Smtp-Source: ABdhPJyjqEN4o+uRLoBbnlj0MlDAPry3aL6UvdzchLzPvOyba3eSHDQmnBRmhZBKOKsUmJ8IS8AV16BtASe91klOTug=
-X-Received: by 2002:aca:7c4:: with SMTP id 187mr8931318oih.47.1617948149739;
- Thu, 08 Apr 2021 23:02:29 -0700 (PDT)
+        id S233411AbhDIG0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 02:26:16 -0400
+Received: from mail-mw2nam10on2082.outbound.protection.outlook.com ([40.107.94.82]:31168
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233335AbhDIG0P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 02:26:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GQUO8DPfrMph1GD4iiqEyJz/xMeXCCkrX829BhJXFmjh68UPNEVBMX/LGLcKpqzQUPGnJ6UesXsfP9NstDPRRX3BpXlyK+4lEv1/QY5CL38E0Xd1ZHvLNd1Q7U7Xlwxnv39KjssxZDKuRDEoj+b68jdlw7QBOuanov/7MW79Y4Nm4UixlDraaKPj+xU5zXZRa4Y7SKajCW5RCpQHwmNNLchcyy56IUwBSTfBdoWJKZ/k+i5LIa+o2pAjzo79lpE85Sphq1mvkVZQ90ntBXBhdjO9qDppTVk7iTsy2i0OcH/f4GyKqilW0DNnWBTdnQaJNOzK/qIKqXqiIfd6JbN50g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yjp1ABAf0QmTjF8d+8A4bU+5IeL2sIkw0JiP9OYIUT8=;
+ b=PADpMj6vUkPdvpWaviTf96eiuqjtlN84mBCjZBTCSvge99t9Wyd4dNcF5cEP7kt8uNofkkzdGerWzqFxrQ/id65l3PJnMFuuSUvvI+Ylnl56/p7WU74QTPE4OwUwKzU+FKwyYyAAPlkd9lxeOXdmD6YKUjOgqNaJV0ASAYNmLNU9HKrRwzhfS9RNVnwZRIMh+KWGBAtJ7/i8NBdrBpJnQM+caM4cdFyxkWkloEEziAFNfQivFOlBDzhEhjomj21BY0nCP0B3Y63z2nWBvxO7K6ozZkcc+S9PvQx09ngBE60lQ2qo6j/K0cYj8gpBtD+Fl90hTbGcr+ksyfPuxREb5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.35) smtp.rcpttodomain=netfilter.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yjp1ABAf0QmTjF8d+8A4bU+5IeL2sIkw0JiP9OYIUT8=;
+ b=Rb1TsvzEjFIwBlstMUn8eCPJdmpQpazv63o0zVMCbSrm+9qxUCN3jlIe+HSYVSkCV8KuizuZhhv2DnqSbIx9Nnz6MQ3V6QeetAOPnVe4Tkg7oxnckLwFFL+WnVbt+hhpYx1Qb0R2r5RjCM9oomBKG3DepUACEvSQot/T0IMz7OCqPyZtw85KDxz6WtChkx3IZ5DGABJVtCl88GsSKWaUwPlEKxJ7/MmM0VwOGA3NRelnDtaR6szxUg1rMZ191YBn0qwJdIaGeNFpC/LW+Mf5IHYrsZ04KWYkA0izE0tmN6Wpg8SW/K1af3jhVBkGdmMtsj4absCRMUqzgM/ETVTtLA==
+Received: from BN0PR04CA0148.namprd04.prod.outlook.com (2603:10b6:408:ed::33)
+ by BN9PR12MB5337.namprd12.prod.outlook.com (2603:10b6:408:102::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17; Fri, 9 Apr
+ 2021 06:26:02 +0000
+Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ed:cafe::22) by BN0PR04CA0148.outlook.office365.com
+ (2603:10b6:408:ed::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend
+ Transport; Fri, 9 Apr 2021 06:26:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
+ smtp.mailfrom=nvidia.com; netfilter.org; dkim=none (message not signed)
+ header.d=none;netfilter.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.35; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.35) by
+ BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4020.17 via Frontend Transport; Fri, 9 Apr 2021 06:26:01 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Apr
+ 2021 06:26:00 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2 via Frontend
+ Transport; Fri, 9 Apr 2021 06:25:59 +0000
+Date:   Fri, 9 Apr 2021 06:25:56 +0000
+From:   Jianbo Liu <jianbol@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <pablo@netfilter.org>,
+        Roi Dayan <roid@nvidia.com>
+Subject: Re: [PATCH net] net: flow_offload: Fix UBSAN invalid-load warning in
+ tcf_block_unbind
+Message-ID: <20210409062555.GA1191@vdi.nvidia.com>
+References: <20210408074718.14331-1-jianbol@nvidia.com>
+ <20210408141619.7dd765b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20210407113920.3735505-1-liuhangbin@gmail.com>
- <CAHmME9p40M5oHDZXnFDXfO4-JuJ7bUB5BnsccGV1pksguz73sg@mail.gmail.com>
- <c47d99b9d0efeea4e6cd238c2affc0fbe296b53c.camel@redhat.com>
- <CAHmME9pRSOANrdvegLm9x8VTNWKcMtoymYrgStuSx+nsu=jpwA@mail.gmail.com>
- <20210409024143.GL2900@Leo-laptop-t470s> <CAHmME9oqK9iXRn3wxAB-MZvX3k_hMbtjHF_V9UY96u6NLcczAw@mail.gmail.com>
- <20210409024907.GN2900@Leo-laptop-t470s> <YG/EAePSEeYdonA0@zx2c4.com>
-In-Reply-To: <YG/EAePSEeYdonA0@zx2c4.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 9 Apr 2021 08:02:18 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXG-e_NtLkAdLYp70x5ft_Q1Bn9rmdXs4awt7FEd5PQ4+Q@mail.gmail.com>
-Message-ID: <CAMj1kXG-e_NtLkAdLYp70x5ft_Q1Bn9rmdXs4awt7FEd5PQ4+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, Simo Sorce <simo@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20210408141619.7dd765b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5012d154-17ce-4dc3-0f4c-08d8fb2058ac
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5337:
+X-Microsoft-Antispam-PRVS: <BN9PR12MB533765F4A2CD459A1D724581C5739@BN9PR12MB5337.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: T/PR7C8HlF9KOZq3THLVs84E+dBwT1xAqgWBiXvTMuW1mZQiS7H5Rr2bAIJiZuijJZGw0kC2FeIyFZFhYs7ZP7ShyfaqoMH4ei1SfIqCHlQh4DNPbfQnGnHOqt2Dvyh0qQf/61btzAw9SeXNtJr7lQccrelxnAfKzI7sFHbs0VwCL4LenbTy8LRyxhDAlBS/v6yroz3wbAkJoUsULz/G+WLKEjOKyu06NvTSdpmcuSxCXjwU9VqWwpR3M75VpBnJUD9qKxNx1FcqVqaZAx/pyBcdzsJhq5/ubLs4iWMOzUuaE75celwv6HUgfmE+5Bk0JAx1G8/6+bGXTYRXBVIUCBeqkvjaSSff0hxcP70Bb+QEPgPPnGJhtQdJzHHRo3whvWyNUl3qf3C6WcA9qRvVm7AJK73PvM9VwkJoERY6go3wioLih118pTIjYl8y3NBQT5zts1Vjm7uq1JdupZf8vUY53Z2NuFpN84+BcueohusYBXPz4kWmWwIjbtNO0+RQWZEyMO2UuDzqpZKB02xx4QyRpGohBJRFfUaXsjMuDqvkZSAlZ0lv0AdU1J7LMy9DCfHySiEfYDapwqrtyI7Cn1RMV3mrsPUVW202o5lSvEsVSqphvYXGbtTnk69Fmk537GzpNn8NMaTS/pwcYtAwq2hAdqsAuEtkoqz1xtcU3Z4=
+X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(136003)(376002)(46966006)(36840700001)(86362001)(336012)(316002)(70206006)(70586007)(6916009)(82310400003)(83380400001)(33656002)(54906003)(4326008)(186003)(36860700001)(107886003)(36906005)(478600001)(47076005)(55016002)(26005)(356005)(8936002)(6666004)(7696005)(5660300002)(2906002)(8676002)(426003)(82740400003)(7636003)(1076003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 06:26:01.6342
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5012d154-17ce-4dc3-0f4c-08d8fb2058ac
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5337
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Apr 2021 at 05:03, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> On Fri, Apr 09, 2021 at 10:49:07AM +0800, Hangbin Liu wrote:
-> > On Thu, Apr 08, 2021 at 08:44:35PM -0600, Jason A. Donenfeld wrote:
-> > > Since it's just a normal module library, you can simply do this in the
-> > > module_init function, rather than deep within registration
-> > > abstractions.
-> >
-> > I did a try but looks it's not that simple. Not sure if it's because wireguard
-> > calls the library directly. Need to check more...
->
-> Something like the below should work...
->
+The 04/08/2021 14:16, Jakub Kicinski wrote:
+> On Thu, 8 Apr 2021 07:47:18 +0000 Jianbo Liu wrote:
+> > When device is removed, indirect block is unregisterd. As
+> > bo->unlocked_driver_cb is not initialized, the following UBSAN is
+> > triggered.
+> > 
+> > UBSAN: invalid-load in net/sched/cls_api.c:1496:10
+> > load of value 6 is not a valid value for type '_Bool'
+> > 
+> > This patch fixes the warning by calling device's indr block bind
+> > callback, and unlocked_driver_cb is assigned with correct value.
+> > 
+> > Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
+> > Signed-off-by: Jianbo Liu <jianbol@nvidia.com>
+> > Reviewed-by: Roi Dayan <roid@nvidia.com>
+> 
+> It's been a while since I looked at this code but I don't understand
+> what you're doing here.
 
-The below only works if all the code is modular. initcall return
-values are ignored for builtin code, and so the library functions will
-happily work regardless of fips_enabled, and there is generally no
-guarantee that no library calls can be made before the initcall() is
-invoked.
+To fix the UBSAN warning in tcf_block_unbind. It's easily triggered when
+netdev is removed before tunnel netdev.
 
-For ordinary crypto API client code, the algorithm in question may be
-an a priori unknown, and so the only sensible place to put this check
-is where the algorithms are registered or instantiated.
+> 
+> The init in tc_block_indr_cleanup() makes sense. What's the change to
+> setup_cb achieving? Thanks.
 
-For code such as WireGuard that is hardwired to use a single set of
-(forbidden! :-)) algorithms via library calls, the simplest way to do
-this securely is to disable the whole thing, even though I agree it is
-not the most elegant solution.
+But unlocked_driver_cb of flow_block_offload is not initialized in init.
+Calling setup_cb is to get the correct value from driver.
 
-If we go with Jason's approach, we would need to mandate each of these
-drivers can only be built as a module if the kernel is built with
-FIPS-200 support. This is rather trivial by itself, i.e.,
-
-  depends on m || !CRYPTO_FIPS
-
-but I am a bit concerned that the rather intricate kconfig
-dependencies between the generic and arch-optimized versions of those
-drivers get complicated even further.
+> 
+> > diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> > index dc5c1e69cd9f..8cdc60833890 100644
+> > --- a/include/net/flow_offload.h
+> > +++ b/include/net/flow_offload.h
+> > @@ -459,6 +459,11 @@ typedef int flow_setup_cb_t(enum tc_setup_type type, void *type_data,
+> >  
+> >  struct flow_block_cb;
+> >  
+> > +typedef int flow_indr_block_bind_cb_t(struct net_device *dev, struct Qdisc *sch, void *cb_priv,
+> > +				      enum tc_setup_type type, void *type_data,
+> > +				      void *data,
+> > +				      void (*cleanup)(struct flow_block_cb *block_cb));
+> > +
+> >  struct flow_block_indr {
+> >  	struct list_head		list;
+> >  	struct net_device		*dev;
+> > @@ -466,6 +471,7 @@ struct flow_block_indr {
+> >  	enum flow_block_binder_type	binder_type;
+> >  	void				*data;
+> >  	void				*cb_priv;
+> > +	flow_indr_block_bind_cb_t	*setup_cb;
+> >  	void				(*cleanup)(struct flow_block_cb *block_cb);
+> >  };
+> >  
+> > @@ -562,11 +568,6 @@ static inline void flow_block_init(struct flow_block *flow_block)
+> >  	INIT_LIST_HEAD(&flow_block->cb_list);
+> >  }
+> >  
+> > -typedef int flow_indr_block_bind_cb_t(struct net_device *dev, struct Qdisc *sch, void *cb_priv,
+> > -				      enum tc_setup_type type, void *type_data,
+> > -				      void *data,
+> > -				      void (*cleanup)(struct flow_block_cb *block_cb));
+> > -
+> >  int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv);
+> >  void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+> >  			      void (*release)(void *cb_priv));
+> > diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+> > index 715b67f6c62f..85a3d8530952 100644
+> > --- a/net/core/flow_offload.c
+> > +++ b/net/core/flow_offload.c
+> > @@ -373,7 +373,8 @@ int flow_indr_dev_register(flow_indr_block_bind_cb_t *cb, void *cb_priv)
+> >  }
+> >  EXPORT_SYMBOL(flow_indr_dev_register);
+> >  
+> > -static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
+> > +static void __flow_block_indr_cleanup(struct flow_indr_dev *indr_dev,
+> > +				      void (*release)(void *cb_priv),
+> >  				      void *cb_priv,
+> >  				      struct list_head *cleanup_list)
+> >  {
+> > @@ -381,8 +382,10 @@ static void __flow_block_indr_cleanup(void (*release)(void *cb_priv),
+> >  
+> >  	list_for_each_entry_safe(this, next, &flow_block_indr_list, indr.list) {
+> >  		if (this->release == release &&
+> > -		    this->indr.cb_priv == cb_priv)
+> > +		    this->indr.cb_priv == cb_priv) {
+> > +			this->indr.setup_cb = indr_dev->cb;
+> >  			list_move(&this->indr.list, cleanup_list);
+> > +		}
+> >  	}
+> >  }
+> >  
+> > @@ -390,10 +393,8 @@ static void flow_block_indr_notify(struct list_head *cleanup_list)
+> >  {
+> >  	struct flow_block_cb *this, *next;
+> >  
+> > -	list_for_each_entry_safe(this, next, cleanup_list, indr.list) {
+> > -		list_del(&this->indr.list);
+> > +	list_for_each_entry_safe(this, next, cleanup_list, indr.list)
+> >  		this->indr.cleanup(this);
+> > -	}
+> >  }
+> >  
+> >  void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+> > @@ -418,7 +419,7 @@ void flow_indr_dev_unregister(flow_indr_block_bind_cb_t *cb, void *cb_priv,
+> >  		return;
+> >  	}
+> >  
+> > -	__flow_block_indr_cleanup(release, cb_priv, &cleanup_list);
+> > +	__flow_block_indr_cleanup(this, release, cb_priv, &cleanup_list);
+> >  	mutex_unlock(&flow_indr_block_lock);
+> >  
+> >  	flow_block_indr_notify(&cleanup_list);
+> > diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> > index d3db70865d66..b213206da728 100644
+> > --- a/net/sched/cls_api.c
+> > +++ b/net/sched/cls_api.c
+> > @@ -646,7 +646,7 @@ static void tc_block_indr_cleanup(struct flow_block_cb *block_cb)
+> >  	struct net_device *dev = block_cb->indr.dev;
+> >  	struct Qdisc *sch = block_cb->indr.sch;
+> >  	struct netlink_ext_ack extack = {};
+> > -	struct flow_block_offload bo;
+> > +	struct flow_block_offload bo = {};
+> >  
+> >  	tcf_block_offload_init(&bo, dev, sch, FLOW_BLOCK_UNBIND,
+> >  			       block_cb->indr.binder_type,
+> > @@ -654,8 +654,13 @@ static void tc_block_indr_cleanup(struct flow_block_cb *block_cb)
+> >  			       &extack);
+> >  	rtnl_lock();
+> >  	down_write(&block->cb_lock);
+> > -	list_del(&block_cb->driver_list);
+> > -	list_move(&block_cb->list, &bo.cb_list);
+> > +	if (!block_cb->indr.setup_cb ||
+> > +	    block_cb->indr.setup_cb(dev, sch, block_cb->indr.cb_priv,
+> > +				    TC_SETUP_BLOCK, &bo, block, NULL)) {
+> > +		list_del(&block_cb->indr.list);
+> > +		list_del(&block_cb->driver_list);
+> > +		list_move(&block_cb->list, &bo.cb_list);
+> > +	}
+> >  	tcf_block_unbind(block, &bo);
+> >  	up_write(&block->cb_lock);
+> >  	rtnl_unlock();
+> 
 
 -- 
-Ard.
-
-
-
-
-
-
-> diff --git a/arch/arm/crypto/chacha-glue.c b/arch/arm/crypto/chacha-glue.c
-> index a408f4bcfd62..47212f9421c1 100644
-> --- a/arch/arm/crypto/chacha-glue.c
-> +++ b/arch/arm/crypto/chacha-glue.c
-> @@ -14,6 +14,7 @@
->  #include <linux/jump_label.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  #include <asm/cputype.h>
->  #include <asm/hwcap.h>
-> @@ -297,6 +298,9 @@ static int __init chacha_simd_mod_init(void)
->  {
->         int err = 0;
->
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (IS_REACHABLE(CONFIG_CRYPTO_BLKCIPHER)) {
->                 err = crypto_register_skciphers(arm_algs, ARRAY_SIZE(arm_algs));
->                 if (err)
-> diff --git a/arch/arm/crypto/curve25519-glue.c b/arch/arm/crypto/curve25519-glue.c
-> index 31eb75b6002f..d03f810fdaf3 100644
-> --- a/arch/arm/crypto/curve25519-glue.c
-> +++ b/arch/arm/crypto/curve25519-glue.c
-> @@ -14,6 +14,7 @@
->  #include <crypto/internal/simd.h>
->  #include <linux/types.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->  #include <linux/init.h>
->  #include <linux/jump_label.h>
->  #include <linux/scatterlist.h>
-> @@ -114,6 +115,9 @@ static struct kpp_alg curve25519_alg = {
->
->  static int __init mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (elf_hwcap & HWCAP_NEON) {
->                 static_branch_enable(&have_neon);
->                 return IS_REACHABLE(CONFIG_CRYPTO_KPP) ?
-> diff --git a/arch/arm/crypto/poly1305-glue.c b/arch/arm/crypto/poly1305-glue.c
-> index 3023c1acfa19..30d6c6de7a27 100644
-> --- a/arch/arm/crypto/poly1305-glue.c
-> +++ b/arch/arm/crypto/poly1305-glue.c
-> @@ -17,6 +17,7 @@
->  #include <linux/crypto.h>
->  #include <linux/jump_label.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  void poly1305_init_arm(void *state, const u8 *key);
->  void poly1305_blocks_arm(void *state, const u8 *src, u32 len, u32 hibit);
-> @@ -240,6 +241,9 @@ static struct shash_alg arm_poly1305_algs[] = {{
->
->  static int __init arm_poly1305_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (IS_ENABLED(CONFIG_KERNEL_MODE_NEON) &&
->             (elf_hwcap & HWCAP_NEON))
->                 static_branch_enable(&have_neon);
-> diff --git a/arch/arm64/crypto/chacha-neon-glue.c b/arch/arm64/crypto/chacha-neon-glue.c
-> index 1d9824c4ae43..1696993326b5 100644
-> --- a/arch/arm64/crypto/chacha-neon-glue.c
-> +++ b/arch/arm64/crypto/chacha-neon-glue.c
-> @@ -26,6 +26,7 @@
->  #include <linux/jump_label.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  #include <asm/hwcap.h>
->  #include <asm/neon.h>
-> @@ -214,6 +215,9 @@ static struct skcipher_alg algs[] = {
->
->  static int __init chacha_simd_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!cpu_have_named_feature(ASIMD))
->                 return 0;
->
-> diff --git a/arch/arm64/crypto/poly1305-glue.c b/arch/arm64/crypto/poly1305-glue.c
-> index f33ada70c4ed..ac257a52be4d 100644
-> --- a/arch/arm64/crypto/poly1305-glue.c
-> +++ b/arch/arm64/crypto/poly1305-glue.c
-> @@ -17,6 +17,7 @@
->  #include <linux/crypto.h>
->  #include <linux/jump_label.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  asmlinkage void poly1305_init_arm64(void *state, const u8 *key);
->  asmlinkage void poly1305_blocks(void *state, const u8 *src, u32 len, u32 hibit);
-> @@ -208,6 +209,9 @@ static struct shash_alg neon_poly1305_alg = {
->
->  static int __init neon_poly1305_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!cpu_have_named_feature(ASIMD))
->                 return 0;
->
-> diff --git a/arch/mips/crypto/chacha-glue.c b/arch/mips/crypto/chacha-glue.c
-> index 90896029d0cd..31f8294f2a31 100644
-> --- a/arch/mips/crypto/chacha-glue.c
-> +++ b/arch/mips/crypto/chacha-glue.c
-> @@ -12,6 +12,7 @@
->  #include <crypto/internal/skcipher.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  asmlinkage void chacha_crypt_arch(u32 *state, u8 *dst, const u8 *src,
->                                   unsigned int bytes, int nrounds);
-> @@ -128,6 +129,9 @@ static struct skcipher_alg algs[] = {
->
->  static int __init chacha_simd_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         return IS_REACHABLE(CONFIG_CRYPTO_BLKCIPHER) ?
->                 crypto_register_skciphers(algs, ARRAY_SIZE(algs)) : 0;
->  }
-> diff --git a/arch/mips/crypto/poly1305-glue.c b/arch/mips/crypto/poly1305-glue.c
-> index fc881b46d911..f5edec10cef8 100644
-> --- a/arch/mips/crypto/poly1305-glue.c
-> +++ b/arch/mips/crypto/poly1305-glue.c
-> @@ -12,6 +12,7 @@
->  #include <linux/cpufeature.h>
->  #include <linux/crypto.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  asmlinkage void poly1305_init_mips(void *state, const u8 *key);
->  asmlinkage void poly1305_blocks_mips(void *state, const u8 *src, u32 len, u32 hibit);
-> @@ -173,6 +174,9 @@ static struct shash_alg mips_poly1305_alg = {
->
->  static int __init mips_poly1305_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         return IS_REACHABLE(CONFIG_CRYPTO_HASH) ?
->                 crypto_register_shash(&mips_poly1305_alg) : 0;
->  }
-> diff --git a/arch/x86/crypto/blake2s-glue.c b/arch/x86/crypto/blake2s-glue.c
-> index 94ac5bdd9f6f..968762fcc8b2 100644
-> --- a/arch/x86/crypto/blake2s-glue.c
-> +++ b/arch/x86/crypto/blake2s-glue.c
-> @@ -11,6 +11,7 @@
->  #include <linux/jump_label.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  #include <asm/cpufeature.h>
->  #include <asm/fpu/api.h>
-> @@ -194,6 +195,9 @@ static struct shash_alg blake2s_algs[] = {{
->
->  static int __init blake2s_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!boot_cpu_has(X86_FEATURE_SSSE3))
->                 return 0;
->
-> diff --git a/arch/x86/crypto/chacha_glue.c b/arch/x86/crypto/chacha_glue.c
-> index 4c4dc64398cb..15e6cd084598 100644
-> --- a/arch/x86/crypto/chacha_glue.c
-> +++ b/arch/x86/crypto/chacha_glue.c
-> @@ -12,6 +12,7 @@
->  #include <crypto/internal/skcipher.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->  #include <asm/simd.h>
->
->  asmlinkage void chacha_block_xor_ssse3(u32 *state, u8 *dst, const u8 *src,
-> @@ -278,6 +279,9 @@ static struct skcipher_alg algs[] = {
->
->  static int __init chacha_simd_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!boot_cpu_has(X86_FEATURE_SSSE3))
->                 return 0;
->
-> diff --git a/arch/x86/crypto/curve25519-x86_64.c b/arch/x86/crypto/curve25519-x86_64.c
-> index a9edb6f8a0ba..b840c7e49aa1 100644
-> --- a/arch/x86/crypto/curve25519-x86_64.c
-> +++ b/arch/x86/crypto/curve25519-x86_64.c
-> @@ -11,6 +11,7 @@
->  #include <linux/jump_label.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  #include <asm/cpufeature.h>
->  #include <asm/processor.h>
-> @@ -1488,6 +1489,9 @@ static struct kpp_alg curve25519_alg = {
->
->  static int __init curve25519_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (boot_cpu_has(X86_FEATURE_BMI2) && boot_cpu_has(X86_FEATURE_ADX))
->                 static_branch_enable(&curve25519_use_bmi2_adx);
->         else
-> diff --git a/arch/x86/crypto/poly1305_glue.c b/arch/x86/crypto/poly1305_glue.c
-> index b69e362730d0..eb1940c74c7b 100644
-> --- a/arch/x86/crypto/poly1305_glue.c
-> +++ b/arch/x86/crypto/poly1305_glue.c
-> @@ -11,6 +11,7 @@
->  #include <linux/jump_label.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->  #include <asm/intel-family.h>
->  #include <asm/simd.h>
->
-> @@ -258,6 +259,9 @@ static struct shash_alg alg = {
->
->  static int __init poly1305_simd_mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (IS_ENABLED(CONFIG_AS_AVX) && boot_cpu_has(X86_FEATURE_AVX) &&
->             cpu_has_xfeatures(XFEATURE_MASK_SSE | XFEATURE_MASK_YMM, NULL))
->                 static_branch_enable(&poly1305_use_avx);
-> diff --git a/lib/crypto/blake2s.c b/lib/crypto/blake2s.c
-> index 41025a30c524..8d244eeb277e 100644
-> --- a/lib/crypto/blake2s.c
-> +++ b/lib/crypto/blake2s.c
-> @@ -15,6 +15,7 @@
->  #include <linux/module.h>
->  #include <linux/init.h>
->  #include <linux/bug.h>
-> +#include <linux/fips.h>
->  #include <asm/unaligned.h>
->
->  bool blake2s_selftest(void);
-> @@ -109,6 +110,9 @@ EXPORT_SYMBOL(blake2s256_hmac);
->
->  static int __init mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
->             WARN_ON(!blake2s_selftest()))
->                 return -ENODEV;
-> diff --git a/lib/crypto/chacha.c b/lib/crypto/chacha.c
-> index 65ead6b0c7e0..4f0087717faf 100644
-> --- a/lib/crypto/chacha.c
-> +++ b/lib/crypto/chacha.c
-> @@ -11,6 +11,9 @@
->  #include <linux/bitops.h>
->  #include <linux/string.h>
->  #include <linux/cryptohash.h>
-> +#include <linux/fips.h>
-> +#include <linux/errno.h>
-> +#include <linux/module.h>
->  #include <asm/unaligned.h>
->  #include <crypto/chacha.h>
->
-> @@ -113,3 +116,12 @@ void hchacha_block_generic(const u32 *state, u32 *stream, int nrounds)
->         memcpy(&stream[4], &x[12], 16);
->  }
->  EXPORT_SYMBOL(hchacha_block_generic);
-> +
-> +static int __init mod_init(void)
-> +{
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +       return 0;
-> +}
-> +
-> +module_init(mod_init);
-> diff --git a/lib/crypto/chacha20poly1305.c b/lib/crypto/chacha20poly1305.c
-> index 1fec56e5dd51..d19278c5813d 100644
-> --- a/lib/crypto/chacha20poly1305.c
-> +++ b/lib/crypto/chacha20poly1305.c
-> @@ -18,6 +18,7 @@
->  #include <linux/init.h>
->  #include <linux/mm.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->
->  #define CHACHA_KEY_WORDS       (CHACHA_KEY_SIZE / sizeof(u32))
->
-> @@ -358,6 +359,9 @@ EXPORT_SYMBOL(chacha20poly1305_decrypt_sg_inplace);
->
->  static int __init mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
->             WARN_ON(!chacha20poly1305_selftest()))
->                 return -ENODEV;
-> diff --git a/lib/crypto/curve25519.c b/lib/crypto/curve25519.c
-> index 288a62cd29b2..f759d49b0b57 100644
-> --- a/lib/crypto/curve25519.c
-> +++ b/lib/crypto/curve25519.c
-> @@ -12,11 +12,15 @@
->  #include <crypto/curve25519.h>
->  #include <linux/module.h>
->  #include <linux/init.h>
-> +#include <linux/fips.h>
->
->  bool curve25519_selftest(void);
->
->  static int __init mod_init(void)
->  {
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +
->         if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
->             WARN_ON(!curve25519_selftest()))
->                 return -ENODEV;
-> diff --git a/lib/crypto/poly1305.c b/lib/crypto/poly1305.c
-> index 9d2d14df0fee..ae4255957d31 100644
-> --- a/lib/crypto/poly1305.c
-> +++ b/lib/crypto/poly1305.c
-> @@ -10,6 +10,7 @@
->  #include <crypto/internal/poly1305.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/fips.h>
->  #include <asm/unaligned.h>
->
->  void poly1305_init_generic(struct poly1305_desc_ctx *desc, const u8 *key)
-> @@ -73,5 +74,14 @@ void poly1305_final_generic(struct poly1305_desc_ctx *desc, u8 *dst)
->  }
->  EXPORT_SYMBOL_GPL(poly1305_final_generic);
->
-> +static int __init mod_init(void)
-> +{
-> +       if (fips_enabled)
-> +               return -EOPNOTSUPP;
-> +       return 0;
-> +}
-> +
-> +module_init(mod_init);
-> +
->  MODULE_LICENSE("GPL");
->  MODULE_AUTHOR("Martin Willi <martin@strongswan.org>");
->
->
