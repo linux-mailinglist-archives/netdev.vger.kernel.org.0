@@ -2,90 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3373E359BD9
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 12:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41110359BF3
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 12:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233499AbhDIKVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 06:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58304 "EHLO
+        id S233293AbhDIK0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 06:26:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234457AbhDIKUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 06:20:15 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37014C061760
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 03:20:01 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id f2-20020a17090a4a82b02900c67bf8dc69so4758429pjh.1
-        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 03:20:01 -0700 (PDT)
+        with ESMTP id S231638AbhDIK0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 06:26:31 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0DFC061760;
+        Fri,  9 Apr 2021 03:26:18 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id s7so4987727wru.6;
+        Fri, 09 Apr 2021 03:26:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gtFeJhmGJ+7JyTnNumGxRwfBuWH74EWer/oxb3y1Xi0=;
-        b=kCJOKQ5ywaF+s3qKkIa1Vr/zoowQI1G7vxbz0yyOkJNda4onQ+woLS/rI/AHlNScMS
-         YdsI5DxYgdfm03qkrFqYTNF7dAPT/fy5T1xT5SnhXftuzagedXVdc27loLROtu6nYFnc
-         FGw3IqP1o32LAbaW/h9FL7KbLp1xgEwZnoSL7YYB/PrM5SB5ZWORuxZkjD6gDOpYjoja
-         U0lRpELnMhie1MzgZvTU8Fyoma2uB+aaBJ95YyvTr1/7Ou2PgkSjAmtqPL6mv0XqS8W1
-         wREt+n8hf/pSxw6kP2iYv8R4VFhSrd6PkedSdrrIMXucsATweUHmJRw2vlbCwflvGlVo
-         ZoXA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LRAyoqSstv9qcrVjPv+B4YXhvLoW8/SLy7wVQjukdx4=;
+        b=fT3uh1Tg12CI5KeTSpiwstJvKUIb0Jg5amRuuD4aMieGsELFvBptCFYon3x81ZbqtJ
+         BMpXvhAdjwwqzF7CTJmxUaC9Xs0nnMs8ihbg+/zervtql6Vw8pQV0qIy1zgfIBMgrihz
+         pYigmfs/Dz7VwE+Vlf/jo4+A+0Yf/a0iKruTLa7IDRbeqJfW7pRi4Pg4YD+czhyy4KfB
+         SKri2g8qO7lhgbEef/5y94SfJBZbqUHzh39U1AP9Nu+O3NEwenFgs8AYrEiKUG6JAk7C
+         zE8cNulj/4/OO1GjEW1qB9frGfqwEWAkWXvwpr6dQkAV9V2jWXBYtJuku2jVcOfkc0W2
+         EiPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gtFeJhmGJ+7JyTnNumGxRwfBuWH74EWer/oxb3y1Xi0=;
-        b=dkDz07Fj7j1RtG/XwoROtlvPYi3YDFQavHWrfH1qcyIA6A3EBpdADoclNGkQNbogii
-         iSbNjlWbMSrCDIkhh+5U7KNXkpwi4EelnJEql5ReNA9CcQhY5mvPJc9XRS5O5mYOGCOP
-         XXL8oxx/pDier4PtrbyYnNanTd8zdR9qWMwunnjiZtLpOVSu4t8u4OYoFewRmroE9Oww
-         aVH1kQGIUFPX9B7BaOPoZ1PoFcTwANxTz61ObewhVpWZXKfKlL9MdJ2cGIGE+CiccRpv
-         cNn+9RNRI1cTsBPFfE8/WkpSqEKpSFx9s8MqVZ+NrjRoCFHl/XpMwzEtELfi3yIUCce9
-         9g8Q==
-X-Gm-Message-State: AOAM530j1Bh0NoZE1uggFlHFZ1OZE4xIO4ATD9pUzusKA58+LgqlzRIx
-        RNlVRWZqfoLApRFdwBZPRuI=
-X-Google-Smtp-Source: ABdhPJzLzC5gjbcb85D0C+wPknnPnlu2PjeSz9g8821dPJf0Xq1ZgQeCwtg0i4LL4fiqDJHfxBLuwA==
-X-Received: by 2002:a17:90a:d812:: with SMTP id a18mr7070916pjv.192.1617963600822;
-        Fri, 09 Apr 2021 03:20:00 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id z25sm1920366pfn.37.2021.04.09.03.19.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 03:20:00 -0700 (PDT)
-Date:   Fri, 9 Apr 2021 13:19:52 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next] enetc: Use generic rule to map Tx rings to
- interrupt vectors
-Message-ID: <20210409101952.iyf4svtgxvgwvxfr@skbuf>
-References: <20210409071613.28912-1-claudiu.manoil@nxp.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LRAyoqSstv9qcrVjPv+B4YXhvLoW8/SLy7wVQjukdx4=;
+        b=m4tYAdgi2ZZNmHYdjz0EJBLNHLjNJCDoyy4DlXOl+JeVBrrIczDklbYCSUkoa3+P3h
+         Bpfl1I2puAFowfVuFmSUS4+sJbZA7RxL/vW15QjsiVuwFB9NvdkSbFKT5ZDYr8qWz2LZ
+         TJU6PM86r1ZqqzEea0/ljIJvmxUymtXTBvaoSMbb2paLRAbzhGm37mqI5uTSlx/TgvDm
+         nwV75rj3v/QCn2vu0HLGcd9JrAhrlkZwDjvoXL+4Kk46NjRJNbKrBezU66QKRcFWJDW1
+         IJvaxPeS/mT5Sj+FGiGLHirFG3hznQ+yZTjj5UitwFkHpNTEaUl6pvDClvc1A42ke5lc
+         woNQ==
+X-Gm-Message-State: AOAM532uLyPsCek1YIlKZ8GU76QaM5rItDGwjAVJoS8kh7acePIJDWob
+        gEgKOMRTlc/vLNfvwJXg/6iA6kNipv4=
+X-Google-Smtp-Source: ABdhPJyRaboQNnb4wffn7NnFkh1UNbm6Nyg27QXBRQRF0/EWjZS4BANfYNnApYnrGB93QtMRPuEhCA==
+X-Received: by 2002:a5d:5152:: with SMTP id u18mr16423345wrt.289.1617963977545;
+        Fri, 09 Apr 2021 03:26:17 -0700 (PDT)
+Received: from [192.168.1.101] ([37.167.116.29])
+        by smtp.gmail.com with ESMTPSA id y22sm3785521wmc.18.2021.04.09.03.26.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Apr 2021 03:26:16 -0700 (PDT)
+Subject: Re: [PATCH] net/rds: Avoid potential use after free in
+ rds_send_remove_from_sock
+To:     Aditya Pakki <pakki001@umn.edu>
+Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org
+References: <20210407000913.2207831-1-pakki001@umn.edu>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <bd3c84bc-6ae0-63e9-61f2-5cf64a976531@gmail.com>
+Date:   Fri, 9 Apr 2021 12:26:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210409071613.28912-1-claudiu.manoil@nxp.com>
+In-Reply-To: <20210407000913.2207831-1-pakki001@umn.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 09, 2021 at 10:16:13AM +0300, Claudiu Manoil wrote:
-> Even if the current mapping is correct for the 1 CPU and 2 CPU cases
-> (currently enetc is included in SoCs with up to 2 CPUs only), better
-> use a generic rule for the mapping to cover all possible cases.
-> The number of CPUs is the same as the number of interrupt vectors:
-> 
-> Per device Tx rings -
-> device_tx_ring[idx], where idx = 0..n_rings_total-1
-> 
-> Per interrupt vector Tx rings -
-> int_vector[i].ring[j], where i = 0..n_int_vects-1
-> 			     j = 0..n_rings_per_v-1
-> 
-> Mapping rule -
-> n_rings_per_v = n_rings_total / n_int_vects
-> for i = 0..n_int_vects - 1:
-> 	for j = 0..n_rings_per_v - 1:
-> 		idx = n_int_vects * j + i
-> 		int_vector[i].ring[j] <- device_tx_ring[idx]
-> 
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> ---
 
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+On 4/7/21 2:09 AM, Aditya Pakki wrote:
+> In case of rs failure in rds_send_remove_from_sock(), the 'rm' resource
+> is freed and later under spinlock, causing potential use-after-free.
+> Set the free pointer to NULL to avoid undefined behavior.
+> 
+> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+> ---
+>  net/rds/message.c | 1 +
+>  net/rds/send.c    | 2 +-
+>  2 files changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/rds/message.c b/net/rds/message.c
+> index 071a261fdaab..90ebcfe5fe3b 100644
+> --- a/net/rds/message.c
+> +++ b/net/rds/message.c
+> @@ -180,6 +180,7 @@ void rds_message_put(struct rds_message *rm)
+>  		rds_message_purge(rm);
+>  
+>  		kfree(rm);
+> +		rm = NULL;
+
+This is a nop really.
+
+This does not clear @rm variable in the caller.
+
+
+
+>  	}
+>  }
+>  EXPORT_SYMBOL_GPL(rds_message_put);
+> diff --git a/net/rds/send.c b/net/rds/send.c
+> index 985d0b7713ac..fe5264b9d4b3 100644
+> --- a/net/rds/send.c
+> +++ b/net/rds/send.c
+> @@ -665,7 +665,7 @@ static void rds_send_remove_from_sock(struct list_head *messages, int status)
+>  unlock_and_drop:
+>  		spin_unlock_irqrestore(&rm->m_rs_lock, flags);
+>  		rds_message_put(rm);
+> -		if (was_on_sock)
+> +		if (was_on_sock && rm)
+>  			rds_message_put(rm);
+
+Maybe the bug is that the refcount has not be elevated when was_on_sock
+has been set.
+
+>  	}
+>  
+> 
