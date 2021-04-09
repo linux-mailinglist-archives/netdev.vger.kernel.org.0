@@ -2,134 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECDF235A745
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:43:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0FBA35A747
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:44:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234292AbhDIToC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 15:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232855AbhDIToA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 15:44:00 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26E1C061762;
-        Fri,  9 Apr 2021 12:43:46 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id u21so10396318ejo.13;
-        Fri, 09 Apr 2021 12:43:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5UYa70dh30D9VBwtvT7OqpO7sw3vtfJKMvIiKRh6GeY=;
-        b=fkkfoPoRz8d83AokzQ7L6GTbjaKU/DhNM7q7RVEpqTsF1klo1m6lCvAwTolJSXWAbM
-         JIBjY40QgYqcJtcXxfejiZ9bkv+j/sEyxjpFch/MH6jDX2IGNJ4Yi35w8a1eyHKescx2
-         0TFIOqIqdwr+uKCrBH/P28A8cnv8GgvR7hj96mBL8BXcpfGgPtkR5sBg81vdSBGcfaN1
-         Xe/74i/JICYjlKWAAiBPCvpeYIZTtsnjjtBmLfcccUqAtIxFCtfTKi5i+mrIAEmxYrU4
-         TZHcnRvCkKUKGwIHina+mheILLHyyGDmukDdeKKHmPpWDCoxkfvPGKaMRavdq5w8XQYE
-         3pEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5UYa70dh30D9VBwtvT7OqpO7sw3vtfJKMvIiKRh6GeY=;
-        b=ID1e00AuAtK9DW71L3YxLtC9jhXawAUKOgNR1PWCyI/QzWr4o13dSrnxWMUlmjlHKv
-         /xo8I8AR4d5JPZw4lRSB/8dNCEciwGRCADWY4LfSM+GuzKs/kEmjXijBdUgm313bqWn8
-         tO0RNYZquPuDbcgle85Q7JA9aXcUrDiSqwvXsjG8GB64E5dYydXsGnzeLzBqlBtfygaX
-         eR3NNt0G/DSxtMIzGmgVeq1hlhZp55VrrMZaFTBY08tzrUWN1rD387YAV1qR1agMcrYY
-         SU37+LwWhzsW5ngjB+yc3Kz+nuDYShGVmOUXciJkrDBXNAhmDImV3UP3zo+9cVwWCkUw
-         R21g==
-X-Gm-Message-State: AOAM531ZvKvNCOvZTyknOelD04Z/OWcwTnMOCeL4Cqw/1uh5XtiJ6mw9
-        PLmcc029jrrnXxgiRA3U5Go1fAv3tL7p+T7kbjs=
-X-Google-Smtp-Source: ABdhPJwVOEIyaQjI4MXQ5Xe0/oNdshHtbZvqJV5v6rYd9A0WUvhzGw4rIa1yYreweKKm2yAIzl7WKxRs/bJRhOOzp1c=
-X-Received: by 2002:a17:906:3ce9:: with SMTP id d9mr347758ejh.172.1617997425581;
- Fri, 09 Apr 2021 12:43:45 -0700 (PDT)
+        id S234298AbhDIToa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 15:44:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234142AbhDITo1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 15:44:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7284261001;
+        Fri,  9 Apr 2021 19:44:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617997453;
+        bh=1ySM7fCna3+y1Vh5Mtfl1tYpONqqGVYQCsZBxFfzPNc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g67OOCl+5LcoNcqXpnJGjRiL5Ipn43km3YaPRLhUmTe7YfbRMfJwqPTyZtAKfFL/K
+         ABCtT1tCTAVllcMo9qs2eyW3XjIITHIzN11swuXC2l0P3IfW1VnOnMhfU+bYJuhTFy
+         YcJBerZuaYXTN0uDEozxkVGKShlYpqcqo81mossSYtiAybxp7VIoXvFOIftG14TGRi
+         C0I8QfUPAwwmKNRoZQ2MGo7szeJz3TCrkUcdQQN/qSJUnNArhmWF4gdWfF7YRbDzHz
+         GEAq2BNw4z+DwO2m1fO46jQhhXHD2y6fIHxgDjAUCN+fbqjfcfwTgE30TUa5eoSfEP
+         uNyRyQAW2nHCQ==
+Date:   Fri, 9 Apr 2021 12:44:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Claudiu Manoil <claudiu.manoil@gmail.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [net-next, v2, 2/2] enetc: support PTP Sync packet one-step
+ timestamping
+Message-ID: <20210409124412.3728a224@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a9a755f3-9a44-83d5-4426-1238c96c8e15@gmail.com>
+References: <20210408111350.3817-1-yangbo.lu@nxp.com>
+        <20210408111350.3817-3-yangbo.lu@nxp.com>
+        <20210408090250.21dee5c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210408090708.7dc9960f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0PR04MB6754A7B847379CC8DC3D855196739@AM0PR04MB6754.eurprd04.prod.outlook.com>
+        <20210409090939.0a2c0325@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a9a755f3-9a44-83d5-4426-1238c96c8e15@gmail.com>
 MIME-Version: 1.0
-References: <20210408183828.1907807-1-martin.blumenstingl@googlemail.com>
- <20210408183828.1907807-2-martin.blumenstingl@googlemail.com> <20210408224617.crnllsf7eedxr6cp@skbuf>
-In-Reply-To: <20210408224617.crnllsf7eedxr6cp@skbuf>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Fri, 9 Apr 2021 21:43:34 +0200
-Message-ID: <CAFBinCAACrUO+89TnPs=5hhkV_73N5hxz=18u9o-NERUC_wpGg@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/2] net: dsa: lantiq_gswip: Don't use PHY auto polling
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Vladimir,
+On Fri, 9 Apr 2021 22:32:49 +0300 Claudiu Manoil wrote:
+> On 09.04.2021 19:09, Jakub Kicinski wrote:
+> > On Fri, 9 Apr 2021 06:37:53 +0000 Claudiu Manoil wrote:  
+> >> Please try test_and_set_bit_lock()/ clear_bit_unlock() based on Jakub's
+> >> suggestion, and see if it works for you / whether it can replace the mutex.  
+> > 
+> > I was thinking that with multiple queues just a bit won't be sufficient
+> > because:
+> > 
+> > xmit:				work:
+> > test_bit... // already set
+> > 				dequeue // empty
+> > enqueue
+> > 				clear_bit()
+> > 
+> > That frame will never get sent, no?  
+> 
+> I don't see any issue with Yangbo's initial design actually, I was just
+> suggesting him to replace the mutex with a bit lock, based on your comments.
+> That means:
+> xmit:		work:				clean_tx_ring: //Tx conf
+> skb_queue_tail()		
+> 		skb_dequeue()
+> 		test_and_set_bit_lock()
+> 						clear_bit_unlock()
+> 
+> The skb queue is one per device, as it needs to serialize ptp skbs
+> for that device (due to the restriction that a ptp packet cannot be 
+> enqueued for transmission if there's another ptp packet waiting
+> for transmission in a h/w descriptor ring).
+> 
+> If multiple ptp skbs are coming in from different xmit queues at the 
+> same time (same device), they are enqueued in the common priv->tx_skbs 
+> queue (skb_queue_tail() is protected by locks), and the worker thread is 
+> started.
+> The worker dequeues the first ptp skb, and places the packet in the h/w 
+> descriptor ring for transmission. Then dequeues the second skb and waits 
+> at the lock (or mutex or whatever lock is preferred).
+> Upon transmission of the ptp packet the lock is released by the Tx 
+> confirmation napi thread (clean_tx_ring()) and the next PTP skb can be 
+> placed in the corresponding descriptor ring for transmission by the 
+> worker thread.
 
-On Fri, Apr 9, 2021 at 12:46 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Thu, Apr 08, 2021 at 08:38:27PM +0200, Martin Blumenstingl wrote:
-> > PHY auto polling on the GSWIP hardware can be used so link changes
-> > (speed, link up/down, etc.) can be detected automatically. Internally
-> > GSWIP reads the PHY's registers for this functionality. Based on this
-> > automatic detection GSWIP can also automatically re-configure it's port
-> > settings. Unfortunately this auto polling (and configuration) mechanism
-> > seems to cause various issues observed by different people on different
-> > devices:
-> > - FritzBox 7360v2: the two Gbit/s ports (connected to the two internal
-> >   PHY11G instances) are working fine but the two Fast Ethernet ports
-> >   (using an AR8030 RMII PHY) are completely dead (neither RX nor TX are
-> >   received). It turns out that the AR8030 PHY sets the BMSR_ESTATEN bit
-> >   as well as the ESTATUS_1000_TFULL and ESTATUS_1000_XFULL bits. This
-> >   makes the PHY auto polling state machine (rightfully?) think that the
-> >   established link speed (when the other side is Gbit/s capable) is
-> >   1Gbit/s.
->
-> Why do you say "rightfully"? The PHY is gigabit capable, and it reports
-> that via the Extended Status register. This is one of the reasons why
-> the "advertising" and "supported" link modes are separate concepts,
-> because even though you support gigabit, you don't advertise it because
-> you are in RMII mode.
-according to the marketing materials of the AR8030 it is a "Ultra
-low-power single RMII Fast Ethernet PHY"
-based on that I am referring to this PHY as "not Gbit/s capable"
-(other PHYs from the AR803x series are Gbit/s capable though)
+I see. I thought you were commenting on my scheme. Yes, if only the
+worker is allowed to send there is no race, that should work well.
 
-> How does turning off the auto polling feature help circumvent the
-> Atheros PHY reporting "issue"? Do we even know that is the problem, or
-> is it simply a guess on your part based on something that looked strange?
-I have a patch in my queue (which I'll send for the next -net-next
-cycle) which adds "ethtool -d" (.get_regs) support to the GSWIP
-driver.
-There are multiple status registers, one of them indicates that the
-link speed (as result of the auto polling mechanism) is 1Gbit/s
+In my suggestion I was trying to allow the first frame to be sent
+directly without going via the queue and requiring the worker to be
+scheduled in.
 
-[...]
-> > Switch to software based configuration instead of PHY auto polling (and
-> > letting the GSWIP hardware configure the ports automatically) for the
-> > following link parameters:
-> > - link up/down
-> > - link speed
-> > - full/half duplex
-> > - flow control (RX / TX pause)
->
-> What does the auto polling feature consist of, exactly? Is there some
-> sort of microcontroller accessing the MDIO bus simultaneously with
-> Linux?
-I believe the answer is yes, but there's no clear description in the
-datasheet for a newer GSWIP revision [0]
-"Figure 8" on page 41 (or page 39 if you go by the numbers at the
-bottom of each page) has a description of the state machine logic.
-If I understood Hauke correct the "not fiber" part is only checked for
-newer GSWIP revisions
+> So the way I understood your comments is that you'd rather use a spin 
+> lock in the worker thread instead of a mutex.
 
-Please note that the datasheet from [0] refers to part number GSW140
-which is a stand-alone IC.
-The GSWIP driver (currently) supports an older revision (at least two
-generations older) of GSWIP which is built into Lantiq xRX200 and
-xRX300 SoCs.
+Not exactly, my main objection was that the mutex was used for wake up.
+Worker locks it, completion path unlocks it.
 
+Your suggestion of using a bit works well. Just Instead of a loop the
+worker needs to send a single skb, and completion needs to schedule it
+again.
 
-Best regards,
-Martin
+> > Note that skb_queue already has a lock so you'd just need to make that
+> > lock protect the flag/bit as well, overall the number of locks remains
+> > the same. Take the queue's lock, check the flag, use
+> > __skb_queue_tail(), release etc.
+> 
+> This is a good optimization idea indeed, to use the priv->tx_skb skb 
+> list's spin lock, instead of adding another lock.
 
-
-[0] https://www.maxlinear.com/document/index?id=23266&languageid=1033&type=Datasheet&partnumber=GSW140&filename=617930_GSW140_DS_Rev1.7.pdf&part=GSW140
