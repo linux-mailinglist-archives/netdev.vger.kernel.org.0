@@ -2,170 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF453590DE
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 02:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA0E3590E2
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 02:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbhDIAZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 20:25:06 -0400
-Received: from mail-dm6nam10on2117.outbound.protection.outlook.com ([40.107.93.117]:16352
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232488AbhDIAZF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 20:25:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SfwPQyhuwCSs+wM6N2o6eXL+OOWz7IHKEgIEiC9B9w56SThLNqW0bHIeVjlgiUlYtrchulJXmBHeKLCiItmIzhLz5iJ8lES9bnnLjfIHefOxs+hYxN4dpbL+v4EgwjkDZHS0SGKHewHLCmnDdT2XDiDzVvRxBNy7qpRDN0Cp+ebIPzh9eBrMZ+H60uL6L00o4A2XS55YWJPlmdm/4mwptZT0rNxToOiQK7xd38teCGQ0etI5tIhbVX1BFWgCgAzV24i8qxlFAzRjWj3/8sy86XNj6u/YNY757NTv2uYWfFb92WgqKYmjHgtwBxkZlCHd2YNC47pDaRSfvTz6Hs5aYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ljLVMJNrflCvoAXOQXdrvt+7pSdVvtF/V0+eK7Te95U=;
- b=cuZAl2YQLQv96nVpPnHZiMPIfHfIKLhFKdZb6qI2jBe7LfNpSKt005398VmhAec5jWIBgN+BjCnDMiIOPpDAycYHZKdGfvTKWBqqdb3FH9VEL8Nhnue85iKtPLQOhxgNASqVYf4BTf78npyaGjUoHq1kMDZ4A4+SAXGosiMwPgk3uohcVIXXwsSdlpoM4Km+jPXKWqvlLSXFXlnvsJRWvOguy3Z1dW0SUyNbJa1qOSkUC4G6Osmcp/NXttg9YOysRm0eVa2XqRqUeTeHktp+p22CLy59S2NN7b2yz3QubREItiLJie4evRLfve2XkTo7sU6uYA+R7NPqfMZLSjhsZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ljLVMJNrflCvoAXOQXdrvt+7pSdVvtF/V0+eK7Te95U=;
- b=dNdDXfO/hZdCqofwhCMyLFbYjlJifSWyVOlBiOsXmkY8jH8LP81Y4tKOAQRZurqrnyu5mujgdM9JtpWf74HTYrkJF5shmglqfmUdn+0uM8AQkiw+qKcYB50Jc4yz3t6vAojMLHcId+HffMYj4Y5Ey6B1YrlqoaKRgpQHWlD/b/o=
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- (2603:10b6:302:10::24) by MW4PR21MB1905.namprd21.prod.outlook.com
- (2603:10b6:303:7e::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.3; Fri, 9 Apr
- 2021 00:24:51 +0000
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d]) by MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d%6]) with mapi id 15.20.4042.006; Fri, 9 Apr 2021
- 00:24:51 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: RE: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Topic: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Index: AQHXLNFkZWy01RJh1EWXtFcKc+4EuqqrT01Q
-Date:   Fri, 9 Apr 2021 00:24:51 +0000
-Message-ID: <MW2PR2101MB0892B82CBCF2450D4A82DD50BF739@MW2PR2101MB0892.namprd21.prod.outlook.com>
-References: <20210408225840.26304-1-decui@microsoft.com>
- <20210408.164618.597563844564989065.davem@davemloft.net>
-In-Reply-To: <20210408.164618.597563844564989065.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=718988b0-567a-42ca-a84e-a5989b14df65;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-09T00:08:29Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none
- header.from=microsoft.com;
-x-originating-ip: [2601:600:8b00:6b90:adc1:3ae7:8580:9c8a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2728f939-a2b1-49bf-edd3-08d8faede45a
-x-ms-traffictypediagnostic: MW4PR21MB1905:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW4PR21MB1905523F5FC5873B492F4F71BF739@MW4PR21MB1905.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xoFYWoTdo6lAy33lLml/sWVD12/z75n/c8j2Rf5wFF/qADD+aht+xENQ+HLe53GqOons1uLHCUhfzHKUXqaWY5C+SdO0PXqqJHLfwb/HutNY0oE0nffPLfTkV+uDWpgLabHGRWuuxPFuVosuo5e/SlrQSPPcpEtLhNRupd3pLcaYpqgvjSBYm8wyGoCsdBFj9owBckDDZBRFu+fb2YK6DheApc2q1XXtixfzLcljkRcx70n9DFcAYLLAvgaIEhQs47EJQ8idnq0HwYIJSFKCN7L9L572wGyXzy+gmqfuehv3SHQhwBD/86gA1GqNSUcWovFgkrh8JrOR6KTOLxqlfoDwZ8HgVxCl36QkCkwFV5I2ftT2dSdtPteyfhX11V4rVIMZCbLFnuhac0t0BJT1whkw7wtljxsWJR+DO9MM16hqaLAPcoDGGo6+z9GAojzmnSjpHDax0F/CJnzjGwGXndYUYFZoiUDiFoFjlzh97NBNMsRJG3UKAx97uKqJ/hs61OvSbOYG3vDz8/RbonQ4We2lwvfaQs8ycX0CQdAMjAtH2tSU9ZQ4z5370YfZDza0QNQw6yphl1Uy/RcHO4PHbUIqkltv43ZO0MuTffYsRlxlzGJNVMybYqiXnXDZLe9PArlN/dXYCvNMo+cLbbAkVTg3OTgVrs8iLNy+rzYhyPX/fr7PmX6kXQL5lQFj0Sza
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB0892.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(346002)(366004)(39860400002)(47530400004)(186003)(83380400001)(7416002)(66556008)(66946007)(64756008)(66446008)(8936002)(7696005)(66476007)(82960400001)(316002)(8990500004)(54906003)(478600001)(6506007)(86362001)(10290500003)(4326008)(38100700001)(5660300002)(71200400001)(76116006)(2906002)(55016002)(8676002)(33656002)(9686003)(52536014)(82950400001)(6916009)(21314003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?pW1KYNboJZ6YrPezYUvZkoMA/cgM9VUbEVTC3lnKl3BpxLxCOM41+3vaNEAE?=
- =?us-ascii?Q?du/rQsW0qD5CAtRRKhm+DM6k7MjGCoQqHNpdm16HJPsXKnrjL82baRuNc2jM?=
- =?us-ascii?Q?mitfsxQH+zRlj727y8UkNEXDvZCVsaCicJa+EkVGqu8aq0A6Zdbu8ucYft8U?=
- =?us-ascii?Q?pJE2PcI9d44iCGgnY1qddwgAWdd6Hcm771mh5zSCOTKNfK/GNmkdKuE8y/1z?=
- =?us-ascii?Q?gr0FmDwDdLKl0XKstoWtbbgQZkWeu74fKowr54Si4EPC+U+67xwaCXxHXjVC?=
- =?us-ascii?Q?Y1PW7DsAkLCXhjvwvRNBlaWDMPrZv2LJujwAl/pusZMo4zGhnLVpHozTeKU+?=
- =?us-ascii?Q?cNaKDHuS3EPb83U1d0TzlLKpZ1rah+ySnxisuanwrMJUievDF1CxsVhVgZhh?=
- =?us-ascii?Q?j82TJOrLxYaP4iNufpH+c8/+musxUlwkDePW84KGheSd7j9Yxff5Hqa7IGND?=
- =?us-ascii?Q?MFqGSN0SY7nc9Bm72HnUWJg4pKP5xaJDUwXib53JjOyJH2nHVrwvmYUFyjco?=
- =?us-ascii?Q?tSM4VbHluIRr1vxlSJgXGRQJR8uh9X0W0nCXsqXHYGEREn6yCX/b7BP6+APV?=
- =?us-ascii?Q?A6sb0cUdoeGFiIpkZ5hsqUAwOhwTeA9QTnXV5Cadcz9CzeK4mue4TrJJI0a5?=
- =?us-ascii?Q?a5xXpn6Q4PdzYnDm3CIhHa4PfXFA92rCcwo5H9FhzcjLBNA+CkPRYp4p5i1y?=
- =?us-ascii?Q?onMlg0pPOFcC36FKo9mSQNZVlwXd6m8+/LwOIBGmLxJc1SPDnuIZmRHq4m75?=
- =?us-ascii?Q?4k9NUf03vxgzlm2vJw4+MT8m4vElMWTwfJCLD4k+41LeeLlxF5KvrENgAQZp?=
- =?us-ascii?Q?RpQAx4kXaxzzXQgHEWfL6tGmeIyMDiDNeSG6LAbRQVUYQ0WYOqmdRVwD277X?=
- =?us-ascii?Q?6johcAZ/4CcjhQsz4Y5DxmqBfTBhXI4uEBISl1Z+hSP7LKZ8c/J386XpqLbC?=
- =?us-ascii?Q?CEc05ekIwrYeurZ0XhTCdV//7OK2SnNEYhDx8VipLRuh5MNbka2huiWdSqgn?=
- =?us-ascii?Q?OofPREoksc3YOL1StlVsq0yRe4YXwqbHEZnlb4H6VORBkOPyG9j35c2B1tTX?=
- =?us-ascii?Q?LcuDSpUE1K+CXJwPCpxFasAUUgcU0OByXRjhlZni1qlyltd6lGWq6/B7A938?=
- =?us-ascii?Q?k/WWVeYYKCNHdukB3qnf+7ntdZT56TV9JGQqqSZYViwyLx9wJDwIFboQevRT?=
- =?us-ascii?Q?zs10Bg/UNUlm+P9wuRxFlTt+Wy1xWw2kPwW4WNiCY6UKr8422mlCwb3hpkoF?=
- =?us-ascii?Q?smzIvcjGWFlur35ITYLe1nQ5BmqRD9ZjafPkSDMlc74IcYom+CNC4wkZ9I+B?=
- =?us-ascii?Q?sfoM7fMWoIRx6QOri0VZ2hv+s/WTK0ncBsAsj+no0KKDhpun7/mHsPM8KbLI?=
- =?us-ascii?Q?X57c3x1nP9VtiBXV+KKuTA3PRETJ?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB0892.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2728f939-a2b1-49bf-edd3-08d8faede45a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2021 00:24:51.7483
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gyWzFEyPpjkvyGaVikXKjK+hQRqBzRji+NvMHaup4BudVDIYj7rHwMF/ukU2xUqhiPu4z+8A/9Jicsgswsb3Hw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1905
+        id S233089AbhDIA0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 20:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232951AbhDIA0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 20:26:39 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB973C061760;
+        Thu,  8 Apr 2021 17:26:27 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id r193so4142059ior.9;
+        Thu, 08 Apr 2021 17:26:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=qAptFUU90Znoha/E9NINSsAXDHdY41JcMDe7P0BQ2Yg=;
+        b=lqAGPuzRmQzOkMzEJ9f0AoMW+aNm0bys8BXHQIwaHKHGSBML0IDUTzNKKH3ch1XqPN
+         VkmHxyqWhT2OmqMAtrliPhTJ6RJcf/6sOgYJAPjLBUEQyviZpLUpWz4Z+e0ckkD2vcVa
+         5W0omj+G0zkx55JP5i1w7lhfz/R1whTl8FBuFc4nC1Ro9gVNSmxuxo3BNVpjBzUDdWS4
+         A9jR/+pguoo3iuT9N1vfW6GmBcF7VBOB4o4bdZzYAz6XdkV/YPxrcF4jDfQitgBUy7R1
+         Pm8f+g/fhldAB12N62U06LPaFa3RxMq+Xhjgn6FFXepOdE/8jXjXP1b5PUttC9zE+HCI
+         hD4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=qAptFUU90Znoha/E9NINSsAXDHdY41JcMDe7P0BQ2Yg=;
+        b=cb6winHOUCxqUO0Y7qRKBapePl4LQiGVW+PYHxr8oSaZEYK2aR8RWdwWQkYkYiM2qQ
+         6HwqJDXmMw2Mfg+nDfKpP0Q4MLFc54dwKa2GYfVoYmljOPl8Jk+X1dwpJXmr08EY0w/+
+         tGSv0wwp9GE3T/mbT1SGK1mHmH2a3vFxA4gECVR//4m2dNzgIdorp2c8rkykTKwChRf1
+         7v+ltOzLhcDUd6ghzIK21B9dBLB1Qs0aRIj3nHOU/6kFbA9wd2cMVf6LMgCl+nn9bYqW
+         FpG2wNUaK+/b05tnCsJK7sX9XzoF4ux3P9u0BSom6KL2NLrQb+8T8N7O7gBIDaenNyDv
+         DKhg==
+X-Gm-Message-State: AOAM530jk4m5PROt1Yf3yiT9YV8wpx0WEgBwzjCxxcDzVZHculn/TeaI
+        Uy/GXtKGQi7v012ksMFjygA=
+X-Google-Smtp-Source: ABdhPJwNBeyYBBhR5PYARBaEDWRkA3HCI5UnZZMdpyf1XJ8WKww02UwfsAbdyg7KmbNmVeWgO9ichw==
+X-Received: by 2002:a6b:8b0e:: with SMTP id n14mr9145619iod.199.1617927987114;
+        Thu, 08 Apr 2021 17:26:27 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id k11sm455905ilv.73.2021.04.08.17.26.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Apr 2021 17:26:26 -0700 (PDT)
+Date:   Thu, 08 Apr 2021 17:26:19 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <606f9f2b26b1a_c8b9208a4@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210408030556.45134-1-xiyou.wangcong@gmail.com>
+References: <20210408030556.45134-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next] sock_map: fix a potential use-after-free in
+ sock_map_close()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: David Miller <davem@davemloft.net>
-> Sent: Thursday, April 8, 2021 4:46 PM
-> ...
-> > +struct gdma_msg_hdr {
-> > +	u32 hdr_type;
-> > +	u32 msg_type;
-> > +	u16 msg_version;
-> > +	u16 hwc_msg_id;
-> > +	u32 msg_size;
-> > +} __packed;
-> > +
-> > +struct gdma_dev_id {
-> > +	union {
-> > +		struct {
-> > +			u16 type;
-> > +			u16 instance;
-> > +		};
-> > +
-> > +		u32 as_uint32;
-> > +	};
-> > +} __packed;
->=20
-> Please don't  use __packed unless absolutely necessary.  It generates
-> suboptimal code (byte at a time
-> accesses etc.) and for many of these you don't even need it.
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> The last refcnt of the psock can be gone right after
+> sock_map_remove_links(), so sk_psock_stop() could trigger a UAF.
+> The reason why I placed sk_psock_stop() there is to avoid RCU read
+> critical section, and more importantly, some callee of
+> sock_map_remove_links() is supposed to be called with RCU read lock,
+> we can not simply get rid of RCU read lock here. Therefore, the only
+> choice we have is to grab an additional refcnt with sk_psock_get()
+> and put it back after sk_psock_stop().
+> 
+> Reported-by: syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com
+> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  net/core/sock_map.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index f473c51cbc4b..6f1b82b8ad49 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -1521,7 +1521,7 @@ void sock_map_close(struct sock *sk, long timeout)
+>  
+>  	lock_sock(sk);
+>  	rcu_read_lock();
 
-In the driver code, all the structs/unions marked by __packed are used to
-talk with the hardware, so I think __packed is necessary here?
+It looks like we can drop the rcu_read_lock()/unlock() section then if we
+take a reference on the psock? Before it was there to ensure we didn't
+lose the psock from some other context, but with a reference held this
+can not happen.
 
-Do you think if it's better if we remove all the __packed, and add
-static_assert(sizeof(struct XXX) =3D=3D YYY) instead? e.g.
+> -	psock = sk_psock(sk);
+> +	psock = sk_psock_get(sk);
+>  	if (unlikely(!psock)) {
+>  		rcu_read_unlock();
+>  		release_sock(sk);
+> @@ -1532,6 +1532,7 @@ void sock_map_close(struct sock *sk, long timeout)
+>  	sock_map_remove_links(sk, psock);
+>  	rcu_read_unlock();
+>  	sk_psock_stop(psock, true);
+> +	sk_psock_put(sk, psock);
+>  	release_sock(sk);
+>  	saved_close(sk, timeout);
+>  }
+> -- 
+> 2.25.1
+> 
 
-@@ -105,7 +105,8 @@ struct gdma_msg_hdr {
-        u16 msg_version;
-        u16 hwc_msg_id;
-        u32 msg_size;
--} __packed;
-+};
-+static_assert(sizeof(struct gdma_msg_hdr) =3D=3D 16);
 
- struct gdma_dev_id {
-        union {
-
-Now I'm trying to figure out how other NIC drivers define structs/unions.
-
-Thanks,
-Dexuan
