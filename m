@@ -2,157 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A649E359E98
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 14:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBCF359EB5
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 14:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233587AbhDIMZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 08:25:46 -0400
-Received: from mx.i2x.nl ([5.2.79.48]:59826 "EHLO mx.i2x.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232763AbhDIMZp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 08:25:45 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd00::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mx.i2x.nl (Postfix) with ESMTPS id BC5575FBA8;
-        Fri,  9 Apr 2021 14:25:29 +0200 (CEST)
-Authentication-Results: mx.i2x.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="Tcw1qj2W";
-        dkim-atps=neutral
-Received: from www (unknown [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 7F273BC6013;
-        Fri,  9 Apr 2021 14:25:29 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 7F273BC6013
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1617971129;
-        bh=8+E8zX/etY3i4LNvV1TwVYoMvMWtXNcy6wJF6uT5dRI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tcw1qj2Wfgvbthhz2/picZXahWlFzpEgfAPbgjUST7I4lhUBZYACWjtYtc9Yb+osb
-         tp7b/aLxZ6HeRn9PFIz6MgGmZiSRINCL9O3NEeb6Ne9p15n9mqctyN/Lc3W7B9zpdL
-         +s5pDcWEID9av23lIspKxpt0d7CRyIzsF77uAxXmFGSmIp9qQ/Tul/N2bSqEEEFkRL
-         GfoXTg6TDxCTyq4F+8ARBgGkOIRLJWFiGQ1oNtTmWy/Hb2lwgwqU+mhF1HJE81p6L8
-         7Jt2oyMyFQTVHzCBtkGLSDzejUbp2AKemy9j0vclRtwKiWWyZj16cn0kriDnkrqEG2
-         xTqkT1/o+fZcg==
-Received: from 48.79.2.5.in-addr.arpa (48.79.2.5.in-addr.arpa [5.2.79.48])
- by www.vdorst.com (Horde Framework) with HTTPS; Fri, 09 Apr 2021 12:25:29
- +0000
-Date:   Fri, 09 Apr 2021 12:25:29 +0000
-Message-ID: <20210409122529.Horde.fb4QbDNxhPNA6ZyDBOjGTct@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     DENG Qingfang <dqfext@gmail.com>,
+        id S233363AbhDIMbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 08:31:35 -0400
+Received: from mail-mw2nam10on2087.outbound.protection.outlook.com ([40.107.94.87]:48864
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232395AbhDIMbe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 08:31:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cTHdPZWQlKXB/sEQmoNeQassjP04YmL1hWKcksiJqJdviKFzClQTMu8CsPEMGgMkU74aQB7xaqjDcxFt3Cem7aOtW/VHbwtHVeo6e1H/AfVsWHGcu3012JgeKw1BqxapGe78FjLcbdXzuKrB3G6fEdHzYFxS6ZcATDDDmuvF1i6CDLdgcEaOs/WTzhqw5mA4mvR3cDMCW3ObweYzkW4avu8YVYKYlcVRzVfk+nwLrbHIs6yBKy5AFAVHBWjdjF9MP7hRUuYx7XDaute6mp6TwZ1+dQ+wE1CNHNc3ZqNwb+GRWvdpFeaGUz/0Bydf704ZXC73ljv0tNT9Kmi4HaMsMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=md7cRVzfg0w7/L0NV8wICTgcfG94qd+CbBkpIUrMVyE=;
+ b=Hn69rITgNUsIdSr49p/l6bqIWkw58ZAFLILfbvJn6UTY+aMWxPfDCUL4Zf3/FiEAm9DRwsM2GYNHeKYmsJycyJIe7PROr2giz12gaNpJduJvB3d5Hd/EK1z/tYixrZO03sSRA3kRfYBs6xcj86L8Bah5uuQE0fLVppjLR2Cs9NURRn/9jyD4K7JmQDW55UavsQnyMkWsIo06oN6Gg5e+RcgZAskRoNzc+MjDFMBqnsc4oHsqjEyFFSUyLJYcZIWvrs2iIg5BdoySRTFAc9cnVg8ZvvwyATD+6xJAFR4FfzJ67QhPziKCrNvz5AYQP1hD+7nC1UpqxUn8pv/vIQccbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=md7cRVzfg0w7/L0NV8wICTgcfG94qd+CbBkpIUrMVyE=;
+ b=hY+ApfIs6vYwDa2Hs4ujc5bgltN6VY8ZjOIfKcHQTbUAwhitQuKj16z8f4XixOXtRHeaSWIy0G61IdRmiX6cY6RTChndE7B2WUfzh1mcSIMqg0Wjiy7y0pHUUByvrh1FeNVO1jyjSkDc3DH4WDoeBYFlLKY7qv+gVQ5zFhgjIp0zBbme7QysXhA2AKtnF5209c3MrFN0v+0hL/rXHRbpkPl/EwXTPkdDWkZeakPNSapsPJttqJmBP30RnMgJtazzG2Ier3kueRWsvKvoJ5yEKyxhavCla8ghEWnWf1NxbJYKcpHxW6cIEEbq6ZHbuNrWDD454hrskHjAuTD9r/J8BA==
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BY5PR12MB4081.namprd12.prod.outlook.com (2603:10b6:a03:20e::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Fri, 9 Apr
+ 2021 12:31:20 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::7cec:a7fa:db2e:3073]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::7cec:a7fa:db2e:3073%9]) with mapi id 15.20.4020.019; Fri, 9 Apr 2021
+ 12:31:19 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-staging@lists.linux.dev,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Weijie Gao <weijie.gao@mediatek.com>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Subject: Re: [RFC v3 net-next 0/4] MT7530 interrupt support
-References: <20210408123919.2528516-1-dqfext@gmail.com>
- <20210408140255.Horde.Pl-DXtrqmiH9imsWjDqblfM@www.vdorst.com>
- <CALW65jZujSCk16RX_xgcg+NGrc9yyFQOQ9Y-z3qz-Qv1TvUQLg@mail.gmail.com>
- <YG8zvFKOdnzaJqLa@lunn.ch>
-In-Reply-To: <YG8zvFKOdnzaJqLa@lunn.ch>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        Karsten Graul <kgraul@linux.ibm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Subject: RE: [PATCH rdma-next 4/8] IB/core: Skip device which doesn't have
+ necessary capabilities
+Thread-Topic: [PATCH rdma-next 4/8] IB/core: Skip device which doesn't have
+ necessary capabilities
+Thread-Index: AQHXKd+XJ6WIY5+vZk6+h+s0LuIetKqnpFkAgAGBvmCAAAdugIAABvxwgAFZoICAAZZSAA==
+Date:   Fri, 9 Apr 2021 12:31:19 +0000
+Message-ID: <BY5PR12MB43227C478E381EAFADD3FB44DC739@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20210405055000.215792-1-leon@kernel.org>
+ <20210405055000.215792-5-leon@kernel.org> <20210406154646.GW7405@nvidia.com>
+ <BY5PR12MB4322E477DA2334233EAD5173DC759@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20210407151359.GI7405@nvidia.com>
+ <BY5PR12MB4322B39A132397E661680A4BDC759@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20210408121601.GR7405@nvidia.com>
+In-Reply-To: <20210408121601.GR7405@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [136.185.184.152]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4071f901-d4b2-4a88-5b10-08d8fb5360db
+x-ms-traffictypediagnostic: BY5PR12MB4081:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR12MB4081ED0B8B8DABB13ACDCAF2DC739@BY5PR12MB4081.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1051;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VA7FU0BbaXfKzMrTiz/5O6K0F83SCNzdOkklCtwVV7tyur9o5+t8tCFt0vABLrjezUW2xYF87IKyJcAm58CYsTdT3VEeohj6pkR/z9YztMb0NiOVhkCPTkM7lftgwaRxWvdNiHOOO93+NLsyhkk8nkscqx2AEQsMgZ7SGTsYuuWthgI3cHyWN862A5zaiJaMKbaPLuSdjcEvBhC2vDoLRRKSgDAukkN4yhTv30CblZ7fH/irEHaF7S5h9ImcIf8faGJc9V0yW+AtjYQeWzVzcHV/gmjwptcCT1mRQKDUm+hbH1ciHZuYK6dEPgeXlS1rvGF4Vf9lrmwA5DHPpLgcqwJnqVcYo3yeNjt41ck3zOdnucfxaQcfWmi9UXD/LJhs5DLa0f+uYU3eulSHe9yg4ti4e3tx0bKFe68QYE4gbvWNlrSxPQfCP01bttpUM/NJMSjqrTVWAhW9EwXu5L2QW1vPEYK7BpIcKWaaAA0ePE0y5YpvyAAoHfA9cUT1quoAPH5DWtKFaDdeVZJpZM14jhPTsXCrCCmoHtPjvYcq7cXyBTgXh59g5lApSAWvm/UmsH1KlEhgNj/dE7TURbAhyE2Y2J+/bYgepDoBPP/11/ECgsJayG+/n7FH3biYd95lLfWKWPj8rBYcircegssZd8DXDxYWP+RODYYLHsSsycs=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(346002)(376002)(366004)(4326008)(7416002)(8676002)(6862004)(6506007)(7696005)(71200400001)(64756008)(38100700001)(54906003)(8936002)(186003)(5660300002)(66556008)(26005)(66476007)(66946007)(66446008)(76116006)(86362001)(6636002)(478600001)(316002)(2906002)(52536014)(9686003)(55016002)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?eciJqHI1d1b+KIvsms6EtOaZySVVO4CpIY6RrOP4YtR6Kq8mfCL9wi8YXAEo?=
+ =?us-ascii?Q?eN/embWRlyOPQ6de5q2rM58ZCkbZSUb82goUz/GOtgpHLqRSY4V0XO2J59SZ?=
+ =?us-ascii?Q?VVFgwMcFH/IYJ6FpugSzAOVdZPV34xNg1dlTcB4P09/reVOocduw4JvBDjX6?=
+ =?us-ascii?Q?4aBxWluHrVOPW8pKca3LEkfET8lLQ1PxHIPvXQty2wVIN5MhdPzjDnY1ykrr?=
+ =?us-ascii?Q?T2XBW92+Orzlfix6HkNk8rifR5nxPpBJN5vSmisCRfYePfWOlUR+/3ZPtQPU?=
+ =?us-ascii?Q?J15wb0cv4R7QfmUtanEcmW4kenpZKTys6gz5hA65FWu/BI4CRrFBNrMZhlzw?=
+ =?us-ascii?Q?njEfxl3p/YrOCPsO9PyQIqwX/E2RKyGTwj4fD4j4NRPnnHzuzlG5KcrDGvV3?=
+ =?us-ascii?Q?iTE6GFxf4SdomW0RcKX3wW+An0gfrZH7SHqDQWz1wdIe8BjoDM7+8i+g+1Aw?=
+ =?us-ascii?Q?yWxnoWoQ+tli8OJye1pjbstVH6+UtjB0t5PXYXsd3SqA1YJ/lCJiPfM5ByzQ?=
+ =?us-ascii?Q?ZR8n4o9i5QTR/14grhyc3FXscAiGZw0dH5U9Bfm4N5lQWZ58o6S4c89tQvTp?=
+ =?us-ascii?Q?J7h9S6snHhDQynIJ80DBrCYNQLWnhA0uxheH9dmOO1/mlBUPhwqzn8lFlozv?=
+ =?us-ascii?Q?Vsa/fg+fvlDYjIskMUAB7nhgeHrVysw7LXoujCT158ItuuvUggOj4trAt7he?=
+ =?us-ascii?Q?Ba/Hf3nHflfe5A/mCEN6ShZ/WLJDFp8LcO5/FZoG1C0eCELgF03xvus+zRQP?=
+ =?us-ascii?Q?wn5m+d6sNb630CDpc6IgCngE0EjH2cq0pdVtMQ+/NwGyz9k6gb7EUDyf2gQj?=
+ =?us-ascii?Q?nmpaMK1HX9eHCD1hgOCg724tpexMQ2xieP2vCn8UQ5o8zlqav21ac0kd01M3?=
+ =?us-ascii?Q?z1ttOMH7mvX/PgMlmefwx8cWkaExi+dcNt/2oNZXR/gfF0CS6ebGkcuw9BzU?=
+ =?us-ascii?Q?HmY0Nniampb5q+1aYwMkkaXCx/1U9BcMjAiXlgDC9nVz01YI9r1N5BOcRhH0?=
+ =?us-ascii?Q?M8blzfa4fGmr8LBNk1mrVHCjc/hGGXZGuBscm/krC4y0NJK10UE/vi/ESJjG?=
+ =?us-ascii?Q?xMiS3z4gknf33kcOLnr6ZIECbCx8nK2QDJ7bTRIMOFjDXZLiyI8OUFB7ivb+?=
+ =?us-ascii?Q?rVtRU0cEksIcFdhoztGohhC/GyQ2/YAHNpgCbTlVdYRblv/gwKi+e10mEA8S?=
+ =?us-ascii?Q?LW8vDZwBYHgY+3EFNdYGfoFelJBPY05a4lomts91l6ADa7sZGYDyOpebxFoc?=
+ =?us-ascii?Q?+KOtSKKsbuDzKMbfvm+FDwztYr1XHHiCm/bBNYgEsosRL3PysZFiHPb9nu2Y?=
+ =?us-ascii?Q?uCDoi6Xq4oy2Yn6Cj/E4QioM?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4071f901-d4b2-4a88-5b10-08d8fb5360db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2021 12:31:19.6222
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CWm8dj+N9hpAN0IwRER78TQNIfn88AC830gzdm5RbQ6qnuPPTXBCmwApmGUcJjrYl07/nZlp8VlTESAiDC1kFw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4081
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Andrew Lunn <andrew@lunn.ch>:
-
-> On Thu, Apr 08, 2021 at 11:00:08PM +0800, DENG Qingfang wrote:
->> Hi René,
->>
->> On Thu, Apr 8, 2021 at 10:02 PM René van Dorst  
->> <opensource@vdorst.com> wrote:
->> >
->> > Tested on Ubiquiti ER-X-SFP (MT7621) with 1 external phy which  
->> uses irq=POLL.
->> >
->>
->> I wonder if the external PHY's IRQ can be registered in the devicetree.
->> Change MT7530_NUM_PHYS to 6, and add the following to ER-X-SFP dts PHY node:
->
-> I don't know this platform. What is the PHYs interrupt pin connected
-> to? A SoC GPIO? There is a generic mechanism to describe PHY
-> interrupts in DT. That should be used, if it is a GPIO.
->
-> 	   Andrew
-
-Quoting Andrew Lunn <andrew@lunn.ch>:
-
-> On Thu, Apr 08, 2021 at 11:00:08PM +0800, DENG Qingfang wrote:
->> Hi René,
->>
->> On Thu, Apr 8, 2021 at 10:02 PM René van Dorst  
->> <opensource@vdorst.com> wrote:
->> >
->> > Tested on Ubiquiti ER-X-SFP (MT7621) with 1 external phy which  
->> uses irq=POLL.
->> >
->>
->> I wonder if the external PHY's IRQ can be registered in the devicetree.
->> Change MT7530_NUM_PHYS to 6, and add the following to ER-X-SFP dts PHY node:
->
-> I don't know this platform. What is the PHYs interrupt pin connected
-> to? A SoC GPIO? There is a generic mechanism to describe PHY
-> interrupts in DT. That should be used, if it is a GPIO.
->
-> 	   Andrew
 
 
-Hi Andrew,
-
-I couldn't find if the external phy IRQ is connected to any gpio of the SOC.
-So External PHY IRQ can't be sensed via a gpio.
-
-
-The patch used the MT7530 link change interrupt and flags.
-Maybe the patch is misusing the these flags as an interrupt?
-The same MT7530 register also has the interrupt flags for the internal phys.
-But in the MT7531 datasheet they don't describe them.
-
-On the other hand I don't have any information about the internal PHY  
-or register settings.
-So enabling the interrupt on the PHY is currently not possible.
-
-I also forced enabled all the MT7530 PHY interrupts and PHY link  
-change interrupts.
-I print the interrupt status mt7530.
-I don't see any MT7530 interrupt fired when link changing the port  
-5/external phy.
-Which was of course as expected. We only have 5 internal phy's for the  
-port 0 to 4.
-Port 5 and 6 is only have a MAC that is connected to the SOC of an  
-external PHY.
-
-Greats,
-
-René
-
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, April 8, 2021 5:46 PM
+> On Wed, Apr 07, 2021 at 03:44:35PM +0000, Parav Pandit wrote:
+>=20
+> > > If it returns EOPNOTUPP then the remove is never called so if it
+> > > allocated memory and left it allocated then it is leaking memory.
+> > >
+> > I probably confused you. There is no leak today because add_one
+> > allocates memory, and later on when SA/CM etc per port cap is not
+> > present, it is unused left there which is freed on remove_one().
+> > Returning EOPNOTUPP is fine at start of add_one() before allocation.
+>=20
+> Most of ULPs are OK, eg umad does:
+>=20
+> 	umad_dev =3D kzalloc(struct_size(umad_dev, ports, e - s + 1),
+> GFP_KERNEL);
+> 	if (!umad_dev)
+> 		return -ENOMEM;
+> 	for (i =3D s; i <=3D e; ++i) {
+> 		if (!rdma_cap_ib_mad(device, i))
+> 			continue;
+>=20
+> 	if (!count) {
+> 		ret =3D -EOPNOTSUPP;
+> 		goto free;
+> free:
+> 	/* balances kref_init */
+> 	ib_umad_dev_put(umad_dev);
+>=20
+> It looks like only cm.c and cma.c need fixing, just fix those two.
+Only cma.c needs a fixing. cm.c also reports EOPNOTSUPP.
+I will send the simplified fix through Leon.
