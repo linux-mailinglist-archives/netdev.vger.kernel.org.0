@@ -2,402 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6644D35A3A6
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 18:42:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B7735A3EF
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 18:48:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234227AbhDIQmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 12:42:42 -0400
-Received: from mga01.intel.com ([192.55.52.88]:9785 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234174AbhDIQm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 12:42:27 -0400
-IronPort-SDR: 87EBEp/rllNS3GT9F3+Pjq+55NdxIYYXl4gfBlbKFNdVl1ckygwF2gIiPPqSK6kDZpxRqBwx4l
- H4JH8fyxLZlA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9949"; a="214235100"
-X-IronPort-AV: E=Sophos;i="5.82,209,1613462400"; 
-   d="scan'208";a="214235100"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2021 09:42:14 -0700
-IronPort-SDR: GlCDi5S+aPkD9iX1kpGNsnZdxrUVrZeXlvzDGQOCFboqR7NmTladE24o+CNeNzOAQP/XlvxVAC
- VnYAXts3Olqg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,209,1613462400"; 
-   d="scan'208";a="531055081"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga004.jf.intel.com with ESMTP; 09 Apr 2021 09:42:13 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, Vedang Patel <vedang.patel@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: [PATCH net-next 9/9] igc: Enable TX via AF_XDP zero-copy
-Date:   Fri,  9 Apr 2021 09:43:51 -0700
-Message-Id: <20210409164351.188953-10-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210409164351.188953-1-anthony.l.nguyen@intel.com>
-References: <20210409164351.188953-1-anthony.l.nguyen@intel.com>
+        id S233977AbhDIQsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 12:48:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48833 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232395AbhDIQsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 12:48:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1617986904;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=Chg6IKEuKKojYi7mhUKaMLERMRmxIjzmO/LXSZ+TUHU=;
+        b=fWN7UcRXuIoI7jmib68jpV0YbctgHeJetl4QJTvh+iuysD3Vt1leS4AQs3VFt6iNwioB14
+        SXlFTqrbXGt6vVeU/AbbKPJ64SwHo44xtmZzRifZxB9j4oLRBnAFzJR6VWGO/A9J0f3Qdy
+        yWG9eIdYEE8NdZWVVTK1kZsBDHMKLT0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-113-yABDH4QuP2uNk47F9zUpGQ-1; Fri, 09 Apr 2021 12:48:20 -0400
+X-MC-Unique: yABDH4QuP2uNk47F9zUpGQ-1
+Received: by mail-wm1-f69.google.com with SMTP id c81-20020a1c9a540000b0290127367b3942so553613wme.0
+        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 09:48:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=Chg6IKEuKKojYi7mhUKaMLERMRmxIjzmO/LXSZ+TUHU=;
+        b=Af2C1dkY4EGFgfwZjZlQ0Rzm5bLReCHGxzddknRpPZGrkwm/+G4h4ckdw/o3EzORZ6
+         Zna9bLCaIyYy+sqVxHiKVD8EyIz4UpSbgY5fHOCawd1fULHUenn2Ew28LHZtm9+GTUPu
+         u2tlIwJQ9o9ZjpSdlXkq1TWZscYmqE2Lxm6R66Ub708Q4ccHzHZgO5SHhudqenKh3xrK
+         iEf1vfy3LhRbzlBtHlVq7mXfBXlCnWWY52PSxc+zr4s9DnOA4ki4LQVkk6f2iZmG/kyA
+         lOM/3B859X92FggWlEel5kJQ+A/Ap9Yo7r+QGNpdSp/A7CjS/HnC1GUMOVNIqMf0xtgh
+         wHWA==
+X-Gm-Message-State: AOAM532rfrFQkuvS5r3AkVWSesiU8jdaiTyuuBwYhzBZIVYl1G0iVLea
+        84FdDs/azWZJG77PcCJMv62ePFX/qhWsr6uwbcLYda/0l+FsOPeJNhDIcc9SCq8xp/IFrbXU4UA
+        coJXTEO7Cr4yHKhJU
+X-Received: by 2002:a1c:9a16:: with SMTP id c22mr7681446wme.7.1617986899513;
+        Fri, 09 Apr 2021 09:48:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw2SClI5Njn6xjA2MPYxm2kpYJCEchwrX/9+aQChXy3FOe+I3afHnDGXz6jYj0V+5m4e1Tm6w==
+X-Received: by 2002:a1c:9a16:: with SMTP id c22mr7681431wme.7.1617986899273;
+        Fri, 09 Apr 2021 09:48:19 -0700 (PDT)
+Received: from redhat.com ([2a10:800e:f0d3:0:b69b:9fb8:3947:5636])
+        by smtp.gmail.com with ESMTPSA id o25sm6618101wmh.1.2021.04.09.09.48.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Apr 2021 09:48:18 -0700 (PDT)
+Date:   Fri, 9 Apr 2021 12:48:16 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elic@nvidia.com, jasowang@redhat.com, mst@redhat.com,
+        si-wei.liu@oracle.com
+Subject: [GIT PULL] vdpa/mlx5: last minute fixes
+Message-ID: <20210409124816-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Guedes <andre.guedes@intel.com>
+The following changes since commit e49d033bddf5b565044e2abe4241353959bc9120:
 
-Add support for transmitting packets via AF_XDP zero-copy mechanism.
+  Linux 5.12-rc6 (2021-04-04 14:15:36 -0700)
 
-The packet transmission itself is implemented by igc_xdp_xmit_zc() which
-is called from igc_clean_tx_irq() when the ring has AF_XDP zero-copy
-enabled. Likewise i40e and ice drivers, the transmission budget used is
-the number of descriptors available on the ring.
+are available in the Git repository at:
 
-A new tx buffer type is introduced to 'enum igc_tx_buffer_type' to
-indicate the tx buffer uses memory from xsk pool so it can be properly
-cleaned after transmission or when the ring is cleaned.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-The I225 controller has only 4 Tx hardware queues so the main difference
-between igc and other Intel drivers that support AF_XDP zero-copy is
-that there is no tx ring dedicated exclusively to XDP. Instead, tx
-rings are shared between the network stack and XDP, and netdev queue
-lock is used to ensure mutual exclusion. This is the same approach
-implemented to support XDP_TX and XDP_REDIRECT actions.
+for you to fetch changes up to bc04d93ea30a0a8eb2a2648b848cef35d1f6f798:
 
-Signed-off-by: Andre Guedes <andre.guedes@intel.com>
-Signed-off-by: Vedang Patel <vedang.patel@intel.com>
-Signed-off-by: Jithu Joseph <jithu.joseph@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igc/igc.h      |   3 +
- drivers/net/ethernet/intel/igc/igc_base.h |   1 +
- drivers/net/ethernet/intel/igc/igc_main.c | 113 +++++++++++++++++++++-
- drivers/net/ethernet/intel/igc/igc_xdp.c  |  20 +++-
- 4 files changed, 129 insertions(+), 8 deletions(-)
+  vdpa/mlx5: Fix suspend/resume index restoration (2021-04-09 12:08:28 -0400)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 7d452d422b1c..059b5bcab281 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -245,6 +245,8 @@ int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx);
- void igc_update_stats(struct igc_adapter *adapter);
- void igc_disable_rx_ring(struct igc_ring *ring);
- void igc_enable_rx_ring(struct igc_ring *ring);
-+void igc_disable_tx_ring(struct igc_ring *ring);
-+void igc_enable_tx_ring(struct igc_ring *ring);
- int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
- 
- /* igc_dump declarations */
-@@ -400,6 +402,7 @@ enum igc_boards {
- enum igc_tx_buffer_type {
- 	IGC_TX_BUFFER_TYPE_SKB,
- 	IGC_TX_BUFFER_TYPE_XDP,
-+	IGC_TX_BUFFER_TYPE_XSK,
- };
- 
- /* wrapper around a pointer to a socket buffer,
-diff --git a/drivers/net/ethernet/intel/igc/igc_base.h b/drivers/net/ethernet/intel/igc/igc_base.h
-index 2ca028c1919f..ce530f5fd7bd 100644
---- a/drivers/net/ethernet/intel/igc/igc_base.h
-+++ b/drivers/net/ethernet/intel/igc/igc_base.h
-@@ -78,6 +78,7 @@ union igc_adv_rx_desc {
- 
- /* Additional Transmit Descriptor Control definitions */
- #define IGC_TXDCTL_QUEUE_ENABLE	0x02000000 /* Ena specific Tx Queue */
-+#define IGC_TXDCTL_SWFLUSH	0x04000000 /* Transmit Software Flush */
- 
- /* Additional Receive Descriptor Control definitions */
- #define IGC_RXDCTL_QUEUE_ENABLE	0x02000000 /* Ena specific Rx Queue */
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 118c2852317f..7a243d1a4769 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -187,24 +187,28 @@ static void igc_clean_tx_ring(struct igc_ring *tx_ring)
- {
- 	u16 i = tx_ring->next_to_clean;
- 	struct igc_tx_buffer *tx_buffer = &tx_ring->tx_buffer_info[i];
-+	u32 xsk_frames = 0;
- 
- 	while (i != tx_ring->next_to_use) {
- 		union igc_adv_tx_desc *eop_desc, *tx_desc;
- 
- 		switch (tx_buffer->type) {
-+		case IGC_TX_BUFFER_TYPE_XSK:
-+			xsk_frames++;
-+			break;
- 		case IGC_TX_BUFFER_TYPE_XDP:
- 			xdp_return_frame(tx_buffer->xdpf);
-+			igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
- 			break;
- 		case IGC_TX_BUFFER_TYPE_SKB:
- 			dev_kfree_skb_any(tx_buffer->skb);
-+			igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
- 			break;
- 		default:
- 			netdev_warn_once(tx_ring->netdev, "Unknown Tx buffer type\n");
- 			break;
- 		}
- 
--		igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
--
- 		/* check for eop_desc to determine the end of the packet */
- 		eop_desc = tx_buffer->next_to_watch;
- 		tx_desc = IGC_TX_DESC(tx_ring, i);
-@@ -234,6 +238,9 @@ static void igc_clean_tx_ring(struct igc_ring *tx_ring)
- 		}
- 	}
- 
-+	if (tx_ring->xsk_pool && xsk_frames)
-+		xsk_tx_completed(tx_ring->xsk_pool, xsk_frames);
-+
- 	/* reset BQL for queue */
- 	netdev_tx_reset_queue(txring_txq(tx_ring));
- 
-@@ -676,6 +683,8 @@ static void igc_configure_tx_ring(struct igc_adapter *adapter,
- 	u64 tdba = ring->dma;
- 	u32 txdctl = 0;
- 
-+	ring->xsk_pool = igc_get_xsk_pool(adapter, ring);
-+
- 	/* disable the queue */
- 	wr32(IGC_TXDCTL(reg_idx), 0);
- 	wrfl();
-@@ -2506,6 +2515,65 @@ static void igc_update_tx_stats(struct igc_q_vector *q_vector,
- 	q_vector->tx.total_packets += packets;
- }
- 
-+static void igc_xdp_xmit_zc(struct igc_ring *ring)
-+{
-+	struct xsk_buff_pool *pool = ring->xsk_pool;
-+	struct netdev_queue *nq = txring_txq(ring);
-+	union igc_adv_tx_desc *tx_desc = NULL;
-+	int cpu = smp_processor_id();
-+	u16 ntu = ring->next_to_use;
-+	struct xdp_desc xdp_desc;
-+	u16 budget;
-+
-+	if (!netif_carrier_ok(ring->netdev))
-+		return;
-+
-+	__netif_tx_lock(nq, cpu);
-+
-+	budget = igc_desc_unused(ring);
-+
-+	while (xsk_tx_peek_desc(pool, &xdp_desc) && budget--) {
-+		u32 cmd_type, olinfo_status;
-+		struct igc_tx_buffer *bi;
-+		dma_addr_t dma;
-+
-+		cmd_type = IGC_ADVTXD_DTYP_DATA | IGC_ADVTXD_DCMD_DEXT |
-+			   IGC_ADVTXD_DCMD_IFCS | IGC_TXD_DCMD |
-+			   xdp_desc.len;
-+		olinfo_status = xdp_desc.len << IGC_ADVTXD_PAYLEN_SHIFT;
-+
-+		dma = xsk_buff_raw_get_dma(pool, xdp_desc.addr);
-+		xsk_buff_raw_dma_sync_for_device(pool, dma, xdp_desc.len);
-+
-+		tx_desc = IGC_TX_DESC(ring, ntu);
-+		tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
-+		tx_desc->read.olinfo_status = cpu_to_le32(olinfo_status);
-+		tx_desc->read.buffer_addr = cpu_to_le64(dma);
-+
-+		bi = &ring->tx_buffer_info[ntu];
-+		bi->type = IGC_TX_BUFFER_TYPE_XSK;
-+		bi->protocol = 0;
-+		bi->bytecount = xdp_desc.len;
-+		bi->gso_segs = 1;
-+		bi->time_stamp = jiffies;
-+		bi->next_to_watch = tx_desc;
-+
-+		netdev_tx_sent_queue(txring_txq(ring), xdp_desc.len);
-+
-+		ntu++;
-+		if (ntu == ring->count)
-+			ntu = 0;
-+	}
-+
-+	ring->next_to_use = ntu;
-+	if (tx_desc) {
-+		igc_flush_tx_descriptors(ring);
-+		xsk_tx_release(pool);
-+	}
-+
-+	__netif_tx_unlock(nq);
-+}
-+
- /**
-  * igc_clean_tx_irq - Reclaim resources after transmit completes
-  * @q_vector: pointer to q_vector containing needed info
-@@ -2522,6 +2590,7 @@ static bool igc_clean_tx_irq(struct igc_q_vector *q_vector, int napi_budget)
- 	unsigned int i = tx_ring->next_to_clean;
- 	struct igc_tx_buffer *tx_buffer;
- 	union igc_adv_tx_desc *tx_desc;
-+	u32 xsk_frames = 0;
- 
- 	if (test_bit(__IGC_DOWN, &adapter->state))
- 		return true;
-@@ -2552,19 +2621,22 @@ static bool igc_clean_tx_irq(struct igc_q_vector *q_vector, int napi_budget)
- 		total_packets += tx_buffer->gso_segs;
- 
- 		switch (tx_buffer->type) {
-+		case IGC_TX_BUFFER_TYPE_XSK:
-+			xsk_frames++;
-+			break;
- 		case IGC_TX_BUFFER_TYPE_XDP:
- 			xdp_return_frame(tx_buffer->xdpf);
-+			igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
- 			break;
- 		case IGC_TX_BUFFER_TYPE_SKB:
- 			napi_consume_skb(tx_buffer->skb, napi_budget);
-+			igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
- 			break;
- 		default:
- 			netdev_warn_once(tx_ring->netdev, "Unknown Tx buffer type\n");
- 			break;
- 		}
- 
--		igc_unmap_tx_buffer(tx_ring->dev, tx_buffer);
--
- 		/* clear last DMA location and unmap remaining buffers */
- 		while (tx_desc != eop_desc) {
- 			tx_buffer++;
-@@ -2606,6 +2678,14 @@ static bool igc_clean_tx_irq(struct igc_q_vector *q_vector, int napi_budget)
- 
- 	igc_update_tx_stats(q_vector, total_packets, total_bytes);
- 
-+	if (tx_ring->xsk_pool) {
-+		if (xsk_frames)
-+			xsk_tx_completed(tx_ring->xsk_pool, xsk_frames);
-+		if (xsk_uses_need_wakeup(tx_ring->xsk_pool))
-+			xsk_set_tx_need_wakeup(tx_ring->xsk_pool);
-+		igc_xdp_xmit_zc(tx_ring);
-+	}
-+
- 	if (test_bit(IGC_RING_FLAG_TX_DETECT_HANG, &tx_ring->flags)) {
- 		struct igc_hw *hw = &adapter->hw;
- 
-@@ -6274,6 +6354,31 @@ void igc_enable_rx_ring(struct igc_ring *ring)
- 		igc_alloc_rx_buffers(ring, igc_desc_unused(ring));
- }
- 
-+static void igc_disable_tx_ring_hw(struct igc_ring *ring)
-+{
-+	struct igc_hw *hw = &ring->q_vector->adapter->hw;
-+	u8 idx = ring->reg_idx;
-+	u32 txdctl;
-+
-+	txdctl = rd32(IGC_TXDCTL(idx));
-+	txdctl &= ~IGC_TXDCTL_QUEUE_ENABLE;
-+	txdctl |= IGC_TXDCTL_SWFLUSH;
-+	wr32(IGC_TXDCTL(idx), txdctl);
-+}
-+
-+void igc_disable_tx_ring(struct igc_ring *ring)
-+{
-+	igc_disable_tx_ring_hw(ring);
-+	igc_clean_tx_ring(ring);
-+}
-+
-+void igc_enable_tx_ring(struct igc_ring *ring)
-+{
-+	struct igc_adapter *adapter = ring->q_vector->adapter;
-+
-+	igc_configure_tx_ring(adapter, ring);
-+}
-+
- /**
-  * igc_init_module - Driver Registration Routine
-  *
-diff --git a/drivers/net/ethernet/intel/igc/igc_xdp.c b/drivers/net/ethernet/intel/igc/igc_xdp.c
-index 7fe3177a53dd..38e86522ab7b 100644
---- a/drivers/net/ethernet/intel/igc/igc_xdp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_xdp.c
-@@ -39,13 +39,14 @@ static int igc_xdp_enable_pool(struct igc_adapter *adapter,
- {
- 	struct net_device *ndev = adapter->netdev;
- 	struct device *dev = &adapter->pdev->dev;
--	struct igc_ring *rx_ring;
-+	struct igc_ring *rx_ring, *tx_ring;
- 	struct napi_struct *napi;
- 	bool needs_reset;
- 	u32 frame_size;
- 	int err;
- 
--	if (queue_id >= adapter->num_rx_queues)
-+	if (queue_id >= adapter->num_rx_queues ||
-+	    queue_id >= adapter->num_tx_queues)
- 		return -EINVAL;
- 
- 	frame_size = xsk_pool_get_rx_frame_size(pool);
-@@ -67,18 +68,23 @@ static int igc_xdp_enable_pool(struct igc_adapter *adapter,
- 	needs_reset = netif_running(adapter->netdev) && igc_xdp_is_enabled(adapter);
- 
- 	rx_ring = adapter->rx_ring[queue_id];
-+	tx_ring = adapter->tx_ring[queue_id];
-+	/* Rx and Tx rings share the same napi context. */
- 	napi = &rx_ring->q_vector->napi;
- 
- 	if (needs_reset) {
- 		igc_disable_rx_ring(rx_ring);
-+		igc_disable_tx_ring(tx_ring);
- 		napi_disable(napi);
- 	}
- 
- 	set_bit(IGC_RING_FLAG_AF_XDP_ZC, &rx_ring->flags);
-+	set_bit(IGC_RING_FLAG_AF_XDP_ZC, &tx_ring->flags);
- 
- 	if (needs_reset) {
- 		napi_enable(napi);
- 		igc_enable_rx_ring(rx_ring);
-+		igc_enable_tx_ring(tx_ring);
- 
- 		err = igc_xsk_wakeup(ndev, queue_id, XDP_WAKEUP_RX);
- 		if (err)
-@@ -90,12 +96,13 @@ static int igc_xdp_enable_pool(struct igc_adapter *adapter,
- 
- static int igc_xdp_disable_pool(struct igc_adapter *adapter, u16 queue_id)
- {
-+	struct igc_ring *rx_ring, *tx_ring;
- 	struct xsk_buff_pool *pool;
--	struct igc_ring *rx_ring;
- 	struct napi_struct *napi;
- 	bool needs_reset;
- 
--	if (queue_id >= adapter->num_rx_queues)
-+	if (queue_id >= adapter->num_rx_queues ||
-+	    queue_id >= adapter->num_tx_queues)
- 		return -EINVAL;
- 
- 	pool = xsk_get_pool_from_qid(adapter->netdev, queue_id);
-@@ -105,19 +112,24 @@ static int igc_xdp_disable_pool(struct igc_adapter *adapter, u16 queue_id)
- 	needs_reset = netif_running(adapter->netdev) && igc_xdp_is_enabled(adapter);
- 
- 	rx_ring = adapter->rx_ring[queue_id];
-+	tx_ring = adapter->tx_ring[queue_id];
-+	/* Rx and Tx rings share the same napi context. */
- 	napi = &rx_ring->q_vector->napi;
- 
- 	if (needs_reset) {
- 		igc_disable_rx_ring(rx_ring);
-+		igc_disable_tx_ring(tx_ring);
- 		napi_disable(napi);
- 	}
- 
- 	xsk_pool_dma_unmap(pool, IGC_RX_DMA_ATTR);
- 	clear_bit(IGC_RING_FLAG_AF_XDP_ZC, &rx_ring->flags);
-+	clear_bit(IGC_RING_FLAG_AF_XDP_ZC, &tx_ring->flags);
- 
- 	if (needs_reset) {
- 		napi_enable(napi);
- 		igc_enable_rx_ring(rx_ring);
-+		igc_enable_tx_ring(tx_ring);
- 	}
- 
- 	return 0;
--- 
-2.26.2
+----------------------------------------------------------------
+vdpa/mlx5: last minute fixes
+
+These all look like something we are better off having
+than not ...
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Eli Cohen (4):
+      vdpa/mlx5: Use the correct dma device when registering memory
+      vdpa/mlx5: Retrieve BAR address suitable any function
+      vdpa/mlx5: Fix wrong use of bit numbers
+      vdpa/mlx5: Fix suspend/resume index restoration
+
+Si-Wei Liu (1):
+      vdpa/mlx5: should exclude header length and fcs from mtu
+
+ drivers/vdpa/mlx5/core/mlx5_vdpa.h |  4 ++++
+ drivers/vdpa/mlx5/core/mr.c        |  9 +++++++--
+ drivers/vdpa/mlx5/core/resources.c |  3 ++-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c  | 40 +++++++++++++++++++++++---------------
+ 4 files changed, 37 insertions(+), 19 deletions(-)
 
