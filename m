@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA9B135A8C6
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 00:44:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1561235A8CA
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 00:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235105AbhDIWih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 18:38:37 -0400
-Received: from mail-ed1-f54.google.com ([209.85.208.54]:33571 "EHLO
-        mail-ed1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234602AbhDIWih (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 18:38:37 -0400
-Received: by mail-ed1-f54.google.com with SMTP id w18so8341047edc.0;
-        Fri, 09 Apr 2021 15:38:22 -0700 (PDT)
+        id S235271AbhDIWiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 18:38:52 -0400
+Received: from mail-ej1-f54.google.com ([209.85.218.54]:41907 "EHLO
+        mail-ej1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234602AbhDIWiu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 18:38:50 -0400
+Received: by mail-ej1-f54.google.com with SMTP id g17so8223581ejp.8;
+        Fri, 09 Apr 2021 15:38:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NBKBwFnLR6KheF+0+jTnrdx81GBF+PEZpOcMgLUdP0I=;
-        b=QNcDKWg3i3l0fzCFlmYy+3oSUs7xyv3i8GSFrsXg7YaGpUxHqKgh2ztO/FJHSpxRld
-         RWmXl0qgtyDjAhfHLJCSdzUnQXyPp5tjw5ufJ7NFKiO3KKFwdH8C1NdZznZYPBcGINz6
-         FU1cYQpWY0nBLXjJb79rgLXYFr1KQQKCBxNFE5GyMuupfLmupENS2gZNyRqOZPLVhLi2
-         J4LCwIV5o/StbIfRRLs+WKWJEJffn5daUScMsyZI+s46oG3ZJ+xRtJIzzfrqmViEAD4c
-         un5ae6IA3tp8a+TWGI5SH1Y1qa+Zw9vNHkm4eofpP4SqFU//7A9HsFYqZ8Uz52w8+63v
-         yNaw==
-X-Gm-Message-State: AOAM530gq5sgiBYsek14KDwLVWXfg7F77YCi8kN8DRnWdwPrxjfNx2f2
-        gQBFJmj88iNAdUvxWiDeNG3f7wH5ermszQ==
-X-Google-Smtp-Source: ABdhPJwtnHH8zpJEzm27S9Tc0XAdPpGrPGHLvRaejF34zvtOUNDL6mxmVFoz2jOa3QSgVZRWgp5IlQ==
-X-Received: by 2002:a05:6402:51cd:: with SMTP id r13mr19553933edd.116.1618007902253;
-        Fri, 09 Apr 2021 15:38:22 -0700 (PDT)
+        bh=vTaN//8xhOW6+dxdPY1I1bInoY8eqI/bBr1slqBlUSQ=;
+        b=MDJPl/myf2AZgAwuJjMBhWk6pfLHyNCg5mhMjK7qfm2mLiXx/A9XoQhXloOOf4LGkn
+         53vW/FmHMwWPCBwPI3wheZ5VDKq2BFNWEdh5rSaSv9gtJdxPZRg8W5r5B/4zuSVash/A
+         PJRBHjkQRG/XjQn2X3x45djtx++ZYgObD0W6X+Pop7E2M/jDmkq1pvzMcgcfqnQ43jh+
+         Ttg2wFetjLyIWIpm3ZONTyLR4V0X6mQL7T7BV0R0wNBZ5rVcNrgEedl553XuaUDQVuC+
+         kvkmtUkvWO/90MTteiSdOn6sju+C5f+viLBtzl2USOaS+Z2qDjiPkuvi852X2Kp8d+6f
+         s0jA==
+X-Gm-Message-State: AOAM532Bu3ACDFh50oZWReuhk5OfYcyiOMFAft6X60gR0OVvA+taK4UF
+        G0M6wDdxoT/hnwfwnhJEZFTSLo24GX8PiA==
+X-Google-Smtp-Source: ABdhPJxw/xKPMPcoWnc0Xwnb5N/pYOuckTTq0yj9tph5v/fPkzmO94ANO8HgYyDIdQekYGgL1qsvbA==
+X-Received: by 2002:a17:907:3c08:: with SMTP id gh8mr4361500ejc.439.1618007916135;
+        Fri, 09 Apr 2021 15:38:36 -0700 (PDT)
 Received: from msft-t490s.teknoraver.net (net-93-66-21-119.cust.vodafonedsl.it. [93.66.21.119])
-        by smtp.gmail.com with ESMTPSA id s20sm2108726edu.93.2021.04.09.15.38.20
+        by smtp.gmail.com with ESMTPSA id s20sm2108726edu.93.2021.04.09.15.38.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Apr 2021 15:38:21 -0700 (PDT)
+        Fri, 09 Apr 2021 15:38:35 -0700 (PDT)
 From:   Matteo Croce <mcroce@linux.microsoft.com>
 To:     netdev@vger.kernel.org, linux-mm@kvack.org
 Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
@@ -80,9 +80,9 @@ Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next v3 1/5] xdp: reduce size of struct xdp_mem_info
-Date:   Sat, 10 Apr 2021 00:37:57 +0200
-Message-Id: <20210409223801.104657-2-mcroce@linux.microsoft.com>
+Subject: [PATCH net-next v3 2/5] mm: add a signature in struct page
+Date:   Sat, 10 Apr 2021 00:37:58 +0200
+Message-Id: <20210409223801.104657-3-mcroce@linux.microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210409223801.104657-1-mcroce@linux.microsoft.com>
 References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
@@ -92,67 +92,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Matteo Croce <mcroce@microsoft.com>
 
-It is possible to compress/reduce the size of struct xdp_mem_info.
-This change reduce struct xdp_mem_info from 8 bytes to 4 bytes.
+This is needed by the page_pool to avoid recycling a page not allocated
+via page_pool.
 
-The member xdp_mem_info.id can be reduced to u16, as the mem_id_ht
-rhashtable in net/core/xdp.c is already limited by MEM_ID_MAX=0xFFFE
-which can safely fit in u16.
-
-The member xdp_mem_info.type could be reduced more than u16, as it stores
-the enum xdp_mem_type, but due to alignment it is only reduced to u16.
-
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Matteo Croce <mcroce@microsoft.com>
 ---
- include/net/xdp.h | 4 ++--
- net/core/xdp.c    | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ include/linux/mm_types.h | 1 +
+ include/net/page_pool.h  | 2 ++
+ net/core/page_pool.c     | 4 ++++
+ 3 files changed, 7 insertions(+)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index a5bc214a49d9..c35864d59113 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -48,8 +48,8 @@ enum xdp_mem_type {
- #define XDP_XMIT_FLAGS_MASK	XDP_XMIT_FLUSH
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 6613b26a8894..ef2d0d5f62e4 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -101,6 +101,7 @@ struct page {
+ 			 * 32-bit architectures.
+ 			 */
+ 			dma_addr_t dma_addr;
++			unsigned long signature;
+ 		};
+ 		struct {	/* slab, slob and slub */
+ 			union {
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index b5b195305346..b30405e84b5e 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -63,6 +63,8 @@
+  */
+ #define PP_ALLOC_CACHE_SIZE	128
+ #define PP_ALLOC_CACHE_REFILL	64
++#define PP_SIGNATURE		0x20210303
++
+ struct pp_alloc_cache {
+ 	u32 count;
+ 	void *cache[PP_ALLOC_CACHE_SIZE];
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index ad8b0707af04..2ae9b554ef98 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -232,6 +232,8 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+ 		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
  
- struct xdp_mem_info {
--	u32 type; /* enum xdp_mem_type, but known size type */
--	u32 id;
-+	u16 type; /* enum xdp_mem_type, but known size type */
-+	u16 id;
- };
+ skip_dma_map:
++	page->signature = PP_SIGNATURE;
++
+ 	/* Track how many pages are held 'in-flight' */
+ 	pool->pages_state_hold_cnt++;
  
- struct page_pool;
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 05354976c1fc..3dd47ed83778 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -35,11 +35,11 @@ static struct rhashtable *mem_id_ht;
- 
- static u32 xdp_mem_id_hashfn(const void *data, u32 len, u32 seed)
- {
--	const u32 *k = data;
--	const u32 key = *k;
-+	const u16 *k = data;
-+	const u16 key = *k;
- 
- 	BUILD_BUG_ON(sizeof_field(struct xdp_mem_allocator, mem.id)
--		     != sizeof(u32));
-+		     != sizeof(u16));
- 
- 	/* Use cyclic increasing ID as direct hash key */
- 	return key;
-@@ -49,7 +49,7 @@ static int xdp_mem_id_cmp(struct rhashtable_compare_arg *arg,
- 			  const void *ptr)
- {
- 	const struct xdp_mem_allocator *xa = ptr;
--	u32 mem_id = *(u32 *)arg->key;
-+	u16 mem_id = *(u16 *)arg->key;
- 
- 	return xa->mem.id != mem_id;
- }
+@@ -302,6 +304,8 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+ 			     DMA_ATTR_SKIP_CPU_SYNC);
+ 	page->dma_addr = 0;
+ skip_dma_unmap:
++	page->signature = 0;
++
+ 	/* This may be the last page returned, releasing the pool, so
+ 	 * it is not safe to reference pool afterwards.
+ 	 */
 -- 
 2.30.2
 
