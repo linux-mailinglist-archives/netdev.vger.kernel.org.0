@@ -2,68 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41110359BF3
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 12:26:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89BB5359C1A
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 12:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233293AbhDIK0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 06:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231638AbhDIK0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 06:26:31 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0DFC061760;
-        Fri,  9 Apr 2021 03:26:18 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id s7so4987727wru.6;
-        Fri, 09 Apr 2021 03:26:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LRAyoqSstv9qcrVjPv+B4YXhvLoW8/SLy7wVQjukdx4=;
-        b=fT3uh1Tg12CI5KeTSpiwstJvKUIb0Jg5amRuuD4aMieGsELFvBptCFYon3x81ZbqtJ
-         BMpXvhAdjwwqzF7CTJmxUaC9Xs0nnMs8ihbg+/zervtql6Vw8pQV0qIy1zgfIBMgrihz
-         pYigmfs/Dz7VwE+Vlf/jo4+A+0Yf/a0iKruTLa7IDRbeqJfW7pRi4Pg4YD+czhyy4KfB
-         SKri2g8qO7lhgbEef/5y94SfJBZbqUHzh39U1AP9Nu+O3NEwenFgs8AYrEiKUG6JAk7C
-         zE8cNulj/4/OO1GjEW1qB9frGfqwEWAkWXvwpr6dQkAV9V2jWXBYtJuku2jVcOfkc0W2
-         EiPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LRAyoqSstv9qcrVjPv+B4YXhvLoW8/SLy7wVQjukdx4=;
-        b=m4tYAdgi2ZZNmHYdjz0EJBLNHLjNJCDoyy4DlXOl+JeVBrrIczDklbYCSUkoa3+P3h
-         Bpfl1I2puAFowfVuFmSUS4+sJbZA7RxL/vW15QjsiVuwFB9NvdkSbFKT5ZDYr8qWz2LZ
-         TJU6PM86r1ZqqzEea0/ljIJvmxUymtXTBvaoSMbb2paLRAbzhGm37mqI5uTSlx/TgvDm
-         nwV75rj3v/QCn2vu0HLGcd9JrAhrlkZwDjvoXL+4Kk46NjRJNbKrBezU66QKRcFWJDW1
-         IJvaxPeS/mT5Sj+FGiGLHirFG3hznQ+yZTjj5UitwFkHpNTEaUl6pvDClvc1A42ke5lc
-         woNQ==
-X-Gm-Message-State: AOAM532uLyPsCek1YIlKZ8GU76QaM5rItDGwjAVJoS8kh7acePIJDWob
-        gEgKOMRTlc/vLNfvwJXg/6iA6kNipv4=
-X-Google-Smtp-Source: ABdhPJyRaboQNnb4wffn7NnFkh1UNbm6Nyg27QXBRQRF0/EWjZS4BANfYNnApYnrGB93QtMRPuEhCA==
-X-Received: by 2002:a5d:5152:: with SMTP id u18mr16423345wrt.289.1617963977545;
-        Fri, 09 Apr 2021 03:26:17 -0700 (PDT)
-Received: from [192.168.1.101] ([37.167.116.29])
-        by smtp.gmail.com with ESMTPSA id y22sm3785521wmc.18.2021.04.09.03.26.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Apr 2021 03:26:16 -0700 (PDT)
-Subject: Re: [PATCH] net/rds: Avoid potential use after free in
- rds_send_remove_from_sock
-To:     Aditya Pakki <pakki001@umn.edu>
-Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
-        linux-kernel@vger.kernel.org
-References: <20210407000913.2207831-1-pakki001@umn.edu>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <bd3c84bc-6ae0-63e9-61f2-5cf64a976531@gmail.com>
-Date:   Fri, 9 Apr 2021 12:26:15 +0200
+        id S233364AbhDIK3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 06:29:46 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:40030 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232469AbhDIK3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 06:29:40 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lUoOC-0000EC-Kv; Fri, 09 Apr 2021 10:29:24 +0000
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: cnic: issue with double assignment to
+ ictx->xstorm_st_context.common.flags
+To:     Vladislav Zolotarov <vladz@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Bhanu Prakash Gollapudi <bprakash@broadcom.com>,
+        Eilon Greenstein <eilong@broadcom.com>
+Cc:     "David S. Miller" <davem@conan.davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Saurav Kashyap <skashyap@marvell.com>,
+        Javed Hasan <jhasan@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Nilesh Javali <njavali@marvell.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Message-ID: <45fd66c6-764b-bc0d-7ff9-920db399f11b@canonical.com>
+Date:   Fri, 9 Apr 2021 11:29:24 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210407000913.2207831-1-pakki001@umn.edu>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,53 +44,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+Analysis of linux with Coverity has detected an issue with the
+assignment of ictx->xstorm_st_context.common.fla in
+drivers/net/ethernet/broadcom/cnic.c in function cnic_setup_bnx2x_ctx.
 
-On 4/7/21 2:09 AM, Aditya Pakki wrote:
-> In case of rs failure in rds_send_remove_from_sock(), the 'rm' resource
-> is freed and later under spinlock, causing potential use-after-free.
-> Set the free pointer to NULL to avoid undefined behavior.
-> 
-> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
-> ---
->  net/rds/message.c | 1 +
->  net/rds/send.c    | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/rds/message.c b/net/rds/message.c
-> index 071a261fdaab..90ebcfe5fe3b 100644
-> --- a/net/rds/message.c
-> +++ b/net/rds/message.c
-> @@ -180,6 +180,7 @@ void rds_message_put(struct rds_message *rm)
->  		rds_message_purge(rm);
->  
->  		kfree(rm);
-> +		rm = NULL;
+This was introduced a while back with the following commit:
 
-This is a nop really.
+commit 619c5cb6885b936c44ae1422ef805b69c6291485
+Author: Vlad Zolotarov <vladz@broadcom.com>
+Date:   Tue Jun 14 14:33:44 2011 +0300
 
-This does not clear @rm variable in the caller.
+    New 7.0 FW: bnx2x, cnic, bnx2i, bnx2fc
 
+The static analysis is as follows:
 
+1761        ictx->xstorm_st_context.common.flags =
 
->  	}
->  }
->  EXPORT_SYMBOL_GPL(rds_message_put);
-> diff --git a/net/rds/send.c b/net/rds/send.c
-> index 985d0b7713ac..fe5264b9d4b3 100644
-> --- a/net/rds/send.c
-> +++ b/net/rds/send.c
-> @@ -665,7 +665,7 @@ static void rds_send_remove_from_sock(struct list_head *messages, int status)
->  unlock_and_drop:
->  		spin_unlock_irqrestore(&rm->m_rs_lock, flags);
->  		rds_message_put(rm);
-> -		if (was_on_sock)
-> +		if (was_on_sock && rm)
->  			rds_message_put(rm);
+Unused value (UNUSED_VALUE)assigned_value: Assigning value 1 to
+ictx->xstorm_st_context.common.flags here, but that stored value is
+overwritten before it can be used.
 
-Maybe the bug is that the refcount has not be elevated when was_on_sock
-has been set.
+1762                1 <<
+XSTORM_COMMON_CONTEXT_SECTION_PHYSQ_INITIALIZED_SHIFT;
+1763        ictx->xstorm_st_context.common.flags =
 
->  	}
->  
-> 
+    value_overwrite: Overwriting previous write to
+ictx->xstorm_st_context.common.flags with value from port << 1.
+
+1764                port << XSTORM_COMMON_CONTEXT_SECTION_PBF_PORT_SHIFT;
+1765
+1766        ictx->tstorm_st_context.iscsi.hdr_bytes_2_fetch =
+ISCSI_HEADER_SIZE;
+
+The re-assignment of ictx->xstorm_st_context.common.flags in line 1763
+is overwriting the value assigned on line 1761.  Should the = operator
+on the re-assignment be an |= operator instead?
+
+Colin
