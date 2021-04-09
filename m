@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E279935980F
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 10:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C591359812
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 10:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232203AbhDIIid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 04:38:33 -0400
-Received: from mail-eopbgr30077.outbound.protection.outlook.com ([40.107.3.77]:50793
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        id S232320AbhDIIig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 04:38:36 -0400
+Received: from mail-db8eur05on2083.outbound.protection.outlook.com ([40.107.20.83]:61615
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232021AbhDIIia (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 04:38:30 -0400
+        id S232161AbhDIIid (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 04:38:33 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oAIt6yb0SaEDro9WVE3cm1MXip0/7SZ2GoP74TnUiL9+WnbaRVUD+/fsPtg5xqJV3LRbaaGqaYTo5EiP7gG5rNGuigL+2rdIIEenDdCDOjzVROLbDeFe6M927VxGKVgT69sKHnq4CLwoxI/BtTdesIGnz2+Xg50YhdmebJHYR1PJ6yd7hUlCFHgFskuKZhcEIpND6uRipgjLIF5IM9S1J+gxbLH+i/3nXgpj10jsqMcsLnecgqR+ZsFAnZ0siYAd3yRHIALNXsx319YVDvkkA/XcMbdBLfa2jWj1jkhk9G5KAmCo4yd1w1gr09o+hek9gkuRSABGEs5wey31mcbTuQ==
+ b=Gx9mkAV6rvNR46tIQpss9qc0oLZrff97TsSnaciYqOJGuFf7J8fn8D7zdComSDO5/ixF2llWWU0qIxxW+mxFSb08jMb/+L/jmrQnq9OAQ7CIYTb/+VM2G/hph1CSHKydcQE6HLj4XFu+7VoEM7i8aLgWLVNIo2pf9vHkXnA1oA95fnTACrgVCK8rHlS95z+yrT4izE7F4EcSUl78zKXJnKX0OWl+JkkWiib/XDzasjHuudvlC1VMJWV43qUniXJDRiOR+N4UdSIV3JLly6RRwpPjAuYS6/whVGuPFxrxczmiM+CLxzr7JQFNyz7tafK7i8k+e7dgNv0LckaSye9d3g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ci/5m4BuQuvSU5S9ipW21U1f1kWeQmz1Ae3R+0Nlexs=;
- b=HDQIZioovzkzse9YBleGFKnTPU4P9QneOgpsFklwD8cUzvpsTSzxKKGK8D6q7Nnf8Xank6uEbPW3pWXaAleD0vpl+FW8dtLqhEQTgiGoRFaWk6SSB00DYcSs6unV4237kFyvP+NG1NrSke6BgsrJHBmyiRfkKuCTetxaeXH3e92Xn0M619Eot6K5jcGNVfM1kko8a0cIwuKCso+7/TB7n4LNlss8YEZgH2ZOp4+gakfgRSKAYIs1f7KG9ruzLZmzV2+EYm/2fKWOfnZjSuHrJQiAV8+pJN4XruPqDQO8Nqp2g3qV4cJ1wyqYmZXhOUu7OKcs3awhxL7XDTUM4IyaQA==
+ bh=3iB9kddQliaUKAkoLWowI2Km+Ju0958c8++EXuYyz0Y=;
+ b=SGwUHhcfhAcA6Qje1EnQCergD8jI+nO6o/blyLsPx/I5CVFuxQIR8nHvG2EyW5FJZoQ1tW2Cb1H7vlImGcHA4eJRo66j05NlKF7B6ku+rgdNgWIlnRqdCE4mu7CwgkJ2VfWDrNJFw1RZU97Xwsr/WafMe6SRe/VtiD1pN/oDGL82oSFKA8iSHVSvHXZIIpXTNgt2E6QTGzdDeliLNxKt1XxkyBZ2mgUKzimNVhFJmbE+KxZ1O9vODA4X3uOfb8ngf5VRi7o7ldhZFVYIytvZLlgIw2ZmaduHWrmhS6IdfqcYUBpgDnucOOIq7i1UHdOZdvft8PMaLGhk0+n9KaZZNg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ci/5m4BuQuvSU5S9ipW21U1f1kWeQmz1Ae3R+0Nlexs=;
- b=KYp2hp7l8kbD/OR66tow9HxQrn4BV0hg84s541PkZZEFha1YPjVu21X8Ug3TtKTwxjEd11oaztjrqd0YQpbtWVchIcKQI1iyG2YoQyDpFIg6AcqmBYBchylEsrRUXxc6PThipYG/sj7LGSm8mcaxatfagEj/WzeoRb8+tNgKBYE=
+ bh=3iB9kddQliaUKAkoLWowI2Km+Ju0958c8++EXuYyz0Y=;
+ b=ZHquo/VAdubbsghaHuFTCouXS2sGRnJ7r18+olPMnm4AaRaw30tBSIjZnDuEPmnaVlzcdfgDRINWuLb9mb9sB5q1+QlAwhkcbZmJCkMS2b06sfIz8p2lY+pdRIEvw+nA0OXNE2aCFjPEQWhoZ5SbFNrSwSN4YTeqB2eMgEWPUew=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DB7PR04MB4521.eurprd04.prod.outlook.com (2603:10a6:5:39::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.32; Fri, 9 Apr
- 2021 08:38:16 +0000
+ 2021 08:38:19 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::9598:ace0:4417:d1d5]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::9598:ace0:4417:d1d5%6]) with mapi id 15.20.4020.017; Fri, 9 Apr 2021
- 08:38:16 +0000
+ 08:38:19 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         frowand.list@gmail.com
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/3] dt-bindings: net: add new properties for of_get_mac_address from nvmem
-Date:   Fri,  9 Apr 2021 16:37:49 +0800
-Message-Id: <20210409083751.27750-2-qiangqing.zhang@nxp.com>
+Subject: [PATCH net-next 2/3] net: ethernet: add property "nvmem_macaddr_swap" to swap macaddr bytes order
+Date:   Fri,  9 Apr 2021 16:37:50 +0800
+Message-Id: <20210409083751.27750-3-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210409083751.27750-1-qiangqing.zhang@nxp.com>
 References: <20210409083751.27750-1-qiangqing.zhang@nxp.com>
@@ -56,49 +56,49 @@ X-ClientProxiedBy: HK2PR0401CA0014.apcprd04.prod.outlook.com
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by HK2PR0401CA0014.apcprd04.prod.outlook.com (2603:1096:202:2::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend Transport; Fri, 9 Apr 2021 08:38:12 +0000
+Received: from localhost.localdomain (119.31.174.71) by HK2PR0401CA0014.apcprd04.prod.outlook.com (2603:1096:202:2::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend Transport; Fri, 9 Apr 2021 08:38:16 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 10914813-7557-40f0-c4f9-08d8fb32d17f
+X-MS-Office365-Filtering-Correlation-Id: 004d3919-dba9-49ed-f8dc-08d8fb32d3bc
 X-MS-TrafficTypeDiagnostic: DB7PR04MB4521:
-X-Microsoft-Antispam-PRVS: <DB7PR04MB45216750AEA528C7A79FB329E6739@DB7PR04MB4521.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <DB7PR04MB452192BED83D12F352256900E6739@DB7PR04MB4521.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /IQi/usn4tVSEtvVjJm9eVW9NRY/4P8K7CePIcUEA/2ROn5Puh2DP2upI0bsim4xgx/6HTBoh3GEZ93TcSFOw0mhFBEJOUdxK3d96pAYuYKIXI4ya0t08qFt9mgm3txcp6LBck6W+l+in7fPMEkKCGfr3T47JtUjZmc34qUUYvFsxuLDw2WGjFgEQB4q+gnUEHEgL0BBPlLgeqlpeifRouYwDFkcKvvJ3cFhnCevvAqfHSI5Qc2zm9jvazJqxp5/vEUe9B63R7nY5iyxyg2lAz7s8gFJQYbCijxG9Ksc73Mth6Go2ls0zUkqdeLxpWBwarkuuKvU1D/hF48HZp3QvGb6aZM26gg/SWncfyTr2KPd5A3DjZ0FGKIfQVm+5w3zWkKCb5TGG2ceFEoK8pO82jMKhPA1WM+H19OOJVB9x3MgxIH5FlstMQjOvUSycalNIOx0K5bZRc6y99OaixEhZhBUVv4D0wExVghh6e0yODvpQs82FMNqqpkoEewr/+EfS/SkADzJQUDaJsbM2ra6JRvBz0kpe1/Xg0WlOemjCfBqnzMxLu8/jD9IinrDhr8oEHgAs/rsL3QC6PffV7HRBFEPaebc7iBCkLTajdo+Jcp21L1BJHEThQZbYaeCohSkFnFzzOdWBBfKDQ3EaaDib9lKZoCuVx0FnXaLBFQKakW9XylieuFthYUHhFsWpV62HM91272fXzKExqkBhuixfkGhUuIcY6PYQFrBV2QfZGQ=
+X-Microsoft-Antispam-Message-Info: 45GDGOHwwfM6Tm583Z6BN4Nb63uN+yAIWQu7q5uOInWsGV9cvf/ndxtlrYMpq2fR/Hr8C6SAWrByR+ZYRX269vChFWsSZTIVzSZhFYFNgTh0ENO2fnuOXaHcdmXn+VlsWEUH3vd6vljl8ozw56tCB5w1c1vmUcDh59zLZN+2pdk4vyQ1iEqXMiD2OAbXmtRIIm0Cqhtkei9jL1NAyn4DmERZp2hfIAqgAWw2zKdJ8XZ0ccCZL7JoUdQKv271b16xX4M6Ggl5qnWpcRa3IKu2HNorV8jy3iC6Pm35cl71vq+OOOxfaZqe5kRhVvOL93jRJDin4kA3r7v077A/J0QO7arQRxBaL4j9TiTb7t/UstLVvNrylm3r2AstiWK/uYGpKYiF24hL4YCksAO6T+gaL2NTRKOP2hU/zWwcABtsfuKug3a5GOXh60j2wke34xvGp8YtVfiGk9/qNp/n5GuJYrlSFGLFLNj/3D5iMYf0d2vSp51s6ManXWIkp14bJiRM+pU8aud3FVu4Nz7iIQGNLtIQ8RiHfv8n9Fc3in+KbgSDAd6F9Nb6E3jk/xvpNROtQPPWY7Slpp94LWIAw0XO9moOYMdhkTjLwM1qhGMuSZqZnuYzf5UUHxRuhmcVwRW/FlmXDaAAsMNm6nxGmc2MGfLqsyq7XlObwQaY9ouHPDPpAdjR/1qeImtMwalWOw2xRQwQq45FdpqOJjREsMOzhdFYsrvOKIOzxKNM47R7LQA=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(136003)(346002)(396003)(376002)(8676002)(6486002)(52116002)(316002)(6506007)(6512007)(478600001)(69590400012)(83380400001)(8936002)(2616005)(36756003)(7416002)(2906002)(26005)(186003)(956004)(38350700001)(16526019)(66946007)(6666004)(1076003)(66476007)(66556008)(4326008)(5660300002)(38100700001)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oh3aaXVpF+jSsSnaxfz50gpWUfcpBs7LIBa/YHAtzncjpafrsCX0jjYmczYN?=
- =?us-ascii?Q?Tbhc9n9m3uHUEokwTVhQCyjgVCMSGR/wOqtudjcYCdVtr6VnDDzmhLH+XqBf?=
- =?us-ascii?Q?qFQQaFnAbOcc3Idy2WQa8ctZgqUdFc3VbMLDY/PrSK+5uoCxPaB/PauEqifS?=
- =?us-ascii?Q?9mOoyEab9ILG1Y5q67CN6kHDYb42QU07DbZe52e0O159dWHynDRsqUYxkJ4R?=
- =?us-ascii?Q?QRA7VUhV2JL3WIrjp8OBH8QmVk7lK1hbuadIxEgZJyW9qXBLwsIkHqwWZT4T?=
- =?us-ascii?Q?OD+c/DWJVKg6WBKBRr6V1EyhyJgKUmPlleDwd0bxn2xcmQTkiW1iAi3US4mR?=
- =?us-ascii?Q?AQgkgqX8GDhXoOSCdFO1koiE+kZ5R30m9o5PpLwEkO4FClWNBrMQig8b3QoK?=
- =?us-ascii?Q?8Bs8Yk6USLCikHdCm585XxPpSjakdXy3Y+MohlcdLKXrigwCHuBI4Go2nrGW?=
- =?us-ascii?Q?81tOdoZNJJJgVXty4RVXj2r/Chn3j4Kl1rAe0Q/V+oQeiLXmWjKBKW61xL8H?=
- =?us-ascii?Q?UCdbEUt6t5xTNjA4EJMZfHpUOBOYdUoitzGm+ToStpZ7a/K4oN7MJ4Phqeru?=
- =?us-ascii?Q?4Nd8/cjNq/3KWuaxnBOUPzFtxxoE3kkRYzeWajX2YXJoX9rl1Hx3m0h3KXlQ?=
- =?us-ascii?Q?XPQFih2Sr2MHSWER5dr9AjHYIC1nkbesjoKdSZk3yf2gQq6/8uYsU58S4bzS?=
- =?us-ascii?Q?27bpjD3Rpo7vKi/SmWnhqFO0mLJBQnpdEzZnjz7AKrVIAFb31H1Vwh9/ylH7?=
- =?us-ascii?Q?paHSaQt9E1WCvWtUgOh6ceSnk4nWMhbNj4J0HdauaVTJWHxrUWYL0TwWra/6?=
- =?us-ascii?Q?Phamc/gxAt6lrkuOfhwAC+I52E/8nc1EqFXfRu2hJPYtjQlFAXQsIu+F0ill?=
- =?us-ascii?Q?IzzAJq3osnt3ejaP1IC+YSoUtFzeEwBWJfS3BkvgKlvn1l/ZdUdtQBZWmRwL?=
- =?us-ascii?Q?DvSkkYpdMVBuI5AsusyWcGE6eUcvU30Wqu8BWKeOYAXS+Y1HS7ijeWHgtLCZ?=
- =?us-ascii?Q?2IGv3PtO+Whb1OwNbCde58+NPCRkbLFdMpxSSuf1eu2sN4J0HkZYsB65hQUm?=
- =?us-ascii?Q?A0UpoWRs7uz5FrAjTCPIs9Y8G9yu78ZWgB2xkB3Ror6mgPfTkA9+rRJCuPDP?=
- =?us-ascii?Q?5NTQLnKjgRrYTNtaoih5L9NwwAjgAzLccfnmQ6Ei9QVRhTTM2zo6HD1zTxzC?=
- =?us-ascii?Q?77lrgaPA3ITkn31IbtHDMfr1airL1JIKDy4B5PwNXNvPU2JLlGJt6Wedo50T?=
- =?us-ascii?Q?oBuh8m4LwtrQFmMfX0ZDaJJvjxpfVzp9/yM1dikBvfTEF1VU/g5YZcBbkrw0?=
- =?us-ascii?Q?IoiWv8xfn5sPj5sQ2vSityFo?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?tEyeKy9IxcjhcB3Yshd4KrUlk0YuZqcbCMF0exWvcAxFg9xNy67GzaRv7sJU?=
+ =?us-ascii?Q?yvT2t019O1/juRXGm6OImH5FJ2/1qBH/RsHCxo+p3Bjv72SOZNS72Je6zN4r?=
+ =?us-ascii?Q?5Ct5Ulc8oPl7HC84256aMNabWh8HRWXKpoPCLTl85kfbMvVKUMx8FVs93kTo?=
+ =?us-ascii?Q?hmmybvUhn6Pu61DPkdQ57BLxkFSx3mHF0XI91aSkX/Fz0aV00fH02DOLhdUW?=
+ =?us-ascii?Q?QA5W3N+2V2Bp8bMHEEl7fVb/5DYjl2xaltlsNtalpwH4sjVs2Jr8N4eLxXe/?=
+ =?us-ascii?Q?Y2GMWmFYJiX+MtecUT/l2elI9yQH3jEhw3rps/vsWZvlDJvbBbejguKut5EO?=
+ =?us-ascii?Q?CaorXDqfAmCa6LducURb2nxkTwYTARNixgnl9xCjaSF+sWZyYZCxoJdas+pG?=
+ =?us-ascii?Q?V1n1MteCTyapVN6vSqQzcKL6U3xaSYUsPzUH1cs68q7ndknVuQ+Je1tqQ7N1?=
+ =?us-ascii?Q?+3mnZ/s+IZUC3PSDo7OqnkcoenSiN5VcyFLsmAFI/27oqtGnE1Ict1Dn3pu8?=
+ =?us-ascii?Q?AwIm1kRY7WKZ4uC1wZCB6O7iPq3pvapxM2EFC5cw4whdDLHaqp04MDM4ADRm?=
+ =?us-ascii?Q?YA9wOT5A9PF5J3BEgXcaS7CLXvVyC1qbHhMq4XTK2wXThSTG+qI/k8YVXOAe?=
+ =?us-ascii?Q?21Tqg7hEXFe4BFMWKeRFF87Fevm8CHDlGiyPfuidY+V59ZWmmpzgbRVOAVPi?=
+ =?us-ascii?Q?AsrL1MkwHqu9qlaT2FQAI87sgDu4hFFyRw+xSgHkKCRMGycIiaKTqNhHh1Lo?=
+ =?us-ascii?Q?giRRd05MNn45fuYDilGj5CgkRXnLZhLxMwOxPUJmFdD7NOa6Xkqo0RZN1ofj?=
+ =?us-ascii?Q?c11mosSXS0dNW2SoQA2809z5iFCyU4UGr9q0oYG0czZfDqTo1Ee6kjLYbkTA?=
+ =?us-ascii?Q?8pTCzCLtpFxq+jmAh0RIaV++9WzRemKiMMaN703vHvIcGijxAov79sJDnazP?=
+ =?us-ascii?Q?82QsWIhLnPeOrH0WkwmcGz88pbmd7T+ZhE+bLMwzKKdJ+tllDvjYgHvJDzb4?=
+ =?us-ascii?Q?J6qGMLYcOOGKKeLNSb4WfzZ/KsGQOVCciahdMS0zqtV40ueGC8sUi2cvaEci?=
+ =?us-ascii?Q?Colojp2zkpl/z9Kbfsz3JF+gKqO4nKt4XSp8PkchWgbt2Q8MFv4D0+1TLSU5?=
+ =?us-ascii?Q?if+/FkRFKAw+8bdtFZg5Dfy/i+7XBamcfkSfmlvfKVbeP6mcHX2DCeoZ2ILF?=
+ =?us-ascii?Q?VHVt5F9iU9GboUn4QThI3LFXhSVqn8SOmkHKHWn8nsarrMJeLuw9rx7S0Grb?=
+ =?us-ascii?Q?/4ypQaFHMpuyuiDnIZ5wUxv/C7HJ4Y79q7GqNZxaGJONGJ/uumGGtxoLxvEH?=
+ =?us-ascii?Q?ObFhGvUKbO9i1eNmRwqLxGlR?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10914813-7557-40f0-c4f9-08d8fb32d17f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 004d3919-dba9-49ed-f8dc-08d8fb32d3bc
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 08:38:15.9681
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 08:38:19.3483
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ylJPxWitLIr5lKd3vulXOXoE0qrqS20qq5iZn/Syajkb4GnD2n0HjlEJJNKW6aA5R/EgvLeBMH80dffoydk1XQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: stWM380tICWbwHEwRGLX3WZZcHC9taJxB81XGqJHEl5yu7afnBG5I5ulOOrkOC6DdNMDctaoumTKFqV6sZq1QA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4521
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -106,52 +106,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Fugang Duan <fugang.duan@nxp.com>
 
-Currently, of_get_mac_address supports NVMEM, some platforms
-MAC address that read from NVMEM efuse requires to swap bytes
-order, so add new property "nvmem_macaddr_swap" to specify the
-behavior. If the MAC address is valid from NVMEM, add new property
-"nvmem-mac-address" in ethernet node.
+ethernet controller driver call .of_get_mac_address() to get
+the mac address from devictree tree, if these properties are
+not present, then try to read from nvmem.
 
-Update these two properties in the binding documentation.
+For example, read MAC address from nvmem:
+of_get_mac_address()
+	of_get_mac_addr_nvmem()
+		nvmem_get_mac_address()
+
+i.MX6x/7D/8MQ/8MM platforms ethernet MAC address read from
+nvmem ocotp eFuses, but it requires to swap the six bytes
+order.
+
+The patch add optional property "nvmem_macaddr_swap" to swap
+macaddr bytes order.
 
 Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- .../bindings/net/ethernet-controller.yaml          | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ net/ethernet/eth.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index e8f04687a3e0..c868c295aabf 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -32,6 +32,15 @@ properties:
-       - minItems: 6
-         maxItems: 6
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index 4106373180c6..11057671a9d6 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -534,8 +534,10 @@ EXPORT_SYMBOL(eth_platform_get_mac_address);
+ int nvmem_get_mac_address(struct device *dev, void *addrbuf)
+ {
+ 	struct nvmem_cell *cell;
+-	const void *mac;
++	const unsigned char *mac;
++	unsigned char macaddr[ETH_ALEN];
+ 	size_t len;
++	int i = 0;
  
-+  nvmem-mac-address:
-+    allOf:
-+      - $ref: /schemas/types.yaml#definitions/uint8-array
-+      - minItems: 6
-+        maxItems: 6
-+    description:
-+      Specifies the MAC address that was read from nvmem-cells and dynamically
-+      add the property in device node;
-+
-   max-frame-size:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     description:
-@@ -52,6 +61,11 @@ properties:
-   nvmem-cell-names:
-     const: mac-address
+ 	cell = nvmem_cell_get(dev, "mac-address");
+ 	if (IS_ERR(cell))
+@@ -547,14 +549,27 @@ int nvmem_get_mac_address(struct device *dev, void *addrbuf)
+ 	if (IS_ERR(mac))
+ 		return PTR_ERR(mac);
  
-+  nvmem_macaddr_swap:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      swap bytes order for the 6 bytes of MAC address
+-	if (len != ETH_ALEN || !is_valid_ether_addr(mac)) {
+-		kfree(mac);
+-		return -EINVAL;
++	if (len != ETH_ALEN)
++		goto invalid_addr;
 +
-   phy-connection-type:
-     description:
-       Specifies interface type between the Ethernet device and a physical
++	if (dev->of_node &&
++	    of_property_read_bool(dev->of_node, "nvmem_macaddr_swap")) {
++		for (i = 0; i < ETH_ALEN; i++)
++			macaddr[i] = mac[ETH_ALEN - i - 1];
++	} else {
++		ether_addr_copy(macaddr, mac);
+ 	}
+ 
+-	ether_addr_copy(addrbuf, mac);
++	if (!is_valid_ether_addr(macaddr))
++		goto invalid_addr;
++
++	ether_addr_copy(addrbuf, macaddr);
+ 	kfree(mac);
+ 
+ 	return 0;
++
++invalid_addr:
++	kfree(mac);
++	return -EINVAL;
+ }
+ EXPORT_SYMBOL(nvmem_get_mac_address);
 -- 
 2.17.1
 
