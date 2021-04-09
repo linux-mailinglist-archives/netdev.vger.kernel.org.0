@@ -2,139 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CDC5359113
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 02:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12705359115
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 02:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbhDIAzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Apr 2021 20:55:02 -0400
-Received: from mail-bn7nam10on2121.outbound.protection.outlook.com ([40.107.92.121]:39165
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232426AbhDIAzB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Apr 2021 20:55:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b19SeGfqJFWBVKctsA/uQQ9czRMy5Ea+ulogO1TPFK5B1rDPweMDSTOkUnHVwYLx2W3l+o+FAZpHCij+p0l4tMSGvYYIZImS4NpZAm/V0vWlO+pCVJvp+spowKBLAlM5D6iPrHaliTr/Bs4EP+5jDN02amsldAf7vCG+qcbPPkSjwVylorhovM46bdJGUtcfsocWtSmKbkq2X9ESfCbU2mGNKE+Bo61vQivcBSD/7Xiz8CRs77QxYza8AFy2ifqZSieBGeViWSMLysVhmS/n7ncNJA+PVuWPV2KuqQ7XcCkRWh7QwAuaJzQRKMO5/C4tfpAbApoSvMdkX8eYLJMI1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RivmEfd1Otp0JWXpcOlCXuNuxa4BfBmRmOrg01Eug0g=;
- b=HNaWIv2nrueBaxOrPmL91ej9CndttjDryyX4SBQxftqylXTz8wITVUB546nJHTzctchAUeL9XQd8VfsTIQ4l+bLrtAR3OE3snNhMDvDcEenHCndQP5YLOLmFnZqClXvQJA6mDoRNealQIlGF0hinXfHLeYrYJecAo/kma9M9DZTMrUFftNLN+SBSihSqLMlPNhAWhLRcIwtE43aGbSAU0FLSPiqJN/+MWFHM65rTZari0Gb2jNydxB+FrDUjzFLGoNKOMAUtccL6EbyeePxt8CtBUKQkP1J2USIDQvAa5hP7jHzYqibq2BzDA5uu76icxNSf+ftucDnUfrMlGcg00g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RivmEfd1Otp0JWXpcOlCXuNuxa4BfBmRmOrg01Eug0g=;
- b=O80nKVB9Lzs6hGLygEAVRODthC3Z9FzzJxtrWLrzAAGceLjeczCcA2J3jciv1+ejqF6nWXMGNBvaIrosAFl6BQjB2AnVf0vukLw/RgI1BLzbe0V6swDCvugva+VkxXCllibcPto+tw1jCVY/E/qgTGVOCv3G/irh+W28utYFuoE=
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- (2603:10b6:302:10::24) by MW4PR21MB2002.namprd21.prod.outlook.com
- (2603:10b6:303:68::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.1; Fri, 9 Apr
- 2021 00:54:47 +0000
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d]) by MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d%6]) with mapi id 15.20.4042.006; Fri, 9 Apr 2021
- 00:54:46 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: RE: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Topic: [PATCH v3 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Index: AQHXLNeAZWy01RJh1EWXtFcKc+4EuqqrW8LQ
-Date:   Fri, 9 Apr 2021 00:54:46 +0000
-Message-ID: <MW2PR2101MB08920609294E2F94F362EEABBF739@MW2PR2101MB0892.namprd21.prod.outlook.com>
-References: <20210408225840.26304-1-decui@microsoft.com>
- <20210408164552.2d67f7b1@hermes.local> <YG+gFMnVuvtlHNQQ@lunn.ch>
-In-Reply-To: <YG+gFMnVuvtlHNQQ@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=43b17a5c-e589-42fb-96c7-529aab6326ba;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-09T00:53:14Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [2601:600:8b00:6b90:adc1:3ae7:8580:9c8a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 40c2168e-4d01-438d-9330-08d8faf21258
-x-ms-traffictypediagnostic: MW4PR21MB2002:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW4PR21MB2002E88ED437AC21CA0D637BBF739@MW4PR21MB2002.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qkdk3AkjlCkPhln9JrL4B/LixqR5wXdqG/mwm48HW7ocbrJRqjXL2bk7bNQbvOuEnN4skymX7S+zw//nfUanayB1UkHZqmaUdV5HVBemLVrCunGfAm63wbD8nSjuD7/5KOS+kPXaZiGW+CVBfZifxJZWZK3Uz3VWtFsFeCXusHb544bdn1myIdVtCjIHlebdEW7aMJylhSctd0kyV+HH0YNLXsyIsvYfh0SQXyyvFJzhuYFuM2iPuzlJuE0RbYORnqML72o4Rkssd6DS09w6ukYgwl3YZ4oY0uYT/8jPRJlmcdtyesacp8AxQa9COoMZYLHqAnORodjgiTDQpPeadnGww5i51Wd3V28U5ov3RnKEsSE2lGwcwbLwx0ne4mV367tA2Ss2BIBPvI8kFAA9AtNfxGHraaJx17HtpPkMPFa5ZnAmMUGqxwaES0HtvWh1bEsBumAY22sqD+IanMvJ2JeLyCyXeuJ1efy0rvJ7exzUApsxHUrggmz0fcGV3MZXROL34v45i4pFUx2sRbt8vNeeh+j7Pem1sOXjSyqEjjc1t63qum+jltGhemHlOnCwCASBnRa4G6491P9bVbYYEOt7O689JmLUS2C7LGg00XAYl+oM83VC4JJ8D3DS55t/axUq9TL8WIRKWHQp6HPDGk8KQEdvyd3uwosw0wTKCk8=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB0892.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(366004)(346002)(396003)(47530400004)(186003)(7416002)(8936002)(76116006)(5660300002)(33656002)(110136005)(71200400001)(2906002)(54906003)(82950400001)(9686003)(55016002)(53546011)(7696005)(66446008)(478600001)(82960400001)(10290500003)(316002)(8676002)(52536014)(66476007)(66946007)(4326008)(86362001)(66556008)(64756008)(4744005)(38100700001)(6506007)(8990500004);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?hce9iC1a78lNuge7mOkveYPxBIjUNlNcRIQLWG2Pxreem4hZbJofvWcguWEP?=
- =?us-ascii?Q?dyrygRlBnkSlH2baJUntxjTn0fxrxM4TPbVZORrwNUL2d8CUiAIC844ffvMZ?=
- =?us-ascii?Q?57qIsLB8oKiQ9JQLmkqz69TodUvMz4O7P1dz5CfHZsIiAZbN0o+Wy77wkRt6?=
- =?us-ascii?Q?7toxFNSpfL+UcarJtGmGAzhzclS3hGIntMAQNR7bdIut0B6XmfO30795HF7A?=
- =?us-ascii?Q?oq6kGorijPAbo6aGtvybcYnF6tZrkDFzj7SToJC4Xsza3hsuefSHjl1Pzla5?=
- =?us-ascii?Q?qDxjMOUBSDugfkqB+/nwoU0AIr0eVR9Gh1+XdKEULDQ6rwQ/v2968g0HQuUg?=
- =?us-ascii?Q?OFWuE55ToDTuDfMzqQGpuBlGPijbVjLYi6jccVr6Ct5mnMzOk/yrVSceYsBZ?=
- =?us-ascii?Q?u4RN1LRik0dGvS8ek9jI8Ef30RhYaL0UDsuPt1s/RBEXIYAbxdnTKDuPn0/v?=
- =?us-ascii?Q?ju9PKn9zch+Y/GUpCj6tbX3QtkEO3kFwZrJ3e8Jhgdmr6F99Fmufb2aT/wdW?=
- =?us-ascii?Q?j3jzcUMY/+z710FFxaMmWHf8crKhbJvT475xqQy0H3912vakIsPApUxUZhgE?=
- =?us-ascii?Q?MbjL0H3JTHIxQR62FUPQGDlhj5HM31o5Ad0YuA5Ds+jHAUVEwPfjO0JftX5L?=
- =?us-ascii?Q?wSvvhb4RVtdcKIOmCd3Uzztuw8XxULtHXgVY+NXsa6eXI80AgG1bQbpyKNW2?=
- =?us-ascii?Q?jwubYedzxFTHTTyLLh3xVlKcftr1oz9os1zI89m/K9VQiPoOJl35Koif1GCy?=
- =?us-ascii?Q?rWuJdLBohZcPhTdhBa3Tms9dopkWEA9IefN3iIdJ0M3LkLezgrufM75+zrAj?=
- =?us-ascii?Q?0d8bQxG48psHq81UZ46yqP0BjAZdGSGC4F4L3rme1P7Ti52Z6wa7p/kZ2vmm?=
- =?us-ascii?Q?BFtvPA29hfrqSfW0Bo7nui2lgZxky7EfkuzuZdsXU6QiISLa+IRM/lGXmcsM?=
- =?us-ascii?Q?cZ2VPea87sBpAYNxK0SHX5jxIeSFTRU3SWJJg2VbcA8jDxQgC5xIHiNzgUi6?=
- =?us-ascii?Q?ALAOgHOuWeoRVKXGW7rEXjiLUS3DqwXmbilPbdZAD0vxahQBJ0NWZjBGy68T?=
- =?us-ascii?Q?UI5J1yipyn3bJGkDNO0fCXKJL0aDlh4JOtDGXN+WSu653JC0ajDaK2R+MGn7?=
- =?us-ascii?Q?019tr69PCsWjftjpfVqvpzS+ItARC7UbqHMPHviMBvy4YDzJ6PR5qOJmlGbT?=
- =?us-ascii?Q?ez4aVpq0NcgPDzKkUTwttDF8XLFuP5cDmdBRXJs9i+FfhyLSUZE7W4OBad2f?=
- =?us-ascii?Q?sanP1XfxXXj5Y0usI777fHF44e0YUzgYUDEO677BdJfCSGafY5m1FiAWf/qG?=
- =?us-ascii?Q?xLNUYb5/6nMy0h1kLX+mT6j9MtvdnrNJcrR+zqihEfLvEzWfp4E02I+W+Mwk?=
- =?us-ascii?Q?x0EutWS/RBzzMLIrDP2/LKJPX/HR?=
-Content-Type: text/plain; charset="us-ascii"
+        id S233095AbhDIA4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Apr 2021 20:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232426AbhDIA4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Apr 2021 20:56:36 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EE2C061760;
+        Thu,  8 Apr 2021 17:56:24 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id t14so3394483ilu.3;
+        Thu, 08 Apr 2021 17:56:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=UEdsZX4xRKTXy7Uhxf5TSkdKwTjEEWUxQ3XylhoYirQ=;
+        b=qkr1UC9iVxiC/F7eKOS/bwa6AAfT+Q3NXwb9FTbHB3CRanaZclRhekzYIBgEADA668
+         82oWjx+UzO6vHE0iQaZBEUZPG451oJ3G9uHKFPpgD1pXaALQ6odKuOgSvB/R20f+x1Ce
+         MkM1NmbSOWP/5b/8quKpwGS4P0oQQSUlP4cxNI+r8RbUy/VoGeFtthhuXzld14cScrO9
+         IE2rk5cIretqc4wPeFxiqFVIMQFBoTMIM6nAxPeVW2e6Gtm+MLrsbJygbY5MIOh6RYML
+         9QYAsd+/Hyz3Bf+XGH7w8MbgRjRNPTAvnxuS01a8Nud8RyvyqK3/qQ8yPe2wI7TFcsZe
+         S34Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=UEdsZX4xRKTXy7Uhxf5TSkdKwTjEEWUxQ3XylhoYirQ=;
+        b=l/isTb9JAq2E4RGBiJ9W8b3TZbrBdYrcMOhGNqqD4yJwG7pc0PkOkGtPtouuDZBXbp
+         nNHgsHa+jqlTA7HVkJMv2PyGO8WcfmawL1Lk65+R8Zmlm4SV6zd7l2dKqogJpsHf9Ud+
+         ZnRwaPUOb7cnHfYRz5dx3w8Sj4Fv6+jIQWtfFJnmHtf0P1DH9t89JxRnHtFF0EeFTofV
+         wED7nbV7h4f+KLOSoidC4seKmkFXvzM61ajjjbNUCm6T+ww39h7UnaxfJPX9RoZOaPK4
+         j+V9nwU3jUynnf9o9u8lwNt+l6BtUARWDUMmnxnDalNz68/RUkScZP5EC0zChoqOsrwX
+         Si2g==
+X-Gm-Message-State: AOAM533vH5cXghFHfAv848GhNVCYZl8fnJFB9RsAvBo9dkZ/6qmKctmT
+        4OPeWka/BaWun2Qr1REESj8=
+X-Google-Smtp-Source: ABdhPJxhyOwfkTTc+MdVlfsb5am4+JwHytngO8T/7QAGvKIiJ53g41x+hLH8AT8i0oFwja9vzF4ysg==
+X-Received: by 2002:a05:6e02:174d:: with SMTP id y13mr8881673ill.83.1617929783623;
+        Thu, 08 Apr 2021 17:56:23 -0700 (PDT)
+Received: from localhost ([172.242.244.146])
+        by smtp.gmail.com with ESMTPSA id v17sm429789ios.46.2021.04.08.17.56.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Apr 2021 17:56:23 -0700 (PDT)
+Date:   Thu, 08 Apr 2021 17:56:15 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com
+Message-ID: <606fa62f6fe99_c8b920884@john-XPS-13-9370.notmuch>
+In-Reply-To: <cover.1617885385.git.lorenzo@kernel.org>
+References: <cover.1617885385.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v8 bpf-next 00/14] mvneta: introduce XDP multi-buffer
+ support
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB0892.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40c2168e-4d01-438d-9330-08d8faf21258
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2021 00:54:46.8450
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K6I/Uhh0YqxNw+gxGyRZByulMzzHc98q3M8Q9xBK2jRLHijjXF3XRjTzsUJiWih3jOJWoHDqaD1BO1HbiBwGSA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB2002
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Thursday, April 8, 2021 5:30 PM
-> To: Stephen Hemminger <stephen@networkplumber.org>
-> ...
-> > Linux kernel doesn't do namespaces in the code, so every new driver nee=
-ds
-> > to worry about global symbols clashing
->=20
-> This driver is called mana, yet the code uses ana. It would be good to
-> resolve this inconsistency as well. Ideally, you want to prefix
-> everything with ana_ or mana_, depending on what you choose, so we
-> have a clean namespace.
->=20
-> 	   Andrew
+Lorenzo Bianconi wrote:
+> This series introduce XDP multi-buffer support. The mvneta driver is
+> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers=
 
-Thanks for the suggestion! Let me think about this and work out a solution.
+> please focus on how these new types of xdp_{buff,frame} packets
+> traverse the different layers and the layout design. It is on purpose
+> that BPF-helpers are kept simple, as we don't want to expose the
+> internal layout to allow later changes.
+> =
+
+> For now, to keep the design simple and to maintain performance, the XDP=
+
+> BPF-prog (still) only have access to the first-buffer. It is left for
+> later (another patchset) to add payload access across multiple buffers.=
+
+> This patchset should still allow for these future extensions. The goal
+> is to lift the XDP MTU restriction that comes with XDP, but maintain
+> same performance as before.
+> =
+
+> The main idea for the new multi-buffer layout is to reuse the same
+> layout used for non-linear SKB. We introduced a "xdp_shared_info" data
+> structure at the end of the first buffer to link together subsequent bu=
+ffers.
+> xdp_shared_info will alias skb_shared_info allowing to keep most of the=
+ frags
+> in the same cache-line (while with skb_shared_info only the first fragm=
+ent will
+> be placed in the first "shared_info" cache-line). Moreover we introduce=
+d some
+> xdp_shared_info helpers aligned to skb_frag* ones.
+> Converting xdp_frame to SKB and deliver it to the network stack is show=
+n in
+> patch 07/14. Building the SKB, the xdp_shared_info structure will be co=
+nverted
+> in a skb_shared_info one.
+> =
+
+> A multi-buffer bit (mb) has been introduced in xdp_{buff,frame} structu=
+re
+> to notify the bpf/network layer if this is a xdp multi-buffer frame (mb=
+ =3D 1)
+> or not (mb =3D 0).
+> The mb bit will be set by a xdp multi-buffer capable driver only for
+> non-linear frames maintaining the capability to receive linear frames
+> without any extra cost since the xdp_shared_info structure at the end
+> of the first buffer will be initialized only if mb is set.
+> =
+
+> Typical use cases for this series are:
+> - Jumbo-frames
+> - Packet header split (please see Google=EF=BF=BD=EF=BF=BD=EF=BF=BDs us=
+e-case @ NetDevConf 0x14, [0])
+> - TSO
+> =
+
+> A new frame_length field has been introduce in XDP ctx in order to noti=
+fy the
+> eBPF layer about the total frame size (linear + paged parts).
+> =
+
+> bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take=
+ into
+> account xdp multi-buff frames.
+
+I just read the commit messages for v8 so far. But, I'm still wondering h=
+ow
+to handle use cases where we want to put extra bytes at the end of the
+packet, or really anywhere in the general case. We can extend tail with a=
+bove
+is there anyway to then write into that extra space?
+
+I think most use cases will only want headers so we can likely make it =
+
+a callout to a helper. Could we add something like, xdp_get_bytes(start, =
+end)
+to pull in the bytes?
+
+My dumb pseudoprogram being something like,
+
+  trailer[16] =3D {0,1,2,3,4,5,6,7,8,9,a,b,c,d,e}
+  trailer_size =3D 16;
+  old_end =3D xdp->length;
+  new_end =3D xdp->length + trailer_size;
+
+  err =3D bpf_xdp_adjust_tail(xdp, trailer_size)
+  if (err) return err;
+
+  err =3D xdp_get_bytes(xdp, old_end, new_end);
+  if (err) return err;
+
+  memcpy(xdp->data, trailer, trailer_size);
+
+Do you think that could work if we code up xdp_get_bytes()? Does the driv=
+er
+have enough context to adjust xdp to map to my get_bytes() call? I think
+so but we should check.
+
+> =
+
+> More info about the main idea behind this approach can be found here [1=
+][2].
+
+Thanks for working on this!=
