@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B231359723
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 10:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38691359725
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 10:07:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232560AbhDIIH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 04:07:28 -0400
-Received: from mail-co1nam11on2043.outbound.protection.outlook.com ([40.107.220.43]:62816
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        id S232635AbhDIIHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 04:07:30 -0400
+Received: from mail-bn7nam10on2079.outbound.protection.outlook.com ([40.107.92.79]:6432
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232087AbhDIIHZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 04:07:25 -0400
+        id S232452AbhDIIH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 04:07:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Znvyb1AgTZiJYClfsJYUN0KqfRpQahbV8R9ZbIy4OauR7V0KeCkMXq2l0koc5nKctrjv/WiUUcntXEc/yDoHsZ6lQR8gpqhux4U5D1XgHy0FbRsbTXuOh36g2njObFerdZji6CP+ooj/f12kH8Y1v3fSyTVM4q1hzNLTYX00DerxjMCw7E8w1uSOaQJmbPgUG/eFcEMTyaImn/DHJpEWNO9PwVjkZAEK4ueA6SPp9qJ5Nzamz1YLSr2jroXXRR+Jq/nQQmNF8+Ed7a5qsZxauxJS9ooK0AzQ7t4XrUQYJBNUuFWUOoKqnsGH2a9byk44aDZ7n2yCs8dM9HMQKTCT4Q==
+ b=np8xV2BNdshHvFqr5i4nLon1yZVEYoX9fvP6Yga9Ndz6PLrqS9dyg/5WBKOamBrbS2oEH1U5b3AMYttFY47TeAB0doOdyOwV+gRT+yO7+Erd24ADS/Fz/P1ryzldZZ5qKDjuXoHcNGvKz8foSMOGlg0IhmF1czzVWucRQQy9mkS0J9OO+Lkxvzcyxp5ey0zxppWsZ35WmJCeVBBPRYvb9x0oYixk+Mf0N16cjYNYoZ1p1tHDp9PhHOi3iV4tfARToqw4j9Ya36quSW/890mJDRL2sVFsAkv7+csK95jCu54i8kQhhhUT+gAFReZ2n5tjUkdX+ua3jFMDdUzdGo9nBw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SRjDAJ8OUpkf4M2DTeycMtAZ3N1WoRIJrhaWSnjaQlo=;
- b=gTcs3LFPPyRgafL/ggNhtJyzYGMMZHNFPnRXVAc3wOKUzr3PmxQezbILhLefEbOdy555XelnYJwhLzv+KXgU0HSYkfI7MUJ2/rKgZnnqiQ4nA7MM2+h2K/Uu9N5ObrFqcyM5jnU5JHnnfwKhcfwXzFGci7omTNgwmc61E9R7tUq1Ci7q88esabKY01HPyNjUsgA8ZQiIsuO+2ZPatxCgLcL+MU8Gz0wRY5X80XgYViXqiPho/WwokRb/vaYEwyaSrUS/VikZIOqX2tAOA4o68ZxQXhMxtKXwili+/NCGin0H6G5nMh8dpywo8RglEWZ8H6T5GoSaGzNP9oleh5Rqlg==
+ bh=7HHmgDlVK9ldPQmcHYFuRM6C5HFjcsNN9HVQmjzSAxE=;
+ b=LA/EKYUvPlX8jBssVx4xCaFuw9bTVOBvZ50il+hz2ZO+ErmstkfmfprFMlJVlwY2NJcP3lse+PLB5izMYqFYKBD+INljG5YX8ZqFRBCZmJOa9QlYnzL433mB583kSZPSZgplUt7ovHaZiRqNGtgiEMtDTbleGnPr3lyBUBbgl0UZ4n/LUMDQVhkACuhNdPU0+hCVcWgxN4P/M6/mVUkwKxHnHjzwmfELB2busfUzCsJ4OhltT7E0svswL7vOtElBdv70QtvkUJPLsZF6Ge2aqc2/5L9r9eejddeXnK+gyetEuGdC5ndOmvijy1JW/cJ5pXmmxSdSsq6g/0FUrZ4ILg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SRjDAJ8OUpkf4M2DTeycMtAZ3N1WoRIJrhaWSnjaQlo=;
- b=lir+KDJE0edXQbN/OeUavxvEzR0C0cmKVc5eQQFv+P2kcZXWaLXbKhzwgpPHzWjHhjqn/4EzyTqMa4WZDuvOpiWEc/Ro33M5YVj28ZMonpSbRSySf4uRRSPywZ5IFAbFtSnGS+sYhjDVInieYPTues6wMBmtHKZpS+YthCEMUfoVXaKs5Z6eEFEmuFDBpgqo18bpmEEODn5d8wjIpJEElrc0j34Oi6BD6IBS25C07KO1dYn5MJQeaguw/7Ugvt29lplrjMYKk6mFHNTf8I5DOBM/EIvhwZqVo99tx1R0kbqBEVupvJRmYxxXMI2UoJZScjB/3ReL3246NrTR+kO0VQ==
-Received: from BN9PR03CA0613.namprd03.prod.outlook.com (2603:10b6:408:106::18)
- by DM5PR1201MB0058.namprd12.prod.outlook.com (2603:10b6:4:50::11) with
+ bh=7HHmgDlVK9ldPQmcHYFuRM6C5HFjcsNN9HVQmjzSAxE=;
+ b=QQvPa5og/U997Hn2fklWgYlNseQpy4hUWutn95Rh2fgRiy28Sl9p56dsvDk5+U11WBEQfR3Km8CY1lmwp4JNRm3lKm1oBTDi0AkQur9He3qW0+PCmzpJYyK5oi7OIYORI459ieII8FfdeBxw3WvW5+QOy21ABRhGZsB6uZsPhv21q3kFPvyd96ABfXtxXlOjLaM3WRDYmWdCPZgzHA3M6xZvkOWS4TsXL1Lenekhvy69LOuawc12y4cU48zmq7u46hFKxgFEyOQvr/Q6/w+mTrlSDUoKB9Mip8VaQSZC0eAHgweDAM0MNaPiTCteCiDNXuqeCkV/sriUc5Dw6EmVWQ==
+Received: from BN9PR03CA0471.namprd03.prod.outlook.com (2603:10b6:408:139::26)
+ by DM6PR12MB4928.namprd12.prod.outlook.com (2603:10b6:5:1b8::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Fri, 9 Apr
- 2021 08:07:11 +0000
-Received: from BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::c5) by BN9PR03CA0613.outlook.office365.com
- (2603:10b6:408:106::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.21; Fri, 9 Apr
+ 2021 08:07:13 +0000
+Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:139:cafe::b7) by BN9PR03CA0471.outlook.office365.com
+ (2603:10b6:408:139::26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend
- Transport; Fri, 9 Apr 2021 08:07:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=pass action=none header.from=nvidia.com;
+ Transport; Fri, 9 Apr 2021 08:07:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- BN8NAM11FT024.mail.protection.outlook.com (10.13.177.38) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Fri, 9 Apr 2021 08:07:11 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Apr
- 2021 08:07:10 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Apr
- 2021 08:07:10 +0000
+ 15.20.4020.17 via Frontend Transport; Fri, 9 Apr 2021 08:07:13 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Apr
+ 2021 08:07:12 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 9 Apr 2021 01:07:08 -0700
+ Transport; Fri, 9 Apr 2021 01:07:10 -0700
 From:   Moshe Shemesh <moshe@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -64,9 +61,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         "Michal Kubecek" <mkubecek@suse.cz>
 CC:     <netdev@vger.kernel.org>,
         Vladyslav Tarasiuk <vladyslavt@nvidia.com>
-Subject: [PATCH net-next 6/8] ethtool: Add fallback to get_module_eeprom from netlink command
-Date:   Fri, 9 Apr 2021 11:06:39 +0300
-Message-ID: <1617955601-21055-7-git-send-email-moshe@nvidia.com>
+Subject: [PATCH net-next 7/8] phy: sfp: add netlink SFP support to generic SFP code
+Date:   Fri, 9 Apr 2021 11:06:40 +0300
+Message-ID: <1617955601-21055-8-git-send-email-moshe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1617955601-21055-1-git-send-email-moshe@nvidia.com>
 References: <1617955601-21055-1-git-send-email-moshe@nvidia.com>
@@ -74,121 +71,166 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 67f694cf-f7b8-4543-fcfd-08d8fb2e7a8e
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB0058:
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB005820818738B0FA66B0D583D4739@DM5PR1201MB0058.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1388;
+X-MS-Office365-Filtering-Correlation-Id: 76507215-16d2-41f3-d345-08d8fb2e7b95
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4928:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4928BA8AB2CBC4D0205840C5D4739@DM6PR12MB4928.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dkXDD8kd/rLUBkt2I2KwQw0CWGvHgd/AhDH/g3iUJQIuOZ+r1r95BbMm53iejG0nsIDaN+6e+oPbWoKGrXkhLeKJ1+lfogm842POLepo+TUUobpwyjCR3lwqGCkRq32MWqDTeuJoyac+VTDUk954uWGmKDouCv6APAYbV6XnBzED3gfL9J+tct1JlnG6zpaoMY1V7BgzTrWZnxQzpcTvuzgYMKkfSeWjdz01Pe8hUOHMUs2pKzL9aYp6Od+NtTQfavBfClH6aFvie1V55vKeZUcX8p1mEbDbgMAWEPqzR3AjFKns1Psujm90Ds6VduVOWhN6UEIAlJ4LGxERaPwHd4rCmf4uI6n4sn+JIcy0B23Z/iERcCSMNx1Kg26sNZIUmh1BuZ14hnVflmSgd6FChyPGVmFy2uJaKcmVEjGk69YIVIzUKHYRbtaAF7MV94fGzQPOPB+j4zGAp+ofmYV84zLmArIqOpaEGhtqK6AVH3z5qFyja3AfWLLDLY7rx+kDTlixOS/zrBkYDslKAFl2hbT34pkDq3lZ9isDneAz8sL3wybRZovnG9JvQS67NnW8aQLr25n6+GV+OWeFabnRy42zPKv/y6b6jm9lgsMPSq1L+53w5K06n0H1FZPQcrJhpiLTHc/Z/NPw1OKlFezyw7G7oKxFoTVVSEjSZrkF+LI=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid02.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(346002)(39860400002)(36840700001)(46966006)(86362001)(26005)(36860700001)(70586007)(107886003)(47076005)(336012)(356005)(83380400001)(2616005)(426003)(186003)(70206006)(8676002)(4326008)(478600001)(8936002)(82310400003)(36906005)(82740400003)(316002)(6666004)(110136005)(7696005)(54906003)(7636003)(2906002)(36756003)(5660300002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: tVXm5T9G3O1NVdFrvQyR5W6OVFQj2lQVWKv7zHNVpPzblXUzlyC79VQUle5nvS3lBzJPYTxX4AKGE4IGwrlE9+mDnowed3C/gqZ5ISg0iBRu1iINHN+3ofG6xRwbXW8M1OYfF2r0ZBtUt4nKBV+Nht+Se/BIe++4urHE6vFW91R/Q+/gG9sGc8LmgQRyF6x9WJ4kSmu5+8WatmIyA5DWKSRglsiFeI6RqT83If6MEPCDsDl2nhjiJWOHkVywKpvGRnzQ5ebEX67qN0SqxIB5hFCtzgKsqV6skl5eHiBiKvXizXnEeLgkt4eWkv90RkIaPmezKMAMrqNsYSoqnTUcnsU1amHRLySwoklL596L8mS0mAPafMltLer1hfvSv9CgvtwZFjPfm8AQCZVxM8ayP3h6G2r8BDTlK1tCAYLKfoC7cfUL2jGiMTrSY64GrMWfiGVuvyz6a513bllBdwqLzMRmi6gAxGOrCU4h6s4IFSGVJUJ12hq3Vm44nMpOYyIyRbcJwMKs4k+lfDI1dmIbH86W/BP0iyIRo5AfGBKqz9Az7ltIK/paNBK7AW8JX93A5Cgc2wO7aBZVdlQA/KmLXo9q5ddzB0xisVcBBApee+h1UopDBx5EqjceVeLXVV++QlTryiuzHQv+nNpLky75QWiV4CX/JAONCkysJ2j+kkpMaXn/o8TaD1O0XmEWkQpa
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(136003)(376002)(46966006)(36840700001)(36756003)(26005)(82310400003)(186003)(86362001)(8676002)(478600001)(83380400001)(4326008)(54906003)(36860700001)(110136005)(8936002)(70206006)(6666004)(82740400003)(356005)(5660300002)(336012)(426003)(2906002)(7636003)(36906005)(7696005)(47076005)(107886003)(2616005)(70586007)(316002)(41533002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 08:07:11.4514
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2021 08:07:13.1680
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67f694cf-f7b8-4543-fcfd-08d8fb2e7a8e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76507215-16d2-41f3-d345-08d8fb2e7b95
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0058
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4928
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+From: Andrew Lunn <andrew@lunn.ch>
 
-In case netlink get_module_eeprom_by_page() callback is not implemented
-by the driver, try to call old get_module_info() and get_module_eeprom()
-pair. Recalculate parameters to get_module_eeprom() offset and len using
-page number and their sizes. Return error if this can't be done.
+The new netlink API for reading SFP data requires a new op to be
+implemented. The idea of the new netlink SFP code is that userspace is
+responsible to parsing the EEPROM data and requesting pages, rather
+than have the kernel decide what pages are interesting and returning
+them. This allows greater flexibility for newer formats.
 
-Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
+Currently the generic SFP code only supports simple SFPs. Allow i2c
+address 0x50 and 0x51 to be accessed with page and bank must always be
+0. This interface will later be extended when for example QSFP support
+is added.
+
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Vladyslav Tarasiuk <vladyslavt@nvidia.com>
 ---
- net/ethtool/eeprom.c | 62 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 61 insertions(+), 1 deletion(-)
+ drivers/net/phy/sfp-bus.c | 20 ++++++++++++++++++++
+ drivers/net/phy/sfp.c     | 25 +++++++++++++++++++++++++
+ drivers/net/phy/sfp.h     |  3 +++
+ include/linux/sfp.h       | 10 ++++++++++
+ 4 files changed, 58 insertions(+)
 
-diff --git a/net/ethtool/eeprom.c b/net/ethtool/eeprom.c
-index 8536dd905da5..1a49c133d401 100644
---- a/net/ethtool/eeprom.c
-+++ b/net/ethtool/eeprom.c
-@@ -25,6 +25,66 @@ struct eeprom_reply_data {
- #define MODULE_EEPROM_REPDATA(__reply_base) \
- 	container_of(__reply_base, struct eeprom_reply_data, base)
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 2e11176c6b94..e61de66e973b 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -555,6 +555,26 @@ int sfp_get_module_eeprom(struct sfp_bus *bus, struct ethtool_eeprom *ee,
+ }
+ EXPORT_SYMBOL_GPL(sfp_get_module_eeprom);
  
-+static int fallback_set_params(struct eeprom_req_info *request,
-+			       struct ethtool_modinfo *modinfo,
-+			       struct ethtool_eeprom *eeprom)
++/**
++ * sfp_get_module_eeprom_by_page() - Read a page from the SFP module EEPROM
++ * @bus: a pointer to the &struct sfp_bus structure for the sfp module
++ * @page: a &struct ethtool_module_eeprom
++ * @extack: extack for reporting problems
++ *
++ * Read an EEPROM page as specified by the supplied @page. See the
++ * documentation for &struct ethtool_module_eeprom for the page to be read.
++ *
++ * Returns 0 on success or a negative errno number. More error
++ * information might be provided via extack
++ */
++int sfp_get_module_eeprom_by_page(struct sfp_bus *bus,
++				  const struct ethtool_module_eeprom *page,
++				  struct netlink_ext_ack *extack)
 +{
-+	u32 offset = request->offset;
-+	u32 length = request->length;
++	return bus->socket_ops->module_eeprom_by_page(bus->sfp, page, extack);
++}
++EXPORT_SYMBOL_GPL(sfp_get_module_eeprom_by_page);
 +
-+	if (request->page)
-+		offset = request->page * ETH_MODULE_EEPROM_PAGE_LEN + offset;
+ /**
+  * sfp_upstream_start() - Inform the SFP that the network device is up
+  * @bus: a pointer to the &struct sfp_bus structure for the sfp module
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 7998acc689b7..37f722c763d7 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -2330,6 +2330,30 @@ static int sfp_module_eeprom(struct sfp *sfp, struct ethtool_eeprom *ee,
+ 	return 0;
+ }
+ 
++static int sfp_module_eeprom_by_page(struct sfp *sfp,
++				     const struct ethtool_module_eeprom *page,
++				     struct netlink_ext_ack *extack)
++{
++	if (page->bank) {
++		NL_SET_ERR_MSG(extack, "Banks not supported");
++		return -EOPNOTSUPP;
++	}
 +
-+	if (modinfo->type == ETH_MODULE_SFF_8079 &&
-+	    request->i2c_address == 0x51)
-+		offset += ETH_MODULE_EEPROM_PAGE_LEN * 2;
++	if (page->page) {
++		NL_SET_ERR_MSG(extack, "Only page 0 supported");
++		return -EOPNOTSUPP;
++	}
 +
-+	if (offset >= modinfo->eeprom_len)
-+		return -EINVAL;
++	if (page->i2c_address != 0x50 &&
++	    page->i2c_address != 0x51) {
++		NL_SET_ERR_MSG(extack, "Only address 0x50 and 0x51 supported");
++		return -EOPNOTSUPP;
++	}
 +
-+	eeprom->cmd = ETHTOOL_GMODULEEEPROM;
-+	eeprom->len = length;
-+	eeprom->offset = offset;
++	return sfp_read(sfp, page->i2c_address == 0x51, page->offset,
++			page->data, page->length);
++};
 +
-+	return 0;
+ static const struct sfp_socket_ops sfp_module_ops = {
+ 	.attach = sfp_attach,
+ 	.detach = sfp_detach,
+@@ -2337,6 +2361,7 @@ static const struct sfp_socket_ops sfp_module_ops = {
+ 	.stop = sfp_stop,
+ 	.module_info = sfp_module_info,
+ 	.module_eeprom = sfp_module_eeprom,
++	.module_eeprom_by_page = sfp_module_eeprom_by_page,
+ };
+ 
+ static void sfp_timeout(struct work_struct *work)
+diff --git a/drivers/net/phy/sfp.h b/drivers/net/phy/sfp.h
+index b83f70526270..27226535c72b 100644
+--- a/drivers/net/phy/sfp.h
++++ b/drivers/net/phy/sfp.h
+@@ -14,6 +14,9 @@ struct sfp_socket_ops {
+ 	int (*module_info)(struct sfp *sfp, struct ethtool_modinfo *modinfo);
+ 	int (*module_eeprom)(struct sfp *sfp, struct ethtool_eeprom *ee,
+ 			     u8 *data);
++	int (*module_eeprom_by_page)(struct sfp *sfp,
++				     const struct ethtool_module_eeprom *page,
++				     struct netlink_ext_ack *extack);
+ };
+ 
+ int sfp_add_phy(struct sfp_bus *bus, struct phy_device *phydev);
+diff --git a/include/linux/sfp.h b/include/linux/sfp.h
+index 38893e4dd0f0..302094b855fb 100644
+--- a/include/linux/sfp.h
++++ b/include/linux/sfp.h
+@@ -542,6 +542,9 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
+ int sfp_get_module_info(struct sfp_bus *bus, struct ethtool_modinfo *modinfo);
+ int sfp_get_module_eeprom(struct sfp_bus *bus, struct ethtool_eeprom *ee,
+ 			  u8 *data);
++int sfp_get_module_eeprom_by_page(struct sfp_bus *bus,
++				  const struct ethtool_module_eeprom *page,
++				  struct netlink_ext_ack *extack);
+ void sfp_upstream_start(struct sfp_bus *bus);
+ void sfp_upstream_stop(struct sfp_bus *bus);
+ void sfp_bus_put(struct sfp_bus *bus);
+@@ -587,6 +590,13 @@ static inline int sfp_get_module_eeprom(struct sfp_bus *bus,
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline int sfp_get_module_eeprom_by_page(struct sfp_bus *bus,
++						const struct ethtool_module_eeprom *page,
++						struct netlink_ext_ack *extack)
++{
++	return -EOPNOTSUPP;
 +}
 +
-+static int eeprom_fallback(struct eeprom_req_info *request,
-+			   struct eeprom_reply_data *reply,
-+			   struct genl_info *info)
-+{
-+	struct net_device *dev = reply->base.dev;
-+	struct ethtool_modinfo modinfo = {0};
-+	struct ethtool_eeprom eeprom = {0};
-+	u8 *data;
-+	int err;
-+
-+	modinfo.cmd = ETHTOOL_GMODULEINFO;
-+	err = ethtool_get_module_info_call(dev, &modinfo);
-+	if (err < 0)
-+		return err;
-+
-+	err = fallback_set_params(request, &modinfo, &eeprom);
-+	if (err < 0)
-+		return err;
-+
-+	data = kmalloc(eeprom.len, GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+	err = ethtool_get_module_eeprom_call(dev, &eeprom, data);
-+	if (err < 0)
-+		goto err_out;
-+
-+	reply->data = data;
-+	reply->length = eeprom.len;
-+
-+	return 0;
-+
-+err_out:
-+	kfree(data);
-+	return err;
-+}
-+
- static int eeprom_prepare_data(const struct ethnl_req_info *req_base,
- 			       struct ethnl_reply_data *reply_base,
- 			       struct genl_info *info)
-@@ -36,7 +96,7 @@ static int eeprom_prepare_data(const struct ethnl_req_info *req_base,
- 	int ret;
- 
- 	if (!dev->ethtool_ops->get_module_eeprom_by_page)
--		return -EOPNOTSUPP;
-+		return eeprom_fallback(request, reply, info);
- 
- 	page_data.offset = request->offset;
- 	page_data.length = request->length;
+ static inline void sfp_upstream_start(struct sfp_bus *bus)
+ {
+ }
 -- 
 2.26.2
 
