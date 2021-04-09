@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66DBD35A687
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DB935A68A
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 21:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234880AbhDITCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 15:02:06 -0400
+        id S234899AbhDITCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 15:02:12 -0400
 Received: from mga04.intel.com ([192.55.52.120]:13032 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234825AbhDITBz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 15:01:55 -0400
-IronPort-SDR: QEANcEU5+lOW2Q4CK7NkyjHe+dtlowgPkXdT7PcsQpJ2d1mT+0NE+Q3aJlUQuyCHWfjQrS1Y1C
- GQQ8bFGJpJCw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9949"; a="191674938"
+        id S234799AbhDITB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Apr 2021 15:01:56 -0400
+IronPort-SDR: vi5XTPoxW7R928enLQ0w1s1uJksunER6tjtkfymYR5GarnVhbgUoBxq6n0c8geiXGNdI2JcXmj
+ bTX8Bo3FnccA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9949"; a="191674940"
 X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
-   d="scan'208";a="191674938"
+   d="scan'208";a="191674940"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2021 12:01:33 -0700
-IronPort-SDR: HXdsUcLdD/UAGQDofA0qdRNmLVRMryccxGUBl+Nf15lkX9Kjnxkpxzhsaav1nzvLvYHx9NOsG9
- MTzH4iIGt0XA==
+IronPort-SDR: iiGAmeG+7kKar533L8QsPmeYRziCcjKDapzqGCf1A/KpSftHjXuFn+FodypEIDD010X9Ne7/QG
+ 3qZijzbdNAIg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
-   d="scan'208";a="449181592"
+   d="scan'208";a="449181596"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 09 Apr 2021 12:01:32 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Radoslaw Tyl <radoslawx.tyl@intel.com>, netdev@vger.kernel.org,
+Cc:     Chen Lin <chen.lin5@zte.com.cn>, netdev@vger.kernel.org,
         sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 2/4] ixgbe: aggregate of all receive errors through netdev's rx_errors
-Date:   Fri,  9 Apr 2021 12:03:12 -0700
-Message-Id: <20210409190314.946192-3-anthony.l.nguyen@intel.com>
+        Dave Switzer <david.switzer@intel.com>
+Subject: [PATCH net-next 3/4] net: intel: Remove unused function pointer typedef ixgbe_mc_addr_itr
+Date:   Fri,  9 Apr 2021 12:03:13 -0700
+Message-Id: <20210409190314.946192-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210409190314.946192-1-anthony.l.nguyen@intel.com>
 References: <20210409190314.946192-1-anthony.l.nguyen@intel.com>
@@ -42,55 +42,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Radoslaw Tyl <radoslawx.tyl@intel.com>
+From: Chen Lin <chen.lin5@zte.com.cn>
 
-The global rx error does not take into account all the error counters
-that are counted by device.
+Remove the 'ixgbe_mc_addr_itr' typedef as it is not used.
 
-Extend rx error with the following counters:
-- illegal byte error
-- number of receive fragment errors
-- receive jabber
-- receive oversize error
-- receive undersize error
-- frames marked as checksum invalid by hardware
-
-The above were added in order to align statistics with other products.
-
-Signed-off-by: Radoslaw Tyl <radoslawx.tyl@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
+Tested-by: Dave Switzer <david.switzer@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_type.h | 4 ----
+ drivers/net/ethernet/intel/ixgbevf/vf.h       | 3 ---
+ 2 files changed, 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 7ba1c2985ef7..7711828401d9 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -7240,12 +7240,21 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
- 	hwstats->ptc1023 += IXGBE_READ_REG(hw, IXGBE_PTC1023);
- 	hwstats->ptc1522 += IXGBE_READ_REG(hw, IXGBE_PTC1522);
- 	hwstats->bptc += IXGBE_READ_REG(hw, IXGBE_BPTC);
-+	hwstats->illerrc += IXGBE_READ_REG(hw, IXGBE_ILLERRC);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
+index 4c317b0dbfd4..2647937f7f4d 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
+@@ -3384,10 +3384,6 @@ struct ixgbe_hw_stats {
+ /* forward declaration */
+ struct ixgbe_hw;
  
- 	/* Fill out the OS statistics structure */
- 	netdev->stats.multicast = hwstats->mprc;
+-/* iterator type for walking multicast address lists */
+-typedef u8* (*ixgbe_mc_addr_itr) (struct ixgbe_hw *hw, u8 **mc_addr_ptr,
+-				  u32 *vmdq);
+-
+ /* Function pointer table */
+ struct ixgbe_eeprom_operations {
+ 	s32 (*init_params)(struct ixgbe_hw *);
+diff --git a/drivers/net/ethernet/intel/ixgbevf/vf.h b/drivers/net/ethernet/intel/ixgbevf/vf.h
+index d1e9e306653b..1d8209df4162 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/vf.h
++++ b/drivers/net/ethernet/intel/ixgbevf/vf.h
+@@ -16,9 +16,6 @@
  
- 	/* Rx Errors */
--	netdev->stats.rx_errors = hwstats->crcerrs + hwstats->rlec;
-+	netdev->stats.rx_errors = hwstats->crcerrs +
-+				    hwstats->illerrc +
-+				    hwstats->rlec +
-+				    hwstats->rfc +
-+				    hwstats->rjc +
-+				    hwstats->roc +
-+				    hwstats->ruc +
-+				    hw_csum_rx_error;
-+
- 	netdev->stats.rx_dropped = 0;
- 	netdev->stats.rx_length_errors = hwstats->rlec;
- 	netdev->stats.rx_crc_errors = hwstats->crcerrs;
+ struct ixgbe_hw;
+ 
+-/* iterator type for walking multicast address lists */
+-typedef u8* (*ixgbe_mc_addr_itr) (struct ixgbe_hw *hw, u8 **mc_addr_ptr,
+-				  u32 *vmdq);
+ struct ixgbe_mac_operations {
+ 	s32 (*init_hw)(struct ixgbe_hw *);
+ 	s32 (*reset_hw)(struct ixgbe_hw *);
 -- 
 2.26.2
 
