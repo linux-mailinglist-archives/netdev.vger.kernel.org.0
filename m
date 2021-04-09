@@ -2,185 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD0E359D34
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 13:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6FD359DAB
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 13:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233955AbhDILVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 07:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        id S233661AbhDILoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 07:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233528AbhDILV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 07:21:29 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BD7C061761
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 04:21:15 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lUpCI-0002zW-1g; Fri, 09 Apr 2021 13:21:10 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:be45:ae3b:b63f:80bb] (unknown [IPv6:2a03:f580:87bc:d400:be45:ae3b:b63f:80bb])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9686F60B30E;
-        Fri,  9 Apr 2021 11:21:08 +0000 (UTC)
-To:     Koen Vandeputte <koen.vandeputte@citymesh.com>,
-        linux-can@vger.kernel.org
-Cc:     wg@grandegger.com, netdev@vger.kernel.org, qiangqing.zhang@nxp.com,
-        gregkh@linuxfoundation.org
-References: <5bdfcccb-0b02-e46b-eefe-7df215cc9d02@citymesh.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: flexcan introduced a DIV/0 in kernel
-Message-ID: <27f66de1-42bc-38d9-8a1c-7062eb359958@pengutronix.de>
-Date:   Fri, 9 Apr 2021 13:21:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S233674AbhDILoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 07:44:17 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9907BC061761
+        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 04:44:04 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id h3so2428215qvr.10
+        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 04:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xILRdjjqgvTdx0uZ4o4FMfOIz3vPmxb5Qtg/TJU4Yu8=;
+        b=X1hgY0NMCegmRMytxM1g5vqshk7BQanJXzzsMHkzNqsREu6103BgHFlHMT45GxmrBP
+         /htRGrqC3hcoQ9Q5jhkgGbvLjRQuiV+OeCmc0fR3PWSv6pPehDXn8iMugTkhtRxBP15j
+         HuMmzamMay5CIDRwbPioUyuP6X3/0J2Jc8fdBoVbTYibnu8u3SAL9sI28comjppD+E6B
+         qTo2LoLTwDgaJmkc+2xwrIxgos7HOT2RCUUKpV7oyESeF25GaQaYUK3wYJkRiovJidfX
+         SCp+3j+Y0U5wqGUsf6uAGUEIUwCGmCtW+hEaAeXjblqz6WBVk+Rw4WYC3yCoBEtGsaV7
+         9LNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xILRdjjqgvTdx0uZ4o4FMfOIz3vPmxb5Qtg/TJU4Yu8=;
+        b=Ci8380A5UfGDKdvfKZiaAcwzzzr4sACxseRqxeK+QvkqJpSzOJ+zH3NwlnxRcE+7a7
+         OTBUTfdr3y0VIcSr+CDo1GrQBiRCXlLDgTsaySyq1bcEYDbzw9oSIdmq+IRyUyKUktRL
+         BI/Y+oKD6GpRQ7jGOMVMPauBQjC1ZzcBE7iSjYA4An6w6dKxYqvGz7B2HwHMXdoO02uX
+         kMtmys/NDL2YPA7ZY1tqa+/cLww97Sxv8PsRneG6WUY6TaobaZt1MjelWKm3EVx6/r93
+         pbQWmXnvmq7KM6z0YgVaHCieZIXXd1+biR4Qu5X4JjRmvoSSQoPooIaGnXLo4cOqKFpg
+         0+Bg==
+X-Gm-Message-State: AOAM533WAX9gP6ehusZ7kMjaMbIGb+G/fHAd0ykCMaQqeuxkItHFKcqR
+        5IXjHZxE/Ng+kU877Cyp3ttL5w==
+X-Google-Smtp-Source: ABdhPJx1MLawzUTvI++3BBM9AXazUAr9kzmP769E0PnYy4rOLqTkV3NG8pTIMs0l4HAQ7llSGxp+Ag==
+X-Received: by 2002:ad4:4c83:: with SMTP id bs3mr13557008qvb.41.1617968643870;
+        Fri, 09 Apr 2021 04:44:03 -0700 (PDT)
+Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-22-184-144-36-31.dsl.bell.ca. [184.144.36.31])
+        by smtp.googlemail.com with ESMTPSA id e14sm1549587qte.78.2021.04.09.04.44.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Apr 2021 04:44:03 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/7] net: sched: Add a trap-and-forward action
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+References: <20210408133829.2135103-1-petrm@nvidia.com>
+ <20210408133829.2135103-2-petrm@nvidia.com>
+ <b60df78a-1aba-ba27-6508-4c67b0496020@mojatatu.com>
+ <877dlb67pk.fsf@nvidia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <6424d667-86a9-8fd1-537e-331cf4e5970c@mojatatu.com>
+Date:   Fri, 9 Apr 2021 07:44:02 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <5bdfcccb-0b02-e46b-eefe-7df215cc9d02@citymesh.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="nBVWLW53Klz3SazimupYl6ClFh1ue0jhZ"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <877dlb67pk.fsf@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---nBVWLW53Klz3SazimupYl6ClFh1ue0jhZ
-Content-Type: multipart/mixed; boundary="Y82zJn2Dv6AVbFagVp0PE5TBUKGbJiie7";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Koen Vandeputte <koen.vandeputte@citymesh.com>, linux-can@vger.kernel.org
-Cc: wg@grandegger.com, netdev@vger.kernel.org, qiangqing.zhang@nxp.com,
- gregkh@linuxfoundation.org
-Message-ID: <27f66de1-42bc-38d9-8a1c-7062eb359958@pengutronix.de>
-Subject: Re: flexcan introduced a DIV/0 in kernel
-References: <5bdfcccb-0b02-e46b-eefe-7df215cc9d02@citymesh.com>
-In-Reply-To: <5bdfcccb-0b02-e46b-eefe-7df215cc9d02@citymesh.com>
+On 2021-04-09 7:03 a.m., Petr Machata wrote:
+> 
+> Jamal Hadi Salim <jhs@mojatatu.com> writes:
+> 
+>> I am concerned about adding new opcodes which only make sense if you
+>> offload (or make sense only if you are running in s/w).
+>>
+>> Those opcodes are intended to be generic abstractions so the dispatcher
+>> can decide what to do next. Adding things that are specific only
+>> to scenarios of hardware offload removes that opaqueness.
+>> I must have missed the discussion on ACT_TRAP because it is the
+>> same issue there i.e shouldnt be an opcode. For details see:
+>> https://people.netfilter.org/pablo/netdev0.1/papers/Linux-Traffic-Control-Classifier-Action-Subsystem-Architecture.pdf
+> 
+> Trap has been in since 4.13, so 2017ish. It's done and dusted at this
+> point.
+> 
 
---Y82zJn2Dv6AVbFagVp0PE5TBUKGbJiie7
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+I am afraid that is not a good arguement. With all due respect,
+here's how it translates:
+"We already made a mistake, therefore, its ok to build on it and
+make more mistakes". Touching those opcodes is really dirty; at
+least i have seen no convincing arguement _at all_ for it. And,
+it is not too late not to make more mistakes.
+I dont remember, I may have spoken against TRAP; what i know is had
+i seen the patch i would have said something - maybe i did and should
+have been louder. Mea culpa.
 
-On 4/9/21 12:18 PM, Koen Vandeputte wrote:
-> Hi All,
->=20
-> I just updated kernel 4.14 within OpenWRT from 4.14.224 to 4.14.229
-> Booting it shows the splat below on each run. [1]
->=20
->=20
-> It seems there are 2 patches regarding flexcan which were introduced in=
-=20
-> 4.14.226
->=20
-> --> ce59ffca5c49 ("can: flexcan: enable RX FIFO after FRZ/HALT valid")
-> --> bb7c9039a396 ("can: flexcan: assert FRZ bit in flexcan_chip_freeze(=
-)")
->=20
-> Reverting these fixes the splat.
-
-This patch should fix the problem:
-
-47c5e474bc1e can: flexcan: flexcan_chip_freeze(): fix chip freeze for mis=
-sing
-bitrate
-
-Greg, can you pick this up for v4.14?
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+>> IMO:
+>> It seems to me there are two actions here encapsulated in one.
+>> The first is to "trap" and the second is to "drop".
+>>
+>> This is no different semantically than say "mirror and drop"
+>> offload being enunciated by "skip_sw".
+>>
+>> Does the spectrum not support multiple actions?
+>> e.g with a policy like:
+>>   match blah action trap action drop skip_sw
+> 
+> Trap drops implicitly. We need a "trap, but don't drop". Expressed in
+> terms of existing actions it would be "mirred egress redirect dev
+> $cpu_port". But how to express $cpu_port except again by a HW-specific
+> magic token I don't know.
 
 
---Y82zJn2Dv6AVbFagVp0PE5TBUKGbJiie7--
+Note: mirred was originally intended to send redirect/mirror
+packets to user space (the comment is still there in the code).
+Infact there is a patch lying around somewhere that does that with
+packet sockets (the author hasnt been serious about pushing it
+upstream). In that case the semantics are redirecting to a file
+descriptor. Could we have something like that here which points
+to whatever representation $cpu_port has? Sounds like semantics
+for "trap and forward" are just "mirror and forward".
 
---nBVWLW53Klz3SazimupYl6ClFh1ue0jhZ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I think there is value in having something like trap action
+which generalizes the combinations only to the fact that
+it will make it easier to relay the info to the offload without
+much transformation.
+If i was to do it i would write one action configured by user space:
+- to return DROP if you want action trap-and-drop semantics.
+- to return STOLEN if you want trap
+- to return PIPE if you want trap and forward. You will need a second
+action composed to forward.
 
------BEGIN PGP SIGNATURE-----
+I said dummy because this action has no value in s/w. Someone could
+use it in s/w but it would be no different than gact.
+Maybe it could be extended to work also in s/w by adding the "trap to
+fd" in userspace.
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmBwOKEACgkQqclaivrt
-76lhoAgAtAeVBewulVO/cxnrjXLRoe66xX8DV7gbfcswNY0YYi+WXdAPH/FgL+b+
-PETRdh/3eOa7TNlmaI4SbfnselXyh+F8jQW6D8AOGuIVS8FCBgoBW3D6ib53qpfu
-KZ39+eH6Q37cVFcT2Tf7X5fSFF2Cnq290FuqcwWIA4mnrhrZWIQr6DYyCoHGHY3I
-TLbCSvw+42m6VGcDyFXpWTSsd3uzPDIcPHeNdIwcYOy66WAjNWZ+vtdx7GKpzy/w
-uKtchblkJTEcDNF9kCynxzv1V5ubISw7K8ZyuGdernyoDAdj40lKUqQsn3SmoJ/z
-YTMlO+N/XDZPamh0d5TE3v0MHEuSOg==
-=Bpu1
------END PGP SIGNATURE-----
-
---nBVWLW53Klz3SazimupYl6ClFh1ue0jhZ--
+cheers,
+jamal
