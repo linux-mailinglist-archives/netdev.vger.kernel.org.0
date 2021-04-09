@@ -2,79 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA4E0359FC7
-	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 15:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 254DA359FCA
+	for <lists+netdev@lfdr.de>; Fri,  9 Apr 2021 15:27:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbhDIN1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 09:27:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60658 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232286AbhDIN1W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 09:27:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 16A8461105;
-        Fri,  9 Apr 2021 13:27:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1617974829;
-        bh=nKeHRuV5ymkEE4MF/NvZwM3D4+Kpkmi60AA4GEp/lxc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KZKMEUfRgF+cTTCGQSVZvtyf7Mk+1WDaNgzOGt4vZlr+tvIH/S7FlxdZMN2BRO4vu
-         iaykpC0N/jH72qcco8nqGaBmXYOqLMGUrORGfKnCRyf3cMv0HNSvxoexVMWmpmq0PZ
-         F9JyM8CsNjogKdYEwaCZ6aqoLvM8v5ej6S7DJHOo=
-Date:   Fri, 9 Apr 2021 15:27:07 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Koen Vandeputte <koen.vandeputte@citymesh.com>,
-        linux-can@vger.kernel.org, wg@grandegger.com,
-        netdev@vger.kernel.org, qiangqing.zhang@nxp.com
-Subject: Re: flexcan introduced a DIV/0 in kernel
-Message-ID: <YHBWKzZyuUhMr0fj@kroah.com>
-References: <5bdfcccb-0b02-e46b-eefe-7df215cc9d02@citymesh.com>
- <27f66de1-42bc-38d9-8a1c-7062eb359958@pengutronix.de>
- <f7ba143a-58c8-811a-876e-d494c4681537@citymesh.com>
- <20210409131001.7r36v2vd3zmceloj@pengutronix.de>
+        id S232286AbhDIN1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 09:27:47 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:46670 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231599AbhDIN1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 09:27:46 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1lUrAZ-00019X-TV; Fri, 09 Apr 2021 13:27:31 +0000
+To:     Siva Reddy <siva.kallam@samsung.com>,
+        Byungho An <bh74.an@samsung.com>
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: net: sxgbe: issue with incorrect masking / case values in switch
+ statements
+Cc:     Vipul Pandya <vipul.pandya@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <e3f20a0f-058b-9f57-57aa-91455b2f34a5@canonical.com>
+Date:   Fri, 9 Apr 2021 14:27:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210409131001.7r36v2vd3zmceloj@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 09, 2021 at 03:10:01PM +0200, Marc Kleine-Budde wrote:
-> On 09.04.2021 14:55:59, Koen Vandeputte wrote:
-> > 
-> > On 09.04.21 13:21, Marc Kleine-Budde wrote:
-> > > On 4/9/21 12:18 PM, Koen Vandeputte wrote:
-> > > > Hi All,
-> > > > 
-> > > > I just updated kernel 4.14 within OpenWRT from 4.14.224 to 4.14.229
-> > > > Booting it shows the splat below on each run. [1]
-> > > > 
-> > > > 
-> > > > It seems there are 2 patches regarding flexcan which were introduced in
-> > > > 4.14.226
-> > > > 
-> > > > --> ce59ffca5c49 ("can: flexcan: enable RX FIFO after FRZ/HALT valid")
-> > > > --> bb7c9039a396 ("can: flexcan: assert FRZ bit in flexcan_chip_freeze()")
-> > > > 
-> > > > Reverting these fixes the splat.
-> > > This patch should fix the problem:
-> > > 
-> > > 47c5e474bc1e can: flexcan: flexcan_chip_freeze(): fix chip freeze for missing
-> > > bitrate
-> > > 
-> > > Greg, can you pick this up for v4.14?
-> > > 
-> > > regards,
-> > > Marc
-> > > 
-> > Checking kernels 4.4 & 4.9 shows that this fix is also missing over there.
-> > 
-> > Marc,
-> > Can you confirm that it's also required for these?
-> 
-> ACK, the fix is needed for v4.4.265 and v4.9.265.
+Hi,
 
-Now queued up there too, thanks!
+Static analysis with Coverity has found an issue with the sxgbe driver
+in drivers/net/ethernet/samsung/sxgbe/sxgbe_mtl.c from the following commit:
 
-greg k-h
+commit 1edb9ca69e8a7988900fc0283e10550b5592164d
+Author: Siva Reddy <siva.kallam@samsung.com>
+Date:   Tue Mar 25 12:10:54 2014 -0700
+
+    net: sxgbe: add basic framework for Samsung 10Gb ethernet driver
+
+
+The analysis is as follows:
+
+ 20 static void sxgbe_mtl_init(void __iomem *ioaddr, unsigned int etsalg,
+ 21                           unsigned int raa)
+ 22 {
+ 23        u32 reg_val;
+ 24
+ 25        reg_val = readl(ioaddr + SXGBE_MTL_OP_MODE_REG);
+ 26        reg_val &= ETS_RST;
+ 27
+ 28        /* ETS Algorith */
+ 29        switch (etsalg & SXGBE_MTL_OPMODE_ESTMASK) {
+
+Logically dead code (DEADCODE)
+
+ 30        case ETS_WRR:
+ 31                reg_val &= ETS_WRR;
+ 32                break;
+
+Logically dead code (DEADCODE)
+
+ 33        case ETS_WFQ:
+ 34                reg_val |= ETS_WFQ;
+ 35                break;
+
+Logically dead code (DEADCODE)
+
+ 36        case ETS_DWRR:
+ 37                reg_val |= ETS_DWRR;
+ 38                break;
+ 39        }
+
+Above:
+  SXGBE_MTL_OPMODE_ESTMASK is 0x3
+  ETS_WRR is 0xFFFFFFFB
+  ETS_WFQ is 0x00000020
+  ETS_DWRR is 0x00000040
+
+so none of the case statements are ever reachable because of the mask
+being used.
+
+
+ 40        writel(reg_val, ioaddr + SXGBE_MTL_OP_MODE_REG);
+ 41
+ 42        switch (raa & SXGBE_MTL_OPMODE_RAAMASK) {
+
+Logically dead code (DEADCODE)
+
+ 43        case RAA_SP:
+ 44                reg_val &= RAA_SP;
+ 45                break;
+
+Logically dead code (DEADCODE)
+
+ 46        case RAA_WSP:
+ 47                reg_val |= RAA_WSP;
+ 48                break;
+ 49        }
+ 50        writel(reg_val, ioaddr + SXGBE_MTL_OP_MODE_REG);
+ 51}
+
+And above,
+  SXGBE_MTL_OPMODE_RAAMASK is 0x1
+  RAA_SP is 0xFFFFFFFB
+  RAA_WSP is 0x00000004
+
+again, none of the case statements are ever reachable because of the
+mask being used.
+
+Not sure of how this was meant to work, so I can't determine a fix,
+hence I'm reporting this issue.
+
+Colin
