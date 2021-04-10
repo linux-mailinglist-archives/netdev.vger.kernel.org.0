@@ -2,65 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ACD535AE06
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 16:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E8E35AE10
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 16:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234733AbhDJOOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Apr 2021 10:14:19 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:50515 "EHLO
+        id S234772AbhDJORm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 10:17:42 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57251 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234392AbhDJOOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 10:14:18 -0400
+        by vger.kernel.org with ESMTP id S234392AbhDJORl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 10:17:41 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 363735C009D;
-        Sat, 10 Apr 2021 10:14:03 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id B0E455C018B;
+        Sat, 10 Apr 2021 10:17:26 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sat, 10 Apr 2021 10:14:03 -0400
+  by compute4.internal (MEProxy); Sat, 10 Apr 2021 10:17:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
-         h=message-id:subject:from:to:date:content-type:mime-version
-        :content-transfer-encoding; s=fm2; bh=blCztr7AFSPd4SPPg7VzqAdi0f
-        EafCtmv2N1s0KuDv8=; b=Bg8QzpfiAbOQkjJKXPY6uMCm2VBa1Jo+DVZeByylEc
-        XhWeZSOjzdX4776OGDE3MI831zj3PakKVEPbAVBNGE8bsSFm5GMXMmxQzt0D5uEP
-        VAVd9XuJt3IA6lAwx9J4x51Lnv/KDFy4w/7D79YNOKYqcDxvo7321bcDMmMSM8Vx
-        iPElvdIpmtPhEvccD9veCFkV+YBOO6mOviXUxvQxmLXVaJPnbB+2j2WfZDj/utwt
-        p2XXuXpiWXuhabefk/+bhDP/rXxJasTvjQ2K9HJoA4QGWghkbLOYTB1FCZyNg/72
-        8b0RBJud1hdYv5jSHkJCDzoRXYI6lxozLSMGcSCAs2wQ==
+         h=message-id:subject:from:to:date:in-reply-to:references
+        :content-type:mime-version:content-transfer-encoding; s=fm2; bh=
+        tGWlQKDAZVjJDkQPZKfn2sCLGpZQ6YnCbJmlC8cU/t0=; b=UdKDOnopkGe7GSUO
+        g5wALft8eASHtkdobOFw4L7t5n3ASmKtxp84KBqUL2HX/x0diWqZVh6M2/V5C/Ea
+        KAioguu4iXs/vrEt5HPO2ARZHr5Pzd4VTIdBeFLv9txasrC2jSIZpYv92wR9SBTA
+        EbWX9o7/7Jw/hUk+VopaWI/PsFN5JGHlKfkbGZuFuxlYsnezQDTJ1/W6tLu+oSV5
+        s4Ux8KXcPLtGz7DppQIovIMHgoa21/46dJkLTZI6K0gwOLKCmJ/n6OS5djghhNN8
+        VdwBM4BAVDRBjbW/EP4J+8gJCvT0TiqlwQI8QN/yGgNPnbbV8he2cpl77dae5zi7
+        jCeWvQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=content-transfer-encoding:content-type
-        :date:from:message-id:mime-version:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=blCztr
-        7AFSPd4SPPg7VzqAdi0fEafCtmv2N1s0KuDv8=; b=nb0g5E2y59w3JLtfybRFLN
-        QCE2loOgUbV2x+8o+b3VvzVlaMn6vg4IOpYHTE5ThFFkWmoYqfjFTwAygbNjoU/5
-        Fd18OC+YcSdNSCbU1FbjAHjesBcV8A5FtONaFYkJ1bJKrWLKkqUvsEih/jKlkDCc
-        p3NN9eQCRglU304Bam5cd8g1/UbLiajigW+7Dyu2VZKBjXTcVPNzSO+/QUgM9f3B
-        CCOK7tCah1LPKTHVQknyV/nMC4kDUuDit748E/e01HaBKvG237iNMXo+gy44cFGA
-        56PpQq45ois2iVLK5CI+1ErvqpNj+h3q89lY7UEnly0ppO8n6KfrwYTKicek7onw
-        ==
-X-ME-Sender: <xms:qrJxYPZ-fUzoNKkgv5enlRMhp9fwIbTmODTEWtGzUNYF61jkbvIDFg>
-    <xme:qrJxYOYuPviDqMTOFWoMel0tWXQ61mN8Aabjei8oJvaoxna10SzhSRfaKaqyhWoMC
-    jdaBXzBxUHtqLxUEw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekfedgjeegucetufdoteggodetrfdotf
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=tGWlQKDAZVjJDkQPZKfn2sCLGpZQ6YnCbJmlC8cU/
+        t0=; b=tcW4y/OgHi6kBTQFglmODhEvcdyl7KJdFvuc1/B/4qUl7zwKWa7H21jnR
+        AedXf3Dmi1jSnmytS6tjA9X2fMydhwUwaQMfZahxanaVB+ppdcep5vL2w17mYQPc
+        BZJH9jdMvqcGDvNx3YAg86yvOxQvAceByiclqXhc9ayfojhHeIdI6evIsGkqoE3E
+        npo1RjMCYgSr3VWsZ5yOYTQlITdmE9HfEujJiRQp4tu3JU7do8F3vRDV/FUNMVTP
+        kNqix5zHzVEc+LuOuAGvBGE38o9I1NiBsA9i6gg0xnCmoQPe8TkO9y6i3ta2TiTH
+        v32xawmE6w6HYs/XfvU8DV6Y6gNPA==
+X-ME-Sender: <xms:dbNxYOe9Zp7SF8ncLfYl9gfLLMP1E83RgjM0fuqTo6Rds8OXRHXmXg>
+    <xme:dbNxYIOBRmtf3HtfI1dDneQ72a6dGIF2HoM9MX2rjIOreJh5oSnrRPfyJb4gKukes
+    mU1fl-aVGrSdkJZxw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekfedgjeehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefkuffhvffftggfggfgsehtjeertd
-    dtreejnecuhfhrohhmpeevhhhrihhsucfvrghlsghothcuoegthhhrihhssehtrghlsgho
-    thhhohhmvgdrtghomheqnecuggftrfgrthhtvghrnhepkedujeeijeehjeffjeefiedtud
-    dtgfelhedufeeghfeljeeitefhiedvudeifeehnecukfhppeejvddrleehrddvgeefrddu
-    heeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheptg
-    hhrhhishesthgrlhgsohhthhhomhgvrdgtohhm
-X-ME-Proxy: <xmx:qrJxYB_0BDiXEpFbFtbDYxGZX5H37YdjsafsMx28Se95MKtL6uFTDg>
-    <xmx:qrJxYFo354DXCWglgjO9awePs28BUnxiXP4Fc5kowf6y4IGgmTXSuQ>
-    <xmx:qrJxYKoxae1Ulpmf5PLWGl1EPSlapqbSD--S9Xbls7MBDXc4h82m2Q>
-    <xmx:q7JxYPATiDqX0LeQjlwcASDvA41pKah142-O2xVBL6lNLmPRg4BNgA>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefkuffhvfffjghftggfggfgsehtje
+    ertddtreejnecuhfhrohhmpeevhhhrihhsucfvrghlsghothcuoegthhhrihhssehtrghl
+    sghothhhohhmvgdrtghomheqnecuggftrfgrthhtvghrnhepueevgeelveekudeltdevie
+    fgteethfdvjeelueefvdelgedtkedtieejjeegfedunecuffhomhgrihhnpehsrhdrhhht
+    necukfhppeejvddrleehrddvgeefrdduheeinecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomheptghhrhhishesthgrlhgsohhthhhomhgvrdgtohhm
+X-ME-Proxy: <xmx:dbNxYPguhfuNGDLmzaWN0_mzigvTE47EQIAekt4VE9tGtBIVK-tLjw>
+    <xmx:dbNxYL87a2F2G9AntyufhorfJ1HGV3o0e01OqVyw_Mqch5lACpj30Q>
+    <xmx:dbNxYKvOrcRdFicG9ae3qPZJmAu7gmDsoOciSp-XIRE92cCESYAodg>
+    <xmx:drNxYPVf4IcN4L8JvXAZwpfPZidJLACS69EVcbeE7l65fRTijcjkDg>
 Received: from SpaceballstheLaptop.talbothome.com (unknown [72.95.243.156])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 46A7F240054;
-        Sat, 10 Apr 2021 10:14:02 -0400 (EDT)
-Message-ID: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
-Subject: [PATCH 0/9] Updates for mmsd
+        by mail.messagingengine.com (Postfix) with ESMTPA id 53A7A240054;
+        Sat, 10 Apr 2021 10:17:25 -0400 (EDT)
+Message-ID: <b23ba0656ea0d58fdbd8c83072e017f63629f934.camel@talbothome.com>
+Subject: [PATCH 1/9] Fix mmsd to work with T-mobile
 From:   Chris Talbot <chris@talbothome.com>
 To:     ofono@ofono.org, netdev@vger.kernel.org,
         debian-on-mobile-maintainers@alioth-lists.debian.net,
         librem-5-dev@lists.community.puri.sm
-Date:   Sat, 10 Apr 2021 10:13:45 -0400
+Date:   Sat, 10 Apr 2021 10:17:25 -0400
+In-Reply-To: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
+References: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
@@ -69,26 +72,1097 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patch is a squashed version of a series of patches here:
 
-I am submitting a series of patches for mmsd that I have been working
-on. The patches have been successfully tested on PostmarketOS, Debian
-on Mobile (Mobian), PureOS, and Fedora.
+https://git.sr.ht/~anteater/mmsd
 
-The patches fall into two catagories:
-1) core fixes to mmsd to get it to work with several carriers
-(including T-Mobile USA, AT&T USA, Telus Canada, and a Swedish
-Carrier). 
-2) A new plugin to enable mmsd functionality on Modem Manager. 
+It also includes some fixes to a few hacks in the code. Rather than
+submit two patches that need to go together, I just squashed it into
+one commit.
+---
+ Makefile.am       |   3 +-
+ gweb/gresolv.c    |  73 ++++++++++++++-
+ gweb/gweb.c       |   1 +
+ plugins/ofono.c   |  11 ++-
+ src/mmsutil.c     | 233 ++++++++++++++++++++++++++++++++++++++--------
+ src/mmsutil.h     |  17 ++++
+ src/service.c     |  58 ++++++++++--
+ test/send-message |  24 ++---
+ 8 files changed, 356 insertions(+), 64 deletions(-)
 
-The Patches have been tested on both the Pinephone and the Librem 5,
-and have been confirmed tested accross all major US carriers (as well
-as several minor US carriers), Canadian carriers, French carriers, and
-Swedish carriers. They been been likely tested on more carriers, but
-the author can only confirm the above ones (as he has gotten positive
-feedback for them).
-
+diff --git a/Makefile.am b/Makefile.am
+index ee2c715..99fdb76 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -88,7 +88,8 @@ unit_test_wsputil_SOURCES = unit/test-wsputil.c
+src/wsputil.c src/wsputil.h
+ unit_test_wsputil_LDADD = @GLIB_LIBS@
+ 
+ unit_test_mmsutil_SOURCES = unit/test-mmsutil.c src/mmsutil.c
+src/mmsutil.h \
+-						src/wsputil.c
+src/wsputil.h
++						src/wsputil.c
+src/wsputil.h \
++						src/log.c src/log.h
+ unit_test_mmsutil_LDADD = @GLIB_LIBS@
+ 
+ TESTS = unit/test-wsputil unit/test-mmsutil
+diff --git a/gweb/gresolv.c b/gweb/gresolv.c
+index 79abc9b..bb1c32d 100644
+--- a/gweb/gresolv.c
++++ b/gweb/gresolv.c
+@@ -35,6 +35,7 @@
+ #include <arpa/inet.h>
+ #include <arpa/nameser.h>
+ #include <net/if.h>
++#include <ifaddrs.h>
+ 
+ #include "gresolv.h"
+ 
+@@ -764,13 +765,15 @@ static int connect_udp_channel(struct
+resolv_nameserver *nameserver)
+ 		return -EINVAL;
+ 
+ 	sk = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
++	const int so_reuseaddr = 1;
++	setsockopt(sk, SOL_SOCKET, SO_REUSEADDR, &so_reuseaddr, sizeof
+so_reuseaddr);
+ 	if (sk < 0) {
+ 		freeaddrinfo(rp);
+ 		return -EIO;
+ 	}
+ 
+ 	/*
+-	 * If nameserver points to localhost ip, their is no need to
++	 * If nameserver points to localhost ip, there is no need to
+ 	 * bind the socket on any interface.
+ 	 */
+ 	if (nameserver->resolv->index > 0 &&
+@@ -780,12 +783,63 @@ static int connect_udp_channel(struct
+resolv_nameserver *nameserver)
+ 		memset(interface, 0, IF_NAMESIZE);
+ 		if (if_indextoname(nameserver->resolv->index,
+ 						interface) != NULL) {
+-			if (setsockopt(sk, SOL_SOCKET,
+SO_BINDTODEVICE,
+-						interface,
+IF_NAMESIZE) < 0) {
++			/* set up bind address */
++			struct sockaddr_storage bind_addr;
++			int addr_size = 0;
++			memset(&bind_addr, 0, sizeof(bind_addr));
++			bind_addr.ss_family = rp->ai_family;
++
++			struct ifaddrs *ifa, *ifa_tmp;
++			if (getifaddrs(&ifa) == -1) {
++				perror("getifaddrs failed");
++				return -errno;
++			}
++			ifa_tmp = ifa;
++			while (ifa_tmp) {
++				if (!strcmp(ifa_tmp->ifa_name,
+interface) && 
++						ifa_tmp->ifa_addr) {
++					if (ifa_tmp->ifa_addr-
+>sa_family != rp->ai_family) {
++						printf("fam %d !=
+expected %d\n", ifa_tmp->ifa_addr->sa_family, rp->ai_family);
++						ifa_tmp = ifa_tmp-
+>ifa_next;
++						continue;
++					}
++					if (ifa_tmp->ifa_addr-
+>sa_family == AF_INET) {
++						struct sockaddr_in
+*bind_addr4 = (struct sockaddr_in *)&bind_addr;
++						bind_addr4-
+>sin_addr.s_addr = ((struct sockaddr_in *)ifa_tmp->ifa_addr)-
+>sin_addr.s_addr;
++						bind_addr4->sin_port =
+53;
++						printf("addr = %s\n",
+inet_ntoa(bind_addr4->sin_addr));
++						addr_size =
+sizeof(*bind_addr4);
++					} else if (ifa_tmp->ifa_addr-
+>sa_family == AF_INET6) {
++						struct sockaddr_in6
+*bind_addr6 = (struct sockaddr_in6 *)&bind_addr;
++						bind_addr6->sin6_addr
+= ((struct sockaddr_in6 *)ifa_tmp->ifa_addr)->sin6_addr;
++						bind_addr6->sin6_port
+= 53;
++						char buf[64];
++						inet_ntop(AF_INET6,
+bind_addr6->sin6_addr.s6_addr, buf, 64);
++						printf("addr = %s\n",
+buf);
++						addr_size =
+sizeof(*bind_addr6);
++					} else {
++						printf("unknown
+fam\n");
++					}
++					break;
++				}
++				ifa_tmp = ifa_tmp->ifa_next;
++			}
++
++/*			if (bind_addr. && bind_addr.sin_addr.s_addr ==
+0) {
++				printf("interface not found\n");
++			}
++
++			if (bind_addr.sin6_addr.s_addr == 0) {
++				printf("interface6 not found\n");
++			}*/
++
++			if (bind(sk, (struct sockaddr *)&bind_addr,
+addr_size) < 0) {
++				perror("bind failed");
+ 				close(sk);
+ 				freeaddrinfo(rp);
+ 				return -EIO;
+ 			}
++			freeifaddrs(ifa);
+ 		}
+ 	}
+ 
+@@ -896,6 +950,7 @@ void g_resolv_set_debug(GResolv *resolv,
+GResolvDebugFunc func,
+ gboolean g_resolv_add_nameserver(GResolv *resolv, const char *address,
+ 					uint16_t port, unsigned long
+flags)
+ {
++	printf ("adding nameserver %s\n", address);
+ 	struct resolv_nameserver *nameserver;
+ 
+ 	if (resolv == NULL)
+@@ -911,6 +966,7 @@ gboolean g_resolv_add_nameserver(GResolv *resolv,
+const char *address,
+ 	nameserver->resolv = resolv;
+ 
+ 	if (connect_udp_channel(nameserver) < 0) {
++		printf ("connect_udp_channel failed!\n");
+ 		free_nameserver(nameserver);
+ 		return FALSE;
+ 	}
+@@ -977,6 +1033,9 @@ guint g_resolv_lookup_hostname(GResolv *resolv,
+const char *hostname,
+ 
+ 	if (resolv->nameserver_list == NULL) {
+ 		int i;
++		printf("g_resolv_lookup_hostname: nameserver_list
+NULL\n");
++
++		printf("g_resolv_lookup_hostname: nscount=%d\n",
+resolv->res.nscount);
+ 
+ 		for (i = 0; i < resolv->res.nscount; i++) {
+ 			char buf[100];
+@@ -989,15 +1048,19 @@ guint g_resolv_lookup_hostname(GResolv *resolv,
+const char *hostname,
+ 				sa_addr = &resolv-
+>res._u._ext.nsaddrs[i]->sin6_addr;
+ 			}
+ 
+-			if (family != AF_INET && family != AF_INET6)
++			if (family != AF_INET && family != AF_INET6) {
++				printf("g_resolv_lookup_hostname:
+skipping b/c family=%d\n", family);
+ 				continue;
++			}
+ 
+ 			if (inet_ntop(family, sa_addr, buf,
+sizeof(buf)))
+ 				g_resolv_add_nameserver(resolv, buf,
+53, 0);
+ 		}
+ 
+-		if (resolv->nameserver_list == NULL)
++		if (resolv->nameserver_list == NULL) {
++			printf("g_resolv_lookup_hostname:
+nameserver_list *still* NULL\n");
+ 			g_resolv_add_nameserver(resolv, "127.0.0.1",
+53, 0);
++		}
+ 	}
+ 
+ 	lookup = g_try_new0(struct resolv_lookup, 1);
+diff --git a/gweb/gweb.c b/gweb/gweb.c
+index 4c2f95c..f72e137 100644
+--- a/gweb/gweb.c
++++ b/gweb/gweb.c
+@@ -1008,6 +1008,7 @@ static inline int bind_socket(int sk, int index,
+int family)
+ 	if (if_indextoname(index, interface) == NULL)
+ 		return -1;
+ 
++	printf("binding %s\n", interface);
+ 	err = setsockopt(sk, SOL_SOCKET, SO_BINDTODEVICE,
+ 					interface, IF_NAMESIZE);
+ 	if (err < 0)
+diff --git a/plugins/ofono.c b/plugins/ofono.c
+index e7324a7..24a147a 100644
+--- a/plugins/ofono.c
++++ b/plugins/ofono.c
+@@ -396,11 +396,14 @@ static void check_context_active(struct
+modem_data *modem,
+ 		g_free(modem->context_proxy);
+ 		modem->context_proxy = NULL;
+ 
++		DBG("context_active = false");
+ 		mms_service_bearer_notify(modem->service, FALSE, NULL,
+NULL);
+-	} else if (modem->context_proxy != NULL)
++	} else if (modem->context_proxy != NULL) {
++		DBG("nonnull proxy");
+ 		mms_service_bearer_notify(modem->service, TRUE,
+ 						modem-
+>context_interface,
+ 						modem->context_proxy);
++	}
+ }
+ 
+ static void check_context_settings(struct modem_data *modem,
+@@ -452,6 +455,7 @@ static void check_context_settings(struct
+modem_data *modem,
+ 	if (modem->context_active == FALSE)
+ 		return;
+ 
++	DBG("about to bearer_notify");
+ 	mms_service_bearer_notify(modem->service, TRUE,
+ 					modem->context_interface,
+ 					modem->context_proxy);
+@@ -692,6 +696,7 @@ static void set_context_reply(DBusPendingCall
+*call, void *user_data)
+ 	dbus_error_init(&err);
+ 
+ 	if (dbus_set_error_from_message(&err, reply) == TRUE) {
++		DBG("set_ctx reply failure (%s: %s), about to
+bearer_notify", err.name, err.message);
+ 		dbus_error_free(&err);
+ 		mms_service_bearer_notify(modem->service, FALSE, NULL,
+NULL);
+ 	}
+@@ -739,15 +744,17 @@ static void bearer_handler(mms_bool_t active,
+void *user_data)
+ {
+ 	struct modem_data *modem = user_data;
+ 
+-	DBG("path %s active %d", modem->path, active);
++	DBG("path %s active %d context_active %d", modem->path,
+active, modem->context_active);
+ 
+ 	if (active == TRUE && modem->context_active == TRUE) {
++		DBG("active and context_active, bearer_notify");
+ 		mms_service_bearer_notify(modem->service, TRUE,
+ 						modem-
+>context_interface,
+ 						modem->context_proxy);
+ 		return;
+ 	}
+ 
++	DBG("checking for failure");
+ 	if (active == FALSE && modem->context_active == FALSE) {
+ 		mms_service_bearer_notify(modem->service, FALSE, NULL,
+NULL);
+ 		return;
+diff --git a/src/mmsutil.c b/src/mmsutil.c
+index a9a12eb..5fcf358 100644
+--- a/src/mmsutil.c
++++ b/src/mmsutil.c
+@@ -32,6 +32,7 @@
+ 
+ #include "wsputil.h"
+ #include "mmsutil.h"
++#include "mms.h"
+ 
+ #define MAX_ENC_VALUE_BYTES 6
+ 
+@@ -75,7 +76,11 @@ enum mms_header {
+ 	MMS_HEADER_SUBJECT =			0x16,
+ 	MMS_HEADER_TO =				0x17,
+ 	MMS_HEADER_TRANSACTION_ID =		0x18,
+-	__MMS_HEADER_MAX =			0x19,
++	MMS_HEADER_RETRIEVE_STATUS =		0x19,
++	MMS_HEADER_RETRIEVE_TEXT =		0x20,
++	MMS_HEADER_READ_STATUS =		0x21,
++	MMS_HEADER_LAST_HANDLED =		0x21,
++	__MMS_HEADER_MAX =			0x22,
+ 	MMS_HEADER_INVALID =			0x80,
+ };
+ 
+@@ -159,13 +164,18 @@ static gboolean extract_short(struct
+wsp_header_iter *iter, void *user)
+ static const char *decode_text(struct wsp_header_iter *iter)
+ {
+ 	const unsigned char *p;
+-	unsigned int l;
++	unsigned int l=32;
+ 
+-	if (wsp_header_iter_get_val_type(iter) != WSP_VALUE_TYPE_TEXT)
++	if (wsp_header_iter_get_val_type(iter) != WSP_VALUE_TYPE_TEXT)
+{
++		p = wsp_header_iter_get_val(iter);
++		DBG("could not decode text of (dummy) length %u: %*s",
+l-1, l-1, p+1);
+ 		return NULL;
++	}
+ 
+ 	p = wsp_header_iter_get_val(iter);
+ 	l = wsp_header_iter_get_val_len(iter);
++	DBG("claimed len: %u", l);
++	DBG("val: %*s", l - 1, p);
+ 
+ 	return wsp_decode_text(p, l, NULL);
+ }
+@@ -184,31 +194,14 @@ static gboolean extract_text(struct
+wsp_header_iter *iter, void *user)
+ 	return TRUE;
+ }
+ 
+-static gboolean extract_text_array_element(struct wsp_header_iter
+*iter,
+-						void *user)
+-{
+-	char **out = user;
+-	const char *element;
+-	char *tmp;
+-
+-	element = decode_text(iter);
+-	if (element == NULL)
+-		return FALSE;
+-
+-	if (*out == NULL) {
+-		*out = g_strdup(element);
+-		return TRUE;
+-	}
+-
+-	tmp = g_strjoin(",", *out, element, NULL);
+-	if (tmp == NULL)
+-		return FALSE;
+-
+-	g_free(*out);
+-
+-	*out = tmp;
+-
+-	return TRUE;
++static char* remove_address_type_suffix(const char* addr, size_t len)
+{
++	return g_strdup(addr);
++/*	#define MMS_ADDR_SUFFIX_PUBLIC_LAND_MOBILE_NUMBER "/TYPE=PLMN"
++	if(g_str_has_suffix(addr,
+MMS_ADDR_SUFFIX_PUBLIC_LAND_MOBILE_NUMBER)) {
++		return g_strndup(addr, len -
+strlen(MMS_ADDR_SUFFIX_PUBLIC_LAND_MOBILE_NUMBER));
++	} else {
++		return g_strdup(addr);
++	}*/
+ }
+ 
+ static char *decode_encoded_string_with_mib_enum(const unsigned char
+*p,
+@@ -242,6 +235,57 @@ static char
+*decode_encoded_string_with_mib_enum(const unsigned char *p,
+ 			&bytes_read, &bytes_written, NULL);
+ }
+ 
++static gboolean extract_text_array_element(struct wsp_header_iter
+*iter,
++						void *user)
++{
++	char **out = user;
++	const char *element = NULL;
++	char *tmp;
++	DBG("");
++
++	const unsigned char *p;
++	unsigned int l;
++
++	p = wsp_header_iter_get_val(iter);
++	l = wsp_header_iter_get_val_len(iter);
++
++	switch (wsp_header_iter_get_val_type(iter)) {
++	case WSP_VALUE_TYPE_TEXT:
++		/* Text-string */
++		element = wsp_decode_text(p, l, NULL);
++		break;
++	case WSP_VALUE_TYPE_LONG:
++		/* (Value-len) Char-set Text-string */
++		element = decode_encoded_string_with_mib_enum(p, l);
++		break;
++	case WSP_VALUE_TYPE_SHORT:
++		element = NULL;
++		break;
++	}
++
++	if (element == NULL) {
++		DBG("failed, type=%d",
+wsp_header_iter_get_val_type(iter));
++		return FALSE;
++	}
++
++	if (*out == NULL) {
++		*out = g_strdup(element);
++		return TRUE;
++	}
++
++	tmp = g_strjoin(",", *out, element, NULL);
++	if (tmp == NULL) {
++		DBG("join failed");
++		return FALSE;
++	}
++
++	g_free(*out);
++
++	*out = tmp;
++
++	return TRUE;
++}
++
+ static gboolean extract_encoded_text(struct wsp_header_iter *iter,
+void *user)
+ {
+ 	char **out = user;
+@@ -361,26 +405,62 @@ static gboolean extract_from(struct
+wsp_header_iter *iter, void *user)
+ 	const unsigned char *p;
+ 	unsigned int l;
+ 	const char *text;
++	unsigned char char_set = 0;
+ 
+-	if (wsp_header_iter_get_val_type(iter) != WSP_VALUE_TYPE_LONG)
++	if (wsp_header_iter_get_val_type(iter) != WSP_VALUE_TYPE_LONG)
+{
++		DBG("val_type not LONG");
+ 		return FALSE;
++	}
+ 
+ 	p = wsp_header_iter_get_val(iter);
+ 	l = wsp_header_iter_get_val_len(iter);
+ 
+-	if (p[0] != 128 && p[0] != 129)
++	/* From-value = Value-length (Address-present-token=128
+Encoded-string-value | Insert-address-token=129) */
++	/* Encoded-string-value = Text-string | Value-length Char-set
+Text-string */
++	/* Value-length = Short-length | (Length-quote Length) */
++	/* Short-length = val 0-30 */
++	/* Length-quote = val 31 */
++	/* Length = Uintvar-integer */
++
++	if (p[0] != 128 && p[0] != 129) {
++		DBG("not 128 or 129");
+ 		return FALSE;
++	}
+ 
+ 	if (p[0] == 129) {
+ 		*out = NULL;
+ 		return TRUE;
+ 	}
++	p += 1; l -= 1; /* token has been handled */
++
++	unsigned int val_len = l;
++	unsigned int str_len;
++	if (p[0] < 31) { /*short-length */
++		val_len = p[0];
++		char_set = p[1];
++		p += 2;
++		val_len -= 1; /* count encoding against val_len */
++	} else if (p[0] == 31) /* length quote then long length */ {
++		unsigned int consumed = 0;
++		gboolean ok = wsp_decode_uintvar(p, l, &val_len,
+&consumed);
++		if (!ok)
++			return FALSE;
++		char_set = p[1];
++		p += consumed;
++		val_len -= 1; /* count encoding against val_len */
++	}
++	str_len = val_len - 1; /* NUL at the end is not counted by
+strlen() */
++	
++	DBG("trying to decode text of length %u: %*s", str_len,
+str_len, p);
++	text = wsp_decode_text(p, val_len, NULL);
++	DBG("text=\"%s\"", text);
+ 
+-	text = wsp_decode_text(p + 1, l - 1, NULL);
+-	if (text == NULL)
++	if (text == NULL) {
++		DBG("could not decode text of length %u: %*s",
+str_len, str_len, p);
+ 		return FALSE;
++	}
+ 
+-	*out = g_strdup(text);
++	*out = remove_address_type_suffix(text, str_len);
+ 
+ 	return TRUE;
+ }
+@@ -473,6 +553,50 @@ static gboolean extract_priority(struct
+wsp_header_iter *iter, void *user)
+ 	return TRUE;
+ }
+ 
++static gboolean extract_read_status(struct wsp_header_iter *iter, void
+*user)
++{
++	enum mms_message_read_status *out = user;
++	const unsigned char *p;
++
++	if (wsp_header_iter_get_val_type(iter) !=
+WSP_VALUE_TYPE_SHORT)
++		return FALSE;
++
++	p = wsp_header_iter_get_val(iter);
++
++	if (p[0] == MMS_MESSAGE_READ_STATUS_READ ||
++		p[0] == MMS_MESSAGE_READ_STATUS_DELETED_UNREAD) {
++		*out = p[0];
++		return TRUE;
++	}
++
++	return FALSE;
++}
++
++static gboolean extract_retr_status(struct wsp_header_iter *iter, void
+*user)
++{
++	enum mms_message_retr_status *out = user;
++	const unsigned char *p;
++
++	if (wsp_header_iter_get_val_type(iter) !=
+WSP_VALUE_TYPE_SHORT)
++		return FALSE;
++
++	p = wsp_header_iter_get_val(iter);
++
++	switch (p[0]) {
++	case MMS_MESSAGE_RETR_STATUS_OK:
++	case MMS_MESSAGE_RETR_STATUS_ERR_TRANS_FAILURE:
++	case MMS_MESSAGE_RETR_STATUS_ERR_TRANS_MESSAGE_NOT_FOUND:
++	case MMS_MESSAGE_RETR_STATUS_ERR_PERM_FAILURE:
++	case MMS_MESSAGE_RETR_STATUS_ERR_PERM_SERVICE_DENIED:
++	case MMS_MESSAGE_RETR_STATUS_ERR_PERM_MESSAGE_NOT_FOUND:
++	case MMS_MESSAGE_RETR_STATUS_ERR_PERM_CONTENT_UNSUPPORTED:
++		*out = p[0];
++		return TRUE;
++	}
++
++	return FALSE;
++}
++
+ static gboolean extract_rsp_status(struct wsp_header_iter *iter, void
+*user)
+ {
+ 	unsigned char *out = user;
+@@ -559,7 +683,7 @@ static header_handler handler_for_type(enum
+mms_header header)
+ 	case MMS_HEADER_CONTENT_LOCATION:
+ 		return extract_text;
+ 	case MMS_HEADER_CONTENT_TYPE:
+-		return extract_text;
++		return extract_text; /* extract_encoded_text? */
+ 	case MMS_HEADER_DATE:
+ 		return extract_date;
+ 	case MMS_HEADER_DELIVERY_REPORT:
+@@ -590,6 +714,12 @@ static header_handler handler_for_type(enum
+mms_header header)
+ 		return extract_rsp_status;
+ 	case MMS_HEADER_RESPONSE_TEXT:
+ 		return extract_encoded_text;
++	case MMS_HEADER_RETRIEVE_STATUS:
++		return extract_retr_status;
++	case MMS_HEADER_RETRIEVE_TEXT:
++		return extract_encoded_text;
++	case MMS_HEADER_READ_STATUS:
++		return extract_read_status;
+ 	case MMS_HEADER_SENDER_VISIBILITY:
+ 		return extract_sender_visibility;
+ 	case MMS_HEADER_STATUS:
+@@ -650,8 +780,12 @@ static gboolean mms_parse_headers(struct
+wsp_header_iter *iter,
+ 		h = p[0] & 0x7f;
+ 
+ 		handler = handler_for_type(h);
+-		if (handler == NULL)
++		if (handler == NULL) {
++			DBG("no handler for type %u", h);
+ 			return FALSE;
++		}
++
++		DBG("saw header of type %u", h);
+ 
+ 		/* Unsupported header, skip */
+ 		if (entries[h].data == NULL)
+@@ -662,9 +796,15 @@ static gboolean mms_parse_headers(struct
+wsp_header_iter *iter,
+ 				!(entries[h].flags &
+HEADER_FLAG_ALLOW_MULTI))
+ 			continue;
+ 
++		DBG("running handler for type %u", h);
++
+ 		/* Parse the header */
+-		if (handler(iter, entries[h].data) == FALSE)
++		if (handler(iter, entries[h].data) == FALSE) {
++			DBG("handler %p for type %u returned false",
+handler, h);
+ 			return FALSE;
++		}
++
++		DBG("handler for type %u was success", h);
+ 
+ 		entries[h].pos = i;
+ 		entries[h].flags |= HEADER_FLAG_MARKED;
+@@ -672,8 +812,10 @@ static gboolean mms_parse_headers(struct
+wsp_header_iter *iter,
+ 
+ 	for (i = 0; i < __MMS_HEADER_MAX + 1; i++) {
+ 		if ((entries[i].flags & HEADER_FLAG_MANDATORY) &&
+-				!(entries[i].flags &
+HEADER_FLAG_MARKED))
++				!(entries[i].flags &
+HEADER_FLAG_MARKED)) {
++			DBG("header %u was mandatory but not marked",
+i);
+ 			return FALSE;
++		}
+ 	}
+ 
+ 	/*
+@@ -704,8 +846,10 @@ static gboolean mms_parse_headers(struct
+wsp_header_iter *iter,
+ 
+ 		va_end(args);
+ 
+-		if (entries[i].pos != expected_pos)
++		if (entries[i].pos != expected_pos) {
++			DBG("header %u was in position %u but expected
+in position %u", i, entries[i].pos, expected_pos);
+ 			return FALSE;
++		}
+ 	}
+ 
+ 	return TRUE;
+@@ -770,6 +914,7 @@ static gboolean extract_content_id(struct
+wsp_header_iter *iter, void *user)
+ 		return FALSE;
+ 
+ 	*out = g_strdup(text);
++	DBG("extracted content-id %s\n", *out);
+ 
+ 	return TRUE;
+ }
+@@ -991,11 +1136,17 @@ gboolean mms_message_decode(const unsigned char
+*pdu,
+ 	flags |= WSP_HEADER_ITER_FLAG_DETECT_MMS_MULTIPART;
+ 	wsp_header_iter_init(&iter, pdu, len, flags);
+ 
++	DBG("about to check well known");
++
+ 	CHECK_WELL_KNOWN_HDR(MMS_HEADER_MESSAGE_TYPE);
+ 
++	DBG("about to extract short");
++
+ 	if (extract_short(&iter, &octet) == FALSE)
+ 		return FALSE;
+ 
++	DBG("octet %u", octet);
++
+ 	if (octet < MMS_MESSAGE_TYPE_SEND_REQ ||
+ 			octet > MMS_MESSAGE_TYPE_DELIVERY_IND)
+ 		return FALSE;
+@@ -1422,6 +1573,12 @@ static header_encoder encoder_for_type(enum
+mms_header header)
+ 		return NULL;
+ 	case MMS_HEADER_RESPONSE_TEXT:
+ 		return NULL;
++	case MMS_HEADER_RETRIEVE_STATUS:
++		return NULL;
++	case MMS_HEADER_RETRIEVE_TEXT:
++		return NULL;
++	case MMS_HEADER_READ_STATUS:
++		return NULL;
+ 	case MMS_HEADER_SENDER_VISIBILITY:
+ 		return NULL;
+ 	case MMS_HEADER_STATUS:
+diff --git a/src/mmsutil.h b/src/mmsutil.h
+index e32c761..00ecc39 100644
+--- a/src/mmsutil.h
++++ b/src/mmsutil.h
+@@ -50,6 +50,23 @@ enum mms_message_rsp_status {
+ 	MMS_MESSAGE_RSP_STATUS_ERR_PERM_LACK_OF_PREPAID
+=		235,
+ };
+ 
++enum mms_message_retr_status {
++	MMS_MESSAGE_RETR_STATUS_OK =				128,
++	MMS_MESSAGE_RETR_STATUS_ERR_TRANS_MIN
+=			192,
++	MMS_MESSAGE_RETR_STATUS_ERR_TRANS_FAILURE =		192,
++	MMS_MESSAGE_RETR_STATUS_ERR_TRANS_MESSAGE_NOT_FOUND =	194,
++	MMS_MESSAGE_RETR_STATUS_ERR_PERM_MIN =			224,
++	MMS_MESSAGE_RETR_STATUS_ERR_PERM_FAILURE =		224,
++	MMS_MESSAGE_RETR_STATUS_ERR_PERM_SERVICE_DENIED =	225,
++	MMS_MESSAGE_RETR_STATUS_ERR_PERM_MESSAGE_NOT_FOUND =	226,
++	MMS_MESSAGE_RETR_STATUS_ERR_PERM_CONTENT_UNSUPPORTED =	227,
++};
++
++enum mms_message_read_status {
++	MMS_MESSAGE_READ_STATUS_READ =			128,
++	MMS_MESSAGE_READ_STATUS_DELETED_UNREAD =	129,
++};
++
+ enum mms_message_notify_status {
+ 	MMS_MESSAGE_NOTIFY_STATUS_RETRIEVED =		129,
+ 	MMS_MESSAGE_NOTIFY_STATUS_REJECTED =		130,
+diff --git a/src/service.c b/src/service.c
+index b3ecc1e..c7ef255 100644
+--- a/src/service.c
++++ b/src/service.c
+@@ -609,7 +609,7 @@ static void emit_message_added(const struct
+mms_service *service,
+ 
+ static void activate_bearer(struct mms_service *service)
+ {
+-	DBG("service %p", service);
++	DBG("service %p setup %d active %d", service, service-
+>bearer_setup, service->bearer_active);
+ 
+ 	if (service->bearer_setup == TRUE)
+ 		return;
+@@ -622,7 +622,7 @@ static void activate_bearer(struct mms_service
+*service)
+ 	if (service->bearer_handler == NULL)
+ 		return;
+ 
+-	DBG("service %p", service);
++	DBG("service %p waiting for %d seconds", service,
+BEARER_SETUP_TIMEOUT);
+ 
+ 	service->bearer_setup = TRUE;
+ 
+@@ -736,6 +736,8 @@ static DBusMessage *get_messages(DBusConnection
+*conn,
+ 	GHashTableIter table_iter;
+ 	gpointer key, value;
+ 
++	DBG("");
++
+ 	reply = dbus_message_new_method_return(dbus_msg);
+ 	if (reply == NULL)
+ 		return NULL;
+@@ -1632,6 +1634,7 @@ static void append_attachment_properties(struct
+mms_attachment *part,
+ 	dbus_message_iter_open_container(part_array, DBUS_TYPE_STRUCT,
+ 							NULL, &entry);
+ 
++	DBG("content-id: %s\n", part->content_id);
+ 	dbus_message_iter_append_basic(&entry, DBUS_TYPE_STRING,
+ 							&part-
+>content_id);
+ 	dbus_message_iter_append_basic(&entry, DBUS_TYPE_STRING,
+@@ -1793,7 +1796,7 @@ static void append_msg_recipients(DBusMessageIter
+*dict,
+ 
+ 	for (i = 0; tokens[i] != NULL; i++) {
+ 		rcpt = mms_address_to_string(tokens[i]);
+-
++		DBG("rcpt=%s", rcpt);
+ 		dbus_message_iter_append_basic(&array,
+DBUS_TYPE_STRING, &rcpt);
+ 	}
+ 
+@@ -1814,25 +1817,31 @@ static void
+append_rc_msg_properties(DBusMessageIter *dict,
+ 	const char *from_prefix;
+ 	char *from;
+ 
++	DBG("status=%s", status);
+ 	mms_dbus_dict_append_basic(dict, "Status",
+ 					DBUS_TYPE_STRING, &status);
+ 
++	DBG("date=%s", date);
+ 	mms_dbus_dict_append_basic(dict, "Date",
+ 					DBUS_TYPE_STRING,  &date);
+ 
++	DBG("subject=%s", msg->rc.subject);
+ 	if (msg->rc.subject != NULL)
+ 		mms_dbus_dict_append_basic(dict, "Subject",
+ 					DBUS_TYPE_STRING, &msg-
+>rc.subject);
+ 
++	DBG("from=%s", msg->rc.from);
+ 	from = g_strdup(msg->rc.from);
+ 
+ 	if (from != NULL) {
+ 		from_prefix = mms_address_to_string(from);
++		DBG("from_pfx=%s", from_prefix);
+ 		mms_dbus_dict_append_basic(dict, "Sender",
+ 					DBUS_TYPE_STRING,
+&from_prefix);
+ 		g_free(from);
+ 	}
+ 
++	DBG("to=%s", msg->rc.to);
+ 	if (msg->rc.to != NULL)
+ 		append_msg_recipients(dict, msg);
+ }
+@@ -1862,6 +1871,8 @@ static void append_message(const char *path,
+const struct mms_service *service,
+ 
+ 	mms_dbus_dict_open(iter, &dict);
+ 
++	DBG("type=%d", msg->type);
++
+ 	switch (msg->type) {
+ 	case MMS_MESSAGE_TYPE_SEND_REQ:
+ 		append_sr_msg_properties(&dict, msg);
+@@ -1873,7 +1884,7 @@ static void append_message(const char *path,
+const struct mms_service *service,
+ 	case MMS_MESSAGE_TYPE_NOTIFYRESP_IND:
+ 		break;
+ 	case MMS_MESSAGE_TYPE_RETRIEVE_CONF:
+-		append_rc_msg_properties(&dict, msg);
++		append_rc_msg_properties(&dict, msg); /* causes dbus
+disconnect! */
+ 		break;
+ 	case MMS_MESSAGE_TYPE_ACKNOWLEDGE_IND:
+ 		break;
+@@ -1884,6 +1895,7 @@ static void append_message(const char *path,
+const struct mms_service *service,
+ 	if (msg->attachments != NULL) {
+ 		char *pdu_path = mms_store_get_path(service->identity,
+ 								msg-
+>uuid);
++		DBG("appending pdu path %s", pdu_path);
+ 		append_msg_attachments(&dict, pdu_path, msg);
+ 		g_free(pdu_path);
+ 	}
+@@ -2059,8 +2071,10 @@ static gboolean
+result_request_notify_resp(struct mms_request *request)
+ 		return FALSE;
+ 	}
+ 
+-	if (request->msg == NULL)
++	if (request->msg == NULL) {
++		mms_error("POST m.notify.resp.ind provided no message
+to register");
+ 		return FALSE;
++	}
+ 
+ 	msg = mms_request_steal_message(request);
+ 
+@@ -2210,6 +2224,9 @@ static gboolean web_get_cb(GWebResult *result,
+gpointer user_data)
+ complete:
+ 	close(request->fd);
+ 
++	DBG("request->result_cb=%p vs.
+retrieve_conf=%p/send_conf=%p/notify_resp=%p",
++	  request->result_cb, result_request_retrieve_conf,
+result_request_send_conf, result_request_notify_resp);
++
+ 	if (request->result_cb == NULL || request->result_cb(request)
+== TRUE)
+ 		mms_request_destroy(request);
+ 	else {
+@@ -2378,25 +2395,37 @@ void mms_service_push_notify(struct mms_service
+*service,
+ 		return;
+ 	}
+ 
++	DBG("about to push notify");
++
+ 	if (mms_push_notify(data, len, &nread) == FALSE)
+ 		goto out;
+ 
++	DBG("did push notify; about to store");
++
+ 	uuid = mms_store(service->identity, data + nread, len -
+nread);
+ 	if (uuid == NULL)
+ 		goto out;
+ 
++	DBG("did store; about to decode");
++
+ 	if (mms_message_decode(data + nread, len - nread, msg) ==
+FALSE)
+ 		goto error;
+ 
++	DBG("did decode message");
++
+ 	if (msg->type == MMS_MESSAGE_TYPE_DELIVERY_IND) {
+ 		msg->uuid = g_strdup(uuid);
+ 
+ 		dump_delivery_ind(msg);
+ 
++		DBG("about to store_meta_open");
++
+ 		meta = mms_store_meta_open(service->identity, uuid);
+ 		if (meta == NULL)
+ 			goto error;
+ 
++		DBG("did store_meta_open");
++
+ 		g_key_file_set_string(meta, "info", "state",
+"notification");
+ 
+ 		mms_store_meta_close(service->identity, uuid, meta,
+TRUE);
+@@ -2404,17 +2433,25 @@ void mms_service_push_notify(struct mms_service
+*service,
+ 		return;
+ 	}
+ 
++	DBG("is type NI?");
++
+ 	if (msg->type != MMS_MESSAGE_TYPE_NOTIFICATION_IND)
+ 		goto error;
+ 
++	DBG("type is NI");
++
+ 	msg->uuid = g_strdup(uuid);
+ 
+ 	dump_notification_ind(msg);
+ 
++	DBG("about to store_meta_open 2");
++
+ 	meta = mms_store_meta_open(service->identity, uuid);
+ 	if (meta == NULL)
+ 		goto error;
+ 
++	DBG("did store_meta_open 2");
++
+ 	g_key_file_set_boolean(meta, "info", "read", FALSE);
+ 
+ 	g_key_file_set_string(meta, "info", "state", "notification");
+@@ -2427,6 +2464,8 @@ void mms_service_push_notify(struct mms_service
+*service,
+ 	if (request == NULL)
+ 		goto out;
+ 
++	DBG("did create_request");
++
+ 	g_queue_push_tail(service->request_queue, request);
+ 
+ 	activate_bearer(service);
+@@ -2442,12 +2481,16 @@ out:
+ 	mms_error("Failed to handle incoming notification");
+ }
+ 
++void debug_print(const char* s, void* data) {
++	printf("%s\n", s);
++}
++
+ void mms_service_bearer_notify(struct mms_service *service, mms_bool_t
+active,
+ 				const char *interface, const char
+*proxy)
+ {
+ 	int ifindex;
+ 
+-	DBG("service %p active %d", service, active);
++	DBG("service=%p active=%d iface=%s proxy=%s", service, active,
+interface, proxy);
+ 
+ 	if (service == NULL)
+ 		return;
+@@ -2463,6 +2506,7 @@ void mms_service_bearer_notify(struct mms_service
+*service, mms_bool_t active,
+ 	if (active == FALSE)
+ 		goto interface_down;
+ 
++
+ 	DBG("interface %s proxy %s", interface, proxy);
+ 
+ 	if (service->web != NULL) {
+@@ -2481,6 +2525,8 @@ void mms_service_bearer_notify(struct mms_service
+*service, mms_bool_t active,
+ 	if (service->web == NULL)
+ 		return;
+ 
++	g_web_set_debug(service->web, (GWebDebugFunc)debug_print,
+NULL);
++
+ 	/* Sometimes no proxy is reported as string instead of NULL */
+ 	if (g_strcmp0(proxy, "") != 0)
+ 		g_web_set_proxy(service->web, proxy);
+diff --git a/test/send-message b/test/send-message
+index 558fdaa..8477e79 100755
+--- a/test/send-message
++++ b/test/send-message
+@@ -5,23 +5,23 @@ import dbus
+ import csv
+ 
+ if (len(sys.argv) < 4):
+-	print "Usage: %s"\
++	print("Usage: {}"\
+ 		" <recipient>,..."\
+ 		" <smil-file-path>"\
+ 		" <<content-id>,<content-type>,<file-path>>,..."\
+-		% (sys.argv[0])
+-	print "Sample(Related): %s"\
++		.format(sys.argv[0]))
++	print("Sample(Related): {}"\
+ 		" \"+33611111111,+33622222222\""\
+ 		" \"smil.txt\""\
+ 		" \"cid-1,text/plain,text.txt\""\
+ 		" \"cid-2,image/jpeg,image.jpg\""\
+-		% (sys.argv[0])
+-	print "Sample(Mixed): %s"\
++		.format(sys.argv[0]))
++	print("Sample(Mixed): {}"\
+ 		" \"+33611111111,+33622222222\""\
+ 		" \"\""\
+ 		" \"cid-1,text/plain,text.txt\""\
+ 		" \"cid-2,image/jpeg,image.jpg\""\
+-		% (sys.argv[0])
++		.format(sys.argv[0]))
+ 	sys.exit(1)
+ 
+ bus = dbus.SessionBus()
+@@ -38,23 +38,23 @@ service =
+dbus.Interface(bus.get_object('org.ofono.mms', path),
+ recipients = dbus.Array([],signature=dbus.Signature('s'))
+ reader = csv.reader([sys.argv[1]])
+ for r in reader:
+-	print "Recipient list: %s" % r
++	print("Recipient list: {}".format(r))
+ 	for i in r:
+ 		recipients.append(dbus.String(i))
+ 
+ 
+ if sys.argv[2] == "":
+-	print "Send MMS as Mixed"
++	print("Send MMS as Mixed")
+ 	smil = ""
+ else:
+-	print "Send MMS as Related"
+-	print "Smil path: %s" % (sys.argv[2])
++	print("Send MMS as Related")
++	print("Smil path: {}".format(sys.argv[2]))
+ 	file = open(sys.argv[2],"r")
+ 	smil = dbus.String(file.read())
+ 
+ attachments = dbus.Array([],signature=dbus.Signature('(sss)'))
+ for a in sys.argv[3:]:
+-	print "Attachment: (%s)" % a
++	print("Attachment: ({})".format(a))
+ 	reader = csv.reader([a])
+ 	for r in reader:
+ 		attachments.append(dbus.Struct((dbus.String(r[0]),
+@@ -64,4 +64,4 @@ for a in sys.argv[3:]:
+ 
+ path = service.SendMessage(recipients, smil, attachments)
+ 
+-print path
++print(path)
 -- 
-Respectfully,
-Chris Talbot
+2.30.2
+
 
