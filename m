@@ -2,114 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3BE235AE82
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 16:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8791535AEE9
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 17:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbhDJOtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Apr 2021 10:49:33 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:46829 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234818AbhDJOtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 10:49:32 -0400
-Received: by mail-il1-f198.google.com with SMTP id u19so5312760ilj.13
-        for <netdev@vger.kernel.org>; Sat, 10 Apr 2021 07:49:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=opHa0na1CTuYC9MsrnRbiN8M/7f6oGgvd1rRpihSqxk=;
-        b=V1keL9dwkJxSrp0jfS3wowzlNAC31EvN9L0f19OkgcuotOxnhEzc8YrY0C9ZN++lcU
-         RfBoJSspxAIaR4hZNyv1m7yWyT1tEEZ7DRG0fQrTCiera3xPVspZ9pbkKl7FZyoffGzm
-         VcMU/wXtJGOexBt8yIX7g5ySYk1/CyW0pW/rpTdU2LHeQadpAttmJWTFU9GZXoAEYACY
-         S388ZXFOqf/5v+egKHsv6MBCuBTk00VaF6esIXx+Hd5PL+nMSbrgbAfLedli2RNsYbUw
-         /9XVkVyFBj+sRV9HeB/gzVVP3XvpQjZwfBcBW3Bj3InHMi9ksTQgjoTWMWXwFQW3VsFa
-         qiKg==
-X-Gm-Message-State: AOAM531PoH32YkpZj6WFhJ56GRl3EfyVSZJ0piY+bWxE1aWbq393JgwP
-        haBDb2ftOMIrHSRqBf6uiehYKgEAFAl0dz65CPOy0oISvAwC
-X-Google-Smtp-Source: ABdhPJzmuxOdgQKaxS7S9qWO0NPoMt6qdJ6W4pNfEE/zt863VeL0o1dCb3hHd8Xpac2ijJbI27cozeq1zHyDFtzuGY07GEEFumJz
+        id S234768AbhDJPtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 11:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234334AbhDJPtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 11:49:08 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4D0C06138A;
+        Sat, 10 Apr 2021 08:48:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=91B1rcP8cMJQqrbDXcQN0ARnzQOA1OqZMuSrhvn5KWM=; b=evTQPZqIi5C2RLsOo/Cnp8EvmB
+        +uevWJugbBaSvzGC1a3HmfgpppZ6H1ka7pXORdatOgeVE3x3oXAbAseMJAUFRD7T4ieZ5i7iiKhlp
+        s13tFWfw/Cw0h1OKIkHOpy0hV022PAiVzvvtxFLai9MMVguPFdLDq4j90+T/YAth83dSLczxTeuNW
+        2WU9FO6QmMXdyNeytzYOZHDNDUKGMJaWbvPFUxIgPtJXRTCKU1gjDOL5ajONo2fvEa5FSsVZ0rf/K
+        M0ZWL1F0jSmahwlmebzn8v0M9ft1X/XAyYHxO5+HYitLqCGcQCzcmbfBB0K9PsGLHRcbZ62eFStHJ
+        5u/3GzcQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1lVFqS-001rFg-3o; Sat, 10 Apr 2021 15:48:28 +0000
+Date:   Sat, 10 Apr 2021 16:48:24 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+Message-ID: <20210410154824.GZ2531743@casper.infradead.org>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-3-mcroce@linux.microsoft.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5002:: with SMTP id e2mr15370368iob.43.1618066157659;
- Sat, 10 Apr 2021 07:49:17 -0700 (PDT)
-Date:   Sat, 10 Apr 2021 07:49:17 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008ce91e05bf9f62bc@google.com>
-Subject: [syzbot] WARNING in __nf_unregister_net_hook (4)
-From:   syzbot <syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210409223801.104657-3-mcroce@linux.microsoft.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Apr 10, 2021 at 12:37:58AM +0200, Matteo Croce wrote:
+> This is needed by the page_pool to avoid recycling a page not allocated
+> via page_pool.
 
-syzbot found the following issue on:
+Is the PageType mechanism more appropriate to your needs?  It wouldn't
+be if you use page->_mapcount (ie mapping it to userspace).
 
-HEAD commit:    cc0626c2 net: smsc911x: skip acpi_device_id table when !CO..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=110a3096d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7eff0f22b8563a5f
-dashboard link: https://syzkaller.appspot.com/bug?extid=154bd5be532a63aa778b
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+154bd5be532a63aa778b@syzkaller.appspotmail.com
-
-hook not found, pf 2 num 0
-WARNING: CPU: 1 PID: 8144 at net/netfilter/core.c:480 __nf_unregister_net_hook+0x1eb/0x610 net/netfilter/core.c:480
-Modules linked in:
-CPU: 1 PID: 8144 Comm: syz-executor.0 Not tainted 5.12.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__nf_unregister_net_hook+0x1eb/0x610 net/netfilter/core.c:480
-Code: 0f b6 14 02 48 89 c8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 11 04 00 00 8b 53 1c 89 ee 48 c7 c7 e0 26 6c 8a e8 72 df 87 01 <0f> 0b e9 e5 00 00 00 e8 09 1d 37 fa 44 8b 3c 24 4c 89 f8 48 c1 e0
-RSP: 0018:ffffc9001534f418 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffff88802f867a00 RCX: 0000000000000000
-RDX: 0000000000040000 RSI: ffffffff815c5205 RDI: fffff52002a69e75
-RBP: 0000000000000002 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff815bdf9e R11: 0000000000000000 R12: ffff8880272c8f20
-R13: 0000000000000000 R14: ffff88802fa34c00 R15: 0000000000000006
-FS:  00007feaf7d10700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fb651f70ca0 CR3: 0000000069f31000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- nf_unregister_net_hook+0xd5/0x110 net/netfilter/core.c:502
- nf_tables_unregister_hook.part.0+0x131/0x200 net/netfilter/nf_tables_api.c:234
- nf_tables_unregister_hook net/netfilter/nf_tables_api.c:8122 [inline]
- nf_tables_commit+0x1d9b/0x4710 net/netfilter/nf_tables_api.c:8122
- nfnetlink_rcv_batch+0x975/0x21b0 net/netfilter/nfnetlink.c:508
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:580 [inline]
- nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:598
- netlink_unicast_kernel net/netlink/af_netlink.c:1312 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1338
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1927
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2433
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x466459
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007feaf7d10188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf60 RCX: 0000000000466459
-RDX: 0000000000000000 RSI: 000000002000c2c0 RDI: 0000000000000003
-RBP: 00000000004bf9fb R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf60
-R13: 00007ffe0fcaf04f R14: 00007feaf7d10300 R15: 0000000000022000
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+> ---
+>  include/linux/mm_types.h | 1 +
+>  include/net/page_pool.h  | 2 ++
+>  net/core/page_pool.c     | 4 ++++
+>  3 files changed, 7 insertions(+)
+> 
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 6613b26a8894..ef2d0d5f62e4 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -101,6 +101,7 @@ struct page {
+>  			 * 32-bit architectures.
+>  			 */
+>  			dma_addr_t dma_addr;
+> +			unsigned long signature;
+>  		};
+>  		struct {	/* slab, slob and slub */
+>  			union {
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index b5b195305346..b30405e84b5e 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -63,6 +63,8 @@
+>   */
+>  #define PP_ALLOC_CACHE_SIZE	128
+>  #define PP_ALLOC_CACHE_REFILL	64
+> +#define PP_SIGNATURE		0x20210303
+> +
+>  struct pp_alloc_cache {
+>  	u32 count;
+>  	void *cache[PP_ALLOC_CACHE_SIZE];
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index ad8b0707af04..2ae9b554ef98 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -232,6 +232,8 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>  		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+>  
+>  skip_dma_map:
+> +	page->signature = PP_SIGNATURE;
+> +
+>  	/* Track how many pages are held 'in-flight' */
+>  	pool->pages_state_hold_cnt++;
+>  
+> @@ -302,6 +304,8 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+>  			     DMA_ATTR_SKIP_CPU_SYNC);
+>  	page->dma_addr = 0;
+>  skip_dma_unmap:
+> +	page->signature = 0;
+> +
+>  	/* This may be the last page returned, releasing the pool, so
+>  	 * it is not safe to reference pool afterwards.
+>  	 */
+> -- 
+> 2.30.2
+> 
