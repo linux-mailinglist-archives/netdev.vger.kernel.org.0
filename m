@@ -2,170 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7332835B084
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 22:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB0135B0C9
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 01:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235102AbhDJUxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Apr 2021 16:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54084 "EHLO
+        id S235130AbhDJXeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 19:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234439AbhDJUxz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 16:53:55 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F741C06138A;
-        Sat, 10 Apr 2021 13:53:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=yEhz7y0CGZuP2jAZyLJRxF/+72ERrNclNPf+YZnthms=; b=i5gbw5w7uAuWK89bhf2Sg7mZPO
-        Pe/IPgz7XQwGqe28En2+H4gPDf6Sym78McWLPJU3KV96pLYwkpSXhe6+oEJ3sAa1/Di6jsUAOzZgi
-        ULC+GRiQllP9ZWO9bagsiISYHoJ2xBkKQS4JcFgd70jdxVMTzZv6ZMQNuvd2RX5rGpw0j6hxGI/6d
-        xcHwuMMVnefYehJ8tSrn21Atv+iusGtsYROOGw9+gGNxnxg51m4pU3XYrT8rQ9Zf+ph7qJ8WMXrn3
-        4FByd97IikiPQkrYqwtPDLgJK/bD1Vt264ofkgkNfniLmGY8lOdL/mFCFddDljXke6n8E79zIv/UV
-        yN30XbLQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1lVKbS-0027wf-Fe; Sat, 10 Apr 2021 20:53:16 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>
-Subject: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Date:   Sat, 10 Apr 2021 21:52:45 +0100
-Message-Id: <20210410205246.507048-2-willy@infradead.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210410205246.507048-1-willy@infradead.org>
-References: <20210410205246.507048-1-willy@infradead.org>
+        with ESMTP id S234874AbhDJXeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 19:34:15 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC2EC06138A
+        for <netdev@vger.kernel.org>; Sat, 10 Apr 2021 16:33:59 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id c15so201526wro.13
+        for <netdev@vger.kernel.org>; Sat, 10 Apr 2021 16:33:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SPQP1AlG80lVtzcKmLeMBKgBFLwPTctBeZqtIKnIfNo=;
+        b=mgIsBwkSdnPp1ECywVFveIPdAGLy5eDNUtti1/GRTQI5lIDSCteZFdlqioFtrWpUvC
+         3CZrD1twAvjt/dnImbvGgUSKEcE6ui3refwNdedP0EqKDEADmgXwol55VZyIhYeRwsqb
+         8SP+xLZqA2NHExfmJ7j8CjbAM/Ym04YzTwU3Qpi8y5J3d1oKsRNRkzG3LeIPl5qHR7Yp
+         /S2x5qr4rQCnYypxooKgIWvs3dgqzxuBqFL18u8NaioIdE2qEUC6QQNTsyqd7Tc6yUdF
+         vsGQkFpfiI6GsAGUmJa3YiH7U+08HHYWz+RkczJvTQoQi9EbxQbtBZFf2QKvY63AE5ps
+         QNMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SPQP1AlG80lVtzcKmLeMBKgBFLwPTctBeZqtIKnIfNo=;
+        b=fdN+QQLR99HgkR7yml02v1hdgrq/OVTqPpEYPPJTIUdQonSGG7r9XSl2HjVwJal+3S
+         q0Sjs9WNdCflLe3NZYvsVXsXzIsIriZ1i5ojaiWX3x/MvAJ3w5bOsoLvewz+yiJKDN5u
+         lxWwr+REm6TilCg7CGy8pDlfM00xxf2LukRyw63wth+aad3Zd3lDGba66cki1zxh5cq3
+         u+puMY/T1kU0eY8f+05fdcCYjT8GPwiPro0QIVygXXWwi9TJD3JYjcnlJ1Ll6E2UyalS
+         7ftFdr9rfhG914c/rBLGibdbmhTHcbgpHgpEzg9gwouH5zEyTLvGd8YOGMMUfwgFlYXC
+         bffA==
+X-Gm-Message-State: AOAM5316SMSLJLtITeo0Ol+e6d4J4KFT7wWd57pEnRSxw/B4BeZsJyIM
+        1RRBBDay9brZDkR/xQbLWzNOGQ==
+X-Google-Smtp-Source: ABdhPJwDvHW5deUPUee2///ZQ7WTP2K5nhuT39hRK/6meJuM9hO9hsOQ3TMuTSJ2bCPKtGoUJRl1Sw==
+X-Received: by 2002:a5d:4c52:: with SMTP id n18mr24883949wrt.210.1618097637967;
+        Sat, 10 Apr 2021 16:33:57 -0700 (PDT)
+Received: from KernelVM (2.0.5.1.1.6.3.8.5.c.c.3.f.b.d.3.0.0.0.0.6.1.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:df16:0:3dbf:3cc5:8361:1502])
+        by smtp.gmail.com with ESMTPSA id s13sm10886016wrv.80.2021.04.10.16.33.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Apr 2021 16:33:57 -0700 (PDT)
+Date:   Sun, 11 Apr 2021 00:33:55 +0100
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        linmiaohe <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Marco Elver <elver@google.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Dongseok Yi <dseok.yi@samsung.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, vladimir.oltean@nxp.com,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: core: sk_buff: zero-fill skb->data in __alloc_skb
+ function
+Message-ID: <YHI143tR7iSCpV6x@KernelVM>
+References: <20210410095149.3708143-1-phil@philpotter.co.uk>
+ <CANn89iJdoaC9P_Nd=BrXVRyMS43YOg-DX=VciDO89mH_JPVRTg@mail.gmail.com>
+ <CANn89iK4HuKv4AgY5PPWGEEihNEFxGhhqpBp7zv-FfCcJyboDg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iK4HuKv4AgY5PPWGEEihNEFxGhhqpBp7zv-FfCcJyboDg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-32-bit architectures which expect 8-byte alignment for 8-byte integers
-and need 64-bit DMA addresses (arc, arm, mips, ppc) had their struct
-page inadvertently expanded in 2019.  When the dma_addr_t was added,
-it forced the alignment of the union to 8 bytes, which inserted a 4 byte
-gap between 'flags' and the union.
+On Sat, Apr 10, 2021 at 01:00:34PM +0200, Eric Dumazet wrote:
+> On Sat, Apr 10, 2021 at 12:12 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > On Sat, Apr 10, 2021 at 11:51 AM Phillip Potter <phil@philpotter.co.uk> wrote:
+> > >
+> > > Zero-fill skb->data in __alloc_skb function of net/core/skbuff.c,
+> > > up to start of struct skb_shared_info bytes. Fixes a KMSAN-found
+> > > uninit-value bug reported by syzbot at:
+> > > https://syzkaller.appspot.com/bug?id=abe95dc3e3e9667fc23b8d81f29ecad95c6f106f
+> > >
+> > > Reported-by: syzbot+2e406a9ac75bb71d4b7a@syzkaller.appspotmail.com
+> > > Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+> > > ---
+> > >  net/core/skbuff.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > index 785daff48030..9ac26cdb5417 100644
+> > > --- a/net/core/skbuff.c
+> > > +++ b/net/core/skbuff.c
+> > > @@ -215,6 +215,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+> > >          * to allow max possible filling before reallocation.
+> > >          */
+> > >         size = SKB_WITH_OVERHEAD(ksize(data));
+> > > +       memset(data, 0, size);
+> > >         prefetchw(data + size);
+> >
+> >
+> > Certainly not.
+> >
+> > There is a difference between kmalloc() and kzalloc()
+> >
+> > Here you are basically silencing KMSAN and make it useless.
+> >
+> > Please fix the real issue, or stop using KMSAN if it bothers you.
+> 
+> My understanding of the KMSAN bug (when I released it months ago) was
+> that it was triggered by some invalid assumptions in geneve_xmit()
+> 
+> The syzbot repro sends a packet with a very small size (Ethernet
+> header only) and no IP/IPv6 header
+> 
+> Fix for ipv4 part (sorry, not much time during week end to test all this)
+> 
+> diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+> index e3b2375ac5eb55f544bbc1f309886cc9be189fd1..0a72779bc74bc50c20c34c05b2c525cca829f33c
+> 100644
+> --- a/drivers/net/geneve.c
+> +++ b/drivers/net/geneve.c
+> @@ -892,6 +892,9 @@ static int geneve_xmit_skb(struct sk_buff *skb,
+> struct net_device *dev,
+>         __be16 sport;
+>         int err;
+> 
+> +       if (!pskb_network_may_pull(skb, sizeof(struct iphdr))
+> +               return -EINVAL;
+> +
+>         sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+>         rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
+>                               geneve->cfg.info.key.tp_dst, sport);
 
-We could fix this by telling the compiler to use a smaller alignment
-for the dma_addr, but that seems a little fragile.  Instead, move the
-'flags' into the union.  That causes dma_addr to shift into the same
-bits as 'mapping', so it would have to be cleared on free.  To avoid
-this, insert three words of padding and use the same bits as ->index
-and ->private, neither of which have to be cleared on free.
+Dear Eric,
 
-Fixes: c25fff7171be ("mm: add dma_addr_t to struct page")
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
----
- include/linux/mm_types.h | 38 ++++++++++++++++++++++++++------------
- 1 file changed, 26 insertions(+), 12 deletions(-)
+Thank you for your help/feedback. I have crafted a patch using your code
+above and the equivalent check for geneve6_xmit_skb, and this works for
+me on my local KMSAN build. I am also running it through syzbot to check
+there as well. I will send out with appropriate attribution assuming all
+is OK on the testing front.
 
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 6613b26a8894..45c563e9b50e 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -68,16 +68,22 @@ struct mem_cgroup;
- #endif
- 
- struct page {
--	unsigned long flags;		/* Atomic flags, some possibly
--					 * updated asynchronously */
- 	/*
--	 * Five words (20/40 bytes) are available in this union.
--	 * WARNING: bit 0 of the first word is used for PageTail(). That
--	 * means the other users of this union MUST NOT use the bit to
-+	 * This union is six words (24 / 48 bytes) in size.
-+	 * The first word is reserved for atomic flags, often updated
-+	 * asynchronously.  Use the PageFoo() macros to access it.  Some
-+	 * of the flags can be reused for your own purposes, but the
-+	 * word as a whole often contains other information and overwriting
-+	 * it will cause functions like page_zone() and page_node() to stop
-+	 * working correctly.
-+	 *
-+	 * Bit 0 of the second word is used for PageTail(). That
-+	 * means the other users of this union MUST leave the bit zero to
- 	 * avoid collision and false-positive PageTail().
- 	 */
- 	union {
- 		struct {	/* Page cache and anonymous pages */
-+			unsigned long flags;
- 			/**
- 			 * @lru: Pageout list, eg. active_list protected by
- 			 * lruvec->lru_lock.  Sometimes used as a generic list
-@@ -96,13 +102,14 @@ struct page {
- 			unsigned long private;
- 		};
- 		struct {	/* page_pool used by netstack */
--			/**
--			 * @dma_addr: might require a 64-bit value even on
--			 * 32-bit architectures.
--			 */
--			dma_addr_t dma_addr;
-+			unsigned long _pp_flags;
-+			unsigned long pp_magic;
-+			unsigned long xmi;
-+			unsigned long _pp_mapping_pad;
-+			dma_addr_t dma_addr;	/* might be one or two words */
- 		};
- 		struct {	/* slab, slob and slub */
-+			unsigned long _slab_flags;
- 			union {
- 				struct list_head slab_list;
- 				struct {	/* Partial pages */
-@@ -130,6 +137,7 @@ struct page {
- 			};
- 		};
- 		struct {	/* Tail pages of compound page */
-+			unsigned long _t1_flags;
- 			unsigned long compound_head;	/* Bit zero is set */
- 
- 			/* First tail page only */
-@@ -139,12 +147,14 @@ struct page {
- 			unsigned int compound_nr; /* 1 << compound_order */
- 		};
- 		struct {	/* Second tail page of compound page */
-+			unsigned long _t2_flags;
- 			unsigned long _compound_pad_1;	/* compound_head */
- 			atomic_t hpage_pinned_refcount;
- 			/* For both global and memcg */
- 			struct list_head deferred_list;
- 		};
- 		struct {	/* Page table pages */
-+			unsigned long _pt_flags;
- 			unsigned long _pt_pad_1;	/* compound_head */
- 			pgtable_t pmd_huge_pte; /* protected by page->ptl */
- 			unsigned long _pt_pad_2;	/* mapping */
-@@ -159,6 +169,7 @@ struct page {
- #endif
- 		};
- 		struct {	/* ZONE_DEVICE pages */
-+			unsigned long _zd_flags;
- 			/** @pgmap: Points to the hosting device page map. */
- 			struct dev_pagemap *pgmap;
- 			void *zone_device_data;
-@@ -174,8 +185,11 @@ struct page {
- 			 */
- 		};
- 
--		/** @rcu_head: You can use this to free a page by RCU. */
--		struct rcu_head rcu_head;
-+		struct {
-+			unsigned long _rcu_flags;
-+			/** @rcu_head: You can use this to free a page by RCU. */
-+			struct rcu_head rcu_head;
-+		};
- 	};
- 
- 	union {		/* This union is 4 bytes in size. */
--- 
-2.30.2
-
+Regards,
+Phil
