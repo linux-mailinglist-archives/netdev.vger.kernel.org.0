@@ -2,151 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3A7035A98E
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 02:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF8E35A99A
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 02:40:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235293AbhDJAgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 20:36:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43996 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235215AbhDJAgT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 20:36:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 28DC161029;
-        Sat, 10 Apr 2021 00:36:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618014965;
-        bh=Tn3XAOZyH1seZ040OJXO+O98FX2DMkgVb4elvyZz9y4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KvQi+1MjEeIFiWwkYpPeM7e7+IoNoruvUgYSIsBeYB0NDJaRgewgcYrV6A/UyBWS1
-         wy4c0B6omLsLoFnVdFx7L1j5L0RzKTMbXxLG7wuxZtyZJ/K/TWlHb3d6rl9CzwQPHu
-         OsORLD0cf6Lu2A34Ccckh/qSNEh/oRcgP8FZNN66akTyofpSAhpP0y00N2X+N9c6LL
-         NEtWp3tEVFnyEZYq0zL3vWnRdtQ/tQQPG8nUnuuXG/+kr/gltoSKidWNnLYPBViF30
-         nnAFq7Bj1DTP8QlzrrLfTIBD0PFf41ua3QwzaCwbeGjn/KpV7uNZB6rqWBHQsuclC7
-         BMRmw/C13JU6Q==
-Date:   Fri, 9 Apr 2021 17:36:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, Andre Guedes <andre.guedes@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
-        Vedang Patel <vedang.patel@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: Re: [PATCH net-next 8/9] igc: Enable RX via AF_XDP zero-copy
-Message-ID: <20210409173604.217406b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210409164351.188953-9-anthony.l.nguyen@intel.com>
-References: <20210409164351.188953-1-anthony.l.nguyen@intel.com>
-        <20210409164351.188953-9-anthony.l.nguyen@intel.com>
+        id S235300AbhDJAkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 20:40:18 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:52614 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235215AbhDJAkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 20:40:17 -0400
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+        by linux.microsoft.com (Postfix) with ESMTPSA id A584220B5683;
+        Fri,  9 Apr 2021 17:40:03 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A584220B5683
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1618015203;
+        bh=JxAWTKu0RsLOn+CtOJNoC1FW0WcD7DLqFKDKm5Tu7xg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=oHL6t39YonTW38B5zIyWMIxXPFYAXsrJ1LA+xAxog1i3nr6opzclHK9FMNwuSJPjp
+         G+O74GkXOPZ6fYtvi5mj7L2gjH2mejD4EkEumfzzh21qpKtYX+e8olGqz8gfjD3Hz+
+         Z1/3PwXzhgpo+Uh1MrFjw71nPxqY5i2+/NOUWl6k=
+Received: by mail-pj1-f42.google.com with SMTP id ot17-20020a17090b3b51b0290109c9ac3c34so5765558pjb.4;
+        Fri, 09 Apr 2021 17:40:03 -0700 (PDT)
+X-Gm-Message-State: AOAM532z8fWhtlAfHeIOvh7bNlggRgaxC39Qlm12m7mzEXBpXMjK6+EN
+        qTWef47rBPltY2VScCk18PLuW5LQJTOtZBWFkEQ=
+X-Google-Smtp-Source: ABdhPJxsiSBaEo0q7IWG1XR6kNJzbJXnsnMAllDVNr0h3y82Zw+JbOCz2+OIKyRWvvOv4WiFz2E42r9sXZlYYlk4Od0=
+X-Received: by 2002:a17:90a:5306:: with SMTP id x6mr11539930pjh.39.1618015203252;
+ Fri, 09 Apr 2021 17:40:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-4-mcroce@linux.microsoft.com> <YHDtQWyzFmrjuQWr@apalos.home>
+In-Reply-To: <YHDtQWyzFmrjuQWr@apalos.home>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Sat, 10 Apr 2021 02:39:27 +0200
+X-Gmail-Original-Message-ID: <CAFnufp0aRJnJU4ZvLnp+zj2mp7FkgXGTon5JDFDU4BMoPsdUaQ@mail.gmail.com>
+Message-ID: <CAFnufp0aRJnJU4ZvLnp+zj2mp7FkgXGTon5JDFDU4BMoPsdUaQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/5] page_pool: Allow drivers to hint on SKB recycling
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  9 Apr 2021 09:43:50 -0700 Tony Nguyen wrote:
-> From: Andre Guedes <andre.guedes@intel.com>
-> 
-> Add support for receiving packets via AF_XDP zero-copy mechanism.
-> 
-> Add a new flag to 'enum igc_ring_flags_t' to indicate the ring has
-> AF_XDP zero-copy enabled so proper ring setup is carried out during ring
-> configuration in igc_configure_rx_ring().
-> 
-> RX buffers can now be allocated via the shared pages mechanism (default
-> behavior of the driver) or via xsk pool (when AF_XDP zero-copy is
-> enabled) so a union is added to the 'struct igc_rx_buffer' to cover both
-> cases.
-> 
-> When AF_XDP zero-copy is enabled, rx buffers are allocated from the xsk
-> pool using the new helper igc_alloc_rx_buffers_zc() which is the
-> counterpart of igc_alloc_rx_buffers().
-> 
-> Likewise other Intel drivers that support AF_XDP zero-copy, in igc we
-> have a dedicated path for cleaning up rx irqs when zero-copy is enabled.
-> This avoids adding too many checks within igc_clean_rx_irq(), resulting
-> in a more readable and efficient code since this function is called from
-> the hot-path of the driver.
+On Sat, Apr 10, 2021 at 2:11 AM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
+>
+> Hi Matteo,
+>
+> [...]
+> > +bool page_pool_return_skb_page(void *data);
+> > +
+> >  struct page_pool *page_pool_create(const struct page_pool_params *params);
+> >
+> >  #ifdef CONFIG_PAGE_POOL
+> > @@ -243,4 +247,13 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
+> >               spin_unlock_bh(&pool->ring.producer_lock);
+> >  }
+> >
+> > +/* Store mem_info on struct page and use it while recycling skb frags */
+> > +static inline
+> > +void page_pool_store_mem_info(struct page *page, struct xdp_mem_info *mem)
+> > +{
+> > +     u32 *xmi = (u32 *)mem;
+> > +
+>
+> I just noticed this changed from the original patchset I was carrying.
+> On the original, I had a union containing a u32 member to explicitly avoid
+> this casting. Let's wait for comments on the rest of the series, but i'd like
+> to change that back in a v4. Aplogies, I completely missed this on the
+> previous postings ...
+>
 
-> +static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
-> +					    struct xdp_buff *xdp)
-> +{
-> +	unsigned int metasize = xdp->data - xdp->data_meta;
-> +	unsigned int datasize = xdp->data_end - xdp->data;
-> +	struct sk_buff *skb;
-> +
-> +	skb = __napi_alloc_skb(&ring->q_vector->napi,
-> +			       xdp->data_end - xdp->data_hard_start,
-> +			       GFP_ATOMIC | __GFP_NOWARN);
-> +	if (unlikely(!skb))
-> +		return NULL;
-> +
-> +	skb_reserve(skb, xdp->data - xdp->data_hard_start);
-> +	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
-> +	if (metasize)
-> +		skb_metadata_set(skb, metasize);
+Hi,
 
-But you haven't actually copied the matadata into the skb,
-the metadata is before xdp->data, right?
+I had to change this because including net/xdp.h here caused a
+circular dependency.
+I think that the safest thing we can do is to use memcpy(), which will
+handle the alignments correctly, depending on the architecture.
 
-> +	return skb;
-> +}
-
-> +static int igc_xdp_enable_pool(struct igc_adapter *adapter,
-> +			       struct xsk_buff_pool *pool, u16 queue_id)
-> +{
-> +	struct net_device *ndev = adapter->netdev;
-> +	struct device *dev = &adapter->pdev->dev;
-> +	struct igc_ring *rx_ring;
-> +	struct napi_struct *napi;
-> +	bool needs_reset;
-> +	u32 frame_size;
-> +	int err;
-> +
-> +	if (queue_id >= adapter->num_rx_queues)
-> +		return -EINVAL;
-> +
-> +	frame_size = xsk_pool_get_rx_frame_size(pool);
-> +	if (frame_size < ETH_FRAME_LEN + VLAN_HLEN * 2) {
-> +		/* When XDP is enabled, the driver doesn't support frames that
-> +		 * span over multiple buffers. To avoid that, we check if xsk
-> +		 * frame size is big enough to fit the max ethernet frame size
-> +		 * + vlan double tagging.
-> +		 */
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	err = xsk_pool_dma_map(pool, dev, IGC_RX_DMA_ATTR);
-> +	if (err) {
-> +		netdev_err(ndev, "Failed to map xsk pool\n");
-> +		return err;
-> +	}
-> +
-> +	needs_reset = netif_running(adapter->netdev) && igc_xdp_is_enabled(adapter);
-> +
-> +	rx_ring = adapter->rx_ring[queue_id];
-> +	napi = &rx_ring->q_vector->napi;
-> +
-> +	if (needs_reset) {
-> +		igc_disable_rx_ring(rx_ring);
-> +		napi_disable(napi);
-> +	}
-> +
-> +	set_bit(IGC_RING_FLAG_AF_XDP_ZC, &rx_ring->flags);
-> +
-> +	if (needs_reset) {
-> +		napi_enable(napi);
-> +		igc_enable_rx_ring(rx_ring);
-> +
-> +		err = igc_xsk_wakeup(ndev, queue_id, XDP_WAKEUP_RX);
-> +		if (err)
-> +			return err;
-
-No need for an unwind path here?
-Does something call XDP_SETUP_XSK_POOL(NULL) on failure automagically?
-
-> +	}
-> +
-> +	return 0;
-> +}
+Cheers,
+-- 
+per aspera ad upstream
