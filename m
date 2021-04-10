@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BC6F35AE16
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 16:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ACF535AE1F
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 16:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234698AbhDJOUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Apr 2021 10:20:35 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36835 "EHLO
+        id S234881AbhDJOVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 10:21:13 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:39771 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234519AbhDJOUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 10:20:35 -0400
+        by vger.kernel.org with ESMTP id S234836AbhDJOVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 10:21:05 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 920935C0189;
-        Sat, 10 Apr 2021 10:20:20 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id CDFE15C01BE;
+        Sat, 10 Apr 2021 10:20:50 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sat, 10 Apr 2021 10:20:20 -0400
+  by compute4.internal (MEProxy); Sat, 10 Apr 2021 10:20:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=talbothome.com;
          h=message-id:subject:from:to:date:in-reply-to:references
         :content-type:mime-version:content-transfer-encoding; s=fm2; bh=
-        CJqY00XdomyeCtNxnwgXbX8urx12xkl4eFktcz1wACs=; b=5/5bMGIYrF9cQF6Q
-        0HPum+ZPHc10yL0rBP5tJdxXUd4e63Ea/MjF56UPQu3r6oKr+FFq+HV0oERPSAgH
-        NrYXyt7F7j9BL2jsPTXuATR6dt0SKc52TIITEWqPx51pKgQn1X5cxC5B/iIsUEEl
-        e8++x68LyQBfGmCrJ719weRtB8rEefM5Mb8iEoox7p1Llr5FpSqGa1knErSUUtP/
-        Qbrsvb8z1GqRuYpiU6rwsvCkCWrOxFJvb60zjz1giUd98fU+mM8DSMpZ1IwiUlax
-        Dd93hznqGq0/wNtVg+6lF7ynrgJgdUg4PnQ2skTs66J+FdYuySqAFHAU/GZ6mjFc
-        xQrNsQ==
+        G1F2fDHqZXAnu7GAO+4YC0JgSWJLXjPEuJvtZBCYYps=; b=kbCdDicWkkLVWGY/
+        HpDrZY9IiNCSGXhbmQI9s6KcIwpkq8nwHqGkn/48Ck9M6Uiee2c0tET9SSqCHsIm
+        Pvm5KDwtFRXBYPOjJF2wgmgTSZf6Mj7RD/bWjNncLZ/+wsmtMBJhtcu5phaiyqbt
+        FsmnJbYdheDZ9YMlSWBl1ZJa/AVYYDJtJrt1JR50RfceioCtczn7PjrncDiPdQpV
+        Vk/O0E6KEIijJWR6pvo5nZOPEMJpEB+3hJ2LQR1wvFGB6NQXU4Qw+aObF8UVuPMW
+        Jo7T/PgG1UAJp03bveaxbLoObTLawgqJ8xIDpaZKAukMZ6ku7SFBTsSHwaAOzQak
+        IzxbGw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=content-transfer-encoding:content-type
         :date:from:in-reply-to:message-id:mime-version:references
         :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=CJqY00XdomyeCtNxnwgXbX8urx12xkl4eFktcz1wA
-        Cs=; b=XQ7ekfLdCxn0ZnirbFP03fYsTFtzmDFhITBPA8xTtElDH7EyKjmtztFzK
-        rHK7Gd1fy5+F9AiuLqwXscSk95F0f533rFW0JHVYtBcGvaKVIkkh541BbgcIV9vy
-        pRdo0UY3shw5F3HA0Qm3hGQOyCXxYDBKTTe5rOtOwXMkjle8AF2GnD1xZxfqdsoO
-        QDv5AIK32Q8BprkcXovRwm7PVaYu1YXRiNIMFDYxF0y7Cw/ctAJcTQnKQZTsTGKF
-        8N8LGNqM9s/K0KOr0eDrE+fnJhDCF8LcAuWIW2sEkP0GlZrtQVBHj77cUn1garc9
-        y1TX9DbzsAsQjNadpQcpR44id5GbA==
-X-ME-Sender: <xms:I7RxYIhfdA4RjCStuA12GNjqaTXN9-1iSZtnOpKIvtni_wN8oGg2KA>
-    <xme:I7RxYBD5tv5r2qNhnen0Xgbo-cEvCmO335PgU_XAhm2iz5E_8ItkxvHzvkqlNuT9g
-    fRxOQZ4LwH4V7dlMQ>
+        :x-sasl-enc; s=fm2; bh=G1F2fDHqZXAnu7GAO+4YC0JgSWJLXjPEuJvtZBCYY
+        ps=; b=ZAtC5gFBmwlVAHhfCjRoujsoAxKqXYCt03M7AzugEwhnxuZit8kt6onrB
+        BSyKwWl5t9QkXQW1uQC1GM3w53v9BpdGZ4VFQ4GKdWuESKNiQHlPiJYQJZ517lpB
+        QEgpmXyFGZ8WbG7UpYygTlevc2wPeSCr+ElPn7hGMgLVIBaeYc6N07TrCFRngrHV
+        7kJ9xLvsnKZXXHCFAIw61idby+L7v2TA65k8ZLD5rfyAsicWRY8qZ7GaGSMaTx4j
+        JtYTJROvGrzkXMuHyBb8cTQ8Gx3KVzQFD/oVaCul2+kiyF74y9EiyM+VafyVgAp4
+        8SBXkCSrlKW7tjTWSeYg2fxuzM1Bg==
+X-ME-Sender: <xms:QrRxYCg507NhSrM3ik8KLjOiwToaJdYk8_zuigS6kCCxLGspy4Oq_g>
+    <xme:QrRxYDBiH__WHeyoO-cJ4vwVysWy3gXfspZgu82EAeddSsEGkQ9JyNpPhTtSGCKie
+    bgbPUTDdjL5Ud5Ezw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekfedgjeeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefkuffhvfffjghftggfggfgsehtje
     ertddtreejnecuhfhrohhmpeevhhhrihhsucfvrghlsghothcuoegthhhrihhssehtrghl
     sghothhhohhmvgdrtghomheqnecuggftrfgrthhtvghrnhepgefhtdfhgfeklefgueevte
     dtfeejjefhvdetheevudfgkeeghefhleelvdeuieegnecukfhppeejvddrleehrddvgeef
-    rdduheeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    rdduheeinecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomh
     eptghhrhhishesthgrlhgsohhthhhomhgvrdgtohhm
-X-ME-Proxy: <xmx:I7RxYAHEzEm-ScgxezrPx3K7Tk7EvUXEJAQDPE8sEHBzq1u4ggZ_dQ>
-    <xmx:I7RxYJTGFzj7V71wo4yYClqoUEEZM2--9hJ-k47MscICL_aZnzxw5A>
-    <xmx:I7RxYFxJPOPHj0q0xMk5psuCb-J7_PdwQLLfLOl6L_1r8Kch2yoPgg>
-    <xmx:JLRxYGqQIbq0T5OBvkMDfuszYu9OQqnYWg5Q1Vy5SHKXNUmNMX44Rw>
+X-ME-Proxy: <xmx:QrRxYKFGNO50hNr9TgibBSKSTpHWGlSWq66yRgjSOOEg6eDbhdKX8w>
+    <xmx:QrRxYLQkBmOWZHYLejWVx3zyuCaXRCp8-VmabbzejsmRe6a9XRnHAw>
+    <xmx:QrRxYPwcy9j5hk3ZkHPcM92IzynEL6cFyanhONJ_3aSzwf6vuqIGRA>
+    <xmx:QrRxYIqS8cl3mbsIZhAvCqt7BsZJtUi74WmgHN5F6_qULx5CPEIAFQ>
 Received: from SpaceballstheLaptop.talbothome.com (unknown [72.95.243.156])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B92171080057;
-        Sat, 10 Apr 2021 10:20:19 -0400 (EDT)
-Message-ID: <df512b811ee2df6b8f55dd2a9fb0178e6e5c490f.camel@talbothome.com>
-Subject: [PATCH 2/9] Ensure Compatibility with Telus Canada
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9D0B01080064;
+        Sat, 10 Apr 2021 10:20:50 -0400 (EDT)
+Message-ID: <178dd29027e6abb4a205e25c02f06769848cbb76.camel@talbothome.com>
+Subject: [PATCH 3/9] Ensure Compatibility with AT&T
 From:   Chris Talbot <chris@talbothome.com>
 To:     ofono@ofono.org, netdev@vger.kernel.org,
         debian-on-mobile-maintainers@alioth-lists.debian.net,
         librem-5-dev@lists.community.puri.sm
-Date:   Sat, 10 Apr 2021 10:20:19 -0400
-In-Reply-To: <b23ba0656ea0d58fdbd8c83072e017f63629f934.camel@talbothome.com>
+Date:   Sat, 10 Apr 2021 10:20:50 -0400
+In-Reply-To: <df512b811ee2df6b8f55dd2a9fb0178e6e5c490f.camel@talbothome.com>
 References: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com>
          <b23ba0656ea0d58fdbd8c83072e017f63629f934.camel@talbothome.com>
+         <df512b811ee2df6b8f55dd2a9fb0178e6e5c490f.camel@talbothome.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
@@ -73,53 +74,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Telus Canada makes mmsd decode a header that is not in the standard.
-This patch allows this header to be decoded and allows for MMS support
-in Telus Canada.
+This patch fixes two issues to ensure compatibility with AT&T:
+1) Explicity close connections to the mmsc
+2) Allow MMS Proxies that are domain names
 ---
- src/mmsutil.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ gweb/gweb.c   | 3 ++-
+ src/service.c | 3 +++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/src/mmsutil.c b/src/mmsutil.c
-index 5fcf358..9430bf1 100644
---- a/src/mmsutil.c
-+++ b/src/mmsutil.c
-@@ -732,10 +732,9 @@ static header_handler handler_for_type(enum
-mms_header header)
- 		return extract_text;
- 	case MMS_HEADER_INVALID:
- 	case __MMS_HEADER_MAX:
-+	default:
- 		return NULL;
- 	}
--
--	return NULL;
- }
+diff --git a/gweb/gweb.c b/gweb/gweb.c
+index f72e137..995d12f 100644
+--- a/gweb/gweb.c
++++ b/gweb/gweb.c
+@@ -1309,7 +1309,8 @@ static guint do_request(GWeb *web, const char
+*url,
+ 			session->address = g_strdup(session->host);
  
- struct header_handler_entry {
-@@ -781,8 +780,17 @@ static gboolean mms_parse_headers(struct
-wsp_header_iter *iter,
+ 		memset(&hints, 0, sizeof(struct addrinfo));
+-		hints.ai_flags = AI_NUMERICHOST;
++		/* Comment out next line to have AT&T MMS proxy work
+*/
++		//hints.ai_flags = AI_NUMERICHOST;
+ 		hints.ai_family = session->web->family;
  
- 		handler = handler_for_type(h);
- 		if (handler == NULL) {
--			DBG("no handler for type %u", h);
--			return FALSE;
-+			if(h == MMS_HEADER_INVALID) {
-+				DBG("no handler for type %u", h);
-+				return FALSE;
-+			} else if (h == __MMS_HEADER_MAX) {
-+				DBG("no handler for type %u", h);
-+				return FALSE;
-+			} else {
-+				/*  Telus has strange headers, so this
-handles it */
-+				DBG("type isn't a part of the
-standard? Skipping %u", h);
-+				continue;
-+			}
- 		}
+ 		if (session->addr != NULL) {
+diff --git a/src/service.c b/src/service.c
+index c7ef255..a3b90c5 100644
+--- a/src/service.c
++++ b/src/service.c
+@@ -2527,6 +2527,9 @@ void mms_service_bearer_notify(struct mms_service
+*service, mms_bool_t active,
  
- 		DBG("saw header of type %u", h);
+ 	g_web_set_debug(service->web, (GWebDebugFunc)debug_print,
+NULL);
+ 
++	/* Explicitly close connections to work with AT&T */
++	g_web_set_close_connection(service->web,TRUE);
++
+ 	/* Sometimes no proxy is reported as string instead of NULL */
+ 	if (g_strcmp0(proxy, "") != 0)
+ 		g_web_set_proxy(service->web, proxy);
 -- 
 2.30.2
+
 
