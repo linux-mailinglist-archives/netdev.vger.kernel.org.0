@@ -2,69 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA46335A9EB
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 03:23:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B0CC35AA4D
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 04:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbhDJBX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 21:23:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52798 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235215AbhDJBX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Apr 2021 21:23:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2818D610E5;
-        Sat, 10 Apr 2021 01:23:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618017793;
-        bh=eHinba/b43Qm1YPgt0k98KpU2ScxfhNtgLreIjItFOY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kZPLJJ84ISSpgSUF6OxQQn3SOEtfniA6VeJsfYeQppFZYVabUTVZM4NOJh0Jp0K2v
-         jgcAPrk00euha41eyfdEtG+FxTgsKZ5t9/xN7j201gqyCu22Sdxgctc6Un+XJde5aC
-         c7UOAvVTxmrJ6c3iWI7vrSHYkIVuX0jLkVTn08jBRwSjXU2Lv/o+7YgTDOGS1MsdTT
-         SScuCwf3ciHGkis4wFQnS6PpyAPg3Rr3DpVOqqUH1+vwHRR/QCW0oMDAh/CuLzV73h
-         OgnmGFOCJ2X/ToQJQ2sbuvuhf7fjRewls7e5QfBZUSWgeKQu+5CdBrEI55E08v1fsP
-         ZMV+DsCvptz6Q==
-Date:   Fri, 9 Apr 2021 18:23:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next] enetc: Use generic rule to map Tx rings to
- interrupt vectors
-Message-ID: <20210409182312.5f440d95@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210409101952.iyf4svtgxvgwvxfr@skbuf>
-References: <20210409071613.28912-1-claudiu.manoil@nxp.com>
-        <20210409101952.iyf4svtgxvgwvxfr@skbuf>
+        id S233577AbhDJCU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Apr 2021 22:20:29 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:16433 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229665AbhDJCU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 22:20:28 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FHJZ00DdgzqT0W;
+        Sat, 10 Apr 2021 10:18:00 +0800 (CST)
+Received: from DESKTOP-EFRLNPK.china.huawei.com (10.174.176.196) by
+ DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
+ 14.3.498.0; Sat, 10 Apr 2021 10:20:06 +0800
+From:   Qiheng Lin <linqiheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
+        <luiz.dentz@gmail.com>, <linux-bluetooth@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Qiheng Lin <linqiheng@huawei.com>
+Subject: [PATCH -next] Bluetooth: use flexible-array member instead of zero-length array
+Date:   Sat, 10 Apr 2021 10:19:35 +0800
+Message-ID: <20210410021935.11100-1-linqiheng@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.174.176.196]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Apr 2021 13:19:52 +0300 Vladimir Oltean wrote:
-> On Fri, Apr 09, 2021 at 10:16:13AM +0300, Claudiu Manoil wrote:
-> > Even if the current mapping is correct for the 1 CPU and 2 CPU cases
-> > (currently enetc is included in SoCs with up to 2 CPUs only), better
-> > use a generic rule for the mapping to cover all possible cases.
-> > The number of CPUs is the same as the number of interrupt vectors:
-> > 
-> > Per device Tx rings -
-> > device_tx_ring[idx], where idx = 0..n_rings_total-1
-> > 
-> > Per interrupt vector Tx rings -
-> > int_vector[i].ring[j], where i = 0..n_int_vects-1
-> > 			     j = 0..n_rings_per_v-1
-> > 
-> > Mapping rule -
-> > n_rings_per_v = n_rings_total / n_int_vects
-> > for i = 0..n_int_vects - 1:
-> > 	for j = 0..n_rings_per_v - 1:
-> > 		idx = n_int_vects * j + i
-> > 		int_vector[i].ring[j] <- device_tx_ring[idx]
-> > 
-> > Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> 
-> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Fix the following coccicheck warning:
 
-Applied, thanks!
+net/bluetooth/msft.c:37:6-13: WARNING use flexible-array member instead
+net/bluetooth/msft.c:42:6-10: WARNING use flexible-array member instead
+net/bluetooth/msft.c:52:6-10: WARNING use flexible-array member instead
+
+Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
+---
+ net/bluetooth/msft.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+index e28f15439ce4..37a394786a94 100644
+--- a/net/bluetooth/msft.c
++++ b/net/bluetooth/msft.c
+@@ -34,12 +34,12 @@ struct msft_le_monitor_advertisement_pattern {
+ 	__u8 length;
+ 	__u8 data_type;
+ 	__u8 start_byte;
+-	__u8 pattern[0];
++	__u8 pattern[];
+ };
+ 
+ struct msft_le_monitor_advertisement_pattern_data {
+ 	__u8 count;
+-	__u8 data[0];
++	__u8 data[];
+ };
+ 
+ struct msft_cp_le_monitor_advertisement {
+@@ -49,7 +49,7 @@ struct msft_cp_le_monitor_advertisement {
+ 	__u8 rssi_low_interval;
+ 	__u8 rssi_sampling_period;
+ 	__u8 cond_type;
+-	__u8 data[0];
++	__u8 data[];
+ } __packed;
+ 
+ struct msft_rp_le_monitor_advertisement {
+-- 
+2.31.1
+
