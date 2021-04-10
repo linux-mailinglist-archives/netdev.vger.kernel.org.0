@@ -2,345 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26BE935AD3D
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 14:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FFA835AD7E
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 15:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234569AbhDJMWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Apr 2021 08:22:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22226 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234091AbhDJMWu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 08:22:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618057355;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2lHmW80zMb1RAPlBttEHj/iaug8lI+PMLYTyWRiAeXM=;
-        b=TjOaHcgoUoaP0V0JvCJl5dtLmkK94a8Wx6Ig/jIrOlBRqlf0G2fKsdSD34MUAaYhA7S0V9
-        1K7MG9EcJRaet5vsdaW8uN5uR051dx9wcAEXo82U36kTZsb9ClrGBSgaad/W+iuvo01LpT
-        239oTz7j3dRuzKFRdxlIb8P2xLmnzjM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-544-02f9eIm-OsurQArQH4k2ZQ-1; Sat, 10 Apr 2021 08:22:32 -0400
-X-MC-Unique: 02f9eIm-OsurQArQH4k2ZQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S234754AbhDJNQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 09:16:32 -0400
+Received: from mga12.intel.com ([192.55.52.136]:64539 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234262AbhDJNQa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Apr 2021 09:16:30 -0400
+IronPort-SDR: ygiHZWxWLYCp4PxYRUkYNwnWhQwvO1KlKuQlqXG1SXwYe6wVgZDCmIlEv1+qja4ombxy/HZcM/
+ G1Xz4zg/xkng==
+X-IronPort-AV: E=McAfee;i="6000,8403,9950"; a="173409214"
+X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
+   d="scan'208";a="173409214"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2021 06:16:16 -0700
+IronPort-SDR: K9zar4f0vNOGus1eGQXEBDsrvlbQ2NnorowaLzI/5TOGNIA6PF243l/U4Mkiep86Z7go7fx+s8
+ 60kNxwsxmwgg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,210,1613462400"; 
+   d="scan'208";a="388085254"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Apr 2021 06:16:15 -0700
+Received: from linux.intel.com (unknown [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 69161107ACE3;
-        Sat, 10 Apr 2021 12:22:31 +0000 (UTC)
-Received: from dhcp-25.97.bos.redhat.com (ovpn-115-147.rdu2.redhat.com [10.10.115.147])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 069125D9C0;
-        Sat, 10 Apr 2021 12:22:26 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Joe Stringer <joe@cilium.io>, dev@openvswitch.org,
-        Networking <netdev@vger.kernel.org>,
-        Michael Cambria <mcambria@redhat.com>,
-        Flavio Leitner <fbl@redhat.com>
-Subject: Re: [ovs-dev] [PATCH] openvswitch: perform refragmentation for packets which pass through conntrack
-References: <20210319204307.3128280-1-aconole@redhat.com>
-        <CADa=Ryw==DwqWowBMSXqgBVc2zXH_FK_Ky+7n9Dz4EMhF8YANQ@mail.gmail.com>
-        <f7tk0pcmru0.fsf@dhcp-25.97.bos.redhat.com>
-        <ff7ca766-32c1-8156-42bf-cf4c6d1c9033@ovn.org>
-Date:   Sat, 10 Apr 2021 08:22:26 -0400
-In-Reply-To: <ff7ca766-32c1-8156-42bf-cf4c6d1c9033@ovn.org> (Ilya Maximets's
-        message of "Fri, 9 Apr 2021 17:02:12 +0200")
-Message-ID: <f7to8emib25.fsf@dhcp-25.97.bos.redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+        by linux.intel.com (Postfix) with ESMTPS id 862245808EA;
+        Sat, 10 Apr 2021 06:16:12 -0700 (PDT)
+Date:   Sat, 10 Apr 2021 21:16:09 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/1] net: stmmac: Add support for external
+ trigger timestamping
+Message-ID: <20210410131609.GA12931@linux.intel.com>
+References: <20210407170442.1641-1-vee.khee.wong@linux.intel.com>
+ <20210409175004.2fceacdd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210409175004.2fceacdd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ilya Maximets <i.maximets@ovn.org> writes:
-
-> On 4/8/21 10:41 PM, Aaron Conole wrote:
->> Joe Stringer <joe@cilium.io> writes:
->> 
->>> Hey Aaron, long time no chat :)
->> 
->> Same :)
->> 
->>> On Fri, Mar 19, 2021 at 1:43 PM Aaron Conole <aconole@redhat.com> wrote:
->>>>
->>>> When a user instructs a flow pipeline to perform connection tracking,
->>>> there is an implicit L3 operation that occurs - namely the IP fragments
->>>> are reassembled and then processed as a single unit.  After this, new
->>>> fragments are generated and then transmitted, with the hint that they
->>>> should be fragmented along the max rx unit boundary.  In general, this
->>>> behavior works well to forward packets along when the MTUs are congruent
->>>> across the datapath.
->>>>
->>>> However, if using a protocol such as UDP on a network with mismatching
->>>> MTUs, it is possible that the refragmentation will still produce an
->>>> invalid fragment, and that fragmented packet will not be delivered.
->>>> Such a case shouldn't happen because the user explicitly requested a
->>>> layer 3+4 function (conntrack), and that function generates new fragments,
->>>> so we should perform the needed actions in that case (namely, refragment
->>>> IPv4 along a correct boundary, or send a packet too big in the IPv6 case).
->>>>
->>>> Additionally, introduce a test suite for openvswitch with a test case
->>>> that ensures this MTU behavior, with the expectation that new tests are
->>>> added when needed.
->>>>
->>>> Fixes: 7f8a436eaa2c ("openvswitch: Add conntrack action")
->>>> Signed-off-by: Aaron Conole <aconole@redhat.com>
->>>> ---
->>>> NOTE: checkpatch reports a whitespace error with the openvswitch.sh
->>>>       script - this is due to using tab as the IFS value.  This part
->>>>       of the script was copied from
->>>>       tools/testing/selftests/net/pmtu.sh so I think should be
->>>>       permissible.
->>>>
->>>>  net/openvswitch/actions.c                  |   2 +-
->>>>  tools/testing/selftests/net/.gitignore     |   1 +
->>>>  tools/testing/selftests/net/Makefile       |   1 +
->>>>  tools/testing/selftests/net/openvswitch.sh | 394 +++++++++++++++++++++
->>>>  4 files changed, 397 insertions(+), 1 deletion(-)
->>>>  create mode 100755 tools/testing/selftests/net/openvswitch.sh
->>>>
->>>> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
->>>> index 92a0b67b2728..d858ea580e43 100644
->>>> --- a/net/openvswitch/actions.c
->>>> +++ b/net/openvswitch/actions.c
->>>> @@ -890,7 +890,7 @@ static void do_output(struct datapath *dp, struct sk_buff *skb, int out_port,
->>>>                 if (likely(!mru ||
->>>>                            (skb->len <= mru + vport->dev->hard_header_len))) {
->>>>                         ovs_vport_send(vport, skb, ovs_key_mac_proto(key));
->>>> -               } else if (mru <= vport->dev->mtu) {
->>>> +               } else if (mru) {
->>>>                         struct net *net = read_pnet(&dp->net);
->>>>
->>>>                         ovs_fragment(net, vport, skb, mru, key);
->>>
->>> I thought about this for a while. For a bit of context, my
->>> recollection is that in the initial design, there was an attempt to
->>> minimize the set of assumptions around L3 behaviour and despite
->>> performing this pseudo-L3 action of connection tracking, attempt a
->>> "bump-in-the-wire" approach where OVS is serving as an L2 switch and
->>> if you wanted L3 features, you need to build them on top or explicitly
->>> define that you're looking for L3 semantics. In this case, you're
->>> interpreting that the combination of the conntrack action + an output
->>> action implies that L3 routing is being performed. Hence, OVS should
->>> act like a router and either refragment or generate ICMP PTB in the
->>> case where MTU differs. According to the flow table, the rest of the
->>> routing functionality (MAC handling for instance) may or may not have
->>> been performed at this point, but we basically leave that up to the
->>> SDN controller to implement the right behaviour. In relation to this
->>> particular check, the idea was to retain the original geometry of the
->>> packet such that it's as though there were no functionality performed
->>> in the middle at all. OVS happened to do connection tracking (which
->>> implicitly involved queueing fragments), but if you treat it as an
->>> opaque box, you have ports connected and OVS is simply performing
->>> forwarding between the ports.
->> 
->> I've been going back and forth on this.  On the one hand, Open vSwitch
->> is supposed to only care about 'just' the L2 forwarding, with some
->> additional processing to assist.  After that, it's up to an L3 layer to
->> really provide additional support, and the idea is that the controller
->> or something else should really be guiding this higher level
->> intelligence.
->> 
->> The issue I have is that we do some of the high level intelligence here
->> to support conntrack, and it's done in a way that is a bit unintuitive.
->> As an example, you write:
->> 
->>   ... the idea was to retain the original geometry of the packet such
->>   that it's as though there were no functionality performed in the
->>   middle at all
->> 
->> But, the fragmentation engine isn't guaranteed to reassemble exactly the
->> same packets.
->> 
->> Consider the scenario where there is an upstream router that has
->> performed it's own mitm fragmentation.  There can be a sequence of
->> packets after that that looks like:
->> 
->>   IPID == 1,  pkt 1 (1410 bytes), pkt 2 (64 bytes), pkt 3 (1000 bytes)
->> 
->> When reassembled by the frag engine, we will only use the MRU as the
->> guide, and that will spit out:
->> 
->>   IPID == 1,  pkt 1 (1410 bytes), pkt 2 (1044 bytes)
->> 
->> We will have reduced the number of packets moving through the network,
->> and then aren't acting as a bump in the wire, but as a real entity.
->> 
->> I even tested this:
->> 
->>   04:28:47 root@dhcp-25
->> /home/aconole/git/linux/tools/testing/selftests/net# grep 'IP
->> 172.31.110.2' test_mismatched_mtu_with_conntrack/c1-pkts.cap
->>   16:25:43.481072 IP 172.31.110.2.52352 > 172.31.110.1.ddi-udp-1: UDP, bad length 1901 > 1360
->>   16:25:43.525972 IP 172.31.110.2 > 172.31.110.1: ip-proto-17
->>   16:25:43.567272 IP 172.31.110.2 > 172.31.110.1: ip-proto-17
->>   bash: __git_ps1: command not found
->>   04:28:54 root@dhcp-25
->> /home/aconole/git/linux/tools/testing/selftests/net# grep 'IP
->> 172.31.110.2' test_mismatched_mtu_with_conntrack/s1-pkts.cap
->>   16:25:43.567435 IP 172.31.110.2.52352 > 172.31.110.1.ddi-udp-1: UDP, bad length 1901 > 1360
->>   16:25:43.567438 IP 172.31.110.2 > 172.31.110.1: ip-proto-17
->> 
->> Additionally, because this happens transparently for the flow rule user,
->> we need to run check_pkt_len() after every call to the conntrack action
->> because there is really no longer a way to know whether the packet came
->> in via a fragmented path.  I guess we could do something with
->> ip.frag==first|later|no... selection rules to try and create a custom
->> table for handling fragments - but that seems like it's a workaround for
->> the conntrack functionality w.r.t. the fragmentation engine.
+On Fri, Apr 09, 2021 at 05:50:04PM -0700, Jakub Kicinski wrote:
+> Other than the minor nit below LGTM. Let's give Richard one more day.
+> 
+> On Thu,  8 Apr 2021 01:04:42 +0800 Wong Vee Khee wrote:
+> > +static void timestamp_interrupt(struct stmmac_priv *priv)
+> > +{
+> > +	struct ptp_clock_event event;
+> > +	unsigned long flags;
+> > +	u32 num_snapshot;
+> > +	u32 ts_status;
+> > +	u32 tsync_int;
+> > +	u64 ptp_time;
+> > +	int i;
+> > +
+> > +	tsync_int = readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE;
+> > +
+> > +	if (!tsync_int)
+> > +		return;
+> > +
+> > +	/* Read timestamp status to clear interrupt from either external
+> > +	 * timestamp or start/end of PPS.
+> > +	 */
+> > +	ts_status = readl(priv->ioaddr + GMAC_TIMESTAMP_STATUS);
+> > +
+> > +	if (priv->plat->ext_snapshot_en) {
+> 
+> Are you intending to add more code after this if? Otherwise you could
+> flip the condition and return early instead of having the extra level
+> of indentation.
 >
+
+Thanks fo the suggestion.
+There's no plan to add more code after this as per STMMAC features that
+required this interrupt. I will flip the condition.
+
+> > +		num_snapshot = (ts_status & GMAC_TIMESTAMP_ATSNS_MASK) >>
+> > +			       GMAC_TIMESTAMP_ATSNS_SHIFT;
+> > +
+> > +		for (i = 0; i < num_snapshot; i++) {
+> > +			spin_lock_irqsave(&priv->ptp_lock, flags);
+> > +			get_ptptime(priv->ptpaddr, &ptp_time);
+> > +			spin_unlock_irqrestore(&priv->ptp_lock, flags);
+> > +			event.type = PTP_CLOCK_EXTTS;
+> > +			event.index = 0;
+> > +			event.timestamp = ptp_time;
+> > +			ptp_clock_event(priv->ptp_clock, &event);
+> > +		}
+> > +	}
+> > +}
+> 
+> Not really related to this patch but how does stmmac set IRQF_SHARED
+> and yet not track if it indeed generated the interrupt? Isn't that
+> against the rules?
 >
-> Maybe it makes no sense, so correct me if I'm wrong, but looking at the
-> defragmentation code I see that it does not touch original fragments.
 
-I guess you're referring to the frag list that gets generated and stored
-in the skbuff shinfo?
+Good point! Thanks for pointing that out. I looked at how STMMAC
+interrupt handlers are coded, and indeed there are no tracking. Will
+work on that and send as a seperate patch in near future.
 
-> I mean, since it's not a IP_DEFRAG_LOCAL_DELIVER, skb still holds a list
-> of fragments with their original size.  Maybe we can fragment them based
-> on existing skb fragments instead of using the maximum fragment size and
-> get the same split as it was before defragmentation?
-
-I think during conntrack processing we linearize the skbuff and then
-discard these fragments.  At least, I didn't look as deeply just now,
-but I did hack a check for the skbfraglist on output:
-
-   if (skb_has_frag_list(skb)) {
-      printk(KERN_CRIT "SKB HAS A FRAG LIST");
-   }
-
-And this print wasn't hit during the ovs output processing above.  So I
-assume we don't have the fraglist any more by the time output would
-happen. Are you asking if we can keep this list around to use?
-
->>> One of the related implications is the contrast between what happens
->>> in this case if you have a conntrack action injected or not when
->>> outputting to another port. If you didn't put a connection tracking
->>> action into the flows when redirecting here, then there would be no
->>> defragmentation or refragmentation. In that case, OVS is just
->>> attempting to forward to another device and if the MTU check fails,
->>> then bad luck, packets will be dropped. Now, with the interpretation
->>> in this patch, it seems like we're trying to say that, well, actually,
->>> if the controller injects a connection tracking action, then the
->>> controller implicitly switches OVS into a sort of half-L3 mode for
->>> this particular flow. This makes the behaviour a bit inconsistent.
->> 
->> I agree, the behavior will be inconsistent w.r.t. L3.  But it is right
->> now also.  And at least with this change we will be consistently
->> inconsistent - the user requests ct() with the L3 functions that it
->> implies.
->> 
->> One other problem with the controller is the way we need to generate
->> FRAGNEED packets in v4.  The spec is quite clear with DF=1, drop and
->> generate.  With DF=0, it's less clear (at least after I re-checked RFC
->> 791 I didn't see anything, but I might have missed it).  The controller
->> will now receive all the traffic, I guess.  It's okay with TCP flows
->> that set DF=1, but for UDP (maybe other protocols) that isn't the case.
->> 
->>> Another thought that occurs here is that if you have three interfaces
->>> attached to the switch, say one with MTU 1500 and two with MTU 1450,
->>> and the OVS flows are configured to conntrack and clone the packets
->>> from the higher-MTU interface to the lower-MTU interfaces. If you
->>> receive larger IP fragments on the first interface and attempt to
->>> forward on to the other interfaces, should all interfaces generate an
->>> ICMPv6 PTB?
->> 
->> I guess they would, for each destination.  I don't know if it's
->> desirable, but I can see how it would generate a lot of traffic.  Then
->> again, why should it?  Would conntrack determine that we have two
->> interfaces to output: actions?
->> 
->>> That doesn't seem quite right, especially if one of those
->>> ports is used for mirroring the traffic for operational reasons while
->>> the other path is part of the actual routing path for the traffic.
->> 
->> I didn't consider the mirroring case.  I guess we would either need some
->> specific metadata.  I don't know that anyone is making a mirror port
->> this way, but I guess if the bug report comes in I'll look at it ;)
->> 
->>> You'd end up with duplicate PTB messages for the same outbound
->>> request. If I read right, this would also not be able to be controlled
->>> by the OVS controller because when we call into ip6_fragment() and hit
->>> the MTU-handling path, it will automatically take over and generate
->>> the ICMP response out the source interface, without any reference to
->>> the OVS flow table. This seems like it's further breaking the model
->>> where instead of OVS being a purely programmable L2-like flow
->>> match+actions pipeline, now depending on the specific actions you
->>> inject (in particular combinations), you get some bits of the L3
->>> functionality. But for full L3 functionality, the controller still
->>> needs to handle the rest through the correct set of actions in the
->>> flow.
->> 
->> It's made more difficult because ct() action itself does L3 processing
->> (and I think I demonstrated this).
->> 
->>> Looking at the tree, it seems like this problem can be solved in
->>> userspace without further kernel changes by using
->>> OVS_ACTION_ATTR_CHECK_PKT_LEN, see commit 4d5ec89fc8d1 ("net:
->>> openvswitch: Add a new action check_pkt_len"). It even explicitly says
->>> "The main use case for adding this action is to solve the packet drops
->>> because of MTU mismatch in OVN virtual networking solution.". Have you
->>> tried using this approach?
->> 
->> We looked and discussed it a bit.  I think the outcome boils down to
->> check_pkt_len needs to be used on every single instance where a ct()
->> call occurs because ct() implies we have connections to monitor, and
->> that implies l3, so we need to do something (either push to a controller
->> and handle it like OVN would, etc).  This has implications on older
->> versions of OvS userspace (that don't support check_pkt_len action), and
->> non-OVN based controllers (that might just program a flow pipeline and
->> expect it to work).
->> 
->> I'm not sure what the best approach is really.
->> 
->>>> diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
->>>> index 61ae899cfc17..d4d7487833be 100644
->>>> --- a/tools/testing/selftests/net/.gitignore
->>>> +++ b/tools/testing/selftests/net/.gitignore
->>>> @@ -30,3 +30,4 @@ hwtstamp_config
->>>>  rxtimestamp
->>>>  timestamping
->>>>  txtimestamp
->>>> +test_mismatched_mtu_with_conntrack
->>>> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
->>>> index 25f198bec0b2..dc9b556f86fd 100644
->>>> --- a/tools/testing/selftests/net/Makefile
->>>> +++ b/tools/testing/selftests/net/Makefile
->>>
->>> Neat to see some bootstrapping of in-tree OVS testing. I'd probably
->>> put it in a separate commit but maybe that's just personal preference.
->> 
->> I figured I should add it here because it demonstrates the issue I'm
->> trying to solve.  But I agree, it's maybe a new functionality, so I'm
->> okay with submitting this part + test cases with net-next instead.
->> 
->>> I didn't look *too* closely at the tests but just one nit below:
->>>
->>>> +       # test a udp connection
->>>> +       info "send udp data"
->>>> + ip netns exec server sh -c 'cat ${ovs_dir}/fifo | nc -l -vv -u
->>>> 8888 >${ovs_dir}/fifo 2>${ovs_dir}/s1-nc.log & echo $! >
->>>> ${ovs_dir}/server.pid'
->>>
->>> There are multiple netcat implementations with different arguments
->>> (BSD and nmap.org and maybe also Debian versions). Might be nice to
->>> point out which netcat you're relying on here or try to detect & fail
->>> out/skip on the wrong one. For reference, the equivalent OVS test code
->>> detection is here:
->> 
->> netcat's -l, -v, and -u options are universal (even to the old 'hobbit'
->> 1.10 netcat), so I don't think we need to do detection for these
->> options.  If a future test needs something special (like 'send-only' for
->> nmap-ncat), then it probably makes sense to hook something up then.
->> 
->>> https://github.com/openvswitch/ovs/blob/80e74da4fd8bfdaba92105560ce144b4b2d00e36/tests/atlocal.in#L175
->> 
->> _______________________________________________
->> dev mailing list
->> dev@openvswitch.org
->> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
->> 
 
