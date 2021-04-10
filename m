@@ -2,79 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0CC35AA4D
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 04:20:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 573C435AAA8
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 06:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233577AbhDJCU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Apr 2021 22:20:29 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:16433 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbhDJCU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Apr 2021 22:20:28 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FHJZ00DdgzqT0W;
-        Sat, 10 Apr 2021 10:18:00 +0800 (CST)
-Received: from DESKTOP-EFRLNPK.china.huawei.com (10.174.176.196) by
- DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.498.0; Sat, 10 Apr 2021 10:20:06 +0800
-From:   Qiheng Lin <linqiheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <linux-bluetooth@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Qiheng Lin <linqiheng@huawei.com>
-Subject: [PATCH -next] Bluetooth: use flexible-array member instead of zero-length array
-Date:   Sat, 10 Apr 2021 10:19:35 +0800
-Message-ID: <20210410021935.11100-1-linqiheng@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        id S231573AbhDJEL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 00:11:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58818 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229437AbhDJEL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Apr 2021 00:11:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id BECD8611AF;
+        Sat, 10 Apr 2021 04:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618027873;
+        bh=AyKTQz3diuZcepHqxJ9DHk8auhUU1Lp6XSHBUmhJcBU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gGDAXtj2AkKtOn3bthXPbWmspxSFxQPlItKWQfML/KQ6kczaJ3ZbnaM0jRZH/s31a
+         8fCfiuG+SA1Jnyma3wZzvecV+3l91/Iw+oPCtcFbrNyi51XArpxmE1YQqLlek/XkVR
+         CLM5T9MEqAgncAbUFiHbEUDGxr8ZpS8bECiv57vaATHfRGYDRVCla0Y4k0XT2T/OQW
+         izdi7iWI2v9NspZM+hxFmL9fwipKpuuXzAM/3UI6hn+whJv2fvlMnyLiatNExbU0ay
+         wk5Zx3iUKcoCm/TCqsFEHKKeuFtUnLA6q3u33iEmvBPvtRBIS43x8AKwwqkgKZB64L
+         U9MQFaX89j2oQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AC61460BFF;
+        Sat, 10 Apr 2021 04:11:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.174.176.196]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7] net: ipa: a few small fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161802787370.22966.5421763361774209604.git-patchwork-notify@kernel.org>
+Date:   Sat, 10 Apr 2021 04:11:13 +0000
+References: <20210409180722.1176868-1-elder@linaro.org>
+In-Reply-To: <20210409180722.1176868-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warning:
+Hello:
 
-net/bluetooth/msft.c:37:6-13: WARNING use flexible-array member instead
-net/bluetooth/msft.c:42:6-10: WARNING use flexible-array member instead
-net/bluetooth/msft.c:52:6-10: WARNING use flexible-array member instead
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Signed-off-by: Qiheng Lin <linqiheng@huawei.com>
----
- net/bluetooth/msft.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On Fri,  9 Apr 2021 13:07:15 -0500 you wrote:
+> This series implements some minor bug fixes or improvements.
+> 
+> The first patch removes an apparently unnecessary restriction, which
+> results in an error on a 32-bit ARM build.
+> 
+> The second makes a definition used for SDM845 match what is used in
+> the downstream code.
+> 
+> [...]
 
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index e28f15439ce4..37a394786a94 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -34,12 +34,12 @@ struct msft_le_monitor_advertisement_pattern {
- 	__u8 length;
- 	__u8 data_type;
- 	__u8 start_byte;
--	__u8 pattern[0];
-+	__u8 pattern[];
- };
- 
- struct msft_le_monitor_advertisement_pattern_data {
- 	__u8 count;
--	__u8 data[0];
-+	__u8 data[];
- };
- 
- struct msft_cp_le_monitor_advertisement {
-@@ -49,7 +49,7 @@ struct msft_cp_le_monitor_advertisement {
- 	__u8 rssi_low_interval;
- 	__u8 rssi_sampling_period;
- 	__u8 cond_type;
--	__u8 data[0];
-+	__u8 data[];
- } __packed;
- 
- struct msft_rp_le_monitor_advertisement {
--- 
-2.31.1
+Here is the summary with links:
+  - [net-next,1/7] net: ipa: relax pool entry size requirement
+    https://git.kernel.org/netdev/net-next/c/7ad3bd52cbcb
+  - [net-next,2/7] net: ipa: update sequence type for modem TX endpoint
+    https://git.kernel.org/netdev/net-next/c/49e76a418981
+  - [net-next,3/7] net: ipa: only set endpoint netdev pointer when in use
+    https://git.kernel.org/netdev/net-next/c/57f63faf0562
+  - [net-next,4/7] net: ipa: ipa_stop() does not return an error
+    https://git.kernel.org/netdev/net-next/c/077e770f2601
+  - [net-next,5/7] net: ipa: get rid of empty IPA functions
+    https://git.kernel.org/netdev/net-next/c/74858b63c47c
+  - [net-next,6/7] net: ipa: get rid of empty GSI functions
+    https://git.kernel.org/netdev/net-next/c/57ab8ca42fa0
+  - [net-next,7/7] net: ipa: three small fixes
+    https://git.kernel.org/netdev/net-next/c/602a1c76f847
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
