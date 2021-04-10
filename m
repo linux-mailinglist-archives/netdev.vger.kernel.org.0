@@ -2,148 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E038C35AB14
-	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 07:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D279935AB4F
+	for <lists+netdev@lfdr.de>; Sat, 10 Apr 2021 08:22:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbhDJFZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Apr 2021 01:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbhDJFZ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 01:25:57 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CB6C061762
-        for <netdev@vger.kernel.org>; Fri,  9 Apr 2021 22:25:42 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id o16so8886573ljp.3
-        for <netdev@vger.kernel.org>; Fri, 09 Apr 2021 22:25:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rN8uPmHgYp+HYktaVED9qkx5irVyPn+XQ+GV3auP+g0=;
-        b=Q7A+mvW5T7Io1MJ0BNeghz8UFKw+G2eDgEO0DQhPkizFVHaXWm68NB+sOLkZdA1NsP
-         7L0XF9gJADvwK3xMf5I+VSfA15B3kVTHejwHyvDGl2KQZolff7le3Pn6JFCXXQsP4Tmb
-         XM9cxzqhSihbNOa9zyQpLNGEgsTykAVkWzpeFaweN1zmvKSfHBs2rNWesOOqwdvxP5me
-         IlzNOAJVI+GWA4z4wVkZr4TxGBIUcIhbcGLgI7N+nqCHo81OUoenBXtNnYbnfc/lfpMf
-         vywRyAijQrBN3JjGrcCoN7A1QjlsrbLtyrHdufaCeEbMdqGDVejBnUcbx/wBom6QKPqH
-         hKiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rN8uPmHgYp+HYktaVED9qkx5irVyPn+XQ+GV3auP+g0=;
-        b=XOeNVPmWMLftbYrBewlN/PcuFrCZEWzvETCD9xsWAiBjazvU8+DBBsPJvTA4Cw2BJP
-         Uw7dXuu0GmcTrZdzbF8efK3H/SXVZnNyC+SgOCh2rZV0bXg8sQD5pH/Rb/pj/FghIGnH
-         aYkcqMGYd+dlS4yxk7HZbIcW/7sppC1KlN3KRNSFxuOuNTprxlE83faIMEwQ6icgz5+w
-         EZdAxZeY2HuulsZ4gbtM00RCcuHhUpvWR/zvAptmvXphYbRIoytT3cUwdUQbgvmTTKD2
-         YVqLm/cZ7uF7XcSmIpWnhpir4eBP4z5maWA5HQWlBYf7Tl9WKfUcs75H4m8IgFPBjyqK
-         ZYyg==
-X-Gm-Message-State: AOAM530S3VCeM/eCb9WChi7TaGbeffMy8e83/b8tOw/MkuWp6HdHDFHy
-        h07IY2RXWcwdVTfqoBTQPJH0aQZAux2P99HGlSI=
-X-Google-Smtp-Source: ABdhPJyo+Hn11Im3Z2Ay5kJFufoe86GK/lQJ5Sg7VNdeD8K27/RKfqnL99XhKbdssnvHeaERQBUBG5gRDeMgBc/nPyw=
-X-Received: by 2002:a2e:8eda:: with SMTP id e26mr10833172ljl.457.1618032341292;
- Fri, 09 Apr 2021 22:25:41 -0700 (PDT)
+        id S234192AbhDJGWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Apr 2021 02:22:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25242 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229992AbhDJGWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Apr 2021 02:22:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618035739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nv0p4RXdpoXEf7jqWszTL6fVOOyMMq+6cdW6F9BHRE8=;
+        b=cDx2Kr02pDCs3CexD206x/O+ZbG6UBaC+1ppHR+0pnBNWVbzadgc24K/zMtt7o+pjBJ7SD
+        bhxDPMuft3DcGg7WsAYmal07EFa618wGU6fFKya8BrZNE5WVbApxPh2EJqJTcCPYurfeQO
+        d6zYBxc87mbw9eZzDdiadEH7Q6XsRtQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-169-H9vV9Gg_ME-THv76LsVBSA-1; Sat, 10 Apr 2021 02:22:12 -0400
+X-MC-Unique: H9vV9Gg_ME-THv76LsVBSA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B3FA4593C0;
+        Sat, 10 Apr 2021 06:22:08 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DD3276F968;
+        Sat, 10 Apr 2021 06:21:59 +0000 (UTC)
+Date:   Sat, 10 Apr 2021 08:21:58 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     kernel test robot <lkp@intel.com>, linux-mm@kvack.org,
+        kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>, brouer@redhat.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Bogus struct page layout on 32-bit
+Message-ID: <20210410082158.79ad09a6@carbon>
+In-Reply-To: <20210410024313.GX2531743@casper.infradead.org>
+References: <20210409185105.188284-3-willy@infradead.org>
+        <202104100656.N7EVvkNZ-lkp@intel.com>
+        <20210410024313.GX2531743@casper.infradead.org>
 MIME-Version: 1.0
-References: <20210409225346.432312-1-opensource@vdorst.com>
-In-Reply-To: <20210409225346.432312-1-opensource@vdorst.com>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Sat, 10 Apr 2021 13:25:31 +0800
-Message-ID: <CALW65jZRs4DBOpWiY+CxWZmX9wXhSP1cM-qeftC=xY2=Tr+HoA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: mt7530: Add support for EEE features
-To:     =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ren=C3=A9,
+On Sat, 10 Apr 2021 03:43:13 +0100
+Matthew Wilcox <willy@infradead.org> wrote:
 
-On Sat, Apr 10, 2021 at 6:54 AM Ren=C3=A9 van Dorst <opensource@vdorst.com>=
- wrote:
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -2568,6 +2568,11 @@ static void mt753x_phylink_mac_link_up(struct dsa_=
-switch *ds, int port,
->                         mcr |=3D PMCR_TX_FC_EN;
->                 if (rx_pause)
->                         mcr |=3D PMCR_RX_FC_EN;
-> +
-> +               if (mode =3D=3D MLO_AN_PHY && phydev &&
-> +                   !(priv->eee_disabled & BIT(port)) &&
-> +                   phy_init_eee(phydev, 0) >=3D 0)
-> +                       mcr |=3D PMCR_FORCE_EEE1G | PMCR_FORCE_EEE100;
+> On Sat, Apr 10, 2021 at 06:45:35AM +0800, kernel test robot wrote:
+> > >> include/linux/mm_types.h:274:1: error: static_assert failed due to requirement '__builtin_offsetof(struct page, lru) == __builtin_offsetof(struct folio, lru)' "offsetof(struct page, lru) == offsetof(struct folio, lru)"  
+> >    FOLIO_MATCH(lru, lru);
+> >    include/linux/mm_types.h:272:2: note: expanded from macro 'FOLIO_MATCH'
+> >            static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))  
+> 
+> Well, this is interesting.  pahole reports:
+> 
+> struct page {
+>         long unsigned int          flags;                /*     0     4 */
+>         /* XXX 4 bytes hole, try to pack */
+>         union {
+>                 struct {
+>                         struct list_head lru;            /*     8     8 */
+> ...
+> struct folio {
+>         union {
+>                 struct {
+>                         long unsigned int flags;         /*     0     4 */
+>                         struct list_head lru;            /*     4     8 */
+> 
+> so this assert has absolutely done its job.
+> 
+> But why has this assert triggered?  Why is struct page layout not what
+> we thought it was?  Turns out it's the dma_addr added in 2019 by commit
+> c25fff7171be ("mm: add dma_addr_t to struct page").  On this particular
+> config, it's 64-bit, and ppc32 requires alignment to 64-bit.  So
+> the whole union gets moved out by 4 bytes.
 
-You should adjust this according to e->advertised.
+Argh, good that you are catching this!
 
->         }
->
->         mt7530_set(priv, MT7530_PMCR_P(port), mcr);
-> @@ -2800,6 +2805,49 @@ mt753x_phy_write(struct dsa_switch *ds, int port, =
-int regnum, u16 val)
->         return priv->info->phy_write(ds, port, regnum, val);
->  }
->
-> +static int mt753x_get_mac_eee(struct dsa_switch *ds, int port,
-> +                             struct ethtool_eee *e)
-> +{
-> +       struct mt7530_priv *priv =3D ds->priv;
-> +       u32 eeecr, pmsr;
-> +
-> +       e->eee_enabled =3D !(priv->eee_disabled & BIT(port));
-> +
-> +       if (e->eee_enabled) {
-> +               eeecr =3D mt7530_read(priv, MT7530_PMEEECR_P(port));
-> +               e->tx_lpi_enabled =3D !(eeecr & LPI_MODE_EN);
-> +               e->tx_lpi_timer =3D GET_LPI_THRESH(eeecr);
-> +               pmsr =3D mt7530_read(priv, MT7530_PMSR_P(port));
-> +               e->eee_active =3D e->eee_enabled && !!(pmsr & PMSR_EEE1G)=
-;
+> Unfortunately, we can't just fix this by putting an 'unsigned long pad'
+> in front of it.  It still aligns the entire union to 8 bytes, and then
+> it skips another 4 bytes after the pad.
+> 
+> We can fix it like this ...
+> 
+> +++ b/include/linux/mm_types.h
+> @@ -96,11 +96,12 @@ struct page {
+>                         unsigned long private;
+>                 };
+>                 struct {        /* page_pool used by netstack */
+> +                       unsigned long _page_pool_pad;
 
-eee_enabled and eee_active will be set in phy_ethtool_get_eee, no need
-to set them here.
+I'm fine with this pad.  Matteo is currently proposing[1] to add a 32-bit
+value after @dma_addr, and he could use this area instead.
 
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int mt753x_set_mac_eee(struct dsa_switch *ds, int port,
-> +                             struct ethtool_eee *e)
-> +{
-> +       struct mt7530_priv *priv =3D ds->priv;
-> +       u32 eeecr;
-> +
-> +       if (e->eee_enabled) {
-> +               if (e->tx_lpi_timer > 0xFFF)
-> +                       return -EINVAL;
-> +               priv->eee_disabled &=3D ~BIT(port);
-> +               eeecr =3D mt7530_read(priv, MT7530_PMEEECR_P(port));
-> +               eeecr &=3D ~(LPI_THRESH_MASK | LPI_MODE_EN);
-> +               if (!e->tx_lpi_enabled)
-> +                       /* Force LPI Mode without a delay */
-> +                       eeecr |=3D LPI_MODE_EN;
-> +               eeecr |=3D SET_LPI_THRESH(e->tx_lpi_timer);
-> +               mt7530_write(priv, MT7530_PMEEECR_P(port), eeecr);
-> +       } else {
-> +               priv->eee_disabled |=3D BIT(port);
-> +       }
-> +
-> +       return 0;
-> +}
+[1] https://lore.kernel.org/netdev/20210409223801.104657-3-mcroce@linux.microsoft.com/
+
+When adding/changing this, we need to make sure that it doesn't overlap
+member @index, because network stack use/check page_is_pfmemalloc().
+As far as my calculations this is safe to add.  I always try to keep an
+eye out for this, but I wonder if we could have a build check like yours.
+
+
+>                         /**
+>                          * @dma_addr: might require a 64-bit value even on
+>                          * 32-bit architectures.
+>                          */
+> -                       dma_addr_t dma_addr;
+> +                       dma_addr_t dma_addr __packed;
+>                 };
+>                 struct {        /* slab, slob and slub */
+>                         union {
+> 
+> but I don't know if GCC is smart enough to realise that dma_addr is now
+> on an 8 byte boundary and it can use a normal instruction to access it,
+> or whether it'll do something daft like use byte loads to access it.
+> 
+> We could also do:
+> 
+> +                       dma_addr_t dma_addr __packed __aligned(sizeof(void *));
+> 
+> and I see pahole, at least sees this correctly:
+> 
+>                 struct {
+>                         long unsigned int _page_pool_pad; /*     4     4 */
+>                         dma_addr_t dma_addr __attribute__((__aligned__(4))); /*     8     8 */
+>                 } __attribute__((__packed__)) __attribute__((__aligned__(4)));  
+> 
+> This presumably affects any 32-bit architecture with a 64-bit phys_addr_t
+> / dma_addr_t.  Advice, please?
+
+I'm not sure that the 32-bit behavior is with 64-bit (dma) addrs.
+
+I don't have any 32-bit boards with 64-bit DMA.  Cc. Ivan, wasn't your
+board (572x ?) 32-bit with driver 'cpsw' this case (where Ivan added
+XDP+page_pool) ?
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
