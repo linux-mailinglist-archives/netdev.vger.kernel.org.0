@@ -2,177 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FAC835B436
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 14:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3B635B46F
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 15:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235580AbhDKMaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 08:30:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51584 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235531AbhDKMaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Apr 2021 08:30:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CF0E560FF1;
-        Sun, 11 Apr 2021 12:29:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618144190;
-        bh=z9CBGyAh7zyEaDjGnleco1PXy+Wz1Vf3AA0ontwVqDI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kquAPUa2vilFuhhyZvVEK2NAYD5KUOLaFkJFqPvIoG26sEX1b8wOarXXWAMxKH+hY
-         6Lg9ER/geo22Lf7DjVdoklZYWW3lqlQUrkdiNRw4SPtx435wdBT3bciqjD688CVg4K
-         HJsZ98IZAjL22qpggp12CBw2TQ1iH9B4KaUhiSFzq0QeGSsv44UdXuFDAoPgqDQ2eU
-         msIjvhrvOYEbqzXWVkOxuZx/xwyJtEBf/TSDi8ktBelD5P0WrgcU5Zg6CnafKb33gK
-         WYBPnoURe4kvhYHep9uYqamXl+zFrzwSbsP1ZcfBJCJrVq60v9UWy5mKb/ZHznOo4U
-         hGPXeE/9LDSGw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Maor Gottlieb <maorg@nvidia.com>, linux-api@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@mellanox.com>
-Subject: [PATCH rdma-next v1 7/7] RDMA/mlx5: Expose UAPI to query DM
-Date:   Sun, 11 Apr 2021 15:29:24 +0300
-Message-Id: <20210411122924.60230-8-leon@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210411122924.60230-1-leon@kernel.org>
-References: <20210411122924.60230-1-leon@kernel.org>
+        id S235536AbhDKNAp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Apr 2021 09:00:45 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:46540 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235095AbhDKNAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 09:00:42 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-233-giCDps9eNZWOx9H2k5bC9w-1; Sun, 11 Apr 2021 09:00:21 -0400
+X-MC-Unique: giCDps9eNZWOx9H2k5bC9w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7CBC0802B62;
+        Sun, 11 Apr 2021 13:00:19 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.79])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6807F101E24A;
+        Sun, 11 Apr 2021 13:00:11 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: [PATCHv3 bpf-next 0/5] bpf: Tracing and lsm programs re-attach
+Date:   Sun, 11 Apr 2021 15:00:05 +0200
+Message-Id: <20210411130010.1337650-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+hi,
+while adding test for pinning the module while there's
+trampoline attach to it, I noticed that we don't allow
+link detach and following re-attach for trampolines.
+Adding that for tracing and lsm programs.
 
-Expose UAPI to query MEMIC DM, this will let user space application
-that didn't allocate the DM but has access to by owning the matching
-command FD to retrieve its information.
+You need to have patch [1] from bpf tree for test module
+attach test to pass.
 
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+v3 changes:
+  - used ASSERT* macros apart from lsm test, which is using
+    CHECKs all over the place [Andrii]
+  - added acks
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/20210326105900.151466-1-jolsa@kernel.org/
 ---
- drivers/infiniband/hw/mlx5/dm.c          | 47 +++++++++++++++++++++++-
- drivers/infiniband/hw/mlx5/dm.h          |  1 +
- include/uapi/rdma/mlx5_user_ioctl_cmds.h |  8 ++++
- 3 files changed, 55 insertions(+), 1 deletion(-)
+Jiri Olsa (5):
+      bpf: Allow trampoline re-attach for tracing and lsm programs
+      selftests/bpf: Add re-attach test to fentry_test
+      selftests/bpf: Add re-attach test to fexit_test
+      selftests/bpf: Add re-attach test to lsm test
+      selftests/bpf: Test that module can't be unloaded with attached trampoline
 
-diff --git a/drivers/infiniband/hw/mlx5/dm.c b/drivers/infiniband/hw/mlx5/dm.c
-index bec0489428f8..235aad6beacb 100644
---- a/drivers/infiniband/hw/mlx5/dm.c
-+++ b/drivers/infiniband/hw/mlx5/dm.c
-@@ -293,6 +293,7 @@ static struct ib_dm *handle_alloc_dm_memic(struct ib_ucontext *ctx,
- 	kref_init(&dm->ref);
- 	xa_init(&dm->ops);
- 	mutex_init(&dm->ops_xa_lock);
-+	dm->req_length = attr->length;
- 
- 	err = mlx5_cmd_alloc_memic(dm_db, &dm->base.dev_addr,
- 				   dm->base.size, attr->alignment);
-@@ -473,6 +474,38 @@ static int mlx5_ib_dealloc_dm(struct ib_dm *ibdm,
- 	}
- }
- 
-+static int UVERBS_HANDLER(MLX5_IB_METHOD_DM_QUERY)(
-+	struct uverbs_attr_bundle *attrs)
-+{
-+	struct ib_dm *ibdm =
-+		uverbs_attr_get_obj(attrs, MLX5_IB_ATTR_QUERY_DM_REQ_HANDLE);
-+	struct mlx5_ib_dm *dm = to_mdm(ibdm);
-+	struct mlx5_ib_dm_memic *memic;
-+	u64 start_offset;
-+	u16 page_idx;
-+	int err;
-+
-+	if (dm->type != MLX5_IB_UAPI_DM_TYPE_MEMIC)
-+		return -EOPNOTSUPP;
-+
-+	memic = to_memic(ibdm);
-+	page_idx = memic->mentry.rdma_entry.start_pgoff & 0xFFFF;
-+	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_QUERY_DM_RESP_PAGE_INDEX,
-+			     &page_idx, sizeof(page_idx));
-+	if (err)
-+		return err;
-+
-+	start_offset = memic->base.dev_addr & ~PAGE_MASK;
-+	err =  uverbs_copy_to(attrs, MLX5_IB_ATTR_QUERY_DM_RESP_START_OFFSET,
-+			      &start_offset, sizeof(start_offset));
-+	if (err)
-+		return err;
-+
-+	return uverbs_copy_to(attrs, MLX5_IB_ATTR_QUERY_DM_RESP_LENGTH,
-+			      &memic->req_length,
-+			      sizeof(memic->req_length));
-+}
-+
- void mlx5_ib_dm_mmap_free(struct mlx5_ib_dev *dev,
- 			  struct mlx5_user_mmap_entry *mentry)
- {
-@@ -498,6 +531,17 @@ void mlx5_ib_dm_mmap_free(struct mlx5_ib_dev *dev,
- 	}
- }
- 
-+DECLARE_UVERBS_NAMED_METHOD(
-+	MLX5_IB_METHOD_DM_QUERY,
-+	UVERBS_ATTR_IDR(MLX5_IB_ATTR_QUERY_DM_REQ_HANDLE, UVERBS_OBJECT_DM,
-+			UVERBS_ACCESS_READ, UA_MANDATORY),
-+	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_QUERY_DM_RESP_START_OFFSET,
-+			    UVERBS_ATTR_TYPE(u64), UA_MANDATORY),
-+	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_QUERY_DM_RESP_PAGE_INDEX,
-+			    UVERBS_ATTR_TYPE(u16), UA_MANDATORY),
-+	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_QUERY_DM_RESP_LENGTH,
-+			    UVERBS_ATTR_TYPE(u64), UA_MANDATORY));
-+
- ADD_UVERBS_ATTRIBUTES_SIMPLE(
- 	mlx5_ib_dm, UVERBS_OBJECT_DM, UVERBS_METHOD_DM_ALLOC,
- 	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_ALLOC_DM_RESP_START_OFFSET,
-@@ -524,7 +568,8 @@ DECLARE_UVERBS_NAMED_METHOD(
- 			    UA_OPTIONAL));
- 
- DECLARE_UVERBS_GLOBAL_METHODS(UVERBS_OBJECT_DM,
--			      &UVERBS_METHOD(MLX5_IB_METHOD_DM_MAP_OP_ADDR));
-+			      &UVERBS_METHOD(MLX5_IB_METHOD_DM_MAP_OP_ADDR),
-+			      &UVERBS_METHOD(MLX5_IB_METHOD_DM_QUERY));
- 
- const struct uapi_definition mlx5_ib_dm_defs[] = {
- 	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_DM, &mlx5_ib_dm),
-diff --git a/drivers/infiniband/hw/mlx5/dm.h b/drivers/infiniband/hw/mlx5/dm.h
-index 4d0ffad29d8f..9674a80d8d70 100644
---- a/drivers/infiniband/hw/mlx5/dm.h
-+++ b/drivers/infiniband/hw/mlx5/dm.h
-@@ -31,6 +31,7 @@ struct mlx5_ib_dm_memic {
- 	struct xarray               ops;
- 	struct mutex                ops_xa_lock;
- 	struct kref                 ref;
-+	size_t                      req_length;
- };
- 
- struct mlx5_ib_dm_icm {
-diff --git a/include/uapi/rdma/mlx5_user_ioctl_cmds.h b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-index c6fbc5211717..3798cbcb9021 100644
---- a/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-+++ b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-@@ -43,6 +43,7 @@ enum mlx5_ib_create_flow_action_attrs {
- 
- enum mlx5_ib_dm_methods {
- 	MLX5_IB_METHOD_DM_MAP_OP_ADDR  = (1U << UVERBS_ID_NS_SHIFT),
-+	MLX5_IB_METHOD_DM_QUERY,
- };
- 
- enum mlx5_ib_dm_map_op_addr_attrs {
-@@ -52,6 +53,13 @@ enum mlx5_ib_dm_map_op_addr_attrs {
- 	MLX5_IB_ATTR_DM_MAP_OP_ADDR_RESP_PAGE_INDEX,
- };
- 
-+enum mlx5_ib_query_dm_attrs {
-+	MLX5_IB_ATTR_QUERY_DM_REQ_HANDLE = (1U << UVERBS_ID_NS_SHIFT),
-+	MLX5_IB_ATTR_QUERY_DM_RESP_START_OFFSET,
-+	MLX5_IB_ATTR_QUERY_DM_RESP_PAGE_INDEX,
-+	MLX5_IB_ATTR_QUERY_DM_RESP_LENGTH,
-+};
-+
- enum mlx5_ib_alloc_dm_attrs {
- 	MLX5_IB_ATTR_ALLOC_DM_RESP_START_OFFSET = (1U << UVERBS_ID_NS_SHIFT),
- 	MLX5_IB_ATTR_ALLOC_DM_RESP_PAGE_INDEX,
--- 
-2.30.2
+ kernel/bpf/syscall.c                                   | 23 +++++++++++++++++------
+ kernel/bpf/trampoline.c                                |  2 +-
+ tools/testing/selftests/bpf/prog_tests/fentry_test.c   | 51 ++++++++++++++++++++++++++++++++++++---------------
+ tools/testing/selftests/bpf/prog_tests/fexit_test.c    | 51 ++++++++++++++++++++++++++++++++++++---------------
+ tools/testing/selftests/bpf/prog_tests/module_attach.c | 23 +++++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/test_lsm.c      | 48 ++++++++++++++++++++++++++++++++++++++----------
+ tools/testing/selftests/bpf/test_progs.h               |  2 +-
+ 7 files changed, 152 insertions(+), 48 deletions(-)
 
