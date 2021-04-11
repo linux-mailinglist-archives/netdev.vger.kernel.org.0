@@ -2,133 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7D435B6BB
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 21:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B3A35B6E0
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 22:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235618AbhDKTXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 15:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60092 "EHLO
+        id S236537AbhDKUhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 16:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235323AbhDKTXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 15:23:22 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523D8C061574
-        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 12:23:05 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id u3so5266178qvj.8
-        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 12:23:05 -0700 (PDT)
+        with ESMTP id S233822AbhDKUhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 16:37:31 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACD7C061574
+        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 13:37:14 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id s11-20020a056830124bb029021bb3524ebeso10988305otp.0
+        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 13:37:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=avXKiq6W+cYGDZMRMyBt4n7I4IadwdOEJ3VppA72up8=;
-        b=lEu20EK+X+1WiwYPTWb8cP1F1Qq7LW5NURwjmGPt968kvqeyKoujeqFFMXbTd/M9Wu
-         ppHVpNr2DHA0WINHls+tiDm06zgy4BOXXKojmIUPXXxefy9hS0/saZOMcEOfwO1bvhTC
-         X5dbf70xuqvFw/ThI40zb/8C87o2cG1Vip17U5d73RnRQQLkMHkneZHP7HFTT+9ISTC7
-         9r5GjJoP4VLhSP/wH9OlPMEObRGSYNW3gjyh8tIgC9im+2kIyWW39aC02tNzT9UujHd6
-         /OHoqYnhjkeRrmCY3Ax8RCkpONhNHLiAGwUPX0RmLQq+kdLMjevBLi+lKD8qd4bD0zyk
-         rWOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=avXKiq6W+cYGDZMRMyBt4n7I4IadwdOEJ3VppA72up8=;
-        b=AeTM0YlA/bVx/KE2N5n3OAMinMZn0tRDaJ1/LmtRZC53vRDvJc205AmXLYya03s+8w
-         U7X1XU5Y/IUB0jbB4TWLiM2RQzSBHf7mhQJLwgOuIquDOiJEPsvZv6SYk/XjzwsjvW/R
-         6fFLShYtknVNBmAIwzarCU5x+PPXb7j2th0F4BI7he6rs3c80DqQ8/+cXmGRvzc6eHTI
-         w9R0EZLF5qxSXDFZcc5WnUT2L0S3f9Xtp0sQym69ZWOxjLMwcwtbAD08CoZ0ukPKFhER
-         5n0Sw0MYJmKd1oir0Rgg6Uh4kawZA/xfhI+aDMrRK1yvD73/0YFhrmpjqyxQp5OQHgbw
-         zqfA==
-X-Gm-Message-State: AOAM531cilmaif/vL8r/YBkgU3rPoxZ+K64Y2gzOfBq3AJoHOGu23UzJ
-        z5U3L9JhFrxlXUjmgu8d+uSC/L2hn7bbCA==
-X-Google-Smtp-Source: ABdhPJzIqAon0BzR8LpoF0DHxUjqClo4RyFAmuYjszffIGg/rVKHhvbv1pCrCILwnw9+vkufAehP0Q==
-X-Received: by 2002:a0c:e950:: with SMTP id n16mr2789573qvo.43.1618168984338;
-        Sun, 11 Apr 2021 12:23:04 -0700 (PDT)
-Received: from [192.168.1.79] (bras-base-kntaon1617w-grc-22-184-144-36-31.dsl.bell.ca. [184.144.36.31])
-        by smtp.googlemail.com with ESMTPSA id x22sm4759524qki.21.2021.04.11.12.23.03
+        bh=T0wu6sj4bStEBpLbQzv4rYhAmCgr+WzK85ZIhvG4PZc=;
+        b=UWm1fav4Q2tgwBoDQBx0wqfMrLJcpM+uX1RIn5OWpR3PxcK0VWQhsg3+aEPgtiG79r
+         Xh0mXva7fY1Zn5AlwT1uxWXjOUu2hP//4Pj2WU6WHHngQHNsyoF9ErcSEgyTnmCwhIRx
+         UxhoRCD0+mkj8kaLn4vH4N65ejKL5AOZrXTLM6EeI/j/gI6pknPNZCTN7gJk1jOT/cnB
+         /M0EyHyNModf7VGIVXRfEiBRUo78OSMyjGG1u5TlmJqYfuN7QH6wytFSC+It1lxeBIs0
+         xBZd5OCnMeEODdULHm3J80gPo7q2QYV8HzoI6KPaA/JoIZdNTyxgbHCAwlMH7X3OWGZt
+         vTdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=T0wu6sj4bStEBpLbQzv4rYhAmCgr+WzK85ZIhvG4PZc=;
+        b=da6jU/EZMSzKujkxkQUpnxwtEiAjIH3yca3XqX6WxIDxYn2us4zWnI/oRtuKWUMODK
+         xL1Z5S/KPSAywISeYmQ2RxXjhSG71jlPEn8gd0vQ+0M0E4jatf5hKtVyX5LxlYLV5uJK
+         P1xNrCUp75hy8qeRAO8Vwzy+0eOotlvCM0eZGCEfhlAixbHHRpv1Lp/FPV/8oDY+jYjf
+         JmapMreX3FFXVO4j5SqJF3iUyKhohdWIUnu+iHt6PywITn7XzuIdeAG4yjcbUZY2TadO
+         07ZRUYF0+dydlikZOvu932pJLxL/CRUfTnqn0mDFvC2as8iHqCRlxlA1DX5RBvYUvz4e
+         2NxA==
+X-Gm-Message-State: AOAM532YJUlKRu26nmPNmQw0Rc+h4hYTgEBxTuyncbHJtSbYS4PpHNk9
+        ZzZomDFbutNTSIAdnm8vbmc=
+X-Google-Smtp-Source: ABdhPJywcCsZat3ECtk89Ngxwd54uJIXCBAbX0Y1Evq2U72h1zC+WngNnxkHHgHGvI4A8HQblOGTOA==
+X-Received: by 2002:a05:6830:3497:: with SMTP id c23mr20381727otu.344.1618173433784;
+        Sun, 11 Apr 2021 13:37:13 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t2sm1799858ool.18.2021.04.11.13.37.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Apr 2021 12:23:03 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/7] net: sched: Add a trap-and-forward action
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Sun, 11 Apr 2021 13:37:13 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Subject: Re: [PATCH net] virtio_net: Do not pull payload in skb->head
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <20210408133829.2135103-1-petrm@nvidia.com>
- <20210408133829.2135103-2-petrm@nvidia.com>
- <b60df78a-1aba-ba27-6508-4c67b0496020@mojatatu.com>
- <877dlb67pk.fsf@nvidia.com>
- <6424d667-86a9-8fd1-537e-331cf4e5970c@mojatatu.com>
- <8735vz609x.fsf@nvidia.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <137b2a5b-8a05-e699-1ac9-3dc072ea16a7@mojatatu.com>
-Date:   Sun, 11 Apr 2021 15:23:02 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        netdev <netdev@vger.kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org
+References: <20210402132602.3659282-1-eric.dumazet@gmail.com>
+ <20210411134329.GA132317@roeck-us.net>
+ <CANn89iJ+RjYPY11zUtvmMkOp1E2DKLuAk2q0LHUbcJpbcZVSjw@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
+Message-ID: <0f63dc52-ea72-16b6-7dcd-efb24de0c852@roeck-us.net>
+Date:   Sun, 11 Apr 2021 13:37:10 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <8735vz609x.fsf@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <CANn89iJ+RjYPY11zUtvmMkOp1E2DKLuAk2q0LHUbcJpbcZVSjw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-04-09 9:43 a.m., Petr Machata wrote:
+On 4/11/21 8:06 AM, Eric Dumazet wrote:
+> On Sun, Apr 11, 2021 at 3:43 PM Guenter Roeck <linux@roeck-us.net> wrote:
 > 
-> Jamal Hadi Salim <jhs@mojatatu.com> writes:
+>> This patch causes a virtio-net interface failure when booting sh4 images
+>> in qemu. The test case is nothing special: Just try to get an IP address
+>> using udhcpc. If it fails, udhcpc reports:
+>>
+>> udhcpc: started, v1.33.0
+>> udhcpc: sending discover
+>> FAIL
+>>
 > 
-
->>>> Does the spectrum not support multiple actions?
->>>> e.g with a policy like:
->>>>    match blah action trap action drop skip_sw
->>> Trap drops implicitly. We need a "trap, but don't drop". Expressed in
->>> terms of existing actions it would be "mirred egress redirect dev
->>> $cpu_port". But how to express $cpu_port except again by a HW-specific
->>> magic token I don't know.
-> 
-> (I meant mirred egress mirror, not redirect.)
+> Can you investigate where the incoming packet is dropped ?
 >
 
-Ok.
+Unless I am missing something, packets are not dropped. It looks more
+like udhcpc gets bad indigestion in the receive path and exits immediately.
+Plus, it doesn't happen all the time; sometimes it receives the discover
+response and is able to obtain an IP address.
 
->> Note: mirred was originally intended to send redirect/mirror
->> packets to user space (the comment is still there in the code).
->> Infact there is a patch lying around somewhere that does that with
->> packet sockets (the author hasnt been serious about pushing it
->> upstream). In that case the semantics are redirecting to a file
->> descriptor. Could we have something like that here which points
->> to whatever representation $cpu_port has? Sounds like semantics
->> for "trap and forward" are just "mirror and forward".
-> 
-> Hmm, we have devlink ports, the CPU port is exposed there. But that's
-> the only thing that comes to mind. Those are specific for the given
-> device though, it doesn't look suitable...
-> 
+Overall this is quite puzzling since udhcpc exits immediately when the problem
+is seen, no matter which option I give it on the command line; it should not
+really do that.
 
-If it has an ifindex should be good enough for abstraction
-purposes.
-
->> I think there is value in having something like trap action
->> which generalizes the combinations only to the fact that
->> it will make it easier to relay the info to the offload without
->> much transformation.
->> If i was to do it i would write one action configured by user space:
->> - to return DROP if you want action trap-and-drop semantics.
->> - to return STOLEN if you want trap
->> - to return PIPE if you want trap and forward. You will need a second
->> action composed to forward.
-> 
-> I think your STOLEN and PIPE are the same behavior. Both are "transfer
-> the packet to the SW datapath, but keep it in the HW datapath".
-> 
-> In general I have no issue expressing this stuff as a new action,
-> instead of an opcode. I'll take a look at this.
-> 
-
-Ok, thanks.
-
-cheers,
-jamal
+Guenter
