@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E13435B497
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 15:30:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B5C35B4AF
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 15:42:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235484AbhDKN2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 09:28:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59398 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229804AbhDKN2v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Apr 2021 09:28:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 668AA61042;
-        Sun, 11 Apr 2021 13:28:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618147715;
-        bh=PG4kqQZC0C6teZuojGxYzzZ517iaE42zQVnfJXJE7Lg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bb1DYdseG6I8texPAGMIOZRMeYi5JPI/p5TyxnzH6W1k6qERJvJ+BvrO59KkyXG4u
-         22yf+oV6a9tlW+qAwz0F+rTK8rtxr9hIEAvG0n74IVQYruThNYh3YtUOK3zF5clbm6
-         bqZ9Jh6YtpagCR/FQBQGgu1C9Om6U/ipafbS9XJ5XjyKFywvc3LgswN8JwnkAC0Owk
-         E9w02PkInBGMsHN8lC5gavEMt2PWpBbIPBApVUWK9jf+aWGgpfcoLRu5iMaMKJbF1W
-         12Kn1TlqYx8Skw6pPfNBwTctgvBMBns9Qe+Vm6OpHUAMuErFGGDxarePbhpvYOs7MU
-         sqSPHDA6/gSCw==
-Date:   Sun, 11 Apr 2021 16:28:31 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alex Elder <elder@linaro.org>
+        id S235467AbhDKNme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 09:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229804AbhDKNmd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 09:42:33 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3ACC061574
+        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 06:42:17 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id i22so4013612ila.11
+        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 06:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jHOs/GUNj1A6ya3vcccNEUycGjR7OVNzCp35FYh45a8=;
+        b=L1RRQYC6N+Dgp4DoT7PRd517GDpNGGbtDzuZ9+qO0iXUwrd8RL0nk3BAmjHcOFMh/L
+         F58/rFW3gpuUbxOkb+NQDUNqI2Vd3qUINmwa5K/XHJOSyBC/3TDhRtaAwfXQ8f+4KIgh
+         LpKNRLly3IdatiwMfBXxgTcaR9FmlXDegyQSTfY5RJK5ZnCjwxxmIhR2c9nduL13eZcK
+         Habfk+eVF9R1w+FVnmdaQZYrgeDP17L4nvzNJZkJf2TqBDyeu/jllBXzntrXHxyerbBl
+         1+8r/iPAfKIviGsRx5iRDGpav4ASk2kzYQF0pnuXTf0wj5+r7wyM4BBuFE30AeOpbs3R
+         83Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jHOs/GUNj1A6ya3vcccNEUycGjR7OVNzCp35FYh45a8=;
+        b=OJf6aN7ef4pMC3XUP+xFpOCFLb0iGPKHctxczFTIdNpzu7RWl/pbl1oqELVSZPhpIH
+         SSFeIG9cF4UObY9aZ+phKEbCP4fr2WPXPw9KaztIc6WnFzCMXOyBGvlM8i+kXSFWpIki
+         t8dHPb0f+LmNpM69w1ExvYzA362VILPgYizeaUnWS2PPfhsOh3SM+7N33ulsDRi0oS4a
+         EKGtleYX9kxPmtoE+Fv4v2VQ+2m8hSJUqKrK0o0C1tHFXtKyJGl9N1t5pUDiT+LMGp82
+         g5oNUH+sjeHvWqQRVBzDK0QX6B0I0xEoRE0zV1nztdqSHAPVe49JrUYAIvrW+At+rBT9
+         rAkQ==
+X-Gm-Message-State: AOAM533vDF/ggW+RiSfDofDPFrJJXQLMYXWePxa6Zh6TpAD1d8esC0l4
+        g0TeBTO7a6BFe0YS5UaUpd5ErQ==
+X-Google-Smtp-Source: ABdhPJxuBaDdJ7m0Z1ESomTiIQVbmHZfCmZCK7Lzg4DEFwh75H0k+WYobd4D4EFPi3LJyDoysVg5gg==
+X-Received: by 2002:a05:6e02:20c5:: with SMTP id 5mr1869932ilq.14.1618148536684;
+        Sun, 11 Apr 2021 06:42:16 -0700 (PDT)
+Received: from [192.168.20.93] ([64.118.8.63])
+        by smtp.googlemail.com with ESMTPSA id b9sm4186165iof.54.2021.04.11.06.42.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Apr 2021 06:42:16 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/7] net: ipa: ipa_stop() does not return an
+ error
+To:     Leon Romanovsky <leon@kernel.org>
 Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
         evgreen@chromium.org, cpratapa@codeaurora.org,
         subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 4/7] net: ipa: ipa_stop() does not return an
- error
-Message-ID: <YHL5fwkYyHvQG2Z4@unreal>
 References: <20210409180722.1176868-1-elder@linaro.org>
- <20210409180722.1176868-5-elder@linaro.org>
- <YHKYWCkPl5pucFZo@unreal>
- <1f5c3d2c-f22a-ef5e-f282-fb2dec4479f3@linaro.org>
+ <20210409180722.1176868-5-elder@linaro.org> <YHKYWCkPl5pucFZo@unreal>
+ <1f5c3d2c-f22a-ef5e-f282-fb2dec4479f3@linaro.org> <YHL5fwkYyHvQG2Z4@unreal>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <6e0c08a0-aebd-83b2-26b5-98f7d46d6b2b@linaro.org>
+Date:   Sun, 11 Apr 2021 08:42:15 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f5c3d2c-f22a-ef5e-f282-fb2dec4479f3@linaro.org>
+In-Reply-To: <YHL5fwkYyHvQG2Z4@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 11, 2021 at 08:09:55AM -0500, Alex Elder wrote:
-> On 4/11/21 1:34 AM, Leon Romanovsky wrote:
-> > On Fri, Apr 09, 2021 at 01:07:19PM -0500, Alex Elder wrote:
-> >> In ipa_modem_stop(), if the modem netdev pointer is non-null we call
-> >> ipa_stop().  We check for an error and if one is returned we handle
-> >> it.  But ipa_stop() never returns an error, so this extra handling
-> >> is unnecessary.  Simplify the code in ipa_modem_stop() based on the
-> >> knowledge no error handling is needed at this spot.
-> >>
-> >> Signed-off-by: Alex Elder <elder@linaro.org>
-> >> ---
-> >>  drivers/net/ipa/ipa_modem.c | 18 ++++--------------
-> >>  1 file changed, 4 insertions(+), 14 deletions(-)
-> > 
-> > <...>
-> > 
-> >> +	/* Stop the queue and disable the endpoints if it's open */
-> >>  	if (netdev) {
-> >> -		/* Stop the queue and disable the endpoints if it's open */
-> >> -		ret = ipa_stop(netdev);
-> >> -		if (ret)
-> >> -			goto out_set_state;
-> >> -
-> >> +		(void)ipa_stop(netdev);
-> > 
-> > This void casting is not needed here and in more general case sometimes
-> > even be seen as a mistake, for example if the returned attribute declared
-> > as __must_check.
-> 
-> I accept your point but I feel like it's sort of a 50/50 thing.
-> 
-> I think *not* checking an available return value is questionable
-> practice.  I'd really rather have a build option for a
-> "__need_not_check" tag and have "must_check" be the default.
+On 4/11/21 8:28 AM, Leon Romanovsky wrote:
+>> I think *not* checking an available return value is questionable
+>> practice.  I'd really rather have a build option for a
+>> "__need_not_check" tag and have "must_check" be the default.
+> __need_not_check == void ???
 
-__need_not_check == void ???
+I'm not sure I understand your statement here, but...
 
-> 
-> The void cast here says "I know this returns a result, but I am
-> intentionally not checking it."  If it had been __must_check I
-> would certainly have checked it.  
-> 
-> That being said, I don't really care that much, so I'll plan
-> to post version 2, which will drop this cast (I'll probably
-> add a comment though).
+My point is, I'd rather have things like printk() and
+strscpy() be marked with (an imaginary) __need_not_check,
+than the way things are, with only certain functions being
+marked __must_check.
 
-Thanks
+In my view, if a function returns a value, all callers
+of that function ought to be checking it.  If the return
+value is not necessary it should be a void function if
+possible.
 
-> 
-> Thanks.
-> 
-> 					-Alex
-> 
-> > 
-> > Thanks
-> > 
-> 
+I don't expect the world to change, but I just think the
+default should be "must check" rather than "check optional".
+
+					-Alex
