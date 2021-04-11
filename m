@@ -2,76 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99B2535B5ED
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 17:38:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C542935B60F
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 18:23:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236340AbhDKPi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 11:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235202AbhDKPi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 11:38:28 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1CAC061574
-        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 08:38:11 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id em21-20020a17090b0155b029014e204a81e6so791490pjb.1
-        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 08:38:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uzZK4zKfhkQbjReqTShPAeOuD/MC4re8rtWmQWvCoys=;
-        b=AQ2K3q7CTCZ5Z07ZUaIREvBenYvlULHChWst0ONxsxJqH3BJxA2mjcu7WfHyg6eIuE
-         KCH8mqLaIXSQATfEDSckJUezYPzQmkPF2IC9fUeCXRyaNN0HiaIUzONKJkM9ey7ENyz0
-         1nVZiAiUSPm7HK4pPKSOwBZ6xToGtB7a+ncqACkZDnpS3NGmAWHyhSncUe9kPk4NagM0
-         kQNEjC/yq5XsDv/nu8GSq5VKktz4F0oUw7DxP+8y/M+R+K+G0CgUeGZucG0wrw3T9JyP
-         G5O0LpYpuFa5H1DGqriMt8kcVWmu9OZ2jtmlI3y4VWT6xohDqo6QJLuBd46HSq8M9TuI
-         PnGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uzZK4zKfhkQbjReqTShPAeOuD/MC4re8rtWmQWvCoys=;
-        b=mxwRTAyC58X3Tiz7Yl2CjOP+GqpTpjFQWQm9BmiG68rhfYc9Ga4H2fYxRub/5IQ5z5
-         qVBUZTjI+zkLHVrCNp/dFzOVQCKmOx4VvBovKS0FarVIPme3fnuT502tUcFl7CFvGPtP
-         sBfbe2dSrd2O4WmNljQOagFZ5cIMPIxdxGHBlrGD7nK0tS5Ky1nyv/61mghpqnWhoVlZ
-         IafNpZty5jgFDms9OyXgC3Kt79hWT86/3UYqQvbRbYmI8ULMX4i/E3jkdp48c3g6biRo
-         PLAfuRCWBlcN4N6s5Vsq9h32MC/a2jH6il5E9oDhQpcMAVaOQU4iZ6mBtFoqd4BIsTRw
-         Pzxg==
-X-Gm-Message-State: AOAM5306f13jOZZmTK2vgeRTfc9Rwyxi6alKN2Q6RB/goPfwzGmNreRy
-        HWAepN3ZBpeOtSSDalybUQM=
-X-Google-Smtp-Source: ABdhPJxu1sA/lbuylYHBheYaofcc2hAUywOFx/1xoRqXWXpITLAhhEKn4mSyUE4DUTvAJwLnhDGWNQ==
-X-Received: by 2002:a17:902:dac2:b029:e6:30a6:4c06 with SMTP id q2-20020a170902dac2b02900e630a64c06mr22485165plx.65.1618155490944;
-        Sun, 11 Apr 2021 08:38:10 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id p24sm4296805pfn.11.2021.04.11.08.38.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Apr 2021 08:38:10 -0700 (PDT)
-Date:   Sun, 11 Apr 2021 08:38:08 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io
-Subject: Re: [PATCH net-next 0/8] ionic: hwstamp tweaks
-Message-ID: <20210411153808.GB5719@hoboy.vegasvil.org>
-References: <20210407232001.16670-1-snelson@pensando.io>
+        id S236411AbhDKQYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 12:24:06 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:30507 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236406AbhDKQYF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Apr 2021 12:24:05 -0400
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4FJHHM2Bm5zB09Zv;
+        Sun, 11 Apr 2021 18:23:43 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id M7H_TZ3xfLZz; Sun, 11 Apr 2021 18:23:43 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4FJHHM11MkzB09Zt;
+        Sun, 11 Apr 2021 18:23:43 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id A74A38B770;
+        Sun, 11 Apr 2021 18:23:46 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id z7Gre_ROyeC9; Sun, 11 Apr 2021 18:23:46 +0200 (CEST)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 3131E8B75B;
+        Sun, 11 Apr 2021 18:23:46 +0200 (CEST)
+Subject: Re: sysctl: setting key "net.core.bpf_jit_enable": Invalid argument
+To:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Sandipan Das <sandipan@linux.ibm.com>
+Cc:     it+linux-bpf@molgen.mpg.de, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+References: <412d88b2-fa9a-149e-6f6e-3cfbce9edef0@molgen.mpg.de>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <d880c38c-e410-0b69-0897-9cbf4b759045@csgroup.eu>
+Date:   Sun, 11 Apr 2021 18:23:44 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210407232001.16670-1-snelson@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <412d88b2-fa9a-149e-6f6e-3cfbce9edef0@molgen.mpg.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 04:19:53PM -0700, Shannon Nelson wrote:
-> A few little changes after review comments and
-> additional internal testing.
 
-This series is a delta against the previously posted one.  Please
-follow the process by re-basing your changes into the original series,
-putting a "v2" into the Subject line, and adding a brief change log
-into the cover letter.
 
-Thanks,
-Richard
+Le 11/04/2021 à 13:09, Paul Menzel a écrit :
+> Dear Linux folks,
+> 
+> 
+> Related to * [CVE-2021-29154] Linux kernel incorrect computation of branch displacements in BPF JIT 
+> compiler can be abused to execute arbitrary code in Kernel mode* [1], on the POWER8 system IBM 
+> S822LC with self-built Linux 5.12.0-rc5+, I am unable to disable `bpf_jit_enable`.
+> 
+>     $ /sbin/sysctl net.core.bpf_jit_enable
+>     net.core.bpf_jit_enable = 1
+>     $ sudo /sbin/sysctl -w net.core.bpf_jit_enable=0
+>     sysctl: setting key "net.core.bpf_jit_enable": Invalid argument
+> 
+> It works on an x86 with Debian sid/unstable and Linux 5.10.26-1.
+
+Maybe you have selected CONFIG_BPF_JIT_ALWAYS_ON in your self-built kernel ?
+
+config BPF_JIT_ALWAYS_ON
+	bool "Permanently enable BPF JIT and remove BPF interpreter"
+	depends on BPF_SYSCALL && HAVE_EBPF_JIT && BPF_JIT
+	help
+	  Enables BPF JIT and removes BPF interpreter to avoid
+	  speculative execution of BPF instructions by the interpreter
+
+
+Christophe
