@@ -2,203 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BACBD35B6EF
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 22:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E9235B6FF
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 23:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235908AbhDKUzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 16:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
+        id S235725AbhDKVXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 17:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235530AbhDKUzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 16:55:40 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C400C061574;
-        Sun, 11 Apr 2021 13:55:23 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id x4so12671045edd.2;
-        Sun, 11 Apr 2021 13:55:23 -0700 (PDT)
+        with ESMTP id S235338AbhDKVXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 17:23:52 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34651C061574
+        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 14:23:33 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id z1so12825034ybf.6
+        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 14:23:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1GLY6Eu9dQMP0XShrTgVjqUA8MtMQyS320t2XhbwrW0=;
-        b=UK7OTbcEjHlRsD0XoePgHsAzs6+lsaUGE9wnXfsq7M5/290LA19+xCtPMuNBvK/HQK
-         NKWifP0lryKzdiZFl/3jTQuy2F4F2k7/TkOKEHM6GLPHt8riH3AsrP8ym2N3wYjmnfyB
-         kuy2l5LD3refApVsv6bUz2NnBA2cRfe613oAAnwfObYHShAIPlxNzczYZPMpV8vNUYSQ
-         wjiw5i4AmP/Jb0cWuod5DUFrRwgh7e6SMXpNLlKTP/hGYbXBsfAJ5B0u+o2j/vsMTVtw
-         DsINKliCj4GC+Wq+cjl+KSwXrfe0K4eLaXPatHgH621g6TSq+eYnsGPWBEzsdDptbtnk
-         ewCg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s6wkbqBA5jKWZN4q21yFCGp918hjP1L7ivFeYGjBOqQ=;
+        b=Oa0ZMgio6Z9baxTPoSl6M1bPnIC/KoXwqmD93MdVLOcBNx76z186BfpzBKrkRFvqo1
+         VrdvVi8lEsMAN1ALzS5dRjHYuBfTLN3oSYELdmJg+TKlvVLhqSucgga/kFE1Oh0akApz
+         XmbGwae/WmP2OoAiD6r/+tZoLAMk8y2QSDz1ilXs1MA6HPIGHMO7V0IV+GT3quS5qFSY
+         l828/nm4v713WheizgsfWEnC6Xe6uYbWYLq0k8o9INX/dR+WtGg+Hp05XEDsnYgaAy/s
+         3C9XHeAghZ/fTtWMs7bowBTDnO8qpDwn987ZYgPC0I6e/XTz9Iv3NqqP2m/U682OWKE6
+         igrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1GLY6Eu9dQMP0XShrTgVjqUA8MtMQyS320t2XhbwrW0=;
-        b=gq3iCkbre2/wAs5AUovxGwgO3WYCE3+jaPXEDn604J80BciYYh/aR6n3KktjBMpK8Q
-         mQP1kk3AAkRXb2ya4CYd5nUr0mSOWEfa4O8qUtVH2G5t/k5w5N65rsF5LYkNa2nIF3ye
-         aZn94ZF42TpaHJezZDLODJ3wa1QT7UXMjpp593T4L27fiNq+CLUOnq+TDheVzNf+Wk/X
-         MS0MGLx89IkCGPBwjgReNLVBk6xYEqFl4P3fwfqpwGPVltG7YhVUwJ1ofcA7OFWgf3Iw
-         dqiKVe5a93iocSneNcpk+cjfOepLKBKlyQSaTW0bqlWhoGAaznf1UZ4Jij/vzyIGasr4
-         OsDQ==
-X-Gm-Message-State: AOAM530mUHhhyMlOO/dWcwyBpfwgejskNGOdDTzOnHgOe2mNqp2t+tCV
-        3HjnRMedor0SxXkrczjk4B/yNQ5kPJQ=
-X-Google-Smtp-Source: ABdhPJzJJOofM5sAz5+gUCX63gvn4xZT0ooG+kiNlEdjEYRt9NPbuQAKOJ/rLMxZDTP6omgY8NLDBA==
-X-Received: by 2002:a05:6402:27d3:: with SMTP id c19mr27061624ede.129.1618174521757;
-        Sun, 11 Apr 2021 13:55:21 -0700 (PDT)
-Received: from localhost.localdomain (p200300f137277800428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:3727:7800:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id l2sm4475453ejz.93.2021.04.11.13.55.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Apr 2021 13:55:21 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        olteanv@gmail.com, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        andrew@lunn.ch,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH net-next] net: dsa: lantiq_gswip: Add support for dumping the registers
-Date:   Sun, 11 Apr 2021 22:55:11 +0200
-Message-Id: <20210411205511.417085-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.31.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s6wkbqBA5jKWZN4q21yFCGp918hjP1L7ivFeYGjBOqQ=;
+        b=T6sCUDfcpjXS6d+6E31VodMLwgsqWLs/yc4jLqIG/r9AszPENmrQcj12HpYioq9ejR
+         JDSXrz7rrEadTC3MJ0Tjz7+pf6G08CU2B2BE1fVi91DNIoqcNAYOWIzV0AgShZMr5Sle
+         zc55yKVkK+EKy6ASKCvhrmCdGfNkAoLgsLGaJkPsOZQeWq8Btr1mAjgYVqg7XuGTNfvC
+         GYy/WWjf1AeJw+3zoyu0go8b2Avn2gO61+s1DjuF+lfWuK35j13Ik6LhcFMHt8alBIrD
+         ESik+qSyUyVOOXtt6eJWNUWC1cx3pb57/7foQYX3ikOTsI2y8vySCg6gvmMxcLMrCyEf
+         lKNw==
+X-Gm-Message-State: AOAM533MticN5x3cDFCf86uHmd6jNiApLAPlKQrA5+uiKMfVWgaGXmZ2
+        T5IuT/6zBl+ConwwLtQEgUe4OYOLnJ75aOTLe23pHw==
+X-Google-Smtp-Source: ABdhPJxu+cegXOLCQP6ej753YV30YyK7KGcm6ddWduFIt3Nzk7J7ZQUUrWIBdXA3Xj16yXYHsaRk/MAcgAsLqO4qu80=
+X-Received: by 2002:a25:7e01:: with SMTP id z1mr35375662ybc.253.1618176212047;
+ Sun, 11 Apr 2021 14:23:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210402132602.3659282-1-eric.dumazet@gmail.com>
+ <20210411134329.GA132317@roeck-us.net> <CANn89iJ+RjYPY11zUtvmMkOp1E2DKLuAk2q0LHUbcJpbcZVSjw@mail.gmail.com>
+ <0f63dc52-ea72-16b6-7dcd-efb24de0c852@roeck-us.net>
+In-Reply-To: <0f63dc52-ea72-16b6-7dcd-efb24de0c852@roeck-us.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sun, 11 Apr 2021 23:23:20 +0200
+Message-ID: <CANn89iJa8KAnfWvUB8Jr8hsG5x_Amg90DbpoAHiuNZigv75MEA@mail.gmail.com>
+Subject: Re: [PATCH net] virtio_net: Do not pull payload in skb->head
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for .get_regs_len and .get_regs so it is easier to find out
-about the state of the ports on the GSWIP hardware. For this we
-specifically add the GSWIP_MAC_PSTATp(port) and GSWIP_MDIO_STATp(port)
-register #defines as these contain the current port status (as well as
-the result of the auto polling mechanism). Other global and per-port
-registers which are also considered useful are included as well.
+On Sun, Apr 11, 2021 at 10:37 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On 4/11/21 8:06 AM, Eric Dumazet wrote:
+> > On Sun, Apr 11, 2021 at 3:43 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> >> This patch causes a virtio-net interface failure when booting sh4 images
+> >> in qemu. The test case is nothing special: Just try to get an IP address
+> >> using udhcpc. If it fails, udhcpc reports:
+> >>
+> >> udhcpc: started, v1.33.0
+> >> udhcpc: sending discover
+> >> FAIL
+> >>
+> >
+> > Can you investigate where the incoming packet is dropped ?
+> >
+>
+> Unless I am missing something, packets are not dropped. It looks more
+> like udhcpc gets bad indigestion in the receive path and exits immediately.
+> Plus, it doesn't happen all the time; sometimes it receives the discover
+> response and is able to obtain an IP address.
+>
+> Overall this is quite puzzling since udhcpc exits immediately when the problem
+> is seen, no matter which option I give it on the command line; it should not
+> really do that.
 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/dsa/lantiq_gswip.c | 83 ++++++++++++++++++++++++++++++++++
- 1 file changed, 83 insertions(+)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 314ae78bbdd6..d3cfc72644ff 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -90,6 +90,21 @@
- 					 GSWIP_MDIO_PHY_LINK_MASK | \
- 					 GSWIP_MDIO_PHY_SPEED_MASK | \
- 					 GSWIP_MDIO_PHY_FDUP_MASK)
-+#define GSWIP_MDIO_STATp(p)		(0x16 + (p))
-+#define  GSWIP_MDIO_STAT_RXACT		BIT(10)
-+#define  GSWIP_MDIO_STAT_TXACT		BIT(9)
-+#define  GSWIP_MDIO_STAT_CLK_STOP_CAPAB	BIT(8)
-+#define  GSWIP_MDIO_STAT_EEE_CAPABLE	BIT(7)
-+#define  GSWIP_MDIO_STAT_PACT		BIT(6)
-+#define  GSWIP_MDIO_STAT_LSTAT		BIT(5)
-+#define  GSWIP_MDIO_STAT_SPEED_M10	0x00
-+#define  GSWIP_MDIO_STAT_SPEED_M100	0x08
-+#define  GSWIP_MDIO_STAT_SPEED_1G	0x10
-+#define  GSWIP_MDIO_STAT_SPEED_RESERVED	0x18
-+#define  GSWIP_MDIO_STAT_SPEED_MASK	0x18
-+#define  GSWIP_MDIO_STAT_FDUP		BIT(2)
-+#define  GSWIP_MDIO_STAT_RXPAUEN	BIT(1)
-+#define  GSWIP_MDIO_STAT_TXPAUEN	BIT(0)
- 
- /* GSWIP MII Registers */
- #define GSWIP_MII_CFGp(p)		(0x2 * (p))
-@@ -195,6 +210,19 @@
- #define GSWIP_PCE_DEFPVID(p)		(0x486 + ((p) * 0xA))
- 
- #define GSWIP_MAC_FLEN			0x8C5
-+#define GSWIP_MAC_PSTATp(p)		(0x900 + ((p) * 0xC))
-+#define  GSWIP_MAC_PSTAT_PACT		BIT(11)
-+#define  GSWIP_MAC_PSTAT_GBIT		BIT(10)
-+#define  GSWIP_MAC_PSTAT_MBIT		BIT(9)
-+#define  GSWIP_MAC_PSTAT_FDUP		BIT(8)
-+#define  GSWIP_MAC_PSTAT_RXPAU		BIT(7)
-+#define  GSWIP_MAC_PSTAT_TXPAU		BIT(6)
-+#define  GSWIP_MAC_PSTAT_RXPAUEN	BIT(5)
-+#define  GSWIP_MAC_PSTAT_TXPAUEN	BIT(4)
-+#define  GSWIP_MAC_PSTAT_LSTAT		BIT(3)
-+#define  GSWIP_MAC_PSTAT_CRS		BIT(2)
-+#define  GSWIP_MAC_PSTAT_TXLPI		BIT(1)
-+#define  GSWIP_MAC_PSTAT_RXLPI		BIT(0)
- #define GSWIP_MAC_CTRL_0p(p)		(0x903 + ((p) * 0xC))
- #define  GSWIP_MAC_CTRL_0_PADEN		BIT(8)
- #define  GSWIP_MAC_CTRL_0_FCS_EN	BIT(7)
-@@ -701,6 +729,57 @@ static void gswip_port_disable(struct dsa_switch *ds, int port)
- 			  GSWIP_SDMA_PCTRLp(port));
- }
- 
-+static int gswip_get_regs_len(struct dsa_switch *ds, int port)
-+{
-+	return 17 * sizeof(u32);
-+}
-+
-+static void gswip_get_regs(struct dsa_switch *ds, int port,
-+			   struct ethtool_regs *regs, void *_p)
-+{
-+	struct gswip_priv *priv = ds->priv;
-+	u32 *p = _p;
-+
-+	regs->version = gswip_switch_r(priv, GSWIP_VERSION);
-+
-+	memset(p, 0xff, 17 * sizeof(u32));
-+
-+	p[0] = gswip_mdio_r(priv, GSWIP_MDIO_GLOB);
-+	p[1] = gswip_mdio_r(priv, GSWIP_MDIO_CTRL);
-+	p[2] = gswip_mdio_r(priv, GSWIP_MDIO_MDC_CFG0);
-+	p[3] = gswip_mdio_r(priv, GSWIP_MDIO_MDC_CFG1);
-+
-+	if (!dsa_is_cpu_port(priv->ds, port)) {
-+		p[4] = gswip_mdio_r(priv, GSWIP_MDIO_PHYp(port));
-+		p[5] = gswip_mdio_r(priv, GSWIP_MDIO_STATp(port));
-+		p[6] = gswip_mii_r(priv, GSWIP_MII_CFGp(port));
-+	}
-+
-+	switch (port) {
-+	case 0:
-+		p[7] = gswip_mii_r(priv, GSWIP_MII_PCDU0);
-+		break;
-+	case 1:
-+		p[7] = gswip_mii_r(priv, GSWIP_MII_PCDU1);
-+		break;
-+	case 5:
-+		p[7] = gswip_mii_r(priv, GSWIP_MII_PCDU5);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	p[8] = gswip_switch_r(priv, GSWIP_PCE_PCTRL_0p(port));
-+	p[9] = gswip_switch_r(priv, GSWIP_PCE_VCTRL(port));
-+	p[10] = gswip_switch_r(priv, GSWIP_PCE_DEFPVID(port));
-+	p[11] = gswip_switch_r(priv, GSWIP_MAC_FLEN);
-+	p[12] = gswip_switch_r(priv, GSWIP_MAC_PSTATp(port));
-+	p[13] = gswip_switch_r(priv, GSWIP_MAC_CTRL_0p(port));
-+	p[14] = gswip_switch_r(priv, GSWIP_MAC_CTRL_2p(port));
-+	p[15] = gswip_switch_r(priv, GSWIP_FDMA_PCTRLp(port));
-+	p[16] = gswip_switch_r(priv, GSWIP_SDMA_PCTRLp(port));
-+}
-+
- static int gswip_pce_load_microcode(struct gswip_priv *priv)
- {
- 	int i;
-@@ -1795,6 +1874,8 @@ static const struct dsa_switch_ops gswip_xrx200_switch_ops = {
- 	.setup			= gswip_setup,
- 	.port_enable		= gswip_port_enable,
- 	.port_disable		= gswip_port_disable,
-+	.get_regs_len		= gswip_get_regs_len,
-+	.get_regs		= gswip_get_regs,
- 	.port_bridge_join	= gswip_port_bridge_join,
- 	.port_bridge_leave	= gswip_port_bridge_leave,
- 	.port_fast_age		= gswip_port_fast_age,
-@@ -1819,6 +1900,8 @@ static const struct dsa_switch_ops gswip_xrx300_switch_ops = {
- 	.setup			= gswip_setup,
- 	.port_enable		= gswip_port_enable,
- 	.port_disable		= gswip_port_disable,
-+	.get_regs_len		= gswip_get_regs_len,
-+	.get_regs		= gswip_get_regs,
- 	.port_bridge_join	= gswip_port_bridge_join,
- 	.port_bridge_leave	= gswip_port_bridge_leave,
- 	.port_fast_age		= gswip_port_fast_age,
--- 
-2.31.1
+Could you strace both cases and report differences you can spot ?
 
+strace -o STRACE -f -s 1000 udhcpc
