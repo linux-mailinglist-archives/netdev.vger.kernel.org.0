@@ -2,300 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E38EE35B69C
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 20:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E9C35B6A1
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 20:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236300AbhDKSrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 14:47:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48220 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235559AbhDKSrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 14:47:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618166845;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/j9y2btoqO1c0Evplz4jdccpWFMTVusOQ6AtByiGqOw=;
-        b=fLrNuTKBkeJnB9xE5EYYw7FiYEF7vbfElal6O4K1QIlHjNQWhMeBXYchT1Hic85FnXfgjI
-        UMXe+42erjTZpbrgew3cN7H/KKSj1leypJItvW6bh92Z+U7yu8QTWm/wES1H3xY3jMOzbZ
-        dq8s1FsrB+d6uiMId8m37dJotpNYin4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-335-YGHtXGSDOi-GxPfIaZVYMA-1; Sun, 11 Apr 2021 14:47:12 -0400
-X-MC-Unique: YGHtXGSDOi-GxPfIaZVYMA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A6C2610053EC;
-        Sun, 11 Apr 2021 18:47:10 +0000 (UTC)
-Received: from krava (unknown [10.40.192.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 246985D6D5;
-        Sun, 11 Apr 2021 18:47:03 +0000 (UTC)
-Date:   Sun, 11 Apr 2021 20:47:03 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        id S236354AbhDKSui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 14:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235559AbhDKSuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 14:50:37 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B54C061574;
+        Sun, 11 Apr 2021 11:50:21 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id w23so822422ejb.9;
+        Sun, 11 Apr 2021 11:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1ty1Czh9jzGSLSaBD6OEi4xCWXhhRsAdU4C4Zv9FtpA=;
+        b=h3+qmfIBrq9SMeJ9SUE8NAWojFCjO7X2et0Sw+gRAkPQYksU2US98qcPxmvLS5TzV+
+         DQilo4ce5ixh8uAyS2GG+n+9II/1YovjJDo8U5fx+obecVVnzfVHOMwY/rQUfSuruVnq
+         sOR34pMGadXflXvK8AbUZiO5/bC7Y8cCJ6Y6jfSonAWoAqPQbcpaxjeiV/GjdNk3AyOC
+         Jvkl6gDGOpRkw4sax8yuuhR0j39bhoTwZbP9RQTrnQy6htih2U00a1vjg7d3N/qTzNyb
+         BeSaC4lxxJqgnvNpoATzfxfKJTJgwx/xh5LkB23CzkIJAxtPXTPRyyuL8FEuLUdszhMC
+         RIxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1ty1Czh9jzGSLSaBD6OEi4xCWXhhRsAdU4C4Zv9FtpA=;
+        b=K+OEsv6iHJzurT5kJB4abnDSPd7k47k3Btd6Z9N0clD0Q9tSgTAoH6qGvNPdBa9hjo
+         LZ9Yl9M600GEabhCOS1f0/FipiRBizfQwkSZdMH76YQxa6m5NURtoM0iZeQ13y+4+IJj
+         jBlkaVnSiOorGORNfZ/8l+4AMuyUmwTPX+g5TiOyHGuzwLvpgaNEY1zyNNg1GOMYL2sN
+         qGW+KXjJbuuW8GttGlE+54TtqD2HBkBBjKsRqh2QlpG7UkHPGybGGsyqfFdmN1WfkHdh
+         qs8ax2AAgEnjYu8nxEv4W89c31qgVILioDE7+iDIinxlR6w69BZRkfRIwXHFXJuQI734
+         WiVw==
+X-Gm-Message-State: AOAM533gG9vMW072cD3J4mijjF1uM/aFtr1gj/ANIH1FYMj6xm95DeOY
+        Q+S+l2clkdqq5Pq6m8HsTlA=
+X-Google-Smtp-Source: ABdhPJxUGUHe1CqoDODRylrnVsXKIwWIFQxN50fgwFCqtCRDyBLMqI1LlpYkLW+8Ci1A+zZcBjW/1A==
+X-Received: by 2002:a17:906:a0c2:: with SMTP id bh2mr23624798ejb.394.1618167019649;
+        Sun, 11 Apr 2021 11:50:19 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id a9sm5232003eda.13.2021.04.11.11.50.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Apr 2021 11:50:19 -0700 (PDT)
+Date:   Sun, 11 Apr 2021 21:50:17 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        kbuild-all@lists.01.org
-Subject: Re: [PATCHv3 bpf-next 1/5] bpf: Allow trampoline re-attach for
- tracing and lsm programs (fwd)
-Message-ID: <YHNEJ2K/22vxr7vs@krava>
-References: <alpine.DEB.2.22.394.2104111952420.11703@hadrien>
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Message-ID: <20210411185017.3xf7kxzzq2vefpwu@skbuf>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com>
+ <20210411200135.35fb5985@thinkpad>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.DEB.2.22.394.2104111952420.11703@hadrien>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20210411200135.35fb5985@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 11, 2021 at 07:54:34PM +0200, Julia Lawall wrote:
-> Please check the goto on line 2663.  Is an unlock needed here?
+On Sun, Apr 11, 2021 at 08:01:35PM +0200, Marek Behun wrote:
+> On Sat, 10 Apr 2021 15:34:46 +0200
+> Ansuel Smith <ansuelsmth@gmail.com> wrote:
+> 
+> > Hi,
+> > this is a respin of the Marek series in hope that this time we can
+> > finally make some progress with dsa supporting multi-cpu port.
+> > 
+> > This implementation is similar to the Marek series but with some tweaks.
+> > This adds support for multiple-cpu port but leave the driver the
+> > decision of the type of logic to use about assigning a CPU port to the
+> > various port. The driver can also provide no preference and the CPU port
+> > is decided using a round-robin way.
+> 
+> In the last couple of months I have been giving some thought to this
+> problem, and came up with one important thing: if there are multiple
+> upstream ports, it would make a lot of sense to dynamically reallocate
+> them to each user port, based on which user port is actually used, and
+> at what speed.
+> 
+> For example on Turris Omnia we have 2 CPU ports and 5 user ports. All
+> ports support at most 1 Gbps. Round-robin would assign:
+>   CPU port 0 - Port 0
+>   CPU port 1 - Port 1
+>   CPU port 0 - Port 2
+>   CPU port 1 - Port 3
+>   CPU port 0 - Port 4
+> 
+> Now suppose that the user plugs ethernet cables only into ports 0 and 2,
+> with 1, 3 and 4 free:
+>   CPU port 0 - Port 0 (plugged)
+>   CPU port 1 - Port 1 (free)
+>   CPU port 0 - Port 2 (plugged)
+>   CPU port 1 - Port 3 (free)
+>   CPU port 0 - Port 4 (free)
+> 
+> We end up in a situation where ports 0 and 2 share 1 Gbps bandwidth to
+> CPU, and the second CPU port is not used at all.
+> 
+> A mechanism for automatic reassignment of CPU ports would be ideal here.
+> 
+> What do you guys think?
 
-oops, yes, it's missing unlock.. I'll send new version
+The reason why I don't think this is such a great idea is because the
+CPU port assignment is a major reconfiguration step which should at the
+very least be done while the network is down, to avoid races with the
+data path (something which this series does not appear to handle).
+And if you allow the static user-port-to-CPU-port assignment to change
+every time a link goes up/down, I don't think you really want to force
+the network down through the entire switch basically.
 
-thanks,
-jirka
+So I'd be tempted to say 'tough luck' if all your ports are not up, and
+the ones that are are assigned statically to the same CPU port. It's a
+compromise between flexibility and simplicity, and I would go for
+simplicity here. That's the most you can achieve with static assignment,
+just put the CPU ports in a LAG if you want better dynamic load balancing
+(for details read on below).
 
-> 
-> julia
-> 
-> ---------- Forwarded message ----------
-> Date: Mon, 12 Apr 2021 01:28:54 +0800
-> From: kernel test robot <lkp@intel.com>
-> To: kbuild@lists.01.org
-> Cc: lkp@intel.com, Julia Lawall <julia.lawall@lip6.fr>
-> Subject: Re: [PATCHv3 bpf-next 1/5] bpf: Allow trampoline re-attach for tracing
->     and lsm programs
-> 
-> CC: kbuild-all@lists.01.org
-> In-Reply-To: <20210411130010.1337650-2-jolsa@kernel.org>
-> References: <20210411130010.1337650-2-jolsa@kernel.org>
-> TO: Jiri Olsa <jolsa@kernel.org>
-> TO: Alexei Starovoitov <ast@kernel.org>
-> TO: Daniel Borkmann <daniel@iogearbox.net>
-> TO: Andrii Nakryiko <andriin@fb.com>
-> CC: "Toke Høiland-Jørgensen" <toke@redhat.com>
-> CC: netdev@vger.kernel.org
-> CC: bpf@vger.kernel.org
-> CC: Martin KaFai Lau <kafai@fb.com>
-> CC: Song Liu <songliubraving@fb.com>
-> CC: Yonghong Song <yhs@fb.com>
-> CC: John Fastabend <john.fastabend@gmail.com>
-> 
-> Hi Jiri,
-> 
-> I love your patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on bpf-next/master]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Jiri-Olsa/bpf-Tracing-and-lsm-programs-re-attach/20210411-210314
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> :::::: branch date: 4 hours ago
-> :::::: commit date: 4 hours ago
-> config: x86_64-allyesconfig (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Julia Lawall <julia.lawall@lip6.fr>
-> 
-> 
-> cocci warnings: (new ones prefixed by >>)
-> >> kernel/bpf/syscall.c:2738:1-7: preceding lock on line 2633
-> 
-> vim +2738 kernel/bpf/syscall.c
-> 
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2564
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2565  static int bpf_tracing_prog_attach(struct bpf_prog *prog,
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2566  				   int tgt_prog_fd,
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2567  				   u32 btf_id)
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2568  {
-> a3b80e1078943d Andrii Nakryiko        2020-04-28  2569  	struct bpf_link_primer link_primer;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2570  	struct bpf_prog *tgt_prog = NULL;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2571  	struct bpf_trampoline *tr = NULL;
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2572  	struct bpf_tracing_link *link;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2573  	u64 key = 0;
-> a3b80e1078943d Andrii Nakryiko        2020-04-28  2574  	int err;
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2575
-> 9e4e01dfd3254c KP Singh               2020-03-29  2576  	switch (prog->type) {
-> 9e4e01dfd3254c KP Singh               2020-03-29  2577  	case BPF_PROG_TYPE_TRACING:
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2578  		if (prog->expected_attach_type != BPF_TRACE_FENTRY &&
-> be8704ff07d237 Alexei Starovoitov     2020-01-20  2579  		    prog->expected_attach_type != BPF_TRACE_FEXIT &&
-> 9e4e01dfd3254c KP Singh               2020-03-29  2580  		    prog->expected_attach_type != BPF_MODIFY_RETURN) {
-> 9e4e01dfd3254c KP Singh               2020-03-29  2581  			err = -EINVAL;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2582  			goto out_put_prog;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2583  		}
-> 9e4e01dfd3254c KP Singh               2020-03-29  2584  		break;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2585  	case BPF_PROG_TYPE_EXT:
-> 9e4e01dfd3254c KP Singh               2020-03-29  2586  		if (prog->expected_attach_type != 0) {
-> 9e4e01dfd3254c KP Singh               2020-03-29  2587  			err = -EINVAL;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2588  			goto out_put_prog;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2589  		}
-> 9e4e01dfd3254c KP Singh               2020-03-29  2590  		break;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2591  	case BPF_PROG_TYPE_LSM:
-> 9e4e01dfd3254c KP Singh               2020-03-29  2592  		if (prog->expected_attach_type != BPF_LSM_MAC) {
-> 9e4e01dfd3254c KP Singh               2020-03-29  2593  			err = -EINVAL;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2594  			goto out_put_prog;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2595  		}
-> 9e4e01dfd3254c KP Singh               2020-03-29  2596  		break;
-> 9e4e01dfd3254c KP Singh               2020-03-29  2597  	default:
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2598  		err = -EINVAL;
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2599  		goto out_put_prog;
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2600  	}
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2601
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2602  	if (!!tgt_prog_fd != !!btf_id) {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2603  		err = -EINVAL;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2604  		goto out_put_prog;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2605  	}
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2606
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2607  	if (tgt_prog_fd) {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2608  		/* For now we only allow new targets for BPF_PROG_TYPE_EXT */
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2609  		if (prog->type != BPF_PROG_TYPE_EXT) {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2610  			err = -EINVAL;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2611  			goto out_put_prog;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2612  		}
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2613
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2614  		tgt_prog = bpf_prog_get(tgt_prog_fd);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2615  		if (IS_ERR(tgt_prog)) {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2616  			err = PTR_ERR(tgt_prog);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2617  			tgt_prog = NULL;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2618  			goto out_put_prog;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2619  		}
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2620
-> 22dc4a0f5ed11b Andrii Nakryiko        2020-12-03  2621  		key = bpf_trampoline_compute_key(tgt_prog, NULL, btf_id);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2622  	}
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2623
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2624  	link = kzalloc(sizeof(*link), GFP_USER);
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2625  	if (!link) {
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2626  		err = -ENOMEM;
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2627  		goto out_put_prog;
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2628  	}
-> f2e10bff16a0fd Andrii Nakryiko        2020-04-28  2629  	bpf_link_init(&link->link, BPF_LINK_TYPE_TRACING,
-> f2e10bff16a0fd Andrii Nakryiko        2020-04-28  2630  		      &bpf_tracing_link_lops, prog);
-> f2e10bff16a0fd Andrii Nakryiko        2020-04-28  2631  	link->attach_type = prog->expected_attach_type;
-> 70ed506c3bbcfa Andrii Nakryiko        2020-03-02  2632
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29 @2633  	mutex_lock(&prog->aux->dst_mutex);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2634
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2635  	/* There are a few possible cases here:
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2636  	 *
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2637  	 * - if prog->aux->dst_trampoline is set, the program was just loaded
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2638  	 *   and not yet attached to anything, so we can use the values stored
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2639  	 *   in prog->aux
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2640  	 *
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2641  	 * - if prog->aux->dst_trampoline is NULL, the program has already been
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2642           *   attached to a target and its initial target was cleared (below)
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2643  	 *
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2644  	 * - if tgt_prog != NULL, the caller specified tgt_prog_fd +
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2645  	 *   target_btf_id using the link_create API.
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2646  	 *
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2647  	 * - if tgt_prog == NULL when this function was called using the old
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2648  	 *   raw_tracepoint_open API, and we need a target from prog->aux
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2649  	 *
-> fc909cd5516914 Jiri Olsa              2021-04-11  2650  	 * - if prog->aux->dst_trampoline and tgt_prog is NULL, the program
-> fc909cd5516914 Jiri Olsa              2021-04-11  2651  	 *   was detached and is going for re-attachment.
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2652  	 */
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2653  	if (!prog->aux->dst_trampoline && !tgt_prog) {
-> fc909cd5516914 Jiri Olsa              2021-04-11  2654  		/*
-> fc909cd5516914 Jiri Olsa              2021-04-11  2655  		 * Allow re-attach for TRACING and LSM programs. If it's
-> fc909cd5516914 Jiri Olsa              2021-04-11  2656  		 * currently linked, bpf_trampoline_link_prog will fail.
-> fc909cd5516914 Jiri Olsa              2021-04-11  2657  		 * EXT programs need to specify tgt_prog_fd, so they
-> fc909cd5516914 Jiri Olsa              2021-04-11  2658  		 * re-attach in separate code path.
-> fc909cd5516914 Jiri Olsa              2021-04-11  2659  		 */
-> fc909cd5516914 Jiri Olsa              2021-04-11  2660  		if (prog->type != BPF_PROG_TYPE_TRACING &&
-> fc909cd5516914 Jiri Olsa              2021-04-11  2661  		    prog->type != BPF_PROG_TYPE_LSM) {
-> fc909cd5516914 Jiri Olsa              2021-04-11  2662  			err = -EINVAL;
-> fc909cd5516914 Jiri Olsa              2021-04-11  2663  			goto out_put_prog;
-> fc909cd5516914 Jiri Olsa              2021-04-11  2664  		}
-> fc909cd5516914 Jiri Olsa              2021-04-11  2665  		btf_id = prog->aux->attach_btf_id;
-> fc909cd5516914 Jiri Olsa              2021-04-11  2666  		key = bpf_trampoline_compute_key(NULL, prog->aux->attach_btf, btf_id);
-> babf3164095b06 Andrii Nakryiko        2020-03-09  2667  	}
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2668
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2669  	if (!prog->aux->dst_trampoline ||
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2670  	    (key && key != prog->aux->dst_trampoline->key)) {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2671  		/* If there is no saved target, or the specified target is
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2672  		 * different from the destination specified at load time, we
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2673  		 * need a new trampoline and a check for compatibility
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2674  		 */
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2675  		struct bpf_attach_target_info tgt_info = {};
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2676
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2677  		err = bpf_check_attach_target(NULL, prog, tgt_prog, btf_id,
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2678  					      &tgt_info);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2679  		if (err)
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2680  			goto out_unlock;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2681
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2682  		tr = bpf_trampoline_get(key, &tgt_info);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2683  		if (!tr) {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2684  			err = -ENOMEM;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2685  			goto out_unlock;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2686  		}
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2687  	} else {
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2688  		/* The caller didn't specify a target, or the target was the
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2689  		 * same as the destination supplied during program load. This
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2690  		 * means we can reuse the trampoline and reference from program
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2691  		 * load time, and there is no need to allocate a new one. This
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2692  		 * can only happen once for any program, as the saved values in
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2693  		 * prog->aux are cleared below.
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2694  		 */
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2695  		tr = prog->aux->dst_trampoline;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2696  		tgt_prog = prog->aux->dst_prog;
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2697  	}
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2698
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2699  	err = bpf_link_prime(&link->link, &link_primer);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2700  	if (err)
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2701  		goto out_unlock;
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2702
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2703  	err = bpf_trampoline_link_prog(prog, tr);
-> babf3164095b06 Andrii Nakryiko        2020-03-09  2704  	if (err) {
-> a3b80e1078943d Andrii Nakryiko        2020-04-28  2705  		bpf_link_cleanup(&link_primer);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2706  		link = NULL;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2707  		goto out_unlock;
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2708  	}
-> babf3164095b06 Andrii Nakryiko        2020-03-09  2709
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2710  	link->tgt_prog = tgt_prog;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2711  	link->trampoline = tr;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2712
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2713  	/* Always clear the trampoline and target prog from prog->aux to make
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2714  	 * sure the original attach destination is not kept alive after a
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2715  	 * program is (re-)attached to another target.
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2716  	 */
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2717  	if (prog->aux->dst_prog &&
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2718  	    (tgt_prog_fd || tr != prog->aux->dst_trampoline))
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2719  		/* got extra prog ref from syscall, or attaching to different prog */
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2720  		bpf_prog_put(prog->aux->dst_prog);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2721  	if (prog->aux->dst_trampoline && tr != prog->aux->dst_trampoline)
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2722  		/* we allocated a new trampoline, so free the old one */
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2723  		bpf_trampoline_put(prog->aux->dst_trampoline);
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2724
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2725  	prog->aux->dst_prog = NULL;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2726  	prog->aux->dst_trampoline = NULL;
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2727  	mutex_unlock(&prog->aux->dst_mutex);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2728
-> a3b80e1078943d Andrii Nakryiko        2020-04-28  2729  	return bpf_link_settle(&link_primer);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2730  out_unlock:
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2731  	if (tr && tr != prog->aux->dst_trampoline)
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2732  		bpf_trampoline_put(tr);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2733  	mutex_unlock(&prog->aux->dst_mutex);
-> 3aac1ead5eb6b7 Toke Høiland-Jørgensen 2020-09-29  2734  	kfree(link);
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2735  out_put_prog:
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2736  	if (tgt_prog_fd && tgt_prog)
-> 4a1e7c0c63e02d Toke Høiland-Jørgensen 2020-09-29  2737  		bpf_prog_put(tgt_prog);
-> fec56f5890d93f Alexei Starovoitov     2019-11-14 @2738  	return err;
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2739  }
-> fec56f5890d93f Alexei Starovoitov     2019-11-14  2740
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+But this brings us to another topic, which I've been discussing with
+Florian. I am also interested in the multi CPU ports topic for the
+NXP LS1028A SoC, which uses the felix driver for its embedded switch.
+I need to explain some of the complexities there, in order to lay out
+what are the aspects which should ideally be supported.
 
+The Ocelot switch family (which Felix is a part of) doesn't actually
+support more than one "NPI" port as it's called (when the CPU port
+module's queues are linked to an Ethernet port, which is what DSA calls
+the "CPU port"). So you'd be tempted to say that a DSA setup with
+multiple CPU ports is not realizable for this SoC.
 
+But in fact, there are 2 Ethernet ports connecting the embedded switch
+and the CPU, one port is at 2.5Gbps and the other is at 1Gbps. We can
+dynamically choose which one is the NPI port through device tree
+(arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi), and at the moment, we
+choose the 2.5Gbps port as DSA CPU port, and we disable the 1Gbps
+internal port. If we wanted to, we could enable the second internal port
+as an internally-facing user port, but that's a bit awkward due to
+multi-homing. Nonetheless, this is all that's achievable using the NPI
+port functionality.
+
+However, due to some unrelated issues, the Felix switch has ended up
+supporting two tagging protocols in fact. So there is now an option
+through which the user can run this command:
+
+  echo ocelot-8021q > /sys/class/net/eno2/dsa/tagging
+
+(where eno2 is the DSA master)
+and the switch will disable the NPI port and set up some VLAN
+pushing/popping rules through which DSA gets everything it needs to
+offer absolutely the same services towards the upper network stack
+layer, but without enabling the hardware functionality for a CPU port
+(as far as the switch hardware is aware, it is unmanaged).
+
+This opens up some possibilities because we no longer have the
+limitation that there can be only 1 NPI port in the system. As you'd
+have it, I believe that any DSA switch with a fully programmable "port
+forwarding matrix" (aka a bitmap which answers the question "can port i
+send packets to port j?") is capable to some degree of supporting
+multiple DSA CPU ports, in the statically-assigned fashion that this
+patch series attempts to achieve. Namely, you just configure the port
+forwarding matrix to allow user port i to flood traffic to one CPU port
+but not to the other, and you disable communication between the CPU
+ports.
+
+But there is something which is even more interesting about Felix with
+the ocelot-8021q tagger. Since Marek posted his RFC and until Ansuel
+posted the follow-up, things have happened, and now both Felix and the
+Marvell driver support LAG offload via the bonding and/or team drivers.
+At least for Felix, when using the ocelot-8021q tagged, it should be
+possible to put the two CPU ports in a hardware LAG, and the two DSA
+masters in a software LAG, and let the bond/team upper of the DSA
+masters be the CPU port.
+
+I would like us to keep the door open for both alternatives, and to have
+a way to switch between static user-to-CPU port assignment, and LAG.
+I think that if there are multiple 'ethernet = ' phandles present in the
+device tree, DSA should populate a list of valid DSA masters, and then
+call into the driver to allow it to select which master it prefers for
+each user port. This is similar to what Ansuel added with 'port_get_preferred_cpu',
+except that I chose "DSA master" and not "CPU port" for a specific reason.
+For LAG, the DSA master would be bond0.
+
+In fact, in my case, this CPU port election procedure should also be
+repeated when the tagging protocol changes, because Felix will be forced
+to choose the same DSA master for all user ports at probe time, because
+it boots up with the standard NPI-based "ocelot" tagger. So it can only
+make use of the second CPU port when the tagging protocol changes.
+
+Changing the DSA tagging protocol has to be done with the network down
+(ip link set eno2 down && ip link set eno3 down). If we were to bring
+eno2 and eno3 back up now, DSA or the driver would choose one of the DSA
+masters for every port, round robin or what not. But we don't bring
+the masters up yet, we create a bonding interface and we enslave eno2
+and eno3 to it. DSA should detect this and add bond0 to its list of
+candidates for a DSA master. Only now we bring up the masters, and the
+port_get_preferred_cpu() function (or however it might end up being
+named) should give the driver the option to select bond0 as a valid DSA
+master.
+
+Using bond0 as a DSA master would need some changes to DSA, because
+currently it won't work. Namely, the RX data path needs the netdev->dsa_ptr
+populated on the DSA master, whose type is a struct dsa_port *cpu_dp.
+So, logically, we need a *cpu_dp corresponding to bond0.
+
+One idea to solve this is to reuse something we already have: the
+current struct dsa_switch_tree :: lags array of net devices. These hold
+pointers to bonding interfaces now, but we could turn them into an array
+of struct dsa_port "logical ports". The idea is that through this
+change, every LAG offloaded by DSA will have a corresponding "logical
+dp" which isn't present in the dst->ports list. Since every struct
+dsa_port already has a lag_dev pointer, transforming the "dst->lags"
+array from an array of LAG net devices into an array of logical DSA
+ports will cover the existing use case as well: a logical port will
+always have the dp->lag_dev pointer populated with the bonding/team
+interface it offloads.
+
+So if we make this change, we can populate bond0->dsa_ptr with this
+"logical dp". This way we need to make no other changes to the RX data
+path, and from the PoV of the data path itself, it isn't even a 'multi
+CPU port' setup.
+
+As for TX, that should already be fine: we call dev_queue_xmit() towards
+bond0 because that's our master, and bond0 deals with xmit hashing
+towards eno2 or eno3 on a per-packet basis, and that's what we want.
+
+To destroy this setup, the user just needs to run 'ip link del bond0'
+(with the link down I think) and DSA should call 'port_get_preferred_cpu'
+again, but without bond0 in the list this time. The setup should revert
+to its state with static assignment of user to CPU ports.
+
+[ of course, I haven't tried any of this, I am just imagining things ]
+
+I deliberately gave this very convoluted example because I would like
+the progress that we make to be in this general direction. If I
+understand your use cases, I believe they should be covered.
