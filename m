@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD6F35B478
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 15:17:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5FB35B477
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 15:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235643AbhDKNAz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Apr 2021 09:00:55 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:35827 "EHLO
+        id S235635AbhDKNAx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Apr 2021 09:00:53 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:49373 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235629AbhDKNAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 09:00:54 -0400
+        by vger.kernel.org with ESMTP id S235629AbhDKNAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 09:00:53 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-302-K7mxPl9BNp-m5Lcz9YgCjg-1; Sun, 11 Apr 2021 09:00:32 -0400
-X-MC-Unique: K7mxPl9BNp-m5Lcz9YgCjg-1
+ us-mta-442-LzoibjDuPJqC8VfkZK9xBQ-1; Sun, 11 Apr 2021 09:00:35 -0400
+X-MC-Unique: LzoibjDuPJqC8VfkZK9xBQ-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CE7DF10053E6;
-        Sun, 11 Apr 2021 13:00:30 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7F9D18397A0;
+        Sun, 11 Apr 2021 13:00:33 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 51D85101E24A;
-        Sun, 11 Apr 2021 13:00:28 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D886101E24A;
+        Sun, 11 Apr 2021 13:00:31 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
+Cc:     Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCHv3 bpf-next 4/5] selftests/bpf: Add re-attach test to lsm test
-Date:   Sun, 11 Apr 2021 15:00:09 +0200
-Message-Id: <20210411130010.1337650-5-jolsa@kernel.org>
+Subject: [PATCHv3 bpf-next 5/5] selftests/bpf: Test that module can't be unloaded with attached trampoline
+Date:   Sun, 11 Apr 2021 15:00:10 +0200
+Message-Id: <20210411130010.1337650-6-jolsa@kernel.org>
 In-Reply-To: <20210411130010.1337650-1-jolsa@kernel.org>
 References: <20210411130010.1337650-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -50,101 +50,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding the test to re-attach (detach/attach again) lsm programs,
-plus check that already linked program can't be attached again.
+Adding test to verify that once we attach module's trampoline,
+the module can't be unloaded.
 
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../selftests/bpf/prog_tests/test_lsm.c       | 48 +++++++++++++++----
- 1 file changed, 38 insertions(+), 10 deletions(-)
+ .../selftests/bpf/prog_tests/module_attach.c  | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_lsm.c b/tools/testing/selftests/bpf/prog_tests/test_lsm.c
-index 2755e4f81499..d492e76e01cf 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_lsm.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_lsm.c
-@@ -18,6 +18,8 @@ char *CMD_ARGS[] = {"true", NULL};
- #define GET_PAGE_ADDR(ADDR, PAGE_SIZE)					\
- 	(char *)(((unsigned long) (ADDR + PAGE_SIZE)) & ~(PAGE_SIZE-1))
- 
-+static int duration = 0;
-+
- int stack_mprotect(void)
- {
- 	void *buf;
-@@ -51,23 +53,25 @@ int exec_cmd(int *monitored_pid)
- 	return -EINVAL;
+diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c b/tools/testing/selftests/bpf/prog_tests/module_attach.c
+index 5bc53d53d86e..d85a69b7ce44 100644
+--- a/tools/testing/selftests/bpf/prog_tests/module_attach.c
++++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
+@@ -45,12 +45,18 @@ static int trigger_module_test_write(int write_sz)
+ 	return 0;
  }
  
--void test_test_lsm(void)
-+static int test_lsm(struct lsm *skel)
- {
--	struct lsm *skel = NULL;
--	int err, duration = 0;
-+	struct bpf_link *link;
- 	int buf = 1234;
--
--	skel = lsm__open_and_load();
--	if (CHECK(!skel, "skel_load", "lsm skeleton failed\n"))
--		goto close_prog;
-+	int err;
- 
- 	err = lsm__attach(skel);
- 	if (CHECK(err, "attach", "lsm attach failed: %d\n", err))
--		goto close_prog;
-+		return err;
-+
-+	/* Check that already linked program can't be attached again. */
-+	link = bpf_program__attach(skel->progs.test_int_hook);
-+	if (CHECK(!IS_ERR(link), "attach_link",
-+		  "re-attach without detach should not succeed"))
-+		return -1;
- 
- 	err = exec_cmd(&skel->bss->monitored_pid);
- 	if (CHECK(err < 0, "exec_cmd", "err %d errno %d\n", err, errno))
--		goto close_prog;
-+		return err;
- 
- 	CHECK(skel->bss->bprm_count != 1, "bprm_count", "bprm_count = %d\n",
- 	      skel->bss->bprm_count);
-@@ -77,7 +81,7 @@ void test_test_lsm(void)
- 	err = stack_mprotect();
- 	if (CHECK(errno != EPERM, "stack_mprotect", "want err=EPERM, got %d\n",
- 		  errno))
--		goto close_prog;
-+		return err;
- 
- 	CHECK(skel->bss->mprotect_count != 1, "mprotect_count",
- 	      "mprotect_count = %d\n", skel->bss->mprotect_count);
-@@ -89,6 +93,30 @@ void test_test_lsm(void)
- 	CHECK(skel->bss->copy_test != 3, "copy_test",
- 	      "copy_test = %d\n", skel->bss->copy_test);
- 
-+	lsm__detach(skel);
-+
-+	skel->bss->copy_test = 0;
-+	skel->bss->bprm_count = 0;
-+	skel->bss->mprotect_count = 0;
-+	return 0;
++static int delete_module(const char *name, int flags)
++{
++	return syscall(__NR_delete_module, name, flags);
 +}
 +
-+void test_test_lsm(void)
-+{
-+	struct lsm *skel = NULL;
-+	int err;
+ void test_module_attach(void)
+ {
+ 	const int READ_SZ = 456;
+ 	const int WRITE_SZ = 457;
+ 	struct test_module_attach* skel;
+ 	struct test_module_attach__bss *bss;
++	struct bpf_link *link;
+ 	int err;
+ 
+ 	skel = test_module_attach__open();
+@@ -84,6 +90,23 @@ void test_module_attach(void)
+ 	ASSERT_EQ(bss->fexit_ret, -EIO, "fexit_tet");
+ 	ASSERT_EQ(bss->fmod_ret_read_sz, READ_SZ, "fmod_ret");
+ 
++	test_module_attach__detach(skel);
 +
-+	skel = lsm__open_and_load();
-+	if (CHECK(!skel, "lsm_skel_load", "lsm skeleton failed\n"))
-+		goto close_prog;
++	/* attach fentry/fexit and make sure it get's module reference */
++	link = bpf_program__attach(skel->progs.handle_fentry);
++	if (!ASSERT_OK_PTR(link, "attach_fentry"))
++		goto cleanup;
 +
-+	err = test_lsm(skel);
-+	if (CHECK(err, "test_lsm", "first attach failed\n"))
-+		goto close_prog;
++	ASSERT_ERR(delete_module("bpf_testmod", 0), "delete_module");
++	bpf_link__destroy(link);
 +
-+	err = test_lsm(skel);
-+	CHECK(err, "test_lsm", "second attach failed\n");
++	link = bpf_program__attach(skel->progs.handle_fexit);
++	if (!ASSERT_OK_PTR(link, "attach_fexit"))
++		goto cleanup;
 +
- close_prog:
- 	lsm__destroy(skel);
++	ASSERT_ERR(delete_module("bpf_testmod", 0), "delete_module");
++	bpf_link__destroy(link);
++
+ cleanup:
+ 	test_module_attach__destroy(skel);
  }
 -- 
 2.30.2
