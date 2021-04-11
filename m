@@ -2,112 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CCAE35B6EB
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 22:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BACBD35B6EF
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 22:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236572AbhDKUtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 16:49:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34805 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236537AbhDKUtR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 16:49:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618174140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WgCMOQWQVsoo18S8HwQ+Un6/4nDLRTxeG+tZrHLLzJw=;
-        b=bdYSWC3XE+cTZlbNJ5prS7TWyaTetI1UTadbwdB3OZ8Bms/mP2E7+2Qfq4OlGxDaDwHByl
-        LrpVwOvWlCOqryAbtUmYpyO0ENdagHyCutOo3jEtCtalbpuijVoGgerbf0ORsIaJ98PpXF
-        xuPKlL5VInMRM+8sB4eGbYT8QrHq56s=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-281-awPogwZ8PLaUuWprY8GmtQ-1; Sun, 11 Apr 2021 16:48:58 -0400
-X-MC-Unique: awPogwZ8PLaUuWprY8GmtQ-1
-Received: by mail-wr1-f71.google.com with SMTP id m5so906175wrr.8
-        for <netdev@vger.kernel.org>; Sun, 11 Apr 2021 13:48:58 -0700 (PDT)
+        id S235908AbhDKUzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 16:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235530AbhDKUzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 16:55:40 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C400C061574;
+        Sun, 11 Apr 2021 13:55:23 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id x4so12671045edd.2;
+        Sun, 11 Apr 2021 13:55:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1GLY6Eu9dQMP0XShrTgVjqUA8MtMQyS320t2XhbwrW0=;
+        b=UK7OTbcEjHlRsD0XoePgHsAzs6+lsaUGE9wnXfsq7M5/290LA19+xCtPMuNBvK/HQK
+         NKWifP0lryKzdiZFl/3jTQuy2F4F2k7/TkOKEHM6GLPHt8riH3AsrP8ym2N3wYjmnfyB
+         kuy2l5LD3refApVsv6bUz2NnBA2cRfe613oAAnwfObYHShAIPlxNzczYZPMpV8vNUYSQ
+         wjiw5i4AmP/Jb0cWuod5DUFrRwgh7e6SMXpNLlKTP/hGYbXBsfAJ5B0u+o2j/vsMTVtw
+         DsINKliCj4GC+Wq+cjl+KSwXrfe0K4eLaXPatHgH621g6TSq+eYnsGPWBEzsdDptbtnk
+         ewCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WgCMOQWQVsoo18S8HwQ+Un6/4nDLRTxeG+tZrHLLzJw=;
-        b=SgNuWdtCtMJO/1Yh2lpdXehdV7cgBKZVQzmDXQWAt29u0hIyderKF1dSzb/uZjJIp6
-         pyyYYMmjDJm1CXTUsjs5hD6vDs98eD73GKOiPgOgYa68ql1QqQM2lOIRUFPAZj+u66Ya
-         egGUsH/fcEvC+CLlKAhu0Px+yW/uTC6nbMIgU+hFInSDV2IGv+uoVADxDEeTbfQ99yWb
-         M1MPSA9lzHDJH2zWD0H2IHg7J9+UvHfmX29xRU12qGfg41wsYQNynJHZvQejOxeuSZzr
-         U/JGgnPmD9ZBYnSVUML88YHFTkNd5bf524G88IZEsOfiVz5oaKssaZvnMaIFKpRzrkwR
-         WOjA==
-X-Gm-Message-State: AOAM532UHKZLtZuMng3wsqd9vgcHmURyd1aHdVGOtBOJQhoeOVg0wQEU
-        LqwvlPg8GF9nTsyd67JYO875b9lZn2S15PwegtZbJ8jgiFf7zfqOmM7RNsAjihWDDtpvSGozjGT
-        fcrvM8TK5u0e6Ozcg
-X-Received: by 2002:adf:f64f:: with SMTP id x15mr12219240wrp.266.1618174137327;
-        Sun, 11 Apr 2021 13:48:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzZ8f1z7+lBgJ+qTQWMzJhdvfvlDPXwnCbDDkLtc7bGWr9KZU5tbgznyW47X/5g4qaJepDMnQ==
-X-Received: by 2002:adf:f64f:: with SMTP id x15mr12219231wrp.266.1618174137201;
-        Sun, 11 Apr 2021 13:48:57 -0700 (PDT)
-Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
-        by smtp.gmail.com with ESMTPSA id a8sm15566507wrh.91.2021.04.11.13.48.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1GLY6Eu9dQMP0XShrTgVjqUA8MtMQyS320t2XhbwrW0=;
+        b=gq3iCkbre2/wAs5AUovxGwgO3WYCE3+jaPXEDn604J80BciYYh/aR6n3KktjBMpK8Q
+         mQP1kk3AAkRXb2ya4CYd5nUr0mSOWEfa4O8qUtVH2G5t/k5w5N65rsF5LYkNa2nIF3ye
+         aZn94ZF42TpaHJezZDLODJ3wa1QT7UXMjpp593T4L27fiNq+CLUOnq+TDheVzNf+Wk/X
+         MS0MGLx89IkCGPBwjgReNLVBk6xYEqFl4P3fwfqpwGPVltG7YhVUwJ1ofcA7OFWgf3Iw
+         dqiKVe5a93iocSneNcpk+cjfOepLKBKlyQSaTW0bqlWhoGAaznf1UZ4Jij/vzyIGasr4
+         OsDQ==
+X-Gm-Message-State: AOAM530mUHhhyMlOO/dWcwyBpfwgejskNGOdDTzOnHgOe2mNqp2t+tCV
+        3HjnRMedor0SxXkrczjk4B/yNQ5kPJQ=
+X-Google-Smtp-Source: ABdhPJzJJOofM5sAz5+gUCX63gvn4xZT0ooG+kiNlEdjEYRt9NPbuQAKOJ/rLMxZDTP6omgY8NLDBA==
+X-Received: by 2002:a05:6402:27d3:: with SMTP id c19mr27061624ede.129.1618174521757;
+        Sun, 11 Apr 2021 13:55:21 -0700 (PDT)
+Received: from localhost.localdomain (p200300f137277800428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:3727:7800:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id l2sm4475453ejz.93.2021.04.11.13.55.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Apr 2021 13:48:56 -0700 (PDT)
-Date:   Sun, 11 Apr 2021 16:48:52 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: Re: [PATCH v6 03/10] vhost-vdpa: protect concurrent access to
- vhost device iotlb
-Message-ID: <20210411164827-mutt-send-email-mst@kernel.org>
-References: <20210331080519.172-1-xieyongji@bytedance.com>
- <20210331080519.172-4-xieyongji@bytedance.com>
- <20210409121512-mutt-send-email-mst@kernel.org>
- <CACycT3tPWwpGBNEqiL4NPrwGZhmUtAVHUZMOdbSHzjhN-ytg_A@mail.gmail.com>
+        Sun, 11 Apr 2021 13:55:21 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        olteanv@gmail.com, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        andrew@lunn.ch,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>
+Subject: [PATCH net-next] net: dsa: lantiq_gswip: Add support for dumping the registers
+Date:   Sun, 11 Apr 2021 22:55:11 +0200
+Message-Id: <20210411205511.417085-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACycT3tPWwpGBNEqiL4NPrwGZhmUtAVHUZMOdbSHzjhN-ytg_A@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 11, 2021 at 01:36:18PM +0800, Yongji Xie wrote:
-> On Sat, Apr 10, 2021 at 12:16 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Wed, Mar 31, 2021 at 04:05:12PM +0800, Xie Yongji wrote:
-> > > Use vhost_dev->mutex to protect vhost device iotlb from
-> > > concurrent access.
-> > >
-> > > Fixes: 4c8cf318("vhost: introduce vDPA-based backend")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > > Acked-by: Jason Wang <jasowang@redhat.com>
-> > > Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-> >
-> > I could not figure out whether there's a bug there now.
-> > If yes when is the concurrent access triggered?
-> >
-> 
-> When userspace sends the VHOST_IOTLB_MSG_V2 message concurrently?
-> 
-> vhost_vdpa_chr_write_iter -> vhost_chr_write_iter ->
-> vhost_vdpa_process_iotlb_msg()
-> 
-> Thanks,
-> Yongji
+Add support for .get_regs_len and .get_regs so it is easier to find out
+about the state of the ports on the GSWIP hardware. For this we
+specifically add the GSWIP_MAC_PSTATp(port) and GSWIP_MDIO_STATp(port)
+register #defines as these contain the current port status (as well as
+the result of the auto polling mechanism). Other global and per-port
+registers which are also considered useful are included as well.
 
-And then what happens currently?
+Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/net/dsa/lantiq_gswip.c | 83 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
 
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 314ae78bbdd6..d3cfc72644ff 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -90,6 +90,21 @@
+ 					 GSWIP_MDIO_PHY_LINK_MASK | \
+ 					 GSWIP_MDIO_PHY_SPEED_MASK | \
+ 					 GSWIP_MDIO_PHY_FDUP_MASK)
++#define GSWIP_MDIO_STATp(p)		(0x16 + (p))
++#define  GSWIP_MDIO_STAT_RXACT		BIT(10)
++#define  GSWIP_MDIO_STAT_TXACT		BIT(9)
++#define  GSWIP_MDIO_STAT_CLK_STOP_CAPAB	BIT(8)
++#define  GSWIP_MDIO_STAT_EEE_CAPABLE	BIT(7)
++#define  GSWIP_MDIO_STAT_PACT		BIT(6)
++#define  GSWIP_MDIO_STAT_LSTAT		BIT(5)
++#define  GSWIP_MDIO_STAT_SPEED_M10	0x00
++#define  GSWIP_MDIO_STAT_SPEED_M100	0x08
++#define  GSWIP_MDIO_STAT_SPEED_1G	0x10
++#define  GSWIP_MDIO_STAT_SPEED_RESERVED	0x18
++#define  GSWIP_MDIO_STAT_SPEED_MASK	0x18
++#define  GSWIP_MDIO_STAT_FDUP		BIT(2)
++#define  GSWIP_MDIO_STAT_RXPAUEN	BIT(1)
++#define  GSWIP_MDIO_STAT_TXPAUEN	BIT(0)
+ 
+ /* GSWIP MII Registers */
+ #define GSWIP_MII_CFGp(p)		(0x2 * (p))
+@@ -195,6 +210,19 @@
+ #define GSWIP_PCE_DEFPVID(p)		(0x486 + ((p) * 0xA))
+ 
+ #define GSWIP_MAC_FLEN			0x8C5
++#define GSWIP_MAC_PSTATp(p)		(0x900 + ((p) * 0xC))
++#define  GSWIP_MAC_PSTAT_PACT		BIT(11)
++#define  GSWIP_MAC_PSTAT_GBIT		BIT(10)
++#define  GSWIP_MAC_PSTAT_MBIT		BIT(9)
++#define  GSWIP_MAC_PSTAT_FDUP		BIT(8)
++#define  GSWIP_MAC_PSTAT_RXPAU		BIT(7)
++#define  GSWIP_MAC_PSTAT_TXPAU		BIT(6)
++#define  GSWIP_MAC_PSTAT_RXPAUEN	BIT(5)
++#define  GSWIP_MAC_PSTAT_TXPAUEN	BIT(4)
++#define  GSWIP_MAC_PSTAT_LSTAT		BIT(3)
++#define  GSWIP_MAC_PSTAT_CRS		BIT(2)
++#define  GSWIP_MAC_PSTAT_TXLPI		BIT(1)
++#define  GSWIP_MAC_PSTAT_RXLPI		BIT(0)
+ #define GSWIP_MAC_CTRL_0p(p)		(0x903 + ((p) * 0xC))
+ #define  GSWIP_MAC_CTRL_0_PADEN		BIT(8)
+ #define  GSWIP_MAC_CTRL_0_FCS_EN	BIT(7)
+@@ -701,6 +729,57 @@ static void gswip_port_disable(struct dsa_switch *ds, int port)
+ 			  GSWIP_SDMA_PCTRLp(port));
+ }
+ 
++static int gswip_get_regs_len(struct dsa_switch *ds, int port)
++{
++	return 17 * sizeof(u32);
++}
++
++static void gswip_get_regs(struct dsa_switch *ds, int port,
++			   struct ethtool_regs *regs, void *_p)
++{
++	struct gswip_priv *priv = ds->priv;
++	u32 *p = _p;
++
++	regs->version = gswip_switch_r(priv, GSWIP_VERSION);
++
++	memset(p, 0xff, 17 * sizeof(u32));
++
++	p[0] = gswip_mdio_r(priv, GSWIP_MDIO_GLOB);
++	p[1] = gswip_mdio_r(priv, GSWIP_MDIO_CTRL);
++	p[2] = gswip_mdio_r(priv, GSWIP_MDIO_MDC_CFG0);
++	p[3] = gswip_mdio_r(priv, GSWIP_MDIO_MDC_CFG1);
++
++	if (!dsa_is_cpu_port(priv->ds, port)) {
++		p[4] = gswip_mdio_r(priv, GSWIP_MDIO_PHYp(port));
++		p[5] = gswip_mdio_r(priv, GSWIP_MDIO_STATp(port));
++		p[6] = gswip_mii_r(priv, GSWIP_MII_CFGp(port));
++	}
++
++	switch (port) {
++	case 0:
++		p[7] = gswip_mii_r(priv, GSWIP_MII_PCDU0);
++		break;
++	case 1:
++		p[7] = gswip_mii_r(priv, GSWIP_MII_PCDU1);
++		break;
++	case 5:
++		p[7] = gswip_mii_r(priv, GSWIP_MII_PCDU5);
++		break;
++	default:
++		break;
++	}
++
++	p[8] = gswip_switch_r(priv, GSWIP_PCE_PCTRL_0p(port));
++	p[9] = gswip_switch_r(priv, GSWIP_PCE_VCTRL(port));
++	p[10] = gswip_switch_r(priv, GSWIP_PCE_DEFPVID(port));
++	p[11] = gswip_switch_r(priv, GSWIP_MAC_FLEN);
++	p[12] = gswip_switch_r(priv, GSWIP_MAC_PSTATp(port));
++	p[13] = gswip_switch_r(priv, GSWIP_MAC_CTRL_0p(port));
++	p[14] = gswip_switch_r(priv, GSWIP_MAC_CTRL_2p(port));
++	p[15] = gswip_switch_r(priv, GSWIP_FDMA_PCTRLp(port));
++	p[16] = gswip_switch_r(priv, GSWIP_SDMA_PCTRLp(port));
++}
++
+ static int gswip_pce_load_microcode(struct gswip_priv *priv)
+ {
+ 	int i;
+@@ -1795,6 +1874,8 @@ static const struct dsa_switch_ops gswip_xrx200_switch_ops = {
+ 	.setup			= gswip_setup,
+ 	.port_enable		= gswip_port_enable,
+ 	.port_disable		= gswip_port_disable,
++	.get_regs_len		= gswip_get_regs_len,
++	.get_regs		= gswip_get_regs,
+ 	.port_bridge_join	= gswip_port_bridge_join,
+ 	.port_bridge_leave	= gswip_port_bridge_leave,
+ 	.port_fast_age		= gswip_port_fast_age,
+@@ -1819,6 +1900,8 @@ static const struct dsa_switch_ops gswip_xrx300_switch_ops = {
+ 	.setup			= gswip_setup,
+ 	.port_enable		= gswip_port_enable,
+ 	.port_disable		= gswip_port_disable,
++	.get_regs_len		= gswip_get_regs_len,
++	.get_regs		= gswip_get_regs,
+ 	.port_bridge_join	= gswip_port_bridge_join,
+ 	.port_bridge_leave	= gswip_port_bridge_leave,
+ 	.port_fast_age		= gswip_port_fast_age,
 -- 
-MST
+2.31.1
 
