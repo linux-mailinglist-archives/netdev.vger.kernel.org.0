@@ -2,96 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE1F935B1D4
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 07:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C20435B204
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 08:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229452AbhDKFgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 01:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbhDKFgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 01:36:46 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DC3C06138B
-        for <netdev@vger.kernel.org>; Sat, 10 Apr 2021 22:36:30 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g17so10394684edm.6
-        for <netdev@vger.kernel.org>; Sat, 10 Apr 2021 22:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0lwDd82fgpJThgZMHhLJnQgV6W4vkNqis2PraEjVIBw=;
-        b=c4Db3epPQ7BtwNnPr8IaEN1uoC8TT4Cseg9TW2LOXl0mLgoowQzuMu0HEjnfJhWU6l
-         xzrGM8hjOF8f1AvXob4ziQXk/mFjMtQD4xc7CI3foTZ4jSrKSitPBEtZsx+YmJQKz4CL
-         2rxWFLJRkkr9xhYHKoO4FyXyLmIyEuT02doObAUnu5ZdTsK4/1fJ6fOIBnRyM4XwdAaO
-         rwNDIsTqSR3SbA4yx+T/jvt8ShIArPdnAFni2G29Ac44P6VGKd0xcSl8weOqDXSEKsKn
-         Jb+YUau5RFx4C7t8XsuqOke36WQB/kNHw24Ej3LTxaI+V9cPhxvKZv988v7Mr4mS8Nse
-         hw+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0lwDd82fgpJThgZMHhLJnQgV6W4vkNqis2PraEjVIBw=;
-        b=hUnpi64npxsKhQWSDV0ZSST/1xCvEAB+agnzFSoBQbEe8irLZEgtwkKs5ETBjOxv+q
-         jFOI2MyCT6SXgADeBU3vZHp9KshCJpKJne+IoUCGmZyuPZNZhYbK8rGh1UA2oxbf6kkN
-         VTF6ogngshvtKFgXQsQx+nVoBLuXrykEk5EUsL4CujRzvCIJqJkCtBdB9JGCwpdPtyTp
-         h+TYfjX6S9nFBkrDnWxivFIkyiwzALVoNOWKqcFMQYhAy3KAlkQzm2EMpgGtvaB9yt+f
-         9nPprOWpceTuvrEx58Zg5aJKim5sum25kD62g1tfQB1ygbdrla9AXCVTrSf2Q541VP+z
-         4O5g==
-X-Gm-Message-State: AOAM5331ne9qCHTKOXM3Oj222Y60gHWMgNb7XThv9XCXGdQBNN+xWwwL
-        WL3hAQ1PU1bbeLC3GzyC+DjW2sA0N34VUY5Kbcfe
-X-Google-Smtp-Source: ABdhPJz0uxSIdyrEwimFA/W6SiCsgNrH3yatdgdl47Lv/XrisxjYBLMuDcXpWpcG+4MirvvkrrYIKqyH/L4ndSeY1QQ=
-X-Received: by 2002:a05:6402:6ca:: with SMTP id n10mr24284861edy.312.1618119389097;
- Sat, 10 Apr 2021 22:36:29 -0700 (PDT)
+        id S233743AbhDKGeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 02:34:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54828 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229452AbhDKGeU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Apr 2021 02:34:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 74EC260233;
+        Sun, 11 Apr 2021 06:34:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618122845;
+        bh=E+zS1GucVpnc1S/WzIUFUGJ2q+K67CMTTp3C6hulqv0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n8RQAuwj5jHnTDT/528vkL3tjTlpBIvloX1advafNyyN09rChNrdvNJjjRTCaVo3x
+         Q58J6YJegcxTLAEUtFKnk2baVmEJMbZElJluFGfOTwYSkJjxMfh39Wk7qQACl0bYtU
+         Kjz3UlKFC1m6cPdN8qWyX+nv55dZ01x2fJkLJv0rZnaN1L1OULabwIjAUNGaJiZA6o
+         taQl9YtNZpX3OtOFWf6Ud4AY7NSMAp3pB6xn6GZg9Lk7RqCcscg3j5YCCZDtVECSHZ
+         9SphWFWR24DN9d07YXq2pgmr9QVQQNXn1MsyecyWg89DOa2USwTUSzBindVsmCejEu
+         utx64jWsghCVA==
+Date:   Sun, 11 Apr 2021 09:34:00 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 4/7] net: ipa: ipa_stop() does not return an
+ error
+Message-ID: <YHKYWCkPl5pucFZo@unreal>
+References: <20210409180722.1176868-1-elder@linaro.org>
+ <20210409180722.1176868-5-elder@linaro.org>
 MIME-Version: 1.0
-References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-4-xieyongji@bytedance.com>
- <20210409121512-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210409121512-mutt-send-email-mst@kernel.org>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Sun, 11 Apr 2021 13:36:18 +0800
-Message-ID: <CACycT3tPWwpGBNEqiL4NPrwGZhmUtAVHUZMOdbSHzjhN-ytg_A@mail.gmail.com>
-Subject: Re: Re: [PATCH v6 03/10] vhost-vdpa: protect concurrent access to
- vhost device iotlb
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210409180722.1176868-5-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 10, 2021 at 12:16 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, Mar 31, 2021 at 04:05:12PM +0800, Xie Yongji wrote:
-> > Use vhost_dev->mutex to protect vhost device iotlb from
-> > concurrent access.
-> >
-> > Fixes: 4c8cf318("vhost: introduce vDPA-based backend")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > Acked-by: Jason Wang <jasowang@redhat.com>
-> > Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
->
-> I could not figure out whether there's a bug there now.
-> If yes when is the concurrent access triggered?
->
+On Fri, Apr 09, 2021 at 01:07:19PM -0500, Alex Elder wrote:
+> In ipa_modem_stop(), if the modem netdev pointer is non-null we call
+> ipa_stop().  We check for an error and if one is returned we handle
+> it.  But ipa_stop() never returns an error, so this extra handling
+> is unnecessary.  Simplify the code in ipa_modem_stop() based on the
+> knowledge no error handling is needed at this spot.
+> 
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ipa/ipa_modem.c | 18 ++++--------------
+>  1 file changed, 4 insertions(+), 14 deletions(-)
 
-When userspace sends the VHOST_IOTLB_MSG_V2 message concurrently?
+<...>
 
-vhost_vdpa_chr_write_iter -> vhost_chr_write_iter ->
-vhost_vdpa_process_iotlb_msg()
+> +	/* Stop the queue and disable the endpoints if it's open */
+>  	if (netdev) {
+> -		/* Stop the queue and disable the endpoints if it's open */
+> -		ret = ipa_stop(netdev);
+> -		if (ret)
+> -			goto out_set_state;
+> -
+> +		(void)ipa_stop(netdev);
 
-Thanks,
-Yongji
+This void casting is not needed here and in more general case sometimes
+even be seen as a mistake, for example if the returned attribute declared
+as __must_check.
+
+Thanks
