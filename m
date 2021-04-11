@@ -2,71 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB57535B3E9
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 13:55:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E00935B423
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 14:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235531AbhDKLy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 07:54:59 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:49642 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbhDKLy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 07:54:59 -0400
-Received: from marcel-macbook.holtmann.net (p5b3d235a.dip0.t-ipconnect.de [91.61.35.90])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 0E770CECF3;
-        Sun, 11 Apr 2021 14:02:25 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: Re: [PATCH v2] Bluetooth: Return whether a connection is outbound
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210409150356.v2.1.Id5ee0a2edda8f0902498aaeb1b6c78d062579b75@changeid>
-Date:   Sun, 11 Apr 2021 13:54:40 +0200
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <8E072277-ED4D-408F-BE6B-A3C6E17A7BA6@holtmann.org>
-References: <20210409150356.v2.1.Id5ee0a2edda8f0902498aaeb1b6c78d062579b75@changeid>
-To:     Yu Liu <yudiliu@google.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+        id S235465AbhDKM3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 08:29:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229804AbhDKM3q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Apr 2021 08:29:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D69A610C8;
+        Sun, 11 Apr 2021 12:29:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618144170;
+        bh=vvod46FFvsLIObM4UJY8ibXDvqx4jxtkFns9xCfqbas=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Bmc5bC1feeq1T4WUz/K/WEhcyFVdMiwPpDCJ1hDnvDeUZn4Iribm/UVM7Oslvz7oS
+         pptsB67joWQdYVQSzrvCiNBRS9ngrRisXaMNUb5BFlxFGgqgif8AjrisKMeAZ+Tnfy
+         zNbSrU9NXzkoG/biQmweVK5ujnyzFKrXcmZSwMbyHNjnYENy2bkkMS5l173c4zFM9N
+         SXyEsxN7E0vC+Fv3mb9zh8F8OarhImcv5IZDw7ajQVxrR3qYz3JdFcCFajYLJ5PzjR
+         n20t63cc5YIXaoDTizCeqd7fE7ZU8BBEZioTFWnr0NT5JK995tiWj5e9Ncl5tfTabv
+         BfbgVsDcrDfIg==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-api@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Yishai Hadas <yishaih@mellanox.com>
+Subject: [PATCH rdma-next v1 0/7] Add MEMIC operations support
+Date:   Sun, 11 Apr 2021 15:29:17 +0300
+Message-Id: <20210411122924.60230-1-leon@kernel.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yu,
+From: Leon Romanovsky <leonro@nvidia.com>
 
-> When an MGMT_EV_DEVICE_CONNECTED event is reported back to the user
-> space we will set the flags to tell if the established connection is
-> outbound or not. This is useful for the user space to log better metrics
-> and error messages.
-> 
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> Signed-off-by: Yu Liu <yudiliu@google.com>
-> ---
-> 
-> Changes in v2:
-> - Defined the bit as MGMT_DEV_FOUND_INITIATED_CONN
-> 
-> Changes in v1:
-> - Initial change
-> 
-> include/net/bluetooth/hci_core.h | 2 +-
-> include/net/bluetooth/mgmt.h     | 1 +
-> net/bluetooth/hci_event.c        | 8 ++++----
-> net/bluetooth/l2cap_core.c       | 2 +-
-> net/bluetooth/mgmt.c             | 6 +++++-
-> 5 files changed, 12 insertions(+), 7 deletions(-)
+Changelog:
+v1: 
+ * Changed logic of patch #6 per-Jason's request. 
+v0: https://lore.kernel.org/linux-rdma/20210318111548.674749-1-leon@kernel.org
 
-patch has been applied to bluetooth-next tree.
+---------------------------------------------------------------------------
 
-Regards
+Hi,
 
-Marcel
+This series from Maor extends MEMIC to support atomic operations from
+the host in addition to already supported regular read/write.
+
+Thanks
+
+Maor Gottlieb (7):
+  net/mlx5: Add MEMIC operations related bits
+  RDMA/uverbs: Make UVERBS_OBJECT_METHODS to consider line number
+  RDMA/mlx5: Move all DM logic to separate file
+  RDMA/mlx5: Re-organize the DM code
+  RDMA/mlx5: Add support to MODIFY_MEMIC command
+  RDMA/mlx5: Add support in MEMIC operations
+  RDMA/mlx5: Expose UAPI to query DM
+
+ drivers/infiniband/hw/mlx5/Makefile      |   1 +
+ drivers/infiniband/hw/mlx5/cmd.c         | 101 ----
+ drivers/infiniband/hw/mlx5/cmd.h         |   3 -
+ drivers/infiniband/hw/mlx5/dm.c          | 584 +++++++++++++++++++++++
+ drivers/infiniband/hw/mlx5/dm.h          |  68 +++
+ drivers/infiniband/hw/mlx5/main.c        | 243 +---------
+ drivers/infiniband/hw/mlx5/mlx5_ib.h     |  25 +-
+ drivers/infiniband/hw/mlx5/mr.c          |   1 +
+ include/linux/mlx5/mlx5_ifc.h            |  42 +-
+ include/rdma/uverbs_named_ioctl.h        |   2 +-
+ include/uapi/rdma/mlx5_user_ioctl_cmds.h |  19 +
+ 11 files changed, 720 insertions(+), 369 deletions(-)
+ create mode 100644 drivers/infiniband/hw/mlx5/dm.c
+ create mode 100644 drivers/infiniband/hw/mlx5/dm.h
+
+-- 
+2.30.2
 
