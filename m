@@ -2,192 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C17D635B2D2
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 11:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE9635B2F3
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 12:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235319AbhDKJnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 05:43:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51912 "EHLO
+        id S235389AbhDKKGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 06:06:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39726 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235005AbhDKJnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 05:43:41 -0400
+        by vger.kernel.org with ESMTP id S235366AbhDKKGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 06:06:01 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618134204;
+        s=mimecast20190719; t=1618135544;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XOqiznYAiRVy/Amk28LrMWkmWtJUIVRZ/la5M97wHQ8=;
-        b=PW4Lm6wjf4mSk5odkTwUl7lDbOk0iTQ5225/1e5O/aa+GBTXSvdFJAAyCqoDEy1Gixg0z3
-        CCeSgfbgENxnPJ/m5+WOalyz/y05Kg3QeKYXlOK9vN8doFN6bf4RS4Yvvh5JXDKicOmyKm
-        9RNoLiOT2M2TfR6aYQiBLSElz9yjX/0=
+        bh=MhHr3Cd5ZDKM5bg6lUgtgpxP7s+VM/Oo10g+H6b6Os0=;
+        b=O3Cr/gdGeDiQfLv6B6+jNHs7SFsa24+tbtXJLFL/VMXCVnDbyDStUUXL0JQBR0JWJCgyts
+        4Mnor+U0VS1Xb2SlMyrcHDlEC1xKRfBWKzb/J7Xgm7qoidUSJ2clm0jYqdfHK6OuZ2h5IE
+        EgG4QhZz3g+/q+kXfJSGbDijOG4Habo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-571-iowazDUgNc61YX-AnGHs-A-1; Sun, 11 Apr 2021 05:43:21 -0400
-X-MC-Unique: iowazDUgNc61YX-AnGHs-A-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-8-iUqQIEx5NBa4mkSJa5bIWw-1; Sun, 11 Apr 2021 06:05:42 -0400
+X-MC-Unique: iUqQIEx5NBa4mkSJa5bIWw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 92CFA501FB;
-        Sun, 11 Apr 2021 09:43:18 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4135610053EA;
+        Sun, 11 Apr 2021 10:05:41 +0000 (UTC)
 Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B66045D9D3;
-        Sun, 11 Apr 2021 09:43:10 +0000 (UTC)
-Date:   Sun, 11 Apr 2021 11:43:07 +0200
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 957FD14106;
+        Sun, 11 Apr 2021 10:05:18 +0000 (UTC)
+Date:   Sun, 11 Apr 2021 12:05:17 +0200
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     brouer@redhat.com, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Shakeel Butt <shakeelb@google.com>,
         Matteo Croce <mcroce@linux.microsoft.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>, brouer@redhat.com,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210411114307.5087f958@carbon>
-In-Reply-To: <20210410205246.507048-2-willy@infradead.org>
-References: <20210410205246.507048-1-willy@infradead.org>
-        <20210410205246.507048-2-willy@infradead.org>
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+Message-ID: <20210411120500.73c1cadb@carbon>
+In-Reply-To: <20210410193955.GA2531743@casper.infradead.org>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+        <20210409223801.104657-3-mcroce@linux.microsoft.com>
+        <20210410154824.GZ2531743@casper.infradead.org>
+        <YHHPbQm2pn2ysth0@enceladus>
+        <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
+        <YHHuE7g73mZNrMV4@enceladus>
+        <20210410193955.GA2531743@casper.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 10 Apr 2021 21:52:45 +0100
-"Matthew Wilcox (Oracle)" <willy@infradead.org> wrote:
+On Sat, 10 Apr 2021 20:39:55 +0100
+Matthew Wilcox <willy@infradead.org> wrote:
 
-> 32-bit architectures which expect 8-byte alignment for 8-byte integers
-> and need 64-bit DMA addresses (arc, arm, mips, ppc) had their struct
-> page inadvertently expanded in 2019.  When the dma_addr_t was added,
-> it forced the alignment of the union to 8 bytes, which inserted a 4 byte
-> gap between 'flags' and the union.
+> On Sat, Apr 10, 2021 at 09:27:31PM +0300, Ilias Apalodimas wrote:
+> > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
+> > > can not be used.  
+> > 
+> > Yes it can, since it's going to be used as your default allocator for
+> > payloads, which might end up on an SKB.
+> > So we have to keep the extra added field on struct page for our mark.
+> > Matthew had an intersting idea.  He suggested keeping it, but changing the 
+> > magic number, so it can't be a kernel address, but I'll let him follow 
+> > up on the details.  
 > 
-> We could fix this by telling the compiler to use a smaller alignment
-> for the dma_addr, but that seems a little fragile.  Instead, move the
-> 'flags' into the union.  That causes dma_addr to shift into the same
-> bits as 'mapping', so it would have to be cleared on free.  To avoid
-> this, insert three words of padding and use the same bits as ->index
-> and ->private, neither of which have to be cleared on free.
+> Sure!  So, given the misalignment problem I discovered yesterday [1],
+> we probably want a page_pool page to look like:
 > 
-> Fixes: c25fff7171be ("mm: add dma_addr_t to struct page")
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
->  include/linux/mm_types.h | 38 ++++++++++++++++++++++++++------------
->  1 file changed, 26 insertions(+), 12 deletions(-)
+> unsigned long	flags;
+> unsigned long	pp_magic;
+> unsigned long	xmi;
+> unsigned long	_pp_mapping_pad;
+> dma_addr_t	dma_addr;	/* might be one or two words */
 > 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 6613b26a8894..45c563e9b50e 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -68,16 +68,22 @@ struct mem_cgroup;
->  #endif
->  
->  struct page {
-> -	unsigned long flags;		/* Atomic flags, some possibly
-> -					 * updated asynchronously */
->  	/*
-> -	 * Five words (20/40 bytes) are available in this union.
-> -	 * WARNING: bit 0 of the first word is used for PageTail(). That
-> -	 * means the other users of this union MUST NOT use the bit to
-> +	 * This union is six words (24 / 48 bytes) in size.
-> +	 * The first word is reserved for atomic flags, often updated
-> +	 * asynchronously.  Use the PageFoo() macros to access it.  Some
-> +	 * of the flags can be reused for your own purposes, but the
-> +	 * word as a whole often contains other information and overwriting
-> +	 * it will cause functions like page_zone() and page_node() to stop
-> +	 * working correctly.
-> +	 *
-> +	 * Bit 0 of the second word is used for PageTail(). That
-> +	 * means the other users of this union MUST leave the bit zero to
->  	 * avoid collision and false-positive PageTail().
->  	 */
->  	union {
->  		struct {	/* Page cache and anonymous pages */
-> +			unsigned long flags;
->  			/**
->  			 * @lru: Pageout list, eg. active_list protected by
->  			 * lruvec->lru_lock.  Sometimes used as a generic list
-> @@ -96,13 +102,14 @@ struct page {
->  			unsigned long private;
->  		};
->  		struct {	/* page_pool used by netstack */
-> -			/**
-> -			 * @dma_addr: might require a 64-bit value even on
-> -			 * 32-bit architectures.
-> -			 */
-> -			dma_addr_t dma_addr;
+> The only real restriction here is that pp_magic should not be a valid
+> pointer, and it must have the bottom bit clear.  I'd recommend something
+> like:
+> 
+> #define PP_MAGIC	(0x20 + POISON_POINTER_DELTA)
+> 
+> This leaves page->mapping as NULL, so you don't have to worry about
+> clearing it before free.
+>
+> [1] https://lore.kernel.org/linux-mm/20210410024313.GX2531743@casper.infradead.org/
 
-The original intend of placing member @dma_addr here is that it overlap
-with @LRU (type struct list_head) which contains two pointers.  Thus, in
-case of CONFIG_ARCH_DMA_ADDR_T_64BIT=y on 32-bit architectures it would
-use both pointers.
+I didn't see this, before asking[2] for explaining your intent.
+I still worry about page->index, see [2].
 
-Thinking more about this, this design is flawed as bit 0 of the first
-word is used for compound pages (see PageTail and @compound_head), is
-reserved.  We knew DMA addresses were aligned, thus we though this
-satisfied that need.  BUT for DMA_ADDR_T_64BIT=y on 32-bit arch the
-first word will contain the "upper" part of the DMA addr, which I don't
-think gives this guarantee.
+[2] https://lore.kernel.org/netdev/20210411114307.5087f958@carbon/
 
-I guess, nobody are using this combination?!?  I though we added this
-to satisfy TI (Texas Instrument) driver cpsw (code in
-drivers/net/ethernet/ti/cpsw*).  Thus, I assumed it was in use?
-
-
-> +			unsigned long _pp_flags;
-> +			unsigned long pp_magic;
-> +			unsigned long xmi;
-
-Matteo notice, I think intent is we can store xdp_mem_info in @xmi.
-
-> +			unsigned long _pp_mapping_pad;
-> +			dma_addr_t dma_addr;	/* might be one or two words */
->  		};
-
-Could you explain your intent here?
-I worry about @index.
-
-As I mentioned in other thread[1] netstack use page_is_pfmemalloc()
-(code copy-pasted below signature) which imply that the member @index
-have to be kept intact. In above, I'm unsure @index is untouched.
-
-[1] https://lore.kernel.org/lkml/20210410082158.79ad09a6@carbon/
 -- 
 Best regards,
   Jesper Dangaard Brouer
   MSc.CS, Principal Kernel Engineer at Red Hat
   LinkedIn: http://www.linkedin.com/in/brouer
-
-/*
- * Return true only if the page has been allocated with
- * ALLOC_NO_WATERMARKS and the low watermark was not
- * met implying that the system is under some pressure.
- */
-static inline bool page_is_pfmemalloc(const struct page *page)
-{
-	/*
-	 * Page index cannot be this large so this must be
-	 * a pfmemalloc page.
-	 */
-	return page->index == -1UL;
-}
-
-/*
- * Only to be called by the page allocator on a freshly allocated
- * page.
- */
-static inline void set_page_pfmemalloc(struct page *page)
-{
-	page->index = -1UL;
-}
-
-static inline void clear_page_pfmemalloc(struct page *page)
-{
-	page->index = 0;
-}
 
