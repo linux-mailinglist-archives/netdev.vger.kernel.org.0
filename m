@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9BCB35B2BE
-	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 11:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC9AE35B2C8
+	for <lists+netdev@lfdr.de>; Sun, 11 Apr 2021 11:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235310AbhDKJaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 05:30:39 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:18524 "EHLO m43-7.mailgun.net"
+        id S235345AbhDKJck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 05:32:40 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:25002 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235251AbhDKJai (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Apr 2021 05:30:38 -0400
+        id S235269AbhDKJcj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Apr 2021 05:32:39 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1618133422; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1618133543; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=CZaQsurYXafEiO8zvG37h8CkGJKclLCmc8SRLDWNp7g=;
- b=oKDOhuG6yEWclw0Kp5xGkFwLlRO+wqfQrndXiFYXijnfp/uYiVY5SAkzqG2wM2/lkwOfa3qW
- YjbzggpbkZ2n8E30czKiOZ63lRHHDYoBNTYuVlI6R/aDOqDheXuSgE2aYPMUD8XM9Qd8ml14
- 3DPP7/Py5Bn/dcckyI7Na8L/EpE=
+ Content-Type: Sender; bh=ORlIUfijIrnSlUyjuvajmJtLvP0WXW8LZmX4NEH0q/4=;
+ b=ItHAQQb4mAhuk3ySQ9pOgPGtMRom043UFBXRjSrCJNyGIMHaGTyUi1NbREk/WEuX9y2vGmcj
+ qQsm1VWCcknLIVsuiGO9jHnUoc3sFV95v/MagqBCm3cFSb5Z0nNlWCwPAccob8S7RWhIdnJ7
+ VrJ9R+m2Sfu86p9cLt9FPznPuCo=
 X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6072c1a39a9ff96d95c8e2b9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 11 Apr 2021 09:30:11
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 6072c21be0e9c9a6b6fcf200 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 11 Apr 2021 09:32:11
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D8C1BC433CA; Sun, 11 Apr 2021 09:30:11 +0000 (UTC)
+        id D8F1FC433C6; Sun, 11 Apr 2021 09:32:11 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,59 +39,57 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 70DC3C433C6;
-        Sun, 11 Apr 2021 09:30:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 70DC3C433C6
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DAE4EC433ED;
+        Sun, 11 Apr 2021 09:32:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DAE4EC433ED
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mt7601u: fix always true expression
+Subject: Re: [PATCH net-next 3/5] iwlegacy: avoid -Wempty-body warning
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210225183241.1002129-1-colin.king@canonical.com>
-References: <20210225183241.1002129-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20210322104343.948660-3-arnd@kernel.org>
+References: <20210322104343.948660-3-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     netdev@vger.kernel.org, Stanislaw Gruszka <stf_xl@wp.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210411093011.D8C1BC433CA@smtp.codeaurora.org>
-Date:   Sun, 11 Apr 2021 09:30:11 +0000 (UTC)
+Message-Id: <20210411093211.D8F1FC433C6@smtp.codeaurora.org>
+Date:   Sun, 11 Apr 2021 09:32:11 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-> From: Colin Ian King <colin.king@canonical.com>
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Currently the expression ~nic_conf1 is always true because nic_conf1
-> is a u16 and according to 6.5.3.3 of the C standard the ~ operator
-> promotes the u16 to an integer before flipping all the bits. Thus
-> the top 16 bits of the integer result are all set so the expression
-> is always true.  If the intention was to flip all the bits of nic_conf1
-> then casting the integer result back to a u16 is a suitabel fix.
+> There are a couple of warnings in this driver when building with W=1:
 > 
-> Interestingly static analyzers seem to thing a bitwise ! should be
-> used instead of ~ for this scenario, so I think the original intent
-> of the expression may need some extra consideration.
+> drivers/net/wireless/intel/iwlegacy/common.c: In function 'il_power_set_mode':
+> drivers/net/wireless/intel/iwlegacy/common.c:1195:60: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+>  1195 |                                 il->chain_noise_data.state);
+>       |                                                            ^
+> drivers/net/wireless/intel/iwlegacy/common.c: In function 'il_do_scan_abort':
+> drivers/net/wireless/intel/iwlegacy/common.c:1343:57: error: suggest braces around empty body in an 'else' statement [-Werror=empty-body]
 > 
-> Addresses-Coverity: ("Logical vs. bitwise operator")
-> Fixes: c869f77d6abb ("add mt7601u driver")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> Acked-by: Jakub Kicinski <kubakici@wp.pl>
+> Change the empty debug macros to no_printk(), which avoids the
+> warnings and adds useful format string checks.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-87fce88658ba mt7601u: fix always true expression
+fa9f5d0e0b45 iwlegacy: avoid -Wempty-body warning
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210225183241.1002129-1-colin.king@canonical.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20210322104343.948660-3-arnd@kernel.org/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
