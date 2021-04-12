@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EA335CA19
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 17:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7472735CA1D
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 17:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243020AbhDLPhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 11:37:48 -0400
+        id S243028AbhDLPhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 11:37:52 -0400
 Received: from mga05.intel.com ([192.55.52.43]:41987 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243002AbhDLPhr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 11:37:47 -0400
-IronPort-SDR: bIP6XHNUPUoNcK8eylvrkKGI9H1OYI8nHxaTUG7Zfj7oh9hMIdt8+eDHXQ4OHDdsQNf2L2X2uo
- 5HE12cN3+J+Q==
-X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="279520347"
+        id S243026AbhDLPhu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 11:37:50 -0400
+IronPort-SDR: rn01DtF8WyxOjT2CPa6tj/ivnjGq+2wJS0MLThbE+Kx4AZ0ifunHOhCb/JsoLDvygtK3bZiCVz
+ NElgYCDm5PVw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="279520366"
 X-IronPort-AV: E=Sophos;i="5.82,216,1613462400"; 
-   d="scan'208";a="279520347"
+   d="scan'208";a="279520366"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2021 08:37:27 -0700
-IronPort-SDR: bd+EADXBvpH+5fMGfOG23IswEqIT2UHjFMkiCtd7FVK+CPqidADNdIMjGm5EiTdDzu0uiboKeD
- qbMp2p7zfcng==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2021 08:37:32 -0700
+IronPort-SDR: sZl6Rq2WIgjPvAX2K30+/WT6CSq7XcxQXnXEPno6nA/VYX6tTfc+s+4CmqQ4e3FPqBJlSqH+Pl
+ eopjwVqdXvsA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,216,1613462400"; 
-   d="scan'208";a="614609580"
+   d="scan'208";a="614609597"
 Received: from glass.png.intel.com ([10.158.65.59])
-  by fmsmga005.fm.intel.com with ESMTP; 12 Apr 2021 08:37:22 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 12 Apr 2021 08:37:27 -0700
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -43,9 +43,9 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next 3/7] net: stmmac: refactor stmmac_init_rx_buffers for stmmac_reinit_rx_buffers
-Date:   Mon, 12 Apr 2021 23:41:26 +0800
-Message-Id: <20210412154130.20742-4-boon.leong.ong@intel.com>
+Subject: [PATCH net-next 4/7] net: stmmac: rearrange RX and TX desc init into per-queue basis
+Date:   Mon, 12 Apr 2021 23:41:27 +0800
+Message-Id: <20210412154130.20742-5-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210412154130.20742-1-boon.leong.ong@intel.com>
 References: <20210412154130.20742-1-boon.leong.ong@intel.com>
@@ -55,487 +55,250 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The per-queue RX buffer allocation in stmmac_reinit_rx_buffers() can be
-made to use stmmac_alloc_rx_buffers() by merging the page_pool alloc
-checks for "buf->page" and "buf->sec_page" in stmmac_init_rx_buffers().
+Below functions are made to be per-queue in preparation of XDP ZC:
 
-This is in preparation for XSK pool allocation later.
+ __init_dma_rx_desc_rings(struct stmmac_priv *priv, u32 queue, gfp_t flags)
+ __init_dma_tx_desc_rings(struct stmmac_priv *priv, u32 queue)
+
+The original functions below are stay maintained for all queue usage:
+
+ init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
+ init_dma_tx_desc_rings(struct net_device *dev)
 
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 378 +++++++++---------
- 1 file changed, 189 insertions(+), 189 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 180 ++++++++++--------
+ 1 file changed, 100 insertions(+), 80 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a6c3414fd231..7e889ef0c7b5 100644
+index 7e889ef0c7b5..0804674e628e 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1388,12 +1388,14 @@ static int stmmac_init_rx_buffers(struct stmmac_priv *priv, struct dma_desc *p,
- 	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
- 	struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
+@@ -1575,60 +1575,70 @@ static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
+ }
  
--	buf->page = page_pool_dev_alloc_pages(rx_q->page_pool);
--	if (!buf->page)
--		return -ENOMEM;
--	buf->page_offset = stmmac_rx_offset(priv);
-+	if (!buf->page) {
-+		buf->page = page_pool_dev_alloc_pages(rx_q->page_pool);
-+		if (!buf->page)
-+			return -ENOMEM;
-+		buf->page_offset = stmmac_rx_offset(priv);
+ /**
+- * init_dma_rx_desc_rings - init the RX descriptor rings
+- * @dev: net device structure
++ * __init_dma_rx_desc_rings - init the RX descriptor ring (per queue)
++ * @priv: driver private structure
++ * @queue: RX queue index
+  * @flags: gfp flag.
+  * Description: this function initializes the DMA RX descriptors
+  * and allocates the socket buffers. It supports the chained and ring
+  * modes.
+  */
+-static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
++static int __init_dma_rx_desc_rings(struct stmmac_priv *priv, u32 queue, gfp_t flags)
+ {
+-	struct stmmac_priv *priv = netdev_priv(dev);
+-	u32 rx_count = priv->plat->rx_queues_to_use;
+-	int ret = -ENOMEM;
+-	int queue;
++	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
++	int ret;
+ 
+-	/* RX INITIALIZATION */
+ 	netif_dbg(priv, probe, priv->dev,
+-		  "SKB addresses:\nskb\t\tskb data\tdma data\n");
++		  "(%s) dma_rx_phy=0x%08x\n", __func__,
++		  (u32)rx_q->dma_rx_phy);
+ 
+-	for (queue = 0; queue < rx_count; queue++) {
+-		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
++	stmmac_clear_rx_descriptors(priv, queue);
+ 
++	WARN_ON(xdp_rxq_info_reg_mem_model(&rx_q->xdp_rxq,
++					   MEM_TYPE_PAGE_POOL,
++					   rx_q->page_pool));
+ 
+-		netif_dbg(priv, probe, priv->dev,
+-			  "(%s) dma_rx_phy=0x%08x\n", __func__,
+-			  (u32)rx_q->dma_rx_phy);
++	netdev_info(priv->dev,
++		    "Register MEM_TYPE_PAGE_POOL RxQ-%d\n",
++		    rx_q->queue_index);
+ 
+-		stmmac_clear_rx_descriptors(priv, queue);
++	ret = stmmac_alloc_rx_buffers(priv, queue, flags);
++	if (ret < 0)
++		return -ENOMEM;
+ 
+-		WARN_ON(xdp_rxq_info_reg_mem_model(&rx_q->xdp_rxq,
+-						   MEM_TYPE_PAGE_POOL,
+-						   rx_q->page_pool));
++	rx_q->cur_rx = 0;
++	rx_q->dirty_rx = 0;
+ 
+-		netdev_info(priv->dev,
+-			    "Register MEM_TYPE_PAGE_POOL RxQ-%d\n",
+-			    rx_q->queue_index);
++	/* Setup the chained descriptor addresses */
++	if (priv->mode == STMMAC_CHAIN_MODE) {
++		if (priv->extend_desc)
++			stmmac_mode_init(priv, rx_q->dma_erx,
++					 rx_q->dma_rx_phy,
++					 priv->dma_rx_size, 1);
++		else
++			stmmac_mode_init(priv, rx_q->dma_rx,
++					 rx_q->dma_rx_phy,
++					 priv->dma_rx_size, 0);
 +	}
  
--	if (priv->sph) {
-+	if (priv->sph && !buf->sec_page) {
- 		buf->sec_page = page_pool_dev_alloc_pages(rx_q->page_pool);
- 		if (!buf->sec_page)
- 			return -ENOMEM;
-@@ -1547,48 +1549,16 @@ static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
- {
- 	u32 rx_count = priv->plat->rx_queues_to_use;
- 	u32 queue;
--	int i;
+-		ret = stmmac_alloc_rx_buffers(priv, queue, flags);
+-		if (ret < 0)
+-			goto err_init_rx_buffers;
++	return 0;
++}
  
- 	for (queue = 0; queue < rx_count; queue++)
- 		dma_recycle_rx_skbufs(priv, queue);
+-		rx_q->cur_rx = 0;
+-		rx_q->dirty_rx = 0;
++static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
++{
++	struct stmmac_priv *priv = netdev_priv(dev);
++	u32 rx_count = priv->plat->rx_queues_to_use;
++	u32 queue;
++	int ret;
  
- 	for (queue = 0; queue < rx_count; queue++) {
--		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
--
--		for (i = 0; i < priv->dma_rx_size; i++) {
--			struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
--			struct dma_desc *p;
--
+-		/* Setup the chained descriptor addresses */
+-		if (priv->mode == STMMAC_CHAIN_MODE) {
 -			if (priv->extend_desc)
--				p = &((rx_q->dma_erx + i)->basic);
+-				stmmac_mode_init(priv, rx_q->dma_erx,
+-						 rx_q->dma_rx_phy,
+-						 priv->dma_rx_size, 1);
 -			else
--				p = rx_q->dma_rx + i;
--
--			if (!buf->page) {
--				buf->page = page_pool_dev_alloc_pages(rx_q->page_pool);
--				if (!buf->page)
--					goto err_reinit_rx_buffers;
--
--				buf->addr = page_pool_get_dma_addr(buf->page) +
--					    buf->page_offset;
--			}
--
--			if (priv->sph && !buf->sec_page) {
--				buf->sec_page = page_pool_dev_alloc_pages(rx_q->page_pool);
--				if (!buf->sec_page)
--					goto err_reinit_rx_buffers;
--
--				buf->sec_addr = page_pool_get_dma_addr(buf->sec_page);
--			}
-+		int ret;
- 
--			stmmac_set_desc_addr(priv, p, buf->addr);
--			if (priv->sph)
--				stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, true);
--			else
--				stmmac_set_desc_sec_addr(priv, p, buf->sec_addr, false);
--			if (priv->dma_buf_sz == BUF_SIZE_16KiB)
--				stmmac_init_desc3(priv, p);
+-				stmmac_mode_init(priv, rx_q->dma_rx,
+-						 rx_q->dma_rx_phy,
+-						 priv->dma_rx_size, 0);
 -		}
-+		ret = stmmac_alloc_rx_buffers(priv, queue, GFP_KERNEL);
-+		if (ret < 0)
-+			goto err_reinit_rx_buffers;
- 	}
- 
- 	return;
-@@ -1791,153 +1761,173 @@ static void stmmac_free_tx_skbufs(struct stmmac_priv *priv)
- }
- 
- /**
-- * free_dma_rx_desc_resources - free RX dma desc resources
-+ * __free_dma_rx_desc_resources - free RX dma desc resources (per queue)
-  * @priv: private structure
-+ * @queue: RX queue index
-  */
--static void free_dma_rx_desc_resources(struct stmmac_priv *priv)
-+static void __free_dma_rx_desc_resources(struct stmmac_priv *priv, u32 queue)
- {
--	u32 rx_count = priv->plat->rx_queues_to_use;
--	u32 queue;
-+	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
- 
--	/* Free RX queue resources */
--	for (queue = 0; queue < rx_count; queue++) {
--		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
-+	/* Release the DMA RX socket buffers */
-+	dma_free_rx_skbufs(priv, queue);
- 
--		/* Release the DMA RX socket buffers */
--		dma_free_rx_skbufs(priv, queue);
-+	/* Free DMA regions of consistent memory previously allocated */
-+	if (!priv->extend_desc)
-+		dma_free_coherent(priv->device, priv->dma_rx_size *
-+				  sizeof(struct dma_desc),
-+				  rx_q->dma_rx, rx_q->dma_rx_phy);
-+	else
-+		dma_free_coherent(priv->device, priv->dma_rx_size *
-+				  sizeof(struct dma_extended_desc),
-+				  rx_q->dma_erx, rx_q->dma_rx_phy);
- 
--		/* Free DMA regions of consistent memory previously allocated */
--		if (!priv->extend_desc)
--			dma_free_coherent(priv->device, priv->dma_rx_size *
--					  sizeof(struct dma_desc),
--					  rx_q->dma_rx, rx_q->dma_rx_phy);
--		else
--			dma_free_coherent(priv->device, priv->dma_rx_size *
--					  sizeof(struct dma_extended_desc),
--					  rx_q->dma_erx, rx_q->dma_rx_phy);
-+	if (xdp_rxq_info_is_reg(&rx_q->xdp_rxq))
-+		xdp_rxq_info_unreg(&rx_q->xdp_rxq);
- 
--		if (xdp_rxq_info_is_reg(&rx_q->xdp_rxq))
--			xdp_rxq_info_unreg(&rx_q->xdp_rxq);
-+	kfree(rx_q->buf_pool);
-+	if (rx_q->page_pool)
-+		page_pool_destroy(rx_q->page_pool);
-+}
- 
--		kfree(rx_q->buf_pool);
--		if (rx_q->page_pool)
--			page_pool_destroy(rx_q->page_pool);
--	}
-+static void free_dma_rx_desc_resources(struct stmmac_priv *priv)
-+{
-+	u32 rx_count = priv->plat->rx_queues_to_use;
-+	u32 queue;
++	/* RX INITIALIZATION */
++	netif_dbg(priv, probe, priv->dev,
++		  "SKB addresses:\nskb\t\tskb data\tdma data\n");
 +
-+	/* Free RX queue resources */
-+	for (queue = 0; queue < rx_count; queue++)
-+		__free_dma_rx_desc_resources(priv, queue);
- }
- 
- /**
-- * free_dma_tx_desc_resources - free TX dma desc resources
-+ * __free_dma_tx_desc_resources - free TX dma desc resources (per queue)
-  * @priv: private structure
-+ * @queue: TX queue index
-  */
--static void free_dma_tx_desc_resources(struct stmmac_priv *priv)
-+static void __free_dma_tx_desc_resources(struct stmmac_priv *priv, u32 queue)
- {
--	u32 tx_count = priv->plat->tx_queues_to_use;
--	u32 queue;
-+	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
-+	size_t size;
-+	void *addr;
- 
--	/* Free TX queue resources */
--	for (queue = 0; queue < tx_count; queue++) {
--		struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
--		size_t size;
--		void *addr;
-+	/* Release the DMA TX socket buffers */
-+	dma_free_tx_skbufs(priv, queue);
-+
-+	if (priv->extend_desc) {
-+		size = sizeof(struct dma_extended_desc);
-+		addr = tx_q->dma_etx;
-+	} else if (tx_q->tbs & STMMAC_TBS_AVAIL) {
-+		size = sizeof(struct dma_edesc);
-+		addr = tx_q->dma_entx;
-+	} else {
-+		size = sizeof(struct dma_desc);
-+		addr = tx_q->dma_tx;
-+	}
- 
--		/* Release the DMA TX socket buffers */
--		dma_free_tx_skbufs(priv, queue);
-+	size *= priv->dma_tx_size;
- 
--		if (priv->extend_desc) {
--			size = sizeof(struct dma_extended_desc);
--			addr = tx_q->dma_etx;
--		} else if (tx_q->tbs & STMMAC_TBS_AVAIL) {
--			size = sizeof(struct dma_edesc);
--			addr = tx_q->dma_entx;
--		} else {
--			size = sizeof(struct dma_desc);
--			addr = tx_q->dma_tx;
--		}
-+	dma_free_coherent(priv->device, size, addr, tx_q->dma_tx_phy);
- 
--		size *= priv->dma_tx_size;
-+	kfree(tx_q->tx_skbuff_dma);
-+	kfree(tx_q->tx_skbuff);
-+}
- 
--		dma_free_coherent(priv->device, size, addr, tx_q->dma_tx_phy);
-+static void free_dma_tx_desc_resources(struct stmmac_priv *priv)
-+{
-+	u32 tx_count = priv->plat->tx_queues_to_use;
-+	u32 queue;
- 
--		kfree(tx_q->tx_skbuff_dma);
--		kfree(tx_q->tx_skbuff);
--	}
-+	/* Free TX queue resources */
-+	for (queue = 0; queue < tx_count; queue++)
-+		__free_dma_tx_desc_resources(priv, queue);
- }
- 
- /**
-- * alloc_dma_rx_desc_resources - alloc RX resources.
-+ * __alloc_dma_rx_desc_resources - alloc RX resources (per queue).
-  * @priv: private structure
-+ * @queue: RX queue index
-  * Description: according to which descriptor can be used (extend or basic)
-  * this function allocates the resources for TX and RX paths. In case of
-  * reception, for example, it pre-allocated the RX socket buffer in order to
-  * allow zero-copy mechanism.
-  */
--static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
-+static int __alloc_dma_rx_desc_resources(struct stmmac_priv *priv, u32 queue)
- {
-+	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
-+	struct stmmac_channel *ch = &priv->channel[queue];
- 	bool xdp_prog = stmmac_xdp_is_enabled(priv);
--	u32 rx_count = priv->plat->rx_queues_to_use;
--	int ret = -ENOMEM;
--	u32 queue;
-+	struct page_pool_params pp_params = { 0 };
-+	unsigned int num_pages;
-+	int ret;
- 
--	/* RX queues buffers and DMA */
--	for (queue = 0; queue < rx_count; queue++) {
--		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
--		struct stmmac_channel *ch = &priv->channel[queue];
--		struct page_pool_params pp_params = { 0 };
--		unsigned int num_pages;
--		int ret;
-+	rx_q->queue_index = queue;
-+	rx_q->priv_data = priv;
-+
-+	pp_params.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
-+	pp_params.pool_size = priv->dma_rx_size;
-+	num_pages = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
-+	pp_params.order = ilog2(num_pages);
-+	pp_params.nid = dev_to_node(priv->device);
-+	pp_params.dev = priv->device;
-+	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-+	pp_params.offset = stmmac_rx_offset(priv);
-+	pp_params.max_len = STMMAC_MAX_RX_BUF_SIZE(num_pages);
-+
-+	rx_q->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(rx_q->page_pool)) {
-+		ret = PTR_ERR(rx_q->page_pool);
-+		rx_q->page_pool = NULL;
-+		return ret;
-+	}
- 
--		rx_q->queue_index = queue;
--		rx_q->priv_data = priv;
--
--		pp_params.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
--		pp_params.pool_size = priv->dma_rx_size;
--		num_pages = DIV_ROUND_UP(priv->dma_buf_sz, PAGE_SIZE);
--		pp_params.order = ilog2(num_pages);
--		pp_params.nid = dev_to_node(priv->device);
--		pp_params.dev = priv->device;
--		pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
--		pp_params.offset = stmmac_rx_offset(priv);
--		pp_params.max_len = STMMAC_MAX_RX_BUF_SIZE(num_pages);
--
--		rx_q->page_pool = page_pool_create(&pp_params);
--		if (IS_ERR(rx_q->page_pool)) {
--			ret = PTR_ERR(rx_q->page_pool);
--			rx_q->page_pool = NULL;
--			goto err_dma;
--		}
-+	rx_q->buf_pool = kcalloc(priv->dma_rx_size,
-+				 sizeof(*rx_q->buf_pool),
-+				 GFP_KERNEL);
-+	if (!rx_q->buf_pool)
-+		return -ENOMEM;
- 
--		rx_q->buf_pool = kcalloc(priv->dma_rx_size,
--					 sizeof(*rx_q->buf_pool),
--					 GFP_KERNEL);
--		if (!rx_q->buf_pool)
--			goto err_dma;
-+	if (priv->extend_desc) {
-+		rx_q->dma_erx = dma_alloc_coherent(priv->device,
-+						   priv->dma_rx_size *
-+						   sizeof(struct dma_extended_desc),
-+						   &rx_q->dma_rx_phy,
-+						   GFP_KERNEL);
-+		if (!rx_q->dma_erx)
-+			return -ENOMEM;
- 
--		if (priv->extend_desc) {
--			rx_q->dma_erx = dma_alloc_coherent(priv->device,
--							   priv->dma_rx_size *
--							   sizeof(struct dma_extended_desc),
--							   &rx_q->dma_rx_phy,
--							   GFP_KERNEL);
--			if (!rx_q->dma_erx)
--				goto err_dma;
-+	} else {
-+		rx_q->dma_rx = dma_alloc_coherent(priv->device,
-+						  priv->dma_rx_size *
-+						  sizeof(struct dma_desc),
-+						  &rx_q->dma_rx_phy,
-+						  GFP_KERNEL);
-+		if (!rx_q->dma_rx)
-+			return -ENOMEM;
-+	}
- 
--		} else {
--			rx_q->dma_rx = dma_alloc_coherent(priv->device,
--							  priv->dma_rx_size *
--							  sizeof(struct dma_desc),
--							  &rx_q->dma_rx_phy,
--							  GFP_KERNEL);
--			if (!rx_q->dma_rx)
--				goto err_dma;
--		}
-+	ret = xdp_rxq_info_reg(&rx_q->xdp_rxq, priv->dev,
-+			       rx_q->queue_index,
-+			       ch->rx_napi.napi_id);
-+	if (ret) {
-+		netdev_err(priv->dev, "Failed to register xdp rxq info\n");
-+		return -EINVAL;
-+	}
- 
--		ret = xdp_rxq_info_reg(&rx_q->xdp_rxq, priv->dev,
--				       rx_q->queue_index,
--				       ch->rx_napi.napi_id);
--		if (ret) {
--			netdev_err(priv->dev, "Failed to register xdp rxq info\n");
-+	return 0;
-+}
-+
-+static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
-+{
-+	u32 rx_count = priv->plat->rx_queues_to_use;
-+	u32 queue;
-+	int ret;
-+
-+	/* RX queues buffers and DMA */
 +	for (queue = 0; queue < rx_count; queue++) {
-+		ret = __alloc_dma_rx_desc_resources(priv, queue);
++		ret = __init_dma_rx_desc_rings(priv, queue, flags);
 +		if (ret)
- 			goto err_dma;
--		}
++			goto err_init_rx_buffers;
  	}
  
  	return 0;
-@@ -1949,60 +1939,70 @@ static int alloc_dma_rx_desc_resources(struct stmmac_priv *priv)
+@@ -1647,63 +1657,73 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
  }
  
  /**
-- * alloc_dma_tx_desc_resources - alloc TX resources.
-+ * __alloc_dma_tx_desc_resources - alloc TX resources (per queue).
-  * @priv: private structure
-+ * @queue: TX queue index
-  * Description: according to which descriptor can be used (extend or basic)
-  * this function allocates the resources for TX and RX paths. In case of
-  * reception, for example, it pre-allocated the RX socket buffer in order to
-  * allow zero-copy mechanism.
+- * init_dma_tx_desc_rings - init the TX descriptor rings
+- * @dev: net device structure.
++ * __init_dma_tx_desc_rings - init the TX descriptor ring (per queue)
++ * @priv: driver private structure
++ * @queue : TX queue index
+  * Description: this function initializes the DMA TX descriptors
+  * and allocates the socket buffers. It supports the chained and ring
+  * modes.
   */
--static int alloc_dma_tx_desc_resources(struct stmmac_priv *priv)
-+static int __alloc_dma_tx_desc_resources(struct stmmac_priv *priv, u32 queue)
+-static int init_dma_tx_desc_rings(struct net_device *dev)
++static int __init_dma_tx_desc_rings(struct stmmac_priv *priv, u32 queue)
  {
--	u32 tx_count = priv->plat->tx_queues_to_use;
--	int ret = -ENOMEM;
+-	struct stmmac_priv *priv = netdev_priv(dev);
+-	u32 tx_queue_cnt = priv->plat->tx_queues_to_use;
 -	u32 queue;
 +	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
-+	size_t size;
-+	void *addr;
+ 	int i;
  
--	/* TX queues buffers and DMA */
--	for (queue = 0; queue < tx_count; queue++) {
+-	for (queue = 0; queue < tx_queue_cnt; queue++) {
 -		struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
--		size_t size;
--		void *addr;
-+	tx_q->queue_index = queue;
-+	tx_q->priv_data = priv;
+-
+-		netif_dbg(priv, probe, priv->dev,
+-			  "(%s) dma_tx_phy=0x%08x\n", __func__,
+-			 (u32)tx_q->dma_tx_phy);
+-
+-		/* Setup the chained descriptor addresses */
+-		if (priv->mode == STMMAC_CHAIN_MODE) {
+-			if (priv->extend_desc)
+-				stmmac_mode_init(priv, tx_q->dma_etx,
+-						 tx_q->dma_tx_phy,
+-						 priv->dma_tx_size, 1);
+-			else if (!(tx_q->tbs & STMMAC_TBS_AVAIL))
+-				stmmac_mode_init(priv, tx_q->dma_tx,
+-						 tx_q->dma_tx_phy,
+-						 priv->dma_tx_size, 0);
+-		}
++	netif_dbg(priv, probe, priv->dev,
++		  "(%s) dma_tx_phy=0x%08x\n", __func__,
++		  (u32)tx_q->dma_tx_phy);
  
--		tx_q->queue_index = queue;
--		tx_q->priv_data = priv;
-+	tx_q->tx_skbuff_dma = kcalloc(priv->dma_tx_size,
-+				      sizeof(*tx_q->tx_skbuff_dma),
-+				      GFP_KERNEL);
-+	if (!tx_q->tx_skbuff_dma)
-+		return -ENOMEM;
+-		for (i = 0; i < priv->dma_tx_size; i++) {
+-			struct dma_desc *p;
+-			if (priv->extend_desc)
+-				p = &((tx_q->dma_etx + i)->basic);
+-			else if (tx_q->tbs & STMMAC_TBS_AVAIL)
+-				p = &((tx_q->dma_entx + i)->basic);
+-			else
+-				p = tx_q->dma_tx + i;
++	/* Setup the chained descriptor addresses */
++	if (priv->mode == STMMAC_CHAIN_MODE) {
++		if (priv->extend_desc)
++			stmmac_mode_init(priv, tx_q->dma_etx,
++					 tx_q->dma_tx_phy,
++					 priv->dma_tx_size, 1);
++		else if (!(tx_q->tbs & STMMAC_TBS_AVAIL))
++			stmmac_mode_init(priv, tx_q->dma_tx,
++					 tx_q->dma_tx_phy,
++					 priv->dma_tx_size, 0);
++	}
  
--		tx_q->tx_skbuff_dma = kcalloc(priv->dma_tx_size,
--					      sizeof(*tx_q->tx_skbuff_dma),
--					      GFP_KERNEL);
--		if (!tx_q->tx_skbuff_dma)
--			goto err_dma;
-+	tx_q->tx_skbuff = kcalloc(priv->dma_tx_size,
-+				  sizeof(struct sk_buff *),
-+				  GFP_KERNEL);
-+	if (!tx_q->tx_skbuff)
-+		return -ENOMEM;
+-			stmmac_clear_desc(priv, p);
++	for (i = 0; i < priv->dma_tx_size; i++) {
++		struct dma_desc *p;
  
--		tx_q->tx_skbuff = kcalloc(priv->dma_tx_size,
--					  sizeof(struct sk_buff *),
--					  GFP_KERNEL);
--		if (!tx_q->tx_skbuff)
--			goto err_dma;
-+	if (priv->extend_desc)
-+		size = sizeof(struct dma_extended_desc);
-+	else if (tx_q->tbs & STMMAC_TBS_AVAIL)
-+		size = sizeof(struct dma_edesc);
-+	else
-+		size = sizeof(struct dma_desc);
+-			tx_q->tx_skbuff_dma[i].buf = 0;
+-			tx_q->tx_skbuff_dma[i].map_as_page = false;
+-			tx_q->tx_skbuff_dma[i].len = 0;
+-			tx_q->tx_skbuff_dma[i].last_segment = false;
+-			tx_q->tx_skbuff[i] = NULL;
+-		}
++		if (priv->extend_desc)
++			p = &((tx_q->dma_etx + i)->basic);
++		else if (tx_q->tbs & STMMAC_TBS_AVAIL)
++			p = &((tx_q->dma_entx + i)->basic);
++		else
++			p = tx_q->dma_tx + i;
  
--		if (priv->extend_desc)
--			size = sizeof(struct dma_extended_desc);
--		else if (tx_q->tbs & STMMAC_TBS_AVAIL)
--			size = sizeof(struct dma_edesc);
--		else
--			size = sizeof(struct dma_desc);
-+	size *= priv->dma_tx_size;
+-		tx_q->dirty_tx = 0;
+-		tx_q->cur_tx = 0;
+-		tx_q->mss = 0;
++		stmmac_clear_desc(priv, p);
  
--		size *= priv->dma_tx_size;
-+	addr = dma_alloc_coherent(priv->device, size,
-+				  &tx_q->dma_tx_phy, GFP_KERNEL);
-+	if (!addr)
-+		return -ENOMEM;
+-		netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
++		tx_q->tx_skbuff_dma[i].buf = 0;
++		tx_q->tx_skbuff_dma[i].map_as_page = false;
++		tx_q->tx_skbuff_dma[i].len = 0;
++		tx_q->tx_skbuff_dma[i].last_segment = false;
++		tx_q->tx_skbuff[i] = NULL;
+ 	}
  
--		addr = dma_alloc_coherent(priv->device, size,
--					  &tx_q->dma_tx_phy, GFP_KERNEL);
--		if (!addr)
--			goto err_dma;
-+	if (priv->extend_desc)
-+		tx_q->dma_etx = addr;
-+	else if (tx_q->tbs & STMMAC_TBS_AVAIL)
-+		tx_q->dma_entx = addr;
-+	else
-+		tx_q->dma_tx = addr;
- 
--		if (priv->extend_desc)
--			tx_q->dma_etx = addr;
--		else if (tx_q->tbs & STMMAC_TBS_AVAIL)
--			tx_q->dma_entx = addr;
--		else
--			tx_q->dma_tx = addr;
++	tx_q->dirty_tx = 0;
++	tx_q->cur_tx = 0;
++	tx_q->mss = 0;
++
++	netdev_tx_reset_queue(netdev_get_tx_queue(priv->dev, queue));
++
 +	return 0;
 +}
 +
-+static int alloc_dma_tx_desc_resources(struct stmmac_priv *priv)
++static int init_dma_tx_desc_rings(struct net_device *dev)
 +{
-+	u32 tx_count = priv->plat->tx_queues_to_use;
++	struct stmmac_priv *priv = netdev_priv(dev);
++	u32 tx_queue_cnt;
 +	u32 queue;
-+	int ret;
 +
-+	/* TX queues buffers and DMA */
-+	for (queue = 0; queue < tx_count; queue++) {
-+		ret = __alloc_dma_tx_desc_resources(priv, queue);
-+		if (ret)
-+			goto err_dma;
- 	}
- 
++	tx_queue_cnt = priv->plat->tx_queues_to_use;
++
++	for (queue = 0; queue < tx_queue_cnt; queue++)
++		__init_dma_tx_desc_rings(priv, queue);
++
  	return 0;
+ }
+ 
 -- 
 2.25.1
 
