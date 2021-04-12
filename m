@@ -2,60 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E74835C04C
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 11:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5506C35BEBF
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 11:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238423AbhDLJML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 05:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239294AbhDLJHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 05:07:07 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776C3C06137A;
-        Mon, 12 Apr 2021 02:02:36 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1lVsSf-0004hh-JE; Mon, 12 Apr 2021 11:02:25 +0200
-Date:   Mon, 12 Apr 2021 11:02:25 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Message-ID: <20210412090225.GB14932@breakpoint.cc>
-References: <20210412150416.4465b518@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210412150416.4465b518@canb.auug.org.au>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S237733AbhDLJBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 05:01:55 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:36210 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238785AbhDLI5Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 04:57:16 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D64EE1A1B85;
+        Mon, 12 Apr 2021 10:56:57 +0200 (CEST)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 842071A1B82;
+        Mon, 12 Apr 2021 10:56:54 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 0AFF94032C;
+        Mon, 12 Apr 2021 10:56:49 +0200 (CEST)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [net-next, v3, 0/2] enetc: support PTP Sync packet one-step timestamping
+Date:   Mon, 12 Apr 2021 17:03:25 +0800
+Message-Id: <20210412090327.22330-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> net/bridge/netfilter/ebtables.c:1248:33: error: 'struct netns_xt' has no member named 'tables'
->  1248 |  list_for_each_entry(t, &net->xt.tables[NFPROTO_BRIDGE], list) {
->       |                                 ^
-> include/linux/list.h:619:20: note: in definition of macro 'list_entry_is_head'
->   619 |  (&pos->member == (head))
->       |                    ^~~~
-> net/bridge/netfilter/ebtables.c:1248:2: note: in expansion of macro 'list_for_each_entry'
->  1248 |  list_for_each_entry(t, &net->xt.tables[NFPROTO_BRIDGE], list) {
->       |  ^~~~~~~~~~~~~~~~~~~
-> 
-> Caused by commit
-> 
->   5b53951cfc85 ("netfilter: ebtables: use net_generic infra")
-> 
-> interacting with commit
-> 
->   7ee3c61dcd28 ("netfilter: bridge: add pre_exit hooks for ebtable unregistration")
+This patch-set is to add support for PTP Sync packet one-step timestamping.
+Since ENETC single-step register has to be configured dynamically per
+packet for correctionField offeset and UDP checksum update, current
+one-step timestamping packet has to be sent only when the last one
+completes transmitting on hardware. So, on the TX, this patch handles
+one-step timestamping packet as below:
 
-Right, the fixup is correct.
+- Trasmit packet immediately if no other one in transfer, or queue to
+  skb queue if there is already one in transfer.
+  The test_and_set_bit_lock() is used here to lock and check state.
+- Start a work when complete transfer on hardware, to release the bit
+  lock and to send one skb in skb queue if has.
+
+Changes for v2:
+	- Rebased.
+	- Fixed issues from patchwork checks.
+	- netif_tx_lock for one-step timestamping packet sending.
+Changes for v3:
+	- Used system workqueue.
+	- Set bit lock when transmitted one-step packet, and scheduled
+	  work when completed. The worker cleared the bit lock, and
+	  transmitted one skb in skb queue if has, instead of a loop.
+
+Yangbo Lu (2):
+  enetc: mark TX timestamp type per skb
+  enetc: support PTP Sync packet one-step timestamping
+
+ drivers/net/ethernet/freescale/enetc/enetc.c  | 193 ++++++++++++++++--
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  23 ++-
+ .../ethernet/freescale/enetc/enetc_ethtool.c  |   3 +-
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |   7 +
+ 4 files changed, 200 insertions(+), 26 deletions(-)
+
+
+base-commit: 5b489fea977c2b23e26e2f630478da0f4bfdc879
+-- 
+2.25.1
+
