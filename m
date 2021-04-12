@@ -2,124 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1456035BED8
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 11:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8AC935BECF
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 11:02:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238939AbhDLJCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 05:02:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239636AbhDLJA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 05:00:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2CCC961370;
-        Mon, 12 Apr 2021 08:58:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1618217927;
-        bh=ACtMWK41v8hxTWK8YferxvR+RzIdpU+E0ffPqlv1ssU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jgMTOkAiT8bPwQl0CrIJfgk86iF0bVOAVNSkuwRbTvTrDDXvLMXfF6s/43eosNq5S
-         O64TyGlUvPjmsmflK3eUYmZH6/VH0M2CFzCuNF7+OlBsRtPNns4mMIk1aIcQ218l1P
-         fA2HUFnXxwNSPPj9Olhp5cnGEkD0PLW3iDvcdq7Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org, Dmitry Safonov <dima@arista.com>
-Subject: [PATCH 5.11 001/210] xfrm/compat: Cleanup WARN()s that can be user-triggered
-Date:   Mon, 12 Apr 2021 10:38:26 +0200
-Message-Id: <20210412084016.059533040@linuxfoundation.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210412084016.009884719@linuxfoundation.org>
-References: <20210412084016.009884719@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        id S238817AbhDLJCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 05:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239059AbhDLI7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 04:59:05 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A9DC06138D
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:56:50 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id n8so20188276lfh.1
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:56:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=v80JJJDW9QtxHkk0a0zU0nnrThIy25/WR2Z0y5oalCQ=;
+        b=B0FICsUZf5BlugUzF6HFNlkL5xjsucp0vP8Ze+uCdd+R0swzQwgQoJXK+CzHNwyYps
+         Idg6A81UHoPEHV2+aO2VHh1yzZWxUDXt0M2lvIN+6AGXURRcLwc18alykY183arV+jv0
+         gtKBn//eU/Vh3G5BzOFRBljiadmr8pZ/Oab80=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=v80JJJDW9QtxHkk0a0zU0nnrThIy25/WR2Z0y5oalCQ=;
+        b=nc7+ux8U6pcqRAVUUxQkGZ9X0YxsbAIUWv0kBcmp7mR3MYW8M3gJNyhPPIDzlaOFok
+         b7yXC/SD/lsQ26+q/4Kxifs6tlbFv0eJfkKk997Cig8J82eg22nctEzSYd0orPG5Ggnc
+         6WlE0NE1PnPhIolj/Kgwopsea82mcA4zM9xuEnrkgVp/5Q59kTl5dXSik4xmQUswipFQ
+         74niKVCosRsFh2/pdS4MxofKsQ0izMfvkbczmuigbt+1W7oYNrMAK5NFYyM12hdtk5/N
+         kCTen6mRMOQcopXFQDTzts8BnYQVhGraPpNFzJ8187e+f5Qy1v6jVbe0W3aTy6mPGfE7
+         xw+Q==
+X-Gm-Message-State: AOAM530nBPQ9MyJWFvBdtqXWJIr4OPSILbAAhDESoZ9IJn+dHy1w9GOY
+        q7rkhZrXLvD448gw87bwx9Ae9g==
+X-Google-Smtp-Source: ABdhPJzS8q80Ofl+UQJgn2PmQRSlB7aoaXgbZM87nPxi9zU3guOvIdL4NtCaH8vS1B7vmXTmlb/huA==
+X-Received: by 2002:ac2:5617:: with SMTP id v23mr18500507lfd.123.1618217808502;
+        Mon, 12 Apr 2021 01:56:48 -0700 (PDT)
+Received: from cloudflare.com (79.184.75.85.ipv4.supernova.orange.pl. [79.184.75.85])
+        by smtp.gmail.com with ESMTPSA id y25sm2739125ljc.73.2021.04.12.01.56.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 01:56:47 -0700 (PDT)
+References: <20210408030556.45134-1-xiyou.wangcong@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [Patch bpf-next] sock_map: fix a potential use-after-free in
+ sock_map_close()
+In-reply-to: <20210408030556.45134-1-xiyou.wangcong@gmail.com>
+Date:   Mon, 12 Apr 2021 10:56:46 +0200
+Message-ID: <87pmyz3mpd.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Safonov <dima@arista.com>
+On Thu, Apr 08, 2021 at 05:05 AM CEST, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+>
+> The last refcnt of the psock can be gone right after
+> sock_map_remove_links(), so sk_psock_stop() could trigger a UAF.
+> The reason why I placed sk_psock_stop() there is to avoid RCU read
+> critical section, and more importantly, some callee of
+> sock_map_remove_links() is supposed to be called with RCU read lock,
+> we can not simply get rid of RCU read lock here. Therefore, the only
+> choice we have is to grab an additional refcnt with sk_psock_get()
+> and put it back after sk_psock_stop().
+>
+> Reported-by: syzbot+7b6548ae483d6f4c64ae@syzkaller.appspotmail.com
+> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-commit ef19e111337f6c3dca7019a8bad5fbc6fb18d635 upstream.
-
-Replace WARN_ONCE() that can be triggered from userspace with
-pr_warn_once(). Those still give user a hint what's the issue.
-
-I've left WARN()s that are not possible to trigger with current
-code-base and that would mean that the code has issues:
-- relying on current compat_msg_min[type] <= xfrm_msg_min[type]
-- expected 4-byte padding size difference between
-  compat_msg_min[type] and xfrm_msg_min[type]
-- compat_policy[type].len <= xfrma_policy[type].len
-(for every type)
-
-Reported-by: syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com
-Fixes: 5f3eea6b7e8f ("xfrm/compat: Attach xfrm dumps to 64=>32 bit translator")
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Safonov <dima@arista.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/xfrm/xfrm_compat.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
-
---- a/net/xfrm/xfrm_compat.c
-+++ b/net/xfrm/xfrm_compat.c
-@@ -216,7 +216,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_c
- 	case XFRM_MSG_GETSADINFO:
- 	case XFRM_MSG_GETSPDINFO:
- 	default:
--		WARN_ONCE(1, "unsupported nlmsg_type %d", nlh_src->nlmsg_type);
-+		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
- 		return ERR_PTR(-EOPNOTSUPP);
- 	}
- 
-@@ -277,7 +277,7 @@ static int xfrm_xlate64_attr(struct sk_b
- 		return xfrm_nla_cpy(dst, src, nla_len(src));
- 	default:
- 		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
--		WARN_ONCE(1, "unsupported nla_type %d", src->nla_type);
-+		pr_warn_once("unsupported nla_type %d\n", src->nla_type);
- 		return -EOPNOTSUPP;
- 	}
- }
-@@ -315,8 +315,10 @@ static int xfrm_alloc_compat(struct sk_b
- 	struct sk_buff *new = NULL;
- 	int err;
- 
--	if (WARN_ON_ONCE(type >= ARRAY_SIZE(xfrm_msg_min)))
-+	if (type >= ARRAY_SIZE(xfrm_msg_min)) {
-+		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
- 		return -EOPNOTSUPP;
-+	}
- 
- 	if (skb_shinfo(skb)->frag_list == NULL) {
- 		new = alloc_skb(skb->len + skb_tailroom(skb), GFP_ATOMIC);
-@@ -378,6 +380,10 @@ static int xfrm_attr_cpy32(void *dst, si
- 	struct nlmsghdr *nlmsg = dst;
- 	struct nlattr *nla;
- 
-+	/* xfrm_user_rcv_msg_compat() relies on fact that 32-bit messages
-+	 * have the same len or shorted than 64-bit ones.
-+	 * 32-bit translation that is bigger than 64-bit original is unexpected.
-+	 */
- 	if (WARN_ON_ONCE(copy_len > payload))
- 		copy_len = payload;
- 
-
-
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
