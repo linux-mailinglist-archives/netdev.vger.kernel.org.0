@@ -2,25 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9906D35D3B4
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 01:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 786BF35D3B9
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 01:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344010AbhDLXEq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 12 Apr 2021 19:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55210 "EHLO
+        id S241881AbhDLXJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 19:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241815AbhDLXEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 19:04:45 -0400
-Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84F5C061574;
-        Mon, 12 Apr 2021 16:04:26 -0700 (PDT)
-Received: from thinkpad (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id 0FA8B13FC7A;
-        Tue, 13 Apr 2021 01:04:24 +0200 (CEST)
-Date:   Tue, 13 Apr 2021 01:04:23 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        with ESMTP id S237611AbhDLXJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 19:09:27 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251EEC061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 16:09:08 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id a25so4019748ljm.11
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 16:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=n38TXfinM8M/vOCnLljCyW6opWl632LLNTqZhEwUeTA=;
+        b=R9NgDMrVFMIUl7QxV+c06S2YIy6SIecVB3jtjAgbpJZl9WjI9RKyMOFYx/6i5MPXsJ
+         wYY5N/WjMEiro2ZpcpLzYRCd8sJ+xJqanf9Kn3N8U61/k4nRAtxj9heLVLpDhF2UMS/3
+         i1UXBwCVWZ+eUxFfJoOfVDNDNBeo6mC66kaeaHwa/xhraLqYsiHa4/aPxcC9muqxyTvV
+         cscwohBmetNs0dBN+EnoBDcBTbntLaaingqU6I0rtOItqkHIuf4j1sB5v2ftJ15/2DGd
+         l7h3aBMhTDeDrrYnnlM1IKHM58FGbmmwClM13s2mk1CkxoCmq74M4AUK3pXTmciSnGpU
+         cs4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=n38TXfinM8M/vOCnLljCyW6opWl632LLNTqZhEwUeTA=;
+        b=HRXcM0k14bLIKlKEzziLT2QHbYhzjTKa2fc0Pe1fcqr7J6UE3vWiu/CYD4O7+0InOW
+         dTwAZ/MOthLjByqbEgLDtv5baX9hPO2+kLYh0gcF5sQWJK3X6V9j8HGvywSPrQ79E7xw
+         iktuaDof2RsDt+kISuAFtoafQhaBRrQY2eHWb4kiIMg5RS4XPNDJgZU0JrtzU0iWieQl
+         elVg0LpdkYIhcW5MpoUqRUOinMlmeTFvMZTUx0U6sIDJ80rYRoKWLsbcHLZr3jD/4M4r
+         CRCXJVXofQ9zOjWUkZMmiLQKQCm+FqeS0NtmaIA0VjB6KbF6+zsCNH6rCVbfoFh5m9Fj
+         KSvw==
+X-Gm-Message-State: AOAM53194h5sEAxEm/g1K+uOh0sVlpI1mySK6+kFocArIDWnAoHAzZUp
+        /JOd8b8LQAp6698hI2BN5CKDJw==
+X-Google-Smtp-Source: ABdhPJx06NxMuV1QKmqrbCvLvPEzOj/x6kSDnfOLDli9t9gNtmoveeX6VknvaWTDksfG253aQSfgZA==
+X-Received: by 2002:a2e:99c1:: with SMTP id l1mr707785ljj.180.1618268946482;
+        Mon, 12 Apr 2021 16:09:06 -0700 (PDT)
+Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
+        by smtp.gmail.com with ESMTPSA id m15sm2652921lfg.43.2021.04.12.16.09.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 16:09:06 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
         Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -33,7 +62,7 @@ Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
         Wei Wang <weiwan@google.com>,
         Cong Wang <cong.wang@bytedance.com>,
         Taehee Yoo <ap420073@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
         zhang kai <zhangkaiheb@126.com>,
         Weilong Chen <chenweilong@huawei.com>,
         Roopa Prabhu <roopa@cumulusnetworks.com>,
@@ -41,263 +70,123 @@ Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
         Francis Laniel <laniel_francis@privacyrequired.com>,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-Message-ID: <20210413010423.6986bd85@thinkpad>
-In-Reply-To: <20210412224805.sgweqvx7ngbtmf4n@skbuf>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com>
-        <20210411200135.35fb5985@thinkpad>
-        <20210411185017.3xf7kxzzq2vefpwu@skbuf>
-        <878s5nllgs.fsf@waldekranz.com>
-        <20210412213045.4277a598@thinkpad>
-        <8735vvkxju.fsf@waldekranz.com>
-        <20210412213402.vwvon2fdtzf4hnrt@skbuf>
-        <87zgy3jhr1.fsf@waldekranz.com>
-        <20210412220655.27rsiyxlf3f3tydm@skbuf>
-        <87tuobjg0j.fsf@waldekranz.com>
-        <20210412224805.sgweqvx7ngbtmf4n@skbuf>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+In-Reply-To: <20210413005518.2f9b9cef@thinkpad>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf> <878s5nllgs.fsf@waldekranz.com> <20210412213045.4277a598@thinkpad> <8735vvkxju.fsf@waldekranz.com> <20210412235054.73754df9@thinkpad> <87wnt7jgzk.fsf@waldekranz.com> <20210413005518.2f9b9cef@thinkpad>
+Date:   Tue, 13 Apr 2021 01:09:05 +0200
+Message-ID: <87r1jfje26.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Apr 2021 01:48:05 +0300
-Vladimir Oltean <olteanv@gmail.com> wrote:
+On Tue, Apr 13, 2021 at 00:55, Marek Behun <marek.behun@nic.cz> wrote:
+> On Tue, 13 Apr 2021 00:05:51 +0200
+> Tobias Waldekranz <tobias@waldekranz.com> wrote:
+>
+>> On Mon, Apr 12, 2021 at 23:50, Marek Behun <marek.behun@nic.cz> wrote:
+>> > On Mon, 12 Apr 2021 23:22:45 +0200
+>> > Tobias Waldekranz <tobias@waldekranz.com> wrote:
+>> >  
+>> >> On Mon, Apr 12, 2021 at 21:30, Marek Behun <marek.behun@nic.cz> wrote:  
+>> >> > On Mon, 12 Apr 2021 14:46:11 +0200
+>> >> > Tobias Waldekranz <tobias@waldekranz.com> wrote:
+>> >> >    
+>> >> >> I agree. Unless you only have a few really wideband flows, a LAG will
+>> >> >> typically do a great job with balancing. This will happen without the
+>> >> >> user having to do any configuration at all. It would also perform well
+>> >> >> in "router-on-a-stick"-setups where the incoming and outgoing port is
+>> >> >> the same.    
+>> >> >
+>> >> > TLDR: The problem with LAGs how they are currently implemented is that
+>> >> > for Turris Omnia, basically in 1/16 of configurations the traffic would
+>> >> > go via one CPU port anyway.
+>> >> >
+>> >> >
+>> >> >
+>> >> > One potencial problem that I see with using LAGs for aggregating CPU
+>> >> > ports on mv88e6xxx is how these switches determine the port for a
+>> >> > packet: only the src and dst MAC address is used for the hash that
+>> >> > chooses the port.
+>> >> >
+>> >> > The most common scenario for Turris Omnia, for example, where we have 2
+>> >> > CPU ports and 5 user ports, is that into these 5 user ports the user
+>> >> > plugs 5 simple devices (no switches, so only one peer MAC address for
+>> >> > port). So we have only 5 pairs of src + dst MAC addresses. If we simply
+>> >> > fill the LAG table as it is done now, then there is 2 * 0.5^5 = 1/16
+>> >> > chance that all packets would go through one CPU port.
+>> >> >
+>> >> > In order to have real load balancing in this scenario, we would either
+>> >> > have to recompute the LAG mask table depending on the MAC addresses, or
+>> >> > rewrite the LAG mask table somewhat randomly periodically. (This could
+>> >> > be in theory offloaded onto the Z80 internal CPU for some of the
+>> >> > switches of the mv88e6xxx family, but not for Omnia.)    
+>> >> 
+>> >> I thought that the option to associate each port netdev with a DSA
+>> >> master would only be used on transmit. Are you saying that there is a
+>> >> way to configure an mv88e6xxx chip to steer packets to different CPU
+>> >> ports depending on the incoming port?
+>> >>
+>> >> The reason that the traffic is directed towards the CPU is that some
+>> >> kind of entry in the ATU says so, and the destination of that entry will
+>> >> either be a port vector or a LAG. Of those two, only the LAG will offer
+>> >> any kind of balancing. What am I missing?  
+>> >
+>> > Via port vectors you can "load balance" by ports only, i.e. input port X  
+>> > -> trasmit via CPU port Y.  
+>> 
+>> How is this done? In a case where there is no bridging between the
+>> ports, then I understand. Each port could have its own FID. But if you
+>> have this setup...
+>> 
+>>    br0    wan
+>>    / \
+>> lan0 lan1
+>> 
+>> lan0 and lan1 would use the same FID. So how could you say that frames
+>> from lan0 should go to cpu0 and frames from lan1 should go to cpu1 if
+>> the DA is the same? What would be the content of the ATU in a setup
+>> like that?
+>> 
+>> > When using LAGs, you are load balancing via hash(src MAC | dst mac)
+>> > only. This is better in some ways. But what I am saying is that if the
+>> > LAG mask table is static, as it is now implemented in mv88e6xxx code,
+>> > then for many scenarios there is a big probability of no load balancing
+>> > at all. For Turris Omnia for example there is 6.25% probability that
+>> > the switch chip will send all traffic to the CPU via one CPU port.
+>> > This is because the switch chooses the LAG port only from the hash of
+>> > dst+src MAC address. (By the 1/16 = 6.25% probability I mean that for
+>> > cca 1 in 16 customers, the switch would only use one port when sending
+>> > data to the CPU).
+>> >
+>> > The round robin solution here is therefore better in this case.  
+>> 
+>> I agree that it would be better in that case. I just do not get how you
+>> get the switch to do it for you.
+>
+> I thought that this is configured in the mv88e6xxx_port_vlan() function.
+> For each port, you specify via which ports data can egress.
+> So for ports 0, 2, 4 you can enable CPU port 0, and for ports 1 and 3
+> CPU port 1.
 
-> On Tue, Apr 13, 2021 at 12:26:52AM +0200, Tobias Waldekranz wrote:
-> > On Tue, Apr 13, 2021 at 01:06, Vladimir Oltean <olteanv@gmail.com> wrote:  
-> > > On Mon, Apr 12, 2021 at 11:49:22PM +0200, Tobias Waldekranz wrote:  
-> > >> On Tue, Apr 13, 2021 at 00:34, Vladimir Oltean <olteanv@gmail.com> wrote:  
-> > >> > On Mon, Apr 12, 2021 at 11:22:45PM +0200, Tobias Waldekranz wrote:  
-> > >> >> On Mon, Apr 12, 2021 at 21:30, Marek Behun <marek.behun@nic.cz> wrote:  
-> > >> >> > On Mon, 12 Apr 2021 14:46:11 +0200
-> > >> >> > Tobias Waldekranz <tobias@waldekranz.com> wrote:
-> > >> >> >  
-> > >> >> >> I agree. Unless you only have a few really wideband flows, a LAG will
-> > >> >> >> typically do a great job with balancing. This will happen without the
-> > >> >> >> user having to do any configuration at all. It would also perform well
-> > >> >> >> in "router-on-a-stick"-setups where the incoming and outgoing port is
-> > >> >> >> the same.  
-> > >> >> >
-> > >> >> > TLDR: The problem with LAGs how they are currently implemented is that
-> > >> >> > for Turris Omnia, basically in 1/16 of configurations the traffic would
-> > >> >> > go via one CPU port anyway.
-> > >> >> >
-> > >> >> >
-> > >> >> >
-> > >> >> > One potencial problem that I see with using LAGs for aggregating CPU
-> > >> >> > ports on mv88e6xxx is how these switches determine the port for a
-> > >> >> > packet: only the src and dst MAC address is used for the hash that
-> > >> >> > chooses the port.
-> > >> >> >
-> > >> >> > The most common scenario for Turris Omnia, for example, where we have 2
-> > >> >> > CPU ports and 5 user ports, is that into these 5 user ports the user
-> > >> >> > plugs 5 simple devices (no switches, so only one peer MAC address for
-> > >> >> > port). So we have only 5 pairs of src + dst MAC addresses. If we simply
-> > >> >> > fill the LAG table as it is done now, then there is 2 * 0.5^5 = 1/16
-> > >> >> > chance that all packets would go through one CPU port.
-> > >> >> >
-> > >> >> > In order to have real load balancing in this scenario, we would either
-> > >> >> > have to recompute the LAG mask table depending on the MAC addresses, or
-> > >> >> > rewrite the LAG mask table somewhat randomly periodically. (This could
-> > >> >> > be in theory offloaded onto the Z80 internal CPU for some of the
-> > >> >> > switches of the mv88e6xxx family, but not for Omnia.)  
-> > >> >> 
-> > >> >> I thought that the option to associate each port netdev with a DSA
-> > >> >> master would only be used on transmit. Are you saying that there is a
-> > >> >> way to configure an mv88e6xxx chip to steer packets to different CPU
-> > >> >> ports depending on the incoming port?
-> > >> >> 
-> > >> >> The reason that the traffic is directed towards the CPU is that some
-> > >> >> kind of entry in the ATU says so, and the destination of that entry will
-> > >> >> either be a port vector or a LAG. Of those two, only the LAG will offer
-> > >> >> any kind of balancing. What am I missing?
-> > >> >> 
-> > >> >> Transmit is easy; you are already in the CPU, so you can use an
-> > >> >> arbitrarily fancy hashing algo/ebpf classifier/whatever to load balance
-> > >> >> in that case.  
-> > >> >
-> > >> > Say a user port receives a broadcast frame. Based on your understanding
-> > >> > where user-to-CPU port assignments are used only for TX, which CPU port
-> > >> > should be selected by the switch for this broadcast packet, and by which
-> > >> > mechanism?  
-> > >> 
-> > >> AFAIK, the only option available to you (again, if there is no LAG set
-> > >> up) is to statically choose one CPU port per entry. But hopefully Marek
-> > >> can teach me some new tricks!
-> > >> 
-> > >> So for any known (since the broadcast address is loaded in the ATU it is
-> > >> known) destination (b/m/u-cast), you can only "load balance" based on
-> > >> the DA. You would also have to make sure that unknown unicast and
-> > >> unknown multicast is only allowed to egress one of the CPU ports.
-> > >> 
-> > >> If you have a LAG OTOH, you could include all CPU ports in the port
-> > >> vectors of those same entries. The LAG mask would then do the final
-> > >> filtering so that you only send a single copy to the CPU.  
-> > >
-> > > I forgot that mv88e6xxx keeps the broadcast address in the ATU. I wanted
-> > > to know what is done in the flooding case, therefore I should have asked
-> > > about unknown destination traffic. It is sent to one CPU but not the
-> > > other based on what information?
-> > >
-> > > And for destinations loaded into the ATU, how is user port isolation
-> > > performed? Say lan0 and lan1 have the same MAC address of 00:01:02:03:04:05,
-> > > but lan0 goes to the eth0 DSA master and lan1 goes to eth1. How many ATU
-> > > entries would there be for host addresses, and towards which port would
-> > > they point? Are they isolated by a port private VLAN or something along
-> > > those lines?  
-> > 
-> > This is what I do not understand. This is what I hope that Marek can
-> > tell me. To my knowledge, there is no way to per-port load balancing
-> > from the switch to the CPU. In any given FID, there can be only one
-> > entry per address, and that entry can only point to either a vector or a
-> > LAG.
-> > 
-> > So my theory is that the only way of getting any load balancing, however
-> > flawed, on receive (from switch to CPU) is by setting up a
-> > LAG. Hopefully there is some trick that I do not know about which means
-> > we have another option available to us.  
-> 
-> Understood. So as far as you know the Marvell Linkstreet hardware
-> capabilities, it isn't possible to do a clean-cut "all traffic from port
-> X goes to CPU port A and none to B", but instead it's more of a mushy
-> mess like "unknown unicast is flooded to CPU port A, unknown multicast
-> to CPU port B, MAC address 00:01:02:03:04:05 may go to CPU port A, MAC
-> address 00:01:02:03:04:06 to CPU port B". Basically an open-coded mess
-> of a LAG handled by some logic like DSA, once the RX filtering series
-> gets merged. Until then, all traffic to the CPU is unknown-destination
-> traffic as long as I know the mv88e6xxx (due to that limitation where it
-> doesn't learn from the MAC SA of FROM_CPU packets, and DSA does not
-> install into the ATU any of the host addresses, nor does it send any
-> FORWARD frames). But if this is the case and everything towards the CPU
-> is currently flooded, what sort of load balancing do we even have?
-> Between unknown unicast and unknown multicast? :)
-> 
-> So excuse me for believing that the hardware is capable of doing what
-> these 3 patches pretend without seeing the driver-side code!
+Ahh I see. Well the port based VLANs are just an isolation mechanism. So
+with a setup like this...
 
-I just now noticed that this series does not include the proposed code
-change for mv88e6xxx.
+    cpu0 cpu1 lan0 lan1
+cpu0           x
+cpu1                x
+lan0 x              x
+lan1      x    x
 
-I am attaching below a patch we use for our TurrisOS 5.4 kernel that
-uses this API for Omnia in the mv88e6xxx driver.
+...you could get the isolation in place. But you will still lookup the
+DA in the ATU, and there you will find a destination of either cpu0 or
+cpu1. So for one of the ports, the destination will be outside of its
+port based VLAN. Once the vectors are ANDed together, it is left with no
+valid port to egress through, and the packet is dropped.
 
-Subject: [PATCH] net: dsa: mv88e6xxx: support multi-CPU DSA
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+> Am I wrong? I confess that I did not understand this into the most fine
+> details, so it is entirely possible that I am missing something
+> important and am completely wrong. Maybe this cannot be done.
 
-Add support for multi-CPU DSA for mv88e6xxx.
-Currently only works with multiple CPUs when there is only one switch in
-the switch tree.
-
-Signed-off-by: Marek Behún <marek.behun@nic.cz>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 48 ++++++++++++++++++++++++++++++--
- 1 file changed, 46 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 33b391376352..804ba563540e 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1080,6 +1080,7 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- {
- 	struct dsa_switch *ds = NULL;
- 	struct net_device *br;
-+	u8 upstream;
- 	u16 pvlan;
- 	int i;
- 
-@@ -1091,17 +1092,36 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- 		return 0;
- 
- 	/* Frames from DSA links and CPU ports can egress any local port */
--	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
-+	if (dsa_is_dsa_port(ds, port))
- 		return mv88e6xxx_port_mask(chip);
- 
-+	if (dsa_is_cpu_port(ds, port)) {
-+		u16 pmask = mv88e6xxx_port_mask(chip);
-+		pvlan = 0;
-+
-+		for (i = 0; i < mv88e6xxx_num_ports(chip); ++i) {
-+			if (dsa_is_cpu_port(ds, i)) {
-+				if (i == port)
-+					pvlan |= BIT(i);
-+				continue;
-+			}
-+			if ((pmask & BIT(i)) &&
-+			     dsa_upstream_port(chip->ds, i) == port)
-+				pvlan |= BIT(i);
-+		}
-+
-+		return pvlan;
-+	}
-+
- 	br = ds->ports[port].bridge_dev;
- 	pvlan = 0;
- 
- 	/* Frames from user ports can egress any local DSA links and CPU ports,
- 	  * as well as any local member of their bridge group.
- 	  */
-+	upstream = dsa_upstream_port(chip->ds, port);
- 	for (i = 0; i < mv88e6xxx_num_ports(chip); ++i)
--		if (dsa_is_cpu_port(chip->ds, i) ||
-+		if ((dsa_is_cpu_port(chip->ds, i) && i == upstream) ||
- 		     dsa_is_dsa_port(chip->ds, i) ||
- 		     (br && dsa_to_port(chip->ds, i)->bridge_dev == br))
- 			pvlan |= BIT(i);
-@@ -2388,6 +2408,7 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
- 	}
- 
- 	if (port == upstream_port) {
-+		dev_info(chip->dev, "Setting CPU port as port %i\n", port);
- 		if (chip->info->ops->set_cpu_port) {
- 			err = chip->info->ops->set_cpu_port(chip,
- 							     upstream_port);
-@@ -2406,6 +2427,28 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
- 	return 0;
- }
- 
-+static int mv88e6xxx_port_change_cpu_port(struct dsa_switch *ds, int port,
-+					   struct dsa_port *new_cpu_dp)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	int err;
-+
-+	mv88e6xxx_reg_lock(chip);
-+
-+	err = mv88e6xxx_setup_upstream_port(chip, port);
-+	if (err)
-+		goto unlock;
-+
-+	err = mv88e6xxx_port_vlan_map(chip, port);
-+	if (err)
-+		goto unlock;
-+
-+unlock:
-+	mv88e6xxx_reg_unlock(chip);
-+
-+	return err;
-+}
-+
- static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
- 	struct dsa_switch *ds = chip->ds;
-@@ -4996,6 +5039,7 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.port_hwtstamp_get	= mv88e6xxx_port_hwtstamp_get,
- 	.port_txtstamp		= mv88e6xxx_port_txtstamp,
- 	.port_rxtstamp		= mv88e6xxx_port_rxtstamp,
-+	.port_change_cpu_port	= mv88e6xxx_port_change_cpu_port,
- 	.get_ts_info		= mv88e6xxx_get_ts_info,
- };
- 
--- 
-2.24.1
+I really doubt that it can be done. Not in any robust way at
+least. Happy to be proven wrong though! :)
