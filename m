@@ -2,116 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED45A35CFF4
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 20:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E10035D02B
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 20:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243376AbhDLSEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 14:04:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46398 "EHLO vps0.lunn.ch"
+        id S244767AbhDLSVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 14:21:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50566 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240038AbhDLSEs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 14:04:48 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lW0v6-00GJyj-J1; Mon, 12 Apr 2021 20:04:20 +0200
-Date:   Mon, 12 Apr 2021 20:04:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
-Message-ID: <YHSLpGQclt6EshDF@lunn.ch>
-References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
+        id S230336AbhDLSVb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 14:21:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 518B061220;
+        Mon, 12 Apr 2021 18:21:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618251673;
+        bh=Pxinurmgz0bTNDq+FpM3BVONUcDXYcGZywCD/Ij7L4Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N3S9s2+a09C9YKW1Xf8cZ5jKUAZEuyzU5G1NBBbaYwka3sT0f5TLm7gnVydkxeTXA
+         k86779A6BtjYVOmMsE2TXzJ/LMnD04icepcemO/bbvkxLN4pgo4OavUKpCkR52H6JB
+         OmpEd4wbih0qvqEQDh8y1b7RMXlUqr/iSg9F2KaybeSDaauqsyHvj5LCAFAWAbcazF
+         z7QdQ1nEeDuSPCJubh5c0h9RYn/tZZEH7Did9zf/H2+GQVwaADBzVUJfhPl0PTY4WH
+         5+ALUu5POwQMiIyCLZZ9LSXt2M8qn+gJYb6ogGEpPgjTq6xdSDtDr4qujVmiH5nUKE
+         MWkV7EpZYv5WQ==
+Date:   Mon, 12 Apr 2021 11:21:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     davem@davemloft.net, kys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, liuwe@microsoft.com,
+        netdev@vger.kernel.org, leon@kernel.org, andrew@lunn.ch,
+        bernd@petrovitsch.priv.at, rdunlap@infradead.org,
+        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH v4 net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Message-ID: <20210412112109.145faac8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210412023455.45594-1-decui@microsoft.com>
+References: <20210412023455.45594-1-decui@microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static const struct nxp_c45_phy_stats nxp_c45_hw_stats[] = {
-> +	{ "phy_symbol_error_cnt", MDIO_MMD_VEND1, SYMBOL_ERROR_COUNTER, 0, GENMASK(15, 0) },
-> +	{ "phy_link_status_drop_cnt", MDIO_MMD_VEND1, LINK_DROP_COUNTER, 8, GENMASK(13, 8) },
-> +	{ "phy_link_availability_drop_cnt", MDIO_MMD_VEND1, LINK_DROP_COUNTER, 0, GENMASK(5, 0) },
+On Sun, 11 Apr 2021 19:34:55 -0700 Dexuan Cui wrote:
+> +	for (i = 0; i < ANA_INDIRECT_TABLE_SIZE; i++)
+> +		apc->indir_table[i] = i % apc->num_queues;
 
-netdev tries to keep with the old 80 character limit. Please wrap the
-long lines.
+ethtool_rxfh_indir_default()
 
-> +static void nxp_c45_set_delays(struct phy_device *phydev)
-> +{
-> +	struct nxp_c45_phy *priv = phydev->priv;
-> +	u64 tx_delay = priv->tx_delay;
-> +	u64 rx_delay = priv->rx_delay;
-> +	u64 degree;
+> +	err = mana_cfg_vport_steering(apc, rx, true, update_hash, update_tab);
+> +	return err;
+
+return mana_...
+
+please fix everywhere.
+
+> +	netif_set_real_num_tx_queues(ndev, apc->num_queues);
 > +
-> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-> +		degree = tx_delay / PS_PER_DEGREE;
-> +		phy_write_mmd(phydev, MDIO_MMD_VEND1, VND1_TXID,
-> +			      ID_ENABLE | nxp_c45_get_phase_shift(degree));
+> +	err = mana_add_rx_queues(apc, ndev);
+> +	if (err)
+> +		goto destroy_vport;
+> +
+> +	apc->rss_state = apc->num_queues > 1 ? TRI_STATE_TRUE : TRI_STATE_FALSE;
+> +
+> +	netif_set_real_num_rx_queues(ndev, apc->num_queues);
+
+netif_set_real_num_.. can fail.
+
+> +	rtnl_lock();
+> +
+> +	netdev_lockdep_set_classes(ndev);
+> +
+> +	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+> +	ndev->hw_features |= NETIF_F_RXCSUM;
+> +	ndev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
+> +	ndev->hw_features |= NETIF_F_RXHASH;
+> +	ndev->features = ndev->hw_features;
+> +	ndev->vlan_features = 0;
+> +
+> +	err = register_netdevice(ndev);
+> +	if (err) {
+> +		netdev_err(ndev, "Unable to register netdev.\n");
+> +		goto destroy_vport;
 > +	}
+> +
+> +	rtnl_unlock();
+> +
+> +	return 0;
+> +destroy_vport:
+> +	rtnl_unlock();
 
-You are missing an else clause. You need to ensure the delay is 0 if
-delays are not required. You have no idea what the bootloader has
-done.
+Why do you take rtnl_lock() explicitly around this code?
 
-> +static int nxp_c45_get_delays(struct phy_device *phydev)
+> +static int mana_set_channels(struct net_device *ndev,
+> +			     struct ethtool_channels *channels)
 > +{
-> +	struct nxp_c45_phy *priv = phydev->priv;
-> +	int ret;
+> +	struct ana_port_context *apc = netdev_priv(ndev);
+> +	unsigned int new_count;
+> +	unsigned int old_count;
+> +	int err, err2;
 > +
-> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-> +		ret = device_property_read_u32(&phydev->mdio.dev, "tx-internal-delay-ps",
-> +					       &priv->tx_delay);
-> +		if (ret) {
-> +			phydev_err(phydev, "tx-internal-delay-ps property missing\n");
-
-This is not normally mandatory. Default to 2ns if not specified in DT.
-
-> +static int nxp_c45_set_phy_mode(struct phy_device *phydev)
-> +{
-> +	int ret;
+> +	new_count = channels->combined_count;
+> +	old_count = apc->num_queues;
 > +
-> +	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, ABILITIES);
-> +	phydev_dbg(phydev, "Clause 45 managed PHY abilities 0x%x\n", ret);
+> +	if (new_count < 1 || new_count > apc->max_queues ||
+> +	    channels->rx_count || channels->tx_count || channels->other_count)
+
+All these checks should be done by the core already.
+
+> +		return -EINVAL;
 > +
-> +	switch (phydev->interface) {
-> +	case PHY_INTERFACE_MODE_RGMII:
-> +		if (!(ret & RGMII_ABILITY)) {
-> +			phydev_err(phydev, "rgmii mode not supported\n");
-> +			return -EINVAL;
-> +		}
-> +		phy_write_mmd(phydev, MDIO_MMD_VEND1, MII_BASIC_CONFIG, MII_BASIC_CONFIG_RGMII);
-> +		break;
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +	case PHY_INTERFACE_MODE_RGMII_TXID:
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +		if (!(ret & RGMII_ID_ABILITY)) {
-> +			phydev_err(phydev, "rgmii-id, rgmii-txid, rgmii-rxid modes are not supported\n");
-> +			return -EINVAL;
-> +		}
-> +		phy_write_mmd(phydev, MDIO_MMD_VEND1, MII_BASIC_CONFIG, MII_BASIC_CONFIG_RGMII);
-> +		ret = nxp_c45_get_delays(phydev);
-> +		if (ret)
-> +			return ret;
-> +
-> +		nxp_c45_set_delays(phydev);
-> +		break;
+> +	if (new_count == old_count)
+> +		return 0;
 
-Again, for PHY_INTERFACE_MODE_RGMII you need to ensure the hardware is
-not inserting a delay.
+And so is this one.
 
-> +	case PHY_INTERFACE_MODE_SGMII:
-> +		if (!(ret & SGMII_ABILITY)) {
-> +			phydev_err(phydev, "sgmii mode not supported\n");
-> +			return -EINVAL;
-> +		}
-> +		phy_write_mmd(phydev, MDIO_MMD_VEND1, MII_BASIC_CONFIG, MII_BASIC_CONFIG_SGMII);
-> +		break;
-
-Interested. What gets reported over the inband signalling?
-
-	    Andrew
+> +	err = mana_detach(ndev);
+> +	if (err) {
+> +		netdev_err(ndev, "mana_detach failed: %d\n", err);
+> +		return err;
+> +	}
