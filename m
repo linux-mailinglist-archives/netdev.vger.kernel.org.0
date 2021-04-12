@@ -2,96 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CFD035CF3D
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 19:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB32135CF7E
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 19:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243556AbhDLRJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 13:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        id S243030AbhDLRbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 13:31:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240644AbhDLRJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 13:09:02 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F19C061574;
-        Mon, 12 Apr 2021 10:08:44 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id n138so22637444lfa.3;
-        Mon, 12 Apr 2021 10:08:44 -0700 (PDT)
+        with ESMTP id S240002AbhDLRbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 13:31:39 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96DCC061574;
+        Mon, 12 Apr 2021 10:31:20 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id d3-20020a9d29030000b029027e8019067fso11624980otb.13;
+        Mon, 12 Apr 2021 10:31:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z9yKLqiHk2kInh9XkjY0B3JWgb5a3H5BK5yAT5kVFoo=;
-        b=dwZtx3a8HY8JxAzp3P/Y+m2rO6juUSU2LwwkBQ0bdejB1w/uBt1TwaTTfNR7Z0Y1Oo
-         nEkNHNjJH9Sf/lYdefy+khZ0XSSHTwbbWZshd/dcPqqFWR15qs1OdalYQuabtyUEpobh
-         K3RHghqSa7I5GUjhB+A1riqUn4SjTVR+wS0R9o9nr6pIihoeWRXgLhBjfi+CwxNHto+4
-         1ftI+4rukuZvyOJhwXOdjCC46DOzQhYi2qLPwcrKKMNXkOgMNRnhhChiswpbwh8utyIt
-         NEhZEGknwhIN80LrRNfAZS65n7M/gHi2yysw4pxLcSr1/9DCCRfaiAyfvdSvj7ORQa0l
-         Su5Q==
+        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=e3VEpGhYiefaJKeY4+NLvTiF0Tsi+ZBQQ0EZDI3Jxos=;
+        b=LtZNNOIN24GLzWMKQzqihFUsvq2DvB2PGVInZ/pNVLaU2OJX7hP0p8G2k9KrGB/pFZ
+         tXm5vXTukZydEvmCehdvm1z+6402pypqRCHh2rHCgDEccO79Qhik86/B4qUWrSUy5rRw
+         Fj0ucQcTwwpYgPlko5lGLdjIlKhF/2BirgyIyKSJKQ/wRWvPshuE7EbjfKNgbJrfcTJG
+         r5XHDIjF9fh0F9RLSoCzrBHS4TQ6ET3pv8HhEMSyvzKRbVV7Z965J3kkt1vksHmAKb5D
+         jnKKkB265gQdOHF313c3pVqP3Wgjbqx56n1YndlnPfpQ+fM/wpMr9rkOZCXp+NfuUkUU
+         PHbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z9yKLqiHk2kInh9XkjY0B3JWgb5a3H5BK5yAT5kVFoo=;
-        b=JBYyijJD+tPMDU4UQbfnVaAAOvaBzNNoMDNWc3lzUcSXQkFBkLi1lW7sE7qAQiQXN/
-         E8o6xROdhhoelahiurwOz89GgSgg8T/Fjjwea4GpfcmLZ9jxTMov7uhK1llnUWe1dr/c
-         wA37ErEN+40ytitd5mJpq8GB40tFCzk4jthdgE+Gw+y5MPtcoffLMByI6B9qfVQdWz3h
-         KXXFtT//UR2ZRcTzETa5MGwM+oWY4MUecOWJRnR7llXX+DVceIcYZONoQpPCyXRtTTj3
-         nrmgHkT3j/fQ2v7cUSJV1CDjmoGD9LX/iXKZISFu5TiCOneKBC8L46wT0992+ySMNggc
-         463w==
-X-Gm-Message-State: AOAM531TV6c0LwxWJlC/atQ0crn+C2wf9+jnuq3C4lIneq9dsLficZJM
-        0F3In8OzXfI5H2sT2iZWckvRZ5jVVvWg4FF/mKY=
-X-Google-Smtp-Source: ABdhPJwdQOkGyTx6w7MDT1WWBesr2v3+MAbclsgUF8zQms6ncveFR/SBii9/xm4FK/lZ5PAQ0Y0I6LBuUm0hoNVFuFQ=
-X-Received: by 2002:a05:6512:3ba9:: with SMTP id g41mr839392lfv.38.1618247322990;
- Mon, 12 Apr 2021 10:08:42 -0700 (PDT)
+        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=e3VEpGhYiefaJKeY4+NLvTiF0Tsi+ZBQQ0EZDI3Jxos=;
+        b=Mtuc82jg62JtjWb0OuEskZCsBprQ3tHOL0i7KsPHsL6dLJmqo90IhQ0OwQncXRtcWw
+         nEt7h9PAN9OOZ8d3vub/V+tL7Kf1gmWYXFTif1+CCG/pCzTJ9lBH8mNtXMyD/9+j/OB6
+         7UY4Wt3ruNUIcX9KOcAg/XoJq/3u1MXb/i+HkSKK7yhkYaVB02amFX4dOKzOB7PnyUFR
+         Tqpaw8Gyf8lBM/JLIV/VLy++BKKV5swXJPkKpEpMjTVDAD6ZD0LWk2kJoHqybTEc4m8t
+         hBbxOIxFQjiDwNIxRpjD2qZKAghxk8PxgQ8DVVkw1kLtybHi4KNOR4fEY3xZpqKANBXg
+         RREw==
+X-Gm-Message-State: AOAM531AvMysaHp/bEYSd3QrpmTTqbbK5qflkE//0gI9a+22HWUt+Smv
+        DCGG+vGhfvW7SrZdoXh7Z9ZOvh2RgXc=
+X-Google-Smtp-Source: ABdhPJyktvCedEmcjABjRaVnLcIETPgZpNf6bFNB3wPPEfRdGnoJG9qfRl/PtwYlTtKvDqdi0633mQ==
+X-Received: by 2002:a05:6830:1f0b:: with SMTP id u11mr4016794otg.104.1618248679878;
+        Mon, 12 Apr 2021 10:31:19 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j4sm1178311oiw.0.2021.04.12.10.31.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Apr 2021 10:31:19 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Subject: Re: Linux 5.12-rc7
+To:     Eric Dumazet <edumazet@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
+ <20210412051445.GA47322@roeck-us.net>
+ <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
+ <CANn89iK2aUESa6DSG=Y4Y9tPmPW2weE05AVpxnDbqYwQjFM2Vw@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
+Message-ID: <78c858ba-a847-884f-80c3-cb1eb84d4113@roeck-us.net>
+Date:   Mon, 12 Apr 2021 10:31:17 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <CACkBjsa12CEHfT75J6M1Pqy9=6uGFvOX+vGHCa7yO-mqUN14FQ@mail.gmail.com>
- <CACkBjsbcmt=+PFjEybaumg3Rp2peSyoyc_1McZmqT0zeKNUSCg@mail.gmail.com>
-In-Reply-To: <CACkBjsbcmt=+PFjEybaumg3Rp2peSyoyc_1McZmqT0zeKNUSCg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 12 Apr 2021 10:08:31 -0700
-Message-ID: <CAADnVQL2kFqcsPnew4a2QSOP4cxm0Shd7=d0wdmzXLg+S-7KkQ@mail.gmail.com>
-Subject: Re: BUG: unable to handle kernel paging request in bpf_check
-To:     Hao Sun <sunhao.th@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANn89iK2aUESa6DSG=Y4Y9tPmPW2weE05AVpxnDbqYwQjFM2Vw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 12:11 AM Hao Sun <sunhao.th@gmail.com> wrote:
->
-> Besides, another similar bug occurred while fault injection was enabled.
-> ====
-> BUG: unable to handle kernel paging request in bpf_prog_alloc_no_stats
-> ========================================================
-> RAX: ffffffffffffffda RBX: 000000000059c080 RCX: 000000000047338d
-> RDX: 0000000000000078 RSI: 0000000020000300 RDI: 0000000000000005
-> RBP: 00007f7e3c38fc90 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
-> R13: 00007ffed3a1dd6f R14: 00007ffed3a1df10 R15: 00007f7e3c38fdc0
-> BUG: unable to handle page fault for address: ffff91f2077ed028
-> #PF: supervisor write access in kernel mode
-> #PF: error_code(0x0002) - not-present page
-> PGD 1810067 P4D 1810067 PUD 1915067 PMD 3b907067 PTE 0
-> Oops: 0002 [#1] SMP
-> CPU: 3 PID: 17344 Comm: executor Not tainted 5.12.0-rc6+ #1
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> 1.13.0-1ubuntu1.1 04/01/2014
-> RIP: 0010:bpf_prog_alloc_no_stats+0x251/0x6e0 kernel/bpf/core.c:94
+On 4/12/21 9:31 AM, Eric Dumazet wrote:
+> On Mon, Apr 12, 2021 at 6:28 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+>>
+>> On Sun, Apr 11, 2021 at 10:14 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>>>
+>>> Qemu test results:
+>>>         total: 460 pass: 459 fail: 1
+>>> Failed tests:
+>>>         sh:rts7751r2dplus_defconfig:ata:net,virtio-net:rootfs
+>>>
+>>> The failure bisects to commit 0f6925b3e8da ("virtio_net: Do not pull payload in
+>>> skb->head"). It is a spurious problem - the test passes roughly every other
+>>> time. When the failure is seen, udhcpc fails to get an IP address and aborts
+>>> with SIGTERM. So far I have only seen this with the "sh" architecture.
+>>
+>> Hmm. Let's add in some more of the people involved in that commit, and
+>> also netdev.
+>>
+>> Nothing in there looks like it should have any interaction with
+>> architecture, so that "it happens on sh" sounds odd, but maybe it's
+>> some particular interaction with the qemu environment.
+> 
+> Yes, maybe.
+> 
+> I spent few hours on this, and suspect a buggy memcpy() implementation
+> on SH, but this was not conclusive.
+> 
 
-Both crashes don't make much sense.
-There are !null checks in both cases.
-I suspect it's a kmsan bug.
-Most likely kmsan_map_kernel_range_noflush is doing something wrong.
-No idea where that function lives. I don't see it in the kernel sources.
+I replaced all memcpy() calls in skbuff.h with calls to
+
+static inline void __my_memcpy(unsigned char *to, const unsigned char *from,
+                               unsigned int len)
+{
+       while (len--)
+               *to++ = *from++;
+}
+
+That made no difference, so unless you have some other memcpy() in mind that
+seems to be unlikely.
+
+> By pulling one extra byte, the problem goes away.
+> 
+> Strange thing is that the udhcpc process does not go past sendto().
+> 
+
+I have been trying to debug that one. Unfortunately gdb doesn't work with sh,
+so I can't use it to debug the problem. I'll spend some more time on this today.
+
+Thanks,
+Guenter
