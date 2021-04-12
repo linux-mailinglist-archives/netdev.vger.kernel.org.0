@@ -2,89 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B36735C2BC
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 12:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADA235C31C
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 12:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241220AbhDLJsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 05:48:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22044 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241682AbhDLJqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 05:46:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618220745;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VIbjcuPC8N7M+c8siBXb+nqnEmaj8al3DwWSW085yH4=;
-        b=ftOCZjPFYnBvJn8wIIIj770n1E8KI/P6wlsfKrtqP+IuZMkjSURNK9TRMv30Gg89Ve3kxG
-        DxRW3BGhCqWe8Kz0DpvFg6rowBzXZamhnMUy0A/quEpBzgvNvCGX/VFt84Rha4SC6nM3xz
-        duoVYqgUCFtNAAFpKV612EeBjozRVsI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-355-HQjvhX-LOsmrxNMG3pSHew-1; Mon, 12 Apr 2021 05:45:44 -0400
-X-MC-Unique: HQjvhX-LOsmrxNMG3pSHew-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CE1B66415B;
-        Mon, 12 Apr 2021 09:45:42 +0000 (UTC)
-Received: from wangxiaodeMacBook-Air.local (ovpn-13-232.pek2.redhat.com [10.72.13.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 761635C26D;
-        Mon, 12 Apr 2021 09:45:36 +0000 (UTC)
-Subject: Re: [PATCH] vdpa/mlx5: Set err = -ENOMEM in case dma_map_sg_attrs
- fails
-To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com, si-wei.liu@oracle.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20210411083646.910546-1-elic@nvidia.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <427b1f96-9e41-a1e3-1ce5-09fc38799e69@redhat.com>
-Date:   Mon, 12 Apr 2021 17:45:34 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.9.1
+        id S242787AbhDLJ5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 05:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244083AbhDLJyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 05:54:50 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9A8C06138F;
+        Mon, 12 Apr 2021 02:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=0UfDA/sQr+zdmclT4Oo7p8kfTePhSR650tmaVpnrbDI=; b=AOqjZOIof8IP30HVfsW8bXXL8
+        nzxyKvCBKJhnEgQ9wyWD5qe2q3ipakjbGmjlReIW4Vh2YxDnxakEJbfpFkj6I/wi9P0QVKErT4jPV
+        KaH3i+2e6izA7HLnGgYyFzAWAUeL3CX1zYeGTUZABjowWTE2uovBdjqDranMyrmATUMEqZm85pwCb
+        /EtTc0DrX7hhZrjABT3rU8eeCUZOLaOSRh3h01TC7MqptZx4ehquIEAquGuu+oSKYvF2K5fiXNltw
+        iMrRZT7iQkiRtb1zhkQFzEcDVmYn9oX3bATpvkDTVy8NzNV29WGwrBQIoUdO1O5r5b7QENp27iWwm
+        E0baPHxrg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52330)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lVtCy-0004Qr-MJ; Mon, 12 Apr 2021 10:50:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lVtCw-00079M-6r; Mon, 12 Apr 2021 10:50:14 +0100
+Date:   Mon, 12 Apr 2021 10:50:14 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
+Message-ID: <20210412095012.GJ1463@shell.armlinux.org.uk>
+References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20210411083646.910546-1-elic@nvidia.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 09, 2021 at 09:41:06PM +0300, Radu Pirea (NXP OSS) wrote:
+> +#define B100T1_PMAPMD_CTL		0x0834
+> +#define B100T1_PMAPMD_CONFIG_EN		BIT(15)
+> +#define B100T1_PMAPMD_MASTER		BIT(14)
+> +#define MASTER_MODE			(B100T1_PMAPMD_CONFIG_EN | B100T1_PMAPMD_MASTER)
+> +#define SLAVE_MODE			(B100T1_PMAPMD_CONFIG_EN)
+> +
+> +#define DEVICE_CONTROL			0x0040
+> +#define DEVICE_CONTROL_RESET		BIT(15)
+> +#define DEVICE_CONTROL_CONFIG_GLOBAL_EN	BIT(14)
+> +#define DEVICE_CONTROL_CONFIG_ALL_EN	BIT(13)
+> +#define RESET_POLL_NS			(250 * NSEC_PER_MSEC)
+> +
+> +#define PHY_CONTROL			0x8100
+> +#define PHY_CONFIG_EN			BIT(14)
+> +#define PHY_START_OP			BIT(0)
+> +
+> +#define PHY_CONFIG			0x8108
+> +#define PHY_CONFIG_AUTO			BIT(0)
+> +
+> +#define SIGNAL_QUALITY			0x8320
+> +#define SQI_VALID			BIT(14)
+> +#define SQI_MASK			GENMASK(2, 0)
+> +#define MAX_SQI				SQI_MASK
+> +
+> +#define CABLE_TEST			0x8330
+> +#define CABLE_TEST_ENABLE		BIT(15)
+> +#define CABLE_TEST_START		BIT(14)
+> +#define CABLE_TEST_VALID		BIT(13)
+> +#define CABLE_TEST_OK			0x00
+> +#define CABLE_TEST_SHORTED		0x01
+> +#define CABLE_TEST_OPEN			0x02
+> +#define CABLE_TEST_UNKNOWN		0x07
+> +
+> +#define PORT_CONTROL			0x8040
+> +#define PORT_CONTROL_EN			BIT(14)
+> +
+> +#define PORT_INFRA_CONTROL		0xAC00
+> +#define PORT_INFRA_CONTROL_EN		BIT(14)
+> +
+> +#define VND1_RXID			0xAFCC
+> +#define VND1_TXID			0xAFCD
+> +#define ID_ENABLE			BIT(15)
+> +
+> +#define ABILITIES			0xAFC4
+> +#define RGMII_ID_ABILITY		BIT(15)
+> +#define RGMII_ABILITY			BIT(14)
+> +#define RMII_ABILITY			BIT(10)
+> +#define REVMII_ABILITY			BIT(9)
+> +#define MII_ABILITY			BIT(8)
+> +#define SGMII_ABILITY			BIT(0)
+> +
+> +#define MII_BASIC_CONFIG		0xAFC6
+> +#define MII_BASIC_CONFIG_REV		BIT(8)
+> +#define MII_BASIC_CONFIG_SGMII		0x9
+> +#define MII_BASIC_CONFIG_RGMII		0x7
+> +#define MII_BASIC_CONFIG_RMII		0x5
+> +#define MII_BASIC_CONFIG_MII		0x4
+> +
+> +#define SYMBOL_ERROR_COUNTER		0x8350
+> +#define LINK_DROP_COUNTER		0x8352
+> +#define LINK_LOSSES_AND_FAILURES	0x8353
+> +#define R_GOOD_FRAME_CNT		0xA950
+> +#define R_BAD_FRAME_CNT			0xA952
+> +#define R_RXER_FRAME_CNT		0xA954
+> +#define RX_PREAMBLE_COUNT		0xAFCE
+> +#define TX_PREAMBLE_COUNT		0xAFCF
+> +#define RX_IPG_LENGTH			0xAFD0
+> +#define TX_IPG_LENGTH			0xAFD1
+> +#define COUNTERS_EN			BIT(15)
+> +
+> +#define CLK_25MHZ_PS_PERIOD		40000UL
+> +#define PS_PER_DEGREE			(CLK_25MHZ_PS_PERIOD / 360)
+> +#define MIN_ID_PS			8222U
+> +#define MAX_ID_PS			11300U
 
-ÔÚ 2021/4/11 ÏÂÎç4:36, Eli Cohen Ð´µÀ:
-> Set err = -ENOMEM if dma_map_sg_attrs() fails so the function reutrns
-> error.
->
-> Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->   drivers/vdpa/mlx5/core/mr.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
-> index 3908ff28eec0..800cfd1967ad 100644
-> --- a/drivers/vdpa/mlx5/core/mr.c
-> +++ b/drivers/vdpa/mlx5/core/mr.c
-> @@ -278,8 +278,10 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
->   	mr->log_size = log_entity_size;
->   	mr->nsg = nsg;
->   	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
-> -	if (!mr->nent)
-> +	if (!mr->nent) {
-> +		err = -ENOMEM;
->   		goto err_map;
-> +	}
->   
->   	err = create_direct_mr(mvdev, mr);
->   	if (err)
+Maybe include some prefix as to which MMD each of these registers is
+located?
 
+> +static bool nxp_c45_can_sleep(struct phy_device *phydev)
+> +{
+> +	int reg;
+> +
+> +	reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_STAT1);
+> +	if (reg < 0)
+> +		return false;
+> +
+> +	return !!(reg & MDIO_STAT1_LPOWERABLE);
+> +}
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+This looks like it could be useful as a generic helper function -
+nothing in this function is specific to this PHY.
 
+> +static int nxp_c45_resume(struct phy_device *phydev)
+> +{
+> +	int reg;
+> +
+> +	if (!nxp_c45_can_sleep(phydev))
+> +		return -EOPNOTSUPP;
+> +
+> +	reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
+> +	reg &= ~MDIO_CTRL1_LPOWER;
+> +	phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1, reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static int nxp_c45_suspend(struct phy_device *phydev)
+> +{
+> +	int reg;
+> +
+> +	if (!nxp_c45_can_sleep(phydev))
+> +		return -EOPNOTSUPP;
+> +
+> +	reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
+> +	reg |= MDIO_CTRL1_LPOWER;
+> +	phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1, reg);
+> +
+> +	return 0;
+> +}
 
+These too look like potential generic helper functions.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
