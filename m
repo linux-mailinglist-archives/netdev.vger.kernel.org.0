@@ -2,180 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55DD435C691
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3121835C6A5
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241293AbhDLMqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 08:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237283AbhDLMqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 08:46:33 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A1AC061574
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 05:46:15 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id j18so21199618lfg.5
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 05:46:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=K9zFwgQThnD5eX67NpvDmwlYzeG84kCePup7Nam43iY=;
-        b=G7nI0KdFgTu9x2Gm0LgVO8BLeCpd3E53MYTduPLDoh/nAzdbUShjlY2Bq7s6wcLx6c
-         v/HzrGr9dInpgl6OIX3SjSYsR7ltPeMw+L/of9q37M+MS4OACfK9mHanwyqWo2WkPH5P
-         QfbhVfvciGXGjAprM9g4i106zLzp/2PigWVCTukRN9yhdxJYqTSamyQa/gBQiZxkMvB+
-         gOQQbnSof6Hxu5vyO/1Lvc4XRsUroCeRc+f3hmHs8j+N0ss/Ja3F3RbGMp6teocVVdSP
-         ieH/gmv1lZMO2zIy5+iIf54d+hy/5PKAYuvitDxdT27UxXJ6X9sxT3qcJCapKcicWcTC
-         IC7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=K9zFwgQThnD5eX67NpvDmwlYzeG84kCePup7Nam43iY=;
-        b=nYPzJXMUpPYcFWw3jbBP2RM9sout+ftMQdpHuYuzjuun91hPcITCFeUyEVcVlt8CkV
-         NjnQHSH4zDrTBZtRDNlNPgp7hTxdioKr0o1O/2YmLQgoZJrnJ3MkaEhow4bHTOVLWx3i
-         LSkS6ItF8qmxCxnPWx8n9uEloIpY5NxkLLbUU/iX17URXgkqMAsnEYLy9JjxqZRQn39/
-         TdYKRaqFiyhRgp6tFn6hi9u9OV+p1bp0kohp27w5iHLfYzoDJjQfnFxGR9Ngt4nFFTdS
-         +go2jXu6ftILWZLrDOo/547OsxdsXb2eIbhhOR8lEfeSkdrlFWBsVrTWgxN/y3kiGX8H
-         7PfQ==
-X-Gm-Message-State: AOAM533yaKcmXQsVvHpDQnMqH63LbxeQpQIgtc2hrk58stIqnguVPlw1
-        0ACXmhzISviCzc+z1YVxA5/BmQ==
-X-Google-Smtp-Source: ABdhPJzjI9GmrUK8iNW4oCMP8MXEMTbgxyK3/Sdw+SGf63/Xij/YmEw31zF4YXLxXo2MH4jCxy/Iag==
-X-Received: by 2002:a19:2387:: with SMTP id j129mr15163663lfj.478.1618231573027;
-        Mon, 12 Apr 2021 05:46:13 -0700 (PDT)
-Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
-        by smtp.gmail.com with ESMTPSA id w19sm2413556lfl.199.2021.04.12.05.46.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 05:46:12 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Marek Behun <marek.behun@nic.cz>
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        zhang kai <zhangkaiheb@126.com>,
-        Weilong Chen <chenweilong@huawei.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-In-Reply-To: <20210411185017.3xf7kxzzq2vefpwu@skbuf>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf>
-Date:   Mon, 12 Apr 2021 14:46:11 +0200
-Message-ID: <878s5nllgs.fsf@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S241400AbhDLMrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 08:47:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49423 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241408AbhDLMrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 08:47:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618231602;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gyRA3eXvjPEiAnUmzzROMJvtjDJt+882R/Pm9YO3IBI=;
+        b=JRv7jkM8UeZCBUnQaCQt8+mV98GTZiisYSrZNEZERUz6T2UMnUdbCCrpj1DntLVonZlgJ9
+        Aqp7hQh3t8b9A/2M/TmTBY+MHWBXq/tKwTl3UoQE9plHF1PVqbFwdIKtGlrJL3W+EHpjB4
+        ggun5dgSPW4UgPfk7sTpYytseatFmnA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-509-H2Ovd74qMrWeALGVTF0e4Q-1; Mon, 12 Apr 2021 08:46:38 -0400
+X-MC-Unique: H2Ovd74qMrWeALGVTF0e4Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E15306D252;
+        Mon, 12 Apr 2021 12:46:36 +0000 (UTC)
+Received: from ovpn-112-53.phx2.redhat.com (ovpn-112-53.phx2.redhat.com [10.3.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A59646090F;
+        Mon, 12 Apr 2021 12:46:29 +0000 (UTC)
+Message-ID: <01fae6c3113d454cc009f065fde77f66af9845b6.camel@redhat.com>
+Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
+From:   Simo Sorce <simo@redhat.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "herbert.xu" <herbert.xu@redhat.com>
+Date:   Mon, 12 Apr 2021 08:46:28 -0400
+In-Reply-To: <5d6137d0e4ea1d67ee495398f2cb12a1c21653fd.camel@redhat.com>
+References: <20210407113920.3735505-1-liuhangbin@gmail.com>
+         <CAHmME9p40M5oHDZXnFDXfO4-JuJ7bUB5BnsccGV1pksguz73sg@mail.gmail.com>
+         <c47d99b9d0efeea4e6cd238c2affc0fbe296b53c.camel@redhat.com>
+         <CAHmME9pRSOANrdvegLm9x8VTNWKcMtoymYrgStuSx+nsu=jpwA@mail.gmail.com>
+         <20210409024143.GL2900@Leo-laptop-t470s>
+         <CAHmME9oqK9iXRn3wxAB-MZvX3k_hMbtjHF_V9UY96u6NLcczAw@mail.gmail.com>
+         <20210409024907.GN2900@Leo-laptop-t470s> <YG/EAePSEeYdonA0@zx2c4.com>
+         <CAMj1kXG-e_NtLkAdLYp70x5ft_Q1Bn9rmdXs4awt7FEd5PQ4+Q@mail.gmail.com>
+         <0ef180dea02996fc5f4660405f2333220e8ae4c4.camel@redhat.com>
+         <CAHmME9opMi_2_cOS66U6jJvYZ=WJWv4E-mjYr20YaL=zzJxv+Q@mail.gmail.com>
+         <5d6137d0e4ea1d67ee495398f2cb12a1c21653fd.camel@redhat.com>
+Organization: Red Hat, Inc.
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 11, 2021 at 21:50, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Sun, Apr 11, 2021 at 08:01:35PM +0200, Marek Behun wrote:
->> On Sat, 10 Apr 2021 15:34:46 +0200
->> Ansuel Smith <ansuelsmth@gmail.com> wrote:
->> 
->> > Hi,
->> > this is a respin of the Marek series in hope that this time we can
->> > finally make some progress with dsa supporting multi-cpu port.
->> > 
->> > This implementation is similar to the Marek series but with some tweaks.
->> > This adds support for multiple-cpu port but leave the driver the
->> > decision of the type of logic to use about assigning a CPU port to the
->> > various port. The driver can also provide no preference and the CPU port
->> > is decided using a round-robin way.
->> 
->> In the last couple of months I have been giving some thought to this
->> problem, and came up with one important thing: if there are multiple
->> upstream ports, it would make a lot of sense to dynamically reallocate
->> them to each user port, based on which user port is actually used, and
->> at what speed.
->> 
->> For example on Turris Omnia we have 2 CPU ports and 5 user ports. All
->> ports support at most 1 Gbps. Round-robin would assign:
->>   CPU port 0 - Port 0
->>   CPU port 1 - Port 1
->>   CPU port 0 - Port 2
->>   CPU port 1 - Port 3
->>   CPU port 0 - Port 4
->> 
->> Now suppose that the user plugs ethernet cables only into ports 0 and 2,
->> with 1, 3 and 4 free:
->>   CPU port 0 - Port 0 (plugged)
->>   CPU port 1 - Port 1 (free)
->>   CPU port 0 - Port 2 (plugged)
->>   CPU port 1 - Port 3 (free)
->>   CPU port 0 - Port 4 (free)
->> 
->> We end up in a situation where ports 0 and 2 share 1 Gbps bandwidth to
->> CPU, and the second CPU port is not used at all.
->> 
->> A mechanism for automatic reassignment of CPU ports would be ideal here.
->> 
->> What do you guys think?
->
-> The reason why I don't think this is such a great idea is because the
-> CPU port assignment is a major reconfiguration step which should at the
-> very least be done while the network is down, to avoid races with the
-> data path (something which this series does not appear to handle).
-> And if you allow the static user-port-to-CPU-port assignment to change
-> every time a link goes up/down, I don't think you really want to force
-> the network down through the entire switch basically.
->
-> So I'd be tempted to say 'tough luck' if all your ports are not up, and
-> the ones that are are assigned statically to the same CPU port. It's a
-> compromise between flexibility and simplicity, and I would go for
-> simplicity here. That's the most you can achieve with static assignment,
-> just put the CPU ports in a LAG if you want better dynamic load balancing
-> (for details read on below).
+On Fri, 2021-04-09 at 14:56 -0400, Simo Sorce wrote:
+> Hi Jason,
+> I can't speak for Hangbin, we do not work for the same company and I
+> was not aware of his efforts until this patch landed.
 
-I agree. Unless you only have a few really wideband flows, a LAG will
-typically do a great job with balancing. This will happen without the
-user having to do any configuration at all. It would also perform well
-in "router-on-a-stick"-setups where the incoming and outgoing port is
-the same.
+Turns out I and Hangbin do work for the same company after all.
+Left hand is meeting right hand internally now. :-D
+The comments still stand of course.
 
-...
+Simo.
 
-> But there is something which is even more interesting about Felix with
-> the ocelot-8021q tagger. Since Marek posted his RFC and until Ansuel
-> posted the follow-up, things have happened, and now both Felix and the
-> Marvell driver support LAG offload via the bonding and/or team drivers.
-> At least for Felix, when using the ocelot-8021q tagged, it should be
-> possible to put the two CPU ports in a hardware LAG, and the two DSA
-> masters in a software LAG, and let the bond/team upper of the DSA
-> masters be the CPU port.
->
-> I would like us to keep the door open for both alternatives, and to have
-> a way to switch between static user-to-CPU port assignment, and LAG.
-> I think that if there are multiple 'ethernet = ' phandles present in the
-> device tree, DSA should populate a list of valid DSA masters, and then
-> call into the driver to allow it to select which master it prefers for
-> each user port. This is similar to what Ansuel added with 'port_get_preferred_cpu',
-> except that I chose "DSA master" and not "CPU port" for a specific reason.
-> For LAG, the DSA master would be bond0.
+> For my part we were already looking at big_key, wireguard and other
+> areas internally, but were not thinking of sending upstream patches
+> like these w/o first a good assessment with our teams and lab that they
+> were proper and sufficient.
+> 
+> >  So
+> > I think either you should send an exhaustive patch series that forbids
+> > all use of non-FIPS crypto anywhere in the kernel (another example:
+> > net/core/secure_seq.c) in addition to all tunneling modules that don't
+> > use FIPS-certified crypto, or figure out how to disable the lib/crypto
+> > primitives that you want to be disabled in "fips mode". With a
+> > coherent patchset for either of these, we can then evaluate it.
+> 
+> Yes a cohesive approach would be ideal, but I do not know if pushing
+> substantially the same checks we have in the Crypto API down to
+> lib/crypto is the right way to go, I am not oppose but I guess Herbert
+> would have to chime in here.
+> 
 
-I do not see why we would go through the trouble of creating a
-user-visible bond/team for this. As you detail below, it would mean
-jumping through a lot of hoops. I am not sure there is that much we can
-use from those drivers.
+-- 
+Simo Sorce
+RHEL Crypto Team
+Red Hat, Inc
 
-- We know that the CPU ports are statically up, so there is no "active
-  transmit set" to manage, it always consists of all ports.
 
-- The LAG members are statically known at boot time via the DT, so we do
-  not need (or want, in fact) any management of that from userspace.
 
-We could just let the drivers setup the LAG internally, and then do the
-load-balancing in dsa_slave_xmit or provide a generic helper that the
-taggers could use.
+
