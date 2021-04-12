@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC67C35CC67
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2EB335CC5D
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244557AbhDLQ2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:28:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57616 "EHLO mail.kernel.org"
+        id S243543AbhDLQ2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:28:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243408AbhDLQ0M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 12:26:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AC00060200;
-        Mon, 12 Apr 2021 16:24:51 +0000 (UTC)
+        id S243716AbhDLQ0N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 12:26:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 24FD561372;
+        Mon, 12 Apr 2021 16:24:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244692;
-        bh=iaPirG7GpMnweMUpMRsnT/uw9iCtZxePVwuIJKbij14=;
+        s=k20201202; t=1618244694;
+        bh=nUvGJWgWbLvPWG9YfcI1jq3Ts2T5CZOYb7nvgqz96fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QOf8ark0UDLPRRs0auVZgWB0mW/Q5VKJ1N9pWgi3qflluDxwHsYZuDL7nVKzcyM+c
-         VT/Txc05OoFcwniEBRLLMs4rfmZGjcYh8Awzxx0ZBeOZxIr0Aa49GLEldXTegCIEo4
-         mfmH8ooMC4gmE2U1EExYKbkhCYmlmZGC0zJVlvLdGCr7L3BV9LK/f03xL1qLwVL6/P
-         14gqZZdkqILkd8J3DHZQIVrPAZ3piHkk6oEzwtJSnUWqUoleI/QR+2UoT5dAVMTbzp
-         90BrI2JHBt4+IjNrGh5AwNtjoCVV7BGiL3zgpqDfIvOrUGW+gQL59e65PEpOjMq2eY
-         XEFxemzdjOEsQ==
+        b=HAtdyuzc9EH+hLHY1RSKgnCGWfARsu0Dt7S6hNJXZfoBJKchl45BdC42LUXDxR9o0
+         Cj+yfv4OxlG2tDQxCsiuQ0BxgxeF/YD7SMPhy0b2q2CeVA1ApNOE9ixpQOnuqOyeEY
+         vPzxf7fks198yABvm0o3ksAtwNjJGg+hCpmnqoyLyJ20RemjpAWqnOZFMC7hZt+DVr
+         pPa9Gavp3y1mG1yY0SxEkXNtybVMD1mly81k4BOSfYl7kTZ0SLimaLEzZ2DOWDEQn8
+         EJzuH9MRwEZLH6PfM4+mz8fLNnwKyWZMFMRBnHbLLlB289L3NhAaP7B9G+Vy/AR6nB
+         woA0sgdr4SZPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Phillip Potter <phil@philpotter.co.uk>,
-        syzbot+001516d86dbe88862cec@syzkaller.appspotmail.com,
-        Eric Dumazet <edumazet@google.com>,
+Cc:     Aditya Pakki <pakki001@umn.edu>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 40/46] net: tun: set tun->dev->addr_len during TUNSETLINK processing
-Date:   Mon, 12 Apr 2021 12:23:55 -0400
-Message-Id: <20210412162401.314035-40-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Subject: [PATCH AUTOSEL 5.10 41/46] net/rds: Avoid potential use after free in rds_send_remove_from_sock
+Date:   Mon, 12 Apr 2021 12:23:56 -0400
+Message-Id: <20210412162401.314035-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210412162401.314035-1-sashal@kernel.org>
 References: <20210412162401.314035-1-sashal@kernel.org>
@@ -44,99 +44,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Phillip Potter <phil@philpotter.co.uk>
+From: Aditya Pakki <pakki001@umn.edu>
 
-[ Upstream commit cca8ea3b05c972ffb5295367e6c544369b45fbdd ]
+[ Upstream commit 0c85a7e87465f2d4cbc768e245f4f45b2f299b05 ]
 
-When changing type with TUNSETLINK ioctl command, set tun->dev->addr_len
-to match the appropriate type, using new tun_get_addr_len utility function
-which returns appropriate address length for given type. Fixes a
-KMSAN-found uninit-value bug reported by syzbot at:
-https://syzkaller.appspot.com/bug?id=0766d38c656abeace60621896d705743aeefed51
+In case of rs failure in rds_send_remove_from_sock(), the 'rm' resource
+is freed and later under spinlock, causing potential use-after-free.
+Set the free pointer to NULL to avoid undefined behavior.
 
-Reported-by: syzbot+001516d86dbe88862cec@syzkaller.appspotmail.com
-Diagnosed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/tun.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ net/rds/message.c | 1 +
+ net/rds/send.c    | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index accde25a66a0..c671d8e25774 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -69,6 +69,14 @@
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
- #include <linux/mutex.h>
-+#include <linux/ieee802154.h>
-+#include <linux/if_ltalk.h>
-+#include <uapi/linux/if_fddi.h>
-+#include <uapi/linux/if_hippi.h>
-+#include <uapi/linux/if_fc.h>
-+#include <net/ax25.h>
-+#include <net/rose.h>
-+#include <net/6lowpan.h>
+diff --git a/net/rds/message.c b/net/rds/message.c
+index 071a261fdaab..90ebcfe5fe3b 100644
+--- a/net/rds/message.c
++++ b/net/rds/message.c
+@@ -180,6 +180,7 @@ void rds_message_put(struct rds_message *rm)
+ 		rds_message_purge(rm);
  
- #include <linux/uaccess.h>
- #include <linux/proc_fs.h>
-@@ -2978,6 +2986,45 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
- 	return __tun_set_ebpf(tun, prog_p, prog);
+ 		kfree(rm);
++		rm = NULL;
+ 	}
  }
+ EXPORT_SYMBOL_GPL(rds_message_put);
+diff --git a/net/rds/send.c b/net/rds/send.c
+index 985d0b7713ac..fe5264b9d4b3 100644
+--- a/net/rds/send.c
++++ b/net/rds/send.c
+@@ -665,7 +665,7 @@ static void rds_send_remove_from_sock(struct list_head *messages, int status)
+ unlock_and_drop:
+ 		spin_unlock_irqrestore(&rm->m_rs_lock, flags);
+ 		rds_message_put(rm);
+-		if (was_on_sock)
++		if (was_on_sock && rm)
+ 			rds_message_put(rm);
+ 	}
  
-+/* Return correct value for tun->dev->addr_len based on tun->dev->type. */
-+static unsigned char tun_get_addr_len(unsigned short type)
-+{
-+	switch (type) {
-+	case ARPHRD_IP6GRE:
-+	case ARPHRD_TUNNEL6:
-+		return sizeof(struct in6_addr);
-+	case ARPHRD_IPGRE:
-+	case ARPHRD_TUNNEL:
-+	case ARPHRD_SIT:
-+		return 4;
-+	case ARPHRD_ETHER:
-+		return ETH_ALEN;
-+	case ARPHRD_IEEE802154:
-+	case ARPHRD_IEEE802154_MONITOR:
-+		return IEEE802154_EXTENDED_ADDR_LEN;
-+	case ARPHRD_PHONET_PIPE:
-+	case ARPHRD_PPP:
-+	case ARPHRD_NONE:
-+		return 0;
-+	case ARPHRD_6LOWPAN:
-+		return EUI64_ADDR_LEN;
-+	case ARPHRD_FDDI:
-+		return FDDI_K_ALEN;
-+	case ARPHRD_HIPPI:
-+		return HIPPI_ALEN;
-+	case ARPHRD_IEEE802:
-+		return FC_ALEN;
-+	case ARPHRD_ROSE:
-+		return ROSE_ADDR_LEN;
-+	case ARPHRD_NETROM:
-+		return AX25_ADDR_LEN;
-+	case ARPHRD_LOCALTLK:
-+		return LTALK_ALEN;
-+	default:
-+		return 0;
-+	}
-+}
-+
- static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
- 			    unsigned long arg, int ifreq_len)
- {
-@@ -3133,6 +3180,7 @@ static long __tun_chr_ioctl(struct file *file, unsigned int cmd,
- 			ret = -EBUSY;
- 		} else {
- 			tun->dev->type = (int) arg;
-+			tun->dev->addr_len = tun_get_addr_len(tun->dev->type);
- 			netif_info(tun, drv, tun->dev, "linktype set to %d\n",
- 				   tun->dev->type);
- 			ret = 0;
 -- 
 2.30.2
 
