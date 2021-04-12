@@ -2,136 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1838B35D32C
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 00:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3A7535D332
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 00:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343812AbhDLWbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 18:31:37 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:50474 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343761AbhDLWb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 18:31:28 -0400
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 8C84E63E75;
-        Tue, 13 Apr 2021 00:30:44 +0200 (CEST)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 7/7] netfilter: nftables: clone set element expression template
-Date:   Tue, 13 Apr 2021 00:30:59 +0200
-Message-Id: <20210412223059.20841-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210412223059.20841-1-pablo@netfilter.org>
-References: <20210412223059.20841-1-pablo@netfilter.org>
+        id S240619AbhDLWeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 18:34:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47035 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239408AbhDLWeL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 18:34:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618266831;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kDYC/0JEgwH/dQyAoKRIGlbZ//2y9RqMa3XQD3efgMY=;
+        b=NGk1iL2Vh8v3fLQOHJiUqvZszsATTCc8BeG5owW9SvspkiHkssvUH45pvtOouB2V2kk1Ci
+        p8rcCcw5OEncfhMFQAdd9xz0NiF7W960NZzLWZXIFLdaWYPGUdjl6FMVdqnGHlclq4aMiB
+        9PNwRUUIaDxEzefu8qtTKjd/gQFEv2c=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-227-uejuC2AeP8mG4pcXjF4v3Q-1; Mon, 12 Apr 2021 18:33:50 -0400
+X-MC-Unique: uejuC2AeP8mG4pcXjF4v3Q-1
+Received: by mail-wr1-f70.google.com with SMTP id j24so4983712wra.1
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 15:33:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kDYC/0JEgwH/dQyAoKRIGlbZ//2y9RqMa3XQD3efgMY=;
+        b=RmZNDotP3Hh5f3qhp0NMf1OtcjyG5mS5YLDIPNSAe8nrxQBCFO5NiUhe2mvsNagzBI
+         A/xfs+aetkQ8f6JwbJqHpGkiIlTzIr5HD2l79QGJZuE/BmtxyPKj0HDJeoDoBOeebZV2
+         04ocg5HyTMg0ZRJRTnsapB/Np08LEDsML7VdIj/K930KDd5oyxt5jtogtmpiGldCes46
+         pxbG8f7V7/udiasjzIO7XZK3t4ABdvDadFZIXszpoZfjddNoQFo4Ag6npQtq/z0ldYG5
+         yATGgMRqXMUQ/3P/8+FQTMFR4R+531Rf8IPibhut6wRwmkd3iWZMZ+9RA7ZzCt+m07G3
+         h/Pw==
+X-Gm-Message-State: AOAM531vbmRLGf+5mVjGivYvx0QO4Ma3lE4shrRUF95PGW07oGs5ddFu
+        r4UopyFX3BK4kHhMaFuO3+rZnVXLIlC4DSZDvdNKwv10MruY5gxB5O9BYApXP16Aw++bCV+Nl2r
+        Bvdounr1haSbVw2dx
+X-Received: by 2002:adf:df0a:: with SMTP id y10mr19746096wrl.246.1618266829124;
+        Mon, 12 Apr 2021 15:33:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxuanvU3G286FyJLWeBqftN6+/9ZmG2RjPQ17fFEUGiVXPjlB6KaubOAPuXTHof1g4G0gV/JQ==
+X-Received: by 2002:adf:df0a:: with SMTP id y10mr19746080wrl.246.1618266828954;
+        Mon, 12 Apr 2021 15:33:48 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
+        by smtp.gmail.com with ESMTPSA id j6sm609841wmq.16.2021.04.12.15.33.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 15:33:48 -0700 (PDT)
+Date:   Mon, 12 Apr 2021 18:33:45 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
+Message-ID: <20210412183141-mutt-send-email-mst@kernel.org>
+References: <20210129002136.70865-1-weiwan@google.com>
+ <20210412180353-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210412180353-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-memcpy() breaks when using connlimit in set elements. Use
-nft_expr_clone() to initialize the connlimit expression list, otherwise
-connlimit garbage collector crashes when walking on the list head copy.
+On Mon, Apr 12, 2021 at 06:08:21PM -0400, Michael S. Tsirkin wrote:
+> OK I started looking at this again. My idea is simple.
+> A. disable callbacks before we try to drain skbs
+> B. actually do disable callbacks even with event idx
+> 
+> To make B not regress, we need to
+> C. detect the common case of disable after event triggering and skip the write then.
+> 
+> I added a new event_triggered flag for that.
+> Completely untested - but then I could not see the warnings either.
+> Would be very much interested to know whether this patch helps
+> resolve the sruprious interrupt problem at all ...
+> 
+> 
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-[  493.064656] Workqueue: events_power_efficient nft_rhash_gc [nf_tables]
-[  493.064685] RIP: 0010:find_or_evict+0x5a/0x90 [nf_conncount]
-[  493.064694] Code: 2b 43 40 83 f8 01 77 0d 48 c7 c0 f5 ff ff ff 44 39 63 3c 75 df 83 6d 18 01 48 8b 43 08 48 89 de 48 8b 13 48 8b 3d ee 2f 00 00 <48> 89 42 08 48 89 10 48 b8 00 01 00 00 00 00 ad de 48 89 03 48 83
-[  493.064699] RSP: 0018:ffffc90000417dc0 EFLAGS: 00010297
-[  493.064704] RAX: 0000000000000000 RBX: ffff888134f38410 RCX: 0000000000000000
-[  493.064708] RDX: 0000000000000000 RSI: ffff888134f38410 RDI: ffff888100060cc0
-[  493.064711] RBP: ffff88812ce594a8 R08: ffff888134f38438 R09: 00000000ebb9025c
-[  493.064714] R10: ffffffff8219f838 R11: 0000000000000017 R12: 0000000000000001
-[  493.064718] R13: ffffffff82146740 R14: ffff888134f38410 R15: 0000000000000000
-[  493.064721] FS:  0000000000000000(0000) GS:ffff88840e440000(0000) knlGS:0000000000000000
-[  493.064725] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  493.064729] CR2: 0000000000000008 CR3: 00000001330aa002 CR4: 00000000001706e0
-[  493.064733] Call Trace:
-[  493.064737]  nf_conncount_gc_list+0x8f/0x150 [nf_conncount]
-[  493.064746]  nft_rhash_gc+0x106/0x390 [nf_tables]
+Hmm a slightly cleaner alternative is to clear the flag when enabling interrupts ...
+I wonder which cacheline it's best to use for this.
 
-Reported-by: Laura Garcia Liebana <nevola@gmail.com>
-Fixes: 409444522976 ("netfilter: nf_tables: add elements with stateful expressions")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 46 ++++++++++++++++++++++++++---------
- 1 file changed, 34 insertions(+), 12 deletions(-)
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index f57f1a6ba96f..589d2f6978d3 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5295,16 +5295,35 @@ int nft_set_elem_expr_clone(const struct nft_ctx *ctx, struct nft_set *set,
- 	return -ENOMEM;
- }
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 82e520d2cb12..c23341b18eb5 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1429,6 +1429,7 @@ static void virtnet_poll_cleantx(struct receive_queue *rq)
+ 		return;
  
--static void nft_set_elem_expr_setup(const struct nft_set_ext *ext, int i,
--				    struct nft_expr *expr_array[])
-+static int nft_set_elem_expr_setup(struct nft_ctx *ctx,
-+				   const struct nft_set_ext *ext,
-+				   struct nft_expr *expr_array[],
-+				   u32 num_exprs)
- {
- 	struct nft_set_elem_expr *elem_expr = nft_set_ext_expr(ext);
--	struct nft_expr *expr = nft_setelem_expr_at(elem_expr, elem_expr->size);
-+	struct nft_expr *expr;
-+	int i, err;
-+
-+	for (i = 0; i < num_exprs; i++) {
-+		expr = nft_setelem_expr_at(elem_expr, elem_expr->size);
-+		err = nft_expr_clone(expr, expr_array[i]);
-+		if (err < 0)
-+			goto err_elem_expr_setup;
-+
-+		elem_expr->size += expr_array[i]->ops->size;
-+		nft_expr_destroy(ctx, expr_array[i]);
-+		expr_array[i] = NULL;
-+	}
-+
-+	return 0;
-+
-+err_elem_expr_setup:
-+	for (; i < num_exprs; i++) {
-+		nft_expr_destroy(ctx, expr_array[i]);
-+		expr_array[i] = NULL;
-+	}
- 
--	memcpy(expr, expr_array[i], expr_array[i]->ops->size);
--	elem_expr->size += expr_array[i]->ops->size;
--	kfree(expr_array[i]);
--	expr_array[i] = NULL;
-+	return -ENOMEM;
- }
- 
- static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
-@@ -5556,12 +5575,15 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 		*nft_set_ext_obj(ext) = obj;
- 		obj->use++;
+ 	if (__netif_tx_trylock(txq)) {
++		virtqueue_disable_cb(vq);
+ 		free_old_xmit_skbs(sq, true);
+ 		__netif_tx_unlock(txq);
  	}
--	for (i = 0; i < num_exprs; i++)
--		nft_set_elem_expr_setup(ext, i, expr_array);
-+	err = nft_set_elem_expr_setup(ctx, ext, expr_array, num_exprs);
-+	if (err < 0)
-+		goto err_elem_expr;
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 71e16b53e9c1..88f0b16b11b8 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -113,6 +113,9 @@ struct vring_virtqueue {
+ 	/* Last used index we've seen. */
+ 	u16 last_used_idx;
  
- 	trans = nft_trans_elem_alloc(ctx, NFT_MSG_NEWSETELEM, set);
--	if (trans == NULL)
--		goto err_trans;
-+	if (trans == NULL) {
-+		err = -ENOMEM;
-+		goto err_elem_expr;
-+	}
++	/* Hint for event idx: already triggered no need to disable. */
++	bool event_triggered;
++
+ 	union {
+ 		/* Available for split ring */
+ 		struct {
+@@ -739,7 +742,10 @@ static void virtqueue_disable_cb_split(struct virtqueue *_vq)
  
- 	ext->genmask = nft_genmask_cur(ctx->net) | NFT_SET_ELEM_BUSY_MASK;
- 	err = set->ops->insert(ctx->net, set, &elem, &ext2);
-@@ -5605,7 +5627,7 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 	set->ops->remove(ctx->net, set, &elem);
- err_element_clash:
- 	kfree(trans);
--err_trans:
-+err_elem_expr:
- 	if (obj)
- 		obj->use--;
+ 	if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
+ 		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+-		if (!vq->event)
++		if (vq->event)
++			/* TODO: this is a hack. Figure out a cleaner value to write. */
++			vring_used_event(&vq->split.vring) = 0x0;
++		else
+ 			vq->split.vring.avail->flags =
+ 				cpu_to_virtio16(_vq->vdev,
+ 						vq->split.avail_flags_shadow);
+@@ -1605,6 +1611,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	vq->weak_barriers = weak_barriers;
+ 	vq->broken = false;
+ 	vq->last_used_idx = 0;
++	vq->event_triggered = false;
+ 	vq->num_added = 0;
+ 	vq->packed_ring = true;
+ 	vq->use_dma_api = vring_use_dma_api(vdev);
+@@ -1919,6 +1926,12 @@ void virtqueue_disable_cb(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
  
--- 
-2.20.1
++	/* If device triggered an event already it won't trigger one again:
++	 * no need to disable.
++	 */
++	if (vq->event_triggered)
++		return;
++
+ 	if (vq->packed_ring)
+ 		virtqueue_disable_cb_packed(_vq);
+ 	else
+@@ -1942,6 +1955,9 @@ unsigned virtqueue_enable_cb_prepare(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+ 
++	if (vq->event_triggered)
++		vq->event_triggered = false;
++
+ 	return vq->packed_ring ? virtqueue_enable_cb_prepare_packed(_vq) :
+ 				 virtqueue_enable_cb_prepare_split(_vq);
+ }
+@@ -2005,6 +2021,9 @@ bool virtqueue_enable_cb_delayed(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
+ 
++	if (vq->event_triggered)
++		vq->event_triggered = false;
++
+ 	return vq->packed_ring ? virtqueue_enable_cb_delayed_packed(_vq) :
+ 				 virtqueue_enable_cb_delayed_split(_vq);
+ }
+@@ -2044,6 +2063,10 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+ 	if (unlikely(vq->broken))
+ 		return IRQ_HANDLED;
+ 
++	/* Just a hint for performance: so it's ok that this can be racy! */
++	if (vq->event)
++		vq->event_triggered = true;
++
+ 	pr_debug("virtqueue callback for %p (%p)\n", vq, vq->vq.callback);
+ 	if (vq->vq.callback)
+ 		vq->vq.callback(&vq->vq);
+@@ -2083,6 +2106,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+ 	vq->weak_barriers = weak_barriers;
+ 	vq->broken = false;
+ 	vq->last_used_idx = 0;
++	vq->event_triggered = false;
+ 	vq->num_added = 0;
+ 	vq->use_dma_api = vring_use_dma_api(vdev);
+ #ifdef DEBUG
 
