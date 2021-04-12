@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C414235B8FA
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 05:37:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 101F235B900
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 05:42:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236266AbhDLDhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 23:37:45 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3525 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235366AbhDLDho (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 23:37:44 -0400
-Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FJZBK0kr0zRcNn;
-        Mon, 12 Apr 2021 11:35:21 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Mon, 12 Apr 2021 11:37:25 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Mon, 12 Apr
- 2021 11:37:25 +0800
-Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
- qdisc
-To:     Hillf Danton <hdanton@sina.com>
-CC:     Juergen Gross <jgross@suse.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Jiri Kosina <JKosina@suse.com>
-References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
- <20210409090909.1767-1-hdanton@sina.com>
- <20210412032111.1887-1-hdanton@sina.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <caadc833-ee47-8243-a238-57595e7fc446@huawei.com>
-Date:   Mon, 12 Apr 2021 11:37:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S236569AbhDLDnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 23:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235366AbhDLDnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 23:43:05 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC2AC061574;
+        Sun, 11 Apr 2021 20:42:47 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id m18so3419699plc.13;
+        Sun, 11 Apr 2021 20:42:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TbV7aHs7TaIhyV0H0KiEJQJbVjhXqA5DKHSoe6+ECPw=;
+        b=P49so0HJzAqTv6dJXeU7iuIOm7fDFNyyZSoqpw0IGgN2WT+OcbM9TVUJvnSps2D6FV
+         ocO0sEZhJJMEU8qIE/a51GoTocEhwzbbkMoH0Cbmf+i9p+bbVlTM5qiDzKSJ37wOZC3+
+         2pUZyv/F3wPJPIoqSvt0bd2RN12rfYLYmzhOb5YGyAoZm8uFGpsriEsX+57HU1yUB7Iy
+         mI8w5yu0620bLR90MrBddwfrU7ye/05QYa9LKIlsWV9iWDE99DJJVsYSU6B4PcYuMQgd
+         59B/WiVnFR7obFfZ8ZEmiSr7tMKT1M3t95asjWXeRUB4DUBYPIf4toqvDlwXT924+iyM
+         MxrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TbV7aHs7TaIhyV0H0KiEJQJbVjhXqA5DKHSoe6+ECPw=;
+        b=KlLoM1XB/RfsU4dOM6OJRi3FjJNM6vipRL3mqTCIGi2zpA3rH76u8S5jKAZ0odnKdz
+         ZYAp+hMr+V04IG4mEbpdqSyFWjngnfpU2KLs/583bIvyoVANsqL5RHdGn1X024LUMxYn
+         AD4/YZvaxoyItO6Q4zdcAFrgx7YrZEYPY/5I5D1h6Ur8ou0WWSrYtYs37eyS8FaX9WzA
+         /dQUb9jSM+xSuBH/4aegm0X+vDhe3HYVHQlC+/ndWJMC9jlE2HyrR2o5l4tFAGrV9VTq
+         v3TxDP/yPUCuY7C2byIMZyQzGCXm7KCysCFncLev/HLUvuSOgqfu0tG5ayGNZMMtM0J1
+         1CTQ==
+X-Gm-Message-State: AOAM532UTslK+fyHjsj/AJAYWSWiptnHw/y6uZAO9LsjpM3YUgYhATTB
+        9uoiJUrmN7C7kd+c3I0TQlk=
+X-Google-Smtp-Source: ABdhPJwdVRYU3h0l1OFzieG7ZRMhsfTOWmdz910QyVB1NKZu1Di8amy5CJ8Q0tY3NgFMgooSH6PiMQ==
+X-Received: by 2002:a17:90b:390f:: with SMTP id ob15mr1860487pjb.100.1618198967574;
+        Sun, 11 Apr 2021 20:42:47 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id v22sm5387185pff.105.2021.04.11.20.42.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Apr 2021 20:42:46 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [RFC v4 net-next 0/4] MT7530 interrupt support
+Date:   Mon, 12 Apr 2021 11:42:33 +0800
+Message-Id: <20210412034237.2473017-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210412032111.1887-1-hdanton@sina.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/4/12 11:21, Hillf Danton wrote:
-> On Mon, 12 Apr 2021 09:24:30  Yunsheng Lin wrote:
->> On 2021/4/9 17:09, Hillf Danton wrote:
->>> On Fri, 9 Apr 2021 07:31:03  Juergen Gross wrote:
->>>> On 25.03.21 04:13, Yunsheng Lin wrote:
->>>> I have a setup which is able to reproduce the issue quite reliably:
->>>>
->>>> In a Xen guest I'm mounting 8 NFS shares and run sysbench fileio on
->>>> each of them. The average latency reported by sysbench is well below
->>>> 1 msec, but at least once per hour I get latencies in the minute
->>>> range.
->>>>
->>>> With this patch I don't see these high latencies any longer (test
->>>> is running for more than 20 hours now).
->>>>
->>>> So you can add my:
->>>>
->>>> Tested-by: Juergen Gross <jgross@suse.com>
->>>>
->>>
->>> If retry is allowed in the dequeue method then a simple seqcount can do the
->>> work of serializing enqueuer and dequeuer. IIUC it was not attempted last year.
->>
->> At the first glance, I do not think the below patch fix the data race
-> 
-> Thanks for taking a look.
-> 
->> described in the commit log, as it does not handle the time window
->> between dequeuing and q->seqlock releasing, as below:
->>
-> Yes the time window does exist.
-> 
->> The cpu1 may not see the qdisc->pad changed after pfifo_fast_dequeue(),
->> and cpu2 is not able to take the q->seqlock yet because cpu1 do not
->> release the q->seqlock.
->>
-> It's now covered by extending the seqcount aperture a bit.
-> 
-> --- x/net/sched/sch_generic.c
-> +++ y/net/sched/sch_generic.c
-> @@ -380,14 +380,23 @@ void __qdisc_run(struct Qdisc *q)
->  {
->  	int quota = dev_tx_weight;
->  	int packets;
-> +	int seq;
-> +
-> +again:
-> +	seq = READ_ONCE(q->pad);
-> +	smp_rmb();
->  
->  	while (qdisc_restart(q, &packets)) {
->  		quota -= packets;
->  		if (quota <= 0) {
->  			__netif_schedule(q);
-> -			break;
-> +			return;
->  		}
->  	}
-> +
-> +	smp_rmb();
-> +	if (seq != READ_ONCE(q->pad))
-> +		goto again;
+Add support for MT7530 interrupt controller.
 
-As my understanding, there is still time window between q->pad checking
-above and q->seqlock releasing in qdisc_run_end().
+DENG Qingfang (4):
+  net: phy: add MediaTek PHY driver
+  net: dsa: mt7530: add interrupt support
+  dt-bindings: net: dsa: add MT7530 interrupt controller binding
+  staging: mt7621-dts: enable MT7530 interrupt controller
 
->  }
->  
->  unsigned long dev_trans_start(struct net_device *dev)
-> @@ -632,6 +641,9 @@ static int pfifo_fast_enqueue(struct sk_
->  			return qdisc_drop(skb, qdisc, to_free);
->  	}
->  
-> +	qdisc->pad++;
-> +	smp_wmb();
-> +
->  	qdisc_update_stats_at_enqueue(qdisc, pkt_len);
->  	return NET_XMIT_SUCCESS;
->  }
-> 
-> .
-> 
+ .../devicetree/bindings/net/dsa/mt7530.txt    |   6 +
+ drivers/net/dsa/Kconfig                       |   1 +
+ drivers/net/dsa/mt7530.c                      | 266 ++++++++++++++++--
+ drivers/net/dsa/mt7530.h                      |  20 +-
+ drivers/net/phy/Kconfig                       |   5 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/mediatek.c                    | 111 ++++++++
+ drivers/staging/mt7621-dts/mt7621.dtsi        |   4 +
+ 8 files changed, 385 insertions(+), 29 deletions(-)
+ create mode 100644 drivers/net/phy/mediatek.c
+
+-- 
+2.25.1
 
