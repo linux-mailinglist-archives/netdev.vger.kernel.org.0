@@ -2,160 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F9D35BAF4
+	by mail.lfdr.de (Postfix) with ESMTP id E524635BAF5
 	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236915AbhDLHkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 03:40:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42268 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236916AbhDLHkb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 03:40:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C96AC61207;
-        Mon, 12 Apr 2021 07:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618213213;
-        bh=PqrprxM8ruC8Y4nAdtK1y3AXp+UT48yE/rDrzpZ44oU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ncs5gZO/GAf5MDEh/R3yMagsLX7kDlGoouwqzw8qOslxulyMdY5Yd3I5CyWjSTkl7
-         6OYjdro6AdnpMiX/lDHCcIh1NHzxUm0z7Ybm03Heo3I28vjHBwEGQqcY5jsg4dY88e
-         idt0/9jj7VTEtPuo+pwSTdwZCqgoEEbQwdVfmHXPekRVIFPiZbaNFM8+cGNzvbN4z2
-         w7FunmfAnnEfpQ18Zty4kEiGT63+POKsY1z55WMaRlwB2q8uPEVlWcZsaZ9KdkGo2j
-         ehIWzUmJkOdqrL/N3aO4zNGFqLVrz/wHinCgcz8ZOLnaTuorlmmDLftb47YvMCoLmw
-         6u7SfpoYo+jcw==
-Date:   Mon, 12 Apr 2021 10:40:09 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Devesh Sharma <devesh.sharma@broadcom.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
+        id S236927AbhDLHkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 03:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236917AbhDLHkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 03:40:36 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00642C061574;
+        Mon, 12 Apr 2021 00:40:16 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id j4-20020a05600c4104b029010c62bc1e20so6268284wmi.3;
+        Mon, 12 Apr 2021 00:40:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VlhQoqqQup2EQc4EKSdGaI4dxwZDzOfrhmT9hkGCxW8=;
+        b=Zrn9cdTLvdgO9jzqu1N0dQxDyXNF9OjdLREK9WOB57MAOqSBs3tKlXLRV7pVh8txTf
+         kSszZ//7SfofUAvD2Wweorv29UNnf64DciT3fwqF8DgHM+wlUAGmy3UGZFg0VgTij06K
+         gRYXVvss7fCzkNfPZ0NQRrZ7zX6ebnEH+OkUs7hWzK78gxXYKCtNc/Y0SybYQoqudDzF
+         qVxdrFwug6g+RRWcAPQ6624vTI1wUQZpGGdEkuArT4MmBOBDnV8mlvzfVdnOoUWDEcRV
+         ia1xRWg3vzZHw194349FF4nSi77gKPaXFDITcHC8j6ayQMxjfk+Pdto3FRvlXbmJKNWX
+         PdiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VlhQoqqQup2EQc4EKSdGaI4dxwZDzOfrhmT9hkGCxW8=;
+        b=lNOOqE/c80iE2wb+czO2hgufLAiXRm9vgoyD5qjOCR0fSa/DD84RxYm0Vvh4aQgRz4
+         VyB1RKUDPlGa/78mymODVD85ti42l7/Gu22oMk3gqN+EupLCZnxNrd53TK+uKXN3/srl
+         IGdP5CYa/KUNQd+b8XCCg5XUob17FBBhy1dKuFRvbqJ1qBN+dzz4yWjgRlzgsOB0g33O
+         HXsffUyz+urJPEP7DayqPClrRD7utTJSwH9aRzZYdQHuEDxe4+PMY9OxLCVNNJypl233
+         pcOE52bPjD4l6HRdchT3c85mk8lOpH9LVDIMP8W1uTVzRo2DI+9i4oSc8bR0RG63kl86
+         CLrw==
+X-Gm-Message-State: AOAM531JYUCcXbP86kZWD+HAtLQiE/8mK6s4bGGlNnR4mGKQPfgtnusG
+        dc0Ry35MmfydHA7gk9vi/Lhh6ROwrAo=
+X-Google-Smtp-Source: ABdhPJxPM+IATReMlcDqqyeKZK/B1R1r2JTyuEvtXLxfwJbofp8uucJTGxbEl8Y2A2vh9w6XKDce9g==
+X-Received: by 2002:a1c:5454:: with SMTP id p20mr3834383wmi.187.1618213215806;
+        Mon, 12 Apr 2021 00:40:15 -0700 (PDT)
+Received: from [192.168.1.101] ([37.164.79.211])
+        by smtp.gmail.com with ESMTPSA id v18sm13650978wmh.28.2021.04.12.00.40.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Apr 2021 00:40:15 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/3] net: use skb_for_each_frag() helper where
+ possible
+To:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: Re: [PATCH rdma-next v2 0/5] Get rid of custom made module dependency
-Message-ID: <YHP5WRfEKQ3n9O0s@unreal>
-References: <20210401065715.565226-1-leon@kernel.org>
- <CANjDDBiuw_VNepewLAtYE58Eg2JEsvGbpxttWyjV6DYMQdY5Zw@mail.gmail.com>
- <YGhUjarXh+BEK1pW@unreal>
- <CANjDDBiC-8pL+-ma1c0n8vjMaorm-CasV_D+_8q2LGy-AYuTVg@mail.gmail.com>
- <YG7srVMi8IEjuLfF@unreal>
- <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
+        Julia Lawall <julia.lawall@inria.fr>
+References: <20210412003802.51613-1-mcroce@linux.microsoft.com>
+ <20210412003802.51613-3-mcroce@linux.microsoft.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <44e9ef55-cafd-6613-938b-381ff84d3fc5@gmail.com>
+Date:   Mon, 12 Apr 2021 09:40:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
+In-Reply-To: <20210412003802.51613-3-mcroce@linux.microsoft.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 08, 2021 at 08:42:57PM +0530, Devesh Sharma wrote:
-> On Thu, Apr 8, 2021 at 5:14 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Thu, Apr 08, 2021 at 05:06:24PM +0530, Devesh Sharma wrote:
-> > > On Sat, Apr 3, 2021 at 5:12 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Sat, Apr 03, 2021 at 03:52:13PM +0530, Devesh Sharma wrote:
-> > > > > On Thu, Apr 1, 2021 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > >
-> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > >
-> > > > > > Changelog:
-> > > > > > v2:
-> > > > > >  * kbuild spotted that I didn't delete all code in patch #5, so deleted
-> > > > > >    even more ulp_ops derefences.
-> > > > > > v1: https://lore.kernel.org/linux-rdma/20210329085212.257771-1-leon@kernel.org
-> > > > > >  * Go much deeper and removed useless ULP indirection
-> > > > > > v0: https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
-> > > > > > -----------------------------------------------------------------------
-> > > > > >
-> > > > > > The following series fixes issue spotted in [1], where bnxt_re driver
-> > > > > > messed with module reference counting in order to implement symbol
-> > > > > > dependency of bnxt_re and bnxt modules. All of this is done, when in
-> > > > > > upstream we have only one ULP user of that bnxt module. The simple
-> > > > > > declaration of exported symbol would do the trick.
-> > > > > >
-> > > > > > This series removes that custom module_get/_put, which is not supposed
-> > > > > > to be in the driver from the beginning and get rid of nasty indirection
-> > > > > > logic that isn't relevant for the upstream code.
-> > > > > >
-> > > > > > Such small changes allow us to simplify the bnxt code and my hope that
-> > > > > > Devesh will continue where I stopped and remove struct bnxt_ulp_ops too.
-> > > > > >
-> > > > > > Thanks
-> > > > > >
-> > > > > > [1] https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
-> > > > > >
-> > > > > > Leon Romanovsky (5):
-> > > > > >   RDMA/bnxt_re: Depend on bnxt ethernet driver and not blindly select it
-> > > > > >   RDMA/bnxt_re: Create direct symbolic link between bnxt modules
-> > > > > >   RDMA/bnxt_re: Get rid of custom module reference counting
-> > > > > >   net/bnxt: Remove useless check of non-existent ULP id
-> > > > > >   net/bnxt: Use direct API instead of useless indirection
-> > > > > >
-> > > > > >  drivers/infiniband/hw/bnxt_re/Kconfig         |   4 +-
-> > > > > >  drivers/infiniband/hw/bnxt_re/main.c          |  93 ++-----
-> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   4 +-
-> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
-> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 245 +++++++-----------
-> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  32 +--
-> > > > > >  6 files changed, 119 insertions(+), 260 deletions(-)
-> > > > >
-> > > > > Hi Leon,
-> > > > >
-> > > > > After a couple of internal discussions we reached a conclusion to
-> > > > > implement the Auxbus driver interface and fix the problem once and for
-> > > > > all.
-> > > >
-> > > > Thanks Devesh,
-> > > >
-> > > > Jason, it looks like we can proceed with this patchset, because in
-> > > > auxbus mode this module refcount and ULP indirection logics will be
-> > > > removed anyway.
-> > > >
-> > > > Thanks
-> > > Hi Leon,
-> > >
-> > > In my internal testing, I am seeing a crash using the 3rd patch. I am
-> > > spending a few cycles on debugging it. expect my input in a day or so.
-> >
-> > Can you please post the kernel crash report here?
-> > I don't see how function rename in patch #3 can cause to the crash.
-> Hey, unfortunately my kdump service config is giving me tough time on
-> my host. I will share if I get it.
 
-Any news here?
 
-> >
-> > Thanks
-> >
-> > > >
-> > > > > >
-> > > > > > --
-> > > > > > 2.30.2
-> > > > > >
-> > > > >
-> > > > >
-> > > > > --
-> > > > > -Regards
-> > > > > Devesh
-> > > >
-> > > >
-> > >
-> > >
-> > > --
-> > > -Regards
-> > > Devesh
-> >
-> >
+On 4/12/21 2:38 AM, Matteo Croce wrote:
+> From: Matteo Croce <mcroce@microsoft.com>
 > 
+> use the new helper macro skb_for_each_frag() which allows to iterate
+> through all the SKB fragments.
 > 
-> -- 
-> -Regards
-> Devesh
+> The patch was created with Coccinelle, this was the semantic patch:
+> 
+> @@
+> struct sk_buff *skb;
+> identifier i;
+> statement S;
+> iterator name skb_for_each_frag;
+> @@
+> -for (i = 0; i < skb_shinfo(skb)->nr_frags; \(++i\|i++\))
+> +skb_for_each_frag(skb, i)
+>  S
+> @@
+> struct skb_shared_info *sinfo;
+> struct sk_buff *skb;
+> identifier i;
+> statement S;
+> iterator name skb_for_each_frag;
+> @@
+
+
+I disagree with this part :
+
+>  sinfo = skb_shinfo(skb)
+>  ...
+> -for (i = 0; i < sinfo->nr_frags; \(++i\|i++\))
+> +skb_for_each_frag(skb, i)
+>  S
+>
+
+
+> index bde781f46b41..5de00477eaf9 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -1644,7 +1644,7 @@ static int __pskb_trim_head(struct sk_buff *skb, int len)
+>  	eat = len;
+>  	k = 0;
+>  	shinfo = skb_shinfo(skb);
+> -	for (i = 0; i < shinfo->nr_frags; i++) {
+> +	skb_for_each_frag(skb, i) {
+>  		int size = skb_frag_size(&shinfo->frags[i]);
+>  
+>  		if (size <= eat) {
+
+This will force the compiler to re-evaluate skb_shinfo(skb)->nr_frags in the loop,
+since atomic operations like skb_frag_unref() have a memory clobber.
+
+skb_shinfo(skb)->nr_frags has to reload three vars.
+
+The macro should only be used when the code had
+
+for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
 
 
