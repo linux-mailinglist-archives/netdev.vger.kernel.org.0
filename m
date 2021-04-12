@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2A635CAD8
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5431335CADA
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241331AbhDLQMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:12:42 -0400
-Received: from mail-mw2nam10on2071.outbound.protection.outlook.com ([40.107.94.71]:64385
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S241769AbhDLQMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:12:53 -0400
+Received: from mail-bn7nam10on2045.outbound.protection.outlook.com ([40.107.92.45]:47649
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237798AbhDLQMf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 12:12:35 -0400
+        id S241551AbhDLQMv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 12:12:51 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PqQHUby1nekfRoq2214MqcxFfl+Yli1MvbAQDQeqpv/wk/Oksz6QKfy6VSZ3Cz93UkeFs0fQW9CIUN2sQcZ4Y3lluLwGm4z5Pt5nxcibJbn3gqq2LgI0Vh+WE5lmMWSvmG4AxL9xi83auyBCEeETcxSWu/u555z+HJlX4g7r/t/2tmjI1cD9+BioSCSI9H3ZTm2GCSAAvNA1bHfbhG/XLlWR4NSlVt5vxvwcBvg4qO95E4q2SSIvBazXZQFWTgabIYpkPYBeZaXwxsDM0rmvB/6TVZf1nrvWFayOePDEXQLedsjm0WwRa7LELY+kv4JS/4AfDvtYkulQOHRtEqAuFQ==
+ b=KXuZ4ziFqj0ELHJ/c5iOrIdbXdwx8IP7+cK6H9e69upEM4sDBrhdBvdJMBuLZrr1HeEB+X46/5B0NT9JrPxdoin3lUXEzR3HUjldvm1/PcUYiZZiSVC3wiAHF3K6t4uq26l/JG9p8dLjZx3ZNjcl6rtfIvo6hMqVVeaoH582wraDm8HJbSWsGggbtlawrCGtQay903i0Z91m9QyUrYFcxeWNNsPthtVkaTNk1imui8Z2rw1Ei7o6H3EFNogqqprAeSSQEqwzh3iSnk8284vQ7z06O4zLYyPAPlvaUVz3qskFqaGUe9XnUCtIJRj/d5HzaEQriZPt/+PxSMtHQzQwMg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e+uasTNZtw9elqIRSBoLLyw89Hi6ooHYRyopiZpkC5c=;
- b=oRf69zSoJonuKgXqF6oTqew4/6BUjiZfo6SDNWaHo97Pga14HCEq2oUpUZk3sduh7zm9U6UVUpLWXwUnjvW2+hhCRx3vGaemAP6LSbN3xnVj+ufJ405utY0qUYKgLyF6MU9yfOsYNlSeq1rLByudRfJO0To9cVwMF16fbXI8nPwU70TyIzNDddckFOK6fHXMggdqmtq0iNeTp9yQDRm9Z0ZRTpFxErRyc4PZGaddU9XFLWMEI0TIJ4oxL5ZpDX1jCM+FID8HErCK/9hDWLcFObGbd97eDWEBVmQEaDMg53dAueGMWe69okp9wYkIa6MfsqPnk5hjCRnkDhWTq7CfjA==
+ bh=Hnjhhp2oAAnb8lmrVViDhY1/cpCdJUiEkT2L+XjPDiU=;
+ b=IJAQX21/c2H2XYsQfGIUo01a/s/0K+ftJQ6VcqyVTOwhwJAJAKjltU9ivpOqswDRiJCw0Ykz2XGztCezA3HzMBsEiJaGTqDJ5C1fjMXy4GGqWj58yfo1vEKcz5DT3mDNIUGG3Xs0JyQrYf4/7svQBKyJCXACYkubI/LFXJAdJORjOyAdOy6EH7j2CYZsgV16BJQkUnX6iesxmvdXG9pzQ8x1xT8yCAucoMi/SRu2AkxF/TPkPYeZfsW8lifF3e2QnowM5E8cz6kftSSS4BBqRT+IpY9RvstotFESX0NjDRGPfxBXAVoRL45358Z2HgkNqQ/mKruCWNZ0Df8QVfd5kw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e+uasTNZtw9elqIRSBoLLyw89Hi6ooHYRyopiZpkC5c=;
- b=mPyG+XkeXrjv3dRyWhypTq6JgvDMeMDC+AmP8Y2dk/fRdG3BXGUIkx0ncUatB0xjMgD1U64KSS4tvD6+ZPbZNx9KGO6YN/+0SuIIk6LxcHYxS8n8M/hsuHgdjf9wQOpuGWYznjU6ZhDKMs8Kf3kNim25Q/pc6zc0y60wCXHC7h8fdhtocB/8r242eS7gjp6Q8W9iHi/wuyHgSUqxlExG4p2+I0Wwg0qOjgEqfEo9QMXaRxCn6Ay4NV+L+WL54T2jzmAV8/3Pb7Rajn5/8K8JkWr2tOO3B46kLj5Hh2YHiU38yoX86Oyj0+aRfoHw3MFKzKWv2zfXrlZSWqekXmpbkw==
+ bh=Hnjhhp2oAAnb8lmrVViDhY1/cpCdJUiEkT2L+XjPDiU=;
+ b=QneShM9bL82EAqXnJjEtpcF5yHOS7b31P0YpizHamP6B8ni1ic7xGeBFvcezYHJWVS0J5VpoVyOR/OKP8T/ChyMU2rxHxWaPVeTsPUrRboYu1ff/a9FVsKuaht749rArPk5WF85241/VgwwQxZt+0N50oJkObfPtm8kO9uSGma8Zc/bfj8KsQnX/NIy6kd185ZeB0Ql4o6KUAofJcoQkkQkLvMbEpkBX8b9IiztlMZc+vi8Zfaq6JolLyp8R+Al3F92rQKgDuUbzaXZHZS9O1yEzEmJ64REp+JRhGztJWvwz+1kdgmbNT/05sPhLbF3hrQE2nc24dZnrbKznHf0Upw==
 Authentication-Results: intel.com; dkim=none (message not signed)
  header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4618.namprd12.prod.outlook.com (2603:10b6:5:78::20) with
+ by DM6PR12MB2940.namprd12.prod.outlook.com (2603:10b6:5:15f::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17; Mon, 12 Apr
- 2021 16:12:15 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Mon, 12 Apr
+ 2021 16:12:31 +0000
 Received: from DM6PR12MB3834.namprd12.prod.outlook.com
  ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
  ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.4020.022; Mon, 12 Apr 2021
- 16:12:15 +0000
-Date:   Mon, 12 Apr 2021 13:12:14 -0300
+ 16:12:31 +0000
+Date:   Mon, 12 Apr 2021 13:12:29 -0300
 From:   Jason Gunthorpe <jgg@nvidia.com>
 To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
 Cc:     "dledford@redhat.com" <dledford@redhat.com>,
@@ -49,108 +49,110 @@ Cc:     "dledford@redhat.com" <dledford@redhat.com>,
         "Ertman, David M" <david.m.ertman@intel.com>,
         "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Hefty, Sean" <sean.hefty@intel.com>,
-        "Lacombe, John S" <john.s.lacombe@intel.com>
-Subject: Re: [PATCH v4 01/23] iidc: Introduce iidc.h
-Message-ID: <20210412161214.GA1115060@nvidia.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-2-shiraz.saleem@intel.com>
- <20210407154430.GA502757@nvidia.com>
- <1e61169b83ac458aa9357298ecfab846@intel.com>
- <20210407224324.GH282464@nvidia.com>
- <2339b8bb35b74aabbb708fcd1a6ab40f@intel.com>
+        "Hefty, Sean" <sean.hefty@intel.com>
+Subject: Re: [PATCH v4 resend 01/23] iidc: Introduce iidc.h
+Message-ID: <20210412161229.GA1115687@nvidia.com>
+References: <20210407001502.1890-1-shiraz.saleem@intel.com>
+ <20210407001502.1890-2-shiraz.saleem@intel.com>
+ <20210407180529.GA547588@nvidia.com>
+ <2ee289f620154810921df2bc2c903192@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2339b8bb35b74aabbb708fcd1a6ab40f@intel.com>
+In-Reply-To: <2ee289f620154810921df2bc2c903192@intel.com>
 X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: MN2PR06CA0018.namprd06.prod.outlook.com
- (2603:10b6:208:23d::23) To DM6PR12MB3834.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL0PR02CA0137.namprd02.prod.outlook.com
+ (2603:10b6:208:35::42) To DM6PR12MB3834.namprd12.prod.outlook.com
  (2603:10b6:5:14a::12)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR06CA0018.namprd06.prod.outlook.com (2603:10b6:208:23d::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Mon, 12 Apr 2021 16:12:15 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lVzAc-004hAZ-0l; Mon, 12 Apr 2021 13:12:14 -0300
+Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR02CA0137.namprd02.prod.outlook.com (2603:10b6:208:35::42) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend Transport; Mon, 12 Apr 2021 16:12:31 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lVzAr-004hAz-RQ; Mon, 12 Apr 2021 13:12:29 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4d453756-7544-4c29-a703-08d8fdcdbcf0
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4618:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4618B55F2FFDCE9740994254C2709@DM6PR12MB4618.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Office365-Filtering-Correlation-Id: 12062fcf-855f-47c6-c2f7-08d8fdcdc665
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2940:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB2940843CFCD9F88921D9221DC2709@DM6PR12MB2940.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vd8KvViw9KFXdnJKtpfqw+TgogPcXjacZFsReiVtgrSk/ZNXAnkjwdK0pPe4GJnsrpLmV6UbGzzvEdApV6p4J/Xtpgug3cktya6QKYgM4FeVliiYrIC9Rgx6qKaOMNXo8BjhySxNhSKFauAlikwf9PuoZ4/2+1CFkDSMDjGVBQ5trtdZ3Hc4Co9qm2p0ybqhPXh4gzIfXcYmrCG3lXExqjHzWyCv5fKz+jTx2m/Q9ir5kE74QF55y16THjc7v32AdilKtzgFwVqfH/y9HgWfZq6A6dp5K4RlM89WyFDfJxzA6nOIqeWiakrmaxouXiW1xqBrihMz/wY7mS+NuCrCqT7BPoqIbwmzYO5vPfYkG/OyuuawhLHxytfM9WbQlgzfzri3sEYQlzEekdTNMdjZ1HZ0rewqI8iqXUHY3r1Mr5iBmy6Va8by2QSicBstJEhqLkM5xwOGueggGoZDXurFcOC7no5CnO+n/y4NWh5ieN7VGlUDuboj9GUy2s9oD1CLvT8g8hoTkQY01024rOUEH3BN28XZLoeakgbzysSQ+OJhC7Qr5YzzlpOOkgj5egOyX4cP14yMakBUpEwmqXqbbmn1u8c4iEnpDUAJGAlT90w=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(376002)(396003)(366004)(346002)(83380400001)(66556008)(26005)(186003)(86362001)(36756003)(478600001)(66946007)(7416002)(66476007)(2616005)(8936002)(316002)(426003)(9746002)(8676002)(9786002)(2906002)(1076003)(38100700002)(6916009)(5660300002)(4326008)(33656002)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?O3mAwv1Vx+bjZCFJV9T9kxThGKVFC77lXIGO6Pnh2Uw5OQD+jvf8yGaX0kaY?=
- =?us-ascii?Q?NYA7pFMWnjcBa/6pIuMmZ0FoZC5Zc/q8tvEqL+98PJQb9EAqSE40HZUtY4XE?=
- =?us-ascii?Q?UN0ZRGYLTjhCagO31/4Z2UsvK1OKs8ruoAP0Qr8ln8/zEzmmCHRe7B+N5YhY?=
- =?us-ascii?Q?Z4ce0Wke6NU3C57V1BNRfpFxdwBDbBU4MDGbDvlbI6/uvvf6KiaZ0Jh5NUtR?=
- =?us-ascii?Q?EUQwDTBNVLgP6cXWS0KxGVIrROmAdta5gOobxNbwWwEp+vip+VMGY2jK2ico?=
- =?us-ascii?Q?tUZMeXEx/nN4TJ9hhuRRhJqvxDg0ZkqVTnPRRzHklv4LM22gHLSOM2KNETwN?=
- =?us-ascii?Q?dT2T5JZ93tanqOc8NJ+lNZN2YFDi0bHHqMZ56Ftn0pWb7VmSeyswjdDzeREe?=
- =?us-ascii?Q?XElqJaKjZsLrp0PzZRrheuROXusJ4ES+lsGfRkxWCICCDPr4To5yZHg71Lyg?=
- =?us-ascii?Q?IatT9xt7OA/wd+irSLTz3TuI4r0y1hj90UAI+NvmeicI9GwhZjieUZXugJPT?=
- =?us-ascii?Q?U37aQ9QdOUiJI1+xbemZGbHLkPnodKmDMxetlx0CUoL5QoCVmIIcKlYaNwZp?=
- =?us-ascii?Q?U/PYmx4WBOzMqW/1pgnTT3h+7ef5oZnKmzCsmI2rluNK7Q8gnFvYHB+t9cEg?=
- =?us-ascii?Q?gRTJRvMjvz23YPz6SBe8XnZ+J3PxDIkXK3h1z06uj5cYtNLGdzsTIOWLPCci?=
- =?us-ascii?Q?YgmKMJ27q3C9rby/n7rA57EXIJ7u4j0vMvohqbQ2iXynozCWKfPxq8/7Z0Iy?=
- =?us-ascii?Q?6zShjB6IR9EIgawnzDwu3P4p3DXX0aonTT+ZJ1in8RUkeecnf1lzGMzneucA?=
- =?us-ascii?Q?5WILuyISXk3PIROovqMRvP4lCJFPum+CvxBER2QlT3Rt2dYLmdO4MJBSzk7V?=
- =?us-ascii?Q?Y9cjL+QPynaXpgDv1xjxfnPZm+HaapALI/cKA9JlTX08fg7qPTlJkyfxC4Qr?=
- =?us-ascii?Q?8JcESDEB4vLs2knzrDj7cUwaL1uUtsCERLI6NFXyFgt5YQh7TORLUUnuDIY/?=
- =?us-ascii?Q?4jfQNErr+898sgp0uyW7oV8x9C8ZKWj3v8qDuW9eEnfjlcAOsiKzrvZgoqy8?=
- =?us-ascii?Q?V3VDlc4SQYhZh8HX7YCWcNTnp6ICladiWRtbwHkgc6luJ6x0r+RhfhqYsHaG?=
- =?us-ascii?Q?6Y+Nw/J42OqLkKwQOV5hXMkogTMcft418lDiUICHWsw9gJOF3QVQW9muXOQH?=
- =?us-ascii?Q?0aVdYVpjxVPUyxp3c2wq1deKzJIvk9c2DvB40p+ni0mTxGreLeCklxPK4m+h?=
- =?us-ascii?Q?wIQ/zX2GiAWvUZZ7+Xl5b/Mcrj/+ca2UDSfyOc9HZ0yN21JT0QYQnaD9tAW6?=
- =?us-ascii?Q?7xCjl9SGEr6YR/wB2nqWPaAiQwUzULvnokW+Fynk3Jz0oQ=3D=3D?=
+X-Microsoft-Antispam-Message-Info: 6yFPJ7xDlrq2/eBavN/TW9L4XlL+J3aH/X+vq3m/6Q+vZLkp/NFb0ReyNgMTG3AsKmrsZr17N5VevuWAHblzHkOH97wuuUXWmpRmfz8DMLwq7UoGXWYMAvRg2aWfwEI1yxsF4keju4u3c/ErqTBgnzOuVwefUTreRgiGmmQU8N4vRIyfqPcnG9360bK7FZZw3aWKtsLonA0ytqYjhp3kBxRwgpxG6eZL5PjA2dNR0MQyYlG4r/woga9HbgLqUiNBmZQpUecqDBQPye8gHZoRdqZyw8genpOaXeiIHE7M5D5AbLf6xL/JHw2U+erVHLxb8OPMWus5KY4xsUvNnrJ1DHfhjVckkl+vWiucFIzYqSPs7qEfYc9kWSv/Ht86T+2zj0cFIlUkAr7p52jkWB3640Sbdq+ozKDYtNB2CD6qOzEw3hVcs25enOJohSiIZ6twjBINoXnz1jp/I+Jimo9pxvZzRQy+BSE1WQqLXt5mmSX2oA0HKH1Xh1lBDpuWLKBvV0Z0lr4axu8+jnkV8o2GiGvjXbQeXTFwSrDvX5gJLFLcoNI9GXDEoWkeRCWV5KELwvYS2LeBr94MDorl+5BsZuhL8m9r/y1O8uwm/DxXMFI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(366004)(396003)(346002)(39860400002)(9746002)(38100700002)(7416002)(478600001)(66946007)(9786002)(8936002)(5660300002)(2906002)(4326008)(8676002)(83380400001)(54906003)(186003)(66476007)(1076003)(6916009)(33656002)(316002)(36756003)(66556008)(426003)(2616005)(86362001)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?U8OAiptXZHte7LNBCr/dsVk6Monrj5X6I8wfEE//s9b7RsRrMPLxNsqOgzuU?=
+ =?us-ascii?Q?RoxBB29crgkfPH3wVCoARED/0olfAuAan/mPsWHs+1efM+fRlaMu3Q8cSDJC?=
+ =?us-ascii?Q?S+/V1wQVwIGcy9p9EBuQGZN+b9g0TaugDJZ79Z5nb1vufVHqOLSlxDomNlD/?=
+ =?us-ascii?Q?+rNry4CihPFivicrkgP4izf6DKSNcQ6hT0PNXJHt9Fs30YfgpLYEdkoG0iuB?=
+ =?us-ascii?Q?6kPFs3W6HuMtnq103LDU8kfJJ3D78CkdOwzaAzmmCL4wg2fo19etCzuaZ3+i?=
+ =?us-ascii?Q?eKULt7xgs7A/dXXlaz4BaUxtcOkqgVpE3CHOurybA6R0jkEHBQ8+doQYoW/Q?=
+ =?us-ascii?Q?uFTU69zElzO/rxvB7DFhUUL5NI/Dn9PnrRWOsELdoZTT+RFCkHsf7SU/Qm0s?=
+ =?us-ascii?Q?CxAnVdXFS8vbDk4wAOEttHHsyfMwdNGFQVIee20Cr2TKMZzVwa0rOoAl+Tvv?=
+ =?us-ascii?Q?UNxlLkFSAYdIEqyZ9fNMgRHGgWU8SywTbxQdq+56DbfG6BInprfYcKMWxUig?=
+ =?us-ascii?Q?zbLcalUBKXDSpPrer6c8W1Ly+tK5WSRK/ZwqOSfBXgDU6y2iXEIxRv2XPJ4C?=
+ =?us-ascii?Q?KqvJJCfza4WcO2UGT+sxiRklzPllMm0Nkz9X+Mye4sHZkGAukJKnyn1KBmNe?=
+ =?us-ascii?Q?m6SnmR2TfJTk6g693t/ZgNVXEedUWV64tyi2stVZ8PyeEA6JdTuIHIjvfcvm?=
+ =?us-ascii?Q?6gmF9W/xlwG+Bofg9NJcO2d0/iRTksQ8tQ7iVfAb7ItctPqtDgdDDRQz0VYI?=
+ =?us-ascii?Q?tpwJnwkjPn/LerU+IgIa+rjb4Xy29lV7WjkXlvqPGZZggEtdgxh9wVs2OzEW?=
+ =?us-ascii?Q?XlVvu3yKPNWGfqdCQtIEDcRPihStYBjf61KDx5TzcHWGcBmKnMuh0AhrvQ0a?=
+ =?us-ascii?Q?hPJ9JNYXzwOCgUGwLd9Mbyhckl7543s8ErnAMfmNRA8Y5jIGE+cOXZ3mIiqR?=
+ =?us-ascii?Q?uxViUgWvaGf1aLfGb9kyte4KTX67uNOn97z8CH3lKasz/L+Phf57kebiIayE?=
+ =?us-ascii?Q?XTuc/HyK0FVFG1N2p2u3oliiktQppl5eXcBlmQjLDK/jxQt+tZpeBplQVTlJ?=
+ =?us-ascii?Q?KOok5V6DE3zJGU41Qnk7UOwXrgaLtMRjT4gJuQ+1Z+FLDOWLJ07GbU4sJAda?=
+ =?us-ascii?Q?yStJDq/ED1yO0J05RJ8wFRW3wupKgwjCrEnlM+AZkdzXfjY4FPjKwZphrEyq?=
+ =?us-ascii?Q?BcudLKx/V/IYNDYfoHgaaZL969zXkEw28A2LRqTFf2l340YWLSDhl2vFqhVD?=
+ =?us-ascii?Q?pP+ompPMj/3FyfuvNYJWEo0JBmlZqlfA6h45WtNLSRZDcZOY1yVVmLo6L8vl?=
+ =?us-ascii?Q?p3c6VrQRqnGgiC4C6MIrcXgnp9Ygk8VKYjslYKziqv2U6A=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d453756-7544-4c29-a703-08d8fdcdbcf0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12062fcf-855f-47c6-c2f7-08d8fdcdc665
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2021 16:12:15.5124
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2021 16:12:31.2905
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xxNCWYBmZhj8OI4m7RJwJLTZJrHe75nABaXl4gwqUGFGPoN3N53IxnniZohBgs58
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4618
+X-MS-Exchange-CrossTenant-UserPrincipalName: XSoIlN5zdGmLEeXK90p/LLfCBbqvpj3Lr6ui8vlWdfu3UXbXtpD4JHNTDDGJ1R2B
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2940
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 02:50:43PM +0000, Saleem, Shiraz wrote:
+On Mon, Apr 12, 2021 at 02:51:18PM +0000, Saleem, Shiraz wrote:
 
-> Because it is an unnecessary thing to force a user to build/load drivers for
-> which they don't have the HW for? 
+> > Where is ftype initialized?
+> 
+> Today it is just pf. But the upcoming Intel ethernet VF driver will
+> set it to true.
 
-Happens automatically in all distros, so I don't agree with this.
+Then it is dead code, don't send dead code to the kernel.
 
-> The problem gets compounded if we have to do it for all future HW
-> Intel PCI drivers, i.e. depends on ICE && ....
+> > This cdev_info should just be a 'struct ice_pf *' and the "struct
+> > iidc_core_dev_info" should be deleted entirely. You'll notice this
+> > ends up looking nearly exactly like mlx5 does after this.
+> 
+> It was intentionally designed to be core device object carving out
+> only pieces of the PF information required by the rdma driver. The
+> next near-term PCI driver using IIDC can also this. Why expose the
+> whole PF? This is a design choice no? Why do we need to follow mlx5?
 
-Then someday build a proper pluggable abstraction and put all your
-ethernet drivers under it. 
+When you get around to building your multi-driver API it should be
+structured so it doesn't have a de-normalization of the data - don't
+copy from one authoritative struct to some other struct just to get
+some weird information hiding.
 
-Today you haven't done that and all we have a set of ops that only
-work with one eth driver and a totally different set of functions that
-only work with a different driver.
+The PF driver should be a subclass if your "generic" driver and
+directly embed some struct like this as the singular canonical source
+of information, not be duplicated.
 
-It is all just dead code until it gets finished and process is to not
-merge dead code.
+> I don't follow what the hackery is. Just because we use cdev_info in
+> the .ops callbacks as opposed to ice_pf?
 
-> There is a near-term Intel ethernet VF driver which will use IIDC to
-> provide RDMA in the VF, and implement some of these .ops
-> callbacks. There is also intent to move i40e to IIDC.
+There are too many signs to ignore:
+ - The obfuscated extensible structs being passed into ops that are
+   only encoding a couple function call parameters
+ - The ops that only have one implementation
+ - The struct that is a complete copy of a different, but "internal",
+   struct
 
-"near-term" We are now on year three of Intel talking about this
-driver!
-
-Get the bulk of the thing merged and deal with the rest in followup
-patches.
-
-> But in a unified irdma driver model connecting to multiple PCI gen
-> drivers, I do think it serves a reason.
-
-It is fine as a high level idea, but the implementation has to meet
-kernel standards.
+You do stuff like this to make stable ABIs. This is forbidden by Linus
+for in-kernel APIs, and it is not the kernel style in general to code
+like this.
 
 Jason
