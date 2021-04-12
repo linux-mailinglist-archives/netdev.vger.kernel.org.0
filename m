@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E4335CD00
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1705E35CD02
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241389AbhDLQcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:32:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35660 "EHLO mail.kernel.org"
+        id S243832AbhDLQcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:32:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245177AbhDLQ3y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 12:29:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B07E61393;
-        Mon, 12 Apr 2021 16:25:51 +0000 (UTC)
+        id S245184AbhDLQ3z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 12:29:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 846CC6135C;
+        Mon, 12 Apr 2021 16:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244752;
-        bh=AZG4uhieMhRSVcxgjq0/ZqtPsJSZZi9hjmpwCslHhFI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SerFPbUrMMIBW0MQgE4lU26VN/HsmUXXFB0bg96iwlLi+rmkoAg72OXX2DA4TVA7m
-         Buk0UMrFh4+GD5oX20zmbjTu1I7dzZ42kepZU9z+YHr1HRHhTM3Yp3hikyrVYMzN29
-         wyIhp39psWCBOacpFIu37jed6RvTqt9b1eqQ5e4evAjepfT4kd4GoNQVWlD8ipqBvS
-         62wuMw1BnqKl2ISS+ud8rA5jqOiOCUq0nReZx/CPYUWXqmYhmiUWz06ZkkST1P5cte
-         DEKNAy84LAOyyU0WP6x2iyxWf5nuicqygH+rxSjLvNSmeFF/dp9fuIxIZRvixKianc
-         oy3uQdir1Rscw==
+        s=k20201202; t=1618244755;
+        bh=nkH7xThCyOmnPCpcc/xlAl5WT+HcSRCGoCaTMMxeiEA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HmaMrQ/ohn/mnVLGUxQY+AcaP1Rg6S4+bmy+9+Fl342gUIyM3iHtQIKOMXaCmRyNs
+         A41LSap4Wb+Vw0EiGrlXv3cesyVaHxJZe1y1kv6t49Gu/J/62Uew4Un+maBq/QY7Tq
+         IFKN1FdinYxHaBBAJJwZjofqZOi5zfmoIH6aaLE9mIGJdLlJlz9y6VujZz43sUUX1Q
+         //ST1LGqKbp956/nBRrd/WrTAUunZjrFNaDiqm83hZVNltdy8wAclyPO6NfzUoDCAv
+         A54YgV7z8EHKR0DEQ7COH6X6ZEplvsszYn0eWLsqt4w48KAYxNsTYdyGL83fHyetbd
+         nCnV3rUZ2EGfw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "A. Cody Schuffelen" <schuffelen@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 39/39] virt_wifi: Return micros for BSS TSF values
-Date:   Mon, 12 Apr 2021 12:25:01 -0400
-Message-Id: <20210412162502.314854-39-sashal@kernel.org>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 01/28] net: ieee802154: nl-mac: fix check on panid
+Date:   Mon, 12 Apr 2021 12:25:26 -0400
+Message-Id: <20210412162553.315227-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210412162502.314854-1-sashal@kernel.org>
-References: <20210412162502.314854-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,48 +42,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "A. Cody Schuffelen" <schuffelen@google.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit b57aa17f07c9270e576ef7df09f142978b5a75f0 ]
+[ Upstream commit 6f7f657f24405f426212c09260bf7fe8a52cef33 ]
 
-cfg80211_inform_bss expects to receive a TSF value, but is given the
-time since boot in nanoseconds. TSF values are expected to be at
-microsecond scale rather than nanosecond scale.
+This patch fixes a null pointer derefence for panid handle by move the
+check for the netlink variable directly before accessing them.
 
-Signed-off-by: A. Cody Schuffelen <schuffelen@google.com>
-Link: https://lore.kernel.org/r/20210318200419.1421034-1-schuffelen@google.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20210228151817.95700-4-aahringo@redhat.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/virt_wifi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ieee802154/nl-mac.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
-index 01305ba2d3aa..9d04ca53229b 100644
---- a/drivers/net/wireless/virt_wifi.c
-+++ b/drivers/net/wireless/virt_wifi.c
-@@ -12,6 +12,7 @@
- #include <net/cfg80211.h>
- #include <net/rtnetlink.h>
- #include <linux/etherdevice.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
+diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
+index d3cbb3258718..c0930b9fe848 100644
+--- a/net/ieee802154/nl-mac.c
++++ b/net/ieee802154/nl-mac.c
+@@ -559,9 +559,7 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
+ 	desc->mode = nla_get_u8(info->attrs[IEEE802154_ATTR_LLSEC_KEY_MODE]);
  
- static struct wiphy *common_wiphy;
-@@ -168,11 +169,11 @@ static void virt_wifi_scan_result(struct work_struct *work)
- 			     scan_result.work);
- 	struct wiphy *wiphy = priv_to_wiphy(priv);
- 	struct cfg80211_scan_info scan_info = { .aborted = false };
-+	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
+ 	if (desc->mode == IEEE802154_SCF_KEY_IMPLICIT) {
+-		if (!info->attrs[IEEE802154_ATTR_PAN_ID] &&
+-		    !(info->attrs[IEEE802154_ATTR_SHORT_ADDR] ||
+-		      info->attrs[IEEE802154_ATTR_HW_ADDR]))
++		if (!info->attrs[IEEE802154_ATTR_PAN_ID])
+ 			return -EINVAL;
  
- 	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
- 					   CFG80211_BSS_FTYPE_PRESP,
--					   fake_router_bssid,
--					   ktime_get_boottime_ns(),
-+					   fake_router_bssid, tsf,
- 					   WLAN_CAPABILITY_ESS, 0,
- 					   (void *)&ssid, sizeof(ssid),
- 					   DBM_TO_MBM(-50), GFP_KERNEL);
+ 		desc->device_addr.pan_id = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_PAN_ID]);
+@@ -570,6 +568,9 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
+ 			desc->device_addr.mode = IEEE802154_ADDR_SHORT;
+ 			desc->device_addr.short_addr = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_SHORT_ADDR]);
+ 		} else {
++			if (!info->attrs[IEEE802154_ATTR_HW_ADDR])
++				return -EINVAL;
++
+ 			desc->device_addr.mode = IEEE802154_ADDR_LONG;
+ 			desc->device_addr.extended_addr = nla_get_hwaddr(info->attrs[IEEE802154_ATTR_HW_ADDR]);
+ 		}
 -- 
 2.30.2
 
