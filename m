@@ -2,133 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E524635BAF5
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C1B35BAFA
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236927AbhDLHkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 03:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49092 "EHLO
+        id S236899AbhDLHl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 03:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236917AbhDLHkg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 03:40:36 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00642C061574;
-        Mon, 12 Apr 2021 00:40:16 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id j4-20020a05600c4104b029010c62bc1e20so6268284wmi.3;
-        Mon, 12 Apr 2021 00:40:16 -0700 (PDT)
+        with ESMTP id S236917AbhDLHl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 03:41:27 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D665DC061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 00:40:58 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id c16so12587947oib.3
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 00:40:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VlhQoqqQup2EQc4EKSdGaI4dxwZDzOfrhmT9hkGCxW8=;
-        b=Zrn9cdTLvdgO9jzqu1N0dQxDyXNF9OjdLREK9WOB57MAOqSBs3tKlXLRV7pVh8txTf
-         kSszZ//7SfofUAvD2Wweorv29UNnf64DciT3fwqF8DgHM+wlUAGmy3UGZFg0VgTij06K
-         gRYXVvss7fCzkNfPZ0NQRrZ7zX6ebnEH+OkUs7hWzK78gxXYKCtNc/Y0SybYQoqudDzF
-         qVxdrFwug6g+RRWcAPQ6624vTI1wUQZpGGdEkuArT4MmBOBDnV8mlvzfVdnOoUWDEcRV
-         ia1xRWg3vzZHw194349FF4nSi77gKPaXFDITcHC8j6ayQMxjfk+Pdto3FRvlXbmJKNWX
-         PdiA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SosURgTWm7bhYnfflbqTj3vqGS/o94RI6cqCpClYbUk=;
+        b=VNXxChMY8xucg1lo0MUofovnkBCh09zNlBMrZYo32hGVxH5IM1Yi1Sp3AAOA19TNZO
+         HwAAA2aRNgxoHqjPCCqxtNGWTG4jG9Ks/7zCoDdcRBA/lXvm6tYa0muBhhOwyByF6PyQ
+         WxgoWLnrTlZbFF1T6N+iGCdNdBAAHz8zkSx72jM2U4RawiHgdc8NHyctTv7KFIfXu1e+
+         vRH6iVVe4jZaxLzk1zS009GTD6C4AA0hmPH7SqtJOwrRYasLSWq4RtgSoRalOffjRIoR
+         Orz04MShYAQmuu6hZmVTITI8glGn4Ik3RRs7W5880rnLgTZmZ2x/O0ZzA5O8UN1UxEDt
+         yJdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=VlhQoqqQup2EQc4EKSdGaI4dxwZDzOfrhmT9hkGCxW8=;
-        b=lNOOqE/c80iE2wb+czO2hgufLAiXRm9vgoyD5qjOCR0fSa/DD84RxYm0Vvh4aQgRz4
-         VyB1RKUDPlGa/78mymODVD85ti42l7/Gu22oMk3gqN+EupLCZnxNrd53TK+uKXN3/srl
-         IGdP5CYa/KUNQd+b8XCCg5XUob17FBBhy1dKuFRvbqJ1qBN+dzz4yWjgRlzgsOB0g33O
-         HXsffUyz+urJPEP7DayqPClrRD7utTJSwH9aRzZYdQHuEDxe4+PMY9OxLCVNNJypl233
-         pcOE52bPjD4l6HRdchT3c85mk8lOpH9LVDIMP8W1uTVzRo2DI+9i4oSc8bR0RG63kl86
-         CLrw==
-X-Gm-Message-State: AOAM531JYUCcXbP86kZWD+HAtLQiE/8mK6s4bGGlNnR4mGKQPfgtnusG
-        dc0Ry35MmfydHA7gk9vi/Lhh6ROwrAo=
-X-Google-Smtp-Source: ABdhPJxPM+IATReMlcDqqyeKZK/B1R1r2JTyuEvtXLxfwJbofp8uucJTGxbEl8Y2A2vh9w6XKDce9g==
-X-Received: by 2002:a1c:5454:: with SMTP id p20mr3834383wmi.187.1618213215806;
-        Mon, 12 Apr 2021 00:40:15 -0700 (PDT)
-Received: from [192.168.1.101] ([37.164.79.211])
-        by smtp.gmail.com with ESMTPSA id v18sm13650978wmh.28.2021.04.12.00.40.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Apr 2021 00:40:15 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/3] net: use skb_for_each_frag() helper where
- possible
-To:     Matteo Croce <mcroce@linux.microsoft.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>
-References: <20210412003802.51613-1-mcroce@linux.microsoft.com>
- <20210412003802.51613-3-mcroce@linux.microsoft.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <44e9ef55-cafd-6613-938b-381ff84d3fc5@gmail.com>
-Date:   Mon, 12 Apr 2021 09:40:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        bh=SosURgTWm7bhYnfflbqTj3vqGS/o94RI6cqCpClYbUk=;
+        b=gAPhC0RskChLwHIKiBfPSZETYofEUJTTvH/2uQ2+5/rlJ4mNxjBhZqD7VZC7fhCGRF
+         VU3Ytw+DDgkTQdDx4bAvCbCbldv1US7kGDTJVZwClYIhGCdXVuITLoQsCpDX9Abwa4FM
+         RdYbTvyX9eH+IirBZBiMx9dp0Wgukqb9yGag8kUYv+ukEr+FPYolBXrcaApWnXfhL5De
+         rrkLxpc+OJlJrgskuvfm0DEThob3mA16TCHsfDl3SywhHSu+Z2xp9tpMgsaYFwuwUHWR
+         HR99qhsRiwh95xdCnPTjFlJhW/OwB8XuwJ90b3JZTSxz9ouxAeHOxDsHus+D3fccuXIX
+         pj2A==
+X-Gm-Message-State: AOAM533Qdo6TW4Puixlc3WahafhseHEjwXMSh1gTGwkLF7vJp91izqSq
+        yUmasM5Ehv77Cztd3NWwz1pmsg6ofrI=
+X-Google-Smtp-Source: ABdhPJxi2LXcwhLD4y0yVZG2z5XqCjanuK7qkQGm6Avcv3FTetmI2uWQt+gG3N+aE6fIFz2gj412ZQ==
+X-Received: by 2002:a54:408a:: with SMTP id i10mr18448513oii.141.1618213258119;
+        Mon, 12 Apr 2021 00:40:58 -0700 (PDT)
+Received: from pear.attlocal.net ([2600:1700:271:1a80:70fe:cfb5:1414:607d])
+        by smtp.gmail.com with ESMTPSA id u185sm1580911oie.12.2021.04.12.00.40.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Apr 2021 00:40:57 -0700 (PDT)
+From:   Lijun Pan <lijunp213@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <lijunp213@gmail.com>
+Subject: [PATCH net-next] ibmvnic: clean up the remaining debugfs data structures
+Date:   Mon, 12 Apr 2021 02:40:59 -0500
+Message-Id: <20210412074059.9251-1-lijunp213@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20210412003802.51613-3-mcroce@linux.microsoft.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit e704f0434ea6 ("ibmvnic: Remove debugfs support") did not
+clean up everything. Remove the remaining code.
 
+Signed-off-by: Lijun Pan <lijunp213@gmail.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.h | 94 ------------------------------
+ 1 file changed, 94 deletions(-)
 
-On 4/12/21 2:38 AM, Matteo Croce wrote:
-> From: Matteo Croce <mcroce@microsoft.com>
-> 
-> use the new helper macro skb_for_each_frag() which allows to iterate
-> through all the SKB fragments.
-> 
-> The patch was created with Coccinelle, this was the semantic patch:
-> 
-> @@
-> struct sk_buff *skb;
-> identifier i;
-> statement S;
-> iterator name skb_for_each_frag;
-> @@
-> -for (i = 0; i < skb_shinfo(skb)->nr_frags; \(++i\|i++\))
-> +skb_for_each_frag(skb, i)
->  S
-> @@
-> struct skb_shared_info *sinfo;
-> struct sk_buff *skb;
-> identifier i;
-> statement S;
-> iterator name skb_for_each_frag;
-> @@
-
-
-I disagree with this part :
-
->  sinfo = skb_shinfo(skb)
->  ...
-> -for (i = 0; i < sinfo->nr_frags; \(++i\|i++\))
-> +skb_for_each_frag(skb, i)
->  S
->
-
-
-> index bde781f46b41..5de00477eaf9 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -1644,7 +1644,7 @@ static int __pskb_trim_head(struct sk_buff *skb, int len)
->  	eat = len;
->  	k = 0;
->  	shinfo = skb_shinfo(skb);
-> -	for (i = 0; i < shinfo->nr_frags; i++) {
-> +	skb_for_each_frag(skb, i) {
->  		int size = skb_frag_size(&shinfo->frags[i]);
->  
->  		if (size <= eat) {
-
-This will force the compiler to re-evaluate skb_shinfo(skb)->nr_frags in the loop,
-since atomic operations like skb_frag_unref() have a memory clobber.
-
-skb_shinfo(skb)->nr_frags has to reload three vars.
-
-The macro should only be used when the code had
-
-for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
-
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index 806aa75a4e86..c1d39a748546 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -412,77 +412,6 @@ struct ibmvnic_control_ip_offload {
+ 	struct ibmvnic_rc rc;
+ } __packed __aligned(8);
+ 
+-struct ibmvnic_request_dump_size {
+-	u8 first;
+-	u8 cmd;
+-	u8 reserved[6];
+-	__be32 len;
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+-struct ibmvnic_request_dump {
+-	u8 first;
+-	u8 cmd;
+-	u8 reserved1[2];
+-	__be32 ioba;
+-	__be32 len;
+-	u8 reserved2[4];
+-} __packed __aligned(8);
+-
+-struct ibmvnic_request_dump_rsp {
+-	u8 first;
+-	u8 cmd;
+-	u8 reserved[6];
+-	__be32 dumped_len;
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+-struct ibmvnic_request_ras_comp_num {
+-	u8 first;
+-	u8 cmd;
+-	u8 reserved1[2];
+-	__be32 num_components;
+-	u8 reserved2[4];
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+-struct ibmvnic_request_ras_comps {
+-	u8 first;
+-	u8 cmd;
+-	u8 reserved[2];
+-	__be32 ioba;
+-	__be32 len;
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+-struct ibmvnic_control_ras {
+-	u8 first;
+-	u8 cmd;
+-	u8 correlator;
+-	u8 level;
+-	u8 op;
+-#define IBMVNIC_TRACE_LEVEL	1
+-#define IBMVNIC_ERROR_LEVEL	2
+-#define IBMVNIC_TRACE_PAUSE	3
+-#define IBMVNIC_TRACE_RESUME	4
+-#define IBMVNIC_TRACE_ON		5
+-#define IBMVNIC_TRACE_OFF		6
+-#define IBMVNIC_CHG_TRACE_BUFF_SZ	7
+-	u8 trace_buff_sz[3];
+-	u8 reserved[4];
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+-struct ibmvnic_collect_fw_trace {
+-	u8 first;
+-	u8 cmd;
+-	u8 correlator;
+-	u8 reserved;
+-	__be32 ioba;
+-	__be32 len;
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+ struct ibmvnic_request_statistics {
+ 	u8 first;
+ 	u8 cmd;
+@@ -494,15 +423,6 @@ struct ibmvnic_request_statistics {
+ 	u8 reserved[4];
+ } __packed __aligned(8);
+ 
+-struct ibmvnic_request_debug_stats {
+-	u8 first;
+-	u8 cmd;
+-	u8 reserved[2];
+-	__be32 ioba;
+-	__be32 len;
+-	struct ibmvnic_rc rc;
+-} __packed __aligned(8);
+-
+ struct ibmvnic_error_indication {
+ 	u8 first;
+ 	u8 cmd;
+@@ -677,22 +597,8 @@ union ibmvnic_crq {
+ 	struct ibmvnic_query_ip_offload query_ip_offload_rsp;
+ 	struct ibmvnic_control_ip_offload control_ip_offload;
+ 	struct ibmvnic_control_ip_offload control_ip_offload_rsp;
+-	struct ibmvnic_request_dump_size request_dump_size;
+-	struct ibmvnic_request_dump_size request_dump_size_rsp;
+-	struct ibmvnic_request_dump request_dump;
+-	struct ibmvnic_request_dump_rsp request_dump_rsp;
+-	struct ibmvnic_request_ras_comp_num request_ras_comp_num;
+-	struct ibmvnic_request_ras_comp_num request_ras_comp_num_rsp;
+-	struct ibmvnic_request_ras_comps request_ras_comps;
+-	struct ibmvnic_request_ras_comps request_ras_comps_rsp;
+-	struct ibmvnic_control_ras control_ras;
+-	struct ibmvnic_control_ras control_ras_rsp;
+-	struct ibmvnic_collect_fw_trace collect_fw_trace;
+-	struct ibmvnic_collect_fw_trace collect_fw_trace_rsp;
+ 	struct ibmvnic_request_statistics request_statistics;
+ 	struct ibmvnic_generic_crq request_statistics_rsp;
+-	struct ibmvnic_request_debug_stats request_debug_stats;
+-	struct ibmvnic_request_debug_stats request_debug_stats_rsp;
+ 	struct ibmvnic_error_indication error_indication;
+ 	struct ibmvnic_link_state_indication link_state_indication;
+ 	struct ibmvnic_change_mac_addr change_mac_addr;
+-- 
+2.23.0
 
