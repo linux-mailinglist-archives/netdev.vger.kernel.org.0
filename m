@@ -2,62 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B0D235BDF2
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1456035BED8
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 11:03:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238178AbhDLI4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 04:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238379AbhDLIxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 04:53:51 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A648AC06134F
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:53:19 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id z13so3055110lfd.9
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:53:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=4x707U9exLm2LVQU/9fq4M+cW4wadgJtnzlwv6yCJQc=;
-        b=HHbBxkz5WDz9A4TrPaatxAAFHGgEuvt4Y/HnEa0mdDex8m6l7SAvnvFQpdap0QkGa/
-         lWIeuqhAkfu/tzX0HEZbkJ897bKGcshVH2ih/NgnWiQRnhlPow0M/mKpl7QKYdqMsQTG
-         m633hOgLYjhROA4ie3YFTE5RYdO8DxR7pHSW9LmpB+s8XvxwWw2O63dLIUCXFkLjfKHj
-         CU3g1yd4whmpcDi+O9+re4VgEyi2DF7WML4HS2rJ3czUXyqIyEomI52WqyUGg/9bCT6T
-         YneKtjsAqXPflGourOpRPWKe35hvbLnHBuaXAomdiYZVLGNKhCQBOQmJe+RH7EUAuvlr
-         /8VA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=4x707U9exLm2LVQU/9fq4M+cW4wadgJtnzlwv6yCJQc=;
-        b=RTj3G/D0awPA0uEScV0Em+H8LQcJFWgmDqhbpLlhmd6xfLjVmZVm7SEsn8MluW77/j
-         gNdy5JutQTpaW3M3duREEPyB53TG1rzcmce0qE0A52EUUDKNACBkF4aUPbOUkrCDX9g+
-         c5tMZ9raqaE9EULNr3Rx8yirZMBWPwmsSK9c0cxvhTisoIS/ofbVtFfhIJy8LrXdPU11
-         nWl5ODTRGlKp0+zVYi6RWxmmMRJOisiIqW3nTjUA2TgwdcWfgUr6SbU7LwItRXsZ7s57
-         6iUaGf83iuGLhCbrlqd7xnsDZfWYiU8w4Bo/UtQ3cuSZaKp7Fghf5jladeDpN3rj+0Ye
-         mOdw==
-X-Gm-Message-State: AOAM533xPkdv5aw5OwzwugyRAPNkN4mqdTn/Qtg/xIxpllx5cZ7hRpjQ
-        RHvJ3UWlRQvmOAHYLySPWBz0WujfIAKoP4Sv5cg=
-X-Google-Smtp-Source: ABdhPJz9fkZx0bciB7rQGN1La24aYKI81BogGKIK2ogu/MR++xKBP+Bx4uTWsocSloY8ZLES8T8JUWmMbIoTNQcwaFA=
-X-Received: by 2002:a19:bca:: with SMTP id 193mr7753466lfl.160.1618217598076;
- Mon, 12 Apr 2021 01:53:18 -0700 (PDT)
+        id S238939AbhDLJCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 05:02:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49930 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239636AbhDLJA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 05:00:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2CCC961370;
+        Mon, 12 Apr 2021 08:58:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1618217927;
+        bh=ACtMWK41v8hxTWK8YferxvR+RzIdpU+E0ffPqlv1ssU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jgMTOkAiT8bPwQl0CrIJfgk86iF0bVOAVNSkuwRbTvTrDDXvLMXfF6s/43eosNq5S
+         O64TyGlUvPjmsmflK3eUYmZH6/VH0M2CFzCuNF7+OlBsRtPNns4mMIk1aIcQ218l1P
+         fA2HUFnXxwNSPPj9Olhp5cnGEkD0PLW3iDvcdq7Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        netdev@vger.kernel.org, Dmitry Safonov <dima@arista.com>
+Subject: [PATCH 5.11 001/210] xfrm/compat: Cleanup WARN()s that can be user-triggered
+Date:   Mon, 12 Apr 2021 10:38:26 +0200
+Message-Id: <20210412084016.059533040@linuxfoundation.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210412084016.009884719@linuxfoundation.org>
+References: <20210412084016.009884719@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Sender: tkoura94@gmail.com
-Received: by 2002:a2e:8602:0:0:0:0:0 with HTTP; Mon, 12 Apr 2021 01:53:17
- -0700 (PDT)
-From:   Kayla Manthey <sgt.kayla12@gmail.com>
-Date:   Mon, 12 Apr 2021 08:53:17 +0000
-X-Google-Sender-Auth: IaPxOsgRZOCIlK5OpY9myG_umRI
-Message-ID: <CANDjuz=+c7Yft9w7Mfc=OJFZZpxkQD4hC7Lpx07EP66FVpXPvw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bitte ich m=C3=B6chte wissen, ob Sie meine vorherige Nachricht erhalten hab=
-en, danke.
+From: Dmitry Safonov <dima@arista.com>
+
+commit ef19e111337f6c3dca7019a8bad5fbc6fb18d635 upstream.
+
+Replace WARN_ONCE() that can be triggered from userspace with
+pr_warn_once(). Those still give user a hint what's the issue.
+
+I've left WARN()s that are not possible to trigger with current
+code-base and that would mean that the code has issues:
+- relying on current compat_msg_min[type] <= xfrm_msg_min[type]
+- expected 4-byte padding size difference between
+  compat_msg_min[type] and xfrm_msg_min[type]
+- compat_policy[type].len <= xfrma_policy[type].len
+(for every type)
+
+Reported-by: syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com
+Fixes: 5f3eea6b7e8f ("xfrm/compat: Attach xfrm dumps to 64=>32 bit translator")
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/xfrm/xfrm_compat.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+--- a/net/xfrm/xfrm_compat.c
++++ b/net/xfrm/xfrm_compat.c
+@@ -216,7 +216,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_c
+ 	case XFRM_MSG_GETSADINFO:
+ 	case XFRM_MSG_GETSPDINFO:
+ 	default:
+-		WARN_ONCE(1, "unsupported nlmsg_type %d", nlh_src->nlmsg_type);
++		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
+ 		return ERR_PTR(-EOPNOTSUPP);
+ 	}
+ 
+@@ -277,7 +277,7 @@ static int xfrm_xlate64_attr(struct sk_b
+ 		return xfrm_nla_cpy(dst, src, nla_len(src));
+ 	default:
+ 		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
+-		WARN_ONCE(1, "unsupported nla_type %d", src->nla_type);
++		pr_warn_once("unsupported nla_type %d\n", src->nla_type);
+ 		return -EOPNOTSUPP;
+ 	}
+ }
+@@ -315,8 +315,10 @@ static int xfrm_alloc_compat(struct sk_b
+ 	struct sk_buff *new = NULL;
+ 	int err;
+ 
+-	if (WARN_ON_ONCE(type >= ARRAY_SIZE(xfrm_msg_min)))
++	if (type >= ARRAY_SIZE(xfrm_msg_min)) {
++		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
+ 		return -EOPNOTSUPP;
++	}
+ 
+ 	if (skb_shinfo(skb)->frag_list == NULL) {
+ 		new = alloc_skb(skb->len + skb_tailroom(skb), GFP_ATOMIC);
+@@ -378,6 +380,10 @@ static int xfrm_attr_cpy32(void *dst, si
+ 	struct nlmsghdr *nlmsg = dst;
+ 	struct nlattr *nla;
+ 
++	/* xfrm_user_rcv_msg_compat() relies on fact that 32-bit messages
++	 * have the same len or shorted than 64-bit ones.
++	 * 32-bit translation that is bigger than 64-bit original is unexpected.
++	 */
+ 	if (WARN_ON_ONCE(copy_len > payload))
+ 		copy_len = payload;
+ 
+
+
