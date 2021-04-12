@@ -2,104 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C24B435D41D
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 01:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1AD235D431
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 01:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344189AbhDLXqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 19:46:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59592 "EHLO mail.kernel.org"
+        id S242618AbhDLXzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 19:55:11 -0400
+Received: from mail.nic.cz ([217.31.204.67]:58582 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237290AbhDLXqI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 19:46:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5CB6061278;
-        Mon, 12 Apr 2021 23:45:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618271149;
-        bh=QRIInDklK16Ym/43NY2Bvzrh8ZTmiRAiyJRfrUabGpk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XFpiTYrmI2eNTJprFnnSFChlZDgqgDu1IHOvc7YS45+kb5dxAOGzw8PGt7y8GyQGD
-         0HGvbNrRlZplIxqPYpzYT/XbQMEn4DUDzHgdVFeBPPDbDTMY3ps4ulDCzrdA9GBjHQ
-         vOkKDZ2WJaaqK+RcE4GITJ3r2BGxab4E8Bqgj2N9UrefkFF+D1+W7pS4pGKeSzU+cT
-         1kdtDxQgXqvdBRZkC3QWY5V8s0Jnk1yexmtnoqjGRl7LXGWQ8imR4I5HmEYYP3RsV5
-         i6RO+ffz1CCjDL928gs7O3FKN8sk4MQndgoYNHWKFHL7ETVQJLlu7SU0jyFRp+H0Nu
-         kZdFH/yWp38NA==
-Date:   Tue, 13 Apr 2021 01:45:45 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S237250AbhDLXzK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 19:55:10 -0400
+Received: from thinkpad (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id 949C0140655;
+        Tue, 13 Apr 2021 01:54:50 +0200 (CEST)
+Date:   Tue, 13 Apr 2021 01:54:50 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: marvell: fix detection of PHY on Topaz
- switches
-Message-ID: <20210413014545.1bb4601e@thinkpad>
-In-Reply-To: <20210412163829.kp7feb3yhzymukg2@pali>
-References: <20210412121430.20898-1-pali@kernel.org>
-        <YHRH2zWsYkv/yjYz@lunn.ch>
-        <20210412133447.fyqkavrs5r5wbino@pali>
-        <YHRcu+dNKE7xC8EG@lunn.ch>
-        <20210412150152.pbz5zt7mu3aefbrx@pali>
-        <YHRoEfGi3/l3K6iF@lunn.ch>
-        <20210412155239.chgrne7uzvlrac2e@pali>
-        <YHRxcyezvUij82bl@lunn.ch>
-        <20210412163829.kp7feb3yhzymukg2@pali>
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Message-ID: <20210413015450.1ae597da@thinkpad>
+In-Reply-To: <87o8ejjdu6.fsf@waldekranz.com>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com>
+        <20210411200135.35fb5985@thinkpad>
+        <20210411185017.3xf7kxzzq2vefpwu@skbuf>
+        <878s5nllgs.fsf@waldekranz.com>
+        <20210412213045.4277a598@thinkpad>
+        <8735vvkxju.fsf@waldekranz.com>
+        <20210412235054.73754df9@thinkpad>
+        <87wnt7jgzk.fsf@waldekranz.com>
+        <20210413005518.2f9b9cef@thinkpad>
+        <87r1jfje26.fsf@waldekranz.com>
+        <87o8ejjdu6.fsf@waldekranz.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Apr 2021 18:38:29 +0200
-Pali Roh=C3=A1r <pali@kernel.org> wrote:
+On Tue, 13 Apr 2021 01:13:53 +0200
+Tobias Waldekranz <tobias@waldekranz.com> wrote:
 
-> On Monday 12 April 2021 18:12:35 Andrew Lunn wrote:
-> > On Mon, Apr 12, 2021 at 05:52:39PM +0200, Pali Roh=C3=A1r wrote: =20
-> > > On Monday 12 April 2021 17:32:33 Andrew Lunn wrote: =20
-> > > > > Anyway, now I'm looking at phy/marvell.c driver again and it supp=
-orts
-> > > > > only 88E6341 and 88E6390 families from whole 88E63xxx range.
-> > > > >=20
-> > > > > So do we need to define for now table for more than
-> > > > > MV88E6XXX_FAMILY_6341 and MV88E6XXX_FAMILY_6390 entries? =20
-> > > >=20
-> > > > Probably not. I've no idea if the 6393 has an ID, so to be safe you
-> > > > should add that. Assuming it has a family of its own. =20
-> > >=20
-> > > So what about just?
-> > >=20
-> > > 	if (reg =3D=3D MII_PHYSID2 && !(val & 0x3f0)) {
-> > > 		if (chip->info->family =3D=3D MV88E6XXX_FAMILY_6341)
-> > > 			val |=3D MV88E6XXX_PORT_SWITCH_ID_PROD_6341 >> 4;
-> > > 		else if (chip->info->family =3D=3D MV88E6XXX_FAMILY_6390)
-> > > 			val |=3D MV88E6XXX_PORT_SWITCH_ID_PROD_6390 >> 4;
-> > > 	} =20
-> >=20
-> > As i said, i expect the 6393 also has no ID. And i recently found out
-> > Marvell have some automotive switches, 88Q5xxx which are actually
-> > based around the same IP and could be added to this driver. They also
-> > might not have an ID. I suspect this list is going to get longer, so
-> > having it table driven will make that simpler, less error prone.
-> >=20
-> >      Andrew =20
->=20
-> Ok, I will use table but I fill it only with Topaz (6341) and Peridot
-> (6390) which was there before as I do not have 6393 switch for testing.
->=20
-> If you or anybody else has 6393 unit for testing, please extend then
-> table.
+> > ...you could get the isolation in place. But you will still lookup the
+> > DA in the ATU, and there you will find a destination of either cpu0 or
+> > cpu1. So for one of the ports, the destination will be outside of its
+> > port based VLAN. Once the vectors are ANDed together, it is left with no
+> > valid port to egress through, and the packet is dropped.
+> >  
+> >> Am I wrong? I confess that I did not understand this into the most fine
+> >> details, so it is entirely possible that I am missing something
+> >> important and am completely wrong. Maybe this cannot be done.  
+> >
+> > I really doubt that it can be done. Not in any robust way at
+> > least. Happy to be proven wrong though! :)  
+> 
+> I think I figured out why it "works" for you. Since the CPU address is
+> never added to the ATU, traffic for it is treated as unknown. Thanks to
+> that, it flooded and the isolation brings it together. As soon as
+> mv88e6xxx starts making use of Vladimirs offloading of host addresses
+> though, I suspect this will fall apart.
 
-6393 PHYs report PHY ID 0x002b0808, I.e. no model number.
+Hmm :( This is bad news. I would really like to make it balance via
+input ports. The LAG balancing for this usecase is simply unacceptable,
+since the switch puts so little information into the hash function.
 
-I now realize that I did not implement this for 6393, these PHYs are
-detected as
-  mv88e6085 ... PHY [...] driver [Generic PHY] (irq=3DPOLL)
-
-And it seems that this temperature sensor is different from 1510, 6341
-and 6390 :) I will look into this and send a patch.
+I will look into this, maybe ask some follow-up questions.
 
 Marek
