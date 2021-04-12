@@ -2,106 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3121835C6A5
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E46835C6B7
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241400AbhDLMrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 08:47:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49423 "EHLO
+        id S241485AbhDLMuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 08:50:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:39832 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241408AbhDLMrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 08:47:00 -0400
+        by vger.kernel.org with ESMTP id S238534AbhDLMt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 08:49:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618231602;
+        s=mimecast20190719; t=1618231780;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gyRA3eXvjPEiAnUmzzROMJvtjDJt+882R/Pm9YO3IBI=;
-        b=JRv7jkM8UeZCBUnQaCQt8+mV98GTZiisYSrZNEZERUz6T2UMnUdbCCrpj1DntLVonZlgJ9
-        Aqp7hQh3t8b9A/2M/TmTBY+MHWBXq/tKwTl3UoQE9plHF1PVqbFwdIKtGlrJL3W+EHpjB4
-        ggun5dgSPW4UgPfk7sTpYytseatFmnA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-509-H2Ovd74qMrWeALGVTF0e4Q-1; Mon, 12 Apr 2021 08:46:38 -0400
-X-MC-Unique: H2Ovd74qMrWeALGVTF0e4Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E15306D252;
-        Mon, 12 Apr 2021 12:46:36 +0000 (UTC)
-Received: from ovpn-112-53.phx2.redhat.com (ovpn-112-53.phx2.redhat.com [10.3.112.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A59646090F;
-        Mon, 12 Apr 2021 12:46:29 +0000 (UTC)
-Message-ID: <01fae6c3113d454cc009f065fde77f66af9845b6.camel@redhat.com>
-Subject: Re: [PATCH net-next] [RESEND] wireguard: disable in FIPS mode
-From:   Simo Sorce <simo@redhat.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "herbert.xu" <herbert.xu@redhat.com>
-Date:   Mon, 12 Apr 2021 08:46:28 -0400
-In-Reply-To: <5d6137d0e4ea1d67ee495398f2cb12a1c21653fd.camel@redhat.com>
-References: <20210407113920.3735505-1-liuhangbin@gmail.com>
-         <CAHmME9p40M5oHDZXnFDXfO4-JuJ7bUB5BnsccGV1pksguz73sg@mail.gmail.com>
-         <c47d99b9d0efeea4e6cd238c2affc0fbe296b53c.camel@redhat.com>
-         <CAHmME9pRSOANrdvegLm9x8VTNWKcMtoymYrgStuSx+nsu=jpwA@mail.gmail.com>
-         <20210409024143.GL2900@Leo-laptop-t470s>
-         <CAHmME9oqK9iXRn3wxAB-MZvX3k_hMbtjHF_V9UY96u6NLcczAw@mail.gmail.com>
-         <20210409024907.GN2900@Leo-laptop-t470s> <YG/EAePSEeYdonA0@zx2c4.com>
-         <CAMj1kXG-e_NtLkAdLYp70x5ft_Q1Bn9rmdXs4awt7FEd5PQ4+Q@mail.gmail.com>
-         <0ef180dea02996fc5f4660405f2333220e8ae4c4.camel@redhat.com>
-         <CAHmME9opMi_2_cOS66U6jJvYZ=WJWv4E-mjYr20YaL=zzJxv+Q@mail.gmail.com>
-         <5d6137d0e4ea1d67ee495398f2cb12a1c21653fd.camel@redhat.com>
-Organization: Red Hat, Inc.
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        bh=9C/cD8P3IrDuK2NZ6oucMLdIewXV7K4I9kOUr8VG5sI=;
+        b=J1JfqPG47p1x6ALVBZji1OlyCMpjsGOyK01rKN08PBREy6OhzvOdUuPqomTWk1qK+2D99x
+        fnPZiv4oBJUsd0MUT7hwL/jhlhA1OyTmVu4XZ0TBqwbvfhifQyPs25RyqBGO+KKJ/xNemJ
+        gdvh4BYU73pC6FR+tSSiT9CAk7qY4cs=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-506-FrS-CHtqO36Ccki8Y045xg-1; Mon, 12 Apr 2021 08:49:39 -0400
+X-MC-Unique: FrS-CHtqO36Ccki8Y045xg-1
+Received: by mail-ed1-f70.google.com with SMTP id r12so3154155eds.15
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 05:49:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9C/cD8P3IrDuK2NZ6oucMLdIewXV7K4I9kOUr8VG5sI=;
+        b=K5bdVRCO8+Kl3ciaLYzeevp5DId6VtUxioHE0X1Ui2KiLWyFn6Xf5SjHgWcbr2MXo5
+         mqxUi1Cd82msHhikMqeda+sApUzPAzu+SfL+vBogULMURoewAK5CfZgNRmBLMD7/7QUD
+         z6PaiQzg/3/x62MxHmiwTOepGZGeYmiOul+KfQzotY4VMjpMozu4GIm3SOfBkHyedP/c
+         w9jqyPpdY5XCVvmDCk7Fc4RD8D2A0QXp1WFzRTyrtWjzg1sVURmubptYRxDz32nxAxgV
+         p6BABzYmw13qs2Y29CgIwvmQ91uYpneYaN7m74WguCtkxGYTFVqSkd0fkNBNfgw5p2R+
+         1u/g==
+X-Gm-Message-State: AOAM530f6z+pnYqhh6Po1nK1D/UrIivvqZ0ThTJFnKoJgb4lO0lgRDt1
+        W2PXySd2UbNRc1ADQB5qAamI76kYIivC4CM7/atiwHJsxbaTjmA/3NgUzxCP6cqSMWGac9SP14l
+        xTIBzqbauLQg5byZL
+X-Received: by 2002:a17:907:2da7:: with SMTP id gt39mr26876323ejc.193.1618231778004;
+        Mon, 12 Apr 2021 05:49:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy9TAigsm6UebpwTlyCIPnqI/8fvxuiuivYYglIeM/jT9AIMxLlEwKdWU424VxLaXfSrQdHKQ==
+X-Received: by 2002:a17:907:2da7:: with SMTP id gt39mr26876310ejc.193.1618231777810;
+        Mon, 12 Apr 2021 05:49:37 -0700 (PDT)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id u19sm6688595edy.23.2021.04.12.05.49.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 05:49:37 -0700 (PDT)
+Date:   Mon, 12 Apr 2021 14:49:35 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, si-wei.liu@oracle.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH] vdpa/mlx5: Set err = -ENOMEM in case dma_map_sg_attrs
+ fails
+Message-ID: <20210412124935.jtguuf7dj74eezcw@steredhat>
+References: <20210411083646.910546-1-elic@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210411083646.910546-1-elic@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-04-09 at 14:56 -0400, Simo Sorce wrote:
-> Hi Jason,
-> I can't speak for Hangbin, we do not work for the same company and I
-> was not aware of his efforts until this patch landed.
+On Sun, Apr 11, 2021 at 11:36:46AM +0300, Eli Cohen wrote:
+>Set err = -ENOMEM if dma_map_sg_attrs() fails so the function reutrns
+>error.
+>
+>Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
+>Signed-off-by: Eli Cohen <elic@nvidia.com>
+>Reported-by: kernel test robot <lkp@intel.com>
+>Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>---
+> drivers/vdpa/mlx5/core/mr.c | 4 +++-
+> 1 file changed, 3 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
+>index 3908ff28eec0..800cfd1967ad 100644
+>--- a/drivers/vdpa/mlx5/core/mr.c
+>+++ b/drivers/vdpa/mlx5/core/mr.c
+>@@ -278,8 +278,10 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_vdpa_direct_mr
+> 	mr->log_size = log_entity_size;
+> 	mr->nsg = nsg;
+> 	mr->nent = dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTIONAL, 0);
+>-	if (!mr->nent)
+>+	if (!mr->nent) {
+>+		err = -ENOMEM;
+> 		goto err_map;
+>+	}
+>
+> 	err = create_direct_mr(mvdev, mr);
+> 	if (err)
+>-- 
+>2.30.1
+>
 
-Turns out I and Hangbin do work for the same company after all.
-Left hand is meeting right hand internally now. :-D
-The comments still stand of course.
-
-Simo.
-
-> For my part we were already looking at big_key, wireguard and other
-> areas internally, but were not thinking of sending upstream patches
-> like these w/o first a good assessment with our teams and lab that they
-> were proper and sufficient.
-> 
-> >  So
-> > I think either you should send an exhaustive patch series that forbids
-> > all use of non-FIPS crypto anywhere in the kernel (another example:
-> > net/core/secure_seq.c) in addition to all tunneling modules that don't
-> > use FIPS-certified crypto, or figure out how to disable the lib/crypto
-> > primitives that you want to be disabled in "fips mode". With a
-> > coherent patchset for either of these, we can then evaluate it.
-> 
-> Yes a cohesive approach would be ideal, but I do not know if pushing
-> substantially the same checks we have in the Crypto API down to
-> lib/crypto is the right way to go, I am not oppose but I guess Herbert
-> would have to chime in here.
-> 
-
--- 
-Simo Sorce
-RHEL Crypto Team
-Red Hat, Inc
-
-
-
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
