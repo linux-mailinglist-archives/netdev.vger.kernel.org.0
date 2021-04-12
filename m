@@ -2,73 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A6135C6DE
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:57:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B2BA35C750
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 15:15:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241568AbhDLM54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 08:57:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45404 "EHLO vps0.lunn.ch"
+        id S238145AbhDLNP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 09:15:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45428 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241506AbhDLM5x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 08:57:53 -0400
+        id S236976AbhDLNP2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 09:15:28 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1lVw85-00GGXV-JZ; Mon, 12 Apr 2021 14:57:25 +0200
-Date:   Mon, 12 Apr 2021 14:57:25 +0200
+        id 1lVwPD-00GGfR-0f; Mon, 12 Apr 2021 15:15:07 +0200
+Date:   Mon, 12 Apr 2021 15:15:07 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Radu Nicolae Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
-Message-ID: <YHRDtTKUI0Uck00n@lunn.ch>
-References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
- <YHCsrVNcZmeTPJzW@lunn.ch>
- <64e44d26f45a4fcfc792073fe195e731e6f7e6d9.camel@oss.nxp.com>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell: fix detection of PHY on Topaz switches
+Message-ID: <YHRH2zWsYkv/yjYz@lunn.ch>
+References: <20210412121430.20898-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <64e44d26f45a4fcfc792073fe195e731e6f7e6d9.camel@oss.nxp.com>
+In-Reply-To: <20210412121430.20898-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 01:02:07PM +0300, Radu Nicolae Pirea (NXP OSS) wrote:
-> On Fri, 2021-04-09 at 21:36 +0200, Andrew Lunn wrote:
-> > On Fri, Apr 09, 2021 at 09:41:06PM +0300, Radu Pirea (NXP OSS) wrote:
-> > > Add driver for tja1103 driver and for future NXP C45 PHYs.
-> > 
-> > So apart from c45 vs c22, how does this differ to nxp-tja11xx.c?
-> > Do we really want two different drivers for the same hardware? 
-> > Can we combine them somehow?
-> It looks like the PHYs are the same hardware, but that's not entirely
-> true. Just the naming is the same. TJA1103 is using a different IP and
-> is having timestamping support(I will add it later).
+> +static u16 mv88e6xxx_physid_for_family(enum mv88e6xxx_family family);
+> +
 
-Is the IP very different? You often see different generations of a PHY
-supported by the same driver, if the generations are similar.
+No forward declaration please. Move the code around. It is often best
+to do that in a patch which just moves code, no other changes. It
+makes it easier to review.
 
-Does it support C22 or it is purely a C45 device?
+>  static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
+>  {
+>  	struct mv88e6xxx_mdio_bus *mdio_bus = bus->priv;
+> @@ -3040,24 +3042,9 @@ static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
+>  	err = chip->info->ops->phy_read(chip, bus, phy, reg, &val);
+>  	mv88e6xxx_reg_unlock(chip);
+>  
+> -	if (reg == MII_PHYSID2) {
+> -		/* Some internal PHYs don't have a model number. */
+> -		if (chip->info->family != MV88E6XXX_FAMILY_6165)
+> -			/* Then there is the 6165 family. It gets is
+> -			 * PHYs correct. But it can also have two
+> -			 * SERDES interfaces in the PHY address
+> -			 * space. And these don't have a model
+> -			 * number. But they are not PHYs, so we don't
+> -			 * want to give them something a PHY driver
+> -			 * will recognise.
+> -			 *
+> -			 * Use the mv88e6390 family model number
+> -			 * instead, for anything which really could be
+> -			 * a PHY,
+> -			 */
+> -			if (!(val & 0x3f0))
+> -				val |= MV88E6XXX_PORT_SWITCH_ID_PROD_6390 >> 4;
+> -	}
+> +	/* Some internal PHYs don't have a model number. */
+> +	if (reg == MII_PHYSID2 && !(val & 0x3f0))
+> +		val |= mv88e6xxx_physid_for_family(chip->info->family);
+>  
+>  	return err ? err : val;
+>  }
+> @@ -5244,6 +5231,39 @@ static const struct mv88e6xxx_info *mv88e6xxx_lookup_info(unsigned int prod_num)
+>  	return NULL;
+>  }
+>  
+> +/* This table contains representative model for every family */
+> +static const enum mv88e6xxx_model family_model_table[] = {
+> +	[MV88E6XXX_FAMILY_6095] = MV88E6095,
+> +	[MV88E6XXX_FAMILY_6097] = MV88E6097,
+> +	[MV88E6XXX_FAMILY_6185] = MV88E6185,
+> +	[MV88E6XXX_FAMILY_6250] = MV88E6250,
+> +	[MV88E6XXX_FAMILY_6320] = MV88E6320,
+> +	[MV88E6XXX_FAMILY_6341] = MV88E6341,
+> +	[MV88E6XXX_FAMILY_6351] = MV88E6351,
+> +	[MV88E6XXX_FAMILY_6352] = MV88E6352,
+> +	[MV88E6XXX_FAMILY_6390] = MV88E6390,
+> +};
 
-> TJA is also not an Ethernet PHY series, but a general prefix for media
-> interfaces including also CAN, LIN, etc.
-> > 
-> > > +config NXP_C45_PHY
-> > > +       tristate "NXP C45 PHYs"
-> > 
-> > This is also very vague. So in the future it will support PHYs other
-> > than the TJA series?
-> Yes, in the future this driver will support other PHYs too.
+This table is wrong. MV88E6390 does not equal
+MV88E6XXX_PORT_SWITCH_ID_PROD_6390. MV88E6XXX_PORT_SWITCH_ID_PROD_6390
+was chosen because it is already an MDIO device ID, in register 2 and
+3. It probably will never clash with a real Marvell PHY ID. MV88E6390
+is just a small integer, and there is a danger it will clash with a
+real PHY.
 
-Based on the same IP? Or different IP? Are we talking about 2 more
-PHYs, so like the nxp-tja11xx.c will support 3 PHYs. And then the
-tja1106 will come along and need a new driver? What will you call
-that? I just don't like 'NXP C45 PHYs", it gives no clue as to what it
-actually supports, and it gives you problems when you need to add yet
-another driver.
+> --- a/drivers/net/phy/marvell.c
+> +++ b/drivers/net/phy/marvell.c
+> @@ -3021,9 +3021,34 @@ static struct phy_driver marvell_drivers[] = {
+>  		.get_stats = marvell_get_stats,
+>  	},
+>  	{
+> -		.phy_id = MARVELL_PHY_ID_88E6390,
+> +		.phy_id = MARVELL_PHY_ID_88E6341_FAMILY,
+>  		.phy_id_mask = MARVELL_PHY_ID_MASK,
+> -		.name = "Marvell 88E6390",
+> +		.name = "Marvell 88E6341 Family",
 
-At minimum, there needs to be a patch to add tja1102 to the help for
-the nxp-tja11xx.c driver. And this driver needs to list tja1103.
+You cannot just replace the MARVELL_PHY_ID_88E6390. That will break
+the 6390! You need to add the new PHY for the 88E6341.
 
     Andrew
