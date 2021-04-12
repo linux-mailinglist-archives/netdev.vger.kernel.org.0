@@ -2,165 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57F3835D2E4
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 00:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0337F35D2F0
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 00:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343608AbhDLWIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 18:08:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20517 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237058AbhDLWIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 18:08:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618265304;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AGL7wZWdJprmiLe0nt1hRgifCRO5IhlbubiT9W672a0=;
-        b=bpV/lPOoRNUq1q731oRrr0c0LCNnAiOl/EFDxClN2EIQvTIIDi2rPms/7i03YFCADXq45y
-        LI92LD+BLNmKaQNegNuziIu0oXpwqgAmtmC0eIuhHW9XsDHqZoOd4X2bysr11LXFkiYa4t
-        fK0DXKRzf6M75TqWaX7maioe2Qe7W4g=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-458-bLDZ3xQ6OQSeGZG861wadw-1; Mon, 12 Apr 2021 18:08:23 -0400
-X-MC-Unique: bLDZ3xQ6OQSeGZG861wadw-1
-Received: by mail-wm1-f69.google.com with SMTP id z135-20020a1c7e8d0000b02901297f50f20dso135547wmc.0
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 15:08:23 -0700 (PDT)
+        id S1343652AbhDLWR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 18:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240100AbhDLWR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 18:17:56 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7952C061574;
+        Mon, 12 Apr 2021 15:17:37 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id k21so1148476pll.10;
+        Mon, 12 Apr 2021 15:17:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eqMfZ9uDSMPVYNe4oF3x3rg/XnK6ZxSzgJH1Um+dq1g=;
+        b=Ju2zF6bVacD6Eu+b7uVnDJyLnM9tiGwBUtNLK879GvPrXdKLiTI2ur+5NB+yCzapkX
+         btcZ3vnvxrKGaU0q0VCwCEQuf3n+bs9HRV3VFPyhzISzZ2VWaFr1PkZ41waH7CjtyvOk
+         xxHz7Wwd4cj0yUo0BlhLWxntoMKmMJkyASKdtt/NEaCfy3hDjUibz3prZzEEQ64G2loN
+         zmPTedh/kZVxlgZuRc6Oksx2x4w6ayjkWbzuqeMAjplEaV94Ihkq2q2upvAql6IfQne/
+         61JuGu8eit+llUlu2tVkhN2t3v0lfAq+Q+Wtwlrf/3YiN0ooCzydsP7M+eetBO6tZeYZ
+         Jbzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:ccc;
-        bh=AGL7wZWdJprmiLe0nt1hRgifCRO5IhlbubiT9W672a0=;
-        b=N5YdKw8zrHKf+XkSD4vCBl11PlqJw9WWbeYzIIjzohPNY/SsHyrEyW7uYVLb31lK7W
-         +tOua+mRQBT7AJO4P35dvqaKXimU9HuETvjU2da8V/VapjeesCE02XCB2qhrvrOad50R
-         Yv66RdcQ3rMzzs3HqNMEyAf3QuUnbKts0q16BHDcf8nIbYsJr6jymcQ+ByLZ5E76AX05
-         fgdePtZTvnxf9XSaPvASlH2CT4bSsO/V17q9LZ+FvLnZJQTkWjwhJZ6ATyvlaW3i6w0j
-         5CyiyMuIsN1J95t7DToik3xApUV60ckcgxb8sXSuY1JgBDmFH3ED97lu40rD7KraZJ1w
-         5Zeg==
-X-Gm-Message-State: AOAM531cXFjyLyvesx1m3wGlQX3wTOs2eswh7EE30KXWD3yDT3MxD9li
-        jxiNKLlbeG8/ghd+plFeUiabQPayy8UeyAtfQxwtj3EidbYkwT1vZQhGD1XUzGB1cT64svRaUmw
-        Kt3uUlYpXS7QZIZvs
-X-Received: by 2002:a05:600c:329c:: with SMTP id t28mr1073713wmp.74.1618265302063;
-        Mon, 12 Apr 2021 15:08:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxQq02VEH0x+yR4nCVseGnJU8z9TNWYz+YkkYnKTZ8stWzkVM0s8+ImnNF6USPPWg4NmHoYgQ==
-X-Received: by 2002:a05:600c:329c:: with SMTP id t28mr1073698wmp.74.1618265301866;
-        Mon, 12 Apr 2021 15:08:21 -0700 (PDT)
-Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
-        by smtp.gmail.com with ESMTPSA id v7sm17127237wrs.2.2021.04.12.15.08.18
+         :mime-version:content-disposition:in-reply-to;
+        bh=eqMfZ9uDSMPVYNe4oF3x3rg/XnK6ZxSzgJH1Um+dq1g=;
+        b=Y391mVAJSVnG06efmPpb+JOm1z6+xP7TDiRkPbqJoOYzBIxvyXTYR5tm6JlM4bfmJK
+         uRN0Hpu+ovDkFPwHACkoaTOFxACJAgCTEvLZKPgyyReG0Y7Zlu/+r/bURAuq7Vt+CSXD
+         7RDDTD0OjMeF+X0b0ay0UP1jQmhT5xVQUmegJrIZfAzz1sLEZPFsKJaEtjYr0ovX0TEz
+         QdUInzLZ9PayQL/wtU4TjAhwDOCp6g93uQMvpFnJ6fJJemKYsCsYWUhZQRy3Bn3kItkp
+         wRF3dyZmIxNgfM9LNSnoVZ4FPJCaOisZkvQQOZg48G57hDEcGNq0HYiGNCl7PfZg2Q5L
+         CejA==
+X-Gm-Message-State: AOAM531MAuwSXlBmTek9SOwV8roTEPelV6Kg2oShN4TILqM/tqZ+5JGU
+        JrdSZ91IUUwg+6LXx1QehCE=
+X-Google-Smtp-Source: ABdhPJx+aIDD2NkWc6lwFtvcBzE0mkVok62Wqoc4sdLaWOOtSmYZP4Xdcd+5CDYJQVyFf5ofeOAqKg==
+X-Received: by 2002:a17:90b:3656:: with SMTP id nh22mr1347599pjb.112.1618265857365;
+        Mon, 12 Apr 2021 15:17:37 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id v135sm12829858pgb.82.2021.04.12.15.17.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 15:08:19 -0700 (PDT)
-Date:   Mon, 12 Apr 2021 18:08:16 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Wei Wang <weiwan@google.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-Message-ID: <20210412180353-mutt-send-email-mst@kernel.org>
-References: <20210129002136.70865-1-weiwan@google.com>
+        Mon, 12 Apr 2021 15:17:36 -0700 (PDT)
+Date:   Tue, 13 Apr 2021 01:17:21 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Message-ID: <20210412221721.3gszur3hbrkhe76m@skbuf>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com>
+ <20210411200135.35fb5985@thinkpad>
+ <20210411185017.3xf7kxzzq2vefpwu@skbuf>
+ <20210412150045.929508-1-dqfext@gmail.com>
+ <20210412163211.jrqtwwz2f7ftyli6@skbuf>
+ <20210413000457.61050ea3@thinkpad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210129002136.70865-1-weiwan@google.com>
-Ccc:    Eugenio Perez Martin <eperezma@redhat.com>
+In-Reply-To: <20210413000457.61050ea3@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-OK I started looking at this again. My idea is simple.
-A. disable callbacks before we try to drain skbs
-B. actually do disable callbacks even with event idx
+On Tue, Apr 13, 2021 at 12:04:57AM +0200, Marek Behun wrote:
+> On Mon, 12 Apr 2021 19:32:11 +0300
+> Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> > On Mon, Apr 12, 2021 at 11:00:45PM +0800, DENG Qingfang wrote:
+> > > On Sun, Apr 11, 2021 at 09:50:17PM +0300, Vladimir Oltean wrote:
+> > > >
+> > > > So I'd be tempted to say 'tough luck' if all your ports are not up, and
+> > > > the ones that are are assigned statically to the same CPU port. It's a
+> > > > compromise between flexibility and simplicity, and I would go for
+> > > > simplicity here. That's the most you can achieve with static assignment,
+> > > > just put the CPU ports in a LAG if you want better dynamic load balancing
+> > > > (for details read on below).
+> > > >
+> > >
+> > > Many switches such as mv88e6xxx only support MAC DA/SA load balancing,
+> > > which make it not ideal in router application (Router WAN <--> ISP BRAS
+> > > traffic will always have the same DA/SA and thus use only one port).
+> >
+> > Is this supposed to make a difference? Choose a better switch vendor!
+>
+> :-) Are you saying that we shall abandon trying to make the DSA
+> subsystem work with better performace for our routers, in order to
+> punish ourselves for our bad decision to use Marvell switches?
 
-To make B not regress, we need to
-C. detect the common case of disable after event triggering and skip the write then.
-
-I added a new event_triggered flag for that.
-Completely untested - but then I could not see the warnings either.
-Would be very much interested to know whether this patch helps
-resolve the sruprious interrupt problem at all ...
-
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 82e520d2cb12..a91a2d6d1ee3 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1429,6 +1429,7 @@ static void virtnet_poll_cleantx(struct receive_queue *rq)
- 		return;
- 
- 	if (__netif_tx_trylock(txq)) {
-+		virtqueue_disable_cb(vq);
- 		free_old_xmit_skbs(sq, true);
- 		__netif_tx_unlock(txq);
- 	}
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 71e16b53e9c1..213bfe8b6051 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -113,6 +113,9 @@ struct vring_virtqueue {
- 	/* Last used index we've seen. */
- 	u16 last_used_idx;
- 
-+	/* Hint for event idx: already triggered no need to disable. */
-+	bool event_triggered;
-+
- 	union {
- 		/* Available for split ring */
- 		struct {
-@@ -739,7 +742,10 @@ static void virtqueue_disable_cb_split(struct virtqueue *_vq)
- 
- 	if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
- 		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
--		if (!vq->event)
-+		if (vq->event)
-+			/* TODO: this is a hack. Figure out a cleaner value to write. */
-+			vring_used_event(&vq->split.vring) = 0x0;
-+		else
- 			vq->split.vring.avail->flags =
- 				cpu_to_virtio16(_vq->vdev,
- 						vq->split.avail_flags_shadow);
-@@ -1605,6 +1611,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	vq->weak_barriers = weak_barriers;
- 	vq->broken = false;
- 	vq->last_used_idx = 0;
-+	vq->event_triggered = false;
- 	vq->num_added = 0;
- 	vq->packed_ring = true;
- 	vq->use_dma_api = vring_use_dma_api(vdev);
-@@ -1919,6 +1926,14 @@ void virtqueue_disable_cb(struct virtqueue *_vq)
- {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
- 
-+	/* If device triggered an event already it won't trigger one again:
-+	 * no need to disable.
-+	 */
-+	if (vq->event_triggered) {
-+		vq->event_triggered = false;
-+		return;
-+	}
-+
- 	if (vq->packed_ring)
- 		virtqueue_disable_cb_packed(_vq);
- 	else
-@@ -2044,6 +2059,10 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
- 	if (unlikely(vq->broken))
- 		return IRQ_HANDLED;
- 
-+	/* Just a hint for performance: so it's ok that this can be racy! */
-+	if (vq->event)
-+		vq->event_triggered = true;
-+
- 	pr_debug("virtqueue callback for %p (%p)\n", vq, vq->vq.callback);
- 	if (vq->vq.callback)
- 		vq->vq.callback(&vq->vq);
-@@ -2083,6 +2102,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
- 	vq->weak_barriers = weak_barriers;
- 	vq->broken = false;
- 	vq->last_used_idx = 0;
-+	vq->event_triggered = false;
- 	vq->num_added = 0;
- 	vq->use_dma_api = vring_use_dma_api(vdev);
- #ifdef DEBUG
-
+No, not at all, I just don't understand what is the point you and
+Qingfang are trying to make. LAG is useful in general for load balancing.
+With the particular case of point-to-point links with Marvell Linkstreet,
+not so much. Okay. With a different workload, maybe it is useful with
+Marvell Linkstreet too. Again okay. Same for static assignment,
+sometimes it is what is needed and sometimes it just isn't.
+It was proposed that you write up a user space program that picks the
+CPU port assignment based on your favorite metric and just tells DSA to
+reconfigure itself, either using a custom fancy static assignment based
+on traffic rate (read MIB counters every minute) or simply based on LAG.
+All the data laid out so far would indicate that this would give you the
+flexibility you need, however you didn't leave any comment on that,
+either acknowledging or explaining why it wouldn't be what you want.
