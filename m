@@ -2,202 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD2535D36C
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 00:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD4E935D373
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 00:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343867AbhDLWsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 18:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239204AbhDLWsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 18:48:41 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95014C061574;
-        Mon, 12 Apr 2021 15:48:21 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so3772534pjb.4;
-        Mon, 12 Apr 2021 15:48:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+Gom69CFeyrxSUGzmy9QsPsITP7WL0OibZKzpKZ6hdk=;
-        b=PqkfPqEL0+xuPe46qXxN+KmkyZ2SnOLZBPRmvpCNjyYml3rekuWsRb5Ajpr4Zu3I0o
-         6pKTuC6s4harsP3hgAnmoD3jXDXY5IvvEIoy3xWY8HRKyPABLfzN94oyxTubhhkE129i
-         Z6cn8V+Gp5QA+7w13HEt9wdFYCbYoStYJKoNaRxsn8f9QTzNprYveFFTX3Dwx0TOxmdJ
-         69YXhN/v88DqbVuX0Ib/O+YwvmWuhb5e630z+D3wU5QmjDyqQYXldBg15SLBMNqqVrez
-         iKG6FdgC1NPokO/w/yVbLBQ3RHLBFd1BKmJEIa9UqJhk5SMEm5AVgeuhnVZs45Tj4Dpw
-         BYWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+Gom69CFeyrxSUGzmy9QsPsITP7WL0OibZKzpKZ6hdk=;
-        b=MbzLEfBCW24eOgHqsEBp0OEpzmcA9ngQbBDO9424UZcChdNS92A88RxfTJ1zReKHFJ
-         C7SJ/muQVHLVW9Oe1Qouht83fa8TSEpXzgFmEknnKHnNhT5BG+htI0SLvMwOvlzP2ipe
-         NTZ/rwTWt4HDVfvRbTtuwTipLcHki82QrXXLAzvY9VcK+SmtW+FgyhMUq3txGOxxoLlp
-         G91Cv+WtEKArxIr90+3w4/k79l56xmPGHbLIxFwz85jdtvNng9K2vDIJZt6lbPaOZiDC
-         s1pFVNMW5cj/3j5CoRGthLMEA6p+dXH4xWx/dzn8abhPnpQJFMoZ0LlgbkFFJBe1KAE3
-         3V3g==
-X-Gm-Message-State: AOAM5330eD+E+hLKQP6pvriXoV7gYBfoyernWmYfcWbMWVzuZjqmy40i
-        AYVY6GEWGPRPvStEmNEiSMM=
-X-Google-Smtp-Source: ABdhPJyZ8iwHPQ7GO16S42IB1UY/ImQAqs6iKYG83Q2kapsnkvjC+3rnqwNlHH0281Y3WTPEZ8AuuQ==
-X-Received: by 2002:a17:90a:d707:: with SMTP id y7mr1636112pju.50.1618267701064;
-        Mon, 12 Apr 2021 15:48:21 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id w1sm2250620pgp.31.2021.04.12.15.48.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 15:48:20 -0700 (PDT)
-Date:   Tue, 13 Apr 2021 01:48:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Marek Behun <marek.behun@nic.cz>,
-        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        id S1343888AbhDLWtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 18:49:07 -0400
+Received: from mail-mw2nam08on2061.outbound.protection.outlook.com ([40.107.101.61]:44231
+        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239204AbhDLWtF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 18:49:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CtOhcAOS5XsxCDNdNJcPPioqy71gSewNTFLiyPD5f3iVD9eie3WDAYZQOvmYZUopvWLGBuiQKoLfHSFcoT0VuPPFPLmlxJOihhhQ6L8mFIln/X4gC0NLLmtXQhe8wo/ySY+fC6rH3khq45+EsRWU60RXHY43l17nf1NOW9z7m16WHpSJoigKTQHJqhuS1DtMz5I5Vj1u4Ymd/tRKrpJ6obIoEeF2B5ENsSq89aWnyaBvwQARqq9lfUFBNhvX/fImHTxulphEaewWkL2wCCq3PLo0gxwUB/labngaNgjmk1TIxRwhd4WB/OgCvuna7KFfs1SJhX/ta3H2de9rSY4LIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F+CON4jgvlfwPud8+D8/htfVek+e6ibqemNbiRY9tLQ=;
+ b=ENKiJom8bmhBwLLAfiRNZG607bEgI0sLsaO0Vq9uFNNMfHMJq/Rk1LOJX6OauoGkCW3D4dP72/t7NfH+WiiC5sDsJW1/EsK14JOQvxJSdIfAKSh8Uq7qF91jH5DT82ZpRCmk4mug7jT61dmYAyVo3MwTRyJPz4Mm4/BjKoXTS0T17ABMY1uGv7MiMc1xXl7cZdUs451WMZTYwVq1J4fIrhgQoj5e+lLe+cmoxzRF8+Ir8vBQZV/5s4I/ZY1VtBGRkauCuAb0lGX4QW/Pm325SdvIZTISwdQjDzx7PCjSNYpd1EtsP7jMK5TAhPn12tAjJMyZVCu2e7Xga4HWVgs8vQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F+CON4jgvlfwPud8+D8/htfVek+e6ibqemNbiRY9tLQ=;
+ b=pmrOCXIjrEnCUAq7wY39L9sAxVYYXkfSbpyq2Rbfkc4jhTioBkgzNyNepIriZk0KNFjAIksyVvGlYl4nn36KGBNy3SiNhiyZs+qQm5vHbjiXxjmxLYHUcG7vFLJQLUFIK0ogYHIKkBUygwHWTrE3ouawZsKgWx2EVGpJfJQxTr/BKMvdzJpPlZnmluaueHpG8j5+KYE+972MgTCOKBNPdWHDWTrdBE6a24i+nIqpWINdTxFHWuxmISX+obtOGtaGKtPHlSZ219Gy0wlrAmKp6lH4vMJvmUMmZa2cL5/x1WPlDjFRz9H2jADYJc+LO4eSEW2f6A1kIYoRK4X/e7qWdA==
+Authentication-Results: talpey.com; dkim=none (message not signed)
+ header.d=none;talpey.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3116.namprd12.prod.outlook.com (2603:10b6:5:38::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Mon, 12 Apr
+ 2021 22:48:45 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.4020.022; Mon, 12 Apr 2021
+ 22:48:45 +0000
+Date:   Mon, 12 Apr 2021 19:48:43 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Tom Talpey <tom@talpey.com>
+Cc:     Haakon Bugge <haakon.bugge@oracle.com>,
+        David Laight <David.Laight@aculab.com>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Avihai Horon <avihaih@nvidia.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        zhang kai <zhangkaiheb@126.com>,
-        Weilong Chen <chenweilong@huawei.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-Message-ID: <20210412224805.sgweqvx7ngbtmf4n@skbuf>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com>
- <20210411200135.35fb5985@thinkpad>
- <20210411185017.3xf7kxzzq2vefpwu@skbuf>
- <878s5nllgs.fsf@waldekranz.com>
- <20210412213045.4277a598@thinkpad>
- <8735vvkxju.fsf@waldekranz.com>
- <20210412213402.vwvon2fdtzf4hnrt@skbuf>
- <87zgy3jhr1.fsf@waldekranz.com>
- <20210412220655.27rsiyxlf3f3tydm@skbuf>
- <87tuobjg0j.fsf@waldekranz.com>
-MIME-Version: 1.0
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Devesh Sharma <devesh.sharma@broadcom.com>,
+        Faisal Latif <faisal.latif@intel.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bruce Fields <bfields@fieldses.org>, Jens Axboe <axboe@fb.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Keith Busch <kbusch@kernel.org>, Lijun Ou <oulijun@huawei.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        OFED mailing list <linux-rdma@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        Max Gurtovoy <maxg@mellanox.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Linux-Net <netdev@vger.kernel.org>,
+        Potnuri Bharat Teja <bharat@chelsio.com>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        VMware PV-Drivers <pv-drivers@vmware.com>,
+        Weihang Li <liweihang@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [PATCH rdma-next 00/10] Enable relaxed ordering for ULPs
+Message-ID: <20210412224843.GQ7405@nvidia.com>
+References: <C2924F03-11C5-4839-A4F3-36872194EEA8@oracle.com>
+ <20210406114952.GH7405@nvidia.com>
+ <aeb7334b-edc0-78c2-4adb-92d4a994210d@talpey.com>
+ <8A5E83DF-5C08-49CE-8EE3-08DC63135735@oracle.com>
+ <4b02d1b2-be0e-0d1d-7ac3-38d32e44e77e@talpey.com>
+ <1FA38618-E245-4C53-BF49-6688CA93C660@oracle.com>
+ <7b9e7d9c-13d7-0d18-23b4-0d94409c7741@talpey.com>
+ <f71b24433f4540f0a13133111a59dab8@AcuMS.aculab.com>
+ <880A23A2-F078-42CF-BEE2-30666BCB9B5D@oracle.com>
+ <7deadc67-650c-ea15-722b-a1d77d38faba@talpey.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87tuobjg0j.fsf@waldekranz.com>
+In-Reply-To: <7deadc67-650c-ea15-722b-a1d77d38faba@talpey.com>
+X-Originating-IP: [142.162.115.133]
+X-ClientProxiedBy: BLAPR03CA0136.namprd03.prod.outlook.com
+ (2603:10b6:208:32e::21) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BLAPR03CA0136.namprd03.prod.outlook.com (2603:10b6:208:32e::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Mon, 12 Apr 2021 22:48:44 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lW5MJ-004y9Y-Mm; Mon, 12 Apr 2021 19:48:43 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 24257fb2-64d4-489f-b836-08d8fe052094
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3116:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3116562C312A534C6DE9D7E0C2709@DM6PR12MB3116.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: g7P9KU3nuldAskQZ5NHWojS1NZenRIHfOTAm3PVPOCZZY9STDxRTDUwyRZACGwQg1eZmrrlMG8Sfy7W4P5Gej6p2FLED2Wfahwx/EZdupgXBGXn5xOzPAcJ5PuCAV2v/KbV/9Vx/Cm0CFpHzkuNfBSyNPVWJsB4TTS6A3heWGVMGttfFVIN6I8a2Pj/psiEWvO1fqUCQZyblsGfT48H3SXHrrjKiSy0HWTfFUED1fNM3to3JTggGlVHYWkAlGGDxKO7Mf5hZfqcQemON+Po7j0Oc1VtbpD1YNlfwHLH5LgGbAKUL22hoZWtNYscT8Q1rcM+kKRsBfxwIx7nY9Q14UXUDaVWTVkpeOoczfll5bBrgT7lZXORrOzwizwFAq2ovKthF9WiOWPl9CGT1RKy6yDahVNWkF00gNIQJMhQJ0Qx4tF+/I6Li+zu+yjQdeJS9JkbeOnQ7iqh98tsRc7PFuR+X/kh8DZdLeYml4r2MDbggYw7N13kR0YJOWq7D8nfPhdENDy40EvDK2K5pX1RoLaa2v9fwvPRFoGUCQOm0ydAB/2KuAWxliHzxLbRIlbtrldCK/Ww06Hy3bbhTGyCjFOXDM7V26TdYX6HzC4qWCDw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(376002)(39860400002)(366004)(83380400001)(2616005)(2906002)(36756003)(38100700002)(4744005)(186003)(9746002)(1076003)(478600001)(426003)(4326008)(54906003)(86362001)(8676002)(7416002)(316002)(6916009)(66476007)(66556008)(66946007)(26005)(5660300002)(33656002)(8936002)(7406005)(9786002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?WCbyl5YzMwSW1NEK0ld6MqvIqe0liUi21PJaRrSQrLdmGRQ7oFjMxJ9LILNQ?=
+ =?us-ascii?Q?RDHSUu/Zx8zEHw0jkj4Q/hbjuY803jvp1/l2yQ46P+CAw37RcNuprLDetAz9?=
+ =?us-ascii?Q?sso5b3Ub1obpiLxOFYJjOaDoPPcx5DHqcq70fH57lxlG9Fziv38HEdTbH9cD?=
+ =?us-ascii?Q?Lcc46Lfdr2xmL5xIjpgKypfSarjqELSGyRV5dJQJIayEsfhJJ1s8PS2wSoKd?=
+ =?us-ascii?Q?afnnvCz5TEZ4/KF5glJPJLVIjHnZCBNUYmIZ4nA8qor9Wlw58h7qI7sa4YOx?=
+ =?us-ascii?Q?nlT5A99WIQpgJUanz6pl61QYhnf/6GKEapTMzk+2DMW8rMEuoeyT5B914fMJ?=
+ =?us-ascii?Q?+6o/Vp1/kOmy6N0/1PdihnDliM6lTlDXgrsDRN+Yr6h3T4ZwCSEpCLObd1c8?=
+ =?us-ascii?Q?Yw75FAV3YFdQ8pHdSqLkBTboI0LKgMY0rUpxZ03sartk3+LJu4+75GmNeZ/P?=
+ =?us-ascii?Q?qViHH4bHwvTU9C6eEvGuqgEPWk7R43UI6ZnT5yPdCSDS7qw2Mg/gCj9LaKMU?=
+ =?us-ascii?Q?EAdjGmTXpyE3vyPSkKaqAE3eaXwugnfUqASdLRw7Sm3ipMcFJ/v06+Kp2nvn?=
+ =?us-ascii?Q?+EuMmqLDlHW5H9hyWaV171ACJLkKwebx4KW8n12muHR4KNndfLBr32dmzqXB?=
+ =?us-ascii?Q?GiCbp0H8doY2qlWJWwu399GZ5ISZpwOvPNhFnoZ/Pyp8NJy2r/XGZLHm+n/q?=
+ =?us-ascii?Q?U7V3fiEvp6Fa1rRk8eE2hlTNsJMlOTfJng/+7fP5o4JSEnMvtloyzA2apr6v?=
+ =?us-ascii?Q?v/0IcLaZTRtY/lJT/L9SNQJnfpL10rgiLnVSXTS2dCoFJN8KJpWs+nfWqk9u?=
+ =?us-ascii?Q?z1cF3iL6fqwS052Sbl5cJCX6u8qHPi7UenUWSNX0vwnUWeQ5/Jo2Gb08PV37?=
+ =?us-ascii?Q?SDpA6+dYwDJYS5UeTKVw72SQBbEZ1s3rebHjBQJdisE5o+QFVfqqpZOjJYPA?=
+ =?us-ascii?Q?z+TpaBSepUwCoLIlYFoF3pmm4jSoIYAQsSdHIZ0yy425JGJEmURC6ciBl1of?=
+ =?us-ascii?Q?rzCjvJfLpXWyEOyOXIKomZHZyWAhP/gAdn5FAEr5USxRE77e0AcAmjayjXvO?=
+ =?us-ascii?Q?VXCkXsAZKW/CZtZFD+5Xiz3tuXd3toWlAMI7CtrDIkGS+sBineQ2m/Y8HMXK?=
+ =?us-ascii?Q?2e+5nPO3927YTUmaePxf6dmFsupsAFXpBAxrQjd55Rtg3v0/w7V5EgdgYZq7?=
+ =?us-ascii?Q?lB55RZlvU2vcBUzkTeu1REW//2v945npLtbBGOc/xShQgCqsd2iyRdK+TNCl?=
+ =?us-ascii?Q?zwvnjbG9Yala8vozEuLnvFCqZMWtnnqGZbpVGxoQ2cGU/C6nCIrpOWVnJkJZ?=
+ =?us-ascii?Q?szHQ3QTSb9EQIc/Gg/vxOMFLOTM3SFFsspFRMIWhvp6bBQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24257fb2-64d4-489f-b836-08d8fe052094
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2021 22:48:45.1232
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Al6kpnEjiA2j2+gOKnQSIm3ZeYc4aVfkBwdu/8xqaPykaW0cKQKRbvGzV4ftxGRx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3116
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 12:26:52AM +0200, Tobias Waldekranz wrote:
-> On Tue, Apr 13, 2021 at 01:06, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Apr 12, 2021 at 11:49:22PM +0200, Tobias Waldekranz wrote:
-> >> On Tue, Apr 13, 2021 at 00:34, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> > On Mon, Apr 12, 2021 at 11:22:45PM +0200, Tobias Waldekranz wrote:
-> >> >> On Mon, Apr 12, 2021 at 21:30, Marek Behun <marek.behun@nic.cz> wrote:
-> >> >> > On Mon, 12 Apr 2021 14:46:11 +0200
-> >> >> > Tobias Waldekranz <tobias@waldekranz.com> wrote:
-> >> >> >
-> >> >> >> I agree. Unless you only have a few really wideband flows, a LAG will
-> >> >> >> typically do a great job with balancing. This will happen without the
-> >> >> >> user having to do any configuration at all. It would also perform well
-> >> >> >> in "router-on-a-stick"-setups where the incoming and outgoing port is
-> >> >> >> the same.
-> >> >> >
-> >> >> > TLDR: The problem with LAGs how they are currently implemented is that
-> >> >> > for Turris Omnia, basically in 1/16 of configurations the traffic would
-> >> >> > go via one CPU port anyway.
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> > One potencial problem that I see with using LAGs for aggregating CPU
-> >> >> > ports on mv88e6xxx is how these switches determine the port for a
-> >> >> > packet: only the src and dst MAC address is used for the hash that
-> >> >> > chooses the port.
-> >> >> >
-> >> >> > The most common scenario for Turris Omnia, for example, where we have 2
-> >> >> > CPU ports and 5 user ports, is that into these 5 user ports the user
-> >> >> > plugs 5 simple devices (no switches, so only one peer MAC address for
-> >> >> > port). So we have only 5 pairs of src + dst MAC addresses. If we simply
-> >> >> > fill the LAG table as it is done now, then there is 2 * 0.5^5 = 1/16
-> >> >> > chance that all packets would go through one CPU port.
-> >> >> >
-> >> >> > In order to have real load balancing in this scenario, we would either
-> >> >> > have to recompute the LAG mask table depending on the MAC addresses, or
-> >> >> > rewrite the LAG mask table somewhat randomly periodically. (This could
-> >> >> > be in theory offloaded onto the Z80 internal CPU for some of the
-> >> >> > switches of the mv88e6xxx family, but not for Omnia.)
-> >> >> 
-> >> >> I thought that the option to associate each port netdev with a DSA
-> >> >> master would only be used on transmit. Are you saying that there is a
-> >> >> way to configure an mv88e6xxx chip to steer packets to different CPU
-> >> >> ports depending on the incoming port?
-> >> >> 
-> >> >> The reason that the traffic is directed towards the CPU is that some
-> >> >> kind of entry in the ATU says so, and the destination of that entry will
-> >> >> either be a port vector or a LAG. Of those two, only the LAG will offer
-> >> >> any kind of balancing. What am I missing?
-> >> >> 
-> >> >> Transmit is easy; you are already in the CPU, so you can use an
-> >> >> arbitrarily fancy hashing algo/ebpf classifier/whatever to load balance
-> >> >> in that case.
-> >> >
-> >> > Say a user port receives a broadcast frame. Based on your understanding
-> >> > where user-to-CPU port assignments are used only for TX, which CPU port
-> >> > should be selected by the switch for this broadcast packet, and by which
-> >> > mechanism?
-> >> 
-> >> AFAIK, the only option available to you (again, if there is no LAG set
-> >> up) is to statically choose one CPU port per entry. But hopefully Marek
-> >> can teach me some new tricks!
-> >> 
-> >> So for any known (since the broadcast address is loaded in the ATU it is
-> >> known) destination (b/m/u-cast), you can only "load balance" based on
-> >> the DA. You would also have to make sure that unknown unicast and
-> >> unknown multicast is only allowed to egress one of the CPU ports.
-> >> 
-> >> If you have a LAG OTOH, you could include all CPU ports in the port
-> >> vectors of those same entries. The LAG mask would then do the final
-> >> filtering so that you only send a single copy to the CPU.
-> >
-> > I forgot that mv88e6xxx keeps the broadcast address in the ATU. I wanted
-> > to know what is done in the flooding case, therefore I should have asked
-> > about unknown destination traffic. It is sent to one CPU but not the
-> > other based on what information?
-> >
-> > And for destinations loaded into the ATU, how is user port isolation
-> > performed? Say lan0 and lan1 have the same MAC address of 00:01:02:03:04:05,
-> > but lan0 goes to the eth0 DSA master and lan1 goes to eth1. How many ATU
-> > entries would there be for host addresses, and towards which port would
-> > they point? Are they isolated by a port private VLAN or something along
-> > those lines?
-> 
-> This is what I do not understand. This is what I hope that Marek can
-> tell me. To my knowledge, there is no way to per-port load balancing
-> from the switch to the CPU. In any given FID, there can be only one
-> entry per address, and that entry can only point to either a vector or a
-> LAG.
-> 
-> So my theory is that the only way of getting any load balancing, however
-> flawed, on receive (from switch to CPU) is by setting up a
-> LAG. Hopefully there is some trick that I do not know about which means
-> we have another option available to us.
+On Mon, Apr 12, 2021 at 04:20:47PM -0400, Tom Talpey wrote:
 
-Understood. So as far as you know the Marvell Linkstreet hardware
-capabilities, it isn't possible to do a clean-cut "all traffic from port
-X goes to CPU port A and none to B", but instead it's more of a mushy
-mess like "unknown unicast is flooded to CPU port A, unknown multicast
-to CPU port B, MAC address 00:01:02:03:04:05 may go to CPU port A, MAC
-address 00:01:02:03:04:06 to CPU port B". Basically an open-coded mess
-of a LAG handled by some logic like DSA, once the RX filtering series
-gets merged. Until then, all traffic to the CPU is unknown-destination
-traffic as long as I know the mv88e6xxx (due to that limitation where it
-doesn't learn from the MAC SA of FROM_CPU packets, and DSA does not
-install into the ATU any of the host addresses, nor does it send any
-FORWARD frames). But if this is the case and everything towards the CPU
-is currently flooded, what sort of load balancing do we even have?
-Between unknown unicast and unknown multicast? :)
+> So the issue is only in testing all the providers and platforms,
+> to be sure this new behavior isn't tickling anything that went
+> unnoticed all along, because no RDMA provider ever issued RO.
 
-So excuse me for believing that the hardware is capable of doing what
-these 3 patches pretend without seeing the driver-side code!
+The mlx5 ethernet driver has run in RO mode for a long time, and it
+operates in basically the same way as RDMA. The issues with Haswell
+have been worked out there already.
+
+The only open question is if the ULPs have errors in their
+implementation, which I don't think we can find out until we apply
+this series and people start running their tests aggressively.
+
+Jason
