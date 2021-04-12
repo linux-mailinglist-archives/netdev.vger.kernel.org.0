@@ -2,86 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22ED835CF9E
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 19:43:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6797835CFA2
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 19:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244288AbhDLRoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 13:44:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45488 "EHLO mail.kernel.org"
+        id S244303AbhDLRpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 13:45:16 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46346 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243735AbhDLRoG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 13:44:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ADD5261354;
-        Mon, 12 Apr 2021 17:43:46 +0000 (UTC)
-Date:   Mon, 12 Apr 2021 18:43:44 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Amit Daniel Kachhap <amit.kachhap@arm.com>
-Subject: Re: [PATCH] arch/arm64/kernel/traps: Use find_vma_intersection() in
- traps for setting si_code
-Message-ID: <20210412174343.GG2060@arm.com>
-References: <20210407150940.542103-1-Liam.Howlett@Oracle.com>
+        id S243722AbhDLRpQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 13:45:16 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lW0cI-00GJfe-8V; Mon, 12 Apr 2021 19:44:54 +0200
+Date:   Mon, 12 Apr 2021 19:44:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: phy: marvell: fix detection of PHY on Topaz
+ switches
+Message-ID: <YHSHFjcxDauzOP1v@lunn.ch>
+References: <20210412121430.20898-1-pali@kernel.org>
+ <20210412165739.27277-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210407150940.542103-1-Liam.Howlett@Oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210412165739.27277-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 07, 2021 at 03:11:06PM +0000, Liam Howlett wrote:
-> find_vma() will continue to search upwards until the end of the virtual
-> memory space.  This means the si_code would almost never be set to
-> SEGV_MAPERR even when the address falls outside of any VMA.  The result
-> is that the si_code is not reliable as it may or may not be set to the
-> correct result, depending on where the address falls in the address
-> space.
+On Mon, Apr 12, 2021 at 06:57:39PM +0200, Pali Rohár wrote:
+> Since commit fee2d546414d ("net: phy: marvell: mv88e6390 temperature
+> sensor reading"), Linux reports the temperature of Topaz hwmon as
+> constant -75°C.
 > 
-> Using find_vma_intersection() allows for what is intended by only
-> returning a VMA if it falls within the range provided, in this case a
-> window of 1.
+> This is because switches from the Topaz family (88E6141 / 88E6341) have
+> the address of the temperature sensor register different from Peridot.
 > 
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> ---
->  arch/arm64/kernel/traps.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> This address is instead compatible with 88E1510 PHYs, as was used for
+> Topaz before the above mentioned commit.
 > 
-> diff --git a/arch/arm64/kernel/traps.c b/arch/arm64/kernel/traps.c
-> index a05d34f0e82a..a44007904a64 100644
-> --- a/arch/arm64/kernel/traps.c
-> +++ b/arch/arm64/kernel/traps.c
-> @@ -383,9 +383,10 @@ void force_signal_inject(int signal, int code, unsigned long address, unsigned i
->  void arm64_notify_segfault(unsigned long addr)
->  {
->  	int code;
-> +	unsigned long ut_addr = untagged_addr(addr);
->  
->  	mmap_read_lock(current->mm);
-> -	if (find_vma(current->mm, untagged_addr(addr)) == NULL)
-> +	if (find_vma_intersection(current->mm, ut_addr, ut_addr + 1) == NULL)
->  		code = SEGV_MAPERR;
->  	else
->  		code = SEGV_ACCERR;
+> Create a new mapping table between switch family and PHY ID for families
+> which don't have a model number. And define PHY IDs for Topaz and Peridot
+> families.
+> 
+> Create a new PHY ID and a new PHY driver for Topaz's internal PHY.
+> The only difference from Peridot's PHY driver is the HWMON probing
+> method.
+> 
+> Prior this change Topaz's internal PHY is detected by kernel as:
+> 
+>   PHY [...] driver [Marvell 88E6390] (irq=63)
+> 
+> And afterwards as:
+> 
+>   PHY [...] driver [Marvell 88E6341 Family] (irq=63)
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> BugLink: https://github.com/globalscaletechnologies/linux/issues/1
+> Fixes: fee2d546414d ("net: phy: marvell: mv88e6390 temperature sensor reading")
+> Reviewed-by: Marek Behún <kabel@kernel.org>
 
-I don't think your change is entirely correct either. We can have a
-fault below the vma of a stack (with VM_GROWSDOWN) and
-find_vma_intersection() would return NULL but it should be a SEGV_ACCERR
-instead.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Maybe this should employ similar checks as __do_page_fault() (with
-expand_stack() and VM_GROWSDOWN).
-
--- 
-Catalin
+    Andrew
