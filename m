@@ -2,79 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5152D35C603
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9F4535C615
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240318AbhDLMQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 08:16:23 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45310 "EHLO vps0.lunn.ch"
+        id S240361AbhDLMV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 08:21:26 -0400
+Received: from mail.pr-group.ru ([178.18.215.3]:50834 "EHLO mail.pr-group.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237283AbhDLMQW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 08:16:22 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lVvTx-00GGCA-21; Mon, 12 Apr 2021 14:15:57 +0200
-Date:   Mon, 12 Apr 2021 14:15:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        liuwe@microsoft.com, netdev@vger.kernel.org, leon@kernel.org,
-        bernd@petrovitsch.priv.at, rdunlap@infradead.org,
-        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH v4 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Message-ID: <YHQ5/fJyvkTHzBqA@lunn.ch>
-References: <20210412023455.45594-1-decui@microsoft.com>
+        id S238720AbhDLMVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 08:21:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        bh=4+hOEbabYeWB61G/f7BMXIZpqriitfA8fo4sgdlsFRA=;
+        b=aVWie3uFpfjJE182ykHUWaR/yANcpgBVnqL/ximYM/kifvOY3ZKGFrknHu8yhYmN988lxbY3kP38G
+         hXJ1tCfBSad/HR/s0lHd+yyTxxcAzeXCx8Z04t3o2zudowCXEPpO88+yPlOo/Ty+647RanuNG/vnZ6
+         NHcWtXMhyaLibApvkSFytQiXRZb17ybkm4rphJO0NxhDYa30OCY1OUsmuuQR/J+s8UH1RzcGzyx2Dm
+         wHaRmilJrqbGuxzSRDh6tBfa4gO13a8y60JR+lqo0oFRXH6jWwsfMpOZrytfVkHRp2g8JiDWY7VYZG
+         YKa/Wn6qjtx2M0icHspYZsSLTmp0nLg==
+X-Spam-Status: No, hits=0.0 required=3.4
+        tests=BAYES_00: -1.665, CUSTOM_RULE_FROM: ALLOW, TOTAL_SCORE: -1.665,autolearn=ham
+X-Spam-Level: 
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([178.70.223.189])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Mon, 12 Apr 2021 15:20:50 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, system@metrotek.ru,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: phy: marvell-88x2222: a couple of improvements
+Date:   Mon, 12 Apr 2021 15:16:58 +0300
+Message-Id: <cover.1618227910.git.i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210412023455.45594-1-decui@microsoft.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static inline bool is_gdma_msg(const void *req)
-> +{
-> +	struct gdma_req_hdr *hdr = (struct gdma_req_hdr *)req;
-> +
-> +	if (hdr->req.hdr_type == GDMA_STANDARD_HEADER_TYPE &&
-> +	    hdr->resp.hdr_type == GDMA_STANDARD_HEADER_TYPE &&
-> +	    hdr->req.msg_size >= sizeof(struct gdma_req_hdr) &&
-> +	    hdr->resp.msg_size >= sizeof(struct gdma_resp_hdr) &&
-> +	    hdr->req.msg_type != 0 && hdr->resp.msg_type != 0)
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
-> +static inline bool is_gdma_msg_len(const u32 req_len, const u32 resp_len,
-> +				   const void *req)
-> +{
-> +	struct gdma_req_hdr *hdr = (struct gdma_req_hdr *)req;
-> +
-> +	if (req_len >= sizeof(struct gdma_req_hdr) &&
-> +	    resp_len >= sizeof(struct gdma_resp_hdr) &&
-> +	    req_len >= hdr->req.msg_size && resp_len >= hdr->resp.msg_size &&
-> +	    is_gdma_msg(req)) {
-> +		return true;
-> +	}
-> +
-> +	return false;
-> +}
+First, there are some SFP modules that only uses RX_LOS for link
+indication. Add check that SFP link is operational before actual read of
+link status.
 
-You missed adding the mana_ prefix here. There might be others.
+Second, it is invalid to set 10G speed without autonegotiation,
+according to phy_ethtool_ksettings_set(). Implement switching between
+10GBase-R and 1000Base-X/SGMII if autonegotiation can't complete but
+there is signal in line.
 
-> +#define CQE_POLLING_BUFFER 512
-> +struct ana_eq {
-> +	struct gdma_queue *eq;
-> +	struct gdma_comp cqe_poll[CQE_POLLING_BUFFER];
-> +};
+Ivan Bornyakov (2):
+  net: phy: marvell-88x2222: check that link is operational
+  net: phy: marvell-88x2222: swap 1G/10G modes on autoneg
 
-> +static int ana_poll(struct napi_struct *napi, int budget)
-> +{
+ drivers/net/phy/marvell-88x2222.c | 296 +++++++++++++++++++-----------
+ 1 file changed, 191 insertions(+), 105 deletions(-)
 
-You also have a few cases of ana_, not mana_. There might be others.
+-- 
+2.26.3
 
-    Andrew
+
