@@ -2,103 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E8335BAE5
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F9D35BAF4
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236855AbhDLHiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 03:38:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40844 "EHLO mail.kernel.org"
+        id S236915AbhDLHkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 03:40:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42268 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230356AbhDLHiJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 03:38:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E950A6120B;
-        Mon, 12 Apr 2021 07:37:50 +0000 (UTC)
+        id S236916AbhDLHkb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 03:40:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C96AC61207;
+        Mon, 12 Apr 2021 07:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618213071;
-        bh=W1SBAxid1H3eBmNfVo5aELF90NKiRpX8bemdlPiFQ6Q=;
+        s=k20201202; t=1618213213;
+        bh=PqrprxM8ruC8Y4nAdtK1y3AXp+UT48yE/rDrzpZ44oU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YaP9ZQ/lvhMegoFspa2NikHKJx5jTHerAvihqMgTpLa7E6wZZMEYlA7BxTC7RIBQa
-         lCGuX+W3D8uSLunnN6w2usrz3ONrr04gG7JmFokGlsPm1hyP1/0zybVmCwQTXAzGiI
-         SQQumv0O8kGW8efmKI2HPjGHQrXzzXXss4oaHtKtUiw4cvkhIE34/YANxUoycn0Rd7
-         Fow0CzyOyCss4sqnawjlfbPnHuN18pXE3pourL51cGRI9412Q4ntYiHCntVIUpACTb
-         yfWBhaR6bepiSelApeMFTtE8TZpirIr0s9doyVdnD0jdvlLzcr7du9RevBvn5QjoAw
-         PgonVF+CIScNw==
-Date:   Mon, 12 Apr 2021 10:37:10 +0300
+        b=Ncs5gZO/GAf5MDEh/R3yMagsLX7kDlGoouwqzw8qOslxulyMdY5Yd3I5CyWjSTkl7
+         6OYjdro6AdnpMiX/lDHCcIh1NHzxUm0z7Ybm03Heo3I28vjHBwEGQqcY5jsg4dY88e
+         idt0/9jj7VTEtPuo+pwSTdwZCqgoEEbQwdVfmHXPekRVIFPiZbaNFM8+cGNzvbN4z2
+         w7FunmfAnnEfpQ18Zty4kEiGT63+POKsY1z55WMaRlwB2q8uPEVlWcZsaZ9KdkGo2j
+         ehIWzUmJkOdqrL/N3aO4zNGFqLVrz/wHinCgcz8ZOLnaTuorlmmDLftb47YvMCoLmw
+         6u7SfpoYo+jcw==
+Date:   Mon, 12 Apr 2021 10:40:09 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com
-Subject: Re: [PATCH net-next 4/5] bnxt_en: Refactor __bnxt_vf_reps_destroy().
-Message-ID: <YHP4piIPfdXca+uB@unreal>
-References: <1618186695-18823-1-git-send-email-michael.chan@broadcom.com>
- <1618186695-18823-5-git-send-email-michael.chan@broadcom.com>
+To:     Devesh Sharma <devesh.sharma@broadcom.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Naresh Kumar PBS <nareshkumar.pbs@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Subject: Re: [PATCH rdma-next v2 0/5] Get rid of custom made module dependency
+Message-ID: <YHP5WRfEKQ3n9O0s@unreal>
+References: <20210401065715.565226-1-leon@kernel.org>
+ <CANjDDBiuw_VNepewLAtYE58Eg2JEsvGbpxttWyjV6DYMQdY5Zw@mail.gmail.com>
+ <YGhUjarXh+BEK1pW@unreal>
+ <CANjDDBiC-8pL+-ma1c0n8vjMaorm-CasV_D+_8q2LGy-AYuTVg@mail.gmail.com>
+ <YG7srVMi8IEjuLfF@unreal>
+ <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1618186695-18823-5-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <CANjDDBirjSEkcDZ4E8u4Ce_dep3PRTmo2S9-q7=dmR+MLKi_=A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 11, 2021 at 08:18:14PM -0400, Michael Chan wrote:
-> Add a new helper function __bnxt_free_one_vf_rep() to free one VF rep.
-> We also reintialize the VF rep fields to proper initial values so that
-> the function can be used without freeing the VF rep data structure.  This
-> will be used in subsequent patches to free and recreate VF reps after
-> error recovery.
+On Thu, Apr 08, 2021 at 08:42:57PM +0530, Devesh Sharma wrote:
+> On Thu, Apr 8, 2021 at 5:14 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Thu, Apr 08, 2021 at 05:06:24PM +0530, Devesh Sharma wrote:
+> > > On Sat, Apr 3, 2021 at 5:12 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > >
+> > > > On Sat, Apr 03, 2021 at 03:52:13PM +0530, Devesh Sharma wrote:
+> > > > > On Thu, Apr 1, 2021 at 12:27 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > >
+> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > >
+> > > > > > Changelog:
+> > > > > > v2:
+> > > > > >  * kbuild spotted that I didn't delete all code in patch #5, so deleted
+> > > > > >    even more ulp_ops derefences.
+> > > > > > v1: https://lore.kernel.org/linux-rdma/20210329085212.257771-1-leon@kernel.org
+> > > > > >  * Go much deeper and removed useless ULP indirection
+> > > > > > v0: https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
+> > > > > > -----------------------------------------------------------------------
+> > > > > >
+> > > > > > The following series fixes issue spotted in [1], where bnxt_re driver
+> > > > > > messed with module reference counting in order to implement symbol
+> > > > > > dependency of bnxt_re and bnxt modules. All of this is done, when in
+> > > > > > upstream we have only one ULP user of that bnxt module. The simple
+> > > > > > declaration of exported symbol would do the trick.
+> > > > > >
+> > > > > > This series removes that custom module_get/_put, which is not supposed
+> > > > > > to be in the driver from the beginning and get rid of nasty indirection
+> > > > > > logic that isn't relevant for the upstream code.
+> > > > > >
+> > > > > > Such small changes allow us to simplify the bnxt code and my hope that
+> > > > > > Devesh will continue where I stopped and remove struct bnxt_ulp_ops too.
+> > > > > >
+> > > > > > Thanks
+> > > > > >
+> > > > > > [1] https://lore.kernel.org/linux-rdma/20210324142524.1135319-1-leon@kernel.org
+> > > > > >
+> > > > > > Leon Romanovsky (5):
+> > > > > >   RDMA/bnxt_re: Depend on bnxt ethernet driver and not blindly select it
+> > > > > >   RDMA/bnxt_re: Create direct symbolic link between bnxt modules
+> > > > > >   RDMA/bnxt_re: Get rid of custom module reference counting
+> > > > > >   net/bnxt: Remove useless check of non-existent ULP id
+> > > > > >   net/bnxt: Use direct API instead of useless indirection
+> > > > > >
+> > > > > >  drivers/infiniband/hw/bnxt_re/Kconfig         |   4 +-
+> > > > > >  drivers/infiniband/hw/bnxt_re/main.c          |  93 ++-----
+> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   4 +-
+> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
+> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 245 +++++++-----------
+> > > > > >  drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  32 +--
+> > > > > >  6 files changed, 119 insertions(+), 260 deletions(-)
+> > > > >
+> > > > > Hi Leon,
+> > > > >
+> > > > > After a couple of internal discussions we reached a conclusion to
+> > > > > implement the Auxbus driver interface and fix the problem once and for
+> > > > > all.
+> > > >
+> > > > Thanks Devesh,
+> > > >
+> > > > Jason, it looks like we can proceed with this patchset, because in
+> > > > auxbus mode this module refcount and ULP indirection logics will be
+> > > > removed anyway.
+> > > >
+> > > > Thanks
+> > > Hi Leon,
+> > >
+> > > In my internal testing, I am seeing a crash using the 3rd patch. I am
+> > > spending a few cycles on debugging it. expect my input in a day or so.
+> >
+> > Can you please post the kernel crash report here?
+> > I don't see how function rename in patch #3 can cause to the crash.
+> Hey, unfortunately my kdump service config is giving me tough time on
+> my host. I will share if I get it.
+
+Any news here?
+
+> >
+> > Thanks
+> >
+> > > >
+> > > > > >
+> > > > > > --
+> > > > > > 2.30.2
+> > > > > >
+> > > > >
+> > > > >
+> > > > > --
+> > > > > -Regards
+> > > > > Devesh
+> > > >
+> > > >
+> > >
+> > >
+> > > --
+> > > -Regards
+> > > Devesh
+> >
+> >
 > 
-> Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-> Reviewed-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c | 21 ++++++++++++++-----
->  1 file changed, 16 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-> index b5d6cd63bea7..a4ac11f5b0e5 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-> @@ -288,6 +288,21 @@ void bnxt_vf_reps_open(struct bnxt *bp)
->  		bnxt_vf_rep_open(bp->vf_reps[i]->dev);
->  }
->  
-> +static void __bnxt_free_one_vf_rep(struct bnxt *bp, struct bnxt_vf_rep *vf_rep)
-> +{
-> +	if (!vf_rep)
-> +		return;
-
-How can it be NULL if you check that vf_rep != NULL when called to
-__bnxt_free_one_vf_rep() ?
-
-Thanks
-
-> +
-> +	if (vf_rep->dst) {
-> +		dst_release((struct dst_entry *)vf_rep->dst);
-> +		vf_rep->dst = NULL;
-> +	}
-> +	if (vf_rep->tx_cfa_action != CFA_HANDLE_INVALID) {
-> +		hwrm_cfa_vfr_free(bp, vf_rep->vf_idx);
-> +		vf_rep->tx_cfa_action = CFA_HANDLE_INVALID;
-> +	}
-> +}
-> +
->  static void __bnxt_vf_reps_destroy(struct bnxt *bp)
->  {
->  	u16 num_vfs = pci_num_vf(bp->pdev);
-> @@ -297,11 +312,7 @@ static void __bnxt_vf_reps_destroy(struct bnxt *bp)
->  	for (i = 0; i < num_vfs; i++) {
->  		vf_rep = bp->vf_reps[i];
->  		if (vf_rep) {
-> -			dst_release((struct dst_entry *)vf_rep->dst);
-> -
-> -			if (vf_rep->tx_cfa_action != CFA_HANDLE_INVALID)
-> -				hwrm_cfa_vfr_free(bp, vf_rep->vf_idx);
-> -
-> +			__bnxt_free_one_vf_rep(bp, vf_rep);
->  			if (vf_rep->dev) {
->  				/* if register_netdev failed, then netdev_ops
->  				 * would have been set to NULL
 > -- 
-> 2.18.1
-> 
+> -Regards
+> Devesh
+
+
