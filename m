@@ -2,108 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D52B135BDF8
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B0D235BDF2
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238264AbhDLI4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 04:56:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44272 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238822AbhDLIyw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 04:54:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A446061363;
-        Mon, 12 Apr 2021 08:52:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618217579;
-        bh=hrWfHU5AAc5N/c21/smS4Sap61CFVbzlbuSTQUEq1B8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aYsWHDuHjnYvcAjqadsSxQE3wBtMTzBJMv67OFHZ5rnLhkQEFxnpgMWfRjaovnwr6
-         GFivLGNUi5hmjXJTxmEINEa8JIxgDGnNxZ4DqYqUQgOVtYVWPagBvsfsuOsmihUbVJ
-         lepBlXLejyPqZIl54p2qfjqIcqMXlBhHKYXgKYmKR8OUAfqEPCABpXyKW1NkfFkpgl
-         LXPlPrG1FYluboLSa58//ynE8gpd69NGsob4AV/XzqasTw8qqd8BGApp26eITreDDG
-         Amrc+hbX1696QejfORGBqICHtep//3uJgHHXIDqMeRpTI+KqE2pXXl1f5r2S5JMXw3
-         d5TV+hMh53tcA==
-Date:   Mon, 12 Apr 2021 11:52:43 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: Re: [PATCH v4 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Message-ID: <YHQKWx6Alcc6OQ9X@unreal>
-References: <20210412023455.45594-1-decui@microsoft.com>
- <YHP6s2zagD67Xr0z@unreal>
- <MW2PR2101MB08920145C271FCEF8D337BE2BF709@MW2PR2101MB0892.namprd21.prod.outlook.com>
+        id S238178AbhDLI4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 04:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238379AbhDLIxv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 04:53:51 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A648AC06134F
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:53:19 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id z13so3055110lfd.9
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:53:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=4x707U9exLm2LVQU/9fq4M+cW4wadgJtnzlwv6yCJQc=;
+        b=HHbBxkz5WDz9A4TrPaatxAAFHGgEuvt4Y/HnEa0mdDex8m6l7SAvnvFQpdap0QkGa/
+         lWIeuqhAkfu/tzX0HEZbkJ897bKGcshVH2ih/NgnWiQRnhlPow0M/mKpl7QKYdqMsQTG
+         m633hOgLYjhROA4ie3YFTE5RYdO8DxR7pHSW9LmpB+s8XvxwWw2O63dLIUCXFkLjfKHj
+         CU3g1yd4whmpcDi+O9+re4VgEyi2DF7WML4HS2rJ3czUXyqIyEomI52WqyUGg/9bCT6T
+         YneKtjsAqXPflGourOpRPWKe35hvbLnHBuaXAomdiYZVLGNKhCQBOQmJe+RH7EUAuvlr
+         /8VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=4x707U9exLm2LVQU/9fq4M+cW4wadgJtnzlwv6yCJQc=;
+        b=RTj3G/D0awPA0uEScV0Em+H8LQcJFWgmDqhbpLlhmd6xfLjVmZVm7SEsn8MluW77/j
+         gNdy5JutQTpaW3M3duREEPyB53TG1rzcmce0qE0A52EUUDKNACBkF4aUPbOUkrCDX9g+
+         c5tMZ9raqaE9EULNr3Rx8yirZMBWPwmsSK9c0cxvhTisoIS/ofbVtFfhIJy8LrXdPU11
+         nWl5ODTRGlKp0+zVYi6RWxmmMRJOisiIqW3nTjUA2TgwdcWfgUr6SbU7LwItRXsZ7s57
+         6iUaGf83iuGLhCbrlqd7xnsDZfWYiU8w4Bo/UtQ3cuSZaKp7Fghf5jladeDpN3rj+0Ye
+         mOdw==
+X-Gm-Message-State: AOAM533xPkdv5aw5OwzwugyRAPNkN4mqdTn/Qtg/xIxpllx5cZ7hRpjQ
+        RHvJ3UWlRQvmOAHYLySPWBz0WujfIAKoP4Sv5cg=
+X-Google-Smtp-Source: ABdhPJz9fkZx0bciB7rQGN1La24aYKI81BogGKIK2ogu/MR++xKBP+Bx4uTWsocSloY8ZLES8T8JUWmMbIoTNQcwaFA=
+X-Received: by 2002:a19:bca:: with SMTP id 193mr7753466lfl.160.1618217598076;
+ Mon, 12 Apr 2021 01:53:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW2PR2101MB08920145C271FCEF8D337BE2BF709@MW2PR2101MB0892.namprd21.prod.outlook.com>
+Sender: tkoura94@gmail.com
+Received: by 2002:a2e:8602:0:0:0:0:0 with HTTP; Mon, 12 Apr 2021 01:53:17
+ -0700 (PDT)
+From:   Kayla Manthey <sgt.kayla12@gmail.com>
+Date:   Mon, 12 Apr 2021 08:53:17 +0000
+X-Google-Sender-Auth: IaPxOsgRZOCIlK5OpY9myG_umRI
+Message-ID: <CANDjuz=+c7Yft9w7Mfc=OJFZZpxkQD4hC7Lpx07EP66FVpXPvw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 08:35:32AM +0000, Dexuan Cui wrote:
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Monday, April 12, 2021 12:46 AM
-> > To: Dexuan Cui <decui@microsoft.com>
-> > > ...
-> > > +#define ANA_MAJOR_VERSION	0
-> > > +#define ANA_MINOR_VERSION	1
-> > > +#define ANA_MICRO_VERSION	1
-> > 
-> > Please don't introduce drier versions.
-> 
-> This is not the usual "driver version", though it's called  "drv version" :-)
-> As you can see, the driver does not use the macro MODULE_VERSION().
-> 
-> Here the "drv version" actually means the version of the VF-to-PF protocol,
-> with which the Azure Network Adapter ethernet NIC driver (i.e. the VF driver)
-> talks to the PF driver.  The protocol version determines the formats of the
-> messages that are sent from the VF driver to the PF driver, e.g. query the
-> MAC address, create Send/Receive queues, configure RSS, etc.
-> 
-> Currently the protocol versin is 0.1.1 You may ask why it's called
-> "drv version" rather than "protocol version" -- it's because the PF driver
-> calls it that way, so I think here the VF driver may as well use the same
-> name. BTW, the "drv ver" info is passed to the PF driver in the below
-> function:
-
-Ohh, yes, the "driver version" is not the ideal name for that.
-
-I already looked on it in previous patch, came to the conclusion about
-the protocol and forgot :(.
-
-> 
-> static int mana_query_client_cfg(struct ana_context *ac, u32 drv_major_ver,
->                                  u32 drv_minor_ver, u32 drv_micro_ver,
->                                  u16 *max_num_vports)
-> {
->         struct gdma_context *gc = ac->gdma_dev->gdma_context;
->         struct ana_query_client_cfg_resp resp = {};
->         struct ana_query_client_cfg_req req = {};
->         struct device *dev = gc->dev;
->         int err = 0;
-> 
->         mana_gd_init_req_hdr(&req.hdr, ANA_QUERY_CLIENT_CONFIG,
->                              sizeof(req), sizeof(resp));
->         req.drv_major_ver = drv_major_ver;
->         req.drv_minor_ver = drv_minor_ver;
->         req.drv_micro_ver = drv_micro_ver;
-> 
->         err = mana_send_request(ac, &req, sizeof(req), &resp, sizeof(resp));
-> 
-> Thanks,
-> Dexuan
-> 
+Bitte ich m=C3=B6chte wissen, ob Sie meine vorherige Nachricht erhalten hab=
+en, danke.
