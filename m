@@ -2,204 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E64DE35C82B
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA1235C864
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242117AbhDLOFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 10:05:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57049 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238881AbhDLOFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 10:05:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618236283;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Milm+ZpD4p8fQX5ep4YA+mBfvp9QBbTbvO+DYpJDU18=;
-        b=QApx9zMpxQphojcnVWrGS5rND3FClHooSZx3foLeSmCFdS/LgpiF2NcvW/iKCXYJUekwK7
-        5BszUvbFCln+aGP7qYrBL14ztLgIn098UJNJIAaRgO+rgEe9PSDeolmVvA16B2VqvqSpYw
-        PIjqZkacDfH2jl4UOfoBCvYidhnruUo=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-1-6CkP11qSPNe5UQtlhzA8Bg-1; Mon, 12 Apr 2021 10:04:41 -0400
-X-MC-Unique: 6CkP11qSPNe5UQtlhzA8Bg-1
-Received: by mail-ed1-f70.google.com with SMTP id i1so3298250edf.4
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 07:04:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Milm+ZpD4p8fQX5ep4YA+mBfvp9QBbTbvO+DYpJDU18=;
-        b=iXfjYIwUWCPF9UxbuLJenn+jGYRrcwsb9pQLtgOgUKFWEFN10pzbwJICcJeIcFFBXF
-         NevHIsr2zn0xLggAoCcNZY/k3ZGNrT+SGYBPXk+ibVDjuiaO8e8N1cT26lEAK0GeRBW8
-         b/cYbj3xeMXS6gzx2A2cMqjVA/HugJlaE9jY+XCxTRmSLs5U2R6NxJdOKwwxjqMx0fNt
-         3vSbDqm53empVExvSX7P/dIs9DN4HnQM3+KqRK9ZD5P76uts7WXdsuX+tMhKGBZkfKQ0
-         IGszUFNsdV72fMFYKZ3yRoS/dbcUTH7dulR633gdYD6okmeRUqZ7Koo59wnOnPqKsAoV
-         MI4w==
-X-Gm-Message-State: AOAM533M4UkUzqkx4aC9OycTmkIr/Coph+vx8Q/t4icGc96phyPhGLPW
-        5X+stJkRKKKrtE2/RIB8YcjLvKMzeEIG70p+XltxJ9qiZrVytH6GLsvDufC7Ue+U8R8iJgsg8Xy
-        4bIbeFd0BqaQiwi33
-X-Received: by 2002:a17:907:367:: with SMTP id rs7mr13497905ejb.468.1618236280399;
-        Mon, 12 Apr 2021 07:04:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxAO03nKUgqVdQNXtykFitW8Mn5GTR/gCbYmSlRkP2aDoipwEngT50nePILvx+KJFTgeG/aKA==
-X-Received: by 2002:a17:907:367:: with SMTP id rs7mr13497872ejb.468.1618236280127;
-        Mon, 12 Apr 2021 07:04:40 -0700 (PDT)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id h3sm6860322edv.80.2021.04.12.07.04.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 07:04:39 -0700 (PDT)
-Date:   Mon, 12 Apr 2021 16:04:37 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Jiang Wang ." <jiang.wang@bytedance.com>,
-        Jorgen Hansen <jhansen@vmware.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
-        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [External] Re: [RFC] vsock: add multiple transports support for
- dgram
-Message-ID: <20210412140437.6k3zxw2cv4p54lvm@steredhat>
-References: <20210406183112.1150657-1-jiang.wang@bytedance.com>
- <1D46A084-5B77-4803-8B5F-B2F36541DA10@vmware.com>
- <CAP_N_Z-KFUYZc7p1z_-9nb9CvjtyGFkgkX1PEbh-SgKbX_snQw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
+        id S242216AbhDLOLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 10:11:30 -0400
+Received: from mail-vi1eur05on2078.outbound.protection.outlook.com ([40.107.21.78]:19040
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241159AbhDLOL3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 10:11:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RLm/O2M28XLbm28t8H4Exd6nAdvT9YJtJwSpFI+u10ddtGq0ySq6EsYiZ305ZHAj7Xk3kmqp1EWLzHJI6+yWHYdu1czP93vy2QaTAXnPgWeXlUxueaFEBg63VBUihAq3HqakRgFJaHpZg2cwavnVqFZC5OozJ9VGOrK/XyUwAiZQqgC4qkYI5U/4wxeiIUPIUh9D6e1j1p8BjnNT+89i1+BYY67DaCTIenH8ycJ+xBKamIjehJbN0OxnUiMpgDMmZKOYcTandh4gdLCekEG8YUeRvcF36xUCDLY3PS0fDXK45R7qVTSyELh7bCsurHVNPnME40WnzRM22GTrWQutMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IIRyO4OnYqWQlCKjGhvWeRf414rx8Zfj6mvN7gHu0X4=;
+ b=icEM1Q5qdxSyCT94q3DjpVCRHOSCobhOZcBCJJCA83Z/VxJrjtShxPLam3QOAQO8RQqiPeUQ/z3id6r3EuyxpiOSueiyh1nw2TLQYo1ta5/9l25D8xwn8ZSEJypgLZks26ARJ0+19isz/ysRnv5CygIjmfwW68fqi/xtQF8ugwRqgAt6vnG15qBsMCT5cvQ4MDIooxfKxEVpAEugQ+YDHlhdWU/w0rSEUW2PvlFMvU08x2faEcpMELC1X1maGDO6bSG9mSpYXKLI1JbNG5yM1XFPi9XG/DIhk9L1SOGfoOKfXhUfXfvRVD757CLasRReTSEKWjgLFxpLg1WicQJmzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IIRyO4OnYqWQlCKjGhvWeRf414rx8Zfj6mvN7gHu0X4=;
+ b=UX4J5NwV610iqc3jI04swKA4pFYDc0aH8XjBxk8rPiNrHc2+GaPEp2jaqN8zzDRyG2kgzXyqzW/ADTEmf7YyVSeLBNljUG77muVNdfE3I7iyoOW49co6/FV6tZp0iv0aM3EQ+cdRcD5+03/O7iUgmZ0wBDIiSv6L+Nkq8azBpW4=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
+Received: from VI1PR04MB5101.eurprd04.prod.outlook.com (2603:10a6:803:5f::31)
+ by VI1PR04MB7198.eurprd04.prod.outlook.com (2603:10a6:800:126::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.22; Mon, 12 Apr
+ 2021 14:11:09 +0000
+Received: from VI1PR04MB5101.eurprd04.prod.outlook.com
+ ([fe80::1d18:6e9:995c:1945]) by VI1PR04MB5101.eurprd04.prod.outlook.com
+ ([fe80::1d18:6e9:995c:1945%6]) with mapi id 15.20.4020.018; Mon, 12 Apr 2021
+ 14:11:07 +0000
+Message-ID: <111528aed55593de83a17dc8bd6d762c1c5a3171.camel@oss.nxp.com>
+Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
+From:   "Radu Nicolae Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 12 Apr 2021 17:11:02 +0300
+In-Reply-To: <YHRDtTKUI0Uck00n@lunn.ch>
+References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
+         <YHCsrVNcZmeTPJzW@lunn.ch>
+         <64e44d26f45a4fcfc792073fe195e731e6f7e6d9.camel@oss.nxp.com>
+         <YHRDtTKUI0Uck00n@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAP_N_Z-KFUYZc7p1z_-9nb9CvjtyGFkgkX1PEbh-SgKbX_snQw@mail.gmail.com>
+X-Originating-IP: [89.45.21.213]
+X-ClientProxiedBy: AM0PR05CA0089.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::29) To VI1PR04MB5101.eurprd04.prod.outlook.com
+ (2603:10a6:803:5f::31)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.141] (89.45.21.213) by AM0PR05CA0089.eurprd05.prod.outlook.com (2603:10a6:208:136::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Mon, 12 Apr 2021 14:11:06 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d1193bb3-941d-4f0a-e86d-08d8fdbcd0d3
+X-MS-TrafficTypeDiagnostic: VI1PR04MB7198:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <VI1PR04MB7198541E3E3CCBC955025B5F9F709@VI1PR04MB7198.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +jOfmKbOP7iq0xQp2aD3x98l73ePw/cFJr5SHx0nNrKOLEFYx4UoUCtO04fQj1Dwl96xc1U2JCQOMqsAZPFTZ4OZLnXFRKG9lc2EgJ5zz7Cju6fVOOFFYCp9wK8QPzWapIqu95SyLdHKDSejZjbvONwvzif2SjIfMu/3kpBF/+Akg0/s5x7JxW/ZUxoLj/bCqLHZMQLOY9m2bZiiHrosftIt31TuGod00AgzH7BNsabpwHPjvg++1lsZm9S5CQaazLi99U+8uhnt1zTtzG+Wi4nh6XkIk4wvW5S4J9viuQ/APONfJQvCB32DpOGj0Ku4JH1DuQ5RwG+sLgnf63iohFy9IhrWNLpAcDx2I2fMBrYCE630Kcu2Lc3KcNM09XFxfwpiMi6ER6qr77vI4NZutwKbem+nqWb5GN0hwxm/NYuuWiS02zKOw0cC9E/HOCWOIrJLxnD6pbu5VGrMGqJJCYU6ca1oaI65M/yvD4/M3aCeSGLyJPu5DCU34qqLNB9Ul5xBK5gJS4XVGSVenvPwHVGOmBE5TzNGNIgIVFmwvcRfZrop0ph7bW9c5VarxSYA/WATAvEAbo0Kgkt7fsB8tVsTUCgMW3nNmM6MTWwnK4qke59fbbP9H/BN1neCCYAT2WBBFLhOnMoiotolyX9Og9jB9BqEv4/99km+wAUVcNlket/tgPo2MQOXB2NjSZMo
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5101.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(39860400002)(136003)(346002)(376002)(6666004)(6916009)(4326008)(38100700002)(956004)(52116002)(2616005)(86362001)(16576012)(5660300002)(66946007)(478600001)(6486002)(66556008)(66476007)(8676002)(38350700002)(16526019)(8936002)(26005)(2906002)(186003)(316002)(41350200001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?akxBMWdod3paVGNDaUhNZlRCKzlKM3dMQnlIMFJHTUhaS0sxRkN5Mmd4REZZ?=
+ =?utf-8?B?cEM0aWdPRk1xUFMwbU1mWDdZSkNJL0piZ3Bob1FxZHR2bVMwMi9nZVc4eVA2?=
+ =?utf-8?B?clQrY2x1MDRScnVDRmhwNUhEeGh1cVphOW9lK0t6N2JvUGRxSDRZcVE5S09m?=
+ =?utf-8?B?NHdvYk1FQ21yVkVTZVdiaklBNEZXdldFSEIwYzhRUW5LSVhHRkF6UHplWENT?=
+ =?utf-8?B?SFMxTTdHVHk4S25XUDNoTFJleTZVM2RxRklpQjFaay8yWi9EWlBQaVhqWExy?=
+ =?utf-8?B?cG4vOUlFdU02ZXgwK3JMYURGTFVxWVhISTZkOE5BcUd2REljZlkzdFI2ZHRK?=
+ =?utf-8?B?N0ZUWHBlOUZJQlBYUGx0SzRPUzgvQXd2eXRaNTI3bnhKbXV1UlZ2clQ4R0t5?=
+ =?utf-8?B?MGJTVU5zN3o1TUxOSVNlcDI1TFJGQk1ZZ0Z6RW9ZRURESFNmaHR1YzROTmZJ?=
+ =?utf-8?B?dXcrWXN2NENPRC9VaTRoOHBwSEZ5bVR4dzFuclI1TUxkZGFjemZKYXAzdTE4?=
+ =?utf-8?B?b3hScUpTcUNvNmg0YjcwYzZtRnNBSGxmKzN6eFp3UWNCWE1RRzFOY0s2TU9m?=
+ =?utf-8?B?b1g5NEJvSHR1WEZwTW1mNUpWdTllZGlqZ0FLN3d4eVJvTzhqYlJJWVorS2ti?=
+ =?utf-8?B?czk0M2w1NVV4d3lmZmJGSklKck1nZ2FKVXc4NCtGcUJ6a2VsbmF1V2JmaEE2?=
+ =?utf-8?B?aDVnN1ZjdkxCWCtLZktjZGZtTlMxdDNIY0k4OVFJd3E5NFo1RFhBaDNUQVQv?=
+ =?utf-8?B?TGVYMXJCQ3d3RzRtbDM2YTRieXRMSVdTNmZWM0NoQlNDZEtTUC9EMTFmd1dy?=
+ =?utf-8?B?YnEwL0p1Qm1RcjR1b2hHOUU4M0pkUDBjU0ZUMFlWRlhkR05JK1FTQ2E2UW9Y?=
+ =?utf-8?B?dGkyVzh5NW1YRXVROG1OSXBtd0g1S3k0NmI3ejdiNk1QWmpnL1d0WXpEOEZS?=
+ =?utf-8?B?SnZlY2s4UDRSbDVmQU1QUjlEaUJhTDJ2NzJ3Z0E1OU5qdW05SDJ1MnNHSFFK?=
+ =?utf-8?B?eUxiM0MrUGkxRllqRFJaMkpURkFpZ0srRFFMZ0FINXBhV3Jlb2I4VG8rZGFM?=
+ =?utf-8?B?NlU3dkJCUFl4cVM5ZGEzQkZraEtOVDNneEd0MS84V2g4TWp2WW81eGt2ZnF5?=
+ =?utf-8?B?d1JSdkdJempCR3M4c0Zuc2ZlYkFTRlRyZ1VsWTR0V3l2L0VvMEtTYkc2SFdx?=
+ =?utf-8?B?OHMzMC96NisrRWgxKzZWc1IzNWw2ME9sQTgvMzJzV0YxeHBJTE9KLzVyQ3BJ?=
+ =?utf-8?B?T3pqNU95alhSMnM0RmV1YzJrZUp5MDlUWXk1WEV5cjEzdkRrdDQ0SzJmN05M?=
+ =?utf-8?B?aEo3WHFDVm9jS0tPVEFLQjlNTGhHSUtuVGVXaWxxOWVmVmwwUzFyd2lyd2sw?=
+ =?utf-8?B?bmQrK3F2ajBYcGVoQkdPaU9oT3BFRG9GMk53SGYxWEFCdlhYTkx2VzNJekxy?=
+ =?utf-8?B?S0U2WnhHWVJncEIvYjZZQUZSMUhTWEZvUGxndDMyVXc5bDI2VGN1dDM2S3FN?=
+ =?utf-8?B?UG8wTWU5NFlaVy9SMmdLejJ3bHJsdUh5UXorUS9ncGg5VDR3QlEwRVBrb2Nw?=
+ =?utf-8?B?U3VrU1lCOW1jYzZqUFBCUDgxaFVROGFRQk4rVnNGNEYrYUNheGdJUkNjRDJZ?=
+ =?utf-8?B?WExYcndUZit4M1FYOUtLMThNVWxzWXJQQmdpYUh2ME0vWFZKNk9NNFdkVFkx?=
+ =?utf-8?B?emNwNmZuaDIyd29jeExjcVcydStsc2Jwb0RlUlRkRENlL2hoaG5ESXVCdzg5?=
+ =?utf-8?Q?Fn1sRuzhb+54eug9koHw5XB5qGYGEGPa1z80XWM?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1193bb3-941d-4f0a-e86d-08d8fdbcd0d3
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5101.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2021 14:11:07.5280
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ohT9cZy/VZlj9ASSJGJTPKRcHtsUK4m459/qcqhFuOnYa7yKv/sdLYnwgu1mmodXOU4xpJl7ppOjiRUJDtYLjNuCRTHEpNvijr3qwCMuQA4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7198
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiang,
-thanks for re-starting the multi-transport support for dgram!
+On Mon, 2021-04-12 at 14:57 +0200, Andrew Lunn wrote:
+> On Mon, Apr 12, 2021 at 01:02:07PM +0300, Radu Nicolae Pirea (NXP
+> OSS) wrote:
+> > On Fri, 2021-04-09 at 21:36 +0200, Andrew Lunn wrote:
+> > > On Fri, Apr 09, 2021 at 09:41:06PM +0300, Radu Pirea (NXP OSS)
+> > > wrote:
+> > > > Add driver for tja1103 driver and for future NXP C45 PHYs.
+> > > 
+> > > So apart from c45 vs c22, how does this differ to nxp-tja11xx.c?
+> > > Do we really want two different drivers for the same hardware? 
+> > > Can we combine them somehow?
+> > It looks like the PHYs are the same hardware, but that's not
+> > entirely
+> > true. Just the naming is the same. TJA1103 is using a different IP
+> > and
+> > is having timestamping support(I will add it later).
+> 
+> Is the IP very different? You often see different generations of a
+> PHY
+> supported by the same driver, if the generations are similar.
+Yes. It's very different. I know what you mean, but that's not the
+case. That's why we decided to write a new driver from scratch.
+> 
+> Does it support C22 or it is purely a C45 device?
+It is purely a C45 device.
+> 
+> > TJA is also not an Ethernet PHY series, but a general prefix for
+> > media
+> > interfaces including also CAN, LIN, etc.
+> > > 
+> > > > +config NXP_C45_PHY
+> > > > +       tristate "NXP C45 PHYs"
+> > > 
+> > > This is also very vague. So in the future it will support PHYs
+> > > other
+> > > than the TJA series?
+> > Yes, in the future this driver will support other PHYs too.
+> 
+> Based on the same IP? 
+> Or different IP? Are we talking about 2 more
+> PHYs, so like the nxp-tja11xx.c will support 3 PHYs. And then the
+> tja1106 will come along and need a new driver?
+> What will you call
+> that?
+>  I just don't like 'NXP C45 PHYs", it gives no clue as to what it
+> actually supports, and it gives you problems when you need to add yet
+> another driver.
+Even if the PHY will be based on the same IP or not, if it is a C45
+PHY, it will be supported by this driver. We are not talking about 2 or
+3 PHYs. This driver will support all future C45 PHYs. That's why we
+named it "NXP C45".
+> 
+> At minimum, there needs to be a patch to add tja1102 to the help for
+> the nxp-tja11xx.c driver. And this driver needs to list tja1103.
+I will make the changes then.
+Thank you.
+> 
+>     Andrew
 
-On Wed, Apr 07, 2021 at 11:25:36AM -0700, Jiang Wang . wrote:
->On Wed, Apr 7, 2021 at 2:51 AM Jorgen Hansen <jhansen@vmware.com> wrote:
->>
->>
->> > On 6 Apr 2021, at 20:31, Jiang Wang <jiang.wang@bytedance.com> wrote:
->> >
->> > From: "jiang.wang" <jiang.wang@bytedance.com>
->> >
->> > Currently, only VMCI supports dgram sockets. To supported
->> > nested VM use case, this patch removes transport_dgram and
->> > uses transport_g2h and transport_h2g for dgram too.
-
-I agree on this part, I think that's the direction to go.  
-transport_dgram was added as a shortcut.
-
->>
->> Could you provide some background for introducing this change - are you
->> looking at introducing datagrams for a different transport? VMCI datagrams
->> already support the nested use case,
->
->Yes, I am trying to introduce datagram for virtio transport. I wrote a
->spec patch for
->virtio dgram support and also a code patch, but the code patch is still WIP.
->When I wrote this commit message, I was thinking nested VM is the same as
->multiple transport support. But now, I realize they are different.
->Nested VMs may use
->the same virtualization layer(KVM on KVM), or different virtualization layers
->(KVM on ESXi). Thanks for letting me know that VMCI already supported nested
->use cases. I think you mean VMCI on VMCI, right?
->
->> but if we need to support multiple datagram
->> transports we need to rework how we administer port assignment for datagrams.
->> One specific issue is that the vmci transport won’t receive any datagrams for a
->> port unless the datagram socket has already been assigned the vmci transport
->> and the port bound to the underlying VMCI device (see below for more details).
->>
->I see.
->
->> > The transport is assgined when sending every packet and
->> > receiving every packet on dgram sockets.
->>
->> Is the intent that the same datagram socket can be used for sending packets both
->> In the host to guest, and the guest to directions?
->
->Nope. One datagram socket will only send packets to one direction, either to the
->host or to the guest. My above description is wrong. When sending packets, the
->transport is assigned with the first packet (with auto_bind).
-
-I'm not sure this is right.
-The auto_bind on the first packet should only assign a local port to the 
-socket, but does not affect the transport to be used.
-
-A user could send one packet to the nested guest and another to the host 
-using the same socket, or am I wrong?
-
->
->The problem is when receiving packets. The listener can bind to the
->VMADDR_CID_ANY
->address. Then it is unclear which transport we should use. For stream
->sockets, there will be a new socket for each connection, and transport
->can be decided
->at that time. For datagram sockets, I am not sure how to handle that.
-
-yes, this I think is the main problem, but maybe the sender one is even 
-more complicated.
-
-Maybe we should remove the 1:1 association we have now between vsk and 
-transport.
-
-At least for DGRAM, for connected sockets I think the association makes 
-sense.
-
->For VMCI, does the same transport can be used for both receiving from
->host and from
->the guest?
-
-Yes, they're registered at different times, but it's the same transport.
-
->
->For virtio, the h2g and g2h transports are different,, so we have to 
->choose
->one of them. My original thought is to wait until the first packet 
->arrives.
->
->Another idea is that we always bind to host addr and use h2g
->transport because I think that might
->be more common. If a listener wants to recv packets from the host, then 
->it
->should bind to the guest addr instead of CID_ANY.
-
-Yes, I remember we discussed this idea, this would simplify the 
-receiving, but there is still the issue of a user wanting to receive 
-packets from both the nested guest and the host.
-
->Any other suggestions?
->
-
-I think one solution could be to remove the 1:1 association between 
-DGRAM socket and transport.
-
-IIUC VMCI creates a skb for each received packet and queues it through 
-sk_receive_skb() directly in the struct sock.
-
-Then the .dgram_dequeue() callback dequeues them using 
-skb_recv_datagram().
-
-We can move these parts in the vsock core, and create some helpers to 
-allow the transports to enqueue received DGRAM packets in the same way 
-(and with the same format) directly in the struct sock.
-
-
-What do you think?
-
-Thanks,
-Stefano
 
