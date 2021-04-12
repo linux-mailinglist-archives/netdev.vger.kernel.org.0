@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBD135CDC3
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1ED35CDC2
 	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245724AbhDLQia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:38:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38910 "EHLO mail.kernel.org"
+        id S245715AbhDLQi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:38:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38912 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343762AbhDLQgA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1343763AbhDLQgA (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Apr 2021 12:36:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D69F613C4;
-        Mon, 12 Apr 2021 16:27:16 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 98B91613E1;
+        Mon, 12 Apr 2021 16:27:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244837;
-        bh=WiUTH/L9SjZ2jjuuqVcwm0DgrsU3EqBQmbrUllHic18=;
+        s=k20201202; t=1618244838;
+        bh=FcsUkKioZA4Od5n/OACK5XQmTWA2WD4p0Bi2hPfzReE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UK7MUukBM5RCDVLCbud6kGF1UBVClHXLwvU5sfMh65zx2I/wjbr/Jf1pUB/QZGGAe
-         +HCwQqDnFZ8sLBoHgRJzl9kge2abLchAY2r+05Swmr/YO7ZhFob6N+adgySpVq6Nf4
-         V55bFRCo60FlLu7I18kP+XwnX7RQVdtb/T1uifa0BEnEehU6TlWiEL2K3qkLXQUxbN
-         jJQyNM5RBj7ra9VuhYxvZvOXPucGTCcvqSVTOXwo+NR0W3Lr1sV96N1aqIxLKwDykn
-         ua9Sb3le+eaxJ8Leq1uF1MBNcFo584xQqJ+LJ/mSzU2dfcJNUiI+hNlL7z0LCN/5Ia
-         i8Fwo2lqRlBzg==
+        b=IcBY4hRY6LH+ObeHmndseh7FLB8Cn5g5exv8gAJdLeIBLK0EktpkYm4dxAt3HQZsW
+         QkIV/9O8pGpB4WHO8go1Cp/54hTPOuY9MwPfEnfMLhjIOtj2YZmszgFdan0wS0qJKK
+         poxVROVLnJmwrcVklC/c7WScCuHx7sBRpMiaZDB76pCFXvGr/B2kxfKBSVaa4GxyEU
+         XFa/5GeS3uhifSV6XOI9DnIOT0W0ffuPefvy4dUoWpfPclni9gPdxof2XZ2yok/T8Q
+         6Du8VaiUyAj17lNIrS2EV42FQ8lzlxywVhp9M2taejUijfTlCiMIGqgeoj59pwnvRn
+         nkanxujnIOvVA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexander Aring <aahringo@redhat.com>,
-        syzbot+8b6719da8a04beeafcc3@syzkaller.appspotmail.com,
         Stefan Schmidt <stefan@datenfreihafen.org>,
         Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/23] net: ieee802154: forbid monitor for set llsec params
-Date:   Mon, 12 Apr 2021 12:26:50 -0400
-Message-Id: <20210412162704.315783-9-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 10/23] net: ieee802154: stop dump llsec keys for monitors
+Date:   Mon, 12 Apr 2021 12:26:51 -0400
+Message-Id: <20210412162704.315783-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210412162704.315783-1-sashal@kernel.org>
 References: <20210412162704.315783-1-sashal@kernel.org>
@@ -46,34 +45,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit 88c17855ac4291fb462e13a86b7516773b6c932e ]
+[ Upstream commit fb3c5cdf88cd504ef11d59e8d656f4bc896c6922 ]
 
-This patch forbids to set llsec params for monitor interfaces which we
-don't support yet.
+This patch stops dumping llsec keys for monitors which we don't support
+yet. Otherwise we will access llsec mib which isn't initialized for
+monitors.
 
-Reported-by: syzbot+8b6719da8a04beeafcc3@syzkaller.appspotmail.com
 Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20210405003054.256017-3-aahringo@redhat.com
+Link: https://lore.kernel.org/r/20210405003054.256017-4-aahringo@redhat.com
 Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ieee802154/nl802154.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/ieee802154/nl802154.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index d90a4ed5b8a0..249db5ea02b9 100644
+index 249db5ea02b9..524819f76858 100644
 --- a/net/ieee802154/nl802154.c
 +++ b/net/ieee802154/nl802154.c
-@@ -1417,6 +1417,9 @@ static int nl802154_set_llsec_params(struct sk_buff *skb,
- 	u32 changed = 0;
- 	int ret;
+@@ -1526,6 +1526,11 @@ nl802154_dump_llsec_key(struct sk_buff *skb, struct netlink_callback *cb)
+ 	if (err)
+ 		return err;
  
-+	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
-+		return -EOPNOTSUPP;
++	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR) {
++		err = skb->len;
++		goto out_err;
++	}
 +
- 	if (info->attrs[NL802154_ATTR_SEC_ENABLED]) {
- 		u8 enabled;
- 
+ 	if (!wpan_dev->netdev) {
+ 		err = -EINVAL;
+ 		goto out_err;
 -- 
 2.30.2
 
