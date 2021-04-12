@@ -2,124 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4078A35BD5B
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52B135BDF8
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238049AbhDLIvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 04:51:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41562 "EHLO mail.kernel.org"
+        id S238264AbhDLI4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 04:56:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44272 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238733AbhDLIuj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 04:50:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2BE5761243;
-        Mon, 12 Apr 2021 08:50:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1618217421;
-        bh=ACtMWK41v8hxTWK8YferxvR+RzIdpU+E0ffPqlv1ssU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E+vJ6lxO2FENHlmOQ3kDbCzmD72UG7W35g4AngXBF+D2yqT5xb2eHAGezVg5rYQfX
-         LCNe1G6FteYJS/OoErL+qLgxYMfeOTjSDSdD3grPlaz44ocvOxyLYcM8M8hubNCv96
-         OQNVhrH2KhIN7Xm92owRpZqBHu3baERI5pVIe4uE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org, Dmitry Safonov <dima@arista.com>
-Subject: [PATCH 5.10 001/188] xfrm/compat: Cleanup WARN()s that can be user-triggered
-Date:   Mon, 12 Apr 2021 10:38:35 +0200
-Message-Id: <20210412084013.693509554@linuxfoundation.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210412084013.643370347@linuxfoundation.org>
-References: <20210412084013.643370347@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        id S238822AbhDLIyw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 04:54:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A446061363;
+        Mon, 12 Apr 2021 08:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618217579;
+        bh=hrWfHU5AAc5N/c21/smS4Sap61CFVbzlbuSTQUEq1B8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aYsWHDuHjnYvcAjqadsSxQE3wBtMTzBJMv67OFHZ5rnLhkQEFxnpgMWfRjaovnwr6
+         GFivLGNUi5hmjXJTxmEINEa8JIxgDGnNxZ4DqYqUQgOVtYVWPagBvsfsuOsmihUbVJ
+         lepBlXLejyPqZIl54p2qfjqIcqMXlBhHKYXgKYmKR8OUAfqEPCABpXyKW1NkfFkpgl
+         LXPlPrG1FYluboLSa58//ynE8gpd69NGsob4AV/XzqasTw8qqd8BGApp26eITreDDG
+         Amrc+hbX1696QejfORGBqICHtep//3uJgHHXIDqMeRpTI+KqE2pXXl1f5r2S5JMXw3
+         d5TV+hMh53tcA==
+Date:   Mon, 12 Apr 2021 11:52:43 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Wei Liu <liuwe@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        Shachar Raindel <shacharr@microsoft.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: Re: [PATCH v4 net-next] net: mana: Add a driver for Microsoft Azure
+ Network Adapter (MANA)
+Message-ID: <YHQKWx6Alcc6OQ9X@unreal>
+References: <20210412023455.45594-1-decui@microsoft.com>
+ <YHP6s2zagD67Xr0z@unreal>
+ <MW2PR2101MB08920145C271FCEF8D337BE2BF709@MW2PR2101MB0892.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MW2PR2101MB08920145C271FCEF8D337BE2BF709@MW2PR2101MB0892.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Safonov <dima@arista.com>
+On Mon, Apr 12, 2021 at 08:35:32AM +0000, Dexuan Cui wrote:
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Monday, April 12, 2021 12:46 AM
+> > To: Dexuan Cui <decui@microsoft.com>
+> > > ...
+> > > +#define ANA_MAJOR_VERSION	0
+> > > +#define ANA_MINOR_VERSION	1
+> > > +#define ANA_MICRO_VERSION	1
+> > 
+> > Please don't introduce drier versions.
+> 
+> This is not the usual "driver version", though it's called  "drv version" :-)
+> As you can see, the driver does not use the macro MODULE_VERSION().
+> 
+> Here the "drv version" actually means the version of the VF-to-PF protocol,
+> with which the Azure Network Adapter ethernet NIC driver (i.e. the VF driver)
+> talks to the PF driver.  The protocol version determines the formats of the
+> messages that are sent from the VF driver to the PF driver, e.g. query the
+> MAC address, create Send/Receive queues, configure RSS, etc.
+> 
+> Currently the protocol versin is 0.1.1 You may ask why it's called
+> "drv version" rather than "protocol version" -- it's because the PF driver
+> calls it that way, so I think here the VF driver may as well use the same
+> name. BTW, the "drv ver" info is passed to the PF driver in the below
+> function:
 
-commit ef19e111337f6c3dca7019a8bad5fbc6fb18d635 upstream.
+Ohh, yes, the "driver version" is not the ideal name for that.
 
-Replace WARN_ONCE() that can be triggered from userspace with
-pr_warn_once(). Those still give user a hint what's the issue.
+I already looked on it in previous patch, came to the conclusion about
+the protocol and forgot :(.
 
-I've left WARN()s that are not possible to trigger with current
-code-base and that would mean that the code has issues:
-- relying on current compat_msg_min[type] <= xfrm_msg_min[type]
-- expected 4-byte padding size difference between
-  compat_msg_min[type] and xfrm_msg_min[type]
-- compat_policy[type].len <= xfrma_policy[type].len
-(for every type)
-
-Reported-by: syzbot+834ffd1afc7212eb8147@syzkaller.appspotmail.com
-Fixes: 5f3eea6b7e8f ("xfrm/compat: Attach xfrm dumps to 64=>32 bit translator")
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Dmitry Safonov <dima@arista.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/xfrm/xfrm_compat.c |   12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
-
---- a/net/xfrm/xfrm_compat.c
-+++ b/net/xfrm/xfrm_compat.c
-@@ -216,7 +216,7 @@ static struct nlmsghdr *xfrm_nlmsg_put_c
- 	case XFRM_MSG_GETSADINFO:
- 	case XFRM_MSG_GETSPDINFO:
- 	default:
--		WARN_ONCE(1, "unsupported nlmsg_type %d", nlh_src->nlmsg_type);
-+		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
- 		return ERR_PTR(-EOPNOTSUPP);
- 	}
- 
-@@ -277,7 +277,7 @@ static int xfrm_xlate64_attr(struct sk_b
- 		return xfrm_nla_cpy(dst, src, nla_len(src));
- 	default:
- 		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
--		WARN_ONCE(1, "unsupported nla_type %d", src->nla_type);
-+		pr_warn_once("unsupported nla_type %d\n", src->nla_type);
- 		return -EOPNOTSUPP;
- 	}
- }
-@@ -315,8 +315,10 @@ static int xfrm_alloc_compat(struct sk_b
- 	struct sk_buff *new = NULL;
- 	int err;
- 
--	if (WARN_ON_ONCE(type >= ARRAY_SIZE(xfrm_msg_min)))
-+	if (type >= ARRAY_SIZE(xfrm_msg_min)) {
-+		pr_warn_once("unsupported nlmsg_type %d\n", nlh_src->nlmsg_type);
- 		return -EOPNOTSUPP;
-+	}
- 
- 	if (skb_shinfo(skb)->frag_list == NULL) {
- 		new = alloc_skb(skb->len + skb_tailroom(skb), GFP_ATOMIC);
-@@ -378,6 +380,10 @@ static int xfrm_attr_cpy32(void *dst, si
- 	struct nlmsghdr *nlmsg = dst;
- 	struct nlattr *nla;
- 
-+	/* xfrm_user_rcv_msg_compat() relies on fact that 32-bit messages
-+	 * have the same len or shorted than 64-bit ones.
-+	 * 32-bit translation that is bigger than 64-bit original is unexpected.
-+	 */
- 	if (WARN_ON_ONCE(copy_len > payload))
- 		copy_len = payload;
- 
-
-
+> 
+> static int mana_query_client_cfg(struct ana_context *ac, u32 drv_major_ver,
+>                                  u32 drv_minor_ver, u32 drv_micro_ver,
+>                                  u16 *max_num_vports)
+> {
+>         struct gdma_context *gc = ac->gdma_dev->gdma_context;
+>         struct ana_query_client_cfg_resp resp = {};
+>         struct ana_query_client_cfg_req req = {};
+>         struct device *dev = gc->dev;
+>         int err = 0;
+> 
+>         mana_gd_init_req_hdr(&req.hdr, ANA_QUERY_CLIENT_CONFIG,
+>                              sizeof(req), sizeof(resp));
+>         req.drv_major_ver = drv_major_ver;
+>         req.drv_minor_ver = drv_minor_ver;
+>         req.drv_micro_ver = drv_micro_ver;
+> 
+>         err = mana_send_request(ac, &req, sizeof(req), &resp, sizeof(resp));
+> 
+> Thanks,
+> Dexuan
+> 
