@@ -2,53 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A52035D271
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C5E35D27D
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244788AbhDLVTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 17:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242830AbhDLVTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 17:19:43 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D44C061574;
-        Mon, 12 Apr 2021 14:19:24 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id BE3754D259C01;
-        Mon, 12 Apr 2021 14:19:20 -0700 (PDT)
-Date:   Mon, 12 Apr 2021 14:19:16 -0700 (PDT)
-Message-Id: <20210412.141916.1569200948681549246.davem@davemloft.net>
-To:     boon.leong.ong@intel.com
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        mcoquelin.stm32@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 6/7] net: stmmac: Enable RX via AF_XDP
- zero-copy
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210412154130.20742-7-boon.leong.ong@intel.com>
-References: <20210412154130.20742-1-boon.leong.ong@intel.com>
-        <20210412154130.20742-7-boon.leong.ong@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 12 Apr 2021 14:19:21 -0700 (PDT)
+        id S245367AbhDLVUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 17:20:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55636 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240456AbhDLVU2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 17:20:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 40E71613A9;
+        Mon, 12 Apr 2021 21:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618262410;
+        bh=McdKSr2lIRx4HpyFmlsBhy4KpZ1+yo9DQcE8iHKS40U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MMUhvQadzkqTyxsIQoiXxeQMgt22NFyLbn99TJ4IjqPsOEVFM0qEXgpPipW6vY4hh
+         5OLqrN5PBv15XJNet+k7yvcdMizo0/fknxTEUCrA6rKK5t3jslDzrRXoG5M5jLYZiw
+         dcfhFN04OaPigUdNTwV2j3HR5M9/Ktw8f0r9eukKNEMilHHTWlzUQniIf2lGkDcjWf
+         JKcYrcL2RnGMiUpmVXxcfuLsnNVLpWWy7AJfxJKDOVMPB+KRcpm9cAP3St2tQ+sZed
+         c40SexpWu51WyypZJBqNAz9X7WQTJ1tGGiJNnayQ1xHhvt+w/rzJJT6bxtEplkWDys
+         AesFJb2XUK3Hw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2F44260CCF;
+        Mon, 12 Apr 2021 21:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V4 1/2] dt-bindings: net: renesas,etheravb: Add additional
+ clocks
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161826241018.26087.15056633928793158329.git-patchwork-notify@kernel.org>
+Date:   Mon, 12 Apr 2021 21:20:10 +0000
+References: <20210412132619.7896-1-aford173@gmail.com>
+In-Reply-To: <20210412132619.7896-1-aford173@gmail.com>
+To:     Adam Ford <aford173@gmail.com>
+Cc:     netdev@vger.kernel.org, aford@beaconembedded.com,
+        sergei.shtylyov@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+	/* synchronize_rcu() needed for pending XDP buffers to drain */
-+	for (queue = 0; queue < rx_queues_cnt; queue++) {
-+		rx_q = &priv->rx_queue[queue];
-+		if (rx_q->xsk_pool) {
-+			synchronize_rcu();
+Hello:
 
-Are you sure this is safe here, especially via the ->ndo_setup_tc() code path?
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Thank you.
+On Mon, 12 Apr 2021 08:26:18 -0500 you wrote:
+> The AVB driver assumes there is an external crystal, but it could
+> be clocked by other means.  In order to enable a programmable
+> clock, it needs to be added to the clocks list and enabled in the
+> driver.  Since there currently only one clock, there is no
+> clock-names list either.
+> 
+> Update bindings to add the additional optional clock, and explicitly
+> name both of them.
+> 
+> [...]
+
+Here is the summary with links:
+  - [V4,1/2] dt-bindings: net: renesas,etheravb: Add additional clocks
+    https://git.kernel.org/netdev/net-next/c/6f43735b6da6
+  - [V4,2/2] net: ethernet: ravb: Enable optional refclk
+    https://git.kernel.org/netdev/net-next/c/8ef7adc6beb2
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
