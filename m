@@ -2,195 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64C2535BA9D
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 671D935BAA0
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236802AbhDLHKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 03:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        id S236811AbhDLHLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 03:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbhDLHKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 03:10:32 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABE9C061574;
-        Mon, 12 Apr 2021 00:10:15 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id u20so1609500wmj.0;
-        Mon, 12 Apr 2021 00:10:15 -0700 (PDT)
+        with ESMTP id S229581AbhDLHLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 03:11:38 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD375C061574;
+        Mon, 12 Apr 2021 00:11:20 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id w8so3532688plg.9;
+        Mon, 12 Apr 2021 00:11:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=EuL8gmDqGA0jFvgb08iY50PZ/+xeg9skTwFfVdB5qaY=;
-        b=CDo13+cONLRw/3EJcDVE5lDZJuI8Bo7aHY3kFGkriFdRNk/tXsM11vEbZw2ZwMYQz7
-         YP0IxBJHahJqEOMJZTvwZNNYX7s3uSrehtyAG0xTN91vy9VZP9ADO7sw+Px9IJH9a40P
-         cgL6kJ35aUPqQSM0e5rzipAzTm8UO5KG6yjxwLjy8xs5WfeWWN9Ff2Caun/D88lth9B6
-         mRYms4DDaJ1BB6GjBCX3vrEN7DWDe6hpDAYBBTvhlmB7fq/AECVFuG0/pdqbVm6wo0Cl
-         F9Vdu3Sulb5O4Ze3apGftqRwY3qWPGRcLZYz6fGoWovpcE/kr+fyOY68YaFsNXJJxSkQ
-         LzOg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ppdiEWGNg0vMhgLnO1iUl3C7FGroJ7Uxfmw4PhKvKaA=;
+        b=a1IC0BLoF/J8pmYkIyQkvfI6WbNIG86JPMSPfDLvJyuQsP4Lrd/nAKmBTRFbL09cBS
+         Qj0VBfcy81XImQDiozKi6yAdreJq8L1fcNbNFxkG29W3kG/Tq6m8bZ5WoPHJyCIgpm76
+         e2FyW+0Jy+nLwkkLAvI/5/M5Jce0m+vWkVIYnWjd0HPsp144OIckziqkXnJTfSzmNPh9
+         BcR8oEd6EXGuUj7QC0j5snqpGFWxChHm6yC7HJRgBqVr5fNhaxODT30AoL5tfVchcoMx
+         UATsqe2atOuFNl2vXpd+R/di/1eqsQ6QJhbz/cyqDIyH68ZXkzSCZngA7DT3FGfQWLLJ
+         IfcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EuL8gmDqGA0jFvgb08iY50PZ/+xeg9skTwFfVdB5qaY=;
-        b=bAuSqKCXAJYT4geIf+kqU0rmRU72/bY7FmX6cJMdpbksZuNamso/I2fidm5kV16/m1
-         WieSXkrCiWIqlRZxERNAB0VwFC3Kj3uKJfuBnDLf07zQdYdgaO9vbJewQFIoNlspt5uf
-         6KZ/p58XMhFpvTgtp0dN6148nLukQ8Wn8G1ec/u5TZzcD3eVDQvoeCBzUP0fxoOfcf9K
-         TFkfCmJFX0ALRdhFQRIDRwegxnMY8L/eeCp//RipCgmySec4S5eBBs3z6IDSqGijxWxh
-         WBcsvgptISysiLrqkZwRN7kSctEs2mTUSJBiNET6Fw5Ye3ZMDiHCThURpjAoJqqWu2Xk
-         nSvA==
-X-Gm-Message-State: AOAM533zO/rV5r3S5Q7k0xpurVtvOX0Z5YT4s1Fya3rT5oW/EDDRxM++
-        Q6Y64MWd7z5f+JP6rrMXolFDomeEekE=
-X-Google-Smtp-Source: ABdhPJwCjIA8wploUX0BzFcnt8q32Yuf7Ez5E0+dzAquu0JDwDHqOUru0CEqdeI0TyYvuHVpbTBxig==
-X-Received: by 2002:a1c:6382:: with SMTP id x124mr25291677wmb.142.1618211413952;
-        Mon, 12 Apr 2021 00:10:13 -0700 (PDT)
-Received: from [192.168.1.101] ([37.164.79.211])
-        by smtp.gmail.com with ESMTPSA id r5sm14099723wmr.15.2021.04.12.00.10.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Apr 2021 00:10:13 -0700 (PDT)
-Subject: Re: [syzbot] KMSAN: uninit-value in INET_ECN_decapsulate (2)
-To:     syzbot <syzbot+5e9c61d74e52a82b8ace@syzkaller.appspotmail.com>,
-        davem@davemloft.net, glider@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <00000000000083f82005bec0f1ad@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6d73d77a-5e25-0915-a0bb-3b421afa0acd@gmail.com>
-Date:   Mon, 12 Apr 2021 09:10:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ppdiEWGNg0vMhgLnO1iUl3C7FGroJ7Uxfmw4PhKvKaA=;
+        b=UO4F9M1ve4XoFBuGr7IAcfgqpIfIPfmk38m7Q/aA7IEeGmG1GZdCqDVf5bqpWQV3L7
+         3JC2NvucQqI1PAUJMLpV9W0/UuJDWWBtowmyAB0lty/3+N130ADTpYiHE+qExgEvpmGL
+         WTPSrUf5pvq7jxLPuZB804mNTgKYzlzzQVxCh27j63WE7lmGOJ0ce9a8XhMtgpSVlk2b
+         0rk286hFjX8K0wRrkkpSq4DWtTAhbtL3m5tWDq9IA1uMeeNFsWd4hyQjU4D6jexhmtde
+         AYkISrt8Bv59wM2l7/dJ8wrL6MQzWGX7jtQudyawjEAHNq9CEwI47R5gG/N4ByRStSIT
+         ZvSA==
+X-Gm-Message-State: AOAM530Q9H9YR1IXDMODBXongVkoiD4R7bLlGUGsryqLfCvwSg7btWFY
+        1NNmFO/EH+Nb6BUKPWNUQ8F3L4MlkTGYjGFEiQ==
+X-Google-Smtp-Source: ABdhPJztHd7ROeKEi95CD/PyFXTwQvREz5hPZeca9seo1vNducxZ29SSYXSl3unYh39hsJeTxrs+YwxVKMvU14sDlrw=
+X-Received: by 2002:a17:90a:714a:: with SMTP id g10mr20397142pjs.57.1618211480419;
+ Mon, 12 Apr 2021 00:11:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <00000000000083f82005bec0f1ad@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CACkBjsa12CEHfT75J6M1Pqy9=6uGFvOX+vGHCa7yO-mqUN14FQ@mail.gmail.com>
+In-Reply-To: <CACkBjsa12CEHfT75J6M1Pqy9=6uGFvOX+vGHCa7yO-mqUN14FQ@mail.gmail.com>
+From:   Hao Sun <sunhao.th@gmail.com>
+Date:   Mon, 12 Apr 2021 15:11:18 +0800
+Message-ID: <CACkBjsbcmt=+PFjEybaumg3Rp2peSyoyc_1McZmqT0zeKNUSCg@mail.gmail.com>
+Subject: Re: BUG: unable to handle kernel paging request in bpf_check
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="00000000000076950b05bfc1384a"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--00000000000076950b05bfc1384a
+Content-Type: text/plain; charset="UTF-8"
 
+Besides, another similar bug occurred while fault injection was enabled.
+====
+BUG: unable to handle kernel paging request in bpf_prog_alloc_no_stats
+========================================================
+RAX: ffffffffffffffda RBX: 000000000059c080 RCX: 000000000047338d
+RDX: 0000000000000078 RSI: 0000000020000300 RDI: 0000000000000005
+RBP: 00007f7e3c38fc90 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
+R13: 00007ffed3a1dd6f R14: 00007ffed3a1df10 R15: 00007f7e3c38fdc0
+BUG: unable to handle page fault for address: ffff91f2077ed028
+#PF: supervisor write access in kernel mode
+#PF: error_code(0x0002) - not-present page
+PGD 1810067 P4D 1810067 PUD 1915067 PMD 3b907067 PTE 0
+Oops: 0002 [#1] SMP
+CPU: 3 PID: 17344 Comm: executor Not tainted 5.12.0-rc6+ #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+1.13.0-1ubuntu1.1 04/01/2014
+RIP: 0010:bpf_prog_alloc_no_stats+0x251/0x6e0 kernel/bpf/core.c:94
+Code: 45 b0 4c 8d 78 28 4d 8b a5 20 03 00 00 41 8b 85 a8 0f 00 00 89
+45 c8 48 83 7d a8 00 0f 85 2e 03 00 00 4c 89 ff e8 4f 18 60 00 <4c> 89
+20 4d 85 e4 0f 85 27 03 00 00 49 89 1f 4d 85 e4 74 0c 49 f7
+RSP: 0018:ffff89f2077cfaa8 EFLAGS: 00010286
+RAX: ffff91f2077ed028 RBX: 0000096680024de8 RCX: ffff91f2077ed028
+RDX: ffff99f2077ed028 RSI: 0000000000000008 RDI: ffff89f2077ed028
+RBP: ffff89f2077cfb28 R08: ffffd7eb8000000f R09: ffff888b7ffd3000
+R10: 000000000000037a R11: 0000000000000000 R12: 0000000000000000
+R13: ffff888b1465aad8 R14: 0000000004c30000 R15: ffff89f2077ed028
+FS:  00007f7e3c390700(0000) GS:ffff888b7fd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff91f2077ed028 CR3: 0000000044802004 CR4: 0000000000770ee0
+PKRU: 55555554
+Call Trace:
+ bpf_prog_alloc+0x74/0x310 kernel/bpf/core.c:119
+ bpf_prog_load kernel/bpf/syscall.c:2162 [inline]
+ __do_sys_bpf+0x11af3/0x17290 kernel/bpf/syscall.c:4393
+ __se_sys_bpf+0x8e/0xa0 kernel/bpf/syscall.c:4351
+ __x64_sys_bpf+0x4a/0x70 kernel/bpf/syscall.c:4351
+ do_syscall_64+0xa2/0x120 arch/x86/entry/common.c:48
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x47338d
+Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
+89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f7e3c38fc58 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 000000000059c080 RCX: 000000000047338d
+RDX: 0000000000000078 RSI: 0000000020000300 RDI: 0000000000000005
+RBP: 00007f7e3c38fc90 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
+R13: 00007ffed3a1dd6f R14: 00007ffed3a1df10 R15: 00007f7e3c38fdc0
+Modules linked in:
+Dumping ftrace buffer:
+   (ftrace buffer empty)
+CR2: ffff91f2077ed028
+---[ end trace bc1de9e0e1b51e8c ]---
+RIP: 0010:bpf_prog_alloc_no_stats+0x251/0x6e0 kernel/bpf/core.c:94
+Code: 45 b0 4c 8d 78 28 4d 8b a5 20 03 00 00 41 8b 85 a8 0f 00 00 89
+45 c8 48 83 7d a8 00 0f 85 2e 03 00 00 4c 89 ff e8 4f 18 60 00 <4c> 89
+20 4d 85 e4 0f 85 27 03 00 00 49 89 1f 4d 85 e4 74 0c 49 f7
+RSP: 0018:ffff89f2077cfaa8 EFLAGS: 00010286
+RAX: ffff91f2077ed028 RBX: 0000096680024de8 RCX: ffff91f2077ed028
+RDX: ffff99f2077ed028 RSI: 0000000000000008 RDI: ffff89f2077ed028
+RBP: ffff89f2077cfb28 R08: ffffd7eb8000000f R09: ffff888b7ffd3000
+R10: 000000000000037a R11: 0000000000000000 R12: 0000000000000000
+R13: ffff888b1465aad8 R14: 0000000004c30000 R15: ffff89f2077ed028
+FS:  00007f7e3c390700(0000) GS:ffff888b7fd00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffff91f2077ed028 CR3: 0000000044802004 CR4: 0000000000770ee0
+PKRU: 55555554
 
-On 3/30/21 3:26 PM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    29ad81a1 arch/x86: add missing include to sparsemem.h
-> git tree:       https://github.com/google/kmsan.git master
-> console output: https://syzkaller.appspot.com/x/log.txt?x=166fe481d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b573c14b733efb1c
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5e9c61d74e52a82b8ace
-> compiler:       Debian clang version 11.0.1-2
-> userspace arch: i386
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+5e9c61d74e52a82b8ace@syzkaller.appspotmail.com
-> 
-> =====================================================
-> BUG: KMSAN: uninit-value in __INET_ECN_decapsulate include/net/inet_ecn.h:236 [inline]
-> BUG: KMSAN: uninit-value in INET_ECN_decapsulate+0x329/0x1db0 include/net/inet_ecn.h:258
-> CPU: 1 PID: 9058 Comm: syz-executor.1 Not tainted 5.11.0-rc7-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <IRQ>
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x21c/0x280 lib/dump_stack.c:120
->  kmsan_report+0xfb/0x1e0 mm/kmsan/kmsan_report.c:118
->  __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
->  __INET_ECN_decapsulate include/net/inet_ecn.h:236 [inline]
->  INET_ECN_decapsulate+0x329/0x1db0 include/net/inet_ecn.h:258
->  geneve_rx+0x216e/0x29d0 include/net/inet_ecn.h:304
->  geneve_udp_encap_recv+0x1055/0x1340 drivers/net/geneve.c:377
->  udp_queue_rcv_one_skb+0x1943/0x1af0 net/ipv4/udp.c:2095
->  udp_queue_rcv_skb+0x286/0x1040 net/ipv4/udp.c:2169
->  udp_unicast_rcv_skb net/ipv4/udp.c:2327 [inline]
->  __udp4_lib_rcv+0x3a1f/0x58f0 net/ipv4/udp.c:2396
->  udp_rcv+0x5c/0x70 net/ipv4/udp.c:2567
->  ip_protocol_deliver_rcu+0x572/0xc50 net/ipv4/ip_input.c:204
->  ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
->  NF_HOOK include/linux/netfilter.h:301 [inline]
->  ip_local_deliver+0x585/0x8d0 net/ipv4/ip_input.c:252
->  dst_input include/net/dst.h:447 [inline]
->  ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
->  NF_HOOK include/linux/netfilter.h:301 [inline]
->  ip_rcv+0x599/0x820 net/ipv4/ip_input.c:539
->  __netif_receive_skb_one_core net/core/dev.c:5323 [inline]
->  __netif_receive_skb+0x1ec/0x640 net/core/dev.c:5437
->  process_backlog+0x517/0xbd0 net/core/dev.c:6328
->  napi_poll+0x428/0x15c0 net/core/dev.c:6806
->  net_rx_action+0x34c/0xd30 net/core/dev.c:6889
->  __do_softirq+0x1b9/0x715 kernel/softirq.c:343
->  asm_call_irq_on_stack+0xf/0x20
->  </IRQ>
->  __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
->  run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
->  do_softirq_own_stack+0x6e/0x90 arch/x86/kernel/irq_64.c:77
->  do_softirq kernel/softirq.c:246 [inline]
->  __local_bh_enable_ip+0x184/0x1d0 kernel/softirq.c:196
->  local_bh_enable+0x36/0x40 include/linux/bottom_half.h:32
->  rcu_read_unlock_bh include/linux/rcupdate.h:737 [inline]
->  __dev_queue_xmit+0x3b3e/0x45c0 net/core/dev.c:4178
->  dev_queue_xmit+0x4b/0x60 net/core/dev.c:4184
->  packet_snd net/packet/af_packet.c:3006 [inline]
->  packet_sendmsg+0x8778/0x9a60 net/packet/af_packet.c:3031
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg net/socket.c:672 [inline]
->  __sys_sendto+0x9ea/0xc60 net/socket.c:1975
->  __do_sys_sendto net/socket.c:1987 [inline]
->  __se_sys_sendto+0x107/0x130 net/socket.c:1983
->  __ia32_sys_sendto+0x6e/0x90 net/socket.c:1983
->  do_syscall_32_irqs_on arch/x86/entry/common.c:79 [inline]
->  __do_fast_syscall_32+0x102/0x160 arch/x86/entry/common.c:141
->  do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:166
->  do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:209
->  entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-> RIP: 0023:0xf7f84549
-> Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-> RSP: 002b:00000000f557e5fc EFLAGS: 00000296 ORIG_RAX: 0000000000000171
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000980
-> RDX: 000000000000000e RSI: 0000000000000000 RDI: 00000000200002c0
-> RBP: 0000000000000014 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> 
-> Uninit was created at:
->  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
->  kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
->  kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
->  slab_alloc_node mm/slub.c:2907 [inline]
->  __kmalloc_node_track_caller+0xa37/0x1430 mm/slub.c:4527
->  __kmalloc_reserve net/core/skbuff.c:142 [inline]
->  __alloc_skb+0x2f8/0xb30 net/core/skbuff.c:210
->  alloc_skb include/linux/skbuff.h:1099 [inline]
->  alloc_skb_with_frags+0x1f3/0xc10 net/core/skbuff.c:5894
->  sock_alloc_send_pskb+0xdc1/0xf90 net/core/sock.c:2348
->  packet_alloc_skb net/packet/af_packet.c:2854 [inline]
->  packet_snd net/packet/af_packet.c:2949 [inline]
->  packet_sendmsg+0x6aab/0x9a60 net/packet/af_packet.c:3031
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg net/socket.c:672 [inline]
->  __sys_sendto+0x9ea/0xc60 net/socket.c:1975
->  __do_sys_sendto net/socket.c:1987 [inline]
->  __se_sys_sendto+0x107/0x130 net/socket.c:1983
->  __ia32_sys_sendto+0x6e/0x90 net/socket.c:1983
->  do_syscall_32_irqs_on arch/x86/entry/common.c:79 [inline]
->  __do_fast_syscall_32+0x102/0x160 arch/x86/entry/common.c:141
->  do_fast_syscall_32+0x6a/0xc0 arch/x86/entry/common.c:166
->  do_SYSENTER_32+0x73/0x90 arch/x86/entry/common.c:209
->  entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-> =====================================================
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
+The following system call sequence (Syzlang format) can reproduce the crash:
+# {Threaded:false Collide:false Repeat:true RepeatTimes:0 Procs:1
+Slowdown:1 Sandbox:none Fault:true FaultCall:0 FaultNth:4 Leak:false
+NetInjection:true NetDevices:true NetReset:true Cgroups:true
+BinfmtMisc:true CloseFDs:true KCSAN:false DevlinkPCI:true USB:true
+VhciInjection:true Wifi:true IEEE802154:true Sysctl:true
+UseTmpDir:true HandleSegv:true Repro:false Trace:false}
 
-#syz fix: net: geneve: check skb is large enough for IPv4/IPv6 header
+bpf$BPF_PROG_WITH_BTFID_LOAD(0x5, &(0x7f0000000300)=@bpf_ext={0x1c,
+0x8, &(0x7f00000001c0)=@raw=[@initr0={0x18, 0x0, 0x0, 0x0,
+0x4953b92f0467cc49, 0x0, 0x0, 0x0, 0xdbd689758db6b4a7}, @func={0x85,
+0x0, 0x1, 0x0, 0x1}, @exit, @generic={0xd3c15618b9efaeff, 0x0, 0x0,
+0x0, 0xc0fc52df13f3fbec}, @map_val={0x18, 0x0, 0x2, 0x0, 0x0, 0x0,
+0x0, 0x0, 0xf7a72204b1b46d92}, @jmp], &(0x7f0000000200)='GPL\x00',
+0x0, 0x0, 0x0, 0x0, 0x9, [], 0x0, 0x0, 0x0, 0x8, 0x0, 0x0, 0x10, 0x0,
+0x0, 0x0, 0x0}, 0x78)
 
+Using syz-execprog can run this reproduction program directly:
+ ./syz-execprog -repeat 0 -procs 1 -slowdown 1 -fault_call 0
+-fault_nth 4 -enable tun -enable netdev -enable resetnet -enable
+cgroups -enable binfmt-misc -enable close_fds -enable devlinkpci
+-enable usb -enable vhci -enable wifi -enable ieee802154 -enable
+sysctl repro.prog
+
+--00000000000076950b05bfc1384a
+Content-Type: application/octet-stream; name=log
+Content-Disposition: attachment; filename=log
+Content-Transfer-Encoding: base64
+Content-ID: <f_kne9bmpm0>
+X-Attachment-Id: f_kne9bmpm0
+
+WyAgODIwLjQ1OTg2Ml0gRkFVTFRfSU5KRUNUSU9OOiBmb3JjaW5nIGEgZmFpbHVyZS4NClsgIDgy
+MC40NTk4NjJdIG5hbWUgZmFpbHNsYWIsIGludGVydmFsIDEsIHByb2JhYmlsaXR5IDAsIHNwYWNl
+IDAsIHRpbWVzIDANClsgIDgyMC40NjA4MzldIENQVTogMyBQSUQ6IDE3MzQ0IENvbW06IGV4ZWN1
+dG9yIE5vdCB0YWludGVkIDUuMTIuMC1yYzYrICMxDQpbICA4MjAuNDYxNDY5XSBIYXJkd2FyZSBu
+YW1lOiBRRU1VIFN0YW5kYXJkIFBDIChpNDQwRlggKyBQSUlYLCAxOTk2KSwgQklPUyAxLjEzLjAt
+MXVidW50dTEuMSAwNC8wMS8yMDE0DQpbICA4MjAuNDYyMjY5XSBDYWxsIFRyYWNlOg0KWyAgODIw
+LjQ2MjUwOV0gIGR1bXBfc3RhY2srMHgxZmYvMHgyNzUNClsgIDgyMC40NjI4NzZdICBzaG91bGRf
+ZmFpbCsweDhiMC8weDlkMA0KWyAgODIwLjQ2MzMyNl0gIF9fc2hvdWxkX2ZhaWxzbGFiKzB4MWY0
+LzB4MjkwDQpbICA4MjAuNDYzNzQ1XSAgc2hvdWxkX2ZhaWxzbGFiKzB4MjkvMHg3MA0KWyAgODIw
+LjQ2NDEyM10gIF9fa21hbGxvYysweGJjLzB4NTYwDQpbICA4MjAuNDY0NDgyXSAgPyBrY2FsbG9j
+KzB4MWUvMHgzMA0KWyAgODIwLjQ2NDgwM10gID8ga21zYW5fZ2V0X21ldGFkYXRhKzB4MTFkLzB4
+MTgwDQpbICA4MjAuNDY1MjIyXSAga2NhbGxvYysweDFlLzB4MzANClsgIDgyMC40NjU1NDNdICBr
+bXNhbl9tYXBfa2VybmVsX3JhbmdlX25vZmx1c2grMHhhNy8weDIzMA0KWyAgODIwLjQ2NjAzOF0g
+IF9fdm1hbGxvY19ub2RlX3JhbmdlKzB4YWQzLzB4MTFhMA0KWyAgODIwLjQ2NjQ5NF0gIF9fdm1h
+bGxvYysweDEyZi8weDE0MA0KWyAgODIwLjQ2Njg1N10gID8gYnBmX3Byb2dfYWxsb2Nfbm9fc3Rh
+dHMrMHhhNi8weDZlMA0KWyAgODIwLjQ2NzI5Nl0gID8gYnBmX3Byb2dfYWxsb2Nfbm9fc3RhdHMr
+MHhhNi8weDZlMA0KWyAgODIwLjQ2ODI1M10gIGJwZl9wcm9nX2FsbG9jX25vX3N0YXRzKzB4YTYv
+MHg2ZTANClsgIDgyMC40Njg3MjFdICA/IHNlY3VyaXR5X2NhcGFibGUrMHgxY2IvMHgyMjANClsg
+IDgyMC40NjkyOTddICA/IGttc2FuX2dldF9tZXRhZGF0YSsweDExZC8weDE4MA0KWyAgODIwLjQ2
+OTcxMF0gIGJwZl9wcm9nX2FsbG9jKzB4NzQvMHgzMTANClsgIDgyMC40NzAwNzRdICA/IGttc2Fu
+X2dldF9zaGFkb3dfb3JpZ2luX3B0cisweDg0LzB4YjANClsgIDgyMC40NzA1NTVdICBfX2RvX3N5
+c19icGYrMHgxMWFmMy8weDE3MjkwDQpbICA4MjAuNDcxMDYxXSAgPyBfX21zYW5faW5zdHJ1bWVu
+dF9hc21fc3RvcmUrMHgyMi8weDEzMA0KWyAgODIwLjQ3MjA2Nl0gID8gdmZzX3dyaXRlKzB4ZTQw
+LzB4MTcwMA0KWyAgODIwLjQ3MjU3NF0gID8ga21zYW5fZ2V0X21ldGFkYXRhKzB4MTFkLzB4MTgw
+DQpbICA4MjAuNDczMTkzXSAgPyBrbXNhbl9nZXRfbWV0YWRhdGErMHgxMWQvMHgxODANClsgIDgy
+MC40NzM3NDRdICA/IGZwdXQrMHg1Mi8weDI3MA0KWyAgODIwLjQ3NDExMl0gID8ga21zYW5fZ2V0
+X21ldGFkYXRhKzB4MTFkLzB4MTgwDQpbICA4MjAuNDc0NTIwXSAgPyBrbXNhbl9nZXRfbWV0YWRh
+dGErMHgxMWQvMHgxODANClsgIDgyMC40NzQ5MjhdICA/IGttc2FuX2dldF9zaGFkb3dfb3JpZ2lu
+X3B0cisweDg0LzB4YjANClsgIDgyMC40NzUzODJdICA/IF9fbXNhbl9tZXRhZGF0YV9wdHJfZm9y
+X3N0b3JlXzQrMHgxMy8weDIwDQpbICA4MjAuNDc1ODcwXSAgX19zZV9zeXNfYnBmKzB4OGUvMHhh
+MA0KWyAgODIwLjQ3NjIxMF0gIF9feDY0X3N5c19icGYrMHg0YS8weDcwDQpbICA4MjAuNDc2NTUy
+XSAgZG9fc3lzY2FsbF82NCsweGEyLzB4MTIwDQpbICA4MjAuNDc2OTAwXSAgZW50cnlfU1lTQ0FM
+TF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhZQ0KWyAgODIwLjQ3NzM1OV0gUklQOiAwMDMzOjB4
+NDczMzhkDQpbICA4MjAuNDc3Nzk0XSBDb2RlOiAwMiBiOCBmZiBmZiBmZiBmZiBjMyA2NiAwZiAx
+ZiA0NCAwMCAwMCBmMyAwZiAxZSBmYSA0OCA4OSBmOCA0OCA4OSBmNyA0OCA4OSBkNiA0OCA4OSBj
+YSA0ZCA4OSBjMiA0ZCA4OSBjOCA0YyA4YiA0YyAyNCAwOCAwZiAwNSA8NDg+IDNkIDAxIGYwIGZm
+IGZmIDczIDAxIGMzIDQ4IGM3IGMxIGJjIGZmIGZmIGZmIGY3IGQ4IDY0IDg5IDAxIDQ4DQpbICA4
+MjAuNDc5Mjc1XSBSU1A6IDAwMmI6MDAwMDdmN2UzYzM4ZmM1OCBFRkxBR1M6IDAwMDAwMjQ2IE9S
+SUdfUkFYOiAwMDAwMDAwMDAwMDAwMTQxDQpbICA4MjAuNDc5OTY0XSBSQVg6IGZmZmZmZmZmZmZm
+ZmZmZGEgUkJYOiAwMDAwMDAwMDAwNTljMDgwIFJDWDogMDAwMDAwMDAwMDQ3MzM4ZA0KWyAgODIw
+LjQ4MDU5M10gUkRYOiAwMDAwMDAwMDAwMDAwMDc4IFJTSTogMDAwMDAwMDAyMDAwMDMwMCBSREk6
+IDAwMDAwMDAwMDAwMDAwMDUNClsgIDgyMC40ODExNzNdIFJCUDogMDAwMDdmN2UzYzM4ZmM5MCBS
+MDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5OiAwMDAwMDAwMDAwMDAwMDAwDQpbICA4MjAuNDgxODIw
+XSBSMTA6IDAwMDAwMDAwMDAwMDAwMDAgUjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDAw
+MDAwMDAwMDAwNA0KWyAgODIwLjQ4MjgyNF0gUjEzOiAwMDAwN2ZmZWQzYTFkZDZmIFIxNDogMDAw
+MDdmZmVkM2ExZGYxMCBSMTU6IDAwMDA3ZjdlM2MzOGZkYzANClsgIDgyMC40ODM4NzddIEJVRzog
+dW5hYmxlIHRvIGhhbmRsZSBwYWdlIGZhdWx0IGZvciBhZGRyZXNzOiBmZmZmOTFmMjA3N2VkMDI4
+DQpbICA4MjAuNDg0NDI0XSAjUEY6IHN1cGVydmlzb3Igd3JpdGUgYWNjZXNzIGluIGtlcm5lbCBt
+b2RlDQpbICA4MjAuNDg0ODMwXSAjUEY6IGVycm9yX2NvZGUoMHgwMDAyKSAtIG5vdC1wcmVzZW50
+IHBhZ2UNClsgIDgyMC40ODUyMjhdIFBHRCAxODEwMDY3IFA0RCAxODEwMDY3IFBVRCAxOTE1MDY3
+IFBNRCAzYjkwNzA2NyBQVEUgMA0KWyAgODIwLjQ4NTgyOF0gT29wczogMDAwMiBbIzFdIFNNUA0K
+WyAgODIwLjQ4NjA5OV0gQ1BVOiAzIFBJRDogMTczNDQgQ29tbTogZXhlY3V0b3IgTm90IHRhaW50
+ZWQgNS4xMi4wLXJjNisgIzENClsgIDgyMC40ODY2MTRdIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3Rh
+bmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEuMTMuMC0xdWJ1bnR1MS4xIDA0
+LzAxLzIwMTQNClsgIDgyMC40ODczMzNdIFJJUDogMDAxMDpicGZfcHJvZ19hbGxvY19ub19zdGF0
+cysweDI1MS8weDZlMA0KWyAgODIwLjQ4Nzg5MV0gQ29kZTogNDUgYjAgNGMgOGQgNzggMjggNGQg
+OGIgYTUgMjAgMDMgMDAgMDAgNDEgOGIgODUgYTggMGYgMDAgMDAgODkgNDUgYzggNDggODMgN2Qg
+YTggMDAgMGYgODUgMmUgMDMgMDAgMDAgNGMgODkgZmYgZTggNGYgMTggNjAgMDAgPDRjPiA4OSAy
+MCA0ZCA4NSBlNCAwZiA4NSAyNyAwMyAwMCAwMCA0OSA4OSAxZiA0ZCA4NSBlNCA3NCAwYyA0OSBm
+Nw0KWyAgODIwLjQ4OTI5M10gUlNQOiAwMDE4OmZmZmY4OWYyMDc3Y2ZhYTggRUZMQUdTOiAwMDAx
+MDI4Ng0KWyAgODIwLjQ4OTgwMl0gUkFYOiBmZmZmOTFmMjA3N2VkMDI4IFJCWDogMDAwMDA5NjY4
+MDAyNGRlOCBSQ1g6IGZmZmY5MWYyMDc3ZWQwMjgNClsgIDgyMC40OTAzOTddIFJEWDogZmZmZjk5
+ZjIwNzdlZDAyOCBSU0k6IDAwMDAwMDAwMDAwMDAwMDggUkRJOiBmZmZmODlmMjA3N2VkMDI4DQpb
+ICA4MjAuNDkwOTc3XSBSQlA6IGZmZmY4OWYyMDc3Y2ZiMjggUjA4OiBmZmZmZDdlYjgwMDAwMDBm
+IFIwOTogZmZmZjg4OGI3ZmZkMzAwMA0KWyAgODIwLjQ5MTUzM10gUjEwOiAwMDAwMDAwMDAwMDAw
+MzdhIFIxMTogMDAwMDAwMDAwMDAwMDAwMCBSMTI6IDAwMDAwMDAwMDAwMDAwMDANClsgIDgyMC40
+OTIxMTVdIFIxMzogZmZmZjg4OGIxNDY1YWFkOCBSMTQ6IDAwMDAwMDAwMDRjMzAwMDAgUjE1OiBm
+ZmZmODlmMjA3N2VkMDI4DQpbICA4MjAuNDkyNzEzXSBGUzogIDAwMDA3ZjdlM2MzOTA3MDAoMDAw
+MCkgR1M6ZmZmZjg4OGI3ZmQwMDAwMCgwMDAwKSBrbmxHUzowMDAwMDAwMDAwMDAwMDAwDQpbICA4
+MjAuNDkzMzg0XSBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUw
+MDMzDQpbICA4MjAuNDkzODcxXSBDUjI6IGZmZmY5MWYyMDc3ZWQwMjggQ1IzOiAwMDAwMDAwMDQ0
+ODAyMDA0IENSNDogMDAwMDAwMDAwMDc3MGVlMA0KWyAgODIwLjQ5NDQ2Ml0gUEtSVTogNTU1NTU1
+NTQNClsgIDgyMC40OTQ3MTddIENhbGwgVHJhY2U6DQpbICA4MjAuNDk0OTQ1XSAgYnBmX3Byb2df
+YWxsb2MrMHg3NC8weDMxMA0KWyAgODIwLjQ5NTMwNF0gID8ga21zYW5fZ2V0X3NoYWRvd19vcmln
+aW5fcHRyKzB4ODQvMHhiMA0KWyAgODIwLjQ5NTc2NF0gIF9fZG9fc3lzX2JwZisweDExYWYzLzB4
+MTcyOTANClsgIDgyMC40OTYxMjFdICA/IF9fbXNhbl9pbnN0cnVtZW50X2FzbV9zdG9yZSsweDIy
+LzB4MTMwDQpbICA4MjAuNDk2NTc3XSAgPyB2ZnNfd3JpdGUrMHhlNDAvMHgxNzAwDQpbICA4MjAu
+NDk2OTMzXSAgPyBrbXNhbl9nZXRfbWV0YWRhdGErMHgxMWQvMHgxODANClsgIDgyMC40OTczNjJd
+ICA/IGttc2FuX2dldF9tZXRhZGF0YSsweDExZC8weDE4MA0KWyAgODIwLjQ5Nzg5OV0gID8gZnB1
+dCsweDUyLzB4MjcwDQpbICA4MjAuNDk4MjUwXSAgPyBrbXNhbl9nZXRfbWV0YWRhdGErMHgxMWQv
+MHgxODANClsgIDgyMC40OTg2NThdICA/IGttc2FuX2dldF9tZXRhZGF0YSsweDExZC8weDE4MA0K
+WyAgODIwLjQ5OTA4OF0gID8ga21zYW5fZ2V0X3NoYWRvd19vcmlnaW5fcHRyKzB4ODQvMHhiMA0K
+WyAgODIwLjQ5OTU0M10gID8gX19tc2FuX21ldGFkYXRhX3B0cl9mb3Jfc3RvcmVfNCsweDEzLzB4
+MjANClsgIDgyMC41MDAxMjJdICBfX3NlX3N5c19icGYrMHg4ZS8weGEwDQpbICA4MjAuNTAwNDg5
+XSAgX194NjRfc3lzX2JwZisweDRhLzB4NzANClsgIDgyMC41MDA4ODBdICBkb19zeXNjYWxsXzY0
+KzB4YTIvMHgxMjANClsgIDgyMC41MDEyNzldICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJh
+bWUrMHg0NC8weGFlDQpbICA4MjAuNTAxNzM3XSBSSVA6IDAwMzM6MHg0NzMzOGQNClsgIDgyMC41
+MDIwMzhdIENvZGU6IDAyIGI4IGZmIGZmIGZmIGZmIGMzIDY2IDBmIDFmIDQ0IDAwIDAwIGYzIDBm
+IDFlIGZhIDQ4IDg5IGY4IDQ4IDg5IGY3IDQ4IDg5IGQ2IDQ4IDg5IGNhIDRkIDg5IGMyIDRkIDg5
+IGM4IDRjIDhiIDRjIDI0IDA4IDBmIDA1IDw0OD4gM2QgMDEgZjAgZmYgZmYgNzMgMDEgYzMgNDgg
+YzcgYzEgYmMgZmYgZmYgZmYgZjcgZDggNjQgODkgMDEgNDgNClsgIDgyMC41MDM1MTddIFJTUDog
+MDAyYjowMDAwN2Y3ZTNjMzhmYzU4IEVGTEFHUzogMDAwMDAyNDYgT1JJR19SQVg6IDAwMDAwMDAw
+MDAwMDAxNDENClsgIDgyMC41MDQxNjRdIFJBWDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDAw
+MDAwMDA1OWMwODAgUkNYOiAwMDAwMDAwMDAwNDczMzhkDQpbICA4MjAuNTA0NzE4XSBSRFg6IDAw
+MDAwMDAwMDAwMDAwNzggUlNJOiAwMDAwMDAwMDIwMDAwMzAwIFJESTogMDAwMDAwMDAwMDAwMDAw
+NQ0KWyAgODIwLjUwNTMxM10gUkJQOiAwMDAwN2Y3ZTNjMzhmYzkwIFIwODogMDAwMDAwMDAwMDAw
+MDAwMCBSMDk6IDAwMDAwMDAwMDAwMDAwMDANClsgIDgyMC41MDU4NzddIFIxMDogMDAwMDAwMDAw
+MDAwMDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAyNDYgUjEyOiAwMDAwMDAwMDAwMDAwMDA0DQpbICA4
+MjAuNTA2NDM5XSBSMTM6IDAwMDA3ZmZlZDNhMWRkNmYgUjE0OiAwMDAwN2ZmZWQzYTFkZjEwIFIx
+NTogMDAwMDdmN2UzYzM4ZmRjMA0KWyAgODIwLjUwNzAxNV0gTW9kdWxlcyBsaW5rZWQgaW46DQpb
+ICA4MjAuNTA3MzI1XSBEdW1waW5nIGZ0cmFjZSBidWZmZXI6DQpbICA4MjAuNTA3NzQzXSAgICAo
+ZnRyYWNlIGJ1ZmZlciBlbXB0eSkNClsgIDgyMC41MDgwMzRdIENSMjogZmZmZjkxZjIwNzdlZDAy
+OA0KWyAgODIwLjUwODMzNF0gLS0tWyBlbmQgdHJhY2UgYmMxZGU5ZTBlMWI1MWU4YyBdLS0tDQpb
+ICA4MjAuNTA4Njk5XSBSSVA6IDAwMTA6YnBmX3Byb2dfYWxsb2Nfbm9fc3RhdHMrMHgyNTEvMHg2
+ZTANClsgIDgyMC41MDkxNjddIENvZGU6IDQ1IGIwIDRjIDhkIDc4IDI4IDRkIDhiIGE1IDIwIDAz
+IDAwIDAwIDQxIDhiIDg1IGE4IDBmIDAwIDAwIDg5IDQ1IGM4IDQ4IDgzIDdkIGE4IDAwIDBmIDg1
+IDJlIDAzIDAwIDAwIDRjIDg5IGZmIGU4IDRmIDE4IDYwIDAwIDw0Yz4gODkgMjAgNGQgODUgZTQg
+MGYgODUgMjcgMDMgMDAgMDAgNDkgODkgMWYgNGQgODUgZTQgNzQgMGMgNDkgZjcNClsgIDgyMC41
+MTA1MzhdIFJTUDogMDAxODpmZmZmODlmMjA3N2NmYWE4IEVGTEFHUzogMDAwMTAyODYNClsgIDgy
+MC41MTA5ODNdIFJBWDogZmZmZjkxZjIwNzdlZDAyOCBSQlg6IDAwMDAwOTY2ODAwMjRkZTggUkNY
+OiBmZmZmOTFmMjA3N2VkMDI4DQpbICA4MjAuNTExNTQ3XSBSRFg6IGZmZmY5OWYyMDc3ZWQwMjgg
+UlNJOiAwMDAwMDAwMDAwMDAwMDA4IFJESTogZmZmZjg5ZjIwNzdlZDAyOA0KWyAgODIwLjUxMjEw
+Nl0gUkJQOiBmZmZmODlmMjA3N2NmYjI4IFIwODogZmZmZmQ3ZWI4MDAwMDAwZiBSMDk6IGZmZmY4
+ODhiN2ZmZDMwMDANClsgIDgyMC41MTI2NjNdIFIxMDogMDAwMDAwMDAwMDAwMDM3YSBSMTE6IDAw
+MDAwMDAwMDAwMDAwMDAgUjEyOiAwMDAwMDAwMDAwMDAwMDAwDQpbICA4MjAuNTEzMjA2XSBSMTM6
+IGZmZmY4ODhiMTQ2NWFhZDggUjE0OiAwMDAwMDAwMDA0YzMwMDAwIFIxNTogZmZmZjg5ZjIwNzdl
+ZDAyOA0KWyAgODIwLjUxMzcyM10gRlM6ICAwMDAwN2Y3ZTNjMzkwNzAwKDAwMDApIEdTOmZmZmY4
+ODhiN2ZkMDAwMDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMA0KWyAgODIwLjUxNDMzNF0g
+Q1M6ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMw0KWyAgODIw
+LjUxNDc2MV0gQ1IyOiBmZmZmOTFmMjA3N2VkMDI4IENSMzogMDAwMDAwMDA0NDgwMjAwNCBDUjQ6
+IDAwMDAwMDAwMDA3NzBlZTANClsgIDgyMC41MTUyNjZdIFBLUlU6IDU1NTU1NTU0DQpbICA4MjAu
+NTE1NDg0XSBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzogRmF0YWwgZXhjZXB0aW9uDQpbICA4
+MjAuNTE2MDM4XSBEdW1waW5nIGZ0cmFjZSBidWZmZXI6DQpbICA4MjAuNTE2MzI5XSAgICAoZnRy
+YWNlIGJ1ZmZlciBlbXB0eSkNClsgIDgyMC41MTY2MDhdIEtlcm5lbCBPZmZzZXQ6IDB4N2EwMDAw
+MCBmcm9tIDB4ZmZmZmZmZmY4MTAwMDAwMCAocmVsb2NhdGlvbiByYW5nZTogMHhmZmZmZmZmZjgw
+MDAwMDAwLTB4ZmZmZmZmZmZiZmZmZmZmZikNClsgIDgyMC41MTc0MzRdIFJlYm9vdGluZyBpbiAx
+IHNlY29uZHMuLg0K
+--00000000000076950b05bfc1384a--
