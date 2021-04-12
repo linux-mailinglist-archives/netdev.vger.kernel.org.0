@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9856935CDBF
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:52:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2419C35CDC0
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:52:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343899AbhDLQiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:38:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38886 "EHLO mail.kernel.org"
+        id S243707AbhDLQiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:38:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343653AbhDLQfl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 12:35:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A9A22613D9;
-        Mon, 12 Apr 2021 16:27:02 +0000 (UTC)
+        id S1343678AbhDLQfn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 12:35:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF8BE613E0;
+        Mon, 12 Apr 2021 16:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244823;
-        bh=iSCjhrH7qXR9SQ2svIa8dIQK+hhdiCawt2RDAuaR1As=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WJsYjGaQMV92kfmwp+veHpbPZnAYQlqC5CqDlpgZZvBpAZx06TGdoYcxnPKQLnjmT
-         pYDbAnXSMw38+Lgmt6iLGJ86An90iqHD+AvbpzFCGjLHyDwriIYjhJt+7UPKnCskKj
-         Sd0+HCXl7L9mmMVJ5HKCTsHk0nlT3r1+Wkh2/JQx0JypwLJoBaerFVYZdM0ww2JetR
-         UWb+6TiLb7096CJBh+6d6S0Fg/OICBGRmGSoYjSrsf4FXnpmIYCR0tZfNx7a3dgAj6
-         CejwTWsUXzPa2+07bORng7XgSHifxnWrhu7bnGsfQmJksCHs0JDvR9vXQl9b2VoZAq
-         /tPQkPO2TtEaQ==
+        s=k20201202; t=1618244826;
+        bh=nkH7xThCyOmnPCpcc/xlAl5WT+HcSRCGoCaTMMxeiEA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hJSe1VzuZuuDQTMEQYnNbcoI7jUT1mi2IGPdIHk2+fDvqff+zN3nA10Y1wIgwelIc
+         CDGddMev8TyRCe4GAXHPKHMQcEFe8yyCPFk2agQrsnNhgvceQ6fCOfhdPwSv1InbCa
+         uxvjVAUb8DThIqgsjXuJQhbawdFFZStGEeEhHxRB7tPGGVbVmRmDKNtcrfWktZy9TM
+         cY9yQ1XBlyVV1WOSzinej+PONZkh76Gp2QN/WLEk3SU4FvykVdRdiB/Jua9iWNJUgI
+         Bs352169exinCdcvZytGlD+704QTSSdaPuZmcSyZjlgyz3RHs5NlCfQ0axUPVmPTHw
+         KBAjQlpZvWE3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Du Cheng <ducheng2@gmail.com>,
-        syzbot+5f9392825de654244975@syzkaller.appspotmail.com,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 25/25] cfg80211: remove WARN_ON() in cfg80211_sme_connect
-Date:   Mon, 12 Apr 2021 12:26:30 -0400
-Message-Id: <20210412162630.315526-25-sashal@kernel.org>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 01/23] net: ieee802154: nl-mac: fix check on panid
+Date:   Mon, 12 Apr 2021 12:26:42 -0400
+Message-Id: <20210412162704.315783-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210412162630.315526-1-sashal@kernel.org>
-References: <20210412162630.315526-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,39 +42,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Du Cheng <ducheng2@gmail.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit 1b5ab825d9acc0f27d2f25c6252f3526832a9626 ]
+[ Upstream commit 6f7f657f24405f426212c09260bf7fe8a52cef33 ]
 
-A WARN_ON(wdev->conn) would trigger in cfg80211_sme_connect(), if multiple
-send_msg(NL80211_CMD_CONNECT) system calls are made from the userland, which
-should be anticipated and handled by the wireless driver. Remove this WARN_ON()
-to prevent kernel panic if kernel is configured to "panic_on_warn".
+This patch fixes a null pointer derefence for panid handle by move the
+check for the netlink variable directly before accessing them.
 
-Bug reported by syzbot.
-
-Reported-by: syzbot+5f9392825de654244975@syzkaller.appspotmail.com
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
-Link: https://lore.kernel.org/r/20210407162756.6101-1-ducheng2@gmail.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20210228151817.95700-4-aahringo@redhat.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/sme.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ieee802154/nl-mac.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/wireless/sme.c b/net/wireless/sme.c
-index 8344153800e2..c9158360154a 100644
---- a/net/wireless/sme.c
-+++ b/net/wireless/sme.c
-@@ -530,7 +530,7 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
- 		cfg80211_sme_free(wdev);
- 	}
+diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
+index d3cbb3258718..c0930b9fe848 100644
+--- a/net/ieee802154/nl-mac.c
++++ b/net/ieee802154/nl-mac.c
+@@ -559,9 +559,7 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
+ 	desc->mode = nla_get_u8(info->attrs[IEEE802154_ATTR_LLSEC_KEY_MODE]);
  
--	if (WARN_ON(wdev->conn))
-+	if (wdev->conn)
- 		return -EINPROGRESS;
+ 	if (desc->mode == IEEE802154_SCF_KEY_IMPLICIT) {
+-		if (!info->attrs[IEEE802154_ATTR_PAN_ID] &&
+-		    !(info->attrs[IEEE802154_ATTR_SHORT_ADDR] ||
+-		      info->attrs[IEEE802154_ATTR_HW_ADDR]))
++		if (!info->attrs[IEEE802154_ATTR_PAN_ID])
+ 			return -EINVAL;
  
- 	wdev->conn = kzalloc(sizeof(*wdev->conn), GFP_KERNEL);
+ 		desc->device_addr.pan_id = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_PAN_ID]);
+@@ -570,6 +568,9 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
+ 			desc->device_addr.mode = IEEE802154_ADDR_SHORT;
+ 			desc->device_addr.short_addr = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_SHORT_ADDR]);
+ 		} else {
++			if (!info->attrs[IEEE802154_ATTR_HW_ADDR])
++				return -EINVAL;
++
+ 			desc->device_addr.mode = IEEE802154_ADDR_LONG;
+ 			desc->device_addr.extended_addr = nla_get_hwaddr(info->attrs[IEEE802154_ATTR_HW_ADDR]);
+ 		}
 -- 
 2.30.2
 
