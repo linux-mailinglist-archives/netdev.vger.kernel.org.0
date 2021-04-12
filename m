@@ -2,123 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D12EE35D17C
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 21:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB48435D1B7
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 22:05:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238816AbhDLTxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 15:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41464 "EHLO
+        id S240409AbhDLUF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 16:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236851AbhDLTxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 15:53:22 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5462C061574
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 12:53:03 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id e14so22235552ejz.11
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 12:53:03 -0700 (PDT)
+        with ESMTP id S237103AbhDLUF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 16:05:26 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51401C061574;
+        Mon, 12 Apr 2021 13:05:08 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id s16-20020a0568301490b02901b83efc84a0so13934950otq.10;
+        Mon, 12 Apr 2021 13:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ytdkbaL73lFIN3mq5XNXeHjVCdg3/x5SiQzakslnlq8=;
-        b=uetVgCoE+DgHhYwixTxmRwHyfXkqF6ZPzX7wrPfKSTH8tsJ0y5mGy7srKwa447gLns
-         4MujFavn3GK9g1vnZ/5nOQ2yr1vpawjmIGNnX9en2UJovArhVvrGE4P0KFCpLkMQLFug
-         J2qvBoo5Bpxo/VeaivJRdrZY2N0hF1K3rQvjWG7R+Rt7R53EhlCfhx671LudopAhenkC
-         Sxv5jIYghdlBL1xjnYiubtVP6a1BB1x+LgQG8dyl3d5miMEISIfLPR0KhGMkO1937w0/
-         X32v8e63d3Ds1Rs2SfEV9pIYaFGiS3Ue2IjMzcJcfGo8J9KlCxNbjXrJ/3AFlp7YRQW8
-         Uc6w==
+        h=sender:subject:to:cc:references:from:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ozYkzZahxasDu0RA4+Fy0mh6v5SoOyFZLD3eJA9VLk0=;
+        b=pWYnQj1LoCTihTMEFWLBB5lq3oDRUOy60PH60d0mY9fR8Da12WMm0ustgmWk8R7kS1
+         +kDIbG9Iu6EMuhHZMr7aYf1dI0KnyUWN7YIJHakXgLDqksjDP1Vu9OhLLauve0T8YI8M
+         KGwIMyxekni9ZwwPsdRdd7liV0mNkzP2AVw5GMfVYr+AQdQstYsFaLhxHbWVuIfKYWll
+         ZV7UzqCswJZfPUk8DIPjzKg/SYChHcVlBB93D8MpA+v3mnayH/XDoVmaOae5cnf3hM+k
+         BN/9sp/oXNHB+t6hGdFQjys5+1Qb8dwGLDbefknejbBNp7a3X5L5wTxNlicjLEbc1duM
+         7fLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ytdkbaL73lFIN3mq5XNXeHjVCdg3/x5SiQzakslnlq8=;
-        b=qTPr5IupgcYw/aP9TYwylNC4mxK9Z9Ctmfu4pYopWJx+eDtqHboHe7Wkv3N6nvZSoe
-         AlnOvlhqwZWwVAgWGbgzs4Wlpn3Z16q0IR4qiiS1ARvQbJdj0q7YKbhzCgw71cKf7QVC
-         LSFEbmAOFFtUa6TF2qf/FGBnBbDf0DiLkB4wlkFwdm1p2IQo8Xk0xy3HmivlDBdnkMk9
-         sKuERTj9UDngAKYB1XqlKyjkF7rq1LNa6VXmuzaUyQJmaYtFUKbVBD6aJP+mF4IEok+3
-         g9L1A1xEUUZ1QfozkD/1+O6GXQu7c0vAPFlfuplNueoQnhpTjyU7FPC7ENF8ojuBkd8V
-         OiNg==
-X-Gm-Message-State: AOAM533o0LGFEIFBcwrzzEelG/Z+OYeP4cTWCAnMi50jqubn/O6FNbxi
-        Vj0uPlkbAEtXx+GzoOJTcw07mZKGSsv+wA==
-X-Google-Smtp-Source: ABdhPJzTsjA1vdlGfbI0Z6UHzesszEMWZGzrd7E5UYOmV7h1RZD3W/0RjpzlUbnQJbZJAhlJlStdQA==
-X-Received: by 2002:a17:907:2662:: with SMTP id ci2mr1506910ejc.467.1618257182192;
-        Mon, 12 Apr 2021 12:53:02 -0700 (PDT)
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
-        by smtp.gmail.com with ESMTPSA id kj24sm742374ejc.49.2021.04.12.12.53.00
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ozYkzZahxasDu0RA4+Fy0mh6v5SoOyFZLD3eJA9VLk0=;
+        b=lrvx/em07uZpRcccEdPXbkMXTiiMaC6gidmK+icSvx2HHqY6kK7WPiWiltJcynXYA6
+         +F5T2CN1CF3o2OCgtuT4HJveDixJk+1W1Vs+JI5Oagzr1yGS2GUT70fLnxCmRGNrps95
+         rAoyB/pK3kEtbA6dZRA2IbT1RygSt/tJpCTeAGl78JQdXXlqqvbJ/ITP/81D9365bRgi
+         u+5j5PQIUnlLBHEkG9g1co+OmHpCZoyFAqQFA2MyZA3rGBH/n0WGn+L4w4oNVhm/EV8c
+         C5x0B5zGbIOPjtxcj92dsp0TatFFoCCQLjg6jxP37wWKlmF4oVvC24uekRvw5qXaUabK
+         b0+Q==
+X-Gm-Message-State: AOAM5338Lxnwx6HzrkUVUg1kXxJ1xhzvtb2N4yb1BCqAfat8+frrVsDm
+        dRPR0Dix0guXS59csaipz02cD1jAsT4=
+X-Google-Smtp-Source: ABdhPJw8A2g1et1w2obR1QxzG+wfucUIJye4pMzO8/IG20EHTIbzrIZgPUfv0Y6ozQLGVF/zr8OzaA==
+X-Received: by 2002:a9d:7a53:: with SMTP id z19mr1831265otm.40.1618257907168;
+        Mon, 12 Apr 2021 13:05:07 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id t203sm2442572oig.2.2021.04.12.13.05.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Apr 2021 12:53:01 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id j20-20020a05600c1914b029010f31e15a7fso9358237wmq.1
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 12:53:00 -0700 (PDT)
-X-Received: by 2002:a1c:2941:: with SMTP id p62mr680690wmp.120.1618257179874;
- Mon, 12 Apr 2021 12:52:59 -0700 (PDT)
+        Mon, 12 Apr 2021 13:05:06 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Subject: Re: Linux 5.12-rc7
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
+ <20210412051445.GA47322@roeck-us.net>
+ <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
+ <CANn89iK2aUESa6DSG=Y4Y9tPmPW2weE05AVpxnDbqYwQjFM2Vw@mail.gmail.com>
+ <78c858ba-a847-884f-80c3-cb1eb84d4113@roeck-us.net>
+ <CANn89i+wQoaiFEe1Qi1k96d-ACLmAtJJQ36bs5Z5knYO1v+rOg@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
+Message-ID: <ec5a2822-02b8-22e8-b2e2-23a942506a94@roeck-us.net>
+Date:   Mon, 12 Apr 2021 13:05:04 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210412190845.4406-1-andreas.a.roeseler@gmail.com>
- <CA+FuTSdMpMm9nwFP2u7KDeNUfXXfmQBGMmPfE-MBJTrGs-8stA@mail.gmail.com> <f969d15083f8f7b7ba9ef001505ad2e16b0c2fdd.camel@gmail.com>
-In-Reply-To: <f969d15083f8f7b7ba9ef001505ad2e16b0c2fdd.camel@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 12 Apr 2021 15:52:22 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe8at268+yqcxS-srCiMoovYCnBr56o9C52n3HWzkqZhw@mail.gmail.com>
-Message-ID: <CA+FuTSe8at268+yqcxS-srCiMoovYCnBr56o9C52n3HWzkqZhw@mail.gmail.com>
-Subject: Re: [PATCH net-next] icmp: pass RFC 8335 reply messages to ping_rcv
-To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANn89i+wQoaiFEe1Qi1k96d-ACLmAtJJQ36bs5Z5knYO1v+rOg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 3:41 PM Andreas Roeseler
-<andreas.a.roeseler@gmail.com> wrote:
->
-> On Mon, 2021-04-12 at 15:28 -0400, Willem de Bruijn wrote:
-> > On Mon, Apr 12, 2021 at 3:09 PM Andreas Roeseler
-> > <andreas.a.roeseler@gmail.com> wrote:
-> > >
-> > > The current icmp_rcv function drops all unknown ICMP types,
-> > > including
-> > > ICMP_EXT_ECHOREPLY (type 43). In order to parse Extended Echo Reply
-> > > messages, we have
-> > > to pass these packets to the ping_rcv function, which does not do
-> > > any
-> > > other filtering and passes the packet to the designated socket.
-> > >
-> > > Pass incoming RFC 8335 ICMP Extended Echo Reply packets to the
-> > > ping_rcv
-> > > handler instead of discarding the packet.
-> > >
-> > > Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
-> > > ---
-> > >  net/ipv4/icmp.c | 5 +++++
-> > >  1 file changed, 5 insertions(+)
-> > >
-> > > diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-> > > index 76990e13a2f9..8bd988fbcb31 100644
-> > > --- a/net/ipv4/icmp.c
-> > > +++ b/net/ipv4/icmp.c
-> > > @@ -1196,6 +1196,11 @@ int icmp_rcv(struct sk_buff *skb)
-> > >                 goto success_check;
-> > >         }
-> > >
-> > > +       if (icmph->type == ICMP_EXT_ECHOREPLY) {
-> > > +               success = ping_rcv(skb);
-> > > +               goto success_check;
-> > > +       }
-> > > +
-> >
-> > Do you need the same for ICMPV6_EXT_ECHO_REPLY ?
->
-> Yes, but this should be handled in icmpv6_rcv in net/ipv6/icmp.c and
-> we're thinking of including all icmpv6 support for RFC 8335 (replying
-> and parsing replies) in a separate patch.
+On 4/12/21 10:38 AM, Eric Dumazet wrote:
+[ ... ]
 
-Please send them together in the same patchset.
+> Yes, I think this is the real issue here. This smells like some memory
+> corruption.
+> 
+> In my traces, packet is correctly received in AF_PACKET queue.
+> 
+> I have checked the skb is well formed.
+> 
+> But the user space seems to never call poll() and recvmsg() on this
+> af_packet socket.
+> 
 
-Sending ipv4 and ipv6 separately can lead to missing or subtly
-differently implemented features. It's preferable to be able to review
-both at the same time.
+After sprinkling the kernel with debug messages:
+
+424   00:01:33.674181 sendto(6, "E\0\1H\0\0\0\0@\21y\246\0\0\0\0\377\377\377\377\0D\0C\00148\346\1\1\6\0\246\336\333\v\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0RT\0\
+424   00:01:33.693873 close(6)          = 0
+424   00:01:33.694652 fcntl64(5, F_SETFD, FD_CLOEXEC) = 0
+424   00:01:33.695213 clock_gettime64(CLOCK_MONOTONIC, 0x7be18a18) = -1 EFAULT (Bad address)
+424   00:01:33.695889 write(2, "udhcpc: clock_gettime(MONOTONIC) failed\n", 40) = -1 EFAULT (Bad address)
+424   00:01:33.697311 exit_group(1)     = ?
+424   00:01:33.698346 +++ exited with 1 +++
+
+I only see that after adding debug messages in the kernel, so I guess there must be
+a heisenbug somehere.
+
+Anyway, indeed, I see (another kernel debug message):
+
+__do_sys_clock_gettime: Returning -EFAULT on address 0x7bacc9a8
+
+So udhcpc doesn't even try to read the reply because it crashes after sendto()
+when trying to read the current time. Unless I am missing something, that means
+that the problem happens somewhere on the send side.
+
+To make things even more interesting, it looks like the failing system call
+isn't always clock_gettime().
+
+Guenter
