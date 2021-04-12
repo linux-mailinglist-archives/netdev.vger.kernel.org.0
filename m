@@ -2,220 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D321335D232
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 22:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FA035D259
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238758AbhDLUoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 16:44:14 -0400
-Received: from mail-dm6nam10on2139.outbound.protection.outlook.com ([40.107.93.139]:52096
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238563AbhDLUoN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 16:44:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L/yPvKv/dfCLU6xFTOF4wpta+fO0zGfim+WXqkhNDb41/YDKM/BdZxeRQnyfXWcaZE+c3+dAFX5XlnnHzn8NBH7xxOoOUcCMDWlkv+2md8e+PFkrBG2/7EU7dA0CxZ76fOyiK6pG78gbbTsSYI831KRw4pYnHVJyHiCtmcUcjJF75RWE2b+B069hGU0N4BOdc0bAHTuZk5t6hbVVP1qnUKp8BNv0B70BNN9NkoGeBfTm0obZ+HG4TWEH24c5N+CXgu6CUroiCPbS8xMfBpWfr9ISyCZsKxbL6UFB6P/je+NeaQLcYz+vFOV4GChrcxBB3piGHMJvxFFLiZ47DdvHfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=piQ4IcIlv2gdBIcNnc1WphQXH0ptjtRXxTDm3J2WgeM=;
- b=BdH61Y5Ky3VgrXmXBerqCEH4RT8yQiOKj4nT7Df9bE3XCFQklY4i7Fs993G2f/rTRdMgZydglkH6HIqN/hFztjU4jExGxBMogTpuZ+K1bJLo1HxrlVPgDTxfMcep27JXRm6x2sJS2k/1zIvn66vj6G12IV6wI0E0JVJskHXcj9bMl/WGJkFk5ILoIFQzmmeZVEge/2wC9+4XPui9jXZZaxs6rzL6DT64bZOC+5RjIypnFHP39axiUyEqCWae35w+uRZ2v3aZLBAzt1O0bgnItUA9D5OfqMgmKl3RI5JSYh5uE4duuCk07Hmmo+EWY3MVxoMjiL4J5NLbCRMW3TCRDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=piQ4IcIlv2gdBIcNnc1WphQXH0ptjtRXxTDm3J2WgeM=;
- b=g8oac+0Qy2bFa2L0NURMRls4UKD2P/EgXTMAhZ4a81+EG7Qa8RjY+QpUgtVIrMvzyB1OWLZE74AenSfNHkIOXFcV/ATrqIyVJjQF4pBAwIA446DFM6GwlUs39/YHLoqg/Jvgi+r3D9V2/4YPQaZvP0lsWsan32DZX0gOQQ8NeZg=
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- (2603:10b6:302:10::24) by MWHPR21MB0751.namprd21.prod.outlook.com
- (2603:10b6:300:76::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.2; Mon, 12 Apr
- 2021 20:43:53 +0000
-Received: from MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d]) by MW2PR2101MB0892.namprd21.prod.outlook.com
- ([fe80::5548:cbd8:43cd:aa3d%6]) with mapi id 15.20.4065.005; Mon, 12 Apr 2021
- 20:43:53 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Wei Liu <liuwe@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "bernd@petrovitsch.priv.at" <bernd@petrovitsch.priv.at>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-Subject: RE: [PATCH v4 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Topic: [PATCH v4 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Thread-Index: AQHXL8icok+TxRuwHk2RzEnwF60u5qqxWR8A
-Date:   Mon, 12 Apr 2021 20:43:52 +0000
-Message-ID: <MW2PR2101MB08921AE42035E49BABB19C19BF709@MW2PR2101MB0892.namprd21.prod.outlook.com>
-References: <20210412023455.45594-1-decui@microsoft.com>
- <20210412112109.145faac8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210412112109.145faac8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=53b59c0c-60e1-483f-96dd-85bcc846cf2a;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-04-12T20:42:24Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [2601:600:8b00:6b90:6473:731a:ac25:3e78]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fb9e4bff-ee52-4044-12fa-08d8fdf3af2a
-x-ms-traffictypediagnostic: MWHPR21MB0751:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR21MB075106165B1246CBBDE120B8BF709@MWHPR21MB0751.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WCxeCFqfgW8ATnTxOWDHQp2vUdmvyKGVAbpr/4Thf40Os5VPVwVov3vXKEYlkd8AH76CsZMpchhzv9y6/LSqMyvwlDoAhTabUDJT0Wh1MJJffgqa3VnSKC0NODVXan/KA1zZGdY1y87mbruUNsq47WPHONS/Sk4ZfxgNj4cDjfEe074qZHDhLG3UoMn+7QXtYC3nZT818NxzuaUKCFfhkjQOBMAIhY8yWPCWm1RBFkPee4n6i5nCH4YmZoe9IUVN0LI3LDdotq4hfrV+2727SwGhSGnaojwIQ15dPIY3usQsMF18ShyoC4aazRHAa08fIZIrZohSL53HzyIu2AMmy8iMxEGgJh5sOwxN2mofX7MOnUPxxpFNDFPCKnzXrul2mlEhhUssqdATrcBiaXl5CkNgXf+Jmo65wAvef9ZT6fKi9F7mLqnlMkxXAPKNk5plyn3NH4Y3OqUlgLH1r4rI5X6c9XkdqfA86pvOaLyBCVAuS5S1W0qzLk4atRXHUtRpRu2Hf5oA2V3pCJBSGEuEoYbD5vHFQgr5RHEH89Ytil6kT4iBTBkqzTJhxrUGz9pKU0Dmq14Rxsk2x8LEf1xbs9MJag1RcYkdf01CO7IGGsQ=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB0892.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(136003)(396003)(376002)(366004)(47530400004)(10290500003)(7416002)(83380400001)(478600001)(86362001)(8990500004)(7696005)(82950400001)(8676002)(9686003)(55016002)(82960400001)(66476007)(66946007)(54906003)(6506007)(64756008)(316002)(38100700002)(6916009)(66556008)(2906002)(5660300002)(52536014)(33656002)(66446008)(4326008)(186003)(71200400001)(76116006)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?+k+o64vN5/e9fHQ/FJ6qjaSbNH0aYkoXEvaFRF5tQq3otj6nYbldUJqFdCvp?=
- =?us-ascii?Q?DSkcAEgrp9+sCJQXnU9pCPpnHxS660CuyCPj1OQkI6053/yr8C8Yj3CqnQWk?=
- =?us-ascii?Q?FU0LCzca+Bi+5JZQKvGUjuHX2kyU6TZsh0XEHa/T3EPOdr/e9f5d9zUqzllO?=
- =?us-ascii?Q?2J6JrjF0J4h1/RinU3zdLiv2lDTfWSaHHL8ajIKzXXF3DNAX73eFK7tddDoH?=
- =?us-ascii?Q?WdpnqF0xgJjakYdmrIPlArlHGDzzwHa//igjcPxJ08GP/3ifkaLDDpt7xnRW?=
- =?us-ascii?Q?6LkLi3gQZ24FQSLCzvAHoUyQSsCN7Y3zZCmlpZYFVgwgcFBIYNCNQdoXKB3w?=
- =?us-ascii?Q?LuoFXEEUC4S0hu48olTdpnD67DO0OSqRAyLma47UyGq7qugEBtIXlmu/yJfv?=
- =?us-ascii?Q?Ug+R3PaGTFaBkJRz7kSW4TK9F8aa5rvOWg/erzuyPmWxBU+OShFoFi4zfp35?=
- =?us-ascii?Q?jrnX3bJriatQLjXFh13tfPrpO3PTx9rIyFtldVPN0LJaR7Kxs4bqybE+YpyM?=
- =?us-ascii?Q?oK1fx6ijj8bGJMvbmLoe/PSgeV8Ml9tkJCllQsu13BbAdV3cOCsbrEN9hOUt?=
- =?us-ascii?Q?3wShVxGbyG8CBW3gUI1rgCtC0zMOy5sfWyRIhakNhG6s8WLChe6OjBzciAnn?=
- =?us-ascii?Q?K7dNXhQrlqKrpjQTvF0FVQ70lo3L0+vq3GMNwVn24WYoWckS9ZXGkt9eXmrV?=
- =?us-ascii?Q?VStuMuAS76ByqzEVauSYQhTJfL3PX3ARAquPLXdvRhTvtowbQD+4cNfjqgg2?=
- =?us-ascii?Q?JGgg7rx+HCUxFkjMuFzadnDaRzSekIam5kMvzX7xv8C98e9BTE0IfYqlb8B8?=
- =?us-ascii?Q?UUfj9R7vZtcRVJuFO5PjeaDZChakXk+TuWHM4sBMmyheOYMCwgw59aHyxh/i?=
- =?us-ascii?Q?648AgaS3gjvt+Y6THrmeNaDw602PEne0bltg5fLnfdXf1oaMlqRuKUH4xW1g?=
- =?us-ascii?Q?PhzUN/AtsJMXfMbCaqTyNpDVzqi0dkHd1g3dG/VyRbyzaUIDpU8M536ZeG1N?=
- =?us-ascii?Q?JQRzb8C/7l6CceKSTkCUzEnaKFwb69Led3XuqH9j8YdVZ70RZKQ0oGR39L4f?=
- =?us-ascii?Q?8QdYL+vMYz8dqxnVgMNu5VoGN6PC/rOJOMk28RsKxqtcvalnz9P1oQ+tg8ew?=
- =?us-ascii?Q?KWCPyyRBL8FeM4phXS1JscEfB3qafNJfPO3Xfv1mS883TtVmIXefRCap/Z8z?=
- =?us-ascii?Q?l3rUM2mkx8bF0hW7T+RaNbMZ1ik7T3NuD/+vQypvsLgQo3Km2OX7OZcQJsF9?=
- =?us-ascii?Q?ExOg7ZYaWtzR+MHmYdL2KZSCzd+ZNQbpeOnLXmUXpXYnpdKhGKzQeG2oPLnD?=
- =?us-ascii?Q?U99FKGsrZjM5jvTLeL0i+yXY89Un7VmAXzrxz16AZ60HKzqcOeawd0i8wbrN?=
- =?us-ascii?Q?puCBrP7Ni/Z4U+mr8tR2u7ze1UyT?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S239877AbhDLVG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 17:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237301AbhDLVGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 17:06:54 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD74AC061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 14:06:30 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id r22so6323472ljc.5
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 14:06:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=lmGNdZVCHKnCrB24IClMPX3adyoZYXpathY8b+YYjtM=;
+        b=ye4AKZS5Y5qt8BooNKChPJd5rl2NC8U0gKRNJoO8i5NTlDsrQvHUuSUn16QxfazZNY
+         Hwuq5hdmZgacPUsZMjWK8CQlTZr1+vF23tFPTHqSzx1JYDmgqxBqEnb16J3SF23B0h4l
+         qIeyc1Rej+kzlni1ndYfFYX2e3yOm+uPU3rrTaXMS9cpkX12A4uq6dutmRaHtR6xF7R9
+         3NpzC+nsZOqsb0ZwSlgNkVb1ChsLDP654VgKwXaEBSRlKDfStW3VliQFYxEKmjpUTE72
+         sEVG3UT/FkdiQy1plXf9yCSljhCBRJhsWy9Ox5RDPUyR2unnm9zl6R2fpT+X9oakKlSQ
+         l5WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=lmGNdZVCHKnCrB24IClMPX3adyoZYXpathY8b+YYjtM=;
+        b=jZ6HhaewRmN5UrInz4dwDTbAjrXWfDTdFJ+tRxVP72cZLhzJjUWVvx7nbbVhQNmLNx
+         +Lyhhai6OZWoqS4JUk33G4KwGUACR5TBGRxfFZYDoMPWTgsYT6dbpT1QUgYkBKHtclA2
+         yv7vWdKJ+3dYXy/zDor2ESN7opa0Ene7w0l2IVS68OVYBUTCbctPOtBW4Tdqaur3/MWa
+         PNi/AYhUpkOXs6a2OrOccUUigTbL4+wpaoxz9DZ4HBssq5JDSzCWqFwz8d5ZTPMD3dDF
+         NNV3DbTbvuAY1GgNdYbex+2BK1ppdPDEBnzmFaQwwOKncVh2/JQ7yv4vZ00/n+uvtIlp
+         Uo5g==
+X-Gm-Message-State: AOAM533dTRLZ1QChMMC3nnnrD0Y+JSxfhm8DdEy/jxJjMAqg2cuGY0W6
+        aRYfguibl8FfYc4h56jGiDD84g==
+X-Google-Smtp-Source: ABdhPJw5TS01WYJU4kVcs3+bcg5uz2WQeXvmpxD9ydCvA80yFjbnPbgRSHqcU9eSByRJ1PhlntBXkA==
+X-Received: by 2002:a2e:b013:: with SMTP id y19mr15916353ljk.428.1618261588902;
+        Mon, 12 Apr 2021 14:06:28 -0700 (PDT)
+Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
+        by smtp.gmail.com with ESMTPSA id t193sm2604600lff.2.2021.04.12.14.06.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 14:06:28 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Marek Behun <marek.behun@nic.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+In-Reply-To: <20210412143522.zwjsldqpme6wrcat@skbuf>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf> <878s5nllgs.fsf@waldekranz.com> <20210412143522.zwjsldqpme6wrcat@skbuf>
+Date:   Mon, 12 Apr 2021 23:06:27 +0200
+Message-ID: <875z0rkyb0.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB0892.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb9e4bff-ee52-4044-12fa-08d8fdf3af2a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2021 20:43:52.9676
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FG2MkIivJY7EFRiIB3WBNhOyeIz3eBc6gj6sHOQw3hNo15DKfZMsWVVz6htcyfX0s6RLN4ZlTvxvXeeFxmWjdA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0751
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Monday, April 12, 2021 11:21 AM
-> ...=20
-> On Sun, 11 Apr 2021 19:34:55 -0700 Dexuan Cui wrote:
-> > +	for (i =3D 0; i < ANA_INDIRECT_TABLE_SIZE; i++)
-> > +		apc->indir_table[i] =3D i % apc->num_queues;
->=20
-> ethtool_rxfh_indir_default()
+On Mon, Apr 12, 2021 at 17:35, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Apr 12, 2021 at 02:46:11PM +0200, Tobias Waldekranz wrote:
+>> On Sun, Apr 11, 2021 at 21:50, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > On Sun, Apr 11, 2021 at 08:01:35PM +0200, Marek Behun wrote:
+>> >> On Sat, 10 Apr 2021 15:34:46 +0200
+>> >> Ansuel Smith <ansuelsmth@gmail.com> wrote:
+>> >> 
+>> >> > Hi,
+>> >> > this is a respin of the Marek series in hope that this time we can
+>> >> > finally make some progress with dsa supporting multi-cpu port.
+>> >> > 
+>> >> > This implementation is similar to the Marek series but with some tweaks.
+>> >> > This adds support for multiple-cpu port but leave the driver the
+>> >> > decision of the type of logic to use about assigning a CPU port to the
+>> >> > various port. The driver can also provide no preference and the CPU port
+>> >> > is decided using a round-robin way.
+>> >> 
+>> >> In the last couple of months I have been giving some thought to this
+>> >> problem, and came up with one important thing: if there are multiple
+>> >> upstream ports, it would make a lot of sense to dynamically reallocate
+>> >> them to each user port, based on which user port is actually used, and
+>> >> at what speed.
+>> >> 
+>> >> For example on Turris Omnia we have 2 CPU ports and 5 user ports. All
+>> >> ports support at most 1 Gbps. Round-robin would assign:
+>> >>   CPU port 0 - Port 0
+>> >>   CPU port 1 - Port 1
+>> >>   CPU port 0 - Port 2
+>> >>   CPU port 1 - Port 3
+>> >>   CPU port 0 - Port 4
+>> >> 
+>> >> Now suppose that the user plugs ethernet cables only into ports 0 and 2,
+>> >> with 1, 3 and 4 free:
+>> >>   CPU port 0 - Port 0 (plugged)
+>> >>   CPU port 1 - Port 1 (free)
+>> >>   CPU port 0 - Port 2 (plugged)
+>> >>   CPU port 1 - Port 3 (free)
+>> >>   CPU port 0 - Port 4 (free)
+>> >> 
+>> >> We end up in a situation where ports 0 and 2 share 1 Gbps bandwidth to
+>> >> CPU, and the second CPU port is not used at all.
+>> >> 
+>> >> A mechanism for automatic reassignment of CPU ports would be ideal here.
+>> >> 
+>> >> What do you guys think?
+>> >
+>> > The reason why I don't think this is such a great idea is because the
+>> > CPU port assignment is a major reconfiguration step which should at the
+>> > very least be done while the network is down, to avoid races with the
+>> > data path (something which this series does not appear to handle).
+>> > And if you allow the static user-port-to-CPU-port assignment to change
+>> > every time a link goes up/down, I don't think you really want to force
+>> > the network down through the entire switch basically.
+>> >
+>> > So I'd be tempted to say 'tough luck' if all your ports are not up, and
+>> > the ones that are are assigned statically to the same CPU port. It's a
+>> > compromise between flexibility and simplicity, and I would go for
+>> > simplicity here. That's the most you can achieve with static assignment,
+>> > just put the CPU ports in a LAG if you want better dynamic load balancing
+>> > (for details read on below).
+>> 
+>> I agree. Unless you only have a few really wideband flows, a LAG will
+>> typically do a great job with balancing. This will happen without the
+>> user having to do any configuration at all. It would also perform well
+>> in "router-on-a-stick"-setups where the incoming and outgoing port is
+>> the same.
+>> 
+>> ...
+>> 
+>> > But there is something which is even more interesting about Felix with
+>> > the ocelot-8021q tagger. Since Marek posted his RFC and until Ansuel
+>> > posted the follow-up, things have happened, and now both Felix and the
+>> > Marvell driver support LAG offload via the bonding and/or team drivers.
+>> > At least for Felix, when using the ocelot-8021q tagged, it should be
+>> > possible to put the two CPU ports in a hardware LAG, and the two DSA
+>> > masters in a software LAG, and let the bond/team upper of the DSA
+>> > masters be the CPU port.
+>> >
+>> > I would like us to keep the door open for both alternatives, and to have
+>> > a way to switch between static user-to-CPU port assignment, and LAG.
+>> > I think that if there are multiple 'ethernet = ' phandles present in the
+>> > device tree, DSA should populate a list of valid DSA masters, and then
+>> > call into the driver to allow it to select which master it prefers for
+>> > each user port. This is similar to what Ansuel added with 'port_get_preferred_cpu',
+>> > except that I chose "DSA master" and not "CPU port" for a specific reason.
+>> > For LAG, the DSA master would be bond0.
+>> 
+>> I do not see why we would go through the trouble of creating a
+>> user-visible bond/team for this. As you detail below, it would mean
+>> jumping through a lot of hoops. I am not sure there is that much we can
+>> use from those drivers.
+>> 
+>> - We know that the CPU ports are statically up, so there is no "active
+>>   transmit set" to manage, it always consists of all ports.
+>> 
+>> - The LAG members are statically known at boot time via the DT, so we do
+>>   not need (or want, in fact) any management of that from userspace.
+>> 
+>> We could just let the drivers setup the LAG internally, and then do the
+>> load-balancing in dsa_slave_xmit or provide a generic helper that the
+>> taggers could use.
+>
+> It's natural of you to lobby for LAG defined in device tree, since I
+> know you want to cover the problem for DSA links as well, not only for
+> CPU ports. That is about the only merit of this solution, however, and I
+> think we should thoroughly discuss DSA links in the first place, before
+> even claiming that it is even the best solution for them.
 
-Will use ethtool_rxfh_indir_default().
+I am quite sure I never said anything about having to define it in the
+DT. The information ("port x, y and z are connected to the CPU") is
+already there. What more would we need?
 
-> > +	err =3D mana_cfg_vport_steering(apc, rx, true, update_hash, update_ta=
-b);
-> > +	return err;
->=20
-> return mana_...
->=20
-> please fix everywhere.
+> First of all, DSA drivers can now look at a struct net_device *bond when
+> they establish their link aggregation domains. If we have no struct
+> net_device *bond we will have to invent a new and parallel API for LAG
+> on CPU ports and DSA links. If we have to modify DSA anyway, I wonder
+> why we don't strive to converge towards a unified driver API at least.
 
-Will fix this one, and will review if there is any similar issue.
+OK, I was thinking more along the lines of these LAGs being a driver
+internal matter. I.e. when a driver sees two links between two chips, it
+could just setup the LAGs without having to bother the DSA layer at
+all.
 
-> > +	netif_set_real_num_tx_queues(ndev, apc->num_queues);
-> > +
-> > +	err =3D mana_add_rx_queues(apc, ndev);
-> > +	if (err)
-> > +		goto destroy_vport;
-> > +
-> > +	apc->rss_state =3D apc->num_queues > 1 ? TRI_STATE_TRUE :
-> TRI_STATE_FALSE;
-> > +
-> > +	netif_set_real_num_rx_queues(ndev, apc->num_queues);
->=20
-> netif_set_real_num_.. can fail.
+DSA would just have N rx handlers setup, and no matter which the
+incoming master port was used, the same action would be taken (untag and
+mux it to the right slave netdev as usual).
 
-Will fix the error handling.
+> Also, the CPU ports might be statically up, but their corresponding DSA
+> masters may not. You are concentrating only on the switch side, but the
+> DSA master side is what's more finicky. For example, I really don't want
+> to see DSA implement its own xmit policies, that will get old really
+> quick, I really appreciate being able to externalize the TX hashing to a
+> separate driver, for which the user already has enough knobs to
+> customize, than to shove that in DT.
 
-> > +	rtnl_lock();
-> > +
-> > +	netdev_lockdep_set_classes(ndev);
-> > +
-> > +	ndev->hw_features =3D NETIF_F_SG | NETIF_F_IP_CSUM |
-> NETIF_F_IPV6_CSUM;
-> > +	ndev->hw_features |=3D NETIF_F_RXCSUM;
-> > +	ndev->hw_features |=3D NETIF_F_TSO | NETIF_F_TSO6;
-> > +	ndev->hw_features |=3D NETIF_F_RXHASH;
-> > +	ndev->features =3D ndev->hw_features;
-> > +	ndev->vlan_features =3D 0;
-> > +
-> > +	err =3D register_netdevice(ndev);
-> > +	if (err) {
-> > +		netdev_err(ndev, "Unable to register netdev.\n");
-> > +		goto destroy_vport;
-> > +	}
-> > +
-> > +	rtnl_unlock();
-> > +
-> > +	return 0;
-> > +destroy_vport:
-> > +	rtnl_unlock();
->=20
-> Why do you take rtnl_lock() explicitly around this code?
+Yeah if we need customizable hashing then I agree, we should go through
+an existing LAG driver.
 
-It looks like there is no good reason, and I guess we just copied
-the code from netvsc_probe(), where the RTNL lock is indeed
-explicitly needed.
+> Defining a LAG between the CPU ports in the device tree also goes
+> against the idea that we should not define policy in the kernel.
+> For that matter, I slept on the overall design and I think that if we
+> were really purists, we should even drop the whole idea with 'round
+> robin by default' in the static user-to-CPU port assignment scenario,
+> and let user space manage _everything_. Meaning that even if there are
+> multiple 'ethernet = ' phandles in the device tree, DSA will consider
+> them only to the point of registering CPU ports for all of them. But we
+> will keep the same dsa_tree_setup_default_cpu -> dsa_tree_find_first_cpu
+> logic, and there will be only one CPU port / DSA master until user space
+> requests otherwise. In this model, the crucial aspect of DSA support for
+> multiple CPU ports will be the ability to have that netlink reconfiguration
+> while the network is down (or has not even been set up yet). You can see
+> how, in this world view, your proposal to define a LAG in the device
+> tree does not smell great.
 
-Will change to directly use register_netdev(), which gets and
-release the RTNL lock automatically.
+Again, I am suggesting no such thing.
 
-> > +static int mana_set_channels(struct net_device *ndev,
-> > +			     struct ethtool_channels *channels)
-> > +{
-> > +	struct ana_port_context *apc =3D netdev_priv(ndev);
-> > +	unsigned int new_count;
-> > +	unsigned int old_count;
-> > +	int err, err2;
-> > +
-> > +	new_count =3D channels->combined_count;
-> > +	old_count =3D apc->num_queues;
-> > +
-> > +	if (new_count < 1 || new_count > apc->max_queues ||
-> > +	    channels->rx_count || channels->tx_count ||
-> channels->other_count)
->=20
-> All these checks should be done by the core already.
->=20
-> > +		return -EINVAL;
-> > +
-> > +	if (new_count =3D=3D old_count)
-> > +		return 0;
->=20
-> And so is this one.
+> Of course, I will let Andrew be the supreme judge when it comes to
+> system design. Simplicity done right is an acquired taste, and I'm
+> absolutely open to admit that I'm not quite there yet.
+>
+>
+>
+> As for LAG on DSA links, yes that is going to be interesting. I see two
+> approaches:
+>
+> - Similar to how mv88e6xxx just decides all by itself to use DSA instead
+>   of EDSA tags on the DSA links, maybe there simply are some things that
+>   the software data path and control path just don't need to care about.
+>   So I wonder, if there isn't any known case in which it wouldn't 'just
+>   work' for mv88e6xxx to detect that it has multiple routing ports
+>   towards the same destination switch, to just go ahead and create a LAG
+>   between them, no DSA involvement at all.
 
-Will change the code to avoid unnecessary checking.
+Right, this is similar to how I saw the CPU ports being managed as well.
 
-Thanks,
-Dexuan
+> - I come from a background where I am working with boards with disjoint
+>   DSA trees:
+>
+>       +---------------------------------------------------------------+
+>       | LS1028A                                                       |
+>       |               +------------------------------+                |
+>       |               |      DSA master for Felix    |                |
+>       |               |(internal ENETC port 2: eno2))|                |
+>       |  +------------+------------------------------+-------------+  |
+>       |  | Felix embedded L2 switch                                |  |
+>       |  |                                                         |  |
+>       |  | +--------------+   +--------------+   +--------------+  |  |
+>       |  | |DSA master for|   |DSA master for|   |DSA master for|  |  |
+>       |  | |  SJA1105 1   |   |  SJA1105 2   |   |  SJA1105 3   |  |  |
+>       |  | |   (swp1)     |   |   (swp2)     |   |   (swp3)     |  |  |
+>       +--+-+--------------+---+--------------+---+--------------+--+--+
+>
+> +-----------------------+ +-----------------------+ +-----------------------+
+> |   SJA1105 switch 1    | |   SJA1105 switch 2    | |   SJA1105 switch 3    |
+> +-----+-----+-----+-----+ +-----+-----+-----+-----+ +-----+-----+-----+-----+
+> |sw1p0|sw1p1|sw1p2|sw1p3| |sw2p0|sw2p1|sw2p2|sw2p3| |sw3p0|sw3p1|sw3p2|sw3p3|
+> +-----+-----+-----+-----+ +-----+-----+-----+-----+ +-----+-----+-----+-----+
+>
+> You may find this setup to be a little bit odd, but the network
+> interfaces in this system are:
+>
+> eno2, swp1, swp2, swp3, sw1p0-sw1p3, sw2p0-sw2p3, sw3p0-sw3p3.
+>
+> This is because the Felix switch has a dsa,member property of <0 0>,
+> SJA1105 switch 1 is <1 0>, SJA1105 switch 2 is <2 0> and SJA1105 switch
+> 3 is <3 0>. So each switch is the only switch within its tree. And that
+> makes Felix the DSA master for 3 DSA switches, while being a DSA switch
+> itself. This was done this way so that tag stacking 'just works': every
+> packet is decapsulated of the Felix tag on eno2, then of the SJA1105 tag
+> on swp1/swp2/swp3.
+>
+> This setup gives me a lot of visibility into Ethernet port counters on
+> all ports. Because swp1, swp2, swp3, because are DSA masters, I see not
+> only their port counters, but also the port counters of the SJA1105 CPU
+> ports. Great.
+>
+> But with the ocelot-8021q tagger, imagine a scenario where I make Felix
+> grok the DSA headers added by SJA1105 (which are also VLAN-based). Then
+> tag stacking would no longer be necessary. I could convert the swp1,
+> swp2, swp3 ports from being DSA masters into being out-facing DSA links,
+> and their net devices would disappear. But then I would lose all
+> visibility into them! And the strange part in my view is that this is a
+> 100% software implementation-defined layout: if they're DSA masters
+> they're net devices, if they're DSA links they aren't, when in fact it
+> is the same hardware just configured differently.
+>
+> So my idea here is maybe we could unify DSA links and disjoint DSA trees
+> by exposing net devices for the out-facing DSA links, just for the sake
+> of:
+> - port counters both ways
+
+We have previously experimented with netdevs for dsa (and cpu) ports,
+just to get to the counters. It seems like something that might be
+better suited for devlink though. That way, regular users would not have
+to be confused by netdevs that they can do very little with, but if you
+know about the fabric underneath you can still get to them easily.
+
+> - having a hook point for LAGs
+>
+> Now don't get me wrong, there are downsides too. For example, the net
+> device would not be useful for the actual data path. DSA will not use it
+> for packet processing coming from / going towards the leaves. You _could_
+> still xmit packets towards an out-facing DSA link, and maybe it would
+> even be less useless than xmitting them through a DSA master: if, when
+> you send a packet through the DSA master, that will be untagged, the
+> same isn't necessarily the case with a DSA link. You can maybe inject a
+> FORWARD packet encapsulated in a FROM_CPU tag, and the semantics would
+> be just 'do your thing'. I don't know.
+
+There could be devices like that I suppose, mv88e6xxx is not one of them
+though. There is no nesting of DSA tags (unless you set them up as
+disjoint trees) AFAIK.
+
+> So I would prefer exhausting the first approach, with private LAG setup
+> on DSA links done in the driver, before even considering the second one.
+
+What is the second approach?
