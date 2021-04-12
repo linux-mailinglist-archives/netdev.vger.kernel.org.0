@@ -2,116 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17EEF35C959
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 17:02:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 018CE35C96F
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 17:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242651AbhDLPCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 11:02:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36696 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241539AbhDLPCN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 11:02:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AE7CF61287;
-        Mon, 12 Apr 2021 15:01:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618239715;
-        bh=5UW8HbUYX4iQh5QgJmFd1pvxwupAcZPnuAATxqfNAFU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OfcOrgnTKmxGMezf+WFS5sQyG4IWu3kkwTPNpUv54N8/2HZ+HATh/SoOPe6mh2Vg4
-         U1y2TQ7PtukxURrHYMOuuIY5fZTYiMGJ3CK78/h/ZAwGzjuhYcYJtlIyArICPmsGWF
-         a4JisaiRtlT7FQThYA8B/mRKAscgCvD3HhhSOXku+1bau/Pib0xTPczbibkV9BIHBa
-         TKSh8Vbqvmf0s0aP2FmeuYY6ZyY2V8XezUqSC0yqifBEOY4+VZ9yqYTvZpOyAv+mLT
-         /cymuEDEr0KugPWh7HGjA1RE2DgmMbc88OROI/wm+6XepcVb0l/d3U7kfMv4Dmk8s7
-         LjXDJqRibTgQw==
-Received: by pali.im (Postfix)
-        id 12E71687; Mon, 12 Apr 2021 17:01:52 +0200 (CEST)
-Date:   Mon, 12 Apr 2021 17:01:52 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        id S242683AbhDLPJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 11:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242650AbhDLPJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 11:09:06 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78061C061574;
+        Mon, 12 Apr 2021 08:08:48 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id l76so9606478pga.6;
+        Mon, 12 Apr 2021 08:08:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=7c5hbFDJuzW8IbaNLbCCwK5N29exubinPApJnJHDfR0=;
+        b=ITLLe2DYMYPMeZVGTkOR3bOoGfykAoYj/bQy2kCNye+lBUJ4XaLgFBgV6f2/yXfdd7
+         oFAVX0mQPwwymASavuDGXYqCdTXy47ZVJ/xlr9FH+qYoJ0kyvIHWC7SglHHDqrO50knq
+         erVGGF9AYHklUu3pGvXTBSIB1dK/wjQF3ksPtYKoYc3UTmIXSSS5oIwQ8EYvT/rFv2Qw
+         B9VpY9yz26CcM80Jg4PDwvFix5CNjmrPsjA+feH4HFT9yDVUE0HBsePWEfP2D1E6A0BC
+         k9hnIqKMl0A/k7zYjwFsYK0ENESXfAjEks0+fqqa79661PTy2kc8s1fOcLNn/eQCZcR7
+         09Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=7c5hbFDJuzW8IbaNLbCCwK5N29exubinPApJnJHDfR0=;
+        b=hGpyIUrv/oH2nPeRq8EExspcIGJ2/gpDgR5extAG9pFMMdqkfeBP6ryoxCjpKN/uAX
+         TUFnwvEcXqWkWJOBju+Qj6c+4cNOXX3em8W4A5XPkZI6pZtqIkKnu/Re/eqV/7qHAGE0
+         XAa+XWbno47nsLJ9ncso0QlSk9KJQjIzQtlgUC+5MzDwlJPr7//AQfIepl8T+bOasgRA
+         IGyb3HuXcFYlpIPhlAbkZdcAbvbTwbdUbhVlDKIozzoQ5s129Wbz73HoD+LZtQhcspFQ
+         IstokF54F90OEuUch9ynJi0+PREDM1/Bp0njtNNoBJiDDSfuw7BCXD9NP/oW9HtCuIWJ
+         FeNw==
+X-Gm-Message-State: AOAM532QQJoca1jA5OwRPt7LvgupfsAaG+uBOpi0WnMpDB5MTHMAske7
+        suu6fwC7Nn4iLn6QAcalNBmF+2B+PsjW4+kX
+X-Google-Smtp-Source: ABdhPJz7KRLv1g9bRdFHzT6lp7tQwKP2uj+NoPFEntDd1eukLWRlre8tS73iPaLZc+mPS/pqqEeSxQ==
+X-Received: by 2002:aa7:91d1:0:b029:1fe:2a02:73b9 with SMTP id z17-20020aa791d10000b02901fe2a0273b9mr25310238pfa.2.1618240125830;
+        Mon, 12 Apr 2021 08:08:45 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id k13sm8406233pji.14.2021.04.12.08.08.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 08:08:45 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: marvell: fix detection of PHY on Topaz switches
-Message-ID: <20210412150152.pbz5zt7mu3aefbrx@pali>
-References: <20210412121430.20898-1-pali@kernel.org>
- <YHRH2zWsYkv/yjYz@lunn.ch>
- <20210412133447.fyqkavrs5r5wbino@pali>
- <YHRcu+dNKE7xC8EG@lunn.ch>
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Subject: Re: [RFC v4 net-next 1/4] net: phy: add MediaTek PHY driver
+Date:   Mon, 12 Apr 2021 23:08:36 +0800
+Message-Id: <20210412150836.929610-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210412070449.Horde.wg9CWXW8V9o0P-heKYtQpVh@www.vdorst.com>
+References: <20210412034237.2473017-1-dqfext@gmail.com> <20210412034237.2473017-2-dqfext@gmail.com> <20210412070449.Horde.wg9CWXW8V9o0P-heKYtQpVh@www.vdorst.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YHRcu+dNKE7xC8EG@lunn.ch>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday 12 April 2021 16:44:11 Andrew Lunn wrote:
-> On Mon, Apr 12, 2021 at 03:34:47PM +0200, Pali RohÃ¡r wrote:
-> > On Monday 12 April 2021 15:15:07 Andrew Lunn wrote:
-> > > > +static u16 mv88e6xxx_physid_for_family(enum mv88e6xxx_family family);
-> > > > +
-> > > 
-> > > No forward declaration please. Move the code around. It is often best
-> > > to do that in a patch which just moves code, no other changes. It
-> > > makes it easier to review.
-> > 
-> > Avoiding forward declaration would mean to move about half of source
-> > code. mv88e6xxx_physid_for_family depends on mv88e6xxx_table which
-> > depends on all _ops structures which depends on all lot of other
-> > functions.
+On Mon, Apr 12, 2021 at 07:04:49AM +0000, René van Dorst wrote:
+> Hi Qingfang,
+> > +static void mtk_phy_config_init(struct phy_device *phydev)
+> > +{
+> > +	/* Disable EEE */
+> > +	phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, 0);
 > 
-> So this is basically what you are trying to do:
+> For my EEE patch I changed this line to:
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 903d619e08ed..ef4dbcb052b7 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -3026,6 +3026,18 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
->         return err;
->  }
->  
-> +static const enum mv88e6xxx_model family_model_table[] = {
-> +       [MV88E6XXX_FAMILY_6095] = MV88E6XXX_PORT_SWITCH_ID_PROD_6095,
-> +       [MV88E6XXX_FAMILY_6097] = MV88E6XXX_PORT_SWITCH_ID_PROD_6097,
-> +       [MV88E6XXX_FAMILY_6185] = MV88E6XXX_PORT_SWITCH_ID_PROD_6185,
-> +       [MV88E6XXX_FAMILY_6250] = MV88E6XXX_PORT_SWITCH_ID_PROD_6250,
-> +       [MV88E6XXX_FAMILY_6320] = MV88E6XXX_PORT_SWITCH_ID_PROD_6320,
-> +       [MV88E6XXX_FAMILY_6341] = MV88E6XXX_PORT_SWITCH_ID_PROD_6341,
-> +       [MV88E6XXX_FAMILY_6351] = MV88E6XXX_PORT_SWITCH_ID_PROD_6351,
-> +       [MV88E6XXX_FAMILY_6352] = MV88E6XXX_PORT_SWITCH_ID_PROD_6352,
-> +       [MV88E6XXX_FAMILY_6390] = MV88E6XXX_PORT_SWITCH_ID_PROD_6390,
-> +};
-
-Ok, no problem. I can change it in this way. I just thought that if
-prod_id is already defined for every model in mv88e6xxx_table[] table I
-could reuse it, instead of duplicating it...
-
-Anyway, now I'm looking at phy/marvell.c driver again and it supports
-only 88E6341 and 88E6390 families from whole 88E63xxx range.
-
-So do we need to define for now table for more than
-MV88E6XXX_FAMILY_6341 and MV88E6XXX_FAMILY_6390 entries?
-
-> +
->  static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
->  {
->         struct mv88e6xxx_mdio_bus *mdio_bus = bus->priv;
-> @@ -3056,7 +3068,7 @@ static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
->                          * a PHY,
->                          */
->                         if (!(val & 0x3f0))
-> -                               val |= MV88E6XXX_PORT_SWITCH_ID_PROD_6390 >> 4;
-> +                               val |= family_model_table[chip->info->family] >> 4;
->         }
+> genphy_config_eee_advert(phydev);
 > 
-> and it compiles. No forward declarations needed. It is missing all the
-> error checking etc, but i don't see why that should change the
-> dependencies.
+> So PHY EEE part is setup properly at boot, instead enable it manual via
+> ethtool.
+> This function also takes the DTS parameters "eee-broken-xxxx" in to account
+> while
+i> setting-up the PHY.
+
+Thanks, I'm now testing with it.
+
 > 
-> 	Andrew
+> > +
+> > +	/* Enable HW auto downshift */
+> > +	phy_modify_paged(phydev, MTK_PHY_PAGE_EXTENDED, 0x14, 0, BIT(4));
