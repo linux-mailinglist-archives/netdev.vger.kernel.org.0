@@ -2,86 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44B8735C4FD
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 13:23:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7C135C579
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 13:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240354AbhDLLXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 07:23:39 -0400
-Received: from mail-yb1-f177.google.com ([209.85.219.177]:44892 "EHLO
-        mail-yb1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240345AbhDLLXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 07:23:36 -0400
-Received: by mail-yb1-f177.google.com with SMTP id l14so8404442ybf.11;
-        Mon, 12 Apr 2021 04:23:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OAZeWmxZnRvBIOsIyb+Toh3owJVdNZMmbeBXAmpmoTg=;
-        b=njRqFYTFmdoeHuvUcbpyday07+mgqdbsiialNpgep8z8XzI8fYpG47EL8HJUQp9YeL
-         EnhDsYbgA550h3u0M7eccgksbmpp6cobMXx4Pwme5PNaSwYq6TQCipBniJTOAHvejF5e
-         0wkv/5iCGXacoWw2KT/1+v3Vjoi/cRsP4g0sRl2gE/mJoqL7pMLTEiy4mbRMCl3sbD/B
-         OHAdlSt03zgUeUZxJj4upxizo9teDA9S24y2J0mf+Jjw30M+M5vwHp3h+iygOGVnES05
-         1BeIbcE5mGfDWGPfzm8tqOSXtcNhgXGQtqZO8QaB4troHI8hvJQj697QhmFMli1LRY+V
-         2ZIw==
-X-Gm-Message-State: AOAM530l5LkJ7CGEyOsBaSfywhmu3cisn4H3nfYHIRuP+5qTHxN8x1Em
-        ycfT5VTut6D6zkhLZfT7Uq0zO/u6kYHeSYBdwV4=
-X-Google-Smtp-Source: ABdhPJwovRRPheJbvtDIuRSwXz1a4oqkVzcTXBDdYe2mdhIrszZieWLwk89XRYNJ9IaYCAKa61T3VFtjZehgxrdQ6bw=
-X-Received: by 2002:a25:cc84:: with SMTP id l126mr14879683ybf.487.1618226597994;
- Mon, 12 Apr 2021 04:23:17 -0700 (PDT)
+        id S240471AbhDLLnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 07:43:11 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:47974 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239624AbhDLLnK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 07:43:10 -0400
+Received: from us.es (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 71F6563E49;
+        Mon, 12 Apr 2021 13:42:27 +0200 (CEST)
+Date:   Mon, 12 Apr 2021 13:42:49 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     netdev@vger.kernel.org, Oz Shlomo <ozsh@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH net-next 1/1] netfilter: flowtable: Make sure dst_cache
+ is valid before using it
+Message-ID: <20210412114249.GA1423@salvia>
+References: <20210411081334.1994938-1-roid@nvidia.com>
+ <20210411105826.GB21185@salvia>
+ <3c0b0f60-b7e1-eea3-383b-aba64df8e68e@nvidia.com>
 MIME-Version: 1.0
-References: <20210410095948.233305-1-mailhol.vincent@wanadoo.fr> <20210412092001.7vp7dtbvsb6bgh2t@pengutronix.de>
-In-Reply-To: <20210412092001.7vp7dtbvsb6bgh2t@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Mon, 12 Apr 2021 20:23:06 +0900
-Message-ID: <CAMZ6RqLgLzMymHus5O7qcL_q=AwywXQusNb51CNL1TtHZ0XwcQ@mail.gmail.com>
-Subject: Re: [PATCH v15 0/3] Introducing ETAS ES58X CAN USB interfaces
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3c0b0f60-b7e1-eea3-383b-aba64df8e68e@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Mon, Apr 12, 2021 at 11:26:35AM +0300, Roi Dayan wrote:
+> 
+> 
+> On 2021-04-11 1:58 PM, Pablo Neira Ayuso wrote:
+> > Hi Roi,
+> > 
+> > On Sun, Apr 11, 2021 at 11:13:34AM +0300, Roi Dayan wrote:
+> > > It could be dst_cache was not set so check it's not null before using
+> > > it.
+> > 
+> > Could you give a try to this fix?
+> > 
+> > net/sched/act_ct.c leaves the xmit_type as FLOW_OFFLOAD_XMIT_UNSPEC
+> > since it does not cache a route.
+> > 
+> > Thanks.
+> > 
+> 
+> what do you mean? FLOW_OFFLOAD_XMIT_UNSPEC doesn't exists so default 0
+> is set.
+> 
+> do you suggest adding that enum option as 0?
 
-On Mon. 12 Apr 2021 at 18:20, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 10.04.2021 18:59:45, Vincent Mailhol wrote:
-> > Here comes the 15th iteration of the patch. This new version addresses
-> > the comments received from Marc (thanks again for the review!) and
-> > simplify the device probing by using .driver_info.
->
-> diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-> index 35ba8af89b2e..7222b3b6ca46 100644
-> --- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-> +++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-> @@ -1096,7 +1096,7 @@ static void es58x_increment_rx_errors(struct es58x_device *es58x_dev)
->   *     be aligned.
->   *
->   * Sends the URB command to the device specific function. Manages the
-> - * errors throwed back by those functions.
-> + * errors thrown back by those functions.
->   */
->  static void es58x_handle_urb_cmd(struct es58x_device *es58x_dev,
->                                  const union es58x_urb_cmd *urb_cmd)
->
-> I have applied to linux-can-next/testing with the above spell fix.
-> Thanks for the steady work on this and all the other features.
+Yes. This could be FLOW_OFFLOAD_XMIT_TC instead if you prefer.
 
-Thanks to you too! This, together with the other features is my
-very first open source contribution. I learned a lot from you,
-Oliver and the others from the mailing list. It was a nice
-experience.
+enum flow_offload_xmit_type {
+        FLOW_OFFLOAD_XMIT_TC        = 0,
+        FLOW_OFFLOAD_XMIT_NEIGH,
+        FLOW_OFFLOAD_XMIT_XFRM,
+        FLOW_OFFLOAD_XMIT_DIRECT,
+};
 
-That said, you will eventually hear from me again on the TDC
-netlink interface (and probably other topics as well).
-
-
-Yours sincerely,
-Vincent
+so there is no need to check for no route in the
+FLOW_OFFLOAD_XMIT_NEIGH case (it's assumed this type always has a
+route).
