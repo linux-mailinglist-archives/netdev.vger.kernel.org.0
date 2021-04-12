@@ -2,101 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB4635CEDC
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D14735CEDD
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244785AbhDLQvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S245114AbhDLQvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245760AbhDLQl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 12:41:56 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7683EC06123B;
-        Mon, 12 Apr 2021 09:32:27 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id s14so2080895pjl.5;
-        Mon, 12 Apr 2021 09:32:27 -0700 (PDT)
+        with ESMTP id S245348AbhDLQmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 12:42:47 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A7AC0611CB
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 09:33:31 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id k23-20020a17090a5917b02901043e35ad4aso9131653pji.3
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 09:33:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8z+/ms9HXXuc1u59TPf3kgky3kvFQaPstoWisAaXMAg=;
-        b=GheD5xk6FCX0Y3/HoHa1l6VnTCdijSOTbozl3pVjfAakw4z8Yx4yOk5DkGxIGMAsns
-         sqCXNRWBgE/wFdwUAstG39HV71yl0aiKw/UfJR98CnqAQYvrUqY2b4V26E8w7xu+B3os
-         TN0R0pPyWAo9NwepW36QyckWHZokzXBsmX6kVl8VCxVviPy0ZksmtWYp0F/YNnpMaykK
-         nkEU2ITHRX5rt9tdCGEanffiie6HJzBxWPTzC3nvx7wmpfZxR2Ydpa05LMtXDHyE+sjZ
-         eqE94OaG+Y6bnoF8ee1Pleh1cqlJPoiWaWlxCfabUsqLQRT1C9vLeEX9LqQ7eZHZTfNz
-         pO1A==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=TtR92kyJgTTT9P3PMJ+Rw3DFoXIsxndAJjUl76F0iNs=;
+        b=Mv0HXI7izsrGpms77gHuuZsj6HWfRIw4oiD6ga8qIkGaoEOwhKpn0xFxnBbKxC8A5V
+         ekz1xn/bcu6Yf+7PJ/0bfR5AVwxnJWN7WeMTZOuAs5TKyuOvlLY5Y+LAV4Wi0prbBVoI
+         RhtGC0jYMXnSfr73CSqfvHTdVOxJ75bccwy/7Sm/7fHqXCj3wxn4T/ZRBawHQ5NJ88q6
+         YSL+VyG5au5fhNz2NNFIinoClRCKCgT4yUKgYRk3suFWDHune5Hp+4LiQjQMDGWrkOBH
+         /HDDMKgKTbRb1x8Y+8Ygmgegj68sETIctV7Dfdmo9XRZiAK5aVpsQZWNkP94geI0BfXO
+         oinA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8z+/ms9HXXuc1u59TPf3kgky3kvFQaPstoWisAaXMAg=;
-        b=DMJ32vlGWkIsNEF7S/+1wVricCNtDb9qvi4Dmt2lZlko1G2qUL+jeGpKNvL0zP/xTs
-         xhl+igUsHjmjZIpCOG5bDe4p8TW5gREc+iehoykDchMagUeUFFKRgz+iyATOLtugeTCT
-         RQgPg4IjVrVIZPB4k3dttfvm7h7nkREjDytK/Vf4KcQAlkPPhI4Mrecq6oOpPGpme29z
-         Isznf4RVR3DqEGB58hx4ln0sdeX+IODYhjAhQth9wglMbQRqpzIxh0UZ3jSXOP5hzQk4
-         Jzl4GxyyFDLgTBpUx2Znyxzvf9b+TvbIvlwTqAI69Z7m1UGZPab+h7xt0PC4TpKy36+b
-         Xuqg==
-X-Gm-Message-State: AOAM530wE0f9PdWCwU6sSbZNYRoi29SBfPn8UgIewkCA7ptC6N5IdVy0
-        r2dRLOAtW8fiC2Mc6YFJz3c=
-X-Google-Smtp-Source: ABdhPJwhcgI9IeGvhjgoT4tAqP4AX2pjomksj/ek+5xymVy4vfiUsqxODG3qwUQsULA7bFo5zMt0aQ==
-X-Received: by 2002:a17:90a:8815:: with SMTP id s21mr29369762pjn.200.1618245146911;
-        Mon, 12 Apr 2021 09:32:26 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id e11sm9725487pfv.48.2021.04.12.09.32.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 09:32:26 -0700 (PDT)
-Date:   Mon, 12 Apr 2021 19:32:11 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Marek Behun <marek.behun@nic.cz>,
-        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        zhang kai <zhangkaiheb@126.com>,
-        Weilong Chen <chenweilong@huawei.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-Message-ID: <20210412163211.jrqtwwz2f7ftyli6@skbuf>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com>
- <20210411200135.35fb5985@thinkpad>
- <20210411185017.3xf7kxzzq2vefpwu@skbuf>
- <20210412150045.929508-1-dqfext@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=TtR92kyJgTTT9P3PMJ+Rw3DFoXIsxndAJjUl76F0iNs=;
+        b=qXS96AhaWG3NXLpb+1WG/YUsrlgmzHygoWwFbXnH2g3NhfoXS/Svh07f/0gD4VNpEr
+         liNe8kg5JQDx9vbjDjwbyy6E7MxPOY5Ob2SckMeeQicO7UOmljk98Oor1XOJgNbDMm2L
+         mCvC03l4CXfQ5mBifaWJQd3vn/ufRTbMcbIdcNScFboY6TFK7TGOTlrX91madmXqTun9
+         lx6kyHkZh46ZCtnr2liZe9Ijhjdj097O0csSENDjrIRdFfogNmFJ2xp4JoDJIBwtwPud
+         gGxb0KAOAlMU557h3khFJyMQjusPS2si3TtKhYCOOrJdOKsWzjEsLPksZAAiqYBHFVYH
+         jPpg==
+X-Gm-Message-State: AOAM5310/Jsis1xwU510ijYP96/tQqZH23RlW4+g7EmY4jJM9HLez8kr
+        oVVDXevfu62p1EMz/m3Ey9Xu3KeUfJEthQ==
+X-Google-Smtp-Source: ABdhPJzK4K39EQlJTgOGUL2iYzhLrLsT92+Nl2hcP15Y+i+cAyN0eQvMfy7NFRm6aaKjs/3pRCGTyg==
+X-Received: by 2002:a17:902:bc4a:b029:e9:8ae7:4091 with SMTP id t10-20020a170902bc4ab02900e98ae74091mr22949724plz.20.1618245210775;
+        Mon, 12 Apr 2021 09:33:30 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id c21sm12309450pgl.71.2021.04.12.09.33.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Apr 2021 09:33:30 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/8] ionic: hwstamp tweaks
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        drivers@pensando.io
+References: <20210407232001.16670-1-snelson@pensando.io>
+ <20210411153808.GB5719@hoboy.vegasvil.org>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <5af0c4f1-82d6-a349-616d-0e92e10dd114@pensando.io>
+Date:   Mon, 12 Apr 2021 09:33:29 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210412150045.929508-1-dqfext@gmail.com>
+In-Reply-To: <20210411153808.GB5719@hoboy.vegasvil.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 11:00:45PM +0800, DENG Qingfang wrote:
-> On Sun, Apr 11, 2021 at 09:50:17PM +0300, Vladimir Oltean wrote:
-> >
-> > So I'd be tempted to say 'tough luck' if all your ports are not up, and
-> > the ones that are are assigned statically to the same CPU port. It's a
-> > compromise between flexibility and simplicity, and I would go for
-> > simplicity here. That's the most you can achieve with static assignment,
-> > just put the CPU ports in a LAG if you want better dynamic load balancing
-> > (for details read on below).
-> >
+On 4/11/21 8:38 AM, Richard Cochran wrote:
+> On Wed, Apr 07, 2021 at 04:19:53PM -0700, Shannon Nelson wrote:
+>> A few little changes after review comments and
+>> additional internal testing.
+> This series is a delta against the previously posted one.  Please
+> follow the process by re-basing your changes into the original series,
+> putting a "v2" into the Subject line, and adding a brief change log
+> into the cover letter.
 >
-> Many switches such as mv88e6xxx only support MAC DA/SA load balancing,
-> which make it not ideal in router application (Router WAN <--> ISP BRAS
-> traffic will always have the same DA/SA and thus use only one port).
+> Thanks,
+> Richard
 
-Is this supposed to make a difference? Choose a better switch vendor!
+If the original patches hadn't already been pulled into net-next, this 
+is what I would have done.  My understanding is that once the patches 
+have been pulled into the repo that we need to do delta patches, not new 
+versions of the same patch, as folks don't normally like changing 
+published tree history.
+
+sln
+
