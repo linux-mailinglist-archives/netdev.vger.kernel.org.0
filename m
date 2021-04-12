@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B09CA35CE04
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6359335CE09
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245508AbhDLQlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:41:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37282 "EHLO mail.kernel.org"
+        id S245588AbhDLQld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:41:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343999AbhDLQgb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 12:36:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D08F8613F2;
-        Mon, 12 Apr 2021 16:27:31 +0000 (UTC)
+        id S1344003AbhDLQgc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 12:36:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 972B661350;
+        Mon, 12 Apr 2021 16:27:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244852;
-        bh=5AVya4vkuXwG5iXSO3Do1PXvm8C9ngfS9ohHbS+s88Y=;
+        s=k20201202; t=1618244854;
+        bh=zdoNfL8nF2oR2mk7xgcsy6wsSn1eqs9f02JL5m9rWQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XsWtypgjSUX+hSDgjcRQX8XHcJBUGWpuXvrU4KZ0LAezlWzP8Y7uFRxWtRS34GYDV
-         H14FGGMwdL8haDBEByamACwzKSZXJzlDnzX1djSGR5x4poVF4dQeKog1fFmNhbLQJX
-         makce/P2EWcWMsG64fquuyle7lfvFy3EGVVWSRrYTWLRhacMxz+jE5DO7VhxpqE+CO
-         TctdFqaL6uS4UH4hnAoCdiGzQmgeMfzVfBMG6/T1ez6ADCfjAy87Y1jhiYFSND5x5v
-         TjRYm+iUMozsw6MQnUXiyD6vK2onM8BDJf/xl53bBPBuJSmd9WaMjS/j8LcQa1+NqZ
-         swDqxcvUaNieA==
+        b=kUgsjIUuQUT9t4BPs6sGpp8Qo30FHkSFxgtiaiRqQzuV3km8HUXvxvMZtkpZ7TBPI
+         nQ3WvTMi8Qccl9a8YPSii+5g1sXs1N3FlDWVa2vQ4Zb0+DQQspkmivssVCrOq6g3Hn
+         CrFA0iRcXQ9jN1v83pLXYv+thtceh42JLiqiy2I6IWwbn0/RNWE42lGIJ+0hJLo66E
+         hj/9bL764R1oemqQvcv+6BUDIZ+NdWmVX7W/puGZzBC2b9NO0IRLY+/Jn2Ov1QUikh
+         lwFQ99Vyd7boQyh1C1UZeGkeKw6qenRA2ffsULuqIFAlZ9FbGC+5tESIv/jNLMJM1R
+         BaeILrkFW9A7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Aditya Pakki <pakki001@umn.edu>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Subject: [PATCH AUTOSEL 4.9 21/23] net/rds: Avoid potential use after free in rds_send_remove_from_sock
-Date:   Mon, 12 Apr 2021 12:27:02 -0400
-Message-Id: <20210412162704.315783-21-sashal@kernel.org>
+        tipc-discussion@lists.sourceforge.net
+Subject: [PATCH AUTOSEL 4.9 22/23] net: tipc: Fix spelling errors in net/tipc module
+Date:   Mon, 12 Apr 2021 12:27:03 -0400
+Message-Id: <20210412162704.315783-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210412162704.315783-1-sashal@kernel.org>
 References: <20210412162704.315783-1-sashal@kernel.org>
@@ -44,48 +44,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aditya Pakki <pakki001@umn.edu>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 0c85a7e87465f2d4cbc768e245f4f45b2f299b05 ]
+[ Upstream commit a79ace4b312953c5835fafb12adc3cb6878b26bd ]
 
-In case of rs failure in rds_send_remove_from_sock(), the 'rm' resource
-is freed and later under spinlock, causing potential use-after-free.
-Set the free pointer to NULL to avoid undefined behavior.
+These patches fix a series of spelling errors in net/tipc module.
 
-Signed-off-by: Aditya Pakki <pakki001@umn.edu>
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rds/message.c | 1 +
- net/rds/send.c    | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ net/tipc/bearer.h | 6 +++---
+ net/tipc/net.c    | 2 +-
+ net/tipc/node.c   | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/rds/message.c b/net/rds/message.c
-index 6cb91061556a..bee84584ce34 100644
---- a/net/rds/message.c
-+++ b/net/rds/message.c
-@@ -90,6 +90,7 @@ void rds_message_put(struct rds_message *rm)
- 		rds_message_purge(rm);
- 
- 		kfree(rm);
-+		rm = NULL;
- 	}
+diff --git a/net/tipc/bearer.h b/net/tipc/bearer.h
+index 278ff7f616f9..eff1667f3748 100644
+--- a/net/tipc/bearer.h
++++ b/net/tipc/bearer.h
+@@ -140,9 +140,9 @@ struct tipc_media {
+  * care of initializing all other fields.
+  */
+ struct tipc_bearer {
+-	void __rcu *media_ptr;			/* initalized by media */
+-	u32 mtu;				/* initalized by media */
+-	struct tipc_media_addr addr;		/* initalized by media */
++	void __rcu *media_ptr;			/* initialized by media */
++	u32 mtu;				/* initialized by media */
++	struct tipc_media_addr addr;		/* initialized by media */
+ 	char name[TIPC_MAX_BEARER_NAME];
+ 	struct tipc_media *media;
+ 	struct tipc_media_addr bcast_addr;
+diff --git a/net/tipc/net.c b/net/tipc/net.c
+index ab8a2d5d1e32..6a2c91f34703 100644
+--- a/net/tipc/net.c
++++ b/net/tipc/net.c
+@@ -88,7 +88,7 @@
+  *     - A spin lock to protect the registry of kernel/driver users (reg.c)
+  *     - A global spin_lock (tipc_port_lock), which only task is to ensure
+  *       consistency where more than one port is involved in an operation,
+- *       i.e., whe a port is part of a linked list of ports.
++ *       i.e., when a port is part of a linked list of ports.
+  *       There are two such lists; 'port_list', which is used for management,
+  *       and 'wait_list', which is used to queue ports during congestion.
+  *
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index fe7b0ad1d6f3..94738a1c67e8 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -1223,7 +1223,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
  }
- EXPORT_SYMBOL_GPL(rds_message_put);
-diff --git a/net/rds/send.c b/net/rds/send.c
-index 50241d30e16d..a84198e1b87c 100644
---- a/net/rds/send.c
-+++ b/net/rds/send.c
-@@ -640,7 +640,7 @@ static void rds_send_remove_from_sock(struct list_head *messages, int status)
- unlock_and_drop:
- 		spin_unlock_irqrestore(&rm->m_rs_lock, flags);
- 		rds_message_put(rm);
--		if (was_on_sock)
-+		if (was_on_sock && rm)
- 			rds_message_put(rm);
- 	}
  
+ /* tipc_node_xmit_skb(): send single buffer to destination
+- * Buffers sent via this functon are generally TIPC_SYSTEM_IMPORTANCE
++ * Buffers sent via this function are generally TIPC_SYSTEM_IMPORTANCE
+  * messages, which will not be rejected
+  * The only exception is datagram messages rerouted after secondary
+  * lookup, which are rare and safe to dispose of anyway.
 -- 
 2.30.2
 
