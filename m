@@ -2,174 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F5A35D075
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 20:35:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 402A535D083
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 20:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245078AbhDLSgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 14:36:03 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:37222 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237062AbhDLSgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 14:36:03 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13CIYgBg007638;
-        Mon, 12 Apr 2021 18:35:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=uQ0lOCAEySGhnk30Su2rDPrRd1Cbz80JRqp/+SZv2IY=;
- b=VPloUGyIDeI05CDFhqgEycTbgtw4Z1aonAMXte/mCOEvL4Uwj/AIMtqZtaWY5XXntHK2
- dv9DBb+n8NArM0lv4x74jjDu79Hg+kyJazm/MthFkI4WpFk0bqEQux/+JmqWSkld17Xp
- xIdV0PFty62/wrz1V0l3oqvrkv4RR4vVOJv1okPR0tRvVZrYdrKfE04k/Ywg2VO7/NgQ
- PzNeTF/4E9D7hcTDz34C3bdoAoTUWaEKalEbrl2CLn6m5kreIOADs3IwWVw5Vlj7TCbI
- fwHXg7mCDXhVFtqoqA9Rei1TCxMGzbWWlKEi2z+I8UqSzSJd0SuvxyzVs8YNOtHd/IGm uQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 37u3ymcp99-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 12 Apr 2021 18:35:39 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13CIGJKr012115;
-        Mon, 12 Apr 2021 18:35:38 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2103.outbound.protection.outlook.com [104.47.55.103])
-        by userp3030.oracle.com with ESMTP id 37unxvs4sn-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 12 Apr 2021 18:35:38 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kRuAAbpPWJXt/GsANt6elmfRo1FLwC0lYhQhMOM7GqWfHzJzGjSUdMsuvqY1VjRxXqvOV+nwK+RWc+8d6QXZbLH8ThoCKxo4pvwEcHv+K/HZIbf0jBtv7elzLIHjNc4X+/D2kviVvuiwVxtH4fzWzarVzryUSJpszVaYrjN/n66zzUNkHGv/ThZ/9wk1dmpWeSwBP1g776Xv3t2RrQRKfunN4909ae2bhmnW3Vfmrpc/I6FVcmimxXi9rfvKPc4bCmQDnT6Rz1E5TaZsGLHzHd1rM8n7xRAs1Dlq8HZnuNKt2r70L1osZQ5eRnXKkz0PZTcPG5UAX3wb32tMRWj/SA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uQ0lOCAEySGhnk30Su2rDPrRd1Cbz80JRqp/+SZv2IY=;
- b=B0ZGGZyyElmzo1dWGLhpdQfBgX2r4zlzVkTHBbeZ1nS6H9iBd/nek8I/a8UfEftj8XhXMDo1FYcspj+Pd4YfcIuYjdA9TtqHYfBeQuYtyW8iBz8xUFaQXuP2CJzb2aXTupXqF5z6ATfaSzTlGvla7GAP8NHXAJUTkFXKsFFxUwWdfKNCaRZNFYcBSPm8NpQHXklTfWMR/dJKx5lgme+f0Q3TilzGCn4TKCk+dS7uVp+4As5Ruq48vvKVgRNOf6REU2CsYgHwv9zNICro4sB6P7VBTp1axhF0yeaN8nKioVsGh/V65L1fQK7HFzdtGe/ZbIkXe5GzbUm17mhdpVKttQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S243433AbhDLSmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 14:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245092AbhDLSmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 14:42:18 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC091C06174A
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 11:41:59 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id 130so1098512qkm.4
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 11:41:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uQ0lOCAEySGhnk30Su2rDPrRd1Cbz80JRqp/+SZv2IY=;
- b=npySF1fzlE/WzetMbYBSVh+/zSi+papz+hUfBC7sUAMWusdXLplfPOOBP+78w01V2AaYCoiaB5r/cTK91Fn5o2ZWcfs0TeQLJwvvHEqnv1LTIw6hvrNlFDjRhnkm6+dT+GrlnGjz4YgLLojlQpfb97gBlPd+d3VvLhd9235LU1g=
-Received: from CY4PR10MB1989.namprd10.prod.outlook.com (2603:10b6:903:11a::12)
- by CY4PR10MB1832.namprd10.prod.outlook.com (2603:10b6:903:123::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16; Mon, 12 Apr
- 2021 18:35:35 +0000
-Received: from CY4PR10MB1989.namprd10.prod.outlook.com
- ([fe80::ad28:97d2:76cf:3fa5]) by CY4PR10MB1989.namprd10.prod.outlook.com
- ([fe80::ad28:97d2:76cf:3fa5%11]) with mapi id 15.20.4020.022; Mon, 12 Apr
- 2021 18:35:35 +0000
-From:   Haakon Bugge <haakon.bugge@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Doug Ledford <dledford@redhat.com>,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
- use it in RDS
-Thread-Topic: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
- use it in RDS
-Thread-Index: AQHXJl3kxGIldyYid0mmsgwi6FkGPKqegoeAgAFv6wCACVprAIAH+6eA
-Date:   Mon, 12 Apr 2021 18:35:35 +0000
-Message-ID: <FA3BF16F-893A-4990-BAA4-E8DC595A814B@oracle.com>
-References: <1617216194-12890-1-git-send-email-haakon.bugge@oracle.com>
- <BYAPR10MB3270D41D73EA9D9D4FCAF118937C9@BYAPR10MB3270.namprd10.prod.outlook.com>
- <20210401175106.GA1627431@nvidia.com>
- <75DFACE2-CBA6-4486-B22F-EFE6D8D51173@oracle.com>
-In-Reply-To: <75DFACE2-CBA6-4486-B22F-EFE6D8D51173@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.60.0.2.21)
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=oracle.com;
-x-originating-ip: [51.175.204.144]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6102b19b-7dd1-4204-f48c-08d8fde1c34b
-x-ms-traffictypediagnostic: CY4PR10MB1832:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CY4PR10MB1832694E1A96C002BBFAF264FD709@CY4PR10MB1832.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2331;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nIhJ6d3JLXc1bBAhEvhatapLNFSyLKpr3G4k/u7TGlVrORqNDG4Iz/t10fjs4TRVaM5OFQzyG5iXTk2aswI8VELfVQB4hLu5Lh8sRWNZ8KJKbxCMJfveM+fqnxST16QVf46/KDR7a1Ut2lNkbS2Alr7M4iaArWskHPd1L0NiSb2lJt5laJaNmJnKEhs/oBV8DPwlIwmbmxgQFtEMVl41R4ld93/JpkBhF2/kGthZ5NFytDp+h2xqvohZaaupXfGzY9a1Gd6M2Ir+OpkaZmjqfYuLfROCfxAC+wGG1qWqxmvjaGSqNmqsqMANLH12sBSrEuH/PRd4t71xcER+aUjFxuT5zcj9EaRR+Spf2ZiskbgufLXqUBw2a6/cdp+WQWl9pZBYiFvFDKW9ZI07HPZBpQUzeL2I6dJKJPiCoRpLQDPFcfCXk/GrOVY6A8EEodrq0V/N5iHbYxOkYnXYDa0OZyz2fILVfdhY2Umxzz9+iXo9ZmcHaErxLvq/Zwz8v8tHryVAN/jdN9B1m9nMD4iCfggYiREvFF22jPjYtN7JWUHnUjNyFt52opOnE0sqE2oVnCYKlepU9oc0PODaT3Rkmj8dOnpHRbhD0I/uU4seCjmLvve98MqAbQiDZksN+ms3sB/Dr2RrSNAvM/WcfEQX9P4RGJ6wBoeLytyI75sc8AI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR10MB1989.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(346002)(136003)(366004)(39860400002)(38100700002)(33656002)(44832011)(2616005)(36756003)(8936002)(76116006)(91956017)(6506007)(66446008)(64756008)(66476007)(66946007)(6512007)(53546011)(478600001)(66556008)(5660300002)(71200400001)(110136005)(26005)(2906002)(186003)(66574015)(54906003)(316002)(4744005)(86362001)(4326008)(6486002)(8676002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?b092QWt3dExFVVE1TWx3OVM2OTQzNlNSUG5FUzZ0aWRGMFRSbnJXOHJJSjYv?=
- =?utf-8?B?MDdWVWtBTGEvK0IyVHM0S2RaMm5FTXVCa0NITndKbXR6Q2c1VG9aOW02Uk9k?=
- =?utf-8?B?UFNqT0ZhYWkrTzlWdHdPeVFNMlJWeGR5cDZGSk53aFkyZVFza09tQ1N1UUd2?=
- =?utf-8?B?cDR5TGxKVTBsSzVXbFJXcU1kbkgzWTVwdXBsci9zR0x3bTh2U2V6WCtpaG1K?=
- =?utf-8?B?a2JVYWhrY0poT1ZCazVRRnpUK1JkVEVRUm9HZDNTakFocEEyR1dxek5RcmZ4?=
- =?utf-8?B?bnhIem80dm5nT1BienJCOHRhMU5RRmd5aExxTmpYZ2dlT2x3SFJrMjYvYlFQ?=
- =?utf-8?B?OWhKL2I5V2NEWmNOeWp1SkxZdUZlRUZRTGtSUnVNYXZoQzJIaStRY2RFS2tI?=
- =?utf-8?B?TURYV0hmeWlRNStnS3ZNdldWVGxkWm5SQVdXUjdyR3oxVnZwbStoQ00wODJC?=
- =?utf-8?B?UTViMHlRSjdsOUM5T1p5UmFGT3NORmRlSGR4ZXFNSStNU2hPTHlsTnNtSGFL?=
- =?utf-8?B?bk5XSVZ0U0pXbHhwVmFMRGMxbDFUZXprR2hxSEpLdDcvaGdZdUQvZDhRS204?=
- =?utf-8?B?cjdHS2J2UURYbHlqWm9XNEpnb1BFQzRNTTRFQ2Q3V1R5aDRXQXRRMkVNckY4?=
- =?utf-8?B?Y3h4MDlPc08vZkU1T1VEbzJYVVVoeUVaaU4xL2hOcGdDMjFOaFNGS3NBamhR?=
- =?utf-8?B?L05TMG5pVTdLcTBzQmZGbTROaGdyV25CeXdoL2hEU0JEa0NIUHBiQTJYd21j?=
- =?utf-8?B?WUdvdHJZWDdpTjAwVjdyNUpnS3JGMy9Uc2pHa2tDa0pBRVo3STV1a3h0ZkNa?=
- =?utf-8?B?VE9Mc05IeUlzRzJKZWRNOU9hZyt6ZndGYTV0Vk9mMXB6dW01REJyanVybjhx?=
- =?utf-8?B?S0lTakFhUSt5enl3QjltVnhvbGVPbFBlcmdQUnZWcmtsYm12ZTJRd3pDd3l5?=
- =?utf-8?B?ZjRrczFobnl3RS9JZ0M4bkk3eDhSRytROWJlZlJyaFZSTzcxZUEvbTczKzBw?=
- =?utf-8?B?V3hyVFJyMlVEcFV3WXdFOUQ3cTZIaTYxM01Pbzc4SlZUU3JHd3hYcEF1dUxs?=
- =?utf-8?B?N09ZZTZkZGlzWHFZSW9RVlRJdUw0eGQ3bmxwUjR6TUVBQ2poNXJIbzN1Rkhz?=
- =?utf-8?B?Y3d6TTQrMG5sOUdNVUZFQmpudVZlTTNkS3g5aDNNTWs2NEpXcWowZ293KzVJ?=
- =?utf-8?B?VXE2RTZPZUt5RTVkenhvaFhqSmJjUjRqUHVqYk5mdDF3RU91azBBbm1wVUJC?=
- =?utf-8?B?NzFraE9ubTFaRzhKRFNScnZxUFNUcU9VZHFhSWlVQlNmSGI0L3BYSFRvWjFU?=
- =?utf-8?B?cEh2ZVdmZlA0cmd4dGJ4MlBjQnNBRGxRMEdKZlJwVkh3YTU2K2U0UXBkZ3dm?=
- =?utf-8?B?YllZSmRGd3JNS3BvOU9PeHJVNWU5WmJ2TnA0S3kyYXBoSllBdWNYdTVMSFJF?=
- =?utf-8?B?NU9sQ01sZUk3bnJZRXlpR0ZJaTNlV0tHT0lmQzdlMnA3OFlYWmNwUGJPeU4w?=
- =?utf-8?B?SVJDb1N6dnkxQ2h4THkwTXNkdDFOS2V3N00weHR3TDZJcitSeUhjQWFGdDdz?=
- =?utf-8?B?SXczcnZVREhHNngxZ0N3em55dXdObEZBcDdrSG5ZY3o4Q3E1RHh4Mk1oL0Z5?=
- =?utf-8?B?VjhVdk84QkttMy9TYWtTSXJ3K1hSMlZVSjVXVG1FUDVXZUZXM0w0RkZxTXF4?=
- =?utf-8?B?TDhKcm1TSlBzaXpPa2p3cVpLdXJVZE8zYjg2UVl1a1hMYkN1YmxYUnkwUVI1?=
- =?utf-8?B?azJMQTBlVzdNWnpkalNMVzIyK3llSEZ0UVE5UUtERy9GMlFDT3M4ZDNuWXp5?=
- =?utf-8?B?Y000cUtSbGptRFZsRFpkQT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B01D4B718271BE4DA9BF4D85D9AB698A@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=UAMz0G7e+PdZfQg+YFgatoU/rR7kyYRFOx3yH7kCYMQ=;
+        b=DAQQQp3v7U0rJe0SuR1lsqJOhM3u4ZxlcOGRot+op5wV2E3bZBE/DH1E03fW4Pp4ng
+         211wrjko+uTTqkKrbySfoi8w61wuHQjSSt2VPNEXu7UkxMMJaAyg+2QQTDCk0iijMHlN
+         9dTn94dKYMAo92jhwMJrxcT+n0CFpYWrntS4kiUlr5kdzTBLACUO+dOCYNc8xrWtaPWA
+         x3vYOk1gv0IR4F6mEZQt7g7yfMCWapFmPWzlIFnor3R1jHr84u5ctXrYUz0nzC7W8yhE
+         z+vrqjGl/+Qf2wdkM5a2a47Civ+UPtVuNJ7amzC3DTFYvmoj6G/N029/BmUZNzau0uST
+         fs9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=UAMz0G7e+PdZfQg+YFgatoU/rR7kyYRFOx3yH7kCYMQ=;
+        b=uW6IiN8j/r+dK6gBBal2lcR2nRkD0pwJpp6cuPD/C0YiC6KBlcdIQP0Ge0DBn1Uh39
+         vJZKg9ybwRbhFDsmCIOCphSYEVpqmFDqNfAtr5ydmn4mttEs+ZhzQyFvTZRJLM6MVmg8
+         49iIZKYcZ6nsH5PoesSoz9Ly7MMIn5ELlFOgx16rQ81SxIkur26P4GPzIwTPZe/E5rQr
+         0N0aaUUQ7JKD8HRDWj9/2N7TRf8i07Xp5p5VjAkQZqKZTQ5v+51HXk+q+/Y5+UQhi4hP
+         T4vad6QSgZHXczDUJEQTs1ZgZSQv/fqb4UVeMXxHY7/LxDULnftEi+AHMUQt1UKOpNCh
+         PDng==
+X-Gm-Message-State: AOAM530QY7OOjK7/0KzPxUoiOdk77/sXA0oOVqh/nlrBYrXdOstqNtcU
+        SEAu4NyZ2wwIei5kPACD0c6wOKTBR260CJnlEsCREOzG0RvHVQ==
+X-Google-Smtp-Source: ABdhPJxzn7oabhfIrJJgNUMK/fEtnDiouSYeD3qd22JOtaDeCKJl/LB+60UkepXJMz+tK4FQujmYjZKfM4ABX4dFKkQ=
+X-Received: by 2002:a05:620a:1291:: with SMTP id w17mr11717744qki.175.1618252918913;
+ Mon, 12 Apr 2021 11:41:58 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR10MB1989.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6102b19b-7dd1-4204-f48c-08d8fde1c34b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2021 18:35:35.8149
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4DgyCXnGZGCcDy6uo4dcgjhZ/JCcqGOeqG0/i0KbEno4362B+sfxlcDwGG0N2FJfl+i0sL5OFBRsoEbAFgiWCg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1832
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9952 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 malwarescore=0
- spamscore=0 adultscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104120117
-X-Proofpoint-GUID: -HFWtu6ZJdXVdtNCAvRIiWXU1M2sDERY
-X-Proofpoint-ORIG-GUID: -HFWtu6ZJdXVdtNCAvRIiWXU1M2sDERY
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9952 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 spamscore=0
- impostorscore=0 priorityscore=1501 lowpriorityscore=0 adultscore=0
- bulkscore=0 phishscore=0 suspectscore=0 malwarescore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104120118
+From:   Ian Kumlien <ian.kumlien@gmail.com>
+Date:   Mon, 12 Apr 2021 20:41:47 +0200
+Message-ID: <CAA85sZsn2oG4wUHPYOPTPW8j6jbHe=_0UiLntZmXjvaf0Cu9PA@mail.gmail.com>
+Subject: [BUG] possible issue with ixgbe
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gNyBBcHIgMjAyMSwgYXQgMTg6NDEsIEhhYWtvbiBCdWdnZSA8aGFha29uLmJ1Z2dl
-QG9yYWNsZS5jb20+IHdyb3RlOg0KPiANCj4gDQo+IA0KPj4gT24gMSBBcHIgMjAyMSwgYXQgMTk6
-NTEsIEphc29uIEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+IHdyb3RlOg0KPj4gDQo+PiBPbiBX
-ZWQsIE1hciAzMSwgMjAyMSBhdCAwNzo1NDoxN1BNICswMDAwLCBTYW50b3NoIFNoaWxpbWthciB3
-cm90ZToNCj4+PiBbLi4uXQ0KPj4+IA0KPj4+IFRoYW5rcyBIYWFrb24uIFBhdGNoc2V0IGxvb2tz
-IGZpbmUgYnkgbWUuDQo+Pj4gQWNrZWQtYnk6IFNhbnRvc2ggU2hpbGlta2FyIDxzYW50b3NoLnNo
-aWxpbWthckBvcmFjbGUuY29tPg0KPj4gDQo+PiBKYWt1Yi9EYXZlIGFyZSB5b3UgT0sgaWYgSSB0
-YWtlIHRoaXMgUkRTIHBhdGNoIHJkbWEgdG8gcmRtYSdzIHRyZWU/DQo+IA0KPiBMZXQgbWUga25v
-dyBpZiB0aGlzIGlzIGxpbmdlcmluZyBkdWUgdG8gTGVvbidzIGNvbW1lbnQgYWJvdXQgdXNpbmcg
-V0FSTl9PTigpIGluc3RlYWQgb2YgZXJyb3IgcmV0dXJucy4NCg0KQSBnZW50bGUgcGluZy4NCg0K
-SMOla29uDQoNCg==
+Hi,
+
+I've encountered this a few times now, been moving kernels since
+there's been things fixed that
+looked related... but...
+
+[959642.297143] ------------[ cut here ]------------
+[959642.297149] NETDEV WATCHDOG: eno1 (ixgbe): transmit queue 2 timed out
+[959642.297189] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:442
+dev_watchdog+0x21f/0x230
+[959642.297199] Modules linked in: chaoskey
+[959642.297205] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.11.11 #272
+[959642.297209] Hardware name: Supermicro Super
+Server/A2SDi-12C-HLN4F, BIOS 1.2 11/05/2019
+[959642.297211] RIP: 0010:dev_watchdog+0x21f/0x230
+[959642.297216] Code: 27 1a fd ff eb ab 4c 89 ef c6 05 c2 27 1a 01 01
+e8 46 12 fa ff 44 89 e1 4c 89 ee 48 c7 c7 90 37 22 a5 48 89 c2 e8 a8
+f2 32 00 <0f> 0b eb 8c 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 49 89 f9
+48 8d
+[959642.297220] RSP: 0018:ffffb1d20015cec8 EFLAGS: 00010282
+[959642.297223] RAX: 0000000000000000 RBX: ffff8dda45c34ec0 RCX:
+ffff8dddafad78d8
+[959642.297225] RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI:
+ffff8dddafad78d0
+[959642.297228] RBP: ffff8dda45c28480 R08: 0000000000000000 R09:
+ffffb1d20015cd00
+[959642.297230] R10: ffffb1d20015ccf8 R11: ffffffffa553e8c8 R12:
+0000000000000002
+[959642.297232] R13: ffff8dda45c28000 R14: 0000000000000001 R15:
+ffff8dddafadbb40
+[959642.297234] FS:  0000000000000000(0000) GS:ffff8dddafac0000(0000)
+knlGS:0000000000000000
+[959642.297237] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[959642.297240] CR2: 00007f0fdc76d5a8 CR3: 000000013debe000 CR4:
+00000000003526e0
+[959642.297242] Call Trace:
+[959642.297246]  <IRQ>
+[959642.297250]  ? pfifo_fast_init+0x100/0x100
+[959642.297254]  call_timer_fn+0x24/0xf0
+[959642.297259]  __run_timers.part.0+0x1b8/0x220
+[959642.297263]  ? recalibrate_cpu_khz+0x10/0x10
+[959642.297268]  ? ktime_get+0x33/0x90
+[959642.297272]  ? lapic_timer_set_periodic+0x20/0x20
+[959642.297276]  ? clockevents_program_event+0x88/0xe0
+[959642.297280]  run_timer_softirq+0x21/0x50
+[959642.297284]  __do_softirq+0xba/0x264
+[959642.297290]  asm_call_irq_on_stack+0x12/0x20
+[959642.297294]  </IRQ>
+[959642.297296]  do_softirq_own_stack+0x32/0x40
+[959642.297300]  irq_exit_rcu+0x83/0xb0
+[959642.297304]  sysvec_apic_timer_interrupt+0x36/0x80
+[959642.297309]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+[959642.297314] RIP: 0010:cpuidle_enter_state+0xcd/0x340
+[959642.297320] Code: 49 89 c5 0f 1f 44 00 00 31 ff e8 8e 96 5b ff 45
+84 ff 74 12 9c 58 f6 c4 02 0f 85 56 02 00 00 31 ff e8 b7 3b 60 ff fb
+45 85 f6 <0f> 88 e9 00 00 00 49 63 c6 4c 2b 2c 24 48 8d 14 40 48 8d 0c
+90 48
+[959642.297322] RSP: 0018:ffffb1d20008fea8 EFLAGS: 00000202
+[959642.297326] RAX: ffff8dddafae9a40 RBX: ffffd1d1ffaeb500 RCX:
+000000000000001f
+[959642.297328] RDX: 0000000000000000 RSI: 0000000040000000 RDI:
+0000000000000000
+[959642.297330] RBP: 0000000000000002 R08: 000368ca223b0fae R09:
+0000000000000008
+[959642.297332] R10: 00000000000003dc R11: 00000000000003da R12:
+ffffffffa55ecf40
+[959642.297334] R13: 000368ca223b0fae R14: 0000000000000002 R15:
+0000000000000000
+[959642.297338]  ? cpuidle_enter_state+0xb2/0x340
+[959642.297342]  cpuidle_enter+0x24/0x40
+[959642.297346]  do_idle+0x1ba/0x210
+[959642.297351]  cpu_startup_entry+0x14/0x20
+[959642.297354]  secondary_startup_64_no_verify+0xb0/0xbb
+[959642.297359] ---[ end trace 9b29a940f734a412 ]---
+[959642.297365] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+[959647.929975] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+[959649.130161] ixgbe 0000:06:00.0 eno1: Reset adapter
+[959649.135186] ixgbe 0000:06:00.0 eno1: NIC Link is Down
+[959652.566949] ixgbe 0000:06:00.0 eno1: NIC Link is Up 1 Gbps, Flow
+Control: RX/TX
+[959669.944390] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+[959670.096838] ixgbe 0000:06:00.0 eno1: Reset adapter
+[959670.101836] ixgbe 0000:06:00.0 eno1: NIC Link is Down
+[959673.405387] ixgbe 0000:06:00.0 eno1: NIC Link is Up 1 Gbps, Flow
+Control: RX/TX
+[959856.307490] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+[959861.536015] ixgbe 0000:06:00.0 eno1: Reset adapter
+[959861.541031] ixgbe 0000:06:00.0 eno1: NIC Link is Down
+[959865.387649] ixgbe 0000:06:00.0 eno1: NIC Link is Up 1 Gbps, Flow
+Control: RX/TX
+----
+
+It always seems to happen under cpu load - I'm mad enough to run
+gentoo on a Atom (Intel(R) Atom(TM) CPU C3858 @ 2.00GHz) machine ;)
+
+When first triggered it takes a while - eventually any spike in cpu
+load will crash the machine... (I suspect that the hw-watchdog reboots
+it but there is no logs)
+
+Any clues? I did run with flow offload in nftables - but I have since
+disabled that as well...
