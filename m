@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77B9835CDD0
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4176E35CD1C
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344162AbhDLQjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343553AbhDLQfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 12:35:25 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A352C061248
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 09:28:47 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id v140so22405022lfa.4
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 09:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qZnpGTTVy12LfI0sdZ4E7fBRBWOOqVoEC2alh6kMWDY=;
-        b=ETzMw5s2kXuc9Y/2ra+bvdUF33rGFaBIkySx0hcWLWbidoSKgMVim2dAvjamPpV0QM
-         4TyYhczD2W2l+0e5Njug1LuCt5A6wO1oEXj8ZDZXUo+eIaFLexZJcPDPlggOza31nZ1t
-         ApPObtQ9fKw6tJfPWayLLxkYUpk9TiOIbuaW8=
+        id S245020AbhDLQdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:33:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27706 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244997AbhDLQba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 12:31:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618245072;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ry8UOmE9xxjldEfstZ7cAn9yNx4EWrsHXZ/UlYipT5w=;
+        b=cQXcR3KZvjy5N4y/RzdamCW7yycijENoKPXgaVgjkq8cU6lp+/IIh92zBqZdS8t/6HrVLf
+        E+abXK9eld7M7fP8CdH93PI8UHPKZtlLjvCb5blDhBzewp0fUrqs25x5Vw6quSjG6m8t+m
+        4D5lADnMuoafIhS1oBC4Zn/sLp8lwY8=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-23-OjhHH59yMPGyvAmWW_HwrQ-1; Mon, 12 Apr 2021 12:31:08 -0400
+X-MC-Unique: OjhHH59yMPGyvAmWW_HwrQ-1
+Received: by mail-wr1-f70.google.com with SMTP id y4so1899891wrs.7
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 09:31:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qZnpGTTVy12LfI0sdZ4E7fBRBWOOqVoEC2alh6kMWDY=;
-        b=H9WmCFwFudSJfvQvUcBgOkKjfVZvTAmOmLineh9AnYPFEyY+J1lc96rNweZzb3L/m7
-         t2GK6XHiSPJ9U+tFDWdEUj3NiDwNBjyNRvLEF9LDzWNSWy6m8hZ51+fDwZkPblEc89/Z
-         t65oWmwe7jBG7fApOn0z+C6sQBeuDCPHNC5LUEVVs+6FZIhpnrH9KYwdM1rH7opEnKHs
-         lo6a9DG2vrxQ8k7+8Fd4Vt20MXUZxvgZNfJX170Fu7WCI6VQ9rOYATJNX2xyo2Uz/BKY
-         nMtcNyhRd23vFYhZ1EFC+aliweHupTyQ9V/w8YDQ9p0L81JRYmuwijbCOh9RjeZ33v1w
-         pwsQ==
-X-Gm-Message-State: AOAM5330PoCaBs0G4vYlD0QH7Jv6moCKHj6iS2d86gmSrRWx+KkAPF/M
-        hC9iOOnCYWKPdhsxS3DfvqwJRLuAk1pM0Fin
-X-Google-Smtp-Source: ABdhPJwqaqGVDlRXD3Xsrd0ahCPB/qwsfcDsMH4s5rXjKXoqfCKnq1Y7W1kupv+1mQt3p1Aoq/JKmA==
-X-Received: by 2002:a05:6512:38aa:: with SMTP id o10mr19842349lft.261.1618244925558;
-        Mon, 12 Apr 2021 09:28:45 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id c5sm2549551lfk.141.2021.04.12.09.28.44
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Apr 2021 09:28:45 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id z13so5320934lfd.9
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 09:28:44 -0700 (PDT)
-X-Received: by 2002:ac2:58fc:: with SMTP id v28mr18962348lfo.201.1618244924698;
- Mon, 12 Apr 2021 09:28:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
- <20210412051445.GA47322@roeck-us.net>
-In-Reply-To: <20210412051445.GA47322@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 12 Apr 2021 09:28:28 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
-Message-ID: <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
-Subject: Re: Linux 5.12-rc7
-To:     Guenter Roeck <linux@roeck-us.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ry8UOmE9xxjldEfstZ7cAn9yNx4EWrsHXZ/UlYipT5w=;
+        b=I9Rn+jFMse4BY2F57kP84nGe08Gh+K8jyq680w9U++7KSYu0SZWxK2t1yKyBimzHQb
+         QFbLir0iRb567TgouEwh2LtJwVjPX3lz+mSGnDTGYJPwd+9RK8X08SesLdajE7gcwbKa
+         Yu5UnZjwx7kz+ph0mXhstd5PayADA8/2FhwLS+J2Nqr7yd0pb5aQxQCvxkaoWNQW4ByG
+         zzicAqPUB2+0U6GPcVGXixSfpDQuTYmzUpGug1hk3yzOI/gHyVFoWCX/1Z+nLtkJ1+aO
+         XUkRY15M770vWuGkVkR9JfpufEnIdlz+rv92D2BAnMrqeFAED1WKYY3z/jIVXVai2dxG
+         Bfdw==
+X-Gm-Message-State: AOAM532OFTS3Dj/NmUZFqMi3CKijP2AKorqPInV96JwUfSZXYRgw8guW
+        YZrzBAWqxXVb8EVlzWtiNH5Ckgy8H9MpOppYP1o2dUuU46Gsbg1TiqkySguhuykOdFnrQxauFjs
+        yKcce+a5QfjGDLNdp
+X-Received: by 2002:a5d:4acf:: with SMTP id y15mr22094248wrs.245.1618245067510;
+        Mon, 12 Apr 2021 09:31:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwUBwHY6Sx2+M0+GnLNuOoMnUNcReuodJIrUaTcwaxJLupeaV8DduFcJ2+NZysOQmkqk3aepA==
+X-Received: by 2002:a5d:4acf:: with SMTP id y15mr22094232wrs.245.1618245067379;
+        Mon, 12 Apr 2021 09:31:07 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
+        by smtp.gmail.com with ESMTPSA id a4sm17141491wrx.86.2021.04.12.09.31.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 09:31:05 -0700 (PDT)
+Date:   Mon, 12 Apr 2021 12:31:02 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
         Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Eric Dumazet <edumazet@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: Linux 5.12-rc7
+Message-ID: <20210412122951-mutt-send-email-mst@kernel.org>
+References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
+ <20210412051445.GA47322@roeck-us.net>
+ <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 11, 2021 at 10:14 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> Qemu test results:
->         total: 460 pass: 459 fail: 1
-> Failed tests:
->         sh:rts7751r2dplus_defconfig:ata:net,virtio-net:rootfs
->
-> The failure bisects to commit 0f6925b3e8da ("virtio_net: Do not pull payload in
-> skb->head"). It is a spurious problem - the test passes roughly every other
-> time. When the failure is seen, udhcpc fails to get an IP address and aborts
-> with SIGTERM. So far I have only seen this with the "sh" architecture.
+On Mon, Apr 12, 2021 at 09:28:28AM -0700, Linus Torvalds wrote:
+> On Sun, Apr 11, 2021 at 10:14 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > Qemu test results:
+> >         total: 460 pass: 459 fail: 1
+> > Failed tests:
+> >         sh:rts7751r2dplus_defconfig:ata:net,virtio-net:rootfs
+> >
+> > The failure bisects to commit 0f6925b3e8da ("virtio_net: Do not pull payload in
+> > skb->head"). It is a spurious problem - the test passes roughly every other
+> > time. When the failure is seen, udhcpc fails to get an IP address and aborts
+> > with SIGTERM. So far I have only seen this with the "sh" architecture.
+> 
+> Hmm. Let's add in some more of the people involved in that commit, and
+> also netdev.
+> 
+> Nothing in there looks like it should have any interaction with
+> architecture, so that "it happens on sh" sounds odd, but maybe it's
+> some particular interaction with the qemu environment.
+> 
+>              Linus
 
-Hmm. Let's add in some more of the people involved in that commit, and
-also netdev.
+Yea Eric's been trying to debug this already. Let's give him a bit more time...
 
-Nothing in there looks like it should have any interaction with
-architecture, so that "it happens on sh" sounds odd, but maybe it's
-some particular interaction with the qemu environment.
+-- 
+MST
 
-             Linus
