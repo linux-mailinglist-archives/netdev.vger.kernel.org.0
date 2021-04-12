@@ -2,62 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1C3E35C90D
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35AE835C914
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242338AbhDLOlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 10:41:52 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:16530 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237806AbhDLOlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 10:41:49 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FJrvf4tJjzPqcC;
-        Mon, 12 Apr 2021 22:38:38 +0800 (CST)
-Received: from localhost (10.174.242.151) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.498.0; Mon, 12 Apr 2021
- 22:41:22 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <dingxiaoxiong@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net] i40e: Fix use-after-free in i40e_client_subtask()
-Date:   Mon, 12 Apr 2021 22:41:18 +0800
-Message-ID: <1618238478-18068-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S240662AbhDLOoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 10:44:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45618 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237806AbhDLOod (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 10:44:33 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lVxnP-00GHIZ-Vo; Mon, 12 Apr 2021 16:44:11 +0200
+Date:   Mon, 12 Apr 2021 16:44:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell: fix detection of PHY on Topaz switches
+Message-ID: <YHRcu+dNKE7xC8EG@lunn.ch>
+References: <20210412121430.20898-1-pali@kernel.org>
+ <YHRH2zWsYkv/yjYz@lunn.ch>
+ <20210412133447.fyqkavrs5r5wbino@pali>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.242.151]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210412133447.fyqkavrs5r5wbino@pali>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+On Mon, Apr 12, 2021 at 03:34:47PM +0200, Pali Rohár wrote:
+> On Monday 12 April 2021 15:15:07 Andrew Lunn wrote:
+> > > +static u16 mv88e6xxx_physid_for_family(enum mv88e6xxx_family family);
+> > > +
+> > 
+> > No forward declaration please. Move the code around. It is often best
+> > to do that in a patch which just moves code, no other changes. It
+> > makes it easier to review.
+> 
+> Avoiding forward declaration would mean to move about half of source
+> code. mv88e6xxx_physid_for_family depends on mv88e6xxx_table which
+> depends on all _ops structures which depends on all lot of other
+> functions.
 
-Currently the call to i40e_client_del_instance frees the object
-pf->cinst, however pf->cinst->lan_info is being accessed after
-the free. Fix this by adding the missing return.
+So this is basically what you are trying to do:
 
-Addresses-Coverity: ("Read from pointer after free")
-Fixes: 7b0b1a6d0ac9 ("i40e: Disable iWARP VSI PETCP_ENA flag on netdev down events")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/ethernet/intel/i40e/i40e_client.c | 1 +
- 1 file changed, 1 insertion(+)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 903d619e08ed..ef4dbcb052b7 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3026,6 +3026,18 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+        return err;
+ }
+ 
++static const enum mv88e6xxx_model family_model_table[] = {
++       [MV88E6XXX_FAMILY_6095] = MV88E6XXX_PORT_SWITCH_ID_PROD_6095,
++       [MV88E6XXX_FAMILY_6097] = MV88E6XXX_PORT_SWITCH_ID_PROD_6097,
++       [MV88E6XXX_FAMILY_6185] = MV88E6XXX_PORT_SWITCH_ID_PROD_6185,
++       [MV88E6XXX_FAMILY_6250] = MV88E6XXX_PORT_SWITCH_ID_PROD_6250,
++       [MV88E6XXX_FAMILY_6320] = MV88E6XXX_PORT_SWITCH_ID_PROD_6320,
++       [MV88E6XXX_FAMILY_6341] = MV88E6XXX_PORT_SWITCH_ID_PROD_6341,
++       [MV88E6XXX_FAMILY_6351] = MV88E6XXX_PORT_SWITCH_ID_PROD_6351,
++       [MV88E6XXX_FAMILY_6352] = MV88E6XXX_PORT_SWITCH_ID_PROD_6352,
++       [MV88E6XXX_FAMILY_6390] = MV88E6XXX_PORT_SWITCH_ID_PROD_6390,
++};
++
+ static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
+ {
+        struct mv88e6xxx_mdio_bus *mdio_bus = bus->priv;
+@@ -3056,7 +3068,7 @@ static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
+                         * a PHY,
+                         */
+                        if (!(val & 0x3f0))
+-                               val |= MV88E6XXX_PORT_SWITCH_ID_PROD_6390 >> 4;
++                               val |= family_model_table[chip->info->family] >> 4;
+        }
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
-index a2dba32383f6..32f3facbed1a 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_client.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
-@@ -375,6 +375,7 @@ void i40e_client_subtask(struct i40e_pf *pf)
- 				clear_bit(__I40E_CLIENT_INSTANCE_OPENED,
- 					  &cdev->state);
- 				i40e_client_del_instance(pf);
-+				return;
- 			}
- 		}
- 	}
--- 
-2.23.0
+and it compiles. No forward declarations needed. It is missing all the
+error checking etc, but i don't see why that should change the
+dependencies.
 
+	Andrew
