@@ -2,128 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F8C635D28B
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:23:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9359B35D294
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:25:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241128AbhDLVXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 17:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
+        id S232094AbhDLVYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 17:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237910AbhDLVXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 17:23:06 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 169F9C061574
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 14:22:48 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id u20so17045248lja.13
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 14:22:48 -0700 (PDT)
+        with ESMTP id S231854AbhDLVYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 17:24:48 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C60C061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 14:24:29 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id k25so14956885iob.6
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 14:24:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=X/nVZlZWogdbt/b/rHVbs9pJBJGAVO4zLjcTUrHYEa4=;
-        b=CqVqT37b4IXGhzlMALkZvN2i9C35RFBOVFEhMSFSKDNZwn0OHG0fX2zcqN+ZASioaw
-         wrFSo7cBXOSpG7uqCQBsValO5nGiV0hC1z8dYtYWJ402pS98Revy0MLu+9aErN5/Ml3r
-         qDP56uIpej1V/yE30doC3yIhADP215w3HDhNo8Aiqjn0su2yRSSEtK3emyJXuCp732eO
-         7oHmVXCaSl60YFl707Vqpm0VqI2YGBfk3AoHudgaeJysGUOGgFKJfRBA6MJ7btSPdTk5
-         GKj3Jd79JkCRnRNRX+y2PJmP8djI736mohzA4P3iXrUkmlrP+uFUjDG258uFw6TI6Vux
-         5U3w==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SErWmlC8LnAVFg10EQrSUIl9iJTpdn9AfBuGrIp4r3E=;
+        b=Uk+DzUY0ql1Gtf/3LFkrvSa7cAqYcYZiQ+z6zpnveIIebA++28q2QVpjGimSFeRd0y
+         UmQiSXIzG7D/OkiVZOAHXrpEyzaxY1sA6czMIU0velb7RHM7j6fKvcgIS3dj1gN1C4x6
+         3jE0J0tpo/KJR507W3OzCNw0DhuPK3h1oPldmxFpKhtJfBWGb680C+8Zr8+IT8vqiUFC
+         edtzQgRRhoQAeVac7EAsCu3hE2WhUws9KoCvu0xReABrfuBVmbsj+TUnyqYgM0xkmTkT
+         ba/oTJsATWJNPH2CmwufODGd/6fzPz9p2SxbPgjxqwl6NAaL3K9eBOoiICL+FqQEo5av
+         vA0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=X/nVZlZWogdbt/b/rHVbs9pJBJGAVO4zLjcTUrHYEa4=;
-        b=jvEgNpZh7M9bpSCyoSval8PT9G5kxNbAtzcEbHidpiFliL61lvdcxa8D9258ldgFvI
-         vS+fH+fA9FRfgcmEuaYNn+rJUA5c9C+v46ks3m+w7ojo1xXIIE2e8Tei+DOX91rbevML
-         zHpUlWw5wYrnEcGkzDFaPIDMI+ptZEIXCKJEHiOxAY/JIVTUkyr6DOIWFWlNl9J2NQCm
-         4f307XRG482uNSQMxNzeS/KCfSerpJ4u/yOAlJcqd2G9qMjqyKYgdkhGDNLEe+Q/0Z2c
-         TtWiuBUmURTe2rhPlRZQjJ/PLuXxINxFIOFb9sTO+Bqh7VmQkZ/+WKZAMaYWj1rwoqXt
-         Z2TA==
-X-Gm-Message-State: AOAM530t8fnIop0jlng9w/hEkCTz1HfVsjZLnXYapcSUxM7diJsHOzAC
-        qdPKjBnTxOZIZol9A0oRqcM9Kw==
-X-Google-Smtp-Source: ABdhPJySYFG4O7x1RJzYQ/9DGEfxhuncXtHh4QB1PGMasLvDWi8tyxHVB2vjj/WSDuNikPbqoBhcvw==
-X-Received: by 2002:a05:651c:110a:: with SMTP id d10mr20148725ljo.307.1618262566528;
-        Mon, 12 Apr 2021 14:22:46 -0700 (PDT)
-Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
-        by smtp.gmail.com with ESMTPSA id l17sm2560744lfg.178.2021.04.12.14.22.45
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SErWmlC8LnAVFg10EQrSUIl9iJTpdn9AfBuGrIp4r3E=;
+        b=cLP6JlCVdlZ7kQugTWNC9qMCsp9JLJXmJlYc/eRQwopXcRzGJljhnlRBAXxfYUK8QH
+         dPJDARjTcpAxpfC9rSst2dOM3NBMaPK7KX7CsFZ1QpoNrfkF6w4Ss7fvy7gzqtCRtPUH
+         BBquMB5aeMU5IYjpaMaQRWicC+w0AEifuR5HIqJ4pTDFqDRmjdoVFzk54eUfocqIwXJH
+         SbWyaxli23EtfCYphaHodA81lsnYnM+3yGXBwHZCd/WRlieSnGB7z9G0zaLFXDclgM3h
+         6a+jNPrUylq5BlHoK2G4+6rgT2Em+S0NNg+W409QPoz55Ve2hY/Gc4v2Tec+KSnraRMI
+         aRyg==
+X-Gm-Message-State: AOAM532dhI7kM9sorhNrBclnN1NGZf+fdIrpcMWltw58meBC9bFtWIAl
+        B1H3y45G0k5XpBBaXXy/pbo+d2B8VMQ=
+X-Google-Smtp-Source: ABdhPJzGsylhoQp1n1lxJaFb9m5HZsyxgyHY5QAFkUAmO5bgJD0J2D3S+COaabIZ0KBoblvPZfvXpg==
+X-Received: by 2002:a6b:8e0d:: with SMTP id q13mr17152250iod.63.1618262669090;
+        Mon, 12 Apr 2021 14:24:29 -0700 (PDT)
+Received: from aroeseler-ly545.hsd1.ut.comcast.net ([2601:681:8800:baf9:1ee4:d363:8fe6:b64f])
+        by smtp.googlemail.com with ESMTPSA id s17sm4274966ilt.77.2021.04.12.14.24.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 14:22:46 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        zhang kai <zhangkaiheb@126.com>,
-        Weilong Chen <chenweilong@huawei.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-In-Reply-To: <20210412213045.4277a598@thinkpad>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf> <878s5nllgs.fsf@waldekranz.com> <20210412213045.4277a598@thinkpad>
-Date:   Mon, 12 Apr 2021 23:22:45 +0200
-Message-ID: <8735vvkxju.fsf@waldekranz.com>
+        Mon, 12 Apr 2021 14:24:28 -0700 (PDT)
+From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Subject: [PATCH net-next V2] icmp: ICMPV6: pass RFC 8335 reply messages to ping_rcv
+Date:   Mon, 12 Apr 2021 16:23:56 -0500
+Message-Id: <20210412212356.22403-1-andreas.a.roeseler@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 21:30, Marek Behun <marek.behun@nic.cz> wrote:
-> On Mon, 12 Apr 2021 14:46:11 +0200
-> Tobias Waldekranz <tobias@waldekranz.com> wrote:
->
->> I agree. Unless you only have a few really wideband flows, a LAG will
->> typically do a great job with balancing. This will happen without the
->> user having to do any configuration at all. It would also perform well
->> in "router-on-a-stick"-setups where the incoming and outgoing port is
->> the same.
->
-> TLDR: The problem with LAGs how they are currently implemented is that
-> for Turris Omnia, basically in 1/16 of configurations the traffic would
-> go via one CPU port anyway.
->
->
->
-> One potencial problem that I see with using LAGs for aggregating CPU
-> ports on mv88e6xxx is how these switches determine the port for a
-> packet: only the src and dst MAC address is used for the hash that
-> chooses the port.
->
-> The most common scenario for Turris Omnia, for example, where we have 2
-> CPU ports and 5 user ports, is that into these 5 user ports the user
-> plugs 5 simple devices (no switches, so only one peer MAC address for
-> port). So we have only 5 pairs of src + dst MAC addresses. If we simply
-> fill the LAG table as it is done now, then there is 2 * 0.5^5 = 1/16
-> chance that all packets would go through one CPU port.
->
-> In order to have real load balancing in this scenario, we would either
-> have to recompute the LAG mask table depending on the MAC addresses, or
-> rewrite the LAG mask table somewhat randomly periodically. (This could
-> be in theory offloaded onto the Z80 internal CPU for some of the
-> switches of the mv88e6xxx family, but not for Omnia.)
+The current icmp_rcv function drops all unknown ICMP types, including
+ICMP_EXT_ECHOREPLY (type 43). In order to parse Extended Echo Reply messages, we have
+to pass these packets to the ping_rcv function, which does not do any
+other filtering and passes the packet to the designated socket.
 
-I thought that the option to associate each port netdev with a DSA
-master would only be used on transmit. Are you saying that there is a
-way to configure an mv88e6xxx chip to steer packets to different CPU
-ports depending on the incoming port?
+Pass incoming RFC 8335 ICMP Extended Echo Reply packets to the ping_rcv
+handler instead of discarding the packet.
 
-The reason that the traffic is directed towards the CPU is that some
-kind of entry in the ATU says so, and the destination of that entry will
-either be a port vector or a LAG. Of those two, only the LAG will offer
-any kind of balancing. What am I missing?
+Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+---
+Changes:
+v1 -> v2:
+ - Add ICMPV6 to patch
+---
+ net/ipv4/icmp.c | 5 +++++
+ net/ipv6/icmp.c | 4 ++++
+ 2 files changed, 9 insertions(+)
 
-Transmit is easy; you are already in the CPU, so you can use an
-arbitrarily fancy hashing algo/ebpf classifier/whatever to load balance
-in that case.
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 76990e13a2f9..8bd988fbcb31 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -1196,6 +1196,11 @@ int icmp_rcv(struct sk_buff *skb)
+ 		goto success_check;
+ 	}
+ 
++	if (icmph->type == ICMP_EXT_ECHOREPLY) {
++		success = ping_rcv(skb);
++		goto success_check;
++	}
++
+ 	/*
+ 	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
+ 	 *
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index 1bca2b09d77e..e8398ffb5e35 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -916,6 +916,10 @@ static int icmpv6_rcv(struct sk_buff *skb)
+ 		success = ping_rcv(skb);
+ 		break;
+ 
++	case ICMPV6_EXT_ECHO_REPLY:
++		success = ping_rcv(skb);
++		break;
++
+ 	case ICMPV6_PKT_TOOBIG:
+ 		/* BUGGG_FUTURE: if packet contains rthdr, we cannot update
+ 		   standard destination cache. Seems, only "advanced"
+-- 
+2.31.1
+
