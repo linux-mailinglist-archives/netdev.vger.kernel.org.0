@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1932735CBE5
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:27:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41CAD35CBE3
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:27:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244402AbhDLQZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:25:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56938 "EHLO mail.kernel.org"
+        id S243895AbhDLQZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:25:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243819AbhDLQY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S243822AbhDLQY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Apr 2021 12:24:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 80C356101B;
-        Mon, 12 Apr 2021 16:24:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CEA7161364;
+        Mon, 12 Apr 2021 16:24:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244647;
-        bh=i8OFDWmtkhlZ2o/xLejnGFjudfCyDewPIs5/dJNhUic=;
+        s=k20201202; t=1618244648;
+        bh=AW0bp1piLj4es0BhKJCmMFtIk8VNLiEF3VgcSgo9LV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLMs0IxEWTf2SrDLcWSmjc6CXPxFzW1b2XF0Cc6766FI6sLuTNNvHzqPsa7xm/opN
-         MAug6bUzI+k49YIOdPMed47NLg2eIIoN1bSpyYn0TXWdc+VdQnxXc/48I/DbdSpTuf
-         40mumnPKIDMxaGKFjHagbPgbSOPyBD9zAtWccT1xBw7HOxBlYxTHS6OtlSn1uR8oFh
-         9Ttse+hCymbJcVagNmxgBXETJ4TotkS7JHk8lGfThEItyS7jJGRNEJlvjOxgu1PnSU
-         badb0MbsUNOqN6RoPUueGy0zFQUUKZsaBY7yYSAAqHwXtsN65IUtOPjK/4CqA37/NZ
-         FkiMpGmy7qZcw==
+        b=VFX6SAGe/oEn2t7TVDj9gX69br7/2zrvvlvNXbEuyku2oCKES/aN7QdTwh0N+3RXW
+         A03Wlp4fi/wSGxVnxTv/6CGwWduTUEt2khyG8VYOv+7ziMfeyuYUhN23+RRkN1zjyV
+         sQi3Cp+3v9vCOr2RRLmQz9dE0ZB7sJmaaLXs7z6Pe70uxWHl3PiD1/ZVOp7CgDg4rn
+         kzKlpmdtYHuxUfN6JIS4gSbStUZLTFR0R50J4TYwzEE2G1MWuGllOcDzywiyb+CZC7
+         rvOL8vGxQHVvAlY0P7UGR0WA2Y9WwttnoLl7cADJe48YjovTUTqyIC9GWDpEI0l+GE
+         DcUt8AcUF2JVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexander Aring <aahringo@redhat.com>,
-        syzbot+368672e0da240db53b5f@syzkaller.appspotmail.com,
+        syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com,
         Stefan Schmidt <stefan@datenfreihafen.org>,
         Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 04/46] net: ieee802154: fix nl802154 del llsec devkey
-Date:   Mon, 12 Apr 2021 12:23:19 -0400
-Message-Id: <20210412162401.314035-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 05/46] net: ieee802154: nl-mac: fix check on panid
+Date:   Mon, 12 Apr 2021 12:23:20 -0400
+Message-Id: <20210412162401.314035-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210412162401.314035-1-sashal@kernel.org>
 References: <20210412162401.314035-1-sashal@kernel.org>
@@ -46,34 +46,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit 27c746869e1a135dffc2f2a80715bb7aa00445b4 ]
+[ Upstream commit 6f7f657f24405f426212c09260bf7fe8a52cef33 ]
 
-This patch fixes a nullpointer dereference if NL802154_ATTR_SEC_DEVKEY is
-not set by the user. If this is the case nl802154 will return -EINVAL.
+This patch fixes a null pointer derefence for panid handle by move the
+check for the netlink variable directly before accessing them.
 
-Reported-by: syzbot+368672e0da240db53b5f@syzkaller.appspotmail.com
+Reported-by: syzbot+d4c07de0144f6f63be3a@syzkaller.appspotmail.com
 Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20210221174321.14210-4-aahringo@redhat.com
+Link: https://lore.kernel.org/r/20210228151817.95700-4-aahringo@redhat.com
 Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ieee802154/nl802154.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ieee802154/nl-mac.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 3f6d86d63923..e9e4652cd592 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1916,7 +1916,8 @@ static int nl802154_del_llsec_devkey(struct sk_buff *skb, struct genl_info *info
- 	struct ieee802154_llsec_device_key key;
- 	__le64 extended_addr;
+diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
+index 6d091e419d3e..d19c40c684e8 100644
+--- a/net/ieee802154/nl-mac.c
++++ b/net/ieee802154/nl-mac.c
+@@ -551,9 +551,7 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
+ 	desc->mode = nla_get_u8(info->attrs[IEEE802154_ATTR_LLSEC_KEY_MODE]);
  
--	if (nla_parse_nested_deprecated(attrs, NL802154_DEVKEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_DEVKEY], nl802154_devkey_policy, info->extack))
-+	if (!info->attrs[NL802154_ATTR_SEC_DEVKEY] ||
-+	    nla_parse_nested_deprecated(attrs, NL802154_DEVKEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_DEVKEY], nl802154_devkey_policy, info->extack))
- 		return -EINVAL;
+ 	if (desc->mode == IEEE802154_SCF_KEY_IMPLICIT) {
+-		if (!info->attrs[IEEE802154_ATTR_PAN_ID] &&
+-		    !(info->attrs[IEEE802154_ATTR_SHORT_ADDR] ||
+-		      info->attrs[IEEE802154_ATTR_HW_ADDR]))
++		if (!info->attrs[IEEE802154_ATTR_PAN_ID])
+ 			return -EINVAL;
  
- 	if (!attrs[NL802154_DEVKEY_ATTR_EXTENDED_ADDR])
+ 		desc->device_addr.pan_id = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_PAN_ID]);
+@@ -562,6 +560,9 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
+ 			desc->device_addr.mode = IEEE802154_ADDR_SHORT;
+ 			desc->device_addr.short_addr = nla_get_shortaddr(info->attrs[IEEE802154_ATTR_SHORT_ADDR]);
+ 		} else {
++			if (!info->attrs[IEEE802154_ATTR_HW_ADDR])
++				return -EINVAL;
++
+ 			desc->device_addr.mode = IEEE802154_ADDR_LONG;
+ 			desc->device_addr.extended_addr = nla_get_hwaddr(info->attrs[IEEE802154_ATTR_HW_ADDR]);
+ 		}
 -- 
 2.30.2
 
