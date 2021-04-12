@@ -2,101 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E83D535C941
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC80435C956
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 17:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238789AbhDLOzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 10:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
+        id S242602AbhDLPBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 11:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237526AbhDLOzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 10:55:53 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81D6C06174A
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 07:55:35 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id w18so15508926edc.0
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 07:55:35 -0700 (PDT)
+        with ESMTP id S241302AbhDLPBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 11:01:12 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBEDEC061574;
+        Mon, 12 Apr 2021 08:00:54 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id t22so6184378ply.1;
+        Mon, 12 Apr 2021 08:00:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=p3fb0bGRJDa+gWnEG9CcLy9+XO75ZHFp+z6HBxZm4ZU=;
-        b=WMDcIvmlJAbBCe9phjMjBBKOFyuv3ADN5tzRRkFKsrqrb/VyuftpraN+UVKIPUD4zF
-         cABDi1sa25owXxenOa376HindbvGNY0CZ4kABhDCP8OKam75qIKCSaNlJ+TOPx1iwREg
-         ofdY+/8Z+7gLf6kV0NUWvM/nm3MLOGctqVjFffEgEdmW/0RwKefSC6ZeQTIOwsvcTE1i
-         4+MVPGszAr5q21qSQCR5tYoP8Fek/L+rLLXWO/DU31vCty/k/S1BvYx3qUfxEGLwxEwO
-         We7tuAMa8v0icRrYYtCmr1TsWZbOpDqyPBhdyL9A3awv14uOf0Gcgz3Nyq7JKfBwQf08
-         /pGg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=0hXhggls3SsdmeEdICPiR/mw1VhFjhbR9Aip2rqIyO4=;
+        b=Lt7Kkeff+wv/0Sl+wVWKVeQuDdCJsddS3WDO/HsC7ExIVOTCGMqJ53FXjfq4eVyIym
+         pJKnIVc+O4MisoROlRvAQc9NAQzobVbiuCLk8GHwE0ttLYCB9ML5VAUxiWar0OEdMzSU
+         Uug2+3qMemrFi7/VGW3QUlvsRZoHX9avflweqAQH5yvxQOujn6/iGvKT4SijR7zil+rl
+         x6/AnREpIPbZ1Tq4MrunHSc+prLscYWUtde56wIbn1BgTik89FOU279kyA7PoX9eb6bz
+         JbcxqyrzcN/t8Y3V33W6VdpUYoBuSQOFi/EhMzNq5Lj15Ikg9oM4Hkx/+4hOH7byY3Lq
+         5asw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=p3fb0bGRJDa+gWnEG9CcLy9+XO75ZHFp+z6HBxZm4ZU=;
-        b=dJlb8TGdCEgSDcr9Ze9LfjNXfM+R3Ht49ZzqpCxTk8pid+p/Edwlj+9XCma+mAWB49
-         THye/Df1JMZITSwKnbxPxI5TyKRqt+Z7/Z4t/jpr3xjgoS8sW/oHtb0dXP2pZYPqEjtI
-         0AsMOHnX+BQkSV1zNY7ZcMTOEhakF5du2/TV92uoSB0dZh78Rwb7CD0Km5cbQ0Iv6uxD
-         7T99Ea+x1ZhHJpUCEc9FkY1r7w9udnwGID/uvtT6cORSg1hopBlhMWojzI3SHmqWXYOf
-         c3Yy32RevTrbih2GUJLSk2T5xcrjvyCkeNr6QDhVgkWESWS6mBmnNqbgKabXJo53D0od
-         tZyw==
-X-Gm-Message-State: AOAM530Gnot3nZWNo6nQ8Gm0FKiVjcX8DNZSkexV8VLoNl5tltU6886a
-        0L6pMkrEfVB4xnsFvm8wnNe0Kkpj+/DVa+gDgo1lDJTrxEY=
-X-Google-Smtp-Source: ABdhPJw3E2CaojH6VKVs8ACPHF/5F33gJEmG8Pi6vVPY1FcEhbZBe8H30pI+PIYDV8zH7ad6rim5nsbzl6C049f8V2k=
-X-Received: by 2002:a50:aad9:: with SMTP id r25mr30033375edc.125.1618239334221;
- Mon, 12 Apr 2021 07:55:34 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=0hXhggls3SsdmeEdICPiR/mw1VhFjhbR9Aip2rqIyO4=;
+        b=EzrIIZYgmw6VOSLHt4dpTqb8cP6VvFac+SLAbw/x+Gz8Yo1mXUdJ5UYhQoktxTodp8
+         Nd0qnBUbU2OG35d8cruxFG1xnWKqNkemx7m6gknNxzmlpY54Ym/KygvlWwMEWWem+Rr7
+         8Y7+x1wi5on/QfqGQTUeZyCVQvHp7UnROlgSPIvGRo8mJCaLM+wADIOWjYO7GiWWzWlR
+         y9ixGtvgYNHYWA8B7iPf/qZgfTuNw8O1pEIHVP5ZrLSvoQGJLb7Wg50KRGiUJXWs7Yr0
+         KvFAH81x6GevRA9JAGj/ZDBguImMwGnL503BLGiqIqUIgFmotUFD9zLIcd5IWK5Yh4PZ
+         yNKA==
+X-Gm-Message-State: AOAM532Di8n9Jk0cZz1PfA0xhjXun8Ud+Uo7gQThxdbYejOnbaguwe0I
+        bUMXSlDKGI0SYDV+HdmTPxdKoyY/Sr+9WTlU
+X-Google-Smtp-Source: ABdhPJyN89fUbcwYmwo8tfuHo+uILoVx2ouA4h+2bcTXZPQh0cGMV43Wr4ZOUK3zn/geNKDM7piASA==
+X-Received: by 2002:a17:90b:3892:: with SMTP id mu18mr27963088pjb.7.1618239654319;
+        Mon, 12 Apr 2021 08:00:54 -0700 (PDT)
+Received: from localhost.localdomain ([138.197.212.246])
+        by smtp.gmail.com with ESMTPSA id y19sm12255982pge.50.2021.04.12.08.00.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 08:00:53 -0700 (PDT)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Marek Behun <marek.behun@nic.cz>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Date:   Mon, 12 Apr 2021 23:00:45 +0800
+Message-Id: <20210412150045.929508-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210411185017.3xf7kxzzq2vefpwu@skbuf>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf>
 MIME-Version: 1.0
-From:   Jax Jiang <jax.jiang.007@gmail.com>
-Date:   Mon, 12 Apr 2021 22:55:22 +0800
-Message-ID: <CAGCQqYa5kGxso9AcKzi0Nke+Gv2o2vwG1qMTXbk-5WHFFURe6w@mail.gmail.com>
-Subject: [BUG] Thunderbolt network ip forward package drop problem.
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi.
-I am geek and try to build 10G NIC and thunderbolt network software router.
-And I found there have some performance problem on Linux thunderbolt network.
+On Sun, Apr 11, 2021 at 09:50:17PM +0300, Vladimir Oltean wrote:
+> 
+> So I'd be tempted to say 'tough luck' if all your ports are not up, and
+> the ones that are are assigned statically to the same CPU port. It's a
+> compromise between flexibility and simplicity, and I would go for
+> simplicity here. That's the most you can achieve with static assignment,
+> just put the CPU ports in a LAG if you want better dynamic load balancing
+> (for details read on below).
+> 
 
-10G NIC -> Linux Kernel -> Thunderbolt Network: downstream speed about 8-9Gbps
-Thunderbolt Network -> Linux Kernel -> 10G NIC: upsteam speed only just 1Mbps.
-
-OS: OpenWRT 19.07 (I also tested ubuntu got same result)
-Kernel Version: 5.10.27 (I also tested Linux 5.12-rc4 got same result)
-These days I try to learn and understand Linux network stack process.
-And I found there have two MTU check codes on ip forward process.
-1. In net/ipv4/ip_forward.c :
-    if (ip_exceeds_mtu(skb, mtu)) {
-        IP_INC_STATS(net, IPSTATS_MIB_FRAGFAILS);
-        icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
-              htonl(mtu));
-        goto drop;
-    }
-2. In net/ipv4/ip_output.c:
-      if (unlikely(!skb->ignore_df ||
-             (IPCB(skb)->frag_max_size &&
-              IPCB(skb)->frag_max_size > mtu))) {
-        IP_INC_STATS(net, IPSTATS_MIB_FRAGFAILS);
-        icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
-              htonl(mtu));
-        kfree_skb(skb);
-        return -EMSGSIZE;
-    }
-Both two codes cause if found package bigger than MTU it will send
-icmp "ICMP_FRAG_NEEDED" msg to client.
-And I capture package by use tcpdump. And I confirmed there have
-"unreachable - need to frag (mtu 1416)" icmp
-package back.
-I try to force remove both two codes(only remove one of them are not
-work). And upsteam speed looks slightly normal. (UP TO 3Gpbs not just
-1Mbps).
-I capture package on normal 10GNIC: Because of TSO, Kernel received
-bigger than mtu package. But on transmit side, it auto split to mtu
-size package. On thunderbolt network, looks received TSO large package
-not automatic split before ip forward.
-
-I found where package drop on thunderbolt network. But I still don't
-know why cause that. And how to solve it.
-
-Could anyone help me?
-
-
-Jax Jiang
+Many switches such as mv88e6xxx only support MAC DA/SA load balancing,
+which make it not ideal in router application (Router WAN <--> ISP BRAS
+traffic will always have the same DA/SA and thus use only one port).
