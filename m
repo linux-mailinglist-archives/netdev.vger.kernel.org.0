@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2656135CC79
+	by mail.lfdr.de (Postfix) with ESMTP id E1C6F35CC7B
 	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:28:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244646AbhDLQ25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:28:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57016 "EHLO mail.kernel.org"
+        id S244830AbhDLQ26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:28:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244562AbhDLQ0c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 12:26:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F80A6137F;
-        Mon, 12 Apr 2021 16:24:58 +0000 (UTC)
+        id S243299AbhDLQ0y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 12:26:54 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6224961371;
+        Mon, 12 Apr 2021 16:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244699;
-        bh=gauwxOII5IhILsHkyZ5M5yDxGcZpvTc8saNGZFsgaoQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nDASX2d+iJ830NbSSN0wPOgJD7CLHT2iyq3wWUfzT99SDHOPI/iFdrLR9GE/J/Ly7
-         yGr3SHxHw9UtLju9ttcRlT1RhggdZS8z68sLvxupwQ+FFRTkYIM0c0VAV4/OnonMEb
-         NnUMdPs4k/mZLK7yDzuoEIDNDFjJJ6vrIoDOoWpdMkOCHfAAXCojf54UGoYNO5TIIf
-         fvZ/umkfbY9PEknfXBwJV+Z3fihPAxiECSUYjE7VlEFH7UHv98y3HylH7YN+xyfnli
-         G+SnqnCUUhpBNcHmnU/I8NfR1H/TeacNzTCIL1s3Plet7LVuvYicN0aWVuJCABMt4h
-         wY0Tgq/eao71A==
+        s=k20201202; t=1618244704;
+        bh=b0XojnXsO9Hyyecq96fEMRKMafR34w5GEc7zCToFUOU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rDb19yRC54w/qhqznXBC6OZDUD/7/NF6nPp5RmKRCXdf3FzsVgvvBq0avK1x6Lvnn
+         48+Ve+snhb40c2e+YFZSM4e7DFQVM2P2alvS4Qqaap2pey3vhidjU5s88AyF3cUHrI
+         XceZJ9DO6PZg27mP9Smtdv36hGCL0ODXnAyN/5+GjChPRCnCjISW27QqhIDJOpmyn8
+         p1YOe6WXUrfgC2b0asg23rsaQmY9NuPGSz+TDdSc7v45IsYbvB1qrmDXR0KDmUBFwt
+         246KCZnLwuIcn++AxAj7KqAPKCFZkfp/EFBfdOoyvE8DrxqEQqps/lUg2CPi01iu+t
+         BCr/MCK2PdVRA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "A. Cody Schuffelen" <schuffelen@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 45/46] virt_wifi: Return micros for BSS TSF values
-Date:   Mon, 12 Apr 2021 12:24:00 -0400
-Message-Id: <20210412162401.314035-45-sashal@kernel.org>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        syzbot+ac5c11d2959a8b3c4806@syzkaller.appspotmail.com,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 01/39] net: ieee802154: fix nl802154 del llsec key
+Date:   Mon, 12 Apr 2021 12:24:23 -0400
+Message-Id: <20210412162502.314854-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210412162401.314035-1-sashal@kernel.org>
-References: <20210412162401.314035-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,48 +42,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "A. Cody Schuffelen" <schuffelen@google.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit b57aa17f07c9270e576ef7df09f142978b5a75f0 ]
+[ Upstream commit 37feaaf5ceb2245e474369312bb7b922ce7bce69 ]
 
-cfg80211_inform_bss expects to receive a TSF value, but is given the
-time since boot in nanoseconds. TSF values are expected to be at
-microsecond scale rather than nanosecond scale.
+This patch fixes a nullpointer dereference if NL802154_ATTR_SEC_KEY is
+not set by the user. If this is the case nl802154 will return -EINVAL.
 
-Signed-off-by: A. Cody Schuffelen <schuffelen@google.com>
-Link: https://lore.kernel.org/r/20210318200419.1421034-1-schuffelen@google.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: syzbot+ac5c11d2959a8b3c4806@syzkaller.appspotmail.com
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Link: https://lore.kernel.org/r/20210221174321.14210-1-aahringo@redhat.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/virt_wifi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ieee802154/nl802154.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
-index c878097f0dda..1df959532c7d 100644
---- a/drivers/net/wireless/virt_wifi.c
-+++ b/drivers/net/wireless/virt_wifi.c
-@@ -12,6 +12,7 @@
- #include <net/cfg80211.h>
- #include <net/rtnetlink.h>
- #include <linux/etherdevice.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index ffcfcef76291..44df73d73fc9 100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1608,7 +1608,8 @@ static int nl802154_del_llsec_key(struct sk_buff *skb, struct genl_info *info)
+ 	struct nlattr *attrs[NL802154_KEY_ATTR_MAX + 1];
+ 	struct ieee802154_llsec_key_id id;
  
- static struct wiphy *common_wiphy;
-@@ -168,11 +169,11 @@ static void virt_wifi_scan_result(struct work_struct *work)
- 			     scan_result.work);
- 	struct wiphy *wiphy = priv_to_wiphy(priv);
- 	struct cfg80211_scan_info scan_info = { .aborted = false };
-+	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
+-	if (nla_parse_nested_deprecated(attrs, NL802154_KEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_KEY], nl802154_key_policy, info->extack))
++	if (!info->attrs[NL802154_ATTR_SEC_KEY] ||
++	    nla_parse_nested_deprecated(attrs, NL802154_KEY_ATTR_MAX, info->attrs[NL802154_ATTR_SEC_KEY], nl802154_key_policy, info->extack))
+ 		return -EINVAL;
  
- 	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
- 					   CFG80211_BSS_FTYPE_PRESP,
--					   fake_router_bssid,
--					   ktime_get_boottime_ns(),
-+					   fake_router_bssid, tsf,
- 					   WLAN_CAPABILITY_ESS, 0,
- 					   (void *)&ssid, sizeof(ssid),
- 					   DBM_TO_MBM(-50), GFP_KERNEL);
+ 	if (ieee802154_llsec_parse_key_id(attrs[NL802154_KEY_ATTR_ID], &id) < 0)
 -- 
 2.30.2
 
