@@ -2,266 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF8335C3C4
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 12:23:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7D235C404
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 12:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239100AbhDLKXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 06:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
+        id S239100AbhDLKbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 06:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239068AbhDLKXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 06:23:08 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5A3C06138C
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 03:22:50 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lVtiB-00079X-CW; Mon, 12 Apr 2021 12:22:31 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:3d5d:9164:44d1:db57] (unknown [IPv6:2a03:f580:87bc:d400:3d5d:9164:44d1:db57])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 41F5A60CD35;
-        Mon, 12 Apr 2021 10:22:29 +0000 (UTC)
-To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+        with ESMTP id S238970AbhDLKba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 06:31:30 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11097C061574;
+        Mon, 12 Apr 2021 03:31:12 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id sd23so10749491ejb.12;
+        Mon, 12 Apr 2021 03:31:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EGiA9WNNtPc3+NS/6kdbcDSHvt+XlVdb8Hnww0GQLWw=;
+        b=HEgI8G6ADeyHpKGzLw4Wny6LdPxHZMvswc8guL88pCcCgHGVLIVK8KhA9ornowNPGF
+         w1wSlbql/TPryQmP47gEJh1rydP+nMf4zeEtoNp7WQIzzan3KB6hGqvJhtV2Xh4no+F8
+         1twmPxLwoB4rW6u1Z6QX8gvDmVag+ihlk4uM44dXwPg3/slr+5WAdLl/0qOzSJUpb7cY
+         izpyH1H8+yucfx15b57AujTUgOHQ6ZqIyW9JMMIinosAjXLOPrw/6pczMadKx4RNDEZH
+         FlQ+Ds5b+A8CHshpzKqXoLkk513EkKXeQBkyYv1mec0u3k6Wq3sZnQNFg06vKJiO37sI
+         zC1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EGiA9WNNtPc3+NS/6kdbcDSHvt+XlVdb8Hnww0GQLWw=;
+        b=Go3GUrDEiySSxXNHY6Oh+8onpXg9TZEj3jBKbpwl6h/3eIl3HR8jFp7x7PxwVGD0H1
+         hPWGUkwA3AJw7VdoFTIJP0/qH9BtKTLt9HI+HswdwQ6hTzqtKjRmVcjnb9G4Hyg0QEEX
+         4fwyZAMzswVkM8+FFsBfFHnvyZUWw26PVHRpGiCQIQoH4xqFTyQf6/HeMdrU1Swyu9VF
+         JFUT+Bm3vTmI/yVQJv+iRfbCNIqmrC4FHAWUomCTSrVZf58kTCzTq3OSNQ8mESDBVVtZ
+         EO9ZyvTAGkaq/SPOa6OYMQ/20y5F1EYhfGGzQGBg61Ao1qMQq1wOOchqHMCC5NMvZqK3
+         TP1w==
+X-Gm-Message-State: AOAM533TieK2QO9e8YZievpP3jLN8yM7gS8EFksbZm1d8BSj3pA59ZEg
+        Dz/TZev8GUU+kPiIRTnQDw8=
+X-Google-Smtp-Source: ABdhPJy7UBj4q+DvQwXKRoDAy0S48SlayaYgb0EAfcwKCvFak61Jet3zUyd3fC4bpH2uKHiuBQ7qLw==
+X-Received: by 2002:a17:906:2509:: with SMTP id i9mr3939604ejb.117.1618223470621;
+        Mon, 12 Apr 2021 03:31:10 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (host-79-34-220-97.business.telecomitalia.it. [79.34.220.97])
+        by smtp.gmail.com with ESMTPSA id w22sm6379565edl.92.2021.04.12.03.31.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 03:31:10 -0700 (PDT)
+Date:   Mon, 12 Apr 2021 06:53:04 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek Behun <marek.behun@nic.cz>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Sriram Dash <sriram.dash@samsung.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org
-References: <20210409134056.18740-1-a-govindraju@ti.com>
- <20210409134056.18740-5-a-govindraju@ti.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH 4/4] can: m_can_platform: Add support for transceiver as
- phy
-Message-ID: <9509372e-60f1-85cf-cc22-f7c1e66ae738@pengutronix.de>
-Date:   Mon, 12 Apr 2021 12:22:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Message-ID: <YHPSMMeOtnLNJPWm@Ansuel-xps.localdomain>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com>
+ <20210411200135.35fb5985@thinkpad>
+ <YHNCUDJrz7ISiLVT@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20210409134056.18740-5-a-govindraju@ti.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="ZcKzB18WVh2ifi2HCVkrsNr3IzjeryztF"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YHNCUDJrz7ISiLVT@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ZcKzB18WVh2ifi2HCVkrsNr3IzjeryztF
-Content-Type: multipart/mixed; boundary="w3ghW4tZBR23ZVBlaIWDDYVNiMsMARMjl";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Aswath Govindraju <a-govindraju@ti.com>
-Cc: Vignesh Raghavendra <vigneshr@ti.com>,
- Kishon Vijay Abraham I <kishon@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>,
- Grygorii Strashko <grygorii.strashko@ti.com>, Faiz Abbas
- <faiz_abbas@ti.com>, Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
- Wolfgang Grandegger <wg@grandegger.com>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, Vinod Koul <vkoul@kernel.org>,
- Sriram Dash <sriram.dash@samsung.com>, linux-can@vger.kernel.org,
- netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org
-Message-ID: <9509372e-60f1-85cf-cc22-f7c1e66ae738@pengutronix.de>
-Subject: Re: [PATCH 4/4] can: m_can_platform: Add support for transceiver as
- phy
-References: <20210409134056.18740-1-a-govindraju@ti.com>
- <20210409134056.18740-5-a-govindraju@ti.com>
-In-Reply-To: <20210409134056.18740-5-a-govindraju@ti.com>
+On Sun, Apr 11, 2021 at 08:39:12PM +0200, Andrew Lunn wrote:
+> On Sun, Apr 11, 2021 at 08:01:35PM +0200, Marek Behun wrote:
+> > On Sat, 10 Apr 2021 15:34:46 +0200
+> > Ansuel Smith <ansuelsmth@gmail.com> wrote:
+> > 
+> > > Hi,
+> > > this is a respin of the Marek series in hope that this time we can
+> > > finally make some progress with dsa supporting multi-cpu port.
+> > > 
+> > > This implementation is similar to the Marek series but with some tweaks.
+> > > This adds support for multiple-cpu port but leave the driver the
+> > > decision of the type of logic to use about assigning a CPU port to the
+> > > various port. The driver can also provide no preference and the CPU port
+> > > is decided using a round-robin way.
+> > 
+> > In the last couple of months I have been giving some thought to this
+> > problem, and came up with one important thing: if there are multiple
+> > upstream ports, it would make a lot of sense to dynamically reallocate
+> > them to each user port, based on which user port is actually used, and
+> > at what speed.
+> > 
+> > For example on Turris Omnia we have 2 CPU ports and 5 user ports. All
+> > ports support at most 1 Gbps. Round-robin would assign:
+> >   CPU port 0 - Port 0
+> >   CPU port 1 - Port 1
+> >   CPU port 0 - Port 2
+> >   CPU port 1 - Port 3
+> >   CPU port 0 - Port 4
+> > 
+> > Now suppose that the user plugs ethernet cables only into ports 0 and 2,
+> > with 1, 3 and 4 free:
+> >   CPU port 0 - Port 0 (plugged)
+> >   CPU port 1 - Port 1 (free)
+> >   CPU port 0 - Port 2 (plugged)
+> >   CPU port 1 - Port 3 (free)
+> >   CPU port 0 - Port 4 (free)
+> > 
+> > We end up in a situation where ports 0 and 2 share 1 Gbps bandwidth to
+> > CPU, and the second CPU port is not used at all.
+> > 
+> > A mechanism for automatic reassignment of CPU ports would be ideal here.
+> 
+> One thing you need to watch out for here source MAC addresses. I've
+> not looked at the details, so this is more a heads up, it needs to be
+> thought about.
+>
+> DSA slaves get there MAC address from the master interface. For a
+> single CPU port, all the slaves have the same MAC address. What
+> happens when you have multiple CPU ports? Does the slave interface get
+> the MAC address from its CPU port? What happens when a slave moves
+> from one CPU interface to another CPU interface? Does its MAC address
+> change. ARP is going to be unhappy for a while? Also, how is the
+> switch deciding on which CPU port to use? Some switches are probably
+> learning the MAC address being used by the interface and doing
+> forwarding based on that. So you might need unique slave MAC
+> addresses, and when a slave moves, it takes it MAC address with it,
+> and you hope the switch learns about the move. But considered trapped
+> frames as opposed to forwarded frames. So BPDU, IGMP, etc. Generally,
+> you only have the choice to send such trapped frames to one CPU
+> port. So potentially, such frames are going to ingress on the wrong
+> port. Does this matter? What about multicast? How do you control what
+> port that ingresses on? What about RX filters on the master
+> interfaces? Could it be we added it to the wrong master?
+> 
 
---w3ghW4tZBR23ZVBlaIWDDYVNiMsMARMjl
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+I think that MAC adress should be changed accordingly. If the port
+doesn't have a custom mac set, it should follow the master mac and be
+changed on port change. (Since this is an RFC I didn't add any lock but
+I think it's needed to change also the cpu_dp and the xmit path)
 
-On 4/9/21 3:40 PM, Aswath Govindraju wrote:
-> From: Faiz Abbas <faiz_abbas@ti.com>
->=20
-> Add support for implementing transceiver node as phy. The max_bitrate i=
-s
-> obtained by getting a phy attribute.
->=20
-> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
-> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
-> ---
->  drivers/net/can/m_can/m_can_platform.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
->=20
-> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m=
-_can/m_can_platform.c
-> index 599de0e08cd7..4a762b5a21d8 100644
-> --- a/drivers/net/can/m_can/m_can_platform.c
-> +++ b/drivers/net/can/m_can/m_can_platform.c
-> @@ -6,6 +6,7 @@
->  // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.t=
-i.com/
-> =20
->  #include <linux/platform_device.h>
-> +#include <linux/phy/phy.h>
-> =20
->  #include "m_can.h"
-> =20
-> @@ -67,7 +68,9 @@ static int m_can_plat_probe(struct platform_device *p=
-dev)
->  	struct resource *res;
->  	void __iomem *addr;
->  	void __iomem *mram_addr;
-> +	struct phy *transceiver;
->  	int irq, ret =3D 0;
-> +	u32 bitrate_max;
-> =20
->  	mcan_class =3D m_can_class_allocate_dev(&pdev->dev,
->  					      sizeof(struct m_can_plat_priv));
-> @@ -101,6 +104,28 @@ static int m_can_plat_probe(struct platform_device=
- *pdev)
->  		goto probe_fail;
->  	}
-> =20
-> +	transceiver =3D devm_phy_optional_get(&pdev->dev, "can_transceiver");=
+> For this series to make progress, we need to know what has been
+> tested, and if all the more complex functionality works, not just
+> basic pings.
 
-> +	if (IS_ERR(transceiver)) {
-> +		ret =3D PTR_ERR(transceiver);
-> +		dev_err(&pdev->dev, "error while getting phy, err=3D%d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	if (!transceiver) {
-> +		dev_warn(&pdev->dev, "No transceiver phy found\n");
+About testing, I'm currently using this with a qca8k switch. It looks
+like all works correctly but I agree that this needs better testing of
+the more complex funcionality. Anyway this series just adds the
+possibility of support and change cpu port but by default keeps the
+old default bheaviour. (so in theory no regression in that part)
 
-I think that's a bit to loud.
-
-> +	} else {
-> +		ret =3D phy_power_on(transceiver);
-
-Please move the phy power on/off to the ndo_open and ndo_stop callbacks. =
-There's
-no need to power the transceivers if the CAN interface is down.
-
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "error powering on phy, err=3D%d\n", ret);
-> +			return ret;
-> +		}
-> +		/* converting from Mbps to bps */
-> +		bitrate_max =3D (transceiver->attrs.max_link_rate) * 1000000;
-> +		if (!bitrate_max)
-> +			dev_warn(&pdev->dev, "Invalid value for transceiver max bitrate. Ig=
-noring bitrate limit\n");
-
-Please move this check to the generic transcevier code.
-
-> +		priv->cdev.can.bitrate_max =3D bitrate_max;
-> +	}
-> +
->  	priv->base =3D addr;
->  	priv->mram_base =3D mram_addr;
-> =20
->=20
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---w3ghW4tZBR23ZVBlaIWDDYVNiMsMARMjl--
-
---ZcKzB18WVh2ifi2HCVkrsNr3IzjeryztF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmB0H2IACgkQqclaivrt
-76n6egf/eFsUSJiwBzgGg9LfFL04wB2B4YGhHoQGhX7uRj2QNAsq9btgslMVHJnd
-eHvdoYrB733sOkKSg/p0SBxuKRD3vca8aY44UNwdT+AnX3AyoelH2i7iXJofhy8c
-0McPKTY/uz/PQNvMzu1GyIoeF4cpYUwVnF9H3KEC/voONaDi8XHNoU6g7RP3uwSp
-9Nh/9QjXxHIa8OUkhW4Ymp/qk/NkA5l6zPDLMmMFu56u3q/bg00CMC0wVPpyL/nm
-7mkRiVt3fRYoqv+IqXSAs/M464fY0Np3+Gsd+PNP5nG/JAPLGTC8autLogS4XDaj
-kwq7/dF9WbHw0yssLda0q2EXtQRQvQ==
-=ZP+A
------END PGP SIGNATURE-----
-
---ZcKzB18WVh2ifi2HCVkrsNr3IzjeryztF--
+> 
+>       Andrew
