@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5050F35C930
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:51:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 864CA35C934
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 16:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242474AbhDLOvY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 12 Apr 2021 10:51:24 -0400
-Received: from mga02.intel.com ([134.134.136.20]:7532 "EHLO mga02.intel.com"
+        id S242550AbhDLOvk convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 12 Apr 2021 10:51:40 -0400
+Received: from mga03.intel.com ([134.134.136.65]:13079 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240199AbhDLOvY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 10:51:24 -0400
-IronPort-SDR: NyNqBz8CNtvEAApVZUIjzz1S5QiWQ48cigL4JCB6Oe2PKxZ/NqxMN2zBwdCQPodsDXLPwX42WW
- 0zWPqEzpfh8A==
-X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="181332635"
+        id S242544AbhDLOvj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 10:51:39 -0400
+IronPort-SDR: Hx/P2ugnxe+u00oo+coGDEaaqpruLn5IwbC9IIXhL2ZRnUm+HX8Jv9yZhbun4icyPSuIHuRWZL
+ Kxrv/eIyjuiA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="194237754"
 X-IronPort-AV: E=Sophos;i="5.82,216,1613462400"; 
-   d="scan'208";a="181332635"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2021 07:51:05 -0700
-IronPort-SDR: Ai1OXhXZ+HFl1g8X2UP4Y6ktg9rQwzWfYVlLgIqmJeQziUlLg+mbzo8kOLxX4Bf7HJyBocXIxg
- Gkv93Vtrkjug==
+   d="scan'208";a="194237754"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2021 07:51:21 -0700
+IronPort-SDR: aLOnJAL5S4Oq9ldJCskKLYsILXHx1/iKdhJ4v5KHBgfWUpdmY4dQfoq9N1lCTdsEqjDdfrv6rp
+ NgXCaraQRgUg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,216,1613462400"; 
-   d="scan'208";a="450011694"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by FMSMGA003.fm.intel.com with ESMTP; 12 Apr 2021 07:51:05 -0700
+   d="scan'208";a="417422733"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Apr 2021 07:51:20 -0700
 Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 12 Apr 2021 07:51:04 -0700
+ 15.1.2106.2; Mon, 12 Apr 2021 07:51:20 -0700
 Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
  fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 12 Apr 2021 07:51:04 -0700
+ 15.1.2106.2; Mon, 12 Apr 2021 07:51:19 -0700
 Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
  fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
- Mon, 12 Apr 2021 07:51:04 -0700
+ Mon, 12 Apr 2021 07:51:19 -0700
 From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 CC:     "dledford@redhat.com" <dledford@redhat.com>,
@@ -47,15 +47,15 @@ CC:     "dledford@redhat.com" <dledford@redhat.com>,
         "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "Williams, Dan J" <dan.j.williams@intel.com>,
         "Hefty, Sean" <sean.hefty@intel.com>
-Subject: RE: [PATCH v4 01/23] iidc: Introduce iidc.h
-Thread-Topic: [PATCH v4 01/23] iidc: Introduce iidc.h
-Thread-Index: AQHXKygiEMWtUC1Uo0mj4KR4ZXyZX6qpx+uAgAKRZLA=
-Date:   Mon, 12 Apr 2021 14:51:03 +0000
-Message-ID: <be4f52362019468b90cd5998fb5cb8b5@intel.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-2-shiraz.saleem@intel.com>
- <20210407173547.GB502757@nvidia.com>
-In-Reply-To: <20210407173547.GB502757@nvidia.com>
+Subject: RE: [PATCH v4 resend 01/23] iidc: Introduce iidc.h
+Thread-Topic: [PATCH v4 resend 01/23] iidc: Introduce iidc.h
+Thread-Index: AQHXK0MoREaUeG1gK0SxdZvV8XgX6Kqp0AGAgAK0eZA=
+Date:   Mon, 12 Apr 2021 14:51:18 +0000
+Message-ID: <2ee289f620154810921df2bc2c903192@intel.com>
+References: <20210407001502.1890-1-shiraz.saleem@intel.com>
+ <20210407001502.1890-2-shiraz.saleem@intel.com>
+ <20210407180529.GA547588@nvidia.com>
+In-Reply-To: <20210407180529.GA547588@nvidia.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -71,158 +71,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v4 01/23] iidc: Introduce iidc.h
+> Subject: Re: [PATCH v4 resend 01/23] iidc: Introduce iidc.h
 > 
-> On Tue, Apr 06, 2021 at 04:01:03PM -0500, Shiraz Saleem wrote:
-> 
-> > +struct iidc_res_base {
-> > +	/* Union for future provision e.g. other res_type */
-> > +	union {
-> > +		struct iidc_rdma_qset_params qsets;
-> > +	} res;
-> 
-> Use an anonymous union?
-> 
-> There is alot of confusiong provisioning for future types, do you have concrete
-> plans here? I'm a bit confused why this is so different from how mlx5 ended up
-> when it already has multiple types.
-
-It was initially designed to be extensible for more resource types. But at this point,
-there is no concrete plan and hence it doesn't need to be a union. 
-
-> 
-> > +};
-> > +
-> > +struct iidc_res {
-> > +	/* Type of resource. */
-> > +	enum iidc_res_type res_type;
-> > +	/* Count requested */
-> > +	u16 cnt_req;
-> > +
-> > +	/* Number of resources allocated. Filled in by callee.
-> > +	 * Based on this value, caller to fill up "resources"
-> > +	 */
-> > +	u16 res_allocated;
-> > +
-> > +	/* Unique handle to resources allocated. Zero if call fails.
-> > +	 * Allocated by callee and for now used by caller for internal
-> > +	 * tracking purpose.
-> > +	 */
-> > +	u32 res_handle;
-> > +
-> > +	/* Peer driver has to allocate sufficient memory, to accommodate
-> > +	 * cnt_requested before calling this function.
-> 
-> Calling what function?
-
-Left over cruft from the re-write of IIDC in v2.
-> 
-> > +	 * Memory has to be zero initialized. It is input/output param.
-> > +	 * As a result of alloc_res API, this structures will be populated.
-> > +	 */
-> > +	struct iidc_res_base res[1];
-> 
-> So it is a wrongly defined flex array? Confused
-
-Needs fixing.
-
-> 
-> The usages are all using this as some super-complicated function argument:
-> 
-> 	struct iidc_res rdma_qset_res = {};
-> 
-> 	rdma_qset_res.res_allocated = 1;
-> 	rdma_qset_res.res_type = IIDC_RDMA_QSETS_TXSCHED;
-> 	rdma_qset_res.res[0].res.qsets.vport_id = vsi->vsi_idx;
-> 	rdma_qset_res.res[0].res.qsets.teid = tc_node->l2_sched_node_id;
-> 	rdma_qset_res.res[0].res.qsets.qs_handle = tc_node->qs_handle;
-> 
-> 	if (cdev_info->ops->free_res(cdev_info, &rdma_qset_res))
-> 
-> So the answer here is to make your function calls sane and well architected. If you
-> have to pass a union to call a function then something is very wrong with the
-> design.
-> 
-
-Based on previous comment, the union will be removed.
-
-> You aren't trying to achieve ABI decoupling of the rdma/ethernet modules with an
-> obfuscated complicated function pointer indirection, are you?
-
-As discussed in other thread, this is part of the IIDC interface exporting the core device .ops callbacks.
-> 
-> > +/* Following APIs are implemented by auxiliary drivers and invoked by
-> > +core PCI
-> > + * driver
+> On Tue, Apr 06, 2021 at 07:14:40PM -0500, Shiraz Saleem wrote:
+> > +/* Structure representing auxiliary driver tailored information about
+> > +the core
+> > + * PCI dev, each auxiliary driver using the IIDC interface will have
+> > +an
+> > + * instance of this struct dedicated to it.
 > > + */
-> > +struct iidc_auxiliary_ops {
-> > +	/* This event_handler is meant to be a blocking call.  For instance,
-> > +	 * when a BEFORE_MTU_CHANGE event comes in, the event_handler will
-> not
-> > +	 * return until the auxiliary driver is ready for the MTU change to
-> > +	 * happen.
+> > +struct iidc_core_dev_info {
+> > +	struct pci_dev *pdev; /* PCI device of corresponding to main function */
+> > +	struct auxiliary_device *adev;
+> > +	/* KVA / Linear address corresponding to BAR0 of underlying
+> > +	 * pci_device.
 > > +	 */
-> > +	void (*event_handler)(struct iidc_core_dev_info *cdev_info,
-> > +			      struct iidc_event *event);
+> > +	u8 __iomem *hw_addr;
+> > +	int cdev_info_id;
 > > +
-> > +	int (*vc_receive)(struct iidc_core_dev_info *cdev_info, u32 vf_id,
-> > +			  u8 *msg, u16 len);
+> > +	u8 ftype;	/* PF(false) or VF (true) */
+> 
+> Where is ftype initialized?
+
+Today it is just pf. But the upcoming Intel ethernet VF driver will set it to true.
+
+> 
+> > +	u16 vport_id;
+> > +	enum iidc_rdma_protocol rdma_protocol;
+> 
+> This duplicates the aux device name, not really sure why it is needed. One user just
+> uses it to make the string, the rest is entangled with the devlink and doesn't need
+> to be stored here.
+
+It is used to pass the type of protocol at drv.probe() in aux RDMA driver.
+
+> 
+> > +	struct iidc_qos_params qos_info;
+> > +	struct net_device *netdev;
+> > +
+> > +	struct msix_entry *msix_entries;
+> > +	u16 msix_count; /* How many vectors are reserved for this device */
+> > +
+> > +	/* Following struct contains function pointers to be initialized
+> > +	 * by core PCI driver and called by auxiliary driver
+> > +	 */
+> > +	const struct iidc_core_ops *ops;
 > > +};
 > 
-> This is not the normal pattern:
-> 
-> > +struct iidc_auxiliary_drv {
-> > +	struct auxiliary_driver adrv;
-> > +	struct iidc_auxiliary_ops *ops;
-> > +};
-> 
-> Just put the two functions above in the drv directly:
-
-Ok.
-
-
-> 
-> struct iidc_auxiliary_drv {
->         struct auxilary_driver adrv;
-> 	void (*event_handler)(struct iidc_core_dev_info *cdev_info, *cdev_info,
-> 			      struct iidc_event *event);
-> 
-> 	int (*vc_receive)(struct iidc_core_dev_info *cdev_info, u32 vf_id,
-> 			  u8 *msg, u16 len);
-> }
+> I spent a while trying to understand this struct and why it exists and..
 > 
 > > +
-> > +#define IIDC_RDMA_NAME	"intel_rdma"
-> > +#define IIDC_RDMA_ID	0x00000010
-> > +#define IIDC_MAX_NUM_AUX	4
-> > +
-> > +/* The const struct that instantiates cdev_info_id needs to be
-> > +initialized
-> > + * in the .c with the macro ASSIGN_IIDC_INFO.
-> > + * For example:
-> > + * static const struct cdev_info_id cdev_info_ids[] =
-> > +ASSIGN_IIDC_INFO;  */ struct cdev_info_id {
-> > +	char *name;
-> > +	int id;
-> > +};
-> > +
-> > +#define IIDC_RDMA_INFO   { .name = IIDC_RDMA_NAME,  .id =
-> IIDC_RDMA_ID },
-> > +
-> > +#define ASSIGN_IIDC_INFO	\
-> > +{				\
-> > +	IIDC_RDMA_INFO		\
-> > +}
+> > +struct iidc_auxiliary_dev {
+> > +	struct auxiliary_device adev;
+> > +	struct iidc_core_dev_info *cdev_info;
 > 
-> I tried to figure out what all this was for and came up short. There is only one user
-> and all this seems unnecessary in this series, add it later when you need it.
+> This cdev_info should just be a 'struct ice_pf *' and the "struct iidc_core_dev_info"
+> should be deleted entirely. You'll notice this ends up looking nearly exactly like
+> mlx5 does after this.
 
-No plan for new user, so this should go.
+It was intentionally designed to be core device object carving out only pieces of the PF
+information required by the rdma driver. The next near-term PCI driver using IIDC can also
+this. Why expose the whole PF? This is a design choice no? Why do we need to follow mlx5?
 
 > 
-> > +
-> > +#define iidc_priv(x) ((x)->auxiliary_priv)
+> You can see it clearly based on how this gets initialized:
 > 
-> Use a static inline function
+> 		cdev_info->pdev = pf->pdev;
+> 		cdev_info->hw_addr = (u8 __iomem *)pf->hw.hw_addr;
 > 
-Ok
+>                 struct ice_vsi *vsi = ice_get_main_vsi(pf);
+> 		cdev_info->vport_id = vsi->vsi_num;
+> 		cdev_info->netdev = vsi->netdev;
+> 		cdev_info->msix_count = pf->num_rdma_msix;
+> 		cdev_info->msix_entries = &pf->msix_entries[pf-
+> >rdma_base_vector];
+> 
+> 		ice_setup_dcb_qos_info(pf, cdev_info->qos_info);
+> 
+> Since the main place this cdev_info appears is in the ops API between the two
+> modules, it looks to me like this is being designed in this obfuscated way to try
+> and create a stable ABI between two modules.
+> 
+> Remove all the stable module ABI hackery before you resend it.
+> 
+
+I don't follow what the hackery is. Just because we use cdev_info in the .ops callbacks as opposed to ice_pf?
+
+This is a private interface for Intel RDMA/PCI drivers and yes it is designed to be forward
+looking especially since when we have near-term plans to use it.
+
+Can you explain what you mean by stable module ABI hackery?
+
+Shiraz
