@@ -2,189 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4D535B7BB
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 02:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4947235B7C6
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 02:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236172AbhDLASm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 20:18:42 -0400
-Received: from relay.smtp-ext.broadcom.com ([192.19.232.172]:60300 "EHLO
-        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235866AbhDLASg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 20:18:36 -0400
-Received: from localhost.swdvt.lab.broadcom.net (dhcp-10-13-253-90.swdvt.lab.broadcom.net [10.13.253.90])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 382B63CED8;
-        Sun, 11 Apr 2021 17:18:19 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 382B63CED8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1618186699;
-        bh=SNHNjgin9SadgJkjG6vruksg3XgYisQCXo+xnrRi8X8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CgAJlgHZxeu6Nyu60HY223aZU0Kfc2sbYJwjbnSUckzVYnP6o6RzOWG4k2yix5PFB
-         kMAv3YB+OKz5bNREBI2ah7jfmEbdImI7ryTHtlm+0zT1+ERT4Rb1GhlVNkhDXpZFzP
-         2ZmRxfgapeXU9Qn3U90Y3XzWkN8WZIAlzHOkCt74=
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 5/5] bnxt_en: Free and allocate VF-Reps during error recovery.
-Date:   Sun, 11 Apr 2021 20:18:15 -0400
-Message-Id: <1618186695-18823-6-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1618186695-18823-1-git-send-email-michael.chan@broadcom.com>
-References: <1618186695-18823-1-git-send-email-michael.chan@broadcom.com>
+        id S235857AbhDLAi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 20:38:28 -0400
+Received: from mail-ej1-f49.google.com ([209.85.218.49]:43767 "EHLO
+        mail-ej1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235484AbhDLAi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 20:38:27 -0400
+Received: by mail-ej1-f49.google.com with SMTP id l4so17372371ejc.10;
+        Sun, 11 Apr 2021 17:38:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hhzMptSRLec1c49GB9hd4ctxKibNLuRbXyBV5wPGE9Q=;
+        b=h3KV/dwZuHRALN85FCzICxQnOPvKLJmO/uOvosKvyG+9NxLjDg52JsPrlaisW3P0h6
+         jycrRhG+2qYMaeXS5eOLDJtMChZRSZS1219j3hl45kyF1H0TWAvQnDqsZiT5/agFXPzp
+         /oAazia6a8C8pfUbt+CqZCon9jtvjWQbtXxYQYMx3tDroyvsJouPsua9qUxyFBlcMx/i
+         KpF0dfe8La4e+zcZpBr0Ag4CdXv5UKqj/zl6/JTJNsBKl6k34NVY4dy4YMe/C7BH1o0d
+         SYEuxzczKyFT9lq+BTUtIpSBMyh8S6HDiLmurZwZb0PbN6P5up5fBKoxuwpS2JHI504b
+         AMxQ==
+X-Gm-Message-State: AOAM531TLqja7XHTEQYRINQY2eVAc1arsMSdAs4hrI7Ru/flFvjBcp14
+        QZaZ/YjQkN6z18fFZM0WBnfB17Yd2yY=
+X-Google-Smtp-Source: ABdhPJyaiM+MbqtE1lLpaOy07e7gzXDh+zaQ64dRusg3KN1gpcp3EYILFdlv4exZmt892Lmc/BOv9g==
+X-Received: by 2002:a17:906:8288:: with SMTP id h8mr10313073ejx.75.1618187889692;
+        Sun, 11 Apr 2021 17:38:09 -0700 (PDT)
+Received: from msft-t490s.teknoraver.net (net-93-66-21-119.cust.vodafonedsl.it. [93.66.21.119])
+        by smtp.gmail.com with ESMTPSA id a9sm5477837eds.33.2021.04.11.17.38.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Apr 2021 17:38:08 -0700 (PDT)
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>
+Subject: [PATCH net-next v2 0/3] introduce skb_for_each_frag()
+Date:   Mon, 12 Apr 2021 02:37:59 +0200
+Message-Id: <20210412003802.51613-1-mcroce@linux.microsoft.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+From: Matteo Croce <mcroce@microsoft.com>
 
-During firmware recovery, VF-Rep configuration in the firmware is lost.
-Fix it by freeing and (re)allocating VF-Reps in FW at relevant points
-during the error recovery process.
+Introduce skb_for_each_frag, an helper macro to iterate over the SKB frags.
 
-Signed-off-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  3 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c | 61 ++++++++++++++++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h | 12 ++++
- 3 files changed, 74 insertions(+), 2 deletions(-)
+First patch introduces the helper, the second one is generated with
+coccinelle and uses the macro where possible.
+Last one is a chunk which have to be applied by hand.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 3f5fbdf61257..e15d454e33f0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11081,6 +11081,7 @@ static void bnxt_fw_reset_close(struct bnxt *bp)
- 		pci_disable_device(bp->pdev);
- 	}
- 	__bnxt_close_nic(bp, true, false);
-+	bnxt_vf_reps_free(bp);
- 	bnxt_clear_int_mode(bp);
- 	bnxt_hwrm_func_drv_unrgtr(bp);
- 	if (pci_is_enabled(bp->pdev))
-@@ -11825,6 +11826,8 @@ static void bnxt_fw_reset_task(struct work_struct *work)
- 		bnxt_ulp_start(bp, rc);
- 		if (!rc)
- 			bnxt_reenable_sriov(bp);
-+		bnxt_vf_reps_alloc(bp);
-+		bnxt_vf_reps_open(bp);
- 		bnxt_dl_health_recovery_done(bp);
- 		bnxt_dl_health_status_update(bp, true);
- 		rtnl_unlock();
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-index a4ac11f5b0e5..dd66302343a2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-@@ -284,8 +284,11 @@ void bnxt_vf_reps_open(struct bnxt *bp)
- 	if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
- 		return;
- 
--	for (i = 0; i < pci_num_vf(bp->pdev); i++)
--		bnxt_vf_rep_open(bp->vf_reps[i]->dev);
-+	for (i = 0; i < pci_num_vf(bp->pdev); i++) {
-+		/* Open the VF-Rep only if it is allocated in the FW */
-+		if (bp->vf_reps[i]->tx_cfa_action != CFA_HANDLE_INVALID)
-+			bnxt_vf_rep_open(bp->vf_reps[i]->dev);
-+	}
- }
- 
- static void __bnxt_free_one_vf_rep(struct bnxt *bp, struct bnxt_vf_rep *vf_rep)
-@@ -361,6 +364,23 @@ void bnxt_vf_reps_destroy(struct bnxt *bp)
- 	__bnxt_vf_reps_destroy(bp);
- }
- 
-+/* Free the VF-Reps in firmware, during firmware hot-reset processing.
-+ * Note that the VF-Rep netdevs are still active (not unregistered) during
-+ * this process. As the mode transition from SWITCHDEV to LEGACY happens
-+ * under the rtnl_lock() this routine is safe under the rtnl_lock().
-+ */
-+void bnxt_vf_reps_free(struct bnxt *bp)
-+{
-+	u16 num_vfs = pci_num_vf(bp->pdev);
-+	int i;
-+
-+	if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
-+		return;
-+
-+	for (i = 0; i < num_vfs; i++)
-+		__bnxt_free_one_vf_rep(bp, bp->vf_reps[i]);
-+}
-+
- static int bnxt_alloc_vf_rep(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
- 			     u16 *cfa_code_map)
- {
-@@ -381,6 +401,43 @@ static int bnxt_alloc_vf_rep(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
- 	return 0;
- }
- 
-+/* Allocate the VF-Reps in firmware, during firmware hot-reset processing.
-+ * Note that the VF-Rep netdevs are still active (not unregistered) during
-+ * this process. As the mode transition from SWITCHDEV to LEGACY happens
-+ * under the rtnl_lock() this routine is safe under the rtnl_lock().
-+ */
-+int bnxt_vf_reps_alloc(struct bnxt *bp)
-+{
-+	u16 *cfa_code_map = bp->cfa_code_map, num_vfs = pci_num_vf(bp->pdev);
-+	struct bnxt_vf_rep *vf_rep;
-+	int rc, i;
-+
-+	if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
-+		return 0;
-+
-+	if (!cfa_code_map)
-+		return -EINVAL;
-+
-+	for (i = 0; i < MAX_CFA_CODE; i++)
-+		cfa_code_map[i] = VF_IDX_INVALID;
-+
-+	for (i = 0; i < num_vfs; i++) {
-+		vf_rep = bp->vf_reps[i];
-+		vf_rep->vf_idx = i;
-+
-+		rc = bnxt_alloc_vf_rep(bp, vf_rep, cfa_code_map);
-+		if (rc)
-+			goto err;
-+	}
-+
-+	return 0;
-+
-+err:
-+	netdev_info(bp->dev, "%s error=%d\n", __func__, rc);
-+	bnxt_vf_reps_free(bp);
-+	return rc;
-+}
-+
- /* Use the OUI of the PF's perm addr and report the same mac addr
-  * for the same VF-rep each time
-  */
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
-index d7287651422f..5637a84884d7 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
-@@ -19,6 +19,8 @@ void bnxt_vf_reps_close(struct bnxt *bp);
- void bnxt_vf_reps_open(struct bnxt *bp);
- void bnxt_vf_rep_rx(struct bnxt *bp, struct sk_buff *skb);
- struct net_device *bnxt_get_vf_rep(struct bnxt *bp, u16 cfa_code);
-+int bnxt_vf_reps_alloc(struct bnxt *bp);
-+void bnxt_vf_reps_free(struct bnxt *bp);
- 
- static inline u16 bnxt_vf_rep_get_fid(struct net_device *dev)
- {
-@@ -61,5 +63,15 @@ static inline bool bnxt_dev_is_vf_rep(struct net_device *dev)
- {
- 	return false;
- }
-+
-+static inline int bnxt_vf_reps_alloc(struct bnxt *bp)
-+{
-+	return 0;
-+}
-+
-+static inline void bnxt_vf_reps_free(struct bnxt *bp)
-+{
-+}
-+
- #endif /* CONFIG_BNXT_SRIOV */
- #endif /* BNXT_VFR_H */
+The second patch raises some checkpatch.pl warnings because part of
+net/tls/tls_sw.c is indented with spaces.
+
+Build tested with an allmodconfig and a test run.
+
+v1 -> v2:
+- don't replace code where a local variable holds a cached value
+  for skb_shinfo(skb)->nr_frags
+
+Matteo Croce (3):
+  skbuff: add helper to walk over the fraglist
+  net: use skb_for_each_frag() helper where possible
+  net: use skb_for_each_frag() in illegal_highdma()
+
+ drivers/atm/he.c                              |  2 +-
+ drivers/hsi/clients/ssi_protocol.c            |  2 +-
+ drivers/infiniband/hw/hfi1/ipoib_tx.c         |  2 +-
+ drivers/infiniband/hw/hfi1/vnic_sdma.c        |  2 +-
+ drivers/infiniband/ulp/ipoib/ipoib_ib.c       |  4 +--
+ drivers/net/ethernet/3com/3c59x.c             |  2 +-
+ drivers/net/ethernet/3com/typhoon.c           |  2 +-
+ drivers/net/ethernet/adaptec/starfire.c       |  2 +-
+ drivers/net/ethernet/aeroflex/greth.c         |  2 +-
+ drivers/net/ethernet/alteon/acenic.c          |  2 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-desc.c     |  2 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c      |  2 +-
+ .../net/ethernet/apm/xgene/xgene_enet_main.c  |  2 +-
+ drivers/net/ethernet/atheros/alx/main.c       |  2 +-
+ .../net/ethernet/atheros/atl1e/atl1e_main.c   |  2 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   |  2 +-
+ drivers/net/ethernet/broadcom/tg3.c           |  2 +-
+ .../ethernet/cavium/thunder/nicvf_queues.c    |  2 +-
+ drivers/net/ethernet/chelsio/cxgb3/sge.c      |  2 +-
+ drivers/net/ethernet/emulex/benet/be_main.c   |  2 +-
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  2 +-
+ drivers/net/ethernet/freescale/gianfar.c      |  3 +-
+ drivers/net/ethernet/google/gve/gve_tx.c      |  2 +-
+ drivers/net/ethernet/hisilicon/hix5hd2_gmac.c |  4 +--
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  4 +--
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  2 +-
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  4 +--
+ drivers/net/ethernet/ibm/ibmveth.c            |  2 +-
+ drivers/net/ethernet/ibm/ibmvnic.c            |  2 +-
+ drivers/net/ethernet/intel/fm10k/fm10k_main.c |  2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c     |  2 +-
+ drivers/net/ethernet/intel/igbvf/netdev.c     |  2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |  2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  2 +-
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  2 +-
+ drivers/net/ethernet/marvell/mv643xx_eth.c    |  2 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  2 +-
+ drivers/net/ethernet/marvell/skge.c           |  2 +-
+ drivers/net/ethernet/marvell/sky2.c           |  8 ++---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  2 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |  2 +-
+ drivers/net/ethernet/realtek/8139cp.c         |  2 +-
+ drivers/net/ethernet/realtek/r8169_main.c     |  2 +-
+ drivers/net/ethernet/rocker/rocker_main.c     |  2 +-
+ drivers/net/ethernet/sfc/tx.c                 |  2 +-
+ drivers/net/ethernet/sun/niu.c                |  4 +--
+ drivers/net/ethernet/sun/sungem.c             |  2 +-
+ drivers/net/ethernet/sun/sunhme.c             |  2 +-
+ drivers/net/ethernet/sun/sunvnet_common.c     |  4 +--
+ .../net/ethernet/synopsys/dwc-xlgmac-desc.c   |  2 +-
+ .../net/ethernet/synopsys/dwc-xlgmac-net.c    |  2 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  2 +-
+ drivers/net/ethernet/ti/netcp_core.c          |  2 +-
+ drivers/net/ethernet/via/via-velocity.c       |  2 +-
+ drivers/net/usb/usbnet.c                      |  2 +-
+ drivers/net/vmxnet3/vmxnet3_drv.c             |  4 +--
+ drivers/net/wireless/intel/iwlwifi/pcie/tx.c  |  2 +-
+ drivers/net/wireless/intel/iwlwifi/queue/tx.c |  2 +-
+ drivers/net/xen-netback/netback.c             |  2 +-
+ drivers/net/xen-netfront.c                    |  2 +-
+ drivers/s390/net/qeth_core_main.c             |  4 +--
+ drivers/scsi/fcoe/fcoe_transport.c            |  2 +-
+ drivers/staging/octeon/ethernet-tx.c          |  2 +-
+ drivers/target/iscsi/cxgbit/cxgbit_target.c   |  4 +--
+ include/linux/skbuff.h                        |  4 +++
+ net/appletalk/ddp.c                           |  2 +-
+ net/core/datagram.c                           |  4 +--
+ net/core/dev.c                                |  2 +-
+ net/core/skbuff.c                             | 32 +++++++++----------
+ net/ipv4/inet_fragment.c                      |  2 +-
+ net/ipv4/tcp.c                                |  2 +-
+ net/ipv4/tcp_output.c                         |  2 +-
+ net/iucv/af_iucv.c                            |  4 +--
+ net/kcm/kcmsock.c                             |  3 +-
+ net/tls/tls_sw.c                              |  2 +-
+ 76 files changed, 108 insertions(+), 106 deletions(-)
+
 -- 
-2.18.1
+2.30.2
 
