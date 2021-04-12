@@ -2,138 +2,350 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E18A35C351
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 12:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4352735C35C
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 12:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239495AbhDLKEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 06:04:09 -0400
-Received: from mail-eopbgr70077.outbound.protection.outlook.com ([40.107.7.77]:38118
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S245009AbhDLKCd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Apr 2021 06:02:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dfahW3klZeomsClH4smRcelbtjlfUYdt9OK7AQ5eLRe/X8kOVjBdrITvaPY0mdBZuxcFLstWVTMvZAtSVHpZnNFcUbk27fOHujG2ui8sSAF28VXKTuf1iEj5GutLrH3J8kCfJUHXMXOw4K/jNQkLiCwk5NCe3e9eZ5LcMNtyANvhb6Pahs127gBjJYTkDZlRJoP+OUugxw8zlRqu5rVc+Yc+RBNiEVTcdvvJ/H9c46V7KMEBnDaf/JNGe3vPhv3/iyFk8+m0dWX5CKT+J5htLPJQNL4MXR5vDA4xUtrw2mng3jwFZSFPwqb/iIqLkPBiBHu8jMTVcUOjQX+s4pSslw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hldA9HZgHQMMdI5xwCyXQwbcGEw+SA60BTr2p4MGWP8=;
- b=HDaqT+U1SEAyh84JJ/RwbR4avrLdxue1AMEK0rswWdOfqGCSrL8NhL6FfVeczjjVkLM1jT5D/0+hFP9Vh5EF09UFSULy9lNQwK7bKJDJGTvKUYiKi3WOezZSXCNYAgmxWQYtZGvFBigfU0qp+8Cj2sQw/R1qaBA0gzauWFVf6+EdguBef9nyIv/IPbi9Vx2upeZkj0A2goj/1Cp1KR/zlb1noBLko+66ghfQj943tVOt1T/tBMieqj1taAyGSmsUnBUyNybhbZIvLeZxhVSEf60oMjggUztW9t2Of5VZKjqt7ViOgiRpuY9XmKdUoXWSuuRCW+ERfXWFMX7GfplDuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hldA9HZgHQMMdI5xwCyXQwbcGEw+SA60BTr2p4MGWP8=;
- b=G4X+DrPJW2IlhkQE0Jrl2P3tR2zTLs5Q/e2YhKzogXhiTsfYsScY/4N8DYNHIygpa8mVKIkoe1BaaHbXiPPF+vUHHcGBKxj10ECwohAURiEogU89BkUvO/W+5mhW6R6lXoqnTAN8EWHbamd7qgwIeCBweN/m+Mh7qOWkL6yc1uY=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=oss.nxp.com;
-Received: from VI1PR04MB5101.eurprd04.prod.outlook.com (2603:10a6:803:5f::31)
- by VI1PR04MB7198.eurprd04.prod.outlook.com (2603:10a6:800:126::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.22; Mon, 12 Apr
- 2021 10:02:12 +0000
-Received: from VI1PR04MB5101.eurprd04.prod.outlook.com
- ([fe80::1d18:6e9:995c:1945]) by VI1PR04MB5101.eurprd04.prod.outlook.com
- ([fe80::1d18:6e9:995c:1945%6]) with mapi id 15.20.4020.018; Mon, 12 Apr 2021
- 10:02:12 +0000
-Message-ID: <64e44d26f45a4fcfc792073fe195e731e6f7e6d9.camel@oss.nxp.com>
-Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
-From:   "Radu Nicolae Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 12 Apr 2021 13:02:07 +0300
-In-Reply-To: <YHCsrVNcZmeTPJzW@lunn.ch>
-References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
-         <YHCsrVNcZmeTPJzW@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [89.45.21.213]
-X-ClientProxiedBy: AM0PR06CA0132.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::37) To VI1PR04MB5101.eurprd04.prod.outlook.com
- (2603:10a6:803:5f::31)
+        id S240385AbhDLKGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 06:06:45 -0400
+Received: from void.so ([95.85.17.176]:46945 "EHLO void.so"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240228AbhDLKEi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Apr 2021 06:04:38 -0400
+Received: from void.so (localhost [127.0.0.1])
+        by void.so (Postfix) with ESMTP id 1A03C1C2AB6;
+        Mon, 12 Apr 2021 13:04:17 +0300 (MSK)
+Received: from void.so ([127.0.0.1])
+        by void.so (void.so [127.0.0.1]) (amavisd-new, port 10024) with LMTP
+        id fvvBIazlvy9l; Mon, 12 Apr 2021 13:04:15 +0300 (MSK)
+Received: from rnd (unknown [213.87.162.169])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by void.so (Postfix) with ESMTPSA id 41E6D1C2A8F;
+        Mon, 12 Apr 2021 13:04:15 +0300 (MSK)
+Date:   Mon, 12 Apr 2021 13:02:28 +0300
+From:   Balaev Pavel <balaevpa@infotecs.ru>
+To:     netdev@vger.kernel.org
+Cc:     christophe.jaillet@wanadoo.fr, davem@davemloft.net,
+        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Subject: [PATCH v2 net-next] net: multipath routing: configurable seed
+Message-ID: <YHQatJxU5tVGCpVw@rnd>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.141] (89.45.21.213) by AM0PR06CA0132.eurprd06.prod.outlook.com (2603:10a6:208:ab::37) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16 via Frontend Transport; Mon, 12 Apr 2021 10:02:11 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3dffd3ed-f1b1-4b52-7f9e-08d8fd9a0b06
-X-MS-TrafficTypeDiagnostic: VI1PR04MB7198:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB7198DFD71C48953EAABAF3BB9F709@VI1PR04MB7198.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4sqGU6RaZO2+mHvApAVUhRhwYPZQndIXLapChNj3KmPQyDZNUJrtJxicvT5IrDKX10569/cDWNxfzn/wod8dzwKPu9jr+0cUztsQVgu5gKY9NJo4kuscz4HQZWzJlBUe4+6CFqft2Bl/97HRiX2gr7C0/Ytm/7sQHxGbwxoJ1prqHlYcJo/7kB1vQXK9lksWXHVsKO8oIAU7/TMcOe7YB/8CtwcSzwlrXhId3q4ZQWXu6jGwU8Q8TPhqRLoP56xnZYVSKBvdOtZEj5mYJ/jEnibDmGAjCT3GntRhpcPXJED5XB8rj9yF2urH4Y9kLfZI7VwD2Y0ouJaxnFZYeuNVFDbPyJW5jQGeNU/ydByVtLuEK7rx/klbiZXmnbKw6zL6toh5KE6+rm2wcxUHQttUay1cTvizj/650fsVssCvzn0OnfahDHCqvvb/tNptR7mfaY4B211iESWY5leZAr3o84vIP4+cQaLT0Gk/77rjPO2Ex8mhyWtKEylLtBLarEnZwfzH3FIa2Cu1ozE+CY6xnyaG0ruUgH//49TcqIPT0AcOFV16oTOP2Z+fDPclS7QXQr69z9xhxjIS7y4THix2u3naoIyiPBvplictQvopOvtGVotVr4jmHFJo31JYjJFDxz1h89k+eM9izA7ROfE3hVAaoSNJlkb28hTwUVkXnPNKGGjWpJYHTMi2UO8oA3wZ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5101.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(39860400002)(136003)(346002)(376002)(6666004)(956004)(6916009)(38100700002)(52116002)(4326008)(2616005)(86362001)(4744005)(16576012)(5660300002)(186003)(66946007)(8936002)(478600001)(66476007)(6486002)(66556008)(8676002)(38350700002)(16526019)(26005)(2906002)(316002)(41350200001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?V0pKWWI2NklPK3R4Ym1VL1hnTFVtaDZxaXZQTHdDZFduRDkwK1RiSXZVKzVr?=
- =?utf-8?B?RDhHcXF0YkFmVmF2MEtGNUNuNFloQVhwbXJqY0RjZkUrYUxsUXRkY05CZjRL?=
- =?utf-8?B?cE1qRGoweXlGelFua3RVZVN1TVhsZmRZRG81akREWEREeVNPRm01NWY3SGJv?=
- =?utf-8?B?ekZrU3A3aEtyU0MvSEZ6WEJXWFgrWTR2cEdXZEdIZ2cwdGw2a0R6ZGNuaE5L?=
- =?utf-8?B?MGtnV2ZXLzlrMjkzQ1piRkJsQlBRU2JESFBaT2tLSDluWnlVN1FyV20yL1E0?=
- =?utf-8?B?THZ1dkxudlJRTHNvUkRCMXUvMENaZ1pnYjRENVlrWlN5ZXdNcyswQkdrdURv?=
- =?utf-8?B?UzFrYWYvSHIxVkdPZzhkVkVsbnBFZENnUGE4OGlyVUorRmVzZDZxUXBGUnRL?=
- =?utf-8?B?QmpkS1N6RkNkV2RqbzU4Q2pQWmxjWjMwa3lkcG8zSUx5OU9USFc0cnBoM3Nj?=
- =?utf-8?B?L2cxZ3oxQ291cTVsUmRNeGhMQTZEaWFCRTVVempEYlhMb3RWVE9PZ3Y4Mzk0?=
- =?utf-8?B?dll3Y3U3Q3crNXcvMGl5SjZ5blpqZUZDMVEzYTZsSFA4VDZBT3JQd1QzRk5l?=
- =?utf-8?B?ZjFQU0xvNFVHaWwrS3lTZjBlUjRXbGlpaUQ5aENNS2lpdlEyMllYM1hQdFFB?=
- =?utf-8?B?cVdVTmlUbklNK1RpUkVCMU0xTWVyODllWHBpSC9KWlRxOUtuZ2RnWGNMSWhX?=
- =?utf-8?B?RzVucDY5YXNuLy9kR2xpU0VCM1JUQnZwTWJocmpPSE9qaFkrOFVTS0ZhQXJP?=
- =?utf-8?B?UVkra09UbE9XUE9sY1pkTzViM2RxSWVnYi9JdUZqSi9BV1R3NFhKM1cycGVP?=
- =?utf-8?B?UC9UL25PR3ZUVDBVYzJjT21HQmt5MklQVVJad1pXQVB5eXE1cnYxTWZWL01i?=
- =?utf-8?B?UEFzSmd6bFQyMHZqSmdQVHZXMTRJYmJ4M2c0WEZZeUxsdXNoU3hqaEZNMXVx?=
- =?utf-8?B?MmFVaENZeFNBdVFSckd1cVFjYUN6WGJRU1I1eWxwV0doRnJkaW9KY2txZWtQ?=
- =?utf-8?B?cy9TUUlOZTBsTTdZT3Q1a080bUJNZHp6VENzaWtYdSs4OXVJbXpVSHEreEZJ?=
- =?utf-8?B?OGo5RmZOTjladWY1czNrbDFRZndUTlZtWkxjdXY2VitNVlZndm1GQ0Y1dHcz?=
- =?utf-8?B?YW52R2NKdkJVUlJXcTRxbStZbkpwSHdiWjRsaUtIZnBNdGJEZUROekNBREQw?=
- =?utf-8?B?TjV6MnBxcjZGd0FPMEdodUpKWDJSc0htVGVoN0FHNlBlQkVUWWUyd0IyenBX?=
- =?utf-8?B?dm5seFptdVFnUjRWaG9BSzNyK084WU9MRjBEclBtSXMxZUthMGJyemtZR2tN?=
- =?utf-8?B?LzUxOG95MWE0RDZEenlENVpRUFVEcmNXVElyUFFlaStid0g1bmRpeGVNOWZH?=
- =?utf-8?B?a3dHK2FtZU5lQUl0M3Ntei9wSjVlaFpuSDNkc0src0E0UW5BQVJXR1ZrNENv?=
- =?utf-8?B?UnZUUFhmUG5oU3F4NmZUbXNpVGU1ZkpDR2tvdzB1TjcxckV6QSs5OUZlSVk1?=
- =?utf-8?B?Wk4wVlZpTGJMd2FLSXpCbGF6TjM3VXoyemcxRUJ0Y1k2c3pRcjBDbWhKNXNn?=
- =?utf-8?B?UFN0Q3p3UGlqS0d6QVhVdjRuTHpHQ2NZM2hDNksrZklqVGdFa2g5QTkxb2Yw?=
- =?utf-8?B?TURENTA0WHdNTi9seG1kMGlNd2JuQjg1ZnRFQS9UbmJnSTBrN21VamVhOU5R?=
- =?utf-8?B?SnBEU0hOSitMdTM4dThQNFJ1amJuL3hSTGp3T0J0LytySkp0NzNRdk55Mkxy?=
- =?utf-8?Q?CPS+QOndRPwnZ7Gmmeagx4KBoGhXYONoTGBylXo?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3dffd3ed-f1b1-4b52-7f9e-08d8fd9a0b06
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5101.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2021 10:02:12.7040
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5SGlm8OibnU+mbGHC0NB/Ufm53NO18go+tR27ZNJWC6QvgYBg3+8IT0Y6MP7kq2QBdH/QPsZbFUdukEdGE056nVcDvk4Tu4uZqXWYAFRSyI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7198
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-04-09 at 21:36 +0200, Andrew Lunn wrote:
-> On Fri, Apr 09, 2021 at 09:41:06PM +0300, Radu Pirea (NXP OSS) wrote:
-> > Add driver for tja1103 driver and for future NXP C45 PHYs.
-> 
-> So apart from c45 vs c22, how does this differ to nxp-tja11xx.c?
-> Do we really want two different drivers for the same hardware? 
-> Can we combine them somehow?
-It looks like the PHYs are the same hardware, but that's not entirely
-true. Just the naming is the same. TJA1103 is using a different IP and
-is having timestamping support(I will add it later).
-TJA is also not an Ethernet PHY series, but a general prefix for media
-interfaces including also CAN, LIN, etc.
-> 
-> > +config NXP_C45_PHY
-> > +       tristate "NXP C45 PHYs"
-> 
-> This is also very vague. So in the future it will support PHYs other
-> than the TJA series?
-Yes, in the future this driver will support other PHYs too.
-> 
->      Andrew
+Ability for user to set seed value for multipath routing hashes.
+Now kernel uses random seed value:
+this is done to prevent hash-flooding DoS attacks,
+but it breaks some scenario, f.e:
 
++-------+        +------+        +--------+
+|       |-eth0---| FW0  |---eth0-|        |
+|       |        +------+        |        |
+|  GW0  |ECMP                ECMP|  GW1   |
+|       |        +------+        |        |
+|       |-eth1---| FW1  |---eth1-|        |
++-------+        +------+        +--------+
+
+In this scenario two ECMP routers used as traffic balancers between
+two firewalls. So if return path of one flow will not be the same,
+such flow will be dropped, because keep-state rules was created on
+other firewall.
+
+This patch add sysctl variable: net.ipv4.fib_multipath_hash_seed.
+User can set the same seed value on GW0 and GW1 and traffic will
+be mirror-balanced. By default random value is used.
+
+Signed-off-by: Balaev Pavel <balaevpa@infotecs.ru>
+---
+ Documentation/networking/ip-sysctl.rst |  14 ++++
+ include/net/flow_dissector.h           |   4 +
+ include/net/netns/ipv4.h               |  20 +++++
+ net/core/flow_dissector.c              |   9 +++
+ net/ipv4/af_inet.c                     |   5 ++
+ net/ipv4/route.c                       |  10 ++-
+ net/ipv4/sysctl_net_ipv4.c             | 104 +++++++++++++++++++++++++
+ 7 files changed, 165 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 9701906f6..d1a67e6fe 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -100,6 +100,20 @@ fib_multipath_hash_policy - INTEGER
+ 	- 1 - Layer 4
+ 	- 2 - Layer 3 or inner Layer 3 if present
+ 
++fib_multipath_hash_seed - STRING
++	Controls seed value for multipath route hashes. By default
++	random value is used. Only valid for kernels built with
++	CONFIG_IP_ROUTE_MULTIPATH enabled.
++
++	Valid format: two hex values set off with comma or "random"
++	keyword.
++
++	Example to generate the seed value::
++
++		RAND=$(openssl rand -hex 16) && echo "${RAND:0:16},${RAND:16:16}"
++
++	Default: "random"
++
+ fib_sync_mem - UNSIGNED INTEGER
+ 	Amount of dirty memory from fib entries that can be backlogged before
+ 	synchronize_rcu is forced.
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index ffd386ea0..2bd4e28de 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -348,6 +348,10 @@ static inline bool flow_keys_have_l4(const struct flow_keys *keys)
+ }
+ 
+ u32 flow_hash_from_keys(struct flow_keys *keys);
++#ifdef CONFIG_IP_ROUTE_MULTIPATH
++u32 flow_multipath_hash_from_keys(struct flow_keys *keys,
++			   const siphash_key_t *seed);
++#endif /* CONFIG_IP_ROUTE_MULTIPATH */
+ void skb_flow_get_icmp_tci(const struct sk_buff *skb,
+ 			   struct flow_dissector_key_icmp *key_icmp,
+ 			   const void *data, int thoff, int hlen);
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 87e161249..70a01817e 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -11,6 +11,14 @@
+ #include <linux/rcupdate.h>
+ #include <linux/siphash.h>
+ 
++#ifdef CONFIG_IP_ROUTE_MULTIPATH
++/* Multipath seed key context */
++struct multipath_seed_ctx {
++	siphash_key_t	seed;
++	struct rcu_head	rcu;
++};
++#endif
++
+ struct ctl_table_header;
+ struct ipv4_devconf;
+ struct fib_rules_ops;
+@@ -222,6 +230,9 @@ struct netns_ipv4 {
+ #ifdef CONFIG_IP_ROUTE_MULTIPATH
+ 	u8 sysctl_fib_multipath_use_neigh;
+ 	u8 sysctl_fib_multipath_hash_policy;
++	int sysctl_fib_multipath_hash_seed;
++	struct multipath_seed_ctx __rcu *fib_multipath_hash_seed_ctx;
++	spinlock_t fib_multipath_hash_seed_ctx_lock;
+ #endif
+ 
+ 	struct fib_notifier_ops	*notifier_ops;
+@@ -233,4 +244,13 @@ struct netns_ipv4 {
+ 	atomic_t	rt_genid;
+ 	siphash_key_t	ip_id_key;
+ };
++
++#ifdef CONFIG_IP_ROUTE_MULTIPATH
++/* Caller needs to wrap with rcu_read_(un)lock() */
++static inline
++struct multipath_seed_ctx *fib_multipath_seed_get_ctx(const struct netns_ipv4 *ipv4)
++{
++	return rcu_dereference(ipv4->fib_multipath_hash_seed_ctx);
++}
++#endif
+ #endif
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 5985029e4..457dfdab8 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -1560,6 +1560,15 @@ u32 flow_hash_from_keys(struct flow_keys *keys)
+ }
+ EXPORT_SYMBOL(flow_hash_from_keys);
+ 
++#ifdef CONFIG_IP_ROUTE_MULTIPATH
++u32 flow_multipath_hash_from_keys(struct flow_keys *keys,
++					const siphash_key_t *seed)
++{
++	return __flow_hash_from_keys(keys, seed);
++}
++EXPORT_SYMBOL(flow_multipath_hash_from_keys);
++#endif /* CONFIG_IP_ROUTE_MULTIPATH */
++
+ static inline u32 ___skb_get_hash(const struct sk_buff *skb,
+ 				  struct flow_keys *keys,
+ 				  const siphash_key_t *keyval)
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index f17870ee5..fd4c68966 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1874,6 +1874,11 @@ static __net_init int inet_init_net(struct net *net)
+ 
+ 	net->ipv4.sysctl_fib_notify_on_flag_change = 0;
+ 
++#ifdef CONFIG_IP_ROUTE_MULTIPATH
++	net->ipv4.fib_multipath_hash_seed_ctx = NULL;
++	spin_lock_init(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
++#endif
++
+ 	return 0;
+ }
+ 
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index f6787c55f..36f72738d 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1911,6 +1911,7 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+ 		       const struct sk_buff *skb, struct flow_keys *flkeys)
+ {
+ 	u32 multipath_hash = fl4 ? fl4->flowi4_multipath_hash : 0;
++	struct multipath_seed_ctx *seed_ctx;
+ 	struct flow_keys hash_keys;
+ 	u32 mhash;
+ 
+@@ -1989,7 +1990,14 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
+ 		}
+ 		break;
+ 	}
+-	mhash = flow_hash_from_keys(&hash_keys);
++
++	rcu_read_lock();
++	seed_ctx = fib_multipath_seed_get_ctx(&net->ipv4);
++	if (seed_ctx)
++		mhash = flow_multipath_hash_from_keys(&hash_keys, &seed_ctx->seed);
++	else
++		mhash = flow_hash_from_keys(&hash_keys);
++	rcu_read_unlock();
+ 
+ 	if (multipath_hash)
+ 		mhash = jhash_2words(mhash, multipath_hash, 0);
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index a09e466ce..38ae8afc0 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -447,6 +447,8 @@ static int proc_tcp_available_ulp(struct ctl_table *ctl,
+ }
+ 
+ #ifdef CONFIG_IP_ROUTE_MULTIPATH
++#define FIB_MULTIPATH_SEED_KEY_LENGTH sizeof(siphash_key_t)
++#define FIB_MULTIPATH_SEED_RANDOM "random"
+ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
+ 					  void *buffer, size_t *lenp,
+ 					  loff_t *ppos)
+@@ -461,6 +463,100 @@ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
+ 
+ 	return ret;
+ }
++
++static void fib_multipath_seed_ctx_free(struct rcu_head *head)
++{
++	struct multipath_seed_ctx *ctx =
++	    container_of(head, struct multipath_seed_ctx, rcu);
++
++	kfree_sensitive(ctx);
++}
++
++static int proc_fib_multipath_hash_seed(struct ctl_table *table, int write,
++					  void *buffer, size_t *lenp,
++					  loff_t *ppos)
++{
++	struct net *net = container_of(table->data, struct net,
++	    ipv4.sysctl_fib_multipath_hash_seed);
++	/* maxlen to print the keys in hex (*2) and a comma in between keys. */
++	struct ctl_table tbl = {
++		.maxlen = ((FIB_MULTIPATH_SEED_KEY_LENGTH * 2) + 2)
++	};
++	siphash_key_t user_key;
++	__le64 key[2];
++	int ret;
++	struct multipath_seed_ctx *ctx;
++
++	tbl.data = kmalloc(tbl.maxlen, GFP_KERNEL);
++
++	if (!tbl.data)
++		return -ENOMEM;
++
++	rcu_read_lock();
++	ctx = rcu_dereference(net->ipv4.fib_multipath_hash_seed_ctx);
++	if (ctx) {
++		put_unaligned_le64(ctx->seed.key[0], &key[0]);
++		put_unaligned_le64(ctx->seed.key[1], &key[1]);
++		user_key.key[0] = le64_to_cpu(key[0]);
++		user_key.key[1] = le64_to_cpu(key[1]);
++
++		snprintf(tbl.data, tbl.maxlen, "%016llx,%016llx",
++				user_key.key[0], user_key.key[1]);
++	} else {
++		snprintf(tbl.data, tbl.maxlen, "%s", FIB_MULTIPATH_SEED_RANDOM);
++	}
++	rcu_read_unlock();
++
++	ret = proc_dostring(&tbl, write, buffer, lenp, ppos);
++
++	if (write && ret == 0) {
++		struct multipath_seed_ctx *new_ctx, *old_ctx;
++
++		if (!strcmp(tbl.data, FIB_MULTIPATH_SEED_RANDOM)) {
++			spin_lock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
++			old_ctx = rcu_dereference_protected(net->ipv4.fib_multipath_hash_seed_ctx,
++					lockdep_is_held(&net->ipv4.fib_multipath_hash_seed_ctx_lock));
++			RCU_INIT_POINTER(net->ipv4.fib_multipath_hash_seed_ctx, NULL);
++			spin_unlock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
++			if (old_ctx)
++				call_rcu(&old_ctx->rcu, fib_multipath_seed_ctx_free);
++
++			pr_debug("multipath hash seed set to random value\n");
++			goto out;
++		}
++
++		if (sscanf(tbl.data, "%llx,%llx", user_key.key, user_key.key + 1) != 2) {
++			ret = -EINVAL;
++			goto out;
++		}
++
++		key[0] = cpu_to_le64(user_key.key[0]);
++		key[1] = cpu_to_le64(user_key.key[1]);
++		pr_debug("multipath hash seed set to 0x%llx,0x%llx\n",
++				user_key.key[0], user_key.key[1]);
++
++		new_ctx = kmalloc(sizeof(*new_ctx), GFP_KERNEL);
++		if (!new_ctx) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		new_ctx->seed.key[0] = get_unaligned_le64(&key[0]);
++		new_ctx->seed.key[1] = get_unaligned_le64(&key[1]);
++
++		spin_lock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
++		old_ctx = rcu_dereference_protected(net->ipv4.fib_multipath_hash_seed_ctx,
++				lockdep_is_held(&net->ipv4.fib_multipath_hash_seed_ctx_lock));
++		rcu_assign_pointer(net->ipv4.fib_multipath_hash_seed_ctx, new_ctx);
++		spin_unlock(&net->ipv4.fib_multipath_hash_seed_ctx_lock);
++		if (old_ctx)
++			call_rcu(&old_ctx->rcu, fib_multipath_seed_ctx_free);
++	}
++
++out:
++	kfree(tbl.data);
++	return ret;
++}
+ #endif
+ 
+ static struct ctl_table ipv4_table[] = {
+@@ -1052,6 +1148,14 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= &two,
+ 	},
++	{
++		.procname	= "fib_multipath_hash_seed",
++		.data		= &init_net.ipv4.sysctl_fib_multipath_hash_seed,
++		/* maxlen to print the keys in hex (*2) and a comma in between keys. */
++		.maxlen		= (FIB_MULTIPATH_SEED_KEY_LENGTH * 2) + 2,
++		.mode		= 0600,
++		.proc_handler	= proc_fib_multipath_hash_seed,
++	},
+ #endif
+ 	{
+ 		.procname	= "ip_unprivileged_port_start",
+-- 
+2.31.1
 
