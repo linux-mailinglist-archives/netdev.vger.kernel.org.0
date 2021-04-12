@@ -2,112 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E500835BB98
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 799D835BB9F
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237111AbhDLIDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 04:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
+        id S237103AbhDLIFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 04:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbhDLIDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 04:03:13 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11509C061574
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:02:56 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id g17so15961620ejp.8
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:02:55 -0700 (PDT)
+        with ESMTP id S237075AbhDLIFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 04:05:44 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3E5C061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:05:26 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id a25so977152ljm.11
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:05:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=p6jHxvinR4oy1/faml5c1RePikeItP2Kvd2rZJWrTiQ=;
-        b=lBqfXWeW37pd7NVUT+Uk9TzwfyGZg7ekKVZcL+rLzd38GksZBKR7JgS6SVbsrGW39X
-         6ZQm8GNiZW6mio9p5jZdsLmscZVYaQofpMHy25hgF5Fb/qN9hrLt4VCW+2+Uo21CZy+8
-         g3M3iRgDWKppnOeVow7mBfNQjxGDyDBNVRnuZFyDbRSLT5wqkwDbmN+y540tFVwD9SQ5
-         hF8wbyI2J28YY73Rx3X4feBz2fKnwz5xghVxWzDMDLzbiyG2SK+nlXToWtL0Pd4QksMZ
-         mVm/zIkwrIYMFJh8mZhUSIbnUq+vU+5wfLBADVijL1Z0Q4jHChPqjIGIK7Ro2tgQP9gs
-         K8lw==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=UJUZ5l+pwb94CXGmjUo0/e251C6xLvaEkwpXTFxqWxA=;
+        b=iVAb7vJAZL3xNbiRZqDlWuRDPrbzftnEC07YIJlZos4pNad3eScwPFC3jTXMufI8LX
+         8KQbvRT+N9A1drMSvHycGWVjBIN74tTOFqdvBiuSQAE4EqHyUGNckgzikDEEFjVoH6fD
+         jMKe6RRjaVS+3u4DBiAfkA8bn09AdzvDwJMn8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p6jHxvinR4oy1/faml5c1RePikeItP2Kvd2rZJWrTiQ=;
-        b=Cx57oe9K7ucL9lQHWRpNcXQyu1ERe1djsxukaYSGxV8foQAunGt+fpSzkU7hXmQQVs
-         K8cuN3eWINnwKvWIMSOASl8xU5DOcSf/BWfCx2RihffWCNDohrKuT2Pk438F863Ag61O
-         ACIJK8os0d+DJ0nEYiOQW4SQASC159l8ADAv/R0lA0j947zk7nLL6FUa0bEXwxmurfI6
-         j2gIGkthoi2cUmmLReMwVihIWAcOu33JzE/p7L4L58803qTve6GzOgbo2cVfVVwql/BX
-         PQ3gpQAsv4dTpD7grUJQX51kfBEFyFwEUFAAbi9on8V1Tqz+JAFQa2IoubIbjdYCMnCa
-         za9A==
-X-Gm-Message-State: AOAM532Q9v2AqqjqkjEW3MDzacj6bpHCbuASlN6JidOP2Wn2s6BAYA0m
-        LdC7ZQWUMUY0GKlBJ6/K79Fhqj4xdGWzxP2clwWH
-X-Google-Smtp-Source: ABdhPJzxBC6arRGRGNDZDQU74O/wINTe0uOldAk5rkZ3ldemXaFDnYdXEXoqOxA7hneHBKXEwp5mvfq2QIMmiuXk118=
-X-Received: by 2002:a17:906:36ce:: with SMTP id b14mr22328852ejc.395.1618214574855;
- Mon, 12 Apr 2021 01:02:54 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=UJUZ5l+pwb94CXGmjUo0/e251C6xLvaEkwpXTFxqWxA=;
+        b=lfBuRmcUqPaznF9hVmR/DU9lCNIEBtIyIxKHn9AxTN9zUgNF1486tys8EkDQc+xnnc
+         9sCVVxd956Y72iu1OVH4GaQjz79UJDqDwcjwit94PJuULQiALEGJvt5wZkutJaG12vok
+         C3xBbEZ57SlxfdEQM7Ln7ru4mz8ldAgUYky2r3w1vWFMVB982OTGbfo4lZJCgIFGnX6d
+         C3nlnx+etsdHidcy/vvu9MBrvp2J4R6uBnSo3KcQOaX2OlIumApij80lrKW2d2J+DHQj
+         mHv41V4eXGL4Is2PIU3nhaSS5qIgpFA+S5luUZAc2AA9Tk7tNEqkFnz0WGnTYNt0aL/q
+         CwWQ==
+X-Gm-Message-State: AOAM5320ovFN3EAsbMD8+cZe1xs8VmxMbAZneIISo+R6uPt0R1jZMSul
+        bhppJT4ICKzpAWfubBOmltcLDQ==
+X-Google-Smtp-Source: ABdhPJzzvWmMcZuSAAXGirY2acPsow1EdDKCC5gv1xy4oJ1TSAImzbsK5/th4asQ6X9yL7Gq+mImMA==
+X-Received: by 2002:a05:651c:1243:: with SMTP id h3mr17555000ljh.128.1618214724994;
+        Mon, 12 Apr 2021 01:05:24 -0700 (PDT)
+Received: from cloudflare.com (79.184.75.85.ipv4.supernova.orange.pl. [79.184.75.85])
+        by smtp.gmail.com with ESMTPSA id d7sm2131512lfv.268.2021.04.12.01.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 01:05:24 -0700 (PDT)
+References: <20210407032111.33398-1-xiyou.wangcong@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        syzbot+320a3bc8d80f478c37e4@syzkaller.appspotmail.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: Re: [Patch bpf-next] skmsg: pass psock pointer to
+ ->psock_update_sk_prot()
+In-reply-to: <20210407032111.33398-1-xiyou.wangcong@gmail.com>
+Date:   Mon, 12 Apr 2021 10:05:23 +0200
+Message-ID: <87r1jg2aik.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-10-xieyongji@bytedance.com>
- <c817178a-2ac8-bf93-1ed3-528579c657a3@redhat.com> <CACycT3v_KFQXoxRbEj8c0Ve6iKn9RbibtBDgBFs=rf0ZOmTBBQ@mail.gmail.com>
- <091dde74-449b-385c-0ec9-11e4847c6c4c@redhat.com> <CACycT3vwATp4+Ao0fjuyeeLQN+xHH=dXF+JUyuitkn4k8hELnA@mail.gmail.com>
- <dc9a90dd-4f86-988c-c1b5-ac606ce5e14b@redhat.com>
-In-Reply-To: <dc9a90dd-4f86-988c-c1b5-ac606ce5e14b@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Mon, 12 Apr 2021 16:02:44 +0800
-Message-ID: <CACycT3vxO21Yt6+px2c2Q8DONNUNehdo2Vez_RKQCKe76CM2TA@mail.gmail.com>
-Subject: Re: Re: [PATCH v6 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 3:16 PM Jason Wang <jasowang@redhat.com> wrote:
+On Wed, Apr 07, 2021 at 05:21 AM CEST, Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 >
+> Using sk_psock() to retrieve psock pointer from sock requires
+> RCU read lock, but we already get psock pointer before calling
+> ->psock_update_sk_prot() in both cases, so we can just pass it
+> without bothering sk_psock().
 >
-> =E5=9C=A8 2021/4/9 =E4=B8=8B=E5=8D=884:02, Yongji Xie =E5=86=99=E9=81=93:
-> >>>>> +};
-> >>>>> +
-> >>>>> +struct vduse_dev_config_data {
-> >>>>> +     __u32 offset; /* offset from the beginning of config space */
-> >>>>> +     __u32 len; /* the length to read/write */
-> >>>>> +     __u8 data[VDUSE_CONFIG_DATA_LEN]; /* data buffer used to read=
-/write */
-> >>>> Note that since VDUSE_CONFIG_DATA_LEN is part of uAPI it means we ca=
-n
-> >>>> not change it in the future.
-> >>>>
-> >>>> So this might suffcient for future features or all type of virtio de=
-vices.
-> >>>>
-> >>> Do you mean 256 is no enough here=EF=BC=9F
-> >> Yes.
-> >>
-> > But this request will be submitted multiple times if config lengh is
-> > larger than 256. So do you think whether we need to extent the size to
-> > 512 or larger?
->
->
-> So I think you'd better either:
->
-> 1) document the limitation (256) in somewhere, (better both uapi and doc)
->
+> Reported-and-tested-by: syzbot+320a3bc8d80f478c37e4@syzkaller.appspotmail.com
+> Fixes: 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-But the VDUSE_CONFIG_DATA_LEN doesn't mean the limitation of
-configuration space. It only means the maximum size of one data
-transfer for configuration space. Do you mean document this?
+We don't necessarily need to pass both sk and psock.  psock has a
+backpointer to sk that owns it.
 
-Thanks,
-Yongji
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
