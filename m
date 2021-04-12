@@ -2,65 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3926235BB2F
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 09:48:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E500835BB98
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 10:02:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237043AbhDLHss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 03:48:48 -0400
-Received: from lpdvacalvio01.broadcom.com ([192.19.229.182]:38254 "EHLO
-        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237029AbhDLHsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 03:48:47 -0400
-Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 69C53E5;
-        Mon, 12 Apr 2021 00:48:29 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 69C53E5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1618213709;
-        bh=iqIiEL+G5T2ttG3Yck3N7LMMb3tzSKgX1h9tbMIl1ig=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=nxx9Il9U5HCUo9FiWXYyfBDVcx4VXA4f1ghwIBfhf4yFKZvg+QCtDtxlhbX9cZhvi
-         ZEW8AAkl0Gft/TSbMujBg8eLB0EHp//WzIlgiFap3R5nWz7T+p4YId2I+mvd5BmX6N
-         kFERZ062aZ+HI4JB9S+LXSUHuLtzV0occjMal/ic=
-Received: from [10.230.42.155] (unknown [10.230.42.155])
-        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id 6F7B21874BD;
-        Mon, 12 Apr 2021 00:48:24 -0700 (PDT)
-Subject: Re: [PATCH 1/2] dt-binding: bcm43xx-fmac: add optional brcm,ccode-map
-To:     Shawn Guo <shawn.guo@linaro.org>, Kalle Valo <kvalo@codeaurora.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20210408113022.18180-1-shawn.guo@linaro.org>
- <20210408113022.18180-2-shawn.guo@linaro.org>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <da449bc1-0155-5019-dede-cd6c8405b059@broadcom.com>
-Date:   Mon, 12 Apr 2021 09:48:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S237111AbhDLIDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 04:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230034AbhDLIDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 04:03:13 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11509C061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:02:56 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id g17so15961620ejp.8
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 01:02:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=p6jHxvinR4oy1/faml5c1RePikeItP2Kvd2rZJWrTiQ=;
+        b=lBqfXWeW37pd7NVUT+Uk9TzwfyGZg7ekKVZcL+rLzd38GksZBKR7JgS6SVbsrGW39X
+         6ZQm8GNiZW6mio9p5jZdsLmscZVYaQofpMHy25hgF5Fb/qN9hrLt4VCW+2+Uo21CZy+8
+         g3M3iRgDWKppnOeVow7mBfNQjxGDyDBNVRnuZFyDbRSLT5wqkwDbmN+y540tFVwD9SQ5
+         hF8wbyI2J28YY73Rx3X4feBz2fKnwz5xghVxWzDMDLzbiyG2SK+nlXToWtL0Pd4QksMZ
+         mVm/zIkwrIYMFJh8mZhUSIbnUq+vU+5wfLBADVijL1Z0Q4jHChPqjIGIK7Ro2tgQP9gs
+         K8lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=p6jHxvinR4oy1/faml5c1RePikeItP2Kvd2rZJWrTiQ=;
+        b=Cx57oe9K7ucL9lQHWRpNcXQyu1ERe1djsxukaYSGxV8foQAunGt+fpSzkU7hXmQQVs
+         K8cuN3eWINnwKvWIMSOASl8xU5DOcSf/BWfCx2RihffWCNDohrKuT2Pk438F863Ag61O
+         ACIJK8os0d+DJ0nEYiOQW4SQASC159l8ADAv/R0lA0j947zk7nLL6FUa0bEXwxmurfI6
+         j2gIGkthoi2cUmmLReMwVihIWAcOu33JzE/p7L4L58803qTve6GzOgbo2cVfVVwql/BX
+         PQ3gpQAsv4dTpD7grUJQX51kfBEFyFwEUFAAbi9on8V1Tqz+JAFQa2IoubIbjdYCMnCa
+         za9A==
+X-Gm-Message-State: AOAM532Q9v2AqqjqkjEW3MDzacj6bpHCbuASlN6JidOP2Wn2s6BAYA0m
+        LdC7ZQWUMUY0GKlBJ6/K79Fhqj4xdGWzxP2clwWH
+X-Google-Smtp-Source: ABdhPJzxBC6arRGRGNDZDQU74O/wINTe0uOldAk5rkZ3ldemXaFDnYdXEXoqOxA7hneHBKXEwp5mvfq2QIMmiuXk118=
+X-Received: by 2002:a17:906:36ce:: with SMTP id b14mr22328852ejc.395.1618214574855;
+ Mon, 12 Apr 2021 01:02:54 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210408113022.18180-2-shawn.guo@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-10-xieyongji@bytedance.com>
+ <c817178a-2ac8-bf93-1ed3-528579c657a3@redhat.com> <CACycT3v_KFQXoxRbEj8c0Ve6iKn9RbibtBDgBFs=rf0ZOmTBBQ@mail.gmail.com>
+ <091dde74-449b-385c-0ec9-11e4847c6c4c@redhat.com> <CACycT3vwATp4+Ao0fjuyeeLQN+xHH=dXF+JUyuitkn4k8hELnA@mail.gmail.com>
+ <dc9a90dd-4f86-988c-c1b5-ac606ce5e14b@redhat.com>
+In-Reply-To: <dc9a90dd-4f86-988c-c1b5-ac606ce5e14b@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Mon, 12 Apr 2021 16:02:44 +0800
+Message-ID: <CACycT3vxO21Yt6+px2c2Q8DONNUNehdo2Vez_RKQCKe76CM2TA@mail.gmail.com>
+Subject: Re: Re: [PATCH v6 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08-04-2021 13:30, Shawn Guo wrote:
-> Add optional brcm,ccode-map property to support translation from ISO3166
-> country code to brcmfmac firmware country code and revision.
+On Mon, Apr 12, 2021 at 3:16 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/4/9 =E4=B8=8B=E5=8D=884:02, Yongji Xie =E5=86=99=E9=81=93:
+> >>>>> +};
+> >>>>> +
+> >>>>> +struct vduse_dev_config_data {
+> >>>>> +     __u32 offset; /* offset from the beginning of config space */
+> >>>>> +     __u32 len; /* the length to read/write */
+> >>>>> +     __u8 data[VDUSE_CONFIG_DATA_LEN]; /* data buffer used to read=
+/write */
+> >>>> Note that since VDUSE_CONFIG_DATA_LEN is part of uAPI it means we ca=
+n
+> >>>> not change it in the future.
+> >>>>
+> >>>> So this might suffcient for future features or all type of virtio de=
+vices.
+> >>>>
+> >>> Do you mean 256 is no enough here=EF=BC=9F
+> >> Yes.
+> >>
+> > But this request will be submitted multiple times if config lengh is
+> > larger than 256. So do you think whether we need to extent the size to
+> > 512 or larger?
+>
+>
+> So I think you'd better either:
+>
+> 1) document the limitation (256) in somewhere, (better both uapi and doc)
+>
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
-> ---
->   .../devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt | 7 +++++++
->   1 file changed, 7 insertions(+)
+But the VDUSE_CONFIG_DATA_LEN doesn't mean the limitation of
+configuration space. It only means the maximum size of one data
+transfer for configuration space. Do you mean document this?
+
+Thanks,
+Yongji
