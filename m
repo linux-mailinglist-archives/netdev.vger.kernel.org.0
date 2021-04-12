@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF3735D29D
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1856335D29B
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 23:31:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244029AbhDLVae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 17:30:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57734 "EHLO mail.kernel.org"
+        id S241128AbhDLVaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 17:30:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240321AbhDLVa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240341AbhDLVa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Apr 2021 17:30:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0B00461278;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 142C46105A;
         Mon, 12 Apr 2021 21:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618263009;
-        bh=eRKU69GIdF6szFcVc7ExlIOkRKSVezN5BsHcoTBujrM=;
+        bh=2VluHk+eufc1objCaoPosLzTVE5QK66i0940ZSFxJqs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UU/uiBz2vYA1Vfk+8hh12+YAgD0rhHDeUiUCZ4/Fk7YF2o3BNUu1m8S8B2Oa8QZMU
-         arNW2O25XxshgWRzfUS1ffEatYEiKQT+5slMTd37j7PUPtz45BsADDXKvXSZyNvs2j
-         31YqHiKiE9Uxftp0OKJkjbaCsQ1YRjoFjOw3qVzbFVpgVfa7SM7yN5f9TzMVlUb2YW
-         Ki3iqx3oDC/DT53aKgoKRKqQrJWbMCdeJeHPPQZ7g7VNHRrDN4IxwZbJcA5fYR8HKx
-         hksoUhcdWFeTDyXl7Di1gzXA3FL5CKmAgymqPTNULdFWNhbI8g2enIINgx0Se+5Kcx
-         gdWyk6Aal5jGA==
+        b=RVHJNJLjiipjm4YwQ3YLDc0HrL+buSc6Sj9/gK1/V0PzbxuDqVsMo8R+SM9ubp8UH
+         FSfy3KEOCmZQkC+Z/B1tCL8e8iMyje5igJLmidcOTIiqvWle17zDBHcOBLn/iJTIK+
+         YWApwu4berwdRM205NbbzmrIOUweueNyahIchvFhCHkqvsjstRtpjMZjUKppR+T7JX
+         Z9c8ZiJzGbe9oE0fiPSgEG5pVApKR3V2E0k3Gy3N8U+m/cvTtn2innbOD1Cwj+95pc
+         89/7rPyuVcJeSpzpi3/SKD/gcR0GL85E8xNmNAVqgruzpJ2TrbizTr2A0KIyQzkG9u
+         WXh5HQobAU3fw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F258560BD8;
-        Mon, 12 Apr 2021 21:30:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 081D260CD0;
+        Mon, 12 Apr 2021 21:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: phy: marvell: fix detection of PHY on Topaz switches
+Subject: Re: [PATCH net resend] ethtool: fix kdoc attr name
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161826300898.30008.38457086565901106.git-patchwork-notify@kernel.org>
-Date:   Mon, 12 Apr 2021 21:30:08 +0000
-References: <20210412165739.27277-1-pali@kernel.org>
-In-Reply-To: <20210412165739.27277-1-pali@kernel.org>
-To:     =?utf-8?b?UGFsaSBSb2jDoXIgPHBhbGlAa2VybmVsLm9yZz4=?=@ci.codeaurora.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        kabel@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <161826300902.30008.7569791245532516594.git-patchwork-notify@kernel.org>
+Date:   Mon, 12 Apr 2021 21:30:09 +0000
+References: <20210412184707.825656-1-kuba@kernel.org>
+In-Reply-To: <20210412184707.825656-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, mkubecek@suse.cz,
+        andrew@lunn.ch, johannes.berg@intel.com, danieller@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +46,17 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 12 Apr 2021 18:57:39 +0200 you wrote:
-> Since commit fee2d546414d ("net: phy: marvell: mv88e6390 temperature
-> sensor reading"), Linux reports the temperature of Topaz hwmon as
-> constant -75°C.
+On Mon, 12 Apr 2021 11:47:07 -0700 you wrote:
+> Add missing 't' in attrtype.
 > 
-> This is because switches from the Topaz family (88E6141 / 88E6341) have
-> the address of the temperature sensor register different from Peridot.
-> 
-> [...]
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/ethtool/netlink.h | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
 Here is the summary with links:
-  - [v2] net: phy: marvell: fix detection of PHY on Topaz switches
-    https://git.kernel.org/netdev/net/c/1fe976d308ac
+  - [net,resend] ethtool: fix kdoc attr name
+    https://git.kernel.org/netdev/net/c/f33b0e196ed7
 
 You are awesome, thank you!
 --
