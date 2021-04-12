@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B8B35CD88
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:37:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9475635CD8B
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 18:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244509AbhDLQhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 12:37:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37274 "EHLO mail.kernel.org"
+        id S245256AbhDLQhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 12:37:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35638 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244992AbhDLQdk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S244994AbhDLQdk (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Apr 2021 12:33:40 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD403613C5;
-        Mon, 12 Apr 2021 16:26:35 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 33331613CF;
+        Mon, 12 Apr 2021 16:26:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618244796;
-        bh=Yh13L35ZM6esCqrd244WMvkZU0q1hVTkp93i3JHN/mU=;
+        s=k20201202; t=1618244799;
+        bh=8HpKkNSRru0z8WcDe7S90lfAhdtFVrp/8hrFMhRpK2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TFGNPWP7bbAnC1dtN6ia7iEXR9XdTBGkTvBIzf+kt228jJPY3vgu1HscZU4SkSQSj
-         Tc8exncKAy3VEoxO+QDQ0gonqCxdNMMWmeQ5FhUyvjAoQlEKeLhGZ1RVasigC/jygc
-         5tb9vmtnighAdi2ufKpcAFfmdCYPfu+8o8DB0BPZrrGvy9nMZlstAxS3++IzrjaUw8
-         4CWz667UR4fNYR0FuL7zQg+Z4BMigdEI8lb5hNd8VbdgTR1qWoujvtkY0c1FRqbEPU
-         MpV6w1bhpO71t3TVDG5dB44+u7RDVcNYiMeo0j4UeBsOx7+ApaF5Qlumnix5LISHbL
-         AUSPc9QwqgKLA==
+        b=CRvmP+zSHkgmswk9ZXjJDHpDsyBD8qkOR1h+n5kmfft0k9anLCxOUj98vBwGwugDI
+         o8X3k+QEbYr8RGN0x/aENiJvz0jc2DzlrZqAySyom7rbYdeLZYcz2+a1nt0Ip2FYa+
+         QI93/oi9leQd7heUsTu+VtOy2a9Z0Rm9+7iud+JL/Z4dgptKRwH5X7NElp3qLBLHSO
+         XuP4gyFGZcV2O8orfk2mvp/FciKKy44oxzErwPwbmZPlXX0n3gmJZz2hlaIj28nZmT
+         eEhJ17ydmribk3NVYy9kAVfojhbd0SFn/WlKxBznjwt/smH8znX3VALyXxztcTEZS1
+         S51wxatEt42WA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tong Zhu <zhutong@amazon.com>,
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+28a246747e0a465127f3@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 04/25] neighbour: Disregard DEAD dst in neigh_update
-Date:   Mon, 12 Apr 2021 12:26:09 -0400
-Message-Id: <20210412162630.315526-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/25] drivers: net: fix memory leak in atusb_probe
+Date:   Mon, 12 Apr 2021 12:26:11 -0400
+Message-Id: <20210412162630.315526-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210412162630.315526-1-sashal@kernel.org>
 References: <20210412162630.315526-1-sashal@kernel.org>
@@ -42,49 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tong Zhu <zhutong@amazon.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit d47ec7a0a7271dda08932d6208e4ab65ab0c987c ]
+[ Upstream commit 6b9fbe16955152626557ec6f439f3407b7769941 ]
 
-After a short network outage, the dst_entry is timed out and put
-in DST_OBSOLETE_DEAD. We are in this code because arp reply comes
-from this neighbour after network recovers. There is a potential
-race condition that dst_entry is still in DST_OBSOLETE_DEAD.
-With that, another neighbour lookup causes more harm than good.
+syzbot reported memory leak in atusb_probe()[1].
+The problem was in atusb_alloc_urbs().
+Since urb is anchored, we need to release the reference
+to correctly free the urb
 
-In best case all packets in arp_queue are lost. This is
-counterproductive to the original goal of finding a better path
-for those packets.
+backtrace:
+    [<ffffffff82ba0466>] kmalloc include/linux/slab.h:559 [inline]
+    [<ffffffff82ba0466>] usb_alloc_urb+0x66/0xe0 drivers/usb/core/urb.c:74
+    [<ffffffff82ad3888>] atusb_alloc_urbs drivers/net/ieee802154/atusb.c:362 [inline][2]
+    [<ffffffff82ad3888>] atusb_probe+0x158/0x820 drivers/net/ieee802154/atusb.c:1038 [1]
 
-I observed a worst case with 4.x kernel where a dst_entry in
-DST_OBSOLETE_DEAD state is associated with loopback net_device.
-It leads to an ethernet header with all zero addresses.
-A packet with all zero source MAC address is quite deadly with
-mac80211, ath9k and 802.11 block ack.  It fails
-ieee80211_find_sta_by_ifaddr in ath9k (xmit.c). Ath9k flushes tx
-queue (ath_tx_complete_aggr). BAW (block ack window) is not
-updated. BAW logic is damaged and ath9k transmission is disabled.
-
-Signed-off-by: Tong Zhu <zhutong@amazon.com>
+Reported-by: syzbot+28a246747e0a465127f3@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/neighbour.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ieee802154/atusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 20f6c634ad68..f9aa9912f940 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1266,7 +1266,7 @@ int neigh_update(struct neighbour *neigh, const u8 *lladdr, u8 new,
- 			 * we can reinject the packet there.
- 			 */
- 			n2 = NULL;
--			if (dst) {
-+			if (dst && dst->obsolete != DST_OBSOLETE_DEAD) {
- 				n2 = dst_neigh_lookup_skb(dst, skb);
- 				if (n2)
- 					n1 = n2;
+diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+index 8e2cbc88df98..2c4274453c15 100644
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -346,6 +346,7 @@ static int atusb_alloc_urbs(struct atusb *atusb, int n)
+ 			return -ENOMEM;
+ 		}
+ 		usb_anchor_urb(urb, &atusb->idle_urbs);
++		usb_free_urb(urb);
+ 		n--;
+ 	}
+ 	return 0;
 -- 
 2.30.2
 
