@@ -2,128 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E38235C5BF
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 13:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7FD35C5D9
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 14:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240650AbhDLLzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 07:55:19 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:41390 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240467AbhDLLzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 07:55:18 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1618228500; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=vdPB/4mlyh2rNRzqrJP2XjppQ3JehxA6cUhYVRcwhQc=; b=KZdUbUW2AdG3ThJtCGMa+3Hhd5VuVtXwp2ygEBvtHPlGQZQhI5yxursUoHBc7gvXfPu50hrX
- JTD4zl7yt1QzzFTQ8jJ75F8hfp8L72DjrjUA3Xv70hUl9xMo2WLVc5MPUmUP6I4lIGx5DcOE
- 0+7RySAZtOiiyKDuJKwueyiWdeQ=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 6074350d03cfff34528bdc40 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 12 Apr 2021 11:54:53
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 29BEEC43463; Mon, 12 Apr 2021 11:54:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D3890C433C6;
-        Mon, 12 Apr 2021 11:54:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D3890C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Shawn Guo <shawn.guo@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: Re: [PATCH 1/2] dt-binding: bcm43xx-fmac: add optional brcm,ccode-map
-References: <20210408113022.18180-1-shawn.guo@linaro.org>
-        <20210408113022.18180-2-shawn.guo@linaro.org>
-        <87k0p9mewt.fsf@codeaurora.org> <20210412012528.GB15093@dragon>
-Date:   Mon, 12 Apr 2021 14:54:46 +0300
-In-Reply-To: <20210412012528.GB15093@dragon> (Shawn Guo's message of "Mon, 12
-        Apr 2021 09:25:29 +0800")
-Message-ID: <87im4rlnuh.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S240799AbhDLMBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 08:01:06 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3397 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240733AbhDLMBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 08:01:05 -0400
+Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FJnL93smNz5pnK;
+        Mon, 12 Apr 2021 19:57:53 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Mon, 12 Apr 2021 20:00:43 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Mon, 12 Apr
+ 2021 20:00:44 +0800
+Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
+ qdisc
+To:     Hillf Danton <hdanton@sina.com>
+CC:     Juergen Gross <jgross@suse.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Jiri Kosina <JKosina@suse.com>
+References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
+ <20210409090909.1767-1-hdanton@sina.com>
+ <20210412032111.1887-1-hdanton@sina.com>
+ <20210412072856.2046-1-hdanton@sina.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <d7b8a391-0b2f-f0a9-82ed-0609addcadb2@huawei.com>
+Date:   Mon, 12 Apr 2021 20:00:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210412072856.2046-1-hdanton@sina.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme706-chm.china.huawei.com (10.1.199.102) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shawn Guo <shawn.guo@linaro.org> writes:
+On 2021/4/12 15:28, Hillf Danton wrote:
+> On Mon, 12 Apr 2021 11:37:24 Yunsheng Lin wrote:
+>> On 2021/4/12 11:21, Hillf Danton wrote:
+>>> On Mon, 12 Apr 2021 09:24:30  Yunsheng Lin wrote:
+>>>> On 2021/4/9 17:09, Hillf Danton wrote:
+>>>>> On Fri, 9 Apr 2021 07:31:03  Juergen Gross wrote:
+>>>>>> On 25.03.21 04:13, Yunsheng Lin wrote:
+>>>>>> I have a setup which is able to reproduce the issue quite reliably:
+>>>>>>
+>>>>>> In a Xen guest I'm mounting 8 NFS shares and run sysbench fileio on
+>>>>>> each of them. The average latency reported by sysbench is well below
+>>>>>> 1 msec, but at least once per hour I get latencies in the minute
+>>>>>> range.
+>>>>>>
+>>>>>> With this patch I don't see these high latencies any longer (test
+>>>>>> is running for more than 20 hours now).
+>>>>>>
+>>>>>> So you can add my:
+>>>>>>
+>>>>>> Tested-by: Juergen Gross <jgross@suse.com>
+>>>>>>
+>>>>>
+>>>>> If retry is allowed in the dequeue method then a simple seqcount can do the
+>>>>> work of serializing enqueuer and dequeuer. IIUC it was not attempted last year.
+>>>>
+>>>> At the first glance, I do not think the below patch fix the data race
+>>>
+>>> Thanks for taking a look.
+>>>
+>>>> described in the commit log, as it does not handle the time window
+>>>> between dequeuing and q->seqlock releasing, as below:
+>>>>
+>>> Yes the time window does exist.
+>>>
+>>>> The cpu1 may not see the qdisc->pad changed after pfifo_fast_dequeue(),
+>>>> and cpu2 is not able to take the q->seqlock yet because cpu1 do not
+>>>> release the q->seqlock.
+>>>>
+>>> It's now covered by extending the seqcount aperture a bit.
+>>>
+>>> --- x/net/sched/sch_generic.c
+>>> +++ y/net/sched/sch_generic.c
+>>> @@ -380,14 +380,23 @@ void __qdisc_run(struct Qdisc *q)
+>>>  {
+>>>  	int quota = dev_tx_weight;
+>>>  	int packets;
+>>> +	int seq;
+>>> +
+>>> +again:
+>>> +	seq = READ_ONCE(q->pad);
+>>> +	smp_rmb();
+>>>  
+>>>  	while (qdisc_restart(q, &packets)) {
+>>>  		quota -= packets;
+>>>  		if (quota <= 0) {
+>>>  			__netif_schedule(q);
+>>> -			break;
+>>> +			return;
+>>>  		}
+>>>  	}
+>>> +
+>>> +	smp_rmb();
+>>> +	if (seq != READ_ONCE(q->pad))
+>>> +		goto again;
+>>
+>> As my understanding, there is still time window between q->pad checking
+>> above and q->seqlock releasing in qdisc_run_end().
+>>
+> Then extend the cover across q->seqlock on top of the flag you added.
 
-> On Sun, Apr 11, 2021 at 10:57:54AM +0300, Kalle Valo wrote:
->> Shawn Guo <shawn.guo@linaro.org> writes:
->> 
->> > Add optional brcm,ccode-map property to support translation from ISO3166
->> > country code to brcmfmac firmware country code and revision.
->> >
->> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
->> > ---
->> >  .../devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt | 7 +++++++
->> >  1 file changed, 7 insertions(+)
->> >
->> > diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt b/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt
->> > index cffb2d6876e3..a65ac4384c04 100644
->> > --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt
->> > +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm43xx-fmac.txt
->> > @@ -15,6 +15,12 @@ Optional properties:
->> >  	When not specified the device will use in-band SDIO interrupts.
->> >   - interrupt-names : name of the out-of-band interrupt, which must be set
->> >  	to "host-wake".
->> > + - brcm,ccode-map : multiple strings for translating ISO3166 country code to
->> > +	brcmfmac firmware country code and revision.  Each string must be in
->> > +	format "AA-BB-num" where:
->> > +	  AA is the ISO3166 country code which must be 2 characters.
->> > +	  BB is the firmware country code which must be 2 characters.
->> > +	  num is the revision number which must fit into signed integer.
->> >  
->> >  Example:
->> >  
->> > @@ -34,5 +40,6 @@ mmc3: mmc@1c12000 {
->> >  		interrupt-parent = <&pio>;
->> >  		interrupts = <10 8>; /* PH10 / EINT10 */
->> >  		interrupt-names = "host-wake";
->> > +		brcm,ccode-map = "JP-JP-78", "US-Q2-86";
->> 
->> The commit log does not answer "Why?". Why this needs to be in device
->> tree and, for example, not hard coded in the driver?
->
-> Thanks for the comment, Kalle.  Actually, this is something I need some
-> input from driver maintainers.  I can see this country code mapping
-> table is chipset specific, and can be hard coded in driver per chip id
-> and revision.  But on the other hand, it makes some sense to have this
-> table in device tree, as the country code that need to be supported
-> could be a device specific configuration.
+Yes, the below patch seems to fix the data race described in
+the commit log.
+Then what is the difference between my patch and your patch below:)
 
-Could be? Does such a use case exist at the moment or are just guessing
-future needs?
+> 
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -36,6 +36,7 @@ struct qdisc_rate_table {
+>  enum qdisc_state_t {
+>  	__QDISC_STATE_SCHED,
+>  	__QDISC_STATE_DEACTIVATED,
+> +	__QDISC_STATE_NEED_RESCHEDULE,
+>  };
+>  
+>  struct qdisc_size_table {
+> @@ -176,8 +177,13 @@ static inline bool qdisc_run_begin(struc
+>  static inline void qdisc_run_end(struct Qdisc *qdisc)
+>  {
+>  	write_seqcount_end(&qdisc->running);
+> -	if (qdisc->flags & TCQ_F_NOLOCK)
+> +	if (qdisc->flags & TCQ_F_NOLOCK) {
+>  		spin_unlock(&qdisc->seqlock);
+> +
+> +		if (test_and_clear_bit(__QDISC_STATE_NEED_RESCHEDULE,
+> +							&qdisc->state))
+> +			__netif_schedule(qdisc);
+> +	}
+>  }
+>  
+>  static inline bool qdisc_may_bulk(const struct Qdisc *qdisc)
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -381,13 +381,21 @@ void __qdisc_run(struct Qdisc *q)
+>  	int quota = dev_tx_weight;
+>  	int packets;
+>  
+> +	if (q->flags & TCQ_F_NOLOCK)
+> +		clear_bit(__QDISC_STATE_NEED_RESCHEDULE, &q->state);
+> +again:
+>  	while (qdisc_restart(q, &packets)) {
+>  		quota -= packets;
+>  		if (quota <= 0) {
+>  			__netif_schedule(q);
+> -			break;
+> +			return;
+>  		}
+>  	}
+> +
+> +	if (q->flags & TCQ_F_NOLOCK)
+> +		if (test_and_clear_bit(__QDISC_STATE_NEED_RESCHEDULE,
+> +					&q->state))
+> +			goto again;
+>  }
+>  
+>  unsigned long dev_trans_start(struct net_device *dev)
+> @@ -632,6 +640,9 @@ static int pfifo_fast_enqueue(struct sk_
+>  			return qdisc_drop(skb, qdisc, to_free);
+>  	}
+>  
+> +	if (qdisc->flags & TCQ_F_NOLOCK)
+> +		set_bit(__QDISC_STATE_NEED_RESCHEDULE, &qdisc->state);
 
-From what I have learned so far I think this kind of data should be in
-the driver, but of course I might be missing something.
+Doing set_bit() in pfifo_fast_enqueue() unconditionally does not
+seems to be performance friendly, because it requires exclusive access
+to the cache line of qdisc->state.
+Perhaps do some performance test?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> +
+>  	qdisc_update_stats_at_enqueue(qdisc, pkt_len);
+>  	return NET_XMIT_SUCCESS;
+>  }
+> 
+> .
+> 
+
