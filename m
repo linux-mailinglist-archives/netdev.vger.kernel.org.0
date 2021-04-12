@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C9A735B8F6
-	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 05:35:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C414235B8FA
+	for <lists+netdev@lfdr.de>; Mon, 12 Apr 2021 05:37:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236539AbhDLDfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Apr 2021 23:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235366AbhDLDfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 23:35:53 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A5AC061574;
-        Sun, 11 Apr 2021 20:35:36 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id p12so8315865pgj.10;
-        Sun, 11 Apr 2021 20:35:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zz+Tw8OZ3h7FdO/ul6ahr3fJRsNT7ZFl+jHU8Ix627M=;
-        b=hJX/Cz6KrB1hU5cib883UIgJBzkAo9o8JX5imTz9nYkdP+Iqq7YtsxE5UXIFQh/BSR
-         /ggY5hkWhJvEDsRm0sGuYzB0ZaA0zflppUuLGOY/gLj1zHV2D1bxHtj9JX5yGMsYlmZ4
-         8AL3/Qb365VKWuqJ5DDbzbT9c0k7IlFqAGzg2RPka4MmTpZkVm9PB+D9/ZAWo26ESI14
-         QFfQdDPnGsc2ZffFSRqLUBzPZPBJMS1GJNJo0IlvadvvgeHLD7WKpvkkf48ZScXNRfpD
-         03FmXgYGA6y/JFioY7AOPHZPPXR8zyvTW3B6TJf+McaOHjCPMZnJoekGCgOFg+CJ42Lp
-         o/Yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zz+Tw8OZ3h7FdO/ul6ahr3fJRsNT7ZFl+jHU8Ix627M=;
-        b=JnFTjr8fRbmcfiE89mFcMWGc289Dq45s1x8IEJtr1Qbi0CReCi8qkb0enbvyvW9O2t
-         sNokWYbT1lmiuBdImSxZyRnm+y7y2uvSwQ5yO8gYSLBPpdc3us8qu/0OM9AAF1vCUGi3
-         enIdM2FW0vDiWdroKgXiunrAg3pfmBbT6t5sg790R/4RMGly+WExk/aPDdonhkTqheAk
-         0g+KOEulrtPioWptZGRTku1xoTLzA8f8rgty57O8lPg7UQcWrwuQjF6bMWcleluDYfzL
-         rbOzEmKEh7iBTsj44Exj3MZgU5uQp8tmLyl3BbAAhtJ+QITmPFLKe3nFdv0eqteMaFqW
-         GSEQ==
-X-Gm-Message-State: AOAM530ZD35tpOD3ldn8Rzwo7gfrDVNiw3ueowCfPsQSQURAzxdme4O6
-        zj6JqljObcwo1MWOaQs0blo=
-X-Google-Smtp-Source: ABdhPJw1wQKv2uLnE5vNX/a7O0otJiXPhGwvtuN1P0B0PVQrbPKQDL2UrR+i6JFovtugH+hnotEHcw==
-X-Received: by 2002:aa7:904b:0:b029:24d:5447:1270 with SMTP id n11-20020aa7904b0000b029024d54471270mr2415897pfo.38.1618198535662;
-        Sun, 11 Apr 2021 20:35:35 -0700 (PDT)
-Received: from localhost.localdomain ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id y3sm8426547pfg.145.2021.04.11.20.35.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Apr 2021 20:35:34 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        zhang kai <zhangkaiheb@126.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Di Zhu <zhudi21@huawei.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/3] net: dsa: allow for multiple CPU ports
-Date:   Mon, 12 Apr 2021 11:35:25 +0800
-Message-Id: <20210412033525.2472820-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210410133454.4768-2-ansuelsmth@gmail.com>
-References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210410133454.4768-2-ansuelsmth@gmail.com>
+        id S236266AbhDLDhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Apr 2021 23:37:45 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3525 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235366AbhDLDho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Apr 2021 23:37:44 -0400
+Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FJZBK0kr0zRcNn;
+        Mon, 12 Apr 2021 11:35:21 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Mon, 12 Apr 2021 11:37:25 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Mon, 12 Apr
+ 2021 11:37:25 +0800
+Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
+ qdisc
+To:     Hillf Danton <hdanton@sina.com>
+CC:     Juergen Gross <jgross@suse.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Jiri Kosina <JKosina@suse.com>
+References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
+ <20210409090909.1767-1-hdanton@sina.com>
+ <20210412032111.1887-1-hdanton@sina.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <caadc833-ee47-8243-a238-57595e7fc446@huawei.com>
+Date:   Mon, 12 Apr 2021 11:37:24 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210412032111.1887-1-hdanton@sina.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 10, 2021 at 03:34:47PM +0200, Ansuel Smith wrote:
-> Allow for multiple CPU ports in a DSA switch tree. By default the first
-> CPU port is assigned mimic the original assignement logic. A DSA driver
-> can define a function to declare a preferred CPU port based on the
-> provided port. If the function doesn't have a preferred port the CPU
-> port is assigned using a round-robin way starting from the last assigned
-> CPU port.
-> Examples:
-> There are two CPU port but no port_get_preferred_cpu is provided:
-> - The old logic is used. Every port is assigned to the first cpu port.
-> There are two CPU port but the port_get_preferred_cpu return -1:
-> - The port is assigned using a round-robin way since no preference is
->   provided.
-> There are two CPU port and the port_get_preferred_cpu define only one
-> port and the rest with -1: (wan port with CPU1 and the rest no
-> preference)
->   lan1 <-> eth0
->   lan2 <-> eth1
->   lan3 <-> eth0
->   lan4 <-> eth1
->   wan  <-> eth1
-> There are two CPU port and the port_get_preferred assign a preference
-> for every port: (wan port with CPU1 everything else CPU0)
->   lan1 <-> eth0
->   lan2 <-> eth0
->   lan3 <-> eth0
->   lan4 <-> eth0
->   wan  <-> eth1
-
-So, drivers will read the name of every port and decide which CPU port
-does it use?
-
+On 2021/4/12 11:21, Hillf Danton wrote:
+> On Mon, 12 Apr 2021 09:24:30  Yunsheng Lin wrote:
+>> On 2021/4/9 17:09, Hillf Danton wrote:
+>>> On Fri, 9 Apr 2021 07:31:03  Juergen Gross wrote:
+>>>> On 25.03.21 04:13, Yunsheng Lin wrote:
+>>>> I have a setup which is able to reproduce the issue quite reliably:
+>>>>
+>>>> In a Xen guest I'm mounting 8 NFS shares and run sysbench fileio on
+>>>> each of them. The average latency reported by sysbench is well below
+>>>> 1 msec, but at least once per hour I get latencies in the minute
+>>>> range.
+>>>>
+>>>> With this patch I don't see these high latencies any longer (test
+>>>> is running for more than 20 hours now).
+>>>>
+>>>> So you can add my:
+>>>>
+>>>> Tested-by: Juergen Gross <jgross@suse.com>
+>>>>
+>>>
+>>> If retry is allowed in the dequeue method then a simple seqcount can do the
+>>> work of serializing enqueuer and dequeuer. IIUC it was not attempted last year.
+>>
+>> At the first glance, I do not think the below patch fix the data race
 > 
-> Signed-off-by: Marek Behún <marek.behun@nic.cz>
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Thanks for taking a look.
+> 
+>> described in the commit log, as it does not handle the time window
+>> between dequeuing and q->seqlock releasing, as below:
+>>
+> Yes the time window does exist.
+> 
+>> The cpu1 may not see the qdisc->pad changed after pfifo_fast_dequeue(),
+>> and cpu2 is not able to take the q->seqlock yet because cpu1 do not
+>> release the q->seqlock.
+>>
+> It's now covered by extending the seqcount aperture a bit.
+> 
+> --- x/net/sched/sch_generic.c
+> +++ y/net/sched/sch_generic.c
+> @@ -380,14 +380,23 @@ void __qdisc_run(struct Qdisc *q)
+>  {
+>  	int quota = dev_tx_weight;
+>  	int packets;
+> +	int seq;
+> +
+> +again:
+> +	seq = READ_ONCE(q->pad);
+> +	smp_rmb();
+>  
+>  	while (qdisc_restart(q, &packets)) {
+>  		quota -= packets;
+>  		if (quota <= 0) {
+>  			__netif_schedule(q);
+> -			break;
+> +			return;
+>  		}
+>  	}
+> +
+> +	smp_rmb();
+> +	if (seq != READ_ONCE(q->pad))
+> +		goto again;
+
+As my understanding, there is still time window between q->pad checking
+above and q->seqlock releasing in qdisc_run_end().
+
+>  }
+>  
+>  unsigned long dev_trans_start(struct net_device *dev)
+> @@ -632,6 +641,9 @@ static int pfifo_fast_enqueue(struct sk_
+>  			return qdisc_drop(skb, qdisc, to_free);
+>  	}
+>  
+> +	qdisc->pad++;
+> +	smp_wmb();
+> +
+>  	qdisc_update_stats_at_enqueue(qdisc, pkt_len);
+>  	return NET_XMIT_SUCCESS;
+>  }
+> 
+> .
+> 
+
