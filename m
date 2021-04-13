@@ -2,98 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBBFE35DCC3
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 12:49:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D64635DCCA
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 12:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244265AbhDMKsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 06:48:51 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:58262 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343879AbhDMKse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 06:48:34 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13DAjWO0182276;
-        Tue, 13 Apr 2021 10:48:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=VHo8rBkqepFbdjOWh9vlGfa/227ekKGAjsHmcxNkLfA=;
- b=kBlra1nzXtrHDY5g71jQ0sv5dJCxpPJL+DzZikE3g6NOgPWnFLSUqoK72UpeAQC4lPBE
- bCE8iFOA/dW5ab8KS27KWztCRnkYM03m7ky/VapcxwGoQPAL5+edm16FWj/srQ8chxds
- y7E91qo67LCSY32HVCOrie/wQvKOSEkA2GVryN5MxWWdtcF/opK0ryPByLi77C6Xat07
- Isu251iavvWE8zzIacMBr8XS6fYrxetdYsOnxIJ9mfyK6JHhBIzh4x9qQL8mn4vJ5HBJ
- dIevxl/VXRx41zTCFJ39qNpnshi4oeHaF/BiwdazXiRCsyB6RaZrYTBp2ZgAabxpH0b0 tA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 37u4nnekhq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Apr 2021 10:48:09 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13DAkLGe183871;
-        Tue, 13 Apr 2021 10:48:07 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 37unxwp62r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Apr 2021 10:48:07 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 13DAm6if023268;
-        Tue, 13 Apr 2021 10:48:06 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 13 Apr 2021 03:48:05 -0700
-Date:   Tue, 13 Apr 2021 13:47:59 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     drivers@pensando.io, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Allen Hubbe <allenbh@pensando.io>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] ionic: return -EFAULT if copy_to_user() fails
-Message-ID: <YHV230jUzxBJxlPS@mwanda>
+        id S1343970AbhDMKto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 06:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343891AbhDMKsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 06:48:47 -0400
+Received: from blyat.fensystems.co.uk (blyat.fensystems.co.uk [IPv6:2a05:d018:a4d:6403:2dda:8093:274f:d185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45877C061574
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 03:48:25 -0700 (PDT)
+Received: from dolphin.home (unknown [IPv6:2a00:23c6:5495:5e00:72b3:d5ff:feb1:e101])
+        by blyat.fensystems.co.uk (Postfix) with ESMTPSA id 7678944263;
+        Tue, 13 Apr 2021 10:48:21 +0000 (UTC)
+Subject: Re: xen-netback hotplug-status regression bug
+To:     paul@xen.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        Paul Durrant <pdurrant@amazon.com>
+References: <afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org>
+ <f469cdee-f97e-da3f-bcab-0be9ed8cd836@xen.org>
+From:   Michael Brown <mcb30@ipxe.org>
+Message-ID: <58ccc3b7-9ccb-b9bf-84e7-4a023ccb5c56@ipxe.org>
+Date:   Tue, 13 Apr 2021 11:48:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9952 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 malwarescore=0
- spamscore=0 adultscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104130074
-X-Proofpoint-ORIG-GUID: O5ahKcDz3aSdIcFS_i_6HVNt4EWgN3wu
-X-Proofpoint-GUID: O5ahKcDz3aSdIcFS_i_6HVNt4EWgN3wu
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9952 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
- phishscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501
- clxscore=1011 lowpriorityscore=0 spamscore=0 impostorscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104130074
+In-Reply-To: <f469cdee-f97e-da3f-bcab-0be9ed8cd836@xen.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on
+        blyat.fensystems.co.uk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The copy_to_user() function returns the number of bytes that it wasn't
-able to copy.  We want to return -EFAULT to the user.
+On 13/04/2021 08:12, Paul Durrant wrote:
+>> If the frontend subsequently disconnects and reconnects (e.g. 
+>> transitions through Closed->Initialising->Connected) then:
+>>
+>> - Nothing recreates "hotplug-status"
+>>
+>> - When the frontend re-enters Connected state, connect() sets up a 
+>> watch on "hotplug-status" again
+>>
+>> - The callback hotplug_status_changed() is never triggered, and so the 
+>> backend device never transitions to Connected state.
+> 
+> That's not how I read it. Given that "hotplug-status" is removed by the 
+> call to hotplug_status_changed() then the next call to connect() should 
+> fail to register the watch and 'have_hotplug_status_watch' should be 0. 
+> Thus backend_switch_state() should not defer the transition to 
+> XenbusStateConnected in any subsequent interaction with the frontend.
 
-Fixes: fee6efce565d ("ionic: add hw timestamp support files")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/pensando/ionic/ionic_phc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Thank you for the reply.  I've tested and confirmed my initial 
+hypothesis: the call to xenbus_watch_pathfmt() succeeds even if the node 
+does not exist.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_phc.c b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
-index 86ae5011ac9b..d7d8d5e81ea0 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_phc.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_phc.c
-@@ -225,7 +225,9 @@ int ionic_lif_hwstamp_get(struct ionic_lif *lif, struct ifreq *ifr)
- 	memcpy(&config, &lif->phc->ts_config, sizeof(config));
- 	mutex_unlock(&lif->phc->config_lock);
- 
--	return copy_to_user(ifr->ifr_data, &config, sizeof(config));
-+	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
-+		return -EFAULT;
-+	return 0;
- }
- 
- static u64 ionic_hwstamp_read(struct ionic *ionic,
--- 
-2.30.2
+I confirmed this with ftrace using:
 
+   cd /sys/kernel/debug/tracing
+   echo function_graph > current_tracer
+   echo set_backend_state > set_ftrace_filter
+   echo xenbus_watch_pathfmt >> set_ftrace_filter
+   echo register_xenbus_watch >> set_ftrace_filter
+   echo xenbus_dev_fatal >> set_ftrace_filter
+
+On the second time that the frontend transitions to Connected, this 
+produced the trace:
+
+   set_backend_state [xen_netback]() {
+     register_xenbus_watch();
+     register_xenbus_watch();
+     xenbus_watch_pathfmt() {
+       register_xenbus_watch();
+     }
+   }
+
+which seems to confirm that the error path in xenbus_watch_path() is 
+*not* taken, i.e. that the call to register_xenbus_watch() succeeded 
+even though the node did not exist.
+
+
+Other observations also seem to confirm this behaviour:
+
+- Running "xenstore ls" in dom0 confirms that on the second frontend 
+transition to Connected, the frontend state is indeed Connected (4) but 
+the backend state remains in InitWait (2)
+
+- Running "xenstore watch 
+/local/domain/0/backend/vif/<domU>/0/hotplug-status" *before* starting 
+the domU confirms that it is possible to create a watch on a node that 
+does not (yet) exist, and that the watch *is* notified when the node is 
+later created.
+
+> Are you seeing the watch successfully re-registered even though the node 
+> does not exist? Perhaps there has been a change in xenstore behaviour?
+
+So, the TL;DR is that yes, the watch does successfully register even 
+though the node does not exist.
+
+ From a quick look through the xenstored source, it looks as though the 
+only check on the node name is the call to is_valid_nodename(), which 
+seems to perform a syntactic validity check only.  I can't immediately 
+find any commit that would have changed this behaviour.
+
+Thanks,
+
+Michael
