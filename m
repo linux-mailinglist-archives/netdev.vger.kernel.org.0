@@ -2,144 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E901835D895
+	by mail.lfdr.de (Postfix) with ESMTP id 0163E35D892
 	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237595AbhDMHOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 03:14:41 -0400
-Received: from mail.pr-group.ru ([178.18.215.3]:57094 "EHLO mail.pr-group.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229802AbhDMHOk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 03:14:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:
-         content-transfer-encoding:in-reply-to:references;
-        bh=pd1fHE23NfZnQxckUIslFHR/YDaX2qQtIgwkeLQlW58=;
-        b=tnao5w7c9/I5l1BAlRvwEibBaCdse6jXQD2iKfsWWLWt+MmKLCgmiCoexYEMA9EtQ1THmrZL0R0TU
-         ni/LXp1IiY9WvPJSLarXfAHr5tlB+Zc3XSiuz6ahgK2AVtwNspbRKH120MIPGm++2j+iKgx7GFeWrY
-         ez+wMr31yLn7KRDsyhcBbk5rrBf6647SC6UgmEO3jSHDnaoqjShuGblYZA7iLnjhG3LRImo5Q+1kC4
-         OzsParxeeq8+Vczj3xqcVE/cyM8zJYwj6KgST4+qWdzEpLXgFeD9eF13LHkvnYytCXi8zQeJAxcWaG
-         A0hdQRs8JO6WxTRcw0QLcL7FskCmIdA==
-X-Spam-Status: No, hits=0.0 required=3.4
-        tests=AWL: 0.000, BAYES_00: -1.665, CUSTOM_RULE_FROM: ALLOW,
-        TOTAL_SCORE: -1.665,autolearn=ham
-X-Spam-Level: 
-X-Footer: bWV0cm90ZWsucnU=
-Received: from dhcp-179.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 13 Apr 2021 10:14:03 +0300
-Date:   Tue, 13 Apr 2021 10:13:49 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     system@metrotek.ru, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: phy: marvell-88x2222: check that link
- is operational
-Message-ID: <20210413071349.r374hxctgboj7l5a@dhcp-179.ddg>
-References: <cover.1618227910.git.i.bornyakov@metrotek.ru>
- <614b534f1661ecf1fff419e2f36eddfb0e6f066d.1618227910.git.i.bornyakov@metrotek.ru>
- <20210413013122.7fa0195f@thinkpad>
+        id S237432AbhDMHOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 03:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229802AbhDMHOd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:14:33 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27195C061574;
+        Tue, 13 Apr 2021 00:14:14 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id a85so10401494pfa.0;
+        Tue, 13 Apr 2021 00:14:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JXWyaO6uozRpzUejkv6WQM7k14W2GQD/gxKY/Zgj0os=;
+        b=IgthMJcsWYYBaUVsCfL/HbE0ZaJtQFIY5p4YI9kFhAsE+Hjq0kxXZ+QXPpaa3VzZ5D
+         Uw7RK/1Qo9fsGZY03B6ckRYtpYFHbHVtQFCPYovaQwORWXldZsvgRevJX/CudvS2oRGy
+         SI9TgvFcU5BwPNYQWQMQbDXVr/UzkOX9luFk/oXJLr99hZVwVP+910tsp6lRpMLmXImn
+         znGmsQvTGsLsc8LELvOFJKJsf/9LWtFWEK/Vg6kfYjTSO7+oGZU1nHEMQIoSMDXXM/n6
+         mTBBeGyPwVECAF7LMtvXdBNOWZhYtAGuwcRItQwRSMCVVoLBCkqiao+AIRnuU554OTi3
+         BR9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JXWyaO6uozRpzUejkv6WQM7k14W2GQD/gxKY/Zgj0os=;
+        b=Miu+1r3AmrCjO1VRtFVEB35KYiBE8MYouy5LJbj+XokikoHqdjarrwn+DUmml/z//N
+         pJKlQFkR6L2FLS/I175cuVO4cn9KdCQHkyj8r77ZthnnZuIMvqI7LObdiCocmAydT+yO
+         FAqRKgwmJ/Zrxj/JHVY7DStit2s/hxsWUh4CswRpmW3NPhvD9ehRHLVcLkNrxjgdRMHP
+         4DuyakQSQOARfuG36lrfnG4jh1GcfV/2jdhQNd/RUmxXXQS/ssFFspt1nUrvjcg7zlft
+         oauVP8EFWcUGJ99RWjKKgbs/JytiBjDW5pealCSvMHqmtLgpquDBXdy7rz9Y82HAgDKl
+         PkMg==
+X-Gm-Message-State: AOAM531dMEYuuGcyjQD33gnmPRAQfpFAoNtC17wxYGvb0+473dQ3b77u
+        uRtfUZejj8Sxg/JVsX6LlWDRBhLxDaWFPjpJOF8=
+X-Google-Smtp-Source: ABdhPJwQs2XodemFscvFdh/gdWgL/U2Ub+qpoUQL8HAP+6IaGgok4qnYmV4V1xkgfB5Pv/XbeG5S5ntdX3SJ0HrVJfk=
+X-Received: by 2002:a63:cf55:: with SMTP id b21mr32288770pgj.126.1618298053549;
+ Tue, 13 Apr 2021 00:14:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210413013122.7fa0195f@thinkpad>
-User-Agent: NeoMutt/20180716
+References: <CAJ8uoz2jym_AmCyMt_B32YBAEsjTNpaQF-WAJUavUe3P5_at3w@mail.gmail.com>
+ <1618278328.0085247-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1618278328.0085247-1-xuanzhuo@linux.alibaba.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 13 Apr 2021 09:14:02 +0200
+Message-ID: <CAJ8uoz27wTWU0HhfVWkcHESfAtMXT6dj=p+JW87zm-ownDF7Ww@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/2] xsk: introduce generic almost-zerocopy xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 01:32:12AM +0200, Marek Behún wrote:
-> On Mon, 12 Apr 2021 15:16:59 +0300
-> Ivan Bornyakov <i.bornyakov@metrotek.ru> wrote:
-> 
-> > Some SFP modules uses RX_LOS for link indication. In such cases link
-> > will be always up, even without cable connected. RX_LOS changes will
-> > trigger link_up()/link_down() upstream operations. Thus, check that SFP
-> > link is operational before actual read link status.
-> > 
-> > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> > ---
-> >  drivers/net/phy/marvell-88x2222.c | 26 ++++++++++++++++++++++++++
-> >  1 file changed, 26 insertions(+)
-> > 
-> > diff --git a/drivers/net/phy/marvell-88x2222.c b/drivers/net/phy/marvell-88x2222.c
-> > index eca8c2f20684..fb285ac741b2 100644
-> > --- a/drivers/net/phy/marvell-88x2222.c
-> > +++ b/drivers/net/phy/marvell-88x2222.c
-> > @@ -51,6 +51,7 @@
-> >  struct mv2222_data {
-> >  	phy_interface_t line_interface;
-> >  	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported);
-> > +	bool sfp_link;
-> >  };
-> >  
-> >  /* SFI PMA transmit enable */
-> > @@ -148,6 +149,9 @@ static int mv2222_read_status(struct phy_device *phydev)
-> >  	phydev->speed = SPEED_UNKNOWN;
-> >  	phydev->duplex = DUPLEX_UNKNOWN;
-> >  
-> > +	if (!priv->sfp_link)
-> > +		return 0;
-> > +
-> 
-> So if SFP is not used at all, if this PHY is used in a different
-> usecase, this function will always return 0? Is this correct?
-> 
-
-Yes, probably. The thing is that I only have hardware with SFP cages, so
-I realy don't know if this driver work in other usecases. The good thing
-about open source is that other developers with different hardware
-configurations can rework here and there and contribute back. Right?
-
-> >  	if (priv->line_interface == PHY_INTERFACE_MODE_10GBASER)
-> >  		link = mv2222_read_status_10g(phydev);
-> >  	else
-> > @@ -446,9 +450,31 @@ static void mv2222_sfp_remove(void *upstream)
-> >  	linkmode_zero(priv->supported);
-> >  }
-> >  
-> > +static void mv2222_sfp_link_up(void *upstream)
-> > +{
-> > +	struct phy_device *phydev = upstream;
-> > +	struct mv2222_data *priv;
-> > +
-> > +	priv = (struct mv2222_data *)phydev->priv;
-> > +
-> > +	priv->sfp_link = true;
-> > +}
-> > +
-> > +static void mv2222_sfp_link_down(void *upstream)
-> > +{
-> > +	struct phy_device *phydev = upstream;
-> > +	struct mv2222_data *priv;
-> > +
-> > +	priv = (struct mv2222_data *)phydev->priv;
-> 
-> This cast is redundant since the phydev->priv is (void*). You can cast
-> (void*) to (struct ... *).
-> 
-> You can also just use
-> 	struct mv2222_data *priv = phydev->priv;
+On Tue, Apr 13, 2021 at 3:49 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
+> On Mon, 12 Apr 2021 16:13:12 +0200, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> > On Wed, Mar 31, 2021 at 2:27 PM Alexander Lobakin <alobakin@pm.me> wrote:
+> > >
+> > > This series is based on the exceptional generic zerocopy xmit logics
+> > > initially introduced by Xuan Zhuo. It extends it the way that it
+> > > could cover all the sane drivers, not only the ones that are capable
+> > > of xmitting skbs with no linear space.
+> > >
+> > > The first patch is a random while-we-are-here improvement over
+> > > full-copy path, and the second is the main course. See the individual
+> > > commit messages for the details.
+> > >
+> > > The original (full-zerocopy) path is still here and still generally
+> > > faster, but for now it seems like virtio_net will remain the only
+> > > user of it, at least for a considerable period of time.
+> > >
+> > > From v1 [0]:
+> > >  - don't add a whole SMP_CACHE_BYTES because of only two bytes
+> > >    (NET_IP_ALIGN);
+> > >  - switch to zerocopy if the frame is 129 bytes or longer, not 128.
+> > >    128 still fit to kmalloc-512, while a zerocopy skb is always
+> > >    kmalloc-1024 -> can potentially be slower on this frame size.
+> > >
+> > > [0] https://lore.kernel.org/netdev/20210330231528.546284-1-alobakin@pm.me
+> > >
+> > > Alexander Lobakin (2):
+> > >   xsk: speed-up generic full-copy xmit
+> >
+> > I took both your patches for a spin on my machine and for the first
+> > one I do see a small but consistent drop in performance. I thought it
+> > would go the other way, but it does not so let us put this one on the
+> > shelf for now.
+> >
+> > >   xsk: introduce generic almost-zerocopy xmit
+> >
+> > This one wreaked havoc on my machine ;-). The performance dropped with
+> > 75% for packets larger than 128 bytes when the new scheme kicks in.
+> > Checking with perf top, it seems that we spend much more time
+> > executing the sendmsg syscall. Analyzing some more:
+> >
+> > $ sudo bpftrace -e 'kprobe:__sys_sendto { @calls = @calls + 1; }
+> > interval:s:1 {printf("calls/sec: %d\n", @calls); @calls = 0;}'
+> > Attaching 2 probes...
+> > calls/sec: 1539509 with your patch compared to
+> >
+> > calls/sec: 105796 without your patch
+> >
+> > The application spends a lot of more time trying to get the kernel to
+> > send new packets, but the kernel replies with "have not completed the
+> > outstanding ones, so come back later" = EAGAIN. Seems like the
+> > transmission takes longer when the skbs have fragments, but I have not
+> > examined this any further. Did you get a speed-up?
+>
+> Regarding this solution, I actually tested it on my mlx5 network card, but the
+> performance was severely degraded, so I did not continue this solution later. I
+> guess it might have something to do with the physical network card. We can try
+> other network cards.
 
-Yeah, I know, but reverse XMAS tree wouldn't line up.
+I tried it on a third card and got a 40% degradation, so let us scrap
+this idea. It should stay optional as it is today as the (software)
+drivers that benefit from this can turn it on explicitly.
 
-> > +
-> > +	priv->sfp_link = false;
-> > +}
-> > +
-> >  static const struct sfp_upstream_ops sfp_phy_ops = {
-> >  	.module_insert = mv2222_sfp_insert,
-> >  	.module_remove = mv2222_sfp_remove,
-> > +	.link_up = mv2222_sfp_link_up,
-> > +	.link_down = mv2222_sfp_link_down,
-> >  	.attach = phy_sfp_attach,
-> >  	.detach = phy_sfp_detach,
-> >  };
-> 
-
+> links: https://www.spinics.net/lists/netdev/msg710918.html
+>
+> Thanks.
+>
+> >
+> > >  net/xdp/xsk.c | 32 ++++++++++++++++++++++----------
+> > >  1 file changed, 22 insertions(+), 10 deletions(-)
+> > >
+> > > --
+> > > Well, this is untested. I currently don't have an access to my setup
+> > > and is bound by moving to another country, but as I don't know for
+> > > sure at the moment when I'll get back to work on the kernel next time,
+> > > I found it worthy to publish this now -- if any further changes will
+> > > be required when I already will be out-of-sight, maybe someone could
+> > > carry on to make a another revision and so on (I'm still here for any
+> > > questions, comments, reviews and improvements till the end of this
+> > > week).
+> > > But this *should* work with all the sane drivers. If a particular
+> > > one won't handle this, it's likely ill. Any tests are highly
+> > > appreciated. Thanks!
+> > > --
+> > > 2.31.1
+> > >
+> > >
