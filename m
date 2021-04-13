@@ -2,117 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3C835D9AD
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 10:10:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7403035D9E4
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 10:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239527AbhDMIKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 04:10:33 -0400
-Received: from lpdvacalvio01.broadcom.com ([192.19.229.182]:47654 "EHLO
-        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229660AbhDMIKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 04:10:30 -0400
-Received: from bld-lvn-bcawlan-34.lvn.broadcom.net (bld-lvn-bcawlan-34.lvn.broadcom.net [10.75.138.137])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 81B1FEA;
-        Tue, 13 Apr 2021 01:10:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 81B1FEA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1618301410;
-        bh=uCji7ZHwBsHQai89pTi9GBVvZ1MCQ70Q2BC0rXU52jM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=gTaLiZWymu31q+wirurSln9KiNUVBFpz0wHI5STJwq15q9y4niPHEeboFkcjC3FiA
-         2+txDYEv3BWOCb+yDsuR1z6DJLvHJnO1qITVdZo5J7QfD4MOll5gzx5yBl2CzYnMnm
-         ijjpk/mUwKmma5vZJbVwu6lHXmyNrSXtKTnZe1/0=
-Received: from [10.230.42.155] (unknown [10.230.42.155])
-        by bld-lvn-bcawlan-34.lvn.broadcom.net (Postfix) with ESMTPSA id 45A4D1874BD;
-        Tue, 13 Apr 2021 01:10:04 -0700 (PDT)
-Subject: Re: [PATCH 2/2] brcmfmac: support parse country code map from DT
-To:     Shawn Guo <shawn.guo@linaro.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20210408113022.18180-1-shawn.guo@linaro.org>
- <20210408113022.18180-3-shawn.guo@linaro.org>
- <b2e07b41-a83e-5b5d-be1d-7a3e8493abd6@broadcom.com>
- <20210413074509.GD15093@dragon>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <5c3f2328-87bc-3103-70bd-d7add0bf464f@broadcom.com>
-Date:   Tue, 13 Apr 2021 10:10:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S242822AbhDMIVd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Apr 2021 04:21:33 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:50980 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229585AbhDMIVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 04:21:31 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-153-fsM8gFBuPMKJZMZap9THCQ-1; Tue, 13 Apr 2021 09:21:08 +0100
+X-MC-Unique: fsM8gFBuPMKJZMZap9THCQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Tue, 13 Apr 2021 09:21:07 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.012; Tue, 13 Apr 2021 09:21:07 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Matthew Wilcox' <willy@infradead.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
+Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Thread-Index: AQHXL8kRwdfrgigLI0exh4xFUSZq9KqyF7dg
+Date:   Tue, 13 Apr 2021 08:21:07 +0000
+Message-ID: <e88c6b601ad644a88e3f758f53f1060c@AcuMS.aculab.com>
+References: <20210410205246.507048-1-willy@infradead.org>
+ <20210410205246.507048-2-willy@infradead.org>
+ <20210411114307.5087f958@carbon>
+ <20210412182354.GN2531743@casper.infradead.org>
+In-Reply-To: <20210412182354.GN2531743@casper.infradead.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20210413074509.GD15093@dragon>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Matthew Wilcox <willy@infradead.org>
+> Sent: 12 April 2021 19:24
+> 
+> On Sun, Apr 11, 2021 at 11:43:07AM +0200, Jesper Dangaard Brouer wrote:
+> > Could you explain your intent here?
+> > I worry about @index.
+> >
+> > As I mentioned in other thread[1] netstack use page_is_pfmemalloc()
+> > (code copy-pasted below signature) which imply that the member @index
+> > have to be kept intact. In above, I'm unsure @index is untouched.
+> 
+> Well, I tried three different approaches.  Here's the one I hated the least.
+> 
+> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> Date: Sat, 10 Apr 2021 16:12:06 -0400
+> Subject: [PATCH] mm: Fix struct page layout on 32-bit systems
+> 
+> 32-bit architectures which expect 8-byte alignment for 8-byte integers
+> and need 64-bit DMA addresses (arc, arm, mips, ppc) had their struct
+> page inadvertently expanded in 2019.  When the dma_addr_t was added,
+> it forced the alignment of the union to 8 bytes, which inserted a 4 byte
+> gap between 'flags' and the union.
+> 
+> We could fix this by telling the compiler to use a smaller alignment
+> for the dma_addr, but that seems a little fragile.  Instead, move the
+> 'flags' into the union.  That causes dma_addr to shift into the same
+> bits as 'mapping', which causes problems with page_mapping() called from
+> set_page_dirty() in the munmap path.  To avoid this, insert three words
+> of padding and use the same bits as ->index and ->private, neither of
+> which have to be cleared on free.
+
+This all looks horribly fragile and is bound to get broken again.
+Are there two problems?
+1) The 'folio' structure needs to match 'rcu' part of the page
+   so that it can use the same rcu list to free items.
+2) Various uses of 'struct page' need to overlay fields to save space.
+
+For (1) the rcu bit should probably be a named structure in an
+anonymous union - probably in both structures.
+
+For (2) is it worth explicitly defining the word number for each field?
+So you end up with something like:
+#define F(offset, member) struct { long _pad_##offset[offset]; member; }
+struct page [
+	union {
+		struct page_rcu;
+		unsigned long flags;
+		F(1, unsigned long xxx);
+		F(2, unsigned long yyy);
+	etc.
 
 
-On 13-04-2021 09:45, Shawn Guo wrote:
-> On Mon, Apr 12, 2021 at 10:09:38AM +0200, Arend van Spriel wrote:
->> On 08-04-2021 13:30, Shawn Guo wrote:
->>> With any regulatory domain requests coming from either user space or
->>> 802.11 IE (Information Element), the country is coded in ISO3166
->>> standard.  It needs to be translated to firmware country code and
->>> revision with the mapping info in settings->country_codes table.
->>> Support populate country_codes table by parsing the mapping from DT.
->>
->> comment below, but you may add...
->>
->> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> 
-> Thanks for reviewing, Arend.
-> 
->>> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
->>> ---
->>>    .../wireless/broadcom/brcm80211/brcmfmac/of.c | 53 +++++++++++++++++++
->>>    1 file changed, 53 insertions(+)
->>>
->>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
->>> index a7554265f95f..ea5c7f434c2c 100644
->>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
->>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
->>
->> [...]
->>
->>> @@ -47,6 +96,10 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
->>>    	    !of_device_is_compatible(np, "brcm,bcm4329-fmac"))
->>>    		return;
->>> +	ret = brcmf_of_get_country_codes(dev, settings);
->>> +	if (ret)
->>> +		dev_warn(dev, "failed to get OF country code map\n");
->>
->> First of all I prefer to use brcmf_err and add ret value to the print
->> message " (err=%d)\n".
-> 
-> Okay.
-> 
->> Another thing is that this mapping is not only
->> applicable for SDIO devices so you may consider doing this for other bus
->> types as well which requires a bit more rework here.
-> 
-> Right. I will take care of it, if we can convince Kalle that having
-> this data in DT is not such a bad idea.
+		
+...
+>  		struct {	/* page_pool used by netstack */
+> -			/**
+> -			 * @dma_addr: might require a 64-bit value even on
+> -			 * 32-bit architectures.
+> -			 */
+> -			dma_addr_t dma_addr;
+> +			unsigned long _pp_flags;
+> +			unsigned long pp_magic;
+> +			unsigned long xmi;
+> +			unsigned long _pp_mapping_pad;
+> +			dma_addr_t dma_addr;	/* might be one or two words */
+>  		};
 
-Sure. So let me explain a bit how our internal regulatory data is 
-organized. The country revision is needed because the rf parameters that 
-provide regulatory compliance are tweaked per platform/customer so 
-depending on the rf path tight to the chip we need to use a certain 
-country revision. As such they could be seen as device specific 
-calibration data which is something that is already supported in the 
-devicetree bindings.
+Isn't that 6 words?
 
-Regards,
-Arend
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
