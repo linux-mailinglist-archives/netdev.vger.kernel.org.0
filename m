@@ -2,131 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A67B35D883
+	by mail.lfdr.de (Postfix) with ESMTP id D526F35D884
 	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbhDMHJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 03:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbhDMHJa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:09:30 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6557C061574
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 00:09:09 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id bs7so7109761qvb.12
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 00:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hV7Z7P462n1e7aUjy94FQET4e7ZXE2xXWIC+nmDti7A=;
-        b=f6JXdSdp0v0YfKv6dWMPdZ6nngQuCQBaRLHCjadkTS+ZiJzSgswgJQRxnItbjXm1EG
-         QY7ZFA1sRZqlH+cvw9oFoZA3mG2JhaZqxvbt3USXZwNiZ8+Snkv/K/NgiwVFNi6sct1O
-         wRoSGtKV7rAccagkOY1+phsju0wFJGqo9SBM4PDCrwzH3W2hm6u3gqFokSjN5YRt9HC3
-         7JRZkh14CK2zFrzANzGpgTg4HIte2SzxFb7N3DqOf9Wlqr3uVNWqFMfq/hHhugTwH/VA
-         wT2gb+0Dw2Mz+nxlRQR9hbDIIjyKgDKmEDvIwqHP5bn0U0qfp7EurTrH7iOYzWKQRl5+
-         NrZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hV7Z7P462n1e7aUjy94FQET4e7ZXE2xXWIC+nmDti7A=;
-        b=UUaSO3tHLrNbnKLgSUKJW3hnclv/GyfQC8Ndz+j2T7AcFH27XrB+Dwdeb/UN3a7EPM
-         fNNBUdJW0KdG52DORpuUdOADyxjSPjJSmNX/rwGDh7ZC0UkRO4C8YbZhXOhTtg3/T6lz
-         YwKVePBvyx27PRI4jtzxT6sPDs5m3vcC/nkj5lXZn7ZPZ60gghPQAAihMAhpGHt6FalO
-         R+PQoR0OkZa9+kNyyUtJn++J4TEty+1rcPnaigCCmQ64yW5e0022PPtist7HeItB3oH1
-         CjyXyUHxJ0bAWHsVsXZMAt8raCyQuU9+d1f5Z3IPKOLGP7sIyCppqWQZQynSVEGyf6u1
-         /doA==
-X-Gm-Message-State: AOAM5302LqXjPbKwTo6OBlQjxSsAd7vNrbNSYYrvekGixO5yKdmpaGej
-        /hrzqObzp+wMW46Zj9y7J5JzQfxiDkJBGQ==
-X-Google-Smtp-Source: ABdhPJzoWUIyppcrT3wX56SyffeetcVF21CSkwOg/WbPV9R79yLQLIUg7HSW5N3Vr60Iq5C7KpF/aw==
-X-Received: by 2002:a0c:d7d2:: with SMTP id g18mr31408548qvj.42.1618297748870;
-        Tue, 13 Apr 2021 00:09:08 -0700 (PDT)
-Received: from jrr-vaio.onthefive.com (2603-6010-7221-eda3-0000-0000-0000-1d7d.res6.spectrum.com. [2603:6010:7221:eda3::1d7d])
-        by smtp.gmail.com with ESMTPSA id k4sm9500582qke.13.2021.04.13.00.09.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Apr 2021 00:09:08 -0700 (PDT)
-From:   Jonathon Reinhart <jonathon.reinhart@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jonathon Reinhart <jonathon.reinhart@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [PATCH] net: Make tcp_allowed_congestion_control readonly in non-init netns
-Date:   Tue, 13 Apr 2021 03:08:48 -0400
-Message-Id: <20210413070848.7261-1-jonathon.reinhart@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S229802AbhDMHKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 03:10:00 -0400
+Received: from uho.ysoft.cz ([81.19.3.130]:52255 "EHLO uho.ysoft.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229732AbhDMHJ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 03:09:57 -0400
+Received: from [10.0.29.110] (unknown [10.0.29.110])
+        by uho.ysoft.cz (Postfix) with ESMTP id 4717FA0494;
+        Tue, 13 Apr 2021 09:09:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
+        s=20160406-ysoft-com; t=1618297777;
+        bh=GvpKB9CHk+oE3F7nATUj71fejlSAjH2cyD8zl2T6k5k=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=eicssWZL/wbFjZc7kGyPoyNLPgQfMzOsEJl/gAttDoYuXOLAJJl1OPBuQr/ni8UVZ
+         PkqffUt/X1OMGC2PQRNehfgbYqqf3AW9sIP0iu3crHIM6CT8Zf1TLu0hX2JgKFJyKt
+         an6tQ23k0whlElbqFGeq/aF1Y271xvK+effbqg5Y=
+Subject: Re: Broken imx6 to QCA8334 connection since PHYLIB to PHYLINK
+ conversion
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jonathan McDowell <noodles@earth.li>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+References: <b7f5842a-c7b7-6439-ae68-51e1690d2507@ysoft.com>
+ <YHRVv/GwCmnRN14j@lunn.ch>
+From:   =?UTF-8?B?TWljaGFsIFZva8OhxI0=?= <michal.vokac@ysoft.com>
+Message-ID: <9fa83984-f385-4705-a50f-688928cc366f@ysoft.com>
+Date:   Tue, 13 Apr 2021 09:09:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YHRVv/GwCmnRN14j@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, tcp_allowed_congestion_control is global and writable;
-writing to it in any net namespace will leak into all other net
-namespaces.
+On 12. 04. 21 16:14, Andrew Lunn wrote:
+>> [1] https://elixir.bootlin.com/linux/v5.12-rc7/source/arch/arm/boot/dts/imx6dl-yapp4-common.dtsi#L101
+> 
+> &fec {
+> 	pinctrl-names = "default";
+> 	pinctrl-0 = <&pinctrl_enet>;
+> 	phy-mode = "rgmii-id";
+> 	phy-reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
+> 	phy-reset-duration = <20>;
+> 	phy-supply = <&sw2_reg>;
+> 	phy-handle = <&ethphy0>;
+> 	status = "okay";
+> 
+> 	mdio {
+> 		#address-cells = <1>;
+> 		#size-cells = <0>;
+> 
+> 		phy_port2: phy@1 {
+> 			reg = <1>;
+> 		};
+> 
+> 		phy_port3: phy@2 {
+> 			reg = <2>;
+> 		};
+> 
+> 		switch@10 {
+> 			compatible = "qca,qca8334";
+> 			reg = <10>;
+> 
+> 			switch_ports: ports {
+> 				#address-cells = <1>;
+> 				#size-cells = <0>;
+> 
+> 				ethphy0: port@0 {
+> 					reg = <0>;
+> 					label = "cpu";
+> 					phy-mode = "rgmii-id";
+> 					ethernet = <&fec>;
+> 
+> 					fixed-link {
+> 						speed = <1000>;
+> 						full-duplex;
+> 					};
+> 				};
+> 
+> The fec phy-handle = <&ethphy0>; is pointing to the PHY of switch port
+> 0. This seems wrong.
 
-tcp_available_congestion_control and tcp_allowed_congestion_control are
-the only sysctls in ipv4_net_table (the per-netns sysctl table) with a
-NULL data pointer; their handlers (proc_tcp_available_congestion_control
-and proc_allowed_congestion_control) have no other way of referencing a
-struct net. Thus, they operate globally.
+I do not understand. Why this seems wrong?
+The switch has four ports. Ports 2 and 3 have a PHY and are connected
+to the transformers/RJ45 connectors. Port 0 is MII/RMII/RGMII of
+the switch. Port 6 (not used) is a SerDes.
 
-Because ipv4_net_table does not use designated initializers, there is no
-easy way to fix up this one "bad" table entry. However, the data pointer
-updating logic shouldn't be applied to NULL pointers anyway, so we
-instead force these entries to be read-only.
+> Does the FEC have a PHY? Do you connect the FEC
+> and the SWITCH at the RGMII level? Or with two back to back PHYs?
+> 
+> If you are doing it RGMII level, the FEC also needs a fixed-link.
 
-These sysctls used to exist in ipv4_table (init-net only), but they were
-moved to the per-net ipv4_net_table, presumably without realizing that
-tcp_allowed_congestion_control was writable and thus introduced a leak.
+The FEC does not have PHY and is connected to the switch at RGMII level.
+Adding the fixed-link { speed = <1000>; full-duplex; }; subnode to FEC
+does not help.
 
-Because the intent of that commit was only to know (i.e. read) "which
-congestion algorithms are available or allowed", this read-only solution
-should be sufficient.
-
-The logic added in recent commit
-31c4d2f160eb: ("net: Ensure net namespace isolation of sysctls")
-does not and cannot check for NULL data pointers, because
-other table entries (e.g. /proc/sys/net/netfilter/nf_log/) have
-.data=NULL but use other methods (.extra2) to access the struct net.
-
-Fixes: 9cb8e048e5d9: ("net/ipv4/sysctl: show tcp_{allowed, available}_congestion_control in non-initial netns")
-Signed-off-by: Jonathon Reinhart <jonathon.reinhart@gmail.com>
----
- net/ipv4/sysctl_net_ipv4.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index a09e466ce11d..a62934b9f15a 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -1383,9 +1383,19 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
- 		if (!table)
- 			goto err_alloc;
- 
--		/* Update the variables to point into the current struct net */
--		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++)
--			table[i].data += (void *)net - (void *)&init_net;
-+		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
-+			if (table[i].data) {
-+				/* Update the variables to point into
-+				 * the current struct net
-+				 */
-+				table[i].data += (void *)net - (void *)&init_net;
-+			} else {
-+				/* Entries without data pointer are global;
-+				 * Make them read-only in non-init_net ns
-+				 */
-+				table[i].mode &= ~0222;
-+			}
-+		}
- 	}
- 
- 	net->ipv4.ipv4_hdr = register_net_sysctl(net, "net/ipv4", table);
--- 
-2.20.1
-
+Michal
