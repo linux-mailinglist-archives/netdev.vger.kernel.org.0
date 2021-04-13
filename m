@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715B535E7F9
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 23:02:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B2D35E7FC
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 23:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243087AbhDMVDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 17:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
+        id S1344492AbhDMVDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 17:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244938AbhDMVDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 17:03:15 -0400
+        with ESMTP id S245671AbhDMVDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 17:03:17 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F90C061574
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 14:02:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAAFC061574
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 14:02:56 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: ezequiel)
-        with ESMTPSA id 047271F42520
+        with ESMTPSA id 0E2E31F42522
 From:   Ezequiel Garcia <ezequiel@collabora.com>
 To:     netdev@vger.kernel.org, linux-rockchip@lists.infradead.org
 Cc:     Jose Abreu <joabreu@synopsys.com>,
@@ -24,10 +24,11 @@ Cc:     Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Peter Geis <pgwipeout@gmail.com>,
-        Ezequiel Garcia <ezequiel@collabora.com>, kernel@collabora.com
-Subject: [PATCH net-next 1/3] net: stmmac: Don't set has_gmac if has_gmac4 is set
-Date:   Tue, 13 Apr 2021 18:02:33 -0300
-Message-Id: <20210413210235.489467-2-ezequiel@collabora.com>
+        David Wu <david.wu@rock-chips.com>, kernel@collabora.com,
+        Ezequiel Garcia <ezequiel@collabora.com>
+Subject: [PATCH net-next 2/3] net: stmmac: dwmac-rk: Check platform-specific ops
+Date:   Tue, 13 Apr 2021 18:02:34 -0300
+Message-Id: <20210413210235.489467-3-ezequiel@collabora.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210413210235.489467-1-ezequiel@collabora.com>
 References: <20210413210235.489467-1-ezequiel@collabora.com>
@@ -37,32 +38,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some Rockchip platforms have a GMAC4 core, and therefore
-'plat_stmmacenet_data.has_gmac' shouldn't be set if
-'plat_stmmacenet_data.has_gmac4' is set.
+From: David Wu <david.wu@rock-chips.com>
 
+Add a check for non-null struct rk_gmac_ops for the
+configured PHY interface mode, failing if unsupported.
+
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+[Ezequiel: Refactor so it fails if unsupported]
 Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 31 +++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index 6ef30252bfe0..c432a9592489 100644
+index c432a9592489..d2637d83899e 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -1400,7 +1400,11 @@ static int rk_gmac_probe(struct platform_device *pdev)
- 	if (IS_ERR(plat_dat))
- 		return PTR_ERR(plat_dat);
+@@ -1294,11 +1294,36 @@ static struct rk_priv_data *rk_gmac_setup(struct platform_device *pdev,
+ 	return bsp_priv;
+ }
  
--	plat_dat->has_gmac = true;
-+	/* If the stmmac is not already selected as gmac4,
-+	 * then make sure we fallback to gmac.
-+	 */
-+	if (!plat_dat->has_gmac4)
-+		plat_dat->has_gmac = true;
- 	plat_dat->fix_mac_speed = rk_fix_speed;
++static int rk_gmac_check_ops(struct rk_priv_data *bsp_priv)
++{
++	switch (bsp_priv->phy_iface) {
++	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++		if (!bsp_priv->ops->set_to_rgmii)
++			return -EINVAL;
++		break;
++	case PHY_INTERFACE_MODE_RMII:
++		if (!bsp_priv->ops->set_to_rmii)
++			return -EINVAL;
++		break;
++	default:
++		dev_err(&bsp_priv->pdev->dev,
++			"unsupported interface %d", bsp_priv->phy_iface);
++	}
++	return 0;
++}
++
+ static int rk_gmac_powerup(struct rk_priv_data *bsp_priv)
+ {
+ 	int ret;
+ 	struct device *dev = &bsp_priv->pdev->dev;
  
- 	plat_dat->bsp_priv = rk_gmac_setup(pdev, plat_dat, data);
++	ret = rk_gmac_check_ops(bsp_priv);
++	if (ret)
++		return ret;
++
+ 	ret = gmac_clk_enable(bsp_priv, true);
+ 	if (ret)
+ 		return ret;
+@@ -1369,10 +1394,12 @@ static void rk_fix_speed(void *priv, unsigned int speed)
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		bsp_priv->ops->set_rgmii_speed(bsp_priv, speed);
++		if (bsp_priv->ops->set_rgmii_speed)
++			bsp_priv->ops->set_rgmii_speed(bsp_priv, speed);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+-		bsp_priv->ops->set_rmii_speed(bsp_priv, speed);
++		if (bsp_priv->ops->set_rmii_speed)
++			bsp_priv->ops->set_rmii_speed(bsp_priv, speed);
+ 		break;
+ 	default:
+ 		dev_err(dev, "unsupported interface %d", bsp_priv->phy_iface);
 -- 
 2.30.0
 
