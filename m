@@ -2,111 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 127D235D8F1
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:34:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE7235D8F4
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239919AbhDMHd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 03:33:57 -0400
-Received: from mail-ua1-f44.google.com ([209.85.222.44]:45913 "EHLO
-        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237567AbhDMHdy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:33:54 -0400
-Received: by mail-ua1-f44.google.com with SMTP id f4so5020807uad.12;
-        Tue, 13 Apr 2021 00:33:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u6UFjwuyKnQpqmhtaDp8WV1qw1jwfIy1yUFgiKaV5UY=;
-        b=tAh9slfyuOEcT93M35aK8CW7kqkE59vjDhsIWtgA16D7CtT7P64dq42H+tG2P6RyBv
-         UbWmiVAkgT9HfXmVMBDCDQthz2yOXZXegr9ooDPF5i3koP4STM/G31DPf/MUpmmJbNpa
-         G5Q4JlctLMKHQSjgjsxFkkTH22TbHzkNZZcAofHDxpYDnpG6XeAMsNMR+oZDcw2cNxs+
-         ZphSk7dqlcgBWoir0UvduT9Oc6LePr0CmcGF6iAH6D20gVc9u0kbG23DWlwgQTsCEpTh
-         e1vrjSPekmkMjfOvQ2GH05WPY/NgXUGkFagme4PPB/57Vq2JkCVQjljmX/HHEGsXJNWO
-         kJVg==
-X-Gm-Message-State: AOAM5306Y7SccntUKGCEAryVOc5FxmjKuxs4wpzvvGWzhJyVsJ4V1ZPW
-        7Ub/e5s7ofiKL53fB5V3XRo9B2c5CuPUtU6eCLfcsktoX4I=
-X-Google-Smtp-Source: ABdhPJzftKnn6TOjbesfeLhixPr7pqyQbLq0YkT7ZLi3DpLJBP2roway01ukDACwhunwhZgE9cRvfVZzumXQp/dxKLA=
-X-Received: by 2002:ab0:3157:: with SMTP id e23mr21121382uam.106.1618299215073;
- Tue, 13 Apr 2021 00:33:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210412132619.7896-1-aford173@gmail.com> <20210412132619.7896-2-aford173@gmail.com>
-In-Reply-To: <20210412132619.7896-2-aford173@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 13 Apr 2021 09:33:23 +0200
-Message-ID: <CAMuHMdU5RfTGs3SCvJX9epKBLOo6o1BQMng49RjrBn+P7QOSeg@mail.gmail.com>
-Subject: Re: [PATCH V4 2/2] net: ethernet: ravb: Enable optional refclk
-To:     Adam Ford <aford173@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Adam Ford-BE <aford@beaconembedded.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        id S239946AbhDMHfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 03:35:15 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:44352 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231236AbhDMHfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:35:14 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1618299290;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/LfaSmfHgZ7FhwZDnDyWBTYgSSsbi4xbqPkH3xgE2QA=;
+        b=U1rYNIyYBvJL7cg2KvL30AZRInQmZ8/etlrwjB2BxBSUhLQV1jUCQ3t+U7CwqVtPP3hyYH
+        nGVVqejphQx69o113MhPCVJmXusUelycu12rByi6KEXVPcKt7ehQyY6uTFRFxhzSOFFdxq
+        oNpMDwjEA5Mhz6+RddV6/c9aqPrp1JF1t9t+pTfW8DJc7WyjH1qt1HnP+PhjvLZDvz+LOa
+        FFIFL0e2/IAQs1igq9iqHwi95xeJEk1wFEHdYkvSHQ1lYJPK0SOb18aROwKuZQDLssJWn1
+        J5hQzKxkThZWaIgrYnsMnV7uByZWv+YUDO+uCjgmoWNHWbYeG4SCm6Ep0H3Naw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1618299290;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/LfaSmfHgZ7FhwZDnDyWBTYgSSsbi4xbqPkH3xgE2QA=;
+        b=xmTfrrOSQsQaStYrHcrKkgH3R0zQpU6/tfqmMYiJP2/o6AFOHBQmn/QsVV3C2WTpdXk7AW
+        ozpGAPJzKEbnhiCA==
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     brouer@redhat.com, Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH RFC net] igb: Fix XDP with PTP enabled
+In-Reply-To: <20210412162846.42706d99@carbon>
+References: <20210412101713.15161-1-kurt@linutronix.de> <20210412162846.42706d99@carbon>
+Date:   Tue, 13 Apr 2021 09:34:49 +0200
+Message-ID: <874kga1vty.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Adam,
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 12, 2021 at 3:27 PM Adam Ford <aford173@gmail.com> wrote:
-> For devices that use a programmable clock for the AVB reference clock,
-> the driver may need to enable them.  Add code to find the optional clock
-> and enable it when available.
+On Mon Apr 12 2021, Jesper Dangaard Brouer wrote:
+> On Mon, 12 Apr 2021 12:17:13 +0200
+> Kurt Kanzenbach <kurt@linutronix.de> wrote:
 >
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>> When using native XDP with the igb driver, the XDP frame data doesn't po=
+int to
+>> the beginning of the packet. It's off by 16 bytes. Everything works as e=
+xpected
+>> with XDP skb mode.
+>>=20
+>> Actually these 16 bytes are used to store the packet timestamps. Therefo=
+re, pull
+>> the timestamp before executing any XDP operations and adjust all other c=
+ode
+>> accordingly. The igc driver does it like that as well.
 >
-> ---
-> V4:  Eliminate the NULL check when disabling refclk, and add a line
->      to disable the refclk if there is a failure after it's been
->      initialized.
+> (Cc. Alexander Duyck)
 
-Thanks for the update!
+Thanks.
 
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -2148,6 +2148,13 @@ static int ravb_probe(struct platform_device *pdev)
->                 goto out_release;
->         }
 >
-> +       priv->refclk = devm_clk_get_optional(&pdev->dev, "refclk");
-> +       if (IS_ERR(priv->refclk)) {
-> +               error = PTR_ERR(priv->refclk);
-> +               goto out_release;
+> Do we have enough room for the packet page-split tricks when these 16
+> bytes are added?
 
-Note that this will call clk_disable_unprepare() in case of failure, which is
-fine, as that function is a no-op in case of a failed clock.
+I think so. AFAICT the timestamp header is accounted. There is
+IGB_2K_TOO_SMALL_WITH_PADDING. If 2k isn't sufficient, then 3k buffers
+are used.
 
-> +       }
-> +       clk_prepare_enable(priv->refclk);
-> +
->         ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
->         ndev->min_mtu = ETH_MIN_MTU;
->
-> @@ -2244,6 +2251,7 @@ static int ravb_probe(struct platform_device *pdev)
->         if (chip_id != RCAR_GEN2)
->                 ravb_ptp_stop(ndev);
->  out_release:
-> +       clk_disable_unprepare(priv->refclk);
->         free_netdev(ndev);
->
->         pm_runtime_put(&pdev->dev);
+The only thing this patch does, is adjusting the xdp->data pointer
+before executing igb_run_xdp() instead of doing it afterwards. So, that
+in the eBPF program `data' points to the packet data, and not to the
+timestamp.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Thanks,
+Kurt
 
-Gr{oetje,eeting}s,
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-                        Geert
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmB1SZkACgkQeSpbgcuY
+8Kbblw/9GEZbAegavmAgPDxBCxupwmoVoxdsy+i7Nw2V5vk1L1eSVSwJwHiXL0Rs
+00Dhns8rjS/FBS+mmDFdyAkz0OvADLsLf6bWE25RtJvgvetKidyq4Y/KhscOvU/7
+Y07ll2KvpxoDT1Au4z3igJHllYt46KJSYnWrS2Id5rtWt9TQS+bC9EtDwMSaGAkK
+krMikylRNHKwFAy4dzO+guThRSDwO0PlCATtVQ3vON47J+MxqcE/Z+5Jl5vP691X
++oXtpcodQ1lVbqxcX66BCduI+QnjBDxgYWhtDOZiDVhU+sqSDldG+MjTbfTdCOUv
+PekfeQT64IaEYFocgIiYX570V0b++7fagSBSNnG7eV4+HNo4ujsWcfjnZCF11KMU
+7qITP/BLK/n+OtpCnpQM6rv+AgSMY3+f3YswiEvF8at3/K77SStNRlB8mtqw3xaF
+wxPQFIepGGzRHq60W3JX7KunyKIpGmg2IzMpi93p3VA1TG2uYAyDMOdqXcy6OcML
+4LDlylLmHvfHRNwEZaQDbWXXdvGoj7A2p74QsoY/cSObVs7wCGL/D++BVramrSmY
+jdgQrmpBJNNtZNzjjNrUE6Dm60dmbeSSHCssgUplCzL2sY+T2C+EwHpsuEXDjZyn
+Djd6091Bcbo6bXfpDjY5ISyTuNI5N9XAGtis4uyr9HhgggET3dc=
+=sh9o
+-----END PGP SIGNATURE-----
+--=-=-=--
