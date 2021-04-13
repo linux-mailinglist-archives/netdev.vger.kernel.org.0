@@ -2,325 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC71735E7C9
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 22:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE05935E7D2
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 22:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348371AbhDMUtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 16:49:07 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41350 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348299AbhDMUsz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 16:48:55 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 09E3FB01D;
-        Tue, 13 Apr 2021 20:48:34 +0000 (UTC)
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 7/7] net: korina: Make driver COMPILE_TESTable
-Date:   Tue, 13 Apr 2021 22:48:18 +0200
-Message-Id: <20210413204818.23350-8-tsbogend@alpha.franken.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210413204818.23350-1-tsbogend@alpha.franken.de>
-References: <20210413204818.23350-1-tsbogend@alpha.franken.de>
+        id S238608AbhDMUv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 16:51:57 -0400
+Received: from mail-mw2nam08on2123.outbound.protection.outlook.com ([40.107.101.123]:27809
+        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239416AbhDMUvo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 16:51:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YP1cvPSC1Kr4o8how7sl+FAcPnLoPMsKyoQwK6xlcICAeu02OWrGLgf9+EpMLWKvDRRKC5EvBphgu8sfaPGhZIJ76pPQLuvYFfGF6VPpFw6Oa5qG7MjEXoMbaAE+/l8curxH/mhsVmKKIrF2Stx4vZAwcOtTCMlsS9Upoub5xlp3ShA+KIA/+VeEE+482pJC/u2ALr3mqRI5hd0uyKIfMV+liAB4vPvjLMf7Q4+KUQb9Bk0Q4m5LnmUTKTlKhPJ4aQD4owAziLkYQQxzBC0iNluTFeNJudyoLVXoVFjelEtPW1aG4Z7d9G4+GodpGWPcyHdA+wOfG4ZR1jacprFjhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vMmZP64cpj8yU8Y4haaewcAaYjDMN2QUh8Hxn6IEKJk=;
+ b=SJtO0rqoKMNOXiENX683OslUavwWOnq0RZjGA0jfVIZVXTlUegEQFHDdzfxNbeNnUx4wBIP8Xm4DXQGiqLiyKwmZG5DYgU6fLHD0k2UMx8WeYeRholI2IxNFYgrxbTbleQOR2SHeDCm+ovwDMQACS0jWAmsXUdVI9mFrZM/NWCjLSJsxCEQ63iO2NqwyqKuIbQ0xmGFVg5n7ZmDroS8Rv0zJCV/ZOvjOz/ckkL1vUo3UEM92Kyt6HZIpl3g7kt/wZADsYt8PKAdKVRGDcN1ecEn5U7ZyWsXEdyp9jwYWJty3qL1nMJzIMj5B8RudD8oI82T1RY++SdF5Vg2uFS8DBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purdue.edu; dmarc=pass action=none header.from=purdue.edu;
+ dkim=pass header.d=purdue.edu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purdue0.onmicrosoft.com; s=selector2-purdue0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vMmZP64cpj8yU8Y4haaewcAaYjDMN2QUh8Hxn6IEKJk=;
+ b=JT+gMGsUob4G7k4WHT3buSF+b6SUFwDbs9X2kKn6B0B9XHyVEA1QZhRfgOvHnX5CQ9jpK8n+xk8Btylp1DluybMVJtR9+PC9HWTtcwRRRw04S5KwHjZlQxdDG+ZqSw23/lji9eRQ8A9BnJPeMxwuItCzdah360w4bWqk5tqt7Kg=
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com (2603:10b6:610:5d::11)
+ by CH2PR22MB1848.namprd22.prod.outlook.com (2603:10b6:610:5e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.21; Tue, 13 Apr
+ 2021 20:51:22 +0000
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::fd2f:cbcc:563b:aa4f]) by CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::fd2f:cbcc:563b:aa4f%5]) with mapi id 15.20.4042.016; Tue, 13 Apr 2021
+ 20:51:22 +0000
+From:   "Gong, Sishuai" <sishuai@purdue.edu>
+To:     "xie.he.0141@gmail.com" <xie.he.0141@gmail.com>,
+        "eyal.birger@gmail.com" <eyal.birger@gmail.com>,
+        "yonatanlinik@gmail.com" <yonatanlinik@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: A data race between fanout_demux_rollover() and __fanout_unlink()
+Thread-Topic: A data race between fanout_demux_rollover() and
+ __fanout_unlink()
+Thread-Index: AQHXMKbDAkps2kEyfUyo2A/srpWwgg==
+Date:   Tue, 13 Apr 2021 20:51:22 +0000
+Message-ID: <4FE5BFAB-1988-4CA9-9B97-CEF73396B4EC@purdue.edu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=purdue.edu;
+x-originating-ip: [66.253.158.155]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 868578c1-dd3e-4e4a-cfbe-08d8febde5b0
+x-ms-traffictypediagnostic: CH2PR22MB1848:
+x-microsoft-antispam-prvs: <CH2PR22MB1848BDF2AD6D6A4441E4F9E1DF4F9@CH2PR22MB1848.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hkJPZ7za+etao3t+4o7/7V2SJp7W0ebPgavnL3CYRvaDobSktMtJQxffLZJzIABQLC2dnewZ5/mmvFLFP+/5gF90DoskcJfmwLxkfW26GUIiSfMUFqMci+j6YYzdQVMg6BgcaqXaVJ15HtP7P/ByNWxcp8hnpy3ebECWMDJAzqk00xsNqqM5PwXoP9jNGwLm3LmYliVPb7J1Tg7WHUC5K/T7rwLyFhrcHaj2d4oXKlfAA1DR0ImHpJQMdy+LPYF6V4qPrWkOS3YhC7tPz6JqUEjkUIJMz2XiA2nHKxIOjSQEWCeI3frYS6a8jFwrK++QdOurXyu9p/SigNtdtf4gRc7IMF4qt99dR6GNSJEe+ZSVCed790WNzmmi5aFmMn7svXlKQ6i62I3nq/tpwrwSnVr53ZFwPBdl0jpr0LM6JS2RTEH//KfRc6fHHD137iQUifw4qL6v6WF62+LvOawauHAiLWkB1Uj1mOIijDqZxp44oDOiHeYdnR3wVm1O9APF97LAF4AAkNq89XPqE6biUObe+1Kb5vnFr1B/SePxtlBH+y7xtv4TkrW+GwcN4snCkc/a2vMN6Tut5TRKVOdUjMOG4w1a28e4Tjil66tqGCIqTvSrRDBRcq4og3kURw2dOAK9Wzxrx/3Ba3DfAypLsth9z+3BfWj8DzEJ3lNScC4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR22MB2056.namprd22.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39860400002)(376002)(346002)(396003)(366004)(478600001)(71200400001)(86362001)(2906002)(6486002)(6512007)(83380400001)(316002)(6506007)(4744005)(122000001)(38100700002)(110136005)(5660300002)(33656002)(186003)(66446008)(66556008)(786003)(64756008)(66946007)(76116006)(26005)(8676002)(75432002)(8936002)(66476007)(36756003)(2616005)(4326008)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?Q0pXS3l5RDFaYktnZVBkSkRqcytnN1NJMUxWVm93TjJRM0pqMS9Kc2VhUUJx?=
+ =?utf-8?B?SGZicHFpT1ROZUNxT2dkeHoydTNJZy9TeGFpSHptcDlFbWNtN04yMitFUWh0?=
+ =?utf-8?B?SEVVSVd4U2h0bWN5ZmpnRDFIY3N1amRsMWdaaVB2b0YwL1Z3K0t4VFEydHFY?=
+ =?utf-8?B?dk5wNElaSEREWVVFZWM5VHVmbEE3WTJPNkJZbUhJbENNczhibEFmanhxVG5N?=
+ =?utf-8?B?MkgwRW9BQStYTmN4WlBaZXpxM3R0VElBM2ltbVFmQ3VSeXp2MDdaTUhCSzFF?=
+ =?utf-8?B?TkNNcGtPR3Q1WGdkRFlXU3NjUFdSQ2E3Wjl3aHZIeUZWemZvanF2bEQvRzNW?=
+ =?utf-8?B?SnUxem95ZU1XY1UweVhQTmgwMS9yWUs3TSttZDE0Wk9CRlRZcCt4elQ0dG9X?=
+ =?utf-8?B?Wnd3MytXR0NtL0JyVE9zV1ZEM0pyK0ZpelEzbjIxcVBEQ1JGLzV1RnZLakVp?=
+ =?utf-8?B?eThlN1RBaDBkRWZyWFlCb2VleHN5NnZUU2I4TWk1ODJ0WVB3OWZ1VzZ2NVNY?=
+ =?utf-8?B?dXBoMjVGaVowQkdac2kwOEllU2JlajhKVmY2bjNMR0NLbjNOWkJlMkF4eUEz?=
+ =?utf-8?B?eTBubDZSbnFmbDh6ODdVM3ZEUkE3U2h2b1phc2ZCaEx2dnNjd1hmSml0OFZM?=
+ =?utf-8?B?T0Z5YnpZWFBjQ09JNWo2SzVqS01pL0dFV1d4UnFqM0g5Nk53M3o0UmJ5QXBz?=
+ =?utf-8?B?dTZZOVQ3ZEljRjFzajN1cUg5VUs1ajR2NC8xM0NKL2kvQ09nWGpNSVgzTWcv?=
+ =?utf-8?B?SzZlSTlYQUl4R2d6bk0xS3YybXVQdytIR0d5RnZCVHorZDBSTkIrNGFHTER2?=
+ =?utf-8?B?Qk9HK0tRaDBva3cyOUMyQXZDQjRWMWVuSTVyOE1wUldIMnp2VElwWmpxTG5G?=
+ =?utf-8?B?T0RvYTVROFpwcE9teEJ6NnFiYThBVTAxZzZoTVBZd29qZDRZZVVmeTV5SHZW?=
+ =?utf-8?B?cjhFWUZ5VGYwOGpxZFcvWHhoQS9nTElVcCtwYTRkZ0tLMm1icmQrZEQ0ZE5i?=
+ =?utf-8?B?ZG5DbTYyUTRVUjJGMVMvdEpSb1NHdE12NWdoOXF2Ymd3alRWWTVhYjZvWHFi?=
+ =?utf-8?B?Vis1Q21WSVFwVEt2N1ROamRiTXI5bGt6SCtOSENqeUd3dGVicG5WRUpaNExo?=
+ =?utf-8?B?M3NYUlE4b0VKc0V5OWQrR3dwdWd0L01FZ0ErS2FsVFJhNDV3eW1vU1p3OGpa?=
+ =?utf-8?B?NXEvdFRCNERkdEoyU1dPSUxGTUlYcmJwWFVsVFZIampkYkJrVGVSMTFUZlNH?=
+ =?utf-8?B?Q0crK2VIdFBsN1BYY0lnaXdXUHVGMUdIVThTbk4wWjBwbzZXR3V6emJhb1h4?=
+ =?utf-8?B?OTVVWHlsOHB4U1g2WkxIYWtsazdmQS9ZSVA1N3ZCWm9CZkd4cTh5bXFIdkJj?=
+ =?utf-8?B?RnM4WFNzek1ZK2RLVVdHc2RhbDhQMzhiRnc3bW01cmZFb3pESFprVWdudkkr?=
+ =?utf-8?B?S1pGRjNjdERYZHVNUmJlaCtnMmR0dDJTK2tua0ZtUzRQb01ZZzRYRDM5SUpK?=
+ =?utf-8?B?b2VMOEN3cjh3ODBodGZVYUFqc3o0WjVOUUw2TWk5bXNuQ3VOVnR0UjV3YytW?=
+ =?utf-8?B?bE9DTVRlYlBFZWo4RDZtNm5rcXBQdzUyc2RhRHk3OVJVNDJLYURvVmdQRlZl?=
+ =?utf-8?B?cm9ETkk0cFBaaGh5MkJSY25zUVk3eW0xdkh4N1g3MkRSNlB2eHpJUW5Sekg2?=
+ =?utf-8?B?cFRBamd5Q0VmVmkrcnk2VCtQcUZGQXkzR083WjRuU09ucll4R1RyZXM0WFBo?=
+ =?utf-8?Q?XcXvbuvikpqAHGqp7S1dk2ycaUaxIo1btEOmy0L?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EBABAB31D18128428BA80058CDE3124D@namprd22.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: purdue.edu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR22MB2056.namprd22.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 868578c1-dd3e-4e4a-cfbe-08d8febde5b0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2021 20:51:22.8271
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4130bd39-7c53-419c-b1e5-8758d6d63f21
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xE9wWcjAVPXFR1+TXOPdputmin62jv57tNTIrFEaHADbU6/QbQ393BA7B+HeU4k12dG2+5sdVdf1BcrzRqOkXA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR22MB1848
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move structs/defines for ethernet/dma register into driver, since they
-are only used for this driver and remove any MIPS specific includes.
-This makes it possible to COMPILE_TEST the driver.
-
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
----
- drivers/net/ethernet/Kconfig  |   2 +-
- drivers/net/ethernet/korina.c | 245 ++++++++++++++++++++++++++++++++--
- 2 files changed, 236 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index ad04660b97b8..c61368968cee 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -97,7 +97,7 @@ config JME
- 
- config KORINA
- 	tristate "Korina (IDT RC32434) Ethernet support"
--	depends on MIKROTIK_RB532
-+	depends on MIKROTIK_RB532 || COMPILE_TEST
- 	help
- 	  If you have a Mikrotik RouterBoard 500 or IDT RC32434
- 	  based system say Y. Otherwise say N.
-diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index d7972965eb14..98aa7f007f8e 100644
---- a/drivers/net/ethernet/korina.c
-+++ b/drivers/net/ethernet/korina.c
-@@ -55,20 +55,244 @@
- #include <linux/crc32.h>
- #include <linux/pgtable.h>
- 
--#include <asm/bootinfo.h>
--#include <asm/bitops.h>
--#include <asm/io.h>
--#include <asm/dma.h>
--
--#include <asm/mach-rc32434/rb.h>
--#include <asm/mach-rc32434/rc32434.h>
--#include <asm/mach-rc32434/eth.h>
--#include <asm/mach-rc32434/dma_v.h>
--
- #define DRV_NAME	"korina"
- #define DRV_VERSION	"0.20"
- #define DRV_RELDATE	"15Sep2017"
- 
-+struct eth_regs {
-+	u32 ethintfc;
-+	u32 ethfifott;
-+	u32 etharc;
-+	u32 ethhash0;
-+	u32 ethhash1;
-+	u32 ethu0[4];		/* Reserved. */
-+	u32 ethpfs;
-+	u32 ethmcp;
-+	u32 eth_u1[10];		/* Reserved. */
-+	u32 ethspare;
-+	u32 eth_u2[42];		/* Reserved. */
-+	u32 ethsal0;
-+	u32 ethsah0;
-+	u32 ethsal1;
-+	u32 ethsah1;
-+	u32 ethsal2;
-+	u32 ethsah2;
-+	u32 ethsal3;
-+	u32 ethsah3;
-+	u32 ethrbc;
-+	u32 ethrpc;
-+	u32 ethrupc;
-+	u32 ethrfc;
-+	u32 ethtbc;
-+	u32 ethgpf;
-+	u32 eth_u9[50];		/* Reserved. */
-+	u32 ethmac1;
-+	u32 ethmac2;
-+	u32 ethipgt;
-+	u32 ethipgr;
-+	u32 ethclrt;
-+	u32 ethmaxf;
-+	u32 eth_u10;		/* Reserved. */
-+	u32 ethmtest;
-+	u32 miimcfg;
-+	u32 miimcmd;
-+	u32 miimaddr;
-+	u32 miimwtd;
-+	u32 miimrdd;
-+	u32 miimind;
-+	u32 eth_u11;		/* Reserved. */
-+	u32 eth_u12;		/* Reserved. */
-+	u32 ethcfsa0;
-+	u32 ethcfsa1;
-+	u32 ethcfsa2;
-+};
-+
-+/* Ethernet interrupt registers */
-+#define ETH_INT_FC_EN		BIT(0)
-+#define ETH_INT_FC_ITS		BIT(1)
-+#define ETH_INT_FC_RIP		BIT(2)
-+#define ETH_INT_FC_JAM		BIT(3)
-+#define ETH_INT_FC_OVR		BIT(4)
-+#define ETH_INT_FC_UND		BIT(5)
-+#define ETH_INT_FC_IOC		0x000000c0
-+
-+/* Ethernet FIFO registers */
-+#define ETH_FIFI_TT_TTH_BIT	0
-+#define ETH_FIFO_TT_TTH		0x0000007f
-+
-+/* Ethernet ARC/multicast registers */
-+#define ETH_ARC_PRO		BIT(0)
-+#define ETH_ARC_AM		BIT(1)
-+#define ETH_ARC_AFM		BIT(2)
-+#define ETH_ARC_AB		BIT(3)
-+
-+/* Ethernet SAL registers */
-+#define ETH_SAL_BYTE_5		0x000000ff
-+#define ETH_SAL_BYTE_4		0x0000ff00
-+#define ETH_SAL_BYTE_3		0x00ff0000
-+#define ETH_SAL_BYTE_2		0xff000000
-+
-+/* Ethernet SAH registers */
-+#define ETH_SAH_BYTE1		0x000000ff
-+#define ETH_SAH_BYTE0		0x0000ff00
-+
-+/* Ethernet GPF register */
-+#define ETH_GPF_PTV		0x0000ffff
-+
-+/* Ethernet PFG register */
-+#define ETH_PFS_PFD		BIT(0)
-+
-+/* Ethernet CFSA[0-3] registers */
-+#define ETH_CFSA0_CFSA4		0x000000ff
-+#define ETH_CFSA0_CFSA5		0x0000ff00
-+#define ETH_CFSA1_CFSA2		0x000000ff
-+#define ETH_CFSA1_CFSA3		0x0000ff00
-+#define ETH_CFSA1_CFSA0		0x000000ff
-+#define ETH_CFSA1_CFSA1		0x0000ff00
-+
-+/* Ethernet MAC1 registers */
-+#define ETH_MAC1_RE		BIT(0)
-+#define ETH_MAC1_PAF		BIT(1)
-+#define ETH_MAC1_RFC		BIT(2)
-+#define ETH_MAC1_TFC		BIT(3)
-+#define ETH_MAC1_LB		BIT(4)
-+#define ETH_MAC1_MR		BIT(31)
-+
-+/* Ethernet MAC2 registers */
-+#define ETH_MAC2_FD		BIT(0)
-+#define ETH_MAC2_FLC		BIT(1)
-+#define ETH_MAC2_HFE		BIT(2)
-+#define ETH_MAC2_DC		BIT(3)
-+#define ETH_MAC2_CEN		BIT(4)
-+#define ETH_MAC2_PE		BIT(5)
-+#define ETH_MAC2_VPE		BIT(6)
-+#define ETH_MAC2_APE		BIT(7)
-+#define ETH_MAC2_PPE		BIT(8)
-+#define ETH_MAC2_LPE		BIT(9)
-+#define ETH_MAC2_NB		BIT(12)
-+#define ETH_MAC2_BP		BIT(13)
-+#define ETH_MAC2_ED		BIT(14)
-+
-+/* Ethernet IPGT register */
-+#define ETH_IPGT		0x0000007f
-+
-+/* Ethernet IPGR registers */
-+#define ETH_IPGR_IPGR2		0x0000007f
-+#define ETH_IPGR_IPGR1		0x00007f00
-+
-+/* Ethernet CLRT registers */
-+#define ETH_CLRT_MAX_RET	0x0000000f
-+#define ETH_CLRT_COL_WIN	0x00003f00
-+
-+/* Ethernet MAXF register */
-+#define ETH_MAXF		0x0000ffff
-+
-+/* Ethernet test registers */
-+#define ETH_TEST_REG		BIT(2)
-+#define ETH_MCP_DIV		0x000000ff
-+
-+/* MII registers */
-+#define ETH_MII_CFG_RSVD	0x0000000c
-+#define ETH_MII_CMD_RD		BIT(0)
-+#define ETH_MII_CMD_SCN		BIT(1)
-+#define ETH_MII_REG_ADDR	0x0000001f
-+#define ETH_MII_PHY_ADDR	0x00001f00
-+#define ETH_MII_WTD_DATA	0x0000ffff
-+#define ETH_MII_RDD_DATA	0x0000ffff
-+#define ETH_MII_IND_BSY		BIT(0)
-+#define ETH_MII_IND_SCN		BIT(1)
-+#define ETH_MII_IND_NV		BIT(2)
-+
-+/* Values for the DEVCS field of the Ethernet DMA Rx and Tx descriptors. */
-+#define ETH_RX_FD		BIT(0)
-+#define ETH_RX_LD		BIT(1)
-+#define ETH_RX_ROK		BIT(2)
-+#define ETH_RX_FM		BIT(3)
-+#define ETH_RX_MP		BIT(4)
-+#define ETH_RX_BP		BIT(5)
-+#define ETH_RX_VLT		BIT(6)
-+#define ETH_RX_CF		BIT(7)
-+#define ETH_RX_OVR		BIT(8)
-+#define ETH_RX_CRC		BIT(9)
-+#define ETH_RX_CV		BIT(10)
-+#define ETH_RX_DB		BIT(11)
-+#define ETH_RX_LE		BIT(12)
-+#define ETH_RX_LOR		BIT(13)
-+#define ETH_RX_CES		BIT(14)
-+#define ETH_RX_LEN_BIT		16
-+#define ETH_RX_LEN		0xffff0000
-+
-+#define ETH_TX_FD		BIT(0)
-+#define ETH_TX_LD		BIT(1)
-+#define ETH_TX_OEN		BIT(2)
-+#define ETH_TX_PEN		BIT(3)
-+#define ETH_TX_CEN		BIT(4)
-+#define ETH_TX_HEN		BIT(5)
-+#define ETH_TX_TOK		BIT(6)
-+#define ETH_TX_MP		BIT(7)
-+#define ETH_TX_BP		BIT(8)
-+#define ETH_TX_UND		BIT(9)
-+#define ETH_TX_OF		BIT(10)
-+#define ETH_TX_ED		BIT(11)
-+#define ETH_TX_EC		BIT(12)
-+#define ETH_TX_LC		BIT(13)
-+#define ETH_TX_TD		BIT(14)
-+#define ETH_TX_CRC		BIT(15)
-+#define ETH_TX_LE		BIT(16)
-+#define ETH_TX_CC		0x001E0000
-+
-+/* DMA descriptor (in physical memory). */
-+struct dma_desc {
-+	u32 control;			/* Control. use DMAD_* */
-+	u32 ca;				/* Current Address. */
-+	u32 devcs;			/* Device control and status. */
-+	u32 link;			/* Next descriptor in chain. */
-+};
-+
-+#define DMA_DESC_COUNT_BIT		0
-+#define DMA_DESC_COUNT_MSK		0x0003ffff
-+#define DMA_DESC_DS_BIT			20
-+#define DMA_DESC_DS_MSK			0x00300000
-+
-+#define DMA_DESC_DEV_CMD_BIT		22
-+#define DMA_DESC_DEV_CMD_MSK		0x01c00000
-+
-+/* DMA descriptors interrupts */
-+#define DMA_DESC_COF			BIT(25) /* Chain on finished */
-+#define DMA_DESC_COD			BIT(26) /* Chain on done */
-+#define DMA_DESC_IOF			BIT(27) /* Interrupt on finished */
-+#define DMA_DESC_IOD			BIT(28) /* Interrupt on done */
-+#define DMA_DESC_TERM			BIT(29) /* Terminated */
-+#define DMA_DESC_DONE			BIT(30) /* Done */
-+#define DMA_DESC_FINI			BIT(31) /* Finished */
-+
-+/* DMA register (within Internal Register Map).  */
-+struct dma_reg {
-+	u32 dmac;		/* Control. */
-+	u32 dmas;		/* Status. */
-+	u32 dmasm;		/* Mask. */
-+	u32 dmadptr;		/* Descriptor pointer. */
-+	u32 dmandptr;		/* Next descriptor pointer. */
-+};
-+
-+/* DMA channels specific registers */
-+#define DMA_CHAN_RUN_BIT		BIT(0)
-+#define DMA_CHAN_DONE_BIT		BIT(1)
-+#define DMA_CHAN_MODE_BIT		BIT(2)
-+#define DMA_CHAN_MODE_MSK		0x0000000c
-+#define	 DMA_CHAN_MODE_AUTO		0
-+#define	 DMA_CHAN_MODE_BURST		1
-+#define	 DMA_CHAN_MODE_XFRT		2
-+#define	 DMA_CHAN_MODE_RSVD		3
-+#define DMA_CHAN_ACT_BIT		BIT(4)
-+
-+/* DMA status registers */
-+#define DMA_STAT_FINI			BIT(0)
-+#define DMA_STAT_DONE			BIT(1)
-+#define DMA_STAT_CHAIN			BIT(2)
-+#define DMA_STAT_ERR			BIT(3)
-+#define DMA_STAT_HALT			BIT(4)
-+
- #define STATION_ADDRESS_HIGH(dev) (((dev)->dev_addr[0] << 8) | \
- 				   ((dev)->dev_addr[1]))
- #define STATION_ADDRESS_LOW(dev)  (((dev)->dev_addr[2] << 24) | \
-@@ -98,6 +322,7 @@ enum chain_status {
- 	desc_empty
- };
- 
-+#define DMA_COUNT(count)	((count) & DMA_DESC_COUNT_MSK)
- #define IS_DMA_FINISHED(X)	(((X) & (DMA_DESC_FINI)) != 0)
- #define IS_DMA_DONE(X)		(((X) & (DMA_DESC_DONE)) != 0)
- #define RCVPKT_LENGTH(X)	(((X) & ETH_RX_LEN) >> ETH_RX_LEN_BIT)
--- 
-2.29.2
-
+SGksDQoNCldlIGZvdW5kIGEgZGF0YSByYWNlIGluIGxpbnV4LTUuMTItcmMzIGJldHdlZW4gYWZf
+cGFja2V0LmMgZnVuY3Rpb25zIGZhbm91dF9kZW11eF9yb2xsb3ZlcigpIGFuZCBfX2Zhbm91dF91
+bmxpbmsoKSBhbmQgd2UgYXJlIGFibGUgdG8gcmVwcm9kdWNlIGl0IHVuZGVyIHg4Ni4gDQoNCldo
+ZW4gdGhlIHR3byBmdW5jdGlvbnMgYXJlIHJ1bm5pbmcgdG9nZXRoZXIsIF9fZmFub3V0X3VubGlu
+aygpIHdpbGwgZ3JhYiBhIGxvY2sgYW5kIG1vZGlmeSBzb21lIGF0dHJpYnV0ZSBvZiBwYWNrZXRf
+ZmFub3V0IHZhcmlhYmxlLCBidXQgZmFub3V0X2RlbXV4X3JvbGxvdmVyKCkgbWF5IG9yIG1heSBu
+b3Qgc2VlIHRoaXMgdXBkYXRlIGRlcGVuZGluZyBvbiBkaWZmZXJlbnQgaW50ZXJsZWF2aW5ncywg
+YXMgc2hvd24gaW4gYmVsb3cuDQoNCkN1cnJlbnRseSwgd2UgZGlkbuKAmXQgZmluZCBhbnkgZXhw
+bGljaXQgZXJyb3JzIGR1ZSB0byB0aGlzIGRhdGEgcmFjZS4gQnV0IGluIGZhbm91dF9kZW11eF9y
+b2xsb3ZlcigpLCB3ZSBub3RpY2VkIHRoYXQgdGhlIGRhdGEtcmFjaW5nIHZhcmlhYmxlIGlzIGlu
+dm9sdmVkIGluIHRoZSBsYXRlciBvcGVyYXRpb24sIHdoaWNoIG1pZ2h0IGJlIGEgY29uY2Vybi4N
+Cg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpFeGVjdXRpb24g
+aW50ZXJsZWF2aW5nDQoNClRocmVhZCAxCQkJCQkJCVRocmVhZCAyDQoNCl9fZmFub3V0X3VubGlu
+aygpCQkJCQkJZmFub3V0X2RlbXV4X3JvbGxvdmVyKCkNCnNwaW5fbG9jaygmZi0+bG9jayk7DQoJ
+CQkJCQkJCQlwbyA9IHBrdF9zayhmLT5hcnJbaWR4XSk7DQoJCQkJCQkJCQkvLyBwbyBpcyBhIG91
+dC1vZi1kYXRlIHZhbHVlDQpmLT5hcnJbaV0gPSBmLT5hcnJbZi0+bnVtX21lbWJlcnMgLSAxXTsN
+CnNwaW5fdW5sb2NrKCZmLT5sb2NrKTsNCg0KDQoNClRoYW5rcywNClNpc2h1YWkNCg0K
