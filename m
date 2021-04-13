@@ -2,144 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E11535E612
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 20:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 998E735E61B
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 20:16:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239513AbhDMSMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 14:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
+        id S1344284AbhDMSQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 14:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345747AbhDMSMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 14:12:35 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0E5C06175F
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:12:15 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id x27so8555468qvd.2
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:12:15 -0700 (PDT)
+        with ESMTP id S237137AbhDMSQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 14:16:53 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E66C061574
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:16:28 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id w8so20337187lfr.0
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:16:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J8WTSsefZFW62T22lrlwArgXymqZlxvKILjzLWwjgyM=;
-        b=NeRrPp3a6n+7xCPvFIEAmJzlaYcK6H2Ep2acNBn2vO1lIoqyEkSFQZPyk844XLkUcC
-         CSJ4wdBUDzbf52DdcpLNnQGRK48SbUStn+UP8xsMDxcSeTFIgnZcN2MUl5BnoMKG9LQh
-         CRwrNuvqMypoArtY1NI2wEIBJjHMfzn/dEGYOtIVpVNSxQJfLvcXs/TniO/IVJSNSyhv
-         byjFIQyzbMN8CJA8WU/zWKL6p05/5EtXDY5NGxWsaT1OECgCIU7I48szlTUHA/rFdAHr
-         aVYht9tuKFMGOF6RKe+TsNrsN+bWZdKi44ptjqa39t4suR13LqINKXw2P70leVxBb/BX
-         7xGw==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=/NRxwC56E+MI3F93yElfCXf/3hj5Z06is2uycZkM0qQ=;
+        b=DvJDXp/d6RVgY9b8RzGDfa4v7bb80kHLSf6aVUTdCUGASXQijU9fey+HkK22mjfMmP
+         Zaw+pH/pdj3l4ftbWEbHMzM/SJic7CkowmqoVf1JbOsKpg5Vx3ODW/XbbiUQg8j0q8Gn
+         7uczMoJP5hsoj6crQbcJtd1Sg6yQ2CT6uuQ1DHeY3f491MsXleeoanzBwaQtkwqDdCcN
+         hiUXX8ySa8zM4KvxXdmrAfUBEStcXDhvOEjSr+HN3HDAHDvAGQBmqsoMQkO90jNPrxsv
+         CQJySlTXy2HN1FLJCkjF6c5G/5OhNaPrGuQNGRTecrenASSgzpUX5EpIa6MNdUdbZdCK
+         pzYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J8WTSsefZFW62T22lrlwArgXymqZlxvKILjzLWwjgyM=;
-        b=Lv7LisnkYFn2YQju+9bEP15/zuaTJRBfoVRsVpZBf6OV0jC9uzzvlHwM9Oh7mlKZat
-         zz28hKgBGkcDBPkqWGwDa8l5CQP0Q0JewWd4bwpNcgp3yxsbNmmq84HP50V0erisq40S
-         A83usWpcrCUKKoHIQMRvLlNs4eXhOhrSS2Ej/evpDAnIhCBpZOnOJPm65R0icpPlYWED
-         DJ0lZEHflaZdxYxw0PFO1ZE7xLGBZa0S3oQ4sTFCYYS2TKRYCwZqtV7TfdbQEWOInR9i
-         Sc0WwDVE4nTSaNhWfhUp0hXbcmmnF24WHfs+hRx5NbYPkvndqqh2Bi+nJJSrbQRAMkVU
-         9uwQ==
-X-Gm-Message-State: AOAM530fcwdp0zVQ1KH13T5X/oBAnInwdM4RIFeK5BcXlQErOPEWIUuf
-        wp/D5cHleas3N5p6ZkloOJpiPMxaxvjWaRLugJhqa+DXjo0Z0TLs
-X-Google-Smtp-Source: ABdhPJweJY/IhHFwcUYvXY9MEhVrrzrSZgJDFZPiTnwI0l+K32/ZohkHIF4ruWRCWlpbp9BjsCSuH+U2BMYtiLDb+SE=
-X-Received: by 2002:a05:6214:20e8:: with SMTP id 8mr33453976qvk.13.1618337534807;
- Tue, 13 Apr 2021 11:12:14 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=/NRxwC56E+MI3F93yElfCXf/3hj5Z06is2uycZkM0qQ=;
+        b=L/dBBlAYetLZd0tE+6BQNdIbh/6l8dCOEEXoyEfzdEMSMcO8HiJFntSOGOA4m2tupG
+         37AuM2DcKW1SZfsRXrL7kTdGGMn1CdXfdscRmTGPTB0CqKhIcfRfJSuvHi8YnKK4oRGo
+         Ja9a2dk12Ttv4xnyMUr+TrPdAh/HE8YSyUjNLGz8rVVQpOprMtK7WrlI1w8cEVi9rrEG
+         DVm6CVF2t1CQxVRt6WIjqXgUazWtuUsVel1MjP67imoZnJAgtz0Qpw/GzSwjoGb3PS0M
+         L4SxPOF3+ZZyXje4jN46AE2289PNm01Y2rnCxlyQIQuUAXIuvI9VKPfvyM54vdTtIeYZ
+         2aoA==
+X-Gm-Message-State: AOAM530xMCBMeyI7QeM09FBup23I7rc7Gx5PFXBP9tyCTIRdFpmGYlbX
+        0nD1J2lVhq5y7swjiU+RrC0TOA==
+X-Google-Smtp-Source: ABdhPJxGcyzZDO/gtjy3O8QplokV8Ru3RCNy02FMyuq/NhsrG7A5qqWuSRiXcZg/cSyET00Wi4U/VA==
+X-Received: by 2002:ac2:58c9:: with SMTP id u9mr11384189lfo.103.1618337786726;
+        Tue, 13 Apr 2021 11:16:26 -0700 (PDT)
+Received: from wkz-x280 (h-90-88.A259.priv.bahnhof.se. [212.85.90.88])
+        by smtp.gmail.com with ESMTPSA id v4sm2263993lfe.18.2021.04.13.11.16.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Apr 2021 11:16:25 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+In-Reply-To: <20210413171443.1b2b2f88@thinkpad>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com> <20210411200135.35fb5985@thinkpad> <20210411185017.3xf7kxzzq2vefpwu@skbuf> <878s5nllgs.fsf@waldekranz.com> <20210412213045.4277a598@thinkpad> <8735vvkxju.fsf@waldekranz.com> <20210412235054.73754df9@thinkpad> <87wnt7jgzk.fsf@waldekranz.com> <20210413005518.2f9b9cef@thinkpad> <87r1jfje26.fsf@waldekranz.com> <87o8ejjdu6.fsf@waldekranz.com> <20210413015450.1ae597da@thinkpad> <20210413022730.2a51c083@thinkpad> <87im4qjl87.fsf@waldekranz.com> <20210413171443.1b2b2f88@thinkpad>
+Date:   Tue, 13 Apr 2021 20:16:24 +0200
+Message-ID: <87fszujbif.fsf@waldekranz.com>
 MIME-Version: 1.0
-References: <00000000000028104905bf0822ce@google.com>
-In-Reply-To: <00000000000028104905bf0822ce@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 13 Apr 2021 20:12:03 +0200
-Message-ID: <CACT4Y+ZN6ue+qH_5AJ9nFmOaAnAw7tv-TdXxHyJ_TirnChURcw@mail.gmail.com>
-Subject: Re: [syzbot] WARNING: suspicious RCU usage in find_inlist_lock
-To:     syzbot <syzbot+b221933e5f9ad5b0e2fd@syzkaller.appspotmail.com>
-Cc:     bridge@lists.linux-foundation.org, coreteam@netfilter.org,
-        David Miller <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>, nikolay@nvidia.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>, roopa@nvidia.com,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 3, 2021 at 4:22 AM syzbot
-<syzbot+b221933e5f9ad5b0e2fd@syzkaller.appspotmail.com> wrote:
+On Tue, Apr 13, 2021 at 17:14, Marek Behun <marek.behun@nic.cz> wrote:
+> On Tue, 13 Apr 2021 16:46:32 +0200
+> Tobias Waldekranz <tobias@waldekranz.com> wrote:
 >
-> Hello,
+>> On Tue, Apr 13, 2021 at 02:27, Marek Behun <marek.behun@nic.cz> wrote:
+>> > On Tue, 13 Apr 2021 01:54:50 +0200
+>> > Marek Behun <marek.behun@nic.cz> wrote:
+>> >  
+>> >> I will look into this, maybe ask some follow-up questions.  
+>> >
+>> > Tobias,
+>> >
+>> > it seems that currently the LAGs in mv88e6xxx driver do not use the
+>> > HashTrunk feature (which can be enabled via bit 11 of the
+>> > MV88E6XXX_G2_TRUNK_MAPPING register).  
+>> 
+>> This should be set at the bottom of mv88e6xxx_lag_sync_masks.
+>> 
+>> > If we used this feature and if we knew what hash function it uses, we
+>> > could write a userspace tool that could recompute new MAC
+>> > addresses for the CPU ports in order to avoid the problem I explained
+>> > previously...
+>> >
+>> > Or the tool can simply inject frames into the switch and try different
+>> > MAC addresses for the CPU ports until desired load-balancing is reached.
+>> >
+>> > What do you think?  
+>> 
+>> As you concluded in your followup, not being able to have a fixed MAC
+>> for the CPU seems weird.
+>> 
+>> Maybe you could do the inverse? Allow userspace to set the masks for an
+>> individual bond/team port in a hash-based LAG, then you can offload that
+>> to DSA. 
 >
-> syzbot found the following issue on:
->
-> HEAD commit:    1e43c377 Merge tag 'xtensa-20210329' of git://github.com/j..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=114cdd4ad00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=78ef1d159159890
-> dashboard link: https://syzkaller.appspot.com/bug?extid=b221933e5f9ad5b0e2fd
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+b221933e5f9ad5b0e2fd@syzkaller.appspotmail.com
+> What masks?
 
-#syz dup: WARNING: suspicious RCU usage in getname_flags
+The table defined in Global2/Register7.
 
-> =============================
-> WARNING: suspicious RCU usage
-> 5.12.0-rc5-syzkaller #0 Not tainted
-> -----------------------------
-> kernel/sched/core.c:8294 Illegal context switch in RCU-sched read-side critical section!
->
-> other info that might help us debug this:
->
->
-> rcu_scheduler_active = 2, debug_locks = 0
-> no locks held by syz-executor.1/8425.
->
-> stack backtrace:
-> CPU: 1 PID: 8425 Comm: syz-executor.1 Not tainted 5.12.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
->  ___might_sleep+0x266/0x2c0 kernel/sched/core.c:8294
->  __mutex_lock_common kernel/locking/mutex.c:928 [inline]
->  __mutex_lock+0xa9/0x1120 kernel/locking/mutex.c:1096
->  find_inlist_lock_noload net/bridge/netfilter/ebtables.c:316 [inline]
->  find_inlist_lock.constprop.0+0x26/0x220 net/bridge/netfilter/ebtables.c:330
->  find_table_lock net/bridge/netfilter/ebtables.c:339 [inline]
->  do_ebt_get_ctl+0x208/0x790 net/bridge/netfilter/ebtables.c:2329
->  nf_getsockopt+0x72/0xd0 net/netfilter/nf_sockopt.c:116
->  ip_getsockopt net/ipv4/ip_sockglue.c:1777 [inline]
->  ip_getsockopt+0x164/0x1c0 net/ipv4/ip_sockglue.c:1756
->  tcp_getsockopt+0x86/0xd0 net/ipv4/tcp.c:4239
->  __sys_getsockopt+0x21f/0x5f0 net/socket.c:2161
->  __do_sys_getsockopt net/socket.c:2176 [inline]
->  __se_sys_getsockopt net/socket.c:2173 [inline]
->  __x64_sys_getsockopt+0xba/0x150 net/socket.c:2173
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x467a6a
-> Code: 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 37 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ffe660d82f8 EFLAGS: 00000202 ORIG_RAX: 0000000000000037
-> RAX: ffffffffffffffda RBX: 00000000005401a0 RCX: 0000000000467a6a
-> RDX: 0000000000000081 RSI: 0000000000000000 RDI: 0000000000000003
-> RBP: 0000000000000000 R08: 00007ffe660d831c R09: 00007ffe660d83a0
-> R10: 00007ffe660d8320 R11: 0000000000000202 R12: 0000000000000003
-> R13: 00007ffe660d8320 R14: 0000000000540128 R15: 00007ffe660d831c
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000028104905bf0822ce%40google.com.
+When a frame is mapped to a LAG (e.g. by an ATU lookup), all member
+ports will added to the frame's destination vector. The mask table is
+the block that then filters the vector to only include a single
+member.
+
+By modifying that table, you can choose which buckets are assigned to
+which member ports. This includes assigning 7 buckets to one member and
+1 to the other for example.
+
+At the moment, mv88e6xxx will statically determine this mapping (in
+mv88e6xxx_lag_set_port_mask), by trying to spread the buckets as evenly
+as possible. It will also rebalance the assignments whenever a link goes
+down, or is "detached" in LACP terms.
+
+You could imagine a different mode in which the DSA driver would receive
+the bucket allocation from the bond/team driver (which in turn could
+come all the way from userspace). Userspace could then implement
+whatever strategy it wants to maximize utilization, though still bound
+by the limitations of the hardware in terms of fields considered during
+hashing of course.
