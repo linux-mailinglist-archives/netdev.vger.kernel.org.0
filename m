@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 974E435DAE5
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3167035DAEE
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245583AbhDMJQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:16:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58525 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S245536AbhDMJQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:16:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618305371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Nsxd662d4i8x3VCivCNK0fCVgM6UOW8+ULBoukCe2ZU=;
-        b=bX57uKGsoIbTAUnt9uK/QnqGG/th/kKlJIi+n3aaKC9nI/QPUUmcE/RiMpBJaaMvQ1AIj4
-        w1pBcL+FMBSd+g0rYrJi8r1SlwEMSd6wu7zXLlGrTUpf9ySeYovOCh78BtkVqBCnP1FxL0
-        xL0+/mh9Ea68aHcIs+SVxu/9jdJ2vcw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-71-x88dCRRUMHWcrN8rL8uRAw-1; Tue, 13 Apr 2021 05:16:07 -0400
-X-MC-Unique: x88dCRRUMHWcrN8rL8uRAw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CD9BD107ACCA;
-        Tue, 13 Apr 2021 09:16:05 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-13-128.pek2.redhat.com [10.72.13.128])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 55CC360C04;
-        Tue, 13 Apr 2021 09:15:59 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH] vhost-vdpa: fix vm_flags for virtqueue doorbell mapping
-Date:   Tue, 13 Apr 2021 17:15:57 +0800
-Message-Id: <20210413091557.29008-1-jasowang@redhat.com>
+        id S238238AbhDMJSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237787AbhDMJSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:18:11 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B909C061574;
+        Tue, 13 Apr 2021 02:17:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=6RTGtC27UlAcq0fr9UOGTdiAA9coaSDQ5gb68n6+EB8=; b=dAxsO3BQxiUv8/gpGGWsrbL11
+        kaed+tTvegZtlg3UTTklLT/C+Ip+DlXkpPjHZohY/Cg3Dy/LIL8j0uP+aMRuVAh/oYDEj+zT4Lo8B
+        b0tgoYYwdb5TQaOkdSPFz6Dc9+/HgtQ7bdmYOL2bHTgCV0hKBuQ7vHgTxnQ2lyYevXa6ueonNSPF+
+        6/5zkwtACHHkUNq2WUqQaR0EuO22zZWpjcnSeyC2jLEHFh43Dql4m19YYO7qZhULwBOaFgBDyAL78
+        mqtua1VoqmEDtPi+6y5ipMdJCAOWNpKqh7S/lodrUuHF2ZMrbKNaoMDkTaBTAOS0txTwCi7pEEmIz
+        ch1k2xT1Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52368)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lWFB2-0005Ri-5E; Tue, 13 Apr 2021 10:17:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lWFB0-000858-1Z; Tue, 13 Apr 2021 10:17:42 +0100
+Date:   Tue, 13 Apr 2021 10:17:42 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     stefanc@marvell.com
+Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, mw@semihalf.com,
+        andrew@lunn.ch, atenart@kernel.org, lironh@marvell.com,
+        danat@marvell.com
+Subject: Re: [PATCH net-next] net: mvpp2: Add parsing support for different
+ IPv4 IHL values
+Message-ID: <20210413091741.GL1463@shell.armlinux.org.uk>
+References: <1618303531-16050-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1618303531-16050-1-git-send-email-stefanc@marvell.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The virtqueue doorbell is usually implemented via registeres but we
-don't provide the necessary vma->flags like VM_PFNMAP. This may cause
-several issues e.g when userspace tries to map the doorbell via vhost
-IOTLB, kernel may panic due to the page is not backed by page
-structure. This patch fixes this by setting the necessary
-vm_flags. With this patch, try to map doorbell via IOTLB will fail
-with bad address.
+On Tue, Apr 13, 2021 at 11:45:31AM +0300, stefanc@marvell.com wrote:
+> From: Stefan Chulski <stefanc@marvell.com>
+> 
+> Add parser entries for different IPv4 IHL values.
+> Each entry will set the L4 header offset according to the IPv4 IHL field.
+> L3 header offset will set during the parsing of the IPv4 protocol.
 
-Cc: stable@vger.kernel.org
-Fixes: ddd89d0a059d ("vhost_vdpa: support doorbell mapping via mmap")
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- drivers/vhost/vdpa.c | 1 +
- 1 file changed, 1 insertion(+)
+What is the impact of this commit? Is something broken at the moment,
+if so what? Does this need to be backported to stable kernels?
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index e0a27e336293..865eab69cb71 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -989,6 +989,7 @@ static int vhost_vdpa_mmap(struct file *file, struct vm_area_struct *vma)
- 	if (vma->vm_end - vma->vm_start != notify.size)
- 		return -ENOTSUPP;
- 
-+	vma->vm_flags |= VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP;
- 	vma->vm_ops = &vhost_vdpa_vm_ops;
- 	return 0;
- }
+These are key questions, of which the former two should be covered in
+every commit message so that the reason for the change can be known.
+It's no good just describing what is being changed in the commit without
+also describing why the change is being made.
+
+Thanks.
+
 -- 
-2.25.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
