@@ -2,124 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BD0835D995
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 10:06:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B432235D997
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 10:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239527AbhDMIGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 04:06:33 -0400
-Received: from mail-bn8nam08on2086.outbound.protection.outlook.com ([40.107.100.86]:62554
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238378AbhDMIGb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 04:06:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CF2+jGC1ogHVmNjtGCVSyjimpvOi7ltD6U8KhJmZMAcqZ42WbvWVdhE+v8amPrIWR8rzyZXDbwIbWu17euoo5l3KgZTp2DCaYemIJ8S/WdPkKeXVaXtROAXhWQuhHpBpBtY6F1k/yLh9tpn+q0hQRdeqADYX0fH8rGq+j5UlzGhHlfDkbgw1htbt0nfDCwvkJnxIm0g8J/1xkT0UQ40LHvmqlGQG3s2tU0/wm48BNLlleO8+t8YtOltXM8hE/ehIBTfsaCYSRUrTAijrg8wBCzqL+tYORNIlgWoOnMoAsR09H2DQIVv227EytNA1hP+LfHz3AmFtA4qhgbDOcfhHag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cmhXM8l34fZyoC1DTPQLz8KnxUR3Q3bsumDsm4MeGAs=;
- b=Wm/wpWIrpS6pHDU3r8DzKZeK6dWM2PCbRLL9yWOlJ4Q6azfv9LiYs5MbNdu2P7haS7nsPGQlz0dA9jj+FU1cNNVhKgHjihsIhMoVd2qOBAoIpYx1kf1mzAiG1+fQ9Fsn4J506qRtwVnluMfgQqeiLTkNrjlxZZwaMxmnCjEoZf5o7HnXoFP1+eFVIqKSTRMXmobe5pfbERgQJJ3b0UAQSY2M3Ufgfhc0KtFB94+YlcYkC/fIAoKFxmpd9O+61q9usQAq7i37FHIciyF7CynANbzdb43XQDOcRGR33lgVL9/plEBe0rIQHNp9pK8wErQBBMp8nkctE8ft3G22bE9Hhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.35) smtp.rcpttodomain=netfilter.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cmhXM8l34fZyoC1DTPQLz8KnxUR3Q3bsumDsm4MeGAs=;
- b=TIOwIKgJPj/cmdfupv9+eY9fObztTTNrTOk7tD02OSJvoAa0q9rG7cjgKU2FyvjQKz0Y8AbEYgrzimUj6aNvN/b2BoN3bvoXkq/rxO3Qv5b9ztIDHwGXSZzHGF1aFNXHOKvMlOKQdsEc0vk+rmIgipash0S3J4FMDtHkfWZf2C1kIMARiU8W+mJgH4v5X6cvpzQTqKw9YVURgSezDtOAEd+kTKEzVXohAVlv1n0rkgMLJttMZ5EHIcjsRn3irqnpQHyUMsp4dm+Yfw1Gr8CAXqapGU4lH4L7h+EJVjKRG3Za1WuHS7SCu0L0r1+d6WntDOeEDs8gPqZTBbNy+PIvuA==
-Received: from MWHPR1201CA0008.namprd12.prod.outlook.com
- (2603:10b6:301:4a::18) by BL0PR12MB4899.namprd12.prod.outlook.com
- (2603:10b6:208:1cf::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.21; Tue, 13 Apr
- 2021 08:06:10 +0000
-Received: from CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:4a:cafe::e) by MWHPR1201CA0008.outlook.office365.com
- (2603:10b6:301:4a::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend
- Transport; Tue, 13 Apr 2021 08:06:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.35)
- smtp.mailfrom=nvidia.com; netfilter.org; dkim=none (message not signed)
- header.d=none;netfilter.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.35 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.35; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.35) by
- CO1NAM11FT066.mail.protection.outlook.com (10.13.175.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4020.17 via Frontend Transport; Tue, 13 Apr 2021 08:06:09 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 13 Apr
- 2021 08:06:09 +0000
-Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.145.6) by mail.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 13 Apr 2021 08:06:07 +0000
-From:   Roi Dayan <roid@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     Roi Dayan <roid@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        "Oz Shlomo" <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next v2 1/1] netfilter: flowtable: Add FLOW_OFFLOAD_XMIT_UNSPEC xmit type
-Date:   Tue, 13 Apr 2021 11:06:05 +0300
-Message-ID: <20210413080605.2108422-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f7b5097f-229b-48e5-7334-08d8fe52ff7a
-X-MS-TrafficTypeDiagnostic: BL0PR12MB4899:
-X-Microsoft-Antispam-PRVS: <BL0PR12MB4899F1197F4C6B85F0DE0D15B84F9@BL0PR12MB4899.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sjtmtBjVuexXFm6BCvTC7gbuhRBeE36Hql0c8QH1Xy1IPxvpvuFqbKu4HR3RbMSTE765IBKyDm78VRR4VgBgqffq/yK7r12DLFi8hQ5lpg1GIfg0VVM3khdho2hRTVw6tMssgKTOW4Yk7CrNKGiGHlHu7cuv8fn2ZnV0O3XXUaH5ZuV8V/fv0PBxB5IGn211HbZ8W4Vt14W5w+uScglNJyWG3xjS3x4fpjQRzs/aABj3ZEp8sfNbErlsteKw7Fg94o+njDbJMY4BQPlpdp3Oc5NKk9Vr1L9SgiMJvLcrFzNpRy3xZjD+TOGAsOf6VweBaVPxyxfFgL+AVOmc68dJFd4f/L/0AvKWf5TG+rfg9EMLgIwPl0pPXGamBKalRwQ6sZJXoZxsvDHUmsg5bwHpWk7of1xXzIWSKuGZZCsPQKFcP9KRd1aTB9peaIx8J8tZsBXHHjm2rUUSipiYIZw5qmdjz+rQI56rHicmkI+ICTKweejczqMM+QXzpzN+JZoVOt0dHOCN5DilTDQIzhmpQIGwZFY2KSyuvsYIdNNbMYEf5g/DjA/6Q8z4An4LiIoAAaljc4jgWKeP9ZdVcs7/yO66tztNhQPTKf1mLrfP+tqmQR6MGAEAGNCJbhxC3qQaB9O9wZqE9P032Tjk/jbJC2pkAj5d8ZdjNnhBD3v+vX0=
-X-Forefront-Antispam-Report: CIP:216.228.112.35;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid04.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(376002)(136003)(39860400002)(396003)(46966006)(36840700001)(70206006)(36756003)(186003)(4326008)(83380400001)(26005)(36860700001)(70586007)(478600001)(8936002)(47076005)(6916009)(7636003)(2616005)(5660300002)(1076003)(82310400003)(2906002)(8676002)(86362001)(356005)(107886003)(82740400003)(336012)(36906005)(426003)(316002)(54906003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2021 08:06:09.8714
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7b5097f-229b-48e5-7334-08d8fe52ff7a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.35];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT066.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4899
+        id S240342AbhDMIHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 04:07:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48032 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238814AbhDMIHN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 04:07:13 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9CB6960FE8;
+        Tue, 13 Apr 2021 08:06:54 +0000 (UTC)
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94)
+        (envelope-from <maz@kernel.org>)
+        id 1lWE4S-007BTF-H5; Tue, 13 Apr 2021 09:06:52 +0100
+Date:   Tue, 13 Apr 2021 09:06:51 +0100
+Message-ID: <8735vuobfo.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Weijie Gao <weijie.gao@mediatek.com>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        =?UTF-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Ungerer <gerg@kernel.org>
+Subject: Re: [RFC v4 net-next 2/4] net: dsa: mt7530: add interrupt support
+In-Reply-To: <YHTgu1+6GZFdFgWJ@lunn.ch>
+References: <20210412034237.2473017-1-dqfext@gmail.com>
+        <20210412034237.2473017-3-dqfext@gmail.com>
+        <87fszvoqvb.wl-maz@kernel.org>
+        <20210412152210.929733-1-dqfext@gmail.com>
+        <YHTgu1+6GZFdFgWJ@lunn.ch>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: andrew@lunn.ch, dqfext@gmail.com, davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com, kuba@kernel.org, Landen.Chao@mediatek.com, matthias.bgg@gmail.com, linux@armlinux.org.uk, sean.wang@mediatek.com, vivien.didelot@gmail.com, olteanv@gmail.com, robh+dt@kernel.org, linus.walleij@linaro.org, gregkh@linuxfoundation.org, sergio.paracuellos@gmail.com, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-staging@lists.linux.dev, devicetree@vger.kernel.org, netdev@vger.kernel.org, weijie.gao@mediatek.com, gch981213@gmail.com, opensource@vdorst.com, frank-w@public-files.de, tglx@linutronix.de, gerg@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It could be xmit type was not set and would default to FLOW_OFFLOAD_XMIT_NEIGH
-and in this type the gc expect to have a route info.
-Fix that by adding FLOW_OFFLOAD_XMIT_UNSPEC which defaults to 0.
+On Tue, 13 Apr 2021 01:07:23 +0100,
+Andrew Lunn <andrew@lunn.ch> wrote:
+> 
+> > > > +static void
+> > > > +mt7530_setup_mdio_irq(struct mt7530_priv *priv)
+> > > > +{
+> > > > +	struct dsa_switch *ds = priv->ds;
+> > > > +	int p;
+> > > > +
+> > > > +	for (p = 0; p < MT7530_NUM_PHYS; p++) {
+> > > > +		if (BIT(p) & ds->phys_mii_mask) {
+> > > > +			unsigned int irq;
+> > > > +
+> > > > +			irq = irq_create_mapping(priv->irq_domain, p);
+> > > 
+> > > This seems odd. Why aren't the MDIO IRQs allocated on demand as
+> > > endpoint attached to this interrupt controller are being probed
+> > > individually? In general, doing this allocation upfront is an
+> > > indication that there is some missing information in the DT to perform
+> > > the discovery.
+> > 
+> > This is what Andrew's mv88e6xxx does, actually. In addition, I also check
+> > the phys_mii_mask to avoid creating mappings for unused ports.
+> 
+> It can be done via DT, using the standard interrupt property, so long
+> as you use of_mdiobus_register(np).
+> 
+> But when you have an 7 port switch, and a nice simple mapping, port 0
+> PHY using interrupt 0, you can save a lot of device tree boilerplate
+> by doing it in code. And when you have 4 of these switches, it gets
+> very boring adding all the DT to just wire up the interrupts 28
+> interrupts.
 
-Fixes: 8b9229d15877 ("netfilter: flowtable: dst_check() from garbage collector path")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
----
+I guess this is depends whether the most usual case is to have all
+these interrupts being actively in use or not. Most interrupts only
+use a limited portion of their interrupt space at any given time.
+Allocating all interrupts and creating mappings upfront is a waste of
+memory.
 
-Notes:
-    v2
-    - add FLOW_OFFLOAD_XMIT_UNSPEC instead of still using neigh as default and checking dst for null
+If the use case here is that all these interrupts will be wired and
+used in most cases, then upfront allocation is probably not a problem.
 
- include/net/netfilter/nf_flow_table.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+	M.
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index 583b327d8fc0..9b42c6523b4d 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -90,7 +90,8 @@ enum flow_offload_tuple_dir {
- #define FLOW_OFFLOAD_DIR_MAX	IP_CT_DIR_MAX
- 
- enum flow_offload_xmit_type {
--	FLOW_OFFLOAD_XMIT_NEIGH		= 0,
-+	FLOW_OFFLOAD_XMIT_UNSPEC	= 0,
-+	FLOW_OFFLOAD_XMIT_NEIGH,
- 	FLOW_OFFLOAD_XMIT_XFRM,
- 	FLOW_OFFLOAD_XMIT_DIRECT,
- };
 -- 
-2.26.2
-
+Without deviation from the norm, progress is not possible.
