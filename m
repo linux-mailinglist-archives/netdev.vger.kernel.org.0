@@ -2,169 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 559EE35DB57
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:35:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0095135DB34
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbhDMJf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:35:26 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10724 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229899AbhDMJfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:35:23 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13D9PCDl031841;
-        Tue, 13 Apr 2021 02:34:55 -0700
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2174.outbound.protection.outlook.com [104.47.58.174])
-        by mx0a-0016f401.pphosted.com with ESMTP id 37w6vugd9g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 13 Apr 2021 02:34:54 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K45pEQBIMIoSfSOrntJW+Iy60DzXK62JPUvUtVyJ3wNVV749tpzikN9523wOh1NRM46ZCk9PnNOqAdAPNkWrXvQue5OZcGiWhs1hPylpJBFiWuHZr18cW7VS1JEKAOaQbgPM/BmQXMQgHNJouEIG4hHa12rOrsNuA0rlOoV478/y7StAngqwkdqmT1ICBDCQT5Xn+sUcF/EC4scl4dFLJe960uiIZHSCTHevH3/7jOcYROf+jYkPUD35zc65YE1q2mg7QIPbEeKqz6Uvdir96e/RzKmfzLs9R8a8MK3OBPs2bwUOwUNrLnROjeBm/xugAj0K89c3VHYnfw65ET6pCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z//fugbOZ6HSRsHNTQWhKV/fRUSLkc/zHPoF1vuhR90=;
- b=FA/8Il934ok6pZJ2RVFjNNo3DhR/p9tIf0huBy/6uay+E2XqFJjpbfHYWSYFrMM6PE9kLi98Z2uu+pmouhDBASVOC/jWQtURGJPjGSxKjryn8FtFJlAIQMQHvHdwTcqlX4D1zIWgiAdEL5Kz60kCsIADjBep3PlS3nXac26ukbxEpU2Ny5wT4RxodzF58C7kcqRofHRqQVKe3WYN9FvPeu/S0y/ZyHcfNu3Ml2mhDu4RPyVvhVIijMP+DsH3025Pm2M51cmFaMZE/2uSedOF5YDxJuDOEmT3SMibw+ExI7PvPy0OLx3G+TX3KT4ot3AY8SVKZulHzm/hGnMH8A2jwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z//fugbOZ6HSRsHNTQWhKV/fRUSLkc/zHPoF1vuhR90=;
- b=AhIkwul/XyKCM91kJuP1kS2Tlnv1Ts0j4ZBIWKxC7LZtU5kI+tswSphridOagNYBV4KOTT5AX1/On2uXgPV0ZNfBUz7eIP1f8Azbwt5a53jJpa0s+JuMtQzsrBQCCGK0NoDh/kY9HCJMLth2BDXxV2OAZ4bCDc8JvA76goyX/3Q=
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
- by MWHPR1801MB1917.namprd18.prod.outlook.com (2603:10b6:301:63::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.22; Tue, 13 Apr
- 2021 09:34:52 +0000
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::ddee:3de3:f688:ee3e]) by CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::ddee:3de3:f688:ee3e%7]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
- 09:34:51 +0000
-From:   Stefan Chulski <stefanc@marvell.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        Liron Himi <lironh@marvell.com>, Dana Vardi <danat@marvell.com>
-Subject: RE: [EXT] Re: [PATCH net-next] net: mvpp2: Add parsing support for
- different IPv4 IHL values
-Thread-Topic: [EXT] Re: [PATCH net-next] net: mvpp2: Add parsing support for
- different IPv4 IHL values
-Thread-Index: AQHXMEFo10wdEFvjykKGBHXbluX/IaqyKzMAgAADlZA=
-Date:   Tue, 13 Apr 2021 09:34:51 +0000
-Message-ID: <CO6PR18MB38732288887550115ACCCF75B04F9@CO6PR18MB3873.namprd18.prod.outlook.com>
-References: <1618303531-16050-1-git-send-email-stefanc@marvell.com>
- <20210413091741.GL1463@shell.armlinux.org.uk>
-In-Reply-To: <20210413091741.GL1463@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=marvell.com;
-x-originating-ip: [62.67.24.210]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a8a86679-363e-4a0f-9323-08d8fe5f639d
-x-ms-traffictypediagnostic: MWHPR1801MB1917:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR1801MB19178759A701A550FEC88915B04F9@MWHPR1801MB1917.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1002;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MCnVY7SPdwvO21FJs1FHJoQTVZrItK5C76JcpabTctZA0v8mJbpQfxlbxfpS5prFBBqeYnk+cRCXTqDF/RZlIZ+2B3WCFC2EDwA2+odv2ZuZNmkxzPnztg1WxntNYPDGepfrrYA4pI2PBite5Zdeopm9dFT/5VZXkr6IjKR0KXdai4qwsjm7rYkxqy5RTst/2X0v5ozxPI/+4wRRJC2Sebp4XJ1K8XwJ3OBu0vrZMFf+kS6yR2OY9izDqhJou5qxoGM2M97zD8IuiTGFto/VH85agxUmCMPMigeIfkZKa8tugk9xjJiPIFxFmgpqT5+UgY1nSZca6iEJaxI3Jo5XIebB3eaPFp03ak4m4kAHOCiATLe1c9lTeqSBrPcmhNyRKgwjaNoqztvmJkypkG33g258kpeCOZQPU6KwxnrUr8s7XGDW3JppV4euvtbZaNdesouTTOetMQrUUwPjKskVI3Uwv8qfVIe3s+i+lfQqfYpWWT3zUUwUbNAlrUKNcd2Nl+noLq/+MIEAe0c2LmuMLEGvQBo/CkJO+jbzRkjVzl8NfP0/AHPt9SQXiGhcBD1mJTd1pKcGMNTjwmr5qe92jKAK035425pIkIuKgJMSTUI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(136003)(376002)(39860400002)(66476007)(107886003)(38100700002)(53546011)(64756008)(4326008)(86362001)(9686003)(122000001)(54906003)(316002)(186003)(2906002)(33656002)(8676002)(66946007)(478600001)(83380400001)(6916009)(8936002)(5660300002)(52536014)(71200400001)(66446008)(76116006)(7696005)(6506007)(26005)(66556008)(55016002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?2p6EfbyJ5cFkIU08JGuhnn9hEMh6FcJAHnLhExiZsEkGtNX4hQXxZd+OZdCJ?=
- =?us-ascii?Q?V/F0utlMkulLfzKUdIXBb27PHfhCwrTOEGGnPznb+M46WvTnbe5qF03ojR8b?=
- =?us-ascii?Q?8iMVdrCyN90SSn4MQOlKPyNvKpQJdAe08Ood7aXaAKO4XWWCQmhFB0n3u0D4?=
- =?us-ascii?Q?11mb9b7OopHVNALmJktBD9KvkKEXW9YLc+2ItGssz1dqY+mwCmieznfJanVv?=
- =?us-ascii?Q?NK9WYeqeJdMLz0VpkDJ2W3yUPN3NlyLdFOHE5w/Vc/tgFGhyUVHKnMgpp8fX?=
- =?us-ascii?Q?RbdL3gW4xOeR3S8GJjzF+I8t6Md7D9uHQOTnnREoeKA/u4UFeB5tiqdsiK1E?=
- =?us-ascii?Q?wbn5qhpW5PhY9C4R4R39PNH3feOGXvuZ3p1PdR5+IUkJcwQMToSNLyysifD2?=
- =?us-ascii?Q?5jIwR7tcvMRntDm2rUnaB9qck5MmOA6Z+WWLkeRXXp2wFd9MMMf6LBCliyB6?=
- =?us-ascii?Q?ITcTmAgLvanL4QHvQ2cmFyILOfWF4VmarM+CX1O0Y39wd/YnH2hIrOnV9G+L?=
- =?us-ascii?Q?hy/RsOEXr1dMIWkvgV76OJwY9/7mpMjvK/wg1mB9ZPbpzRZza0XSEYV57doh?=
- =?us-ascii?Q?HG/OCCa0GJRlMKpl1MZ1RbV7HaiCmQLpeGSPFvI/RspAKtSx1NVmc0kegiJQ?=
- =?us-ascii?Q?cJOpV5VgkYlRx3C9bABu+YwVtBd45w+auXkqjdpzt2bb3aATjlUXofQvKUF4?=
- =?us-ascii?Q?q/7+vz2Df6vWFnxNWNce3COzDRVUXjqTIz0PP+o8jf8b/6UQtEWVX713j8pz?=
- =?us-ascii?Q?XQmzeNIRpCe+v3erhpJpgLCN5BPONvw8zKYkFboVSAL2QjfxDiBYDu0So3Yg?=
- =?us-ascii?Q?Kf3vFZWCC1iXfJ5oSbaxZ2wavJQ5/dJ0a9DA4NMtiPx2JMw1WLrewI8cfz9q?=
- =?us-ascii?Q?snyXalNIHGqrM6ZeTPLg5M6hQmcpYT9zAhuV7UwioLcelKulSxI/81URWuzC?=
- =?us-ascii?Q?ujfuhhDYCsbc8jKIf4KP6JIqGct+ju6aBTg8+LMbd0WfnZsT//zFkBX/zBeo?=
- =?us-ascii?Q?Nd1PyCWpzQsvhaU8TVnHcci2BvzWx6kgndZmGG5ni3PzoMzuxWr1UlVTUtYD?=
- =?us-ascii?Q?ovnC+h9lvhtUFFyWWsigp0YCFL/2KfinbhrXqd2JJ8PJ1e/53dl8AaaxiP5w?=
- =?us-ascii?Q?9qsogg/ErHzVwOjcXnjxl3xHTE5k7/qC+WBbnpFfF+COXyiFhRMIN970hvOQ?=
- =?us-ascii?Q?fDBFpTvMNqP7jtaNIQVqh2eahiK+GmcbCJw4UNkaptRkggKKdEHQJ0tDNV79?=
- =?us-ascii?Q?MxKXisCrc/ERy1zotuJYMO8LQ7wcTkjIWZTk+pOLUKCcfUFTiOGfXn5DWngQ?=
- =?us-ascii?Q?qWAj73Jx6nrLuhnNIVzVMgM7?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S239842AbhDMJcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:32:36 -0400
+Received: from mga12.intel.com ([192.55.52.136]:15985 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230251AbhDMJcf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 05:32:35 -0400
+IronPort-SDR: elErqZP/fBlNNINW9GFTIXvKz16NHiN+UinrOS6z5MR2jGUGpk9roJ4J0cSRPpSw5gE94k43t6
+ mYCg0pSLJ8Ow==
+X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="173868030"
+X-IronPort-AV: E=Sophos;i="5.82,219,1613462400"; 
+   d="scan'208";a="173868030"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 02:32:14 -0700
+IronPort-SDR: gbYVj5qwLtUIw5q8DrxLiv4BRR4jht7zSoRGbxrC5sHYn6kDuJ1GSxWWZB1Pi4NTQ9OKOit9Uv
+ zUunE2UAFYpg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,219,1613462400"; 
+   d="scan'208";a="424178034"
+Received: from glass.png.intel.com ([10.158.65.59])
+  by orsmga008.jf.intel.com with ESMTP; 13 Apr 2021 02:32:08 -0700
+From:   Ong Boon Leong <boon.leong.ong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     alexandre.torgue@foss.st.com,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH net-next v2 0/7] stmmac: add XDP ZC support
+Date:   Tue, 13 Apr 2021 17:36:19 +0800
+Message-Id: <20210413093626.3447-1-boon.leong.ong@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8a86679-363e-4a0f-9323-08d8fe5f639d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2021 09:34:51.8100
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dT9yclBmeq9yMmBIwrj1OwrYAFDgGHseDMcsnQTQJ7GRgUX4DBvXZAb0ziN3RpNMyI62oZBxqa5lg8uubYWE8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1801MB1917
-X-Proofpoint-GUID: FlrGLBqkVcfY7gzydu5MmXHxbgfv-dfg
-X-Proofpoint-ORIG-GUID: FlrGLBqkVcfY7gzydu5MmXHxbgfv-dfg
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-13_04:2021-04-13,2021-04-13 signatures=0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Sent: Tuesday, April 13, 2021 12:18 PM
-> To: Stefan Chulski <stefanc@marvell.com>
-> Cc: netdev@vger.kernel.org; thomas.petazzoni@bootlin.com;
-> davem@davemloft.net; Nadav Haklai <nadavh@marvell.com>; Yan
-> Markman <ymarkman@marvell.com>; linux-kernel@vger.kernel.org;
-> kuba@kernel.org; mw@semihalf.com; andrew@lunn.ch;
-> atenart@kernel.org; Liron Himi <lironh@marvell.com>; Dana Vardi
-> <danat@marvell.com>
-> Subject: [EXT] Re: [PATCH net-next] net: mvpp2: Add parsing support for
-> different IPv4 IHL values
->=20
-> External Email
->=20
-> ----------------------------------------------------------------------
-> On Tue, Apr 13, 2021 at 11:45:31AM +0300, stefanc@marvell.com wrote:
-> > From: Stefan Chulski <stefanc@marvell.com>
-> >
-> > Add parser entries for different IPv4 IHL values.
-> > Each entry will set the L4 header offset according to the IPv4 IHL fiel=
-d.
-> > L3 header offset will set during the parsing of the IPv4 protocol.
->=20
-> What is the impact of this commit? Is something broken at the moment, if =
-so
-> what? Does this need to be backported to stable kernels?
->=20
-> These are key questions, of which the former two should be covered in
-> every commit message so that the reason for the change can be known.
-> It's no good just describing what is being changed in the commit without =
-also
-> describing why the change is being made.
->=20
-> Thanks.
+Hi,
 
-Due to missed parser support for IP header length > 20, RX IPv4 checksum of=
-fload fail.
+This is the v2 patch series to add XDP ZC support to stmmac driver.
 
-Regards.=20
+Summary of v2 patch change:-
+
+6/7: fix synchronize_rcu() is called stmmac_disable_all_queues() that is
+     used by ndo_setup_tc().
+
+ ########################################################################
+
+Continuous burst traffics are generated by pktgen script and in the midst
+of each packet processing operation by xdpsock the following tc-loop.sh
+script is looped continuously:-
+
+ #!/bin/bash
+ tc qdisc del dev eth0 parent root
+ tc qdisc add dev eth0 ingress
+ tc qdisc add dev eth0 root mqprio num_tc 4 map 0 1 2 3 0 0 0 0 0 0 0 0 0 0 0 0 queues 1@0 1@1 1@2 1@3 hw 0
+ tc filter add dev eth0 parent ffff: protocol 802.1Q flower vlan_prio 0 hw_tc 0
+ tc filter add dev eth0 parent ffff: protocol 802.1Q flower vlan_prio 1 hw_tc 1
+ tc filter add dev eth0 parent ffff: protocol 802.1Q flower vlan_prio 2 hw_tc 2
+ tc filter add dev eth0 parent ffff: protocol 802.1Q flower vlan_prio 3 hw_tc 3
+ tc qdisc list dev eth0
+ tc filter show dev eth0 ingress
+
+ On different ssh terminal
+ $ while true; do ./tc-loop.sh; sleep 1; done
+
+The v2 patch series have been tested using the xdpsock app:
+ $ ./xdpsock -i eth0 -l -z
+
+From xdpsock poller pps report and dmesg, we don't find any warning
+related to rcu and the only difference when the script is executed is
+the pps rate drops momentarily.
+
+ sock0@eth0:0 l2fwd xdp-drv
+                   pps            pkts           1.00
+rx                 436347         191361334
+tx                 436411         191361334
+
+ sock0@eth0:0 l2fwd xdp-drv
+                   pps            pkts           1.00
+rx                 254117         191615476
+tx                 254053         191615412
+
+ sock0@eth0:0 l2fwd xdp-drv
+                   pps            pkts           1.00
+rx                 466395         192081924
+tx                 466395         192081860
+
+ sock0@eth0:0 l2fwd xdp-drv
+                   pps            pkts           1.00
+rx                 287410         192369365
+tx                 287474         192369365
+
+ sock0@eth0:0 l2fwd xdp-drv
+                   pps            pkts           1.00
+rx                 395853         192765329
+tx                 395789         192765265
+
+ sock0@eth0:0 l2fwd xdp-drv
+                   pps            pkts           1.00
+rx                 466132         193231514
+tx                 466132         193231450
+
+ ########################################################################
+
+Based on the above result, the fix looks promising. Appreciate that if
+community can help to review the patch series and provide me feedback
+for improvement.
+
+Thanks,
+Boon Leong
+
+ ------------------------------------------------------------------------
+ History of patch series as follow:-
+
+ v1: https://patchwork.kernel.org/project/netdevbpf/list/?series=465747&state=*
+
+ ------------------------------------------------------------------------
+
+Ong Boon Leong (7):
+  net: stmmac: rearrange RX buffer allocation and free functions
+  net: stmmac: introduce dma_recycle_rx_skbufs for
+    stmmac_reinit_rx_buffers
+  net: stmmac: refactor stmmac_init_rx_buffers for
+    stmmac_reinit_rx_buffers
+  net: stmmac: rearrange RX and TX desc init into per-queue basis
+  net: stmmac: Refactor __stmmac_xdp_run_prog for XDP ZC
+  net: stmmac: Enable RX via AF_XDP zero-copy
+  net: stmmac: Add TX via XDP zero-copy socket
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   24 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 1718 +++++++++++++----
+ .../net/ethernet/stmicro/stmmac/stmmac_xdp.c  |   95 +
+ .../net/ethernet/stmicro/stmmac/stmmac_xdp.h  |    3 +
+ 4 files changed, 1411 insertions(+), 429 deletions(-)
+
+-- 
+2.25.1
+
