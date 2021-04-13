@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1B935DF39
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 14:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3092F35DF3C
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 14:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344326AbhDMMpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 08:45:22 -0400
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:19116 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343703AbhDMMoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 08:44:20 -0400
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 387B35212F1;
-        Tue, 13 Apr 2021 15:43:57 +0300 (MSK)
+        id S1345643AbhDMMpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 08:45:24 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:57136 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344532AbhDMMok (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 08:44:40 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 6437A75F59;
+        Tue, 13 Apr 2021 15:44:18 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1618317837;
-        bh=SYZ20NkjdAJ6yvNXHCzpaAcE8wnGZHPDs5NSwqL+FYI=;
+        s=mail202102; t=1618317858;
+        bh=hS1VyDTANdxSRI309WCg4gsvCflOnzV8XuLScTrV4o0=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=mkz8maLYGsy4kCiCsUe1sErOW3kEVBG+rzv/qqFZxuU40s3Y3HjhsThu/9PUa1Ov4
-         XiwkUGJWkf0nsyboyDZD8Q4dbz1W9HSOKuE2KpOl8E7ccqDp5gIhWf7VqvixHFX5kP
-         qFszlvjfQJ0ZPkxqPgmJWu7AlQ3P9WeAG66dZLJ9le69amPMchbagJuO+Bh2jv0YlO
-         jBGvMSJvvr2nMCE0KL8G9m8p/WDsKTVPocXrVuanP/KO2c6heURzBAeenfjKGW4Wec
-         sDAlPviE/TUKw6I5ogIzSaLE5z7OZgQzBGNfLPy/ZlfUacB7SoMBf45Q4nZKqYiY55
-         5y6SEX3oqNYTw==
+        b=sLGsWGK8dPVizFtkiHqRnbe+cvHguaGEO58EvTIU3IxtXD8otSYTEVhOJ/ln1dwAY
+         xwW4Q5EjSIEWr7sgdzQFbBwvdtjg0W4pTqI2FaLzUyVlNMVMPXwVRes8pLzMTVFXFJ
+         ip+dC7M/oEaPZsqEK30QUUvHgRwXKIIP7k35b/QhyMO8eWgTG7w/LeH5aEiA3EbD3K
+         7mkqo2q9Ff/pXf0KwYtDWw6B4UlSJorzAblpzeZyF7gG2I8MkPVMvrcMy3nUSJNH1K
+         +EoQdPv9boKJn971RPyxVkCkZjjvYkQBQqP7js+63BVeYWJb5t9c5AL8oe8OYaJwfR
+         qOWOq2pkVjWmg==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id EC6BF52128E;
-        Tue, 13 Apr 2021 15:43:56 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 26AEF75F1E;
+        Tue, 13 Apr 2021 15:44:18 +0300 (MSK)
 Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 13
- Apr 2021 15:43:55 +0300
+ Apr 2021 15:44:17 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,17 +42,17 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Jorgen Hansen <jhansen@vmware.com>,
         Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
         Colin Ian King <colin.king@canonical.com>,
-        David Brazdil <dbrazdil@google.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Jeff Vander Stoep <jeffv@google.com>,
         Alexander Popov <alex.popov@linux.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <arseny.krasnov@kaspersky.com>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v8 08/19] virtio/vsock: set packet's type in virtio_transport_send_pkt_info()
-Date:   Tue, 13 Apr 2021 15:43:47 +0300
-Message-ID: <20210413124350.3402126-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v8 09/19] virtio/vsock: simplify credit update function API
+Date:   Tue, 13 Apr 2021 15:44:08 +0300
+Message-ID: <20210413124411.3402637-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210413123954.3396314-1-arseny.krasnov@kaspersky.com>
 References: <20210413123954.3396314-1-arseny.krasnov@kaspersky.com>
@@ -60,7 +60,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -101,108 +101,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This moves passing type of packet from 'info' structure to  'virtio_
-transport_send_pkt_info()' function. There is no need to set type of
-packet which differs from type of socket. Since at current time only
-stream type is supported, set it directly in 'virtio_transport_send_
-pkt_info()', so callers don't need to set it.
+This function is static and 'hdr' arg was always NULL.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
+ net/vmw_vsock/virtio_transport_common.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index e4370b1b7494..f69993d67f89 100644
+index f69993d67f89..833104b71a1c 100644
 --- a/net/vmw_vsock/virtio_transport_common.c
 +++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -179,6 +179,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	struct virtio_vsock_pkt *pkt;
- 	u32 pkt_len = info->pkt_len;
- 
-+	info->type = VIRTIO_VSOCK_TYPE_STREAM;
-+
- 	t_ops = virtio_transport_get_ops(vsk);
- 	if (unlikely(!t_ops))
- 		return -EFAULT;
-@@ -270,12 +272,10 @@ void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
+@@ -271,8 +271,7 @@ void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
+ }
  EXPORT_SYMBOL_GPL(virtio_transport_put_credit);
  
- static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
--					       int type,
- 					       struct virtio_vsock_hdr *hdr)
+-static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
+-					       struct virtio_vsock_hdr *hdr)
++static int virtio_transport_send_credit_update(struct vsock_sock *vsk)
  {
  	struct virtio_vsock_pkt_info info = {
  		.op = VIRTIO_VSOCK_OP_CREDIT_UPDATE,
--		.type = type,
- 		.vsk = vsk,
- 	};
- 
-@@ -383,11 +383,8 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 	 * messages, we set the limit to a high value. TODO: experiment
+@@ -384,7 +383,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
  	 * with different values.
  	 */
--	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) {
--		virtio_transport_send_credit_update(vsk,
--						    VIRTIO_VSOCK_TYPE_STREAM,
--						    NULL);
--	}
-+	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
-+		virtio_transport_send_credit_update(vsk, NULL);
+ 	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
+-		virtio_transport_send_credit_update(vsk, NULL);
++		virtio_transport_send_credit_update(vsk);
  
  	return total;
  
-@@ -496,8 +493,7 @@ void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
+@@ -493,7 +492,7 @@ void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
  
  	vvs->buf_alloc = *val;
  
--	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_STREAM,
--					    NULL);
-+	virtio_transport_send_credit_update(vsk, NULL);
+-	virtio_transport_send_credit_update(vsk, NULL);
++	virtio_transport_send_credit_update(vsk);
  }
  EXPORT_SYMBOL_GPL(virtio_transport_notify_buffer_size);
  
-@@ -624,7 +620,6 @@ int virtio_transport_connect(struct vsock_sock *vsk)
- {
- 	struct virtio_vsock_pkt_info info = {
- 		.op = VIRTIO_VSOCK_OP_REQUEST,
--		.type = VIRTIO_VSOCK_TYPE_STREAM,
- 		.vsk = vsk,
- 	};
- 
-@@ -636,7 +631,6 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
- {
- 	struct virtio_vsock_pkt_info info = {
- 		.op = VIRTIO_VSOCK_OP_SHUTDOWN,
--		.type = VIRTIO_VSOCK_TYPE_STREAM,
- 		.flags = (mode & RCV_SHUTDOWN ?
- 			  VIRTIO_VSOCK_SHUTDOWN_RCV : 0) |
- 			 (mode & SEND_SHUTDOWN ?
-@@ -665,7 +659,6 @@ virtio_transport_stream_enqueue(struct vsock_sock *vsk,
- {
- 	struct virtio_vsock_pkt_info info = {
- 		.op = VIRTIO_VSOCK_OP_RW,
--		.type = VIRTIO_VSOCK_TYPE_STREAM,
- 		.msg = msg,
- 		.pkt_len = len,
- 		.vsk = vsk,
-@@ -688,7 +681,6 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
- {
- 	struct virtio_vsock_pkt_info info = {
- 		.op = VIRTIO_VSOCK_OP_RST,
--		.type = VIRTIO_VSOCK_TYPE_STREAM,
- 		.reply = !!pkt,
- 		.vsk = vsk,
- 	};
-@@ -990,7 +982,6 @@ virtio_transport_send_response(struct vsock_sock *vsk,
- {
- 	struct virtio_vsock_pkt_info info = {
- 		.op = VIRTIO_VSOCK_OP_RESPONSE,
--		.type = VIRTIO_VSOCK_TYPE_STREAM,
- 		.remote_cid = le64_to_cpu(pkt->hdr.src_cid),
- 		.remote_port = le32_to_cpu(pkt->hdr.src_port),
- 		.reply = true,
 -- 
 2.25.1
 
