@@ -2,124 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A0C35D7DA
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 08:17:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F3B35D811
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 08:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243443AbhDMGRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 02:17:20 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:16535 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240002AbhDMGRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 02:17:19 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FKFg24LZtzNvMV;
-        Tue, 13 Apr 2021 14:14:06 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 13 Apr 2021 14:16:49 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, <linuxarm@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 2/2] net: hns3: VF not request link status when PF support push link status feature
-Date:   Tue, 13 Apr 2021 14:17:01 +0800
-Message-ID: <1618294621-41356-3-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1618294621-41356-1-git-send-email-tanhuazhong@huawei.com>
-References: <1618294621-41356-1-git-send-email-tanhuazhong@huawei.com>
+        id S240161AbhDMGaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 02:30:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48176 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230418AbhDMGaD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 02:30:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1FD1D6103D;
+        Tue, 13 Apr 2021 06:29:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618295384;
+        bh=sPxJl1FBKHo9wvJk+aIWpc4405aN7VFdL2pRj5QVE14=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rN6whHDsadLaWVJvPMV6+udmq/X6jqoxmR/vzyfXcnG6zNO343BmMJIP3EZZgq5Rl
+         sHXKP5N6ca24t6FCVkuMMoj2aNdTHuTf5y+AMz41V07Zti2B2YVeUGPFErW5HEuaNI
+         AOn3s+QaH/t2dOsTLT1v1UKY0/Sbr779NJh83V1nY+6C27d6EyXwdw94P6QuyB+R2O
+         jWPCnolyzrUsf1ykYtoY6bK2Fw+vpuWijUU4oZqahT7iIQfMkRY3VLp2vaV/2ir0fM
+         Vv1wKjKnJBsq5jK+Mwvvnfc7Sga7x56wGPyyEGrgvNWLKnd0/cXfdjXnCVOHT7/bgR
+         HO0r+RSbod0Ww==
+Date:   Tue, 13 Apr 2021 09:29:41 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     =?iso-8859-1?Q?H=E5kon?= Bugge <haakon.bugge@oracle.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>, netdev@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
+ use it in RDS
+Message-ID: <YHU6VXP6kZABXIYA@unreal>
+References: <1617216194-12890-1-git-send-email-haakon.bugge@oracle.com>
+ <20210412225847.GA1189461@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210412225847.GA1189461@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+On Mon, Apr 12, 2021 at 07:58:47PM -0300, Jason Gunthorpe wrote:
+> On Wed, Mar 31, 2021 at 08:43:12PM +0200, Håkon Bugge wrote:
+> > ib_modify_qp() is an expensive operation on some HCAs running
+> > virtualized. This series removes two ib_modify_qp() calls from RDS.
+> > 
+> > I am sending this as a v3, even though it is the first sent to
+> > net. This because the IB Core commit has reach v3.
+> > 
+> > Håkon Bugge (2):
+> >   IB/cma: Introduce rdma_set_min_rnr_timer()
+> >   rds: ib: Remove two ib_modify_qp() calls
+> 
+> Applied to rdma for-next, thanks
 
-To reduce the processing of unnecessary mailbox command when PF supports
-actively push its link status to VFs, VFs stop sending request link
-status command in periodic service task in this case.
+Jason,
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 8 +++++---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c  | 6 ++++++
- 3 files changed, 12 insertions(+), 3 deletions(-)
+It should be 
++	WARN_ON(id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_TGT);
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 07aa26b..07066c4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2340,10 +2340,11 @@ static void hclgevf_periodic_service_task(struct hclgevf_dev *hdev)
- 	if (!(hdev->serv_processed_cnt % HCLGEVF_STATS_TIMER_INTERVAL))
- 		hclgevf_tqps_update_stats(handle);
- 
--	/* request the link status from the PF. PF would be able to tell VF
--	 * about such updates in future so we might remove this later
-+	/* VF does not need to request link status when this bit is set, because
-+	 * PF will push its link status to VFs when link status changed.
- 	 */
--	hclgevf_request_link_info(hdev);
-+	if (!test_bit(HCLGEVF_STATE_PF_PUSH_LINK_STATUS, &hdev->state))
-+		hclgevf_request_link_info(hdev);
- 
- 	hclgevf_update_link_mode(hdev);
- 
-@@ -2657,6 +2658,7 @@ static int hclgevf_ae_start(struct hnae3_handle *handle)
- 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
- 
- 	clear_bit(HCLGEVF_STATE_DOWN, &hdev->state);
-+	clear_bit(HCLGEVF_STATE_PF_PUSH_LINK_STATUS, &hdev->state);
- 
- 	hclgevf_reset_tqp_stats(handle);
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-index ade6e7f..956095b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-@@ -152,6 +152,7 @@ enum hclgevf_states {
- 	HCLGEVF_STATE_LINK_UPDATING,
- 	HCLGEVF_STATE_PROMISC_CHANGED,
- 	HCLGEVF_STATE_RST_FAIL,
-+	HCLGEVF_STATE_PF_PUSH_LINK_STATUS,
- };
- 
- struct hclgevf_mac {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-index 5b2dcd9..9b17735 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-@@ -276,6 +276,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
- 	u8 duplex;
- 	u32 speed;
- 	u32 tail;
-+	u8 flag;
- 	u8 idx;
- 
- 	/* we can safely clear it now as we are at start of the async message
-@@ -300,11 +301,16 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
- 			link_status = msg_q[1];
- 			memcpy(&speed, &msg_q[2], sizeof(speed));
- 			duplex = (u8)msg_q[4];
-+			flag = (u8)msg_q[5];
- 
- 			/* update upper layer with new link link status */
- 			hclgevf_update_link_status(hdev, link_status);
- 			hclgevf_update_speed_duplex(hdev, speed, duplex);
- 
-+			if (flag & HCLGE_MBX_PUSH_LINK_STATUS_EN)
-+				set_bit(HCLGEVF_STATE_PF_PUSH_LINK_STATUS,
-+					&hdev->state);
-+
- 			break;
- 		case HCLGE_MBX_LINK_STAT_MODE:
- 			idx = (u8)msg_q[1];
--- 
-2.7.4
+and not
++	if (WARN_ON(id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_TGT))
++		return -EINVAL;
 
+Thanks
+
+> 
+> Jason
