@@ -2,249 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCFC235E065
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 15:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 043CB35E08A
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 15:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344835AbhDMNor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 09:44:47 -0400
-Received: from mail-eopbgr130058.outbound.protection.outlook.com ([40.107.13.58]:46739
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1344593AbhDMNoo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 09:44:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZAVtodzE6W2gR6QPdJJoQbF9gH9VJL+WaUAp/SxdjyKHSQEycklHFGEnkF+6Px3VQYpig7mUmK+NHHJ9zkwkkdUs2v1EUydj5qyMQUa/PqU9ZgUfFWD2JxdHcjkihLIwrUIUmGJMXFgyzYjROtn4VaFbsEXP5vhoIYQ7xt/KunAvTCcchYLBQFwDq3zOujUHhjvtSDndEauquBPpgrhTUz3qZ/2epDKwljxE2kHCmLuYTuNNFJabXsS/lEXaPw5Jpfyg12cAg45AhFDCjQaullP3hxtaBdW8HWl7+PYLLbNb8zj8cHxX9ESVMe4G2U+0dvvczIRQSQCj2S31JC6NaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K3No3HnCfBNbMKqDICGhmk9m6DY+g6oS19GsotISd1I=;
- b=KZrPRmCvc2Yp7slme+A3D4cXMaCuO5N6tB6/ANnfRQhVMS/E9Wk7HrC4D2pFGaGqoKK1aYmP6Eloc1lAHErL7R5jTAaqGuCT5P1WHnwfkXrNtTaACMP9tS2VYsG5CcNlNdQzcHkmxU4Ck7H+Ro/9Y+dhTBL8GdAhhhara4Hrv+MhZxtrhTj3+uf8fE5ONzySgZS7RHDCv4g2cO7FQN5RmufX62mUg0kd39rJtbLOKGD0KJ+9+jua+MSVZ96tDMk98T+GBSWb+Ws1Am4HRkJp7GI9+K5O1pxqpWI6g/HxHcFBgpNVblSc18GgJhL5kf5cBcrYpzxVSo6L1vuG6h8Epw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K3No3HnCfBNbMKqDICGhmk9m6DY+g6oS19GsotISd1I=;
- b=Vs1ZZPBOikiBwr0zxNkkalJcoDJ6CtTOY/uYeZoA6dFBULTl73OkvDTAdjC8onRbXHPDL9luW0LE3Ar7hnyPbPoaSnDZg/CpYNG7Q5+/nfOfzwL8gLx2w47mTFNZXXHiPCDeu9qCS7QwPnACp15TVqPNbs+scnKy0Eg6q9Kn+l4=
-Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=oss.nxp.com;
-Received: from VI1PR04MB5101.eurprd04.prod.outlook.com (2603:10a6:803:5f::31)
- by VI1PR0402MB3742.eurprd04.prod.outlook.com (2603:10a6:803:1f::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Tue, 13 Apr
- 2021 13:44:20 +0000
-Received: from VI1PR04MB5101.eurprd04.prod.outlook.com
- ([fe80::1d18:6e9:995c:1945]) by VI1PR04MB5101.eurprd04.prod.outlook.com
- ([fe80::1d18:6e9:995c:1945%6]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
- 13:44:20 +0000
-Message-ID: <427ccaf425fe68190e22fb23e2918bd300679323.camel@oss.nxp.com>
-Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
-From:   "Radu Nicolae Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 13 Apr 2021 16:44:15 +0300
-In-Reply-To: <20210412095012.GJ1463@shell.armlinux.org.uk>
-References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
-         <20210412095012.GJ1463@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [89.45.21.213]
-X-ClientProxiedBy: VI1PR07CA0241.eurprd07.prod.outlook.com
- (2603:10a6:802:58::44) To VI1PR04MB5101.eurprd04.prod.outlook.com
- (2603:10a6:803:5f::31)
+        id S239268AbhDMNrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 09:47:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51757 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346123AbhDMNrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 09:47:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618321609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ruitcOttvU8pMtnqETNMINtrcJvOv4W/NYv8bRKWdyw=;
+        b=QbFxI4cw8jnZHVePc9Nq/YiHwkJ6ym9jLOsKTPlKa3GNxXknncpdWluSKFYEwhS44Ca4wP
+        LPyU6bhuwNkpZBLzQm3AIMoviYAFcbFpn0SZCAuL46lHsQGUd6uOA8jpaghnzvjQOKjOto
+        aobUSMySuCiSIHABWce0NyBJMReSMTw=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-13-Ekkx3drpOO25L0E-ZBPWNw-1; Tue, 13 Apr 2021 09:46:46 -0400
+X-MC-Unique: Ekkx3drpOO25L0E-ZBPWNw-1
+Received: by mail-wr1-f70.google.com with SMTP id v3so782426wrr.22
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 06:46:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ruitcOttvU8pMtnqETNMINtrcJvOv4W/NYv8bRKWdyw=;
+        b=Y1HrgKMTX9WjIPn0H6Y4ic4nvien2LPMDbKyEwCam5T12N7hUI+GC5RTdSmluLOr9L
+         EKrOEM4C1SrU3MecPYqmTiMvZObtJI2dwR9jJ30+LM9awOXutNx8811Es3phCp9bVsV5
+         1gjcFT/cRtxvSfVuYurS3Qw7kw7nKdtbF7REDEuu+B+5Cv/+Ed6+vHXcGp0rgy7kVbUs
+         uQZUDJPXDKnZOrhL7phTwFnbisGYfyGbvDot08IoQ8i4QHH8XpYKVrQHCr14Qp2lex5v
+         npmKD+CBuRLHPRj37UiC32lWLP0max2k50XZzmG5Ye5WkkEWsGv3J1GA2VvEdmT4bs0U
+         KK2A==
+X-Gm-Message-State: AOAM533pKo1Q8G+WjFvcdAKg4I4KpFcvhidnNq8Sp1p1WclQyeoKT/Rh
+        IqqejDy2m1O6d+B/Av3Yk+2ZePT7J5dR+1ROfwfuLa2PvOB1f9Ckr5beq8Ts4pKp9PaWuU56GHs
+        /8ADLhKO8XFDW0Lsd
+X-Received: by 2002:adf:c587:: with SMTP id m7mr36496052wrg.369.1618321605398;
+        Tue, 13 Apr 2021 06:46:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxweykvbt/QwASFWtvZxLoKiOTh8XNV0MDGo+vClfJbzD4DLNEo7214/mwtOKq8JtZgcctFLw==
+X-Received: by 2002:adf:c587:: with SMTP id m7mr36496043wrg.369.1618321605232;
+        Tue, 13 Apr 2021 06:46:45 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
+        by smtp.gmail.com with ESMTPSA id q20sm2842983wmq.2.2021.04.13.06.46.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Apr 2021 06:46:44 -0700 (PDT)
+Date:   Tue, 13 Apr 2021 09:46:41 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: Linux 5.12-rc7
+Message-ID: <20210413094525-mutt-send-email-mst@kernel.org>
+References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
+ <20210412051445.GA47322@roeck-us.net>
+ <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
+ <CANn89iK2aUESa6DSG=Y4Y9tPmPW2weE05AVpxnDbqYwQjFM2Vw@mail.gmail.com>
+ <CANn89i+sYS_x8D5hASKNgmc-k3P7B9JGY9mU1aBwhqHuAkwnBQ@mail.gmail.com>
+ <20210413085538-mutt-send-email-mst@kernel.org>
+ <CANn89iJODpHFAAZt0X-EewnbwKgeLPYpb=0GPRqqZmU9=12R6g@mail.gmail.com>
+ <CANn89iKrSDL9usw18uvVfarWRUBv=V4xTHOMEgS48jhNmzR5_A@mail.gmail.com>
+ <20210413093606-mutt-send-email-mst@kernel.org>
+ <CANn89iKB3x2T=8j5qBVVtStdQBASD-P6B1+yLKwLh+Y+PggB0A@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.141] (89.45.21.213) by VI1PR07CA0241.eurprd07.prod.outlook.com (2603:10a6:802:58::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.6 via Frontend Transport; Tue, 13 Apr 2021 13:44:20 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e78c3820-f894-4393-867a-08d8fe823d88
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3742:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3742BE37012E7FF712BE1FB59F4F9@VI1PR0402MB3742.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0NKb42uj2j+CfVMIPe8JbGbsWihbwQhwDrelB2eWZDXhSTNneZT3e1hZZQ79XwKebAhXf/O/UFk8VjXAQOdb4bssK9y1Cv0yzET7HYrOIYkppglMUDz6ogT1lBuS0EsmIiTQWlu7uKTUjej/PTkR/br+/Wl1i2tjkM2fiuDYU9oln3KfG4BOSVaDTJXp9Rrjk4fEAUeBM6pfDZov8q0pGYTxX1LiZO46EgCW/vuIrvbt0LaNlNTZ51n5dYZlxzFj1hYhiYt48eSzzfjTIDoC0CNud2eAYKTIGvR+itctOqPwKd8GX6kBcdM7+VJVZM43No3DAYxc506FGLhbqb7QoKuHzsrb/E6TiEGqtdOhQdQBLIMqfT4Ku/Ui2b66HAQRxYU02yXweoXRZBF63N2Ub6pyaIwnIIWqJ5bxR7p/p50AOEVMz9pdRtZ4TOFy4s64FmGZJuYwBIIsNWMki56VPigr4L7SDpxNf16NzJAi2inEpB2Vy+GUBAUrE7FbJzjTSQdZGmz1C6ZzicKn6zgOmlLc0r8t16OHYVWirk8Em6gCr8JCMkFL2LdTLNEgexF+3S7Rn2Sw/7M31oXo4mHeSs9j8buIEtTdNTTy8LwOmY01RDYENL5nDuH68QvBF6ceAGe4VaeDPiARssk+zfAPUjUXsoO6vCRMxb47w1O/S0w/2PA7l7BBETsrA0O/lngs
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5101.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(4326008)(86362001)(16576012)(2906002)(66556008)(6916009)(956004)(26005)(6486002)(38100700002)(83380400001)(52116002)(6666004)(66476007)(2616005)(38350700002)(186003)(66946007)(498600001)(5660300002)(8676002)(16526019)(41350200001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QzAweEtSODJLNWIyNU1ZeTZYUVNIdWhlbXl2eWZ1UlpYT21JTDI1bEVpS1Ur?=
- =?utf-8?B?bkg3V1VKWGtOT1diTzFXVHhhZ3p1d1pTVGJPRzVncmRwczNYeDlIS0pDN3My?=
- =?utf-8?B?U3ZSUGVNZjI1RzYyNWZmL1hpYmF1VmhxY2wvWHlrT25JQm1GQlc0RFpoWEc2?=
- =?utf-8?B?aUREdjlCc1Z4OGtYRlVIemdnTnNrMU9TeisydFZOVXp1Wi9HbDJHQXkrN1Z3?=
- =?utf-8?B?a1RwRjl4SUhBcFpWMitOMDNJeFpUb21CM0RlaXhnYlVyTnN3OFRlZzRrbGx5?=
- =?utf-8?B?QXFWYkQ2MS8wRWlpc3BvMm5qSmJwR0dsSDhzQXYxQk96bnV1WThUWlJLK2lP?=
- =?utf-8?B?Tm1YUU9pcURxY242VExFSFlHYVc5cDBrZzI2WStaa2lmTi9OZG9QWEZXU2pE?=
- =?utf-8?B?aWFjbGxudHhiZnd6TGpUelNQZFl5NjZLM1lsVFBpTmE5SGdIaW0rNU9tWWpx?=
- =?utf-8?B?RXV1YURaZzYrVUN1b1Vzdm1wRWo0cDAvTkJZdytHUGhNbVZ5YVBoTG1CeExy?=
- =?utf-8?B?TGhBdEF0YVZ4RVF2alg4eWZCWVlma3J1a0huSHVhWVFRRzFHZm8va0M0M1hR?=
- =?utf-8?B?bCszT3FXcmlMS29hNlcyS3RzVUdFNEtCQllBRzg4amNreFJSamZHWWV6SVVl?=
- =?utf-8?B?ek5pSm0yZnVKNUZOa0VZMDIxNWMvbk5IMlZscXhmMUpQZGp2WlJub3J4eVVZ?=
- =?utf-8?B?Q0hwSGNHTEdwRUgxUmJxN1kvcmxNSU9GTXNBdjJlOWt4S0E1ZDBmRjk0aVV6?=
- =?utf-8?B?eE9LWmdxWUs2N1ErdVV0bnV2eHBmckQyc1h0WDh6RXlMSTJ6Z2hPYSsvMVBp?=
- =?utf-8?B?bzhNcnlyVFRRUDBrQmJpdE1CZUVTSzZHdWt5b3dlemJ4MnNlRmxiS3BmbzRX?=
- =?utf-8?B?K2pVbWVaclBMbkdhcnF6amhINW5Bc3ZwS0pSTWN6WFpjemh3bm50Q0YwS0FJ?=
- =?utf-8?B?UHJ1eG9nNkFTS2JCU1ppOUxDSzZIdEhuRjdRVloyQVEvMmJaU1puRWRBT1Ey?=
- =?utf-8?B?VDlZT2IwT25kcXBCcGZmSitPekQ5RWZrT0dMWjdyRVE0Q0UyU2ZxMjRsY0R5?=
- =?utf-8?B?Y1ZvV3k0THRuelQ2a09aeGJrai9FVVhzZ29kZ0hhYXBPaWNxUytCbkh4Rjdn?=
- =?utf-8?B?bmkxOHlCUW43MjNNc0c1WU1Zc1hPMXN0dEJleVJya2plZzdvUXF3WEVSbEQ1?=
- =?utf-8?B?VmVyNFdnK045V3RkREN1bjVtb28xMEJsY1FNY3VlZHMwYmNjdmRmckhZUjZu?=
- =?utf-8?B?cFQ1c245T1lSSUUrbzRFQlYwbDJPa25PQmNzMndYUVNmeFNsT1lBNFlNcWEy?=
- =?utf-8?B?eCtLTVpkVFhLUkFFUDNaNU43Y0c0UG1RREZ0d1FxRXh4NEY3b3I1R3VNSzVX?=
- =?utf-8?B?dk9CV2RMQjNDMnlvWC83ajhwZGt1K3liOWpXSGc0NmsycU52b0hhQ1c0ejhR?=
- =?utf-8?B?c2taY04xUG1Vdk05c1JWZDVRYUFKZ0dvcVo4bThGbWN2cFQ0clRwM0VpWm5V?=
- =?utf-8?B?NDBnRGk0cjF3ZkMwZzRXUXBEcEpjcVQ1ejlmMzBvNVhzWm1mTmVBVlBjNkR2?=
- =?utf-8?B?bHlPQ1BnS3FqUFRES3hTbW1lcGRpWGQ1cnc1dis3R0w4T3p0NEp4QlFXdUk2?=
- =?utf-8?B?MGg5OVlVTkc3UFFXVERNQk9OTjZIc2ZHRUZsdGVtdGdhM3ZiZXFEY1lpUEdz?=
- =?utf-8?B?bXcwTEZBc3pjemtLbCtNeFVoZExDT25zdC9MNEZCNmowOGxoM3pYdTJOdkFR?=
- =?utf-8?Q?sm0P8P8UCX4FMY+757UbuMnkIfBsgQRoqVSDUhR?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e78c3820-f894-4393-867a-08d8fe823d88
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5101.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2021 13:44:20.7674
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GsG309BhFA26Fr7th9dSuonnPz8Vm43H64K5A3Kk+mIMXV930rp0l9SFGf0sKhuWTOfmMGy26t62PINDPiD36xw1wd7oM7qZ/wu5vgA/4qk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3742
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKB3x2T=8j5qBVVtStdQBASD-P6B1+yLKwLh+Y+PggB0A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-04-12 at 10:50 +0100, Russell King - ARM Linux admin
-wrote:
-> On Fri, Apr 09, 2021 at 09:41:06PM +0300, Radu Pirea (NXP OSS) wrote:
-> > +#define B100T1_PMAPMD_CTL              0x0834
-> > +#define B100T1_PMAPMD_CONFIG_EN                BIT(15)
-> > +#define B100T1_PMAPMD_MASTER           BIT(14)
-> > +#define MASTER_MODE                    (B100T1_PMAPMD_CONFIG_EN |
-> > B100T1_PMAPMD_MASTER)
-> > +#define SLAVE_MODE                     (B100T1_PMAPMD_CONFIG_EN)
-> > +
-> > +#define DEVICE_CONTROL                 0x0040
-> > +#define DEVICE_CONTROL_RESET           BIT(15)
-> > +#define DEVICE_CONTROL_CONFIG_GLOBAL_EN        BIT(14)
-> > +#define DEVICE_CONTROL_CONFIG_ALL_EN   BIT(13)
-> > +#define RESET_POLL_NS                  (250 * NSEC_PER_MSEC)
-> > +
-> > +#define PHY_CONTROL                    0x8100
-> > +#define PHY_CONFIG_EN                  BIT(14)
-> > +#define PHY_START_OP                   BIT(0)
-> > +
-> > +#define PHY_CONFIG                     0x8108
-> > +#define PHY_CONFIG_AUTO                        BIT(0)
-> > +
-> > +#define SIGNAL_QUALITY                 0x8320
-> > +#define SQI_VALID                      BIT(14)
-> > +#define SQI_MASK                       GENMASK(2, 0)
-> > +#define MAX_SQI                                SQI_MASK
-> > +
-> > +#define CABLE_TEST                     0x8330
-> > +#define CABLE_TEST_ENABLE              BIT(15)
-> > +#define CABLE_TEST_START               BIT(14)
-> > +#define CABLE_TEST_VALID               BIT(13)
-> > +#define CABLE_TEST_OK                  0x00
-> > +#define CABLE_TEST_SHORTED             0x01
-> > +#define CABLE_TEST_OPEN                        0x02
-> > +#define CABLE_TEST_UNKNOWN             0x07
-> > +
-> > +#define PORT_CONTROL                   0x8040
-> > +#define PORT_CONTROL_EN                        BIT(14)
-> > +
-> > +#define PORT_INFRA_CONTROL             0xAC00
-> > +#define PORT_INFRA_CONTROL_EN          BIT(14)
-> > +
-> > +#define VND1_RXID                      0xAFCC
-> > +#define VND1_TXID                      0xAFCD
-> > +#define ID_ENABLE                      BIT(15)
-> > +
-> > +#define ABILITIES                      0xAFC4
-> > +#define RGMII_ID_ABILITY               BIT(15)
-> > +#define RGMII_ABILITY                  BIT(14)
-> > +#define RMII_ABILITY                   BIT(10)
-> > +#define REVMII_ABILITY                 BIT(9)
-> > +#define MII_ABILITY                    BIT(8)
-> > +#define SGMII_ABILITY                  BIT(0)
-> > +
-> > +#define MII_BASIC_CONFIG               0xAFC6
-> > +#define MII_BASIC_CONFIG_REV           BIT(8)
-> > +#define MII_BASIC_CONFIG_SGMII         0x9
-> > +#define MII_BASIC_CONFIG_RGMII         0x7
-> > +#define MII_BASIC_CONFIG_RMII          0x5
-> > +#define MII_BASIC_CONFIG_MII           0x4
-> > +
-> > +#define SYMBOL_ERROR_COUNTER           0x8350
-> > +#define LINK_DROP_COUNTER              0x8352
-> > +#define LINK_LOSSES_AND_FAILURES       0x8353
-> > +#define R_GOOD_FRAME_CNT               0xA950
-> > +#define R_BAD_FRAME_CNT                        0xA952
-> > +#define R_RXER_FRAME_CNT               0xA954
-> > +#define RX_PREAMBLE_COUNT              0xAFCE
-> > +#define TX_PREAMBLE_COUNT              0xAFCF
-> > +#define RX_IPG_LENGTH                  0xAFD0
-> > +#define TX_IPG_LENGTH                  0xAFD1
-> > +#define COUNTERS_EN                    BIT(15)
-> > +
-> > +#define CLK_25MHZ_PS_PERIOD            40000UL
-> > +#define PS_PER_DEGREE                  (CLK_25MHZ_PS_PERIOD / 360)
-> > +#define MIN_ID_PS                      8222U
-> > +#define MAX_ID_PS                      11300U
+On Tue, Apr 13, 2021 at 03:42:24PM +0200, Eric Dumazet wrote:
+> On Tue, Apr 13, 2021 at 3:38 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Tue, Apr 13, 2021 at 03:33:40PM +0200, Eric Dumazet wrote:
+> > > On Tue, Apr 13, 2021 at 3:27 PM Eric Dumazet <edumazet@google.com> wrote:
+> > > >
+> > > > On Tue, Apr 13, 2021 at 2:57 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > >
+> > > > > On Mon, Apr 12, 2021 at 06:47:07PM +0200, Eric Dumazet wrote:
+> > > > > > On Mon, Apr 12, 2021 at 6:31 PM Eric Dumazet <edumazet@google.com> wrote:
+> > > > > > >
+> > > > > > > On Mon, Apr 12, 2021 at 6:28 PM Linus Torvalds
+> > > > > > > <torvalds@linux-foundation.org> wrote:
+> > > > > > > >
+> > > > > > > > On Sun, Apr 11, 2021 at 10:14 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> > > > > > > > >
+> > > > > > > > > Qemu test results:
+> > > > > > > > >         total: 460 pass: 459 fail: 1
+> > > > > > > > > Failed tests:
+> > > > > > > > >         sh:rts7751r2dplus_defconfig:ata:net,virtio-net:rootfs
+> > > > > > > > >
+> > > > > > > > > The failure bisects to commit 0f6925b3e8da ("virtio_net: Do not pull payload in
+> > > > > > > > > skb->head"). It is a spurious problem - the test passes roughly every other
+> > > > > > > > > time. When the failure is seen, udhcpc fails to get an IP address and aborts
+> > > > > > > > > with SIGTERM. So far I have only seen this with the "sh" architecture.
+> > > > > > > >
+> > > > > > > > Hmm. Let's add in some more of the people involved in that commit, and
+> > > > > > > > also netdev.
+> > > > > > > >
+> > > > > > > > Nothing in there looks like it should have any interaction with
+> > > > > > > > architecture, so that "it happens on sh" sounds odd, but maybe it's
+> > > > > > > > some particular interaction with the qemu environment.
+> > > > > > >
+> > > > > > > Yes, maybe.
+> > > > > > >
+> > > > > > > I spent few hours on this, and suspect a buggy memcpy() implementation
+> > > > > > > on SH, but this was not conclusive.
+> > > > > > >
+> > > > > > > By pulling one extra byte, the problem goes away.
+> > > > > > >
+> > > > > > > Strange thing is that the udhcpc process does not go past sendto().
+> > > > > >
+> > > > > > This is the patch working around the issue. Unfortunately I was not
+> > > > > > able to root-cause it (I really suspect something on SH)
+> > > > > >
+> > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > > > index 0824e6999e49957f7aaf7c990f6259792d42f32b..fd890a951beea03bdf24406809042666eb972655
+> > > > > > 100644
+> > > > > > --- a/drivers/net/virtio_net.c
+> > > > > > +++ b/drivers/net/virtio_net.c
+> > > > > > @@ -408,11 +408,17 @@ static struct sk_buff *page_to_skb(struct
+> > > > > > virtnet_info *vi,
+> > > > > >
+> > > > > >         /* Copy all frame if it fits skb->head, otherwise
+> > > > > >          * we let virtio_net_hdr_to_skb() and GRO pull headers as needed.
+> > > > > > +        *
+> > > > > > +        * Apparently, pulling only the Ethernet Header triggers a bug
+> > > > > > on qemu-system-sh4.
+> > > > > > +        * Since GRO aggregation really cares of IPv4/IPv6, pull 20 bytes
+> > > > > > +        * more to work around this bug : These 20 bytes can not belong
+> > > > > > +        * to UDP/TCP payload.
+> > > > > > +        * As a bonus, this makes GRO slightly faster for IPv4 (one less copy).
+> > > > > >          */
+> > > > >
+> > > > > Question: do we still want to do this for performance reasons?
+> > > > > We also have the hdr_len coming from the device which is
+> > > > > just skb_headlen on the host.
+> > > >
+> > > > Well, putting 20 bytes in skb->head will disable frag0 optimization.
+> > > >
+> > > > The change would only benefit to sh architecture :)
+> > > >
+> > > > About hdr_len, I suppose we could try it, with appropriate safety checks.
+> > >
+> > > I have added traces, hdr_len seems to be 0 with the qemu-system-sh4 I am using.
+> > >
+> > > Have I understood you correctly ?
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 0824e6999e49957f7aaf7c990f6259792d42f32b..f024860f7dc260d4efbc35a3b8ffd358bd0da894
+> > > 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -399,9 +399,10 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+> > >                 hdr_padded_len = sizeof(struct padded_vnet_hdr);
+> > >
+> > >         /* hdr_valid means no XDP, so we can copy the vnet header */
+> > > -       if (hdr_valid)
+> > > +       if (hdr_valid) {
+> > >                 memcpy(hdr, p, hdr_len);
+> > > -
+> > > +               pr_err("hdr->hdr_len=%u\n", hdr->hdr.hdr_len);
+> > > +       }
+> > >         len -= hdr_len;
+> > >         offset += hdr_padded_len;
+> > >         p += hdr_padded_len;
+> >
+> >
+> > Depends on how you connect qemu on the host. It's filled by host tap,
+> > see virtio_net_hdr_from_skb. If you are using slirp that just zero-fills
+> > it.
 > 
-> Maybe include some prefix as to which MMD each of these registers is
-> located?
-I will add the MMD as prefix. Thank you.
+> Guenter provided :
 > 
-> > +static bool nxp_c45_can_sleep(struct phy_device *phydev)
-> > +{
-> > +       int reg;
-> > +
-> > +       reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_STAT1);
-> > +       if (reg < 0)
-> > +               return false;
-> > +
-> > +       return !!(reg & MDIO_STAT1_LPOWERABLE);
-> > +}
-> 
-> This looks like it could be useful as a generic helper function -
-> nothing in this function is specific to this PHY.
-> 
-> > +static int nxp_c45_resume(struct phy_device *phydev)
-> > +{
-> > +       int reg;
-> > +
-> > +       if (!nxp_c45_can_sleep(phydev))
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
-> > +       reg &= ~MDIO_CTRL1_LPOWER;
-> > +       phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1, reg);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int nxp_c45_suspend(struct phy_device *phydev)
-> > +{
-> > +       int reg;
-> > +
-> > +       if (!nxp_c45_can_sleep(phydev))
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
-> > +       reg |= MDIO_CTRL1_LPOWER;
-> > +       phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1, reg);
-> > +
-> > +       return 0;
-> > +}
-> 
-> These too look like potential generic helper functions.
-That's true.
-Should I implement them as genphy_c45_pma_suspend/resume? Given that we
-can also have PCS suspend/resume too.
+> qemu-system-sh4 -M r2d -kernel ./arch/sh/boot/zImage -no-reboot \
+>         -snapshot \
+>         -drive file=rootfs.ext2,format=raw,if=ide \
+>         -device virtio-net,netdev=net0 -netdev user,id=net0 \
+>         -append "root=/dev/sda console=ttySC1,115200
+> earlycon=scif,mmio16,0xffe80000 noiotrap" \
+>         -serial null -serial stdio -nographic -monitor null
 
-However, in my case, PMA low power bit will enable low power for PCS as
-well.
+That's slirp, sure enough. It generates packets in userspace thus no
+skbs thus no skb_headlen.
+
+-- 
+MST
 
