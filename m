@@ -2,162 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A131C35DA9F
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C8435DAA4
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:07:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbhDMJE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:04:56 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3527 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244480AbhDMJEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:04:09 -0400
-Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FKKNP5ymYzRdpd;
-        Tue, 13 Apr 2021 17:01:41 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Tue, 13 Apr 2021 17:03:31 +0800
-Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Tue, 13 Apr
- 2021 17:03:30 +0800
-Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
- qdisc
-To:     Hillf Danton <hdanton@sina.com>
-CC:     Juergen Gross <jgross@suse.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Jiri Kosina <JKosina@suse.com>
-References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
- <20210409090909.1767-1-hdanton@sina.com>
- <20210412032111.1887-1-hdanton@sina.com>
- <20210412072856.2046-1-hdanton@sina.com>
- <20210413022129.2203-1-hdanton@sina.com>
- <20210413032620.2259-1-hdanton@sina.com>
- <20210413071241.2325-1-hdanton@sina.com>
- <20210413083352.2424-1-hdanton@sina.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <1cd37014-4b2a-b82c-0cfc-6beffb8d36de@huawei.com>
-Date:   Tue, 13 Apr 2021 17:03:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S229863AbhDMJHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:07:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44296 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229562AbhDMJHT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 05:07:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 32D9D60FEF;
+        Tue, 13 Apr 2021 09:06:56 +0000 (UTC)
+Date:   Tue, 13 Apr 2021 11:06:54 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Jonathon Reinhart <jonathon.reinhart@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] net: Make tcp_allowed_congestion_control readonly in
+ non-init netns
+Message-ID: <20210413090654.nwroe4bgwmiuyvsp@wittgenstein>
+References: <20210413070848.7261-1-jonathon.reinhart@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210413083352.2424-1-hdanton@sina.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme713-chm.china.huawei.com (10.1.199.109) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210413070848.7261-1-jonathon.reinhart@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/4/13 16:33, Hillf Danton wrote:
-> On Tue, 13 Apr 2021 15:57:29  Yunsheng Lin wrote:
->> On 2021/4/13 15:12, Hillf Danton wrote:
->>> On Tue, 13 Apr 2021 11:34:27 Yunsheng Lin wrote:
->>>> On 2021/4/13 11:26, Hillf Danton wrote:
->>>>> On Tue, 13 Apr 2021 10:56:42 Yunsheng Lin wrote:
->>>>>> On 2021/4/13 10:21, Hillf Danton wrote:
->>>>>>> On Mon, 12 Apr 2021 20:00:43  Yunsheng Lin wrote:
->>>>>>>>
->>>>>>>> Yes, the below patch seems to fix the data race described in
->>>>>>>> the commit log.
->>>>>>>> Then what is the difference between my patch and your patch below:)
->>>>>>>
->>>>>>> Hehe, this is one of the tough questions over a bounch of weeks.
->>>>>>>
->>>>>>> If a seqcount can detect the race between skb enqueue and dequeue then we
->>>>>>> cant see any excuse for not rolling back to the point without NOLOCK.
->>>>>>
->>>>>> I am not sure I understood what you meant above.
->>>>>>
->>>>>> As my understanding, the below patch is essentially the same as
->>>>>> your previous patch, the only difference I see is it uses qdisc->pad
->>>>>> instead of __QDISC_STATE_NEED_RESCHEDULE.
->>>>>>
->>>>>> So instead of proposing another patch, it would be better if you
->>>>>> comment on my patch, and make improvement upon that.
->>>>>>
->>>>> Happy to do that after you show how it helps revert NOLOCK.
->>>>
->>>> Actually I am not going to revert NOLOCK, but add optimization
->>>> to it if the patch fixes the packet stuck problem.
->>>>
->>> Fix is not optimization, right?
->>
->> For this patch, it is a fix.
->> In case you missed it, I do have a couple of idea to optimize the
->> lockless qdisc:
->>
->> 1. RFC patch to add lockless qdisc bypass optimization:
->>
->> https://patchwork.kernel.org/project/netdevbpf/patch/1616404156-11772-1-git-send-email-linyunsheng@huawei.com/
->>
->> 2. implement lockless enqueuing for lockless qdisc using the idea
->>   from Jason and Toke. And it has a noticable proformance increase with
->>   1-4 threads running using the below prototype based on ptr_ring.
->>
->> static inline int __ptr_ring_multi_produce(struct ptr_ring *r, void *ptr)
->> {
->>
->>        int producer, next_producer;
->>
->>
->>        do {
->>                producer = READ_ONCE(r->producer);
->>                if (unlikely(!r->size) || r->queue[producer])
->>                        return -ENOSPC;
->>                next_producer = producer + 1;
->>                if (unlikely(next_producer >= r->size))
->>                        next_producer = 0;
->>        } while(cmpxchg_relaxed(&r->producer, producer, next_producer) != producer);
->>
->>        /* Make sure the pointer we are storing points to a valid data. */
->>        /* Pairs with the dependency ordering in __ptr_ring_consume. */
->>        smp_wmb();
->>
->>        WRITE_ONCE(r->queue[producer], ptr);
->>        return 0;
->> }
->>
->> 3. Maybe it is possible to remove the netif_tx_lock for lockless qdisc
->>   too, because dev_hard_start_xmit is also in the protection of
->>   qdisc_run_begin()/qdisc_run_end()(if there is only one qdisc using
->>   a netdev queue, which is true for pfifo_fast, I believe).
->>
->> 4. Remove the qdisc->running seqcount operation for lockless qdisc, which
->>   is mainly used to do heuristic locking on q->busylock for locked qdisc.
->>
+On Tue, Apr 13, 2021 at 03:08:48AM -0400, Jonathon Reinhart wrote:
+> Currently, tcp_allowed_congestion_control is global and writable;
+> writing to it in any net namespace will leak into all other net
+> namespaces.
 > 
-> Sounds good. They can stand two months, cant they?
->>>
->>>> Is there any reason why you want to revert it?
->>>>
->>> I think you know Jiri's plan and it would be nice to wait a couple of
->>> months for it to complete.
->>
->> I am not sure I am aware of Jiri's plan.
->> Is there any link referring to the plan?
->>
-> https://lore.kernel.org/lkml/eaff25bc-9b64-037e-b9bc-c06fc4a5a9fb@huawei.com/
-
-I think there is some misunderstanding here.
-
-As my understanding, Jiri and Juergen are from the same team(using
-the suse.com mail server).
-what Jiri said about "I am still planning to have Yunsheng Lin's
-(CCing) fix [1] tested in the coming days." is that Juergen has
-done the test and provide a "Tested-by" tag.
-
-So if this patch fixes the packet stuck problem, Jiri is ok with
-NOLOCK qdisc too.
-
-Or do I misunderstand it again? Perhaps Jiri and Juergen can help to
-clarify this?
-
-
+> tcp_available_congestion_control and tcp_allowed_congestion_control are
+> the only sysctls in ipv4_net_table (the per-netns sysctl table) with a
+> NULL data pointer; their handlers (proc_tcp_available_congestion_control
+> and proc_allowed_congestion_control) have no other way of referencing a
+> struct net. Thus, they operate globally.
 > 
-> .
+> Because ipv4_net_table does not use designated initializers, there is no
+> easy way to fix up this one "bad" table entry. However, the data pointer
+> updating logic shouldn't be applied to NULL pointers anyway, so we
+> instead force these entries to be read-only.
 > 
+> These sysctls used to exist in ipv4_table (init-net only), but they were
+> moved to the per-net ipv4_net_table, presumably without realizing that
+> tcp_allowed_congestion_control was writable and thus introduced a leak.
+> 
+> Because the intent of that commit was only to know (i.e. read) "which
+> congestion algorithms are available or allowed", this read-only solution
+> should be sufficient.
+> 
+> The logic added in recent commit
+> 31c4d2f160eb: ("net: Ensure net namespace isolation of sysctls")
+> does not and cannot check for NULL data pointers, because
+> other table entries (e.g. /proc/sys/net/netfilter/nf_log/) have
+> .data=NULL but use other methods (.extra2) to access the struct net.
+> 
+> Fixes: 9cb8e048e5d9: ("net/ipv4/sysctl: show tcp_{allowed, available}_congestion_control in non-initial netns")
+> Signed-off-by: Jonathon Reinhart <jonathon.reinhart@gmail.com>
+> ---
 
+Thanks for catching this. I think this works fine as a fix.
+
+What I wonder is whether we have a need to make
+tcp_allowed_congestion_control per-netns proper. That would be a bit
+more work of course and we don't need to do it right now.
+
+(Fwiw, we should really have a document describing the sysctls which are
+namespaced and how.)
+
+>  net/ipv4/sysctl_net_ipv4.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index a09e466ce11d..a62934b9f15a 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -1383,9 +1383,19 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
+>  		if (!table)
+>  			goto err_alloc;
+>  
+> -		/* Update the variables to point into the current struct net */
+> -		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++)
+> -			table[i].data += (void *)net - (void *)&init_net;
+> +		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
+> +			if (table[i].data) {
+> +				/* Update the variables to point into
+> +				 * the current struct net
+> +				 */
+> +				table[i].data += (void *)net - (void *)&init_net;
+> +			} else {
+> +				/* Entries without data pointer are global;
+> +				 * Make them read-only in non-init_net ns
+> +				 */
+> +				table[i].mode &= ~0222;
+> +			}
+> +		}
+
+Just for future reference if we would need to distinguish between
+entries that do have data set and such that don't here we could also do
+the below. This works because the tcp_{available,allowed}_[..] do
+allocated into a local ctl_table variable anyway.
+
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index f55095d3ed16..a1c8f5fe7501 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -877,12 +877,14 @@ static struct ctl_table ipv4_net_table[] = {
+        },
+        {
+                .procname       = "tcp_available_congestion_control",
++               .data           = ERR_PTR(-EINVAL),
+                .maxlen         = TCP_CA_BUF_MAX,
+                .mode           = 0444,
+                .proc_handler   = proc_tcp_available_congestion_control,
+        },
+        {
+                .procname       = "tcp_allowed_congestion_control",
++               .data           = ERR_PTR(-EINVAL),
+                .maxlen         = TCP_CA_BUF_MAX,
+                .mode           = 0644,
+                .proc_handler   = proc_allowed_congestion_control,
+@@ -1379,8 +1381,18 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
+                        goto err_alloc;
+
+                /* Update the variables to point into the current struct net */
+-               for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++)
+-                       table[i].data += (void *)net - (void *)&init_net;
++               for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
++                       if (!IS_ERR(table[i].data)) {
++                               /* Update the variables to point into
++                                * the current struct net. */
++                               table[i].data += (void *)net - (void *)&init_net;
++                       } else {
++                               /* Entries without data pointer are global;
++                                * Make them read-only in non-init_net ns.
++                                */
++                               table[i].mode &= ~0222;
++                       }
++               }
+        }
