@@ -2,103 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD5235D66B
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 06:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78D3235D677
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 06:30:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbhDMEZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 00:25:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56513 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229644AbhDMEZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 00:25:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618287882;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q+1EoJgQHtcLO0TXGm3dZ+kuN9h3PKmHdMygVbCrH8A=;
-        b=OY+/F/P4gSgUXOid2o2aHegndvqBe/6q9M0cpJrV7vxUzpuHBEYI9XlZ4OuQQnaO0JcLHZ
-        GmIXy9u0Pg2SubZbjo5vXX8Jpg4J8HT7yQxELQXKG5O0TY/j/yA404R9OjYo2gDj7R3TKa
-        l6yoyDNLMbnDPYe6JpxFJfGIWSWQ32Q=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-M-W-NVbzMWiEI9o-q5FbUg-1; Tue, 13 Apr 2021 00:24:40 -0400
-X-MC-Unique: M-W-NVbzMWiEI9o-q5FbUg-1
-Received: by mail-wm1-f69.google.com with SMTP id o3-20020a1c75030000b029010f4e02a2f2so596843wmc.6
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 21:24:40 -0700 (PDT)
+        id S229744AbhDME2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 00:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229758AbhDME2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 00:28:54 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A26AC06175F
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 21:28:34 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id g17so17001610edm.6
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 21:28:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KgX9vitQLsw/fJL+KP8I/opZHLQIHCxWsZWMUb2jijc=;
+        b=eFRlFPRnxba6eXyWbDP4eUAP/8qETyj5QilhvrMDxqow9MKkPtjWWn5nKiuVjqrpkv
+         BoNi0dhY+1eyDZLRsWmnQz7FsRI0GLPTaSvD5S6Nalm0QjKZ8LzS3XB1m/pI8zmgJ1Pz
+         I2YA00fULsrV5BC6TbbvXbwwvZAcZ2gR+WuRjl4tJKWFuzSK2mUlQZBiqTi6CEbOIkFO
+         sLOJkUheEo2WXa/FBLisAtNwE6JGx44fFsT4NAQRGb0u9MSeVR59huKxKvvrLZ6XhkWl
+         32bc/LrM4GhJ56+2MsnmB1/WkQCVsGpNBxuH6ZFSqodIMwLj28XAKOOyka489ZugEhXC
+         9hng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=q+1EoJgQHtcLO0TXGm3dZ+kuN9h3PKmHdMygVbCrH8A=;
-        b=Xc9956e5Z/yv/c+Uyuv0At+zkF4SB3A1hgEAoODGQUC8kfdq9ij7L4zMggETDmAPtK
-         YX6F/ZAdpkzr2MZYrIJTSZKkMuLUnl0bWFiT0ZaZvn8vL8r+6Tqf/lMLp1voQbWLqDzP
-         9h1jGmzsLN6sp64tC7xL/I5c8IQ5z/Z8sTCpCmIZTEq8mcR5Ch1jmtbyYdJ9re7OIKVF
-         hDkmqnYOODEwNnfn8Ws5tWGJuWywlO05NqUSd6ZH25h4Xt2eWGNny99rZ7ITlhTzkv9Q
-         hUp8LNNmYEc6oBccvZlZaXec0YPimf3OH/aHuHgecvaitA49aBR9LmqrhTy64XqZ5VRg
-         /q8w==
-X-Gm-Message-State: AOAM5314lpzhhNhBD7sSz9p0vPKDELWKcE96fAqZxxWuWVuQ8Kg53G3m
-        vJAH5B8rlpBUdrpPLCyParRod5tjEGvojvacdRFdUaruNgXM3d/JObi1+Dg2zJ3w4LoSHh5hNel
-        BghjJbjYlqKiNTmFU
-X-Received: by 2002:a5d:69ca:: with SMTP id s10mr18463110wrw.78.1618287879418;
-        Mon, 12 Apr 2021 21:24:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyodPDoN8x3GL83Cr9txbEz4M9Dd9UXgw0xTbFSIzIOWIhtoOQiLU8g9CAcs7gvxZ10oODxSA==
-X-Received: by 2002:a5d:69ca:: with SMTP id s10mr18463104wrw.78.1618287879282;
-        Mon, 12 Apr 2021 21:24:39 -0700 (PDT)
-Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
-        by smtp.gmail.com with ESMTPSA id b16sm1161845wmb.39.2021.04.12.21.24.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 21:24:38 -0700 (PDT)
-Date:   Tue, 13 Apr 2021 00:24:35 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     weiwan@google.com, netdev@vger.kernel.org, kuba@kernel.org,
-        willemb@google.com, virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-Message-ID: <20210413002340-mutt-send-email-mst@kernel.org>
-References: <20210129002136.70865-1-weiwan@google.com>
- <20210412180353-mutt-send-email-mst@kernel.org>
- <20210412183141-mutt-send-email-mst@kernel.org>
- <20210412.161458.652699519749470159.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KgX9vitQLsw/fJL+KP8I/opZHLQIHCxWsZWMUb2jijc=;
+        b=RlfvmIjWYY253K+nN+kOkKfBxH6ryObUS/Og4gRwg9LH6DGntrDJ+TDeBgE1jh54Dj
+         XRwzVedpDabr7/W1XDrS7RV9xhp7d4of9h4R2AejnvY0F9pwdtLDNMPvPuvwk5AjTuP3
+         Bnwh08lZUO92U7QHFESFh6jHiBx8cvVAGgKWfZyf3wtQm3fF4xkkaOiHlLPRwJ7vDh3T
+         X0NBPb1A8YhKr6GoTP/FnlyWiHdvleo4cEOFV48dIVzNMcGnAdym5krVZVtzjAFsf5TN
+         LNkhuvZaWxDwMlhJpxVmAA477S2XQL6qHdS0r5FXTSLddFpcPyhAXARdNzEPZBNK0mPb
+         7lfQ==
+X-Gm-Message-State: AOAM530Xfd40b0ZStSWvBHHHzUQPPzQpBgOQwRcf9ps5psAifs25RJr9
+        Y5qee0U1cmH9L55YWGoJBoZcvOIbSD+MKQybobJA
+X-Google-Smtp-Source: ABdhPJxFsbFTwB0q0pNAp17qZJqIqm6vYW6whW2nB86LPbKviA3Z1PMbmmSz/1gnXoDoaJMm9C847RmTUrmsQNZTmWo=
+X-Received: by 2002:a05:6402:6ca:: with SMTP id n10mr32891030edy.312.1618288112971;
+ Mon, 12 Apr 2021 21:28:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210412.161458.652699519749470159.davem@davemloft.net>
+References: <20210331080519.172-1-xieyongji@bytedance.com> <20210331080519.172-10-xieyongji@bytedance.com>
+ <c817178a-2ac8-bf93-1ed3-528579c657a3@redhat.com> <CACycT3v_KFQXoxRbEj8c0Ve6iKn9RbibtBDgBFs=rf0ZOmTBBQ@mail.gmail.com>
+ <091dde74-449b-385c-0ec9-11e4847c6c4c@redhat.com> <CACycT3vwATp4+Ao0fjuyeeLQN+xHH=dXF+JUyuitkn4k8hELnA@mail.gmail.com>
+ <dc9a90dd-4f86-988c-c1b5-ac606ce5e14b@redhat.com> <CACycT3vxO21Yt6+px2c2Q8DONNUNehdo2Vez_RKQCKe76CM2TA@mail.gmail.com>
+ <0f386dfe-45c9-5609-55f7-b8ab2a4abf5e@redhat.com> <CACycT3vbDhUKM0OX-zo02go09gh2+EEdyZ_YQuz8PXzo3EngXw@mail.gmail.com>
+ <a85c0a66-ad7f-a344-f8ed-363355f5e283@redhat.com>
+In-Reply-To: <a85c0a66-ad7f-a344-f8ed-363355f5e283@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 13 Apr 2021 12:28:21 +0800
+Message-ID: <CACycT3tHxtfgQhQgv0VyF_U523qASEv1Ydc4XuX43MFRzGVbfw@mail.gmail.com>
+Subject: Re: Re: [PATCH v6 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 04:14:58PM -0700, David Miller wrote:
-> From: "Michael S. Tsirkin" <mst@redhat.com>
-> Date: Mon, 12 Apr 2021 18:33:45 -0400
-> 
-> > On Mon, Apr 12, 2021 at 06:08:21PM -0400, Michael S. Tsirkin wrote:
-> >> OK I started looking at this again. My idea is simple.
-> >> A. disable callbacks before we try to drain skbs
-> >> B. actually do disable callbacks even with event idx
-> >> 
-> >> To make B not regress, we need to
-> >> C. detect the common case of disable after event triggering and skip the write then.
-> >> 
-> >> I added a new event_triggered flag for that.
-> >> Completely untested - but then I could not see the warnings either.
-> >> Would be very much interested to know whether this patch helps
-> >> resolve the sruprious interrupt problem at all ...
-> >> 
-> >> 
-> >> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > 
-> > Hmm a slightly cleaner alternative is to clear the flag when enabling interrupts ...
-> > I wonder which cacheline it's best to use for this.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> 
-> Please make a fresh new submission if you want to use this approach, thanks.
+On Tue, Apr 13, 2021 at 11:35 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> =E5=9C=A8 2021/4/12 =E4=B8=8B=E5=8D=885:59, Yongji Xie =E5=86=99=E9=81=93=
+:
+> > On Mon, Apr 12, 2021 at 5:37 PM Jason Wang <jasowang@redhat.com> wrote:
+> >>
+> >> =E5=9C=A8 2021/4/12 =E4=B8=8B=E5=8D=884:02, Yongji Xie =E5=86=99=E9=81=
+=93:
+> >>> On Mon, Apr 12, 2021 at 3:16 PM Jason Wang <jasowang@redhat.com> wrot=
+e:
+> >>>> =E5=9C=A8 2021/4/9 =E4=B8=8B=E5=8D=884:02, Yongji Xie =E5=86=99=E9=
+=81=93:
+> >>>>>>>>> +};
+> >>>>>>>>> +
+> >>>>>>>>> +struct vduse_dev_config_data {
+> >>>>>>>>> +     __u32 offset; /* offset from the beginning of config spac=
+e */
+> >>>>>>>>> +     __u32 len; /* the length to read/write */
+> >>>>>>>>> +     __u8 data[VDUSE_CONFIG_DATA_LEN]; /* data buffer used to =
+read/write */
+> >>>>>>>> Note that since VDUSE_CONFIG_DATA_LEN is part of uAPI it means w=
+e can
+> >>>>>>>> not change it in the future.
+> >>>>>>>>
+> >>>>>>>> So this might suffcient for future features or all type of virti=
+o devices.
+> >>>>>>>>
+> >>>>>>> Do you mean 256 is no enough here=EF=BC=9F
+> >>>>>> Yes.
+> >>>>>>
+> >>>>> But this request will be submitted multiple times if config lengh i=
+s
+> >>>>> larger than 256. So do you think whether we need to extent the size=
+ to
+> >>>>> 512 or larger?
+> >>>> So I think you'd better either:
+> >>>>
+> >>>> 1) document the limitation (256) in somewhere, (better both uapi and=
+ doc)
+> >>>>
+> >>> But the VDUSE_CONFIG_DATA_LEN doesn't mean the limitation of
+> >>> configuration space. It only means the maximum size of one data
+> >>> transfer for configuration space. Do you mean document this?
+> >>
+> >> Yes, and another thing is that since you're using
+> >> data[VDUSE_CONFIG_DATA_LEN] in the uapi, it implies the length is alwa=
+ys
+> >> 256 which seems not good and not what the code is wrote.
+> >>
+> > How about renaming VDUSE_CONFIG_DATA_LEN to VDUSE_MAX_TRANSFER_LEN?
+> >
+> > Thanks,
+> > Yongji
+>
+>
+> So a question is the reason to have a limitation of this in the uAPI?
+> Note that in vhost-vdpa we don't have such:
+>
+> struct vhost_vdpa_config {
+>          __u32 off;
+>          __u32 len;
+>          __u8 buf[0];
+> };
+>
 
-Absolutely. This is untested so I just sent this idea out for early feedback
-and hopefully help with testing on real hardware.
-Sorry about being unclear.
+If so, we need to call read()/write() multiple times each time
+receiving/sending one request or response in userspace and kernel. For
+example,
 
--- 
-MST
+1. read and check request/response type
+2. read and check config length if type is VDUSE_SET_CONFIG or VDUSE_GET_CO=
+NFIG
+3. read the payload
 
+Not sure if it's worth it.
+
+Thanks,
+Yongji
