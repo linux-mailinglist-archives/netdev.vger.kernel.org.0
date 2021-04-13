@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD02035DDE0
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 13:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2DEE35DDF3
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 13:43:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243816AbhDMLiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 07:38:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39432 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238148AbhDMLiC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 07:38:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DE12F61244;
-        Tue, 13 Apr 2021 11:37:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618313862;
-        bh=RGZNg9kftVpFHwueFM2mS//vQiDriFVB0rvxdE3Bj0M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CYsm5jHBjyHTSfNLz5owb3ZJx/uyb9g0CMlSlExbjZfOpEHTuqX9AfdRGSZB88/IE
-         xDZ06U049Fhp93e3O0tjFrSdfHDN29lME/DZML2V7OVgdR46CqQ7xdNsepCOuPexbc
-         ztk8pwLWq99C4cHjvkqMB+zJYkceDFFLC97f+2NB8UAn3wRddNSwtTs1FdHRUcrZiJ
-         rS3tmYH0XmFL5wCtumSNJxwhkdBxx7ZpYeF2RJKBgKTaYQYvwPIgOR/FF6vRYfmzck
-         lGFJMdYwkqFFqcS76tzby4Ov9VQIokDFF6cIzS2qNh3DMV5oeYZvSxqNyD0iJJua96
-         SsOtTKaXBH56g==
-Date:   Tue, 13 Apr 2021 14:37:38 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Haakon Bugge <haakon.bugge@oracle.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        Linux-Net <netdev@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
- use it in RDS
-Message-ID: <YHWCgmq4gOmAczq6@unreal>
-References: <1617216194-12890-1-git-send-email-haakon.bugge@oracle.com>
- <20210412225847.GA1189461@nvidia.com>
- <YHU6VXP6kZABXIYA@unreal>
- <F450613D-9A52-4D21-A2D5-E27FA4EBDBBE@oracle.com>
+        id S244553AbhDMLnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 07:43:21 -0400
+Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:41882 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238540AbhDMLnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 07:43:20 -0400
+Received: from tomoyo.flets-east.jp ([153.202.107.157])
+        by mwinf5d89 with ME
+        id sBio2400A3PnFJp03Biwal; Tue, 13 Apr 2021 13:43:00 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 13 Apr 2021 13:43:00 +0200
+X-ME-IP: 153.202.107.157
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH] can: etas_es58x: fix null pointer dereference when handling error frames
+Date:   Tue, 13 Apr 2021 20:42:42 +0900
+Message-Id: <20210413114242.2760-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <F450613D-9A52-4D21-A2D5-E27FA4EBDBBE@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 11:13:38AM +0000, Haakon Bugge wrote:
-> 
-> 
-> > On 13 Apr 2021, at 08:29, Leon Romanovsky <leon@kernel.org> wrote:
-> > 
-> > On Mon, Apr 12, 2021 at 07:58:47PM -0300, Jason Gunthorpe wrote:
-> >> On Wed, Mar 31, 2021 at 08:43:12PM +0200, Håkon Bugge wrote:
-> >>> ib_modify_qp() is an expensive operation on some HCAs running
-> >>> virtualized. This series removes two ib_modify_qp() calls from RDS.
-> >>> 
-> >>> I am sending this as a v3, even though it is the first sent to
-> >>> net. This because the IB Core commit has reach v3.
-> >>> 
-> >>> Håkon Bugge (2):
-> >>>  IB/cma: Introduce rdma_set_min_rnr_timer()
-> >>>  rds: ib: Remove two ib_modify_qp() calls
-> >> 
-> >> Applied to rdma for-next, thanks
-> > 
-> > Jason,
-> > 
-> > It should be 
-> > +	WARN_ON(id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_TGT);
-> 
-> With no return you will arm the setting of the timer and subsequently get an error from the modify_qp later.
+During the handling of CAN bus errors, a CAN error SKB is allocated
+using alloc_can_err_skb(). Even if the allocation of the SKB fails,
+the function continues in order to do the stats handling.
 
-The addition of WARN_ON() means that this is programmer error to get
-such input. Historically, in-kernel API doesn't need to have protection
-from other kernel developers.
+All access to the can_frame pointer (cf) should be guarded by an if
+statement:
+	if (cf)
 
-Thanks
+However, the increment of the rx_bytes stats:
+	netdev->stats.rx_bytes += cf->can_dlc;
+dereferences the cf pointer and was not guarded by an if condition
+leading to a NULL pointer dereference if the can_err_skb() function
+failed.
 
-> 
-> 
-> Håkon
-> 
-> > 
-> > and not
-> > +	if (WARN_ON(id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_TGT))
-> > +		return -EINVAL;
-> > 
-> > Thanks
-> > 
-> >> 
-> >> Jason
-> 
+Replacing the cf->can_dlc by the macro CAN_ERR_DLC (which is the
+length of any CAN error frames) solves this NULL pointer dereference.
+
+Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
+Reported-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+Hi Marc,
+
+I am really sorry, but I was just notified about this issue litteraly
+a few minutes after you send the pull request to net-next.
+
+I am not sure how to proceed. You might either cancel the pull request
+and squash this to 8537257874e9 ("can: etas_es58x: add core support
+for ETAS ES58X CAN USB interfaces") or send it as a separate patch.
+
+Please let me know if you need me to do anything.
+
+Yours sincerely,
+Vincent Mailhol
+---
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 7222b3b6ca46..57e5f94468e9 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -856,7 +856,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
+ 	 * consistency.
+ 	 */
+ 	netdev->stats.rx_packets++;
+-	netdev->stats.rx_bytes += cf->can_dlc;
++	netdev->stats.rx_bytes += CAN_ERR_DLC;
+ 
+ 	if (cf) {
+ 		if (cf->data[1])
+-- 
+2.26.3
+
