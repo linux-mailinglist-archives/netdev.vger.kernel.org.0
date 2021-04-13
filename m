@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8085B35E715
+	by mail.lfdr.de (Postfix) with ESMTP id CC73E35E716
 	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 21:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348062AbhDMTbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 15:31:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36034 "EHLO mail.kernel.org"
+        id S1348065AbhDMTbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 15:31:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345923AbhDMTaw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1345962AbhDMTaw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 13 Apr 2021 15:30:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 12148613D0;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B670613CE;
         Tue, 13 Apr 2021 19:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618342232;
-        bh=6ys1iXotX3jR+ial4+Pd66zwjd4yhmToN2dIGqC16+A=;
+        bh=dp728qMavUj8GhaemE8g8peaLJxCX9qoE/COyGJDofU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G1QEqv6p6I0OAkv5GBXdY9JWDGg2IHolTC6xuXAgLDAey5NN/5QYHWhRI9seyyPiA
-         TGLByLpOIi0gt+MV4TIIn8zJgF04HyHobH/Gw6q4kM0orP0VgGOSlgGQkFs2ZbMTEV
-         lYShvzBRcFtsCDuFyocj2xBjwEeGzWxg2IMsKcgQgA5QnXzhQNvnapdwYN+/Cg85Rq
-         qoWXBcsKWEr64qKaUWWl2YDMJKVhRVTGrgm87CIfsu6v6nHObmSM15+4q/5zrcXuBQ
-         NM6jlWSvn9w4JJ0n9Ki1CaxgOp0l+gSGR0NAfya2KcYZtSdqchwg/JBuNkOqROES9q
-         7lexcwegbZv7w==
+        b=cXbmpaE0gqo9LgdGI3SdR4U8OLwZOYoVs6U5nhr3/ffo41U2OzTpxM+lvn5xYiFJB
+         Dn7DyfGV/ZvGNziao3qSAeeIUTh6dITmbgzSdtu8iWBQakdnAvTodLNgpoL2lFdQxF
+         FkZeFBIPF7Bd8ieNM/8tqXfLfEr9mVzKfYTaXJQ6wBmGWEi+CsANl8Xo2cvValsatz
+         q3NkqUyk96vVPSzgxmg4Kfjq6mV+xSdd3+b01lLCM4XbyKfuePzo8hqdXiTh/uLs59
+         YmFwGp9zLoqY0Jm5fMeOR8f7dI7muqm4QOIsTcrhN48AFrcqnkQsIigSqg6TTvmvp6
+         KBkrNqm9/qBOA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 08/16] net/mlx5: SF, Use device pointer directly
-Date:   Tue, 13 Apr 2021 12:29:58 -0700
-Message-Id: <20210413193006.21650-9-saeed@kernel.org>
+Subject: [net-next 09/16] net/mlx5: SF, Reuse stored hardware function id
+Date:   Tue, 13 Apr 2021 12:29:59 -0700
+Message-Id: <20210413193006.21650-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210413193006.21650-1-saeed@kernel.org>
 References: <20210413193006.21650-1-saeed@kernel.org>
@@ -43,77 +43,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-At many places in the code, device pointer is directly available. Make
-use of it, instead of accessing it from the table.
+SF's hardware function id is already stored in mlx5_sf. Reuse it,
+instead of querying the hw table.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/sf/hw_table.c    | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-index c9bddde04047..ec53c11c8344 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
-@@ -67,8 +67,8 @@ int mlx5_sf_hw_table_sf_alloc(struct mlx5_core_dev *dev, u32 usr_sfnum)
- 		goto exist_err;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+index 60a6328a9ca0..52226d9b9a6d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+@@ -270,15 +270,14 @@ static int mlx5_sf_add(struct mlx5_core_dev *dev, struct mlx5_sf_table *table,
+ {
+ 	struct mlx5_eswitch *esw = dev->priv.eswitch;
+ 	struct mlx5_sf *sf;
+-	u16 hw_fn_id;
+ 	int err;
  
--	hw_fn_id = mlx5_sf_sw_to_hw_id(table->dev, sw_id);
--	err = mlx5_cmd_alloc_sf(table->dev, hw_fn_id);
-+	hw_fn_id = mlx5_sf_sw_to_hw_id(dev, sw_id);
-+	err = mlx5_cmd_alloc_sf(dev, hw_fn_id);
+ 	sf = mlx5_sf_alloc(table, new_attr->sfnum, extack);
+ 	if (IS_ERR(sf))
+ 		return PTR_ERR(sf);
+ 
+-	hw_fn_id = mlx5_sf_sw_to_hw_id(dev, sf->id);
+-	err = mlx5_esw_offloads_sf_vport_enable(esw, &sf->dl_port, hw_fn_id, new_attr->sfnum);
++	err = mlx5_esw_offloads_sf_vport_enable(esw, &sf->dl_port, sf->hw_fn_id,
++						new_attr->sfnum);
  	if (err)
- 		goto err;
- 
-@@ -80,7 +80,7 @@ int mlx5_sf_hw_table_sf_alloc(struct mlx5_core_dev *dev, u32 usr_sfnum)
- 	return sw_id;
- 
- vhca_err:
--	mlx5_cmd_dealloc_sf(table->dev, hw_fn_id);
-+	mlx5_cmd_dealloc_sf(dev, hw_fn_id);
- err:
- 	table->sfs[i].allocated = false;
- exist_err:
-@@ -93,8 +93,8 @@ static void _mlx5_sf_hw_id_free(struct mlx5_core_dev *dev, u16 id)
- 	struct mlx5_sf_hw_table *table = dev->priv.sf_hw_table;
- 	u16 hw_fn_id;
- 
--	hw_fn_id = mlx5_sf_sw_to_hw_id(table->dev, id);
--	mlx5_cmd_dealloc_sf(table->dev, hw_fn_id);
-+	hw_fn_id = mlx5_sf_sw_to_hw_id(dev, id);
-+	mlx5_cmd_dealloc_sf(dev, hw_fn_id);
- 	table->sfs[id].allocated = false;
- 	table->sfs[id].pending_delete = false;
- }
-@@ -123,7 +123,7 @@ void mlx5_sf_hw_table_sf_deferred_free(struct mlx5_core_dev *dev, u16 id)
- 		goto err;
- 	state = MLX5_GET(query_vhca_state_out, out, vhca_state_context.vhca_state);
- 	if (state == MLX5_VHCA_STATE_ALLOCATED) {
--		mlx5_cmd_dealloc_sf(table->dev, hw_fn_id);
-+		mlx5_cmd_dealloc_sf(dev, hw_fn_id);
- 		table->sfs[id].allocated = false;
- 	} else {
- 		table->sfs[id].pending_delete = true;
-@@ -216,7 +216,7 @@ int mlx5_sf_hw_table_create(struct mlx5_core_dev *dev)
- 		return 0;
- 
- 	table->vhca_nb.notifier_call = mlx5_sf_hw_vhca_event;
--	return mlx5_vhca_event_notifier_register(table->dev, &table->vhca_nb);
-+	return mlx5_vhca_event_notifier_register(dev, &table->vhca_nb);
- }
- 
- void mlx5_sf_hw_table_destroy(struct mlx5_core_dev *dev)
-@@ -226,7 +226,7 @@ void mlx5_sf_hw_table_destroy(struct mlx5_core_dev *dev)
- 	if (!table)
- 		return;
- 
--	mlx5_vhca_event_notifier_unregister(table->dev, &table->vhca_nb);
-+	mlx5_vhca_event_notifier_unregister(dev, &table->vhca_nb);
- 	/* Dealloc SFs whose firmware event has been missed. */
- 	mlx5_sf_hw_dealloc_all(table);
- }
+ 		goto esw_err;
+ 	*new_port_index = sf->port_index;
 -- 
 2.30.2
 
