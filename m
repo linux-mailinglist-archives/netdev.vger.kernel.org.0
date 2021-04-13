@@ -2,169 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09BED35E62A
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 20:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00FF835E600
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 20:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345825AbhDMSTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 14:19:41 -0400
-Received: from mx0b-00169c01.pphosted.com ([67.231.156.123]:22104 "EHLO
-        mx0b-00169c01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237951AbhDMSTk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 14:19:40 -0400
-X-Greylist: delayed 522 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Apr 2021 14:19:40 EDT
-Received: from pps.filterd (m0048188.ppops.net [127.0.0.1])
-        by mx0b-00169c01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13DI4rp9011330
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:10:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=paloaltonetworks.com; h=from : to :
- cc : subject : date : message-id : mime-version :
- content-transfer-encoding; s=PPS12012017;
- bh=wZH+66svz49eAS0BHBu3YKga7B8VsRYU0/MlZLKZ4fQ=;
- b=dxCDtxEKDEsHzluS2mIg8mEo//U8V5yYs5Be+vb8E+N+5cjgeAaGyjMim0k0vksiLHig
- le/Pfva8iI04IiBawTHCu0B6TWa3Wb5kHZcayBf/ne6EH6vWa0zSj9Ek10Q16F00EJmJ
- N2R88CiMKOj3FxkOpsvmmLb6MOGEF4/9DBwzb+uygVmOX3KkSim3zR/rdvnn1JhGec9J
- vvniJrLXqvOU30PyssbDYl6Zq7fdtGdOP4O8rQJUruPHu+UeVHlGRLGb66h3fJo3whPO
- OBdmE5/rPrvXNHWL1fBjhb6aW8V1oUuQ9p+kmt1WaAEu+emZulhbbzy9EfAM8Td2oGTe Zw== 
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        by mx0b-00169c01.pphosted.com with ESMTP id 37vgx6hny5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:10:38 -0700
-Received: by mail-wm1-f71.google.com with SMTP id o3-20020a1c75030000b029010f4e02a2f2so1460395wmc.6
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:10:38 -0700 (PDT)
+        id S245699AbhDMSLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 14:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232743AbhDMSLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 14:11:12 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DF0C06175F
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:10:52 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id 18so1947301qkl.3
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 11:10:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paloaltonetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wZH+66svz49eAS0BHBu3YKga7B8VsRYU0/MlZLKZ4fQ=;
-        b=Lxg493MpL13gKfM/jG0KSwRdzh7N9ydU1+xQ6OL6sD3P4GGX8GwNoIcjqsckpYqWnw
-         nlz5xeqnol6bRKAIanyOwot/NNkITIEu83bEvEp+K1sdz1/kZKEDQrKAedLBImXHJFoO
-         QHFImI5EBS94dg+Dejk1LD2jQkyUKwSGoztlFixJE3QA9nC73yJELJZ/Xo6hCWYu/Nr7
-         wJnwDzm1KGnDNitT+DY7LouFPCWI/0k2QL3YBEf/5ghMZY9vp/+qBXoS5C2YOB9RsXsd
-         ZoX4uP/72Cl2TwdcLF9F/nU9naD6Uhne/H/0QBXvxdCu9L8nq6CfslvKK9IQMad7FGUQ
-         q4Kg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FGbhF4j/4KvKvgmcMI4tSFrHp3z+B+kvQjIt7JNGVtM=;
+        b=DfO/jKlu63SfJMFWbKyUV0bbBZCRd1vz/+G/YmzhTTDH2TksvMdvLPRxbz3c5WeN41
+         R44AUBkiZ81oyS2Lj85bwtjNER3XalFky7kL9bC8JR/lyUE29zCFoaBxqknj1X7fInIM
+         SE1PDklgLxqM12WgbGtGcGK3AxZYkvZjHrb1FUUrrfQAVuDGJ+xRcHiy/P8RMOuCUJXT
+         M68JwzItCLD1ZOmOdHkv/LRa4MH+RrzZCxmaWyybHoDiWwcbbRPzWyJOSZTUlsUS3oZo
+         TYqW3UAhV6PcjrG+cIettEB2u7LoXChq3U0cCsRGXUsjHHLiZ7GEVHCZIB5VRPqLB3Sb
+         BKTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wZH+66svz49eAS0BHBu3YKga7B8VsRYU0/MlZLKZ4fQ=;
-        b=OlB8EscjI7S484m6wtgK5TTrLlAyOVe7zDQOznW9WQJpfeVL2DGIo3R+QI7Q1J5vBB
-         NMP1RT9qa85y3DdCjf/8GBSTKoS2RNqQ5P6m5ta4Nq1w4rCoLTtIAARShGOBI9eIm6K1
-         tdbffJL56ZWKAfqlOS2cQqWocCNR3DHsKoYo2jxrpHi8iXZIY51JFw7cEecTfVCBQhF9
-         7aUNRMvquRfJJhd+xZ1x+RYOmtVBLwC/hph1Iilrb1hWsXmUslFRjFNxhShD7oq6yKIC
-         sFX+B4ltezmV8lbc0kwJOXOfIcKaKceincfIPXzWy0V8m6JeJ4WUMeDLW/HB3O/u4ewp
-         n+dg==
-X-Gm-Message-State: AOAM532PxwVeeICSSPdVPd0Rr5HHklDjKvazV0I8VZwh0QqF4fk1Xgtl
-        zZn8rxiWUTGAtkWhCeJAh7py2wLReiZYPT+J5lNPMUVdSmY+Q8Gc74sLoU1ltBvhn/kNlsOeYYR
-        hpOw8xJISr40f0w098K0s0lrbCwDe2bEYc7MnCaBZzQzYu5sLxO6HMnSXkZzjyKMjCdiDvGmW5C
-        8MuhzK
-X-Received: by 2002:a1c:a78b:: with SMTP id q133mr1286147wme.68.1618337435400;
-        Tue, 13 Apr 2021 11:10:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzZuqfuwYeWANy29RTRjtYSnrQmHCujmfwZs8cwpAlneCTG3DsWK2PmBqK2yJ6+pe9vY0BV5Q==
-X-Received: by 2002:a1c:a78b:: with SMTP id q133mr1286110wme.68.1618337435022;
-        Tue, 13 Apr 2021 11:10:35 -0700 (PDT)
-Received: from localhost.localdomain (bzq-79-181-151-86.red.bezeqint.net. [79.181.151.86])
-        by smtp.gmail.com with ESMTPSA id v3sm3065407wmj.25.2021.04.13.11.10.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Apr 2021 11:10:34 -0700 (PDT)
-From:   Or Cohen <orcohen@paloaltonetworks.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-sctp@vger.kernel.org, lucien.xin@gmail.com
-Cc:     nmarkus@paloaltonetworks.com,
-        Or Cohen <orcohen@paloaltonetworks.com>
-Subject: [PATCH v2] net/sctp: fix race condition in sctp_destroy_sock
-Date:   Tue, 13 Apr 2021 21:10:31 +0300
-Message-Id: <20210413181031.27557-1-orcohen@paloaltonetworks.com>
-X-Mailer: git-send-email 2.28.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FGbhF4j/4KvKvgmcMI4tSFrHp3z+B+kvQjIt7JNGVtM=;
+        b=E5iBJUwkN5LjmFRVAI83FTBaheKwKyTE8scDzg3Unu5mnR1xKhklQ36kxarXkUKglT
+         g+cnP1HwboWWRuGylIJsWNqgJhahHrqzLbP0LP1c3uN0yIma0qaoyzoL4rS3E0zTZyZU
+         KtxSgWDbonwB5+fULOOflKt4eAxQ49BFDRs4Svcbk0IDB5UIIGqMapCvC0MkoIN2HhB3
+         TK70BD8AXcfr3Y+7fCb1/E3EQrpNrQ18ThlFGztgC+HIJ7aP71svEv315Oma4pr7IxMb
+         m9yxhoLv+zj1IQYMyF30sf4x2/YT/4J7VPonba3qNnUws4UJikywxRVf+MqbAjhJz+VB
+         QSNQ==
+X-Gm-Message-State: AOAM531/G0xOswOnX54zDu6NZWotXUscY7XR4OdcNqSvfd9TdHmh/DUO
+        GbiGCRHexXLVpCq07x8sZaOspW7mswDR0izTjTyb+g==
+X-Google-Smtp-Source: ABdhPJwgMLCFIyBm4ZJyOejRwBNHEomxHGEGdG3AM3IECeJOe3e/Sq3AX/EF9w+bYLlFMQswhzAYa1DyDU2rtW1P9VI=
+X-Received: by 2002:ae9:e513:: with SMTP id w19mr35388617qkf.231.1618337451241;
+ Tue, 13 Apr 2021 11:10:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: 149E6B6qemrr2AhEPKxHP8z4DIxpfhMn
-X-Proofpoint-GUID: 149E6B6qemrr2AhEPKxHP8z4DIxpfhMn
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-13_12:2021-04-13,2021-04-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 mlxlogscore=468
- priorityscore=1501 clxscore=1015 phishscore=0 suspectscore=0
- malwarescore=0 mlxscore=0 spamscore=0 lowpriorityscore=0 impostorscore=0
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104130123
+References: <000000000000ce66e005bf3b9531@google.com>
+In-Reply-To: <000000000000ce66e005bf3b9531@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 13 Apr 2021 20:10:39 +0200
+Message-ID: <CACT4Y+asWh+a9snv-V=a=h1i9A-4hWW4fb4=1vnEKH7vgoh-Lw@mail.gmail.com>
+Subject: Re: [syzbot] WARNING: suspicious RCU usage in lock_sock_nested
+To:     syzbot <syzbot+80a4f8091f8d5ba51de9@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, dsahern@kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If sctp_destroy_sock is called without sock_net(sk)->sctp.addr_wq_lock
-held and sp->do_auto_asconf is true, then an element is removed
-from the auto_asconf_splist without any proper locking.
+On Mon, Apr 5, 2021 at 5:45 PM syzbot
+<syzbot+80a4f8091f8d5ba51de9@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    d19cc4bf Merge tag 'trace-v5.12-rc5' of git://git.kernel.o..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14898326d00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d1a3d65a48dbd1bc
+> dashboard link: https://syzkaller.appspot.com/bug?extid=80a4f8091f8d5ba51de9
+>
+> Unfortunately, I don't have any reproducer for this issue yet.
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+80a4f8091f8d5ba51de9@syzkaller.appspotmail.com
 
-This can happen in the following functions:
-1. In sctp_accept, if sctp_sock_migrate fails.
-2. In inet_create or inet6_create, if there is a bpf program
-   attached to BPF_CGROUP_INET_SOCK_CREATE which denies
-   creation of the sctp socket.
+#syz dup: WARNING: suspicious RCU usage in getname_flags
 
-The bug is fixed by acquiring addr_wq_lock in sctp_destroy_sock
-instead of sctp_close.
-
-This addresses CVE-2021-23133.
-
-Reported-by: Or Cohen <orcohen@paloaltonetworks.com>
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
-Fixes: 610236587600 ("bpf: Add new cgroup attach type to enable sock modifications")
-Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
----
-Changes in v2:
-	- Removed a comment in sctp_init_sock.
-	- Added a CVE number.
-
- net/sctp/socket.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index a710917c5ac7..b9b3d899a611 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -1520,11 +1520,9 @@ static void sctp_close(struct sock *sk, long timeout)
- 
- 	/* Supposedly, no process has access to the socket, but
- 	 * the net layers still may.
--	 * Also, sctp_destroy_sock() needs to be called with addr_wq_lock
--	 * held and that should be grabbed before socket lock.
- 	 */
--	spin_lock_bh(&net->sctp.addr_wq_lock);
--	bh_lock_sock_nested(sk);
-+	local_bh_disable();
-+	bh_lock_sock(sk);
- 
- 	/* Hold the sock, since sk_common_release() will put sock_put()
- 	 * and we have just a little more cleanup.
-@@ -1533,7 +1531,7 @@ static void sctp_close(struct sock *sk, long timeout)
- 	sk_common_release(sk);
- 
- 	bh_unlock_sock(sk);
--	spin_unlock_bh(&net->sctp.addr_wq_lock);
-+	local_bh_enable();
- 
- 	sock_put(sk);
- 
-@@ -4993,9 +4991,6 @@ static int sctp_init_sock(struct sock *sk)
- 	sk_sockets_allocated_inc(sk);
- 	sock_prot_inuse_add(net, sk->sk_prot, 1);
- 
--	/* Nothing can fail after this block, otherwise
--	 * sctp_destroy_sock() will be called without addr_wq_lock held
--	 */
- 	if (net->sctp.default_auto_asconf) {
- 		spin_lock(&sock_net(sk)->sctp.addr_wq_lock);
- 		list_add_tail(&sp->auto_asconf_list,
-@@ -5030,7 +5025,9 @@ static void sctp_destroy_sock(struct sock *sk)
- 
- 	if (sp->do_auto_asconf) {
- 		sp->do_auto_asconf = 0;
-+		spin_lock_bh(&sock_net(sk)->sctp.addr_wq_lock);
- 		list_del(&sp->auto_asconf_list);
-+		spin_unlock_bh(&sock_net(sk)->sctp.addr_wq_lock);
- 	}
- 	sctp_endpoint_free(sp->ep);
- 	local_bh_disable();
--- 
-2.7.4
-
+> =============================
+> WARNING: suspicious RCU usage
+> 5.12.0-rc5-syzkaller #0 Not tainted
+> -----------------------------
+> kernel/sched/core.c:8294 Illegal context switch in RCU-bh read-side critical section!
+>
+> other info that might help us debug this:
+>
+>
+> rcu_scheduler_active = 2, debug_locks = 0
+> no locks held by syz-executor.3/8407.
+>
+> stack backtrace:
+> CPU: 0 PID: 8407 Comm: syz-executor.3 Not tainted 5.12.0-rc5-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:79 [inline]
+>  dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+>  ___might_sleep+0x229/0x2c0 kernel/sched/core.c:8294
+>  lock_sock_nested+0x25/0x120 net/core/sock.c:3062
+>  lock_sock include/net/sock.h:1600 [inline]
+>  do_ip_getsockopt+0x227/0x18e0 net/ipv4/ip_sockglue.c:1536
+>  ip_getsockopt+0x84/0x1c0 net/ipv4/ip_sockglue.c:1761
+>  tcp_getsockopt+0x86/0xd0 net/ipv4/tcp.c:4239
+>  __sys_getsockopt+0x21f/0x5f0 net/socket.c:2161
+>  __do_sys_getsockopt net/socket.c:2176 [inline]
+>  __se_sys_getsockopt net/socket.c:2173 [inline]
+>  __x64_sys_getsockopt+0xba/0x150 net/socket.c:2173
+>  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x467a6a
+> Code: 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 37 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffc76a6a848 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
+> RAX: ffffffffffffffda RBX: 00007ffc76a6a85c RCX: 0000000000467a6a
+> RDX: 0000000000000060 RSI: 0000000000000000 RDI: 0000000000000003
+> RBP: 0000000000000003 R08: 00007ffc76a6a85c R09: 00007ffc76a6a8c0
+> R10: 00007ffc76a6a860 R11: 0000000000000246 R12: 00007ffc76a6a860
+> R13: 000000000005ecdc R14: 0000000000000000 R15: 00007ffc76a6afd0
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000ce66e005bf3b9531%40google.com.
