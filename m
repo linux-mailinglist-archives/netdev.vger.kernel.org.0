@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9307C35E90D
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 00:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CA835E91F
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 00:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347401AbhDMWd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 18:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240383AbhDMWd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 18:33:28 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C25C061756
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 15:33:08 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id d3-20020a9d29030000b029027e8019067fso15692190otb.13
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 15:33:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=p1ePcMHRiUHLqxmNB1ISxMsad9RE0A3Rj2w0thaVuAM=;
-        b=sc3Iy3Io/zqAZ1NI1n2LzcYMRbU2Hma6K4SwDp4iga7kYT+vQraryaQQvCIjMiJhH6
-         /2Mr0xEIB3Og5qIFkgBaW9+KVTq+NpAGdu3qPIDma23CpGF64AjixfPfM7vn0nGrustq
-         mu/8Buy/oWwuGB+dHSiP+PCo6vACvJgwSbDg8GeWlHznDKnOm///BErcT//t4uhwjmeE
-         MNaA8j3EYnAH3J7C1OCLgni7yE22riSLdJzD64DRHYaitRi70c3mFImQnmwNzQIcc2WG
-         Vk3E0YMudZxsgINQXCx9rNRKFcP09rCtGCdkhaM0eIqATqH9W4DwuBNVx8MP4d8/PM1l
-         LW/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p1ePcMHRiUHLqxmNB1ISxMsad9RE0A3Rj2w0thaVuAM=;
-        b=pRwxeD3h7cmUPSV/XWGRfMfxDDUnkXaPNNC2q8c7ubQ1Mvt+Jo3JngdHATkv3siMGl
-         Uq8hvypf6sFIYzSd9TFiXt9WEY5dDe2wtbZZY3FOprs6ICm8TSzQBAaenSpzhbKA9M3P
-         swT/c9FFxubO+QXuLVFtCErNZrc1paoTgeetQHnZcwI9XdVijtR1aRcxAOZ7LLYBsZjD
-         72dTzZI76I2ywXea2iCqegdnab+d4xby9zSPkDdxqOxg5qur7ZSwBYXhvNqMguMKx17f
-         P2f1fRpsk+vm9uzqjU36oXKJulB90G1Tnr9TEzNeviOcOWVJQkFYoU5I3G5kuNsP35aD
-         jPQw==
-X-Gm-Message-State: AOAM531iZn+3B+mLH6Im59PQ+s7Q6JhmwpFxmnfKVNOy/zd6vs8ki3f1
-        Gae6jd41co/xCElO1rLBlGp2wp5ZX+28rUTLyIR96A==
-X-Google-Smtp-Source: ABdhPJyJi2RekjwUCi3f9BBegVtt9gF6yyk5dHlwVdmGKFv4Q3NOtFEaSkK8Ue82hymvSus3Wmj7/c1lCdBXCZTZHVE=
-X-Received: by 2002:a9d:5c0f:: with SMTP id o15mr29399427otk.279.1618353187987;
- Tue, 13 Apr 2021 15:33:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210406183112.1150657-1-jiang.wang@bytedance.com>
- <1D46A084-5B77-4803-8B5F-B2F36541DA10@vmware.com> <CAP_N_Z-KFUYZc7p1z_-9nb9CvjtyGFkgkX1PEbh-SgKbX_snQw@mail.gmail.com>
- <4FE66B72-E16B-474D-9A17-70B3BCCD5A19@vmware.com>
-In-Reply-To: <4FE66B72-E16B-474D-9A17-70B3BCCD5A19@vmware.com>
-From:   "Jiang Wang ." <jiang.wang@bytedance.com>
-Date:   Tue, 13 Apr 2021 15:32:57 -0700
-Message-ID: <CAP_N_Z8Jp4jbEZ5MjDO7Cj=WsPgB=rZ-ANcPW=4vfpsrDryBRw@mail.gmail.com>
-Subject: Re: [RFC] vsock: add multiple transports support for dgram
-To:     Jorgen Hansen <jhansen@vmware.com>
-Cc:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
-        "duanxiongchun@bytedance.com" <duanxiongchun@bytedance.com>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        id S1347524AbhDMWkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 18:40:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232745AbhDMWkq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 18:40:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 78881611CE;
+        Tue, 13 Apr 2021 22:40:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618353625;
+        bh=OlD0GdQ8fYEYnqnPf3/vEO9T3vKOZDIYrRn3R/+DkRs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=E+bj3mKJhrGwrA1ZQAeWPb0bo6nv6fd63b+2mNC0NCk10sp/Iqi3WW6/7jLU1ngme
+         dbt6jAHuoqHS6+Y8lNBUNgxwM4Oim8WkGzc4JmC+826w5+8BEYHgnVQNWSoviW01El
+         0vJctZGKo7Dnkw7U0X/P/+8OyExQULGZL6hj15wzvlzgZf4HeDS+R7TTEni7o9dRMR
+         FfynLj/tvjwBV0MGB1tI5vyrwgAMQt2Vzl2zvjlikI1NjSZ9IO6uHoFcesdnH1romc
+         mplMbKr9cKTHPpiU7WfmyAQ7UXqWX2ZeR7L6QLOMKWNXvkW8KE551woShTq2VKZez8
+         n23wJDrWzwCuQ==
+Message-ID: <8b3e437e15bfd7f063b41b17ea32311d084a92bc.camel@kernel.org>
+Subject: Re: [net-next 01/16] net/mlx5: E-Switch, let user to enable disable
+ metadata
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Vu Pham <vuhuong@nvidia.com>
+Date:   Tue, 13 Apr 2021 15:40:24 -0700
+In-Reply-To: <20210413132142.0e2d1752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210413193006.21650-1-saeed@kernel.org>
+         <20210413193006.21650-2-saeed@kernel.org>
+         <20210413132142.0e2d1752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 2:02 AM Jorgen Hansen <jhansen@vmware.com> wrote:
->
->
->
-> > On 7 Apr 2021, at 20:25, Jiang Wang . <jiang.wang@bytedance.com> wrote:
-> >
-> > On Wed, Apr 7, 2021 at 2:51 AM Jorgen Hansen <jhansen@vmware.com> wrote=
-:
-> >>
-> >>
-> >>> On 6 Apr 2021, at 20:31, Jiang Wang <jiang.wang@bytedance.com> wrote:
-> >>>
-> >>> From: "jiang.wang" <jiang.wang@bytedance.com>
-> >>>
-> >>> Currently, only VMCI supports dgram sockets. To supported
-> >>> nested VM use case, this patch removes transport_dgram and
-> >>> uses transport_g2h and transport_h2g for dgram too.
-> >>
-> >> Could you provide some background for introducing this change - are yo=
-u
-> >> looking at introducing datagrams for a different transport? VMCI datag=
-rams
-> >> already support the nested use case,
-> >
-> > Yes, I am trying to introduce datagram for virtio transport. I wrote a
-> > spec patch for
-> > virtio dgram support and also a code patch, but the code patch is still=
- WIP.
->
-> Oh ok. Cool. I must have missed the spec patch - could you provide a refe=
-rence to
-> it?
+On Tue, 2021-04-13 at 13:21 -0700, Jakub Kicinski wrote:
+> On Tue, 13 Apr 2021 12:29:51 -0700 Saeed Mahameed wrote:
+> > Currently each packet inserted in eswitch is tagged with a internal
+> > metadata to indicate source vport. Metadata tagging is not always
+> > needed. Metadata insertion is needed for multi-port RoCE, failover
+> > between representors and stacked devices. In many other cases,
+> > metadata enablement is not needed.
+> > 
+> > Metadata insertion slows down the packet processing rate.
+> 
+> Can you share example numbers?
 
-Sure. here is the link:
-https://lists.linuxfoundation.org/pipermail/virtualization/2021-April/05354=
-3.html
+I remember it was substantial, i don't know the exact numbers. it might
+depend on the use case: Parav, do you know ?
 
-> > When I wrote this commit message, I was thinking nested VM is the same =
-as
-> > multiple transport support. But now, I realize they are different.
-> > Nested VMs may use
-> > the same virtualization layer(KVM on KVM), or different virtualization =
-layers
-> > (KVM on ESXi). Thanks for letting me know that VMCI already supported n=
-ested
-> > use cases. I think you mean VMCI on VMCI, right?
->
-> Right, only VMCI on VMCI.
+> 
+> > Hence, allow user to disable metadata using driver specific devlink
+> > parameter.
+> > 
+> > Example to show and disable metadata before changing eswitch mode:
+> > $ devlink dev param show pci/0000:06:00.0 name esw_port_metadata
+> > pci/0000:06:00.0:
+> >   name esw_port_metadata type driver-specific
+> >     values:
+> >       cmode runtime value true
+> > 
+> > $ devlink dev param set pci/0000:06:00.0 \
+> >           name esw_port_metadata value false cmode runtime
+> > 
+> > $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+> 
+> Is this something that only gets enabled when device is put into
+> switchdev mode? That needs to be clarified in the documentation IMO 
+> to give peace of mind to all users who don't enable switchdev.
 
-Got it. thanks.
+Currently this is always enabled when switchdev is turned on, it
+affects the whole operation mode of the FDB and the offloaded flows so
+it can't be dynamic, it must be decided before user enables switchdev,
+it is needed only to allow LAG use cases, hence we add a disable knob
+for those who don't want LAG and could use some more packet rate.
 
-> I=E2=80=99ll respond to Stefano=E2=80=99s email for the rest of the discu=
-ssion.
->
-> Thanks,
-> Jorgen
+Some documentation was pushed as part of this patch:
+please let me know if it needs improvement. (maybe we should add the
+benefit of packet rate ?)
+
+
+ .../device_drivers/ethernet/mellanox/mlx5.rst | 23 +++++++
+
++esw_port_metadata: Eswitch port metadata state
++----------------------------------------------
++Eswitch port metadata state controls whether to internally tag packet
+with metadata or not.
++Metadata tagging must be enabled for multi-port RoCE, failover between
+representors and stacked devices.
++By default metadata is enabled on the supported devices. When metadata
+usage is not needed,
++user can disable metadata tagging before moving the eswitch to
+switchdev mode.
+
