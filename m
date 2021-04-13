@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9510C35DB7F
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0811135DB87
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231219AbhDMJnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbhDMJna (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:43:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B3CC061574
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 02:43:10 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lWFZa-0000ey-I8; Tue, 13 Apr 2021 11:43:06 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1lWFZZ-0002qD-8B; Tue, 13 Apr 2021 11:43:05 +0200
-Date:   Tue, 13 Apr 2021 11:43:05 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH v2 0/7] remove different PHY fixups
-Message-ID: <20210413094305.kvjgaiseppg5hrzh@pengutronix.de>
-References: <20210309112615.625-1-o.rempel@pengutronix.de>
- <CAOMZO5CYquzd4BBZBUM6ufWkPqfidctruWmaDROwHKVmi3NX2A@mail.gmail.com>
- <YGM2AGfawEFTKOtE@lunn.ch>
- <CAOMZO5CRFHh5vv3vQqaatDnq55ZMmO5DfJH1VtZ1n0DBgf5Whg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5CRFHh5vv3vQqaatDnq55ZMmO5DfJH1VtZ1n0DBgf5Whg@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 11:41:25 up 131 days, 23:47, 48 users,  load average: 0.14, 0.07,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S236908AbhDMJp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:45:56 -0400
+Received: from m12-18.163.com ([220.181.12.18]:47477 "EHLO m12-18.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230447AbhDMJpy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 05:45:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=3/bHXVzFNaRdXvSYPl
+        2V8FEalM5QD/aDw5WwKyuiQ/M=; b=EAHdK0F7Km1Qaq2eWpJ55P8VkDJsRGmPxJ
+        dDWJU4CGMMgapwqK6b8eaOSzwUSl6N+qtYtAwv7GvSRitPeVTGQ31bEIo06Hh7ww
+        p0x96asJO7WKGnfTZVsqmgxqUcsrIfrBthahpKnuaUCGBO6aqu4HC/l0TvdbYbvc
+        41bxpXPeA=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp14 (Coremail) with SMTP id EsCowADnbIEvaHVg8nqbdg--.36679S2;
+        Tue, 13 Apr 2021 17:45:21 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     davem@davemloft.net, alex.dewar90@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] nfc: st-nci: remove unnecessary label
+Date:   Tue, 13 Apr 2021 17:45:30 +0800
+Message-Id: <20210413094530.22076-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: EsCowADnbIEvaHVg8nqbdg--.36679S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtrWxKry3JrW7uFWUKr1DGFg_yoWftrg_ur
+        y5XryxXrW8Gr1Yy34DurnxZr95Kw4UWry8Ww1agasxKryDGw1DC3yq9rn3Jw1UWr18AFyq
+        93Z3C34Syr98ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5Ub15UUUUU==
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/xtbBLBFzsV++LMuPpQAAsT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-On Tue, Mar 30, 2021 at 12:04:50PM -0300, Fabio Estevam wrote:
-> Hi Andrew,
-> 
-> On Tue, Mar 30, 2021 at 11:30 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > Hi Fabio
-> >
-> > I think it should be merged, and we fixup anything which does break.
-> > We are probably at the point where more is broken by not merging it
-> > than merging it.
-> 
-> Thanks for your feedback. I agree.
-> 
-> Shawn wants to collect some Acked-by for this series.
-> 
-> Could you please give your Acked-by for this series?
+in st_nci_spi_write function, first assign a value to a variable then
+goto exit label. return statement just follow the label and exit label
+just used once, so we should directly return and remove exit label.
 
-Andrew, can you please add you ACK?
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/nfc/st-nci/spi.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-Shawn will it be enough or you need more ACKs?
-
-Regards,
-Oleksij
+diff --git a/drivers/nfc/st-nci/spi.c b/drivers/nfc/st-nci/spi.c
+index 8db323a..09df6ea 100644
+--- a/drivers/nfc/st-nci/spi.c
++++ b/drivers/nfc/st-nci/spi.c
+@@ -95,17 +95,14 @@ static int st_nci_spi_write(void *phy_id, struct sk_buff *skb)
+ 	 */
+ 	if (!r) {
+ 		skb_rx = alloc_skb(skb->len, GFP_KERNEL);
+-		if (!skb_rx) {
+-			r = -ENOMEM;
+-			goto exit;
+-		}
++		if (!skb_rx)
++			return -ENOMEM;
+ 
+ 		skb_put(skb_rx, skb->len);
+ 		memcpy(skb_rx->data, buf, skb->len);
+ 		ndlc_recv(phy->ndlc, skb_rx);
+ 	}
+ 
+-exit:
+ 	return r;
+ }
+ 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.9.1
+
+
