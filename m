@@ -2,199 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2584935E063
+	by mail.lfdr.de (Postfix) with ESMTP id BCFC235E065
 	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 15:44:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245641AbhDMNo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 09:44:29 -0400
-Received: from mail-eopbgr80078.outbound.protection.outlook.com ([40.107.8.78]:16769
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1344835AbhDMNor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 09:44:47 -0400
+Received: from mail-eopbgr130058.outbound.protection.outlook.com ([40.107.13.58]:46739
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230293AbhDMNo1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 09:44:27 -0400
+        id S1344593AbhDMNoo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 09:44:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PWk041nhpWYvyBz4wmonu6A//uP2b8upop+LwwWoG5o8t0RGbQuOoJUUdzYDlRQn/aR3z7E7Z/BnqeY4vWcMijUuZqv09t+Ie3ONLz5Rb4nWD/z8mjLvHZtjB20LLMEF8740J3+exIM+gNEq+FPb/tOElB2nbIMqUU4dVGu1rd71XAKqbHIZpsoHrIyADkGwiHktOLBwOouHu3wN/u/li7fflvy8TPE6Ru1IRVnb0VwuU4GD7Qf9qMO6AF53SkPKJITiIgHEWBXc/sy0P2nzNRUeU85NaCNTxAshh/wJFXAhsHUOvXZyxC/qvcmmBZF6jwoKx/IipSNFOf8OubqnyA==
+ b=ZAVtodzE6W2gR6QPdJJoQbF9gH9VJL+WaUAp/SxdjyKHSQEycklHFGEnkF+6Px3VQYpig7mUmK+NHHJ9zkwkkdUs2v1EUydj5qyMQUa/PqU9ZgUfFWD2JxdHcjkihLIwrUIUmGJMXFgyzYjROtn4VaFbsEXP5vhoIYQ7xt/KunAvTCcchYLBQFwDq3zOujUHhjvtSDndEauquBPpgrhTUz3qZ/2epDKwljxE2kHCmLuYTuNNFJabXsS/lEXaPw5Jpfyg12cAg45AhFDCjQaullP3hxtaBdW8HWl7+PYLLbNb8zj8cHxX9ESVMe4G2U+0dvvczIRQSQCj2S31JC6NaQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bBVYt8q622fwvQD0oT3+aVUerSEAFy2AE/psRRKlnbE=;
- b=GWW4BXlsRJeAj4NU4wTU3nmRyCLmFD8cQ/6Qtf5CZIq9yHouiBaa7Q4vw5KamxpesvKbt2DUgfUZ7ctG1DT8U7tCGtRmPy9CDwWlQhcxx9Jq3OYoPK67aCMpouNTNlnwVddvKrORV8/JPCW1qWiO2TJxUSIav/ST4UTAJZG08nsbx4tEeCJcIvNZ+ADXB3s8xnPgA+jOGWel3G0k76l+NKGmTRiyMZDUIlK8+JYdwHwuPeRR6Uc22iQAyAB1zdxKTrGcNTCe2rXW7Uleq76L/ox0OCXR8WIcPZ0P6Bn0wquNvPnPo4gp69VXXo/6nMpSHpu0pPK/gUSDVfqzZ+nukA==
+ bh=K3No3HnCfBNbMKqDICGhmk9m6DY+g6oS19GsotISd1I=;
+ b=KZrPRmCvc2Yp7slme+A3D4cXMaCuO5N6tB6/ANnfRQhVMS/E9Wk7HrC4D2pFGaGqoKK1aYmP6Eloc1lAHErL7R5jTAaqGuCT5P1WHnwfkXrNtTaACMP9tS2VYsG5CcNlNdQzcHkmxU4Ck7H+Ro/9Y+dhTBL8GdAhhhara4Hrv+MhZxtrhTj3+uf8fE5ONzySgZS7RHDCv4g2cO7FQN5RmufX62mUg0kd39rJtbLOKGD0KJ+9+jua+MSVZ96tDMk98T+GBSWb+Ws1Am4HRkJp7GI9+K5O1pxqpWI6g/HxHcFBgpNVblSc18GgJhL5kf5cBcrYpzxVSo6L1vuG6h8Epw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bBVYt8q622fwvQD0oT3+aVUerSEAFy2AE/psRRKlnbE=;
- b=Gu4EK4A9zacnxuruJNNEf6ANuJe6Gkz9ZollXoXYpF2qybuMpSQpNbPrQefLETn2l93wax3gb9txUAa08T9TRbF7I+4ioMBVLNUhJWAxBNU831s0bsELBq1MOv0hvLqhdiJgpGcxxnhl9C0+MpziqGk43X6O4FequoMFrXDY9YE=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
+ bh=K3No3HnCfBNbMKqDICGhmk9m6DY+g6oS19GsotISd1I=;
+ b=Vs1ZZPBOikiBwr0zxNkkalJcoDJ6CtTOY/uYeZoA6dFBULTl73OkvDTAdjC8onRbXHPDL9luW0LE3Ar7hnyPbPoaSnDZg/CpYNG7Q5+/nfOfzwL8gLx2w47mTFNZXXHiPCDeu9qCS7QwPnACp15TVqPNbs+scnKy0Eg6q9Kn+l4=
+Authentication-Results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
  header.from=oss.nxp.com;
-Received: from AM0PR04MB7041.eurprd04.prod.outlook.com (2603:10a6:208:19a::13)
- by AM0PR04MB5892.eurprd04.prod.outlook.com (2603:10a6:208:133::13) with
+Received: from VI1PR04MB5101.eurprd04.prod.outlook.com (2603:10a6:803:5f::31)
+ by VI1PR0402MB3742.eurprd04.prod.outlook.com (2603:10a6:803:1f::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.16; Tue, 13 Apr
- 2021 13:44:05 +0000
-Received: from AM0PR04MB7041.eurprd04.prod.outlook.com
- ([fe80::3419:69b2:b9a3:cb69]) by AM0PR04MB7041.eurprd04.prod.outlook.com
- ([fe80::3419:69b2:b9a3:cb69%9]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
- 13:44:05 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Tue, 13 Apr
+ 2021 13:44:20 +0000
+Received: from VI1PR04MB5101.eurprd04.prod.outlook.com
+ ([fe80::1d18:6e9:995c:1945]) by VI1PR04MB5101.eurprd04.prod.outlook.com
+ ([fe80::1d18:6e9:995c:1945%6]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
+ 13:44:20 +0000
+Message-ID: <427ccaf425fe68190e22fb23e2918bd300679323.camel@oss.nxp.com>
 Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Radu-nicolae Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   "Radu Nicolae Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 13 Apr 2021 16:44:15 +0300
+In-Reply-To: <20210412095012.GJ1463@shell.armlinux.org.uk>
 References: <20210409184106.264463-1-radu-nicolae.pirea@oss.nxp.com>
- <YHCsrVNcZmeTPJzW@lunn.ch>
- <64e44d26f45a4fcfc792073fe195e731e6f7e6d9.camel@oss.nxp.com>
- <YHRDtTKUI0Uck00n@lunn.ch>
- <111528aed55593de83a17dc8bd6d762c1c5a3171.camel@oss.nxp.com>
- <YHRX7x0Nm9Kb0Kai@lunn.ch>
- <82741edede173f50a5cae54e68cf51f6b8eb3fe3.camel@oss.nxp.com>
- <YHR6sXvW959zY22K@lunn.ch> <d44a2c82-124c-8628-6149-1363bb7d4869@oss.nxp.com>
- <YHWc/afcY3OXyhAo@lunn.ch>
-From:   Christian Herber <christian.herber@oss.nxp.com>
-Message-ID: <b4f05b61-34f5-e6bf-4373-fa907fc7da4d@oss.nxp.com>
-Date:   Tue, 13 Apr 2021 15:44:03 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
-In-Reply-To: <YHWc/afcY3OXyhAo@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [217.111.68.82]
-X-ClientProxiedBy: AM0P190CA0025.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:190::35) To AM0PR04MB7041.eurprd04.prod.outlook.com
- (2603:10a6:208:19a::13)
+         <20210412095012.GJ1463@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [89.45.21.213]
+X-ClientProxiedBy: VI1PR07CA0241.eurprd07.prod.outlook.com
+ (2603:10a6:802:58::44) To VI1PR04MB5101.eurprd04.prod.outlook.com
+ (2603:10a6:803:5f::31)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [165.114.161.25] (217.111.68.82) by AM0P190CA0025.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Tue, 13 Apr 2021 13:44:04 +0000
+Received: from [192.168.1.141] (89.45.21.213) by VI1PR07CA0241.eurprd07.prod.outlook.com (2603:10a6:802:58::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.6 via Frontend Transport; Tue, 13 Apr 2021 13:44:20 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c4df0562-0044-4822-64f1-08d8fe82342a
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5892:
+X-MS-Office365-Filtering-Correlation-Id: e78c3820-f894-4393-867a-08d8fe823d88
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3742:
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB589200DC0AA9BFA2C0940165C74F9@AM0PR04MB5892.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3742BE37012E7FF712BE1FB59F4F9@VI1PR0402MB3742.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qIS9IyYeDnFVCoWd6yrLdzIFoli36YJRVxdzGNg/b+PHpSKyclogqweMsTMbS4sbNVz184XJLvtQsLu9Z3HjxsOZLs07Ft+bLiGn+Bzkg/Dn7Uw0u5fpDIQp+23dagwC+lUhIkD6oJwQdqp6xoND2wF9kbX5+YbDZR+Kmb4AjHFc30epLYXYq3F/06RXLHSUuLrI3ALjJq9hvwNH2enqyHJue33yfVsOWchiNwspeC6f0/YRM18cdJZnzdNW8NjUrbK2EeH9G9DgpGh3em6FxWk5DmSpy1EvAXXS04CJO+W2qDTRXcnrq4ZhciGW67CF/clLwTxjt2w0hH5ArhG35KWNIp9E84HsAWw4jZMfHnAxxWpnU8KHbLOW12tAocBuR4RBLZbgEzCB15ysxFlf1ZlqjMYJ9Ok9anbC8lc6we6MnPIzbgNNDhb9kCa9RMnRa248i8agzyGwxoLV3jdgockpGP1OmZzOvm6CXRtRga5UltcKUdOC6nWuXX3VGWJTgF1qR9pFzdDHRuNEZomeOnqKTnNGhkc2OKaXCdf5vyzuG97IdDLPlSd1WoFjYlY5QeQvCbR7ys4uqawpqu7T/3KPYESz0Z2el65UTiCR5OyOZ8AI+MCFU9GwoM7nH6Jkk4dxitokvO4wCK95Ow6YQF+S5wqYe26wa2uTaQBzEkUpc1aZrU/cyt09lpCHMqSlbhLAYXU2BPdmD476JXutpHjxhMLgsP5d+b7B7uCdpSpqhNhXpwxnZEl0Lyx33U+2
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB7041.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(498600001)(6706004)(38350700002)(2616005)(38100700002)(8936002)(83380400001)(53546011)(66556008)(6916009)(31686004)(44832011)(16576012)(4326008)(54906003)(956004)(26005)(66946007)(186003)(52116002)(6486002)(5660300002)(55236004)(2906002)(31696002)(8676002)(16526019)(66476007)(78286007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QXNPeUVRaFBkakJHQjlTaEs0azVtSWxEeWFER3d4M1dCUU1nOU1iZk92UGd1?=
- =?utf-8?B?Uit2bm84T3ErTy9kQjdKZ1hLYlNpYnFwS0hWVnAyMjNjTEJUNUpRSDdsc09p?=
- =?utf-8?B?RXBmWUJqd1hnUzF0ZXlJOU1ISTJiVzBFdVREWTk4VjFFaVM4Rmc1bnBOT0tW?=
- =?utf-8?B?QW0xUjNkQnFxdWdqRlNNdXppanZycTVBcEx6NUNxVXdWRDYyekErYThEbWZU?=
- =?utf-8?B?bnJqK2k5UjdSQ0V5dVRDSzlmL3o0T01neEpVS1JnaEV4UWtScnB3cXlnWGd2?=
- =?utf-8?B?am1KL25PU1paeXN4UnRhZ0hWK0JTWXVwTFBOSDBKZTRkd1VKWVNsZFVnS2pX?=
- =?utf-8?B?RjlaWmxBNWJkRnAwc1pjaUZ2SERrVmNLOG01YU9YRjdCTUFYOWd4d1RYR1RN?=
- =?utf-8?B?bGJRSGZPSm5udklYZ3NaUXpXMzVzZ0tlaE5qNnprMStXT09uR21oR1Bha3dF?=
- =?utf-8?B?cHMxR1BySFA0Y0RhUVNaWjBibUowOFQ3aGtrZ2N5Znk5MlBNQ2JjdS9ZSlpG?=
- =?utf-8?B?UkZzOEs4WS9pODFvK05XU1JiY2tkdmhYdHhJS0pZRkYwMHhoYnVsUWx3SUJo?=
- =?utf-8?B?U2ZBY0NaVVE2eG16eXFTTDhXR0QxU1BzdFM3TWMvOFBzOFArMm1DNjBZRjA2?=
- =?utf-8?B?MkJPZnpJSWFGYkFGNHNnREs3bUNvTWZ0clNCT2ppWUxTTU1yUjlqNVNnQTFU?=
- =?utf-8?B?cEhubDdGdGd6TTBZYWJKRVh5MllzTUR6TmJPbEVsQ1djMDBvU3hoQ0cxNE9O?=
- =?utf-8?B?YlJUclhkUVlUNnoxaEJRamovd2dtcVBZR2FzcTN4Y1BVN2FFbXNqYllQSjZu?=
- =?utf-8?B?M1NWelRwWXNvaXZFWjRUV28vRnFJTXduanpVaXhvR0NrNjVlQW5memVGS3hZ?=
- =?utf-8?B?aDRFaFhHQmhyZy84Ym5xL0UyaEdOK0tQZGJxMTZDQWlGV2NlWHZPeUhldEFl?=
- =?utf-8?B?TFZWTG4rb2drdGFGc3ZjNG5nQnQ0RmJKY1pNWVpINkdtKzRTOEZ6OGhMRjBV?=
- =?utf-8?B?aXU3cWNXdkRtODdRRU9mL3U1TnBaRE1KMFJUdTg1Z2oxUXhNTi9Cd3pLdzNm?=
- =?utf-8?B?VUtLeEdWTHh2N0VrMGpPUDJQNjA2N0NVQ1pKK255S09yUi9QUlhPTkMvRGp4?=
- =?utf-8?B?aHFoajJxdVpDMHByM0F4TytPQ3hlT1oxT0FCVXlkb1NRejUrbkxhS0RIbHFy?=
- =?utf-8?B?NmlmRWx5a1Z3ZlpyNTg2dklhWVBCbWVOaUg5YjZWcWthTGhhWSsxZUx6am91?=
- =?utf-8?B?Zzljc1NuZ1l4ZEtQYVd3dVBORHkwZVlmZS9LdHRrTUVGSW8vdkVwcXpPZWtE?=
- =?utf-8?B?UHJMT0xpUzhEU0N5NzNFb1dhclRZU1hpZE5iUkFHUkZLZG1SNGNYV0dabTly?=
- =?utf-8?B?UG84SzBoQk1NV2lVdEc0ak9Ncy9XMTFRWnJkUjlsQlhobVRiUEV2RmJaZFJN?=
- =?utf-8?B?c0VuK0JXVWx6YkhvN3lrVDFKYWlvYVdBWWJHTnVjQUhhLzlWSTVJUFo4M20w?=
- =?utf-8?B?aGZ5RzI4SHEzUkR6QzFLTnMweGQ4K2NDdG8zUGVsQXkxclFKcjVlUlphL0c4?=
- =?utf-8?B?ejV3d05kcXNnZnMyUE9QRThZbGFMR3JibndndWNjdWxiNDJHU1h1QlRDVUlY?=
- =?utf-8?B?M1VKbWFGVm5OSG1tWkt4NzJBd1JXWklKWGg1cVU5K0F1NkZrTHlKRi85R3VU?=
- =?utf-8?B?YndXVURlZ0V3UUJnSFhpemM5UzNaOTJPdFhVL1RmQ1JWUzBxaXZDeklHYUl1?=
- =?utf-8?Q?m2czfxRcaEnjllLlPjvoLWvCI+0uvuuoeFE+1Xh?=
+X-Microsoft-Antispam-Message-Info: 0NKb42uj2j+CfVMIPe8JbGbsWihbwQhwDrelB2eWZDXhSTNneZT3e1hZZQ79XwKebAhXf/O/UFk8VjXAQOdb4bssK9y1Cv0yzET7HYrOIYkppglMUDz6ogT1lBuS0EsmIiTQWlu7uKTUjej/PTkR/br+/Wl1i2tjkM2fiuDYU9oln3KfG4BOSVaDTJXp9Rrjk4fEAUeBM6pfDZov8q0pGYTxX1LiZO46EgCW/vuIrvbt0LaNlNTZ51n5dYZlxzFj1hYhiYt48eSzzfjTIDoC0CNud2eAYKTIGvR+itctOqPwKd8GX6kBcdM7+VJVZM43No3DAYxc506FGLhbqb7QoKuHzsrb/E6TiEGqtdOhQdQBLIMqfT4Ku/Ui2b66HAQRxYU02yXweoXRZBF63N2Ub6pyaIwnIIWqJ5bxR7p/p50AOEVMz9pdRtZ4TOFy4s64FmGZJuYwBIIsNWMki56VPigr4L7SDpxNf16NzJAi2inEpB2Vy+GUBAUrE7FbJzjTSQdZGmz1C6ZzicKn6zgOmlLc0r8t16OHYVWirk8Em6gCr8JCMkFL2LdTLNEgexF+3S7Rn2Sw/7M31oXo4mHeSs9j8buIEtTdNTTy8LwOmY01RDYENL5nDuH68QvBF6ceAGe4VaeDPiARssk+zfAPUjUXsoO6vCRMxb47w1O/S0w/2PA7l7BBETsrA0O/lngs
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5101.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(4326008)(86362001)(16576012)(2906002)(66556008)(6916009)(956004)(26005)(6486002)(38100700002)(83380400001)(52116002)(6666004)(66476007)(2616005)(38350700002)(186003)(66946007)(498600001)(5660300002)(8676002)(16526019)(41350200001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?QzAweEtSODJLNWIyNU1ZeTZYUVNIdWhlbXl2eWZ1UlpYT21JTDI1bEVpS1Ur?=
+ =?utf-8?B?bkg3V1VKWGtOT1diTzFXVHhhZ3p1d1pTVGJPRzVncmRwczNYeDlIS0pDN3My?=
+ =?utf-8?B?U3ZSUGVNZjI1RzYyNWZmL1hpYmF1VmhxY2wvWHlrT25JQm1GQlc0RFpoWEc2?=
+ =?utf-8?B?aUREdjlCc1Z4OGtYRlVIemdnTnNrMU9TeisydFZOVXp1Wi9HbDJHQXkrN1Z3?=
+ =?utf-8?B?a1RwRjl4SUhBcFpWMitOMDNJeFpUb21CM0RlaXhnYlVyTnN3OFRlZzRrbGx5?=
+ =?utf-8?B?QXFWYkQ2MS8wRWlpc3BvMm5qSmJwR0dsSDhzQXYxQk96bnV1WThUWlJLK2lP?=
+ =?utf-8?B?Tm1YUU9pcURxY242VExFSFlHYVc5cDBrZzI2WStaa2lmTi9OZG9QWEZXU2pE?=
+ =?utf-8?B?aWFjbGxudHhiZnd6TGpUelNQZFl5NjZLM1lsVFBpTmE5SGdIaW0rNU9tWWpx?=
+ =?utf-8?B?RXV1YURaZzYrVUN1b1Vzdm1wRWo0cDAvTkJZdytHUGhNbVZ5YVBoTG1CeExy?=
+ =?utf-8?B?TGhBdEF0YVZ4RVF2alg4eWZCWVlma3J1a0huSHVhWVFRRzFHZm8va0M0M1hR?=
+ =?utf-8?B?bCszT3FXcmlMS29hNlcyS3RzVUdFNEtCQllBRzg4amNreFJSamZHWWV6SVVl?=
+ =?utf-8?B?ek5pSm0yZnVKNUZOa0VZMDIxNWMvbk5IMlZscXhmMUpQZGp2WlJub3J4eVVZ?=
+ =?utf-8?B?Q0hwSGNHTEdwRUgxUmJxN1kvcmxNSU9GTXNBdjJlOWt4S0E1ZDBmRjk0aVV6?=
+ =?utf-8?B?eE9LWmdxWUs2N1ErdVV0bnV2eHBmckQyc1h0WDh6RXlMSTJ6Z2hPYSsvMVBp?=
+ =?utf-8?B?bzhNcnlyVFRRUDBrQmJpdE1CZUVTSzZHdWt5b3dlemJ4MnNlRmxiS3BmbzRX?=
+ =?utf-8?B?K2pVbWVaclBMbkdhcnF6amhINW5Bc3ZwS0pSTWN6WFpjemh3bm50Q0YwS0FJ?=
+ =?utf-8?B?UHJ1eG9nNkFTS2JCU1ppOUxDSzZIdEhuRjdRVloyQVEvMmJaU1puRWRBT1Ey?=
+ =?utf-8?B?VDlZT2IwT25kcXBCcGZmSitPekQ5RWZrT0dMWjdyRVE0Q0UyU2ZxMjRsY0R5?=
+ =?utf-8?B?Y1ZvV3k0THRuelQ2a09aeGJrai9FVVhzZ29kZ0hhYXBPaWNxUytCbkh4Rjdn?=
+ =?utf-8?B?bmkxOHlCUW43MjNNc0c1WU1Zc1hPMXN0dEJleVJya2plZzdvUXF3WEVSbEQ1?=
+ =?utf-8?B?VmVyNFdnK045V3RkREN1bjVtb28xMEJsY1FNY3VlZHMwYmNjdmRmckhZUjZu?=
+ =?utf-8?B?cFQ1c245T1lSSUUrbzRFQlYwbDJPa25PQmNzMndYUVNmeFNsT1lBNFlNcWEy?=
+ =?utf-8?B?eCtLTVpkVFhLUkFFUDNaNU43Y0c0UG1RREZ0d1FxRXh4NEY3b3I1R3VNSzVX?=
+ =?utf-8?B?dk9CV2RMQjNDMnlvWC83ajhwZGt1K3liOWpXSGc0NmsycU52b0hhQ1c0ejhR?=
+ =?utf-8?B?c2taY04xUG1Vdk05c1JWZDVRYUFKZ0dvcVo4bThGbWN2cFQ0clRwM0VpWm5V?=
+ =?utf-8?B?NDBnRGk0cjF3ZkMwZzRXUXBEcEpjcVQ1ejlmMzBvNVhzWm1mTmVBVlBjNkR2?=
+ =?utf-8?B?bHlPQ1BnS3FqUFRES3hTbW1lcGRpWGQ1cnc1dis3R0w4T3p0NEp4QlFXdUk2?=
+ =?utf-8?B?MGg5OVlVTkc3UFFXVERNQk9OTjZIc2ZHRUZsdGVtdGdhM3ZiZXFEY1lpUEdz?=
+ =?utf-8?B?bXcwTEZBc3pjemtLbCtNeFVoZExDT25zdC9MNEZCNmowOGxoM3pYdTJOdkFR?=
+ =?utf-8?Q?sm0P8P8UCX4FMY+757UbuMnkIfBsgQRoqVSDUhR?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4df0562-0044-4822-64f1-08d8fe82342a
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB7041.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e78c3820-f894-4393-867a-08d8fe823d88
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5101.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2021 13:44:04.9662
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2021 13:44:20.7674
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WXXOPKom4knn0Wex9YcX7UN65UG1sZA912gpLxHvtAJKaOHyqAM0mEcqBPs95TVBVBr7A4gmOYq95Ni+N7ZGhU5ixBtlTN2dPlXdPRot5cI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5892
+X-MS-Exchange-CrossTenant-UserPrincipalName: GsG309BhFA26Fr7th9dSuonnPz8Vm43H64K5A3Kk+mIMXV930rp0l9SFGf0sKhuWTOfmMGy26t62PINDPiD36xw1wd7oM7qZ/wu5vgA/4qk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3742
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/13/2021 3:30 PM, Andrew Lunn wrote:
-> On Tue, Apr 13, 2021 at 08:56:30AM +0200, Christian Herber wrote:
->> Hi Andrew,
->>
->> On 4/12/2021 6:52 PM, Andrew Lunn wrote:
->>>
->>> So what you are say is, you don't care if the IP is completely
->>> different, it all goes in one driver. So lets put this driver into
->>> nxp-tja11xx.c. And then we avoid all the naming issues.
->>>
->>>        Andrew
->>>
->>
->> As this seems to be a key question, let me try and shed some more light on
->> this.
->> The original series of BASE-T1 PHYs includes TJA110, TJA1101, and TJA1102.
->> They are covered by the existing driver, which has the unfortunate naming
->> TJA11xx. Unfortunate, because the use of wildcards is a bit to generous.
+On Mon, 2021-04-12 at 10:50 +0100, Russell King - ARM Linux admin
+wrote:
+> On Fri, Apr 09, 2021 at 09:41:06PM +0300, Radu Pirea (NXP OSS) wrote:
+> > +#define B100T1_PMAPMD_CTL              0x0834
+> > +#define B100T1_PMAPMD_CONFIG_EN                BIT(15)
+> > +#define B100T1_PMAPMD_MASTER           BIT(14)
+> > +#define MASTER_MODE                    (B100T1_PMAPMD_CONFIG_EN |
+> > B100T1_PMAPMD_MASTER)
+> > +#define SLAVE_MODE                     (B100T1_PMAPMD_CONFIG_EN)
+> > +
+> > +#define DEVICE_CONTROL                 0x0040
+> > +#define DEVICE_CONTROL_RESET           BIT(15)
+> > +#define DEVICE_CONTROL_CONFIG_GLOBAL_EN        BIT(14)
+> > +#define DEVICE_CONTROL_CONFIG_ALL_EN   BIT(13)
+> > +#define RESET_POLL_NS                  (250 * NSEC_PER_MSEC)
+> > +
+> > +#define PHY_CONTROL                    0x8100
+> > +#define PHY_CONFIG_EN                  BIT(14)
+> > +#define PHY_START_OP                   BIT(0)
+> > +
+> > +#define PHY_CONFIG                     0x8108
+> > +#define PHY_CONFIG_AUTO                        BIT(0)
+> > +
+> > +#define SIGNAL_QUALITY                 0x8320
+> > +#define SQI_VALID                      BIT(14)
+> > +#define SQI_MASK                       GENMASK(2, 0)
+> > +#define MAX_SQI                                SQI_MASK
+> > +
+> > +#define CABLE_TEST                     0x8330
+> > +#define CABLE_TEST_ENABLE              BIT(15)
+> > +#define CABLE_TEST_START               BIT(14)
+> > +#define CABLE_TEST_VALID               BIT(13)
+> > +#define CABLE_TEST_OK                  0x00
+> > +#define CABLE_TEST_SHORTED             0x01
+> > +#define CABLE_TEST_OPEN                        0x02
+> > +#define CABLE_TEST_UNKNOWN             0x07
+> > +
+> > +#define PORT_CONTROL                   0x8040
+> > +#define PORT_CONTROL_EN                        BIT(14)
+> > +
+> > +#define PORT_INFRA_CONTROL             0xAC00
+> > +#define PORT_INFRA_CONTROL_EN          BIT(14)
+> > +
+> > +#define VND1_RXID                      0xAFCC
+> > +#define VND1_TXID                      0xAFCD
+> > +#define ID_ENABLE                      BIT(15)
+> > +
+> > +#define ABILITIES                      0xAFC4
+> > +#define RGMII_ID_ABILITY               BIT(15)
+> > +#define RGMII_ABILITY                  BIT(14)
+> > +#define RMII_ABILITY                   BIT(10)
+> > +#define REVMII_ABILITY                 BIT(9)
+> > +#define MII_ABILITY                    BIT(8)
+> > +#define SGMII_ABILITY                  BIT(0)
+> > +
+> > +#define MII_BASIC_CONFIG               0xAFC6
+> > +#define MII_BASIC_CONFIG_REV           BIT(8)
+> > +#define MII_BASIC_CONFIG_SGMII         0x9
+> > +#define MII_BASIC_CONFIG_RGMII         0x7
+> > +#define MII_BASIC_CONFIG_RMII          0x5
+> > +#define MII_BASIC_CONFIG_MII           0x4
+> > +
+> > +#define SYMBOL_ERROR_COUNTER           0x8350
+> > +#define LINK_DROP_COUNTER              0x8352
+> > +#define LINK_LOSSES_AND_FAILURES       0x8353
+> > +#define R_GOOD_FRAME_CNT               0xA950
+> > +#define R_BAD_FRAME_CNT                        0xA952
+> > +#define R_RXER_FRAME_CNT               0xA954
+> > +#define RX_PREAMBLE_COUNT              0xAFCE
+> > +#define TX_PREAMBLE_COUNT              0xAFCF
+> > +#define RX_IPG_LENGTH                  0xAFD0
+> > +#define TX_IPG_LENGTH                  0xAFD1
+> > +#define COUNTERS_EN                    BIT(15)
+> > +
+> > +#define CLK_25MHZ_PS_PERIOD            40000UL
+> > +#define PS_PER_DEGREE                  (CLK_25MHZ_PS_PERIOD / 360)
+> > +#define MIN_ID_PS                      8222U
+> > +#define MAX_ID_PS                      11300U
 > 
-> Yes, that does happen.
+> Maybe include some prefix as to which MMD each of these registers is
+> located?
+I will add the MMD as prefix. Thank you.
 > 
-> Naming is difficult. But i really think nxp-c45.c is much worse. It
-> gives no idea at all what it supports. Or in the future, what it does
-> not support, and you actually need nxp-c45-ng.c.
+> > +static bool nxp_c45_can_sleep(struct phy_device *phydev)
+> > +{
+> > +       int reg;
+> > +
+> > +       reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_STAT1);
+> > +       if (reg < 0)
+> > +               return false;
+> > +
+> > +       return !!(reg & MDIO_STAT1_LPOWERABLE);
+> > +}
 > 
-> Developers are going to look at a board, see a tja1XYZ chip, see the
-> nxp-tja11xx.c and enable it. Does the chip have a big C45 symbol on
-> it? Anything to give the idea it should use the nxp-c45 driver?
+> This looks like it could be useful as a generic helper function -
+> nothing in this function is specific to this PHY.
 > 
-> Maybe we should actually swing the complete opposite direction. Name
-> it npx-tja1103.c. There are lots of drivers which have a specific
-> name, but actually support a lot more devices. The developer sees they
-> have an tja1XYZ, there are two drivers which look about right, and
-> enable them both?
+> > +static int nxp_c45_resume(struct phy_device *phydev)
+> > +{
+> > +       int reg;
+> > +
+> > +       if (!nxp_c45_can_sleep(phydev))
+> > +               return -EOPNOTSUPP;
+> > +
+> > +       reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
+> > +       reg &= ~MDIO_CTRL1_LPOWER;
+> > +       phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1, reg);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int nxp_c45_suspend(struct phy_device *phydev)
+> > +{
+> > +       int reg;
+> > +
+> > +       if (!nxp_c45_can_sleep(phydev))
+> > +               return -EOPNOTSUPP;
+> > +
+> > +       reg = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
+> > +       reg |= MDIO_CTRL1_LPOWER;
+> > +       phy_write_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1, reg);
+> > +
+> > +       return 0;
+> > +}
 > 
->         Andrew
-> 
+> These too look like potential generic helper functions.
+That's true.
+Should I implement them as genphy_c45_pma_suspend/resume? Given that we
+can also have PCS suspend/resume too.
 
-Ok, we can agree that there will not be a perfect naming. Would it be a 
-possibility to rename the existing TJA11xx driver to TJA1100-1-2 or is 
-that unwanted?
+However, in my case, PMA low power bit will enable low power for PCS as
+well.
 
-I agree that it should be easy to find the right driver. Right now, 
-there is another device called the SJA1110, which has a very similar IP 
-integrated. It would be possible to use the driver for that device also, 
-even if this is outside of the scope of this submission. Going for 
-wildcards, we get to xJA11xx, which is really undesirable to me.
-
-In the end my hope was that people will look up the correct driver 
-through LKDDb or similar and will find the matching devices from there.
-
-I am open to any suggestion that leads to users finding the right driver 
-and that also work for future devices.
-
-Using your example of an NG device: My assumption is that the things 
-that change are covered by IEEE standardized registers, and thus should 
-be implemented as part of generic helper functions. The things that are 
-outside of the IEEE scope, e.g xMII interface configuration are generic 
-and can be contained in a single driver if the registers are kept 
-software compatible which we intend to do.
-
-If nxp-c45.c is to generic (I take from your comments that' your 
-conclusion), we could at least lean towards nxp-c45-bt1.c? 
-Unfortunately, the product naming schemes are not sufficiently 
-methodical to have a a good driver name based on product names.
-
-Christian
