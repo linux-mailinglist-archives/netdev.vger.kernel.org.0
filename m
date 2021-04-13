@@ -2,145 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F1635E557
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 19:49:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 261B435E5BD
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 19:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347343AbhDMRtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 13:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347341AbhDMRtt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 13:49:49 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8781C061574
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 10:49:26 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id u11so5209525pjr.0
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 10:49:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=j8r1UA1SAzvucbYLVyzqDfM6oA8DqW9YeJSaDX1Bd68=;
-        b=fpNkGfM6+/VbGTzqdHKcFbVm2EymRyXIsLMtH0iWQuN/nPxMVNH5JplRiWWa6Z5u5g
-         2qBGUGSD0wqt4fsoLad3/+XvfpBRhPDdgOwF4LI0UA69y21QGsMUcNHeCIq617gugHUY
-         P9vbgyfJeomda1dRSjxX/u7D7M6BMRBUIWqvK50R9cJLwacTX2vuLOIic/IZ02iN9M0y
-         KZLfyD1k0Y+UDz6z+VGrB9PBnkX+Ky/HeLKVTXueCBHmWd5bZTbx7CGA3XdPeHcJJtTm
-         9Pp4ejoyVnHhmT9UW6cuMZuid0rffqBsQtB9RbW1yd37Dgnz1AJgypSXctzMuZNpR3G5
-         8jyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=j8r1UA1SAzvucbYLVyzqDfM6oA8DqW9YeJSaDX1Bd68=;
-        b=EyCoM6rPYIE1kVEYqDPjKT+HweKu3gP751Jea9uhyN7xYv4Zv5LN543SMojKL4u+bH
-         UtRMSnrVcMs/B3PMg7YC9PfxF7vunimtLjNyxGwMzQdGrRCXAeSN61ZwQNuKJ2kic+sq
-         /W94q6qCLx0haDqD8opJqdjLk0UY9ZzZlrgeA5YiL5Tl3ODOh/XuVt1RgiiaLOnOludJ
-         fTwHQefUqi6sOgPO9gDmtNualpYyfurtyLtW0zgsT8XWZEhCKcQPJfJjvLXb1/wiDaN0
-         AliPpd777Gusf+CayqnpeY/0pxpO8e6xujSniExKkytEcqpGG+NFJdgnCLkWv86lXJdn
-         WjfQ==
-X-Gm-Message-State: AOAM533JdC/OgAsZJr9qIGl9qd/Xiw+E0p0m2+0MnkudwSP97xWCNR+m
-        TwcvkZ6Ji4JbaD5MYe4lH2YbhDo0BVz+bA==
-X-Google-Smtp-Source: ABdhPJxmXhsbTeuf1evTGiiA8VHbiZjc5/Dzq02V97PL+qDqsA2Mhbheq9YAlesnaSsAiO3qI5fTpA==
-X-Received: by 2002:a17:90a:868c:: with SMTP id p12mr1213482pjn.82.1618336164282;
-        Tue, 13 Apr 2021 10:49:24 -0700 (PDT)
-Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
-        by smtp.gmail.com with ESMTPSA id m4sm14143930pgu.4.2021.04.13.10.49.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Apr 2021 10:49:23 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Tue, 13 Apr 2021 20:49:15 +0300
-To:     Michal =?utf-8?B?Vm9rw6HEjQ==?= <michal.vokac@ysoft.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jonathan McDowell <noodles@earth.li>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: Broken imx6 to QCA8334 connection since PHYLIB to PHYLINK
- conversion
-Message-ID: <20210413174915.uu2senujpqubmcnw@skbuf>
-References: <b7f5842a-c7b7-6439-ae68-51e1690d2507@ysoft.com>
- <YHRVv/GwCmnRN14j@lunn.ch>
- <9fa83984-f385-4705-a50f-688928cc366f@ysoft.com>
+        id S1345874AbhDMR6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 13:58:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23242 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345826AbhDMR6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 13:58:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618336669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EiOkUDbZ189pvJ/K60Ips+so6MTqbBYnCmEHS0RhH4Y=;
+        b=NqojeKJuUAoOSv/kyKK80Ch1mGjMCu2UsyU0WeTcbaIa4gAmP2KB3bCQbY88cUUVNQMLOW
+        H0IlEWmT23aBkTG0MBYf6yYtIiULvCcvSFtjI/Cw9VYMCepSZJY9zwh1M/iSaOXe+E34wz
+        iWIPcFvjV70dA3o+E1x9CUNlUqeIPUQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-574-rMk0UHI9NK6133zHFICuAw-1; Tue, 13 Apr 2021 13:57:45 -0400
+X-MC-Unique: rMk0UHI9NK6133zHFICuAw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A2543801814;
+        Tue, 13 Apr 2021 17:57:43 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F1CF7614FA;
+        Tue, 13 Apr 2021 17:57:33 +0000 (UTC)
+Date:   Tue, 13 Apr 2021 19:57:32 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, song@kernel.org,
+        brouer@redhat.com
+Subject: Re: [PATCH v2 bpf-next] cpumap: bulk skb using
+ netif_receive_skb_list
+Message-ID: <20210413195732.5a124b8f@carbon>
+In-Reply-To: <bb627106428ea3223610f5623142c24270f0e14e.1618330734.git.lorenzo@kernel.org>
+References: <bb627106428ea3223610f5623142c24270f0e14e.1618330734.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9fa83984-f385-4705-a50f-688928cc366f@ysoft.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 09:09:37AM +0200, Michal Vokáč wrote:
-> On 12. 04. 21 16:14, Andrew Lunn wrote:
-> > > [1] https://elixir.bootlin.com/linux/v5.12-rc7/source/arch/arm/boot/dts/imx6dl-yapp4-common.dtsi#L101
-> > 
-> > &fec {
-> > 	pinctrl-names = "default";
-> > 	pinctrl-0 = <&pinctrl_enet>;
-> > 	phy-mode = "rgmii-id";
-> > 	phy-reset-gpios = <&gpio1 25 GPIO_ACTIVE_LOW>;
-> > 	phy-reset-duration = <20>;
-> > 	phy-supply = <&sw2_reg>;
-> > 	phy-handle = <&ethphy0>;
-> > 	status = "okay";
-> > 
-> > 	mdio {
-> > 		#address-cells = <1>;
-> > 		#size-cells = <0>;
-> > 
-> > 		phy_port2: phy@1 {
-> > 			reg = <1>;
-> > 		};
-> > 
-> > 		phy_port3: phy@2 {
-> > 			reg = <2>;
-> > 		};
-> > 
-> > 		switch@10 {
-> > 			compatible = "qca,qca8334";
-> > 			reg = <10>;
-> > 
-> > 			switch_ports: ports {
-> > 				#address-cells = <1>;
-> > 				#size-cells = <0>;
-> > 
-> > 				ethphy0: port@0 {
-> > 					reg = <0>;
-> > 					label = "cpu";
-> > 					phy-mode = "rgmii-id";
-> > 					ethernet = <&fec>;
-> > 
-> > 					fixed-link {
-> > 						speed = <1000>;
-> > 						full-duplex;
-> > 					};
-> > 				};
-> > 
-> > The fec phy-handle = <&ethphy0>; is pointing to the PHY of switch port
-> > 0. This seems wrong.
+On Tue, 13 Apr 2021 18:22:02 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+
+> Rely on netif_receive_skb_list routine to send skbs converted from
+> xdp_frames in cpu_map_kthread_run in order to improve i-cache usage.
+> The proposed patch has been tested running xdp_redirect_cpu bpf sample
+> available in the kernel tree that is used to redirect UDP frames from
+> ixgbe driver to a cpumap entry and then to the networking stack.
+> UDP frames are generated using pkt_gen.
 > 
-
-Actually, the phy-handle is pointing directly to the switch port 0 node.
-
-> I do not understand. Why this seems wrong?
-
-The phy-handle property should point to a node representing a PHY
-device. If a fixed-link subnode is present, no phy-handle is needed.
-
-> The switch has four ports. Ports 2 and 3 have a PHY and are connected
-> to the transformers/RJ45 connectors. Port 0 is MII/RMII/RGMII of
-> the switch. Port 6 (not used) is a SerDes.
+> $xdp_redirect_cpu  --cpu <cpu> --progname xdp_cpu_map0 --dev <eth>
 > 
-> > Does the FEC have a PHY? Do you connect the FEC
-> > and the SWITCH at the RGMII level? Or with two back to back PHYs?
-> > 
-> > If you are doing it RGMII level, the FEC also needs a fixed-link.
+> bpf-next: ~2.2Mpps
+> bpf-next + cpumap skb-list: ~3.15Mpps
 > 
-> The FEC does not have PHY and is connected to the switch at RGMII level.
-> Adding the fixed-link { speed = <1000>; full-duplex; }; subnode to FEC
-> does not help.
-> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Did you also remove the extra phy-handle when you tested?
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Ioana
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
