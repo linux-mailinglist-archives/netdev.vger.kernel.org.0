@@ -2,84 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B731135D95F
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E21E35D969
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240980AbhDMHxj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Apr 2021 03:53:39 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:44276 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241154AbhDMHxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:53:36 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-217-9A0sWgifMA2Wbbm2cF54Qg-1; Tue, 13 Apr 2021 08:53:15 +0100
-X-MC-Unique: 9A0sWgifMA2Wbbm2cF54Qg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Tue, 13 Apr 2021 08:53:14 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.012; Tue, 13 Apr 2021 08:53:14 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matteo Croce' <mcroce@linux.microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>
-Subject: RE: [PATCH net-next v2 0/3] introduce skb_for_each_frag()
-Thread-Topic: [PATCH net-next v2 0/3] introduce skb_for_each_frag()
-Thread-Index: AQHXLzQg5WXC8qIcg0CtZzWZRcsCQaqyElmA
-Date:   Tue, 13 Apr 2021 07:53:14 +0000
-Message-ID: <75045c087db24b6e87b7ed14aa5a721c@AcuMS.aculab.com>
-References: <20210412003802.51613-1-mcroce@linux.microsoft.com>
-In-Reply-To: <20210412003802.51613-1-mcroce@linux.microsoft.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S230320AbhDMH4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 03:56:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42252 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229552AbhDMH4i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 03:56:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 396DF61244;
+        Tue, 13 Apr 2021 07:56:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618300579;
+        bh=kVVabL5zdyMp+h1zLrQ68aRA1oeaHd1lXt68E2zSic4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DEYp3eSN+Z9eHPfHIMp0VYTOnwlImTRli7uvMRGQZ8I3L0h8IdlCp79dQwIqhESx1
+         ygmw3cqQ9GhRkZTppfHIsNwuHSNBMYfn1kpmXUVna2rLqCGDwRoqUcRfMstD7N5RZS
+         +2c5RasV6CB1mlcbOaKKovM6KewM1D0MvlXgwWldNJHAOvBb5NZOdLVE6+O7IqTQfm
+         UAyNUfJQI3VV+lYKn+4Td4GQBi/dtpN00L8R6GNrDSlX066/iuYkYAkRbzUGcTNGTE
+         w8DFKx0pds7NCn4+rVE68hZ9FzVI/8EhGasotz3lNxzz9Ub8+EpoffA26ck/42lJpD
+         1/ApYlGp9ItvA==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next 0/5] net: phy: marvell: some HWMON updates
+Date:   Tue, 13 Apr 2021 09:55:33 +0200
+Message-Id: <20210413075538.30175-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce
-> Sent: 12 April 2021 01:38
-> 
-> Introduce skb_for_each_frag, an helper macro to iterate over the SKB frags.
+Here are some updates for Marvell PHY HWMON, mainly
+- refactoring for code deduplication
+- Amethyst PHY support
 
-The real question is why, the change is:
+Marek Behún (5):
+  net: phy: marvell: refactor HWMON OOP style
+  net: phy: marvell: fix HWMON enable register for 6390
+  net: phy: marvell: use assignment by bitwise AND operator
+  net: dsa: mv88e6xxx: simulate Amethyst PHY model number
+  net: phy: marvell: add support for Amethyst internal PHY
 
--	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-+	skb_for_each_frag(skb, i) {
+ drivers/net/dsa/mv88e6xxx/chip.c |   1 +
+ drivers/net/phy/marvell.c        | 507 +++++++++++++++----------------
+ include/linux/marvell_phy.h      |   1 +
+ 3 files changed, 252 insertions(+), 257 deletions(-)
 
-The existing code isn't complicated or obscure and 'does what it
-says on the tin'.
-The 'helper' requires you go and look up its definition to see
-what it is really doing.
-
-Unless you have a cunning plan to change the definition
-there is zero point.
-
-A more interesting change would be something that generated:
-	unsigned int nr_frags = skb_shinfo(skb)->nr_frags;
-	for (i = 0; i < nr_frags; i++) {
-since that will run faster for most loops.
-But that is ~impossible to do since you can't declare
-variables inside the (...) that are scoped to the loop.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+-- 
+2.26.3
 
