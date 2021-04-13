@@ -2,233 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E5E35D747
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 07:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C277535D76C
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 07:50:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244372AbhDMFeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 01:34:05 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:56259 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbhDMFeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 01:34:04 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1618292025; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=NkA9TJv1SAkeVUjpfKUuL/EFOJA9G6yGr4vAcnlSftM=; b=lLBMM+ungrrZw6hGKAai6i+UFEi67FL2+OmDb3ziQcZ+4T2l3UzxWU+Uw94tLGco9U9C4DE6
- 2/HOaRTLAw39+7rhbl2e259RR/NX5NuaUxUW29extdTC2HmGtzu6NOSs+ZKvZbxjSgtlvtil
- FPPsAYtx4LYmMJZs93NxxP0iSxc=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 60752d39e0e9c9a6b6278298 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 13 Apr 2021 05:33:45
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 0D53FC433ED; Tue, 13 Apr 2021 05:33:45 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B850AC433C6;
-        Tue, 13 Apr 2021 05:33:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B850AC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1344601AbhDMFsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 01:48:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20316 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344335AbhDMFsJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 01:48:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618292870;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=NoGLR1VJ5gNLYdaNxmqjFzT6An+veHXT72XxxlzyW7A=;
+        b=LqGNea/evVgwZkDAOqvivMIXeUppJv7L4x7yOogPxdkuLSujkgG3VlGPxH3aRuH5b1MbzV
+        iCwBc6qL0y51WjSqxAF2ieq/frnZ/grR8Tzy5PXn5xkGXwMELHiXu05IZKMhq2oCBZUdDM
+        M10L0MfnfbQLv324lpQpDyyX3N+wfiM=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-485-uTnJxCW7N8y-ytn7GhZXlg-1; Tue, 13 Apr 2021 01:47:49 -0400
+X-MC-Unique: uTnJxCW7N8y-ytn7GhZXlg-1
+Received: by mail-wm1-f69.google.com with SMTP id o3-20020a1c75030000b029010f4e02a2f2so666855wmc.6
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 22:47:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=NoGLR1VJ5gNLYdaNxmqjFzT6An+veHXT72XxxlzyW7A=;
+        b=jY/i1T8/Nxt48vB7EgzbhJmtVlvRToLarOMKVixRaiquXZJ4+q5vyd5syW6CP5iBkA
+         FY1XwX3oAWfjAXWjlZ/0hg6zZwrzplF086IqWwHG/1r4dcoNXZ+9fL6p2z4t7VgeecK8
+         N2LquHOs6W82cgbMPTbXXIGBP+IY1ScxYUgEmw0xkHIaKFALlx8NWyaZhb86DK7muEQJ
+         DCVGXlmwHCF71q9GmAA3anlEW3k32Tx+tWqVx6HgyaXCKpY2NDjFHDlULzmgO/84+xwU
+         xwu7avXcan4iUOoAk/wAxgO21pWfZb+MjU19GVgFAsLScM009lvFKzT9cHbfvY309d2R
+         68Jg==
+X-Gm-Message-State: AOAM530WngNKuoX8mVzq3RKllyaHln7z3I6rUB0aFj0iO+XjoPYWQjYN
+        oEhUJaUyRLnEztkWQb+eDLejT7eAkvjLtD054DYwxcKpaUdWrnDgcIBl9zwnI9MmsW/vudJAtgm
+        vVXI3ieG/VU1nxrwM
+X-Received: by 2002:adf:dc4f:: with SMTP id m15mr35092242wrj.420.1618292867442;
+        Mon, 12 Apr 2021 22:47:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwxHY/ypRcjTg5TsZRaoQK31psb9y/vV26Xnbj/l6lE6PeheJEYSaDyTSaGX+fe0fFMMvdRZw==
+X-Received: by 2002:adf:dc4f:: with SMTP id m15mr35092229wrj.420.1618292867318;
+        Mon, 12 Apr 2021 22:47:47 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
+        by smtp.gmail.com with ESMTPSA id u9sm1326079wmc.38.2021.04.12.22.47.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Apr 2021 22:47:46 -0700 (PDT)
+Date:   Tue, 13 Apr 2021 01:47:44 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jason Wang <jasowang@redhat.com>,
+        Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH RFC v2 0/4] virtio net: spurious interrupt related fixes
+Message-ID: <20210413054733.36363-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-next-2021-04-13
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20210413053345.0D53FC433ED@smtp.codeaurora.org>
-Date:   Tue, 13 Apr 2021 05:33:45 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+With the implementation of napi-tx in virtio driver, we clean tx
+descriptors from rx napi handler, for the purpose of reducing tx
+complete interrupts. But this introduces a race where tx complete
+interrupt has been raised, but the handler finds there is no work to do
+because we have done the work in the previous rx interrupt handler.
+A similar issue exists with polling from start_xmit, it is however
+less common because of the delayed cb optimization of the split ring -
+but will likely affect the packed ring once that is more common.
 
-here's a pull request to net-next tree, more info below. Please let me know if
-there are any problems.
+In particular, this was reported to lead to the following warning msg:
+[ 3588.010778] irq 38: nobody cared (try booting with the
+"irqpoll" option)
+[ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+5.3.0-19-generic #20~18.04.2-Ubuntu
+[ 3588.017940] Call Trace:
+[ 3588.017942]  <IRQ>
+[ 3588.017951]  dump_stack+0x63/0x85
+[ 3588.017953]  __report_bad_irq+0x35/0xc0
+[ 3588.017955]  note_interrupt+0x24b/0x2a0
+[ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+[ 3588.017957]  handle_irq_event+0x3b/0x60
+[ 3588.017958]  handle_edge_irq+0x83/0x1a0
+[ 3588.017961]  handle_irq+0x20/0x30
+[ 3588.017964]  do_IRQ+0x50/0xe0
+[ 3588.017966]  common_interrupt+0xf/0xf
+[ 3588.017966]  </IRQ>
+[ 3588.017989] handlers:
+[ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+[ 3588.025099] Disabling IRQ #38
 
-Kalle
+This patchset attempts to fix this by cleaning up a bunch of races
+related to the handling of sq callbacks (aka tx interrupts).
+Very lightly tested, sending out for help with testing, early feedback
+and flames. Thanks!
 
-The following changes since commit 2117fce81f6b862aac0673abe8df0c60dca64bfa:
+Michael S. Tsirkin (4):
+  virtio: fix up virtio_disable_cb
+  virtio_net: disable cb aggressively
+  virtio_net: move tx vq operation under tx queue lock
+  virtio_net: move txq wakeups under tx q lock
 
-  Merge branch 'psample-Add-additional-metadata-attributes' (2021-03-14 15:00:44 -0700)
+ drivers/net/virtio_net.c     | 35 +++++++++++++++++++++++++++++------
+ drivers/virtio/virtio_ring.c | 26 +++++++++++++++++++++++++-
+ 2 files changed, 54 insertions(+), 7 deletions(-)
 
-are available in the git repository at:
+-- 
+MST
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git tags/wireless-drivers-next-2021-04-13
-
-for you to fetch changes up to fa9f5d0e0b45a06802f7cb3afed237be6066821e:
-
-  iwlegacy: avoid -Wempty-body warning (2021-04-11 12:31:01 +0300)
-
-----------------------------------------------------------------
-wireless-drivers-next patches for v5.13
-
-First set of patches for v5.13. I have been offline for a couple of
-and I have a smaller pull request this time. The next one will be
-bigger. Nothing really special standing out.
-
-ath11k
-
-* add initial support for QCN9074, but not enabled yet due to firmware problems
-
-* enable radar detection for 160MHz secondary segment
-
-* handle beacon misses in station mode
-
-rtw88
-
-* 8822c: support firmware crash dump
-
-mt7601u
-
-* enable TDLS support
-
-----------------------------------------------------------------
-Ajay Singh (1):
-      wilc1000: use wilc handler as cookie in request_threaded_irq()
-
-Anilkumar Kolli (6):
-      ath11k: Refactor ath11k_msi_config
-      ath11k: Move qmi service_ins_id to hw_params
-      ath11k: qmi: increase the number of fw segments
-      ath11k: Update memory segment count for qcn9074
-      ath11k: Add qcn9074 mhi controller config
-      ath11k: add qcn9074 pci device support
-
-Arnd Bergmann (1):
-      iwlegacy: avoid -Wempty-body warning
-
-Ching-Te Ku (1):
-      rtw88: coex: fix A2DP stutters while WL busy + WL scan
-
-Colin Ian King (2):
-      ath11k: debugfs: Fix spelling mistake "Opportunies" -> "Opportunities"
-      mt7601u: fix always true expression
-
-Dan Carpenter (1):
-      rtw88: Fix an error code in rtw_debugfs_set_rsvd_page()
-
-David Mosberger-Tang (1):
-      wilc1000: Support chip sleep over SPI
-
-Kalle Valo (4):
-      ath11k: print hardware name and version during initialisation
-      ath11k: qmi: add more debug messages
-      ath11k: qmi: cosmetic changes to error messages
-      Merge ath-next from git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
-
-Karthikeyan Periyasamy (5):
-      ath11k: add static window support for register access
-      ath11k: add hal support for QCN9074
-      ath11k: add data path support for QCN9074
-      ath11k: add CE interrupt support for QCN9074
-      ath11k: add extended interrupt support for QCN9074
-
-Lavanya Suresh (3):
-      ath11k: Fix sounding dimension config in HE cap
-      ath11k: Enable radar detection for 160MHz secondary segment
-      ath11k: Add support for STA to handle beacon miss
-
-Lorenzo Bianconi (1):
-      mt7601u: enable TDLS support
-
-Marcus Folkesson (1):
-      wilc1000: write value to WILC_INTR2_ENABLE register
-
-Miaoqing Pan (1):
-      ath11k: fix potential wmi_mgmt_tx_queue race condition
-
-Ping-Ke Shih (1):
-      rtw88: coex: add power off setting
-
-Po-Hao Huang (1):
-      rtw88: 8822c: add LC calibration for RTL8822C
-
-Pradeep Kumar Chitrapu (1):
-      ath11k: fix thermal temperature read
-
-Shuah Khan (2):
-      ath9k: fix ath_tx_process_buffer() potential null ptr dereference
-      Revert "ath9k: fix ath_tx_process_buffer() potential null ptr dereference"
-
-Sriram R (1):
-      ath11k: Update signal filled flag during sta_statistics drv op
-
-Youghandhar Chintala (1):
-      ath10k: skip the wait for completion to recovery in shutdown path
-
-Zong-Zhe Yang (4):
-      rtw88: 8822c: support FW crash dump when FW crash
-      rtw88: add flush hci support
-      rtw88: fix DIG min setting
-      rtw88: 8822c: update tx power limit table to RF v40.1
-
-wengjianfeng (1):
-      rtw88: remove unnecessary variable
-
- drivers/net/wireless/ath/ath10k/snoc.c             |  29 +-
- drivers/net/wireless/ath/ath11k/ahb.c              |   2 +-
- drivers/net/wireless/ath/ath11k/ce.c               |  58 +-
- drivers/net/wireless/ath/ath11k/ce.h               |   1 +
- drivers/net/wireless/ath/ath11k/core.c             |  45 +-
- drivers/net/wireless/ath/ath11k/core.h             |   6 +
- .../net/wireless/ath/ath11k/debugfs_htt_stats.c    |   2 +-
- drivers/net/wireless/ath/ath11k/dp_rx.c            | 476 ++++++------
- drivers/net/wireless/ath/ath11k/dp_tx.c            |   6 +-
- drivers/net/wireless/ath/ath11k/hal.c              |  96 ++-
- drivers/net/wireless/ath/ath11k/hal.h              |  33 +-
- drivers/net/wireless/ath/ath11k/hal_desc.h         |  13 +-
- drivers/net/wireless/ath/ath11k/hal_tx.c           |   3 +
- drivers/net/wireless/ath/ath11k/hal_tx.h           |   1 +
- drivers/net/wireless/ath/ath11k/hif.h              |  10 +
- drivers/net/wireless/ath/ath11k/hw.c               | 796 +++++++++++++++++++++
- drivers/net/wireless/ath/ath11k/hw.h               |  53 ++
- drivers/net/wireless/ath/ath11k/mac.c              |  88 ++-
- drivers/net/wireless/ath/ath11k/mac.h              |   2 +
- drivers/net/wireless/ath/ath11k/mhi.c              | 116 ++-
- drivers/net/wireless/ath/ath11k/pci.c              | 194 +++--
- drivers/net/wireless/ath/ath11k/pci.h              |  21 +-
- drivers/net/wireless/ath/ath11k/qmi.c              | 118 +--
- drivers/net/wireless/ath/ath11k/qmi.h              |   9 +-
- drivers/net/wireless/ath/ath11k/rx_desc.h          | 212 +++++-
- drivers/net/wireless/ath/ath11k/wmi.c              |  64 +-
- drivers/net/wireless/intel/iwlegacy/3945-mac.c     |   2 -
- drivers/net/wireless/intel/iwlegacy/common.c       |   2 -
- drivers/net/wireless/intel/iwlegacy/common.h       |   2 +-
- drivers/net/wireless/mediatek/mt7601u/eeprom.c     |   2 +-
- drivers/net/wireless/mediatek/mt7601u/init.c       |   1 +
- drivers/net/wireless/microchip/wilc1000/netdev.c   |  14 +-
- drivers/net/wireless/microchip/wilc1000/sdio.c     |   2 +-
- drivers/net/wireless/microchip/wilc1000/wlan.c     |  56 +-
- drivers/net/wireless/microchip/wilc1000/wlan.h     |   6 +
- drivers/net/wireless/realtek/rtw88/coex.c          |  13 +-
- drivers/net/wireless/realtek/rtw88/coex.h          |   1 +
- drivers/net/wireless/realtek/rtw88/debug.c         |  43 +-
- drivers/net/wireless/realtek/rtw88/hci.h           |  16 +
- drivers/net/wireless/realtek/rtw88/mac.c           |  19 +
- drivers/net/wireless/realtek/rtw88/mac.h           |   4 +
- drivers/net/wireless/realtek/rtw88/mac80211.c      |   2 +
- drivers/net/wireless/realtek/rtw88/main.c          | 104 ++-
- drivers/net/wireless/realtek/rtw88/main.h          |  13 +
- drivers/net/wireless/realtek/rtw88/pci.c           |  69 ++
- drivers/net/wireless/realtek/rtw88/phy.c           |  23 +-
- drivers/net/wireless/realtek/rtw88/phy.h           |   1 +
- drivers/net/wireless/realtek/rtw88/reg.h           |   6 +
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |  39 +-
- .../net/wireless/realtek/rtw88/rtw8822c_table.c    | 686 +++++++++---------
- 50 files changed, 2709 insertions(+), 871 deletions(-)
