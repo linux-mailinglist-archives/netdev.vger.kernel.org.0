@@ -2,107 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B06E35D982
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB2235D97E
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241700AbhDMH57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 03:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241389AbhDMH55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:57:57 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155AFC061756
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 00:57:38 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id 130so2783955qkm.4
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 00:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v5+J2bw3iz0Zd+e+lzu2Qo4E0AM0dkQGDSzLnSvZvy8=;
-        b=UeZk+RiCWOC7JzxfKx3yG2cydgBtlZe/1uejtnF2xNqDmGDcNuEZ7EWdrLLtf952pZ
-         TMknEiK+XX8+TDgABXQ0W6jCrHb38B53AGoe0RygEiyoUfy29wB5i0e3K2jT8rQDIl8l
-         ZbMe/h14O6lherBFHDwEXREbR05vy7VITvEdWkKpHFS7+rKoiehzsm//anB/UGwZIT/Z
-         +rtrJmxi9XEmTshzP4Lb0KxSZyS74VXC/v0zZVombQRZKV/pKCcKZ+vJL/jEl4X3sMwT
-         EhnMDchYe2NHaL8A0OI+NDCW4n6vcl5gXg4DQ1gtZvXw2gS4l1S0KThEfPZCB6NMouT+
-         TMmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v5+J2bw3iz0Zd+e+lzu2Qo4E0AM0dkQGDSzLnSvZvy8=;
-        b=TFAAPG1mjvJKUqnzWlTnwh+eJ9ljqG0n3fzEK11sUNrIc09BSYU5htzMuJ9MU5+s4h
-         h3KOvAM7XFCthhEHbZ8FE4glQFlLsRzfKDmcSaZkS+8k6llmoYD67EWSxqHR1BVQ8RXO
-         mGvN7BRuW2Z9XCEvdI20oTW2klEYK87tojs040qYkPSKnMaxHbfu9oW+Kc/TK21+Mh8I
-         FkRthHJhHC6fvgluJW3BxWPB1ATme1j+LwwxA98qvw636ZjBScCxuUmrqcZ8IRb7b4cN
-         3n8RoLZbjF4rt+dnlv3aqSMQ+gY1wgtCqKeoW2mZIMK2MbDrl3PnUIsIM0OzHU5A6vCI
-         8PXw==
-X-Gm-Message-State: AOAM533QESHwT4JHSJ4JuzGZI5+z38L6LMbA8m9QeReoDtsU4I+4N71n
-        3bsOqxh9znos3w4VXwzjvyJWTn+ZI8286n33YjFpHg==
-X-Google-Smtp-Source: ABdhPJwmtYlYZsMa2hF3X+4S3UYYT7bEmTeyHKp2IMqH7S4yesxoBZaPruLYG7pF0rHfjIIruZRgYqgIQzZGzlPSX08=
-X-Received: by 2002:a05:620a:243:: with SMTP id q3mr11958116qkn.501.1618300657089;
- Tue, 13 Apr 2021 00:57:37 -0700 (PDT)
+        id S238700AbhDMH5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 03:57:55 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:5131 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229903AbhDMH5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:57:54 -0400
+Received: from DGGEML402-HUB.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FKHvy5C2RzYXDs;
+        Tue, 13 Apr 2021 15:55:26 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ DGGEML402-HUB.china.huawei.com (10.3.17.38) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Tue, 13 Apr 2021 15:57:29 +0800
+Received: from [127.0.0.1] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Tue, 13 Apr
+ 2021 15:57:29 +0800
+Subject: Re: [PATCH net v3] net: sched: fix packet stuck problem for lockless
+ qdisc
+To:     Hillf Danton <hdanton@sina.com>
+CC:     Juergen Gross <jgross@suse.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Jiri Kosina <JKosina@suse.com>
+References: <1616641991-14847-1-git-send-email-linyunsheng@huawei.com>
+ <20210409090909.1767-1-hdanton@sina.com>
+ <20210412032111.1887-1-hdanton@sina.com>
+ <20210412072856.2046-1-hdanton@sina.com>
+ <20210413022129.2203-1-hdanton@sina.com>
+ <20210413032620.2259-1-hdanton@sina.com>
+ <20210413071241.2325-1-hdanton@sina.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <ca1da322-0083-c6e7-d905-c75572b5fdf2@huawei.com>
+Date:   Tue, 13 Apr 2021 15:57:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <000000000000680f2905afd0649c@google.com> <000000000000043f2c05beed04d8@google.com>
-In-Reply-To: <000000000000043f2c05beed04d8@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 13 Apr 2021 09:57:26 +0200
-Message-ID: <CACT4Y+YEE1g-_+3VWS=+tsv9vMOFi3P3rbTj2b2ivbb=+=UeaA@mail.gmail.com>
-Subject: Re: [syzbot] BUG: unable to handle kernel paging request in bpf_trace_run2
-To:     syzbot <syzbot+cc36fd07553c0512f5f7@syzkaller.appspotmail.com>
-Cc:     andrii@kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@chromium.org>, kpsingh@kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        mmullins@mmlx.us, netdev <netdev@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210413071241.2325-1-hdanton@sina.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme711-chm.china.huawei.com (10.1.199.107) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 1, 2021 at 8:01 PM syzbot
-<syzbot+cc36fd07553c0512f5f7@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit befe6d946551d65cddbd32b9cb0170b0249fd5ed
-> Author: Steven Rostedt (VMware) <rostedt@goodmis.org>
-> Date:   Wed Nov 18 14:34:05 2020 +0000
->
->     tracepoint: Do not fail unregistering a probe due to memory failure
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14f0260ed00000
-> start commit:   12450081 libbpf: Fix native endian assumption when parsing..
-> git tree:       bpf
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=5ac0d21536db480b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=cc36fd07553c0512f5f7
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1365d2c3900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d5f08d900000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: tracepoint: Do not fail unregistering a probe due to memory failure
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+On 2021/4/13 15:12, Hillf Danton wrote:
+> On Tue, 13 Apr 2021 11:34:27 Yunsheng Lin wrote:
+>> On 2021/4/13 11:26, Hillf Danton wrote:
+>>> On Tue, 13 Apr 2021 10:56:42 Yunsheng Lin wrote:
+>>>> On 2021/4/13 10:21, Hillf Danton wrote:
+>>>>> On Mon, 12 Apr 2021 20:00:43  Yunsheng Lin wrote:
+>>>>>>
+>>>>>> Yes, the below patch seems to fix the data race described in
+>>>>>> the commit log.
+>>>>>> Then what is the difference between my patch and your patch below:)
+>>>>>
+>>>>> Hehe, this is one of the tough questions over a bounch of weeks.
+>>>>>
+>>>>> If a seqcount can detect the race between skb enqueue and dequeue then we
+>>>>> cant see any excuse for not rolling back to the point without NOLOCK.
+>>>>
+>>>> I am not sure I understood what you meant above.
+>>>>
+>>>> As my understanding, the below patch is essentially the same as
+>>>> your previous patch, the only difference I see is it uses qdisc->pad
+>>>> instead of __QDISC_STATE_NEED_RESCHEDULE.
+>>>>
+>>>> So instead of proposing another patch, it would be better if you
+>>>> comment on my patch, and make improvement upon that.
+>>>>
+>>> Happy to do that after you show how it helps revert NOLOCK.
+>>
+>> Actually I am not going to revert NOLOCK, but add optimization
+>> to it if the patch fixes the packet stuck problem.
+>>
+> Fix is not optimization, right?
 
-Looks reasonable:
+For this patch, it is a fix.
+In case you missed it, I do have a couple of idea to optimize the
+lockless qdisc:
 
-#syz fix:
-tracepoint: Do not fail unregistering a probe due to memory failure
+1. RFC patch to add lockless qdisc bypass optimization:
+
+https://patchwork.kernel.org/project/netdevbpf/patch/1616404156-11772-1-git-send-email-linyunsheng@huawei.com/
+
+2. implement lockless enqueuing for lockless qdisc using the idea
+   from Jason and Toke. And it has a noticable proformance increase with
+   1-4 threads running using the below prototype based on ptr_ring.
+
+static inline int __ptr_ring_multi_produce(struct ptr_ring *r, void *ptr)
+{
+
+        int producer, next_producer;
+
+
+        do {
+                producer = READ_ONCE(r->producer);
+                if (unlikely(!r->size) || r->queue[producer])
+                        return -ENOSPC;
+                next_producer = producer + 1;
+                if (unlikely(next_producer >= r->size))
+                        next_producer = 0;
+        } while(cmpxchg_relaxed(&r->producer, producer, next_producer) != producer);
+
+        /* Make sure the pointer we are storing points to a valid data. */
+        /* Pairs with the dependency ordering in __ptr_ring_consume. */
+        smp_wmb();
+
+        WRITE_ONCE(r->queue[producer], ptr);
+        return 0;
+}
+
+3. Maybe it is possible to remove the netif_tx_lock for lockless qdisc
+   too, because dev_hard_start_xmit is also in the protection of
+   qdisc_run_begin()/qdisc_run_end()(if there is only one qdisc using
+   a netdev queue, which is true for pfifo_fast, I believe).
+
+4. Remove the qdisc->running seqcount operation for lockless qdisc, which
+   is mainly used to do heuristic locking on q->busylock for locked qdisc.
+
+> 
+>> Is there any reason why you want to revert it?
+>>
+> I think you know Jiri's plan and it would be nice to wait a couple of
+> months for it to complete.
+
+I am not sure I am aware of Jiri's plan.
+Is there any link referring to the plan?
+
+> 
+> .
+> 
+
