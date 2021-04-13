@@ -2,123 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C44435E0C1
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 16:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77DEC35E0DA
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 16:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243161AbhDMOCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 10:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237651AbhDMOCO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 10:02:14 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF9DC06175F
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 07:01:54 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id r9so26107035ejj.3
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 07:01:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AFGnHKnHgizV+FsCV7toD3pQlz9ndhsRkbd9JHKTvd8=;
-        b=gbYaC/RA4eUmT+VPtdGwg6SqqhZkkjrsBnbBOkqmZdFA1AVHvUBovodg7KbKHULUl+
-         6heoWEPdrPOmEwLaUlmmZS3giIHFbQujJt/WaF+yl+YsNUYfyw1lc5j2TY2nb/xBL6I7
-         fAaOaj19dn65sTejbQwBQJ/vqZp265XS5Ka1viuZ6TVSqEX3HDSx7F7kOvJefhTy50pM
-         JJUoCrn+0+Rdf7Vzs9t07nxbtgaH8CKgw8BnMEifBXQRxGBKG9k1jNYd/6tJPMLaSmSx
-         0iMZqngixmxWLGeBYhMbggLjjym2d/JyJlsRqHv2VjlFj86mRWs0UdiRw3z9uN3F+Dr4
-         nC+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AFGnHKnHgizV+FsCV7toD3pQlz9ndhsRkbd9JHKTvd8=;
-        b=IeS4k/lCySddO4L2D8IAlOCEib1zDUTTBarWb0E5RIXlPPFNrfe+E4mPCC0bvWLrJw
-         rykqKkGzDmXpNR+X6XPlI0C4jmvjvSazhJTlMkiOJkXhA08HJLUtZ0vWnyJHeNreU7du
-         sJcXLFbOH+Rw/0S6tLb1vk2lfR4vcnX+uuRng3PsrO5I3CtgDxuwNVMIfp2XUBQvGefr
-         Thby+DmbOKKOJ7B3w/AN7hmG2gsMCG1ZVTP5psdBgbsmbZPLyXpNxzJNhvhy/PDurST/
-         W+bzxtp11Pzms9WZjXs+uYiVS5MMmXdoUAKTgr+jepizN20rQIRvQVB22d9gIRGmYxpW
-         +WeA==
-X-Gm-Message-State: AOAM532H0AKxfOdA2YBkUNMOtK8Y36fRIG9VGk8Q4zXkrQQHagVU/Gk/
-        TxhnNDbENCJCODYWyRhb3JvLWurtUQzfzQ==
-X-Google-Smtp-Source: ABdhPJz+NeD7hxYi80HTS/Ql4TbBc+v5mBMxZTIVfZiJZYrcoTkdGDbkIaYmqY+J2tiLtiF2g2uDHQ==
-X-Received: by 2002:a17:906:b2cd:: with SMTP id cf13mr23406454ejb.419.1618322511784;
-        Tue, 13 Apr 2021 07:01:51 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id j1sm8061298ejt.18.2021.04.13.07.01.49
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Apr 2021 07:01:50 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id m9so3852544wrx.3
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 07:01:49 -0700 (PDT)
-X-Received: by 2002:a5d:43c1:: with SMTP id v1mr12067069wrr.419.1618322509572;
- Tue, 13 Apr 2021 07:01:49 -0700 (PDT)
+        id S1345149AbhDMODM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 10:03:12 -0400
+Received: from mail-eopbgr140078.outbound.protection.outlook.com ([40.107.14.78]:57307
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1345086AbhDMOCw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 10:02:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C2wKS3qNKZAXAxK/+Gy0rSfHIxpX/0xkbcaV6atSRYSmFPj5omeT+WH4bWuBzkLRLFjp6aUhQWyAGPfuaOWrNuuTbQQHC7eu2L/Ubj2AKCBYy8PbHfRWswllA6O6ET7h0VfeH6ZrrRbeq/qu4R2k2WELp0Vh9kvfVxTw5vX6fUbvZVFk/B/jDvsLZVcuCucBvw4FpbgPEvsmfubgQaT8P1E41oE5HLgdM+mhrnZxlW58unLMJlnBzqivq8r9rVY+ozrfZbM5nXiiSUaL/0FGGvBQKIhUMTJAKtAWlRBz5hV9jxAYR0T/t1614Cqlqi0hutYQn7Z8bjO12s4uKqwBaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IL70YRJFUvhAU3Ulrz5GnMS7EIFLbBnnYHO+cbkyOwk=;
+ b=MsY4FcKBFVqjt3+LDBN/UliI6dPIy4dAATdLSBWF4vSP2iE4ht5htsyUUmaL4hoccXZJEocm0seLh7xrjN/laD2fCziZgHpU1cee7iJOKPyDdCuP+QwE+Bxg8bGjPLoMi5xGmdwqP8DgmxYYKmcN3/uDnb/7A2luNGVUnKSfDotV8BtIvi0Jqm2XuoZOCjgNi7rjqXCOlioMymWjolHsQUVHk6sDo+NQi7sM5hk1+gg72B4stnZc0jJEtfZWPoorhWh+RsFvEVgvnmnK4zycEj+OytIvMxvy49oGZBtPBgSsI8xgFmU/8fyVA224/lAUDDPdQquc573bpfjOEJBtOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IL70YRJFUvhAU3Ulrz5GnMS7EIFLbBnnYHO+cbkyOwk=;
+ b=RMNzTMA/30iQbIiyrzu1fTz//6iUoqfI8P0g+ItUnTd0btYxnri4hale68NgQN2ZbIoDNQR+WsAZfXwLQoa3yqbS++/+GaKdH/Q9DeVR1ug9o1X8PeFBIZzwsVdcPvecdlKR/LkmdFZU4HBGhvooMnzyp8fKWpYUrwypyWjTUqo=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=oss.nxp.com;
+Received: from AM0PR04MB7041.eurprd04.prod.outlook.com (2603:10a6:208:19a::13)
+ by AM0PR04MB4884.eurprd04.prod.outlook.com (2603:10a6:208:d0::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Tue, 13 Apr
+ 2021 14:02:29 +0000
+Received: from AM0PR04MB7041.eurprd04.prod.outlook.com
+ ([fe80::3419:69b2:b9a3:cb69]) by AM0PR04MB7041.eurprd04.prod.outlook.com
+ ([fe80::3419:69b2:b9a3:cb69%9]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
+ 14:02:29 +0000
+Subject: Re: [PATCH] phy: nxp-c45: add driver for tja1103
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Radu-nicolae Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <YHCsrVNcZmeTPJzW@lunn.ch>
+ <64e44d26f45a4fcfc792073fe195e731e6f7e6d9.camel@oss.nxp.com>
+ <YHRDtTKUI0Uck00n@lunn.ch>
+ <111528aed55593de83a17dc8bd6d762c1c5a3171.camel@oss.nxp.com>
+ <YHRX7x0Nm9Kb0Kai@lunn.ch>
+ <82741edede173f50a5cae54e68cf51f6b8eb3fe3.camel@oss.nxp.com>
+ <YHR6sXvW959zY22K@lunn.ch> <d44a2c82-124c-8628-6149-1363bb7d4869@oss.nxp.com>
+ <YHWc/afcY3OXyhAo@lunn.ch> <b4f05b61-34f5-e6bf-4373-fa907fc7da4d@oss.nxp.com>
+ <YHWjU2LEXTqEYCmZ@lunn.ch>
+From:   Christian Herber <christian.herber@oss.nxp.com>
+Message-ID: <d8910e5f-bdbb-f127-2acb-a6277c53b568@oss.nxp.com>
+Date:   Tue, 13 Apr 2021 16:02:28 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
+In-Reply-To: <YHWjU2LEXTqEYCmZ@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [217.111.68.82]
+X-ClientProxiedBy: AM4PR0202CA0003.eurprd02.prod.outlook.com
+ (2603:10a6:200:89::13) To AM0PR04MB7041.eurprd04.prod.outlook.com
+ (2603:10a6:208:19a::13)
 MIME-Version: 1.0
-References: <20210413054733.36363-1-mst@redhat.com> <20210413054733.36363-2-mst@redhat.com>
-In-Reply-To: <20210413054733.36363-2-mst@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 13 Apr 2021 10:01:11 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe_SjUY4JxR6G9b8a0nx-MfQOkLdHJSzmjpuRG4BvsVPw@mail.gmail.com>
-Message-ID: <CA+FuTSe_SjUY4JxR6G9b8a0nx-MfQOkLdHJSzmjpuRG4BvsVPw@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 1/4] virtio: fix up virtio_disable_cb
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>, Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [165.114.161.25] (217.111.68.82) by AM4PR0202CA0003.eurprd02.prod.outlook.com (2603:10a6:200:89::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Tue, 13 Apr 2021 14:02:28 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 08575edb-1261-453f-51f5-08d8fe84c674
+X-MS-TrafficTypeDiagnostic: AM0PR04MB4884:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB4884617B7D0436CAEA85DE96C74F9@AM0PR04MB4884.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Sl5kmWbLPSjNknkgaZnwLwOjLqjdKjmO1B8LOMwaNkZTTogdGC5QFp+/sLOzlS6aqMGeFj5L0XFSDHsebc1981E5oddObbiLkUNzdVqNsPBFUYdoedwjyFnz9LS7taYLLKBcaCRLM6y+vSuihUtVwPH3RgR3pCHcyg3cA2L/xRqZKVR2K3EBkX+qvlGAU9lUw6unZdr0JGt2WOm1z/rwlAGzICDnDHfSc2qYKmgzAC8fRLe7QQsR7ryNPVqHM8ON3SqW6qkjy3Uow2Vc+tmcBQ5kM+F8jYdxKxiWnmz0mMsPnKuUU1X5tpn0lKeG0gq0wlqMUfzQbtYSkdZClRAvlOQaM2sYulFQLQ3ad3sUYMHXyrr96RijrI1voRWgTTBhRowuMUYcwrns3klU1Ax9yTGk+0iabO7ECOornNRzDRyEqne6ph2lXWxkUiSRv8FYDNHsWkadvh5GSmb42TcN2+NYfofXfmDpNTTX8spITnYQ6MgKpYq+qryzAuO8t/fjfgWc4biIH0ESuWAMtxCFBCD08xNXR8huwGXMzTA/HZ9p/lYmQSLVdPzuZf2OoFnkh4Tc2dQFgZ7XpKzNGMWRoyDEQxlJQOzAyBLSGQrtEdinXWypnZSJ75uPOqr9aJwbghO//TKr1EyAoYThm91xtfeQs9mWGjUB6TSSXrZLgIWwYJ1ForMC70dzCAhUUrQX+hwzp0mbfROAw7Q9Wm9NdIwAICDOTrGIZ7DEiNUy3FFZAdwt/I8FS+sv8/A/4nf7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB7041.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(16576012)(6706004)(6916009)(38350700002)(2906002)(66476007)(8936002)(186003)(498600001)(86362001)(26005)(66556008)(8676002)(4326008)(31686004)(53546011)(54906003)(55236004)(956004)(83380400001)(44832011)(6486002)(52116002)(2616005)(5660300002)(38100700002)(66946007)(16526019)(31696002)(78286007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?OWhOY3BKWllVNDhQNmRCTFVGWCtwa1VoM3RRZXMwSU5SVVBmbTNzQjdidUVB?=
+ =?utf-8?B?ZGxTSGhKeXRKYXpWVXlpKzVwbTJaMEN1N2RrVGF6NnhXZUxRczRoYktBZmhq?=
+ =?utf-8?B?bHo0dFoxSmhSNloxaWk2ZTBXd3NCNTVTQkZyQkYyVWJqM2V3Q0sycnZ2bDk4?=
+ =?utf-8?B?V0dFOWJRc2x4SUFobUprVnQxdEUyYnIzdTVENUZXUUVTaW5nMC9VWFplbFM3?=
+ =?utf-8?B?Z2NYN1N5b0dNY21YeVI1eEVRbXB0M1duQk1mMDFlVVFPTG1oOTB1UExHdmIx?=
+ =?utf-8?B?WGdiZW4xaEVmN0ZSZ3VTQklkTWVhNitKS2tHaTdqSmgyM0NrMzNiR3lRYmZx?=
+ =?utf-8?B?VHFIU1dndCtTbmFhMURHM2Q4OTA3ZC9hRnNHTVFCR3VGTWFRdjhIS1VMTE5G?=
+ =?utf-8?B?U0hhMVdlWTNOSHBUM2xWd2diMzFESzdZR2xxWmZBYklwb0hKdGRpeForM2xo?=
+ =?utf-8?B?Tlh4WmVRL0FUa2lES0hvVXdGMlZVaE9GeFZZR0tCTjlhdmQ4VlZTdGZXWTNo?=
+ =?utf-8?B?N3JNOE9OSmdzVkZlNmMrWTR3SXh2b1V2b0tQVm1vTjZGQlcrNk1YSmpEMXFp?=
+ =?utf-8?B?T1NwdHRYU2UwTzZ0SUFsK040RmVJMENvYVB5Y3FORUV4QjBpRkxNakYyRTc4?=
+ =?utf-8?B?UFVjNElpaSt6bHNLK0JlQ1lyVDB5UWE1L0tNOURsLzFsWm9raDdHTHJkUks0?=
+ =?utf-8?B?T25uaDgzSTFkaEJkbDFocmI3aVhidDZrRDBNalBuYjJNSE8zdjVUTVZybndu?=
+ =?utf-8?B?ZGdpUERnWHpMcFRHNzU0VGVNSGs4MDJGb0xIYUN4a0c2TGRubTB0cTVFMFk1?=
+ =?utf-8?B?UlhHbHFzVkR3RWpkcW1za281Rmg3Z0l4WjNKQzI1a09rTFBPaE54SExqQStt?=
+ =?utf-8?B?ajNIMFcwdll5VnRyWm56emQvYStIdkcwNjdmVlhtaW9QdFpwZjF0TVM0OVYw?=
+ =?utf-8?B?d045YW5LUXJZNmNCWmtQWUliVlF6cnFYL3kwTHlBSG84SVhNaERGVVlRcmpG?=
+ =?utf-8?B?QmFiMEVSMDByZHpUelZianA0MS9hcko0ZDBDaFZDODlNVVlFRGFiRHIxQ3pM?=
+ =?utf-8?B?M2M0VlVQOHd5c1hmek4yZlU5akJqalZhMGpRSHJvaGVzamNnZGVob1BxT3M0?=
+ =?utf-8?B?VHRIWGVZME5kam1MK05HS2p3dXcrbmxSQlhuUVJ6S2xCM1RrT1dBVUYrQ2tl?=
+ =?utf-8?B?Z3BUVmdxekRWaUY2UXZobFptRXM5dHNyUWdkQlE2QkZFZlExQXpkakZVT0Ir?=
+ =?utf-8?B?bmozS3B6emZHUEFEQlJvOW9seXJyQmdJelEzSEl4RElGd21XZXArNHowRkw5?=
+ =?utf-8?B?aGRvVDBFMUdDeFpjNU1jNWR3d2tRZVVWZnZYdEltWmJodk1EVkozT2prUlQz?=
+ =?utf-8?B?UGcvOVZUWGhsVFp2bk5sUk43M1RDVVY2ZmNaWCtadlBEZ1FtNFFBQ0F6ck1t?=
+ =?utf-8?B?SnUycDNKMithRjM5S0JwdkdCbEo5emV3WFRQNlNhcDJrV3hZWUFnZWVlVXhn?=
+ =?utf-8?B?UEl2SFZhSkFZQlhZMm04TnlsclVndUlxYkk3SFFhV2FlYTF5RzRmZkg3T0Rk?=
+ =?utf-8?B?UWJFUFlIRjlWM1cxWGRBWHA5d0IzYjI4M2tHaC9ZV1U3cTMzNWRCaWdFUGZz?=
+ =?utf-8?B?NG1kakErVkErbHJZejRaalZRek44V1Q5ck5Dc1FvVCtqVjFBeVFmOVdRZzZp?=
+ =?utf-8?B?T1ZOMWdCSWN2UWVIcFNSNlZSWC9Oa3o0Szhtd3BrN0U1VTA2cjVSb2ZyV1Ni?=
+ =?utf-8?Q?027YBJONWwRuF3+Onn7OsSf2RHRFrrWhYHqi2lO?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08575edb-1261-453f-51f5-08d8fe84c674
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB7041.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2021 14:02:29.4363
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hH87x2FgUVuhlCLXERI+PNZKmdh4Mok+b6N4KMPARr+x+CeYk0OSkKvP0rAlN582t3SOWm41xBeNX15MFXAuQq2sdlFuw4i9hi7a+j8LjzM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4884
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 1:47 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> virtio_disable_cb is currently a nop for split ring with event index.
-> This is because it used to be always called from a callback when we know
-> device won't trigger more events until we update the index.  However,
-> now that we run with interrupts enabled a lot we also poll without a
-> callback so that is different: disabling callbacks will help reduce the
-> number of spurious interrupts.
+On 4/13/2021 3:57 PM, Andrew Lunn wrote:
+>> Ok, we can agree that there will not be a perfect naming. Would it be a
+>> possibility to rename the existing TJA11xx driver to TJA1100-1-2 or is that
+>> unwanted?
+> 
+> It is generally a bad idea. It makes back porting fixing harder if the
+> file changes name.
+> 
+>> If nxp-c45.c is to generic (I take from your comments that' your
+>> conclusion), we could at least lean towards nxp-c45-bt1.c? Unfortunately,
+>> the product naming schemes are not sufficiently methodical to have a a good
+>> driver name based on product names.
+> 
+> And what does bt1 stand for?
+> 
+> How about nxp-c45-tja11xx.c. It is not ideal, but it does at least
+> give an indication of what devices it does cover, even if there is a
+> big overlap with nxp-tja11xx.c, in terms of pattern matching. And if
+> you do decide to have a major change of registers, your can call the
+> device tja1201 and have a new driver nxp-c45-tja12xx.
+> 
+>         Andrew
+> 
 
-The device may poll for transmit completions as a result of an interrupt
-from virtnet_poll_tx.
+bt1 standing for BASE-T1.
 
-As well as asynchronously to this transmit interrupt, from start_xmit or
-from virtnet_poll_cleantx as a result of a receive interrupt.
+As you can see from the current situation, it could well happen that a 
+future PHY is SW incompatible (right now I would say it is unlikely, but 
+ok), and the device is still a TJA11xx.
 
-As of napi-tx, transmit interrupts are left enabled to operate in standard
-napi mode. While previously they would be left disabled for most of the
-time, enabling only when the queue as low on descriptors.
-
-(in practice, for the at the time common case of split ring with event index,
-little changed, as that mode does not actually enable/disable the interrupt,
-but looks at the consumer index in the ring to decide whether to interrupt)
-
-Combined, this may cause the following:
-
-1. device sends a packet and fires transmit interrupt
-2. driver cleans interrupts using virtnet_poll_cleantx
-3. driver handles transmit interrupt using vring_interrupt,
-    detects that the vring is empty: !more_used(vq),
-    and records a spurious interrupt.
-
-I don't quite follow how suppressing interrupt suppression, i.e.,
-skipping disable_cb, helps avoid this.
-
-I'm probably missing something. Is this solving a subtly different
-problem from the one as I understand it?
-
-> Further, if using event index with a packed ring, and if being called
-> from a callback, we actually do disable interrupts which is unnecessary.
->
-> Fix both issues by tracking whenever we get a callback. If that is
-> the case disabling interrupts with event index can be a nop.
-> If not the case disable interrupts. Note: with a split ring
-> there's no explicit "no interrupts" value. For now we write
-> a fixed value so our chance of triggering an interupt
-> is 1/ring size. It's probably better to write something
-> related to the last used index there to reduce the chance
-> even further. For now I'm keeping it simple.
->
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+nxp-c45-tja11xx is acceptable from my point of view.
