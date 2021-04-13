@@ -2,176 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D21B435DBF3
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:57:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E66435DBFD
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbhDMJ43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:56:29 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:17988 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229687AbhDMJ40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:56:26 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13D9tewP022369;
-        Tue, 13 Apr 2021 02:55:57 -0700
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2108.outbound.protection.outlook.com [104.47.58.108])
-        by mx0a-0016f401.pphosted.com with ESMTP id 37w6vugeyk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 13 Apr 2021 02:55:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B/JrgBScUsr9gHVuPnE+pp1xFU/UDVT7lXvR/mz2Dpaz3sm1rH156vqNhl9yBYghq8WHJDvZDS8ETQiPpQLQ3DNwMBuNOEnAiKhylVnw/Af+KWisWuLlCLYIQETmjryHcPRUAJQfT66Q+h1zeajFZD5cMp54B3Bt1p9KsRxtO7NjCjaf7FtPVlFg4jubpeNLq21XRuiCaNlRnp9uVSqjnkj1f3gXSvVaha4eC1EW6mna9o9MFqJqy/OQzYU1S3glvAzQDHYXxaUMeWQDyV+eeURtwkhoht8OpEjhzJKXyNPSh4XlR2GgTZKUdpR/b/AAeAg0Hta1KWGzLYv65Qvx/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UOVUQdLSQWGZ+j1AOxsv8SlKfrjQ+w7GS7WE3hoWLkc=;
- b=btnaeuZJx6XbTf8BCB7Bjo7hFayPnnnmvY2a8rtYPtscZW+bNp+0VFQQeqDCvsuqyUxeKXr8oYL3u04sWLmomt6+cg2yXr1uHhKSpssp1wUVy2QbdMVjLN0BRLVXszDJVUt/QduYLNlIzhAQckqBOruPAnY/DQBah9bQvtMdE/+hqrNUL67wk1z433wa5+MSj9TZr+6rhMIvXhfle9hBt8F4C4cqbYBZqvGfIOAQhjExwA1MO8CVWmX4JrXNJ0X16fC53lNB/9zcmDFSOj5Gfccc81ICwC6S6k4VF0bJ1pAt15QdMKRlBnDzepX9wjnjnk/suOgRPVUAsEyRPo7d4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UOVUQdLSQWGZ+j1AOxsv8SlKfrjQ+w7GS7WE3hoWLkc=;
- b=dTBRH1WW3Y1nLKxYr2YcdEEwo9i40Okv7tWSgSMcXms/GTNCLMWdxL5+Lwi4vsNoEjqL9qavY3LgSs7B8m5rEV3luiegKdbF1DLxmGhUh/P+vSeNKrzo4uyOnosrNlPmowu/fngWkegrrV3jaPzDJq19EkBBTWc7fG0XG4EouOU=
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
- by MWHPR18MB1566.namprd18.prod.outlook.com (2603:10b6:300:cb::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17; Tue, 13 Apr
- 2021 09:55:54 +0000
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::ddee:3de3:f688:ee3e]) by CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::ddee:3de3:f688:ee3e%7]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
- 09:55:54 +0000
-From:   Stefan Chulski <stefanc@marvell.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        Liron Himi <lironh@marvell.com>, Dana Vardi <danat@marvell.com>
-Subject: RE: [EXT] Re: [PATCH net-next] net: mvpp2: Add parsing support for
- different IPv4 IHL values
-Thread-Topic: [EXT] Re: [PATCH net-next] net: mvpp2: Add parsing support for
- different IPv4 IHL values
-Thread-Index: AQHXMEFo10wdEFvjykKGBHXbluX/IaqyKzMAgAADlZCAAAZBcA==
-Date:   Tue, 13 Apr 2021 09:55:54 +0000
-Message-ID: <CO6PR18MB3873B0B27E086CA02E09B08DB04F9@CO6PR18MB3873.namprd18.prod.outlook.com>
-References: <1618303531-16050-1-git-send-email-stefanc@marvell.com>
- <20210413091741.GL1463@shell.armlinux.org.uk>
- <CO6PR18MB38732288887550115ACCCF75B04F9@CO6PR18MB3873.namprd18.prod.outlook.com>
-In-Reply-To: <CO6PR18MB38732288887550115ACCCF75B04F9@CO6PR18MB3873.namprd18.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=marvell.com;
-x-originating-ip: [62.67.24.210]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a11e4e7c-1ffa-4e73-2a6f-08d8fe625443
-x-ms-traffictypediagnostic: MWHPR18MB1566:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR18MB15669699AFA8B2786E725DFAB04F9@MWHPR18MB1566.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1265;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bqa/EFwDnUrAUHgkiZqcZUJpzn7wYaapLjs3iNYod+Lgv05pOGPl9Zp2lwuVXdyGbR6p3NZhkX3EkEYZhW7vwzU8QYo/CMHT5aWqSVQHiFRx4kCsGdyvCJkW6P6ZvbfkzcQvNPO097z3g+PrdF+350uwCNQTO1uWH15qkhXUEoX6r2ATHvH3y9V5jhfFp/53K4+nvaLXjoMEqVnnsXEP6ISwbgY36TeizXc7pFQkilpcw1pTzrXXINlZca5Zmp+u42f0xpOadOTLzyUhDQR0hE0uDlGj0i+na+Tqn0MiZcJZKb9GmzQifCc1VuaORYMFt5mwM2zEOUQm6Dj/TCBKw6aGn95JaCL6nQT4RvrAmSHFer8aP5PM+1ePmm7I85Nbg0iPgdrpM4ZHCrGv29YeHBS7dkAJ282kaBtkv4P7Ax3K59hCXQVSMzbp5Ntg7rcvmUIhH+bPP32VPwlnZYRmdsi1KxChrjh0YwkBZ8qjUI/VSraBqs7ehYcRLKaVqu3/xpr3upo7ipJ9CrlpBax3nEHxSQ/PZWIOrzug+DMySeFHEmAFR6hLLuocqIwo2Y7BWFaY49CveKktaQMxwJ8sxprsWAFlzjj77DDMGTob9K0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(39850400004)(376002)(136003)(4326008)(186003)(2906002)(8936002)(83380400001)(122000001)(66946007)(6916009)(52536014)(6506007)(53546011)(66476007)(66446008)(64756008)(33656002)(107886003)(71200400001)(478600001)(66556008)(5660300002)(86362001)(2940100002)(316002)(76116006)(54906003)(7696005)(8676002)(26005)(38100700002)(55016002)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?Bhiq3pNpfnnQ8mH4A6WtscOv2E55XHzUt3evk2CXBtC1/tO+D33eUeWtDwdt?=
- =?us-ascii?Q?XrdgKi5AJvG1o4NZZ/ylRK2XfSqcq+6RCIeTL2dsDgPvnr8hbcIKjNCgahze?=
- =?us-ascii?Q?09JgVK8rJqKNA+YV2sPKhPKPKumN3vq7tlIUuH9yWQVTz2l8vsBchaLRX9KA?=
- =?us-ascii?Q?jQU+Z9qJBpndZUHY0fARemumADE+0Ze6hjQ7ObALGeApjPW9X8Z1u2zn2L6n?=
- =?us-ascii?Q?YumsCyCKJGom92TVbMs5KkRLHNMcb/xKaK8oC0OZ9a2w//XhgwJsf09J3hwu?=
- =?us-ascii?Q?6CMUjBzJB+1smpW8lUW5d6R3vA0YpzJ/vj3+sg7blvFc4Rxa3P6oyM722RLK?=
- =?us-ascii?Q?MFcczEdiKM9w/fx6Zii6wRLl8tUwttocuoHWS/FanDITc3WWQcci9eirhai9?=
- =?us-ascii?Q?ySlp8rv6fHH+B/Q1TuVukIMyGlDqyxpRCWDO0GiJfMVfFkiQdUo+4GByD1eQ?=
- =?us-ascii?Q?nlwBct8rPJosMbz6bQJUH8lJ6Vf1nqgG9Fao5fwDvfYQPdWbOg9c1bnxvQLR?=
- =?us-ascii?Q?5k5phVAbvjzUdqtVR2EG20GQLYoSxKfRf8RpcuruNO0Yv13MsxUYcPYHyj25?=
- =?us-ascii?Q?KpTdOq82i0vISlzoFX1PnHuDrHwKDnWyByM7ChP/k7dNaqmv+s5QsYagGRtY?=
- =?us-ascii?Q?vXxG7S1CsgYJ+471DRiQXwSvq8ZvS/Qvq+1ua4n52g0UvTnKlZmmtBwZtTXo?=
- =?us-ascii?Q?TYhe1p9K1XqYIDQvQs/WDMZDmUL8jxMwBmjr4wsSQdltMs/FZMp9+QGFwNvW?=
- =?us-ascii?Q?4iMzFLU8wcw/QGu0HH3j+pKKBifdML+HC6/weDf2qwy6ktLUdvPHSHqeBwmN?=
- =?us-ascii?Q?hWwt+CREN/NFbZVZyYeLfx3RAfBxCfvUMmzxC5JF9OFaaWBhWynyM2pyX3zr?=
- =?us-ascii?Q?sYp/fxnLyB8ElxD+e81P3kt5AttFT6/oyofBzWtvo3gvLT2mutoYMGNDxRWL?=
- =?us-ascii?Q?y4/rcJIfkVMJh0NaNc62be8MjldDuofZkvW/x6BBFvNgEg3T8x6hB58aY7U9?=
- =?us-ascii?Q?cALjFpoAu1Tiif6AsgYY9uNYAXqrMiJIt3sykZTrTfK+IAerm81tV5dNVibo?=
- =?us-ascii?Q?4KatySNZmLz9nbn+S5f1e0kRp7WDjNqeZ/DBQ879jk+pcYtYqyjDT5CXJawS?=
- =?us-ascii?Q?DGRYliweMh7aYh90gCaWm0vEpvWNWTdrAnuL8Q0arOC1iU0tEBs0IuoaTBrs?=
- =?us-ascii?Q?m2OFC63k3cexb58VeZnVb5xIUmXZUIyeYvAeIKdbbHBZsTuAWmXDb5r+tD/f?=
- =?us-ascii?Q?rn4jv4GYqDp7D7bCzo7re9LJkOcFIo1jtIfv5YmmC03gyuV0COAbDoulgR0v?=
- =?us-ascii?Q?5TY0utl4NxoJ1RBqkOw5azEn?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S243030AbhDMJ5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231548AbhDMJ5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:57:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE75C061574
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 02:56:58 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1lWFmp-0003l5-Ho; Tue, 13 Apr 2021 11:56:47 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:d93:7b32:b325:ef5e] (unknown [IPv6:2a03:f580:87bc:d400:d93:7b32:b325:ef5e])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9196760DB47;
+        Tue, 13 Apr 2021 09:56:45 +0000 (UTC)
+Subject: Re: [PATCH v3] dt-bindings: net: can: rcar_can: Document r8a77961
+ support
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        wg@grandegger.com
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh@kernel.org>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+References: <20210409000020.2317696-1-yoshihiro.shimoda.uh@renesas.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
+ iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
+ 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
+ +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
+ 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
+ sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
+ n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
+ 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
+ /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
+ Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
+ ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
+ 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
+ LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
+ iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
+ B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
+ B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
+ yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
+ 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
+ Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
+ RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
+ /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
+ YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
+ wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
+ h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
+ AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
+ m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
+ fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
+ Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
+ BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
+ Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
+ 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
+ cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
+ qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
+ +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
+ /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
+ h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
+ 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
+ sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
+ Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
+ vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
+ X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
+ z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
+ z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
+ 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
+ 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
+ HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
+ xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
+Message-ID: <00ed27cf-f43e-334f-d7c7-0e1d196640d0@pengutronix.de>
+Date:   Tue, 13 Apr 2021 11:56:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a11e4e7c-1ffa-4e73-2a6f-08d8fe625443
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2021 09:55:54.5130
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lWvaMoetO0YXkerq9W+sLIRgm0jYX98OKC8YM4Hb0Md+qtlOwua6T5eU9+C+cN57NnEj4nwe6WT2sBPeHtm5dg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB1566
-X-Proofpoint-GUID: 3WaRM0snAbKbrPmwInmpRlZ5BMHkaqA3
-X-Proofpoint-ORIG-GUID: 3WaRM0snAbKbrPmwInmpRlZ5BMHkaqA3
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-13_04:2021-04-13,2021-04-13 signatures=0
+In-Reply-To: <20210409000020.2317696-1-yoshihiro.shimoda.uh@renesas.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="80pny2FN6gKJ5tZHI6B5tIHrwyRFcCBHQ"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > -----Original Message-----
-> > From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> > Sent: Tuesday, April 13, 2021 12:18 PM
-> > To: Stefan Chulski <stefanc@marvell.com>
-> > Cc: netdev@vger.kernel.org; thomas.petazzoni@bootlin.com;
-> > davem@davemloft.net; Nadav Haklai <nadavh@marvell.com>; Yan
-> Markman
-> > <ymarkman@marvell.com>; linux-kernel@vger.kernel.org;
-> kuba@kernel.org;
-> > mw@semihalf.com; andrew@lunn.ch; atenart@kernel.org; Liron Himi
-> > <lironh@marvell.com>; Dana Vardi <danat@marvell.com>
-> > Subject: [EXT] Re: [PATCH net-next] net: mvpp2: Add parsing support
-> > for different IPv4 IHL values
-> >
-> > External Email
-> >
-> > ----------------------------------------------------------------------
-> > On Tue, Apr 13, 2021 at 11:45:31AM +0300, stefanc@marvell.com wrote:
-> > > From: Stefan Chulski <stefanc@marvell.com>
-> > >
-> > > Add parser entries for different IPv4 IHL values.
-> > > Each entry will set the L4 header offset according to the IPv4 IHL fi=
-eld.
-> > > L3 header offset will set during the parsing of the IPv4 protocol.
-> >
-> > What is the impact of this commit? Is something broken at the moment,
-> > if so what? Does this need to be backported to stable kernels?
-> >
-> > These are key questions, of which the former two should be covered in
-> > every commit message so that the reason for the change can be known.
-> > It's no good just describing what is being changed in the commit
-> > without also describing why the change is being made.
-> >
-> > Thanks.
->=20
-> Due to missed parser support for IP header length > 20, RX IPv4 checksum
-> offload fail.
->=20
-> Regards.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--80pny2FN6gKJ5tZHI6B5tIHrwyRFcCBHQ
+Content-Type: multipart/mixed; boundary="lq6QyrMWuAfxX95EiohGyKJZGQNxXp84c";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, wg@grandegger.com
+Cc: davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+ linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ Geert Uytterhoeven <geert+renesas@glider.be>, Rob Herring <robh@kernel.org>,
+ Wolfram Sang <wsa+renesas@sang-engineering.com>
+Message-ID: <00ed27cf-f43e-334f-d7c7-0e1d196640d0@pengutronix.de>
+Subject: Re: [PATCH v3] dt-bindings: net: can: rcar_can: Document r8a77961
+ support
+References: <20210409000020.2317696-1-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <20210409000020.2317696-1-yoshihiro.shimoda.uh@renesas.com>
 
-Currently driver set skb->ip_summed =3D CHECKSUM_NONE and checksum done by =
-software.
-So this just improve performance for packets with IP header length > 20.=20
-IMO we can keep it in net-next.
+--lq6QyrMWuAfxX95EiohGyKJZGQNxXp84c
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-Stefan.
+On 4/9/21 2:00 AM, Yoshihiro Shimoda wrote:
+> Document SoC specific bindings for R-Car M3-W+ (r8a77961) SoC.
+>=20
+> Also as R8A7796 is now called R8A77960 so that update those
+> references.
+>=20
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+
+Added to latest pull request.
+
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--lq6QyrMWuAfxX95EiohGyKJZGQNxXp84c--
+
+--80pny2FN6gKJ5tZHI6B5tIHrwyRFcCBHQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmB1atoACgkQqclaivrt
+76kA3wf+Pilp2xNeO0//92ahLJklfruOnsMnUm27k26earWFMw47KNoMjCi/GCQ+
+OwdSeeT4J7Etio1roUgdWFD1hP+6I4+lgevddnHaFUS/DYRFRpLb7a6KlGJ5VldV
+bw4kBjGnq9aTEyDmxB4tDJ3Rwwi8hHgZe62AEqT9XsvUOKzl9OhUpPe8LvIFFHRU
+M2/96EWTdB3qPKbwPFG3QGzUC1a83yAlSqYIAbkwoLCprpaZnnxOjDEudtFyMxJN
+t/ECXqwXAxaXQCRoql91BY7SWvjCPKaZXU39bMsenrvcuCYomXJ9KMB3N7Yvsm5t
+kw6jvM7QXBLXu3fozsW/bTiGZY3afg==
+=k7YO
+-----END PGP SIGNATURE-----
+
+--80pny2FN6gKJ5tZHI6B5tIHrwyRFcCBHQ--
