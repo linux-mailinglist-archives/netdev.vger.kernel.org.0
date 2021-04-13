@@ -2,125 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74C6535E268
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 17:12:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAA4F35E26F
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 17:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242392AbhDMPNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 11:13:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229812AbhDMPNB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 11:13:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 29021613B3;
-        Tue, 13 Apr 2021 15:12:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618326762;
-        bh=eAMINRy0iCnq/PGCPbdRVJfTQgHFUZp7G5S/mEDJS/0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=frn9yPw9vzDYyPcZp3Ml6R/AF8ouH4eYW7SQYnJe71ZyF9donSMDC76Ur1qTdKg2i
-         I7biqNDHKkBH5fUaT0E0HxgGJ9IiM5d0LwVOnsOascHGuYGdMFhwrZc8g3AY0eIoEC
-         LPHTDmC30Dq+SYhe9UI2CbplVrzkCk6AoGgqfP2BjkSU5ymR8HKkXkQQPfUzb3v+av
-         lt1Obd+UpXPom+sGkYPxlAfXAGONQ9wwjyr7nKlsAm+SS91ux5g8gCFpqpQQwYnJ+h
-         aKRkYDbat85ZJdsWy6hGNor3kRzYe9oGoOEm54Hcv3JNa/YRNYjMOfI/eE0enN3viX
-         E6iCzwGbDqpSw==
-Date:   Tue, 13 Apr 2021 17:12:38 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org
-Subject: Re: [PATCH net-next 2/5] net: phy: marvell: fix HWMON enable
- register for 6390
-Message-ID: <20210413171238.1da8c4ce@thinkpad>
-In-Reply-To: <YHWp3UToOvq8k3wJ@lunn.ch>
-References: <20210413075538.30175-1-kabel@kernel.org>
-        <20210413075538.30175-3-kabel@kernel.org>
-        <YHWp3UToOvq8k3wJ@lunn.ch>
+        id S1344021AbhDMPPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 11:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242392AbhDMPPG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 11:15:06 -0400
+Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052CBC061574;
+        Tue, 13 Apr 2021 08:14:46 -0700 (PDT)
+Received: from thinkpad (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id 2E28A140A5F;
+        Tue, 13 Apr 2021 17:14:44 +0200 (CEST)
+Date:   Tue, 13 Apr 2021 17:14:43 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        zhang kai <zhangkaiheb@126.com>,
+        Weilong Chen <chenweilong@huawei.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Di Zhu <zhudi21@huawei.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Message-ID: <20210413171443.1b2b2f88@thinkpad>
+In-Reply-To: <87im4qjl87.fsf@waldekranz.com>
+References: <20210410133454.4768-1-ansuelsmth@gmail.com>
+        <20210411200135.35fb5985@thinkpad>
+        <20210411185017.3xf7kxzzq2vefpwu@skbuf>
+        <878s5nllgs.fsf@waldekranz.com>
+        <20210412213045.4277a598@thinkpad>
+        <8735vvkxju.fsf@waldekranz.com>
+        <20210412235054.73754df9@thinkpad>
+        <87wnt7jgzk.fsf@waldekranz.com>
+        <20210413005518.2f9b9cef@thinkpad>
+        <87r1jfje26.fsf@waldekranz.com>
+        <87o8ejjdu6.fsf@waldekranz.com>
+        <20210413015450.1ae597da@thinkpad>
+        <20210413022730.2a51c083@thinkpad>
+        <87im4qjl87.fsf@waldekranz.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Apr 2021 16:25:33 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+On Tue, 13 Apr 2021 16:46:32 +0200
+Tobias Waldekranz <tobias@waldekranz.com> wrote:
 
-> On Tue, Apr 13, 2021 at 09:55:35AM +0200, Marek Beh=C3=BAn wrote:
-> > Register 27_6.15:14 has the following description in 88E6393X
-> > documentation:
-> >   Temperature Sensor Enable
-> >     0x0 - Sample every 1s
-> >     0x1 - Sense rate decided by bits 10:8 of this register
-> >     0x2 - Use 26_6.5 (One shot Temperature Sample) to enable
-> >     0x3 - Disable
-> >=20
-> > This is compatible with how the 6390 code uses this register currently,
-> > but the 6390 code handles it as two 1-bit registers (somewhat), instead
-> > of one register with 4 possible values.
-> >=20
-> > Rename this register and define all 4 values according to 6393X
-> > documentation.
-> >=20
-> > Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> > ---
-> >  drivers/net/phy/marvell.c | 19 +++++++++----------
-> >  1 file changed, 9 insertions(+), 10 deletions(-)
-> >=20
-> > diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> > index 63788d5c13eb..bae2a225b550 100644
-> > --- a/drivers/net/phy/marvell.c
-> > +++ b/drivers/net/phy/marvell.c
-> > @@ -113,11 +113,11 @@
-> >  #define MII_88E1540_COPPER_CTRL3_FAST_LINK_DOWN		BIT(9)
-> > =20
-> >  #define MII_88E6390_MISC_TEST		0x1b
-> > -#define MII_88E6390_MISC_TEST_SAMPLE_1S		0
-> > -#define MII_88E6390_MISC_TEST_SAMPLE_10MS	BIT(14)
-> > -#define MII_88E6390_MISC_TEST_SAMPLE_DISABLE	BIT(15)
-> > -#define MII_88E6390_MISC_TEST_SAMPLE_ENABLE	0
-> > -#define MII_88E6390_MISC_TEST_SAMPLE_MASK	(0x3 << 14)
-> > +#define MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE_SAMPLE_1S	(0x0 << 14)
-> > +#define MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE		(0x1 << 14)
-> > +#define MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE_ONESHOT	(0x2 << 14)
-> > +#define MII_88E6390_MISC_TEST_TEMP_SENSOR_DISABLE		(0x3 << 14)
-> > +#define MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK			(0x3 << 14)
-> > =20
-> >  #define MII_88E6390_TEMP_SENSOR		0x1c
-> >  #define MII_88E6390_TEMP_SENSOR_MASK	0xff
-> > @@ -2352,9 +2352,8 @@ static int m88e6390_get_temp(struct phy_device *p=
-hydev, long *temp)
-> >  	if (ret < 0)
-> >  		goto error;
-> > =20
-> > -	ret =3D ret & ~MII_88E6390_MISC_TEST_SAMPLE_MASK;
-> > -	ret |=3D MII_88E6390_MISC_TEST_SAMPLE_ENABLE |
-> > -		MII_88E6390_MISC_TEST_SAMPLE_1S;
-> > +	ret =3D ret & ~MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK;
-> > +	ret |=3D MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE_SAMPLE_1S; =20
->=20
-> So this is identical
->=20
-> > =20
-> >  	ret =3D __phy_write(phydev, MII_88E6390_MISC_TEST, ret);
-> >  	if (ret < 0)
-> > @@ -2381,8 +2380,8 @@ static int m88e6390_get_temp(struct phy_device *p=
-hydev, long *temp)
-> >  	if (ret < 0)
-> >  		goto error;
-> > =20
-> > -	ret =3D ret & ~MII_88E6390_MISC_TEST_SAMPLE_MASK;
-> > -	ret |=3D MII_88E6390_MISC_TEST_SAMPLE_DISABLE;
-> > +	ret =3D ret & ~MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK;
-> > +	ret |=3D MII_88E6390_MISC_TEST_TEMP_SENSOR_DISABLE; =20
->=20
-> And here we have gone from 0x2 to 0x3?
->=20
-> Have you checked the 6390 datasheet for this?
->=20
-> I will test these patches later.
->=20
->      Andrew
+> On Tue, Apr 13, 2021 at 02:27, Marek Behun <marek.behun@nic.cz> wrote:
+> > On Tue, 13 Apr 2021 01:54:50 +0200
+> > Marek Behun <marek.behun@nic.cz> wrote:
+> >  
+> >> I will look into this, maybe ask some follow-up questions.  
+> >
+> > Tobias,
+> >
+> > it seems that currently the LAGs in mv88e6xxx driver do not use the
+> > HashTrunk feature (which can be enabled via bit 11 of the
+> > MV88E6XXX_G2_TRUNK_MAPPING register).  
+> 
+> This should be set at the bottom of mv88e6xxx_lag_sync_masks.
+> 
+> > If we used this feature and if we knew what hash function it uses, we
+> > could write a userspace tool that could recompute new MAC
+> > addresses for the CPU ports in order to avoid the problem I explained
+> > previously...
+> >
+> > Or the tool can simply inject frames into the switch and try different
+> > MAC addresses for the CPU ports until desired load-balancing is reached.
+> >
+> > What do you think?  
+> 
+> As you concluded in your followup, not being able to have a fixed MAC
+> for the CPU seems weird.
+> 
+> Maybe you could do the inverse? Allow userspace to set the masks for an
+> individual bond/team port in a hash-based LAG, then you can offload that
+> to DSA. 
 
-The 6390 datasheet does not contain specification for temperature
-sensor anymore. I will look into older versions.
+What masks?
