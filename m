@@ -2,105 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E0F35E6C7
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 21:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 395D835E6C9
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 21:04:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347913AbhDMTDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 15:03:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60192 "EHLO mail.kernel.org"
+        id S1347921AbhDMTD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 15:03:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60290 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230397AbhDMTDq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 15:03:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 785A2613C7;
-        Tue, 13 Apr 2021 19:03:25 +0000 (UTC)
+        id S230397AbhDMTD4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 15:03:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 15FD8613C7;
+        Tue, 13 Apr 2021 19:03:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618340606;
-        bh=rLFd/xrh+tG4/zWboqcHD3m2GdGB/rmn4+tq21j9Vys=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LTKxpgW+UWCnxj9hzje2M721QQ5P7aG2LK17i+IcHNdaTiYc54EAJoY/9mOeyxsTP
-         BSleYznLnXp82DjbJgphYut4gbII1XflWxF7/xlGjM5v/YEvDJ/CknzOpA/8pA7wLa
-         DpQIustPmsJGwU+EHsuaTvnZ3mPL6H84GdavAJiIKHMLJL+MVBXN4LjYjZwyeoXzZ1
-         ZgnXVR95TXxBPO26ed3WldvI6TYe0JbT821PRLUCihScov7GDOpLuo7/TaZ6XbBuk8
-         tDKnwSjSU3nKJlINNNd1KVQCtFQ8krlMTkF3baIwKbSaIOvHme8y9iU/nMWMOPa8sv
-         7yCIbC0/GTKuQ==
-Date:   Tue, 13 Apr 2021 12:03:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     davem@davemloft.net, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, liuwe@microsoft.com,
-        netdev@vger.kernel.org, leon@kernel.org, andrew@lunn.ch,
-        bernd@petrovitsch.priv.at, rdunlap@infradead.org,
-        shacharr@microsoft.com, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH v5 net-next] net: mana: Add a driver for Microsoft Azure
- Network Adapter (MANA)
-Message-ID: <20210413120324.18983187@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210413023509.51952-1-decui@microsoft.com>
-References: <20210413023509.51952-1-decui@microsoft.com>
+        s=k20201202; t=1618340616;
+        bh=024RQYE9FOwSubSEu8+U+9O/gSbth/Wav0L2yaIq/CE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=W9GfPXo6hE3q/OpLX9wNTbZjLXShA7tzwr8wzyMijum7OMWJsbTnqTy1cypdHf8Vv
+         1/hrOdrXOWrsNG6HGJqCVnB5lQ0yPbNOV6ot6SH2ryuDh4UBYITLEZgF8pV9UVR6Ur
+         GksGKBQ4WSEp4zpGgNp6FVS/X9BBb4pF5l1X+DlMAM76Yougyp6xuGbodqw3xzHptb
+         dIfoP6qlh2jt/oBJltDErEaHC35wDR6IiQsUpk0BOecS/j8uWgPebtD43WQfd1zJo6
+         IXhzMJ5Iq5Zc5LBA6cpxkMkcaAVROZlHD62p3cMGFD6CH3EVsTrHxqqueXN2b76y3E
+         fgUtf1572LoCQ==
+Date:   Tue, 13 Apr 2021 14:03:45 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: [PATCH][next] ixgbe: Fix out-bounds warning in
+ ixgbe_host_interface_command()
+Message-ID: <20210413190345.GA304933@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Apr 2021 19:35:09 -0700 Dexuan Cui wrote:
-> +	apc->port_st_save = apc->port_is_up;
-> +	apc->port_is_up = false;
-> +	apc->start_remove = true;
-> +
-> +	/* Ensure port state updated before txq state */
-> +	smp_wmb();
-> +
-> +	netif_tx_disable(ndev);
+Replace union with a couple of pointers in order to fix the following
+out-of-bounds warning:
 
-In your napi poll method there is no barrier between port_is_up check
-and netif_tx_queue_stopped().
+  CC [M]  drivers/net/ethernet/intel/ixgbe/ixgbe_common.o
+drivers/net/ethernet/intel/ixgbe/ixgbe_common.c: In function ‘ixgbe_host_interface_command’:
+drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3729:13: warning: array subscript 1 is above array bounds of ‘u32[1]’ {aka ‘unsigned int[1]’} [-Warray-bounds]
+ 3729 |   bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+      |   ~~~~~~~~~~^~~~
+drivers/net/ethernet/intel/ixgbe/ixgbe_common.c:3682:7: note: while referencing ‘u32arr’
+ 3682 |   u32 u32arr[1];
+      |       ^~~~~~
 
-> +	netif_carrier_off(ndev);
-> +
-> +	/* No packet can be transmitted now since apc->port_is_up is false.
-> +	 * There is still a tiny chance that mana_poll_tx_cq() can re-enable
-> +	 * a txq because it may not timely see apc->port_is_up being cleared
-> +	 * to false, but it doesn't matter since mana_start_xmit() drops any
-> +	 * new packets due to apc->port_is_up being false.
-> +	 *
-> +	 * Drain all the in-flight TX packets
-> +	 */
-> +	for (i = 0; i < apc->num_queues; i++) {
-> +		txq = &apc->tx_qp[i].txq;
-> +
-> +		while (atomic_read(&txq->pending_sends) > 0)
-> +			usleep_range(1000, 2000);
-> +	}
+This helps with the ongoing efforts to globally enable -Warray-bounds.
 
-> +		/* All cleanup actions should stay after rtnl_lock(), otherwise
-> +		 * other functions may access partially cleaned up data.
-> +		 */
-> +		rtnl_lock();
-> +
-> +		mana_detach(ndev);
-> +
-> +		unregister_netdevice(ndev);
-> +
-> +		rtnl_unlock();
+Link: https://github.com/KSPP/linux/issues/109
+Co-developed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-I find the resource management somewhat strange. Why is mana_attach()
-and mana_detach() called at probe/remove time, and not when the
-interface is brought up? Presumably when the user ifdowns the interface
-there is no point holding the resources? Your open/close methods are
-rather empty.
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+index 03ccbe6b66d2..e90b5047e695 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+@@ -3678,10 +3678,8 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+ 				 bool return_data)
+ {
+ 	u32 hdr_size = sizeof(struct ixgbe_hic_hdr);
+-	union {
+-		struct ixgbe_hic_hdr hdr;
+-		u32 u32arr[1];
+-	} *bp = buffer;
++	struct ixgbe_hic_hdr *hdr = buffer;
++	u32 *u32arr = buffer;
+ 	u16 buf_len, dword_len;
+ 	s32 status;
+ 	u32 bi;
+@@ -3707,12 +3705,12 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+ 
+ 	/* first pull in the header so we know the buffer length */
+ 	for (bi = 0; bi < dword_len; bi++) {
+-		bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+-		le32_to_cpus(&bp->u32arr[bi]);
++		u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
++		le32_to_cpus(&u32arr[bi]);
+ 	}
+ 
+ 	/* If there is any thing in data position pull it in */
+-	buf_len = bp->hdr.buf_len;
++	buf_len = hdr->buf_len;
+ 	if (!buf_len)
+ 		goto rel_out;
+ 
+@@ -3727,8 +3725,8 @@ s32 ixgbe_host_interface_command(struct ixgbe_hw *hw, void *buffer,
+ 
+ 	/* Pull in the rest of the buffer (bi is where we left off) */
+ 	for (; bi <= dword_len; bi++) {
+-		bp->u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
+-		le32_to_cpus(&bp->u32arr[bi]);
++		u32arr[bi] = IXGBE_READ_REG_ARRAY(hw, IXGBE_FLEX_MNG, bi);
++		le32_to_cpus(&u32arr[bi]);
+ 	}
+ 
+ rel_out:
+-- 
+2.27.0
 
-> +	if ((eq_addr & PAGE_MASK) != eq_addr)
-> +		return -EINVAL;
-> +
-> +	if ((cq_addr & PAGE_MASK) != cq_addr)
-> +		return -EINVAL;
-> +
-> +	if ((rq_addr & PAGE_MASK) != rq_addr)
-> +		return -EINVAL;
-> +
-> +	if ((sq_addr & PAGE_MASK) != sq_addr)
-> +		return -EINVAL;
-
-PAGE_ALIGNED()
