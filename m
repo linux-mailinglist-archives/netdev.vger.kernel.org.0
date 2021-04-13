@@ -2,92 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7270935D4C9
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 03:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B345A35D530
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 04:17:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238715AbhDMBZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 21:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
+        id S245445AbhDMCR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 22:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237792AbhDMBZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 21:25:50 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D034C061574
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 18:25:30 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so3938458pjb.4
-        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 18:25:30 -0700 (PDT)
+        with ESMTP id S239415AbhDMCRz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 22:17:55 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69893C061574;
+        Mon, 12 Apr 2021 19:17:36 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id h19-20020a9d64130000b02902875a567768so3759095otl.0;
+        Mon, 12 Apr 2021 19:17:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=XdOBuI7DEw0fulqmOwramoBH8yqxlwc/+oFM/+yUGE8=;
-        b=H0WqkfP+YiAGfm14JBltGP7lqDjqCYiI/20mGVLUjpbBYVvpk7QzXuvkMiYHcdoeJJ
-         BuqydOiH6T/AsRdXTKcbY1eb7uWnhOrwG56lpOPAHN3AyRnD+nh9/z3Bkk1AIJOnzNWM
-         XD++jxDJzRstiaxCcRxVovRS5XiJCAjzj1k+67db/avRgdmGnRJhV7exQkwgzw5U6lqc
-         iUKRXBHpmLkZQJ6w9MQrRQdy1qnIItXWLj9TNqg1nCwzXZDhYe46ZEnP1o34Ho4drsMR
-         Ma+AWcblajFbNF0CJKu1RlKBRVR/muipNIdtiFT+j8dyDbxLbiyjEA2xbucQS5vhd11j
-         nhKQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fSxsn65EUsOh+O13K1SDdQjwp4rSXw4cGvQZYhLTy4w=;
+        b=UjhlUpEhCdk8GnfT/iFiLz0vCdgDf+MjXL8Tyd2IAmTDHUc8vHS2F3WZ2cVlSUOYHc
+         LESa9Id11SXNBaS/JSkO/nM+n74ekN7S6CRLqmJLnd7FM2LRbbrb10+2LUUN9iqgTRIv
+         ehUk+3/Oh22Gyhe1caE0cxSaqb8IMqiysqT81YgxTvOsEFAnWLi3ra+vxjlDktep+XyX
+         mNiIwOM7YfFTaYhGokJovHc62i5B9FhisuioWuQrwUCI4N4lHooSNmZippkRTUPtzbdg
+         vu8EhTm9LkWBLcDGUlk6Z9p/QpzpCZLDWKjfr9BZztvvdH1FtXdiBv78035SVAGdOi88
+         QtqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=XdOBuI7DEw0fulqmOwramoBH8yqxlwc/+oFM/+yUGE8=;
-        b=eMcr18B7qO1Mw3EatT8midSOivoB3xFsND9c8IAps5Ol311sF6DeU3U4Xozba6wXGy
-         3E7c7zi/7DVbM3YyZpUgK26iqdcj6HmHHNRc+BM8BGEe6yCOWLriVmAcRoqIji0dMJJI
-         lx2CXIjP2P56r+TQYYvdWhVXNq5ZTX8g/j3edFn0mt3OySdX9lpPcHU22Fj4+3yI5269
-         Buu/dOODTBLl+XkAowzUlIlcQkp0iNahTp+ySvPUhypA8Zrt8QKMEltsDuugc4sju9Yf
-         RAT2Gq6SDlu5gFnArsLmOyQkm9QijS2rcOGneJ48SlEgK4P4uT7uxj3ZWX3V2ualvU5l
-         NEdg==
-X-Gm-Message-State: AOAM532UvlCytORf4qlCrYQuUoIqoCuvk/EfAoadPPZH8iIwc+Vyhxgm
-        8LuNsl9fD5f+DmcQ5/jkJVA=
-X-Google-Smtp-Source: ABdhPJztQDNZkW92Nepe+VEMIhbW0sB5R276PhTtRdSbuQvTQYJ70a+JQXiLetIb7irg1tJ+N/qlug==
-X-Received: by 2002:a17:902:e80e:b029:e4:b2b8:e36e with SMTP id u14-20020a170902e80eb02900e4b2b8e36emr29303606plg.45.1618277129587;
-        Mon, 12 Apr 2021 18:25:29 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id i9sm551897pji.41.2021.04.12.18.25.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 18:25:29 -0700 (PDT)
-Date:   Mon, 12 Apr 2021 18:25:27 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        drivers@pensando.io
-Subject: Re: [PATCH net-next 0/8] ionic: hwstamp tweaks
-Message-ID: <20210413012527.GA24198@hoboy.vegasvil.org>
-References: <20210407232001.16670-1-snelson@pensando.io>
- <20210411153808.GB5719@hoboy.vegasvil.org>
- <5af0c4f1-82d6-a349-616d-0e92e10dd114@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fSxsn65EUsOh+O13K1SDdQjwp4rSXw4cGvQZYhLTy4w=;
+        b=cwXBW9yP5xaIw89YrJSoKILnNwJXCvK4wB28DczlolV9DWe8aqzdDVhjQ6wtXEG4+w
+         r1mnboFz2zvB/CvF7IU6S6OpURXg1yeiGEn9Jx0KzyRR6AQvpOf0F/nCh0IX9JHjeJuJ
+         gxzs51keeUxjiDGPbzn3aVjPfyGAs9qEkPiF0SIk+ws/A8nr61rOdseCmewbH8G8119R
+         qu0kxaPtV03AFEw0VyKQ5ldYhW7bgw+Vm1EK+fkIAzmnI5v12Hpc9OABi8I1IRHzPyi6
+         f8izogppYZBka90kl6N1hLv5xE/UzGjYa/uZQ3mBjzeDd4MXcqdL/w+BAIb4GR2P7JyX
+         /vug==
+X-Gm-Message-State: AOAM530m4uSWfwoNrYrmbGRpkjW60riG2rBUSMmPXWEDho2xFgmx0tF1
+        xPuCBsTSltw8sDvfmzBy97TtIQ+o+KqMtLkwUoRor1bB6ixuEQ==
+X-Google-Smtp-Source: ABdhPJx2SV6Eb4LfwNCWO6ws/iWrTQgLal8zMyEu58hWic1n8h9aO4mro0Kl/nTW7U6wxMcIhJpqXVMh2kHHsMg+lhI=
+X-Received: by 2002:a05:6830:802:: with SMTP id r2mr25324193ots.110.1618280255731;
+ Mon, 12 Apr 2021 19:17:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5af0c4f1-82d6-a349-616d-0e92e10dd114@pensando.io>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20210412065759.2907-1-kerneljasonxing@gmail.com> <20210412145229.00003e5d@intel.com>
+In-Reply-To: <20210412145229.00003e5d@intel.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Tue, 13 Apr 2021 10:17:00 +0800
+Message-ID: <CAL+tcoCJZBbkszE68xLRSrtfByZ3Epg7u40e2YftccUDi4034Q@mail.gmail.com>
+Subject: Re: [PATCH] i40e: fix the panic when running bpf in xdpdrv mode
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     anthony.l.nguyen@intel.com, David Miller <davem@davemloft.net>,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, intel-wired-lan@lists.osuosl.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        Jason Xing <xingwanli@kuaishou.com>,
+        Shujin Li <lishujin@kuaishou.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 12, 2021 at 09:33:29AM -0700, Shannon Nelson wrote:
-> If the original patches hadn't already been pulled into net-next, this is
-> what I would have done.  My understanding is that once the patches have been
-> pulled into the repo that we need to do delta patches, not new versions of
-> the same patch, as folks don't normally like changing published tree
-> history.
+On Tue, Apr 13, 2021 at 5:52 AM Jesse Brandeburg
+<jesse.brandeburg@intel.com> wrote:
+>
+> kerneljasonxing@gmail.com wrote:
+>
+> > From: Jason Xing <xingwanli@kuaishou.com>
+> >
+> > Re: [PATCH] i40e: fix the panic when running bpf in xdpdrv mode
+>
+> Please use netdev style subject lines when patching net kernel to
+> indicate which kernel tree this is targeted at, "net" or "net-next"
+> [PATCH net v2] i40e: ...
+>
+> > Fix this by add more rules to calculate the value of @rss_size_max which
+>
+> Fix this panic by adding ...
+>
+> > could be used in allocating the queues when bpf is loaded, which, however,
+> > could cause the failure and then triger the NULL pointer of vsi->rx_rings.
+>
+> trigger
+>
+> > Prio to this fix, the machine doesn't care about how many cpus are online
+> > and then allocates 256 queues on the machine with 32 cpus online
+> > actually.
+> >
+> > Once the load of bpf begins, the log will go like this "failed to get
+> > tracking for 256 queues for VSI 0 err -12" and this "setup of MAIN VSI
+> > failed".
+> >
+> > Thus, I attach the key information of the crash-log here.
+> >
+> > BUG: unable to handle kernel NULL pointer dereference at
+> > 0000000000000000
+> > RIP: 0010:i40e_xdp+0xdd/0x1b0 [i40e]
+> > Call Trace:
+> > [2160294.717292]  ? i40e_reconfig_rss_queues+0x170/0x170 [i40e]
+> > [2160294.717666]  dev_xdp_install+0x4f/0x70
+> > [2160294.718036]  dev_change_xdp_fd+0x11f/0x230
+> > [2160294.718380]  ? dev_disable_lro+0xe0/0xe0
+> > [2160294.718705]  do_setlink+0xac7/0xe70
+> > [2160294.719035]  ? __nla_parse+0xed/0x120
+> > [2160294.719365]  rtnl_newlink+0x73b/0x860
+> >
+> > Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
+> > Signed-off-by: Shujin Li <lishujin@kuaishou.com>
+>
+> if you send to "net" - I suspect you should supply a Fixes: line, above
+> the sign-offs.
+> In this case however, this bug has been here since the beginning of the
+> driver, but the patch will easily apply, so please supply
+>
+> Fixes: 41c445ff0f48 ("i40e: main driver core")
+>
+> > ---
+> >  drivers/net/ethernet/intel/i40e/i40e_main.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> > index 521ea9d..4e9a247 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> > @@ -11867,6 +11867,7 @@ static int i40e_sw_init(struct i40e_pf *pf)
+> >  {
+> >       int err = 0;
+> >       int size;
+> > +     u16 pow;
+> >
+> >       /* Set default capability flags */
+> >       pf->flags = I40E_FLAG_RX_CSUM_ENABLED |
+> > @@ -11885,6 +11886,11 @@ static int i40e_sw_init(struct i40e_pf *pf)
+> >       pf->rss_table_size = pf->hw.func_caps.rss_table_size;
+> >       pf->rss_size_max = min_t(int, pf->rss_size_max,
+> >                                pf->hw.func_caps.num_tx_qp);
+> > +
+> > +     /* find the next higher power-of-2 of num cpus */
+> > +     pow = roundup_pow_of_two(num_online_cpus());
+> > +     pf->rss_size_max = min_t(int, pf->rss_size_max, pow);
+> > +
+>
+> The fix itself is fine, and is correct as far as I can tell, thank you
+> for sending the patch!
+>
 
-Oh, the series you posted on April 1 was merged on April 2 without any
-review.  That seems surprising to me, but perhaps the development
-tempo has increased.
+Thanks for your advice. I'm going to send the patch v2 :)
 
-Wow, and this delta series was also:
+Jason
 
-posted	Date: Wed,  7 Apr 2021 16:19:53 -0700
-merged	Date: Thu, 08 Apr 2021 20:30:28 +0000
-
-That is a pretty good turn around time, less that 24 hours!
-
-Oh well, too late to add my Acked-by.
-
-Thanks,
-Richard
+> >       if (pf->hw.func_caps.rss) {
+> >               pf->flags |= I40E_FLAG_RSS_ENABLED;
+> >               pf->alloc_rss_size = min_t(int, pf->rss_size_max,
+>
+>
