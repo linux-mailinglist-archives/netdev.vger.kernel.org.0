@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA9B35E4B9
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 19:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B33735E4D4
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 19:18:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbhDMRLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 13:11:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60490 "EHLO mail.kernel.org"
+        id S1345750AbhDMRSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 13:18:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33848 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231726AbhDMRLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 13:11:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1EC3C613A9;
-        Tue, 13 Apr 2021 17:10:56 +0000 (UTC)
+        id S243246AbhDMRSs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 13:18:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9BFAB613B1;
+        Tue, 13 Apr 2021 17:18:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618333856;
-        bh=19Oo8r1oTrGSENT9g9BQ+Fqz3X79n7O0E8cOyaHomb8=;
+        s=k20201202; t=1618334308;
+        bh=PsSIcGvOkAsoKkaAHl2VwpmarxSWakDBatYJ5vV6DdY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ptn0fDLs92JZ+hAs4hFP+w8JidDG/sTRBUIyIJIip4z5eAplV/BZV6+yK+MW/ysvg
-         Z//IA1j4scHAYCEyQx56cOejyvhXAm/sgPjgXL3oG2MYs4xKShJhZKzPzMjhtfQ/82
-         am8XFeIl1wfaTzGln1ASDQMfi9c7VKzyBFrBB6w8xr2oTzH6QazgWwYO+OrJP230kh
-         EmrRQI03Ppe2mq6Bn4XM2pxrD5OXD7vWKf0/W+9EHruSLq6LfNewfRzlJsMf/RjoRS
-         r0E3FXjlrGJfjrjzfcqU6W8eNAbB+PfEnFBHbnXuKqG0La2lWfYd3iarKbm230ADDR
-         og0vdyNSgOJSw==
-Date:   Tue, 13 Apr 2021 10:10:55 -0700
+        b=Q4WQfv3lKwFhC02prZBLStdgbdwzOF2CoiXfCw+fvz6jKEOVjz5vj3KmfDY11r7Zv
+         AtC6gbOIY1jBe8hQqi1THRHeG7sL3nwfbtHRGcasybK7UOZvnOG1ClXyrNufeIYy0U
+         tLqfbSpxqv3j2gs2GF9kbCQ1go8m1RRfNxq7oACpOeAr5zlA+Bv/rKoMApE+P0jJ1u
+         STMgjRDcK9jyCfewbRvhiG6hg0bTam7TVbW7z0uWALi8NS7i8U8ehzFQDs5/EPXy7K
+         0uf4uXLYa157QpUh1AMA+zxCjCiZw5jc1Q6b3/Daw8+AHk24r12BTdc+Cq90llw4e3
+         lBa1Av9sAjyRQ==
+Date:   Tue, 13 Apr 2021 10:18:26 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [net-next] enetc: fix locking for one-step timestamping packet
- transfer
-Message-ID: <20210413101055.647cc156@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210413034817.8924-1-yangbo.lu@nxp.com>
-References: <20210413034817.8924-1-yangbo.lu@nxp.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        <linuxarm@huawei.com>, Guangbin Huang <huangguangbin2@huawei.com>
+Subject: Re: [PATCH net-next 1/2] net: hns3: PF add support for pushing link
+ status to VFs
+Message-ID: <20210413101826.103b25fc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1618294621-41356-2-git-send-email-tanhuazhong@huawei.com>
+References: <1618294621-41356-1-git-send-email-tanhuazhong@huawei.com>
+        <1618294621-41356-2-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,17 +43,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Apr 2021 11:48:17 +0800 Yangbo Lu wrote:
-> +	/* Queue one-step Sync packet if already locked */
-> +	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
-> +		if (test_and_set_bit_lock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS,
-> +					  &priv->flags)) {
-> +			skb_queue_tail(&priv->tx_skbs, skb);
-> +			return NETDEV_TX_OK;
-> +		}
+On Tue, 13 Apr 2021 14:17:00 +0800 Huazhong Tan wrote:
+> +static void hclge_push_link_status(struct hclge_dev *hdev)
+> +{
+> +	struct hclge_vport *vport;
+> +	int ret;
+> +	u16 i;
+> +
+> +	for (i = 0; i < pci_num_vf(hdev->pdev); i++) {
+> +		vport = &hdev->vport[i + HCLGE_VF_VPORT_START_NUM];
+> +
+> +		if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state) ||
+> +		    vport->vf_info.link_state != IFLA_VF_LINK_STATE_AUTO)
+> +			continue;
+> +
+> +		ret = hclge_push_vf_link_status(vport);
+> +		if (ret) {
+> +			dev_err(&hdev->pdev->dev,
+> +				"failed to push link status to vf%u, ret = %d\n",
+> +				i, ret);
+
+Isn't this error printed twice? Here and...
+
+> +}
+> +
+>  static void hclge_update_link_status(struct hclge_dev *hdev)
+>  {
+>  	struct hnae3_handle *rhandle = &hdev->vport[0].roce;
+
+> @@ -3246,14 +3269,24 @@ static int hclge_set_vf_link_state(struct hnae3_handle *handle, int vf,
+>  {
+>  	struct hclge_vport *vport = hclge_get_vport(handle);
+>  	struct hclge_dev *hdev = vport->back;
+> +	int link_state_old;
+> +	int ret;
+>  
+>  	vport = hclge_get_vf_vport(hdev, vf);
+>  	if (!vport)
+>  		return -EINVAL;
+>  
+> +	link_state_old = vport->vf_info.link_state;
+>  	vport->vf_info.link_state = link_state;
+>  
+> -	return 0;
+> +	ret = hclge_push_vf_link_status(vport);
+> +	if (ret) {
+> +		vport->vf_info.link_state = link_state_old;
+> +		dev_err(&hdev->pdev->dev,
+> +			"failed to push vf%d link status, ret = %d\n", vf, ret);
 > +	}
 
-Isn't this missing queue_work() as well?
+... here?
 
-Also as I mentioned I don't understand why you created a separate
-workqueue instead of using the system workqueue via schedule_work().
+Otherwise the patches LGTM.
