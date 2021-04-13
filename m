@@ -2,240 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CE6535D96E
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:57:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B5E835D971
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 09:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237901AbhDMH5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 03:57:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42478 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237329AbhDMH4q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 03:56:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 27F18613BB;
-        Tue, 13 Apr 2021 07:56:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618300587;
-        bh=ANC7sC9BaL8QxzufrFObji3DBYjtcRqIlRrsXj+wL/I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B+3YGT9gA8USpNGOa2AwM1Wcqkf/eaOqY+ArYuGbBkqLOv1+ImBUwGz6f+NPovvj5
-         /ZLSWUPt0bgGypLyUIs7bw9yNR1CT04H8MFwFXKGoPTkJEjG46vMNmINmotLgM7AQL
-         wVa5VsWemrm6ISZmXcQsZdUaoy2KouI/6SSw1BuOXFcbUJNseBypRl+c9ZTcZeLqqT
-         zGI4l2rmaWiJWhSk4qvNpJbhd1qWYYe5oAhNuerD+T2oQhwvzPanJ0F0vQXZohB8UN
-         IGCiX3o+etU94Qim4abfXn749GCkHkH8+SqabzsUPefd4/I1yRJDUgUojH/UkxvZ4y
-         y2YIVXIXbY98A==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>, kuba@kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 5/5] net: phy: marvell: add support for Amethyst internal PHY
-Date:   Tue, 13 Apr 2021 09:55:38 +0200
-Message-Id: <20210413075538.30175-6-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210413075538.30175-1-kabel@kernel.org>
-References: <20210413075538.30175-1-kabel@kernel.org>
+        id S240242AbhDMH5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 03:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238461AbhDMH5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 03:57:11 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F97AC06138C
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 00:56:52 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id iu14so7654700qvb.4
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 00:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mxKFk1aTW36YnbK1RqIfQPFwaADMV0ipjdR5vf2QzKU=;
+        b=JoalcQ0j1ayXXRh+TUmTIETow33d/Czs2cXjD5gEct0Y6z8t04a31V1TS2JNwHLPNy
+         0d1UM4KCSBh+AAySFkSNu/qbsighr3D5EeEWXjzGRUm0iCEcxYO4EOgf7JVep+wer3bs
+         Oohd7YtrnB/9AmqLU1AcXbx0QLep0spwaYND9DyQVzICEMbwaXsRMkJnbtZr2OhijpMT
+         mFY+zOzI/oe1VsisFu4gjVOmfNedO8Nt6bzj6CltY0z7NtwOxC3/QkiFihZFPb2H/Udm
+         CW6NPcMRU/r9aWuTcT8fqL7doMHc1sm8dvuyRWXtSEayBYqs6BcZgT7Yj2y29x7r5CDz
+         8pLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mxKFk1aTW36YnbK1RqIfQPFwaADMV0ipjdR5vf2QzKU=;
+        b=h4hZ7qgK01H3qWT1EyBqCfXbqcwoMrL+bXK2afeO/suvZxvVRYfAKfnmovw+d+boLZ
+         TQTZoKcS8BjzJU5FOdV9/H9YprIeAt3kCaTgMpWb6a0yFs6BqF3bL7SdyqHdvFQocTPD
+         EDJR/9UxH7KOVoVizp7XLf6Cw5mGZQtGIb9WG2BUq/3havEQhD/NbtN3S+6HZP3/HiE5
+         5FLdatPNLK8AlIIhG/CIU3y0tdMds1mxY+lMkqc9bwfT/2GECYgzwM0qE00LtASQ/XAd
+         Fa8f3mV5sKdsDSJuJ+HlRG01SdmHyt1X6F7tMXy/fOZbAuvGhEPUrQBM+qQsE0NE3x3c
+         rMmQ==
+X-Gm-Message-State: AOAM533rV1CmZcBU7gNeL8/0e08t8iP9IYU99SIoMlt1MZJAZNbGDOzZ
+        w1bJgE36jZ+a4CgTLkIZ9eNOweqx76AwC91l/q245g==
+X-Google-Smtp-Source: ABdhPJzMBGRjaIpG6PgZxs+ZJeW9IreRa2ouM6Qm5gDee285sjYCDoMDd3rvf7cu2++u4/R5cGcmgqipoKimcP9sT6Y=
+X-Received: by 2002:a0c:e3d1:: with SMTP id e17mr80225qvl.37.1618300611130;
+ Tue, 13 Apr 2021 00:56:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <000000000000d9fefa05bee78afd@google.com> <97b5573f-9fcc-c195-f765-5b1ed84a95bd@fb.com>
+ <d947c28c-6ede-5950-87e7-f56b8403535a@fb.com>
+In-Reply-To: <d947c28c-6ede-5950-87e7-f56b8403535a@fb.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 13 Apr 2021 09:56:40 +0200
+Message-ID: <CACT4Y+ZYEVsycyzDW9+tXYw-5feZS8otgMWGGZRUCLR=czWtqQ@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in bpf_test_run
+To:     Yonghong Song <yhs@fb.com>
+Cc:     syzbot <syzbot+774c590240616eaa3423@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>, andrii@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Jim Mattson <jmattson@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, masahiroy@kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        rafael.j.wysocki@intel.com, Steven Rostedt <rostedt@goodmis.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Thomas Gleixner <tglx@linutronix.de>, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Amethyst internal PHY.
+On Fri, Apr 2, 2021 at 2:41 AM 'Yonghong Song' via syzkaller-bugs
+<syzkaller-bugs@googlegroups.com> wrote:
+> > On 4/1/21 4:29 AM, syzbot wrote:
+> >> Hello,
+> >>
+> >> syzbot found the following issue on:
+> >>
+> >> HEAD commit:    36e79851 libbpf: Preserve empty DATASEC BTFs during
+> >> static..
+> >> git tree:       bpf-next
+> >> console output:
+> >> https://syzkaller.appspot.com/x/log.txt?x=1569bb06d00000
+> >> kernel config:
+> >> https://syzkaller.appspot.com/x/.config?x=7eff0f22b8563a5f
+> >> dashboard link:
+> >> https://syzkaller.appspot.com/bug?extid=774c590240616eaa3423
+> >> syz repro:
+> >> https://syzkaller.appspot.com/x/repro.syz?x=17556b7cd00000
+> >> C reproducer:
+> >> https://syzkaller.appspot.com/x/repro.c?x=1772be26d00000
+> >>
+> >> The issue was bisected to:
+> >>
+> >> commit 997acaf6b4b59c6a9c259740312a69ea549cc684
+> >> Author: Mark Rutland <mark.rutland@arm.com>
+> >> Date:   Mon Jan 11 15:37:07 2021 +0000
+> >>
+> >>      lockdep: report broken irq restoration
+> >>
+> >> bisection log:
+> >> https://syzkaller.appspot.com/x/bisect.txt?x=10197016d00000
+> >> final oops:
+> >> https://syzkaller.appspot.com/x/report.txt?x=12197016d00000
+> >> console output:
+> >> https://syzkaller.appspot.com/x/log.txt?x=14197016d00000
+> >>
+> >> IMPORTANT: if you fix the issue, please add the following tag to the
+> >> commit:
+> >> Reported-by: syzbot+774c590240616eaa3423@syzkaller.appspotmail.com
+> >> Fixes: 997acaf6b4b5 ("lockdep: report broken irq restoration")
+> >>
+> >> ------------[ cut here ]------------
+> >> WARNING: CPU: 0 PID: 8725 at include/linux/bpf-cgroup.h:193
+> >> bpf_cgroup_storage_set include/linux/bpf-cgroup.h:193 [inline]
+> >> WARNING: CPU: 0 PID: 8725 at include/linux/bpf-cgroup.h:193
+> >> bpf_test_run+0x65e/0xaa0 net/bpf/test_run.c:109
+> >
+> > I will look at this issue. Thanks!
+> >
+> >> Modules linked in:
+> >> CPU: 0 PID: 8725 Comm: syz-executor927 Not tainted
+> >> 5.12.0-rc4-syzkaller #0
+> >> Hardware name: Google Google Compute Engine/Google Compute Engine,
+> >> BIOS Google 01/01/2011
+> >> RIP: 0010:bpf_cgroup_storage_set include/linux/bpf-cgroup.h:193 [inline]
+> >> RIP: 0010:bpf_test_run+0x65e/0xaa0 net/bpf/test_run.c:109
+> >> Code: e9 29 fe ff ff e8 b2 9d 3a fa 41 83 c6 01 bf 08 00 00 00 44 89
+> >> f6 e8 51 a5 3a fa 41 83 fe 08 0f 85 74 fc ff ff e8 92 9d 3a fa <0f> 0b
+> >> bd f0 ffff ff e9 5c fd ff ff e8 81 9d 3a fa 83 c5 01 bf 08
+> >> RSP: 0018:ffffc900017bfaf0 EFLAGS: 00010293
+> >> RAX: 0000000000000000 RBX: ffffc90000f29000 RCX: 0000000000000000
+> >> RDX: ffff88801bc68000 RSI: ffffffff8739543e RDI: 0000000000000003
+> >> RBP: 0000000000000007 R08: 0000000000000008 R09: 0000000000000001
+> >> R10: ffffffff8739542f R11: 0000000000000000 R12: dffffc0000000000
+> >> R13: ffff888021dd54c0 R14: 0000000000000008 R15: 0000000000000000
+> >> FS:  00007f00157d7700(0000) GS:ffff8880b9c00000(0000)
+> >> knlGS:0000000000000000
+> >> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> >> CR2: 00007f0015795718 CR3: 00000000157ae000 CR4: 00000000001506f0
+> >> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> >> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> >> Call Trace:
+> >>   bpf_prog_test_run_skb+0xabc/0x1c70 net/bpf/test_run.c:628
+> >>   bpf_prog_test_run kernel/bpf/syscall.c:3132 [inline]
+> >>   __do_sys_bpf+0x218b/0x4f40 kernel/bpf/syscall.c:4411
+> >>   do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>
+> Run on my qemu (4 cpus) with C reproducer and I cannot reproduce the
+> result. It already ran 30 minutes and still running. Checked the code,
+> it is just doing a lot of parallel bpf_prog_test_run's.
+>
+> The failure is in the below WARN_ON_ONCE code:
+>
+> 175 static inline int bpf_cgroup_storage_set(struct bpf_cgroup_storage
+> 176
+> *storage[MAX_BPF_CGROUP_STORAGE_TYPE])
+> 177 {
+> 178         enum bpf_cgroup_storage_type stype;
+> 179         int i, err = 0;
+> 180
+> 181         preempt_disable();
+> 182         for (i = 0; i < BPF_CGROUP_STORAGE_NEST_MAX; i++) {
+> 183                 if
+> (unlikely(this_cpu_read(bpf_cgroup_storage_info[i].task) != NULL))
+> 184                         continue;
+> 185
+> 186                 this_cpu_write(bpf_cgroup_storage_info[i].task,
+> current);
+> 187                 for_each_cgroup_storage_type(stype)
+> 188
+> this_cpu_write(bpf_cgroup_storage_info[i].storage[stype],
+> 189                                        storage[stype]);
+> 190                 goto out;
+> 191         }
+> 192         err = -EBUSY;
+> 193         WARN_ON_ONCE(1);
+> 194
+> 195 out:
+> 196         preempt_enable();
+> 197         return err;
+> 198 }
+>
+> Basically it shows the stress test triggered a warning due to
+> limited kernel resource.
 
-The only difference from Peridot is HWMON.
+Hi Yonghong,
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- drivers/net/phy/marvell.c   | 117 +++++++++++++++++++++++++++++++++++-
- include/linux/marvell_phy.h |   1 +
- 2 files changed, 115 insertions(+), 3 deletions(-)
+Thanks for looking into this.
+If this is not a kernel bug, then it must not use WARN_ON[_ONCE]. It
+makes the kernel untestable for both automated systems and humans:
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 9eb65898da83..5bf3663fa248 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -118,10 +118,21 @@
- #define MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE_ONESHOT	(0x2 << 14)
- #define MII_88E6390_MISC_TEST_TEMP_SENSOR_DISABLE		(0x3 << 14)
- #define MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK			(0x3 << 14)
-+#define MII_88E6393_MISC_TEST_SAMPLES_4096	0x0000
-+#define MII_88E6393_MISC_TEST_SAMPLES_8192	0x0800
-+#define MII_88E6393_MISC_TEST_SAMPLES_16384	0x1000
-+#define MII_88E6393_MISC_TEST_SAMPLES_32768	0x1800
-+#define MII_88E6393_MISC_TEST_SAMPLES_MASK	0x1800
-+#define MII_88E6393_MISC_TEST_RATE_2_3MS	0x0500
-+#define MII_88E6393_MISC_TEST_RATE_6_4MS	0x0600
-+#define MII_88E6393_MISC_TEST_RATE_11_9MS	0x0700
-+#define MII_88E6393_MISC_TEST_RATE_MASK		0x0700
- 
- #define MII_88E6390_TEMP_SENSOR		0x1c
--#define MII_88E6390_TEMP_SENSOR_MASK	0xff
--#define MII_88E6390_TEMP_SENSOR_SAMPLES 10
-+#define MII_88E6393_TEMP_SENSOR_THRESHOLD_MASK	0xff00
-+#define MII_88E6393_TEMP_SENSOR_THRESHOLD_SHIFT	8
-+#define MII_88E6390_TEMP_SENSOR_MASK		0xff
-+#define MII_88E6390_TEMP_SENSOR_SAMPLES		10
- 
- #define MII_88E1318S_PHY_MSCR1_REG	16
- #define MII_88E1318S_PHY_MSCR1_PAD_ODD	BIT(6)
-@@ -2217,6 +2228,7 @@ static int marvell_vct7_cable_test_get_status(struct phy_device *phydev,
- 
- #ifdef CONFIG_HWMON
- struct marvell_hwmon_ops {
-+	int (*config)(struct phy_device *phydev);
- 	int (*get_temp)(struct phy_device *phydev, long *temp);
- 	int (*get_temp_critical)(struct phy_device *phydev, long *temp);
- 	int (*set_temp_critical)(struct phy_device *phydev, long temp);
-@@ -2391,6 +2403,65 @@ static int m88e6390_get_temp(struct phy_device *phydev, long *temp)
- 	return ret;
- }
- 
-+static int m88e6393_get_temp(struct phy_device *phydev, long *temp)
-+{
-+	int err;
-+
-+	err = m88e1510_get_temp(phydev, temp);
-+
-+	/* 88E1510 measures T + 25, while the PHY on 88E6393X switch
-+	 * T + 75, so we have to subtract another 50
-+	 */
-+	*temp -= 50000;
-+
-+	return err;
-+}
-+
-+static int m88e6393_get_temp_critical(struct phy_device *phydev, long *temp)
-+{
-+	int ret;
-+
-+	*temp = 0;
-+
-+	ret = phy_read_paged(phydev, MII_MARVELL_MISC_TEST_PAGE,
-+			     MII_88E6390_TEMP_SENSOR);
-+	if (ret < 0)
-+		return ret;
-+
-+	*temp = (((ret & MII_88E6393_TEMP_SENSOR_THRESHOLD_MASK) >>
-+		  MII_88E6393_TEMP_SENSOR_THRESHOLD_SHIFT) - 75) * 1000;
-+
-+	return 0;
-+}
-+
-+static int m88e6393_set_temp_critical(struct phy_device *phydev, long temp)
-+{
-+	temp = (temp / 1000) + 75;
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_MISC_TEST_PAGE,
-+				MII_88E6390_TEMP_SENSOR,
-+				MII_88E6393_TEMP_SENSOR_THRESHOLD_MASK,
-+				temp << MII_88E6393_TEMP_SENSOR_THRESHOLD_SHIFT);
-+}
-+
-+static int m88e6393_hwmon_config(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = m88e6393_set_temp_critical(phydev, 100000);
-+	if (err)
-+		return err;
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_MISC_TEST_PAGE,
-+				MII_88E6390_MISC_TEST,
-+				MII_88E6390_MISC_TEST_TEMP_SENSOR_MASK |
-+				MII_88E6393_MISC_TEST_SAMPLES_MASK |
-+				MII_88E6393_MISC_TEST_RATE_MASK,
-+				MII_88E6390_MISC_TEST_TEMP_SENSOR_ENABLE |
-+				MII_88E6393_MISC_TEST_SAMPLES_4096 |
-+				MII_88E6393_MISC_TEST_RATE_2_3MS);
-+}
-+
- static int marvell_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 			      u32 attr, int channel, long *temp)
- {
-@@ -2537,8 +2608,13 @@ static int marvell_hwmon_probe(struct phy_device *phydev)
- 
- 	priv->hwmon_dev = devm_hwmon_device_register_with_info(
- 		dev, priv->hwmon_name, phydev, &marvell_hwmon_chip_info, NULL);
-+	if (IS_ERR(priv->hwmon_dev))
-+		return PTR_ERR(priv->hwmon_dev);
- 
--	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
-+	if (ops->config)
-+		err = ops->config(phydev);
-+
-+	return err;
- }
- 
- static const struct marvell_hwmon_ops m88e1121_hwmon_ops = {
-@@ -2556,6 +2632,14 @@ static const struct marvell_hwmon_ops m88e6390_hwmon_ops = {
- 	.get_temp = m88e6390_get_temp,
- };
- 
-+static const struct marvell_hwmon_ops m88e6393_hwmon_ops = {
-+	.config = m88e6393_hwmon_config,
-+	.get_temp = m88e6393_get_temp,
-+	.get_temp_critical = m88e6393_get_temp_critical,
-+	.set_temp_critical = m88e6393_set_temp_critical,
-+	.get_temp_alarm = m88e1510_get_temp_alarm,
-+};
-+
- #define DEF_MARVELL_HWMON_OPS(s) (&(s))
- 
- #else
-@@ -2950,6 +3034,32 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
- 	},
-+	{
-+		.phy_id = MARVELL_PHY_ID_88E6393_FAMILY,
-+		.phy_id_mask = MARVELL_PHY_ID_MASK,
-+		.name = "Marvell 88E6393 Family",
-+		.driver_data = DEF_MARVELL_HWMON_OPS(m88e6393_hwmon_ops),
-+		/* PHY_GBIT_FEATURES */
-+		.flags = PHY_POLL_CABLE_TEST,
-+		.probe = marvell_probe,
-+		.config_init = marvell_config_init,
-+		.config_aneg = m88e1510_config_aneg,
-+		.read_status = marvell_read_status,
-+		.config_intr = marvell_config_intr,
-+		.handle_interrupt = marvell_handle_interrupt,
-+		.resume = genphy_resume,
-+		.suspend = genphy_suspend,
-+		.read_page = marvell_read_page,
-+		.write_page = marvell_write_page,
-+		.get_sset_count = marvell_get_sset_count,
-+		.get_strings = marvell_get_strings,
-+		.get_stats = marvell_get_stats,
-+		.get_tunable = m88e1540_get_tunable,
-+		.set_tunable = m88e1540_set_tunable,
-+		.cable_test_start = marvell_vct7_cable_test_start,
-+		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
-+		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1340S,
- 		.phy_id_mask = MARVELL_PHY_ID_MASK,
-@@ -3016,6 +3126,7 @@ static struct mdio_device_id __maybe_unused marvell_tbl[] = {
- 	{ MARVELL_PHY_ID_88E3016, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E6341_FAMILY, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E6390_FAMILY, MARVELL_PHY_ID_MASK },
-+	{ MARVELL_PHY_ID_88E6393_FAMILY, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1340S, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1548P, MARVELL_PHY_ID_MASK },
- 	{ }
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index f61d82c53f30..acee44b9db26 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -39,6 +39,7 @@
-  */
- #define MARVELL_PHY_ID_88E6341_FAMILY	0x01410f41
- #define MARVELL_PHY_ID_88E6390_FAMILY	0x01410f90
-+#define MARVELL_PHY_ID_88E6393_FAMILY	0x002b0b9b
- 
- #define MARVELL_PHY_FAMILY_ID(id)	((id) >> 4)
- 
--- 
-2.26.3
+https://lwn.net/Articles/769365/
 
+<quote>
+Greg Kroah-Hartman raised the problem of core kernel API code that
+will use WARN_ON_ONCE() to complain about bad usage; that will not
+generate the desired result if WARN_ON_ONCE() is configured to crash
+the machine. He was told that the code should just call pr_warn()
+instead, and that the called function should return an error in such
+situations. It was generally agreed that any WARN_ON() or
+WARN_ON_ONCE() calls that can be triggered from user space need to be
+fixed.
+</quote>
+
+
+
+> >>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+> >> RIP: 0033:0x446199
+> >> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48
+> >> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+> >> 01 f0 ffff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> >> RSP: 002b:00007f00157d72f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> >> RAX: ffffffffffffffda RBX: 00000000004cb440 RCX: 0000000000446199
+> >> RDX: 0000000000000028 RSI: 0000000020000080 RDI: 000000000000000a
+> >> RBP: 000000000049b074 R08: 0000000000000000 R09: 0000000000000000
+> >> R10: 0000000000000000 R11: 0000000000000246 R12: f9abde7200f522cd
+> >> R13: 3952ddf3af240c07 R14: 1631e0d82d3fa99d R15: 00000000004cb448
+> >>
+> >>
+> >> ---
+> >> This report is generated by a bot. It may contain errors.
+> >> See
+> >> https://goo.gl/tpsmEJ
+> >> for more information about syzbot.
+> >> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >>
+> >> syzbot will keep track of this issue. See:
+> >> https://goo.gl/tpsmEJ#status
+> >> for how to communicate with syzbot.
+> >> For information about bisection process see:
+> >> https://goo.gl/tpsmEJ#bisection
+> >> syzbot can test patches for this issue, for details see:
+> >> https://goo.gl/tpsmEJ#testing-patches
