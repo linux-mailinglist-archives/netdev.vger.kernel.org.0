@@ -2,115 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E5EC35E4E3
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 19:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB5B35E4F6
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 19:24:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347125AbhDMRVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 13:21:25 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:47374 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbhDMRVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 13:21:22 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1618334461;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/FIguiC0JpPqnEHwTEVTe/PehrMSgAq174+EKyhr82I=;
-        b=2ls2iDkJEgxLT8BBbuxpsz+mBg1wpRLaZvIiJwhFSRwgoiRMRnJzbT0sYoJa4inNSgR7n+
-        yUBE8eyjM1W4GLKVGy2FAZbaqa99UbF2JxojJdoSpuVrV+Lgu3IpVtB0uw71Bb/TdOs0lH
-        lj+1e99uaxO9VNKrRsD3NzbXge6FqqhohbcsoUHjPXr+qj7ED0Pofah6oLDFDg2JYcgqwD
-        mQDojXqvWnX1rlEtXGPBu0JZRmSWr345WSwhsX+zYTuxXSBbAzGtaeCOolXeXbgsMSo5n2
-        YoVytbBJ6VCsPsJ9spHa95w6rfgnfj40aRiyEFkhM88KW948okBz7aQPZev+Hg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1618334461;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/FIguiC0JpPqnEHwTEVTe/PehrMSgAq174+EKyhr82I=;
-        b=cvPB+KjZ1ydaw7+/5jmL7AtRi2v45vBIWXzrEbqnaXnlvGRBOeJQzWM2dzpHFR670qb0/5
-        pSegCUAMuXU7XPCg==
-To:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: Re: [PATCH RFC net] igb: Fix XDP with PTP enabled
-In-Reply-To: <CAKgT0UekqPNQxV6PzpEeis69z3e3YNcaFyot=nD7w26hLxPX2Q@mail.gmail.com>
-References: <20210412101713.15161-1-kurt@linutronix.de> <20210412162846.42706d99@carbon> <CAKgT0UekqPNQxV6PzpEeis69z3e3YNcaFyot=nD7w26hLxPX2Q@mail.gmail.com>
-Date:   Tue, 13 Apr 2021 19:21:00 +0200
-Message-ID: <87fszuyubn.fsf@kurt>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+        id S232455AbhDMRYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 13:24:52 -0400
+Received: from mail-pg1-f172.google.com ([209.85.215.172]:44638 "EHLO
+        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347172AbhDMRXz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 13:23:55 -0400
+Received: by mail-pg1-f172.google.com with SMTP id y32so12407361pga.11
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 10:23:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=ensXxHe6GeOmADhf8FqIc8ASkNEA88IFt82kF5XQ9U4=;
+        b=VLwUYzDQVC06uCrGw2TukVe5D/5ZCM0kv+Lv+oWtuNhFaXUgp3Xn58yE8gm62xCqAj
+         793hWKfxHCzkKKBWwnuL5193lQpGwE5C1GSmQLP2skF9i1q6WH/ff+joazfrEtxxhRM/
+         HMJV//Dn1jzIGbrnQiMNGCaC5my9hu5bTyfEhztvSSE3flNAy7LVr2/q2AZrZklbVjWV
+         aq11h9gGXzqecZ3GsvJbjPZYUYHobsFxnBd48NnxxOSKts3ESEeBCL7UVMWN3jByb5Ha
+         KHFuoVc4T9X3r/Pb2zNPo7CNaGfqp0khU02IjmZolFVU7UVeVqoAYnLEEFetrsilg4JI
+         pkTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ensXxHe6GeOmADhf8FqIc8ASkNEA88IFt82kF5XQ9U4=;
+        b=Hr4lMloZaYydWSoFXocPcbpkTbz04tFpDksajjIclCk0oxK1ok6taKmGi1Yl+Vga5t
+         qQy6h8pF4e1hp1tAAGMMj49uY4ZS943RY57nOCwKCjBE4F9IkXS3vDyW+FS3UNsrzLCf
+         /ztxb/DFXfJG/cy9FMfp1WQDdNtVvMWW9ud4bOTHBWySe0PQGeda+sqUSuMIy/SflSP8
+         eFZV/7akSxESV/SYpbk2dmimSdfxwOr4UB0YnXWBEY3WW3QskSJfWlwY+2BryEawRwGN
+         EnG/arr/0POwVcDgpUP3b3GZ1I1XeFEnKYNH727XaTFNnTQEOwB9yrgCxyabpN9CjbIL
+         DMEA==
+X-Gm-Message-State: AOAM533E1VYtMHhSQCZUpNZs9A6tQWg02qv+/kCGZ1D8xhFFeHhsGVh1
+        CRSZux49LSj+ct1FBKuYc4YJZjRBCUgTFVHw
+X-Google-Smtp-Source: ABdhPJxvilxB+o8w12TQ8AlfOay6nqNHQaNYyFDMHpktPr8pJpuh63u++ftKLJgK4WkybSrVXadsrg==
+X-Received: by 2002:a62:62c6:0:b029:249:2545:4f91 with SMTP id w189-20020a6262c60000b029024925454f91mr16572000pfb.21.1618334554677;
+        Tue, 13 Apr 2021 10:22:34 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id h18sm14988036pgj.51.2021.04.13.10.22.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Apr 2021 10:22:34 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        richardcochran@gmail.com
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Allen Hubbe <allenbh@pensando.io>
+Subject: [PATCH v2 net-next] ionic: git_ts_info bit shifters
+Date:   Tue, 13 Apr 2021 10:22:16 -0700
+Message-Id: <20210413172216.59026-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+All the uses of HWTSTAMP_FILTER_* values need to be
+bit shifters, not straight values.
 
-On Tue Apr 13 2021, Alexander Duyck wrote:
-> On Mon, Apr 12, 2021 at 7:29 AM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
->> > +ktime_t igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va)
->> >  {
->> >       struct igb_adapter *adapter = q_vector->adapter;
->> > +     struct skb_shared_hwtstamps ts;
->> >       __le64 *regval = (__le64 *)va;
->> >       int adjust = 0;
->> >
->> >       if (!(adapter->ptp_flags & IGB_PTP_ENABLED))
->> > -             return IGB_RET_PTP_DISABLED;
->> > +             return 0;
->> >
->> >       /* The timestamp is recorded in little endian format.
->> >        * DWORD: 0        1        2        3
->> > @@ -888,10 +887,9 @@ int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
->> >
->> >       /* check reserved dwords are zero, be/le doesn't matter for zero */
->> >       if (regval[0])
->> > -             return IGB_RET_PTP_INVALID;
->> > +             return 0;
->> >
->
-> One thing that needs to be cleaned up in the patch is that if it is
-> going to drop these return values it should probably drop the defines
-> for them since I don't think they are used anywhere else.
+v2: fixed subject and added Cc Dan and SoB Allen
 
-Yes, of course. I'll clean it up before sending a non RFC version.
+Fixes: f8ba81da73fc ("ionic: add ethtool support for PTP")
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Allen Hubbe <allenbh@pensando.io>
+---
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 26 +++++++++----------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Thanks,
-Kurt
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+index 71db1e2c7d8a..6583be570e45 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+@@ -888,55 +888,55 @@ static int ionic_get_ts_info(struct net_device *netdev,
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_NTP_ALL);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_NTP_ALL;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_NTP_ALL);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP1_SYNC);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V1_L4_SYNC;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V1_L4_SYNC);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP1_DREQ);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP1_ALL);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V1_L4_EVENT;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V1_L4_EVENT);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_L4_SYNC);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_L4_SYNC;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L4_SYNC);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_L4_DREQ);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_L4_ALL);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_L2_SYNC);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_L2_SYNC;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L2_SYNC);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_L2_DREQ);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_L2_ALL);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_SYNC);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_SYNC;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_SYNC);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_DREQ);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_DELAY_REQ;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_DELAY_REQ);
+ 
+ 	mask = cpu_to_le64(IONIC_PKT_CLS_PTP2_ALL);
+ 	if ((ionic->ident.lif.eth.hwstamp_rx_filters & mask) == mask)
+-		info->rx_filters |= HWTSTAMP_FILTER_PTP_V2_EVENT;
++		info->rx_filters |= BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmB10vwACgkQeSpbgcuY
-8Kae6A//Y46kXPei0XtDNGOtHdy8H2HDncTe48K7rSLmFB2pYeSlsBGsh5LrXJeK
-7o5qc8ZQ5dZq1zkdJZvvfZurP7/t2S/c4+rh3w0fEUH/UF1Zpu0P4ZNEcA6zOBrb
-cPm/nLQZydrfreTcN3bJ2PM3/+80K8FLfF74M/wc47Wi7biCYx94ls2mNoihvy1z
-2TWwTY7EeoN4YElwyIXFGKIqgkuTCMt3hgBtVFnzLCnl7xRu9snHLiCFo5PiNKRT
-qpC79qUHcqtu39VQHlkvHM9tQvnaMj08okgllnvbLX+XftX+ZyEROO5O5AGjS79E
-h5ftqZ6TBqxrOGT3z1M88vlSSBClw2+ZoOXBMCg87Ir4eO5vZwCblvmzipZ5m5Io
-aVqPmUsi3gGNwdvySsBGAweJ4cTrteHyHVBDmB4pd+87IpxCPHh/vj3b1v+kjMcJ
-aUx7Ken6cu9Sx5YifWE33Ad5PbcR1dXjBIQUuf3HKTodX6swudzLSEsKdEN1Nz88
-Ekg+V/YXuV7zDYH9i02OfUTJovD4+AplgNSE/JE3VqQa9G7UrPekMpBJp2DkjwEL
-1N/d0pYPARMDC90TpGbaD1FmXjKPs45Zwe6NEJtoF2d5nHrQWa+biNgs/EnGkfOx
-9ZTEhIBgfmdjG1yetmoQmXZtlPTyKYMoaTV4HjrQ/aGnE4zOKhw=
-=HXr0
------END PGP SIGNATURE-----
---=-=-=--
