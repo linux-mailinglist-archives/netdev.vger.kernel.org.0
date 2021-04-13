@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D64635DCCA
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 12:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F1F35DCD5
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 12:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343970AbhDMKto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 06:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
+        id S1343958AbhDMKwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 06:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343891AbhDMKsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 06:48:47 -0400
-Received: from blyat.fensystems.co.uk (blyat.fensystems.co.uk [IPv6:2a05:d018:a4d:6403:2dda:8093:274f:d185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45877C061574
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 03:48:25 -0700 (PDT)
-Received: from dolphin.home (unknown [IPv6:2a00:23c6:5495:5e00:72b3:d5ff:feb1:e101])
-        by blyat.fensystems.co.uk (Postfix) with ESMTPSA id 7678944263;
-        Tue, 13 Apr 2021 10:48:21 +0000 (UTC)
-Subject: Re: xen-netback hotplug-status regression bug
-To:     paul@xen.org, Wei Liu <wei.liu@kernel.org>,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        Paul Durrant <pdurrant@amazon.com>
-References: <afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org>
- <f469cdee-f97e-da3f-bcab-0be9ed8cd836@xen.org>
-From:   Michael Brown <mcb30@ipxe.org>
-Message-ID: <58ccc3b7-9ccb-b9bf-84e7-4a023ccb5c56@ipxe.org>
-Date:   Tue, 13 Apr 2021 11:48:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        with ESMTP id S236800AbhDMKwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 06:52:12 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC43C061574;
+        Tue, 13 Apr 2021 03:51:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=AyA21hCwDZr44tPRW26rnzyhYZ7wNBvoep8VeScz3VQ=; b=KW64bWZPv7mAcY0rtoikq5GWu
+        ZwntBdejvJO8lY/s7jHil3J4Iy4whTvPkfqiHdkhaxvWQmu0wOkY7T8Dy+8HFVhqAqfq9lQWdSN40
+        aJqawPMaZ5lNIQWk0qOUkd0G7JtNvGrEMqpK0JXyNZahhQ1Z6/1i8amynpR5UvVxqP4Skk1g8YSNY
+        y990OmrYXF4OsnCjiJKqAMYNfQTjOAF92Mar/e81f/PVqz7PKHqEpz0IXwqVrrITNDkxOk1WCCA61
+        GqYJiG4UnrsNAgNvdLXLaf5MdPkKoXUkS2tut7LAozWehylPoGFtKwKvw7vHbWCt5Hn1ebzCLWGS9
+        vGntaCmUA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52372)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lWGe2-0005Xz-Bj; Tue, 13 Apr 2021 11:51:46 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lWGe0-00088B-CB; Tue, 13 Apr 2021 11:51:44 +0100
+Date:   Tue, 13 Apr 2021 11:51:44 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Lucas Stach <l.stach@pengutronix.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 0/7] remove different PHY fixups
+Message-ID: <20210413105144.GN1463@shell.armlinux.org.uk>
+References: <20210309112615.625-1-o.rempel@pengutronix.de>
+ <c03053f59a89ef6ea4a4f2ce15aee4b4f4892745.camel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <f469cdee-f97e-da3f-bcab-0be9ed8cd836@xen.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on
-        blyat.fensystems.co.uk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c03053f59a89ef6ea4a4f2ce15aee4b4f4892745.camel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13/04/2021 08:12, Paul Durrant wrote:
->> If the frontend subsequently disconnects and reconnects (e.g. 
->> transitions through Closed->Initialising->Connected) then:
->>
->> - Nothing recreates "hotplug-status"
->>
->> - When the frontend re-enters Connected state, connect() sets up a 
->> watch on "hotplug-status" again
->>
->> - The callback hotplug_status_changed() is never triggered, and so the 
->> backend device never transitions to Connected state.
-> 
-> That's not how I read it. Given that "hotplug-status" is removed by the 
-> call to hotplug_status_changed() then the next call to connect() should 
-> fail to register the watch and 'have_hotplug_status_watch' should be 0. 
-> Thus backend_switch_state() should not defer the transition to 
-> XenbusStateConnected in any subsequent interaction with the frontend.
+On Tue, Apr 13, 2021 at 12:00:45PM +0200, Lucas Stach wrote:
+> I agree with the opinion that those PHY fixups introduce more harm than
+> good. Essentially they are pushing board specific configuration values
+> into the PHY, without any checks that the fixup is even running on the
+> specific board it was targeted at.
 
-Thank you for the reply.  I've tested and confirmed my initial 
-hypothesis: the call to xenbus_watch_pathfmt() succeeds even if the node 
-does not exist.
+Yes and no. The problem is, that's an easy statement to make when one
+doesn't understand what they're all doing.
 
-I confirmed this with ftrace using:
+Some are "board specific" in that the normal setup for e.g. iMX6 would
+be to enable clock output from the AR8035 PHY and feed that into the
+iMX6 - as far as I'm aware, that's the only working configuration for
+that SoC and PHY. However, it's also true that this fixup should not
+be applied unconditionally.
 
-   cd /sys/kernel/debug/tracing
-   echo function_graph > current_tracer
-   echo set_backend_state > set_ftrace_filter
-   echo xenbus_watch_pathfmt >> set_ftrace_filter
-   echo register_xenbus_watch >> set_ftrace_filter
-   echo xenbus_dev_fatal >> set_ftrace_filter
+Then there's SmartEEE - it has been found that the PHY defaults for
+this lead to link drops independent of the board and SoC that it is
+connected to. It seems that the PHY is essentially broken - it powers
+up with SmartEEE enabled, and when connected to another SmartEEE
+supporting device, it seems guaranteed that it will result in link
+drops in its default configuration.
 
-On the second time that the frontend transitions to Connected, this 
-produced the trace:
+Freescale's approach has apparently been to unconditionally disable
+SmartEEE for all their platforms because of this. With a bit of
+research however (as has been done by Jon and myself) we've found
+that increasing the Tw parameter for 1G connections results in a
+much more stable link.
 
-   set_backend_state [xen_netback]() {
-     register_xenbus_watch();
-     register_xenbus_watch();
-     xenbus_watch_pathfmt() {
-       register_xenbus_watch();
-     }
-   }
+So, just saying that these are bad without actually understanding what
+they are doing is _also_ bad.
 
-which seems to confirm that the error path in xenbus_watch_path() is 
-*not* taken, i.e. that the call to register_xenbus_watch() succeeded 
-even though the node did not exist.
-
-
-Other observations also seem to confirm this behaviour:
-
-- Running "xenstore ls" in dom0 confirms that on the second frontend 
-transition to Connected, the frontend state is indeed Connected (4) but 
-the backend state remains in InitWait (2)
-
-- Running "xenstore watch 
-/local/domain/0/backend/vif/<domU>/0/hotplug-status" *before* starting 
-the domU confirms that it is possible to create a watch on a node that 
-does not (yet) exist, and that the watch *is* notified when the node is 
-later created.
-
-> Are you seeing the watch successfully re-registered even though the node 
-> does not exist? Perhaps there has been a change in xenstore behaviour?
-
-So, the TL;DR is that yes, the watch does successfully register even 
-though the node does not exist.
-
- From a quick look through the xenstored source, it looks as though the 
-only check on the node name is the call to is_valid_nodename(), which 
-seems to perform a syntactic validity check only.  I can't immediately 
-find any commit that would have changed this behaviour.
-
-Thanks,
-
-Michael
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
