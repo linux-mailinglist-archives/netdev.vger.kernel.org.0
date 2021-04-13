@@ -2,89 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F0535DB0A
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B787E35DB0E
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbhDMJYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48150 "EHLO
+        id S245643AbhDMJYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343489AbhDMJYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:24:19 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BE1C061574;
-        Tue, 13 Apr 2021 02:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=R9GQ7/qe2L3QkVEv8Za/HbNqMJ4ZTy0S5naUqEnTVwM=; b=WAckju/LOTKXAc/kphJjfY7DD
-        sT68bHNciI2f1uCn3fZSzA36ODiMWgs5I4VrTQ3w3GA2wUrHGKy1d/U+6ZvYI0Kn0uHrlsJbgM+9p
-        IFh6+ltCtepzF699CmZZfzzVBmezbYWhd4/MnWWRyPfoGZ3HDfWuSdoMXgj3VPIhdsZBUKV0NRp3j
-        JWiyDycmutW4o5RmOs+Npj73u/urCrsxF1OZZ61NwFu5EPzl2uKCyJ3TVGERcMPEkZuyA4yLUeWgA
-        sHU8bfiAWy1moA/1ug+ZIeTVCeP8EgR8wyvjrKSN35fzei+r+FmjBltVSKIcNt1tT+vTly7j0NNsc
-        JYaYYAVag==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52370)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lWFGw-0005SJ-1a; Tue, 13 Apr 2021 10:23:50 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lWFGu-00085G-VI; Tue, 13 Apr 2021 10:23:48 +0100
-Date:   Tue, 13 Apr 2021 10:23:48 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>, system@metrotek.ru,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: phy: marvell-88x2222: check that link
- is operational
-Message-ID: <20210413092348.GM1463@shell.armlinux.org.uk>
-References: <cover.1618227910.git.i.bornyakov@metrotek.ru>
- <614b534f1661ecf1fff419e2f36eddfb0e6f066d.1618227910.git.i.bornyakov@metrotek.ru>
- <YHTacMwlsR8Wl5q/@lunn.ch>
- <20210413071930.52vfjkewkufl7hrb@dhcp-179.ddg>
+        with ESMTP id S239454AbhDMJYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 05:24:53 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D1FC061756
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 02:24:32 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id l14so11151949ybf.11
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 02:24:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eilsWJ436y5EpMfON6Wru7/wZHB3hyKVpK6txyWMaEk=;
+        b=U2AR7ZhsvlKFUL9UAI2j57eVY4R8TZJ57Rex9pkWTeCtEVT6wD9V2k0XQiFOio+ZSl
+         WrT9bj4HyAST2TmN2iAVLrOTZK1xBOqZCA1t5/p/RxgAzH67MfqXxLNxbORiqnzonhrl
+         fhPj8199fGlyld+3rlYneaGjU5AjMFjytQJb30bI5INbjkWUc47dXI8kW2KWQF41qTfy
+         pwanSzKipCKygspEAru7pzJTal7FO9htNYplaofaJjcyojbDR9BMuNIJYK1q/HOXrhmY
+         +ISjULw85tVhgI7ErWMduza7zTsZE1MRAcGFiGaVUjUJBgl048aa02JgXlJI3R3fgxa1
+         adOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eilsWJ436y5EpMfON6Wru7/wZHB3hyKVpK6txyWMaEk=;
+        b=jlUMNE5eyUTdHfOYsFXnMCqHXh2Io9zkGL/Ls7k5x6vJtpyCPXwnLhCZoDcwu9MLsN
+         o8wjkIbfaOZKBgpCdg8kqsoqusw3s7P6sy6zlE4FDpG0TSuB+QjTGdhjH5a746kAm4I2
+         pOfNzOKGcVGym8PNnNTR67PllttXjxj+MfNSUqMAigJ7VF6O/hk0VQAv92XoCmcsalrr
+         /pV1LCfdc426aJsVvCtor8E6SKOOQ8PZDmySH9yWpjdzMZPYhZ05ZJYn1tBuIytGoWqT
+         qKUGRB4EGFcU0E2KO1nKYBklZYW3vH1YgqSsC85tcE3vQiW6swd275XM3npHpM6I4jS0
+         upTw==
+X-Gm-Message-State: AOAM532tQLVHRr0TOyTGxg5lc59bokv/MPLru+hkujINRJ4jvfdyDKc6
+        uQ6NcIVhzfkuSeP4tfrhRFLLwa03ls5EQ5EYmcU2JQ==
+X-Google-Smtp-Source: ABdhPJwNxYSRQPQPqbHv6ObXbGvShQMUCY0Y74AJPbb0xgQNMVttsb9i97F8rFlNrlZWwreruBAxg9HW4gr5GrjDNAk=
+X-Received: by 2002:a25:b906:: with SMTP id x6mr41172495ybj.504.1618305871573;
+ Tue, 13 Apr 2021 02:24:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210413071930.52vfjkewkufl7hrb@dhcp-179.ddg>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
+ <20210412051445.GA47322@roeck-us.net> <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
+ <CANn89iK2aUESa6DSG=Y4Y9tPmPW2weE05AVpxnDbqYwQjFM2Vw@mail.gmail.com>
+ <78c858ba-a847-884f-80c3-cb1eb84d4113@roeck-us.net> <CANn89i+wQoaiFEe1Qi1k96d-ACLmAtJJQ36bs5Z5knYO1v+rOg@mail.gmail.com>
+ <ec5a2822-02b8-22e8-b2e2-23a942506a94@roeck-us.net>
+In-Reply-To: <ec5a2822-02b8-22e8-b2e2-23a942506a94@roeck-us.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 13 Apr 2021 11:24:20 +0200
+Message-ID: <CANn89iKDytTucZfCPKLfiv8FdWYSvs4JzgkN452PrH7qDfPbkg@mail.gmail.com>
+Subject: Re: Linux 5.12-rc7
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 10:19:30AM +0300, Ivan Bornyakov wrote:
-> On Tue, Apr 13, 2021 at 01:40:32AM +0200, Andrew Lunn wrote:
-> > On Mon, Apr 12, 2021 at 03:16:59PM +0300, Ivan Bornyakov wrote:
-> > > Some SFP modules uses RX_LOS for link indication. In such cases link
-> > > will be always up, even without cable connected. RX_LOS changes will
-> > > trigger link_up()/link_down() upstream operations. Thus, check that SFP
-> > > link is operational before actual read link status.
-> > 
-> > Sorry, but this is not making much sense to me.
-> > 
-> > LOS just indicates some sort of light is coming into the device. You
-> > have no idea what sort of light. The transceiver might be able to
-> > decode that light and get sync, it might not. It is important that
-> > mv2222_read_status() returns the line side status. Has it been able to
-> > achieve sync? That should be independent of LOS. Or are you saying the
-> > transceiver is reporting sync, despite no light coming in?
-> > 
-> > 	Andrew
-> 
-> Yes, with some SFP modules transceiver is reporting sync despite no
-> light coming in. So, the idea is to check that link is somewhat
-> operational before determing line-side status. 
+On Mon, Apr 12, 2021 at 10:05 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On 4/12/21 10:38 AM, Eric Dumazet wrote:
+> [ ... ]
+>
+> > Yes, I think this is the real issue here. This smells like some memory
+> > corruption.
+> >
+> > In my traces, packet is correctly received in AF_PACKET queue.
+> >
+> > I have checked the skb is well formed.
+> >
+> > But the user space seems to never call poll() and recvmsg() on this
+> > af_packet socket.
+> >
+>
+> After sprinkling the kernel with debug messages:
+>
+> 424   00:01:33.674181 sendto(6, "E\0\1H\0\0\0\0@\21y\246\0\0\0\0\377\377\377\377\0D\0C\00148\346\1\1\6\0\246\336\333\v\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0RT\0\
+> 424   00:01:33.693873 close(6)          = 0
+> 424   00:01:33.694652 fcntl64(5, F_SETFD, FD_CLOEXEC) = 0
+> 424   00:01:33.695213 clock_gettime64(CLOCK_MONOTONIC, 0x7be18a18) = -1 EFAULT (Bad address)
+> 424   00:01:33.695889 write(2, "udhcpc: clock_gettime(MONOTONIC) failed\n", 40) = -1 EFAULT (Bad address)
+> 424   00:01:33.697311 exit_group(1)     = ?
+> 424   00:01:33.698346 +++ exited with 1 +++
+>
+> I only see that after adding debug messages in the kernel, so I guess there must be
+> a heisenbug somehere.
+>
+> Anyway, indeed, I see (another kernel debug message):
+>
+> __do_sys_clock_gettime: Returning -EFAULT on address 0x7bacc9a8
+>
+> So udhcpc doesn't even try to read the reply because it crashes after sendto()
+> when trying to read the current time. Unless I am missing something, that means
+> that the problem happens somewhere on the send side.
+>
+> To make things even more interesting, it looks like the failing system call
+> isn't always clock_gettime().
+>
+> Guenter
 
-Indeed - it should be a logical and operation - there is light present
-_and_ the PHY recognises the signal. This is what the commit achieves,
-although (iirc) doesn't cater for the case where there is no SFP cage
-attached.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I think GRO fast path has never worked on SUPERH. Probably SUPERH has
+never used a fast NIC (10Gbit+)
+
+The following hack fixes the issue.
+
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index af8c1ea040b9364b076e2d72f04dc3de2d7e2f11..91ba89a645ff91d4cd4f3d8dc8a009bcb67da344
+100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5916,13 +5916,16 @@ static struct list_head
+*gro_list_prepare(struct napi_struct *napi,
+
+ static void skb_gro_reset_offset(struct sk_buff *skb)
+ {
++#if !defined(CONFIG_SUPERH)
+        const struct skb_shared_info *pinfo = skb_shinfo(skb);
+        const skb_frag_t *frag0 = &pinfo->frags[0];
++#endif
+
+        NAPI_GRO_CB(skb)->data_offset = 0;
+        NAPI_GRO_CB(skb)->frag0 = NULL;
+        NAPI_GRO_CB(skb)->frag0_len = 0;
+
++#if !defined(CONFIG_SUPERH)
+        if (!skb_headlen(skb) && pinfo->nr_frags &&
+            !PageHighMem(skb_frag_page(frag0))) {
+                NAPI_GRO_CB(skb)->frag0 = skb_frag_address(frag0);
+@@ -5930,6 +5933,7 @@ static void skb_gro_reset_offset(struct sk_buff *skb)
+                                                    skb_frag_size(frag0),
+                                                    skb->end - skb->tail);
+        }
++#endif
+ }
+
+ static void gro_pull_from_frag0(struct sk_buff *skb, int grow)
