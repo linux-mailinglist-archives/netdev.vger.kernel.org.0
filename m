@@ -2,139 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7403035D9E4
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 10:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AFF135D9FF
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 10:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbhDMIVd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Apr 2021 04:21:33 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:50980 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229585AbhDMIVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 04:21:31 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-153-fsM8gFBuPMKJZMZap9THCQ-1; Tue, 13 Apr 2021 09:21:08 +0100
-X-MC-Unique: fsM8gFBuPMKJZMZap9THCQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.2; Tue, 13 Apr 2021 09:21:07 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.012; Tue, 13 Apr 2021 09:21:07 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matthew Wilcox' <willy@infradead.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>, Christoph Hellwig <hch@lst.de>
-Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Thread-Index: AQHXL8kRwdfrgigLI0exh4xFUSZq9KqyF7dg
-Date:   Tue, 13 Apr 2021 08:21:07 +0000
-Message-ID: <e88c6b601ad644a88e3f758f53f1060c@AcuMS.aculab.com>
-References: <20210410205246.507048-1-willy@infradead.org>
- <20210410205246.507048-2-willy@infradead.org>
- <20210411114307.5087f958@carbon>
- <20210412182354.GN2531743@casper.infradead.org>
-In-Reply-To: <20210412182354.GN2531743@casper.infradead.org>
-Accept-Language: en-GB, en-US
+        id S229896AbhDMI02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 04:26:28 -0400
+Received: from frasgout.his.huawei.com ([185.176.79.56]:2839 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229379AbhDMI00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 04:26:26 -0400
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FKJQw67r3z688K3;
+        Tue, 13 Apr 2021 16:18:48 +0800 (CST)
+Received: from lhreml707-chm.china.huawei.com (10.201.108.56) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2106.2; Tue, 13 Apr 2021 10:26:01 +0200
+Received: from lhreml703-chm.china.huawei.com (10.201.108.52) by
+ lhreml707-chm.china.huawei.com (10.201.108.56) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Tue, 13 Apr 2021 09:25:58 +0100
+Received: from lhreml703-chm.china.huawei.com ([10.201.68.198]) by
+ lhreml703-chm.china.huawei.com ([10.201.68.198]) with mapi id 15.01.2106.013;
+ Tue, 13 Apr 2021 09:25:58 +0100
+From:   Salil Mehta <salil.mehta@huawei.com>
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
+        "Tieman, Henry W" <henry.w.tieman@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        Linuxarm <linuxarm@huawei.com>
+Subject: RE: [PATCH net] ice: Re-organizes reqstd/avail {R,T}XQ check/code for
+ efficiency+readability
+Thread-Topic: [PATCH net] ice: Re-organizes reqstd/avail {R,T}XQ check/code
+ for efficiency+readability
+Thread-Index: AQHXLnSYr3LSh1DDV0C/ZapTpipD6KqxbBIAgACyFoA=
+Date:   Tue, 13 Apr 2021 08:25:58 +0000
+Message-ID: <8fd160b556fc4d45bff2d607918aad33@huawei.com>
+References: <20210411014530.25060-1-salil.mehta@huawei.com>
+ <03655fb6faa595a20a1143fb3b01561042cd317f.camel@intel.com>
+In-Reply-To: <03655fb6faa595a20a1143fb3b01561042cd317f.camel@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+x-originating-ip: [10.47.73.132]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox <willy@infradead.org>
-> Sent: 12 April 2021 19:24
-> 
-> On Sun, Apr 11, 2021 at 11:43:07AM +0200, Jesper Dangaard Brouer wrote:
-> > Could you explain your intent here?
-> > I worry about @index.
-> >
-> > As I mentioned in other thread[1] netstack use page_is_pfmemalloc()
-> > (code copy-pasted below signature) which imply that the member @index
-> > have to be kept intact. In above, I'm unsure @index is untouched.
-> 
-> Well, I tried three different approaches.  Here's the one I hated the least.
-> 
-> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> Date: Sat, 10 Apr 2021 16:12:06 -0400
-> Subject: [PATCH] mm: Fix struct page layout on 32-bit systems
-> 
-> 32-bit architectures which expect 8-byte alignment for 8-byte integers
-> and need 64-bit DMA addresses (arc, arm, mips, ppc) had their struct
-> page inadvertently expanded in 2019.  When the dma_addr_t was added,
-> it forced the alignment of the union to 8 bytes, which inserted a 4 byte
-> gap between 'flags' and the union.
-> 
-> We could fix this by telling the compiler to use a smaller alignment
-> for the dma_addr, but that seems a little fragile.  Instead, move the
-> 'flags' into the union.  That causes dma_addr to shift into the same
-> bits as 'mapping', which causes problems with page_mapping() called from
-> set_page_dirty() in the munmap path.  To avoid this, insert three words
-> of padding and use the same bits as ->index and ->private, neither of
-> which have to be cleared on free.
-
-This all looks horribly fragile and is bound to get broken again.
-Are there two problems?
-1) The 'folio' structure needs to match 'rcu' part of the page
-   so that it can use the same rcu list to free items.
-2) Various uses of 'struct page' need to overlay fields to save space.
-
-For (1) the rcu bit should probably be a named structure in an
-anonymous union - probably in both structures.
-
-For (2) is it worth explicitly defining the word number for each field?
-So you end up with something like:
-#define F(offset, member) struct { long _pad_##offset[offset]; member; }
-struct page [
-	union {
-		struct page_rcu;
-		unsigned long flags;
-		F(1, unsigned long xxx);
-		F(2, unsigned long yyy);
-	etc.
-
-
-		
-...
->  		struct {	/* page_pool used by netstack */
-> -			/**
-> -			 * @dma_addr: might require a 64-bit value even on
-> -			 * 32-bit architectures.
-> -			 */
-> -			dma_addr_t dma_addr;
-> +			unsigned long _pp_flags;
-> +			unsigned long pp_magic;
-> +			unsigned long xmi;
-> +			unsigned long _pp_mapping_pad;
-> +			dma_addr_t dma_addr;	/* might be one or two words */
->  		};
-
-Isn't that 6 words?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+SGkgQW50aG9ueSwNClRoYW5rcyBmb3IgcmV2aWV3aW5nIQ0KDQo+IEZyb206IE5ndXllbiwgQW50
+aG9ueSBMIFttYWlsdG86YW50aG9ueS5sLm5ndXllbkBpbnRlbC5jb21dDQo+IFNlbnQ6IE1vbmRh
+eSwgQXByaWwgMTIsIDIwMjEgMTE6NDEgUE0NCj4gVG86IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1
+YmFAa2VybmVsLm9yZzsgU2FsaWwgTWVodGEgPHNhbGlsLm1laHRhQGh1YXdlaS5jb20+DQo+IENj
+OiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBC
+cmFuZGVidXJnLCBKZXNzZQ0KPiA8amVzc2UuYnJhbmRlYnVyZ0BpbnRlbC5jb20+OyBsaW51eGFy
+bUBvcGVuZXVsZXIub3JnOyBUaWVtYW4sIEhlbnJ5IFcNCj4gPGhlbnJ5LncudGllbWFuQGludGVs
+LmNvbT47IExpbnV4YXJtIDxsaW51eGFybUBodWF3ZWkuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BB
+VENIIG5ldF0gaWNlOiBSZS1vcmdhbml6ZXMgcmVxc3RkL2F2YWlsIHtSLFR9WFEgY2hlY2svY29k
+ZSBmb3INCj4gZWZmaWNpZW5jeStyZWFkYWJpbGl0eQ0KPiANCj4gT24gU3VuLCAyMDIxLTA0LTEx
+IGF0IDAyOjQ1ICswMTAwLCBTYWxpbCBNZWh0YSB3cm90ZToNCj4gPiBJZiB1c2VyIGhhcyBleHBs
+aWNpdGx5IHJlcXVlc3RlZCB0aGUgbnVtYmVyIG9mIHtSLFR9WFFzLCB0aGVuIGl0IGlzDQo+ID4g
+dW5uZWNlc3NhcnkNCj4gPiB0byBnZXQgdGhlIGNvdW50IG9mIGFscmVhZHkgYXZhaWxhYmxlIHtS
+LFR9WFFzIGZyb20gdGhlIFBGDQo+ID4gYXZhaWxfe3IsdH14cXMNCj4gPiBiaXRtYXAuIFRoaXMg
+dmFsdWUgd2lsbCBnZXQgb3ZlcnJpZGVuIGJ5IHVzZXIgc3BlY2lmaWVkIHZhbHVlIGluIGFueQ0K
+PiANCj4gcy9vdmVycmlkZW4vb3ZlcnJpZGRlbg0KDQpPay4NCg0KPiANCj4gPiBjYXNlLg0KPiA+
+DQo+ID4gVGhpcyBwYXRjaCBkb2VzIG1pbm9yIHJlLW9yZ2FuaXphdGlvbiBvZiB0aGUgY29kZSBm
+b3IgaW1wcm92aW5nIHRoZQ0KPiA+IGZsb3cgYW5kDQo+ID4gcmVhZGFiaWx0aXkuIFRoaXMgc2Nv
+cGUgb2YgaW1wcm92ZW1lbnQgd2FzIGZvdW5kIGR1cmluZyB0aGUgcmV2aWV3IG9mDQo+ID4gdGhl
+IElDRQ0KPiA+IGRyaXZlciBjb2RlLg0KPiANCj4gVGhlIGNoYW5nZXMgdGhlbXNlbHZlcyBsb29r
+IG9rLCBidXQgdGhlcmUgYXJlIHNvbWUgY2hlY2twYXRjaCBpc3N1ZXMuDQo+IEFsc28sIGNvdWxk
+IHlvdSBpbmNsdWRlIGludGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vvc2wub3JnDQoNClN1cmUuIHdp
+bGwgZml4IHRoZW0uDQoNCj4gDQo+ID4gRllJLCBJIGNvdWxkIG5vdCB0ZXN0IHRoaXMgY2hhbmdl
+IGR1ZSB0byB1bmF2YWlsYWJpbGl0eSBvZiB0aGUNCj4gPiBoYXJkd2FyZS4gSXQNCj4gPiB3b3Vs
+ZCBoZWxwZnVsIGlmIHNvbWVib2R5IGNhbiB0ZXN0IHRoaXMgYW5kIHByb3ZpZGUgVGVzdGVkLWJ5
+IFRhZy4NCj4gPiBNYW55IHRoYW5rcyENCj4gPg0KPiA+IEZpeGVzOiAxMWI3NTUxZTA5NmQgKCJp
+Y2U6IEltcGxlbWVudCBldGh0b29sIG9wcyBmb3IgY2hhbm5lbHMiKQ0KPiANCj4gVGhpcyBjb21t
+aXQgaWQgZG9lc24ndCBleGlzdC4NCg0KV2lsbCBmaXguIFNvcnJ5IGFib3V0IHRoaXMuDQoNCj4g
+DQo+ID4gU2lnbmVkLW9mZi1ieTogU2FsaWwgTWVodGEgPHNhbGlsLm1laHRhQGh1YXdlaS5jb20+
+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfbGliLmMg
+fCAxNCArKysrKysrKy0tLS0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCsp
+LCA2IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L2ludGVsL2ljZS9pY2VfbGliLmMNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVs
+L2ljZS9pY2VfbGliLmMNCj4gPiBpbmRleCBkMTNjN2ZjOGZiMGEuLjE2MWU4ZGZlNTQ4YyAxMDA2
+NDQNCj4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX2xpYi5jDQo+
+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV9saWIuYw0KPiA+IEBA
+IC0xNjEsMTIgKzE2MSwxMyBAQCBzdGF0aWMgdm9pZCBpY2VfdnNpX3NldF9udW1fcXMoc3RydWN0
+IGljZV92c2kNCj4gPiAqdnNpLCB1MTYgdmZfaWQpDQo+ID4NCj4gPiAgCXN3aXRjaCAodnNpLT50
+eXBlKSB7DQo+ID4gIAljYXNlIElDRV9WU0lfUEY6DQo+ID4gLQkJdnNpLT5hbGxvY190eHEgPSBt
+aW4zKHBmLT5udW1fbGFuX21zaXgsDQo+ID4gLQkJCQkgICAgICBpY2VfZ2V0X2F2YWlsX3R4cV9j
+b3VudChwZiksDQo+ID4gLQkJCQkgICAgICAodTE2KW51bV9vbmxpbmVfY3B1cygpKTsNCj4gPiAg
+CQlpZiAodnNpLT5yZXFfdHhxKSB7DQo+ID4gIAkJCXZzaS0+YWxsb2NfdHhxID0gdnNpLT5yZXFf
+dHhxOw0KPiA+ICAJCQl2c2ktPm51bV90eHEgPSB2c2ktPnJlcV90eHE7DQo+ID4gKwkJfSBlbHNl
+IHsNCj4gPiArCQkJdnNpLT5hbGxvY190eHEgPSBtaW4zKHBmLT5udW1fbGFuX21zaXgsDQo+ID4g
+KwkJCQkJIGljZV9nZXRfYXZhaWxfdHhxX2NvdW50KHBmKSwNCj4gPiArCQkJCQkgKHUxNiludW1f
+b25saW5lX2NwdXMoKSk7DQo+IA0KPiBBbGlnbm1lbnQgaXMgaW5jb3JyZWN0Lg0KDQpPay4gV2ls
+bCBjaGVjaywgcGVyaGFwcyB0aGUgY2F1c2Ugb2YgdGhlIGNoZWNrcGF0Y2gucGwgZXJyb3JzLg0K
+DQo+IA0KPiA+ICAJCX0NCj4gPg0KPiA+ICAJCXBmLT5udW1fbGFuX3R4ID0gdnNpLT5hbGxvY190
+eHE7DQo+ID4gQEAgLTE3NSwxMiArMTc2LDEzIEBAIHN0YXRpYyB2b2lkIGljZV92c2lfc2V0X251
+bV9xcyhzdHJ1Y3QgaWNlX3ZzaQ0KPiA+ICp2c2ksIHUxNiB2Zl9pZCkNCj4gPiAgCQlpZiAoIXRl
+c3RfYml0KElDRV9GTEFHX1JTU19FTkEsIHBmLT5mbGFncykpIHsNCj4gPiAgCQkJdnNpLT5hbGxv
+Y19yeHEgPSAxOw0KPiA+ICAJCX0gZWxzZSB7DQo+ID4gLQkJCXZzaS0+YWxsb2NfcnhxID0gbWlu
+MyhwZi0+bnVtX2xhbl9tc2l4LA0KPiA+IC0JCQkJCSAgICAgIGljZV9nZXRfYXZhaWxfcnhxX2Nv
+dW50KHANCj4gPiBmKSwNCj4gPiAtCQkJCQkgICAgICAodTE2KW51bV9vbmxpbmVfY3B1cygpKTsN
+Cj4gPiAgCQkJaWYgKHZzaS0+cmVxX3J4cSkgew0KPiA+ICAJCQkJdnNpLT5hbGxvY19yeHEgPSB2
+c2ktPnJlcV9yeHE7DQo+ID4gIAkJCQl2c2ktPm51bV9yeHEgPSB2c2ktPnJlcV9yeHE7DQo+ID4g
+KwkJCX0gZWxzZSB7DQo+ID4gKwkJCQl2c2ktPmFsbG9jX3J4cSA9IG1pbjMocGYtPm51bV9sYW5f
+bXNpeCwNCj4gPiArCQkJCQkJIGljZV9nZXRfYXZhaWxfcnhxX2NvdW4NCj4gPiB0KHBmKSwNCj4g
+PiArCQkJCQkJICh1MTYpbnVtX29ubGluZV9jcHVzKCkNCj4gDQo+IFNhbWUsIGFsaWdubWVudCBp
+cyBpbmNvcnJlY3QuDQoNCk9rLiBXaWxsIGZpeC4NCg0KVGhhbmtzDQpTYWxpbC4NCg==
