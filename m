@@ -2,196 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 043CB35E08A
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 15:48:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0728F35E09C
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 15:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239268AbhDMNrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 09:47:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51757 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346123AbhDMNrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 09:47:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618321609;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ruitcOttvU8pMtnqETNMINtrcJvOv4W/NYv8bRKWdyw=;
-        b=QbFxI4cw8jnZHVePc9Nq/YiHwkJ6ym9jLOsKTPlKa3GNxXknncpdWluSKFYEwhS44Ca4wP
-        LPyU6bhuwNkpZBLzQm3AIMoviYAFcbFpn0SZCAuL46lHsQGUd6uOA8jpaghnzvjQOKjOto
-        aobUSMySuCiSIHABWce0NyBJMReSMTw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-13-Ekkx3drpOO25L0E-ZBPWNw-1; Tue, 13 Apr 2021 09:46:46 -0400
-X-MC-Unique: Ekkx3drpOO25L0E-ZBPWNw-1
-Received: by mail-wr1-f70.google.com with SMTP id v3so782426wrr.22
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 06:46:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ruitcOttvU8pMtnqETNMINtrcJvOv4W/NYv8bRKWdyw=;
-        b=Y1HrgKMTX9WjIPn0H6Y4ic4nvien2LPMDbKyEwCam5T12N7hUI+GC5RTdSmluLOr9L
-         EKrOEM4C1SrU3MecPYqmTiMvZObtJI2dwR9jJ30+LM9awOXutNx8811Es3phCp9bVsV5
-         1gjcFT/cRtxvSfVuYurS3Qw7kw7nKdtbF7REDEuu+B+5Cv/+Ed6+vHXcGp0rgy7kVbUs
-         uQZUDJPXDKnZOrhL7phTwFnbisGYfyGbvDot08IoQ8i4QHH8XpYKVrQHCr14Qp2lex5v
-         npmKD+CBuRLHPRj37UiC32lWLP0max2k50XZzmG5Ye5WkkEWsGv3J1GA2VvEdmT4bs0U
-         KK2A==
-X-Gm-Message-State: AOAM533pKo1Q8G+WjFvcdAKg4I4KpFcvhidnNq8Sp1p1WclQyeoKT/Rh
-        IqqejDy2m1O6d+B/Av3Yk+2ZePT7J5dR+1ROfwfuLa2PvOB1f9Ckr5beq8Ts4pKp9PaWuU56GHs
-        /8ADLhKO8XFDW0Lsd
-X-Received: by 2002:adf:c587:: with SMTP id m7mr36496052wrg.369.1618321605398;
-        Tue, 13 Apr 2021 06:46:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxweykvbt/QwASFWtvZxLoKiOTh8XNV0MDGo+vClfJbzD4DLNEo7214/mwtOKq8JtZgcctFLw==
-X-Received: by 2002:adf:c587:: with SMTP id m7mr36496043wrg.369.1618321605232;
-        Tue, 13 Apr 2021 06:46:45 -0700 (PDT)
-Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
-        by smtp.gmail.com with ESMTPSA id q20sm2842983wmq.2.2021.04.13.06.46.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Apr 2021 06:46:44 -0700 (PDT)
-Date:   Tue, 13 Apr 2021 09:46:41 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: Linux 5.12-rc7
-Message-ID: <20210413094525-mutt-send-email-mst@kernel.org>
-References: <CAHk-=wiHGchP=V=a4DbDN+imjGEc=2nvuLQVoeNXNxjpU1T8pg@mail.gmail.com>
- <20210412051445.GA47322@roeck-us.net>
- <CAHk-=whYcwWgSPxuu8FxZ2i_cG7kw82m-Hbj0-67C6dk1Wb0tQ@mail.gmail.com>
- <CANn89iK2aUESa6DSG=Y4Y9tPmPW2weE05AVpxnDbqYwQjFM2Vw@mail.gmail.com>
- <CANn89i+sYS_x8D5hASKNgmc-k3P7B9JGY9mU1aBwhqHuAkwnBQ@mail.gmail.com>
- <20210413085538-mutt-send-email-mst@kernel.org>
- <CANn89iJODpHFAAZt0X-EewnbwKgeLPYpb=0GPRqqZmU9=12R6g@mail.gmail.com>
- <CANn89iKrSDL9usw18uvVfarWRUBv=V4xTHOMEgS48jhNmzR5_A@mail.gmail.com>
- <20210413093606-mutt-send-email-mst@kernel.org>
- <CANn89iKB3x2T=8j5qBVVtStdQBASD-P6B1+yLKwLh+Y+PggB0A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S1346195AbhDMNvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 09:51:46 -0400
+Received: from mail-co1nam11on2050.outbound.protection.outlook.com ([40.107.220.50]:26976
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1346187AbhDMNvp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 09:51:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=laPpahyo7QADbzbhVp87nd16w8ZMgh59/GMIUCUSqfgpBDN4MTgH4wLN+HqM2rR6uJglz8hgyQU7fTNOjp8Z0PdxpPFCZEXjlZGzqI+zfoFePdL9cKZlnihthXYGkxeJ5Q//NNnLYFhHsqOml+CyQnRFH6Holt17DCu6ulEnHX/yAk0C3SdpZxTYB0hfB3Y/98S5xu7bq3zkrscF/+EmJoyC7jpVlbs6gXlNdu7LoXcG/m9bVkoziP1zmUVDBX0FOhtT6RQQ6Oaxd3Lbh/18Dts4lkDNORIAEn5TYj75oZffyTtrXULt+xlW/8T4BipA4ma+A4LXrae+3RfO8FNJ+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EyY2zMBE7enM7irQrTCHHwCilyDTmYBG+ysAXtVccyA=;
+ b=iCEqqjqJWJ6Y9ipaIePY/jPyvKVzdGf1fL/4wDA6eQsh2apknrNRGEoHYXl16BleKpNFvmNcALKPDu2iMfuTk7ZQ9lPe1l2OLbfwQypgpV0YQYpZyEE3nxjrrxd4GySW10GKItfYfI6l8wIkYdM3JY1Cjc80+FwUlv19p8cASF5IwWsInTUMSKASwMp1jfgq548Vr1KWjW5r+xkLkQEMWA4cY7GG4ZfdtGKxkiQ+lsYhmXtk7GBErdyHv2Fmuwv9l+2Pq7oUeKy9CguTqqJqt6cEgE6H7mzigQZXZ+5CwcJfWKuAg5lhmJJnpjOxwAlmviouYYZsqAFkNzoNdNM7FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EyY2zMBE7enM7irQrTCHHwCilyDTmYBG+ysAXtVccyA=;
+ b=VAkwitD/oYUqDVFm6P4RsZn0EqTJKxebFNn5KevB4YEhH7uFYaAAK9Ef3H0OM6fUDvvnrgrgr8Z6EUl6CzXrQjZbStmoxvKUzMVTasyx5f2BB1TreXed+P/SA0YO2g3cbR895zFEY7JlI2oCRtEuOYleTR/K3dLVw7a0aW66BLOAkWSpV90DpLScjUmwLQFtYlk5jok0EaJdwFOXrWGCJCTzmzQZeL6Ivu580BCpD7LWsLipPn1vNtY1SdJgLE/67ENgHWFH/9VJh0i+SXyWLDzcFe7xL177I4cw9QrYoKy5oDN8KHTmB6jCk0kmpx3YeWGK91iYiWsRvsKTHyawog==
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR1201MB2488.namprd12.prod.outlook.com (2603:10b6:3:e1::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.18; Tue, 13 Apr
+ 2021 13:51:22 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
+ 13:51:22 +0000
+Date:   Tue, 13 Apr 2021 10:51:20 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     =?utf-8?B?SMOla29u?= Bugge <haakon.bugge@oracle.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>, netdev@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH for-next v3 0/2] Introduce rdma_set_min_rnr_timer() and
+ use it in RDS
+Message-ID: <20210413135120.GT7405@nvidia.com>
+References: <1617216194-12890-1-git-send-email-haakon.bugge@oracle.com>
+ <20210412225847.GA1189461@nvidia.com>
+ <YHU6VXP6kZABXIYA@unreal>
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CANn89iKB3x2T=8j5qBVVtStdQBASD-P6B1+yLKwLh+Y+PggB0A@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YHU6VXP6kZABXIYA@unreal>
+X-Originating-IP: [142.162.115.133]
+X-ClientProxiedBy: BLAPR03CA0147.namprd03.prod.outlook.com
+ (2603:10b6:208:32e::32) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BLAPR03CA0147.namprd03.prod.outlook.com (2603:10b6:208:32e::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend Transport; Tue, 13 Apr 2021 13:51:22 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lWJRo-005HcI-RV; Tue, 13 Apr 2021 10:51:20 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d71bb45d-0b72-412e-b275-08d8fe8338f7
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB2488:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM5PR1201MB248851BB4DEEB0AAAF4FF834C24F9@DM5PR1201MB2488.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1824;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xAIZRUSa6I+21dqdRPmLuAwCr6MRoA+rIpMx2rtJgxipBQOJ/ubrhXSEpIeZT6LUNua0P+LRp2LcNmKqIz21YtDDK7fD7Guro+Ri4Dh/FhKyGmm5CBB8C8NHFbJkMPwJmdBbm3QnIw+dmXTJW3J+m37jge1YS9tbvdJYJbVmoYH1+BDWL1JhtaQ91iZghEb3MQgz2v10G/Niir5h6oZKwoCbuVNTDJ4SECjeHOETnQQc8LbUZq7dEr6LZx8PGmJ75jMWulqRjR/ptHk6+cBcJxECRVaoLT2Kt8XenlC0kfuCgeFnSLDfvqAJ51TetseO7KPwOFqByH4zWWxLVB3gcOQZB3Mka5KYVhArXFcnsVHb+q2ATZdZag581OdUC89YLmn/xo5QNbyog+FhBiRDqPwd8jXkjEO5sh82ZDfsNCx0zaEmF5s38l+J5CIL5JfcX7AKc42/ZRsRXKaVNhSPATSm03Ta3OJWJGr8UEoeq27gCgrvxDcMmCM399tEce2Nlc5Kfrd7BYvu2qtO4UbJQeu426yftiTIRkg5MuqNKd6rND4vn8I4/uQ7cgyId7rlo56h5Tkx2w4O1wZkt4QmRXjrKXVDfFW/IbjIUhFJOw4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(39860400002)(376002)(396003)(136003)(26005)(186003)(66556008)(86362001)(38100700002)(4744005)(4326008)(36756003)(66946007)(33656002)(66476007)(478600001)(2616005)(426003)(9746002)(9786002)(8676002)(2906002)(6916009)(316002)(8936002)(1076003)(5660300002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?bWNpQUhpVVkrYk5iWnl3diszTnY0YkJ3MWN5SUhHTW1vSHpwL1JxMlV2L3NC?=
+ =?utf-8?B?anVjMW5HMS9wc3VxaExWdXlSK1RuUnJkelRjR2l6RlM1ZjdPbXFYU0ZsNXNa?=
+ =?utf-8?B?dDVKSk92cHpLQ3lVb2lPMUlCVGI1K0ZUZXR1Vm9qR2xPbSs2Uzg0Q1AzOXJD?=
+ =?utf-8?B?UzdSUWpIbGU5UmxmbnZkdmlaMGV2RmxRak9ob1hmWGlpTlFaV2pzdXcwcTUv?=
+ =?utf-8?B?ZFlpTEk0ZlpTYjVKTmFUWDRHb2JxN29wWUlZR24vaUJ2TlErYlNscGJaOUQr?=
+ =?utf-8?B?TmhVK042QUdpSzZnR1BNYUg0RTE4R1ZZb00vT2g2cGlFU0h6QVJPeFpPaU9W?=
+ =?utf-8?B?SkpFaU9TMXFoTHBnMGx2T29FZENXQ0dSK21XRE5idnBoV1IxMTlpUU5TTXlm?=
+ =?utf-8?B?SGtvSGtiRER2azBXRXBEUDY5NTY0bU9ObTd3TTJIUldZOTQ0TmN2M2hSQzI2?=
+ =?utf-8?B?UitKT09ENG5wa1JnY0tON0I5R2Jyem9ZdDNSd1FENFo5U05kYkJlbEd2WHpi?=
+ =?utf-8?B?RUJXK0tidGlPV3pRK1hjVFlGaE50cXA1T1ZNYlFjTFhMNWh5T1NXbGViVjhT?=
+ =?utf-8?B?VmlNdnoweGovaFFWcko2NVN4U0pxdElTVHQxbzd3eXFTK2pueDVHVGtud3du?=
+ =?utf-8?B?RnlkSFdyTGI2blpFc25JeHMraUQ0OW0ydHphamw4cmZFSm14cE5ab0QzU1J5?=
+ =?utf-8?B?STdsYStGMXJSV0c1M2lIMmR1YUpXcDk3bGpQNTBBQWhHRmt4UXExR3JZc2RQ?=
+ =?utf-8?B?cm40eFd6Nk5kYzVkd1A4aHZBeGV1US9FWFNEMitRcHVMK3VkMXJIYlByUjd3?=
+ =?utf-8?B?UU42dzJyaXRha3R2blY3NjlHakNrNVNqcGZiQ3VicEhuREs0M0thdml1OGFD?=
+ =?utf-8?B?a2FwSytlVG95cmpSdTl2eEx0NVc1MmlFV3JZbHJFeGF0V1FrTnc3M2FGZ3pO?=
+ =?utf-8?B?bkhwNjdEb3dWVm5GMEJMNEFMSlJuTUYraVNNRnVYNjN6bXA2bFlBMU96Q1Fm?=
+ =?utf-8?B?MW1JWFVOWFVVckxPbTQxcEh6Q1QwV1pVUFd0NnQ5M1Z0bEVrYkdkekYzN0p1?=
+ =?utf-8?B?cUFVUzZ2NXRvZEI5dXg4enVrWW1EeCtvOFNRT2tNSEtrSkU1NWlEbE5JRU5m?=
+ =?utf-8?B?TEMyTmQ5NCtmSWp5ajUzVXJTSFYwaE44cGgvSlJBSWwxZEMrRVFkM2ZGOFRB?=
+ =?utf-8?B?OU5LVmxQY0R6NXc3d1lYdGZLbFkyWXBHSnJpTWxHSk9aUzFxWnJ0UmdIYXEz?=
+ =?utf-8?B?Q3QyTWlXN0cyc0FnUWh2dlhCZkZpcmFVaXBocHNIOGhSd2Y3WW1IVEZMd3dk?=
+ =?utf-8?B?SUtaeWRlTVQxMCtCTlpqelZSVzFId2Z0REgrS0JGVWxUeFdITkY2ZjZKVFhu?=
+ =?utf-8?B?MjRUM0ZvaTl5NFJFY0VCdEZxZWM4dHIvV2hIS3JQSjBNM0hUZCtPMzhJbzZo?=
+ =?utf-8?B?U0dlM1JpYUkvNE5rd1ZuT3A4dXpaWU5rVm83bWV2RWxIcDYraWV6ZjZqMS8r?=
+ =?utf-8?B?MFg3OHV5c29yRWYyZ253NE1jZ0ptM2h3TmxHQXRXdW9xc1Q5NmNSTzhLTFVq?=
+ =?utf-8?B?NGlhNzZFa2ozZjNWQW1LdmE3VmpiYlFLNVZXMGQ0czNaNEdkRDFRMHBGRTRv?=
+ =?utf-8?B?ak52dXlZS3FFb3NFSytORWFXVlVHRTFsVXNacmxvbjh6eVFpcGVUWlEzVWR3?=
+ =?utf-8?B?ZURVV09uaDA0UUhQcUxDLzhhYzVzcWdYV2oxVHMrbUR0WGtKRUdqdlQ3dUVm?=
+ =?utf-8?B?Z2c4QkhuaUhjcUlHKzBYTmVRU2ZUMHNCR3pvNTA3NGJBbjIxbVlZS0N3Ky9m?=
+ =?utf-8?B?YWlDMmtzTFJzR28zOE5iZz09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d71bb45d-0b72-412e-b275-08d8fe8338f7
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2021 13:51:22.4172
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KNtL6jYUjKGeO7xh4ACLO8fdcaKtiwqgjphsnqdwqZb43VmarjMeyIcJ89ZA9N7j
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2488
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 03:42:24PM +0200, Eric Dumazet wrote:
-> On Tue, Apr 13, 2021 at 3:38 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Tue, Apr 13, 2021 at 03:33:40PM +0200, Eric Dumazet wrote:
-> > > On Tue, Apr 13, 2021 at 3:27 PM Eric Dumazet <edumazet@google.com> wrote:
-> > > >
-> > > > On Tue, Apr 13, 2021 at 2:57 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Mon, Apr 12, 2021 at 06:47:07PM +0200, Eric Dumazet wrote:
-> > > > > > On Mon, Apr 12, 2021 at 6:31 PM Eric Dumazet <edumazet@google.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Apr 12, 2021 at 6:28 PM Linus Torvalds
-> > > > > > > <torvalds@linux-foundation.org> wrote:
-> > > > > > > >
-> > > > > > > > On Sun, Apr 11, 2021 at 10:14 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> > > > > > > > >
-> > > > > > > > > Qemu test results:
-> > > > > > > > >         total: 460 pass: 459 fail: 1
-> > > > > > > > > Failed tests:
-> > > > > > > > >         sh:rts7751r2dplus_defconfig:ata:net,virtio-net:rootfs
-> > > > > > > > >
-> > > > > > > > > The failure bisects to commit 0f6925b3e8da ("virtio_net: Do not pull payload in
-> > > > > > > > > skb->head"). It is a spurious problem - the test passes roughly every other
-> > > > > > > > > time. When the failure is seen, udhcpc fails to get an IP address and aborts
-> > > > > > > > > with SIGTERM. So far I have only seen this with the "sh" architecture.
-> > > > > > > >
-> > > > > > > > Hmm. Let's add in some more of the people involved in that commit, and
-> > > > > > > > also netdev.
-> > > > > > > >
-> > > > > > > > Nothing in there looks like it should have any interaction with
-> > > > > > > > architecture, so that "it happens on sh" sounds odd, but maybe it's
-> > > > > > > > some particular interaction with the qemu environment.
-> > > > > > >
-> > > > > > > Yes, maybe.
-> > > > > > >
-> > > > > > > I spent few hours on this, and suspect a buggy memcpy() implementation
-> > > > > > > on SH, but this was not conclusive.
-> > > > > > >
-> > > > > > > By pulling one extra byte, the problem goes away.
-> > > > > > >
-> > > > > > > Strange thing is that the udhcpc process does not go past sendto().
-> > > > > >
-> > > > > > This is the patch working around the issue. Unfortunately I was not
-> > > > > > able to root-cause it (I really suspect something on SH)
-> > > > > >
-> > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > > index 0824e6999e49957f7aaf7c990f6259792d42f32b..fd890a951beea03bdf24406809042666eb972655
-> > > > > > 100644
-> > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > @@ -408,11 +408,17 @@ static struct sk_buff *page_to_skb(struct
-> > > > > > virtnet_info *vi,
-> > > > > >
-> > > > > >         /* Copy all frame if it fits skb->head, otherwise
-> > > > > >          * we let virtio_net_hdr_to_skb() and GRO pull headers as needed.
-> > > > > > +        *
-> > > > > > +        * Apparently, pulling only the Ethernet Header triggers a bug
-> > > > > > on qemu-system-sh4.
-> > > > > > +        * Since GRO aggregation really cares of IPv4/IPv6, pull 20 bytes
-> > > > > > +        * more to work around this bug : These 20 bytes can not belong
-> > > > > > +        * to UDP/TCP payload.
-> > > > > > +        * As a bonus, this makes GRO slightly faster for IPv4 (one less copy).
-> > > > > >          */
-> > > > >
-> > > > > Question: do we still want to do this for performance reasons?
-> > > > > We also have the hdr_len coming from the device which is
-> > > > > just skb_headlen on the host.
-> > > >
-> > > > Well, putting 20 bytes in skb->head will disable frag0 optimization.
-> > > >
-> > > > The change would only benefit to sh architecture :)
-> > > >
-> > > > About hdr_len, I suppose we could try it, with appropriate safety checks.
-> > >
-> > > I have added traces, hdr_len seems to be 0 with the qemu-system-sh4 I am using.
-> > >
-> > > Have I understood you correctly ?
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index 0824e6999e49957f7aaf7c990f6259792d42f32b..f024860f7dc260d4efbc35a3b8ffd358bd0da894
-> > > 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -399,9 +399,10 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
-> > >                 hdr_padded_len = sizeof(struct padded_vnet_hdr);
-> > >
-> > >         /* hdr_valid means no XDP, so we can copy the vnet header */
-> > > -       if (hdr_valid)
-> > > +       if (hdr_valid) {
-> > >                 memcpy(hdr, p, hdr_len);
-> > > -
-> > > +               pr_err("hdr->hdr_len=%u\n", hdr->hdr.hdr_len);
-> > > +       }
-> > >         len -= hdr_len;
-> > >         offset += hdr_padded_len;
-> > >         p += hdr_padded_len;
-> >
-> >
-> > Depends on how you connect qemu on the host. It's filled by host tap,
-> > see virtio_net_hdr_from_skb. If you are using slirp that just zero-fills
-> > it.
+On Tue, Apr 13, 2021 at 09:29:41AM +0300, Leon Romanovsky wrote:
+> On Mon, Apr 12, 2021 at 07:58:47PM -0300, Jason Gunthorpe wrote:
+> > On Wed, Mar 31, 2021 at 08:43:12PM +0200, Håkon Bugge wrote:
+> > > ib_modify_qp() is an expensive operation on some HCAs running
+> > > virtualized. This series removes two ib_modify_qp() calls from RDS.
+> > > 
+> > > I am sending this as a v3, even though it is the first sent to
+> > > net. This because the IB Core commit has reach v3.
+> > > 
+> > > Håkon Bugge (2):
+> > >   IB/cma: Introduce rdma_set_min_rnr_timer()
+> > >   rds: ib: Remove two ib_modify_qp() calls
+> > 
+> > Applied to rdma for-next, thanks
 > 
-> Guenter provided :
+> Jason,
 > 
-> qemu-system-sh4 -M r2d -kernel ./arch/sh/boot/zImage -no-reboot \
->         -snapshot \
->         -drive file=rootfs.ext2,format=raw,if=ide \
->         -device virtio-net,netdev=net0 -netdev user,id=net0 \
->         -append "root=/dev/sda console=ttySC1,115200
-> earlycon=scif,mmio16,0xffe80000 noiotrap" \
->         -serial null -serial stdio -nographic -monitor null
+> It should be 
+> +	WARN_ON(id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_TGT);
+> 
+> and not
+> +	if (WARN_ON(id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_TGT))
+> +		return -EINVAL;
 
-That's slirp, sure enough. It generates packets in userspace thus no
-skbs thus no skb_headlen.
+Unless we can completely remove the return code the if statement is a
+reasonable way to use the WARN_ON here
 
--- 
-MST
-
+Jason
