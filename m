@@ -2,104 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFAC635E930
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 00:45:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EA7D35E93F
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 00:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348661AbhDMWpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 18:45:33 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:16583 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348641AbhDMWpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 18:45:32 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FKgbx4fTMz18JCT;
-        Wed, 14 Apr 2021 06:42:53 +0800 (CST)
-Received: from A190218597.china.huawei.com (10.47.70.201) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 14 Apr 2021 06:45:03 +0800
-From:   Salil Mehta <salil.mehta@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <salil.mehta@huawei.com>, <jesse.brandeburg@intel.com>,
-        <anthony.l.nguyen@intel.com>, <henry.w.tieman@intel.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <linuxarm@openeuler.org>,
-        <intel-wired-lan@lists.osuosl.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [PATCH V2 net] ice: Re-organizes reqstd/avail {R,T}XQ check/code for efficiency+readability
-Date:   Tue, 13 Apr 2021 23:44:46 +0100
-Message-ID: <20210413224446.16612-1-salil.mehta@huawei.com>
-X-Mailer: git-send-email 2.8.3
+        id S1347621AbhDMWtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 18:49:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30918 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344446AbhDMWts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 18:49:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618354167;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=iem9PTrd0+rkk3Vftx/yxzybaMQQNqsa0A0RKO6QsL0=;
+        b=b7ODPSdhXA3tsWuc6eklhH5wd9aR5EsLt4qQkc99ESOzkyFobpIcwcM/t7E6ZDusU+wZEo
+        gurxJFErxD5UlOsCtjURsl7VQyx77Ckqd3W9EZRW+gzTbp2JwEXkBWbsAiiXJKHdCQmxeT
+        ZdC8QHpOAkVw7oH0eSPiyMdEgP20dvc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-42-MiiNqQbiOLWtDymgkPG_KA-1; Tue, 13 Apr 2021 18:49:23 -0400
+X-MC-Unique: MiiNqQbiOLWtDymgkPG_KA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 657D083DD22;
+        Tue, 13 Apr 2021 22:49:22 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-112-135.ams2.redhat.com [10.36.112.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 94A825C239;
+        Tue, 13 Apr 2021 22:49:21 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] devlink: always check strslashrsplit() return value
+Date:   Wed, 14 Apr 2021 00:48:37 +0200
+Message-Id: <09890143926c494e1cc3939a84eded4c55c27d9e.1618350667.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.70.201]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If user has explicitly requested the number of {R,T}XQs, then it is
-unnecessary to get the count of already available {R,T}XQs from the
-PF avail_{r,t}xqs bitmap. This value will get overridden by user specified
-value in any case.
+strslashrsplit() return value is not checked in __dl_argv_handle(),
+despite the fact that it can return EINVAL.
 
-This patch does minor re-organization of the code for improving the flow
-and readabiltiy. This scope of improvement was found during the review of
-the ICE driver code.
+This commit fix it and make __dl_argv_handle() return error if
+strslashrsplit() return an error code.
 
-FYI, I could not test this change due to unavailability of the hardware.
-It would be helpful if somebody can test this patch and provide Tested-by
-Tag. Many thanks!
-
-Fixes: 87324e747fde ("ice: Implement ethtool ops for channels")
-Cc: intel-wired-lan@lists.osuosl.org
-Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
---
-Change V1->V2
- (*) Fixed the comments from Anthony Nguyen(Intel)
-     Link: https://lkml.org/lkml/2021/4/12/1997
+Fixes: 2f85a9c53587 ("devlink: allow to parse both devlink and port handle in the same time")
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ devlink/devlink.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index d13c7fc8fb0a..d77133d6baa7 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -161,12 +161,13 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index c6e85ff9..faa87b3d 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -965,7 +965,13 @@ static int strtobool(const char *str, bool *p_val)
  
- 	switch (vsi->type) {
- 	case ICE_VSI_PF:
--		vsi->alloc_txq = min3(pf->num_lan_msix,
--				      ice_get_avail_txq_count(pf),
--				      (u16)num_online_cpus());
- 		if (vsi->req_txq) {
- 			vsi->alloc_txq = vsi->req_txq;
- 			vsi->num_txq = vsi->req_txq;
-+		} else {
-+			vsi->alloc_txq = min3(pf->num_lan_msix,
-+					      ice_get_avail_txq_count(pf),
-+					      (u16)num_online_cpus());
- 		}
- 
- 		pf->num_lan_tx = vsi->alloc_txq;
-@@ -175,12 +176,13 @@ static void ice_vsi_set_num_qs(struct ice_vsi *vsi, u16 vf_id)
- 		if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
- 			vsi->alloc_rxq = 1;
- 		} else {
--			vsi->alloc_rxq = min3(pf->num_lan_msix,
--					      ice_get_avail_rxq_count(pf),
--					      (u16)num_online_cpus());
- 			if (vsi->req_rxq) {
- 				vsi->alloc_rxq = vsi->req_rxq;
- 				vsi->num_rxq = vsi->req_rxq;
-+			} else {
-+				vsi->alloc_rxq = min3(pf->num_lan_msix,
-+						      ice_get_avail_rxq_count(pf),
-+						      (u16)num_online_cpus());
- 			}
- 		}
+ static int __dl_argv_handle(char *str, char **p_bus_name, char **p_dev_name)
+ {
+-	strslashrsplit(str, p_bus_name, p_dev_name);
++	int err;
++
++	err = strslashrsplit(str, p_bus_name, p_dev_name);
++	if (err) {
++		pr_err("Devlink identification (\"bus_name/dev_name\") \"%s\" is invalid\n", str);
++		return err;
++	}
+ 	return 0;
+ }
  
 -- 
-2.17.1
+2.30.2
 
