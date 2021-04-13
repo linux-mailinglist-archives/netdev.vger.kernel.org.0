@@ -2,138 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B5335D4A4
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 03:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7270935D4C9
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 03:25:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240266AbhDMBGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Apr 2021 21:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
+        id S238715AbhDMBZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Apr 2021 21:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239318AbhDMBGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 21:06:43 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1F0C061574;
-        Mon, 12 Apr 2021 18:06:25 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id 130so2141595qkm.4;
-        Mon, 12 Apr 2021 18:06:25 -0700 (PDT)
+        with ESMTP id S237792AbhDMBZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Apr 2021 21:25:50 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D034C061574
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 18:25:30 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id nm3-20020a17090b19c3b029014e1bbf6c60so3938458pjb.4
+        for <netdev@vger.kernel.org>; Mon, 12 Apr 2021 18:25:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hVwLckcTsoZ6HK6udwyuD9YVZ7bzQLTeObf78Se6sgk=;
-        b=QCzp8x7GFjs4FxDPNwWSJjU6yK4DbyvES3MDI167L9chvXvhp0yLhZQD2fiXsnGKGM
-         3i0gsu9rjaEavamxbBBEOlLWQCsnc2xI6rlhSILcsv6asO79PWHNegqkxKzm7He6K1ah
-         N+5t9nrIoGNBt5cXvHFyRB0qIgSmiSKeyE9SnVbpzEPa8f6SxUnvnOY3JmWW4Pr3KsiA
-         R4EeqpkN+mSkjsmq6DeTpkvjCQ1Mm150tWKaW3zmDyI7yKZ68HIvQO2rbBC/9D0itfhi
-         IBX5P1I/5n57m4wKLDLGkOzVZk8zRM4FZk7jKDNigPWhk0DdI88qLFTF5dEG+IrOJb+Y
-         r0Jw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=XdOBuI7DEw0fulqmOwramoBH8yqxlwc/+oFM/+yUGE8=;
+        b=H0WqkfP+YiAGfm14JBltGP7lqDjqCYiI/20mGVLUjpbBYVvpk7QzXuvkMiYHcdoeJJ
+         BuqydOiH6T/AsRdXTKcbY1eb7uWnhOrwG56lpOPAHN3AyRnD+nh9/z3Bkk1AIJOnzNWM
+         XD++jxDJzRstiaxCcRxVovRS5XiJCAjzj1k+67db/avRgdmGnRJhV7exQkwgzw5U6lqc
+         iUKRXBHpmLkZQJ6w9MQrRQdy1qnIItXWLj9TNqg1nCwzXZDhYe46ZEnP1o34Ho4drsMR
+         Ma+AWcblajFbNF0CJKu1RlKBRVR/muipNIdtiFT+j8dyDbxLbiyjEA2xbucQS5vhd11j
+         nhKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hVwLckcTsoZ6HK6udwyuD9YVZ7bzQLTeObf78Se6sgk=;
-        b=m0qyG7vlPMxfHpR36kGdEVBHsbe+dzWT6/osF623pJZ6btpfkv/PsL/p+YATZBgNFt
-         KQ+lrHhoql7gc4g6jGUK3bcZLz0FFZUoFVSyXp1ZAV9ED+3e+7Crh0GXtWv0THHklpt9
-         kEOVq3U7zzM1zmdKsBZdVMMl8edNm4ylIrZX6jeeQyuaN825/5rLyL7LYX/uuepNbDLV
-         u8bqzK8HNpxnusavprHvZvIIb4lcUSOMn72dfDh3WrNOd7pQighmVicJC6Xck88xnaYQ
-         jOGL/Q7X3NSgs+xISFcKCm7SvZnDKZmRMdOXvksRTERh+s05nFOeBskOeFCBux3NwjEz
-         Fpqw==
-X-Gm-Message-State: AOAM533Ilf2fhbhJlrt99R8bYhfZS9J0PRU8eG1QRmZcjDAAPzbUN37S
-        oAG0uJ+4KHdjio6FuE7Ljef+bpTR1mF5Yw==
-X-Google-Smtp-Source: ABdhPJyuHutyJv2S2u4Q7vlQKIykhN/IxnoF1RdSKx+5d8R0WbEyc3A5hF7OurTjocDwEx8ldFs8PA==
-X-Received: by 2002:a05:620a:20db:: with SMTP id f27mr30565654qka.51.1618275983861;
-        Mon, 12 Apr 2021 18:06:23 -0700 (PDT)
-Received: from localhost.localdomain ([177.89.232.75])
-        by smtp.gmail.com with ESMTPSA id q67sm7104459qkb.89.2021.04.12.18.06.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=XdOBuI7DEw0fulqmOwramoBH8yqxlwc/+oFM/+yUGE8=;
+        b=eMcr18B7qO1Mw3EatT8midSOivoB3xFsND9c8IAps5Ol311sF6DeU3U4Xozba6wXGy
+         3E7c7zi/7DVbM3YyZpUgK26iqdcj6HmHHNRc+BM8BGEe6yCOWLriVmAcRoqIji0dMJJI
+         lx2CXIjP2P56r+TQYYvdWhVXNq5ZTX8g/j3edFn0mt3OySdX9lpPcHU22Fj4+3yI5269
+         Buu/dOODTBLl+XkAowzUlIlcQkp0iNahTp+ySvPUhypA8Zrt8QKMEltsDuugc4sju9Yf
+         RAT2Gq6SDlu5gFnArsLmOyQkm9QijS2rcOGneJ48SlEgK4P4uT7uxj3ZWX3V2ualvU5l
+         NEdg==
+X-Gm-Message-State: AOAM532UvlCytORf4qlCrYQuUoIqoCuvk/EfAoadPPZH8iIwc+Vyhxgm
+        8LuNsl9fD5f+DmcQ5/jkJVA=
+X-Google-Smtp-Source: ABdhPJztQDNZkW92Nepe+VEMIhbW0sB5R276PhTtRdSbuQvTQYJ70a+JQXiLetIb7irg1tJ+N/qlug==
+X-Received: by 2002:a17:902:e80e:b029:e4:b2b8:e36e with SMTP id u14-20020a170902e80eb02900e4b2b8e36emr29303606plg.45.1618277129587;
+        Mon, 12 Apr 2021 18:25:29 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:645:c000:35:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id i9sm551897pji.41.2021.04.12.18.25.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Apr 2021 18:06:23 -0700 (PDT)
-From:   Ramon Fontes <ramonreisfontes@gmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Cc:     johannes@sipsolutions.net, kvalo@codeaurora.org,
-        davem@davemloft.net, Ramon Fontes <ramonreisfontes@gmail.com>
-Subject: [PATCH] mac80211_hwsim: indicate support for 60GHz channels
-Date:   Mon, 12 Apr 2021 22:06:13 -0300
-Message-Id: <20210413010613.50128-1-ramonreisfontes@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 12 Apr 2021 18:25:29 -0700 (PDT)
+Date:   Mon, 12 Apr 2021 18:25:27 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        drivers@pensando.io
+Subject: Re: [PATCH net-next 0/8] ionic: hwstamp tweaks
+Message-ID: <20210413012527.GA24198@hoboy.vegasvil.org>
+References: <20210407232001.16670-1-snelson@pensando.io>
+ <20210411153808.GB5719@hoboy.vegasvil.org>
+ <5af0c4f1-82d6-a349-616d-0e92e10dd114@pensando.io>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <5af0c4f1-82d6-a349-616d-0e92e10dd114@pensando.io>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Advertise 60GHz channels to mac80211.
----
- drivers/net/wireless/mac80211_hwsim.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+On Mon, Apr 12, 2021 at 09:33:29AM -0700, Shannon Nelson wrote:
+> If the original patches hadn't already been pulled into net-next, this is
+> what I would have done.  My understanding is that once the patches have been
+> pulled into the repo that we need to do delta patches, not new versions of
+> the same patch, as folks don't normally like changing published tree
+> history.
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index fa7d4c20d..70d0af475 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -159,6 +159,8 @@ static const struct ieee80211_regdomain hwsim_world_regdom_custom_01 = {
- 		REG_RULE(5150-10, 5240+10, 40, 0, 30, 0),
- 		REG_RULE(5745-10, 5825+10, 40, 0, 30, 0),
- 		REG_RULE(5855-10, 5925+10, 40, 0, 33, 0),
-+		/* IEEE 802.11ad (60GHz), channels 1..3 */
-+		REG_RULE(56160+2160*1-1080, 56160+2160*3+1080, 2160, 0, 0, 0),
- 	}
- };
- 
-@@ -317,6 +319,12 @@ static struct net_device *hwsim_mon; /* global monitor netdev */
- 	.hw_value = (_freq), \
- }
- 
-+#define CHAN60G(_freq) { \
-+        .band = NL80211_BAND_60GHZ, \
-+        .center_freq = (_freq), \
-+        .hw_value = (_freq), \
-+}
-+
- static const struct ieee80211_channel hwsim_channels_2ghz[] = {
- 	CHAN2G(2412), /* Channel 1 */
- 	CHAN2G(2417), /* Channel 2 */
-@@ -445,6 +453,13 @@ static const struct ieee80211_channel hwsim_channels_6ghz[] = {
- 	CHAN6G(7115), /* Channel 233 */
- };
- 
-+static const struct ieee80211_channel hwsim_channels_60ghz[] = {
-+	CHAN60G(58320), /* Channel 1 */
-+	CHAN60G(60480), /* Channel 2 */
-+	CHAN60G(62640), /* Channel 3 */
-+	CHAN60G(64800), /* Channel 4 */
-+};
-+
- #define NUM_S1G_CHANS_US 51
- static struct ieee80211_channel hwsim_channels_s1g[NUM_S1G_CHANS_US];
- 
-@@ -617,6 +632,7 @@ struct mac80211_hwsim_data {
- 	struct ieee80211_channel channels_2ghz[ARRAY_SIZE(hwsim_channels_2ghz)];
- 	struct ieee80211_channel channels_5ghz[ARRAY_SIZE(hwsim_channels_5ghz)];
- 	struct ieee80211_channel channels_6ghz[ARRAY_SIZE(hwsim_channels_6ghz)];
-+	struct ieee80211_channel channels_60ghz[ARRAY_SIZE(hwsim_channels_60ghz)];
- 	struct ieee80211_channel channels_s1g[ARRAY_SIZE(hwsim_channels_s1g)];
- 	struct ieee80211_rate rates[ARRAY_SIZE(hwsim_rates)];
- 	struct ieee80211_iface_combination if_combination;
-@@ -648,7 +664,8 @@ struct mac80211_hwsim_data {
- 		unsigned long next_start, start, end;
- 	} survey_data[ARRAY_SIZE(hwsim_channels_2ghz) +
- 		      ARRAY_SIZE(hwsim_channels_5ghz) +
--		      ARRAY_SIZE(hwsim_channels_6ghz)];
-+		      ARRAY_SIZE(hwsim_channels_6ghz) +
-+		      ARRAY_SIZE(hwsim_channels_60ghz)];
- 
- 	struct ieee80211_channel *channel;
- 	u64 beacon_int	/* beacon interval in us */;
-@@ -3221,6 +3238,8 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
- 		sizeof(hwsim_channels_5ghz));
- 	memcpy(data->channels_6ghz, hwsim_channels_6ghz,
- 		sizeof(hwsim_channels_6ghz));
-+	memcpy(data->channels_60ghz, hwsim_channels_60ghz,
-+		sizeof(hwsim_channels_60ghz));
- 	memcpy(data->channels_s1g, hwsim_channels_s1g,
- 	       sizeof(hwsim_channels_s1g));
- 	memcpy(data->rates, hwsim_rates, sizeof(hwsim_rates));
--- 
-2.25.1
+Oh, the series you posted on April 1 was merged on April 2 without any
+review.  That seems surprising to me, but perhaps the development
+tempo has increased.
 
+Wow, and this delta series was also:
+
+posted	Date: Wed,  7 Apr 2021 16:19:53 -0700
+merged	Date: Thu, 08 Apr 2021 20:30:28 +0000
+
+That is a pretty good turn around time, less that 24 hours!
+
+Oh well, too late to add my Acked-by.
+
+Thanks,
+Richard
