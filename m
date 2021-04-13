@@ -2,105 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6927235E71F
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 21:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D767B35E724
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 21:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237673AbhDMTeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 15:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231882AbhDMTeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 15:34:02 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CBCC061574
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 12:33:42 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id c8-20020a9d78480000b0290289e9d1b7bcso3082141otm.4
-        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 12:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l/O/VR4bB4Yf40ev7F99+fYica4D8zABTRv5mqubPFQ=;
-        b=U7jq1y4naytpOGJYLAK4f0lO3OB1O+ovCXf9FBLNaBJU1kuSduuSQIO9vL3iI0NsdF
-         mXAnfQ52fTEK4aevp9bSArrTdV0wLBFPYjgYJNnEO8DbsvTKzjxdGSWylR63P+Tr5+ev
-         vb9NQggr0oUEUQJKiS9bhLa/bjVB8oMteRmbyQdBCRdUF8HgDMHtIc1+Ve1zID1tqczB
-         y+YS/Z2jmpjT0LaKPtxv7J/6fIGo2hsCz8Sc91bD5ziQuasHGdzO10x0kNp2ZXdX9M3u
-         Q/OFeRIHdqr+s5xftjWx50l9OzGQwJnnmmgzSdTFUxuL7J3/JLCC58DsW8Q4gK1whKZg
-         i8tA==
+        id S1345589AbhDMTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 15:35:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44233 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345572AbhDMTfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 15:35:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618342485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rUMDskTlMoyXG03Qzv2sJykQt3gDWIVCZXpcjseuLJI=;
+        b=Uh9y5nWdWe5B8lKArAEWhcIyDYkpV6GR4utlHDQ43rekZOzX1sPb6vxLj9ua8W4fOE9l4u
+        OM1IXRAJnKwUvMjJ8BIv1llUb8fVxi1xcvwYgdFZgUwp5QW+MH1sc6gw/l61AC2JlixcOe
+        wOK+QRCa8ntKjqHura9Z+4qY3YJ5iUs=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-_mT5-1K1OI-N0cDvMkQDpQ-1; Tue, 13 Apr 2021 15:34:44 -0400
+X-MC-Unique: _mT5-1K1OI-N0cDvMkQDpQ-1
+Received: by mail-wr1-f70.google.com with SMTP id a15so1021974wrf.19
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 12:34:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l/O/VR4bB4Yf40ev7F99+fYica4D8zABTRv5mqubPFQ=;
-        b=DIe9MpWAlaldCGNmOJAAtru6sQppEdiXlV3aDjPboUjA1mnYeL+GfoJEltXoTnniPo
-         hfe6YdfXRGHK5NtH26ufAH/yMJej63l8KY8PlC6/mau+GJnaG5MbS/KNgZkSE50jUvcW
-         9Rn8VClOoVXuQ/YiEkHbC0CPIY96BpiKtYCH3C8eXHucE0z5eMJZWwM+BpZCz8pMxuvJ
-         N3kUasrsOe6wndo8z5vHvbEasGidfqTk3oD0Ih3mNItgE6fGh5oezdBzknHQ/x8oHXXY
-         xrgtsf7QTwET56diZPyaHCi+cE+/X+4JCLyPIVS2UEI9+QDFu6tF2TFDVuWxq/lhnSaR
-         wucQ==
-X-Gm-Message-State: AOAM530mYyBBSdBNIyUvNc/rFoECjy1AiN/Z0wpya4cl1eWGqnOxBKqo
-        8b4juOwbNwUWwBbyyx+QiVrd6lidhU6PQw==
-X-Google-Smtp-Source: ABdhPJxEK2C63z2FoiKq+vL2gVYOEAPyKxKbyWagZA7H7prAYfmZS/a+NR7GzNVkmotZdQ3cg3YrZw==
-X-Received: by 2002:a9d:30c6:: with SMTP id r6mr14260617otg.270.1618342421898;
-        Tue, 13 Apr 2021 12:33:41 -0700 (PDT)
-Received: from pear.attlocal.net ([2600:1700:271:1a80:f46a:46e6:5a15:5a2c])
-        by smtp.gmail.com with ESMTPSA id x127sm3055299oix.36.2021.04.13.12.33.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Apr 2021 12:33:41 -0700 (PDT)
-From:   Lijun Pan <lijunp213@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <lijunp213@gmail.com>,
-        Nathan Lynch <nathanl@linux.ibm.com>
-Subject: [PATCH net-next v2] ibmvnic: queue reset work in system_long_wq
-Date:   Tue, 13 Apr 2021 14:33:39 -0500
-Message-Id: <20210413193339.11050-1-lijunp213@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rUMDskTlMoyXG03Qzv2sJykQt3gDWIVCZXpcjseuLJI=;
+        b=TAcPf5KYXmrhGJQo0r+dC7dNitu7/jFuHbmxeIlc3J3HtLELBsdI+BhnBc8OeTAeCA
+         Ujz1t7Y/SIEqArFBmM3Un8wZCl/CaBFNpGu3w+T6/wbnLoA1W0C55mC9qYchpJhwy8Ud
+         8b2bAbQNBEshO5uhjWAUJWMbbIUiCFJyCNdysAHn/F8FpxOdxLCzI9s+pNGuIQzskXQY
+         OGljckYSFTTWOgBD+dQeTkEdN6GqtPzt0LKnkhTXX/oHnjHvNMtVJyx3Bci5JtitcgnP
+         eW80uNzJgWn+EAdhVaeQD1ijqAY/czvodA9ujCAOtUAaAn6PnEIj9D+8DLXNZp1kXDL5
+         flfQ==
+X-Gm-Message-State: AOAM533gTggu0+lUPd3IN2yUjGOgDThSIOyTbRdQbl6sllStSRXCziuU
+        oXVy8MBL96gnFkpO6tSgKJ8i9Pl5UPrhhdkD4KHnHrx0HdiwHK1IYXhbqZOF4cmZe0WVu1hgQqT
+        8i7TyWehpUQaHTdZD
+X-Received: by 2002:a1c:7311:: with SMTP id d17mr1440603wmb.183.1618342482959;
+        Tue, 13 Apr 2021 12:34:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwZbArAc+T8QG6nMuGSbTU709+g9JEWWp4LeRlXInp+dBjh991nnHPKXLmKpQOGky2lgU6niQ==
+X-Received: by 2002:a1c:7311:: with SMTP id d17mr1440589wmb.183.1618342482730;
+        Tue, 13 Apr 2021 12:34:42 -0700 (PDT)
+Received: from redhat.com ([2a10:8006:2281:0:1994:c627:9eac:1825])
+        by smtp.gmail.com with ESMTPSA id h2sm3431632wmc.24.2021.04.13.12.34.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Apr 2021 12:34:41 -0700 (PDT)
+Date:   Tue, 13 Apr 2021 15:34:38 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH net-next v3 5/5] virtio-net: keep tx interrupts disabled
+ unless kick
+Message-ID: <20210413153023-mutt-send-email-mst@kernel.org>
+References: <20170424174930.82623-1-willemdebruijn.kernel@gmail.com>
+ <20170424174930.82623-6-willemdebruijn.kernel@gmail.com>
+ <20210413010354-mutt-send-email-mst@kernel.org>
+ <CA+FuTSe_iy=vDze=MSca1iRJX+WR=PjG-HoFZ2GBpFaCxE33Fg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSe_iy=vDze=MSca1iRJX+WR=PjG-HoFZ2GBpFaCxE33Fg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The reset process for ibmvnic commonly takes multiple seconds, clearly
-making it inappropriate for schedule_work/system_wq. The reason to make
-this change is that ibmvnic's use of the default system-wide workqueue
-for a relatively long-running work item can negatively affect other
-workqueue users. So, queue the relatively slow reset job to the
-system_long_wq.
+On Tue, Apr 13, 2021 at 10:27:16AM -0400, Willem de Bruijn wrote:
+> On Tue, Apr 13, 2021 at 1:06 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Mon, Apr 24, 2017 at 01:49:30PM -0400, Willem de Bruijn wrote:
+> > > From: Willem de Bruijn <willemb@google.com>
+> > >
+> > > Tx napi mode increases the rate of transmit interrupts. Suppress some
+> > > by masking interrupts while more packets are expected. The interrupts
+> > > will be reenabled before the last packet is sent.
+> > >
+> > > This optimization reduces the througput drop with tx napi for
+> > > unidirectional flows such as UDP_STREAM that do not benefit from
+> > > cleaning tx completions in the the receive napi handler.
+> > >
+> > > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > > ---
+> > >  drivers/net/virtio_net.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 9dd978f34c1f..003143835766 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -1200,6 +1200,9 @@ static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
+> > >       /* Free up any pending old buffers before queueing new ones. */
+> > >       free_old_xmit_skbs(sq);
+> > >
+> > > +     if (use_napi && kick)
+> > > +             virtqueue_enable_cb_delayed(sq->vq);
+> > > +
+> > >       /* timestamp packet in software */
+> > >       skb_tx_timestamp(skb);
+> >
+> >
+> > I have been poking at this code today and I noticed that is
+> > actually does enable cb where the commit log says masking interrupts.
+> > I think the reason is that with even index previously disable cb
+> > actually did nothing while virtqueue_enable_cb_delayed pushed
+> > the event index out some more.
+> > And this likely explains why it does not work well for packed,
+> > where virtqueue_enable_cb_delayed is same as virtqueue_enable_cb.
+> >
+> > Right? Or did I miss something?
+> 
+> This was definitely based on the split queue with event index handling.
+> 
+> When you say does not work well for packed, you mean that with packed
+> mode we see the consequences of the race condition when accessing vq
+> without holding __netif_tx_lock, in a way that I did not notice with
+> split queue with event index, right?
 
-Suggested-by: Nathan Lynch <nathanl@linux.ibm.com>
-Signed-off-by: Lijun Pan <lijunp213@gmail.com>
----
-v2: reword the commit message to justify why we do this.
+I mean curretly packed does not seem to show same performance gains as
+a micro-benchmark. Could be due to enabling interrupts more aggressively
+there.
 
- drivers/net/ethernet/ibm/ibmvnic.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 0961d36833d5..b72159ccca3a 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2292,8 +2292,9 @@ static void __ibmvnic_reset(struct work_struct *work)
- 	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
- 
- 	if (test_and_set_bit_lock(0, &adapter->resetting)) {
--		schedule_delayed_work(&adapter->ibmvnic_delayed_reset,
--				      IBMVNIC_RESET_DELAY);
-+		queue_delayed_work(system_long_wq,
-+				   &adapter->ibmvnic_delayed_reset,
-+				   IBMVNIC_RESET_DELAY);
- 		return;
- 	}
- 
-@@ -2437,7 +2438,7 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 	list_add_tail(&rwi->list, &adapter->rwi_list);
- 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %s)\n",
- 		   reset_reason_to_string(reason));
--	schedule_work(&adapter->ibmvnic_reset);
-+	queue_work(system_long_wq, &adapter->ibmvnic_reset);
- 
- 	ret = 0;
- err:
--- 
-2.23.0
+> Thanks for looking into this and proposing fixes for this issue and the
+> known other spurious tx interrupt issue.
 
