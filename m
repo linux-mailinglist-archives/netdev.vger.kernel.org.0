@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A42235DB40
-	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC6AB35DB43
+	for <lists+netdev@lfdr.de>; Tue, 13 Apr 2021 11:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245740AbhDMJcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 05:32:42 -0400
-Received: from mga12.intel.com ([192.55.52.136]:15985 "EHLO mga12.intel.com"
+        id S1343504AbhDMJc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 05:32:57 -0400
+Received: from mga04.intel.com ([192.55.52.120]:20457 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230251AbhDMJci (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 05:32:38 -0400
-IronPort-SDR: 2wxMrYFDlNFtPdJ39qASRU/HLxd0qJDAWuoIQsh/4IJxk7ZZRPVrq6sDcTy9C5mBH0gGYUYjdY
- ObcwCwVGju2g==
-X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="173868040"
+        id S230251AbhDMJco (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 05:32:44 -0400
+IronPort-SDR: pEKVL+JUTPNUdSXufZXjIDJPdeKa8LnOEMGt4sxW5YDe9H/sujs4BDrRz3vCtvd58gBGIo2aqk
+ GzsWmaC1Osmw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9952"; a="192247350"
 X-IronPort-AV: E=Sophos;i="5.82,219,1613462400"; 
-   d="scan'208";a="173868040"
+   d="scan'208";a="192247350"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 02:32:19 -0700
-IronPort-SDR: fqePouQHEYHxvaMPgMveVf7pX/F8esCGV9XWO3d6g0cJ/4AI2Jv4TgtL0ScUmxTEKWr8xiaNxq
- R080VoOgKxUg==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 02:32:24 -0700
+IronPort-SDR: rKmz5953TVTjrac7+HQsxRg+QzizWZAvu7ZVaUyWJXiddu2k4mczWcqTf76K84pDmNgbsz+LZj
+ asyQzj5l+NJQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,219,1613462400"; 
-   d="scan'208";a="424178074"
+   d="scan'208";a="424178125"
 Received: from glass.png.intel.com ([10.158.65.59])
-  by orsmga008.jf.intel.com with ESMTP; 13 Apr 2021 02:32:14 -0700
+  by orsmga008.jf.intel.com with ESMTP; 13 Apr 2021 02:32:19 -0700
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -44,9 +44,9 @@ Cc:     alexandre.torgue@foss.st.com,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v2 1/7] net: stmmac: rearrange RX buffer allocation and free functions
-Date:   Tue, 13 Apr 2021 17:36:20 +0800
-Message-Id: <20210413093626.3447-2-boon.leong.ong@intel.com>
+Subject: [PATCH net-next v2 2/7] net: stmmac: introduce dma_recycle_rx_skbufs for stmmac_reinit_rx_buffers
+Date:   Tue, 13 Apr 2021 17:36:21 +0800
+Message-Id: <20210413093626.3447-3-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210413093626.3447-1-boon.leong.ong@intel.com>
 References: <20210413093626.3447-1-boon.leong.ong@intel.com>
@@ -56,167 +56,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch restructures the per RX queue buffer allocation from page_pool
-to stmmac_alloc_rx_buffers().
-
-We also rearrange dma_free_rx_skbufs() so that it can be used in
-init_dma_rx_desc_rings() during freeing of RX buffer in the event of
-page_pool allocation failure to replace the more efficient method earlier.
-The replacement is needed to make the RX buffer alloc and free method
-scalable to XDP ZC xsk_pool alloc and free later.
+Rearrange RX buffer page_pool recycling logics into dma_recycle_rx_skbufs,
+so that we prepare stmmac_reinit_rx_buffers() for XSK pool expansion.
 
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 84 +++++++++++--------
- 1 file changed, 47 insertions(+), 37 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 44 ++++++++++++-------
+ 1 file changed, 27 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 77285646c5fc..f6d3d26ce45a 100644
+index f6d3d26ce45a..a6c3414fd231 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1475,6 +1475,43 @@ static void stmmac_free_tx_buffer(struct stmmac_priv *priv, u32 queue, int i)
- 	tx_q->tx_skbuff_dma[i].map_as_page = false;
+@@ -1512,6 +1512,31 @@ static int stmmac_alloc_rx_buffers(struct stmmac_priv *priv, u32 queue,
+ 	return 0;
  }
  
 +/**
-+ * dma_free_rx_skbufs - free RX dma buffers
++ * dma_recycle_rx_skbufs - recycle RX dma buffers
 + * @priv: private structure
 + * @queue: RX queue index
 + */
-+static void dma_free_rx_skbufs(struct stmmac_priv *priv, u32 queue)
-+{
-+	int i;
-+
-+	for (i = 0; i < priv->dma_rx_size; i++)
-+		stmmac_free_rx_buffer(priv, queue, i);
-+}
-+
-+static int stmmac_alloc_rx_buffers(struct stmmac_priv *priv, u32 queue,
-+				   gfp_t flags)
++static void dma_recycle_rx_skbufs(struct stmmac_priv *priv, u32 queue)
 +{
 +	struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
 +	int i;
 +
 +	for (i = 0; i < priv->dma_rx_size; i++) {
-+		struct dma_desc *p;
-+		int ret;
++		struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
 +
-+		if (priv->extend_desc)
-+			p = &((rx_q->dma_erx + i)->basic);
-+		else
-+			p = rx_q->dma_rx + i;
++		if (buf->page) {
++			page_pool_recycle_direct(rx_q->page_pool, buf->page);
++			buf->page = NULL;
++		}
 +
-+		ret = stmmac_init_rx_buffers(priv, p, i, flags,
-+					     queue);
-+		if (ret)
-+			return ret;
++		if (priv->sph && buf->sec_page) {
++			page_pool_recycle_direct(rx_q->page_pool, buf->sec_page);
++			buf->sec_page = NULL;
++		}
 +	}
-+
-+	return 0;
 +}
 +
  /**
   * stmmac_reinit_rx_buffers - reinit the RX descriptor buffer.
   * @priv: driver private structure
-@@ -1547,15 +1584,14 @@ static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
- 	return;
+@@ -1524,23 +1549,8 @@ static void stmmac_reinit_rx_buffers(struct stmmac_priv *priv)
+ 	u32 queue;
+ 	int i;
  
- err_reinit_rx_buffers:
--	do {
--		while (--i >= 0)
--			stmmac_free_rx_buffer(priv, queue, i);
-+	while (queue >= 0) {
-+		dma_free_rx_skbufs(priv, queue);
- 
- 		if (queue == 0)
- 			break;
- 
--		i = priv->dma_rx_size;
--	} while (queue-- > 0);
-+		queue--;
-+	}
- }
- 
- /**
-@@ -1572,7 +1608,6 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 	u32 rx_count = priv->plat->rx_queues_to_use;
- 	int ret = -ENOMEM;
- 	int queue;
--	int i;
- 
- 	/* RX INITIALIZATION */
- 	netif_dbg(priv, probe, priv->dev,
-@@ -1580,7 +1615,7 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
+-	for (queue = 0; queue < rx_count; queue++) {
+-		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+-
+-		for (i = 0; i < priv->dma_rx_size; i++) {
+-			struct stmmac_rx_buffer *buf = &rx_q->buf_pool[i];
+-
+-			if (buf->page) {
+-				page_pool_recycle_direct(rx_q->page_pool, buf->page);
+-				buf->page = NULL;
+-			}
+-
+-			if (priv->sph && buf->sec_page) {
+-				page_pool_recycle_direct(rx_q->page_pool, buf->sec_page);
+-				buf->sec_page = NULL;
+-			}
+-		}
+-	}
++	for (queue = 0; queue < rx_count; queue++)
++		dma_recycle_rx_skbufs(priv, queue);
  
  	for (queue = 0; queue < rx_count; queue++) {
  		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
--		int ret;
-+
- 
- 		netif_dbg(priv, probe, priv->dev,
- 			  "(%s) dma_rx_phy=0x%08x\n", __func__,
-@@ -1596,22 +1631,12 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 			    "Register MEM_TYPE_PAGE_POOL RxQ-%d\n",
- 			    rx_q->queue_index);
- 
--		for (i = 0; i < priv->dma_rx_size; i++) {
--			struct dma_desc *p;
--
--			if (priv->extend_desc)
--				p = &((rx_q->dma_erx + i)->basic);
--			else
--				p = rx_q->dma_rx + i;
--
--			ret = stmmac_init_rx_buffers(priv, p, i, flags,
--						     queue);
--			if (ret)
--				goto err_init_rx_buffers;
--		}
-+		ret = stmmac_alloc_rx_buffers(priv, queue, flags);
-+		if (ret < 0)
-+			goto err_init_rx_buffers;
- 
- 		rx_q->cur_rx = 0;
--		rx_q->dirty_rx = (unsigned int)(i - priv->dma_rx_size);
-+		rx_q->dirty_rx = 0;
- 
- 		/* Setup the chained descriptor addresses */
- 		if (priv->mode == STMMAC_CHAIN_MODE) {
-@@ -1630,13 +1655,11 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 
- err_init_rx_buffers:
- 	while (queue >= 0) {
--		while (--i >= 0)
--			stmmac_free_rx_buffer(priv, queue, i);
-+		dma_free_rx_skbufs(priv, queue);
- 
- 		if (queue == 0)
- 			break;
- 
--		i = priv->dma_rx_size;
- 		queue--;
- 	}
- 
-@@ -1731,19 +1754,6 @@ static int init_dma_desc_rings(struct net_device *dev, gfp_t flags)
- 	return ret;
- }
- 
--/**
-- * dma_free_rx_skbufs - free RX dma buffers
-- * @priv: private structure
-- * @queue: RX queue index
-- */
--static void dma_free_rx_skbufs(struct stmmac_priv *priv, u32 queue)
--{
--	int i;
--
--	for (i = 0; i < priv->dma_rx_size; i++)
--		stmmac_free_rx_buffer(priv, queue, i);
--}
--
- /**
-  * dma_free_tx_skbufs - free TX dma buffers
-  * @priv: private structure
 -- 
 2.25.1
 
