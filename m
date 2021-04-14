@@ -2,76 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2316535F8CD
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:24:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2077835F8DB
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:24:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351600AbhDNQNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 12:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
+        id S1352664AbhDNQSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 12:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351591AbhDNQNh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 12:13:37 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E76C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 09:13:16 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1lWi8g-0005rm-Uc; Wed, 14 Apr 2021 18:13:14 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     steffen.klassert@secunet.com, davem@davemloft.net, kuba@kernel.org,
-        herbert@gondor.apana.org.au, Florian Westphal <fw@strlen.de>
-Subject: [PATCH ipsec-next 3/3] xfrm: avoid synchronize_rcu during netns destruction
-Date:   Wed, 14 Apr 2021 18:12:53 +0200
-Message-Id: <20210414161253.27586-4-fw@strlen.de>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20210414161253.27586-1-fw@strlen.de>
-References: <20210414161253.27586-1-fw@strlen.de>
+        with ESMTP id S1351688AbhDNQSK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 12:18:10 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E9DC06175F
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id x21-20020a17090a5315b029012c4a622e4aso11087533pjh.2
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0eL/B6Xsq6Q/24IYguuLfwVoh9qvE+Qw7MZOf5nGHyg=;
+        b=DWKLnEjIRc6nqOLRuoo9K6bOLQMW5c1mqbVDL7yGhVs88fhUl8h/izys8YK3f/gwVM
+         PcQzKMKIFq9o0hwsUhKISfLDewBl34wWHl1mNxtvbMhH9ULpfprQDggqRkhav/DB3fq5
+         Lt6TuRqVyREjop1FfnrZ4OwusSTzbuxed+y0o4pqUcZLeuQPE7o9Q0ERP1T2859SlHBK
+         swDXpNsO2sseabX97kJN/6O4FliaKLmz/0n5+zOfFOhIc71jVo20vJcnie48mgAzBh32
+         YSPSVWZiitdeHf/qr6sagNpJv+45RDkOHNv90Ca9f1wMkoDLDoLK0Hka9u0ctg+akLmV
+         r8Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0eL/B6Xsq6Q/24IYguuLfwVoh9qvE+Qw7MZOf5nGHyg=;
+        b=HQlG01Qbq1UH5dahF4Vj0MjvJxw8RUT3GMOlhOu7sReJwCPjBWX7FRGDd4rLZFyVIr
+         dYFViKuoVlShGng/scns4/7cXEHADzLyXeFDoIjvMtLRSS1hqcvombWBNYgRi/xzb327
+         Q3S4I0NxiHksqknej3l1pA6m2bzWMSNEt3Dysr+mUG2q+mY7c0YNsJhK/feFznaeAxDv
+         jG0dVjGS7Gk5XTXP645KjO90/S+WuODnydZUg9B4wCavUYvinFK84uOLqwnyxCAWM7my
+         jzn2MVJl+bdsk95dnwWIW0MdIbjdFV/iMsTNtnCNyf4tDt8E26R+XEAtnYnW3gapibM2
+         dkeg==
+X-Gm-Message-State: AOAM530Vhw6oo7wjnC3QtwFvufYsVqFrx+v2Ggs2zWNxm6r+10cj1bQ7
+        WW3C1OTWuHOLkAEosKL2S4zOZA==
+X-Google-Smtp-Source: ABdhPJx5Ic6DX2vQpbh90Yradu9W82hKhZ9FhXc7n7c05NjGIO6V9+vgFJUqzgqafzt2aOiNHdkPHQ==
+X-Received: by 2002:a17:902:cec1:b029:eb:66ee:6da0 with SMTP id d1-20020a170902cec1b02900eb66ee6da0mr1001099plg.84.1618417068337;
+        Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
+Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
+        by smtp.gmail.com with ESMTPSA id r5sm5092591pjd.38.2021.04.14.09.17.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
+Date:   Wed, 14 Apr 2021 09:17:38 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
+        hpa@zytor.com, arnd@arndb.de, akpm@linux-foundation.org,
+        konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com,
+        sunilmut@microsoft.com
+Subject: Re: [Resend RFC PATCH V2 08/12] UIO/Hyper-V: Not load UIO HV driver
+ in the isolation VM.
+Message-ID: <20210414091738.3df4bed5@hermes.local>
+In-Reply-To: <YHcOL+HlEoh5jPb8@kroah.com>
+References: <20210414144945.3460554-1-ltykernel@gmail.com>
+        <20210414144945.3460554-9-ltykernel@gmail.com>
+        <YHcOL+HlEoh5jPb8@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new exit_pre hook to NULL the netlink socket.
-The net namespace core will do a synchronize_rcu() between the exit_pre
-and exit/exit_batch handlers.
+On Wed, 14 Apr 2021 17:45:51 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/xfrm/xfrm_user.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+> On Wed, Apr 14, 2021 at 10:49:41AM -0400, Tianyu Lan wrote:
+> > From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> > 
+> > UIO HV driver should not load in the isolation VM for security reason.
+> > Return ENOTSUPP in the hv_uio_probe() in the isolation VM.
+> > 
+> > Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 5a0ef4361e43..9313592fa01f 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -3480,18 +3480,22 @@ static int __net_init xfrm_user_net_init(struct net *net)
- 	return 0;
- }
- 
-+static void __net_exit xfrm_user_net_pre_exit(struct net *net)
-+{
-+	RCU_INIT_POINTER(net->xfrm.nlsk, NULL);
-+}
-+
- static void __net_exit xfrm_user_net_exit(struct list_head *net_exit_list)
- {
- 	struct net *net;
--	list_for_each_entry(net, net_exit_list, exit_list)
--		RCU_INIT_POINTER(net->xfrm.nlsk, NULL);
--	synchronize_net();
-+
- 	list_for_each_entry(net, net_exit_list, exit_list)
- 		netlink_kernel_release(net->xfrm.nlsk_stash);
- }
- 
- static struct pernet_operations xfrm_user_net_ops = {
- 	.init	    = xfrm_user_net_init,
-+	.pre_exit   = xfrm_user_net_pre_exit,
- 	.exit_batch = xfrm_user_net_exit,
- };
- 
--- 
-2.26.3
+This is debatable, in isolation VM's shouldn't userspace take responsibility
+to validate host communication. If that is an issue please participate with
+the DPDK community (main user of this) to make sure netvsc userspace driver
+has the required checks.
 
