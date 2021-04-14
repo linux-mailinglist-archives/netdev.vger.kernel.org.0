@@ -2,85 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F149C35F8A8
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F11035F8C8
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352590AbhDNQHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 12:07:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33894 "EHLO mail.kernel.org"
+        id S1351493AbhDNQMs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 12:12:48 -0400
+Received: from mga18.intel.com ([134.134.136.126]:61296 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352587AbhDNQHF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 12:07:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CBF9F6112F;
-        Wed, 14 Apr 2021 16:06:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618416404;
-        bh=bHtZ7nxyQFALxJLyz2Lob7sOa/P681tKImWQcIl3QOI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=exhKN5iKCIbTb9Bz0ntxlYbGh82AmLE3VIk7MkKG/0ReewpRpjQNk927DZ+KkUdOx
-         99KzTCZ89edxXMJwbnGVwAaQJz4uTEhZjYVbXc0fvlotIfY5gHchyKXpQAZGPpAEme
-         Bw5MQthZG+GnxZZl46y5b95bVy4e2IUNDHw714D05OJsEwHPDUItw04NsQD8efrxe4
-         6/EIfvk4kUGsiw4cCkvmoqzF74RR3oEPzDfk5igIbmdfvCMiYikiGA2EmX6ZB7cNHl
-         YzEfFsYlhvpheouEq3korpISK/F0sWOxyi3v0t/tQnZGp7S4riYU97DJpzVjiD2WVu
-         FqRgX0LuKDT9Q==
-From:   Mark Brown <broonie@kernel.org>
-To:     Nico Pache <npache@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, brendanhiggins@google.com,
-        netdev@vger.kernel.org, davidgow@google.com, rafael@kernel.org,
-        mptcp@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
-        geert@linux-m68k.org, tytso@mit.edu, skhan@linuxfoundation.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        linux-ext4@vger.kernel.org, mathew.j.martineau@linux.intel.com
-Subject: Re: (subset) [PATCH v2 0/6] kunit: Fix formatting of KUNIT tests to meet the standard
-Date:   Wed, 14 Apr 2021 17:06:19 +0100
-Message-Id: <161841601730.20953.13768721892830917031.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1618388989.git.npache@redhat.com>
-References: <cover.1618388989.git.npache@redhat.com>
+        id S233932AbhDNQMo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 12:12:44 -0400
+IronPort-SDR: ULjpjgWAVva8sQp+KMXUy3W2BWguWzkSPvHq8dp5+V+tMulYAMey0Nr438Qg4d09DCGX/s3IQF
+ Jm4EaFVi84cg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="182178246"
+X-IronPort-AV: E=Sophos;i="5.82,222,1613462400"; 
+   d="scan'208";a="182178246"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 09:11:03 -0700
+IronPort-SDR: DE6B4YjCMUkQy2gZIwMLAjYT0pE96JDNgn3iwVrYeXbtL8GTIAgKFTBCvsh2Xdc//hnObTfNwJ
+ GR3Z3MHOxxPg==
+X-IronPort-AV: E=Sophos;i="5.82,222,1613462400"; 
+   d="scan'208";a="418378619"
+Received: from glenande-mobl1.amr.corp.intel.com (HELO localhost) ([10.209.19.126])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 09:11:02 -0700
+Date:   Wed, 14 Apr 2021 09:11:00 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     Marcelo Tosatti <mtosatti@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
+        "abelits@marvell.com" <abelits@marvell.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "rppt@linux.vnet.ibm.com" <rppt@linux.vnet.ibm.com>,
+        "jinyuqi@huawei.com" <jinyuqi@huawei.com>,
+        "zhangshaokun@hisilicon.com" <zhangshaokun@hisilicon.com>,
+        netdev@vger.kernel.org, chris.friesen@windriver.com
+Subject: Re: [Patch v4 1/3] lib: Restrict cpumask_local_spread to
+ houskeeping CPUs
+Message-ID: <20210414091100.000033cf@intel.com>
+In-Reply-To: <1a044a14-0884-eedb-5d30-28b4bec24b23@redhat.com>
+References: <20200625223443.2684-1-nitesh@redhat.com>
+        <20200625223443.2684-2-nitesh@redhat.com>
+        <3e9ce666-c9cd-391b-52b6-3471fe2be2e6@arm.com>
+        <20210127121939.GA54725@fuller.cnet>
+        <87r1m5can2.fsf@nanos.tec.linutronix.de>
+        <20210128165903.GB38339@fuller.cnet>
+        <87h7n0de5a.fsf@nanos.tec.linutronix.de>
+        <20210204181546.GA30113@fuller.cnet>
+        <cfa138e9-38e3-e566-8903-1d64024c917b@redhat.com>
+        <20210204190647.GA32868@fuller.cnet>
+        <d8884413-84b4-b204-85c5-810342807d21@redhat.com>
+        <87y2g26tnt.fsf@nanos.tec.linutronix.de>
+        <d0aed683-87ae-91a2-d093-de3f5d8a8251@redhat.com>
+        <7780ae60-efbd-2902-caaa-0249a1f277d9@redhat.com>
+        <07c04bc7-27f0-9c07-9f9e-2d1a450714ef@redhat.com>
+        <20210406102207.0000485c@intel.com>
+        <1a044a14-0884-eedb-5d30-28b4bec24b23@redhat.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 04:58:03 -0400, Nico Pache wrote:
-> There are few instances of KUNIT tests that are not properly defined.
-> This commit focuses on correcting these issues to match the standard
-> defined in the Documentation.
+Nitesh Narayan Lal wrote:
+
+> > The original issue as seen, was that if you rmmod/insmod a driver
+> > *without* irqbalance running, the default irq mask is -1, which means
+> > any CPU. The older kernels (this issue was patched in 2014) used to use
+> > that affinity mask, but the value programmed into all the interrupt
+> > registers "actual affinity" would end up delivering all interrupts to
+> > CPU0,
 > 
-> Issues Fixed:
->  - tests should end in KUNIT_TEST, some fixes have been applied to
->    correct issues were KUNIT_TESTS is used or KUNIT is not mentioned.
->  - Tests should default to KUNIT_ALL_TESTS
->  - Tests configs tristate should have if !KUNIT_ALL_TESTS
+> So does that mean the affinity mask for the IRQs was different wrt where
+> the IRQs were actually delivered?
+> Or, the affinity mask itself for the IRQs after rmmod, insmod was changed
+> to 0 instead of -1?
+
+The smp_affinity was 0xfff, and the kernel chooses which interrupt to
+place the interrupt on, among any of the bits set.
+
+ 
+> I did a quick test on top of 5.12.0-rc6 by comparing the i40e IRQ affinity
+> mask before removing the kernel module and after doing rmmod+insmod
+> and didn't find any difference.
+
+with the patch in question removed? Sorry, I'm confused what you tried.
+
 > 
-> [...]
+> >  and if the machine was under traffic load incoming when the
+> > driver loaded, CPU0 would start to poll among all the different netdev
+> > queues, all on CPU0.
+> >
+> > The above then leads to the condition that the device is stuck polling
+> > even if the affinity gets updated from user space, and the polling will
+> > continue until traffic stops.
+> >
+> >> The problem with the commit is that when we overwrite the affinity mask
+> >> based on the hinting mask we completely ignore the default SMP affinity
+> >> mask. If we do want to overwrite the affinity based on the hint mask we
+> >> should atleast consider the default SMP affinity.
+> 
+> For the issue where the IRQs don't follow the default_smp_affinity mask
+> because of this patch, the following are the steps by which it can be easily
+> reproduced with the latest linux kernel:
+> 
+> # Kernel
+> 5.12.0-rc6+
 
-Applied to
+<snip>
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+> As we can see in the above trace the initial affinity for the IRQ 1478 was
+> correctly set as per the default_smp_affinity mask which includes CPU 42,
+> however, later on, it is updated with CPU3 which is returned from
+> cpumask_local_spread().
+> 
+> > Maybe the right thing is to fix which CPUs are passed in as the valid
+> > mask, or make sure the kernel cross checks that what the driver asks
+> > for is a "valid CPU"?
+> >
+> 
+> Sure, if we can still reproduce the problem that your patch was fixing then
+> maybe we can consider adding a new API like cpumask_local_spread_irq in
+> which we should consider deafult_smp_affinity mask as well before returning
+> the CPU.
 
-Thanks!
+I'm sure I don't have a reproducer of the original problem any more, it
+is lost somewhere 8 years ago. I'd like to be able to repro the original
+issue, but I can't.
 
-[1/6] kunit: ASoC: topology: adhear to KUNIT formatting standard
-      commit: b5fb388da472a69858355560d803602e0ace1006
+Your description of the problem makes it obvious there is an issue. It
+appears as if cpumask_local_spread() is the wrong function to use here.
+If you have any suggestions please let me know.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+We had one other report of this problem as well (I'm not sure if it's
+the same as your report)
+https://lkml.org/lkml/2021/3/28/206
+https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210125/023120.html
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
