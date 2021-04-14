@@ -2,103 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB71235FC43
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44F535FC50
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353743AbhDNUEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 16:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
+        id S232735AbhDNUHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 16:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353744AbhDNUEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:04:21 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE49C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:03:59 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1lWljy-0006k7-8Z
-        for netdev@vger.kernel.org; Wed, 14 Apr 2021 22:03:58 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id D8C8660EC9A
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 20:03:56 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id E507960EC8E;
-        Wed, 14 Apr 2021 20:03:55 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 8dd2a3b8;
-        Wed, 14 Apr 2021 20:03:55 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next] can: etas_es58x: fix null pointer dereference when handling error frames
-Date:   Wed, 14 Apr 2021 22:03:52 +0200
-Message-Id: <20210414200352.2473363-2-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210414200352.2473363-1-mkl@pengutronix.de>
-References: <20210414200352.2473363-1-mkl@pengutronix.de>
+        with ESMTP id S230351AbhDNUHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:07:35 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80589C061574
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:07:12 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id c2so3321002plz.0
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:07:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=In6huv6Y9HCt6IEgW+jAUjzWZLosViGBVtLJdDO7NQI=;
+        b=E6UJNk+xklDwv6KHS3uu2PLcPkqMEktiMgU9hERXpQZGeRenngpLUNRG8c4hHPU8FJ
+         WpLqS4WmEdS3wN5ooiLqa+sOdlbIrI8a7GYI973aCekWj07JyP4IcU1Z/SIlbZZ+l2Jc
+         rBUnyF9mirXP9H4Nj74gHy6egQHP//FFqHRKcl7re7DYjYUbTFBgsKd4IIq9DqnMnF4W
+         3MrtdGDUP1Ev2tDEqv92YMxOqgEjWi4+bBhYbqlhad0tcrlprRFqznJYGCGMgeHzdKn7
+         3hoL8I0BAs3Ojj08LIWeUPePLyjGTRCSV9ps/dOG+ZaPPsaswAQ12qGYtRSsmS0CTNVb
+         KT1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=In6huv6Y9HCt6IEgW+jAUjzWZLosViGBVtLJdDO7NQI=;
+        b=uGakWDFQidQGICwkVt5eVJ1/DoKhG2Bj2A24N+GBAb6ezgyc2hurnkWbmmLTjwHsVI
+         S9HMrnBes4as77FDJI8nfVzvLC4T7XlQhqRQ4U+6F42x/LSxt26aXI4M9omsoYwvkvsR
+         uXn4AG5pd4f3j0NGj/I18hYWiHHg+FIjnp05qxIV8Vu4QAsUal16PHLm/d4GRzm3BKSJ
+         UbEE+B1H7R/Xm5bY5TO3j2/KP6fjHYTaUO30SGezBeZnMoEH5MlpbvmalkdTJHZuOGPe
+         SzF8rT6pDJ3hlRtygtevXPFynlHWkWhpc4x3UWlDY1GJkwc39cFn07EAQyS3Rsj8Aw6I
+         JhSg==
+X-Gm-Message-State: AOAM531vqUQL9Ab4K8XneSm1gY6bWPLtVTuAg3kkFnMCEtE0TH6qThVm
+        vTDssA6+SBNk8tYKPoqogEVD8rn3u5RO1s3TZyk=
+X-Google-Smtp-Source: ABdhPJzRXtXeDcKnQ85ali1CLqKtfp/Yu1PFqqAVhVGq/MBPHGN2wad9SsTqMtQy5qbCeLB/c8MSMdQP1QkwmObsGWE=
+X-Received: by 2002:a17:902:c407:b029:e7:3568:9604 with SMTP id
+ k7-20020a170902c407b02900e735689604mr39227222plk.31.1618430832147; Wed, 14
+ Apr 2021 13:07:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <400E2FE1-A1E7-43EE-9ABA-41C65601C6EB@purdue.edu>
+In-Reply-To: <400E2FE1-A1E7-43EE-9ABA-41C65601C6EB@purdue.edu>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 14 Apr 2021 13:07:01 -0700
+Message-ID: <CAM_iQpWs+T+ps3N7XD2s3YWrqAbQ0zqO_pmFpiFOG5y84Nku0Q@mail.gmail.com>
+Subject: Re: A concurrency bug between l2tp_tunnel_register() and l2tp_xmit_core()
+To:     "Gong, Sishuai" <sishuai@purdue.edu>
+Cc:     "jchapman@katalix.com" <jchapman@katalix.com>,
+        "tparkin@katalix.com" <tparkin@katalix.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+On Tue, Apr 13, 2021 at 3:10 PM Gong, Sishuai <sishuai@purdue.edu> wrote:
+>
+> Hi,
+>
+> We found a concurrency bug in linux 5.12-rc3 and we are able to reproduce=
+ it under x86. This bug happens when two l2tp functions l2tp_tunnel_registe=
+r() and l2tp_xmit_core() are running in parallel. In general, l2tp_tunnel_r=
+egister() registered a tunnel that hasn=E2=80=99t been fully initialized an=
+d then l2tp_xmit_core() tries to access an uninitialized attribute. The int=
+erleaving is shown below..
+>
+> ------------------------------------------
+> Execution interleaving
+>
+> Thread 1                                                                 =
+                               Thread 2
+>
+> l2tp_tunnel_register()
+>         spin_lock_bh(&pn->l2tp_tunnel_list_lock);
+>                 =E2=80=A6
+>                 list_add_rcu(&tunnel->list, &pn->l2tp_tunnel_list);
+>                 // tunnel becomes visible
+>         spin_unlock_bh(&pn->l2tp_tunnel_list_lock);
+>                                                                          =
+                               pppol2tp_connect()
+>                                                                          =
+                                       =E2=80=A6
+>                                                                          =
+                                       tunnel =3D l2tp_tunnel_get(sock_net(=
+sk), info.tunnel_id);
+>                                                                          =
+                                       // Successfully get the new tunnel
+>                                                                          =
+                               =E2=80=A6
+>                                                                          =
+                               l2tp_xmit_core()
+>                                                                          =
+                                       struct sock *sk =3D tunnel->sock;
+>                                                                          =
+                                       // uninitialized, sk=3D0
+>                                                                          =
+                                       =E2=80=A6
+>                                                                          =
+                                       bh_lock_sock(sk);
+>                                                                          =
+                                       // Null-pointer exception happens
+>         =E2=80=A6
+>         tunnel->sock =3D sk;
+>
+> ------------------------------------------
+> Impact & fix
+>
+> This bug causes a kernel NULL pointer deference error, as attached below.=
+ Currently, we think a potential fix is to initialize tunnel->sock before a=
+dding the tunnel into l2tp_tunnel_list.
 
-During the handling of CAN bus errors, a CAN error SKB is allocated
-using alloc_can_err_skb(). Even if the allocation of the SKB fails,
-the function continues in order to do the stats handling.
+I think this is the right fix. Please submit a patch formally.
 
-All access to the can_frame pointer (cf) should be guarded by an if
-statement:
-	if (cf)
-
-However, the increment of the rx_bytes stats:
-	netdev->stats.rx_bytes += cf->can_dlc;
-dereferences the cf pointer and was not guarded by an if condition
-leading to a NULL pointer dereference if the can_err_skb() function
-failed.
-
-Replacing the cf->can_dlc by the macro CAN_ERR_DLC (which is the
-length of any CAN error frames) solves this NULL pointer dereference.
-
-Fixes: 8537257874e9 ("can: etas_es58x: add core support for ETAS ES58X CAN USB interfaces")
-Link: https://lore.kernel.org/r/20210413114242.2760-1-mailhol.vincent@wanadoo.fr
-Reported-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/usb/etas_es58x/es58x_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-index 7222b3b6ca46..57e5f94468e9 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-@@ -856,7 +856,7 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
- 	 * consistency.
- 	 */
- 	netdev->stats.rx_packets++;
--	netdev->stats.rx_bytes += cf->can_dlc;
-+	netdev->stats.rx_bytes += CAN_ERR_DLC;
- 
- 	if (cf) {
- 		if (cf->data[1])
-
-base-commit: 5871d0c6b8ea805916c3135d0c53b095315bc674
--- 
-2.30.2
-
-
+Thanks.
