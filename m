@@ -2,88 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B801235F746
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 17:12:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F7D135F769
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 17:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347168AbhDNPKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 11:10:52 -0400
-Received: from mga09.intel.com ([134.134.136.24]:34043 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347174AbhDNPKu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 11:10:50 -0400
-IronPort-SDR: NkDhiYHKCsFU6mMTtgc+ob3kbqTChbOI5OILWBpnTrHT9QmHqDCCq+g28k13zjkroyNbOi4xC/
- 5+hrXqpWEWFQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9954"; a="194768016"
-X-IronPort-AV: E=Sophos;i="5.82,222,1613462400"; 
-   d="scan'208";a="194768016"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 08:10:15 -0700
-IronPort-SDR: aZgfj1IxVxNFY4kP4MSWfZpcXsUtzUBNLWl3hJsxLJLj+ikwlVn8HR4DMtE2tvqdF3Qwf5aEub
- KrF5E0pVhirg==
-X-IronPort-AV: E=Sophos;i="5.82,222,1613462400"; 
-   d="scan'208";a="399211281"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2021 08:10:13 -0700
-Received: from andy by smile with local (Exim 4.94)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1lWh9e-0041hY-Mt; Wed, 14 Apr 2021 18:10:10 +0300
-Date:   Wed, 14 Apr 2021 18:10:10 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Flavio Suligoi <f.suligoi@asem.it>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next v2 0/5] net: pch: fix and a few cleanups
-Message-ID: <YHcF0kqenD5Si66Z@smile.fi.intel.com>
-References: <20210325173412.82911-1-andriy.shevchenko@linux.intel.com>
+        id S233557AbhDNPOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 11:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233624AbhDNPOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 11:14:06 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B35C061574
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 08:13:45 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id p67so9002196pfp.10
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 08:13:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nrpDlB0LPWjoejIOSmQjtS9LtUgvos7LUCgbdrI/L80=;
+        b=qZOfIoPGD6YUD+8u2BvH8bu/HFL0QLgVxaRzKdHBIp50j8rVNIO/7+oPKlZ9ism/T9
+         HyW8EBerT1ROVskcBBYPSviWYizxO5dDFiE7WxwpXG0hDt/3ElgKkUpklcc1Vap5j50N
+         yfUoFb7U4doecIqNisNRKsxRKhrAGcqYBIELW/07Iv12jKQ/i4z1JJonte9Pn4VpQT45
+         HlFAxFpoEIT86SF4GpAKPktz2eRWNyqDTA0WJXIBPnVlA1kHfHllPmFd7IjsAXreBZiv
+         KqVJ+VsoLznZt8MhtBQFne5zvUlVGjVE6+vx8lE5H6jXMX71Ho2+Ebwv5PSNqfZEaaEg
+         KzRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nrpDlB0LPWjoejIOSmQjtS9LtUgvos7LUCgbdrI/L80=;
+        b=rx2oQCfkx+OrPj+qyATCgXjxy9fBEAzSiJKWTU1OW5+U5iKLbjKdCJHgvqLG5tMDTw
+         lzE/InQToXezgag8XSKeycH8HEsiC4zYZgbJRTrFpZZY0zUf+pyMkWqIXCj55eyaB6Wj
+         nZUWHGZFodjOVq6zlCFLl9LfdRjtgKsKN2al+wGIuSVAysNZK38/PxRjMzc+nU/wUyJc
+         oJ9WYWgSwEwNiJvc66xHMYS5OCkSmUKVlqN14UXN/qzxkfdGFmfLw331LZhNr5wwqKNG
+         h0pYA6HXHi3KFxfOpNegMZwxE3dwqzllmqjuYjwhRozl7m7TjrHhP4ra7SMF/KrMCYQS
+         d2Eg==
+X-Gm-Message-State: AOAM531idFVPb4umu89YzLzT8VWkIMTh+FO5DzQkx7XR+s4yofMdZ4uo
+        HuN+aaiXAvYAHdfx95TqXhI=
+X-Google-Smtp-Source: ABdhPJyrus5+6CpaqeN6WiUoa3P4Efs8Gv4wMBXgsTnnSq5AmcgWSpIQ6Od00lKRynZxPPm6Im/rtw==
+X-Received: by 2002:a63:3c9:: with SMTP id 192mr3497736pgd.423.1618413225088;
+        Wed, 14 Apr 2021 08:13:45 -0700 (PDT)
+Received: from skbuf (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id x12sm1079842pfu.193.2021.04.14.08.13.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Apr 2021 08:13:44 -0700 (PDT)
+Date:   Wed, 14 Apr 2021 18:13:33 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next] net: bridge: propagate error code and extack
+ from br_mc_disabled_update
+Message-ID: <20210414151333.jvrhaesom43cwpcp@skbuf>
+References: <20210414143413.1786981-1-olteanv@gmail.com>
+ <3fb316d9-8ba2-78d2-ac0c-1fab5de09da8@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210325173412.82911-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <3fb316d9-8ba2-78d2-ac0c-1fab5de09da8@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 07:34:07PM +0200, Andy Shevchenko wrote:
-> The series provides one fix (patch 1) for GPIO to be able to wait for
-> the GPIO driver to appear. This is separated from the conversion to
-> the GPIO descriptors (patch 2) in order to have a possibility for
-> backporting. Patches 3 and 4 fix a minor warnings from Sparse while
-> moving to a new APIs. Patch 5 is MODULE_VERSION() clean up.
+On Wed, Apr 14, 2021 at 05:58:04PM +0300, Nikolay Aleksandrov wrote:
+> > @@ -3607,7 +3619,7 @@ int br_multicast_toggle(struct net_bridge *br, unsigned long val)
+> >  			br_multicast_leave_snoopers(br);
+> >  	}
+> >  
+> > -	return 0;
+> > +	return err;
 > 
-> Tested on Intel Minnowboard (v1).
-
-Guys, it has been already the report from kbuild bot (sparse warnings), which
-should be fixed by this series (at least partially if not completely).
-
-Please, apply this as soon as it's possible.
-Or tell me what's wrong with the series.
-
-Thanks!
-
-> Since v2:
-> - added a few cleanups on top of the fix
+> Here won't you return EOPNOTSUPP even though everything above was successful ?
+> I mean if br_mc_disabled_update() returns -EOPNOTSUPP it will just be returned
+> and the caller would think there was an error.
 > 
-> Andy Shevchenko (5):
->   net: pch_gbe: Propagate error from devm_gpio_request_one()
->   net: pch_gbe: Convert to use GPIO descriptors
->   net: pch_gbe: use readx_poll_timeout_atomic() variant
->   net: pch_gbe: Use proper accessors to BE data in pch_ptp_match()
->   net: pch_gbe: remove unneeded MODULE_VERSION() call
+> Did you try running the bridge selftests with this patch ?
 > 
->  .../net/ethernet/oki-semi/pch_gbe/pch_gbe.h   |   2 -
->  .../oki-semi/pch_gbe/pch_gbe_ethtool.c        |   2 +
->  .../ethernet/oki-semi/pch_gbe/pch_gbe_main.c  | 103 +++++++++---------
->  3 files changed, 54 insertions(+), 53 deletions(-)
-> 
-> -- 
-> 2.30.2
-> 
+> Thanks,
+>  Nik
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks, this is a good point. I think I should just do this instead:
+	if (err == -EOPNOTSUPP)
+		err = 0;
+	if (err)
+		...
 
-
+And I haven't run the bridge selftests. You are talking about:
+tools/testing/selftests/net/forwarding/bridge_{igmp,mld}.sh
+right?
