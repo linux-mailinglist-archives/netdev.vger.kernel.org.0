@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F29D835FADA
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E5335FB0A
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352514AbhDNSfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 14:35:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45496 "EHLO mail.kernel.org"
+        id S1353126AbhDNSsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 14:48:08 -0400
+Received: from box.ubports.com ([157.230.16.225]:46303 "EHLO box.ubports.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232246AbhDNSfY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 14:35:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6079861107;
-        Wed, 14 Apr 2021 18:35:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618425302;
-        bh=C+kNVnSifWU5QxK/9U4nB/COob9vJHKoSmCJpUx56n4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Xns6chgKI6aTeq6WBbW3+K5RsWClGN+y9FOyQr1mjpFX29S05jofQiDK4TE7b/Dsw
-         gejm72XUHN4dQKVRFKg87kYgbi5xcJV5kWBbu5s3cyMILDEZ+c+CYBkyOJh+SXFrB5
-         t6pwGGEvCfm+AR+pVqDO7R03Jh/LUFE7L6HEDpMEXiSuKHnrN5zb2j0R9wUpsSHO8n
-         f4JXFWul69YhvAnTSsjQEWybSiY/aY65dOHbanxXo93D2wzx/YqnyFlw10s+G3QC5h
-         Sp74knOyNlm81uLh0RraEuFFqMYlIId6nJZHPj2rpFxQ+EMZI3WRmaGVyvjURKpp5O
-         rTNZNbTrgPxAw==
-Date:   Wed, 14 Apr 2021 11:35:01 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next V2 01/16] net/mlx5: E-Switch, let user to enable
- disable metadata
-Message-ID: <20210414113501.20cea8ad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210414180605.111070-2-saeed@kernel.org>
-References: <20210414180605.111070-1-saeed@kernel.org>
-        <20210414180605.111070-2-saeed@kernel.org>
+        id S1353113AbhDNSrc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 14:47:32 -0400
+X-Greylist: delayed 463 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Apr 2021 14:47:32 EDT
+Received: from authenticated-user (box.ubports.com [157.230.16.225])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        by box.ubports.com (Postfix) with ESMTPSA id 94991FC141;
+        Wed, 14 Apr 2021 20:39:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=ubports.com; s=mail;
+        t=1618425565; bh=IU9kl+tKHDI/AVZXyWUUVfrMt7KW8cClQ9lihOFs4JE=;
+        h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+        b=NGwnT2TMvB+8eLnHpKAfB4K+iytgjOwklPWnCgl0iTlhR7bUFPq6i1GyDQykBLhQr
+         I81eLkrV4cSDtgBW6LHXcV3Z5S/9rdCBE7HNPXObEsfMEVOPgCMdoUy16xv1RsAO01
+         RroQ+Xng1t7qtxIbek8nap1Ph2CjeryU8Q8uaHpPKeYfbukzlFtydw7xfb6OUoVfoK
+         DIOZURS2beu98Jg9nFkqzd2F4k8eRh4fZaajB/aBPl3/d5fZO0DBxTM5kHSSVgA7S7
+         mssUoAgenh7rBcSrxx8Pf63hWxKh1isQBo6e8RVH6AZ0eBhHrgKBrDIZ1L/g2zAuX+
+         0PzPcvE3eu8mA==
+Date:   Wed, 14 Apr 2021 18:39:11 +0000 (UTC)
+From:   Marius Gripsgard <marius@ubports.com>
+To:     Chris Talbot <chris@talbothome.com>
+Cc:     ofono@ofono.org, netdev@vger.kernel.org,
+        debian-on-mobile-maintainers@alioth-lists.debian.net,
+        librem-5-dev@lists.community.puri.sm, 982250@bugs.debian.org,
+        985893@bugs.debian.org
+Message-ID: <9acefe05-29ab-4cb9-8fef-982eb9deb79a@ubports.com>
+In-Reply-To: <634e0debea558b90af2cebfc99518071f1d630e9.camel@talbothome.com>
+References: <051ae8ae27f5288d64ec6ef2bd9f77c06b829b52.camel@talbothome.com> <634e0debea558b90af2cebfc99518071f1d630e9.camel@talbothome.com>
+Subject: Re: Forking on MMSD
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Correlation-ID: <9acefe05-29ab-4cb9-8fef-982eb9deb79a@ubports.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 11:05:50 -0700 Saeed Mahameed wrote:
-> From: Parav Pandit <parav@nvidia.com>
-> 
-> Currently each packet inserted in eswitch is tagged with a internal
-> metadata to indicate source vport. Metadata tagging is not always
-> needed. Metadata insertion is needed for multi-port RoCE, failover
-> between representors and stacked devices. In many other cases,
-> metadata enablement is not needed.
-> 
-> Metadata insertion slows down the packet processing rate of the E-switch
-> when it is in switchdev mode.
-> 
-> Below table show performance gain with metadata disabled for VXLAN
-> offload rules in both SMFS and DMFS steering mode on ConnectX-5 device.
-> 
-> ----------------------------------------------
-> | steering | metadata | pkt size | rx pps    |
-> | mode     |          |          | (million) |
-> ----------------------------------------------
-> | smfs     | disabled | 128Bytes | 42        |
-> ----------------------------------------------
-> | smfs     | enabled  | 128Bytes | 36        |
-> ----------------------------------------------
-> | dmfs     | disabled | 128Bytes | 42        |
-> ----------------------------------------------
-> | dmfs     | enabled  | 128Bytes | 36        |
-> ----------------------------------------------
-> 
-> Hence, allow user to disable metadata using driver specific devlink
-> parameter. Metadata setting of the eswitch is applicable only for the
-> switchdev mode.
-> 
-> Example to show and disable metadata before changing eswitch mode:
-> $ devlink dev param show pci/0000:06:00.0 name esw_port_metadata
-> pci/0000:06:00.0:
->   name esw_port_metadata type driver-specific
->     values:
->       cmode runtime value true
-> 
-> $ devlink dev param set pci/0000:06:00.0 \
-> 	  name esw_port_metadata value false cmode runtime
-> 
-> $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-> 
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Roi Dayan <roid@nvidia.com>
-> Reviewed-by: Vu Pham <vuhuong@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Hi,
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+I would really like to avoid a fork, it's not worth doing dual work. Did yo=
+u ping ofono devs at irc?=C2=A0 Also have you sendt upstream patches? If a =
+fork is the way you want to go, you will need to rename it as the existing =
+packages need to follow upstream, we can't just rip an existing packages aw=
+ay from upstream.
+
+Best regards,
+Marius
+
+Apr 14, 2021 20:21:18 Chris Talbot <chris@talbothome.com>:
+
+> Hello All,
+>=20
+> In talking to the Debian Developer Mr. Federico Ceratto, since I have
+> been unable to get a hold of the Ofono Maintainers, the best course of
+> action for packaging mmsd into Debian is to simply fork the project and
+> submit my version upstream for packaging in Debian. My repository is
+> here: https://source.puri.sm/kop316/mmsd/
+>=20
+> I am sending this so the relavent parties are aware of this, and to
+> indicate that I no longer intend on trying to get a hold of upstream
+> mmsd to try and submit patches.
+>=20
+> For the Purism Employees, I am additionally asking for permission to
+> keep hosting mmsd on https://source.puri.sm/ . I have been extremely
+> appreciative in using it and I am happy to keep it there, but I want to
+> be neighboorly and ask if it is okay for me to keep it there. If it is
+> not, I completely understand and I am fine with moving it to a new
+> host.
+>=20
+> If you have any questions, comments, or concern, please reach out to
+> me.
+>=20
+> --=20
+> Respectfully,
+> Chris Talbot
+> _______________________________________________
+> ofono mailing list -- ofono@ofono.org
+> To unsubscribe send an email to ofono-leave@ofono.org
