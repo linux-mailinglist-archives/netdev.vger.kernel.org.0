@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCB535FBF1
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 21:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C68D35FBF2
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 21:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353532AbhDNTxA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 15:53:00 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:22725 "EHLO
+        id S1353544AbhDNTxF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 15:53:05 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:22178 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353513AbhDNTwh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 15:52:37 -0400
+        by vger.kernel.org with ESMTP id S1353509AbhDNTwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 15:52:43 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-597-5qepCzkcNMGHkRqjPA2hOw-1; Wed, 14 Apr 2021 15:52:11 -0400
-X-MC-Unique: 5qepCzkcNMGHkRqjPA2hOw-1
+ us-mta-386-9acBb_H_PVadcQar_l2qIw-1; Wed, 14 Apr 2021 15:52:17 -0400
+X-MC-Unique: 9acBb_H_PVadcQar_l2qIw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2DBEA1006C8F;
-        Wed, 14 Apr 2021 19:52:09 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7286E107ACCD;
+        Wed, 14 Apr 2021 19:52:15 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 78D126064B;
-        Wed, 14 Apr 2021 19:52:06 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E1036064B;
+        Wed, 14 Apr 2021 19:52:09 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -34,9 +34,9 @@ Cc:     Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
         KP Singh <kpsingh@chromium.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Julia Lawall <julia.lawall@inria.fr>
-Subject: [PATCHv5 bpf-next 4/7] selftests/bpf: Add re-attach test to fexit_test
-Date:   Wed, 14 Apr 2021 21:51:44 +0200
-Message-Id: <20210414195147.1624932-5-jolsa@kernel.org>
+Subject: [PATCHv5 bpf-next 5/7] selftests/bpf: Add re-attach test to lsm test
+Date:   Wed, 14 Apr 2021 21:51:45 +0200
+Message-Id: <20210414195147.1624932-6-jolsa@kernel.org>
 In-Reply-To: <20210414195147.1624932-1-jolsa@kernel.org>
 References: <20210414195147.1624932-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -51,94 +51,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding the test to re-attach (detach/attach again) tracing
-fexit programs, plus check that already linked program can't
-be attached again.
-
-Also switching to ASSERT* macros.
+Adding the test to re-attach (detach/attach again) lsm programs,
+plus check that already linked program can't be attached again.
 
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../selftests/bpf/prog_tests/fexit_test.c     | 52 +++++++++++++------
- 1 file changed, 37 insertions(+), 15 deletions(-)
+ .../selftests/bpf/prog_tests/test_lsm.c       | 48 +++++++++++++++----
+ 1 file changed, 38 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_test.c b/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-index 78d7a2765c27..6792e41f7f69 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-@@ -3,35 +3,57 @@
- #include <test_progs.h>
- #include "fexit_test.skel.h"
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_lsm.c b/tools/testing/selftests/bpf/prog_tests/test_lsm.c
+index 2755e4f81499..d492e76e01cf 100644
+--- a/tools/testing/selftests/bpf/prog_tests/test_lsm.c
++++ b/tools/testing/selftests/bpf/prog_tests/test_lsm.c
+@@ -18,6 +18,8 @@ char *CMD_ARGS[] = {"true", NULL};
+ #define GET_PAGE_ADDR(ADDR, PAGE_SIZE)					\
+ 	(char *)(((unsigned long) (ADDR + PAGE_SIZE)) & ~(PAGE_SIZE-1))
  
--void test_fexit_test(void)
-+static int fexit_test(struct fexit_test *fexit_skel)
++static int duration = 0;
++
+ int stack_mprotect(void)
  {
--	struct fexit_test *fexit_skel = NULL;
- 	int err, prog_fd, i;
- 	__u32 duration = 0, retval;
-+	struct bpf_link *link;
- 	__u64 *result;
+ 	void *buf;
+@@ -51,23 +53,25 @@ int exec_cmd(int *monitored_pid)
+ 	return -EINVAL;
+ }
  
--	fexit_skel = fexit_test__open_and_load();
--	if (CHECK(!fexit_skel, "fexit_skel_load", "fexit skeleton failed\n"))
--		goto cleanup;
+-void test_test_lsm(void)
++static int test_lsm(struct lsm *skel)
+ {
+-	struct lsm *skel = NULL;
+-	int err, duration = 0;
++	struct bpf_link *link;
+ 	int buf = 1234;
 -
- 	err = fexit_test__attach(fexit_skel);
--	if (CHECK(err, "fexit_attach", "fexit attach failed: %d\n", err))
--		goto cleanup;
-+	if (!ASSERT_OK(err, "fexit_attach"))
+-	skel = lsm__open_and_load();
+-	if (CHECK(!skel, "skel_load", "lsm skeleton failed\n"))
+-		goto close_prog;
++	int err;
+ 
+ 	err = lsm__attach(skel);
+ 	if (CHECK(err, "attach", "lsm attach failed: %d\n", err))
+-		goto close_prog;
 +		return err;
 +
 +	/* Check that already linked program can't be attached again. */
-+	link = bpf_program__attach(fexit_skel->progs.test1);
-+	if (!ASSERT_ERR_PTR(link, "fexit_attach_link"))
++	link = bpf_program__attach(skel->progs.test_int_hook);
++	if (CHECK(!IS_ERR(link), "attach_link",
++		  "re-attach without detach should not succeed"))
 +		return -1;
  
- 	prog_fd = bpf_program__fd(fexit_skel->progs.test1);
- 	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
- 				NULL, NULL, &retval, &duration);
--	CHECK(err || retval, "test_run",
--	      "err %d errno %d retval %d duration %d\n",
--	      err, errno, retval, duration);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(retval, 0, "test_run");
+ 	err = exec_cmd(&skel->bss->monitored_pid);
+ 	if (CHECK(err < 0, "exec_cmd", "err %d errno %d\n", err, errno))
+-		goto close_prog;
++		return err;
  
- 	result = (__u64 *)fexit_skel->bss;
--	for (i = 0; i < 6; i++) {
--		if (CHECK(result[i] != 1, "result",
--			  "fexit_test%d failed err %lld\n", i + 1, result[i]))
--			goto cleanup;
-+	for (i = 0; i < sizeof(*fexit_skel->bss) / sizeof(__u64); i++) {
-+		if (!ASSERT_EQ(result[i], 1, "fexit_result"))
-+			return -1;
- 	}
+ 	CHECK(skel->bss->bprm_count != 1, "bprm_count", "bprm_count = %d\n",
+ 	      skel->bss->bprm_count);
+@@ -77,7 +81,7 @@ void test_test_lsm(void)
+ 	err = stack_mprotect();
+ 	if (CHECK(errno != EPERM, "stack_mprotect", "want err=EPERM, got %d\n",
+ 		  errno))
+-		goto close_prog;
++		return err;
  
-+	fexit_test__detach(fexit_skel);
+ 	CHECK(skel->bss->mprotect_count != 1, "mprotect_count",
+ 	      "mprotect_count = %d\n", skel->bss->mprotect_count);
+@@ -89,6 +93,30 @@ void test_test_lsm(void)
+ 	CHECK(skel->bss->copy_test != 3, "copy_test",
+ 	      "copy_test = %d\n", skel->bss->copy_test);
+ 
++	lsm__detach(skel);
 +
-+	/* zero results for re-attach test */
-+	memset(fexit_skel->bss, 0, sizeof(*fexit_skel->bss));
++	skel->bss->copy_test = 0;
++	skel->bss->bprm_count = 0;
++	skel->bss->mprotect_count = 0;
 +	return 0;
 +}
 +
-+void test_fexit_test(void)
++void test_test_lsm(void)
 +{
-+	struct fexit_test *fexit_skel = NULL;
++	struct lsm *skel = NULL;
 +	int err;
 +
-+	fexit_skel = fexit_test__open_and_load();
-+	if (!ASSERT_OK_PTR(fexit_skel, "fexit_skel_load"))
-+		goto cleanup;
++	skel = lsm__open_and_load();
++	if (CHECK(!skel, "lsm_skel_load", "lsm skeleton failed\n"))
++		goto close_prog;
 +
-+	err = fexit_test(fexit_skel);
-+	if (!ASSERT_OK(err, "fexit_first_attach"))
-+		goto cleanup;
++	err = test_lsm(skel);
++	if (CHECK(err, "test_lsm", "first attach failed\n"))
++		goto close_prog;
 +
-+	err = fexit_test(fexit_skel);
-+	ASSERT_OK(err, "fexit_second_attach");
++	err = test_lsm(skel);
++	CHECK(err, "test_lsm", "second attach failed\n");
 +
- cleanup:
- 	fexit_test__destroy(fexit_skel);
+ close_prog:
+ 	lsm__destroy(skel);
  }
 -- 
 2.30.2
