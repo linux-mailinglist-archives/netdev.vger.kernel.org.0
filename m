@@ -2,191 +2,351 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 417DB35E9D2
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 01:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7B935E9E4
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 02:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232503AbhDMXxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Apr 2021 19:53:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:36216 "EHLO mga18.intel.com"
+        id S237765AbhDNAMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 20:12:10 -0400
+Received: from mga17.intel.com ([192.55.52.151]:25010 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229747AbhDMXw7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 19:52:59 -0400
-IronPort-SDR: iRxmBU6OlTbJoN1yj+7WBK45rQlvWfwH4vPbdx/4Nywy4jeS4GI9k4/0hKnhgEhjM7AxIEHQXp
- KurPQ5ObFp6g==
-X-IronPort-AV: E=McAfee;i="6200,9189,9953"; a="182037069"
+        id S230070AbhDNAMJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Apr 2021 20:12:09 -0400
+IronPort-SDR: vwTP15XIOKiFHF+/ANqTzi7PiOuvbLtHRtT+n3MY3r4rjkUpnhQSUeJtY4qEtiOokl9SUD8zox
+ v6/R9+id3q0g==
+X-IronPort-AV: E=McAfee;i="6200,9189,9953"; a="174632860"
 X-IronPort-AV: E=Sophos;i="5.82,220,1613462400"; 
-   d="scan'208";a="182037069"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 16:52:38 -0700
-IronPort-SDR: G7kQshUs7Urg9jiGdTEFGrdM62d45mk4yCpjjHakEZEve1yOyUfPzsvhsr9R39sGLuT0IyhpGb
- JEfB4ikp1/oA==
+   d="scan'208";a="174632860"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 17:11:48 -0700
+IronPort-SDR: DF2ZSG4aAHKBJH7sE7KlhMGSun+pulJxEIWIkDO2V5QhZbRN8Oume3unOAoJD4TdmcDZ4pAzNI
+ aqDdY5OStS9w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.82,220,1613462400"; 
-   d="scan'208";a="450590164"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Apr 2021 16:52:38 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 13 Apr 2021 16:52:37 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Tue, 13 Apr 2021 16:52:37 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2106.2; Tue, 13 Apr 2021 16:52:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ksJkPSuJlkRz4lVE0XYdCBDK/NFJyDlyqyEVozcCqIcgRceH2fPsVypmvQua3eGAEIVbY4gB4hE/XvjhiNJxzNMzMZ1CsQawoW6TSk5ieLhsVlZdOj5irFdc3unIkiO+svzZe7ITLq2JyKc62xms1SFNikzQVkm825uBeo/uqA0/u25iCy/lXkeQWafnn/cG1BsEemYzRAJM+yETfYt5mOHqpqCVUV9h8d/0Kv8SnPBK30T6lGGh6Kkab6S9jDJJb/rwVIMNIc1AQClyHc3qRBwePBqs3i69+xaN6hxckL0jsa0Y8SLh3fTcGWQoL/TS7S2rsv6qFKQnGk8OGVcDYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bgHassLPa/bQG2cV9qz4C+loC0/sGHd5jUXoD7lLKoE=;
- b=XI4Cjv8g/LpMUDRW8vF+janUWCE9+o0LIhLAquV2Ondmn2fxXjxiZMyTHpFtAJRWJOwrpwrmvQkwC/uw9VTZBuMVyezf1KMK0wGX+SKJT5Dz9IXUISkL2it3jA6+TVhkAm+6ckDYdE9l0pELYUgzgzij+DXB1rKWVAAQNmoNN6tUFZg9UOuHFFK/HdAhcXSJKod1CsDCOxPttlwxG67Qm6NyAGY+t74L3U0pozkRDmJNA5A8U5R5C/vaA/glcSP3tBGf95Ws1sI6uI758Cn9dqlEgEdv3IJ2vss6DzuHjoaXsyZrlAABWuq0qsXbc5JSvDvfNzr7Z5H7JDIWq5velg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bgHassLPa/bQG2cV9qz4C+loC0/sGHd5jUXoD7lLKoE=;
- b=gQnX8702p6/IdMmSQYzisGjGdzJhjGQpv0tBItDXxyNb6aZw3ulYQ6tsj/OKNVaeIOG2CYEwlNBc8tuFSg3ZE0xcQXKM8f0fScZqFhj95w0sABFKW6RxATDmiBh2PrwD1jwFIm6kousQDcJk/BbDGDCiDrDw4HgyLLDZd9mNe2o=
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (52.135.112.28) by
- SA0PR11MB4557.namprd11.prod.outlook.com (20.181.61.135) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4020.22; Tue, 13 Apr 2021 23:52:36 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::7ca2:37ff:9cbd:c87c]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::7ca2:37ff:9cbd:c87c%6]) with mapi id 15.20.4020.022; Tue, 13 Apr 2021
- 23:52:36 +0000
-From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Tyl, RadoslawX" <radoslawx.tyl@intel.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Brelinski, TonyX" <tonyx.brelinski@intel.com>
-Subject: Re: [PATCH net-next 2/4] ixgbe: aggregate of all receive errors
- through netdev's rx_errors
-Thread-Topic: [PATCH net-next 2/4] ixgbe: aggregate of all receive errors
- through netdev's rx_errors
-Thread-Index: AQHXLXLISt6VExO6JEW+ZLBLx1Ua/qqs7s0AgAY2dIA=
-Date:   Tue, 13 Apr 2021 23:52:36 +0000
-Message-ID: <424968219126961b51bef798dc554eb2867a9809.camel@intel.com>
-References: <20210409190314.946192-1-anthony.l.nguyen@intel.com>
-         <20210409190314.946192-3-anthony.l.nguyen@intel.com>
-         <20210409180008.1f23bb7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210409180008.1f23bb7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [134.134.136.204]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b65580cc-cc6b-4f62-998f-08d8fed736ab
-x-ms-traffictypediagnostic: SA0PR11MB4557:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SA0PR11MB4557260FD4799EFF9F876C0FC64F9@SA0PR11MB4557.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CBLSSlnI5hwjDLf7sz98E1QNxQm/ubmJJXORgGI73oVA9FYqdZLFCz0nDgC7HKNgSIBaWKyL4O9nrCYYuV5Ko6m2sd73fv+It/tF35nG3RrXTe+nalCjIhqzi7GgApv+MfWPxETYKU0tQlxzwM9E7B+ntCOWPaLcaPNIKf2ESN059KI9XM2m9ilclSv0KYsGDII7YOwnCb9oy3jMr16RPx0itqJEuw27Y9V1yQ5C6sdTjYfQML4tyY7Bo1+XLyiMNarPMFi1Dfq/iJUuTfFOEPeV4RgXlaLQAXbyagU+sE5vnsfbDHH8EoTgGloKDihRwgGdVgJ/E71UR1JxiZXN/77vwCgxYCi+mD/FMiD2j2t6taktjdDHE6mbOaJ8XVMM2KudjRE17hqRsyYcsxMpVvst3gW2pu/seQy0EWyvXbfjUq4ENRbwqTVTZaeOXgeTssApT71DVGxIl13j5QzOVnXkQ5iXgdxTGXo8jkTiGjS5RawftJQ/MAgLYpmHGJCk6rVeHl0oUa8SeV+JS57OQQZ6EuPdxtCE9dT+g5V1SbqihtEmP9lA9+tNw3EERQnWYqniHuJtHElbPknt50QzqgXZgXyv1x69n2FBxjQDl1AV1xjVTwTHKLrIZ1ZCWDHfe9HB9IJfYwV4U2ap2SVmcA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39850400004)(366004)(376002)(396003)(346002)(26005)(64756008)(66946007)(66556008)(66446008)(66476007)(91956017)(6512007)(76116006)(316002)(107886003)(186003)(6916009)(86362001)(83380400001)(2616005)(2906002)(5660300002)(8936002)(6506007)(6486002)(36756003)(122000001)(4326008)(478600001)(8676002)(38100700002)(71200400001)(54906003)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?SnFuQ0hSVlNGVXdFZjdDTlVvOWZNUjRMVis2bXczY3Nsc1VCSnNCRWVlQk1v?=
- =?utf-8?B?blNiRHVpTEphbm1sNC91dUxGa3FkNTVHNHNjN1VPU3E3d0FHQXBuaTF4SEhG?=
- =?utf-8?B?N3BKNTlPeHZTaXdvU3QwZFFUcnJQaW1GYW8wNEVVU2ZzRU9DL00vUUozaTJq?=
- =?utf-8?B?eW9sYnBXRDFPR0Fvd0VmVWdkS28rUHcrN3VpNWZ0bzF0SkZmc2czWWFDTFdW?=
- =?utf-8?B?OFFpTk9nSmxuMGZoc1d4cWxYZzVoakdVMjZ4OHRLZUpwUUdzTlM4OUw1ZzFx?=
- =?utf-8?B?U2s0K2Yvcng0bC8yMmcwdXhwZzhGRG9Eck80MmhnZGFXdlZZS2daR2RLaGIw?=
- =?utf-8?B?azRHc0JEQllPZGlWSW1mYm9hZkMwb0Q0MC94QXBHWHB3M21FOTRIdDBtRXRW?=
- =?utf-8?B?QzB5eE41eS9uUG0xMW9heFNGZUZ0Z3FVTnY0c1pVZXlvRVN6UTRXRHlQUXV0?=
- =?utf-8?B?bXEvczVWbDVFbGtPREtkek1iVEtQWkg0RW1RUDh2NWVnN0dSVkVaTCt4eDVU?=
- =?utf-8?B?RXlSY2JlQTBvZHpueU9KaUs0N3BqaVhvRFJpZmNoTytXU2lleVk4MlhISEho?=
- =?utf-8?B?dHozT0lLRHlNMnRjQTNOUDByUG9zTHM5SUVaM1RIeU5VZi94MXVWOWtmRytx?=
- =?utf-8?B?Mi9NU0dxYVQ3Rjl3cmdpZlF3VFo1bW5mZVJ6TWhQUUx4MEpPdFRIRlFteS84?=
- =?utf-8?B?SlA5S3NJLzd1Ulp6L1NmU0R0bm9oMVE3Y2RGMEt5Y0tsY21xZ3NGdEs4b3Nz?=
- =?utf-8?B?elZhV1ArdFZLSjNpbURoRFM3SG1oeW5udTNkeTB1bEswQUxRREZGWkFGcnZE?=
- =?utf-8?B?T1NTeC9NQjFkOGlwcGJkUUNadXpOcVk0YkgxNHhFc3BjOTZ6bjdoa0VDTFVa?=
- =?utf-8?B?T3lhUE5IMnVLU2NUUlkwZnVnQXlhY0JWU1RYL0ZhQ1Y4VE5nNi9hZlU0L09K?=
- =?utf-8?B?MWZlajR5bEY0aWthQ2tHdEdWWnl2Yk1WMGFXN2F3K0ZTTk5kbEFENllxWTY0?=
- =?utf-8?B?bm84VTlFakd4QVZicHk1TExmS1RYZ0ZKcmpjU1FLcVpkMnpOVUFsZlZVbHNK?=
- =?utf-8?B?WlpCL3pQUG5oMlFHUXIvWDYxVlQvOTJXVHdVOXF4dXJabWFvekx0b3Rmc3o0?=
- =?utf-8?B?TC9HekRLMUtvRkVQQmVyMXI1UVFFdlAzUHhaS0ZZNU9oT2FQTlhNOWRNTDdR?=
- =?utf-8?B?S3c3RzdkWktLRTh4ODFzZ1haems4TXRPdkhESy96NkQ3cGN2RFJjVFdjdi85?=
- =?utf-8?B?YVl1clNTWDk5RFN2Z3NuU3VXVVlWekFqRzYycGtIR1lVZkZhTzdHNWpXbmNj?=
- =?utf-8?B?VThzMUVwaVNsNEkxSTZaZWVuakJ6S2FPSDF4dDVCZlNoZ1J6RjhEMlNKOWF6?=
- =?utf-8?B?cGRpTmNVNUZZZTJuMTJKZ2RXd2wvVFE3ZTRQeHhKdWllVHpOR3o4c1NBWVdv?=
- =?utf-8?B?VkVLS0dSZXZ6TTFMWkVWSzltMWozM09pNHpRSzdSdldBL1ZMeHVsZWJESy9r?=
- =?utf-8?B?cXpVb1N0T2x4WWRDaVFxK3pHSGtwck44dVljVDdJa01RTjhLelBxNCszbGg1?=
- =?utf-8?B?eGdtRGVjclFZZzJVZEFPRkR2d1paM3RJYjhadDdTNzNkeWJ4VllMaWJuYkFU?=
- =?utf-8?B?MWNWVys0VTlrdis4OUpGNm84ZllUUklsWmZrSXMyRGVwSFkwY3dTNU11Z2hO?=
- =?utf-8?B?alFaUDZYS2svQnNPeEZuYW1QUzZIWTc4aitrNHhNT3drbDBaR2ZvQlF4bWMx?=
- =?utf-8?B?UnhKR2FYMmN5VFdLZlI4MXJicUxxLzZCQTBGWkkxWllRd0dLM1Rkd1VXK2pq?=
- =?utf-8?B?ZzJSakxMTHZ1eTRuQnVCZz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CAF192DE2577544D9A3694897BF9563D@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+   d="scan'208";a="611937187"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga006.fm.intel.com with ESMTP; 13 Apr 2021 17:11:48 -0700
+Received: from glass.png.intel.com (glass.png.intel.com [10.158.65.59])
+        by linux.intel.com (Postfix) with ESMTP id E3F4A580842;
+        Tue, 13 Apr 2021 17:11:44 -0700 (PDT)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 1/1] net: stmmac: Add support for external trigger timestamping
+Date:   Wed, 14 Apr 2021 08:16:17 +0800
+Message-Id: <20210414001617.3490-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b65580cc-cc6b-4f62-998f-08d8fed736ab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2021 23:52:36.0675
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8BpA+XUR+Z2Eg7pufI6ytERkjeAgbfsOmpAQo3Yg/aBcxK/AlSMgrbiKe+l1kevNUBAuDn1BKyeeP90Gcd0qsT3pwtixzT69mK8lPa4WrLU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4557
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIxLTA0LTA5IGF0IDE4OjAwIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gRnJpLCAgOSBBcHIgMjAyMSAxMjowMzoxMiAtMDcwMCBUb255IE5ndXllbiB3cm90ZToN
-Cj4gPiBGcm9tOiBSYWRvc2xhdyBUeWwgPHJhZG9zbGF3eC50eWxAaW50ZWwuY29tPg0KPiA+IA0K
-PiA+IFRoZSBnbG9iYWwgcnggZXJyb3IgZG9lcyBub3QgdGFrZSBpbnRvIGFjY291bnQgYWxsIHRo
-ZSBlcnJvcg0KPiA+IGNvdW50ZXJzDQo+ID4gdGhhdCBhcmUgY291bnRlZCBieSBkZXZpY2UuDQo+
-ID4gDQo+ID4gRXh0ZW5kIHJ4IGVycm9yIHdpdGggdGhlIGZvbGxvd2luZyBjb3VudGVyczoNCj4g
-PiAtIGlsbGVnYWwgYnl0ZSBlcnJvcg0KPiA+IC0gbnVtYmVyIG9mIHJlY2VpdmUgZnJhZ21lbnQg
-ZXJyb3JzDQo+ID4gLSByZWNlaXZlIGphYmJlcg0KPiA+IC0gcmVjZWl2ZSBvdmVyc2l6ZSBlcnJv
-cg0KPiA+IC0gcmVjZWl2ZSB1bmRlcnNpemUgZXJyb3INCj4gPiAtIGZyYW1lcyBtYXJrZWQgYXMg
-Y2hlY2tzdW0gaW52YWxpZCBieSBoYXJkd2FyZQ0KPiA+IA0KPiA+IFRoZSBhYm92ZSB3ZXJlIGFk
-ZGVkIGluIG9yZGVyIHRvIGFsaWduIHN0YXRpc3RpY3Mgd2l0aCBvdGhlcg0KPiA+IHByb2R1Y3Rz
-Lg0KPiA+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IFJhZG9zbGF3IFR5bCA8cmFkb3NsYXd4LnR5bEBp
-bnRlbC5jb20+DQo+ID4gVGVzdGVkLWJ5OiBUb255IEJyZWxpbnNraSA8dG9ueXguYnJlbGluc2tp
-QGludGVsLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBUb255IE5ndXllbiA8YW50aG9ueS5sLm5n
-dXllbkBpbnRlbC5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVs
-L2l4Z2JlL2l4Z2JlX21haW4uYyB8IDExICsrKysrKysrKystDQo+ID4gIDEgZmlsZSBjaGFuZ2Vk
-LCAxMCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX21haW4uYw0KPiA+IGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jDQo+ID4gaW5kZXggN2Jh
-MWMyOTg1ZWY3Li43NzExODI4NDAxZDkgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jDQo+ID4gQEAgLTcyNDAsMTIgKzcyNDAsMjEg
-QEAgdm9pZCBpeGdiZV91cGRhdGVfc3RhdHMoc3RydWN0DQo+ID4gaXhnYmVfYWRhcHRlciAqYWRh
-cHRlcikNCj4gPiAgCWh3c3RhdHMtPnB0YzEwMjMgKz0gSVhHQkVfUkVBRF9SRUcoaHcsIElYR0JF
-X1BUQzEwMjMpOw0KPiA+ICAJaHdzdGF0cy0+cHRjMTUyMiArPSBJWEdCRV9SRUFEX1JFRyhodywg
-SVhHQkVfUFRDMTUyMik7DQo+ID4gIAlod3N0YXRzLT5icHRjICs9IElYR0JFX1JFQURfUkVHKGh3
-LCBJWEdCRV9CUFRDKTsNCj4gPiArCWh3c3RhdHMtPmlsbGVycmMgKz0gSVhHQkVfUkVBRF9SRUco
-aHcsIElYR0JFX0lMTEVSUkMpOw0KPiA+ICANCj4gPiAgCS8qIEZpbGwgb3V0IHRoZSBPUyBzdGF0
-aXN0aWNzIHN0cnVjdHVyZSAqLw0KPiA+ICAJbmV0ZGV2LT5zdGF0cy5tdWx0aWNhc3QgPSBod3N0
-YXRzLT5tcHJjOw0KPiA+ICANCj4gPiAgCS8qIFJ4IEVycm9ycyAqLw0KPiA+IC0JbmV0ZGV2LT5z
-dGF0cy5yeF9lcnJvcnMgPSBod3N0YXRzLT5jcmNlcnJzICsgaHdzdGF0cy0+cmxlYzsNCj4gPiAr
-CW5ldGRldi0+c3RhdHMucnhfZXJyb3JzID0gaHdzdGF0cy0+Y3JjZXJycyArDQo+ID4gKwkJCQkg
-ICAgaHdzdGF0cy0+aWxsZXJyYyArDQo+ID4gKwkJCQkgICAgaHdzdGF0cy0+cmxlYyArDQo+ID4g
-KwkJCQkgICAgaHdzdGF0cy0+cmZjICsNCj4gPiArCQkJCSAgICBod3N0YXRzLT5yamMgKw0KPiA+
-ICsJCQkJICAgIGh3c3RhdHMtPnJvYyArDQo+ID4gKwkJCQkgICAgaHdzdGF0cy0+cnVjICsNCj4g
-DQo+IElESyB3aGF0IHRoZSBIVyBjb3VudHMgZXhhY3RseSBidXQgcGVyaGFwcyBybGVjIGluY2x1
-ZGVzIG90aGVyDQo+IGNvdW50ZXJzPyBOb3RlIHRoYXQgdGhlIHN0YXRzIHlvdSBhZGQgd2l0aCB0
-aGlzIHBhdGNoIGFyZSBSRkMgMjgxOSAvDQo+IFJNT04gY291bnRlcnMsIGFuZCBBRkFJVSB0aGV5
-IG92ZXJsYXAgd2l0aCBJRUVFIGNvdW50ZXJzLg0KPiANCj4gSWYgdGhlIFJNT04gY291bnRlcnMg
-YXJlIHNvbWVob3cgZXhjbHVzaXZlbHkgY291bnRpbmcgdGhlaXIgZXZlbnRzDQo+IHlvdQ0KPiBz
-aG91bGQgdXBkYXRlIHJ4X2xlbmd0aF9lcnJvcnMgYXMgd2VsbC4NCg0KVGhhbmtzIGZvciB0aGUg
-ZmVlZGJhY2suIEknbSBnb2luZyB0byBkcm9wIHRoaXMgcGF0Y2ggZm9yIG5vdyBzbyB3ZSBjYW4N
-CmRvdWJsZSBjaGVjayB0aGF0IGV2ZXJ5dGhpbmcgaXMgYmVpbmcgcHJvcGVybHkgaW5jbHVkZWQv
-ZXhjbHVkZWQuDQoNCg==
+From: Tan Tee Min <tee.min.tan@intel.com>
+
+The Synopsis MAC controller supports auxiliary snapshot feature that
+allows user to store a snapshot of the system time based on an external
+event.
+
+This patch add supports to the above mentioned feature. Users will be
+able to triggered capturing the time snapshot from user-space using
+application such as testptp or any other applications that uses the
+PTP_EXTTS_REQUEST ioctl request.
+
+Cc: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@intel.com>
+Co-developed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+---
+v3 -> v4:
+  - Group variable of same datatype together in oneline.
+  - Removed unnecessary mutex_unlock()
+  - Added mutex_destroy() on ptp_unregister().
+v2 -> v3:
+  - Flip ext_snapshot_en condition check for early return.
+v1 -> v2:
+  - Changed from pr_info() to netdev_dbg().
+---
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 10 +++++
+ drivers/net/ethernet/stmicro/stmmac/hwif.h    |  5 +++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  3 ++
+ .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 39 ++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 40 ++++++++++++++++++-
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.h  |  1 +
+ include/linux/stmmac.h                        |  2 +
+ 8 files changed, 101 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 60566598d644..ec140fc4a0f5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -296,6 +296,13 @@ static int intel_crosststamp(ktime_t *device,
+ 
+ 	intel_priv = priv->plat->bsp_priv;
+ 
++	/* Both internal crosstimestamping and external triggered event
++	 * timestamping cannot be run concurrently.
++	 */
++	if (priv->plat->ext_snapshot_en)
++		return -EBUSY;
++
++	mutex_lock(&priv->aux_ts_lock);
+ 	/* Enable Internal snapshot trigger */
+ 	acr_value = readl(ptpaddr + PTP_ACR);
+ 	acr_value &= ~PTP_ACR_MASK;
+@@ -321,6 +328,8 @@ static int intel_crosststamp(ktime_t *device,
+ 	acr_value = readl(ptpaddr + PTP_ACR);
+ 	acr_value |= PTP_ACR_ATSFC;
+ 	writel(acr_value, ptpaddr + PTP_ACR);
++	/* Release the mutex */
++	mutex_unlock(&priv->aux_ts_lock);
+ 
+ 	/* Trigger Internal snapshot signal
+ 	 * Create a rising edge by just toggle the GPO1 to low
+@@ -520,6 +529,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
+ 
+ 	plat->int_snapshot_num = AUX_SNAPSHOT1;
++	plat->ext_snapshot_num = AUX_SNAPSHOT0;
+ 
+ 	plat->has_crossts = true;
+ 	plat->crosststamp = intel_crosststamp;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index 2b5022ef1e52..2cc91759b91f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -504,6 +504,8 @@ struct stmmac_ops {
+ #define stmmac_fpe_irq_status(__priv, __args...) \
+ 	stmmac_do_callback(__priv, mac, fpe_irq_status, __args)
+ 
++struct stmmac_priv;
++
+ /* PTP and HW Timer helpers */
+ struct stmmac_hwtimestamp {
+ 	void (*config_hw_tstamping) (void __iomem *ioaddr, u32 data);
+@@ -515,6 +517,7 @@ struct stmmac_hwtimestamp {
+ 			       int add_sub, int gmac4);
+ 	void (*get_systime) (void __iomem *ioaddr, u64 *systime);
+ 	void (*get_ptptime)(void __iomem *ioaddr, u64 *ptp_time);
++	void (*timestamp_interrupt)(struct stmmac_priv *priv);
+ };
+ 
+ #define stmmac_config_hw_tstamping(__priv, __args...) \
+@@ -531,6 +534,8 @@ struct stmmac_hwtimestamp {
+ 	stmmac_do_void_callback(__priv, ptp, get_systime, __args)
+ #define stmmac_get_ptptime(__priv, __args...) \
+ 	stmmac_do_void_callback(__priv, ptp, get_ptptime, __args)
++#define stmmac_timestamp_interrupt(__priv, __args...) \
++	stmmac_do_void_callback(__priv, ptp, timestamp_interrupt, __args)
+ 
+ /* Helpers to manage the descriptors for chain and ring modes */
+ struct stmmac_mode_ops {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index b8a42260066d..b6cd43eda7ac 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -250,6 +250,9 @@ struct stmmac_priv {
+ 	int use_riwt;
+ 	int irq_wake;
+ 	spinlock_t ptp_lock;
++	/* Protects auxiliary snapshot registers from concurrent access. */
++	struct mutex aux_ts_lock;
++
+ 	void __iomem *mmcaddr;
+ 	void __iomem *ptpaddr;
+ 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+index 113c51bcc0b5..074e2cdfb0fa 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
+@@ -12,8 +12,11 @@
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/delay.h>
++#include <linux/ptp_clock_kernel.h>
+ #include "common.h"
+ #include "stmmac_ptp.h"
++#include "dwmac4.h"
++#include "stmmac.h"
+ 
+ static void config_hw_tstamping(void __iomem *ioaddr, u32 data)
+ {
+@@ -163,6 +166,41 @@ static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
+ 	*ptp_time = ns;
+ }
+ 
++static void timestamp_interrupt(struct stmmac_priv *priv)
++{
++	u32 num_snapshot, ts_status, tsync_int;
++	struct ptp_clock_event event;
++	unsigned long flags;
++	u64 ptp_time;
++	int i;
++
++	tsync_int = readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE;
++
++	if (!tsync_int)
++		return;
++
++	/* Read timestamp status to clear interrupt from either external
++	 * timestamp or start/end of PPS.
++	 */
++	ts_status = readl(priv->ioaddr + GMAC_TIMESTAMP_STATUS);
++
++	if (!priv->plat->ext_snapshot_en)
++		return;
++
++	num_snapshot = (ts_status & GMAC_TIMESTAMP_ATSNS_MASK) >>
++		       GMAC_TIMESTAMP_ATSNS_SHIFT;
++
++	for (i = 0; i < num_snapshot; i++) {
++		spin_lock_irqsave(&priv->ptp_lock, flags);
++		get_ptptime(priv->ptpaddr, &ptp_time);
++		spin_unlock_irqrestore(&priv->ptp_lock, flags);
++		event.type = PTP_CLOCK_EXTTS;
++		event.index = 0;
++		event.timestamp = ptp_time;
++		ptp_clock_event(priv->ptp_clock, &event);
++	}
++}
++
+ const struct stmmac_hwtimestamp stmmac_ptp = {
+ 	.config_hw_tstamping = config_hw_tstamping,
+ 	.init_systime = init_systime,
+@@ -171,4 +209,5 @@ const struct stmmac_hwtimestamp stmmac_ptp = {
+ 	.adjust_systime = adjust_systime,
+ 	.get_systime = get_systime,
+ 	.get_ptptime = get_ptptime,
++	.timestamp_interrupt = timestamp_interrupt,
+ };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index e3e22200a4fd..3a5ca5833ce1 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5687,6 +5687,8 @@ static void stmmac_common_interrupt(struct stmmac_priv *priv)
+ 			else
+ 				netif_carrier_off(priv->dev);
+ 		}
++
++		stmmac_timestamp_interrupt(priv, priv);
+ 	}
+ }
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index b164ae22e35f..4e86cdf2bc9f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -135,7 +135,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
+ {
+ 	struct stmmac_priv *priv =
+ 	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
++	void __iomem *ptpaddr = priv->ptpaddr;
++	void __iomem *ioaddr = priv->hw->pcsr;
+ 	struct stmmac_pps_cfg *cfg;
++	u32 intr_value, acr_value;
+ 	int ret = -EOPNOTSUPP;
+ 	unsigned long flags;
+ 
+@@ -159,6 +162,37 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
+ 					     priv->systime_flags);
+ 		spin_unlock_irqrestore(&priv->ptp_lock, flags);
+ 		break;
++	case PTP_CLK_REQ_EXTTS:
++		priv->plat->ext_snapshot_en = on;
++		mutex_lock(&priv->aux_ts_lock);
++		acr_value = readl(ptpaddr + PTP_ACR);
++		acr_value &= ~PTP_ACR_MASK;
++		if (on) {
++			/* Enable External snapshot trigger */
++			acr_value |= priv->plat->ext_snapshot_num;
++			acr_value |= PTP_ACR_ATSFC;
++			netdev_dbg(priv->dev, "Auxiliary Snapshot %d enabled.\n",
++				   priv->plat->ext_snapshot_num >>
++				   PTP_ACR_ATSEN_SHIFT);
++			/* Enable Timestamp Interrupt */
++			intr_value = readl(ioaddr + GMAC_INT_EN);
++			intr_value |= GMAC_INT_TSIE;
++			writel(intr_value, ioaddr + GMAC_INT_EN);
++
++		} else {
++			netdev_dbg(priv->dev, "Auxiliary Snapshot %d disabled.\n",
++				   priv->plat->ext_snapshot_num >>
++				   PTP_ACR_ATSEN_SHIFT);
++			/* Disable Timestamp Interrupt */
++			intr_value = readl(ioaddr + GMAC_INT_EN);
++			intr_value &= ~GMAC_INT_TSIE;
++			writel(intr_value, ioaddr + GMAC_INT_EN);
++		}
++		writel(acr_value, ptpaddr + PTP_ACR);
++		mutex_unlock(&priv->aux_ts_lock);
++		ret = 0;
++		break;
++
+ 	default:
+ 		break;
+ 	}
+@@ -202,7 +236,7 @@ static struct ptp_clock_info stmmac_ptp_clock_ops = {
+ 	.name = "stmmac ptp",
+ 	.max_adj = 62500000,
+ 	.n_alarm = 0,
+-	.n_ext_ts = 0,
++	.n_ext_ts = 0, /* will be overwritten in stmmac_ptp_register */
+ 	.n_per_out = 0, /* will be overwritten in stmmac_ptp_register */
+ 	.n_pins = 0,
+ 	.pps = 0,
+@@ -237,8 +271,10 @@ void stmmac_ptp_register(struct stmmac_priv *priv)
+ 		stmmac_ptp_clock_ops.max_adj = priv->plat->ptp_max_adj;
+ 
+ 	stmmac_ptp_clock_ops.n_per_out = priv->dma_cap.pps_out_num;
++	stmmac_ptp_clock_ops.n_ext_ts = priv->dma_cap.aux_snapshot_n;
+ 
+ 	spin_lock_init(&priv->ptp_lock);
++	mutex_init(&priv->aux_ts_lock);
+ 	priv->ptp_clock_ops = stmmac_ptp_clock_ops;
+ 
+ 	priv->ptp_clock = ptp_clock_register(&priv->ptp_clock_ops,
+@@ -264,4 +300,6 @@ void stmmac_ptp_unregister(struct stmmac_priv *priv)
+ 		pr_debug("Removed PTP HW clock successfully on %s\n",
+ 			 priv->dev->name);
+ 	}
++
++	mutex_destroy(&priv->aux_ts_lock);
+ }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
+index f88727ce4d30..53172a439810 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.h
+@@ -73,6 +73,7 @@
+ #define	PTP_ACR_ATSEN1		BIT(5)	/* Auxiliary Snapshot 1 Enable */
+ #define	PTP_ACR_ATSEN2		BIT(6)	/* Auxiliary Snapshot 2 Enable */
+ #define	PTP_ACR_ATSEN3		BIT(7)	/* Auxiliary Snapshot 3 Enable */
++#define	PTP_ACR_ATSEN_SHIFT	5	/* Auxiliary Snapshot shift */
+ #define	PTP_ACR_MASK		GENMASK(7, 4)	/* Aux Snapshot Mask */
+ #define	PMC_ART_VALUE0		0x01	/* PMC_ART[15:0] timer value */
+ #define	PMC_ART_VALUE1		0x02	/* PMC_ART[31:16] timer value */
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index e338ef7abc00..97edb31d6310 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -238,6 +238,8 @@ struct plat_stmmacenet_data {
+ 	struct pci_dev *pdev;
+ 	bool has_crossts;
+ 	int int_snapshot_num;
++	int ext_snapshot_num;
++	bool ext_snapshot_en;
+ 	bool multi_msi_en;
+ 	int msi_mac_vec;
+ 	int msi_wol_vec;
+-- 
+2.25.1
+
