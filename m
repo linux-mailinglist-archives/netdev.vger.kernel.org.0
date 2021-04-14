@@ -2,92 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDD935F4AE
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 15:24:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C9035F4D6
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 15:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351249AbhDNNUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 09:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbhDNNUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 09:20:33 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EF7C061574;
-        Wed, 14 Apr 2021 06:20:12 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id g9so3830968wrx.0;
-        Wed, 14 Apr 2021 06:20:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0bIhqwWNYbt6GC/BDwzGF9VeJCYSVuIr4dNVR3W4qu4=;
-        b=RLqpk2TDhznv3HVhQAh/yRcKatVDxw5lYudoekV8tLzuGOYToMr6Szobqts5IhaT1/
-         qxh10Kv4xBSplRbvwTnjyoMAsAi6HuQLM7HGQCNYPkdlq6jdtSahCg4D9c4tvC5Wxcyj
-         Z2TvDa01ZqwkcNcZ7nkWy+mHFJQyh0m50Eeq2aAiTo26EMQpVRQp/7DwYt+dlTO1CNnA
-         dX1XGFpEQiHZLotKVlCXfLTvoXJqaqMrLXuZQL5SLMtQJgmz1UbP+h++34ZiMqnaE45F
-         sSzj9KwoK2UTqo6UOd0YPrWGUjVM0Du1xdNpYIc+7u4BFPfyhhMs3bnejVw7SEIdpAsn
-         7DBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0bIhqwWNYbt6GC/BDwzGF9VeJCYSVuIr4dNVR3W4qu4=;
-        b=oKPf1xMtCKx4FxVZvn32vIrr/k5mTnTq25iWKgD3aLtFX6CKFSWZTbZbuNtZE6TEVH
-         Ww7lMIeLQr03me+xfwREc8H3LcKrOLxs/9QNEqSSjcxTBxdVRoqWAQeNDt6yK0znBL6A
-         3rLGAVv/Trlszn8HWur06psA9gpTGojgc4v9zUv8dYN/JGBgeMUrpNQVulnG8RFtMKkI
-         fgwcUGHliJ1+NqlAusT9gNe/vzhf3JUwce1lbfNJKeK3ad+U2as/wmhrzngIGtFwxPeA
-         7BMjO4a0f6D294ta3hAmX89g0z5mFAfDZSQP+ZfVz8FC53tEjM9XJP+ORQB4Ht2QZZAS
-         4Qcw==
-X-Gm-Message-State: AOAM533xRR+cRp8xHx9TkLnL4nC+V1XVUbTHad/AM9ZmqwSXp1KI8k5E
-        CICzjAPQ++cknGIVJ/whDE29mcXbpjy+jzyhYkU=
-X-Google-Smtp-Source: ABdhPJxmJuvEpV8sgv2ZqRq2dUAwfJegUEE+z2dqxRneV2ErYGAytezOtr0nnRBQt1kDVVApl8JmywvGkps1tKZC2tY=
-X-Received: by 2002:a5d:590d:: with SMTP id v13mr10412881wrd.85.1618406410336;
- Wed, 14 Apr 2021 06:20:10 -0700 (PDT)
+        id S233344AbhDNNZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 09:25:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48530 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351349AbhDNNZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 09:25:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B7EB61132;
+        Wed, 14 Apr 2021 13:25:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618406705;
+        bh=KsfaSXwOVw8QET+rbrgc/Q2gfMGscvpWJQ5f6uP0bDI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Iks8ZnUzibOCOteCTqLQDc3sO5dWbVeFufkJSHTUyiuVNtcpRqRXS0SLs11jkHmkb
+         MM3xrtvIwsBTm4XeXa+KJBW5otpGgsXJdBf1PLWoFl6S+6jknNP+IEbgGHPls7OmuQ
+         kHZnazrVjYdMCTbHdbaTM5brZS9X3pnAGdhY44N6GEnw95SrMNdrMDcDwkciMq/Ps/
+         ffiJEXI7SmS/tWpFVde8yq8BhxsCkNgrrh030U5t5Z0HuTWY+1VXdnFLwC83BoOBOe
+         b0rnWYbgFPS4Xq0+Lz4Jqn8YGEFMv/iS7JktC43lK2k8yNa3ddhxjTHd2GzY/MAK3Z
+         GW8y9TNcG0/KA==
+Received: by mail-qt1-f181.google.com with SMTP id y2so15369137qtw.13;
+        Wed, 14 Apr 2021 06:25:05 -0700 (PDT)
+X-Gm-Message-State: AOAM532rKQpNZzGme299M/aVLuKhG/gFDtGPqldHy/7NodD/sBWr1Npy
+        CK4qHwXhAVtJtRDx2Xm4/3u3ldV/kEs8uFExLA==
+X-Google-Smtp-Source: ABdhPJwJA1ciQB+OakY6pTjV36EpJWrGm4YT0HjQNhSLoyqhAQXeNhsuTJc+12R0uWC9xI3XPGMST7pxg0owMnX4v58=
+X-Received: by 2002:a05:622a:8:: with SMTP id x8mr26156855qtw.31.1618406704544;
+ Wed, 14 Apr 2021 06:25:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210409003904.8957-1-TheSven73@gmail.com> <0bf00feb-a588-12e1-d606-4a5d7d45e0b3@linux.ibm.com>
-In-Reply-To: <0bf00feb-a588-12e1-d606-4a5d7d45e0b3@linux.ibm.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Wed, 14 Apr 2021 09:19:59 -0400
-Message-ID: <CAGngYiXyQEui8+OiVQXe1UeypQvny_hr=qtuOri7r2guxVDm9g@mail.gmail.com>
-Subject: Re: [PATCH net v1] lan743x: fix ethernet frame cutoff issue
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        David S Miller <davem@davemloft.net>,
+References: <20210409134056.18740-1-a-govindraju@ti.com> <20210409134056.18740-4-a-govindraju@ti.com>
+ <20210412175134.GA4109207@robh.at.kernel.org> <e1c2b752-5a2b-e973-c188-5916d8a2e31f@ti.com>
+In-Reply-To: <e1c2b752-5a2b-e973-c188-5916d8a2e31f@ti.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Wed, 14 Apr 2021 08:24:52 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJ6OW6Pwtj7yTiCguvXDPfMreVpEsxAg59pwfa2qWvqEA@mail.gmail.com>
+Message-ID: <CAL_JsqJ6OW6Pwtj7yTiCguvXDPfMreVpEsxAg59pwfa2qWvqEA@mail.gmail.com>
+Subject: Re: [PATCH 3/4] dt-bindings: net: can: Document transceiver
+ implementation as phy
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        George McCollister <george.mccollister@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Vinod Koul <vkoul@kernel.org>,
+        Sriram Dash <sriram.dash@samsung.com>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-phy@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Julian,
-
-On Wed, Apr 14, 2021 at 8:53 AM Julian Wiedmann <jwi@linux.ibm.com> wrote:
+On Wed, Apr 14, 2021 at 1:49 AM Aswath Govindraju <a-govindraju@ti.com> wrote:
 >
-> On a cursory glance, using __netdev_alloc_skb_ip_align() here should
-> allow you to get rid of all the RX_HEAD_PADDING gymnastics.
+> Hi Rob,
 >
-> And also avoid the need for setting RX_CFG_B_RX_PAD_2_, as the
-> NET_IP_ALIGN part would no longer get dma-mapped.
+> On 12/04/21 11:21 pm, Rob Herring wrote:
+> > On Fri, Apr 09, 2021 at 07:10:53PM +0530, Aswath Govindraju wrote:
+> >> From: Faiz Abbas <faiz_abbas@ti.com>
+> >>
+> >> Some transceivers need a configuration step (for example, pulling the
+> >> standby or enable lines) for them to start sending messages. The
+> >> transceiver can be implemented as a phy with the configuration done in the
+> >> phy driver. The bit rate limitation can the be obtained by the driver using
+> >> the phy node.
+> >>
+> >> Document the above implementation in the bosch mcan bindings
+> >>
+> >> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
+> >> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> >> ---
+> >>  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml | 6 ++++++
+> >>  1 file changed, 6 insertions(+)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> >> index 798fa5fb7bb2..2c01899b1a3e 100644
+> >> --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> >> +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> >> @@ -109,6 +109,12 @@ properties:
+> >>    can-transceiver:
+> >>      $ref: can-transceiver.yaml#
+> >>
+> >> +  phys:
+> >> +    minItems: 1
+> >
+> > maxItems: 1
+>
+> Will add this in the respin.
+>
+> >
+> >> +
+> >> +  phy-names:
+> >> +    const: can_transceiver
+> >
+> > Kind of a pointless name. You don't really need a name if there's a
+> > single entry.
+> >
+>
+> This name used by devm_phy_optional_get() in m_can driver to get the phy
+> data structure.
 
-That's an excellent suggestion, and I'll definitely keep that in mind
-for the future.
+With no name, you'll get the 1st one. Looks like the phy subsystem
+warns on this. That's wrong, so please fix that.
 
-In this case, I'm not sure if it could work. This NIC has multi-buffer
-frames. The dma-ed skbs represent frame fragments. A flag in the
-descriptor ring indicates if an skb is "first". If first, we can
-reserve the padding. Otherwise, we cannot. because that would corrupt
-a fragment in the middle. At the time of skb allocation, we do not
-know whether that skb will be "first".
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/microchip/lan743x_main.c?h=v5.12-rc7#n2125
-
-Maybe I'm missing a trick here? Feel free to suggest improvements,
-it's always much appreciated.
-
-Sven
+Rob
