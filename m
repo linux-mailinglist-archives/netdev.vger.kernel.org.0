@@ -2,121 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C44F535FC50
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F82E35FC57
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232735AbhDNUHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 16:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        id S233923AbhDNUKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 16:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbhDNUHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:07:35 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80589C061574
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:07:12 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id c2so3321002plz.0
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:07:12 -0700 (PDT)
+        with ESMTP id S231589AbhDNUKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:10:23 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7117AC061574
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:10:00 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id u4so24612645ljo.6
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:10:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=In6huv6Y9HCt6IEgW+jAUjzWZLosViGBVtLJdDO7NQI=;
-        b=E6UJNk+xklDwv6KHS3uu2PLcPkqMEktiMgU9hERXpQZGeRenngpLUNRG8c4hHPU8FJ
-         WpLqS4WmEdS3wN5ooiLqa+sOdlbIrI8a7GYI973aCekWj07JyP4IcU1Z/SIlbZZ+l2Jc
-         rBUnyF9mirXP9H4Nj74gHy6egQHP//FFqHRKcl7re7DYjYUbTFBgsKd4IIq9DqnMnF4W
-         3MrtdGDUP1Ev2tDEqv92YMxOqgEjWi4+bBhYbqlhad0tcrlprRFqznJYGCGMgeHzdKn7
-         3hoL8I0BAs3Ojj08LIWeUPePLyjGTRCSV9ps/dOG+ZaPPsaswAQ12qGYtRSsmS0CTNVb
-         KT1Q==
+         :cc;
+        bh=MwY/uAWZw4+Qy6L6BtNeYzKjt04mgG0Fmf5rVKjnxzQ=;
+        b=ap3ig7KYnUhag1Gtyu8ju+wZN22X7hJAeGqlif08J6E2FDFZMStFf0J+i5MbXtUumS
+         IzvuAZFclh341ng8JxtdEr2qW9XrlIZXWpjDZb+qgeWbwxE6vWjjGEB/geNPjXxIQclW
+         dFI4IOTCs3fPKR1aHOm/iysJwoR+8kqUtA8mHyxoGySRQcfS+VCb+rZZM7/xiyt/HPID
+         YrSMrjX8rYbjzs5DbiCl29ZXCTZgvVac75YJkITMzGqfEU5saeopAsgC9TvzTPv5274g
+         cWQSom8PzYIEavCa1VDFHlyvioElMYcPnc9kDFdKK4GiYGWLDyOfnxPxwWSmPE8IQGU+
+         dUvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=In6huv6Y9HCt6IEgW+jAUjzWZLosViGBVtLJdDO7NQI=;
-        b=uGakWDFQidQGICwkVt5eVJ1/DoKhG2Bj2A24N+GBAb6ezgyc2hurnkWbmmLTjwHsVI
-         S9HMrnBes4as77FDJI8nfVzvLC4T7XlQhqRQ4U+6F42x/LSxt26aXI4M9omsoYwvkvsR
-         uXn4AG5pd4f3j0NGj/I18hYWiHHg+FIjnp05qxIV8Vu4QAsUal16PHLm/d4GRzm3BKSJ
-         UbEE+B1H7R/Xm5bY5TO3j2/KP6fjHYTaUO30SGezBeZnMoEH5MlpbvmalkdTJHZuOGPe
-         SzF8rT6pDJ3hlRtygtevXPFynlHWkWhpc4x3UWlDY1GJkwc39cFn07EAQyS3Rsj8Aw6I
-         JhSg==
-X-Gm-Message-State: AOAM531vqUQL9Ab4K8XneSm1gY6bWPLtVTuAg3kkFnMCEtE0TH6qThVm
-        vTDssA6+SBNk8tYKPoqogEVD8rn3u5RO1s3TZyk=
-X-Google-Smtp-Source: ABdhPJzRXtXeDcKnQ85ali1CLqKtfp/Yu1PFqqAVhVGq/MBPHGN2wad9SsTqMtQy5qbCeLB/c8MSMdQP1QkwmObsGWE=
-X-Received: by 2002:a17:902:c407:b029:e7:3568:9604 with SMTP id
- k7-20020a170902c407b02900e735689604mr39227222plk.31.1618430832147; Wed, 14
- Apr 2021 13:07:12 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=MwY/uAWZw4+Qy6L6BtNeYzKjt04mgG0Fmf5rVKjnxzQ=;
+        b=Bwo5rKWyEyrZ8qBUP7GAuoIolbCmQWC5jmGJbqy4dsgJnpwYK7g+vyqn9DHJ/j5u9Q
+         F1+DNoKktNBualhnw4Hf+KWdyywDLt7Zg77a1D2BTb+qIB4LNcxZ+t/bdRrb1aPExngJ
+         usyge5LmF9nZqcy/tErIG4proUxiBOTAklAc4/pXjVouzc7mnr53ld5NScJUEfPxiI5V
+         qvfyzpWWwf5Mx/dXO6FcVtyokIEprGyDdfXPFoTI2guFvm9rU/qD5/Mf6TEMFewbInvW
+         zv6lldWuoJsltz5UWawTDxsjiwS139LceDz4RBd2OP7DyUyPDqjvojlclA3MJL8U+sQA
+         NxyA==
+X-Gm-Message-State: AOAM5337jWY35P5ilh2tHtEloOd2ogvw6pCu420tTzlhPsH86k3hl3XO
+        GsetwNi6MLhhORsGTFHVJTQOUhfokw7/tUosEgtK6g==
+X-Google-Smtp-Source: ABdhPJyGzh1aNLsj+H9I9o7DUJdlV5HTtBeAeDM8vjbeZYpt4QAwg2dIXYbLUIkqdF+ZPGeN9DUBYbygk+wOkt8Am2g=
+X-Received: by 2002:a2e:8084:: with SMTP id i4mr25644098ljg.122.1618430998695;
+ Wed, 14 Apr 2021 13:09:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <400E2FE1-A1E7-43EE-9ABA-41C65601C6EB@purdue.edu>
-In-Reply-To: <400E2FE1-A1E7-43EE-9ABA-41C65601C6EB@purdue.edu>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 14 Apr 2021 13:07:01 -0700
-Message-ID: <CAM_iQpWs+T+ps3N7XD2s3YWrqAbQ0zqO_pmFpiFOG5y84Nku0Q@mail.gmail.com>
-Subject: Re: A concurrency bug between l2tp_tunnel_register() and l2tp_xmit_core()
-To:     "Gong, Sishuai" <sishuai@purdue.edu>
-Cc:     "jchapman@katalix.com" <jchapman@katalix.com>,
-        "tparkin@katalix.com" <tparkin@katalix.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20210409223801.104657-1-mcroce@linux.microsoft.com>
+ <20210409223801.104657-3-mcroce@linux.microsoft.com> <20210410154824.GZ2531743@casper.infradead.org>
+ <YHHPbQm2pn2ysth0@enceladus> <CALvZod7UUxTavexGCzbKaK41LAW7mkfQrnDhFbjo-KvH9P6KsQ@mail.gmail.com>
+ <YHHuE7g73mZNrMV4@enceladus> <20210414214132.74f721dd@carbon>
+In-Reply-To: <20210414214132.74f721dd@carbon>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Wed, 14 Apr 2021 13:09:47 -0700
+Message-ID: <CALvZod4F8kCQQcK5_3YH=7keqkgY-97g+_OLoDCN7uNJdd61xA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/5] mm: add a signature in struct page
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
+        Will Deacon <will@kernel.org>,
+        Michel Lespinasse <walken@google.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Hugh Dickins <hughd@google.com>,
+        Peter Xu <peterx@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Cong Wang <cong.wang@bytedance.com>, wenxu <wenxu@ucloud.cn>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 13, 2021 at 3:10 PM Gong, Sishuai <sishuai@purdue.edu> wrote:
+On Wed, Apr 14, 2021 at 12:42 PM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
 >
-> Hi,
+[...]
+> > >
+> > > Can this page_pool be used for TCP RX zerocopy? If yes then PageType
+> > > can not be used.
+> >
+> > Yes it can, since it's going to be used as your default allocator for
+> > payloads, which might end up on an SKB.
 >
-> We found a concurrency bug in linux 5.12-rc3 and we are able to reproduce=
- it under x86. This bug happens when two l2tp functions l2tp_tunnel_registe=
-r() and l2tp_xmit_core() are running in parallel. In general, l2tp_tunnel_r=
-egister() registered a tunnel that hasn=E2=80=99t been fully initialized an=
-d then l2tp_xmit_core() tries to access an uninitialized attribute. The int=
-erleaving is shown below..
+> I'm not sure we want or should "allow" page_pool be used for TCP RX
+> zerocopy.
+> For several reasons.
 >
-> ------------------------------------------
-> Execution interleaving
+> (1) This implies mapping these pages page to userspace, which AFAIK
+> means using page->mapping and page->index members (right?).
 >
-> Thread 1                                                                 =
-                               Thread 2
->
-> l2tp_tunnel_register()
->         spin_lock_bh(&pn->l2tp_tunnel_list_lock);
->                 =E2=80=A6
->                 list_add_rcu(&tunnel->list, &pn->l2tp_tunnel_list);
->                 // tunnel becomes visible
->         spin_unlock_bh(&pn->l2tp_tunnel_list_lock);
->                                                                          =
-                               pppol2tp_connect()
->                                                                          =
-                                       =E2=80=A6
->                                                                          =
-                                       tunnel =3D l2tp_tunnel_get(sock_net(=
-sk), info.tunnel_id);
->                                                                          =
-                                       // Successfully get the new tunnel
->                                                                          =
-                               =E2=80=A6
->                                                                          =
-                               l2tp_xmit_core()
->                                                                          =
-                                       struct sock *sk =3D tunnel->sock;
->                                                                          =
-                                       // uninitialized, sk=3D0
->                                                                          =
-                                       =E2=80=A6
->                                                                          =
-                                       bh_lock_sock(sk);
->                                                                          =
-                                       // Null-pointer exception happens
->         =E2=80=A6
->         tunnel->sock =3D sk;
->
-> ------------------------------------------
-> Impact & fix
->
-> This bug causes a kernel NULL pointer deference error, as attached below.=
- Currently, we think a potential fix is to initialize tunnel->sock before a=
-dding the tunnel into l2tp_tunnel_list.
 
-I think this is the right fix. Please submit a patch formally.
+No, only page->_mapcount is used.
 
-Thanks.
+> (2) It feels wrong (security wise) to keep the DMA-mapping (for the
+> device) and also map this page into userspace.
+>
+
+I think this is already the case i.e pages still DMA-mapped and also
+mapped into userspace.
+
+> (3) The page_pool is optimized for refcnt==1 case, and AFAIK TCP-RX
+> zerocopy will bump the refcnt, which means the page_pool will not
+> recycle the page when it see the elevated refcnt (it will instead
+> release its DMA-mapping).
+
+Yes this is right but the userspace might have already consumed and
+unmapped the page before the driver considers to recycle the page.
+
+>
+> (4) I remember vaguely that this code path for (TCP RX zerocopy) uses
+> page->private for tricks.  And our patch [3/5] use page->private for
+> storing xdp_mem_info.
+>
+> IMHO when the SKB travel into this TCP RX zerocopy code path, we should
+> call page_pool_release_page() to release its DMA-mapping.
+>
+
+I will let TCP RX zerocopy experts respond to this but from my high
+level code inspection, I didn't see page->private usage.
