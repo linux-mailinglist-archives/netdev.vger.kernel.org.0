@@ -2,86 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B202535F913
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01C7235F92A
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:48:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234053AbhDNQkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 12:40:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50928 "EHLO vps0.lunn.ch"
+        id S1352796AbhDNQmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 12:42:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234251AbhDNQit (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 12:38:49 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lWiWr-00GisB-N9; Wed, 14 Apr 2021 18:38:13 +0200
-Date:   Wed, 14 Apr 2021 18:38:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-omap@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH net-next 2/2] net: bridge: switchdev: include local flag
- in FDB notifications
-Message-ID: <YHcadT4XhBq7g61Y@lunn.ch>
-References: <20210414151540.1808871-1-olteanv@gmail.com>
- <20210414151540.1808871-2-olteanv@gmail.com>
- <YHcRNIgI9lVs6MDj@lunn.ch>
- <20210414160510.zcif6liazjltd2cz@skbuf>
+        id S231918AbhDNQmx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 12:42:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C6CB961153;
+        Wed, 14 Apr 2021 16:42:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1618418552;
+        bh=keftbxasv+LlIBHJ83fZlJ3OQDTLXDcZSWTeakEM8yo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DdbQ4zESblVTy3KSkLAZZ04Rfrd0kM5/yME0fqdrSzrAK1JWX549KX+QJeTKIPHH/
+         5gux+Rp/EJ9nMzohJ7FqQngzwMHxFhg4ZSjpDhJoAOVpGzkCN6GM43637QYqyzzwSA
+         H325mRbo/Vx0Mp6t8BGSwWgsZ5UKHAUPecX1JZ45QNSh2OSq5TWg1bzL+bzCH2guY9
+         auzy3SlTXicak58rrWA8bztDOwj31p2arzPBmWyv+btj7VUTIxuGxUPLxs3UgJePAk
+         moFPwRsYF2ZazjWrzRsXfL6AbVCH1tKNDXIVD4ux2J9dK+ncRrMUEpCA1Tg9ghdVch
+         uTURUBlbypu6g==
+Date:   Wed, 14 Apr 2021 09:42:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        <linuxarm@huawei.com>, Guangbin Huang <huangguangbin2@huawei.com>
+Subject: Re: [PATCH net-next 1/2] net: hns3: PF add support for pushing link
+ status to VFs
+Message-ID: <20210414094230.64caf43e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2dac0fe0-cdcb-a3c5-0c72-7873857824fd@huawei.com>
+References: <1618294621-41356-1-git-send-email-tanhuazhong@huawei.com>
+        <1618294621-41356-2-git-send-email-tanhuazhong@huawei.com>
+        <20210413101826.103b25fc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <2dac0fe0-cdcb-a3c5-0c72-7873857824fd@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210414160510.zcif6liazjltd2cz@skbuf>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 14, 2021 at 07:05:10PM +0300, Vladimir Oltean wrote:
-> On Wed, Apr 14, 2021 at 05:58:44PM +0200, Andrew Lunn wrote:
-> > > Let us now add the 'is_local' bit to bridge FDB entries, and make all
-> > > drivers ignore these entries by their own choice.
-> > 
-> > Hi Vladimir
-> > 
-> > This goes to the question about the missing cover letter. Why should
-> > drivers get to ignore them, rather than the core? It feels like there
-> > should be another patch in the series, where a driver does not
-> > actually ignore them, but does something?
+On Wed, 14 Apr 2021 09:51:38 +0800 Huazhong Tan wrote:
+> On 2021/4/14 1:18, Jakub Kicinski wrote:
+> > On Tue, 13 Apr 2021 14:17:00 +0800 Huazhong Tan wrote:  
+> >> +static void hclge_push_link_status(struct hclge_dev *hdev)
+> >> +{
+> >> +	struct hclge_vport *vport;
+> >> +	int ret;
+> >> +	u16 i;
+> >> +
+> >> +	for (i = 0; i < pci_num_vf(hdev->pdev); i++) {
+> >> +		vport = &hdev->vport[i + HCLGE_VF_VPORT_START_NUM];
+> >> +
+> >> +		if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state) ||
+> >> +		    vport->vf_info.link_state != IFLA_VF_LINK_STATE_AUTO)
+> >> +			continue;
+> >> +
+> >> +		ret = hclge_push_vf_link_status(vport);
+> >> +		if (ret) {
+> >> +			dev_err(&hdev->pdev->dev,
+> >> +				"failed to push link status to vf%u, ret = %d\n",
+> >> +				i, ret);  
+> > Isn't this error printed twice? Here and...  
 > 
-> Hi Andrew,
-> 
-> Bridge fdb entries with the is_local flag are entries which are
-> terminated locally and not forwarded. Switchdev drivers might want to be
-> notified of these addresses so they can trap them (otherwise, if they
-> don't program these entries to hardware, there is no guarantee that they
-> will do the right thing with these entries, and they won't be, let's
-> say, flooded). Of course, ideally none of the switchdev drivers should
-> ignore them, but having access to the is_local bit is the bare minimum
-> change that should be done in the bridge layer, before this is even
-> possible.
-> 
-> These 2 changes are actually part of a larger group of changes that
-> together form the "RX filtering for DSA" series. I haven't had a lot of
-> success with that, so I thought a better approach would be to take it
-> step by step. DSA will need to be notified of local FDB entries. For
-> now, it ignores them like everybody else. This is supposed to be a
-> non-functional patch series because I don't want to spam every switchdev
-> maintainer with 15+ DSA RX filtering patches.
+> They are in different contexts. here will be called to
+> update the link status of all VFs when the underlying
+> link status is changed, while the below one is called
+> when the admin set up the specific VF link status.
 
-This is the sort of information which goes into 0/2. It explains the
-big picture 'Why' of the change.
-
-    Andrew
+I see.
