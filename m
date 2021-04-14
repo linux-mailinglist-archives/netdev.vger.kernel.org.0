@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D626A35F5DF
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:14:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 782A535F5E1
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351791AbhDNOGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 10:06:41 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:33046 "EHLO
+        id S1351801AbhDNOGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:06:43 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:33082 "EHLO
         fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349092AbhDNOGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:06:18 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5f8w049791;
-        Wed, 14 Apr 2021 09:05:41 -0500
+        with ESMTP id S1351708AbhDNOGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:06:24 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5k0T049811;
+        Wed, 14 Apr 2021 09:05:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618409141;
-        bh=SbyTJ4nrIzPbNTHEIea0gu+NlxpkXKwgFDRim/hhn7g=;
+        s=ti-com-17Q1; t=1618409146;
+        bh=MyRY0I0AP/JRXTyKWjX42i1P5KYkv5TknwTcfufbT7U=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=xj6v6yYGGZt1t29Qk0f0qFccFV3/eNAcJejciXGwZ98AcnPtDvjo5DLOROMnfnoux
-         KPe7U/dksJlZCtyCMcEkEf9PVYtQ4YkF3odqIMLPgkfSL9wSFNV0rTxEFqEEPYEHbe
-         NzXbedYSLcus8DlNbWlDlfAsXAAx9w9XSTr9f9sM=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13EE5fFE057032
+        b=j3aADMi1VsVshacoEAhR+YfZ8wS+QSPGAUkickG8cHsDQNawwLzuxM2igvgfqyLrF
+         jrycGeFam4BsCT2sj5o9CMu/scAdg5U0C2aXAEpl0V6se3YfOOeDUuG6A31/vZFm5p
+         tUG45+WXT/g2VACOyE9tO1mQTdOu7U69VizzYM8M=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13EE5kNx119677
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 14 Apr 2021 09:05:41 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 14 Apr 2021 09:05:46 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 14
- Apr 2021 09:05:41 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ Apr 2021 09:05:46 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Wed, 14 Apr 2021 09:05:41 -0500
+ Frontend Transport; Wed, 14 Apr 2021 09:05:46 -0500
 Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5LuB074247;
-        Wed, 14 Apr 2021 09:05:36 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5LuC074247;
+        Wed, 14 Apr 2021 09:05:41 -0500
 From:   Aswath Govindraju <a-govindraju@ti.com>
 CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-phy@lists.infradead.org>,
@@ -51,9 +51,9 @@ CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Lokesh Vutla <lokeshvutla@ti.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH v2 3/6] dt-bindings: phy: Add binding for TI TCAN104x CAN transceivers
-Date:   Wed, 14 Apr 2021 19:35:18 +0530
-Message-ID: <20210414140521.11463-4-a-govindraju@ti.com>
+Subject: [PATCH v2 4/6] phy: phy-can-transceiver: Add support for generic CAN transceiver driver
+Date:   Wed, 14 Apr 2021 19:35:19 +0530
+Message-ID: <20210414140521.11463-5-a-govindraju@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210414140521.11463-1-a-govindraju@ti.com>
 References: <20210414140521.11463-1-a-govindraju@ti.com>
@@ -65,89 +65,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding documentation for TI TCAN104x CAN transceivers.
+The driver adds support for generic CAN transceivers. Currently
+the modes supported by this driver are standby and normal modes for TI
+TCAN1042 and TCAN1043 CAN transceivers.
+
+The transceiver is modelled as a phy with pins controlled by gpios, to put
+the transceiver in various device functional modes. It also gets the phy
+attribute max_link_rate for the usage of CAN drivers.
 
 Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- .../bindings/phy/ti,tcan104x-can.yaml         | 56 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 57 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+ MAINTAINERS                       |   1 +
+ drivers/phy/Kconfig               |   9 ++
+ drivers/phy/Makefile              |   1 +
+ drivers/phy/phy-can-transceiver.c | 146 ++++++++++++++++++++++++++++++
+ 4 files changed, 157 insertions(+)
+ create mode 100644 drivers/phy/phy-can-transceiver.c
 
-diff --git a/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
-new file mode 100644
-index 000000000000..4abfc30a97d0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/phy/ti,tcan104x-can.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: TCAN104x CAN TRANSCEIVER PHY
-+
-+maintainers:
-+  - Aswath Govindraju <a-govindraju@ti.com>
-+
-+properties:
-+  $nodename:
-+    pattern: "^tcan104x-phy"
-+
-+  compatible:
-+    enum:
-+      - ti,tcan1042
-+      - ti,tcan1043
-+
-+  '#phy-cells':
-+    const: 0
-+
-+  standby-gpios:
-+    description:
-+      gpio node to toggle standby signal on transceiver
-+    maxItems: 1
-+
-+  enable-gpios:
-+    description:
-+      gpio node to toggle enable signal on transceiver
-+    maxItems: 1
-+
-+  max-bitrate:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      max bit rate supported in bps
-+    minimum: 1
-+
-+required:
-+  - compatible
-+  - '#phy-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    transceiver1: tcan104x-phy {
-+      compatible = "ti,tcan1043";
-+      #phy-cells = <0>;
-+      max-bitrate = <5000000>;
-+      standby-gpios = <&wakeup_gpio1 16 GPIO_ACTIVE_LOW>;
-+      enable-gpios = <&main_gpio1 67 GPIO_ACTIVE_LOW>;
-+    };
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 84ef96a444c3..e666d33af10d 100644
+index e666d33af10d..70e1438c372d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -4046,6 +4046,7 @@ W:	https://github.com/linux-can
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git
+@@ -4047,6 +4047,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git
  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git
  F:	Documentation/devicetree/bindings/net/can/
-+F:	Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+ F:	Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
++F:	drivers/phy/phy-can-transceiver.c
  F:	drivers/net/can/
  F:	include/linux/can/bittiming.h
  F:	include/linux/can/dev.h
+diff --git a/drivers/phy/Kconfig b/drivers/phy/Kconfig
+index 54c1f2f0985f..51902b629fc6 100644
+--- a/drivers/phy/Kconfig
++++ b/drivers/phy/Kconfig
+@@ -61,6 +61,15 @@ config USB_LGM_PHY
+ 	  interface to interact with USB GEN-II and USB 3.x PHY that is part
+ 	  of the Intel network SOC.
+ 
++config PHY_CAN_TRANSCEIVER
++	tristate "CAN transceiver PHY"
++	select GENERIC_PHY
++	help
++	  This option enables support for CAN transceivers as a PHY. This
++	  driver provides function for putting the transceivers in various
++	  functional modes using gpios and sets the attribute max link
++	  rate, for mcan drivers.
++
+ source "drivers/phy/allwinner/Kconfig"
+ source "drivers/phy/amlogic/Kconfig"
+ source "drivers/phy/broadcom/Kconfig"
+diff --git a/drivers/phy/Makefile b/drivers/phy/Makefile
+index adac1b1a39d1..9c66101c9605 100644
+--- a/drivers/phy/Makefile
++++ b/drivers/phy/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_PHY_LPC18XX_USB_OTG)	+= phy-lpc18xx-usb-otg.o
+ obj-$(CONFIG_PHY_XGENE)			+= phy-xgene.o
+ obj-$(CONFIG_PHY_PISTACHIO_USB)		+= phy-pistachio-usb.o
+ obj-$(CONFIG_USB_LGM_PHY)		+= phy-lgm-usb.o
++obj-$(CONFIG_PHY_CAN_TRANSCEIVER)	+= phy-can-transceiver.o
+ obj-y					+= allwinner/	\
+ 					   amlogic/	\
+ 					   broadcom/	\
+diff --git a/drivers/phy/phy-can-transceiver.c b/drivers/phy/phy-can-transceiver.c
+new file mode 100644
+index 000000000000..f2976c1f4d0f
+--- /dev/null
++++ b/drivers/phy/phy-can-transceiver.c
+@@ -0,0 +1,146 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * phy-can-transceiver.c - phy driver for CAN transceivers
++ *
++ * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com
++ *
++ */
++#include<linux/phy/phy.h>
++#include<linux/platform_device.h>
++#include<linux/module.h>
++#include<linux/gpio.h>
++#include<linux/gpio/consumer.h>
++
++struct can_transceiver_data {
++	u32 flags;
++#define CAN_TRANSCEIVER_STB_PRESENT	BIT(0)
++#define CAN_TRANSCEIVER_EN_PRESENT	BIT(1)
++};
++
++struct can_transceiver_phy {
++	struct phy *generic_phy;
++	struct gpio_desc *standby_gpio;
++	struct gpio_desc *enable_gpio;
++};
++
++/* Power on function */
++static int can_transceiver_phy_power_on(struct phy *phy)
++{
++	struct can_transceiver_phy *can_transceiver_phy = phy_get_drvdata(phy);
++
++	if (can_transceiver_phy->standby_gpio)
++		gpiod_set_value_cansleep(can_transceiver_phy->standby_gpio, 0);
++	if (can_transceiver_phy->enable_gpio)
++		gpiod_set_value_cansleep(can_transceiver_phy->enable_gpio, 1);
++
++	return 0;
++}
++
++/* Power off function */
++static int can_transceiver_phy_power_off(struct phy *phy)
++{
++	struct can_transceiver_phy *can_transceiver_phy = phy_get_drvdata(phy);
++
++	if (can_transceiver_phy->standby_gpio)
++		gpiod_set_value_cansleep(can_transceiver_phy->standby_gpio, 1);
++	if (can_transceiver_phy->enable_gpio)
++		gpiod_set_value_cansleep(can_transceiver_phy->enable_gpio, 0);
++
++	return 0;
++}
++
++static const struct phy_ops can_transceiver_phy_ops = {
++	.power_on	= can_transceiver_phy_power_on,
++	.power_off	= can_transceiver_phy_power_off,
++	.owner		= THIS_MODULE,
++};
++
++static const struct can_transceiver_data tcan1042_drvdata = {
++	.flags = CAN_TRANSCEIVER_STB_PRESENT,
++};
++
++static const struct can_transceiver_data tcan1043_drvdata = {
++	.flags = CAN_TRANSCEIVER_STB_PRESENT | CAN_TRANSCEIVER_EN_PRESENT,
++};
++
++static const struct of_device_id can_transceiver_phy_ids[] = {
++	{
++		.compatible = "ti,tcan1042",
++		.data = &tcan1042_drvdata
++	},
++	{
++		.compatible = "ti,tcan1043",
++		.data = &tcan1043_drvdata
++	},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, can_transceiver_phy_ids);
++
++int can_transceiver_phy_probe(struct platform_device *pdev)
++{
++	struct phy_provider *phy_provider;
++	struct device *dev = &pdev->dev;
++	struct can_transceiver_phy *can_transceiver_phy;
++	const struct can_transceiver_data *drvdata;
++	const struct of_device_id *match;
++	struct phy *phy;
++	struct gpio_desc *standby_gpio;
++	struct gpio_desc *enable_gpio;
++	u32 max_bitrate = 0;
++
++	can_transceiver_phy = devm_kzalloc(dev, sizeof(struct can_transceiver_phy), GFP_KERNEL);
++	if (!can_transceiver_phy)
++		return -ENOMEM;
++
++	match = of_match_node(can_transceiver_phy_ids, pdev->dev.of_node);
++	drvdata = match->data;
++
++	phy = devm_phy_create(dev, dev->of_node,
++			      &can_transceiver_phy_ops);
++	if (IS_ERR(phy)) {
++		dev_err(dev, "failed to create can transceiver phy\n");
++		return PTR_ERR(phy);
++	}
++
++	device_property_read_u32(dev, "max-bitrate", &max_bitrate);
++	if (!max_bitrate)
++		dev_warn(dev, "Invalid value for transceiver max bitrate. Ignoring bitrate limit\n");
++	phy->attrs.max_link_rate = max_bitrate;
++
++	can_transceiver_phy->generic_phy = phy;
++
++	if (drvdata->flags & CAN_TRANSCEIVER_STB_PRESENT) {
++		standby_gpio = devm_gpiod_get(dev, "standby", GPIOD_OUT_HIGH);
++		if (IS_ERR(standby_gpio))
++			return PTR_ERR(standby_gpio);
++		can_transceiver_phy->standby_gpio = standby_gpio;
++	}
++
++	if (drvdata->flags & CAN_TRANSCEIVER_EN_PRESENT) {
++		enable_gpio = devm_gpiod_get(dev, "enable", GPIOD_OUT_LOW);
++		if (IS_ERR(enable_gpio))
++			return PTR_ERR(enable_gpio);
++		can_transceiver_phy->enable_gpio = enable_gpio;
++	}
++
++	phy_set_drvdata(can_transceiver_phy->generic_phy, can_transceiver_phy);
++
++	phy_provider = devm_of_phy_provider_register(dev, of_phy_simple_xlate);
++
++	return PTR_ERR_OR_ZERO(phy_provider);
++}
++
++static struct platform_driver can_transceiver_phy_driver = {
++	.probe = can_transceiver_phy_probe,
++	.driver = {
++		.name = "can-transceiver-phy",
++		.of_match_table = can_transceiver_phy_ids,
++	},
++};
++
++module_platform_driver(can_transceiver_phy_driver);
++
++MODULE_AUTHOR("Faiz Abbas <faiz_abbas@ti.com>");
++MODULE_AUTHOR("Aswath Govindraju <a-govindraju@ti.com>");
++MODULE_DESCRIPTION("CAN TRANSCEIVER PHY driver");
++MODULE_LICENSE("GPL v2");
 -- 
 2.17.1
 
