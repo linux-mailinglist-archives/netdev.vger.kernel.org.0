@@ -2,202 +2,314 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 358F335FB64
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 21:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5579835FB9D
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 21:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349349AbhDNTN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 15:13:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60057 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234810AbhDNTN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 15:13:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618427616;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F6FTiB8UzDW4wKvTNKebl00UCwFSLpS/fkluHFZvJPI=;
-        b=LFCu0zgR5WmkUYI9SBSiZ8dQbh0fh+4Cold0XU9fqwZavcSL5jp3wuEufJ5aIiYj5QhpqZ
-        lM/u1Hw8O4pbyAzA/nOK9F6OUhv+Vnjpfe30RV1RCsYaQrCHKg7ZDIKuYUEt04s1ztR1OZ
-        CI1nw/uUZvU8elS1lqnh9daO0BQtmS0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-390-dEgJCfFYO6qLSVsI6D4wlQ-1; Wed, 14 Apr 2021 15:13:32 -0400
-X-MC-Unique: dEgJCfFYO6qLSVsI6D4wlQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F38BC6D241;
-        Wed, 14 Apr 2021 19:13:30 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 666961000324;
-        Wed, 14 Apr 2021 19:13:23 +0000 (UTC)
-Date:   Wed, 14 Apr 2021 21:13:22 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Matteo Croce <mcroce@linux.microsoft.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Christoph Hellwig <hch@lst.de>, brouer@redhat.com
-Subject: Re: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
-Message-ID: <20210414211322.3799afd4@carbon>
-In-Reply-To: <20210414115052.GS2531743@casper.infradead.org>
-References: <20210410205246.507048-1-willy@infradead.org>
-        <20210410205246.507048-2-willy@infradead.org>
-        <20210411114307.5087f958@carbon>
-        <20210411103318.GC2531743@casper.infradead.org>
-        <20210412011532.GG2531743@casper.infradead.org>
-        <20210414101044.19da09df@carbon>
-        <20210414115052.GS2531743@casper.infradead.org>
+        id S1353384AbhDNTXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 15:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353383AbhDNTXe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 15:23:34 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83970C06175F
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 12:23:12 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id t23so10771979pjy.3
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 12:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RLPXF9xKfpbiqRgKyhcZfQg0rMsF6YZg+XoQ99yqW+s=;
+        b=K5ix7wkUKvuO+6dtHTHcAxG2kvqSEBMgIbqGbNSUuJPBe37qLivHubSI2Jz2Is6qsA
+         jT1j+qGmzf2ClgY9YQGxE+d+lzmrQpGOnceIJSkJqBcSD+yeBp/QREbb8d2yJpwIM4yp
+         tEQcwT5SFBtSjuDgW9k6LRoN6LZ75pcQgtxteM4qLWyYiKQCiqIQib423OvpTaELbg0f
+         dLxmHQnChCdyLSvURnTsoTsIJKt/fC+mGwxs+oaGBb87ve4AJBGAV5Uf8U0hFKi1ZVvg
+         KKUm1ydCLJ5FobX9lmRSOHOO6ea4ifNGCh+8Ji0WikYzefa6PKeclWhXSIvYF1QX0Jq4
+         lTZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RLPXF9xKfpbiqRgKyhcZfQg0rMsF6YZg+XoQ99yqW+s=;
+        b=ZsXabB7+V1nj3n+PFFga9qFcmi4Vt/ufzAyhrWznMsdUEIPlXB+5zMhbqDEl5LCSou
+         rhJcPQa3bohOC9rlZPEDuN8fNeESZEo/+0sV032r/l8xM59PK5z+eZTPOwVBz2mq9COP
+         zjdVd/0VYUYgZ8qc0fdJYupsEqM0SVulrHxKqKD7iNSUeUivH4bvcZDFjZfM6+yJ9LdX
+         PA3eP7kIWnyF+Z5R71OE2tkvdx6kSyAQAlUkT+86CfPZY2JC0X1dAQg3p2n0o73+eElO
+         FmzBFhcRrDAEeDAJZQ8Gt8SO/zwHgUSMLG4rtGw8RkURk9+WV+AwgjVyQ75Zdz3wsCL0
+         /rbQ==
+X-Gm-Message-State: AOAM533YHrTa1CaBKZPFOj6Ei2ZYfgIGancqoRkuxsU5SXaSL88gJ2Zi
+        qFBvX9YYVh7fuWxYzvjHcsk=
+X-Google-Smtp-Source: ABdhPJyZwHFl//rRaxGZWDAjFPJGoNGFbbLGHzWi1HVNUZkUzhM1Ilfm72kX+8Xz0wU8Q4WtaF53ig==
+X-Received: by 2002:a17:90a:e50d:: with SMTP id t13mr5176545pjy.160.1618428192001;
+        Wed, 14 Apr 2021 12:23:12 -0700 (PDT)
+Received: from localhost.localdomain (5-12-16-165.residential.rdsnet.ro. [5.12.16.165])
+        by smtp.gmail.com with ESMTPSA id k20sm193460pfa.34.2021.04.14.12.23.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Apr 2021 12:23:11 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next] net: bridge: propagate error code and extack from br_mc_disabled_update
+Date:   Wed, 14 Apr 2021 22:22:57 +0300
+Message-Id: <20210414192257.1954575-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 12:50:52 +0100
-Matthew Wilcox <willy@infradead.org> wrote:
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-> > That said, I think we need to have a quicker fix for the immediate
-> > issue with 64-bit bit dma_addr on 32-bit arch and the misalignment hole
-> > it leaves[3] in struct page.  In[3] you mention ppc32, does it only
-> > happens on certain 32-bit archs? =20
->=20
-> AFAICT it happens on mips32, ppc32, arm32 and arc.  It doesn't happen
-> on x86-32 because dma_addr_t is 32-bit aligned.
+Some Ethernet switches might only be able to support disabling multicast
+snooping globally, which is an issue for example when several bridges
+span the same physical device and request contradictory settings.
 
-(If others want to reproduce).  First I could not reproduce on ARM32.
-Then I found out that enabling CONFIG_XEN on ARCH=3Darm was needed to
-cause the issue by enabling CONFIG_ARCH_DMA_ADDR_T_64BIT.
+Propagate the return value of br_mc_disabled_update() such that this
+limitation is transmitted correctly to user-space.
 
-Details below signature.
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+v2: Overwrite -EOPNOTSUPP with 0 so that br_multicast_toggle doesn't
+leak that return value to the caller.
 
-=46rom file: arch/arm/Kconfig
+@Nikolay:
 
-config XEN
-	bool "Xen guest support on ARM"
-	depends on ARM && AEABI && OF
-	depends on CPU_V7 && !CPU_V6
-	depends on !GENERIC_ATOMIC64
-	depends on MMU
-	select ARCH_DMA_ADDR_T_64BIT
-	select ARM_PSCI
-	select SWIOTLB
-	select SWIOTLB_XEN
-	select PARAVIRT
-	help
-	  Say Y if you want to run Linux in a Virtual Machine on Xen on ARM.
+[root@LS1028ARDB ~/selftests/net/forwarding] # ./bridge_igmp.sh one two three four
+[   45.476399] IPv6: ADDRCONF(NETDEV_CHANGE): one: link becomes ready
+[   45.484079] IPv6: ADDRCONF(NETDEV_CHANGE): two: link becomes ready
+[   45.559919] br0: port 1(two) entered blocking state
+[   45.564965] br0: port 1(two) entered disabled state
+[   45.570849] device two entered promiscuous mode
+[   45.580737] br0: port 2(three) entered blocking state
+[   45.585967] br0: port 2(three) entered disabled state
+[   45.591850] device three entered promiscuous mode
+[   45.601280] br0: port 1(two) entered blocking state
+[   45.606229] br0: port 1(two) entered forwarding state
+[   45.620600] br0: port 2(three) entered blocking state
+[   45.625719] br0: port 2(three) entered forwarding state
+[   45.631438] IPv6: ADDRCONF(NETDEV_CHANGE): four: link becomes ready
+TEST: IGMPv2 report 239.10.10.10                                    [ OK ]
+TEST: IGMPv2 leave 239.10.10.10                                     [ OK ]
+TEST: IGMPv3 report 239.10.10.10 is_include                         [ OK ]
+TEST: IGMPv3 report 239.10.10.10 include -> allow                   [ OK ]
+TEST: IGMPv3 report 239.10.10.10 include -> is_include              [ OK ]
+TEST: IGMPv3 report 239.10.10.10 include -> is_exclude              [ OK ]
+TEST: IGMPv3 report 239.10.10.10 include -> to_exclude              [ OK ]
+TEST: IGMPv3 report 239.10.10.10 exclude -> allow                   [ OK ]
+TEST: IGMPv3 report 239.10.10.10 exclude -> is_include              [ OK ]
+TEST: IGMPv3 report 239.10.10.10 exclude -> is_exclude              [ OK ]
+TEST: IGMPv3 report 239.10.10.10 exclude -> to_exclude              [ OK ]
+TEST: IGMPv3 report 239.10.10.10 include -> block                   [ OK ]
+TEST: IGMPv3 report 239.10.10.10 exclude -> block                   [ OK ]
+TEST: IGMPv3 group 239.10.10.10 exclude timeout                     [ OK ]
+TEST: IGMPv3 S,G port entry automatic add to a *,G port             [ OK ]
+[  160.556931] br0: port 2(three) entered disabled state
+[  160.567926] br0: port 1(two) entered disabled state
+[  160.578931] device three left promiscuous mode
+[  160.584403] br0: port 2(three) entered disabled state
+[  160.604206] device two left promiscuous mode
+[  160.608837] br0: port 1(two) entered disabled state
+RTNETLINK answers: Cannot assign requested address
+[root@LS1028ARDB ~/selftests/net/forwarding] # ./bridge_mld.sh one two three four
+[  168.606290] IPv6: ADDRCONF(NETDEV_CHANGE): one: link becomes ready
+[  168.614313] IPv6: ADDRCONF(NETDEV_CHANGE): two: link becomes ready
+[  168.653335] IPv6: ADDRCONF(NETDEV_CHANGE): four: link becomes ready
+[  168.661972] IPv6: ADDRCONF(NETDEV_CHANGE): three: link becomes ready
+[  168.680831] br0: port 1(two) entered blocking state
+[  168.686361] br0: port 1(two) entered disabled state
+[  168.692220] device two entered promiscuous mode
+[  168.701535] br0: port 2(three) entered blocking state
+[  168.706656] br0: port 2(three) entered disabled state
+[  168.712105] device three entered promiscuous mode
+[  168.722046] br0: port 2(three) entered blocking state
+[  168.727150] br0: port 2(three) entered forwarding state
+[  168.732484] br0: port 1(two) entered blocking state
+[  168.737408] br0: port 1(two) entered forwarding state
+TEST: MLDv2 report ff02::cc is_include                              [ OK ]
+TEST: MLDv2 report ff02::cc include -> allow                        [ OK ]
+TEST: MLDv2 report ff02::cc include -> is_include                   [ OK ]
+TEST: MLDv2 report ff02::cc include -> is_exclude                   [ OK ]
+TEST: MLDv2 report ff02::cc include -> to_exclude                   [ OK ]
+TEST: MLDv2 report ff02::cc exclude -> allow                        [ OK ]
+TEST: MLDv2 report ff02::cc exclude -> is_include                   [ OK ]
+TEST: MLDv2 report ff02::cc exclude -> is_exclude                   [ OK ]
+TEST: MLDv2 report ff02::cc exclude -> to_exclude                   [ OK ]
+TEST: MLDv2 report ff02::cc include -> block                        [ OK ]
+TEST: MLDv2 report ff02::cc exclude -> block                        [ OK ]
+TEST: MLDv2 group ff02::cc exclude timeout                          [ OK ]
+TEST: MLDv2 S,G port entry automatic add to a *,G port              [ OK ]
+[  276.401190] br0: port 2(three) entered disabled state
+[  276.414596] br0: port 1(two) entered disabled state
+[  276.424809] device three left promiscuous mode
+[  276.429494] br0: port 2(three) entered disabled state
+[  276.444132] device two left promiscuous mode
+[  276.449101] br0: port 1(two) entered disabled state
 
-My make compile command:
+It might be helpful to enforce a check in these selftests for the
+version of the bridge binary, it must be >= v5.10 due to your checking
+for "source_list" in the 'bridge mdb' json output.
 
- export VERSION=3Dgcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/
- export CROSS_COMPILE=3D"/home/${USER}/cross-compilers/${VERSION}/bin/arm-n=
-one-linux-gnueabihf-"
- make -j8 ARCH=3Darm CROSS_COMPILE=3D$CROSS_COMPILE
+I tried to do this, and my bridge compiled from source says:
 
-Pahole output:
- $ pahole -C page mm/page_alloc.o
+[root@LS1028ARDB ~/selftests/net/forwarding] # bridge -V
+bridge utility, 5.11.0
 
- struct page {
-        long unsigned int          flags;                /*     0     4 */
+but I suspect that the bridge utility shipped by most if not all
+distributions just return:
 
-        /* XXX 4 bytes hole, try to pack */
+$ bridge -V
+bridge utility, 0.0
 
-        union {
-                struct {
-                        struct list_head lru;            /*     8     8 */
-                        struct address_space * mapping;  /*    16     4 */
-                        long unsigned int index;         /*    20     4 */
-                        long unsigned int private;       /*    24     4 */
-                };                                       /*     8    20 */
-                struct {
-                        dma_addr_t dma_addr;             /*     8     8 */
-                };                                       /*     8     8 */
-                struct {
-                        union {
-                                struct list_head slab_list; /*     8     8 =
-*/
-                                struct {
-                                        struct page * next; /*     8     4 =
-*/
-                                        short int pages; /*    12     2 */
-                                        short int pobjects; /*    14     2 =
-*/
-                                };                       /*     8     8 */
-                        };                               /*     8     8 */
-                        struct kmem_cache * slab_cache;  /*    16     4 */
-                        void *     freelist;             /*    20     4 */
-                        union {
-                                void * s_mem;            /*    24     4 */
-                                long unsigned int counters; /*    24     4 =
-*/
-                                struct {
-                                        unsigned int inuse:16; /*    24: 0 =
- 4 */
-                                        unsigned int objects:15; /*    24:1=
-6  4 */
-                                        unsigned int frozen:1; /*    24:31 =
- 4 */
-                                };                       /*    24     4 */
-                        };                               /*    24     4 */
-                };                                       /*     8    20 */
-                struct {
-                        long unsigned int compound_head; /*     8     4 */
-                        unsigned char compound_dtor;     /*    12     1 */
-                        unsigned char compound_order;    /*    13     1 */
+So I'm not sure how we can actually enforce this version check, but it
+would be nonetheless useful for the selftests to auto-detect if the
+bridge binary has this feature or not.
 
-                        /* XXX 2 bytes hole, try to pack */
+ net/bridge/br_multicast.c | 28 +++++++++++++++++++++-------
+ net/bridge/br_netlink.c   |  4 +++-
+ net/bridge/br_private.h   |  3 ++-
+ net/bridge/br_sysfs_br.c  |  8 +-------
+ 4 files changed, 27 insertions(+), 16 deletions(-)
 
-                        atomic_t   compound_mapcount;    /*    16     4 */
-                        unsigned int compound_nr;        /*    20     4 */
-                };                                       /*     8    16 */
-                struct {
-                        long unsigned int _compound_pad_1; /*     8     4 */
-                        atomic_t   hpage_pinned_refcount; /*    12     4 */
-                        struct list_head deferred_list;  /*    16     8 */
-                };                                       /*     8    16 */
-                struct {
-                        long unsigned int _pt_pad_1;     /*     8     4 */
-                        pgtable_t  pmd_huge_pte;         /*    12     4 */
-                        long unsigned int _pt_pad_2;     /*    16     4 */
-                        union {
-                                struct mm_struct * pt_mm; /*    20     4 */
-                                atomic_t pt_frag_refcount; /*    20     4 */
-                        };                               /*    20     4 */
-                        spinlock_t ptl;                  /*    24     4 */
-                };                                       /*     8    20 */
-                struct {
-                        struct dev_pagemap * pgmap;      /*     8     4 */
-                        void *     zone_device_data;     /*    12     4 */
-                };                                       /*     8     8 */
-                struct callback_head callback_head __attribute__((__aligned=
-__(4))); /*     8     8 */
-        } __attribute__((__aligned__(8)));               /*     8    24 */
-        union {
-                atomic_t           _mapcount;            /*    32     4 */
-                unsigned int       page_type;            /*    32     4 */
-                unsigned int       active;               /*    32     4 */
-                int                units;                /*    32     4 */
-        };                                               /*    32     4 */
-        atomic_t                   _refcount;            /*    36     4 */
-
-        /* size: 40, cachelines: 1, members: 4 */
-        /* sum members: 36, holes: 1, sum holes: 4 */
-        /* forced alignments: 1, forced holes: 1, sum forced holes: 4 */
-        /* last cacheline: 40 bytes */
-} __attribute__((__aligned__(8)));
-
-
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 9d265447d654..4daa95c913d0 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -1593,7 +1593,8 @@ static void br_multicast_port_group_rexmit(struct timer_list *t)
+ 	spin_unlock(&br->multicast_lock);
+ }
+ 
+-static void br_mc_disabled_update(struct net_device *dev, bool value)
++static int br_mc_disabled_update(struct net_device *dev, bool value,
++				 struct netlink_ext_ack *extack)
+ {
+ 	struct switchdev_attr attr = {
+ 		.orig_dev = dev,
+@@ -1602,11 +1603,13 @@ static void br_mc_disabled_update(struct net_device *dev, bool value)
+ 		.u.mc_disabled = !value,
+ 	};
+ 
+-	switchdev_port_attr_set(dev, &attr, NULL);
++	return switchdev_port_attr_set(dev, &attr, extack);
+ }
+ 
+ int br_multicast_add_port(struct net_bridge_port *port)
+ {
++	int err;
++
+ 	port->multicast_router = MDB_RTR_TYPE_TEMP_QUERY;
+ 	port->multicast_eht_hosts_limit = BR_MCAST_DEFAULT_EHT_HOSTS_LIMIT;
+ 
+@@ -1618,8 +1621,12 @@ int br_multicast_add_port(struct net_bridge_port *port)
+ 	timer_setup(&port->ip6_own_query.timer,
+ 		    br_ip6_multicast_port_query_expired, 0);
+ #endif
+-	br_mc_disabled_update(port->dev,
+-			      br_opt_get(port->br, BROPT_MULTICAST_ENABLED));
++	err = br_mc_disabled_update(port->dev,
++				    br_opt_get(port->br,
++					       BROPT_MULTICAST_ENABLED),
++				    NULL);
++	if (err)
++		return err;
+ 
+ 	port->mcast_stats = netdev_alloc_pcpu_stats(struct bridge_mcast_stats);
+ 	if (!port->mcast_stats)
+@@ -3560,16 +3567,23 @@ static void br_multicast_start_querier(struct net_bridge *br,
+ 	rcu_read_unlock();
+ }
+ 
+-int br_multicast_toggle(struct net_bridge *br, unsigned long val)
++int br_multicast_toggle(struct net_bridge *br, unsigned long val,
++			struct netlink_ext_ack *extack)
+ {
+ 	struct net_bridge_port *port;
+ 	bool change_snoopers = false;
++	int err = 0;
+ 
+ 	spin_lock_bh(&br->multicast_lock);
+ 	if (!!br_opt_get(br, BROPT_MULTICAST_ENABLED) == !!val)
+ 		goto unlock;
+ 
+-	br_mc_disabled_update(br->dev, val);
++	err = br_mc_disabled_update(br->dev, val, extack);
++	if (err == -EOPNOTSUPP)
++		err = 0;
++	if (err)
++		goto unlock;
++
+ 	br_opt_toggle(br, BROPT_MULTICAST_ENABLED, !!val);
+ 	if (!br_opt_get(br, BROPT_MULTICAST_ENABLED)) {
+ 		change_snoopers = true;
+@@ -3607,7 +3621,7 @@ int br_multicast_toggle(struct net_bridge *br, unsigned long val)
+ 			br_multicast_leave_snoopers(br);
+ 	}
+ 
+-	return 0;
++	return err;
+ }
+ 
+ bool br_multicast_enabled(const struct net_device *dev)
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index f2b1343f8332..0456593aceec 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -1293,7 +1293,9 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
+ 	if (data[IFLA_BR_MCAST_SNOOPING]) {
+ 		u8 mcast_snooping = nla_get_u8(data[IFLA_BR_MCAST_SNOOPING]);
+ 
+-		br_multicast_toggle(br, mcast_snooping);
++		err = br_multicast_toggle(br, mcast_snooping, extack);
++		if (err)
++			return err;
+ 	}
+ 
+ 	if (data[IFLA_BR_MCAST_QUERY_USE_IFADDR]) {
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 50747990188e..7ce8a77cc6b6 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -810,7 +810,8 @@ void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
+ 			struct sk_buff *skb, bool local_rcv, bool local_orig);
+ int br_multicast_set_router(struct net_bridge *br, unsigned long val);
+ int br_multicast_set_port_router(struct net_bridge_port *p, unsigned long val);
+-int br_multicast_toggle(struct net_bridge *br, unsigned long val);
++int br_multicast_toggle(struct net_bridge *br, unsigned long val,
++			struct netlink_ext_ack *extack);
+ int br_multicast_set_querier(struct net_bridge *br, unsigned long val);
+ int br_multicast_set_hash_max(struct net_bridge *br, unsigned long val);
+ int br_multicast_set_igmp_version(struct net_bridge *br, unsigned long val);
+diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+index 072e29840082..381467b691d5 100644
+--- a/net/bridge/br_sysfs_br.c
++++ b/net/bridge/br_sysfs_br.c
+@@ -409,17 +409,11 @@ static ssize_t multicast_snooping_show(struct device *d,
+ 	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_MULTICAST_ENABLED));
+ }
+ 
+-static int toggle_multicast(struct net_bridge *br, unsigned long val,
+-			    struct netlink_ext_ack *extack)
+-{
+-	return br_multicast_toggle(br, val);
+-}
+-
+ static ssize_t multicast_snooping_store(struct device *d,
+ 					struct device_attribute *attr,
+ 					const char *buf, size_t len)
+ {
+-	return store_bridge_parm(d, buf, len, toggle_multicast);
++	return store_bridge_parm(d, buf, len, br_multicast_toggle);
+ }
+ static DEVICE_ATTR_RW(multicast_snooping);
+ 
+-- 
+2.25.1
 
