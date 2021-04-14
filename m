@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D9635FA47
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF6835FA49
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 20:07:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352303AbhDNSHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 14:07:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36680 "EHLO mail.kernel.org"
+        id S1352331AbhDNSHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 14:07:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352121AbhDNSGj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 14:06:39 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 972EA611F0;
-        Wed, 14 Apr 2021 18:06:17 +0000 (UTC)
+        id S1352131AbhDNSGk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 14:06:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0CF4F611AD;
+        Wed, 14 Apr 2021 18:06:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618423577;
-        bh=N3cRa2k/BT1JCmO7ZB/H3Z4+qM9i/LrvzgaV+/uLyus=;
+        s=k20201202; t=1618423578;
+        bh=sKuR+rJ4IRJZcQDSgbkci2cAffADDuo6nYHvWjTfOM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U7sbVT4da3k0umXzMe6CiE/0hhQ0/WVLEh+jhO/pZ1OkVAdduuWvc18p+ADRs2U4R
-         66YULUxv8FouCy75drB9Hr1wHhEN/chj9Tz4v0of2gC/uNM8w6OSDPaxtsSCDhX8VO
-         IVKotCEO2W9+ZfDC08YS95rle6ogzE73xWACqZQP13oYllzULdyBlpuggpx9kByglT
-         Ilk+nwwAssW/0/1MW2noca5Zl0DTSfksg1n/pR/H2WR8bzarR7T5KIsXWr8jQi+8L5
-         ktDNwiMJkFOwz77496w8kTzSmpeN38YiKVBiEcbvTzplyadDeRHfHG/1oYuB2Aixd1
-         vL4u6yEorVczQ==
+        b=IYEaexKkh8+iXhTeNirs3Iv12ImGYwek3PR2jHQgSvtRKMA15ou9BytyhNhVxqy4f
+         lwX0wG+ZHm7pbDGaAdvCcYhfH6gstbQeYnANL0unA9epfADxX7HM93X4FBNuWO8f8B
+         VFPNuZ8bAlVlE2k6uPk10QW+UjRN5+zyT9tylHPSDqZ4L3sadFe8hJgW5tRahci5vn
+         UV4brTeW8LMKNzfDH7j0OSl8qTDmHip3uohw2ITNdyWbHdyFeQg2FvQFvzZtizrd/Y
+         wAC3X0IOHPq/EQ6a1JgHYmyJVfgLAci9AE6xOUhxult3ryJ4Al4XuKDzqZIpziDH8A
+         vytkREfJsTQMA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 11/16] net/mlx5: DR, Alloc cmd buffer with kvzalloc() instead of kzalloc()
-Date:   Wed, 14 Apr 2021 11:06:00 -0700
-Message-Id: <20210414180605.111070-12-saeed@kernel.org>
+        Colin Ian King <colin.king@canonical.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next V2 12/16] net/mlx5: Fix bit-wise and with zero
+Date:   Wed, 14 Apr 2021 11:06:01 -0700
+Message-Id: <20210414180605.111070-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210414180605.111070-1-saeed@kernel.org>
 References: <20210414180605.111070-1-saeed@kernel.org>
@@ -40,69 +41,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-The cmd size is 8K so use kvzalloc().
+The bit-wise and of the action field with MLX5_ACCEL_ESP_ACTION_DECRYPT
+is incorrect as MLX5_ACCEL_ESP_ACTION_DECRYPT is zero and not intended
+to be a bit-flag. Fix this by using the == operator as was originally
+intended.
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
+Addresses-Coverity: ("Logically dead code")
+Fixes: 7dfee4b1d79e ("net/mlx5: IPsec, Refactor SA handle creation and destruction")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c  | 4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 30b0136b5bc7..461473d31e2e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -287,7 +287,7 @@ int mlx5dr_cmd_create_empty_flow_group(struct mlx5_core_dev *mdev,
- 	u32 *in;
- 	int err;
- 
--	in = kzalloc(inlen, GFP_KERNEL);
-+	in = kvzalloc(inlen, GFP_KERNEL);
- 	if (!in)
- 		return -ENOMEM;
- 
-@@ -302,7 +302,7 @@ int mlx5dr_cmd_create_empty_flow_group(struct mlx5_core_dev *mdev,
- 	*group_id = MLX5_GET(create_flow_group_out, out, group_id);
- 
- out:
--	kfree(in);
-+	kvfree(in);
- 	return err;
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index 24acced415d3..c1926d927008 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -406,7 +406,7 @@ static int dr_get_tbl_copy_details(struct mlx5dr_domain *dmn,
- 		alloc_size = *num_stes * DR_STE_SIZE;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
+index d43a05e77f67..0b19293cdd74 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
+@@ -850,7 +850,7 @@ mlx5_fpga_ipsec_release_sa_ctx(struct mlx5_fpga_ipsec_sa_ctx *sa_ctx)
+ 		return;
  	}
  
--	*data = kzalloc(alloc_size, GFP_KERNEL);
-+	*data = kvzalloc(alloc_size, GFP_KERNEL);
- 	if (!*data)
- 		return -ENOMEM;
- 
-@@ -505,7 +505,7 @@ int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
- 	}
- 
- out_free:
--	kfree(data);
-+	kvfree(data);
- 	return ret;
- }
- 
-@@ -562,7 +562,7 @@ int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
- 	}
- 
- out_free:
--	kfree(data);
-+	kvfree(data);
- 	return ret;
- }
+-	if (sa_ctx->fpga_xfrm->accel_xfrm.attrs.action &
++	if (sa_ctx->fpga_xfrm->accel_xfrm.attrs.action ==
+ 	    MLX5_ACCEL_ESP_ACTION_DECRYPT)
+ 		ida_free(&fipsec->halloc, sa_ctx->sa_handle);
  
 -- 
 2.30.2
