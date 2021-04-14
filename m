@@ -2,118 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 745B835F022
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 10:57:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8B235F04E
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 11:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348542AbhDNIrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 04:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229766AbhDNIrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 04:47:42 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A541DC061574;
-        Wed, 14 Apr 2021 01:47:20 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id n11-20020a05600c4f8bb029010e5cf86347so2222358wmq.1;
-        Wed, 14 Apr 2021 01:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=As3o8lZXZFAGWP1nJ5PUlnWKBI8dDteBEIbgvKq/hiA=;
-        b=gUVgRr9u5bZj4iUjBJbeUbu3UIZrCaOoXbbyplgeqwwYnQ21Ni+RyQ8uAN3rkQoiWC
-         a+lwtIJrg14FlE/HPkvtY7149M3oWnFOghUHf6mFNepPIdbvYNnRx4IWJGD9tX5cM9vp
-         c08xTyFS27O8bhMjd56Pb6y36Tl2aJNK/hY3tufsrEXUm8QoFf/yMVh0FfuhgJGt9bL2
-         SJjf2Wapx16EFxo9xEONuf9dG08/sa0v2xjDL+hDmO7LLCK1hLbaJP2ypMcmY86YQqfB
-         ZWSidVAswTBNJB9cQ4RPLa3Mrupk5WioekiMBIbxwv4BHkgn+FaZZeaB4u8ZECQcd/Lj
-         P4WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=As3o8lZXZFAGWP1nJ5PUlnWKBI8dDteBEIbgvKq/hiA=;
-        b=eQpz395MAOM7A/ZAT4XLigYGxPghBckU9+TmnqIxN6DICzwITCVB93jN93lAx7AFav
-         C1XsnQCoJ7/nKmvtb4XEGc9QhQ6O7JMRGHquEKG0tRrWiji1Nl2mvyRxmox5IW8vYwGI
-         HMTa8Wj97Mmeqp//KtxAx5rc2EmmqwAKy2qn7fKmQ2IBRYGRp6XoTj5qbpuNo8EW6oIW
-         wWCEpBNbNo3lVglEG6JAXHTQ2aY2Gxhw23jSEKNUJWlNlI/5BLWFtSLC/GBLzBd86MkL
-         kWY2s/rmXGmvqQochKqcyrf4dlDJu0nN0rdztXZnYnd6JYGpM9vaftzxyimLA3b0tFg3
-         0K3Q==
-X-Gm-Message-State: AOAM5331WKOvFVK8SxFqRz8opvBgeOqrbybDJu3fzKQOTi4aH308fKm1
-        mizsDiV1yRbKGuapHXCCV5M=
-X-Google-Smtp-Source: ABdhPJxjPx8wq9KVG/0oMJZ+zFnka3lx7RwcMURtXq02N0HyyyoQ3huwQOw1rgmCwI2il6RgbX6wVw==
-X-Received: by 2002:a05:600c:2312:: with SMTP id 18mr1897186wmo.68.1618390039455;
-        Wed, 14 Apr 2021 01:47:19 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f38:4600:c95a:c5e7:2490:ebe3? (p200300ea8f384600c95ac5e72490ebe3.dip0.t-ipconnect.de. [2003:ea:8f38:4600:c95a:c5e7:2490:ebe3])
-        by smtp.googlemail.com with ESMTPSA id d2sm22300722wrs.10.2021.04.14.01.47.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Apr 2021 01:47:19 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net v2] r8169: don't advertise pause in jumbo mode
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        Roman Mamedov <rm+bko@romanrm.net>
-Message-ID: <1fcf6387-f5ee-40f7-d368-37503a81879b@gmail.com>
-Date:   Wed, 14 Apr 2021 10:47:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        id S1350430AbhDNJBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 05:01:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49735 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232358AbhDNJAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 05:00:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618390721;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cUcglsxOYfuHKKMr/TtJ0G52JdWYf/U06GoeD6nm1EM=;
+        b=XydJdaUkxCYEpGMXT51F8sKikFkDtKDiTsvJ3QeuDmskQ+EeEyFteEUl2YM7gR2WJ+0rs+
+        nzKColVqBSq7lA1Qm32CYcLqWpjdpCKAB9C9/n0QvEOF6PZYoc9EukjFVBzgh5bV8N7KD+
+        VXveFjmDV4zmlbS929vMrtrvrSIqZjw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-244-tfVLFSjyP_Ksiv20bRDWxQ-1; Wed, 14 Apr 2021 04:58:39 -0400
+X-MC-Unique: tfVLFSjyP_Ksiv20bRDWxQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D39E79EC0;
+        Wed, 14 Apr 2021 08:58:37 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-112-67.rdu2.redhat.com [10.10.112.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC06262A22;
+        Wed, 14 Apr 2021 08:58:34 +0000 (UTC)
+From:   Nico Pache <npache@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     brendanhiggins@google.com, gregkh@linuxfoundation.org,
+        linux-ext4@vger.kernel.org, netdev@vger.kernel.org,
+        rafael@kernel.org, npache@redhat.com,
+        linux-m68k@lists.linux-m68k.org, geert@linux-m68k.org,
+        tytso@mit.edu, mathew.j.martineau@linux.intel.com,
+        davem@davemloft.net, broonie@kernel.org, davidgow@google.com,
+        skhan@linuxfoundation.org, mptcp@lists.linux.dev
+Subject: [PATCH v2 0/6] kunit: Fix formatting of KUNIT tests to meet the standard
+Date:   Wed, 14 Apr 2021 04:58:03 -0400
+Message-Id: <cover.1618388989.git.npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It has been reported [0] that using pause frames in jumbo mode impacts
-performance. There's no available chip documentation, but vendor
-drivers r8168 and r8125 don't advertise pause in jumbo mode. So let's
-do the same, according to Roman it fixes the issue.
+There are few instances of KUNIT tests that are not properly defined.
+This commit focuses on correcting these issues to match the standard
+defined in the Documentation.
 
-[0] https://bugzilla.kernel.org/show_bug.cgi?id=212617
+Issues Fixed:
+ - tests should end in KUNIT_TEST, some fixes have been applied to
+   correct issues were KUNIT_TESTS is used or KUNIT is not mentioned.
+ - Tests should default to KUNIT_ALL_TESTS
+ - Tests configs tristate should have if !KUNIT_ALL_TESTS
 
-Fixes: 9cf9b84cc701 ("r8169: make use of phy_set_asym_pause")
-Reported-by: Roman Mamedov <rm+bko@romanrm.net>
-Tested-by: Roman Mamedov <rm+bko@romanrm.net>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: stable@vger.kernel.org
----
-This patch doesn't apply cleanly on some kernel versions, but the needed
-changes are trivial.
-v2: added cc stable in sign-off area
----
- drivers/net/ethernet/realtek/r8169_main.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+No functional changes other than CONFIG name changes
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 1b48084f2..7d02bab1c 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2386,6 +2386,13 @@ static void rtl_jumbo_config(struct rtl8169_private *tp)
- 
- 	if (pci_is_pcie(tp->pci_dev) && tp->supports_gmii)
- 		pcie_set_readrq(tp->pci_dev, readrq);
-+
-+	/* Chip doesn't support pause in jumbo mode */
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-+			 tp->phydev->advertising, !jumbo);
-+	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-+			 tp->phydev->advertising, !jumbo);
-+	phy_start_aneg(tp->phydev);
- }
- 
- DECLARE_RTL_COND(rtl_chipcmd_cond)
-@@ -4647,8 +4654,6 @@ static int r8169_phy_connect(struct rtl8169_private *tp)
- 	if (!tp->supports_gmii)
- 		phy_set_max_speed(phydev, SPEED_100);
- 
--	phy_support_asym_pause(phydev);
--
- 	phy_attached_info(phydev);
- 
- 	return 0;
+Changes since v2:
+ - Split patch 1 by subcomponents
+ - fix issues where config was *KUNIT_TEST_TEST
+ - properly threaded/chained messages
+
+Nico Pache (6):
+  kunit: ASoC: topology: adhear to KUNIT formatting standard
+  kunit: software node: adhear to KUNIT formatting standard
+  kunit: ext4: adhear to KUNIT formatting standard
+  kunit: lib: adhear to KUNIT formatting standard
+  kunit: mptcp: adhear to KUNIT formatting standard
+  m68k: update configs to match the proper KUNIT syntax
+
+ arch/m68k/configs/amiga_defconfig    |  6 +++---
+ arch/m68k/configs/apollo_defconfig   |  6 +++---
+ arch/m68k/configs/atari_defconfig    |  6 +++---
+ arch/m68k/configs/bvme6000_defconfig |  6 +++---
+ arch/m68k/configs/hp300_defconfig    |  6 +++---
+ arch/m68k/configs/mac_defconfig      |  6 +++---
+ arch/m68k/configs/multi_defconfig    |  6 +++---
+ arch/m68k/configs/mvme147_defconfig  |  6 +++---
+ arch/m68k/configs/mvme16x_defconfig  |  6 +++---
+ arch/m68k/configs/q40_defconfig      |  6 +++---
+ arch/m68k/configs/sun3_defconfig     |  6 +++---
+ arch/m68k/configs/sun3x_defconfig    |  6 +++---
+ drivers/base/test/Kconfig            |  2 +-
+ drivers/base/test/Makefile           |  2 +-
+ fs/ext4/.kunitconfig                 |  2 +-
+ fs/ext4/Kconfig                      |  2 +-
+ fs/ext4/Makefile                     |  2 +-
+ lib/Kconfig.debug                    | 21 +++++++++++++--------
+ lib/Makefile                         |  6 +++---
+ net/mptcp/Kconfig                    |  2 +-
+ net/mptcp/Makefile                   |  2 +-
+ net/mptcp/crypto.c                   |  2 +-
+ net/mptcp/token.c                    |  2 +-
+ sound/soc/Kconfig                    |  2 +-
+ sound/soc/Makefile                   |  4 ++--
+ 25 files changed, 64 insertions(+), 59 deletions(-)
+
 -- 
-2.31.1
+2.30.2
 
