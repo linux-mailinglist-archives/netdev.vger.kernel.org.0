@@ -2,170 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EEF635E9F2
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 02:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C5635E9F9
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 02:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348070AbhDNAVc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Apr 2021 20:21:32 -0400
-Received: from mga17.intel.com ([192.55.52.151]:25692 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230493AbhDNAVa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Apr 2021 20:21:30 -0400
-IronPort-SDR: nimtIaW2PQ74Z/Hm1kzyVSqpVC3vBroxw1RuLKRrDLJjK+QFk0fDyBx0G3qsClwgtUxYFMrVtK
- uwh8wd2vAi6A==
-X-IronPort-AV: E=McAfee;i="6200,9189,9953"; a="174633928"
-X-IronPort-AV: E=Sophos;i="5.82,220,1613462400"; 
-   d="scan'208";a="174633928"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2021 17:21:10 -0700
-IronPort-SDR: Bl5g51HxI9V5c8Jxm1sW/ntdgLKsFWPHu5EHpZERZj13To26jaFAl3peKTyX4wYLlPlDI8uewa
- JZ1HyRpCqHUQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,220,1613462400"; 
-   d="scan'208";a="521799499"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga001.fm.intel.com with ESMTP; 13 Apr 2021 17:21:10 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 13 Apr 2021 17:21:09 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 13 Apr 2021 17:21:09 -0700
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.013;
- Tue, 13 Apr 2021 17:21:09 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Parav Pandit <parav@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC:     "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "Lacombe, John S" <john.s.lacombe@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Hefty, Sean" <sean.hefty@intel.com>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>
-Subject: RE: [PATCH v4 05/23] ice: Add devlink params support
-Thread-Topic: [PATCH v4 05/23] ice: Add devlink params support
-Thread-Index: AQHXKyglet/OMpr4HUC3+2oFUaS+kaqpm5SA///RCKCAALIhgIABT5TAgAZO+4CAAM18wIAAq1sA///kuJA=
-Date:   Wed, 14 Apr 2021 00:21:08 +0000
-Message-ID: <4d9a592fa5694de8aadc60db1376da20@intel.com>
-References: <20210406210125.241-1-shiraz.saleem@intel.com>
- <20210406210125.241-6-shiraz.saleem@intel.com>
- <20210407145705.GA499950@nvidia.com>
- <e516fa3940984b0cb0134364b923fc8e@intel.com>
- <20210407224631.GI282464@nvidia.com>
- <c5a38fcf137e49c0af0bfa6edd3ec605@intel.com>
- <BY5PR12MB43221FA2A6295C9CF23C798DDC709@BY5PR12MB4322.namprd12.prod.outlook.com>
- <8a7cd11994c2447a926cf2d3e60a019c@intel.com>
- <BY5PR12MB4322A28E6678CBB8A6544026DC4F9@BY5PR12MB4322.namprd12.prod.outlook.com>
-In-Reply-To: <BY5PR12MB4322A28E6678CBB8A6544026DC4F9@BY5PR12MB4322.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1348213AbhDNAZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Apr 2021 20:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237029AbhDNAZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Apr 2021 20:25:53 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2235EC061574
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 17:25:32 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id w3so28734424ejc.4
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 17:25:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ofSqlHpW6OFplG5zBNJarpd/OG8vwHX3fcGfky7GKO0=;
+        b=dxa74v3bbEU8fPB51j4N5OHFA0e4Jood31bfZu3Zyw+E9i26JicVK/KgeU+5fNAg2R
+         hSulCM6IKyOz2B4C9YqptpLd7jOX5eMmaIAlICeYa59pPmOuk7INhA4gyDD0NJSvxq+z
+         qqqipidRUa3pzJQp+TrJ5mFRD6GkdgzysqvlcDRc3Pn4vLdVH4m7qVAwTzN3mcGc0dfE
+         CT43k1TkupQmXY9+uX3i0ovCNDI7or0OG+BqM6b0F9lzL4Py6cwdOcD6/pK8uSEnaI+f
+         nSORpiArXm7CR6JxjpHDw/v7FuZkwj8I0Ozaw5P3OoSzsJ2umPB6vuiOrlrkaNmTN9Qd
+         DK0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ofSqlHpW6OFplG5zBNJarpd/OG8vwHX3fcGfky7GKO0=;
+        b=DuTQ4CEmuATVwNQkcMHM6SRs9g2HOFCqAGw2NwxyMjivKXxpF9SmJTDtlOAMLr2Awk
+         uTcgtssGGhwxE+g7aj4FxGA15XdGyoCCRoo/V/r+tfaKaXzUxBND5bscgqptZTp346lt
+         xX43rgsaRHnEX0xnst8aau/nTyxJUEM3LIjx3v+QIKKg4wxICypBNBp3aE++MXP7awAA
+         6B9lF9BZkgdtGi3JOdSTuR3i5yTgPMKkQ9HoQ0JWTQyNAWZuk3+ejdVmJXJIuyZZGVw4
+         K+mxAUq8yBTmlQ2JGOMt6vjT6iaWa6VsIWA6nRQiv+jh+pyeaobwbB82bTtFWVHSYC4C
+         F5zw==
+X-Gm-Message-State: AOAM531s9SaOVSmWv/0uNKSjqGk6x+o5VEoGTwA495XWqmf+eNwPfX1N
+        xFU6Ksfy3Pi5YAebE3z/yFQi92sJgfgIXA==
+X-Google-Smtp-Source: ABdhPJx16RRaz2jI4XHGM8lOcbg3b8MlXzo6O8PUkFQdWubCG3Sd/Z17g0ISZBf6f9nc08uxSd3wyQ==
+X-Received: by 2002:a17:906:314f:: with SMTP id e15mr34358423eje.30.1618359929878;
+        Tue, 13 Apr 2021 17:25:29 -0700 (PDT)
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
+        by smtp.gmail.com with ESMTPSA id d1sm8912515eje.26.2021.04.13.17.25.28
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Apr 2021 17:25:28 -0700 (PDT)
+Received: by mail-wm1-f51.google.com with SMTP id o20-20020a05600c4fd4b0290114265518afso9614279wmq.4
+        for <netdev@vger.kernel.org>; Tue, 13 Apr 2021 17:25:28 -0700 (PDT)
+X-Received: by 2002:a7b:cb05:: with SMTP id u5mr230396wmj.183.1618359927443;
+ Tue, 13 Apr 2021 17:25:27 -0700 (PDT)
 MIME-Version: 1.0
+References: <20210413054733.36363-1-mst@redhat.com> <20210413054733.36363-2-mst@redhat.com>
+ <CA+FuTSe_SjUY4JxR6G9b8a0nx-MfQOkLdHJSzmjpuRG4BvsVPw@mail.gmail.com>
+ <20210413153951-mutt-send-email-mst@kernel.org> <CA+FuTSd7qagJAN0wpvudvi2Rvxn-SvQaBZ1SU9rwdb1x0j1s3g@mail.gmail.com>
+ <20210413180830-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210413180830-mutt-send-email-mst@kernel.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 13 Apr 2021 20:24:48 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScdzwb1pi=-ms+QNMboJsqOdNddUdqTznbMzRo7PQ3bFg@mail.gmail.com>
+Message-ID: <CA+FuTScdzwb1pi=-ms+QNMboJsqOdNddUdqTznbMzRo7PQ3bFg@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 1/4] virtio: fix up virtio_disable_cb
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: RE: [PATCH v4 05/23] ice: Add devlink params support
-> 
-> 
-> 
-> > From: Saleem, Shiraz <shiraz.saleem@intel.com>
-> > Sent: Tuesday, April 13, 2021 8:11 PM
-> [..]
-> 
-> > > > > Parav is talking about generic ways to customize the aux devices
-> > > > > created and that would seem to serve the same function as this.
-> > > >
-> > > > Is there an RFC or something posted for us to look at?
-> > > I do not have polished RFC content ready yet.
-> > > But coping the full config sequence snippet from the internal draft
-> > > (changed for ice
-> > > example) here as I like to discuss with you in this context.
-> >
-> > Thanks Parav! Some comments below.
-> >
 > > >
-> > > # (1) show auxiliary device types supported by a given devlink device.
-> > > # applies to pci pf,vf,sf. (in general at devlink instance).
-> > > $ devlink dev auxdev show pci/0000:06.00.0
-> > > pci/0000:06.00.0:
-> > >   current:
-> > >     roce eth
-> > >   new:
-> > >   supported:
-> > >     roce eth iwarp
 > > >
-> > > # (2) enable iwarp and ethernet type of aux devices and disable roce.
-> > > $ devlink dev auxdev set pci/0000:06:00.0 roce off iwarp on
+> > > but even yours is also fixed I think.
 > > >
-> > > # (3) now see which aux devices will be enable on next reload.
-> > > $ devlink dev auxdev show pci/0000:06:00.0
-> > > pci/0000:06:00.0:
-> > >   current:
-> > >     roce eth
-> > >   new:
-> > >     eth iwarp
-> > >   supported:
-> > >     roce eth iwarp
-> > >
-> > > # (4) now reload the device and see which aux devices are created.
-> > > At this point driver undergoes reconfig for removal of roce and
-> > > adding
-> > iwarp.
-> > > $ devlink reload pci/0000:06:00.0
+> > > The common point is that a single spurious interrupt is not a problem.
+> > > The problem only exists if there are tons of spurious interrupts with no
+> > > real ones. For this to trigger, we keep polling the ring and while we do
+> > > device keeps firing interrupts. So just disable interrupts while we
+> > > poll.
 > >
-> > I see this is modeled like devlink resource.
-> >
-> > Do we really to need a PCI driver re-init to switch the type of the
-> > auxdev hanging off the PCI dev?
-> >
-> I don't see a need to re-init the whole PCI driver. Since only aux device config is
-> changed only that piece to get reloaded.
+> > But the main change in this patch is to turn some virtqueue_disable_cb
+> > calls into no-ops.
+>
+> Well this was not the design. This is the main change:
+>
+>
+> @@ -739,7 +742,10 @@ static void virtqueue_disable_cb_split(struct virtqueue *_vq)
+>
+>         if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
+>                 vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+> -               if (!vq->event)
+> +               if (vq->event)
+> +                       /* TODO: this is a hack. Figure out a cleaner value to write. */
+> +                       vring_used_event(&vq->split.vring) = 0x0;
+> +               else
+>                         vq->split.vring.avail->flags =
+>                                 cpu_to_virtio16(_vq->vdev,
+>                                                 vq->split.avail_flags_shadow);
+>
+>
+> IIUC previously when event index was enabled (vq->event) virtqueue_disable_cb_split
+> was a nop. Now it sets index to 0x0 (which is a hack, but good enough
+> for testing I think).
 
-But that is what mlx5 and other implementations does on reload no? i.e. a PCI driver reinit.
-I can see an ice implementation of reload morphing to similar over time to support a new config
-that requires a true reinit of PCI driver entities.
+So now tx interrupts will really be suppressed even in event-idx mode.
 
-> 
-> > Why not just allow the setting to apply dynamically during a 'set'
-> > itself with an unplug/plug of the auxdev with correct type.
-> >
-> This suggestion came up in the internal discussion too.
-> However such task needs to synchronize with devlink reload command and also
-> with driver remove() sequence.
-> So locking wise and depending on amount of config change, it is close to what
-> reload will do.
+And what is the purpose of suppressing this operation if
+event_triggered, i.e., after an interrupt occurred? You mention " if
+using event index with a packed ring, and if being called from a
+callback, we actually do disable interrupts which is unnecessary." Can
+you elaborate? Also, even if unnecessary, does it matter? The
+operation itself seems fairly cheap.
 
-Holding this mutex across the auxiliary device unplug/plug in "set" wont cut it?
-https://elixir.bootlin.com/linux/v5.12-rc7/source/drivers/net/ethernet/mellanox/mlx5/core/main.c#L1304
+These should probably be two separate patches.
 
-> For example other resource config or other params setting also to take effect.
-> So to avoid defining multiple config sequence, doing as part of already existing
-> devlink reload, it brings simple sequence to user.
-> 
-> For example,
-> 1. enable/disable desired aux devices
-> 2. configure device resources
-> 3. set some device params
-> 4. do devlink reload and apply settings done in #1 to #3
+There is also a third case, split ring without event index. That
+behaves more like packed ring, I suppose.
 
-Sure. But a user might also just want to operate on just an auxiliary device configuration change. As in #1.
-And he ends up having everything hanging off the PF to get blown out, including potentially
-the VFs. That feels like too big a hammer.
 
-Shiraz
-
+> > I don't understand how that helps reduce spurious
+> > interrupts, as if anything, it keeps interrupts enabled for longer.
