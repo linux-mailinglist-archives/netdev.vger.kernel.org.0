@@ -2,363 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F04835FC3D
+	by mail.lfdr.de (Postfix) with ESMTP id A188A35FC3E
 	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353658AbhDNUDS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 16:03:18 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59992 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353649AbhDNUC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:02:58 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 13EJw5pE025934
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:36 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 37wv93kje5-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:36 -0700
-Received: from intmgw001.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 14 Apr 2021 13:02:34 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 8B3322ED1A84; Wed, 14 Apr 2021 13:02:29 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 17/17] sleftests/bpf: add map linking selftest
-Date:   Wed, 14 Apr 2021 13:01:46 -0700
-Message-ID: <20210414200146.2663044-18-andrii@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210414200146.2663044-1-andrii@kernel.org>
-References: <20210414200146.2663044-1-andrii@kernel.org>
+        id S1353698AbhDNUDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 16:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353718AbhDNUDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 16:03:08 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD88FC061761
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:46 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id 1so16446114qtb.0
+        for <netdev@vger.kernel.org>; Wed, 14 Apr 2021 13:02:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4fJmw5cg9XXe4ty83sBOB42REmqjyuzdrJpjNjrbVtU=;
+        b=XUn/CDrzj6JwVk30IYsCOFauwnz+FXAkDa4wv86zpYg5fvESLfW0siWWOGfNoiEmpL
+         yq0EXqumuuW4eEblV27q4EGzkn7wojbckhtxGL7fhxm+oI294C0vxM1zYQKv4ojWr4MF
+         AZTzn3iN6FOfKc8pCyGT2VEhpca2rqyG53acDB+yyX/GTpG3YqHIxqpyyF2fknSWaMJe
+         Hj8n4O+I+EMnGD04VRRCuEVcA0OBjHt7VDWED0+EMIszCovlECIOSgEKdoq1ARQsxfk8
+         +lzy199T4zuqScVH619SY9G14RM3tTY6IOBhB0lXxZBb5iKnEWHAa3e3X176VCekraTK
+         tORg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4fJmw5cg9XXe4ty83sBOB42REmqjyuzdrJpjNjrbVtU=;
+        b=t0NrSwdHUEYlyoJA5GO7Z64rZi/1WkLpCIXZvsBud2k5AG+sndHXd3Ojn9yxoWlh15
+         B8GwJ3E5qOHcDIPProCOU0AUzhISPxaGPgvEc05TE+zP31KW7ViTSv+2NEO3AUb5wg8M
+         MWNOKMR4XvdloLlhmVBgrOW5PJje/GZjHLPnCXAMtZodOViuG/IJBL7ZBd9Yt8jxShf5
+         O68UL6X+ImBloYniYyO728xK1ZxQE/8TTiQZsPdiFsm6Dx1AzioySSSKP9oV0kWHpib+
+         iS6fMH3u+yh+lmDhkUGNiW2IP67d6dGyNo/Gv0kWATXn+fgc3QGrfm1b6JfDEeHiAZSb
+         Q9RQ==
+X-Gm-Message-State: AOAM530cuO4xQpwtXw8Ns0jt3lHthxbmObRWaC8fPJXTdjQY8+UqpvEz
+        u5k9CaqGBuGzXo871/bPBuEXfJ8x/2BVJpEr8QA=
+X-Google-Smtp-Source: ABdhPJxUbOS14eWgAEjSUk4Bz+YMj/Nu5h7oSbwe1D2J2P6ylqHUbnHbC3GM5rQAzDuNVkJufJfzMwXwRJj1/p3uDs0=
+X-Received: by 2002:ac8:738f:: with SMTP id t15mr38072064qtp.262.1618430566076;
+ Wed, 14 Apr 2021 13:02:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: iEw2iP8xOGfstS7bx4gQa-ih0rWkkI0M
-X-Proofpoint-GUID: iEw2iP8xOGfstS7bx4gQa-ih0rWkkI0M
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.761
- definitions=2021-04-14_12:2021-04-14,2021-04-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 spamscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0 lowpriorityscore=0
- malwarescore=0 adultscore=0 impostorscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104140127
-X-FB-Internal: deliver
+References: <CAA85sZsn2oG4wUHPYOPTPW8j6jbHe=_0UiLntZmXjvaf0Cu9PA@mail.gmail.com>
+In-Reply-To: <CAA85sZsn2oG4wUHPYOPTPW8j6jbHe=_0UiLntZmXjvaf0Cu9PA@mail.gmail.com>
+From:   Ian Kumlien <ian.kumlien@gmail.com>
+Date:   Wed, 14 Apr 2021 22:02:35 +0200
+Message-ID: <CAA85sZsZqz=Dj523x44Lxid4fhpaPMURfNxMPzmeoUv+KdF0Ow@mail.gmail.com>
+Subject: Re: [BUG] possible issue with ixgbe
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add selftest validating various aspects of statically linking BTF-defined map
-definitions. Legacy map definitions do not support extern resolution between
-object files. Some of the aspects validated:
-  - correct resolution of extern maps against concrete map definitions;
-  - extern maps can currently only specify map type and key/value size and/or
-    type information;
-  - weak concrete map definitions are resolved properly.
+So after some digging, the error seems to start in fq? It doesn't seem
+like the adapter says anything on it's own
+but fq is complaining - switched to pfifo_fast for now....
 
-Static map definitions are not yet supported by libbpf, so they are not
-explicitly tested, though manual testing showes that BPF linker handles them
-properly.
+Also, FYI this interface is configured for jumboframes (local interface)
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/testing/selftests/bpf/Makefile          |   4 +-
- .../selftests/bpf/prog_tests/linked_maps.c    |  33 ++++++
- .../selftests/bpf/progs/linked_maps1.c        | 102 ++++++++++++++++
- .../selftests/bpf/progs/linked_maps2.c        | 112 ++++++++++++++++++
- 4 files changed, 250 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/linked_maps.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_maps1.c
- create mode 100644 tools/testing/selftests/bpf/progs/linked_maps2.c
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index a690fd125c6d..bd6d60644275 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -303,11 +303,13 @@ endef
- 
- SKEL_BLACKLIST := btf__% test_pinning_invalid.c test_sk_assign.c
- 
--LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h linked_vars.skel.h
-+LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h		\
-+		linked_vars.skel.h linked_maps.skel.h
- 
- test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
- linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
- linked_vars.skel.h-deps := linked_vars1.o linked_vars2.o
-+linked_maps.skel.h-deps := linked_maps1.o linked_maps2.o
- 
- LINKED_BPF_SRCS := $(patsubst %.o,%.c,$(foreach skel,$(LINKED_SKELS),$($(skel)-deps)))
- 
-diff --git a/tools/testing/selftests/bpf/prog_tests/linked_maps.c b/tools/testing/selftests/bpf/prog_tests/linked_maps.c
-new file mode 100644
-index 000000000000..69e0ef34aff2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/linked_maps.c
-@@ -0,0 +1,33 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include <test_progs.h>
-+#include <sys/syscall.h>
-+#include "linked_maps.skel.h"
-+
-+void test_linked_maps(void)
-+{
-+	int err;
-+	struct linked_maps* skel;
-+
-+	skel = linked_maps__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel_open"))
-+		return;
-+
-+	err = linked_maps__attach(skel);
-+	if (!ASSERT_OK(err, "skel_attach"))
-+		goto cleanup;
-+
-+	/* trigger */
-+	syscall(SYS_getpgid);
-+
-+	ASSERT_EQ(skel->bss->output_first1, 2000, "output_first1");
-+	ASSERT_EQ(skel->bss->output_second1, 2, "output_second1");
-+	ASSERT_EQ(skel->bss->output_weak1, 2, "output_weak1");
-+	/*
-+	ASSERT_EQ(skel->bss->output_static1, 2, "output_static1");
-+	*/
-+
-+cleanup:
-+	linked_maps__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/linked_maps1.c b/tools/testing/selftests/bpf/progs/linked_maps1.c
-new file mode 100644
-index 000000000000..6fb853043318
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/linked_maps1.c
-@@ -0,0 +1,102 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+struct my_key { long x; };
-+struct my_value { long x; };
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, struct my_key);
-+	__type(value, struct my_value);
-+	__uint(max_entries, 16);
-+} map1 SEC(".maps");
-+
-+extern struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, int);
-+	__type(value, int);
-+	/* no max_entries can be specified in extern map */
-+} map2 SEC(".maps");
-+
-+/* This should be the winning map definition, but we have no way of verifying,
-+ * so we just make sure that it links and works without errors
-+ */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, int);
-+	__type(value, int);
-+	__uint(max_entries, 16);
-+} map_weak __weak SEC(".maps");
-+
-+/* Once BPF skeleton can handle static maps with the same name, this map
-+ * should be renamed to just map_static in both files. For now we just make
-+ * sure that static map definitions work.
-+ */
-+/*
-+static struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, int);
-+	__type(value, int);
-+	__uint(max_entries, 4);
-+} map_static1 SEC(".maps");
-+*/
-+
-+int output_first1 = 0;
-+int output_second1 = 0;
-+int output_weak1 = 0;
-+/*
-+int output_static1 = 0;
-+*/
-+
-+SEC("raw_tp/sys_enter")
-+int BPF_PROG(handler_enter1)
-+{
-+	/* update values with key = 1 */
-+	int key = 1, val = 1;
-+	struct my_key key_struct = { .x = 1 };
-+	struct my_value val_struct = { .x = 1000 };
-+
-+	bpf_map_update_elem(&map1, &key_struct, &val_struct, 0);
-+	bpf_map_update_elem(&map2, &key, &val, 0);
-+	bpf_map_update_elem(&map_weak, &key, &val, 0);
-+	/*
-+	bpf_map_update_elem(&map_static1, &key, &val, 0);
-+	*/
-+
-+	return 0;
-+}
-+
-+SEC("raw_tp/sys_exit")
-+int BPF_PROG(handler_exit1)
-+{
-+	/* lookup values with key = 2, set in another file */
-+	int key = 2, *val;
-+	struct my_key key_struct = { .x = 2 };
-+	struct my_value *value_struct;
-+
-+	value_struct = bpf_map_lookup_elem(&map1, &key_struct);
-+	if (value_struct)
-+		output_first1 = value_struct->x;
-+
-+	val = bpf_map_lookup_elem(&map2, &key);
-+	if (val)
-+		output_second1 = *val;
-+
-+	val = bpf_map_lookup_elem(&map_weak, &key);
-+	if (val)
-+		output_weak1 = *val;
-+	
-+	/*
-+	val = bpf_map_lookup_elem(&map_static1, &key);
-+	if (val)
-+		output_static1 = *val;
-+	*/
-+
-+	return 0;
-+}
-+
-+char LICENSE[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/linked_maps2.c b/tools/testing/selftests/bpf/progs/linked_maps2.c
-new file mode 100644
-index 000000000000..93ac7c4f90d2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/linked_maps2.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+/* modifiers and typedefs are ignored when comparing key/value types */
-+typedef struct my_key { long x; } key_type;
-+typedef struct my_value { long x; } value_type;
-+
-+extern struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, key_type);
-+	__type(value, value_type);
-+	/* no max_entries on extern map definitions */
-+} map1 SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, int);
-+	__type(value, int);
-+	__uint(max_entries, 8);
-+} map2 SEC(".maps");
-+
-+/* this definition will lose, but it has to exactly match the winner */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, int);
-+	__type(value, int);
-+	__uint(max_entries, 16);
-+} map_weak __weak SEC(".maps");
-+
-+/* Once BPF skeleton can handle static maps with the same name, this map
-+ * should be renamed to just map_static in both files. For now we just make
-+ * sure that static map definitions work.
-+ */
-+/*
-+static struct {
-+*/
-+	/* different type */
-+/*
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+*/
-+	/* key and value are kept int for convenience, they don't have to
-+	 * match with map_static1
-+	 */
-+/*
-+	__type(key, int);
-+	__type(value, int);
-+*/
-+	/* different max_entries */
-+/*
-+	__uint(max_entries, 20);
-+} map_static2 SEC(".maps");
-+*/
-+
-+int output_first2 = 0;
-+int output_second2 = 0;
-+int output_weak2 = 0;
-+/*
-+int output_static2 = 0;
-+*/
-+
-+SEC("raw_tp/sys_enter")
-+int BPF_PROG(handler_enter2)
-+{
-+	/* update values with key = 2 */
-+	int key = 2, val = 2;
-+	key_type key_struct = { .x = 2 };
-+	value_type val_struct = { .x = 2000 };
-+
-+	bpf_map_update_elem(&map1, &key_struct, &val_struct, 0);
-+	bpf_map_update_elem(&map2, &key, &val, 0);
-+	bpf_map_update_elem(&map_weak, &key, &val, 0);
-+	/*
-+	bpf_map_update_elem(&map_static2, &key, &val, 0);
-+	*/
-+
-+	return 0;
-+}
-+
-+SEC("raw_tp/sys_exit")
-+int BPF_PROG(handler_exit2)
-+{
-+	/* lookup values with key = 1, set in another file */
-+	int key = 1, *val;
-+	key_type key_struct = { .x = 1 };
-+	value_type *value_struct;
-+
-+	value_struct = bpf_map_lookup_elem(&map1, &key_struct);
-+	if (value_struct)
-+		output_first2 = value_struct->x;
-+
-+	val = bpf_map_lookup_elem(&map2, &key);
-+	if (val)
-+		output_second2 = *val;
-+
-+	val = bpf_map_lookup_elem(&map_weak, &key);
-+	if (val)
-+		output_weak2 = *val;
-+	
-+	/*
-+	val = bpf_map_lookup_elem(&map_static2, &key);
-+	if (val)
-+		output_static2 = *val;
-+	*/
-+
-+	return 0;
-+}
-+
-+char LICENSE[] SEC("license") = "GPL";
--- 
-2.30.2
-
+On Mon, Apr 12, 2021 at 8:41 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
+>
+> Hi,
+>
+> I've encountered this a few times now, been moving kernels since
+> there's been things fixed that
+> looked related... but...
+>
+> [959642.297143] ------------[ cut here ]------------
+> [959642.297149] NETDEV WATCHDOG: eno1 (ixgbe): transmit queue 2 timed out
+> [959642.297189] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:442
+> dev_watchdog+0x21f/0x230
+> [959642.297199] Modules linked in: chaoskey
+> [959642.297205] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.11.11 #272
+> [959642.297209] Hardware name: Supermicro Super
+> Server/A2SDi-12C-HLN4F, BIOS 1.2 11/05/2019
+> [959642.297211] RIP: 0010:dev_watchdog+0x21f/0x230
+> [959642.297216] Code: 27 1a fd ff eb ab 4c 89 ef c6 05 c2 27 1a 01 01
+> e8 46 12 fa ff 44 89 e1 4c 89 ee 48 c7 c7 90 37 22 a5 48 89 c2 e8 a8
+> f2 32 00 <0f> 0b eb 8c 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 49 89 f9
+> 48 8d
+> [959642.297220] RSP: 0018:ffffb1d20015cec8 EFLAGS: 00010282
+> [959642.297223] RAX: 0000000000000000 RBX: ffff8dda45c34ec0 RCX:
+> ffff8dddafad78d8
+> [959642.297225] RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI:
+> ffff8dddafad78d0
+> [959642.297228] RBP: ffff8dda45c28480 R08: 0000000000000000 R09:
+> ffffb1d20015cd00
+> [959642.297230] R10: ffffb1d20015ccf8 R11: ffffffffa553e8c8 R12:
+> 0000000000000002
+> [959642.297232] R13: ffff8dda45c28000 R14: 0000000000000001 R15:
+> ffff8dddafadbb40
+> [959642.297234] FS:  0000000000000000(0000) GS:ffff8dddafac0000(0000)
+> knlGS:0000000000000000
+> [959642.297237] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [959642.297240] CR2: 00007f0fdc76d5a8 CR3: 000000013debe000 CR4:
+> 00000000003526e0
+> [959642.297242] Call Trace:
+> [959642.297246]  <IRQ>
+> [959642.297250]  ? pfifo_fast_init+0x100/0x100
+> [959642.297254]  call_timer_fn+0x24/0xf0
+> [959642.297259]  __run_timers.part.0+0x1b8/0x220
+> [959642.297263]  ? recalibrate_cpu_khz+0x10/0x10
+> [959642.297268]  ? ktime_get+0x33/0x90
+> [959642.297272]  ? lapic_timer_set_periodic+0x20/0x20
+> [959642.297276]  ? clockevents_program_event+0x88/0xe0
+> [959642.297280]  run_timer_softirq+0x21/0x50
+> [959642.297284]  __do_softirq+0xba/0x264
+> [959642.297290]  asm_call_irq_on_stack+0x12/0x20
+> [959642.297294]  </IRQ>
+> [959642.297296]  do_softirq_own_stack+0x32/0x40
+> [959642.297300]  irq_exit_rcu+0x83/0xb0
+> [959642.297304]  sysvec_apic_timer_interrupt+0x36/0x80
+> [959642.297309]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+> [959642.297314] RIP: 0010:cpuidle_enter_state+0xcd/0x340
+> [959642.297320] Code: 49 89 c5 0f 1f 44 00 00 31 ff e8 8e 96 5b ff 45
+> 84 ff 74 12 9c 58 f6 c4 02 0f 85 56 02 00 00 31 ff e8 b7 3b 60 ff fb
+> 45 85 f6 <0f> 88 e9 00 00 00 49 63 c6 4c 2b 2c 24 48 8d 14 40 48 8d 0c
+> 90 48
+> [959642.297322] RSP: 0018:ffffb1d20008fea8 EFLAGS: 00000202
+> [959642.297326] RAX: ffff8dddafae9a40 RBX: ffffd1d1ffaeb500 RCX:
+> 000000000000001f
+> [959642.297328] RDX: 0000000000000000 RSI: 0000000040000000 RDI:
+> 0000000000000000
+> [959642.297330] RBP: 0000000000000002 R08: 000368ca223b0fae R09:
+> 0000000000000008
+> [959642.297332] R10: 00000000000003dc R11: 00000000000003da R12:
+> ffffffffa55ecf40
+> [959642.297334] R13: 000368ca223b0fae R14: 0000000000000002 R15:
+> 0000000000000000
+> [959642.297338]  ? cpuidle_enter_state+0xb2/0x340
+> [959642.297342]  cpuidle_enter+0x24/0x40
+> [959642.297346]  do_idle+0x1ba/0x210
+> [959642.297351]  cpu_startup_entry+0x14/0x20
+> [959642.297354]  secondary_startup_64_no_verify+0xb0/0xbb
+> [959642.297359] ---[ end trace 9b29a940f734a412 ]---
+> [959642.297365] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+> [959647.929975] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+> [959649.130161] ixgbe 0000:06:00.0 eno1: Reset adapter
+> [959649.135186] ixgbe 0000:06:00.0 eno1: NIC Link is Down
+> [959652.566949] ixgbe 0000:06:00.0 eno1: NIC Link is Up 1 Gbps, Flow
+> Control: RX/TX
+> [959669.944390] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+> [959670.096838] ixgbe 0000:06:00.0 eno1: Reset adapter
+> [959670.101836] ixgbe 0000:06:00.0 eno1: NIC Link is Down
+> [959673.405387] ixgbe 0000:06:00.0 eno1: NIC Link is Up 1 Gbps, Flow
+> Control: RX/TX
+> [959856.307490] ixgbe 0000:06:00.0 eno1: initiating reset due to tx timeout
+> [959861.536015] ixgbe 0000:06:00.0 eno1: Reset adapter
+> [959861.541031] ixgbe 0000:06:00.0 eno1: NIC Link is Down
+> [959865.387649] ixgbe 0000:06:00.0 eno1: NIC Link is Up 1 Gbps, Flow
+> Control: RX/TX
+> ----
+>
+> It always seems to happen under cpu load - I'm mad enough to run
+> gentoo on a Atom (Intel(R) Atom(TM) CPU C3858 @ 2.00GHz) machine ;)
+>
+> When first triggered it takes a while - eventually any spike in cpu
+> load will crash the machine... (I suspect that the hw-watchdog reboots
+> it but there is no logs)
+>
+> Any clues? I did run with flow offload in nftables - but I have since
+> disabled that as well...
