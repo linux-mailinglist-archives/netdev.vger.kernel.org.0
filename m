@@ -2,66 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF40735FC7A
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539C535FC78
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 22:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349369AbhDNUUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 16:20:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48646 "EHLO mail.kernel.org"
+        id S1348355AbhDNUUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 16:20:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48650 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232735AbhDNUUb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1348332AbhDNUUb (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Apr 2021 16:20:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id F1539608FC;
-        Wed, 14 Apr 2021 20:20:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0C621611AD;
+        Wed, 14 Apr 2021 20:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618431610;
-        bh=xsRlDFDPKJ+4jfdKoAYZ94XhTVzcq2FSuwmw43ambm0=;
+        bh=ziW3vgmeSl5nblZ+qGSbFNfQVB8zMCCvqQvsFgFJ1y4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Eo0M2jgvzF1aeOBoVEy0EwmPuKMNxjL/OxIob+ZYwKdsEM+ydz6BqzuwQ9piUI1m+
-         6hFcjcj+T2b/emzm1WFDsF8kqo309NbfyjjYLTYoVHql0NHadRHZl1puu5P2tUmm2g
-         QWNIpbujqBhdzphklgubpqz9QdpDxIBoGuBI0Zm+r02qWrEIzalOmDEpQbo7DW2T88
-         4qfReJAI5vAGJEG5xwK3PuFlOdlzGuUem3GzdydzfVlojN+KXho4TllHJa6JDb8EPN
-         lh1YAP+WDBWo2CVGN5h6NwHx3K9x84HBxZbfHJS1Jg6kaOCgSHix2F7p538hTP72KO
-         l/mych9J7Vr6Q==
+        b=TEl8qo5o/yF4D3gpOk5hmU7zbz5DbYL9JNKKC5R9BBhmQyFMKBMNG3OyyVLEq4VXZ
+         nq1QLRZZu21eW5zpl6xwUz46WC45VlkTodPD4Xg9qqGDuyzDHCf0w7zS2XXW0Pd6AI
+         sCYWTYuj1IMe2t51fJmlLqbQl6qwFQ+vuYsrUd5vnYnA9JRn6CjuJIl0ldRIMqJNlE
+         /n6jh875gMQLVJTig3pM3S2M/upu5OlMqJoyIONv7BpxoH3yLxi153IjdLExma6qgn
+         vDoVbqFN40BWCdXVHwYoASTnE0zvz6uNtbJ7RJ24Es45/Z4AFQsnn/BmsZBtE/vDLV
+         f+Ws9vLNzrsMA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E675A609B9;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EFA1660CD5;
         Wed, 14 Apr 2021 20:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/3] ibmvnic: correctly call NAPI APIs
+Subject: Re: [PATCH net] doc: move seg6_flowlabel to seg6-sysctl.rst
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161843160993.15230.14853895155691811365.git-patchwork-notify@kernel.org>
+Message-Id: <161843160997.15230.7001721122026016292.git-patchwork-notify@kernel.org>
 Date:   Wed, 14 Apr 2021 20:20:09 +0000
-References: <20210414074616.11299-1-lijunp213@gmail.com>
-In-Reply-To: <20210414074616.11299-1-lijunp213@gmail.com>
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     netdev@vger.kernel.org
+References: <20210414100027.14313-1-nicolas.dichtel@6wind.com>
+In-Reply-To: <20210414100027.14313-1-nicolas.dichtel@6wind.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Wed, 14 Apr 2021 02:46:13 -0500 you wrote:
-> This series correct some misuse of NAPI APIs in the driver.
+On Wed, 14 Apr 2021 12:00:27 +0200 you wrote:
+> Let's have all seg6 sysctl at the same place.
 > 
-> Lijun Pan (3):
->   ibmvnic: avoid calling napi_disable() twice
->   ibmvnic: remove duplicate napi_schedule call in do_reset function
->   ibmvnic: remove duplicate napi_schedule call in open function
-> 
-> [...]
+> Fixes: a6dc6670cd7e ("ipv6: sr: Add documentation for seg_flowlabel sysctl")
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> ---
+>  Documentation/networking/ip-sysctl.rst   | 15 ---------------
+>  Documentation/networking/seg6-sysctl.rst | 13 +++++++++++++
+>  2 files changed, 13 insertions(+), 15 deletions(-)
 
 Here is the summary with links:
-  - [net,1/3] ibmvnic: avoid calling napi_disable() twice
-    https://git.kernel.org/netdev/net/c/0775ebc4cf85
-  - [net,2/3] ibmvnic: remove duplicate napi_schedule call in do_reset function
-    https://git.kernel.org/netdev/net/c/d3a6abccbd27
-  - [net,3/3] ibmvnic: remove duplicate napi_schedule call in open function
-    https://git.kernel.org/netdev/net/c/7c451f3ef676
+  - [net] doc: move seg6_flowlabel to seg6-sysctl.rst
+    https://git.kernel.org/netdev/net/c/292ecd9f5a94
 
 You are awesome, thank you!
 --
