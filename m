@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E669835F03E
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 11:00:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C0E135F043
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 11:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350397AbhDNJBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 05:01:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43225 "EHLO
+        id S1350409AbhDNJBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 05:01:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29437 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350249AbhDNJAN (ORCPT
+        by vger.kernel.org with ESMTP id S1350253AbhDNJAN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 05:00:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1618390731;
+        s=mimecast20190719; t=1618390733;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WcS3XqDLjWw2JcTnxRCko+qmOPIOGyWNCS5CmAztAiQ=;
-        b=De/TbML2BB65r/2xZ7oSxsTQtw7qWG4lP4V3O/O42whM2a/0SaV7kJUJd19Qyi6j0f8P0X
-        GyYtRMZhQIcvDv/fRCkdozt1HAUwzwYU24kL/XMirTKUbQc9cYrHwAUxP9ky5DYZFZEhaQ
-        SEStXmBLEbi/Wolrl/MpzO7YkESxWJk=
+        bh=oQDjPtD3WvuvXM4eQvNcLKFd7+TjM2tF15O9Rwlosks=;
+        b=PW0HFHP2sRXjSEHMVSZBIPqYNLhFTjUJVH/Z2HW/U22bq9XJQ1822g40KfAP0zZlZLMQaP
+        oADxxSJS7zY6wtuatb04HXB2JOrGC/xfPw4t4bEw999qxWDC2PBkMNi4TqQsIOE8JoaROp
+        tAxVQTosrcUbHIM5XN7edf+9Ll0ahyo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-253-Tm09oKAfPRaAHSyqBNW31Q-1; Wed, 14 Apr 2021 04:58:49 -0400
-X-MC-Unique: Tm09oKAfPRaAHSyqBNW31Q-1
+ us-mta-325-VVCRoKS2MlmbPvCm-DEMpQ-1; Wed, 14 Apr 2021 04:58:51 -0400
+X-MC-Unique: VVCRoKS2MlmbPvCm-DEMpQ-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 24EA681426D;
-        Wed, 14 Apr 2021 08:58:47 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1615A802B62;
+        Wed, 14 Apr 2021 08:58:49 +0000 (UTC)
 Received: from localhost.localdomain.com (ovpn-112-67.rdu2.redhat.com [10.10.112.67])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 642975D71D;
-        Wed, 14 Apr 2021 08:58:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F49E5D76F;
+        Wed, 14 Apr 2021 08:58:47 +0000 (UTC)
 From:   Nico Pache <npache@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     brendanhiggins@google.com, gregkh@linuxfoundation.org,
@@ -42,9 +42,9 @@ Cc:     brendanhiggins@google.com, gregkh@linuxfoundation.org,
         tytso@mit.edu, mathew.j.martineau@linux.intel.com,
         davem@davemloft.net, broonie@kernel.org, davidgow@google.com,
         skhan@linuxfoundation.org, mptcp@lists.linux.dev
-Subject: [PATCH v2 5/6] kunit: mptcp: adhear to KUNIT formatting standard
-Date:   Wed, 14 Apr 2021 04:58:08 -0400
-Message-Id: <0fa191715b236766ad13c5f786d8daf92a9a0cf2.1618388989.git.npache@redhat.com>
+Subject: [PATCH v2 6/6] m68k: update configs to match the proper KUNIT syntax
+Date:   Wed, 14 Apr 2021 04:58:09 -0400
+Message-Id: <993949de9baa8e6d42731cc40f786e24aca858b8.1618388989.git.npache@redhat.com>
 In-Reply-To: <cover.1618388989.git.npache@redhat.com>
 References: <cover.1618388989.git.npache@redhat.com>
 MIME-Version: 1.0
@@ -54,66 +54,251 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drop 'S' from end of CONFIG_MPTCP_KUNIT_TESTS inorder to adhear to the
-KUNIT *_KUNIT_TEST config name format.
-
-Fixes: a00a582203db (mptcp: move crypto test to KUNIT)
+No functional changes other than CONFIG name changes
 Signed-off-by: Nico Pache <npache@redhat.com>
 ---
- net/mptcp/Kconfig  | 2 +-
- net/mptcp/Makefile | 2 +-
- net/mptcp/crypto.c | 2 +-
- net/mptcp/token.c  | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ arch/m68k/configs/amiga_defconfig    | 6 +++---
+ arch/m68k/configs/apollo_defconfig   | 6 +++---
+ arch/m68k/configs/atari_defconfig    | 6 +++---
+ arch/m68k/configs/bvme6000_defconfig | 6 +++---
+ arch/m68k/configs/hp300_defconfig    | 6 +++---
+ arch/m68k/configs/mac_defconfig      | 6 +++---
+ arch/m68k/configs/multi_defconfig    | 6 +++---
+ arch/m68k/configs/mvme147_defconfig  | 6 +++---
+ arch/m68k/configs/mvme16x_defconfig  | 6 +++---
+ arch/m68k/configs/q40_defconfig      | 6 +++---
+ arch/m68k/configs/sun3_defconfig     | 6 +++---
+ arch/m68k/configs/sun3x_defconfig    | 6 +++---
+ 12 files changed, 36 insertions(+), 36 deletions(-)
 
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-index a014149aa323..20328920f6ed 100644
---- a/net/mptcp/Kconfig
-+++ b/net/mptcp/Kconfig
-@@ -22,7 +22,7 @@ config MPTCP_IPV6
- 	depends on IPV6=y
- 	default y
- 
--config MPTCP_KUNIT_TESTS
-+config MPTCP_KUNIT_TEST
- 	tristate "This builds the MPTCP KUnit tests" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
- 	default KUNIT_ALL_TESTS
-diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
-index a611968be4d7..dcce3cbd1f19 100644
---- a/net/mptcp/Makefile
-+++ b/net/mptcp/Makefile
-@@ -9,4 +9,4 @@ obj-$(CONFIG_INET_MPTCP_DIAG) += mptcp_diag.o
- 
- mptcp_crypto_test-objs := crypto_test.o
- mptcp_token_test-objs := token_test.o
--obj-$(CONFIG_MPTCP_KUNIT_TESTS) += mptcp_crypto_test.o mptcp_token_test.o
-+obj-$(CONFIG_MPTCP_KUNIT_TEST) += mptcp_crypto_test.o mptcp_token_test.o
-diff --git a/net/mptcp/crypto.c b/net/mptcp/crypto.c
-index b472dc149856..a8931349933c 100644
---- a/net/mptcp/crypto.c
-+++ b/net/mptcp/crypto.c
-@@ -78,6 +78,6 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac)
- 	sha256(input, SHA256_BLOCK_SIZE + SHA256_DIGEST_SIZE, hmac);
- }
- 
--#if IS_MODULE(CONFIG_MPTCP_KUNIT_TESTS)
-+#if IS_MODULE(CONFIG_MPTCP_KUNIT_TEST)
- EXPORT_SYMBOL_GPL(mptcp_crypto_hmac_sha);
- #endif
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index feb4b9ffd462..8f0270a780ce 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -402,7 +402,7 @@ void __init mptcp_token_init(void)
- 	}
- }
- 
--#if IS_MODULE(CONFIG_MPTCP_KUNIT_TESTS)
-+#if IS_MODULE(CONFIG_MPTCP_KUNIT_TEST)
- EXPORT_SYMBOL_GPL(mptcp_token_new_request);
- EXPORT_SYMBOL_GPL(mptcp_token_new_connect);
- EXPORT_SYMBOL_GPL(mptcp_token_accept);
+diff --git a/arch/m68k/configs/amiga_defconfig b/arch/m68k/configs/amiga_defconfig
+index 786656090c50..77cc4ff7ae3a 100644
+--- a/arch/m68k/configs/amiga_defconfig
++++ b/arch/m68k/configs/amiga_defconfig
+@@ -655,11 +655,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/apollo_defconfig b/arch/m68k/configs/apollo_defconfig
+index 9bb12be4a38e..86913bdb265b 100644
+--- a/arch/m68k/configs/apollo_defconfig
++++ b/arch/m68k/configs/apollo_defconfig
+@@ -611,11 +611,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/atari_defconfig b/arch/m68k/configs/atari_defconfig
+index 413232626d9d..6b5c35e7be44 100644
+--- a/arch/m68k/configs/atari_defconfig
++++ b/arch/m68k/configs/atari_defconfig
+@@ -633,11 +633,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/bvme6000_defconfig b/arch/m68k/configs/bvme6000_defconfig
+index 819cc70b06d8..8fbd238d9d29 100644
+--- a/arch/m68k/configs/bvme6000_defconfig
++++ b/arch/m68k/configs/bvme6000_defconfig
+@@ -604,11 +604,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/hp300_defconfig b/arch/m68k/configs/hp300_defconfig
+index 8f8d5968713b..dbebbc079611 100644
+--- a/arch/m68k/configs/hp300_defconfig
++++ b/arch/m68k/configs/hp300_defconfig
+@@ -613,11 +613,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/mac_defconfig b/arch/m68k/configs/mac_defconfig
+index bf15e6c1c939..3ccafd1db067 100644
+--- a/arch/m68k/configs/mac_defconfig
++++ b/arch/m68k/configs/mac_defconfig
+@@ -636,11 +636,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/multi_defconfig b/arch/m68k/configs/multi_defconfig
+index 5466d48fcd9d..572c95f1c8d7 100644
+--- a/arch/m68k/configs/multi_defconfig
++++ b/arch/m68k/configs/multi_defconfig
+@@ -722,11 +722,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/mvme147_defconfig b/arch/m68k/configs/mvme147_defconfig
+index 93c305918838..a92d6c4ab9ff 100644
+--- a/arch/m68k/configs/mvme147_defconfig
++++ b/arch/m68k/configs/mvme147_defconfig
+@@ -603,11 +603,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/mvme16x_defconfig b/arch/m68k/configs/mvme16x_defconfig
+index cacd6c617f69..e1dbe9208a92 100644
+--- a/arch/m68k/configs/mvme16x_defconfig
++++ b/arch/m68k/configs/mvme16x_defconfig
+@@ -604,11 +604,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/q40_defconfig b/arch/m68k/configs/q40_defconfig
+index 3ae421cb24a4..957aa0277c3c 100644
+--- a/arch/m68k/configs/q40_defconfig
++++ b/arch/m68k/configs/q40_defconfig
+@@ -622,11 +622,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/sun3_defconfig b/arch/m68k/configs/sun3_defconfig
+index 6da97e28c48e..ebe23c0414fb 100644
+--- a/arch/m68k/configs/sun3_defconfig
++++ b/arch/m68k/configs/sun3_defconfig
+@@ -605,11 +605,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
+diff --git a/arch/m68k/configs/sun3x_defconfig b/arch/m68k/configs/sun3x_defconfig
+index f54481bb789a..c913aa7635d8 100644
+--- a/arch/m68k/configs/sun3x_defconfig
++++ b/arch/m68k/configs/sun3x_defconfig
+@@ -605,11 +605,11 @@ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_FIND_BIT_BENCHMARK=m
+ CONFIG_TEST_FIRMWARE=m
+ CONFIG_TEST_SYSCTL=m
+-CONFIG_BITFIELD_KUNIT=m
++CONFIG_BITFIELD_KUNIT_TEST=m
+ CONFIG_RESOURCE_KUNIT_TEST=m
+-CONFIG_LINEAR_RANGES_TEST=m
++CONFIG_LINEAR_RANGES_KUNIT_TEST=m
+ CONFIG_CMDLINE_KUNIT_TEST=m
+-CONFIG_BITS_TEST=m
++CONFIG_BITS_KUNIT_TEST=m
+ CONFIG_TEST_UDELAY=m
+ CONFIG_TEST_STATIC_KEYS=m
+ CONFIG_TEST_KMOD=m
 -- 
 2.30.2
 
