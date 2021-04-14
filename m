@@ -2,107 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9DF635F162
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 12:17:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 798D235F1AA
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 12:49:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbhDNKRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 06:17:34 -0400
-Received: from mailout1.secunet.com ([62.96.220.44]:33382 "EHLO
-        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233391AbhDNKR1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 06:17:27 -0400
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id A8F0F800058;
-        Wed, 14 Apr 2021 12:17:04 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 14 Apr 2021 12:17:04 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 14 Apr
- 2021 12:17:03 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 999C831803D4; Wed, 14 Apr 2021 12:17:03 +0200 (CEST)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 3/3] ipv6: fix clang Wformat warning
-Date:   Wed, 14 Apr 2021 12:17:01 +0200
-Message-ID: <20210414101701.324777-4-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210414101701.324777-1-steffen.klassert@secunet.com>
-References: <20210414101701.324777-1-steffen.klassert@secunet.com>
+        id S234007AbhDNKtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 06:49:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59439 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233897AbhDNKt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 06:49:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1618397342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=We9uznYlK5dDZxYFXapdGy47V4QK+f7aFI5+V/isz3E=;
+        b=hDMN/KvQbyuca5T6NawzgVPVyXH99HmqJGX86v8Sf23UEsgqDxhYfYQumiy2voZPUv+dq5
+        GoeW8KKLolfEVbLTpRbmR7t7BUhZzhLHZdGId0m0txz13+X6QQlrCu9f+9QkofL86xhcQz
+        zbT9jXBh+zX/9xi8D2JaujZqYnfWDhE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-306-FmX7bh8WNxWSGVe29FSozw-1; Wed, 14 Apr 2021 06:49:01 -0400
+X-MC-Unique: FmX7bh8WNxWSGVe29FSozw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1E265186833B;
+        Wed, 14 Apr 2021 10:49:00 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-113-255.ams2.redhat.com [10.36.113.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B063B610A8;
+        Wed, 14 Apr 2021 10:48:58 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Dongseok Yi <dseok.yi@samsung.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next] skbuff: revert "skbuff: remove some unnecessary operation in skb_segment_list()"
+Date:   Wed, 14 Apr 2021 12:48:48 +0200
+Message-Id: <f092ecf89336221af04310c9feac800e49d4647f.1618397249.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+the commit 1ddc3229ad3c ("skbuff: remove some unnecessary operation
+in skb_segment_list()") introduces an issue very similar to the
+one already fixed by commit 53475c5dd856 ("net: fix use-after-free when
+UDP GRO with shared fraglist").
 
-When building with 'make W=1', clang warns about a mismatched
-format string:
+If the GSO skb goes though skb_clone() and pskb_expand_head() before
+entering skb_segment_list(), the latter  will unshare the frag_list
+skbs and will release the old list. With the reverted commit in place,
+when skb_segment_list() completes, skb->next points to the just
+released list, and later on the kernel will hit UaF.
 
-net/ipv6/ah6.c:710:4: error: format specifies type 'unsigned short' but the argument has type 'int' [-Werror,-Wformat]
-                        aalg_desc->uinfo.auth.icv_fullbits/8);
-                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/printk.h:375:34: note: expanded from macro 'pr_info'
-        printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-                                ~~~     ^~~~~~~~~~~
-net/ipv6/esp6.c:1153:5: error: format specifies type 'unsigned short' but the argument has type 'int' [-Werror,-Wformat]
-                                aalg_desc->uinfo.auth.icv_fullbits / 8);
-                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/printk.h:375:34: note: expanded from macro 'pr_info'
-        printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-                                ~~~     ^~~~~~~~~~~
+Note that since commit e0e3070a9bc9 ("udp: properly complete L4 GRO
+over UDP tunnel packet") the critical scenario can be reproduced also
+receiving UDP over vxlan traffic with:
 
-Here, the result of dividing a 16-bit number by a 32-bit number
-produces a 32-bit result, which is printed as a 16-bit integer.
+NIC (NETIF_F_GRO_FRAGLIST enabled) -> vxlan -> UDP sink
 
-Change the %hu format to the normal %u, which has the same effect
-but avoids the warning.
+Attaching a packet socket to the NIC will cause skb_clone() and the
+tunnel decapsulation will call pskb_expand_head().
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 1ddc3229ad3c ("skbuff: remove some unnecessary operation in skb_segment_list()")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/ipv6/ah6.c  | 2 +-
- net/ipv6/esp6.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/core/skbuff.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index 440080da805b..01c638f5d8b8 100644
---- a/net/ipv6/ah6.c
-+++ b/net/ipv6/ah6.c
-@@ -705,7 +705,7 @@ static int ah6_init_state(struct xfrm_state *x)
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 3ad9e8425ab2..14010c0eec48 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3773,13 +3773,13 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 	unsigned int tnl_hlen = skb_tnl_header_len(skb);
+ 	unsigned int delta_truesize = 0;
+ 	unsigned int delta_len = 0;
++	struct sk_buff *tail = NULL;
+ 	struct sk_buff *nskb, *tmp;
+ 	int err;
  
- 	if (aalg_desc->uinfo.auth.icv_fullbits/8 !=
- 	    crypto_ahash_digestsize(ahash)) {
--		pr_info("AH: %s digestsize %u != %hu\n",
-+		pr_info("AH: %s digestsize %u != %u\n",
- 			x->aalg->alg_name, crypto_ahash_digestsize(ahash),
- 			aalg_desc->uinfo.auth.icv_fullbits/8);
- 		goto error;
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 153ad103ba74..831a588b04a2 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -1147,7 +1147,7 @@ static int esp_init_authenc(struct xfrm_state *x)
- 		err = -EINVAL;
- 		if (aalg_desc->uinfo.auth.icv_fullbits / 8 !=
- 		    crypto_aead_authsize(aead)) {
--			pr_info("ESP: %s digestsize %u != %hu\n",
-+			pr_info("ESP: %s digestsize %u != %u\n",
- 				x->aalg->alg_name,
- 				crypto_aead_authsize(aead),
- 				aalg_desc->uinfo.auth.icv_fullbits / 8);
+ 	skb_push(skb, -skb_network_offset(skb) + offset);
+ 
+ 	skb_shinfo(skb)->frag_list = NULL;
+-	skb->next = list_skb;
+ 
+ 	do {
+ 		nskb = list_skb;
+@@ -3797,8 +3797,17 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 			}
+ 		}
+ 
+-		if (unlikely(err))
++		if (!tail)
++			skb->next = nskb;
++		else
++			tail->next = nskb;
++
++		if (unlikely(err)) {
++			nskb->next = list_skb;
+ 			goto err_linearize;
++		}
++
++		tail = nskb;
+ 
+ 		delta_len += nskb->len;
+ 		delta_truesize += nskb->truesize;
+@@ -3825,7 +3834,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 
+ 	skb_gso_reset(skb);
+ 
+-	skb->prev = nskb;
++	skb->prev = tail;
+ 
+ 	if (skb_needs_linearize(skb, features) &&
+ 	    __skb_linearize(skb))
 -- 
-2.25.1
+2.26.2
 
