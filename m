@@ -2,90 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C606F35FBE5
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 21:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD5F35FBE9
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 21:52:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349356AbhDNTwX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 15:52:23 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:30073 "EHLO
+        id S1353512AbhDNTwh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 15:52:37 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:34464 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349315AbhDNTwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 15:52:22 -0400
+        by vger.kernel.org with ESMTP id S1349387AbhDNTw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 15:52:29 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-310-6NTSzC4ENvSCcuLet0KdcA-1; Wed, 14 Apr 2021 15:51:55 -0400
-X-MC-Unique: 6NTSzC4ENvSCcuLet0KdcA-1
+ us-mta-471-Vf-_zIiqM6-7rSFDs5w4RQ-1; Wed, 14 Apr 2021 15:52:02 -0400
+X-MC-Unique: Vf-_zIiqM6-7rSFDs5w4RQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 377EB1854E20;
-        Wed, 14 Apr 2021 19:51:54 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2430283DD23;
+        Wed, 14 Apr 2021 19:52:00 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 396DF197F9;
-        Wed, 14 Apr 2021 19:51:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 876C06064B;
+        Wed, 14 Apr 2021 19:51:54 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+Cc:     kernel test robot <lkp@intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Julia Lawall <julia.lawall@inria.fr>
-Subject: [PATCHv5 bpf-next 0/7] bpf: Tracing and lsm programs re-attach
-Date:   Wed, 14 Apr 2021 21:51:40 +0200
-Message-Id: <20210414195147.1624932-1-jolsa@kernel.org>
+Subject: [PATCHv5 bpf-next 1/7] bpf: Allow trampoline re-attach for tracing and lsm programs
+Date:   Wed, 14 Apr 2021 21:51:41 +0200
+Message-Id: <20210414195147.1624932-2-jolsa@kernel.org>
+In-Reply-To: <20210414195147.1624932-1-jolsa@kernel.org>
+References: <20210414195147.1624932-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Authentication-Results: relay.mimecast.com;
         auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-while adding test for pinning the module while there's
-trampoline attach to it, I noticed that we don't allow
-link detach and following re-attach for trampolines.
-Adding that for tracing and lsm programs.
+Currently we don't allow re-attaching of trampolines. Once
+it's detached, it can't be re-attach even when the program
+is still loaded.
 
-You need to have patch [1] from bpf tree for test module
-attach test to pass.
+Adding the possibility to re-attach the loaded tracing and
+lsm programs.
 
-v5 changes:
-  - fixed missing hlist_del_init change
-  - fixed several ASSERT calls
-  - added extra patch for missing ';'
-  - added ASSERT macros to lsm test
-  - added acks
+Fixing missing unlock with proper cleanup goto jump reported
+by Julia.
 
-thanks,
-jirka
-
-
-[1] https://lore.kernel.org/bpf/20210326105900.151466-1-jolsa@kernel.org/
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Julia Lawall <julia.lawall@lip6.fr>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-Jiri Olsa (7):
-      bpf: Allow trampoline re-attach for tracing and lsm programs
-      selftests/bpf: Add missing semicolon
-      selftests/bpf: Add re-attach test to fentry_test
-      selftests/bpf: Add re-attach test to fexit_test
-      selftests/bpf: Add re-attach test to lsm test
-      selftests/bpf: Test that module can't be unloaded with attached trampoline
-      selftests/bpf: Use ASSERT macros in lsm test
+ kernel/bpf/syscall.c    | 23 +++++++++++++++++------
+ kernel/bpf/trampoline.c |  4 ++--
+ 2 files changed, 19 insertions(+), 8 deletions(-)
 
- kernel/bpf/syscall.c                                   | 23 +++++++++++++++++------
- kernel/bpf/trampoline.c                                |  4 ++--
- tools/testing/selftests/bpf/prog_tests/fentry_test.c   | 52 +++++++++++++++++++++++++++++++++++++---------------
- tools/testing/selftests/bpf/prog_tests/fexit_test.c    | 52 +++++++++++++++++++++++++++++++++++++---------------
- tools/testing/selftests/bpf/prog_tests/module_attach.c | 23 +++++++++++++++++++++++
- tools/testing/selftests/bpf/prog_tests/test_lsm.c      | 61 +++++++++++++++++++++++++++++++++++++++++--------------------
- tools/testing/selftests/bpf/test_progs.h               |  2 +-
- 7 files changed, 158 insertions(+), 59 deletions(-)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index fd495190115e..941ca06d9dfa 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2648,14 +2648,25 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
+ 	 *   target_btf_id using the link_create API.
+ 	 *
+ 	 * - if tgt_prog == NULL when this function was called using the old
+-         *   raw_tracepoint_open API, and we need a target from prog->aux
+-         *
+-         * The combination of no saved target in prog->aux, and no target
+-         * specified on load is illegal, and we reject that here.
++	 *   raw_tracepoint_open API, and we need a target from prog->aux
++	 *
++	 * - if prog->aux->dst_trampoline and tgt_prog is NULL, the program
++	 *   was detached and is going for re-attachment.
+ 	 */
+ 	if (!prog->aux->dst_trampoline && !tgt_prog) {
+-		err = -ENOENT;
+-		goto out_unlock;
++		/*
++		 * Allow re-attach for TRACING and LSM programs. If it's
++		 * currently linked, bpf_trampoline_link_prog will fail.
++		 * EXT programs need to specify tgt_prog_fd, so they
++		 * re-attach in separate code path.
++		 */
++		if (prog->type != BPF_PROG_TYPE_TRACING &&
++		    prog->type != BPF_PROG_TYPE_LSM) {
++			err = -EINVAL;
++			goto out_unlock;
++		}
++		btf_id = prog->aux->attach_btf_id;
++		key = bpf_trampoline_compute_key(NULL, prog->aux->attach_btf, btf_id);
+ 	}
+ 
+ 	if (!prog->aux->dst_trampoline ||
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 1f3a4be4b175..205c2cc36ad7 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -414,7 +414,7 @@ int bpf_trampoline_link_prog(struct bpf_prog *prog, struct bpf_trampoline *tr)
+ 	tr->progs_cnt[kind]++;
+ 	err = bpf_trampoline_update(tr);
+ 	if (err) {
+-		hlist_del(&prog->aux->tramp_hlist);
++		hlist_del_init(&prog->aux->tramp_hlist);
+ 		tr->progs_cnt[kind]--;
+ 	}
+ out:
+@@ -437,7 +437,7 @@ int bpf_trampoline_unlink_prog(struct bpf_prog *prog, struct bpf_trampoline *tr)
+ 		tr->extension_prog = NULL;
+ 		goto out;
+ 	}
+-	hlist_del(&prog->aux->tramp_hlist);
++	hlist_del_init(&prog->aux->tramp_hlist);
+ 	tr->progs_cnt[kind]--;
+ 	err = bpf_trampoline_update(tr);
+ out:
+-- 
+2.30.2
 
