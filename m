@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0D935F5D8
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D626A35F5DF
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 16:14:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351746AbhDNOGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 10:06:33 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:47944 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347931AbhDNOGS (ORCPT
+        id S1351791AbhDNOGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 10:06:41 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:33046 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349092AbhDNOGS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 10:06:18 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5bHc011888;
-        Wed, 14 Apr 2021 09:05:37 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5f8w049791;
+        Wed, 14 Apr 2021 09:05:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1618409137;
-        bh=nOtbADv7gq9oWC93nIeG2KyriW+0wEaqeFfExSfoA3U=;
+        s=ti-com-17Q1; t=1618409141;
+        bh=SbyTJ4nrIzPbNTHEIea0gu+NlxpkXKwgFDRim/hhn7g=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=S2NEY8hPC/8Lpjqh1WebsZZ/UVUExP+RgWh5GBR5CAu2RuX6sJwmQ42ZPrGbuiPRe
-         s1XSm1zbV6uX3PcuYhBXwtugtcEwCtXihY6NexPS01uFR4sbcjtdcO44lb4VFBiAd7
-         bFCAUKCrMSI/hZqOSHcMXQtN/SVMeRstFXXXtfhQ=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13EE5a2c041986
+        b=xj6v6yYGGZt1t29Qk0f0qFccFV3/eNAcJejciXGwZ98AcnPtDvjo5DLOROMnfnoux
+         KPe7U/dksJlZCtyCMcEkEf9PVYtQ4YkF3odqIMLPgkfSL9wSFNV0rTxEFqEEPYEHbe
+         NzXbedYSLcus8DlNbWlDlfAsXAAx9w9XSTr9f9sM=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 13EE5fFE057032
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 14 Apr 2021 09:05:36 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 14 Apr 2021 09:05:41 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 14
- Apr 2021 09:05:36 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ Apr 2021 09:05:41 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
- Frontend Transport; Wed, 14 Apr 2021 09:05:36 -0500
+ Frontend Transport; Wed, 14 Apr 2021 09:05:41 -0500
 Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5LuA074247;
-        Wed, 14 Apr 2021 09:05:32 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 13EE5LuB074247;
+        Wed, 14 Apr 2021 09:05:36 -0500
 From:   Aswath Govindraju <a-govindraju@ti.com>
 CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-phy@lists.infradead.org>,
@@ -51,9 +51,9 @@ CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Lokesh Vutla <lokeshvutla@ti.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Aswath Govindraju <a-govindraju@ti.com>
-Subject: [PATCH v2 2/6] phy: Add API for devm_of_phy_optional_get_by_index
-Date:   Wed, 14 Apr 2021 19:35:17 +0530
-Message-ID: <20210414140521.11463-3-a-govindraju@ti.com>
+Subject: [PATCH v2 3/6] dt-bindings: phy: Add binding for TI TCAN104x CAN transceivers
+Date:   Wed, 14 Apr 2021 19:35:18 +0530
+Message-ID: <20210414140521.11463-4-a-govindraju@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210414140521.11463-1-a-govindraju@ti.com>
 References: <20210414140521.11463-1-a-govindraju@ti.com>
@@ -65,65 +65,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add API for devm_of_phy_optional_get_by_index, to obtain a reference to an
-optional phy by index.
+Add binding documentation for TI TCAN104x CAN transceivers.
 
 Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- drivers/phy/phy-core.c  | 26 ++++++++++++++++++++++++++
- include/linux/phy/phy.h |  2 ++
- 2 files changed, 28 insertions(+)
+ .../bindings/phy/ti,tcan104x-can.yaml         | 56 +++++++++++++++++++
+ MAINTAINERS                                   |  1 +
+ 2 files changed, 57 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
 
-diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
-index ccb575b13777..bf06d4e0ede2 100644
---- a/drivers/phy/phy-core.c
-+++ b/drivers/phy/phy-core.c
-@@ -839,6 +839,32 @@ struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
- }
- EXPORT_SYMBOL_GPL(devm_of_phy_get);
- 
-+/**
-+ * devm_of_phy_optional_get_by_index() - lookup and obtain a reference to an optional phy by index.
-+ * @dev: device that requests this phy
-+ * @np: node containing the phy
-+ * @index: index of the phy
-+ *
-+ * Gets the phy using _of_phy_get(), then gets a refcount to it,
-+ * and associates a device with it using devres. On driver detach,
-+ * release function is invoked on the devres data, then,
-+ * devres data is freed. This differs to devm_of_phy_get_by_index() in
-+ * that if the phy does not exist, it is not considered an error and
-+ * -ENODEV will not be returned. Instead the NULL phy is returned,
-+ * which can be passed to all other phy consumer calls.
-+ */
-+struct phy *devm_of_phy_optional_get_by_index(struct device *dev, struct device_node *np,
-+					      int index)
-+{
-+	struct phy *phy = devm_of_phy_get_by_index(dev, np, index);
+diff --git a/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+new file mode 100644
+index 000000000000..4abfc30a97d0
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/phy/ti,tcan104x-can.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 +
-+	if (PTR_ERR(phy) == -ENODEV)
-+		phy = NULL;
++title: TCAN104x CAN TRANSCEIVER PHY
 +
-+	return phy;
-+}
-+EXPORT_SYMBOL_GPL(devm_of_phy_optional_get_by_index);
++maintainers:
++  - Aswath Govindraju <a-govindraju@ti.com>
 +
- /**
-  * devm_of_phy_get_by_index() - lookup and obtain a reference to a phy by index.
-  * @dev: device that requests this phy
-diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-index f3286f4cd306..c5f32b4fadd6 100644
---- a/include/linux/phy/phy.h
-+++ b/include/linux/phy/phy.h
-@@ -253,6 +253,8 @@ struct phy *devm_of_phy_get(struct device *dev, struct device_node *np,
- 			    const char *con_id);
- struct phy *devm_of_phy_get_by_index(struct device *dev, struct device_node *np,
- 				     int index);
-+struct phy *devm_of_phy_optional_get_by_index(struct device *dev, struct device_node *np,
-+					      int index);
- void of_phy_put(struct phy *phy);
- void phy_put(struct device *dev, struct phy *phy);
- void devm_phy_put(struct device *dev, struct phy *phy);
++properties:
++  $nodename:
++    pattern: "^tcan104x-phy"
++
++  compatible:
++    enum:
++      - ti,tcan1042
++      - ti,tcan1043
++
++  '#phy-cells':
++    const: 0
++
++  standby-gpios:
++    description:
++      gpio node to toggle standby signal on transceiver
++    maxItems: 1
++
++  enable-gpios:
++    description:
++      gpio node to toggle enable signal on transceiver
++    maxItems: 1
++
++  max-bitrate:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      max bit rate supported in bps
++    minimum: 1
++
++required:
++  - compatible
++  - '#phy-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    transceiver1: tcan104x-phy {
++      compatible = "ti,tcan1043";
++      #phy-cells = <0>;
++      max-bitrate = <5000000>;
++      standby-gpios = <&wakeup_gpio1 16 GPIO_ACTIVE_LOW>;
++      enable-gpios = <&main_gpio1 67 GPIO_ACTIVE_LOW>;
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 84ef96a444c3..e666d33af10d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4046,6 +4046,7 @@ W:	https://github.com/linux-can
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git
+ F:	Documentation/devicetree/bindings/net/can/
++F:	Documentation/devicetree/bindings/phy/ti,tcan104x-can.yaml
+ F:	drivers/net/can/
+ F:	include/linux/can/bittiming.h
+ F:	include/linux/can/dev.h
 -- 
 2.17.1
 
