@@ -2,70 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3116435F90E
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:40:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B202535F913
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:42:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbhDNQgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 12:36:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42108 "EHLO mail.kernel.org"
+        id S234053AbhDNQkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 12:40:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50928 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351853AbhDNQgE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 12:36:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EA2F6113B;
-        Wed, 14 Apr 2021 16:35:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1618418142;
-        bh=O7aJLYOwfury36Lsg2eL0ZZXdtaYRMwQZFoI4Z5g5BU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p5x9cb/ZghAjwWa244hd1Taf0WaCPGpSzhOJbWZfYYHSiLiqA5Xyxjn64KugheZvE
-         naznlxzfTAz42KRX90rRtR6ylH12uRferNSG7ekrekYDjWqYWyBEx5qihpYKjNVJbj
-         rnm4AWQFmbJqNegrqQqmpv4SSXd2SKM5Ue9mwNuUzUf9kck6LfPik7hjFF6Gb4KipI
-         PTPzm4r4pp2F82a+2SmcAB9CZl1RSC0n4kk6hb2yfvYgv9L20oLZz6Vf34r4aoUKBh
-         lfdyU4Kw88bmZ+0j0XyA7HnUJNEAOMo0avTK0mvA+CZvbrGJ78ag06+lReaYqkkeJI
-         HoTuMfOYQHN2w==
-Date:   Wed, 14 Apr 2021 09:35:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        id S234251AbhDNQit (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 12:38:49 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lWiWr-00GisB-N9; Wed, 14 Apr 2021 18:38:13 +0200
+Date:   Wed, 14 Apr 2021 18:38:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-omap@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [net-next] enetc: fix locking for one-step timestamping packet
- transfer
-Message-ID: <20210414093541.39706863@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <AM7PR04MB6885805B7D5D11DD8DC1CA28F84E9@AM7PR04MB6885.eurprd04.prod.outlook.com>
-References: <20210413034817.8924-1-yangbo.lu@nxp.com>
-        <20210413101055.647cc156@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <AM7PR04MB6885805B7D5D11DD8DC1CA28F84E9@AM7PR04MB6885.eurprd04.prod.outlook.com>
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH net-next 2/2] net: bridge: switchdev: include local flag
+ in FDB notifications
+Message-ID: <YHcadT4XhBq7g61Y@lunn.ch>
+References: <20210414151540.1808871-1-olteanv@gmail.com>
+ <20210414151540.1808871-2-olteanv@gmail.com>
+ <YHcRNIgI9lVs6MDj@lunn.ch>
+ <20210414160510.zcif6liazjltd2cz@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210414160510.zcif6liazjltd2cz@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Apr 2021 06:18:57 +0000 Y.b. Lu wrote:
-> > On Tue, 13 Apr 2021 11:48:17 +0800 Yangbo Lu wrote:  
-> > > +	/* Queue one-step Sync packet if already locked */
-> > > +	if (skb->cb[0] & ENETC_F_TX_ONESTEP_SYNC_TSTAMP) {
-> > > +		if  
-> > (test_and_set_bit_lock(ENETC_TX_ONESTEP_TSTAMP_IN_PROGRESS,  
-> > > +					  &priv->flags)) {
-> > > +			skb_queue_tail(&priv->tx_skbs, skb);
-> > > +			return NETDEV_TX_OK;
-> > > +		}
-> > > +	}  
+On Wed, Apr 14, 2021 at 07:05:10PM +0300, Vladimir Oltean wrote:
+> On Wed, Apr 14, 2021 at 05:58:44PM +0200, Andrew Lunn wrote:
+> > > Let us now add the 'is_local' bit to bridge FDB entries, and make all
+> > > drivers ignore these entries by their own choice.
 > > 
-> > Isn't this missing queue_work() as well?
+> > Hi Vladimir
 > > 
-> > Also as I mentioned I don't understand why you created a separate workqueue
-> > instead of using the system workqueue via schedule_work().  
+> > This goes to the question about the missing cover letter. Why should
+> > drivers get to ignore them, rather than the core? It feels like there
+> > should be another patch in the series, where a driver does not
+> > actually ignore them, but does something?
 > 
-> queue_work(system_wq, ) was put in clean_tx. I finally followed the
-> logic you suggested :)
+> Hi Andrew,
+> 
+> Bridge fdb entries with the is_local flag are entries which are
+> terminated locally and not forwarded. Switchdev drivers might want to be
+> notified of these addresses so they can trap them (otherwise, if they
+> don't program these entries to hardware, there is no guarantee that they
+> will do the right thing with these entries, and they won't be, let's
+> say, flooded). Of course, ideally none of the switchdev drivers should
+> ignore them, but having access to the is_local bit is the bare minimum
+> change that should be done in the bridge layer, before this is even
+> possible.
+> 
+> These 2 changes are actually part of a larger group of changes that
+> together form the "RX filtering for DSA" series. I haven't had a lot of
+> success with that, so I thought a better approach would be to take it
+> step by step. DSA will need to be notified of local FDB entries. For
+> now, it ignores them like everybody else. This is supposed to be a
+> non-functional patch series because I don't want to spam every switchdev
+> maintainer with 15+ DSA RX filtering patches.
 
-Ah, I didn't look close enough. I was expecting to see schedule_work(),
-please consider sending a follow up, queue_work(system_wq, $work) is a
-rare construct.
+This is the sort of information which goes into 0/2. It explains the
+big picture 'Why' of the change.
+
+    Andrew
