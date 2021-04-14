@@ -2,47 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36AB935F870
-	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6657835F876
+	for <lists+netdev@lfdr.de>; Wed, 14 Apr 2021 18:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352451AbhDNPxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 11:53:07 -0400
-Received: from verein.lst.de ([213.95.11.211]:59487 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352442AbhDNPvd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 11:51:33 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 65D2768C7B; Wed, 14 Apr 2021 17:51:08 +0200 (CEST)
-Date:   Wed, 14 Apr 2021 17:51:08 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com, arnd@arndb.de,
-        akpm@linux-foundation.org, gregkh@linuxfoundation.org,
-        konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com,
-        sunilmut@microsoft.com
-Subject: Re: [Resend RFC PATCH V2 12/12] HV/Storvsc: Add Isolation VM
- support for storvsc driver
-Message-ID: <20210414155108.GF32045@lst.de>
-References: <20210414144945.3460554-1-ltykernel@gmail.com> <20210414144945.3460554-13-ltykernel@gmail.com>
+        id S1352485AbhDNPxT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Apr 2021 11:53:19 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:29643 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352426AbhDNPwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Apr 2021 11:52:45 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-15-m9cXnC2KMlaJybEViQCuIg-1; Wed, 14 Apr 2021 16:52:18 +0100
+X-MC-Unique: m9cXnC2KMlaJybEViQCuIg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Wed, 14 Apr 2021 16:52:16 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.012; Wed, 14 Apr 2021 16:52:16 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Matthew Wilcox' <willy@infradead.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Matteo Croce <mcroce@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        "Christoph Hellwig" <hch@lst.de>
+Subject: RE: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Thread-Topic: [PATCH 1/1] mm: Fix struct page layout on 32-bit systems
+Thread-Index: AQHXMSRrwdfrgigLI0exh4xFUSZq9Kq0J1eg
+Date:   Wed, 14 Apr 2021 15:52:16 +0000
+Message-ID: <7f6cee3dcf1749fbb7b54eaf129141e7@AcuMS.aculab.com>
+References: <20210410205246.507048-1-willy@infradead.org>
+ <20210410205246.507048-2-willy@infradead.org>
+ <20210411114307.5087f958@carbon>
+ <20210411103318.GC2531743@casper.infradead.org>
+ <20210412011532.GG2531743@casper.infradead.org>
+ <20210414101044.19da09df@carbon>
+ <20210414115052.GS2531743@casper.infradead.org>
+In-Reply-To: <20210414115052.GS2531743@casper.infradead.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210414144945.3460554-13-ltykernel@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Same comments as for the net driver.  In addition to all the poking
-into kernel internals the fact that this is duplicated in the two main
-drivers should have been a huge red flag.
+> Doing this fixes it:
+> 
+> +++ b/include/linux/types.h
+> @@ -140,7 +140,7 @@ typedef u64 blkcnt_t;
+>   * so they don't care about the size of the actual bus addresses.
+>   */
+>  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+> -typedef u64 dma_addr_t;
+> +typedef u64 __attribute__((aligned(sizeof(void *)))) dma_addr_t;
+>  #else
+>  typedef u32 dma_addr_t;
+>  #endif
+
+I hate __packed so much I've been checking what it does!
+
+If you add __packed to the dma_addr_t field inside the union
+then gcc (at least) removes the pad from before it, but also
+'remembers' the alignment that is enforced by other members
+of the structure.
+
+So you don't need the extra aligned(sizeof (void *)) since
+that is implicit.
+
+So in this case __packed probably has no side effects.
+(Unless a 32bit arch has instructions for a 64bit read
+that must not be on an 8n+4 boundary and the address is taken).
+
+It also doesn't affect 64bit - since the previous field
+forces 64bit alignment.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
