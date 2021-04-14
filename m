@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A2C35FE68
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 01:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A10235FE69
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 01:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237445AbhDNX0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 19:26:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49902 "EHLO mail.kernel.org"
+        id S237553AbhDNX0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 19:26:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49912 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233459AbhDNX0O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Apr 2021 19:26:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B38CE61242;
-        Wed, 14 Apr 2021 23:25:52 +0000 (UTC)
+        id S235170AbhDNX0P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Apr 2021 19:26:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B49061249;
+        Wed, 14 Apr 2021 23:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1618442753;
-        bh=T7KqcsJXuzCajU7swIRrYJFoQd5vgDu/miTpVfFOxRs=;
+        bh=g+M/PEb505lordpqQPP58tMBzdQCbn8CsRda9wF54GY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DmmiQomsK14szSeFW/FfGOVbOivgka0CCqvkJ4KLfHQG/5x1/Q09uu6x4uma9geoz
-         SxWdjew002fr9h77VA6n84pD2Wc3LihbLILe4qSSqmGwWPfCncNG8aGXQNJA56EM+0
-         OVGVfVvhkn1/eX5HsNo1EIh9EqPyscXoLfCU5gAkeCjNZI1u2mKT5b382/pE8ILsDR
-         WL9/QR0n1dw/r4CTv8yK4F3VoC3v0nvyMqAPKMslNxIpLjEOFM22N5dItBd9Vd+n/P
-         s9RF1v15nJVLch/+JAwizRX98tLjDdXeg4wLWD6TyWDETLwDEFEfiz2SK3ZuVeDXaR
-         6yNxjDS9VtfhA==
+        b=VJr7bqvPgA40Q1uI4pjyvZ12PDXCRGFdSBtfQWbhj933XlWcoAueopSVBPlw8FMcl
+         xfiHcjxq1w9QIgAaMbengZAcJPupJa0fu9acRodgcnqQy86eH8ITauQCnLg1MKmpIK
+         0cXX85Bn7Q8DsGmEYmmV8mYpF9EBG6RRmoM3xEwFzXpsX5HOgTRvG5qwb8ppV2izXg
+         z1RBjeA9+aWsv7GBySbLmUw5SZCR1siRw3SFG5NxkNkbb/j3TUvlWIDZB7EjER/zDg
+         SLNHgpFc8A5J2hMRaa6x6M9U2rUgpVRvNVhdHSnggt0sCCKPfk8XneS1dnbTwW4OYX
+         FvGpzd+6lPOrg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org,
         "Cc : Steffen Klassert" <steffen.klassert@secunet.com>,
-        Huy Nguyen <huyn@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [PATCH net 2/3] net/xfrm: Add inner_ipproto into sec_path
-Date:   Wed, 14 Apr 2021 16:25:39 -0700
-Message-Id: <20210414232540.138232-3-saeed@kernel.org>
+        Huy Nguyen <huyn@nvidia.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH net 3/3] net/mlx5: Fix checksum issue of VXLAN and IPsec crypto offload
+Date:   Wed, 14 Apr 2021 16:25:40 -0700
+Message-Id: <20210414232540.138232-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210414232540.138232-1-saeed@kernel.org>
 References: <20210414232540.138232-1-saeed@kernel.org>
@@ -43,90 +44,158 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Huy Nguyen <huyn@nvidia.com>
 
-The inner_ipproto saves the inner IP protocol of the plain
-text packet. This allows vendor's IPsec feature making offload
-decision at skb's features_check and configuring hardware at
-ndo_start_xmit.
+The packet is VXLAN packet over IPsec transport mode tunnel
+which has the following format: [IP1 | ESP | UDP | VXLAN | IP2 | TCP]
+NVIDIA ConnectX card cannot do checksum offload for two L4 headers.
+The solution is using the checksum partial offload similar to
+VXLAN | TCP packet. Hardware calculates IP1, IP2 and TCP checksums and
+software calculates UDP checksum. However, unlike VXLAN | TCP case,
+IPsec's mlx5 driver cannot access the inner plaintext IP protocol type.
+Therefore, inner_ipproto is added in the sec_path structure
+to provide this information. Also, utilize the skb's csum_start to
+program L4 inner checksum offset.
 
-For example, ConnectX6-DX IPsec device needs the plaintext's
-IP protocol to support partial checksum offload on
-VXLAN/GENEVE packet over IPsec transport mode tunnel.
+While at it, remove the call to mlx5e_set_eseg_swp and setup software parser
+fields directly in mlx5e_ipsec_set_swp. mlx5e_set_eseg_swp is not
+needed as the two features (GENEVE and IPsec) are different and adding
+this sharing layer creates unnecessary complexity and affect
+performance.
 
+For the case VXLAN packet over IPsec tunnel mode tunnel, checksum offload
+is disabled because the hardware does not support checksum offload for
+three L3 (IP) headers.
+
+Fixes: 2ac9cfe78223 ("net/mlx5e: IPSec, Add Innova IPSec offload TX data path")
 Signed-off-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Huy Nguyen <huyn@nvidia.com>
 Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- include/net/xfrm.h     |  1 +
- net/xfrm/xfrm_output.c | 36 +++++++++++++++++++++++++++++++++++-
- 2 files changed, 36 insertions(+), 1 deletion(-)
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c  | 65 ++++++++++++++-----
+ .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  | 21 +++++-
+ 2 files changed, 69 insertions(+), 17 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index c58a6d4eb610..e535700431fb 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1032,6 +1032,7 @@ struct sec_path {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+index a97e8d205094..6d2b809988b1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.c
+@@ -136,7 +136,7 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
+ 				struct mlx5_wqe_eth_seg *eseg, u8 mode,
+ 				struct xfrm_offload *xo)
+ {
+-	struct mlx5e_swp_spec swp_spec = {};
++	struct sec_path *sp = skb_sec_path(skb);
  
- 	struct xfrm_state	*xvec[XFRM_MAX_DEPTH];
- 	struct xfrm_offload	ovec[XFRM_MAX_OFFLOAD_DEPTH];
-+	u8			inner_ipproto;
- };
- 
- struct sec_path *secpath_set(struct sk_buff *skb);
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index e4cb0ff4dcf4..da412928093b 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -565,6 +565,36 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
- 	return 0;
- }
- 
-+/* Save inner ip protocol for vendor offload usage */
-+static void get_inner_ipproto(struct sk_buff *skb, struct sec_path *sp)
-+{
-+	const struct ethhdr *eth;
+ 	/* Tunnel Mode:
+ 	 * SWP:      OutL3       InL3  InL4
+@@ -146,23 +146,58 @@ static void mlx5e_ipsec_set_swp(struct sk_buff *skb,
+ 	 * SWP:      OutL3       InL4
+ 	 *           InL3
+ 	 * Pkt: MAC  IP     ESP  L4
++	 *
++	 * Tunnel(VXLAN TCP/UDP) over Transport Mode
++	 * SWP:      OutL3                   InL3  InL4
++	 * Pkt: MAC  IP     ESP  UDP  VXLAN  IP    L4
+ 	 */
+-	swp_spec.l3_proto = skb->protocol;
+-	swp_spec.is_tun = mode == XFRM_MODE_TUNNEL;
+-	if (swp_spec.is_tun) {
+-		if (xo->proto == IPPROTO_IPV6) {
+-			swp_spec.tun_l3_proto = htons(ETH_P_IPV6);
+-			swp_spec.tun_l4_proto = inner_ipv6_hdr(skb)->nexthdr;
+-		} else {
+-			swp_spec.tun_l3_proto = htons(ETH_P_IP);
+-			swp_spec.tun_l4_proto = inner_ip_hdr(skb)->protocol;
+-		}
+-	} else {
+-		swp_spec.tun_l3_proto = skb->protocol;
+-		swp_spec.tun_l4_proto = xo->proto;
 +
-+	if (!skb->inner_protocol)
-+		return;
++	/* Shared settings */
++	eseg->swp_outer_l3_offset = skb_network_offset(skb) / 2;
++	if (skb->protocol == htons(ETH_P_IPV6))
++		eseg->swp_flags |= MLX5_ETH_WQE_SWP_OUTER_L3_IPV6;
 +
-+	if (skb->inner_protocol_type == ENCAP_TYPE_IPPROTO) {
-+		sp->inner_ipproto = skb->inner_protocol;
++	/* Tunnel mode */
++	if (mode == XFRM_MODE_TUNNEL) {
++		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
++		eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
++		if (xo->proto == IPPROTO_IPV6)
++			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
++		if (inner_ip_hdr(skb)->protocol == IPPROTO_UDP)
++			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
 +		return;
 +	}
 +
-+	if (skb->inner_protocol_type != ENCAP_TYPE_ETHER)
++	/* Transport mode */
++	if (mode != XFRM_MODE_TRANSPORT)
 +		return;
 +
-+	eth = (struct ethhdr *)skb_inner_mac_header(skb);
++	if (!sp->inner_ipproto) {
++		eseg->swp_inner_l3_offset = skb_network_offset(skb) / 2;
++		eseg->swp_inner_l4_offset = skb_inner_transport_offset(skb) / 2;
++		if (skb->protocol == htons(ETH_P_IPV6))
++			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
++		if (xo->proto == IPPROTO_UDP)
++			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
++		return;
++	}
 +
-+	switch (eth->h_proto) {
-+	case ntohs(ETH_P_IPV6):
-+		sp->inner_ipproto = inner_ipv6_hdr(skb)->nexthdr;
-+		break;
-+	case ntohs(ETH_P_IP):
-+		sp->inner_ipproto = inner_ip_hdr(skb)->protocol;
++	/* Tunnel(VXLAN TCP/UDP) over Transport Mode */
++	switch (sp->inner_ipproto) {
++	case IPPROTO_UDP:
++		eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L4_UDP;
++		fallthrough;
++	case IPPROTO_TCP:
++		eseg->swp_inner_l3_offset = skb_inner_network_offset(skb) / 2;
++		eseg->swp_inner_l4_offset = (skb->csum_start + skb->head - skb->data) / 2;
++		if (skb->protocol == htons(ETH_P_IPV6))
++			eseg->swp_flags |= MLX5_ETH_WQE_SWP_INNER_L3_IPV6;
 +		break;
 +	default:
-+		return;
-+	}
-+}
-+
- int xfrm_output(struct sock *sk, struct sk_buff *skb)
- {
- 	struct net *net = dev_net(skb_dst(skb)->dev);
-@@ -594,8 +624,12 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
- 			kfree_skb(skb);
- 			return -ENOMEM;
- 		}
--		skb->encapsulation = 1;
++		break;
+ 	}
  
-+		sp->inner_ipproto = 0;
-+		if (skb->encapsulation)
-+			get_inner_ipproto(skb, sp);
+-	mlx5e_set_eseg_swp(skb, eseg, &swp_spec);
++	return;
+ }
+ 
+ void mlx5e_ipsec_set_iv_esn(struct sk_buff *skb, struct xfrm_state *x,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
+index cfa98272e4a9..de242cf1510a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_rxtx.h
+@@ -101,11 +101,28 @@ mlx5e_ipsec_feature_check(struct sk_buff *skb, netdev_features_t features)
+ 	if (sp && sp->len) {
+ 		struct xfrm_state *x = sp->xvec[0];
+ 
+-		if (x && x->xso.offload_handle)
+-			return features;
++		if (!x || !x->xso.offload_handle)
++			goto out_disable;
 +
-+		skb->encapsulation = 1;
- 		sp->olen++;
- 		sp->xvec[sp->len++] = x;
- 		xfrm_state_hold(x);
++		if (sp->inner_ipproto) {
++			/* Cannot support tunnel packet over IPsec tunnel mode
++			 * because we cannot offload three IP header csum
++			 */
++			if (x->props.mode == XFRM_MODE_TUNNEL)
++				goto out_disable;
++
++			/* Only support UDP or TCP L4 checksum */
++			if (sp->inner_ipproto != IPPROTO_UDP &&
++			    sp->inner_ipproto != IPPROTO_TCP)
++				goto out_disable;
++		}
++
++		return features;
++
+ 	}
+ 
+ 	/* Disable CSUM and GSO for software IPsec */
++out_disable:
+ 	return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+ }
+ 
 -- 
 2.30.2
 
