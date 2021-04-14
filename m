@@ -2,70 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD2A35FE1D
-	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 01:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B82B35FE20
+	for <lists+netdev@lfdr.de>; Thu, 15 Apr 2021 01:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbhDNXHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Apr 2021 19:07:13 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55746 "EHLO mx2.suse.de"
+        id S235144AbhDNXHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Apr 2021 19:07:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55762 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233083AbhDNXHN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233467AbhDNXHN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Apr 2021 19:07:13 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id CDB3DAFF1;
-        Wed, 14 Apr 2021 23:06:49 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 40661B030;
+        Wed, 14 Apr 2021 23:06:50 +0000 (UTC)
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: [PATCH v3 net-next 00/10] net: Korina improvements
-Date:   Thu, 15 Apr 2021 01:06:37 +0200
-Message-Id: <20210414230648.76129-1-tsbogend@alpha.franken.de>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 net-next 01/10] net: korina: Fix MDIO functions
+Date:   Thu, 15 Apr 2021 01:06:38 +0200
+Message-Id: <20210414230648.76129-2-tsbogend@alpha.franken.de>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210414230648.76129-1-tsbogend@alpha.franken.de>
+References: <20210414230648.76129-1-tsbogend@alpha.franken.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While converting Mikrotik RB532 support to use device tree I stumbled
-over the korina ethernet driver, which used way too many MIPS specific
-hacks. This series cleans this all up and adds support for device tree.
+Fixed MDIO functions to work reliable and not just by accident.
 
-Changes in v3:
-  - fixed usage of of_get_mac_address for net-next
-  - use readl_poll_timeout_atomic in mdio_wait
-  - return -ETIMEDOUT, if mdio_wait fails
-  - added DT binding and changed compatible name to idt,3243x-emac
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+---
+ drivers/net/ethernet/Kconfig  |  1 +
+ drivers/net/ethernet/korina.c | 54 +++++++++++++++++++++++------------
+ 2 files changed, 36 insertions(+), 19 deletions(-)
 
-Changes in v2:
-  - added device tree support to get rid of idt_cpu_freq
-  - fixed compile test on 64bit archs
-  - fixed descriptor current address handling by storing/using mapped
-    dma addresses (dma controller modifies current address)
-
-Thomas Bogendoerfer (10):
-  net: korina: Fix MDIO functions
-  net: korina: Use devres functions
-  net: korina: Remove not needed cache flushes
-  net: korina: Remove nested helpers
-  net: korina: Use DMA API
-  net: korina: Only pass mac address via platform data
-  net: korina: Add support for device tree
-  net: korina: Get mdio input clock via common clock framework
-  net: korina: Make driver COMPILE_TESTable
-  dt-bindings: net: korina: Add DT bindings for IDT 79RC3243x SoCs
-
- .../bindings/net/idt,3243x-emac.yaml          |  82 +++
- arch/mips/rb532/devices.c                     |   5 +-
- drivers/net/ethernet/Kconfig                  |   3 +-
- drivers/net/ethernet/korina.c                 | 601 +++++++++++++-----
- 4 files changed, 519 insertions(+), 172 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/idt,3243x-emac.yaml
-
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index ad04660b97b8..c059b4bd3f23 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -98,6 +98,7 @@ config JME
+ config KORINA
+ 	tristate "Korina (IDT RC32434) Ethernet support"
+ 	depends on MIKROTIK_RB532
++	select MII
+ 	help
+ 	  If you have a Mikrotik RouterBoard 500 or IDT RC32434
+ 	  based system say Y. Otherwise say N.
+diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
+index 925161959b9b..3f6f4835a9bc 100644
+--- a/drivers/net/ethernet/korina.c
++++ b/drivers/net/ethernet/korina.c
+@@ -41,6 +41,7 @@
+ #include <linux/types.h>
+ #include <linux/interrupt.h>
+ #include <linux/ioport.h>
++#include <linux/iopoll.h>
+ #include <linux/in.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+@@ -137,7 +138,6 @@ struct korina_private {
+ 	struct mii_if_info mii_if;
+ 	struct work_struct restart_task;
+ 	struct net_device *dev;
+-	int phy_addr;
+ };
+ 
+ extern unsigned int idt_cpu_freq;
+@@ -292,32 +292,46 @@ static int korina_send_packet(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ }
+ 
+-static int mdio_read(struct net_device *dev, int mii_id, int reg)
++static int korina_mdio_wait(struct korina_private *lp)
++{
++	u32 value;
++
++	return readl_poll_timeout_atomic(&lp->eth_regs->miimind,
++					 value, value & ETH_MII_IND_BSY,
++					 1, 1000);
++}
++
++static int korina_mdio_read(struct net_device *dev, int phy, int reg)
+ {
+ 	struct korina_private *lp = netdev_priv(dev);
+ 	int ret;
+ 
+-	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
++	if (korina_mdio_wait(lp))
++		return -ETIMEDOUT;
+ 
+-	writel(0, &lp->eth_regs->miimcfg);
+-	writel(0, &lp->eth_regs->miimcmd);
+-	writel(mii_id | reg, &lp->eth_regs->miimaddr);
+-	writel(ETH_MII_CMD_SCN, &lp->eth_regs->miimcmd);
++	writel(phy << 8 | reg, &lp->eth_regs->miimaddr);
++	writel(1, &lp->eth_regs->miimcmd);
++
++	if (korina_mdio_wait(lp))
++		return -ETIMEDOUT;
+ 
+-	ret = (int)(readl(&lp->eth_regs->miimrdd));
++	if (readl(&lp->eth_regs->miimind) & ETH_MII_IND_NV)
++		return -1;
++
++	ret = readl(&lp->eth_regs->miimrdd);
++	writel(0, &lp->eth_regs->miimcmd);
+ 	return ret;
+ }
+ 
+-static void mdio_write(struct net_device *dev, int mii_id, int reg, int val)
++static void korina_mdio_write(struct net_device *dev, int phy, int reg, int val)
+ {
+ 	struct korina_private *lp = netdev_priv(dev);
+ 
+-	mii_id = ((lp->rx_irq == 0x2c ? 1 : 0) << 8);
++	if (korina_mdio_wait(lp))
++		return;
+ 
+-	writel(0, &lp->eth_regs->miimcfg);
+-	writel(1, &lp->eth_regs->miimcmd);
+-	writel(mii_id | reg, &lp->eth_regs->miimaddr);
+-	writel(ETH_MII_CMD_SCN, &lp->eth_regs->miimcmd);
++	writel(0, &lp->eth_regs->miimcmd);
++	writel(phy << 8 | reg, &lp->eth_regs->miimaddr);
+ 	writel(val, &lp->eth_regs->miimwtd);
+ }
+ 
+@@ -643,7 +657,7 @@ static void korina_check_media(struct net_device *dev, unsigned int init_media)
+ {
+ 	struct korina_private *lp = netdev_priv(dev);
+ 
+-	mii_check_media(&lp->mii_if, 0, init_media);
++	mii_check_media(&lp->mii_if, 1, init_media);
+ 
+ 	if (lp->mii_if.full_duplex)
+ 		writel(readl(&lp->eth_regs->ethmac2) | ETH_MAC2_FD,
+@@ -869,12 +883,15 @@ static int korina_init(struct net_device *dev)
+ 	 * Clock independent setting */
+ 	writel(((idt_cpu_freq) / MII_CLOCK + 1) & ~1,
+ 			&lp->eth_regs->ethmcp);
++	writel(0, &lp->eth_regs->miimcfg);
+ 
+ 	/* don't transmit until fifo contains 48b */
+ 	writel(48, &lp->eth_regs->ethfifott);
+ 
+ 	writel(ETH_MAC1_RE, &lp->eth_regs->ethmac1);
+ 
++	korina_check_media(dev, 1);
++
+ 	napi_enable(&lp->napi);
+ 	netif_start_queue(dev);
+ 
+@@ -1089,11 +1106,10 @@ static int korina_probe(struct platform_device *pdev)
+ 	dev->watchdog_timeo = TX_TIMEOUT;
+ 	netif_napi_add(dev, &lp->napi, korina_poll, NAPI_POLL_WEIGHT);
+ 
+-	lp->phy_addr = (((lp->rx_irq == 0x2c? 1:0) << 8) | 0x05);
+ 	lp->mii_if.dev = dev;
+-	lp->mii_if.mdio_read = mdio_read;
+-	lp->mii_if.mdio_write = mdio_write;
+-	lp->mii_if.phy_id = lp->phy_addr;
++	lp->mii_if.mdio_read = korina_mdio_read;
++	lp->mii_if.mdio_write = korina_mdio_write;
++	lp->mii_if.phy_id = 1;
+ 	lp->mii_if.phy_id_mask = 0x1f;
+ 	lp->mii_if.reg_num_mask = 0x1f;
+ 
 -- 
 2.29.2
 
